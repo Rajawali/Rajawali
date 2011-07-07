@@ -1,0 +1,5 @@
+<wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
+	android:thumbnail="@drawable/icon"
+    android:description="@string/description"
+    android:settingsActivity="rajawali.wallpaper.WallpaperSettings"    
+/>

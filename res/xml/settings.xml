@@ -1,0 +1,13 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/app_settings"
+        android:key="appsettings">
+
+	<PreferenceCategory>
+		<!-- CheckBoxPreference
+			android:key="touchAnimation"
+			android:title="@string/touch_animation_setting"
+			android:summary="@string/touch_animation_summary"
+			android:defaultValue="true" />
+	</PreferenceCategory>
+
+</PreferenceScreen>
