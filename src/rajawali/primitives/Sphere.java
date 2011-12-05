@@ -26,6 +26,7 @@ public class Sphere extends BaseObject3D {
 		
 		float[] vertices = new float[numVertices * 3];
 		float[] normals = new float[numVertices * 3];
+		float[] colors = new float[numVertices * 4];
 		short[] indices = new short[numIndices]; 
 		
 		int i, j;
@@ -85,7 +86,16 @@ public class Sphere extends BaseObject3D {
 				textureCoords[numUvs++] = (float)j / mSegmentsH;
 			}
 		}
+		
+		int numColors = numVertices * 4;
+		for(j = 0; j < numColors; j += 4 )
+		{
+			colors[ j ] = 1.0f;
+			colors[ j + 1 ] = 0;
+			colors[ j + 2 ] = 0;
+			colors[ j + 3 ] = 1.0f;
+		}
 
-		setData(vertices, normals, textureCoords, indices);
+		setData(vertices, normals, textureCoords, colors, indices);
 	}
 }

@@ -18,8 +18,10 @@ public class DiffuseMaterial extends AMaterial {
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
 		"attribute vec2 aTextureCoord;\n" +
+		"attribute vec4 aColor;\n" +
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec3 N, L;\n" +
+		"varying vec4 vColor;\n" +
 		
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
@@ -28,6 +30,7 @@ public class DiffuseMaterial extends AMaterial {
 		"	vec4 V = uMMatrix * aPosition;\n" +
 		"   vec4 lightPos = uUseObjectTransform ? uMMatrix * vec4(uLightPos, 1.0) : vec4(uLightPos, 1.0);\n" +
 		"	L = lightPos.xyz - V.xyz;\n" +
+		"	vColor = aColor;\n" +
 		"}";
 		
 	protected static final String mFShader = 
@@ -35,12 +38,15 @@ public class DiffuseMaterial extends AMaterial {
 
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec3 N, L;\n" +
+		"varying vec4 vColor;\n" +
  
 		"uniform sampler2D uTexture0;\n" +
+		"uniform bool uUseTexture;\n" +
 
 		"void main() {\n" +
 		"	float intensity = max(0.0, dot(normalize(N), normalize(L)));\n" +
-		"	gl_FragColor = texture2D(uTexture0, vTextureCoord);\n" +
+		"	if(uUseTexture) gl_FragColor = texture2D(uTexture0, vTextureCoord);\n" +
+		"	else gl_FragColor = vColor;\n" +
 		"	gl_FragColor.rgb *= intensity;\n" +
 		"}";
 	

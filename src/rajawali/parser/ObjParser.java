@@ -113,6 +113,7 @@ public class ObjParser extends AParser {
 			float[] aVertices 	= new float[oid.vertexIndices.size() * 3];
 			float[] aTexCoords 	= new float[oid.texCoordIndices.size() * 2];
 			float[] aNormals 	= new float[oid.normalIndices.size() * 3];
+			float[] aColors		= new float[oid.colorIndices.size() * 4];
 			short[] aIndices 	= new short[oid.vertexIndices.size()];
 			
 			for(i=0; i<oid.vertexIndices.size(); ++i) {
@@ -129,6 +130,14 @@ public class ObjParser extends AParser {
 				aTexCoords[ti] = texCoords.get(texCoordIndex);
 				aTexCoords[ti + 1] = texCoords.get(texCoordIndex + 1);
 			}
+			for(i=0; i<oid.colorIndices.size(); ++i) {
+				short colorIndex = (short)(oid.colorIndices.get(i) * 4);
+				int ti = i * 4;
+				aTexCoords[ti] = texCoords.get(colorIndex);
+				aTexCoords[ti + 1] = texCoords.get(colorIndex + 1);
+				aTexCoords[ti + 2] = texCoords.get(colorIndex + 2);
+				aTexCoords[ti + 3] = texCoords.get(colorIndex + 3);
+			}
 			for(i=0; i<oid.normalIndices.size(); ++i){
 				short normalIndex = (short)(oid.normalIndices.get(i) * 3);
 				int ni = i * 3;
@@ -137,7 +146,7 @@ public class ObjParser extends AParser {
 				aNormals[ni+2] = normals.get(normalIndex + 2);
 			}
 			
-			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aIndices);
+			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
 			oid.targetObj.setShader(new SimpleMaterial());
 			
 			mRootObject.addChild(oid.targetObj);
@@ -149,12 +158,14 @@ public class ObjParser extends AParser {
 		
 		public ArrayList<Short> vertexIndices;
 		public ArrayList<Short> texCoordIndices;
+		public ArrayList<Short> colorIndices;
 		public ArrayList<Short> normalIndices;
 		
 		public ObjIndexData(BaseObject3D targetObj) {
 			this.targetObj = targetObj;
 			vertexIndices = new ArrayList<Short>();
 			texCoordIndices = new ArrayList<Short>();
+			colorIndices = new ArrayList<Short>();
 			normalIndices = new ArrayList<Short>();
 		}
 	}

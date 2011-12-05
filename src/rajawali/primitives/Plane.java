@@ -59,6 +59,7 @@ public class Plane extends BaseObject3D {
         float[] vertices = new float[numVertices * 3];
         float[] textureCoords = new float[numVertices * 2];
         float[] normals = new float[numVertices * 3];
+		float[] colors = new float[numVertices * 4];
         short[] indices = new short[mSegmentsW * mSegmentsH * 6];
         int vertexCount = 0;
         int texCoordCount = 0;
@@ -103,10 +104,15 @@ public class Plane extends BaseObject3D {
         	}
         }
         
-        Log.d(Wallpaper.TAG, "num verts: " + numVertices);
-        Log.d(Wallpaper.TAG, "n4m v3rtz: " + vertexCount);
-        Log.d(Wallpaper.TAG, "n@m 1nd1x: " + (mSegmentsW * mSegmentsH * 6));
+		int numColors = numVertices * 4;
+		for(j = 0; j < numColors; j += 4 )
+		{
+			colors[ j ] = 1.0f;
+			colors[ j + 1 ] = 0;
+			colors[ j + 2 ] = 0;
+			colors[ j + 3 ] = 1.0f;
+		}
         
-        setData(vertices, normals, textureCoords, indices);
+        setData(vertices, normals, textureCoords, colors, indices);
 	}
 }

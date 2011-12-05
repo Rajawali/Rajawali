@@ -36,11 +36,13 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected FloatBuffer mVertices;
 	protected FloatBuffer mNormals;
 	protected FloatBuffer mTextureCoords;
+	protected FloatBuffer mColors;
 	protected ShortBuffer mIndices;
 	protected int mNumIndices;
 	
 	protected AMaterial mMaterial;
 	protected ALight mLight;
+	protected float mAlpha;
 	
 	protected ArrayList<BaseObject3D> mChildren;
 	protected int mNumChildren;
@@ -64,11 +66,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	
 	public BaseObject3D(SerializedObject3D ser) {
 		this();
-		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getIndices());
+		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices());
 	}
 
-	@Override 
-	public void setData(float[] vertices, float[] normals, float[] textureCoords, short[] indices) {
+	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, short[] indices) {
 		mVertices = ByteBuffer.allocateDirect(vertices.length
 	            * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
 	    mVertices.put(vertices).position(0);
@@ -81,6 +82,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	            * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mTextureCoords.put(textureCoords).position(0);
 		
+		mColors = ByteBuffer.allocateDirect(colors.length
+	            * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		mColors.put(textureCoords).position(0);
+		
 		mIndices = ByteBuffer.allocateDirect(indices.length
 				* SHORT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asShortBuffer();
 		mIndices.put(indices).position(0);
@@ -90,12 +95,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		mIsContainerOnly = false;
 	}
 
-	@Override
 	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix) {
 		render(camera, projMatrix, vMatrix, null);
 	}
 	
-	@Override
 	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix, final float[] parentMatrix) {
 		if(!mIsContainerOnly) {
 			mProjMatrix = projMatrix;
@@ -114,6 +117,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	        mMaterial.setCamera(camera);
 	        mMaterial.setVertices(mVertices);
 	        mMaterial.setTextureCoords(mTextureCoords);
+	        mMaterial.setColors(mColors);
 	        mMaterial.setNormals(mNormals); 
 	        
 	        setShaderParams();
@@ -181,12 +185,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		}
 	}	
 
-	@Override
 	public void setPosition(float x, float y, float z) {
 		this.x = x; this.y = y; this.z = z;
 	}
 	
-	@Override
 	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ) {
 		float[] r1 = new float[16]; 
 		int[] viewport = new int[] {0, 0, viewportWidth, viewportHeight};
@@ -197,112 +199,90 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		setPosition(r1[0] * eyeZ, r1[1] * -eyeZ, 0);
 	}
 	
-	@Override
 	public float[] getModelMatrix() {
 		return mMMatrix;
 	}
 
-	@Override
 	public void setX(float x) {
 		this.x = x;
 	}
 
-	@Override
 	public float getX() {
 		return x;
 	}
 
-	@Override
 	public void setY(float y) {
 		this.y = y;
 	}
 
-	@Override
 	public float getY() {
 		return y;
 	}
 
-	@Override
 	public void setZ(float z) {
 		this.z = z;
 	}
 
-	@Override
 	public float getZ() {
 		return z;
 	}
 
-	@Override
 	public void setRotation(float rotX, float rotY, float rotZ) {
 		this.rotX = rotX; this.rotY = rotY; this.rotZ = rotZ;
 	}
 
-	@Override
 	public void setRotX(float rotX) {
 		this.rotX = rotX;
 	}
 
-	@Override
 	public float getRotX() {
 		return rotX;
 	}
 
-	@Override
 	public void setRotY(float rotY) {
 		this.rotY = rotY;
 	}
 
-	@Override
 	public float getRotY() {
 		return rotY;
 	}
 
-	@Override
 	public void setRotZ(float rotZ) {
 		this.rotZ = rotZ;
 	}
 
-	@Override
 	public float getRotZ() {
 		return rotZ;
 	}
 	
-	@Override
 	public void setScale(float scale) {
 		this.scaleX = scale; this.scaleY = scale; this.scaleZ = scale;
 	}
 
-	@Override
 	public void setScale(float scaleX, float scaleY, float scaleZ) {
 		this.scaleX = scaleX; this.scaleY = scaleY; this.scaleZ = scaleZ;
 	}
 
-	@Override
 	public void setScaleX(float scaleX) {
 		this.scaleX = scaleX;
 	}
 
-	@Override
 	public float getScaleX() {
 		return scaleX;
 	}
 
-	@Override
 	public void setScaleY(float scaleY) {
 		this.scaleY = scaleY;
 	}
 
-	@Override
 	public float getScaleY() {
 		return scaleY;
 	}
 
-	@Override
 	public void setScaleZ(float scaleZ) {
 		this.scaleZ = scaleZ;
 	}
 
-	@Override
 	public float getScaleZ() {
 		return scaleZ;
 	}
@@ -339,7 +319,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		this.mDrawingMode = drawingMode;
 	}
 	
-	@Override
 	public int compareTo(BaseObject3D another) {
 		if(mForcedDepth) return -1;
 		if(z < another.z) return 1;
@@ -409,6 +388,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 				mVertices.capacity(),
 				mNormals.capacity(),
 				mTextureCoords.capacity(),
+				mColors.capacity(),
 				mIndices.capacity()
 		);
 		
@@ -417,8 +397,17 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		for(i=0; i<mVertices.capacity(); i++) ser.getVertices()[i] = mVertices.get(i); 
 		for(i=0; i<mNormals.capacity(); i++) ser.getNormals()[i] = mNormals.get(i);
 		for(i=0; i<mTextureCoords.capacity(); i++) ser.getTextureCoords()[i] = mTextureCoords.get(i);
+		for(i=0; i<mColors.capacity(); i++) ser.getTextureCoords()[i] = mColors.get(i);
 		for(i=0; i<mIndices.capacity(); i++) ser.getIndices()[i] = mIndices.get(i);
 		
 		return ser;
+	}
+
+	public float getAlpha() {
+		return mAlpha;
+	}
+
+	public void setAlpha(float alpha) {
+		this.mAlpha = alpha;
 	}
 }

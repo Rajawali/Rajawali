@@ -14,6 +14,7 @@ import rajawali.materials.TextureManager;
 import net.rbgrn.opengl.GLWallpaperService.GLEngine;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -48,15 +49,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected boolean mClearChildren = true;
 	
 	protected Camera3D mCamera;
+	protected float mRed, mBlue, mGreen, mAlpha;
 	
 	public RajawaliRenderer(Context context) {
 		mContext = context;
 		mChildren = new Stack<BaseObject3D>();
 		mCamera = new Camera3D();
 		mCamera.setZ(mEyeZ);
+		mAlpha = 0;
 	}
 
-	@Override
     public void onDrawFrame(GL10 glUnused) {
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 		if(mEnableDepthBuffer) {
@@ -66,7 +68,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			GLES20.glDepthMask(true);
 			GLES20.glClearDepthf(1.0f);
 		}
-        GLES20.glClearColor(0.0f, 0.19f, 0.43f, 1.0f);
+        GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
         GLES20.glClear(clearMask);
         
         mVMatrix = mCamera.getViewMatrix();
@@ -75,7 +77,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         }
     }
 	
-	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		viewportWidth = width;
 		viewportHeight = height;
@@ -99,7 +100,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		*/
 	}
 
-	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         //Matrix.setLookAtM(mVMatrix, 0, 0, 0, mEyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         GLES20.glFrontFace(GLES20.GL_CCW);

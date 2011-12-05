@@ -10,7 +10,7 @@ public interface IObject3D {
 	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix);
 	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix, float[] parentMatrix);
 	public void addTexture(TextureInfo textureInfo);
-	public void setData(float[] vertices, float[] normals, float[] textureCoords, short[] indices);
+	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, short[] indices);
 
 	public void setPosition(float x, float y, float z);
 	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ);

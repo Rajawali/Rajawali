@@ -20,8 +20,10 @@ public abstract class AMaterial {
 	protected int muMVPMatrixHandle;
 	protected int maPositionHandle;
 	protected int maTextureHandle;
+	protected int maColorHandle;
 	protected int maNormalHandle;
 	protected int muCameraPositionHandle;
+	protected int muUseTextureHandle;
 	protected int muMMatrixHandle;
 	protected int muVMatrixHandle;
 	protected ALight mLight;
@@ -61,6 +63,11 @@ public abstract class AMaterial {
 		if(maTextureHandle == -1) {
 			throw new RuntimeException("Could not get attrib location for aTextureCoord");
 		}
+
+		maColorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
+		if(maColorHandle == -1) {
+			Log.d(Wallpaper.TAG, "Could not get attrib location for aColor");
+		}
 		
 		muCameraPositionHandle = GLES20.glGetUniformLocation(mProgram, "uCameraPosition");
 		if(muCameraPositionHandle == -1) {
@@ -80,6 +87,11 @@ public abstract class AMaterial {
 		muVMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uVMatrix");
 		if(muVMatrixHandle == -1) {
 			//Log.d(Wallpaper.TAG, "Could not get attrib location for uVMatrix");
+		}
+		
+		muUseTextureHandle = GLES20.glGetUniformLocation(mProgram, "uUseTexture");
+		if(muUseTextureHandle == -1) {
+			Log.d(Wallpaper.TAG, "Could not get uniform location for uUseTexture");
 		}
 	}
 	
@@ -145,6 +157,8 @@ public abstract class AMaterial {
             GLES20.glBindTexture(type, ti.getTextureId());
             GLES20.glUniform1i(ti.getUniformHandle(), ti.getTextureSlot() - GLES20.GL_TEXTURE0);
         }
+        
+		GLES20.glUniform1i(muUseTextureHandle, num == 0 ? 0 : 1);
     }
     
     public ArrayList<TextureInfo> getTextureInfoList() {
@@ -175,6 +189,12 @@ public abstract class AMaterial {
         GLES20.glEnableVertexAttribArray(maTextureHandle);
     }
     
+    public void setColors(FloatBuffer colors) {
+    	colors.position(0);
+    	GLES20.glVertexAttribPointer(maColorHandle, 2, GLES20.GL_FLOAT, false, 0, colors);
+        GLES20.glEnableVertexAttribArray(maColorHandle);
+    }
+
     public void setNormals(FloatBuffer normals) {
         if(maNormalHandle > -1)
         {

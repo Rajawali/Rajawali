@@ -19,11 +19,9 @@ public abstract class AParser implements IParser {
 		mRootObject = new BaseObject3D();
 	}
 	
-	@Override
 	public void parse() {
 	}
 
-	@Override
 	public BaseObject3D getParsedObject() {
 		return mRootObject;
 	}
