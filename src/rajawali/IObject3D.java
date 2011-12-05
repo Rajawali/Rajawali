@@ -42,7 +42,7 @@ public interface IObject3D {
 	
 	public void addChild(BaseObject3D child);
 	public int getNumChildren();
-	public void setShader(AMaterial shader);
+	public void setMaterial(AMaterial shader);
 	
 	public ArrayList<TextureInfo> getTextureInfoList();
 }

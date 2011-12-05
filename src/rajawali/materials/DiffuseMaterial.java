@@ -28,7 +28,7 @@ public class DiffuseMaterial extends AMaterial {
 		"	vTextureCoord = aTextureCoord;\n" +
 		"	N = uNMatrix * aNormal;\n" +
 		"	vec4 V = uMMatrix * aPosition;\n" +
-		"   vec4 lightPos = uUseObjectTransform ? uMMatrix * vec4(uLightPos, 1.0) : vec4(uLightPos, 1.0);\n" +
+		"   vec4 lightPos = uUseObjectTransform ? uVMatrix * vec4(uLightPos, 1.0) : vec4(uLightPos, 1.0);\n" +
 		"	L = lightPos.xyz - V.xyz;\n" +
 		"	vColor = aColor;\n" +
 		"}";

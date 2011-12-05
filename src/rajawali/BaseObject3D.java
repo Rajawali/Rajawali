@@ -10,6 +10,7 @@ import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.TextureManager.TextureInfo;
 
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
 import android.opengl.Matrix;
@@ -23,7 +24,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
     protected final int SHORT_SIZE_BYTES = 2;
 	
 	protected float x, y, z, rotX, rotY, rotZ, scaleX = 1.0f, scaleY = 1.0f, scaleZ = 1.0f;
-    protected int numVertices;
 	
 	protected float[] mMVPMatrix = new float[16];
 	protected float[] mMMatrix = new float[16];
@@ -39,6 +39,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected FloatBuffer mColors;
 	protected ShortBuffer mIndices;
 	protected int mNumIndices;
+	protected int mNumVertices;
 	
 	protected AMaterial mMaterial;
 	protected ALight mLight;
@@ -84,13 +85,14 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		
 		mColors = ByteBuffer.allocateDirect(colors.length
 	            * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		mColors.put(textureCoords).position(0);
+		mColors.put(colors).position(0);
 		
 		mIndices = ByteBuffer.allocateDirect(indices.length
 				* SHORT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asShortBuffer();
 		mIndices.put(indices).position(0);
 		
 		mNumIndices = indices.length;
+		mNumVertices = vertices.length / 3;
 		
 		mIsContainerOnly = false;
 	}
@@ -346,7 +348,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		return null;
 	}
 	
-	public void setShader(AMaterial material) {
+	public void setMaterial(AMaterial material) {
 		setMaterial(material, true);
 	}
 	
@@ -409,5 +411,27 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 
 	public void setAlpha(float alpha) {
 		this.mAlpha = alpha;
+	}
+	
+	public void setColor(float r, float g, float b, float a) {
+		int numColors = mNumVertices * 4;
+		float[] colors = new float[numColors];
+		
+		for(int j = 0; j < numColors; j += 4 )
+		{
+			colors[ j ] = r;
+			colors[ j + 1 ] = g;
+			colors[ j + 2 ] = b;
+			colors[ j + 3 ] = a;
+		}
+		mColors.position(0);
+		//mColors.clear();
+		mColors = ByteBuffer.allocateDirect(colors.length
+	            * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		mColors.put(colors).position(0);
+	}
+	
+	public void setColor(int color) {
+		setColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f);
 	}
 }

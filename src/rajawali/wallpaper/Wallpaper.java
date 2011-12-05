@@ -15,9 +15,9 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 public class Wallpaper extends GLWallpaperService {
-    public static String TAG = "AlbumCoverWallpaper";
+    public static String TAG = "Rajawali";
     private static final boolean DEBUG = false;		
-	public static final String SHARED_PREFS_NAME = "albumcoverssettings";
+	public static final String SHARED_PREFS_NAME = "rajawalisharedprefs";
 
     private static class ContextFactory implements GLSurfaceView.EGLContextFactory {
     	private static int EGL_CONTEXT_CLIENT_VERSION = 0x3098;

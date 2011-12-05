@@ -19,20 +19,23 @@ public class PhongMaterial extends AMaterial {
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
 		"attribute vec2 aTextureCoord;\n" +
+		"attribute vec4 aColor;\n" +
 		
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec3 N, L, E, H;\n" +
+		"varying vec4 vColor;\n" +
 		
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		
 		"	vec4 eyePosition = uMMatrix  * aPosition;\n" + 
-		"	vec4 eyeLightPos = vec4(uLightPos, 1.0);\n" +
+		"	vec4 eyeLightPos = uUseObjectTransform ? uVMatrix * vec4(uLightPos, 1.0) : vec4(uLightPos, 1.0);\n" +
 		"	N = normalize(uNMatrix * aNormal);\n" +
 		"	L = normalize(eyeLightPos.xyz - eyePosition.xyz);\n" + 
 		"	E = -normalize(eyePosition.xyz);\n" +
 		"	H = normalize(L + E);\n" +
+		"	vColor = aColor;\n" +
 		"}";
 		
 	protected static final String mFShader = 
@@ -40,11 +43,13 @@ public class PhongMaterial extends AMaterial {
 
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec3 N, L, E, H;\n" +
+		"varying vec4 vColor;\n" +
 		
 		"uniform vec4 uSpecularColor;\n" +
 		"uniform vec4 uAmbientColor;\n" +
 		"uniform sampler2D uTexture0;\n" +
 		"uniform float uShininess;\n" +
+		"uniform bool uUseTexture;\n" +
 
 		"void main() {\n" +
 		"	vec3 Normal = normalize(N);\n" +
@@ -55,7 +60,7 @@ public class PhongMaterial extends AMaterial {
 		"	float Kd = max(dot(Normal, Light), 0.0);\n" + 
 		"	float Ks = pow(max(dot(Half, Normal), 0.0), uShininess);\n" + 
 	    "	float Ka = 0.0;\n" +
-	    "	vec4 diffuse  = Kd * texture2D(uTexture0, vTextureCoord);\n" + 
+	    "	vec4 diffuse  = uUseTexture ? Kd * texture2D(uTexture0, vTextureCoord) : Kd * vColor;\n" + 
 	    "	vec4 specular = Ks * uSpecularColor;\n" + 
 	    "	vec4 ambient  = Ka * uAmbientColor;\n" + 
 	    "	gl_FragColor = ambient + diffuse + specular;\n" + 

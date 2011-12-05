@@ -191,7 +191,7 @@ public abstract class AMaterial {
     
     public void setColors(FloatBuffer colors) {
     	colors.position(0);
-    	GLES20.glVertexAttribPointer(maColorHandle, 2, GLES20.GL_FLOAT, false, 0, colors);
+    	GLES20.glVertexAttribPointer(maColorHandle, 4, GLES20.GL_FLOAT, false, 0, colors);
         GLES20.glEnableVertexAttribArray(maColorHandle);
     }
 

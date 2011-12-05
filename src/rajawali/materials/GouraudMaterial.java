@@ -19,10 +19,12 @@ public class GouraudMaterial extends AMaterial {
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
 		"attribute vec2 aTextureCoord;\n" +
+		"attribute vec4 aColor;\n" +
 		
 		"varying vec2 vTextureCoord;\n" +
 		"varying float vSpecularIntensity;\n" +
 		"varying float vDiffuseIntensity;\n" +
+		"varying vec4 vColor;\n" +
 		
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
@@ -30,7 +32,7 @@ public class GouraudMaterial extends AMaterial {
 		
 		"	vec4 vertexPosCam = uMMatrix * aPosition;\n" +
 		"	vec3 normalCam = normalize(uNMatrix * aNormal);\n" +
-		"	vec4 lightPosCam = vec4(uLightPos, 1.0);\n" +
+		"	vec4 lightPosCam = uUseObjectTransform ? uVMatrix * vec4(uLightPos, 1.0) : vec4(uLightPos, 1.0);\n" +
 
 		"	vec3 lightVert = normalize(vec3(lightPosCam - vertexPosCam));\n" +
 		"	vec3 lightRefl = normalize(reflect(lightVert, normalCam));\n" +
@@ -38,6 +40,7 @@ public class GouraudMaterial extends AMaterial {
 		"	vDiffuseIntensity = max(dot(lightVert, normalCam), 0.0);\n" +
 		"	vSpecularIntensity = max(dot(lightRefl, normalize(vec3(vertexPosCam))), 0.0);\n" +
 		"	vSpecularIntensity = pow(vSpecularIntensity, 6.0);\n" +
+		"	vColor = aColor;\n" +
 		"}";
 		
 	protected static final String mFShader = 
@@ -46,12 +49,15 @@ public class GouraudMaterial extends AMaterial {
 		"varying vec2 vTextureCoord;\n" +
 		"varying float vSpecularIntensity;\n" +
 		"varying float vDiffuseIntensity;\n" +
+		"varying vec4 vColor;\n" +
 		
 		"uniform vec4 uSpecularColor;\n" +
 		"uniform sampler2D uTexture0;\n" +
+		"uniform bool uUseTexture;\n" +
+
 
 		"void main() {\n" +
-		"	vec4 texColor = texture2D(uTexture0, vTextureCoord);\n" +
+		"	vec4 texColor = uUseTexture ? texture2D(uTexture0, vTextureCoord) : vColor;\n" +
 		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity;\n" +
 		"}";
 	

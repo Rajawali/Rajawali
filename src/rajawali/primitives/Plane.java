@@ -28,31 +28,6 @@ public class Plane extends BaseObject3D {
 	
 	private void init() {
 		mMaterial = new SimpleMaterial();
-		/*
-		float[] vertices = new float[] {
-			-.5f, -.5f, 0,
-			.5f, -.5f, 0,
-			-.5f, .5f, 0,
-			.5f, .5f, 0	        
-		};
-		float[] textureCoords = new float[] {
-			1f, 1f,
-			0, 1f,
-			1f, 0,
-			0, 0
-		};
-		float[] normals = new float[] {
-			0.0f, 0.0f, 1.0f,
-			0.0f, 0.0f, 1.0f,
-			0.0f, 0.0f, 1.0f,
-			0.0f, 0.0f, 1.0f,
-		};
-		short[] indices = new short[] {
-			0, 3, 1, 0, 2, 3
-		};
-		
-		setData(vertices, normals, textureCoords, indices);*/
-		
 		
         int i, j;
         int numVertices = (mSegmentsW+1) * (mSegmentsH+1);
@@ -108,8 +83,8 @@ public class Plane extends BaseObject3D {
 		for(j = 0; j < numColors; j += 4 )
 		{
 			colors[ j ] = 1.0f;
-			colors[ j + 1 ] = 0;
-			colors[ j + 2 ] = 0;
+			colors[ j + 1 ] = 1.0f;
+			colors[ j + 2 ] = 0.0f;
 			colors[ j + 3 ] = 1.0f;
 		}
         

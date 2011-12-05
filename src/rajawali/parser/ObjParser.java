@@ -147,7 +147,7 @@ public class ObjParser extends AParser {
 			}
 			
 			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
-			oid.targetObj.setShader(new SimpleMaterial());
+			oid.targetObj.setMaterial(new SimpleMaterial());
 			
 			mRootObject.addChild(oid.targetObj);
 		}
