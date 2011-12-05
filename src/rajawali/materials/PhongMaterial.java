@@ -3,6 +3,7 @@ package rajawali.materials;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.wallpaper.Wallpaper;
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -116,8 +117,24 @@ public class PhongMaterial extends AMaterial {
 		mSpecularColor = color;
 	}
 	
+	public void setSpecularColor(float r, float g, float b, float a) {
+		setSpecularColor(new float[] { r, g, b, a });
+	}
+	
+	public void setSpecularColor(int color) {
+		setSpecularColor(new float[] { Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color) });
+	}
+	
 	public void setAmbientcolor(float[] color) {
 		mAmbientColor = color;
+	}
+	
+	public void setAmbientcolor(float r, float g, float b, float a) {
+		setAmbientcolor(new float[] { r, g, b, a });
+	}
+	
+	public void setAmbientcolor(int color) {
+		setAmbientcolor(new float[] { Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color) });
 	}
 	
 	public void setShininess(float shininess) {
