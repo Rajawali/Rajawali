@@ -32,6 +32,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected float[] mScalematrix = new float[16];
 	protected float[] mTranslateMatrix = new float[16];
 	protected float[] mRotateMatrix = new float[16];
+	protected float[] mRotateMatrixTmp = new float[16];
 	
 	protected FloatBuffer mVertices;
 	protected FloatBuffer mNormals;
@@ -83,9 +84,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	            * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mTextureCoords.put(textureCoords).position(0);
 		
-		mColors = ByteBuffer.allocateDirect(colors.length
-	            * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		mColors.put(colors).position(0);
+		if(colors != null) {
+			mColors = ByteBuffer.allocateDirect(colors.length
+		            * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
+			mColors.put(colors).position(0);
+		}
 		
 		mIndices = ByteBuffer.allocateDirect(indices.length
 				* SHORT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asShortBuffer();
@@ -133,9 +136,9 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
         
         Matrix.setIdentityM(mRotateMatrix, 0);
         
-        Matrix.rotateM(mRotateMatrix, 0, (float)rotX, 1.0f, 0.0f, 0.0f);
-        Matrix.rotateM(mRotateMatrix, 0, (float)rotY, 0.0f, 1.0f, 0.0f);
-        Matrix.rotateM(mRotateMatrix, 0, (float)rotZ, 0.0f, 0.0f, 1.0f);
+        rotateM(mRotateMatrix, 0, rotX, 1.0f, 0.0f, 0.0f);
+        rotateM(mRotateMatrix, 0, rotY, 0.0f, 1.0f, 0.0f);
+        rotateM(mRotateMatrix, 0, rotZ, 0.0f, 0.0f, 1.0f);
         
         Matrix.translateM(mMMatrix, 0, x, y, z);
         float[] tmpMatrix = new float[16];
@@ -166,6 +169,12 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
         for(i=0; i<mNumChildren; ++i) {
         	mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix);
         }
+	}
+	
+	protected void rotateM(float[] m, int mOffset, float a, float x, float y, float z) {
+		Matrix.setIdentityM(mRotateMatrixTmp, 0);
+		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
+        Matrix.multiplyMM(m, mOffset, m, mOffset, mRotateMatrixTmp, 0);
 	}
 	
 	protected void setShaderParams() {
