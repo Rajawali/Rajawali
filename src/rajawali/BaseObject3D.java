@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.math.Number3D;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
@@ -22,7 +23,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
     protected final int FLOAT_SIZE_BYTES = 4;
     protected final int SHORT_SIZE_BYTES = 2;
 	
-	protected float x, y, z, rotX, rotY, rotZ, scaleX = 1.0f, scaleY = 1.0f, scaleZ = 1.0f;
+	protected Number3D mPosition, mRotation, mScale;
 	
 	protected float[] mMVPMatrix = new float[16];
 	protected float[] mMMatrix = new float[16];
@@ -59,6 +60,9 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	
 	public BaseObject3D() {
 		mChildren = new ArrayList<BaseObject3D>();
+		mPosition = new Number3D();
+		mRotation = new Number3D();
+		mScale = new Number3D(1, 1, 1);
 	}
 	
 	public BaseObject3D(String name) {
@@ -132,22 +136,22 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
         
         Matrix.setIdentityM(mMMatrix, 0);
         Matrix.setIdentityM(mScalematrix, 0);
-        Matrix.scaleM(mScalematrix, 0, scaleX, scaleY, scaleZ);
+        Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
         
         Matrix.setIdentityM(mRotateMatrix, 0);
         
-        rotateM(mRotateMatrix, 0, rotX, 1.0f, 0.0f, 0.0f);
-        rotateM(mRotateMatrix, 0, rotY, 0.0f, 1.0f, 0.0f);
-        rotateM(mRotateMatrix, 0, rotZ, 0.0f, 0.0f, 1.0f);
+        rotateM(mRotateMatrix, 0, mRotation.x, 1.0f, 0.0f, 0.0f);
+        rotateM(mRotateMatrix, 0, mRotation.y, 0.0f, 1.0f, 0.0f);
+        rotateM(mRotateMatrix, 0, mRotation.z, 0.0f, 0.0f, 1.0f);
         
-        Matrix.translateM(mMMatrix, 0, x, y, z);
+        Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
         Matrix.setIdentityM(mTmpMatrix, 0);
         Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
         Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
         if(parentMatrix != null)
         {
         	Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
-        	mMMatrix = mTmpMatrix;
+        	System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
         }
         Matrix.multiplyMM(mMVPMatrix, 0, vMatrix, 0, mMMatrix, 0);
         Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
@@ -198,7 +202,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	}	
 
 	public void setPosition(float x, float y, float z) {
-		this.x = x; this.y = y; this.z = z;
+		mPosition.x = x; mPosition.y = y; mPosition.z = z;
 	}
 	
 	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ) {
@@ -216,87 +220,87 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	}
 
 	public void setX(float x) {
-		this.x = x;
+		mPosition.x = x;
 	}
 
 	public float getX() {
-		return x;
+		return mPosition.x;
 	}
 
 	public void setY(float y) {
-		this.y = y;
+		mPosition.y = y;
 	}
 
 	public float getY() {
-		return y;
+		return mPosition.y;
 	}
 
 	public void setZ(float z) {
-		this.z = z;
+		mPosition.z = z;
 	}
 
 	public float getZ() {
-		return z;
+		return mPosition.z;
 	}
 
 	public void setRotation(float rotX, float rotY, float rotZ) {
-		this.rotX = rotX; this.rotY = rotY; this.rotZ = rotZ;
+		mRotation.x = rotX; mRotation.y = rotY; mRotation.z = rotZ;
 	}
 
 	public void setRotX(float rotX) {
-		this.rotX = rotX;
+		mRotation.x = rotX;
 	}
 
 	public float getRotX() {
-		return rotX;
+		return mRotation.x;
 	}
 
 	public void setRotY(float rotY) {
-		this.rotY = rotY;
+		mRotation.y = rotY;
 	}
 
 	public float getRotY() {
-		return rotY;
+		return mRotation.y;
 	}
 
 	public void setRotZ(float rotZ) {
-		this.rotZ = rotZ;
+		mRotation.z = rotZ;
 	}
 
 	public float getRotZ() {
-		return rotZ;
+		return mRotation.z;
 	}
 	
 	public void setScale(float scale) {
-		this.scaleX = scale; this.scaleY = scale; this.scaleZ = scale;
+		mScale.x = scale; mScale.y = scale; mScale.z = scale;
 	}
 
 	public void setScale(float scaleX, float scaleY, float scaleZ) {
-		this.scaleX = scaleX; this.scaleY = scaleY; this.scaleZ = scaleZ;
+		mScale.x = scaleX; mScale.y = scaleY; mScale.z = scaleZ;
 	}
 
 	public void setScaleX(float scaleX) {
-		this.scaleX = scaleX;
+		mScale.x = scaleX;
 	}
 
 	public float getScaleX() {
-		return scaleX;
+		return mScale.x;
 	}
 
 	public void setScaleY(float scaleY) {
-		this.scaleY = scaleY;
+		mScale.y = scaleY;
 	}
 
 	public float getScaleY() {
-		return scaleY;
+		return mScale.y;
 	}
 
 	public void setScaleZ(float scaleZ) {
-		this.scaleZ = scaleZ;
+		mScale.z = scaleZ;
 	}
 
 	public float getScaleZ() {
-		return scaleZ;
+		return mScale.z;
 	}
 
 	public boolean isDoubleSided() {
@@ -333,8 +337,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	
 	public int compareTo(BaseObject3D another) {
 		if(mForcedDepth) return -1;
-		if(z < another.z) return 1;
-		else if(z > another.z) return -1;
+		if(mPosition.z < another.getZ()) return 1;
+		else if(mPosition.z > another.getZ()) return -1;
 		else return 0;
 	}
 
