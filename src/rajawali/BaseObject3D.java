@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.TextureManager.TextureInfo;
-
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
@@ -33,6 +32,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected float[] mTranslateMatrix = new float[16];
 	protected float[] mRotateMatrix = new float[16];
 	protected float[] mRotateMatrixTmp = new float[16];
+	protected float[] mTmpMatrix = new float[16];
 	
 	protected FloatBuffer mVertices;
 	protected FloatBuffer mNormals;
@@ -141,13 +141,13 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
         rotateM(mRotateMatrix, 0, rotZ, 0.0f, 0.0f, 1.0f);
         
         Matrix.translateM(mMMatrix, 0, x, y, z);
-        float[] tmpMatrix = new float[16];
-        Matrix.multiplyMM(tmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
-        Matrix.multiplyMM(mMMatrix, 0, tmpMatrix, 0, mRotateMatrix, 0);
+        Matrix.setIdentityM(mTmpMatrix, 0);
+        Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
+        Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
         if(parentMatrix != null)
         {
-        	Matrix.multiplyMM(tmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
-        	mMMatrix = tmpMatrix;
+        	Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
+        	mMMatrix = mTmpMatrix;
         }
         Matrix.multiplyMM(mMVPMatrix, 0, vMatrix, 0, mMMatrix, 0);
         Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
@@ -174,7 +174,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected void rotateM(float[] m, int mOffset, float a, float x, float y, float z) {
 		Matrix.setIdentityM(mRotateMatrixTmp, 0);
 		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
-        Matrix.multiplyMM(m, mOffset, m, mOffset, mRotateMatrixTmp, 0);
+		System.arraycopy(m, 0, mTmpMatrix, 0, 16);
+        Matrix.multiplyMM(m, mOffset, mTmpMatrix, mOffset, mRotateMatrixTmp, 0);
 	}
 	
 	protected void setShaderParams() {
