@@ -7,14 +7,12 @@ import java.util.TimerTask;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import net.rbgrn.opengl.GLWallpaperService.GLEngine;
 import rajawali.BaseObject3D;
 import rajawali.Camera3D;
 import rajawali.materials.TextureManager;
-
-import net.rbgrn.opengl.GLWallpaperService.GLEngine;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -134,13 +132,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void onVisibilityChanged(boolean visible) {
-		Log.d(TAG, "visibility");
 		if(!visible) stopRendering();
 		else startRendering();
 	}
 	
 	public void onSurfaceDestroyed() {
-		Log.d(TAG, "destroyed");
 		stopRendering();
 	}
 	

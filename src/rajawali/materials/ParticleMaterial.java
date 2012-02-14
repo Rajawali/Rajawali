@@ -17,7 +17,7 @@ public class ParticleMaterial extends AMaterial {
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
 		"   vec4 pos = uMMatrix * aPosition;\n" +
-		"	gl_PointSize = uPointSize / (pos.z + 4.0);\n" +
+		"	gl_PointSize = uPointSize;\n" + // / (pos.z + 4.0);\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		"}\n";
 	
