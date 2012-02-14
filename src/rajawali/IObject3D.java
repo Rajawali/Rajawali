@@ -45,4 +45,6 @@ public interface IObject3D {
 	public void setMaterial(AMaterial shader);
 	
 	public ArrayList<TextureInfo> getTextureInfoList();
+	
+	public void serializeToSDCard(String fileName);
 }
