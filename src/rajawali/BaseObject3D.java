@@ -58,6 +58,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected boolean mDoubleSided = false;
 	protected boolean mTransparent = false;
 	protected boolean mForcedDepth = false;
+	protected boolean mHasCubemapTexture = false;
 	protected int mDrawingMode = GLES20.GL_TRIANGLES;
 
 	protected boolean mIsContainerOnly = true;
@@ -125,9 +126,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 				GLES20.glEnable(GLES20.GL_CULL_FACE);
 			if (mTransparent) {
 				GLES20.glEnable(GLES20.GL_BLEND);
-				GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
+				GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 				GLES20.glDepthMask(false);
 			} else {
+				GLES20.glDisable(GLES20.GL_BLEND);
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 				GLES20.glDepthMask(true);
 			}
@@ -136,7 +139,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 			mMaterial.bindTextures();
 			mMaterial.setCamera(camera);
 			mMaterial.setVertices(mVertices);
-			mMaterial.setTextureCoords(mTextureCoords);
+			mMaterial.setTextureCoords(mTextureCoords, mHasCubemapTexture);
 			mMaterial.setColors(mColors);
 			mMaterial.setNormals(mNormals);
 

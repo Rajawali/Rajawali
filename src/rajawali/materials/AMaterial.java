@@ -184,8 +184,12 @@ public abstract class AMaterial {
     }
     
     public void setTextureCoords(FloatBuffer textureCoords) {
+    	setTextureCoords(textureCoords, false);
+    }
+    
+    public void setTextureCoords(FloatBuffer textureCoords, boolean hasCubemapTexture) {
     	textureCoords.position(0);
-    	GLES20.glVertexAttribPointer(maTextureHandle, 2, GLES20.GL_FLOAT, false, 0, textureCoords);
+    	GLES20.glVertexAttribPointer(maTextureHandle, hasCubemapTexture ? 3 : 2, GLES20.GL_FLOAT, false, 0, textureCoords);
         GLES20.glEnableVertexAttribArray(maTextureHandle);
     }
     

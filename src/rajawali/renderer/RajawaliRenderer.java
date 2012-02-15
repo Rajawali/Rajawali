@@ -10,13 +10,17 @@ import javax.microedition.khronos.opengles.GL10;
 import net.rbgrn.opengl.GLWallpaperService.GLEngine;
 import rajawali.BaseObject3D;
 import rajawali.Camera3D;
+import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureManager;
+import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.primitives.Cube;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.util.Log;
 
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer {
@@ -41,13 +45,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected int mNumChildren;
 	protected boolean mEnableDepthBuffer = true;
 	
-	protected float mNearPlane  = 1.0f;
-	protected float mFarPlane = 80.0f;
 	protected TextureManager mTextureManager;
 	protected boolean mClearChildren = true;
 	
 	protected Camera3D mCamera;
 	protected float mRed, mBlue, mGreen, mAlpha;
+	protected Cube mSkybox;
 	
 	public RajawaliRenderer(Context context) {
 		mContext = context;
@@ -80,11 +83,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		viewportHeight = height;
 		
 		float ratio = (float)width/height;
-		float fov = 60;
-		float frustumH = (float)Math.tan(fov / 360.0 * Math.PI) * mNearPlane;
+		float frustumH = (float)Math.tan(mCamera.getFieldOfView() / 360.0 * Math.PI) * mCamera.getNearPlane();
 		float frustumW = frustumH * ratio;
 		
-		Matrix.frustumM(mProjMatrix, 0, -frustumW, frustumW, -frustumH, frustumH, mNearPlane, mFarPlane);
+		Matrix.frustumM(mProjMatrix, 0, -frustumW, frustumW, -frustumH, frustumH, mCamera.getNearPlane(), mCamera.getFarPlane());
 
 		GLES20.glViewport(0, 0, width, height);
 		
@@ -181,6 +183,24 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected void addChild(BaseObject3D child) {
 		mChildren.add(child);
 		mNumChildren = mChildren.size();
+	}
+	
+	protected void setSkybox(int front, int right, int back, int left, int up, int down) {
+		mSkybox = new Cube(100, true);
+		
+		Bitmap[] textures = new Bitmap[6];
+		textures[0] = BitmapFactory.decodeResource(mContext.getResources(), left);
+		textures[1] = BitmapFactory.decodeResource(mContext.getResources(), right);
+		textures[2] = BitmapFactory.decodeResource(mContext.getResources(), up);
+		textures[3] = BitmapFactory.decodeResource(mContext.getResources(), down); //
+		textures[4] = BitmapFactory.decodeResource(mContext.getResources(), front);
+		textures[5] = BitmapFactory.decodeResource(mContext.getResources(), back);		
+		
+		TextureInfo tInfo = mTextureManager.addCubemapTextures(textures);
+		SkyboxMaterial mat = new SkyboxMaterial();
+		mat.addTexture(tInfo);
+		mSkybox.setMaterial(mat);
+		addChild(mSkybox);
 	}
 	
 	protected boolean removeChild(BaseObject3D child) {

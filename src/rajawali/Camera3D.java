@@ -5,6 +5,9 @@ import android.opengl.Matrix;
 public class Camera3D {
 	protected float x, y, z, lookAtX, lookAtY, lookAtZ;
 	protected float[] mVMatrix = new float[16];
+	protected float mNearPlane  = 1.0f;
+	protected float mFarPlane = 80.0f;
+	protected float mFieldOfView = 45;
 	
 	public Camera3D(){}
 	
@@ -75,5 +78,29 @@ public class Camera3D {
 
 	public void setLookAtZ(float lookAtZ) {
 		this.lookAtZ = lookAtZ;
+	}
+
+	public float getNearPlane() {
+		return mNearPlane;
+	}
+
+	public void setNearPlane(float nearPlane) {
+		this.mNearPlane = nearPlane;
+	}
+
+	public float getFarPlane() {
+		return mFarPlane;
+	}
+
+	public void setFarPlane(float farPlane) {
+		this.mFarPlane = farPlane;
+	}
+
+	public float getFieldOfView() {
+		return mFieldOfView;
+	}
+
+	public void setFieldOfView(float fieldOfView) {
+		this.mFieldOfView = fieldOfView;
 	}
 }
