@@ -72,6 +72,18 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
         GLES20.glClear(clearMask);
         
+        if(mSkybox != null) {
+        	GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+        	GLES20.glDepthMask(false);
+        	
+        	mSkybox.render(mCamera, mProjMatrix, mVMatrix);
+        	
+        	if(mEnableDepthBuffer) {
+        		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+        		GLES20.glDepthMask(true);
+        	}
+        }
+        
         mVMatrix = mCamera.getViewMatrix();
         for(int i=0; i<mNumChildren; i++) {
         	mChildren.get(i).render(mCamera, mProjMatrix, mVMatrix);
@@ -200,7 +212,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		SkyboxMaterial mat = new SkyboxMaterial();
 		mat.addTexture(tInfo);
 		mSkybox.setMaterial(mat);
-		addChild(mSkybox);
+		//addChild(mSkybox);
 	}
 	
 	protected boolean removeChild(BaseObject3D child) {

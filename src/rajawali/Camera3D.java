@@ -6,7 +6,7 @@ public class Camera3D {
 	protected float x, y, z, lookAtX, lookAtY, lookAtZ;
 	protected float[] mVMatrix = new float[16];
 	protected float mNearPlane  = 1.0f;
-	protected float mFarPlane = 80.0f;
+	protected float mFarPlane = 120.0f;
 	protected float mFieldOfView = 45;
 	
 	public Camera3D(){}
