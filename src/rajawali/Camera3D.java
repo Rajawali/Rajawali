@@ -31,6 +31,12 @@ public class Camera3D {
 		this.lookAtY = lookatObject.getY();
 		this.lookAtZ = lookatObject.getZ();
 	}
+	
+	public void lookAt(float x, float y, float z) {
+		this.lookAtX = x;
+		this.lookAtY = y;
+		this.lookAtZ = z;
+	}
 
 	public float getX() {
 		return x;

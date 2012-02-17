@@ -76,6 +76,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         	GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         	GLES20.glDepthMask(false);
         	
+        	mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
         	mSkybox.render(mCamera, mProjMatrix, mVMatrix);
         	
         	if(mEnableDepthBuffer) {
@@ -191,8 +192,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	public void setSurfaceView(GLSurfaceView surfaceView) {
 		this.mSurfaceView = surfaceView;
 	}
+	
+	public Context getContext() {
+		return mContext;
+	}
+	
+	public TextureManager getTextureManager() {
+		return mTextureManager;
+	}
 
-	protected void addChild(BaseObject3D child) {
+	public void addChild(BaseObject3D child) {
 		mChildren.add(child);
 		mNumChildren = mChildren.size();
 	}
@@ -212,10 +221,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		SkyboxMaterial mat = new SkyboxMaterial();
 		mat.addTexture(tInfo);
 		mSkybox.setMaterial(mat);
-		//addChild(mSkybox);
 	}
 	
-	protected boolean removeChild(BaseObject3D child) {
+	public boolean removeChild(BaseObject3D child) {
 		boolean result = mChildren.remove(child);
 		mNumChildren = mChildren.size();
 		//mTextureManager.removeTextures(child.getTextureInfoList());

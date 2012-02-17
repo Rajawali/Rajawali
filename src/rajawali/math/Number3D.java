@@ -78,6 +78,13 @@ public class Number3D
 		this.z *= f;
 	}
 	
+	public void multiply(Number3D n)
+	{
+		this.x *= n.x;
+		this.y *= n.y;
+		this.z *= n.z;
+	}
+	
 	public float length()
 	{
 		return (float) Math.sqrt( this.x*this.x + this.y*this.y + this.z*this.z );

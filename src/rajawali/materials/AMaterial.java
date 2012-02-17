@@ -27,6 +27,7 @@ public abstract class AMaterial {
 	protected int muMMatrixHandle;
 	protected int muVMatrixHandle;
 	protected ALight mLight;
+	protected boolean mUseColor = false;
 	
 	protected int numTextures = 0;
 	protected float[] mModelViewMatrix;
@@ -143,6 +144,7 @@ public abstract class AMaterial {
 
     public void useProgram() {
     	GLES20.glUseProgram(mProgram);
+    	GLES20.glUniform1i(muUseTextureHandle, mUseColor == false ? GLES20.GL_TRUE : GLES20.GL_FALSE);
     }
     
     public void bindTextures() {
@@ -157,8 +159,6 @@ public abstract class AMaterial {
             GLES20.glBindTexture(type, ti.getTextureId());
             GLES20.glUniform1i(ti.getUniformHandle(), ti.getTextureSlot() - GLES20.GL_TEXTURE0);
         }
-        
-		GLES20.glUniform1i(muUseTextureHandle, num == 0 ? 0 : 1);
     }
     
     public ArrayList<TextureInfo> getTextureInfoList() {
@@ -173,6 +173,7 @@ public abstract class AMaterial {
 			throw new RuntimeException("Could not get attrib location for uTexture" + count);
 		}
         textureInfo.setUniformHandle(textureHandle);
+        mUseColor = false;
         mTextureInfoList.add(textureInfo);
         numTextures++;
     }
@@ -253,5 +254,9 @@ public abstract class AMaterial {
 		
 		for(int i=0; i<num; ++i)
 			shader.addTexture(mTextureInfoList.get(i));
+	}
+	
+	public void setUseColor(boolean value) {
+		mUseColor = value;
 	}
 }

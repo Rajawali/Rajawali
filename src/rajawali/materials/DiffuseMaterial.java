@@ -45,7 +45,7 @@ public class DiffuseMaterial extends AMaterial {
 
 		"void main() {\n" +
 		"	float intensity = max(0.0, dot(normalize(N), normalize(L)));\n" +
-		"	if(uUseTexture) gl_FragColor = texture2D(uTexture0, vTextureCoord);\n" +
+		"	if(uUseTexture==true) gl_FragColor = texture2D(uTexture0, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +
 		"	gl_FragColor.rgb *= intensity;\n" +
 		"}";

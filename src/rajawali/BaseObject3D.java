@@ -13,6 +13,7 @@ import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.math.Number3D;
+import rajawali.primitives.BoundingBox;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -59,9 +60,13 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected boolean mTransparent = false;
 	protected boolean mForcedDepth = false;
 	protected boolean mHasCubemapTexture = false;
+	protected boolean mIsVisible = true;
 	protected int mDrawingMode = GLES20.GL_TRIANGLES;
 
 	protected boolean mIsContainerOnly = true;
+	protected Number3D mLookAt;
+	protected BoundingBox mBoundingBox;
+	protected boolean mDrawBoundingBox;
 
 	public BaseObject3D() {
 		mChildren = new ArrayList<BaseObject3D>();
@@ -112,6 +117,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		mNumVertices = vertices.length / 3;
 
 		mIsContainerOnly = false;
+		
+		mBoundingBox = new BoundingBox(this);
 	}
 
 	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix) {
@@ -120,6 +127,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 
 	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix,
 			final float[] parentMatrix) {
+		if(!mIsVisible) return;
 		if (!mIsContainerOnly) {
 			mProjMatrix = projMatrix;
 			if (!mDoubleSided)
@@ -154,9 +162,13 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 
 		Matrix.setIdentityM(mRotateMatrix, 0);
 
-		rotateM(mRotateMatrix, 0, mRotation.x, 1.0f, 0.0f, 0.0f);
-		rotateM(mRotateMatrix, 0, mRotation.y, 0.0f, 1.0f, 0.0f);
-		rotateM(mRotateMatrix, 0, mRotation.z, 0.0f, 0.0f, 1.0f);
+		if(mLookAt == null) {
+			rotateM(mRotateMatrix, 0, mRotation.x, 1.0f, 0.0f, 0.0f);
+			rotateM(mRotateMatrix, 0, mRotation.y, 0.0f, 1.0f, 0.0f);
+			rotateM(mRotateMatrix, 0, mRotation.z, 0.0f, 0.0f, 1.0f);
+		} else {
+			Matrix.setLookAtM(mRotateMatrix, 0, 0, 0, 0, mLookAt.x, mLookAt.y, mLookAt.z, 0, 1f, 0);
+		}
 
 		Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
 		Matrix.setIdentityM(mTmpMatrix, 0);
@@ -183,6 +195,9 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		}
 
+		if(mDrawBoundingBox)
+			mBoundingBox.render(camera, projMatrix, vMatrix, mMMatrix);
+		
 		int i;
 		for (i = 0; i < mNumChildren; ++i) {
 			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix);
@@ -217,11 +232,25 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 			throw new RuntimeException(op + ": glError " + error);
 		}
 	}
-
+	
+	public void setPosition(Number3D position) {
+		mPosition.x = position.x;
+		mPosition.y = position.y;
+		mPosition.z = position.z;
+	}
+	
 	public void setPosition(float x, float y, float z) {
 		mPosition.x = x;
 		mPosition.y = y;
 		mPosition.z = z;
+	}
+	
+	public Number3D getPosition() {
+		return mPosition;
+	}
+	
+	public void setDrawBoundingBox(boolean draw) {
+		mDrawBoundingBox = draw;
 	}
 
 	public void setScreenCoordinates(float x, float y, int viewportWidth,
@@ -397,6 +426,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	public void setMaterial(AMaterial material) {
 		setMaterial(material, true);
 	}
+	
+	public AMaterial getMaterial() {
+		return mMaterial;
+	}
 
 	public void setMaterial(AMaterial material, boolean copyTextures) {
 		if (mMaterial != null && copyTextures)
@@ -412,6 +445,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		return mName;
 	}
 
+	public FloatBuffer getVertices() {
+		return mVertices;
+	}
+	
 	public boolean isForcedDepth() {
 		return mForcedDepth;
 	}
@@ -451,6 +488,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		return ser;
 	}
 
+	public BaseObject3D clone()
+	{
+		return new BaseObject3D(toSerializedObject3D());
+	}
+	
 	public float getAlpha() {
 		return mAlpha;
 	}
@@ -459,6 +501,18 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		this.mAlpha = alpha;
 	}
 
+	public void setLookAt(Number3D lookAt) {
+		mLookAt = lookAt;
+	}
+	
+	public void setVisible(boolean visible) {
+		mIsVisible = visible;
+	}
+	
+	public BoundingBox getBoundingBox() {
+		return mBoundingBox;
+	}
+	
 	public void setColor(float r, float g, float b, float a) {
 		int numColors = mNumVertices * 4;
 		float[] colors = new float[numColors];
