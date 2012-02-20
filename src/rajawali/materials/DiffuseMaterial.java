@@ -56,10 +56,17 @@ public class DiffuseMaterial extends AMaterial {
 	
 	protected float[] mNormalMatrix;
 	protected float[] mLightPos;
+	protected float[] mTmp;
+	
+	protected android.graphics.Matrix mTmpNormalMatrix = new android.graphics.Matrix();
+	protected android.graphics.Matrix mTmpMvMatrix = new android.graphics.Matrix();
+
 	
 	public DiffuseMaterial() {
 		super(mVShader, mFShader);
 		mNormalMatrix = new float[9];
+		mTmp = new float[9];
+		mLightPos = new float[3];
 	}
 
 	@Override
@@ -67,7 +74,9 @@ public class DiffuseMaterial extends AMaterial {
 		super.setLight(light);
 
 		DirectionalLight dirLight = (DirectionalLight)light;
-		mLightPos = dirLight.getPosition();
+		mLightPos[0] = dirLight.getPosition().x;
+		mLightPos[1] = dirLight.getPosition().y;
+		mLightPos[2] = dirLight.getPosition().z;
 		GLES20.glUniform3fv(muLightPosHandle, 1, mLightPos, 0);
 		GLES20.glUniform1i(muUseObjectTransformHandle, light.shouldUseObjectTransform() ? 1 : 0);
 	}
@@ -93,26 +102,13 @@ public class DiffuseMaterial extends AMaterial {
 	@Override
 	public void setModelMatrix(float[] modelMatrix) {
 		super.setModelMatrix(modelMatrix);
-		android.graphics.Matrix normalMatrix = new android.graphics.Matrix();
-		android.graphics.Matrix mvMatrix = new android.graphics.Matrix();
 		
-		mvMatrix.setValues(new float[]{
-				modelMatrix[0], modelMatrix[1], modelMatrix[2], 
-				modelMatrix[4], modelMatrix[5], modelMatrix[6],
-				modelMatrix[8], modelMatrix[9], modelMatrix[10]
-		});
+		mTmpMvMatrix.setValues(
+				modelMatrix
+		);
 		
-		normalMatrix.reset();
-		mvMatrix.invert(normalMatrix);
-		float[] values = new float[9];
-		normalMatrix.getValues(values);
-		
-		normalMatrix.setValues(new float[] {
-				values[0], values[3], values[6],
-				values[1], values[4], values[7],
-				values[2], values[5], values[8]
-		});
-		normalMatrix.getValues(mNormalMatrix);
+		mTmpMvMatrix.invert(mTmpNormalMatrix);
+		mTmpNormalMatrix.getValues(mNormalMatrix);
 
 	    GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalMatrix, 0);
 	}

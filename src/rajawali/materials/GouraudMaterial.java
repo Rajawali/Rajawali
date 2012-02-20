@@ -75,6 +75,7 @@ public class GouraudMaterial extends AMaterial {
 		super(mVShader, mFShader);
 		mNormalMatrix = new float[9];
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+		mLightPos = new float[3];
 	}
 	
 	public GouraudMaterial(float[] specularColor) {
@@ -87,7 +88,9 @@ public class GouraudMaterial extends AMaterial {
 		super.setLight(light);
 
 		DirectionalLight dirLight = (DirectionalLight)light;
-		mLightPos = dirLight.getPosition();
+		mLightPos[0] = dirLight.getPosition().x;
+		mLightPos[1] = dirLight.getPosition().y;
+		mLightPos[2] = dirLight.getPosition().z;
 		GLES20.glUniform3fv(muLightPosHandle, 1, mLightPos, 0);
 		GLES20.glUniform1i(muUseObjectTransformHandle, light.shouldUseObjectTransform() ? 1 : 0);
 	}

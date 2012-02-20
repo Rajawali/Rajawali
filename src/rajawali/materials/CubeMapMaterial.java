@@ -59,6 +59,7 @@ public class CubeMapMaterial extends AMaterial {
 		super(mVShader, mFShader);
 		usesCubeMap = true;
 		mNormalMatrix = new float[9];
+		mLightPos = new float[3];
 	}
 	
 	@Override
@@ -66,7 +67,9 @@ public class CubeMapMaterial extends AMaterial {
 		super.setLight(light);
 
 		DirectionalLight dirLight = (DirectionalLight)light;
-		mLightPos = dirLight.getPosition();
+		mLightPos[0] = dirLight.getPosition().x;
+		mLightPos[1] = dirLight.getPosition().y;
+		mLightPos[2] = dirLight.getPosition().z;
 		GLES20.glUniform3fv(muLightPosHandle, 1, mLightPos, 0);
 	}
 

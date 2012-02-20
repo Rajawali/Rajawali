@@ -1,10 +1,16 @@
 package rajawali.lights;
 
+import rajawali.math.Number3D;
+
 public abstract class ALight {
 	protected float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
+	protected Number3D mPosition;
 	
-	protected float mX, mY, mZ;
 	protected boolean mUseObjectTransform;
+	
+	public ALight() {
+		mPosition = new Number3D();
+	}
 	
 	public void setColor(final float r, final float g, final float b) {
 		mColor[0] = r; mColor[1] = g; mColor[2] = b;
@@ -15,35 +21,35 @@ public abstract class ALight {
 	}
 	
 	public float getX() {
-		return mX;
+		return mPosition.x;
 	}
 	
 	public void setPosition(float x, float y, float z) {
-		this.mX = x; this.mY = y; this.mZ = z;
+		this.mPosition.x = x; this.mPosition.y = y; this.mPosition.z = z;
 	}
 	
-	public float[] getPosition() {
-		return new float[] { this.mX, this.mY, this.mZ };
+	public Number3D getPosition() {
+		return mPosition;
 	}
 
 	public void setX(final float x) {
-		this.mX = x;
+		this.mPosition.x = x;
 	}
 
 	public float getY() {
-		return mY;
+		return mPosition.y;
 	}
 
 	public void setY(final float y) {
-		this.mY = y;
+		this.mPosition.y = y;
 	}
 
 	public float getZ() {
-		return mZ;
+		return mPosition.z;
 	}
 
 	public void setZ(final float z) {
-		this.mZ = z;
+		this.mPosition.z = z;
 	}
 
 	public boolean shouldUseObjectTransform() {

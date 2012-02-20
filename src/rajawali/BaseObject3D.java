@@ -514,20 +514,18 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	}
 	
 	public void setColor(float r, float g, float b, float a) {
-		int numColors = mNumVertices * 4;
-		float[] colors = new float[numColors];
-
-		for (int j = 0; j < numColors; j += 4) {
-			colors[j] = r;
-			colors[j + 1] = g;
-			colors[j + 2] = b;
-			colors[j + 3] = a;
-		}
+		if(mColors.capacity() == 0)
+			mColors = ByteBuffer.allocateDirect(mNumVertices * 4 * FLOAT_SIZE_BYTES)
+			.order(ByteOrder.nativeOrder()).asFloatBuffer();
+		
 		mColors.position(0);
-		// mColors.clear();
-		mColors = ByteBuffer.allocateDirect(colors.length * FLOAT_SIZE_BYTES)
-				.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		mColors.put(colors).position(0);
+		
+		while(mColors.remaining() > 3) {
+			mColors.put(r);
+			mColors.put(g);
+			mColors.put(b);
+			mColors.put(a);
+		}
 	}
 
 	public void setColor(int color) {
