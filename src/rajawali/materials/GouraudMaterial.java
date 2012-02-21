@@ -69,7 +69,11 @@ public class GouraudMaterial extends AMaterial {
 	
 	protected float[] mNormalMatrix;
 	protected float[] mLightPos;
+	protected float[] mTmp, mTmp2;
 	protected float[] mSpecularColor;
+	
+	protected android.graphics.Matrix mTmpNormalMatrix = new android.graphics.Matrix();
+	protected android.graphics.Matrix mTmpMvMatrix = new android.graphics.Matrix();
 	
 	public GouraudMaterial() {
 		super(mVShader, mFShader);
@@ -139,26 +143,22 @@ public class GouraudMaterial extends AMaterial {
 	@Override
 	public void setModelMatrix(float[] modelMatrix) {
 		super.setModelMatrix(modelMatrix);
-		android.graphics.Matrix normalMatrix = new android.graphics.Matrix();
-		android.graphics.Matrix mvMatrix = new android.graphics.Matrix();
 		
-		mvMatrix.setValues(new float[]{
-				modelMatrix[0], modelMatrix[1], modelMatrix[2], 
-				modelMatrix[4], modelMatrix[5], modelMatrix[6],
-				modelMatrix[8], modelMatrix[9], modelMatrix[10]
-		});
+		mTmp2[0] = modelMatrix[0]; mTmp2[1] = modelMatrix[1]; mTmp2[2] = modelMatrix[2]; 
+		mTmp2[3] = modelMatrix[4]; mTmp2[4] = modelMatrix[5]; mTmp2[5] = modelMatrix[6];
+		mTmp2[6] = modelMatrix[8]; mTmp2[7] = modelMatrix[9]; mTmp2[8] = modelMatrix[10];
 		
-		normalMatrix.reset();
-		mvMatrix.invert(normalMatrix);
-		float[] values = new float[9];
-		normalMatrix.getValues(values);
+		mTmpMvMatrix.setValues(mTmp2);
 		
-		normalMatrix.setValues(new float[] {
-				values[0], values[3], values[6],
-				values[1], values[4], values[7],
-				values[2], values[5], values[8]
-		});
-		normalMatrix.getValues(mNormalMatrix);
+		mTmpNormalMatrix.reset();
+		mTmpMvMatrix.invert(mTmpNormalMatrix);
+
+		mTmpNormalMatrix.getValues(mTmp);
+		mTmp2[0] = mTmp[0]; mTmp2[1] = mTmp[3]; mTmp2[2] = mTmp[6]; 
+		mTmp2[3] = mTmp[1]; mTmp2[4] = mTmp[4]; mTmp2[5] = mTmp[7];
+		mTmp2[6] = mTmp[2]; mTmp2[7] = mTmp[5]; mTmp2[8] = mTmp[8];
+		mTmpNormalMatrix.setValues(mTmp2);
+		mTmpNormalMatrix.getValues(mNormalMatrix);
 
 	    GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalMatrix, 0);
 	}

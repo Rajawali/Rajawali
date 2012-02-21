@@ -3,6 +3,8 @@ package rajawali.primitives;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.SimpleMaterial;
+import rajawali.wallpaper.Wallpaper;
+import android.util.Log;
 
 
 public class Plane extends BaseObject3D {
@@ -40,8 +42,8 @@ public class Plane extends BaseObject3D {
         for (i = 0; i <= mSegmentsW; ++i) {
             for (j = 0; j <= mSegmentsH; ++j) {
             	vertices[vertexCount] = ((float)i / (float)mSegmentsW - 0.5f) * mWidth;
-            	vertices[vertexCount+1] = ((float)j / (float)mSegmentsH - 0.5f) * mHeight;
-            	vertices[vertexCount+2] = 0;
+            	vertices[vertexCount+1] = 0;
+            	vertices[vertexCount+2] = ((float)j / (float)mSegmentsH - 0.5f) * mHeight;
             	
             	textureCoords[texCoordCount++] = (float)j / (float)mSegmentsW;
             	textureCoords[texCoordCount++] = 1f - (float)i / (float)mSegmentsH;

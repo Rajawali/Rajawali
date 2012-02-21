@@ -15,10 +15,12 @@ public class DiffuseMaterial extends AMaterial {
 		"uniform mat4 uVMatrix;\n" +
 		"uniform vec3 uLightPos;\n" +
 		"uniform bool uUseObjectTransform;\n" +
+		
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
 		"attribute vec2 aTextureCoord;\n" +
 		"attribute vec4 aColor;\n" +
+		
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec3 N, L;\n" +
 		"varying vec4 vColor;\n" +
@@ -29,7 +31,7 @@ public class DiffuseMaterial extends AMaterial {
 		"	N = uNMatrix * aNormal;\n" +
 		"	vec4 V = uMMatrix * aPosition;\n" +
 		"   vec4 lightPos = uUseObjectTransform ? uVMatrix * vec4(uLightPos, 1.0) : vec4(uLightPos, 1.0);\n" +
-		"	L = lightPos.xyz - V.xyz;\n" +
+		"	L = normalize(vec3(lightPos.xyz - V.xyz));\n" +
 		"	vColor = aColor;\n" +
 		"}";
 		
@@ -44,7 +46,7 @@ public class DiffuseMaterial extends AMaterial {
 		"uniform bool uUseTexture;\n" +
 
 		"void main() {\n" +
-		"	float intensity = max(0.0, dot(normalize(N), normalize(L)));\n" +
+		"	float intensity = max(dot(L, N), 0.0);\n" +
 		"	if(uUseTexture==true) gl_FragColor = texture2D(uTexture0, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +
 		"	gl_FragColor.rgb *= intensity;\n" +
@@ -56,16 +58,16 @@ public class DiffuseMaterial extends AMaterial {
 	
 	protected float[] mNormalMatrix;
 	protected float[] mLightPos;
-	protected float[] mTmp;
+	protected float[] mTmp, mTmp2;
 	
 	protected android.graphics.Matrix mTmpNormalMatrix = new android.graphics.Matrix();
 	protected android.graphics.Matrix mTmpMvMatrix = new android.graphics.Matrix();
-
 	
 	public DiffuseMaterial() {
 		super(mVShader, mFShader);
 		mNormalMatrix = new float[9];
 		mTmp = new float[9];
+		mTmp2 = new float[9];
 		mLightPos = new float[3];
 	}
 
@@ -103,11 +105,20 @@ public class DiffuseMaterial extends AMaterial {
 	public void setModelMatrix(float[] modelMatrix) {
 		super.setModelMatrix(modelMatrix);
 		
-		mTmpMvMatrix.setValues(
-				modelMatrix
-		);
+		mTmp2[0] = modelMatrix[0]; mTmp2[1] = modelMatrix[1]; mTmp2[2] = modelMatrix[2]; 
+		mTmp2[3] = modelMatrix[4]; mTmp2[4] = modelMatrix[5]; mTmp2[5] = modelMatrix[6];
+		mTmp2[6] = modelMatrix[8]; mTmp2[7] = modelMatrix[9]; mTmp2[8] = modelMatrix[10];
 		
+		mTmpMvMatrix.setValues(mTmp2);
+		
+		mTmpNormalMatrix.reset();
 		mTmpMvMatrix.invert(mTmpNormalMatrix);
+
+		mTmpNormalMatrix.getValues(mTmp);
+		mTmp2[0] = mTmp[0]; mTmp2[1] = mTmp[3]; mTmp2[2] = mTmp[6]; 
+		mTmp2[3] = mTmp[1]; mTmp2[4] = mTmp[4]; mTmp2[5] = mTmp[7];
+		mTmp2[6] = mTmp[2]; mTmp2[7] = mTmp[5]; mTmp2[8] = mTmp[8];
+		mTmpNormalMatrix.setValues(mTmp2);
 		mTmpNormalMatrix.getValues(mNormalMatrix);
 
 	    GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalMatrix, 0);
