@@ -91,6 +91,8 @@ public class PhongMaterial extends AMaterial {
 		mAmbientColor = new float[] { 0.2f, 0.2f, 0.2f, 1.0f };
 		mShininess = 96.0f;//
 		mLightPos = new float[3];
+		mTmp = new float[9];
+		mTmp2 = new float[9];
 	}
 	
 	public PhongMaterial(float[] specularColor, float[] ambientColor, float shininess) {

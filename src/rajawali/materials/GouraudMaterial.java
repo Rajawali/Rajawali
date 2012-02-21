@@ -80,6 +80,8 @@ public class GouraudMaterial extends AMaterial {
 		mNormalMatrix = new float[9];
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
 		mLightPos = new float[3];
+		mTmp = new float[9];
+		mTmp2 = new float[9];
 	}
 	
 	public GouraudMaterial(float[] specularColor) {

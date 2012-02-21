@@ -10,6 +10,7 @@ public class BoundingBox extends BaseObject3D {
 	protected Number3D mMax;
 	protected BaseObject3D mTargetObj;
 	protected FloatBuffer mVertices;
+	protected Number3D mTmpMin, mTmpMax;
 	
 	public BoundingBox(BaseObject3D targetObj) {
 		mTargetObj = targetObj;
@@ -19,6 +20,9 @@ public class BoundingBox extends BaseObject3D {
 		
 		mMin = new Number3D(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 		mMax = new Number3D(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+		
+		mTmpMin = new Number3D();
+		mTmpMax = new Number3D();
 		
 		Number3D vertex = new Number3D();
 		
@@ -41,11 +45,10 @@ public class BoundingBox extends BaseObject3D {
 	}
 	
 	public Number3D getScaledMin() {
-		Number3D scaled = new Number3D();
-		scaled.x = mMin.x * mTargetObj.getScaleX();
-		scaled.y = mMin.y * mTargetObj.getScaleY();
-		scaled.z = mMin.z * mTargetObj.getScaleZ();
-		return scaled;
+		mTmpMin.x = mMin.x * mTargetObj.getScaleX();
+		mTmpMin.y = mMin.y * mTargetObj.getScaleY();
+		mTmpMin.z = mMin.z * mTargetObj.getScaleZ();
+		return mTmpMin;
 	}
 	
 	public Number3D getMax() {
@@ -53,14 +56,18 @@ public class BoundingBox extends BaseObject3D {
 	}
 
 	public Number3D getScaledMax() {
-		Number3D scaled = new Number3D();
-		scaled.x = mMax.x * mTargetObj.getScaleX();
-		scaled.y = mMax.y * mTargetObj.getScaleY();
-		scaled.z = mMax.z * mTargetObj.getScaleZ();
-		return scaled;
+		mTmpMax.x = mMax.x * mTargetObj.getScaleX();
+		mTmpMax.y = mMax.y * mTargetObj.getScaleY();
+		mTmpMax.z = mMax.z * mTargetObj.getScaleZ();
+		return mTmpMax;
 	}
 	
-	public boolean isInBoundingBox(Number3D point) {
+	public boolean isInBoundingBox(Number3D point)
+	{
+		return isInBoundingBox(point, 1);
+	}
+	
+	public boolean isInBoundingBox(Number3D point, float factor) {
 		Number3D min = getScaledMin();
 		Number3D max = getScaledMax();
 		min.add(mTargetObj.getPosition());
@@ -70,4 +77,5 @@ public class BoundingBox extends BaseObject3D {
 				point.y > min.y && point.y < max.y &&
 				point.z > min.z && point.z < max.z;
 	}
+	
 }

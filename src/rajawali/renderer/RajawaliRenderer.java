@@ -207,7 +207,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	protected void setSkybox(int front, int right, int back, int left, int up, int down) {
-		mSkybox = new Cube(100, true);
+		mSkybox = new Cube(700, true);
 		
 		Bitmap[] textures = new Bitmap[6];
 		textures[0] = BitmapFactory.decodeResource(mContext.getResources(), left);
