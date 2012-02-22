@@ -24,7 +24,7 @@ import android.opengl.Matrix;
 
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer {
-	public static String TAG = "AlbumCoverWallpaper";
+	public static String TAG = "Rajawali";
 	
 	protected Context mContext;
 	
@@ -86,7 +86,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         }
         
         mVMatrix = mCamera.getViewMatrix();
-        for(int i=0; i<mNumChildren; i++) {
+        for(int i=0; i<mNumChildren; ++i) {
         	mChildren.get(i).render(mCamera, mProjMatrix, mVMatrix);
         }
     }
@@ -228,6 +228,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		mNumChildren = mChildren.size();
 		//mTextureManager.removeTextures(child.getTextureInfoList());
 		return result;
+	}
+	
+	public int getNumChildren() {
+		return mNumChildren;
 	}
 	
 	protected boolean hasChild(BaseObject3D child) {

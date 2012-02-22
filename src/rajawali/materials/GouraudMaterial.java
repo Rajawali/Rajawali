@@ -60,6 +60,7 @@ public class GouraudMaterial extends AMaterial {
 		"void main() {\n" +
 		"	vec4 texColor = uUseTexture ? texture2D(uTexture0, vTextureCoord) : vColor;\n" +
 		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity;\n" +
+		"	gl_FragColor.a = texColor.a;\n" +
 		"}";
 	
 	protected int muLightPosHandle;

@@ -33,4 +33,8 @@ public class SimpleMaterial extends AMaterial {
 	public SimpleMaterial() {
 		super(mVShader, mFShader);
 	}
+	
+	public SimpleMaterial(String vertexShader, String fragmentShader) {
+		super(vertexShader, fragmentShader);
+	}
 }

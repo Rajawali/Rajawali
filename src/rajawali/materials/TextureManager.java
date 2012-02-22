@@ -38,7 +38,7 @@ public class TextureManager {
 	public TextureInfo addTexture(Bitmap texture) {
 		if(mTextureInfoList.size() > mMaxTextures)
 			throw new RuntimeException("Max number of textures used");
-		
+
 		int textureSlot = mTextureSlots.get(0);
 		mTextureSlots.remove(0);
 		

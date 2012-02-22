@@ -154,8 +154,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 			setShaderParams();
 		}
 
-		doTransformations();
-
 		Matrix.setIdentityM(mMMatrix, 0);
 		Matrix.setIdentityM(mScalematrix, 0);
 		Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
@@ -215,9 +213,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected void setShaderParams() {
 		mMaterial.setLight(mLight);
 	};
-
-	protected void doTransformations() {
-	}
 
 	public void addTexture(TextureInfo textureInfo) {
 		mMaterial.addTexture(textureInfo);
@@ -434,6 +429,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	public void setMaterial(AMaterial material, boolean copyTextures) {
 		if (mMaterial != null && copyTextures)
 			mMaterial.copyTexturesTo(material);
+		else if(mMaterial != null && !copyTextures)
+			mMaterial.getTextureInfoList().clear();
 		mMaterial = material;
 	}
 

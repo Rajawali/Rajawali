@@ -15,3 +15,4 @@ Rajawali is a 3D engine for Android based on OpenGL ES 2.0. It can be used for n
 * [Rajawali Tutorial 5: Skybox](http://www.rozengain.com/blog/2012/02/15/rajawali-tutorial-5-skybox/)
 * [Rajawali Tutorial 6: Adding User Interface Elements](http://www.rozengain.com/blog/2012/02/17/rajawali-tutorial-6-adding-user-interface-elements/)
 * [Rajawali Tutorial 7: Creating a Custom Material / GLSL Shader](http://www.rozengain.com/blog/2012/02/22/rajawali-tutorial-7-creating-a-custom-material-glsl-shader/)
+* [Rajawali Tutorial 8: More About The Initialization Phase & Lost Textures](http://www.rozengain.com/blog/2012/02/22/rajawali-tutorial-8-more-about-the-initialization-phase-lost-textures/)

@@ -31,7 +31,7 @@ public class DiffuseMaterial extends AMaterial {
 		"	N = uNMatrix * aNormal;\n" +
 		"	vec4 V = uMMatrix * aPosition;\n" +
 		"   vec4 lightPos = uUseObjectTransform ? uVMatrix * vec4(uLightPos, 1.0) : vec4(uLightPos, 1.0);\n" +
-		"	L = normalize(vec3(lightPos.xyz - V.xyz));\n" +
+		"	L = normalize(vec3(lightPos - V));\n" +
 		"	vColor = aColor;\n" +
 		"}";
 		
@@ -65,10 +65,19 @@ public class DiffuseMaterial extends AMaterial {
 	
 	public DiffuseMaterial() {
 		super(mVShader, mFShader);
+		init();
+	}
+	
+	protected void init() {
 		mNormalMatrix = new float[9];
 		mTmp = new float[9];
 		mTmp2 = new float[9];
 		mLightPos = new float[3];
+	}
+	
+	public DiffuseMaterial(String vertexShader, String fragmentShader) {
+		super(vertexShader, fragmentShader);
+		init();
 	}
 
 	@Override

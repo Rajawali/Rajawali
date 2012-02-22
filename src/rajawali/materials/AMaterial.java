@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import rajawali.Camera3D;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.renderer.RajawaliRenderer;
 import rajawali.wallpaper.Wallpaper;
 
 import android.opengl.GLES20;
