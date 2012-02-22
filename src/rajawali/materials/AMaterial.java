@@ -3,7 +3,7 @@ package rajawali.materials;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
-import rajawali.Camera3D;
+import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.renderer.RajawaliRenderer;
@@ -232,7 +232,7 @@ public abstract class AMaterial {
     	mLight = light;
     }
     
-    public void setCamera(Camera3D camera) {
+    public void setCamera(Camera camera) {
     	if(muCameraPositionHandle > -1)
     		GLES20.glUniform3fv(muCameraPositionHandle, 1, new float[]{ camera.getX(), camera.getY(), camera.getZ() }, 0);
     }

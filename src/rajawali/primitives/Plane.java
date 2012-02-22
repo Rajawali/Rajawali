@@ -12,17 +12,19 @@ public class Plane extends BaseObject3D {
 	protected float mHeight;
 	protected int mSegmentsW;
 	protected int mSegmentsH;
+	protected int mDirection;
 	
 	public Plane() {
-		this(1f, 1f, 3, 3);
+		this(1f, 1f, 0, 3, 3);
 	}
 	
-	public Plane(float width, float height, int segmentsW, int segmentsH) {
+	public Plane(float width, float height, int direction, int segmentsW, int segmentsH) {
 		super();
 		mWidth = width;
 		mHeight = height;
 		mSegmentsW = segmentsW;
 		mSegmentsH = segmentsH;
+		mDirection = direction;
 		init();
 	}
 	
@@ -42,8 +44,14 @@ public class Plane extends BaseObject3D {
         for (i = 0; i <= mSegmentsW; ++i) {
             for (j = 0; j <= mSegmentsH; ++j) {
             	vertices[vertexCount] = ((float)i / (float)mSegmentsW - 0.5f) * mWidth;
-            	vertices[vertexCount+1] = 0;
-            	vertices[vertexCount+2] = ((float)j / (float)mSegmentsH - 0.5f) * mHeight;
+            	if(mDirection == 0) {
+	            	vertices[vertexCount+1] = 0;
+	            	vertices[vertexCount+2] = ((float)j / (float)mSegmentsH - 0.5f) * mHeight;
+            	}
+            	else {
+	            	vertices[vertexCount+1] = ((float)j / (float)mSegmentsH - 0.5f) * mHeight;
+	            	vertices[vertexCount+2] = 0;
+            	}
             	
             	textureCoords[texCoordCount++] = (float)j / (float)mSegmentsW;
             	textureCoords[texCoordCount++] = 1f - (float)i / (float)mSegmentsH;

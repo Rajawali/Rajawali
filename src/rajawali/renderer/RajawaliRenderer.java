@@ -9,7 +9,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import net.rbgrn.opengl.GLWallpaperService.GLEngine;
 import rajawali.BaseObject3D;
-import rajawali.Camera3D;
+import rajawali.Camera;
 import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.materials.TextureManager.TextureInfo;
@@ -38,7 +38,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected GLSurfaceView mSurfaceView;
 	protected Timer mTimer;
 	
-	protected float[] mProjMatrix = new float[16];
 	protected float[] mVMatrix = new float[16];
 	
 	protected Stack<BaseObject3D> mChildren;
@@ -48,16 +47,25 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected TextureManager mTextureManager;
 	protected boolean mClearChildren = true;
 	
-	protected Camera3D mCamera;
+	protected Camera mCamera;
+
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
 	
 	public RajawaliRenderer(Context context) {
 		mContext = context;
 		mChildren = new Stack<BaseObject3D>();
-		mCamera = new Camera3D();
+		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
 		mAlpha = 0;
+	}
+	
+	public void setCamera(Camera mCamera) {
+		this.mCamera = mCamera;
+	}
+	
+	public Camera getCamera() {
+		return this.mCamera;
 	}
 
     public void onDrawFrame(GL10 glUnused) {
@@ -77,7 +85,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         	GLES20.glDepthMask(false);
         	
         	mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
-        	mSkybox.render(mCamera, mProjMatrix, mVMatrix);
+        	mSkybox.render(mCamera, mCamera.getProjectionMatrix(), mVMatrix);
         	
         	if(mEnableDepthBuffer) {
         		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -86,8 +94,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         }
         
         mVMatrix = mCamera.getViewMatrix();
-        for(int i=0; i<mNumChildren; ++i) {
-        	mChildren.get(i).render(mCamera, mProjMatrix, mVMatrix);
+        for(int i=0; i<mNumChildren; i++) {
+        	mChildren.get(i).render(mCamera, mCamera.getProjectionMatrix(), mVMatrix);
         }
     }
 	
@@ -95,22 +103,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		viewportWidth = width;
 		viewportHeight = height;
 		
-		float ratio = (float)width/height;
-		float frustumH = (float)Math.tan(mCamera.getFieldOfView() / 360.0 * Math.PI) * mCamera.getNearPlane();
-		float frustumW = frustumH * ratio;
-		
-		Matrix.frustumM(mProjMatrix, 0, -frustumW, frustumW, -frustumH, frustumH, mCamera.getNearPlane(), mCamera.getFarPlane());
+		mCamera.setProjectionMatrix(width, height);
 
 		GLES20.glViewport(0, 0, width, height);
-		
-		/*
-		float[] r1 = new float[16]; 
-		int[] viewport = new int[] {0, 0, viewportWidth, viewportHeight};
-		float[] modelMatrix = new float[16];
-		Matrix.setIdentityM(modelMatrix, 0);
-
-		GLU.gluUnProject(viewportWidth*1.5f, viewportHeight*1.5f, 0.0f, modelMatrix, 0, mProjMatrix, 0, viewport, 0, r1, 0);
-		*/
 	}
 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
