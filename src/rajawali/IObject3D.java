@@ -7,8 +7,8 @@ import rajawali.materials.TextureManager.TextureInfo;
 
 
 public interface IObject3D {
-	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix);
-	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix, float[] parentMatrix);
+	public void render(Camera camera, float[] projMatrix, float[] vMatrix);
+	public void render(Camera camera, float[] projMatrix, float[] vMatrix, float[] parentMatrix);
 	public void addTexture(TextureInfo textureInfo);
 	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, short[] indices);
 

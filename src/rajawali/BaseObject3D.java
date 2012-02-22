@@ -15,6 +15,7 @@ import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.math.Number3D;
 import rajawali.primitives.BoundingBox;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.Camera;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
@@ -24,7 +25,6 @@ import android.util.Log;
 
 public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	public static String TAG = "AlbumCoverWallpaper";
-
 	protected final int FLOAT_SIZE_BYTES = 4;
 	protected final int SHORT_SIZE_BYTES = 2;
 
@@ -121,11 +121,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		mBoundingBox = new BoundingBox(this);
 	}
 
-	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix) {
+	public void render(Camera camera, float[] projMatrix, float[] vMatrix) {
 		render(camera, projMatrix, vMatrix, null);
 	}
 
-	public void render(Camera3D camera, float[] projMatrix, float[] vMatrix,
+	public void render(Camera camera, float[] projMatrix, float[] vMatrix,
 			final float[] parentMatrix) {
 		if(!mIsVisible) return;
 		if (!mIsContainerOnly) {
