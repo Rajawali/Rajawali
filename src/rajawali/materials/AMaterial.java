@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
-import rajawali.renderer.RajawaliRenderer;
 import rajawali.wallpaper.Wallpaper;
-
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -33,11 +31,13 @@ public abstract class AMaterial {
 	protected int numTextures = 0;
 	protected float[] mModelViewMatrix;
 	protected float[] mViewMatrix;
+	protected float[] mCameraPosArray;
 	protected ArrayList<TextureInfo> mTextureInfoList;
 	protected boolean usesCubeMap = false;
 	
 	public AMaterial() {
 		mTextureInfoList = new ArrayList<TextureManager.TextureInfo>();
+		mCameraPosArray = new float[3];
 	}
 	public AMaterial(String vertexShader, String fragmentShader) {
 		this();
@@ -233,8 +233,11 @@ public abstract class AMaterial {
     }
     
     public void setCamera(Camera camera) {
+    	mCameraPosArray[0] = camera.getX();
+    	mCameraPosArray[1] = camera.getY();
+    	mCameraPosArray[2] = camera.getZ();
     	if(muCameraPositionHandle > -1)
-    		GLES20.glUniform3fv(muCameraPositionHandle, 1, new float[]{ camera.getX(), camera.getY(), camera.getZ() }, 0);
+    		GLES20.glUniform3fv(muCameraPositionHandle, 1, mCameraPosArray, 0);
     }
     
     public String toString() {

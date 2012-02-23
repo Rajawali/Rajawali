@@ -151,7 +151,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 			mMaterial.setColors(mColors);
 			mMaterial.setNormals(mNormals);
 
-			setShaderParams();
+			setShaderParams(camera);
 		}
 
 		Matrix.setIdentityM(mMMatrix, 0);
@@ -210,7 +210,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		Matrix.multiplyMM(m, mOffset, mTmpMatrix, mOffset, mRotateMatrixTmp, 0);
 	}
 
-	protected void setShaderParams() {
+	protected void setShaderParams(Camera camera) {
 		mMaterial.setLight(mLight);
 	};
 

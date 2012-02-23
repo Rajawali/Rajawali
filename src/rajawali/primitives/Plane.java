@@ -3,8 +3,6 @@ package rajawali.primitives;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.wallpaper.Wallpaper;
-import android.util.Log;
 
 
 public class Plane extends BaseObject3D {

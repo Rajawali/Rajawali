@@ -37,6 +37,13 @@ public class Number3D
 		z = $z;
 	}
 	
+	public void setAll(double $x, double $y, double $z)
+	{
+		x = (float)$x;
+		y = (float)$y;
+		z = (float)$z;
+	}
+	
 	public void setAllFrom(Number3D $n)
 	{
 		x = $n.x;
@@ -83,6 +90,11 @@ public class Number3D
 		this.x *= n.x;
 		this.y *= n.y;
 		this.z *= n.z;
+	}
+	
+	public float distanceTo(Number3D other)
+	{
+		return (float)Math.sqrt((x - other.x)*(x - other.x) + (y - other.y)*(y - other.y) + (z - other.z)*(z - other.z));
 	}
 	
 	public float length()

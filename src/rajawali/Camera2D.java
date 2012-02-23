@@ -13,7 +13,7 @@ public class Camera2D extends Camera {
 
 	@Override
 	public void setProjectionMatrix(int widthNotUsed, int heightNotUsed) {
-		Matrix.orthoM(mProjMatrix, 0, (-mWidth/2.0f)+x, (mWidth/2.0f)+x, (-mHeight/2.0f)+y, (mHeight/2.0f)+y, mNearPlane, mFarPlane);
+		Matrix.orthoM(mProjMatrix, 0, (-mWidth/2.0f)+mPosition.x, (mWidth/2.0f)+mPosition.x, (-mHeight/2.0f)+mPosition.y, (mHeight/2.0f)+mPosition.y, mNearPlane, mFarPlane);
 	}
 	
 	public void setWidth(float width) {

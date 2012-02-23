@@ -1,6 +1,7 @@
 package rajawali.primitives;
 
 import rajawali.BaseObject3D;
+import rajawali.Camera;
 import rajawali.materials.ParticleMaterial;
 import android.opengl.GLES20;
 
@@ -48,7 +49,9 @@ public class Particle extends BaseObject3D {
 	}
 	
 	@Override
-	protected void setShaderParams() {
+	protected void setShaderParams(Camera camera) {
+		super.setShaderParams(camera);
+		mParticleShader.setDistanceToCam(mPosition.distanceTo(camera.getPosition()));
 		mParticleShader.setPointSize(mPointSize);
 	}
 }

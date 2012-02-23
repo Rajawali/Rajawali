@@ -1,10 +1,10 @@
 package rajawali;
 
-import android.opengl.GLES20;
+import rajawali.math.Number3D;
 import android.opengl.Matrix;
 
 public class Camera {
-	protected float x, y, z, lookAtX, lookAtY, lookAtZ;
+	protected Number3D mPosition, mLookAt;
 	protected float[] mVMatrix = new float[16];
 	protected float[] mProjMatrix = new float[16];
 	protected float mNearPlane  = 1.0f;
@@ -12,15 +12,28 @@ public class Camera {
 	protected float mFieldOfView = 45;
 	
 	public Camera(){
+		mPosition = new Number3D();
+		mLookAt = new Number3D();
 	}
 	
 	public float[] getViewMatrix() {
-		 Matrix.setLookAtM(mVMatrix, 0, x, y, z, lookAtX, lookAtY, lookAtZ, 0f, 1.0f, 0.0f);
+		 Matrix.setLookAtM(mVMatrix, 0, 
+				 mPosition.x, mPosition.y, mPosition.z, 
+				 mLookAt.x, mLookAt.y, mLookAt.z, 
+				 0f, 1.0f, 0.0f);
 		 return mVMatrix;
 	}
 	
 	public void setPosition(float x, float y, float z) {
-		this.x = x; this.y = y; this.z = z;
+		mPosition.x = x; mPosition.y = y; mPosition.z = z;
+	}
+	
+	public void setPosition(Number3D position) {
+		mPosition = position;
+	}
+	
+	public Number3D getPosition() {
+		return mPosition;
 	}
 	
 	public void setProjectionMatrix(int width, int height) {
@@ -36,69 +49,69 @@ public class Camera {
 	}
 	
 	public void setLookAt(float lookAtX, float lookAtY, float lookAtZ) {
-		this.lookAtX = lookAtX;
-		this.lookAtY = lookAtY;
-		this.lookAtZ = lookAtZ;
+		mLookAt.x = lookAtX;
+		mLookAt.y = lookAtY;
+		mLookAt.z = lookAtZ;
 	}
 	
 	public void lookAt(BaseObject3D lookatObject) {
-		this.lookAtX = lookatObject.getX();
-		this.lookAtY = lookatObject.getY();
-		this.lookAtZ = lookatObject.getZ();
+		mLookAt.x = lookatObject.getX();
+		mLookAt.y = lookatObject.getY();
+		mLookAt.z = lookatObject.getZ();
 	}
 	
 	public void lookAt(float x, float y, float z) {
-		this.lookAtX = x;
-		this.lookAtY = y;
-		this.lookAtZ = z;
+		mLookAt.x = x;
+		mLookAt.y = y;
+		mLookAt.z = z;
 	}
 
 	public float getX() {
-		return x;
+		return mPosition.x;
 	}
 
 	public void setX(float x) {
-		this.x = x;
+		mPosition.x = x;
 	}
 
 	public float getY() {
-		return y;
+		return mPosition.y;
 	}
 
 	public void setY(float y) {
-		this.y = y;
+		mPosition.y = y;
 	}
 
 	public float getZ() {
-		return z;
+		return mPosition.z;
 	}
 
 	public void setZ(float z) {
-		this.z = z;
+		mPosition.z = z;
 	}
 
 	public float getLookAtX() {
-		return lookAtX;
+		return mLookAt.x;
 	}
 
 	public void setLookAtX(float lookAtX) {
-		this.lookAtX = lookAtX;
+		mLookAt.x = lookAtX;
 	}
 
 	public float getLookAtY() {
-		return lookAtY;
+		return mLookAt.y;
 	}
 
 	public void setLookAtY(float lookAtY) {
-		this.lookAtY = lookAtY;
+		mLookAt.y = lookAtY;
 	}
 
 	public float getLookAtZ() {
-		return lookAtZ;
+		return mLookAt.z;
 	}
 
 	public void setLookAtZ(float lookAtZ) {
-		this.lookAtZ = lookAtZ;
+		mLookAt.z = lookAtZ;
 	}
 
 	public float getNearPlane() {
