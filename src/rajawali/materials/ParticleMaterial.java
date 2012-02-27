@@ -3,9 +3,7 @@ package rajawali.materials;
 import java.nio.FloatBuffer;
 
 import rajawali.math.Number3D;
-import rajawali.renderer.RajawaliRenderer;
 import android.opengl.GLES20;
-import android.util.Log;
 
 
 public class ParticleMaterial extends AMaterial {
