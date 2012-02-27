@@ -1,7 +1,9 @@
 package rajawali.materials;
 
+import java.nio.FloatBuffer;
+
+import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
-import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -13,15 +15,25 @@ public class ParticleMaterial extends AMaterial {
 		"uniform mat4 uMMatrix;\n" +
 		"uniform float uDistanceToCam;\n" +
 		"uniform vec3 uDistanceAtt;\n" +
-		"attribute vec4 aPosition;\n" +
+		"uniform vec3 uFriction;\n" +
+		"uniform float uTime;\n" +
+		"uniform bool uMultiParticlesEnabled;\n" +
+		
+		"attribute vec4 aPosition;\n" +		
 		"attribute vec2 aTextureCoord;\n" +
+		"attribute vec3 aVelocity;\n" +
+		
 		"varying vec2 vTextureCoord;\n" +
 
 		"void main() {\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
-		"   vec4 pos = uMMatrix * aPosition;\n" +
-//		"	gl_PointSize = uPointSize;\n" + // / (pos.z + 4.0);\n" +
-		"	gl_PointSize = uPointSize / sqrt(uDistanceAtt.x + uDistanceAtt.y * uDistanceToCam + uDistanceAtt.z * uDistanceToCam * uDistanceToCam);\n" +
+		"	vec4 position = vec4(aPosition);\n" +
+		"	if(uMultiParticlesEnabled){" +
+		"		position.x += aVelocity.x * uFriction.x * uTime;\n" +
+		"		position.y += aVelocity.y * uFriction.y * uTime;\n" +
+		"		position.z += aVelocity.z * uFriction.z * uTime; }" +
+		"	gl_Position = uMVPMatrix * position;\n" +
+		"	float pdist = uDistanceToCam + sqrt(position.x * position.x + position.y * position.y + position.z * aPosition.z);\n" +
+		"	gl_PointSize = uPointSize / sqrt(uDistanceAtt.x + uDistanceAtt.y * pdist + uDistanceAtt.z * pdist * pdist);\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		"}\n";
 	
@@ -39,11 +51,19 @@ public class ParticleMaterial extends AMaterial {
 	protected int muPointSizeHandle;
 	protected int muDistanceToCamHandle;
 	protected int muDistanceAttHandle;
+	protected int maVelocityHandle;
+	protected int muFrictionHandle;
+	protected int muTimeHandle;
+	protected int muMultiParticlesEnabledHandle;
+	
 	protected float[] mDistanceAtt;
+	protected boolean mMultiParticlesEnabled;
+	protected float[] mFriction;
 	
 	public ParticleMaterial() {
 		super(mVShader, mFShader);
 		mDistanceAtt = new float[] {1, 1, 1};
+		mFriction = new float[3];
 	}
 	
 	public void setPointSize(float pointSize) {
@@ -51,22 +71,45 @@ public class ParticleMaterial extends AMaterial {
        	GLES20.glUniform1f(muPointSizeHandle, mPointSize);
 	}
 	
+	public void setMultiParticlesEnabled(boolean enabled) {
+		mMultiParticlesEnabled = enabled;
+		GLES20.glUniform1i(muMultiParticlesEnabledHandle, mMultiParticlesEnabled == true ? GLES20.GL_TRUE : GLES20.GL_FALSE);
+	}
+	
+	@Override
+	public void useProgram() {
+		super.useProgram();
+	}
+	
+	public void setVelocity(FloatBuffer velocity) {
+    	velocity.position(0);
+    	GLES20.glVertexAttribPointer(maVelocityHandle, 3, GLES20.GL_FLOAT, false, 0, velocity);
+    	GLES20.glEnableVertexAttribArray(maVelocityHandle);
+    }
+	
+	public void setFriction(Number3D friction) {
+		mFriction[0] = friction.x; mFriction[1] = friction.y; mFriction[2] = friction.z;
+		if(mMultiParticlesEnabled == true) {
+			GLES20.glUniform3fv(muFrictionHandle, 1, mFriction, 0);
+		}
+	}
+	
+	public void setTime(float time) {
+		GLES20.glUniform1f(muTimeHandle, time);
+	}
+	
 	@Override
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);
 		muPointSizeHandle = GLES20.glGetUniformLocation(mProgram, "uPointSize");
-		if(muPointSizeHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uPointSize");
-		}
 		muDistanceToCamHandle = GLES20.glGetUniformLocation(mProgram, "uDistanceToCam");
-		if(muDistanceToCamHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uDistanceToCam");
-		}
 		muDistanceAttHandle = GLES20.glGetUniformLocation(mProgram, "uDistanceAtt");
-		if(muDistanceAttHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uDistanceAtt");
-		}
+		
+		maVelocityHandle = GLES20.glGetAttribLocation(mProgram, "aVelocity");
+		muFrictionHandle = GLES20.glGetUniformLocation(mProgram, "uFriction");
+		muTimeHandle = GLES20.glGetUniformLocation(mProgram, "uTime");
+		muMultiParticlesEnabledHandle = GLES20.glGetUniformLocation(mProgram, "uMultiParticlesEnabled");
 	}
 	
 	public void setDistanceToCam(float distance) {

@@ -7,8 +7,8 @@ import android.opengl.GLES20;
 
 
 public class Particle extends BaseObject3D {
-	private float mPointSize = 10.0f;
-	private ParticleMaterial mParticleShader;
+	protected float mPointSize = 10.0f;
+	protected ParticleMaterial mParticleShader;
 	
 	public Particle() {
 		super();
@@ -23,7 +23,7 @@ public class Particle extends BaseObject3D {
 		return mPointSize;
 	}
 	
-	private void init() {
+	protected void init() {
 		mMaterial = new ParticleMaterial();
 		mParticleShader = (ParticleMaterial)mMaterial;
 		setDrawingMode(GLES20.GL_POINTS);
