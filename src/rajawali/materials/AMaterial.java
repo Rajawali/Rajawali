@@ -25,6 +25,7 @@ public abstract class AMaterial {
 	protected int muUseTextureHandle;
 	protected int muMMatrixHandle;
 	protected int muVMatrixHandle;
+	protected int muLightPowerHandle;
 	protected ALight mLight;
 	protected boolean mUseColor = false;
 	
@@ -94,6 +95,11 @@ public abstract class AMaterial {
 		muUseTextureHandle = GLES20.glGetUniformLocation(mProgram, "uUseTexture");
 		if(muUseTextureHandle == -1) {
 			Log.d(Wallpaper.TAG, "Could not get uniform location for uUseTexture");
+		}
+		
+		muLightPowerHandle = GLES20.glGetUniformLocation(mProgram, "uLightPower");
+		if(muLightPowerHandle == -1) {
+			Log.d(Wallpaper.TAG, "Could not get uniform location for uLightPower");
 		}
 	}
 	
@@ -230,6 +236,8 @@ public abstract class AMaterial {
     public void setLight(ALight light)
     {
     	mLight = light;
+    	if(muLightPowerHandle > -1)
+    		GLES20.glUniform1f(muLightPowerHandle, mLight.getPower());
     }
     
     public void setCamera(Camera camera) {

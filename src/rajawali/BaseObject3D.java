@@ -511,7 +511,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	}
 	
 	public void setColor(float r, float g, float b, float a) {
-		if(mColors.capacity() == 0)
+		if(mColors == null || mColors.capacity() == 0)
 			mColors = ByteBuffer.allocateDirect(mNumVertices * 4 * FLOAT_SIZE_BYTES)
 			.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		

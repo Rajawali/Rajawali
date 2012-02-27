@@ -5,6 +5,7 @@ import rajawali.math.Number3D;
 public abstract class ALight {
 	protected float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
 	protected Number3D mPosition;
+	protected float mPower = 1;
 	
 	protected boolean mUseObjectTransform;
 	
@@ -50,6 +51,14 @@ public abstract class ALight {
 
 	public void setZ(final float z) {
 		this.mPosition.z = z;
+	}
+	
+	public void setPower(float power) {
+		mPower = power;
+	}
+	
+	public float getPower() {
+		return mPower;
 	}
 
 	public boolean shouldUseObjectTransform() {

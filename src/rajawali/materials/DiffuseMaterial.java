@@ -44,12 +44,13 @@ public class DiffuseMaterial extends AMaterial {
  
 		"uniform sampler2D uTexture0;\n" +
 		"uniform bool uUseTexture;\n" +
+		"uniform float uLightPower;\n" +
 
 		"void main() {\n" +
 		"	float intensity = max(dot(L, N), 0.0);\n" +
 		"	if(uUseTexture==true) gl_FragColor = texture2D(uTexture0, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +
-		"	gl_FragColor.rgb *= intensity;\n" +
+		"	gl_FragColor.rgb *= intensity * uLightPower;\n" +
 		"}";
 	
 	protected int muLightPosHandle;

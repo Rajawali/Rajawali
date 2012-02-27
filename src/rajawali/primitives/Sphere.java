@@ -96,7 +96,6 @@ public class Sphere extends BaseObject3D {
 			colors[ j + 1 ] = 0;
 			colors[ j + 2 ] = 0;
 			colors[ j + 3 ] = 1.0f;
-			Log.d(Wallpaper.TAG, "" + numColors + ": " + (j+3));
 		}
 
 		setData(vertices, normals, textureCoords, colors, indices);
