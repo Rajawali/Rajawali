@@ -104,9 +104,13 @@ public class TextureManager {
 	}
 	
 	public void updateTexture(Integer textureId, int textureIndex, Bitmap texture) {
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0 +  textureIndex);
+		GLES20.glActiveTexture(textureIndex);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId.intValue());
-		GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, texture, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE);
+		GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, texture);
+	}
+	
+	public void updateTexture(TextureInfo textureInfo, Bitmap texture) {
+		updateTexture(textureInfo.mTextureId, textureInfo.mTextureSlot, texture);
 	}
 	
 	public void reset() {
