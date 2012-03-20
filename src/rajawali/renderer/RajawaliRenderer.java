@@ -124,7 +124,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         }
 	}
 	
-	protected void startRendering() {
+	public void startRendering() {
 		if(mTimer != null) {
 			mTimer.cancel();
 			mTimer.purge();

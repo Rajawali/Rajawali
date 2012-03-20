@@ -1,18 +1,25 @@
 package rajawali;
 
 import rajawali.math.Number3D;
+import rajawali.renderer.RajawaliRenderer;
 import android.opengl.Matrix;
+import android.util.Log;
 
 public class Camera {
-	protected Number3D mPosition, mLookAt;
+	protected Number3D mPosition, mLookAt, mRotation;
 	protected float[] mVMatrix = new float[16];
+	protected float[] mRotationMatrix = new float[16];
 	protected float[] mProjMatrix = new float[16];
 	protected float mNearPlane  = 1.0f;
 	protected float mFarPlane = 120.0f;
 	protected float mFieldOfView = 45;
+	protected boolean mUseRotationMatrix = false;
+	protected float[] mRotateMatrixTmp = new float[16];
+	protected float[] mTmpMatrix = new float[16];
 	
 	public Camera(){
 		mPosition = new Number3D();
+		mRotation = new Number3D();
 		mLookAt = new Number3D();
 	}
 	
@@ -21,7 +28,26 @@ public class Camera {
 				 mPosition.x, mPosition.y, mPosition.z, 
 				 mLookAt.x, mLookAt.y, mLookAt.z, 
 				 0f, 1.0f, 0.0f);
-		 return mVMatrix;
+		 if(mUseRotationMatrix == false) {
+			Matrix.setIdentityM(mRotationMatrix, 0);
+			rotateM(mRotationMatrix, 0, -mRotation.x, 1.0f, 0.0f, 0.0f);
+			rotateM(mRotationMatrix, 0, -mRotation.y, 0.0f, 1.0f, 0.0f);
+			rotateM(mRotationMatrix, 0, -mRotation.z, 0.0f, 0.0f, 1.0f);
+		 }
+		 Matrix.multiplyMM(mTmpMatrix, 0, mRotationMatrix, 0, mVMatrix, 0);
+		 return mTmpMatrix;
+	}
+	
+	protected void rotateM(float[] m, int mOffset, float a, float x, float y,
+			float z) {
+		Matrix.setIdentityM(mRotateMatrixTmp, 0);
+		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
+		System.arraycopy(m, 0, mTmpMatrix, 0, 16);
+		Matrix.multiplyMM(m, mOffset, mTmpMatrix, mOffset, mRotateMatrixTmp, 0);
+	}
+	
+	public void setRotationMatrix(float[] m) {
+		mRotationMatrix = m;
 	}
 	
 	public void setPosition(float x, float y, float z) {
@@ -34,6 +60,10 @@ public class Camera {
 	
 	public Number3D getPosition() {
 		return mPosition;
+	}
+	
+	public Number3D getRotation() {
+		return mRotation;
 	}
 	
 	public void setProjectionMatrix(int width, int height) {
@@ -113,6 +143,37 @@ public class Camera {
 	public void setLookAtZ(float lookAtZ) {
 		mLookAt.z = lookAtZ;
 	}
+	
+	public void setRotation(float rotX, float rotY, float rotZ) {
+		mRotation.x = rotX;
+		mRotation.y = rotY;
+		mRotation.z = rotZ;
+	}
+
+	public void setRotX(float rotX) {
+		mRotation.x = rotX;
+	}
+
+	public float getRotX() {
+		return mRotation.x;
+	}
+
+	public void setRotY(float rotY) {
+		mRotation.y = rotY;
+	}
+
+	public float getRotY() {
+		return mRotation.y;
+	}
+
+	public void setRotZ(float rotZ) {
+		mRotation.z = rotZ;
+	}
+
+	public float getRotZ() {
+		return mRotation.z;
+	}
+
 
 	public float getNearPlane() {
 		return mNearPlane;
@@ -136,5 +197,13 @@ public class Camera {
 
 	public void setFieldOfView(float fieldOfView) {
 		this.mFieldOfView = fieldOfView;
+	}
+
+	public boolean getUseRotationMatrix() {
+		return mUseRotationMatrix;
+	}
+
+	public void setUseRotationMatrix(boolean useRotationMatrix) {
+		this.mUseRotationMatrix = useRotationMatrix;
 	}
 }
