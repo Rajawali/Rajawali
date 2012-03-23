@@ -24,7 +24,7 @@ import android.opengl.Matrix;
 import android.os.Environment;
 import android.util.Log;
 
-public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
+public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITransformable3D {
 	public static String TAG = "Rajawali";
 	protected final int FLOAT_SIZE_BYTES = 4;
 	protected final int SHORT_SIZE_BYTES = 2;
@@ -180,7 +180,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 			Matrix.setLookAtM(mRotateMatrix, 0, 0, 0, 0, mLookAt.x, mLookAt.y, mLookAt.z, 0, 1f, 0);
 		}
 
-		Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
+		Matrix.translateM(mMMatrix, 0, -mPosition.x, mPosition.y, mPosition.z);
 		Matrix.setIdentityM(mTmpMatrix, 0);
 		Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
 		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
@@ -590,5 +590,25 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		mPickingColorArray[2] = Color.blue(pickingColor) / 255f;
 		mPickingColorArray[3] = Color.alpha(pickingColor) / 255f;
 		mIsPickingEnabled = true;
+	}
+
+	@Override
+	public Number3D getRotation() {
+		return mRotation;
+	}
+
+	@Override
+	public void setRotation(Number3D rotation) {
+		mPosition = rotation;
+	}
+
+	@Override
+	public Number3D getScale() {
+		return mScale;
+	}
+
+	@Override
+	public void setScale(Number3D scale) {
+		mScale = scale;
 	}
 }

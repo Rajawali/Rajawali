@@ -10,6 +10,7 @@ import javax.microedition.khronos.opengles.GL10;
 import net.rbgrn.opengl.GLWallpaperService.GLEngine;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
+import rajawali.animation.TimerManager;
 import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.materials.TextureManager.TextureInfo;
@@ -167,12 +168,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void onVisibilityChanged(boolean visible) {
-		if(!visible) stopRendering();
+		if(!visible) {
+			stopRendering();
+		}
 		else startRendering();
 	}
 	
 	public void onSurfaceDestroyed() {
 		stopRendering();
+		TimerManager.getInstance().clear();
 	}
 	
 	public void setSharedPreferences(SharedPreferences preferences)

@@ -1,5 +1,6 @@
 package rajawali;
 
+import rajawali.animation.TimerManager;
 import rajawali.renderer.RajawaliRenderer;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -45,6 +46,7 @@ public class RajawaliActivity extends Activity {
     @Override
     protected void onPause() {
     	super.onPause();
+    	TimerManager.getInstance().clear();
     	mSurfaceView.onPause();
     }
 }

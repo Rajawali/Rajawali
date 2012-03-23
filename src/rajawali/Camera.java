@@ -3,7 +3,7 @@ package rajawali;
 import rajawali.math.Number3D;
 import android.opengl.Matrix;
 
-public class Camera {
+public class Camera implements ITransformable3D {
 	protected Number3D mPosition, mLookAt, mRotation;
 	protected float[] mVMatrix = new float[16];
 	protected float[] mRotationMatrix = new float[16];
@@ -219,4 +219,39 @@ public class Camera {
 	public void setUseRotationMatrix(boolean useRotationMatrix) {
 		this.mUseRotationMatrix = useRotationMatrix;
 	}
+
+	@Override
+	public void setScale(float scale) {}
+
+	@Override
+	public void setScale(float scaleX, float scaleY, float scaleZ) {}
+
+	@Override
+	public void setScaleX(float scaleX) {}
+
+	@Override
+	public float getScaleX() { return 0; }
+
+	@Override
+	public void setScaleY(float scaleY) {}
+
+	@Override
+	public float getScaleY() { return 0; }
+
+	@Override
+	public void setScaleZ(float scaleZ) {}
+
+	@Override
+	public float getScaleZ() { return 0; }
+
+	@Override
+	public void setRotation(Number3D rotation) {
+		mRotation = rotation;
+	}
+
+	@Override
+	public Number3D getScale() { return null; }
+
+	@Override
+	public void setScale(Number3D scale) {}
 }
