@@ -65,12 +65,12 @@ public abstract class AMaterial {
 
 		maTextureHandle = GLES20.glGetAttribLocation(mProgram, "aTextureCoord");
 		if(maTextureHandle == -1) {
-			Log.d(RajawaliRenderer.TAG, "Could not get attrib location for aTextureCoord");
+			//Log.d(RajawaliRenderer.TAG, "Could not get attrib location for aTextureCoord");
 		}
 
 		maColorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
 		if(maColorHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get attrib location for aColor");
+			//Log.d(Wallpaper.TAG, "Could not get attrib location for aColor");
 		}
 		
 		muCameraPositionHandle = GLES20.glGetUniformLocation(mProgram, "uCameraPosition");
@@ -95,12 +95,12 @@ public abstract class AMaterial {
 		
 		muUseTextureHandle = GLES20.glGetUniformLocation(mProgram, "uUseTexture");
 		if(muUseTextureHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uUseTexture");
+			//Log.d(Wallpaper.TAG, "Could not get uniform location for uUseTexture");
 		}
 		
 		muLightPowerHandle = GLES20.glGetUniformLocation(mProgram, "uLightPower");
 		if(muLightPowerHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uLightPower");
+			//Log.d(Wallpaper.TAG, "Could not get uniform location for uLightPower");
 		}
 	}
 	

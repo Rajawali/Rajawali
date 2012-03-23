@@ -73,16 +73,23 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
-	
+		
     public void onDrawFrame(GL10 glUnused) {
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 		
-		if(mPickerInfo != null)
-			mPickerInfo.getPicker().bindFrameBuffer();
-		else
-			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-			
+		ColorPickerInfo pickerInfo = mPickerInfo;
 		
+		if(pickerInfo != null)
+		{
+			pickerInfo.getPicker().bindFrameBuffer();
+			GLES20.glClearColor(0, 0, 0, 1);
+		}
+		else
+		{
+			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
+		}
+			
 		if(mEnableDepthBuffer) {
 			clearMask |= GLES20.GL_DEPTH_BUFFER_BIT;
 			GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -90,7 +97,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			GLES20.glDepthMask(true);
 			GLES20.glClearDepthf(1.0f);
 		}
-        GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
+        
         GLES20.glClear(clearMask);
         
         if(mSkybox != null) {
@@ -98,7 +105,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         	GLES20.glDepthMask(false);
         	
         	mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
-        	mSkybox.render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, mPickerInfo);
+        	mSkybox.render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, pickerInfo);
         	
         	if(mEnableDepthBuffer) {
         		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -108,11 +115,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         
         mVMatrix = mCamera.getViewMatrix();
         for(int i=0; i<mNumChildren; i++) {
-        	mChildren.get(i).render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, mPickerInfo);
+        	mChildren.get(i).render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, pickerInfo);
         }
         
-		if(mPickerInfo != null) {
-			mPickerInfo.getPicker().createColorPickingTexture(mPickerInfo);
+		if(pickerInfo != null) {
+			pickerInfo.getPicker().createColorPickingTexture(pickerInfo);
+			pickerInfo = null;
 			mPickerInfo = null;
 		}
     }

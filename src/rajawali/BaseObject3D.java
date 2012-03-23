@@ -192,11 +192,20 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
 
 		if (!mIsContainerOnly) {
-			if(pickerInfo == null || (pickerInfo != null && mIsPickingEnabled))
+			if(pickerInfo == null)
 			{
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
+	
+				mIndices.position(0);
+				GLES20.glDrawElements(mDrawingMode, mNumIndices,
+						GLES20.GL_UNSIGNED_SHORT, mIndices);
+			} else if(pickerInfo != null && mIsPickingEnabled) {
+				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
+				pickerMat.setMVPMatrix(mMVPMatrix);
+				pickerMat.setModelMatrix(mMMatrix);
+				pickerMat.setViewMatrix(vMatrix);
 	
 				mIndices.position(0);
 				GLES20.glDrawElements(mDrawingMode, mNumIndices,
@@ -580,7 +589,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		mPickingColorArray[1] = Color.green(pickingColor) / 255f;
 		mPickingColorArray[2] = Color.blue(pickingColor) / 255f;
 		mPickingColorArray[3] = Color.alpha(pickingColor) / 255f;
-		Log.d(RajawaliRenderer.TAG, "Color: " + Color.red(pickingColor) + "|" + Color.green(pickingColor) + "|" + Color.blue(pickingColor));
 		mIsPickingEnabled = true;
 	}
 }
