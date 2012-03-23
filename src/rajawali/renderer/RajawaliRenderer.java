@@ -14,6 +14,7 @@ import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.primitives.Cube;
+import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -32,7 +33,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	
 	protected SharedPreferences preferences;
 	
-	protected int viewportWidth, viewportHeight;
+	protected int mViewportWidth, mViewportHeight;
 	protected GLEngine mEngine;
 	protected GLSurfaceView mSurfaceView;
 	protected Timer mTimer;
@@ -50,6 +51,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
+
+	protected ColorPickerInfo mPickerInfo;
 	
 	public RajawaliRenderer(Context context) {
 		mContext = context;
@@ -67,8 +70,19 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		return this.mCamera;
 	}
 
+	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
+		mPickerInfo = pickerInfo;
+	}
+	
     public void onDrawFrame(GL10 glUnused) {
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
+		
+		if(mPickerInfo != null)
+			mPickerInfo.getPicker().bindFrameBuffer();
+		else
+			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+			
+		
 		if(mEnableDepthBuffer) {
 			clearMask |= GLES20.GL_DEPTH_BUFFER_BIT;
 			GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -84,7 +98,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         	GLES20.glDepthMask(false);
         	
         	mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
-        	mSkybox.render(mCamera, mCamera.getProjectionMatrix(), mVMatrix);
+        	mSkybox.render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, mPickerInfo);
         	
         	if(mEnableDepthBuffer) {
         		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -94,13 +108,18 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
         
         mVMatrix = mCamera.getViewMatrix();
         for(int i=0; i<mNumChildren; i++) {
-        	mChildren.get(i).render(mCamera, mCamera.getProjectionMatrix(), mVMatrix);
+        	mChildren.get(i).render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, mPickerInfo);
         }
+        
+		if(mPickerInfo != null) {
+			mPickerInfo.getPicker().createColorPickingTexture(mPickerInfo);
+			mPickerInfo = null;
+		}
     }
 	
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		viewportWidth = width;
-		viewportHeight = height;
+		mViewportWidth = width;
+		mViewportHeight = height;
 		
 		mCamera.setProjectionMatrix(width, height);
 
@@ -108,7 +127,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        //Matrix.setLookAtM(mVMatrix, 0, 0, 0, mEyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         GLES20.glFrontFace(GLES20.GL_CCW);
         GLES20.glCullFace(GLES20.GL_BACK);
         
@@ -233,5 +251,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			if(mChildren.get(i).equals(child)) return true;
 		}
 		return false;
+	}
+	
+	public int getViewportWidth() {
+		return mViewportWidth;
+	}
+	
+	public int getViewportHeight() {
+		return mViewportHeight;
 	}
 }

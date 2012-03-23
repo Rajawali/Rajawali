@@ -147,6 +147,8 @@ public class ObjParser extends AParser {
 			}
 			
 			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
+			// temporary, need to support mtl files
+			oid.targetObj.setColor(0xffffffff);
 			oid.targetObj.setMaterial(new SimpleMaterial());
 			
 			mRootObject.addChild(oid.targetObj);

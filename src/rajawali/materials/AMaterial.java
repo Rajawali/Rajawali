@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.renderer.RajawaliRenderer;
 import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -64,7 +65,7 @@ public abstract class AMaterial {
 
 		maTextureHandle = GLES20.glGetAttribLocation(mProgram, "aTextureCoord");
 		if(maTextureHandle == -1) {
-			throw new RuntimeException("Could not get attrib location for aTextureCoord");
+			Log.d(RajawaliRenderer.TAG, "Could not get attrib location for aTextureCoord");
 		}
 
 		maColorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");

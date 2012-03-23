@@ -11,11 +11,12 @@ import java.util.ArrayList;
 
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
+import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.math.Number3D;
 import rajawali.primitives.BoundingBox;
 import rajawali.renderer.RajawaliRenderer;
-import rajawali.Camera;
+import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
@@ -24,7 +25,7 @@ import android.os.Environment;
 import android.util.Log;
 
 public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
-	public static String TAG = "AlbumCoverWallpaper";
+	public static String TAG = "Rajawali";
 	protected final int FLOAT_SIZE_BYTES = 4;
 	protected final int SHORT_SIZE_BYTES = 2;
 
@@ -67,6 +68,9 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 	protected Number3D mLookAt;
 	protected BoundingBox mBoundingBox;
 	protected boolean mDrawBoundingBox;
+	protected int mPickingColor;
+	protected boolean mIsPickingEnabled = false;
+	protected float[] mPickingColorArray;
 
 	public BaseObject3D() {
 		mChildren = new ArrayList<BaseObject3D>();
@@ -121,12 +125,12 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		mBoundingBox = new BoundingBox(this);
 	}
 
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix) {
-		render(camera, projMatrix, vMatrix, null);
+	public void render(Camera camera, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
+		render(camera, projMatrix, vMatrix, null, pickerInfo);
 	}
 
 	public void render(Camera camera, float[] projMatrix, float[] vMatrix,
-			final float[] parentMatrix) {
+			final float[] parentMatrix, ColorPickerInfo pickerInfo) {
 		if(!mIsVisible) return;
 		if (!mIsContainerOnly) {
 			mProjMatrix = projMatrix;
@@ -143,13 +147,21 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 				GLES20.glDepthMask(true);
 			}
 
-			mMaterial.useProgram();
-			mMaterial.bindTextures();
-			mMaterial.setCamera(camera);
-			mMaterial.setVertices(mVertices);
-			mMaterial.setTextureCoords(mTextureCoords, mHasCubemapTexture);
-			mMaterial.setColors(mColors);
-			mMaterial.setNormals(mNormals);
+			if(pickerInfo != null && mIsPickingEnabled) {
+				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
+				pickerMat.setPickingColor(mPickingColorArray);
+				pickerMat.useProgram();
+				pickerMat.setCamera(camera);
+				pickerMat.setVertices(mVertices);
+			} else {
+				mMaterial.useProgram();
+				mMaterial.bindTextures();
+				mMaterial.setTextureCoords(mTextureCoords, mHasCubemapTexture);
+				mMaterial.setNormals(mNormals);
+				mMaterial.setColors(mColors);
+				mMaterial.setCamera(camera);
+				mMaterial.setVertices(mVertices);
+			}
 
 			setShaderParams(camera);
 		}
@@ -180,25 +192,27 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
 
 		if (!mIsContainerOnly) {
-			mMaterial.setMVPMatrix(mMVPMatrix);
-			mMaterial.setModelMatrix(mMMatrix);
-			mMaterial.setViewMatrix(vMatrix);
-
-			mIndices.position(0);
-			GLES20.glDrawElements(mDrawingMode, mNumIndices,
-					GLES20.GL_UNSIGNED_SHORT, mIndices);
-
+			if(pickerInfo == null || (pickerInfo != null && mIsPickingEnabled))
+			{
+				mMaterial.setMVPMatrix(mMVPMatrix);
+				mMaterial.setModelMatrix(mMMatrix);
+				mMaterial.setViewMatrix(vMatrix);
+	
+				mIndices.position(0);
+				GLES20.glDrawElements(mDrawingMode, mNumIndices,
+						GLES20.GL_UNSIGNED_SHORT, mIndices);
+			}
 			GLES20.glDisable(GLES20.GL_CULL_FACE);
 			GLES20.glDisable(GLES20.GL_BLEND);
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		}
 
 		if(mDrawBoundingBox)
-			mBoundingBox.render(camera, projMatrix, vMatrix, mMMatrix);
+			mBoundingBox.render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 		
 		int i;
 		for (i = 0; i < mNumChildren; ++i) {
-			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix);
+			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 		}
 	}
 
@@ -552,5 +566,21 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 			Log.e(RajawaliRenderer.TAG, "Serializing " + fileName + " to SD card was unsuccessfull.");
 			e.printStackTrace();
 		}
+	}
+
+	public int getPickingColor() {
+		return mPickingColor;
+	}
+
+	public void setPickingColor(int pickingColor) {
+		if(mPickingColorArray == null)
+			mPickingColorArray = new float[4];
+		this.mPickingColor = pickingColor;
+		mPickingColorArray[0] = Color.red(pickingColor) / 255f;
+		mPickingColorArray[1] = Color.green(pickingColor) / 255f;
+		mPickingColorArray[2] = Color.blue(pickingColor) / 255f;
+		mPickingColorArray[3] = Color.alpha(pickingColor) / 255f;
+		Log.d(RajawaliRenderer.TAG, "Color: " + Color.red(pickingColor) + "|" + Color.green(pickingColor) + "|" + Color.blue(pickingColor));
+		mIsPickingEnabled = true;
 	}
 }

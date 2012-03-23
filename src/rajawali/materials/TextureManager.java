@@ -1,5 +1,6 @@
 package rajawali.materials;
 
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import rajawali.renderer.RajawaliRenderer;
@@ -10,6 +11,7 @@ import android.opengl.GLUtils;
 import android.util.Log;
 
 public class TextureManager {
+	private static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 	private ArrayList<TextureInfo> mTextureInfoList;
 	private ArrayList<Integer> mTextureSlots;
 	
@@ -60,6 +62,46 @@ public class TextureManager {
         mTextureInfoList.add(textureInfo);
 
         texture.recycle();
+        return textureInfo;
+	}
+	
+	public TextureInfo addTexture(IntBuffer buffer, int width, int height) {
+		if(mTextureInfoList.size() > mMaxTextures)
+			throw new RuntimeException("Max number of textures used");
+
+		int textureSlot = mTextureSlots.get(0);
+		mTextureSlots.remove(0);
+
+		int[] textures = new int[1];
+		GLES20.glGenTextures(1, textures, 0);
+		int textureId = textures[0];
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+		
+		GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+		TextureInfo textureInfo = new TextureInfo(textureId, textureSlot);
+		mTextureInfoList.add(textureInfo);
+		return textureInfo;
+	}
+	
+	public TextureInfo createVideoTexture() {
+		if(mTextureInfoList.size() > mMaxTextures)
+			throw new RuntimeException("Max number of textures used");
+
+		int textureSlot = mTextureSlots.get(0);
+		mTextureSlots.remove(0);
+		
+		int[] textures = new int[1];
+		GLES20.glGenTextures(1, textures, 0);
+		int textureId = textures[0];
+		GLES20.glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
+		
+		TextureInfo textureInfo = new TextureInfo(textureId, textureSlot);
+        mTextureInfoList.add(textureInfo);
         return textureInfo;
 	}
 	
