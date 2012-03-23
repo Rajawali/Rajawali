@@ -23,6 +23,7 @@ Rajawali is a 3D engine for Android based on OpenGL ES 2.0. It can be used for n
 * [Rajawali Tutorial 9: Rajawali Tutorial 9: 2D Renderer](http://www.rozengain.com/blog/2012/02/22/rajawali-tutorial-9-2d-renderer/)
 * [Rajawali Tutorial 10: Simple Particle System](http://www.rozengain.com/blog/2012/02/23/rajawali-tutorial-10-simple-particle-system/)
 * [Rajawali Tutorial 11: A Better, Faster Particle System](http://www.rozengain.com/blog/2012/02/27/rajawali-tutorial-11-a-better-faster-particle-system/)
+* [Rajawali Tutorial 12: Object Picking](http://www.rozengain.com/blog/2012/03/23/rajawali-tutorial-12-object-picking/)
 
 ## Made with Rajawali
 
