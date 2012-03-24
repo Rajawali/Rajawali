@@ -84,7 +84,7 @@ public class DiffuseMaterial extends AMaterial {
 	@Override
 	public void setLight(ALight light) {
 		super.setLight(light);
-
+		if(light == null) return;
 		DirectionalLight dirLight = (DirectionalLight)light;
 		mLightPos[0] = dirLight.getPosition().x;
 		mLightPos[1] = dirLight.getPosition().y;

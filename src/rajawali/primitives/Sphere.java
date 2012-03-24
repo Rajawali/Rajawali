@@ -1,9 +1,7 @@
 package rajawali.primitives;
 
-import android.util.Log;
 import rajawali.BaseObject3D;
 import rajawali.materials.DiffuseMaterial;
-import rajawali.wallpaper.Wallpaper;
 
 
 public class Sphere extends BaseObject3D {

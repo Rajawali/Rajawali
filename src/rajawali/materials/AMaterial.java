@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
-import rajawali.renderer.RajawaliRenderer;
 import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -236,6 +235,7 @@ public abstract class AMaterial {
     
     public void setLight(ALight light)
     {
+    	if(light == null) return;
     	mLight = light;
     	if(muLightPowerHandle > -1)
     		GLES20.glUniform1f(muLightPowerHandle, mLight.getPower());

@@ -395,6 +395,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 
 	public void setLight(ALight light) {
 		mLight = light;
+		for(int i=0; i<mChildren.size(); ++i) 
+			mChildren.get(i).setLight(mLight);
 	}
 
 	public ALight getLight() {
