@@ -3,7 +3,6 @@ package rajawali.materials;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.wallpaper.Wallpaper;
-import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
 
