@@ -177,7 +177,7 @@ public abstract class AMaterial {
     	int count = mTextureInfoList.size();
     	String textureName = "uTexture";
     	if(textureInfo.getTextureType() == TextureType.BUMP)
-    		textureName = "normalTexture";
+    		textureName = "uNormalTexture";
     	else
     		textureName += count;
     	

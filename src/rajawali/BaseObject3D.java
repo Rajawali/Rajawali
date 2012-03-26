@@ -111,6 +111,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 					.allocateDirect(colors.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 			mColors.put(colors).position(0);
+		} else {
+			setColor(0xff000000 + (int)(Math.random() * 0xffffff));
 		}
 
 		mIndices = ByteBuffer.allocateDirect(indices.length * SHORT_SIZE_BYTES)
@@ -503,7 +505,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		for (i = 0; i < mTextureCoords.capacity(); i++)
 			ser.getTextureCoords()[i] = mTextureCoords.get(i);
 		for (i = 0; i < mColors.capacity(); i++)
-			ser.getTextureCoords()[i] = mColors.get(i);
+			ser.getColors()[i] = mColors.get(i);
 		for (i = 0; i < mIndices.capacity(); i++)
 			ser.getIndices()[i] = mIndices.get(i);
 
