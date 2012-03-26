@@ -2,8 +2,6 @@ package rajawali.animation;
 
 import java.util.Stack;
 
-import rajawali.animation.Animation3D.Animation3DListener;
-
 public class Animation3DQueue implements Animation3DListener {
 	private Stack<Animation3D> mAnimations;
 	private Animation3DListener mAnimationListener;
