@@ -43,6 +43,14 @@ public class TextureManager {
 	}
 	
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType) {
+		return this.addTexture(texture, textureType, true, true);	
+	}
+	
+	public TextureInfo addTexture(Bitmap texture, boolean mipmap, boolean recycle) {
+		return this.addTexture(texture, mipmap, recycle);
+	}
+
+	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap, boolean recycle) {
 		if(mTextureInfoList.size() > mMaxTextures)
 			throw new RuntimeException("Max number of textures used");
 
@@ -57,16 +65,21 @@ public class TextureManager {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 		
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, texture, 0);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+        if(mipmap)
+        	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+        else
+        	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+        if(mipmap)
+        	GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         
         TextureInfo textureInfo = new TextureInfo(textureId, textureSlot, textureType);
         mTextureInfoList.add(textureInfo);
 
-        texture.recycle();
+        if(recycle)
+        	texture.recycle();
         return textureInfo;
 	}
 	

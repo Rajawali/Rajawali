@@ -163,9 +163,11 @@ public class ObjParser extends AParser {
 			
 			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
 			matLib.setMaterial(oid.targetObj, oid.materialName);
-			
 			mRootObject.addChild(oid.targetObj);
 		}
+		
+		if(mRootObject.getNumChildren() == 1)
+			mRootObject = mRootObject.getChildAt(0);
 	}
 	
 	protected class ObjIndexData {
