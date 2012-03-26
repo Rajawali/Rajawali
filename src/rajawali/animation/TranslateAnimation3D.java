@@ -9,6 +9,7 @@ public class TranslateAnimation3D extends Animation3D {
 	protected Number3D mDiffPosition;
 	protected Number3D mMultipliedPosition = new Number3D();
 	protected Number3D mAddedPosition = new Number3D();
+	protected BezierPath3D mBezierPath;
 	
 	public TranslateAnimation3D(Number3D toPosition) {
 		super();
@@ -22,6 +23,11 @@ public class TranslateAnimation3D extends Animation3D {
 		mToPosition = toPosition;
 	}
 	
+	public TranslateAnimation3D(BezierPath3D bezierPath) {
+		super();
+		mBezierPath = bezierPath;
+	}
+	
 	@Override
 	public void setTransformable3D(ITransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
@@ -31,13 +37,16 @@ public class TranslateAnimation3D extends Animation3D {
 	
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
-		if(mDiffPosition == null)
-			mDiffPosition = Number3D.subtract(mToPosition, mFromPosition);
-		mMultipliedPosition.setAllFrom(mDiffPosition);
-		mMultipliedPosition.multiply(interpolatedTime);
-		mAddedPosition.setAllFrom(mFromPosition);
-		mAddedPosition.add(mMultipliedPosition);
-		
-		mTransformable3D.getPosition().setAllFrom(mAddedPosition);
+		if(mBezierPath == null) {
+			if(mDiffPosition == null)
+				mDiffPosition = Number3D.subtract(mToPosition, mFromPosition);
+			mMultipliedPosition.setAllFrom(mDiffPosition);
+			mMultipliedPosition.multiply(interpolatedTime);
+			mAddedPosition.setAllFrom(mFromPosition);
+			mAddedPosition.add(mMultipliedPosition);
+			mTransformable3D.getPosition().setAllFrom(mAddedPosition);
+		} else {
+			mTransformable3D.getPosition().setAllFrom(mBezierPath.calculatePoint(interpolatedTime));
+		}
 	}
 }

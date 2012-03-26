@@ -39,9 +39,8 @@ public class Animation3D {
 		      long millis = System.currentTimeMillis() - mStartTime;
 		      if(mDirection == -1) millis = mDuration - millis;
 		      float interpolatedTime = mInterpolator.getInterpolation((float)millis / (float)mDuration);
-		      
-		      //Log.d(RajawaliRenderer.TAG, "interp " + interpolatedTime + ", " + (millis / mDuration));
-		      applyTransformation(interpolatedTime);
+
+		      applyTransformation(interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime);
 		      if(mDirection == 1 && interpolatedTime >= 1 || mDirection == -1 && interpolatedTime <= 0)
 		      {
 		    	  if(mRepeatCount == mNumRepeats)
