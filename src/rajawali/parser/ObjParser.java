@@ -10,10 +10,11 @@ import java.util.StringTokenizer;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.AMaterial;
+import rajawali.materials.BumpmapMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
-import rajawali.materials.SimpleMaterial;
 import rajawali.materials.TextureManager;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.wallpaper.Wallpaper;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
@@ -65,7 +66,6 @@ public class ObjParser extends AParser {
 					vertices.add(Float.parseFloat(parts.nextToken()));
 				} else if(type.equals(FACE)) {
 					if(numTokens != 4) {
-						Log.d(Wallpaper.TAG, line);
 						throw new RuntimeException("Quads are not allowed. Make sure the model contains only triangles.");
 					} else {
                         boolean emptyVt = line.indexOf("//") > -1;
@@ -201,7 +201,7 @@ public class ObjParser extends AParser {
 		private final String SPECULAR_HIGHLIGHT_TEXTURE = "map_Ns";
 		private final String ALPHA_TEXTURE_1 = "map_d";
 		private final String ALPHA_TEXTURE_2 = "map_Tr";
-		private final String BUMP_TEXTURE = "map_bump";
+		private final String BUMP_TEXTURE = "map_Bump";
 		
 		private Stack<MaterialDef> mMaterials;
 		private String mResourcePackage;
@@ -235,7 +235,6 @@ public class ObjParser extends AParser {
 						Log.d(Wallpaper.TAG, "Parsing material: " + matDef.name);
 					} else if(type.equals(DIFFUSE_COLOR)) {
 						matDef.diffuseColor = getColorFromParts(parts);
-						Log.d("Rajawali", "colll: " + matDef.diffuseColor);
 					} else if(type.equals(AMBIENT_COLOR)) {
 						matDef.ambientColor = getColorFromParts(parts);
 					} else if(type.equals(SPECULAR_COLOR)) {
@@ -245,17 +244,17 @@ public class ObjParser extends AParser {
 					} else if(type.equals(ALPHA_1) || type.equals(ALPHA_2)) {
 						matDef.alpha = Float.parseFloat(parts.nextToken());
 					} else if(type.equals(AMBIENT_TEXTURE)) {
-						matDef.ambientTexture = parts.nextToken();
+						matDef.ambientTexture = getFileNameWithoutExtenstion(parts.nextToken());
 					} else if(type.equals(DIFFUSE_TEXTURE)) {
 						matDef.diffuseTexture = getFileNameWithoutExtenstion(parts.nextToken());
 					} else if(type.equals(SPECULAR_COLOR_TEXTURE)) {
-						matDef.specularColorTexture = parts.nextToken();
+						matDef.specularColorTexture = getFileNameWithoutExtenstion(parts.nextToken());
 					} else if(type.equals(SPECULAR_HIGHLIGHT_TEXTURE)) {
-						matDef.specularHightlightTexture = parts.nextToken();
+						matDef.specularHightlightTexture = getFileNameWithoutExtenstion(parts.nextToken());
 					} else if(type.equals(ALPHA_TEXTURE_1) || type.equals(ALPHA_TEXTURE_2)) {
-						matDef.alphaTexture = parts.nextToken();
+						matDef.alphaTexture = getFileNameWithoutExtenstion(parts.nextToken());
 					} else if(type.equals(BUMP_TEXTURE)) {
-						matDef.bumpTexture = parts.nextToken();
+						matDef.bumpTexture = getFileNameWithoutExtenstion(parts.nextToken());
 					}
 				}
 				if(matDef != null) mMaterials.add(matDef);
@@ -277,13 +276,22 @@ public class ObjParser extends AParser {
 			}
 
 			boolean hasTexture = matDef != null && matDef.diffuseTexture != null;
+			boolean hasBump = matDef != null && matDef.bumpTexture != null;
 			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000;
 			
-			AMaterial mat = hasSpecular ? new PhongMaterial() : new DiffuseMaterial();
+			AMaterial mat = null;
+			
+			if(hasSpecular && !hasBump)
+				mat = new PhongMaterial();
+			else if(hasBump)
+				mat = new BumpmapMaterial();
+			else
+				new DiffuseMaterial();
+
 			mat.setUseColor(!hasTexture);
 			object.setColor(matDef != null ? matDef.diffuseColor : (0xff000000 + ((int)(Math.random() * 0xffffff))));
 			object.setMaterial(mat);
-			if(hasSpecular) {
+			if(hasSpecular && !hasBump) {
 				PhongMaterial phong = (PhongMaterial)mat;
 				phong.setSpecularColor(matDef.specularColor);
 				phong.setShininess(matDef.specularCoefficient);
@@ -292,6 +300,10 @@ public class ObjParser extends AParser {
 			if(hasTexture) {
 				int identifier = mResources.getIdentifier(matDef.diffuseTexture, "drawable", mResourcePackage);
 				object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
+			}
+			if(hasBump) {
+				int identifier = mResources.getIdentifier(matDef.bumpTexture, "drawable", mResourcePackage);
+				object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier), TextureType.BUMP));
 			}
 		}
 		

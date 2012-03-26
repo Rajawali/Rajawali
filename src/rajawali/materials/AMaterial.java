@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -174,10 +175,16 @@ public abstract class AMaterial {
     
     public void addTexture(TextureInfo textureInfo) {
     	int count = mTextureInfoList.size();
-        int textureHandle = GLES20.glGetUniformLocation(mProgram, "uTexture" + count);
+    	String textureName = "uTexture";
+    	if(textureInfo.getTextureType() == TextureType.BUMP)
+    		textureName = "normalTexture";
+    	else
+    		textureName += count;
+    	
+        int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
 		if(textureHandle == -1) {
 			Log.d(Wallpaper.TAG, toString());
-			throw new RuntimeException("Could not get attrib location for uTexture" + count);
+			throw new RuntimeException("Could not get attrib location for " + textureName);
 		}
         textureInfo.setUniformHandle(textureHandle);
         mUseColor = false;

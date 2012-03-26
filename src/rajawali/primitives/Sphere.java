@@ -82,7 +82,7 @@ public class Sphere extends BaseObject3D {
 		numUvs = 0;
 		for (j = 0; j <= mSegmentsH; ++j) {
 			for (i = 0; i <= mSegmentsW; ++i) {
-				textureCoords[numUvs++] = (float)i / mSegmentsW;
+				textureCoords[numUvs++] = -(float)i / mSegmentsW;
 				textureCoords[numUvs++] = (float)j / mSegmentsH;
 			}
 		}

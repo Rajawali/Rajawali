@@ -37,7 +37,12 @@ public class TextureManager {
 		}
 	}
 	
+	
 	public TextureInfo addTexture(Bitmap texture) {
+		return addTexture(texture, TextureType.DIFFUSE);
+	}
+	
+	public TextureInfo addTexture(Bitmap texture, TextureType textureType) {
 		if(mTextureInfoList.size() > mMaxTextures)
 			throw new RuntimeException("Max number of textures used");
 
@@ -58,7 +63,7 @@ public class TextureManager {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
         GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         
-        TextureInfo textureInfo = new TextureInfo(textureId, textureSlot);
+        TextureInfo textureInfo = new TextureInfo(textureId, textureSlot, textureType);
         mTextureInfoList.add(textureInfo);
 
         texture.recycle();
@@ -190,14 +195,26 @@ public class TextureManager {
 		return mTextureInfoList;
 	}
 	
+	
+	public enum TextureType {
+		DIFFUSE,
+		BUMP
+	}
+	
 	public class TextureInfo {
 		protected int mTextureId;
 		protected int mTextureSlot;
-		protected int mUniformHandle;
+		protected TextureType mTextureType;
+		protected int mUniformHandle;		
 		
 		public TextureInfo(int textureId, int textureSlot) {
+			this(textureId, textureSlot, TextureType.DIFFUSE);
+		}
+		
+		public TextureInfo(int textureId, int textureSlot, TextureType textureType) {
 			mTextureId = textureId;
 			mTextureSlot = textureSlot;
+			mTextureType = textureType;
 		}
 		
 		public int getTextureId() {
@@ -218,6 +235,14 @@ public class TextureManager {
 		
 		public String toString() {
 			return "id: " + mTextureId + " slot: " + mTextureSlot + " handle: " + mUniformHandle;
+		}
+
+		public TextureType getTextureType() {
+			return mTextureType;
+		}
+
+		public void setTextureType(TextureType textureType) {
+			this.mTextureType = textureType;
 		}
 	}
 }
