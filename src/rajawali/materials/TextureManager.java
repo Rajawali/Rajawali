@@ -63,7 +63,6 @@ public class TextureManager {
 		GLES20.glGenTextures(1, textures, 0);
 		int textureId = textures[0];
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-		
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, texture, 0);
         if(mipmap)
         	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
