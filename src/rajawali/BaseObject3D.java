@@ -15,7 +15,6 @@ import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.math.Number3D;
 import rajawali.primitives.BoundingBox;
 import rajawali.renderer.RajawaliRenderer;
-import rajawali.Camera;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
@@ -85,6 +84,26 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D> {
 		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(),
 				ser.getColors(), ser.getIndices());
 	}
+	
+	public BaseObject3D(BaseObject3D srcObject) {
+		this(srcObject.mName);
+		
+		mVertices = srcObject.mVertices;
+		mNormals = srcObject.mNormals;
+		mTextureCoords = srcObject.mTextureCoords;
+		mColors = srcObject.mColors;
+		mIndices = srcObject.mIndices;
+		
+		mNumIndices = srcObject.mNumIndices;
+		mNumVertices = srcObject.mNumVertices;
+
+		mIsContainerOnly = false;
+		
+		mBoundingBox = srcObject.mBoundingBox;
+		
+		mMaterial = srcObject.mMaterial;
+	} 
+ 
 
 	public void setData(float[] vertices, float[] normals,
 			float[] textureCoords, float[] colors, short[] indices) {
