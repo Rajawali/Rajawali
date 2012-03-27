@@ -25,4 +25,19 @@ public abstract class AParser implements IParser {
 	public BaseObject3D getParsedObject() {
 		return mRootObject;
 	}
+	
+	protected class MaterialDef {
+		public String name;
+		public int ambientColor;
+		public int diffuseColor;
+		public int specularColor;
+		public float specularCoefficient;
+		public float alpha;
+		public String ambientTexture;
+		public String diffuseTexture;
+		public String specularColorTexture;
+		public String specularHightlightTexture;
+		public String alphaTexture;
+		public String bumpTexture;
+	}
 }

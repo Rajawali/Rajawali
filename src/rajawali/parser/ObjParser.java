@@ -5,14 +5,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import rajawali.BaseObject3D;
-import rajawali.materials.SimpleMaterial;
+import rajawali.materials.AMaterial;
+import rajawali.materials.BumpmapMaterial;
+import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.PhongMaterial;
 import rajawali.materials.TextureManager;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.wallpaper.Wallpaper;
-
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.util.Log;
 
 
@@ -43,6 +49,7 @@ public class ObjParser extends AParser {
 		ArrayList<Float> vertices = new ArrayList<Float>();
 		ArrayList<Float> texCoords = new ArrayList<Float>();
 		ArrayList<Float> normals = new ArrayList<Float>();
+		MaterialLib matLib = new MaterialLib();
 		
 		try {
 			while((line = buffer.readLine()) != null) {
@@ -59,7 +66,6 @@ public class ObjParser extends AParser {
 					vertices.add(Float.parseFloat(parts.nextToken()));
 				} else if(type.equals(FACE)) {
 					if(numTokens != 4) {
-						Log.d(Wallpaper.TAG, line);
 						throw new RuntimeException("Quads are not allowed. Make sure the model contains only triangles.");
 					} else {
                         boolean emptyVt = line.indexOf("//") > -1;
@@ -98,11 +104,20 @@ public class ObjParser extends AParser {
 					Log.d(Wallpaper.TAG, "Parsing object: " + objName);
 					currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
 					objIndices.add(currObjIndexData);
+				} else if(type.equals(MATERIAL_LIB)) {
+					if(!parts.hasMoreTokens()) continue;
+					String materialLibPath = parts.nextToken().replace(".", "_");
+					Log.d(Wallpaper.TAG, "Found Material Lib: " + materialLibPath);
+					matLib.parse(materialLibPath, mResources.getResourceTypeName(mResourceId), mResources.getResourcePackageName(mResourceId));
+				} else if(type.equals(USE_MATERIAL)) {
+					currObjIndexData.materialName = parts.nextToken();
 				}
 			}
+			buffer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		
 		int numObjects = objIndices.size();
 		
@@ -147,10 +162,12 @@ public class ObjParser extends AParser {
 			}
 			
 			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
-			oid.targetObj.setMaterial(new SimpleMaterial());
-			
+			matLib.setMaterial(oid.targetObj, oid.materialName);
 			mRootObject.addChild(oid.targetObj);
 		}
+		
+		if(mRootObject.getNumChildren() == 1)
+			mRootObject = mRootObject.getChildAt(0);
 	}
 	
 	protected class ObjIndexData {
@@ -161,12 +178,146 @@ public class ObjParser extends AParser {
 		public ArrayList<Short> colorIndices;
 		public ArrayList<Short> normalIndices;
 		
+		public String materialName;
+		
 		public ObjIndexData(BaseObject3D targetObj) {
 			this.targetObj = targetObj;
 			vertexIndices = new ArrayList<Short>();
 			texCoordIndices = new ArrayList<Short>();
 			colorIndices = new ArrayList<Short>();
 			normalIndices = new ArrayList<Short>();
+		}
+	}
+	
+	protected class MaterialLib {
+		private final String MATERIAL_NAME = "newmtl";
+		private final String AMBIENT_COLOR = "Ka";
+		private final String DIFFUSE_COLOR = "Kd";
+		private final String SPECULAR_COLOR = "Ks";
+		private final String SPECULAR_COEFFICIENT = "Ns";
+		private final String ALPHA_1 = "d";
+		private final String ALPHA_2 = "Tr";
+		private final String AMBIENT_TEXTURE = "map_Ka";
+		private final String DIFFUSE_TEXTURE = "map_Kd";
+		private final String SPECULAR_COLOR_TEXTURE = "map_Ks";
+		private final String SPECULAR_HIGHLIGHT_TEXTURE = "map_Ns";
+		private final String ALPHA_TEXTURE_1 = "map_d";
+		private final String ALPHA_TEXTURE_2 = "map_Tr";
+		private final String BUMP_TEXTURE = "map_Bump";
+		
+		private Stack<MaterialDef> mMaterials;
+		private String mResourcePackage;
+		
+		public MaterialLib() {
+			mMaterials = new Stack<ObjParser.MaterialDef>();
+		}
+		
+		public void parse(String materialLibPath, String resourceType, String resourcePackage) {
+			mResourcePackage = resourcePackage;
+			int identifier = mResources.getIdentifier(materialLibPath, resourceType, resourcePackage);
+			
+			InputStream fileIn = mResources.openRawResource(identifier);
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(fileIn));
+			String line;
+			MaterialDef matDef = null;
+			
+			try {
+				while((line = buffer.readLine()) != null) {
+					StringTokenizer parts = new StringTokenizer(line, " ");
+					int numTokens = parts.countTokens();
+					
+					if(numTokens == 0)
+						continue;
+					String type = parts.nextToken();
+					
+					if(type.equals(MATERIAL_NAME)) {
+						if(matDef != null) mMaterials.add(matDef);
+						matDef = new MaterialDef();
+						matDef.name = parts.hasMoreTokens() ? parts.nextToken() : "";
+						Log.d(Wallpaper.TAG, "Parsing material: " + matDef.name);
+					} else if(type.equals(DIFFUSE_COLOR)) {
+						matDef.diffuseColor = getColorFromParts(parts);
+					} else if(type.equals(AMBIENT_COLOR)) {
+						matDef.ambientColor = getColorFromParts(parts);
+					} else if(type.equals(SPECULAR_COLOR)) {
+						matDef.specularColor = getColorFromParts(parts);
+					} else if(type.equals(SPECULAR_COEFFICIENT)) {
+						matDef.specularCoefficient = Float.parseFloat(parts.nextToken());
+					} else if(type.equals(ALPHA_1) || type.equals(ALPHA_2)) {
+						matDef.alpha = Float.parseFloat(parts.nextToken());
+					} else if(type.equals(AMBIENT_TEXTURE)) {
+						matDef.ambientTexture = getFileNameWithoutExtenstion(parts.nextToken());
+					} else if(type.equals(DIFFUSE_TEXTURE)) {
+						matDef.diffuseTexture = getFileNameWithoutExtenstion(parts.nextToken());
+					} else if(type.equals(SPECULAR_COLOR_TEXTURE)) {
+						matDef.specularColorTexture = getFileNameWithoutExtenstion(parts.nextToken());
+					} else if(type.equals(SPECULAR_HIGHLIGHT_TEXTURE)) {
+						matDef.specularHightlightTexture = getFileNameWithoutExtenstion(parts.nextToken());
+					} else if(type.equals(ALPHA_TEXTURE_1) || type.equals(ALPHA_TEXTURE_2)) {
+						matDef.alphaTexture = getFileNameWithoutExtenstion(parts.nextToken());
+					} else if(type.equals(BUMP_TEXTURE)) {
+						matDef.bumpTexture = getFileNameWithoutExtenstion(parts.nextToken());
+					}
+				}
+				if(matDef != null) mMaterials.add(matDef);
+				buffer.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public void setMaterial(BaseObject3D object, String materialName) {
+			MaterialDef matDef = null;
+			
+			for(int i=0; i<mMaterials.size(); ++i) {
+				if(mMaterials.get(i).name.equals(materialName))
+				{
+					matDef = mMaterials.get(i);
+					break;
+				}
+			}
+
+			boolean hasTexture = matDef != null && matDef.diffuseTexture != null;
+			boolean hasBump = matDef != null && matDef.bumpTexture != null;
+			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000;
+			
+			AMaterial mat = null;
+			
+			if(hasSpecular && !hasBump)
+				mat = new PhongMaterial();
+			else if(hasBump)
+				mat = new BumpmapMaterial();
+			else
+				mat = new DiffuseMaterial();
+
+			mat.setUseColor(!hasTexture);
+			object.setColor(matDef != null ? matDef.diffuseColor : (0xff000000 + ((int)(Math.random() * 0xffffff))));
+			object.setMaterial(mat);
+			if(hasSpecular && !hasBump) {
+				PhongMaterial phong = (PhongMaterial)mat;
+				phong.setSpecularColor(matDef.specularColor);
+				phong.setShininess(matDef.specularCoefficient);
+			}
+			
+			if(hasTexture) {
+				int identifier = mResources.getIdentifier(matDef.diffuseTexture, "drawable", mResourcePackage);
+				object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
+			}
+			if(hasBump) {
+				int identifier = mResources.getIdentifier(matDef.bumpTexture, "drawable", mResourcePackage);
+				object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier), TextureType.BUMP));
+			}
+		}
+		
+		private int getColorFromParts(StringTokenizer parts) {
+			int r = (int)(Float.parseFloat(parts.nextToken()) * 255f);
+			int g = (int)(Float.parseFloat(parts.nextToken()) * 255f);
+			int b = (int)(Float.parseFloat(parts.nextToken()) * 255f);
+			return Color.rgb(r, g, b);
+		}
+		
+		private String getFileNameWithoutExtenstion(String fileName) {
+			return fileName.substring(0, fileName.lastIndexOf("."));
 		}
 	}
 }

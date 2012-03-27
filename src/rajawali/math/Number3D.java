@@ -21,6 +21,12 @@ public class Number3D
 		z = 0;
 	}
 	
+	public Number3D(Number3D from) {
+		x = from.x;
+		y = from.y;
+		z = from.z;
+	}
+	
 	public Number3D(float $x, float $y, float $z)
 	{
 		x = $x;
@@ -162,6 +168,11 @@ public class Number3D
 	public static Number3D multiply(Number3D a, Number3D b)
 	{
 		return new Number3D(a.x * b.x, a.y * b.y, a.z * b.z);
+	}
+	
+	public static Number3D multiply(Number3D a, float b)
+	{
+		return new Number3D(a.x * b, a.y * b, a.z * b);
 	}
 	
 	public static Number3D cross(Number3D v, Number3D w)

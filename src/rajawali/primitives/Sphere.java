@@ -1,9 +1,7 @@
 package rajawali.primitives;
 
-import android.util.Log;
 import rajawali.BaseObject3D;
 import rajawali.materials.DiffuseMaterial;
-import rajawali.wallpaper.Wallpaper;
 
 
 public class Sphere extends BaseObject3D {
@@ -84,7 +82,7 @@ public class Sphere extends BaseObject3D {
 		numUvs = 0;
 		for (j = 0; j <= mSegmentsH; ++j) {
 			for (i = 0; i <= mSegmentsW; ++i) {
-				textureCoords[numUvs++] = (float)i / mSegmentsW;
+				textureCoords[numUvs++] = -(float)i / mSegmentsW;
 				textureCoords[numUvs++] = (float)j / mSegmentsH;
 			}
 		}

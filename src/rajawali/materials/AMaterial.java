@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -64,12 +65,12 @@ public abstract class AMaterial {
 
 		maTextureHandle = GLES20.glGetAttribLocation(mProgram, "aTextureCoord");
 		if(maTextureHandle == -1) {
-			throw new RuntimeException("Could not get attrib location for aTextureCoord");
+			//Log.d(RajawaliRenderer.TAG, "Could not get attrib location for aTextureCoord");
 		}
 
 		maColorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
 		if(maColorHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get attrib location for aColor");
+			//Log.d(Wallpaper.TAG, "Could not get attrib location for aColor");
 		}
 		
 		muCameraPositionHandle = GLES20.glGetUniformLocation(mProgram, "uCameraPosition");
@@ -94,12 +95,12 @@ public abstract class AMaterial {
 		
 		muUseTextureHandle = GLES20.glGetUniformLocation(mProgram, "uUseTexture");
 		if(muUseTextureHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uUseTexture");
+			//Log.d(Wallpaper.TAG, "Could not get uniform location for uUseTexture");
 		}
 		
 		muLightPowerHandle = GLES20.glGetUniformLocation(mProgram, "uLightPower");
 		if(muLightPowerHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uLightPower");
+			//Log.d(Wallpaper.TAG, "Could not get uniform location for uLightPower");
 		}
 	}
 	
@@ -174,10 +175,16 @@ public abstract class AMaterial {
     
     public void addTexture(TextureInfo textureInfo) {
     	int count = mTextureInfoList.size();
-        int textureHandle = GLES20.glGetUniformLocation(mProgram, "uTexture" + count);
+    	String textureName = "uTexture";
+    	if(textureInfo.getTextureType() == TextureType.BUMP)
+    		textureName = "uNormalTexture";
+    	else
+    		textureName += count;
+    	
+        int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
 		if(textureHandle == -1) {
 			Log.d(Wallpaper.TAG, toString());
-			throw new RuntimeException("Could not get attrib location for uTexture" + count);
+			throw new RuntimeException("Could not get attrib location for " + textureName);
 		}
         textureInfo.setUniformHandle(textureHandle);
         mUseColor = false;
@@ -235,6 +242,7 @@ public abstract class AMaterial {
     
     public void setLight(ALight light)
     {
+    	if(light == null) return;
     	mLight = light;
     	if(muLightPowerHandle > -1)
     		GLES20.glUniform1f(muLightPowerHandle, mLight.getPower());

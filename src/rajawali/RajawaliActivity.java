@@ -1,5 +1,6 @@
 package rajawali;
 
+import rajawali.animation.TimerManager;
 import rajawali.renderer.RajawaliRenderer;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -7,11 +8,14 @@ import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 public class RajawaliActivity extends Activity {
 	protected GLSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
+	private RajawaliRenderer mRajRenderer;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class RajawaliActivity extends Activity {
     }
     
     protected void setRenderer(RajawaliRenderer renderer) {
+    	mRajRenderer = renderer;
     	mSurfaceView.setRenderer(renderer);
     }
     
@@ -45,6 +50,32 @@ public class RajawaliActivity extends Activity {
     @Override
     protected void onPause() {
     	super.onPause();
+    	TimerManager.getInstance().clear();
     	mSurfaceView.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    	mRajRenderer.onSurfaceDestroyed();
+        unbindDrawables(mLayout);
+        System.gc();
+    }
+    
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
     }
 }
