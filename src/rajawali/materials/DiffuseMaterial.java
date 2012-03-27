@@ -1,6 +1,5 @@
 package rajawali.materials;
 
-import rajawali.lights.ALight;
 
 
 public class DiffuseMaterial extends AAdvancedMaterial {
@@ -57,10 +56,5 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 	
 	public DiffuseMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader);
-	}
-
-	@Override
-	public void setLight(ALight light) {
-		super.setLight(light);
 	}
 }

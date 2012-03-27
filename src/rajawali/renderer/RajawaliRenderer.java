@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
@@ -272,5 +273,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	
 	public int getViewportHeight() {
 		return mViewportHeight;
+	}
+	
+	public void setBackgroundColor(float red, float green, float blue, float alpha) {
+		mRed = red; mGreen = green; mBlue = blue; mAlpha = alpha;
+	}
+	
+	public void setBackgroundColor(int color) {
+		setBackgroundColor(Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color));
 	}
 }
