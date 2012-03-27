@@ -40,12 +40,15 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"uniform sampler2D uTexture0;\n" +
 		"uniform bool uUseTexture;\n" +
 		"uniform float uLightPower;\n" +
+		"uniform vec4 uAmbientColor;\n" +
+		"uniform vec4 uAmbientIntensity;\n" + 
 
 		"void main() {\n" +
 		"	float intensity = max(dot(L, N), 0.0);\n" +
 		"	if(uUseTexture==true) gl_FragColor = texture2D(uTexture0, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +
 		"	gl_FragColor.rgb *= intensity * uLightPower;\n" +
+		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
 		"}";
 	
 	public DiffuseMaterial() {

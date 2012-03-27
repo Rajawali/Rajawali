@@ -45,6 +45,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		
 		"uniform vec4 uSpecularColor;\n" +
 		"uniform vec4 uAmbientColor;\n" +
+		"uniform vec4 uAmbientIntensity;\n" + 
 		"uniform sampler2D uTexture0;\n" +
 		"uniform sampler2D normalTexture;\n" +
 		"uniform float uShininess;\n" +
@@ -58,10 +59,9 @@ public class PhongMaterial extends AAdvancedMaterial {
 		
 		"	float Kd = max(dot(Normal, Light), 0.0);\n" + 
 		"	float Ks = pow(max(dot(Half, Normal), 0.0), uShininess);\n" + 
-	    "	float Ka = 0.0;\n" +
 	    "	vec4 diffuse  = uUseTexture ? Kd * texture2D(uTexture0, vTextureCoord) : Kd * vColor;\n" + 
 	    "	vec4 specular = Ks * uSpecularColor;\n" + 
-	    "	vec4 ambient  = Ka * uAmbientColor;\n" + 
+	    "	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 
 	    "	gl_FragColor = ambient + diffuse + specular;\n" + 
 		"}";
 	
