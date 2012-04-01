@@ -16,6 +16,10 @@ public class Plane extends BaseObject3D {
 		this(1f, 1f, 0, 3, 3);
 	}
 	
+	public Plane(float width, float height, int segmentsW, int segmentsH) {
+		this(width, height, 1, segmentsW, segmentsH);
+	}
+	
 	public Plane(float width, float height, int direction, int segmentsW, int segmentsH) {
 		super();
 		mWidth = width;
