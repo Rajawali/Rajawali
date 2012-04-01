@@ -178,7 +178,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceDestroyed() {
 		stopRendering();
 		TimerManager.getInstance().clear();
-		mTextureManager.reset();
+		if(mTextureManager != null)
+			mTextureManager.reset();
 	}
 	
 	public void setSharedPreferences(SharedPreferences preferences)

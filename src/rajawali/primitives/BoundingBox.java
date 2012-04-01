@@ -15,7 +15,7 @@ public class BoundingBox extends BaseObject3D {
 	public BoundingBox(BaseObject3D targetObj) {
 		mTargetObj = targetObj;
 		
-		FloatBuffer vertices = mTargetObj.getVertices();
+		FloatBuffer vertices = mTargetObj.getGeometry().getVertices();
 		vertices.rewind();
 		
 		mMin = new Number3D(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);

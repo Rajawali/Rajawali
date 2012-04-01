@@ -20,6 +20,8 @@ public interface IObject3D {
 	
 	public float[] getModelMatrix();
 	
+	public Geometry3D getGeometry();
+	
 	public void addChild(BaseObject3D child);
 	public int getNumChildren();
 	public void setMaterial(AMaterial shader);
