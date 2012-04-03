@@ -1,13 +1,16 @@
 package rajawali.animation;
 
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Animation3DQueue implements Animation3DListener {
-	private Stack<Animation3D> mAnimations;
+	private List<Animation3D> mAnimations;
 	private Animation3DListener mAnimationListener;
+	private int mCurrentAnimation;
 	
 	public Animation3DQueue() {
-		mAnimations = new Stack<Animation3D>();
+		mAnimations = new ArrayList<Animation3D>();
+		mCurrentAnimation = 0;
 	}
 	
 	public void addAnimation(Animation3D animation) {
@@ -21,11 +24,12 @@ public class Animation3DQueue implements Animation3DListener {
 
 	@Override
 	public void onAnimationEnd(Animation3D animation) {
-		if(mAnimations.size() == 0) {
+		if(mCurrentAnimation == mAnimations.size() - 1) {
 			if(mAnimationListener != null) mAnimationListener.onAnimationEnd(null);
+			mCurrentAnimation = 0;
 			return;
 		}
-		Animation3D anim = mAnimations.remove(0);
+		Animation3D anim = mAnimations.get(++mCurrentAnimation);
 		anim.start();
 	}
 
@@ -40,7 +44,7 @@ public class Animation3DQueue implements Animation3DListener {
 	
 	public void start() {
 		if(mAnimations.size() == 0) return;
-		Animation3D animation = mAnimations.remove(0);
+		Animation3D animation = mAnimations.get(0);
 		animation.start();
 		if(mAnimationListener != null) mAnimationListener.onAnimationStart(null);
 	}
