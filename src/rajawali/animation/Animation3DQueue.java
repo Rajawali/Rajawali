@@ -12,7 +12,7 @@ public class Animation3DQueue implements Animation3DListener {
 	
 	public void addAnimation(Animation3D animation) {
 		mAnimations.add(animation);
-		animation.setAnimationListener(this);
+		animation.addAnimationListener(this);
 	}
 	
 	public void setAnimationListener(Animation3DListener animationListener) {
