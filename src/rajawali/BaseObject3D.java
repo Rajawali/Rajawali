@@ -80,14 +80,14 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	public BaseObject3D(BaseObject3D srcObject) {
 		this(srcObject.mName);
 		
-		mVertices = srcObject.mVertices;
-		mNormals = srcObject.mNormals;
-		mTextureCoords = srcObject.mTextureCoords;
-		mColors = srcObject.mColors;
-		mIndices = srcObject.mIndices;
+		mGeometry.mVertices = srcObject.mGeometry.mVertices;
+		mGeometry.mNormals = srcObject.mGeometry.mNormals;
+		mGeometry.mTextureCoords = srcObject.mGeometry.mTextureCoords;
+		mGeometry.mColors = srcObject.mGeometry.mColors;
+		mGeometry.mIndices = srcObject.mGeometry.mIndices;
 		
-		mNumIndices = srcObject.mNumIndices;
-		mNumVertices = srcObject.mNumVertices;
+		mGeometry.mNumIndices = srcObject.mGeometry.mNumIndices;
+		mGeometry.mNumVertices = srcObject.mGeometry.mNumVertices;
 
 		mIsContainerOnly = false;
 		
