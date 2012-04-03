@@ -2,8 +2,6 @@ package rajawali.animation.mesh;
 
 import java.util.Stack;
 
-import android.util.Log;
-
 import rajawali.BaseObject3D;
 
 public abstract class AAnimationObject3D extends BaseObject3D {

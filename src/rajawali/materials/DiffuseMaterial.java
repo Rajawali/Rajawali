@@ -22,7 +22,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
-		"	N = uNMatrix * aNormal;\n" +
+		"	N = normalize(uNMatrix * aNormal);\n" +
 		"	vec4 V = uMMatrix * aPosition;\n" +
 		"   vec4 lightPos = vec4(uLightPos, 1.0);\n" +
 		"	L = normalize(vec3(lightPos - V));\n" +
@@ -43,11 +43,10 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"uniform vec4 uAmbientIntensity;\n" + 
 
 		"void main() {\n" +
-		"	float intensity = max(dot(L, N), 0.0);\n" +
+		"	float intensity = uLightPower * clamp(dot(N, L), 0.0, 1.0);\n" +
 		"	if(uUseTexture==true) gl_FragColor = texture2D(uTexture0, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +
-		"	gl_FragColor.rgb *= intensity * uLightPower;\n" +
-		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
+		"	gl_FragColor = uAmbientIntensity * uAmbientColor + intensity * gl_FragColor;" +
 		"}";
 	
 	public DiffuseMaterial() {

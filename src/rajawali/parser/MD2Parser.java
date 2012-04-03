@@ -11,13 +11,11 @@ import rajawali.animation.mesh.IAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.SimpleMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.util.LittleEndianDataInputStream;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 public class MD2Parser extends AParser implements IParser {
 	private MD2Header mHeader;
@@ -60,7 +58,7 @@ public class MD2Parser extends AParser implements IParser {
 			IAnimationFrame firstFrame = mFrames.get(0);
 			mObject.getGeometry().setVertices(firstFrame.getGeometry().getVertices()); 
 			mObject.getGeometry().setNormals(firstFrame.getGeometry().getNormals());
-			mObject.setMaterial(new SimpleMaterial());
+			mObject.setMaterial(new DiffuseMaterial());
 			mObject.setColor(0xffffffff);
 			mObject.addTexture(mTextureManager.addTexture(mTexture));
 		} catch (Exception e) {
@@ -108,7 +106,6 @@ public class MD2Parser extends AParser implements IParser {
 			coords[buffIndex] = (float)is.readShort() / (float)mHeader.skinWidth;
 			coords[buffIndex + 1] = (float)is.readShort() / (float)mHeader.skinHeight;
 		}
-		
 		return coords;
 	}
 
@@ -137,12 +134,13 @@ public class MD2Parser extends AParser implements IParser {
 			int index = 0;
 			
 			for (int j = 0; j < mHeader.numVerts; j++) {
-				vertices[index++] = scaleX * is.readUnsignedByte() + translateX;
-				vertices[index++] = scaleY * is.readUnsignedByte() + translateY;
-				vertices[index++] = scaleZ * is.readUnsignedByte() + translateZ;
-				is.readUnsignedByte(); // int normalIndex
+				vertices[index+2] = scaleX * is.readUnsignedByte() + translateX;
+				vertices[index+1] = scaleY * is.readUnsignedByte() + translateY;
+				vertices[index+0] = scaleZ * is.readUnsignedByte() + translateZ;
+				index+=3;
+				is.readUnsignedByte();
+				
 			}
-
 			frame.getGeometry().setVertices(vertices);
 		}
 	}
@@ -154,39 +152,78 @@ public class MD2Parser extends AParser implements IParser {
 						- mHeader.offsetTriangles);
 		LittleEndianDataInputStream is = new LittleEndianDataInputStream(ba);
 		short[] indices = new short[mHeader.numTriangles*3];
-		float[] reorderedTexCoords = new float[mHeader.numVerts * 2];
-		int index = 0;
-
+		short[] uvIndices = new short[mHeader.numTriangles*3];
+		int index = 0, uvIndex = 0;
+		
 		for (int i = 0; i < mHeader.numTriangles; i++) {
-			short fid1 = (short)is.readUnsignedShort();
-			short fid2 = (short)is.readUnsignedShort();
-			short fid3 = (short)is.readUnsignedShort();
-			int uvid1 = is.readUnsignedShort();
-			int uvid2 = is.readUnsignedShort();
-			int uvid3 = is.readUnsignedShort();
-
-			indices[index+2] = fid1;
-			indices[index+1] = fid2;
-			indices[index] = fid3;
-			index += 3;
-
-			reorderedTexCoords[(fid1 * 2)] = texCoords[uvid1 * 2];
-			reorderedTexCoords[(fid1 * 2)+1] = texCoords[(uvid1 * 2)+1];
-			reorderedTexCoords[(fid2 * 2)] = texCoords[uvid2 * 2];
-			reorderedTexCoords[(fid2 * 2)+1] = texCoords[(uvid2 * 2)+1];
-			reorderedTexCoords[(fid3 * 2)] = texCoords[uvid3 * 2];
-			reorderedTexCoords[(fid3 * 2)+1] = texCoords[(uvid3 * 2)+1];
+			indices[index++] = is.readShort();
+			indices[index++] = is.readShort();
+			indices[index++] = is.readShort();
+			uvIndices[uvIndex++] = is.readShort();
+			uvIndices[uvIndex++] = is.readShort();
+			uvIndices[uvIndex++] = is.readShort();
+		}
+		
+		short newVertexIndex = (short)mHeader.numVerts;
+		int numIndices = indices.length;
+		Stack<VertexIndices> changedIndices = new Stack<MD2Parser.VertexIndices>();
+		
+		for(int i=0; i<numIndices; i++) {
+			for(int j=i+1; j<numIndices; j++) 
+			{
+				if(indices[i] == indices[j] && uvIndices[i] != uvIndices[j])
+				{
+					changedIndices.add(new VertexIndices((short)j, indices[j], newVertexIndex));
+					
+					for(int k=j+1; k<numIndices; k++) {
+						if(indices[j] == indices[k] && uvIndices[j] == uvIndices[k]) {
+							//changedIndices.add(new VertexIndices((short)k, indices[k], newVertexIndex));
+							indices[k] = newVertexIndex;
+						}
+					}
+					
+					indices[j] = newVertexIndex;
+					newVertexIndex++;
+				}
+			}
 		}
 
+		int[] cIndices = new int[changedIndices.size()];
+		for(int j=0; j<changedIndices.size(); j++)
+			cIndices[j] = changedIndices.get(j).oldVertexIndex;
+
+		float[] reorderedTexCoords = new float[(mHeader.numVerts + changedIndices.size()) * 2];
+		
+		for (int i = 0; i < indices.length; i++) {
+			short fid = indices[i];
+			int uvid = uvIndices[i];
+
+			reorderedTexCoords[fid * 2] = texCoords[uvid * 2];
+			reorderedTexCoords[fid * 2 + 1] = texCoords[uvid * 2 + 1];
+		}
+		
 		mObject.getGeometry().setTextureCoords(reorderedTexCoords);
 		mObject.getGeometry().setIndices(indices);
-
+		
 		for(int i = 0; i < mHeader.numFrames; ++i) {
 			VertexAnimationFrame frame = (VertexAnimationFrame)mFrames.get(i);
+			frame.getGeometry().duplicateAndAppendVertices(cIndices);
 			frame.calculateNormals(indices);
 		}
 	}
-
+	
+	private class VertexIndices {
+		public short index;
+		public short oldVertexIndex;
+		public short newVertexIndex;
+		
+		public VertexIndices(short index, short oldVertexIndex, short newVertexIndex) {
+			this.index = index;
+			this.oldVertexIndex = oldVertexIndex;
+			this.newVertexIndex = newVertexIndex;
+		}
+	}
+	
 	private class MD2Header {
 		public int id;
 		public int version;

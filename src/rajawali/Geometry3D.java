@@ -5,6 +5,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import android.util.Log;
+
 public class Geometry3D {
 	public static final int FLOAT_SIZE_BYTES = 4;
 	public static final int SHORT_SIZE_BYTES = 2;
@@ -39,7 +41,14 @@ public class Geometry3D {
 	}
 
 	public void setVertices(float[] vertices) {
-		if(mVertices == null) {
+		setVertices(vertices, false);
+	}
+	
+	public void setVertices(float[] vertices, boolean override) {
+		if(mVertices == null || override == true) {
+			if(mVertices != null) {
+				mVertices.clear();
+			}
 			mVertices = ByteBuffer
 					.allocateDirect(vertices.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -67,6 +76,7 @@ public class Geometry3D {
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 			mNormals.put(normals).position(0);
 		} else {
+			mNormals.position(0);
 			mNormals.put(normals);
 		}
 	}
@@ -158,6 +168,26 @@ public class Geometry3D {
 			mColors.put(b);
 			mColors.put(a);
 		}
+	}
+	
+	public void duplicateAndAppendVertices(int[] indices) {
+		int offset = mVertices.capacity();
+		float[] newVerts = new float[offset + (indices.length * 3)];
+		
+		for(int i=0; i<indices.length; i++) {
+			int vi = offset + (i * 3);
+			int ovi = indices[i] * 3;
+			newVerts[vi] = mVertices.get(ovi);
+			newVerts[vi+1] = mVertices.get(ovi+1);
+			newVerts[vi+2] = mVertices.get(ovi+2);
+		}
+
+		float[] oldVerts = new float[mVertices.capacity()];
+		mVertices.get(oldVerts);
+				
+		System.arraycopy(oldVerts, 0, newVerts, 0, offset);
+		
+		setVertices(newVerts, true);
 	}
 	
 	public String toString() {
