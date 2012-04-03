@@ -34,10 +34,13 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"uniform samplerCube uTexture0;\n" +
 		"varying vec3 N, L;\n" +
 		"varying vec3 vNormal;\n" +
+		"uniform vec4 uAmbientColor;\n" +
+		"uniform vec4 uAmbientIntensity;\n" + 
 
 		"void main() {\n" +
 		"	float intensity = max(0.0, dot(normalize(N), normalize(L)));\n" +
 		"	gl_FragColor = textureCube(uTexture0, vReflectDir);\n" +
+		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
 		"	gl_FragColor.rgb *= intensity;\n" +
 		"}\n";
 	

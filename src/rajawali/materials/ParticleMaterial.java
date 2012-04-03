@@ -11,7 +11,7 @@ public class ParticleMaterial extends AMaterial {
 		"uniform mat4 uMVPMatrix;\n" +
 		"uniform float uPointSize;\n" +
 		"uniform mat4 uMMatrix;\n" +
-		"uniform float uDistanceToCam;\n" +
+		"uniform vec3 uCamPos;\n" +
 		"uniform vec3 uDistanceAtt;\n" +
 		"uniform vec3 uFriction;\n" +
 		"uniform float uTime;\n" +
@@ -30,7 +30,7 @@ public class ParticleMaterial extends AMaterial {
 		"		position.y += aVelocity.y * uFriction.y * uTime;\n" +
 		"		position.z += aVelocity.z * uFriction.z * uTime; }" +
 		"	gl_Position = uMVPMatrix * position;\n" +
-		"	float pdist = uDistanceToCam + sqrt(position.x * position.x + position.y * position.y + position.z * aPosition.z);\n" +
+		"	float pdist = length(uCamPos - position.xyz);\n" +
 		"	gl_PointSize = uPointSize / sqrt(uDistanceAtt.x + uDistanceAtt.y * pdist + uDistanceAtt.z * pdist * pdist);\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		"}\n";
@@ -47,7 +47,7 @@ public class ParticleMaterial extends AMaterial {
 	
 	protected float mPointSize = 10.0f;
 	protected int muPointSizeHandle;
-	protected int muDistanceToCamHandle;
+	protected int muCamPosHandle;
 	protected int muDistanceAttHandle;
 	protected int maVelocityHandle;
 	protected int muFrictionHandle;
@@ -57,11 +57,13 @@ public class ParticleMaterial extends AMaterial {
 	protected float[] mDistanceAtt;
 	protected boolean mMultiParticlesEnabled;
 	protected float[] mFriction;
+	protected float[] mCamPos;
 	
 	public ParticleMaterial() {
 		super(mVShader, mFShader);
 		mDistanceAtt = new float[] {1, 1, 1};
 		mFriction = new float[3];
+		mCamPos = new float[3];
 	}
 	
 	public void setPointSize(float pointSize) {
@@ -101,7 +103,7 @@ public class ParticleMaterial extends AMaterial {
 	{
 		super.setShaders(vertexShader, fragmentShader);
 		muPointSizeHandle = GLES20.glGetUniformLocation(mProgram, "uPointSize");
-		muDistanceToCamHandle = GLES20.glGetUniformLocation(mProgram, "uDistanceToCam");
+		muCamPosHandle = GLES20.glGetUniformLocation(mProgram, "uCamPos");
 		muDistanceAttHandle = GLES20.glGetUniformLocation(mProgram, "uDistanceAtt");
 		
 		maVelocityHandle = GLES20.glGetAttribLocation(mProgram, "aVelocity");
@@ -110,8 +112,9 @@ public class ParticleMaterial extends AMaterial {
 		muMultiParticlesEnabledHandle = GLES20.glGetUniformLocation(mProgram, "uMultiParticlesEnabled");
 	}
 	
-	public void setDistanceToCam(float distance) {
-		GLES20.glUniform1f(muDistanceToCamHandle, distance);
+	public void setCameraPosition(Number3D cameraPos) {
+		mCamPos[0] = cameraPos.x; mCamPos[1] = cameraPos.y; mCamPos[2] = cameraPos.z;
+		GLES20.glUniform3fv(muCamPosHandle, 1, mCamPos, 0);
 		GLES20.glUniform3fv(muDistanceAttHandle, 1, mDistanceAtt, 0);
 	}
 }

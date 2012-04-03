@@ -51,7 +51,7 @@ public class Particle extends BaseObject3D {
 	@Override
 	protected void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
-		mParticleShader.setDistanceToCam(mPosition.distanceTo(camera.getPosition()));
+		mParticleShader.setCameraPosition(camera.getPosition());
 		mParticleShader.setPointSize(mPointSize);
 	}
 }

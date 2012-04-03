@@ -3,10 +3,6 @@ package rajawali;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 import rajawali.lights.ALight;
@@ -25,10 +21,6 @@ import android.os.Environment;
 import android.util.Log;
 
 public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITransformable3D {
-	public static String TAG = "Rajawali";
-	protected final int FLOAT_SIZE_BYTES = 4;
-	protected final int SHORT_SIZE_BYTES = 2;
-
 	protected Number3D mPosition, mRotation, mScale;
 
 	protected float[] mMVPMatrix = new float[16];
@@ -41,17 +33,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
 
-	protected FloatBuffer mVertices;
-	protected FloatBuffer mNormals;
-	protected FloatBuffer mTextureCoords;
-	protected FloatBuffer mColors;
-	protected ShortBuffer mIndices;
-	protected int mNumIndices;
-	protected int mNumVertices;
-
 	protected AMaterial mMaterial;
 	protected ALight mLight;
 	protected float mAlpha;
+	
+	protected Geometry3D mGeometry;
 
 	protected ArrayList<BaseObject3D> mChildren;
 	protected int mNumChildren;
@@ -77,6 +63,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		mPosition = new Number3D();
 		mRotation = new Number3D();
 		mScale = new Number3D(1, 1, 1);
+		mGeometry = new Geometry3D();
 	}
 
 	public BaseObject3D(String name) {
@@ -112,40 +99,14 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 
 	public void setData(float[] vertices, float[] normals,
 			float[] textureCoords, float[] colors, short[] indices) {
-		mVertices = ByteBuffer
-				.allocateDirect(vertices.length * FLOAT_SIZE_BYTES)
-				.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		mVertices.put(vertices).position(0);
-
-		mNormals = ByteBuffer.allocateDirect(normals.length * FLOAT_SIZE_BYTES)
-				.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		mNormals.put(normals).position(0);
-
-		mTextureCoords = ByteBuffer
-				.allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
-				.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		mTextureCoords.put(textureCoords).position(0);
-
-		if (colors != null) {
-			mColors = ByteBuffer
-					.allocateDirect(colors.length * FLOAT_SIZE_BYTES)
-					.order(ByteOrder.nativeOrder()).asFloatBuffer();
-			mColors.put(colors).position(0);
-		} else {
+		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
+		if(colors == null)
 			setColor(0xff000000 + (int)(Math.random() * 0xffffff));
-		}
-
-		mIndices = ByteBuffer.allocateDirect(indices.length * SHORT_SIZE_BYTES)
-				.order(ByteOrder.nativeOrder()).asShortBuffer();
-		mIndices.put(indices).position(0);
-
-		mNumIndices = indices.length;
-		mNumVertices = vertices.length / 3;
-
 		mIsContainerOnly = false;
-		
 		mBoundingBox = new BoundingBox(this);
 	}
+	
+	protected void preRender() {}
 
 	public void render(Camera camera, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
 		render(camera, projMatrix, vMatrix, null, pickerInfo);
@@ -154,6 +115,9 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	public void render(Camera camera, float[] projMatrix, float[] vMatrix,
 			final float[] parentMatrix, ColorPickerInfo pickerInfo) {
 		if(!mIsVisible) return;
+		
+		preRender();
+		
 		if (!mIsContainerOnly) {
 			mProjMatrix = projMatrix;
 			if (!mDoubleSided)
@@ -174,15 +138,15 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 				pickerMat.setPickingColor(mPickingColorArray);
 				pickerMat.useProgram();
 				pickerMat.setCamera(camera);
-				pickerMat.setVertices(mVertices);
+				pickerMat.setVertices(mGeometry.getVertices());
 			} else {
 				mMaterial.useProgram();
 				mMaterial.bindTextures();
-				mMaterial.setTextureCoords(mTextureCoords, mHasCubemapTexture);
-				mMaterial.setNormals(mNormals);
-				mMaterial.setColors(mColors);
+				mMaterial.setTextureCoords(mGeometry.getTextureCoords(), mHasCubemapTexture);
+				mMaterial.setNormals(mGeometry.getNormals());
+				mMaterial.setColors(mGeometry.getColors());
 				mMaterial.setCamera(camera);
-				mMaterial.setVertices(mVertices);
+				mMaterial.setVertices(mGeometry.getVertices());
 			}
 
 			setShaderParams(camera);
@@ -220,18 +184,18 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
 	
-				mIndices.position(0);
-				GLES20.glDrawElements(mDrawingMode, mNumIndices,
-						GLES20.GL_UNSIGNED_SHORT, mIndices);
+				mGeometry.getIndices().position(0);
+				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(),
+						GLES20.GL_UNSIGNED_SHORT, mGeometry.getIndices());
 			} else if(pickerInfo != null && mIsPickingEnabled) {
 				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
 				pickerMat.setMVPMatrix(mMVPMatrix);
 				pickerMat.setModelMatrix(mMMatrix);
 				pickerMat.setViewMatrix(vMatrix);
 	
-				mIndices.position(0);
-				GLES20.glDrawElements(mDrawingMode, mNumIndices,
-						GLES20.GL_UNSIGNED_SHORT, mIndices);
+				mGeometry.getIndices().position(0);
+				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(),
+						GLES20.GL_UNSIGNED_SHORT, mGeometry.getIndices());
 			}
 			GLES20.glDisable(GLES20.GL_CULL_FACE);
 			GLES20.glDisable(GLES20.GL_BLEND);
@@ -267,10 +231,18 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		int error;
 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
 
-			Log.e(TAG, op + ": glError " + error + " in class "
+			Log.e(RajawaliRenderer.TAG, op + ": glError " + error + " in class "
 					+ this.getClass().getName());
 			throw new RuntimeException(op + ": glError " + error);
 		}
+	}
+	
+	public void isContainer(boolean isContainer) {
+		mIsContainerOnly = isContainer;
+	}
+	
+	public boolean isContainer() {
+		return mIsContainerOnly;
 	}
 	
 	public void setPosition(Number3D position) {
@@ -465,6 +437,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		return null;
 	}
 
+	public Geometry3D getGeometry() {
+		return mGeometry;
+	}
+	
 	public void setMaterial(AMaterial material) {
 		setMaterial(material, true);
 	}
@@ -489,10 +465,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		return mName;
 	}
 
-	public FloatBuffer getVertices() {
-		return mVertices;
-	}
-	
 	public boolean isForcedDepth() {
 		return mForcedDepth;
 	}
@@ -512,22 +484,22 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	}
 
 	public SerializedObject3D toSerializedObject3D() {
-		SerializedObject3D ser = new SerializedObject3D(mVertices.capacity(),
-				mNormals.capacity(), mTextureCoords.capacity(),
-				mColors.capacity(), mIndices.capacity());
+		SerializedObject3D ser = new SerializedObject3D(mGeometry.getVertices().capacity(),
+				mGeometry.getNormals().capacity(), mGeometry.getTextureCoords().capacity(),
+				mGeometry.getColors().capacity(), mGeometry.getIndices().capacity());
 
 		int i;
 
-		for (i = 0; i < mVertices.capacity(); i++)
-			ser.getVertices()[i] = mVertices.get(i);
-		for (i = 0; i < mNormals.capacity(); i++)
-			ser.getNormals()[i] = mNormals.get(i);
-		for (i = 0; i < mTextureCoords.capacity(); i++)
-			ser.getTextureCoords()[i] = mTextureCoords.get(i);
-		for (i = 0; i < mColors.capacity(); i++)
-			ser.getColors()[i] = mColors.get(i);
-		for (i = 0; i < mIndices.capacity(); i++)
-			ser.getIndices()[i] = mIndices.get(i);
+		for (i = 0; i < mGeometry.getVertices().capacity(); i++)
+			ser.getVertices()[i] = mGeometry.getVertices().get(i);
+		for (i = 0; i < mGeometry.getNormals().capacity(); i++)
+			ser.getNormals()[i] = mGeometry.getNormals().get(i);
+		for (i = 0; i < mGeometry.getTextureCoords().capacity(); i++)
+			ser.getTextureCoords()[i] = mGeometry.getTextureCoords().get(i);
+		for (i = 0; i < mGeometry.getColors().capacity(); i++)
+			ser.getColors()[i] = mGeometry.getColors().get(i);
+		for (i = 0; i < mGeometry.getIndices().capacity(); i++)
+			ser.getIndices()[i] = mGeometry.getIndices().get(i);
 
 		return ser;
 	}
@@ -557,23 +529,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		return mBoundingBox;
 	}
 	
-	public void setColor(float r, float g, float b, float a) {
-		if(mColors == null || mColors.capacity() == 0)
-			mColors = ByteBuffer.allocateDirect(mNumVertices * 4 * FLOAT_SIZE_BYTES)
-			.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		
-		mColors.position(0);
-		
-		while(mColors.remaining() > 3) {
-			mColors.put(r);
-			mColors.put(g);
-			mColors.put(b);
-			mColors.put(a);
-		}
-	}
-
 	public void setColor(int color) {
-		setColor(Color.red(color) / 255f, Color.green(color) / 255f,
+		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f,
 				Color.blue(color) / 255f, Color.alpha(color) / 255f);
 	}
 
