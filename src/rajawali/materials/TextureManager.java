@@ -83,6 +83,10 @@ public class TextureManager {
 	}
 	
 	public TextureInfo addTexture(IntBuffer buffer, int width, int height) {
+		return addTexture(buffer, width, height, TextureType.DIFFUSE);
+	}
+	
+	public TextureInfo addTexture(IntBuffer buffer, int width, int height, TextureType textureType) {
 		if(mTextureInfoList.size() > mMaxTextures)
 			throw new RuntimeException("Max number of textures used");
 
@@ -100,7 +104,7 @@ public class TextureManager {
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
 		GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
 
-		TextureInfo textureInfo = new TextureInfo(textureId, textureSlot);
+		TextureInfo textureInfo = new TextureInfo(textureId, textureSlot, textureType);
 		mTextureInfoList.add(textureInfo);
 		return textureInfo;
 	}
@@ -210,7 +214,9 @@ public class TextureManager {
 	
 	public enum TextureType {
 		DIFFUSE,
-		BUMP
+		BUMP,
+		FRAME_BUFFER,
+		DEPTH_BUFFER
 	}
 	
 	public class TextureInfo {

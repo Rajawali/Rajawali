@@ -10,11 +10,16 @@ import javax.microedition.khronos.opengles.GL10;
 import net.rbgrn.opengl.GLWallpaperService.GLEngine;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
+import rajawali.Camera2D;
 import rajawali.animation.TimerManager;
+import rajawali.filters.IPostProcessingFilter;
+import rajawali.materials.AMaterial;
 import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.primitives.Cube;
+import rajawali.primitives.Plane;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,6 +28,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer {
@@ -56,9 +62,17 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 
 	protected ColorPickerInfo mPickerInfo;
 	
+	protected Stack<IPostProcessingFilter> mFilters;
+	protected int mFrameBufferHandle = -1;
+	protected int mDepthBufferHandle;
+	protected TextureInfo mFrameBufferTexInfo;
+	protected Plane mPostProcessingQuad;
+	protected Camera2D mPostProcessingCam;
+	
 	public RajawaliRenderer(Context context) {
 		mContext = context;
 		mChildren = new Stack<BaseObject3D>();
+		mFilters = new Stack<IPostProcessingFilter>();
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
 		mAlpha = 0;
@@ -88,7 +102,42 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		}
 		else
 		{
-			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+			if(mFilters.size() == 0)
+				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+			else
+			{
+				if(mFrameBufferHandle == -1) {
+					int[] frameBuffers = new int[1];
+					GLES20.glGenFramebuffers(1, frameBuffers, 0);
+					mFrameBufferHandle = frameBuffers[0];
+					
+					int[] depthBuffers = new int[1];
+					GLES20.glGenRenderbuffers(1, depthBuffers, 0);
+					mDepthBufferHandle = depthBuffers[0];
+
+					mFrameBufferTexInfo = mTextureManager.addTexture(null, mViewportWidth, mViewportHeight, TextureType.FRAME_BUFFER);
+					mPostProcessingQuad = new Plane(1, 1, 1, 1, 1);
+					mPostProcessingQuad.setMaterial((AMaterial)mFilters.get(0));
+					mPostProcessingQuad.addTexture(mFrameBufferTexInfo);
+					mPostProcessingQuad.setDoubleSided(true);
+					mPostProcessingQuad.setRotZ(-90);
+					mPostProcessingCam = new Camera2D();
+					mPostProcessingCam.setProjectionMatrix(0, 0);
+				}
+				
+				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
+				GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mFrameBufferTexInfo.getTextureId(), 0);
+				int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
+				if (status != GLES20.GL_FRAMEBUFFER_COMPLETE)
+				{
+					Log.d(RajawaliRenderer.TAG, "Could not bind post processing frame buffer.");
+					GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+				}
+				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+				GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mViewportWidth, mViewportHeight);
+				GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+			}
+			
 			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
 		}
 			
@@ -124,6 +173,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			pickerInfo.getPicker().createColorPickingTexture(pickerInfo);
 			pickerInfo = null;
 			mPickerInfo = null;
+		} else if(mFilters.size() > 0) {
+			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+			GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
+			GLES20.glClear(clearMask);
+			
+			mPostProcessingQuad.render(mPostProcessingCam, mPostProcessingCam.getProjectionMatrix(),mPostProcessingCam.getViewMatrix(), null);
+			//mPostProcessingQuad.render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, null);
 		}
     }
 	
@@ -266,6 +322,14 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			if(mChildren.get(i).equals(child)) return true;
 		}
 		return false;
+	}
+	
+	public void addPostProcessingFilter(IPostProcessingFilter filter) {
+		mFilters.add(filter);
+	}
+	
+	public void removePostProcessingFilter(IPostProcessingFilter filter) {
+		mFilters.remove(filter);
 	}
 	
 	public int getViewportWidth() {

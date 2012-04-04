@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
-import rajawali.materials.TextureManager.TextureType;
 import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -30,7 +29,7 @@ public abstract class AMaterial {
 	protected ALight mLight;
 	protected boolean mUseColor = false;
 	
-	protected int numTextures = 0;
+	protected int mNumTextures = 0;
 	protected float[] mModelViewMatrix;
 	protected float[] mViewMatrix;
 	protected float[] mCameraPosArray;
@@ -50,7 +49,7 @@ public abstract class AMaterial {
 	
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
-		mProgram = createProgram(mVertexShader, fragmentShader);
+		mProgram = createProgram(vertexShader, fragmentShader);
 		if(mProgram == 0) return;
 		
 		maPositionHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
@@ -176,10 +175,21 @@ public abstract class AMaterial {
     public void addTexture(TextureInfo textureInfo) {
     	int count = mTextureInfoList.size();
     	String textureName = "uTexture";
-    	if(textureInfo.getTextureType() == TextureType.BUMP)
+    	
+    	switch(textureInfo.getTextureType()) {
+    	case BUMP:
     		textureName = "uNormalTexture";
-    	else
+    		break;
+    	case FRAME_BUFFER:
+    		textureName = "uFrameBufferTexture";
+    		break;
+    	case DEPTH_BUFFER:
+    		textureName = "uDepthBufferTexture";
+    		break;
+    	default:
     		textureName += count;
+    		break;
+    	}
     	
         int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
 		if(textureHandle == -1) {
@@ -189,7 +199,7 @@ public abstract class AMaterial {
         textureInfo.setUniformHandle(textureHandle);
         mUseColor = false;
         mTextureInfoList.add(textureInfo);
-        numTextures++;
+        mNumTextures++;
     }
     
     public void setVertices(FloatBuffer vertices) {

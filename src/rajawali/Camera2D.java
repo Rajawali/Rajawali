@@ -3,7 +3,7 @@ package rajawali;
 import android.opengl.Matrix;
 
 public class Camera2D extends Camera {
-	float mWidth, mHeight;
+	private float mWidth, mHeight;
 	public Camera2D() {
 		super();
 		mWidth = 1.0f;
