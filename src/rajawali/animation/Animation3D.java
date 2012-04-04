@@ -1,5 +1,7 @@
 package rajawali.animation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,7 +26,7 @@ public class Animation3D {
 	protected long mUpdateRate = 1000/60;
 	protected boolean mHasStarted;
 	protected boolean mHasEnded;
-	protected Animation3DListener mAnimationListener;
+	protected List<Animation3DListener> mAnimationListeners = new ArrayList<Animation3DListener>();
 	protected Timer mTimer;
 	protected ITransformable3D mTransformable3D;
 	protected Animation3D mInstance;
@@ -45,8 +47,10 @@ public class Animation3D {
 		      {
 		    	  if(mRepeatCount == mNumRepeats)
 		    	  {
-		    		  cancel();
-		    		  if(mAnimationListener != null)  mAnimationListener.onAnimationEnd(mInstance);
+					  cancel();
+					  for(Animation3DListener listener : mAnimationListeners) {
+					 	  listener.onAnimationEnd(mInstance);
+					  }
 		    	  }
 		    	  else
 		    	  {
@@ -54,7 +58,9 @@ public class Animation3D {
 		    			  mDirection *= -1;
 		    		  mStartTime = System.currentTimeMillis();
 		    		  mNumRepeats++;
-		    		  if(mAnimationListener != null)  mAnimationListener.onAnimationRepeat(mInstance);
+					  for(Animation3DListener listener : mAnimationListeners) {
+						  listener.onAnimationRepeat(mInstance);
+					  }
 		    	  }
 		      }
 		   }
@@ -77,7 +83,9 @@ public class Animation3D {
 		reset();
 		if(mTimer == null) mTimer = TimerManager.getInstance().createNewTimer();
 		mTimer.scheduleAtFixedRate(new UpdateTimeTask(), mDelay, mUpdateRate);
-		if(mAnimationListener != null)  mAnimationListener.onAnimationStart(this);
+		for(Animation3DListener listener : mAnimationListeners) {
+			listener.onAnimationStart(this);
+		}
 	}
 	
 	protected void applyTransformation(float interpolatedTime) {
@@ -89,7 +97,12 @@ public class Animation3D {
 	}
 	
 	public void setAnimationListener(Animation3DListener animationListener) {
-		mAnimationListener = animationListener;
+		mAnimationListeners.clear();
+		mAnimationListeners.add(animationListener);
+	}
+	
+	public void addAnimationListener(Animation3DListener animationListener) {
+		mAnimationListeners.add(animationListener);
 	}
 	
 	public void setDuration(long duration) {
