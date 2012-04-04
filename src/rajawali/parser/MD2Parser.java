@@ -38,6 +38,7 @@ public class MD2Parser extends AParser implements IParser {
 		InputStream fileIn = mResources.openRawResource(mResourceId);
 		BufferedInputStream stream = new BufferedInputStream(fileIn);
 		mObject = new VertexAnimationObject3D();
+		mObject.setFps(10);
 
 		mHeader = new MD2Header();
 
@@ -129,6 +130,7 @@ public class MD2Parser extends AParser implements IParser {
 				name = name.subSequence(0, name.lastIndexOf("_")).toString();
 			else
 				name = name.substring(0, 6).replaceAll("[0-9]{1,2}$", "");
+			frame.setName(name);
 			
 			float vertices[] = new float[mHeader.numVerts * 3];
 			int index = 0;
@@ -213,8 +215,10 @@ public class MD2Parser extends AParser implements IParser {
 	}
 	
 	private class VertexIndices {
+		@SuppressWarnings("unused")
 		public short index;
 		public short oldVertexIndex;
+		@SuppressWarnings("unused")
 		public short newVertexIndex;
 		
 		public VertexIndices(short index, short oldVertexIndex, short newVertexIndex) {
@@ -229,17 +233,20 @@ public class MD2Parser extends AParser implements IParser {
 		public int version;
 		public int skinWidth;
 		public int skinHeight;
+		@SuppressWarnings("unused")
 		public int frameSize;
 		public int numSkins;
 		public int numVerts;
 		public int numTexCoord;
 		public int numTriangles;
+		@SuppressWarnings("unused")
 		public int numGLCommands;
 		public int numFrames;
 		public int offsetSkins;
 		public int offsetTexCoord;
 		public int offsetTriangles;
 		public int offsetFrames;
+		@SuppressWarnings("unused")
 		public int offsetGLCommands;
 		public int offsetEnd;
 

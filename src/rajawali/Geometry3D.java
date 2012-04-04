@@ -5,8 +5,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-import android.util.Log;
-
 public class Geometry3D {
 	public static final int FLOAT_SIZE_BYTES = 4;
 	public static final int SHORT_SIZE_BYTES = 2;
