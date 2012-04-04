@@ -76,26 +76,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(),
 				ser.getColors(), ser.getIndices());
 	}
-	
-	public BaseObject3D(BaseObject3D srcObject) {
-		this(srcObject.mName);
-		
-		mGeometry.mVertices = srcObject.mGeometry.mVertices;
-		mGeometry.mNormals = srcObject.mGeometry.mNormals;
-		mGeometry.mTextureCoords = srcObject.mGeometry.mTextureCoords;
-		mGeometry.mColors = srcObject.mGeometry.mColors;
-		mGeometry.mIndices = srcObject.mGeometry.mIndices;
-		
-		mGeometry.mNumIndices = srcObject.mGeometry.mNumIndices;
-		mGeometry.mNumVertices = srcObject.mGeometry.mNumVertices;
-
-		mIsContainerOnly = false;
-		
-		mBoundingBox = srcObject.mBoundingBox;
-		
-		mMaterial = srcObject.mMaterial;
-	} 
- 
 
 	public void setData(float[] vertices, float[] normals,
 			float[] textureCoords, float[] colors, short[] indices) {
