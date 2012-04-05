@@ -63,8 +63,10 @@ public class TextureManager {
 		GLES20.glGenTextures(1, textures, 0);
 		int textureId = textures[0];
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, texture, 0);
-        if(mipmap)
+        
+		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, texture, 0);
+        
+		if(mipmap)
         	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
         else
         	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
@@ -97,7 +99,6 @@ public class TextureManager {
 		GLES20.glGenTextures(1, textures, 0);
 		int textureId = textures[0];
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-		
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
@@ -216,7 +217,8 @@ public class TextureManager {
 		DIFFUSE,
 		BUMP,
 		FRAME_BUFFER,
-		DEPTH_BUFFER
+		DEPTH_BUFFER,
+		LOOKUP
 	}
 	
 	public class TextureInfo {

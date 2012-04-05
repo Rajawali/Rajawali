@@ -1,6 +1,6 @@
 package rajawali.materials;
 
-import rajawali.wallpaper.Wallpaper;
+import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -133,15 +133,15 @@ public class PhongMaterial extends AAdvancedMaterial {
 		super.setShaders(vertexShader, fragmentShader);
 		muSpecularColorHandle = GLES20.glGetUniformLocation(mProgram, "uSpecularColor");
 		if(muSpecularColorHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uSpecularColor");
+			Log.d(RajawaliRenderer.TAG, "Could not get uniform location for uSpecularColor");
 		}
 		muAmbientColorHandle = GLES20.glGetUniformLocation(mProgram, "uAmbientColor");
 		if(muAmbientColorHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uAmbientColor");
+			Log.d(RajawaliRenderer.TAG, "Could not get uniform location for uAmbientColor");
 		}
 		muShininessHandle = GLES20.glGetUniformLocation(mProgram, "uShininess");
 		if(muShininessHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uShininess");
+			Log.d(RajawaliRenderer.TAG, "Could not get uniform location for uShininess");
 		}
 	}
 }

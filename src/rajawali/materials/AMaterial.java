@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.renderer.RajawaliRenderer;
 import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -148,6 +149,14 @@ public abstract class AMaterial {
         }
         return program;
     }
+    
+    protected int getUniformHandle(String name) {
+    	int handle = GLES20.glGetUniformLocation(mProgram, name);
+		if(handle == -1) {
+			Log.d(RajawaliRenderer.TAG, "Could not get uniform location for " + name);
+		}
+		return handle;
+    }
 
     public void useProgram() {
     	GLES20.glUseProgram(mProgram);
@@ -185,6 +194,9 @@ public abstract class AMaterial {
     		break;
     	case DEPTH_BUFFER:
     		textureName = "uDepthBufferTexture";
+    		break;
+    	case LOOKUP:
+    		textureName = "uLookupTexture";
     		break;
     	default:
     		textureName += count;

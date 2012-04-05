@@ -66,6 +66,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected int mFrameBufferHandle = -1;
 	protected int mDepthBufferHandle;
 	protected TextureInfo mFrameBufferTexInfo;
+	protected TextureInfo mDepthBufferTexInfo;
 	protected Plane mPostProcessingQuad;
 	protected Camera2D mPostProcessingCam;
 	
@@ -130,7 +131,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 				int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
 				if (status != GLES20.GL_FRAMEBUFFER_COMPLETE)
 				{
-					Log.d(RajawaliRenderer.TAG, "Could not bind post processing frame buffer.");
+					Log.d(RajawaliRenderer.TAG, "Could not bind post processing frame buffer." + status);
 					GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 				}
 				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
@@ -186,7 +187,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mViewportWidth = width;
 		mViewportHeight = height;
-		
+		Log.d("Rajawali", width +", "+height);
 		mCamera.setProjectionMatrix(width, height);
 
 		GLES20.glViewport(0, 0, width, height);
