@@ -34,7 +34,7 @@ public class SkyboxMaterial extends AMaterial {
 			"}\n";
 		
 	public SkyboxMaterial() {
-		super(mVShader, mFShader);
+		super(mVShader, mFShader, false);
 		usesCubeMap = true;
 	}
 }

@@ -31,11 +31,11 @@ public class ColorPickerMaterial extends AMaterial {
 	protected float[] mPickingColor;
 	
 	public ColorPickerMaterial() {
-		super(mVShader, mFShader);
+		super(mVShader, mFShader, false);
 	}
 	
 	public ColorPickerMaterial(String vertexShader, String fragmentShader) {
-		super(vertexShader, fragmentShader);
+		super(vertexShader, fragmentShader, false);
 	}
 	
 	@Override

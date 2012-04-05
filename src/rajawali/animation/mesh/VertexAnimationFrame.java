@@ -6,6 +6,7 @@ import rajawali.math.Number3D;
 public class VertexAnimationFrame implements IAnimationFrame {
 	protected Geometry3D mGeometry;
 	protected String mName;
+	protected float[] mVertices;
 	
 	public VertexAnimationFrame() {
 		mGeometry = new Geometry3D();
@@ -31,7 +32,7 @@ public class VertexAnimationFrame implements IAnimationFrame {
 		mName = name;
 	}
 	
-	public void calculateNormals(short[] indices) {
+	public float[] calculateNormals(short[] indices) {
 		float[] vertices = new float[mGeometry.getVertices().capacity()];
 		mGeometry.getVertices().get(vertices).position(0);
 		float[] faceNormals = new float[indices.length];
@@ -94,11 +95,11 @@ public class VertexAnimationFrame implements IAnimationFrame {
 			vertNormals[i+1] = vertexNormal.y;
 			vertNormals[i+2] = -vertexNormal.z;
 		}
-		mGeometry.setNormals(vertNormals);
+		//mGeometry.setNormals(vertNormals);
 		faceNormals = null;
-		vertNormals = null;
 		v1 = null;
 		v2 = null;
 		v3 = null;
+		return vertNormals;
 	}
 }

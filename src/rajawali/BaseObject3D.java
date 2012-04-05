@@ -77,13 +77,17 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 				ser.getColors(), ser.getIndices());
 	}
 
+	public void setData(int vertexBufferHandle, int normalBufferHandle,
+			float[] textureCoords, float[] colors, short[] indices) {
+		mGeometry.setData(vertexBufferHandle, normalBufferHandle, textureCoords, colors, indices);
+		mIsContainerOnly = false;
+	}
+	
 	public void setData(float[] vertices, float[] normals,
 			float[] textureCoords, float[] colors, short[] indices) {
 		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
-		if(colors == null)
-			setColor(0xff000000 + (int)(Math.random() * 0xffffff));
 		mIsContainerOnly = false;
-		mBoundingBox = new BoundingBox(this);
+		//mBoundingBox = new BoundingBox(this);
 	}
 	
 	protected void preRender() {}
@@ -118,17 +122,19 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 				pickerMat.setPickingColor(mPickingColorArray);
 				pickerMat.useProgram();
 				pickerMat.setCamera(camera);
-				pickerMat.setVertices(mGeometry.getVertices());
+				pickerMat.setVertices(mGeometry.getVertexBufferHandle());
 			} else {
 				mMaterial.useProgram();
 				mMaterial.bindTextures();
-				mMaterial.setTextureCoords(mGeometry.getTextureCoords(), mHasCubemapTexture);
-				mMaterial.setNormals(mGeometry.getNormals());
-				mMaterial.setColors(mGeometry.getColors());
+				mMaterial.setTextureCoords(mGeometry.getTexCoordBufferHandle(), mHasCubemapTexture);
+				mMaterial.setNormals(mGeometry.getNormalBufferHandle());
+				mMaterial.setColors(mGeometry.getColorBufferHandle());
 				mMaterial.setCamera(camera);
-				mMaterial.setVertices(mGeometry.getVertices());
+				mMaterial.setVertices(mGeometry.getVertexBufferHandle());
 			}
 
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+			
 			setShaderParams(camera);
 		}
 
@@ -164,18 +170,22 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
 	
-				mGeometry.getIndices().position(0);
-				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(),
-						GLES20.GL_UNSIGNED_SHORT, mGeometry.getIndices());
+				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
+				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_SHORT, 0);
+				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+				
+				mMaterial.unbindTextures();
 			} else if(pickerInfo != null && mIsPickingEnabled) {
 				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
 				pickerMat.setMVPMatrix(mMVPMatrix);
 				pickerMat.setModelMatrix(mMMatrix);
 				pickerMat.setViewMatrix(vMatrix);
 	
-				mGeometry.getIndices().position(0);
-				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(),
-						GLES20.GL_UNSIGNED_SHORT, mGeometry.getIndices());
+				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
+				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_SHORT, 0);
+				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+				
+				pickerMat.unbindTextures();
 			}
 			GLES20.glDisable(GLES20.GL_CULL_FACE);
 			GLES20.glDisable(GLES20.GL_BLEND);
@@ -486,7 +496,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 
 	public BaseObject3D clone()
 	{
-		return new BaseObject3D(toSerializedObject3D());
+		BaseObject3D clone = new BaseObject3D();
+		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.isContainer(mIsContainerOnly);
+		return clone;
 	}
 	
 	public float getAlpha() {
@@ -510,8 +523,12 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	}
 	
 	public void setColor(int color) {
+		setColor(color, false);
+	}
+	
+	public void setColor(int color, boolean createNewBuffer) {
 		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f,
-				Color.blue(color) / 255f, Color.alpha(color) / 255f);
+				Color.blue(color) / 255f, Color.alpha(color) / 255f, createNewBuffer);
 	}
 
 	/**

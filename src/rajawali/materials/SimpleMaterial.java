@@ -31,10 +31,10 @@ public class SimpleMaterial extends AMaterial {
 		"}\n";
 	
 	public SimpleMaterial() {
-		super(mVShader, mFShader);
+		super(mVShader, mFShader, false);
 	}
 	
 	public SimpleMaterial(String vertexShader, String fragmentShader) {
-		super(vertexShader, fragmentShader);
+		super(vertexShader, fragmentShader, false);
 	}
 }

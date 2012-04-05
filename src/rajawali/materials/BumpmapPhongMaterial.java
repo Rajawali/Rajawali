@@ -35,6 +35,10 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 			"}";
 	
 	public BumpmapPhongMaterial() {
-		super(PhongMaterial.mVShader, mFShader);
+		this(false);
+	}
+	
+	public BumpmapPhongMaterial(boolean isAnimated) {
+		super(PhongMaterial.mVShader, mFShader, isAnimated);
 	}
 }

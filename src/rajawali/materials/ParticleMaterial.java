@@ -60,7 +60,7 @@ public class ParticleMaterial extends AMaterial {
 	protected float[] mCamPos;
 	
 	public ParticleMaterial() {
-		super(mVShader, mFShader);
+		super(mVShader, mFShader, false);
 		mDistanceAtt = new float[] {1, 1, 1};
 		mFriction = new float[3];
 		mCamPos = new float[3];

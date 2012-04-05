@@ -62,7 +62,7 @@ public class CrosshatchFilter extends AMaterial implements IPostProcessingFilter
 	protected float mScreenHeight;
 	
 	public CrosshatchFilter() {
-		super(mVShader, mFShader);
+		super(mVShader, mFShader, false);
 	}
 	
 	public boolean usesDepthBuffer() {
@@ -80,8 +80,8 @@ public class CrosshatchFilter extends AMaterial implements IPostProcessingFilter
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);
-		muScreenWidthHandle = getUniformHandle("uScreenWidth");
-		muScreenHeightHandle = getUniformHandle("uScreenHeight");
+		muScreenWidthHandle = getUniformLocation("uScreenWidth");
+		muScreenHeightHandle = getUniformLocation("uScreenHeight");
 	}
 	
 	public float getScreenWidth() {

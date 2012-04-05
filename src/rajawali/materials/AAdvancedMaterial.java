@@ -2,10 +2,8 @@ package rajawali.materials;
 
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
-import rajawali.wallpaper.Wallpaper;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 public abstract class AAdvancedMaterial extends AMaterial {
 	protected int muLightPosHandle;
@@ -26,7 +24,12 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader) {
-		super(vertexShader, fragmentShader);
+		this(vertexShader, fragmentShader, false);
+	}
+	
+	public AAdvancedMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
+		super(vertexShader, fragmentShader, isAnimated);
+		
 		mNormalMatrix = new float[9];
 		mTmp = new float[9];
 		mTmp2 = new float[9];
@@ -77,22 +80,10 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);
-		muLightPosHandle = GLES20.glGetUniformLocation(mProgram, "uLightPos");
-		if(muLightPosHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uLightPos");
-		}
-		muNormalMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uNMatrix");
-		if(muNormalMatrixHandle == -1) {
-			throw new RuntimeException("Could not get uniform location for uNMatrix");
-		}
-		muAmbientColorHandle = GLES20.glGetUniformLocation(mProgram, "uAmbientColor");
-		if(muAmbientColorHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uAmbientColor");
-		}
-		muAmbientIntensityHandle = GLES20.glGetUniformLocation(mProgram, "uAmbientIntensity");
-		if(muLightPosHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uAmbientIntensity");
-		}
+		muLightPosHandle = getUniformLocation("uLightPos"); 
+		muNormalMatrixHandle = getUniformLocation("uNMatrix");
+		muAmbientColorHandle = getUniformLocation("uAmbientColor");
+		muAmbientIntensityHandle = getUniformLocation("uAmbientIntensity");
 	}
 	
 	@Override

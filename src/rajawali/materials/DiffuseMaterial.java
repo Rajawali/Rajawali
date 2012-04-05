@@ -19,11 +19,23 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"varying vec3 N, L;\n" +
 		"varying vec4 vColor;\n" +
 		
+		"\n#ifdef VERTEX_ANIM\n" +
+		"attribute vec4 aNextFramePosition;\n" +
+		"attribute vec3 aNextFrameNormal;\n" +
+		"uniform float uInterpolation;\n" +
+		"#endif\n\n" +
+		
 		"void main() {\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
+		"	vec4 position = aPosition;\n" +
+		"	vec3 normal = aNormal;\n" +
+		"	#ifdef VERTEX_ANIM\n" +
+		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
+		"	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);\n" +
+		"	#endif\n" +
+		"	gl_Position = uMVPMatrix * position;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
-		"	N = normalize(uNMatrix * aNormal);\n" +
-		"	vec4 V = uMMatrix * aPosition;\n" +
+		"	N = normalize(uNMatrix * normal);\n" +
+		"	vec4 V = uMMatrix * position;\n" +
 		"   vec4 lightPos = vec4(uLightPos, 1.0);\n" +
 		"	L = normalize(vec3(lightPos - V));\n" +
 		"	vColor = aColor;\n" +
@@ -50,7 +62,15 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"}";
 	
 	public DiffuseMaterial() {
-		super(mVShader, mFShader);
+		this(false);
+	}
+	
+	public DiffuseMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
+		super(vertexShader, fragmentShader, isAnimated);
+	}
+	
+	public DiffuseMaterial(boolean isAnimated) {
+		this(mVShader, mFShader, isAnimated);
 	}
 	
 	public DiffuseMaterial(String vertexShader, String fragmentShader) {

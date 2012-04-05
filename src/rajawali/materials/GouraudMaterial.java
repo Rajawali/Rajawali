@@ -24,12 +24,25 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"varying float vDiffuseIntensity;\n" +
 		"varying vec4 vColor;\n" +
 		
+		"\n#ifdef VERTEX_ANIM\n" +
+		"attribute vec4 aNextFramePosition;\n" +
+		"attribute vec3 aNextFrameNormal;\n" +
+		"uniform float uInterpolation;\n" +
+		"#endif\n\n" +
+		
 		"void main() {\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
+		"	vec4 position = aPosition;\n" +
+		"	vec3 normal = aNormal;\n" +
+		"	#ifdef VERTEX_ANIM\n" +
+		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
+		"	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);\n" +
+		"	#endif\n" +
+		
+		"	gl_Position = uMVPMatrix * position;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		
-		"	vec4 vertexPosCam = uMMatrix * aPosition;\n" +
-		"	vec3 normalCam = normalize(uNMatrix * aNormal);\n" +
+		"	vec4 vertexPosCam = uMMatrix * position;\n" +
+		"	vec3 normalCam = normalize(uNMatrix * normal);\n" +
 		"	vec4 lightPosCam = vec4(uLightPos, 1.0);\n" +
 
 		"	vec3 lightVert = normalize(vec3(lightPosCam - vertexPosCam));\n" +
@@ -66,7 +79,11 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	protected float[] mSpecularColor;
 	
 	public GouraudMaterial() {
-		super(mVShader, mFShader);
+		this(false);
+	}
+	
+	public GouraudMaterial(boolean isAnimated) {
+		super(mVShader, mFShader, isAnimated);
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
 	}
 	

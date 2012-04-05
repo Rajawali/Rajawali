@@ -71,7 +71,7 @@ public class SwirlFilter extends AMaterial implements IPostProcessingFilter {
 	protected float[] mCenter;
 			
 	public SwirlFilter(float screenWidth, float screenHeight, float radius, float angle) {
-		super(mVShader, mFShader);
+		super(mVShader, mFShader, false);
 		mCenter = new float[] { screenWidth * .5f, screenHeight * .5f };
 		mScreenWidth = screenWidth;
 		mScreenHeight = screenHeight;
@@ -99,12 +99,12 @@ public class SwirlFilter extends AMaterial implements IPostProcessingFilter {
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);
-		muTimeHandle = getUniformHandle("uTime");
-		muScreenWidthHandle = getUniformHandle("uScreenWidth");
-		muScreenHeightHandle = getUniformHandle("uScreenHeight");
-		muRadiusHandle = getUniformHandle("uRadius");
-		muAngleHandle = getUniformHandle("uAngle");
-		muCenterHandle = getUniformHandle("uCenter");
+		muTimeHandle = getUniformLocation("uTime");
+		muScreenWidthHandle = getUniformLocation("uScreenWidth");
+		muScreenHeightHandle = getUniformLocation("uScreenHeight");
+		muRadiusHandle = getUniformLocation("uRadius");
+		muAngleHandle = getUniformLocation("uAngle");
+		muCenterHandle = getUniformLocation("uCenter");
 	}
 
 	public float getTime() {

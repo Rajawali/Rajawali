@@ -23,6 +23,9 @@ public class MD2Parser extends AParser implements IParser {
 	private Stack<IAnimationFrame> mFrames;
 	private Bitmap mTexture;
 	private VertexAnimationObject3D mObject;
+	private float[][] mFrameVerts;
+	private short[] mIndices;
+	private float[] mTextureCoords;
 
 	public MD2Parser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
@@ -45,22 +48,26 @@ public class MD2Parser extends AParser implements IParser {
 		try {
 			mHeader.parse(stream);
 			mFrames = new Stack<IAnimationFrame>();
+			
 			for(int i=0; i<mHeader.numFrames; ++i) 
 				mFrames.add(new VertexAnimationFrame());
+			
 			byte[] bytes = new byte[mHeader.offsetEnd - 68];
 			stream.read(bytes);
+			
 			getMaterials(stream, bytes);
 			float[] texCoords = getTexCoords(stream, bytes);
+			
 			getFrames(stream, bytes);
 			getTriangles(stream, bytes, texCoords);
 			
 			mObject.setFrames(mFrames);
 			
 			IAnimationFrame firstFrame = mFrames.get(0);
-			mObject.getGeometry().setVertices(firstFrame.getGeometry().getVertices()); 
-			mObject.getGeometry().setNormals(firstFrame.getGeometry().getNormals());
-			mObject.setMaterial(new DiffuseMaterial());
 			mObject.setColor(0xffffffff);
+			mObject.getGeometry().copyFromGeometry3D(firstFrame.getGeometry());
+			mObject.setData(firstFrame.getGeometry().getVertexBufferHandle(), firstFrame.getGeometry().getNormalBufferHandle(), mTextureCoords, null, mIndices);
+			mObject.setMaterial(new DiffuseMaterial(true));
 			mObject.addTexture(mTextureManager.addTexture(mTexture));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -115,6 +122,8 @@ public class MD2Parser extends AParser implements IParser {
 		ByteArrayInputStream ba = new ByteArrayInputStream(bytes,
 				mHeader.offsetFrames - 68, bytes.length - mHeader.offsetFrames);
 		LittleEndianDataInputStream is = new LittleEndianDataInputStream(ba);
+		
+		mFrameVerts = new float[mHeader.numFrames][];
 
 		for (int i = 0; i < mHeader.numFrames; i++) {
 			float scaleX = is.readFloat();
@@ -143,7 +152,8 @@ public class MD2Parser extends AParser implements IParser {
 				is.readUnsignedByte();
 				
 			}
-			frame.getGeometry().setVertices(vertices);
+			//frame.getGeometry().setVertices(vertices);
+			mFrameVerts[i] = vertices;
 		}
 	}
 
@@ -204,14 +214,35 @@ public class MD2Parser extends AParser implements IParser {
 			reorderedTexCoords[fid * 2 + 1] = texCoords[uvid * 2 + 1];
 		}
 		
-		mObject.getGeometry().setTextureCoords(reorderedTexCoords);
-		mObject.getGeometry().setIndices(indices);
+		//mObject.getGeometry().setTextureCoords(reorderedTexCoords);
+		//mObject.getGeometry().setIndices(indices);
+		mTextureCoords = reorderedTexCoords;
+		mIndices = indices;
 		
 		for(int i = 0; i < mHeader.numFrames; ++i) {
 			VertexAnimationFrame frame = (VertexAnimationFrame)mFrames.get(i);
-			frame.getGeometry().duplicateAndAppendVertices(cIndices);
-			frame.calculateNormals(indices);
+			duplicateAndAppendVertices(i, cIndices);
+			frame.getGeometry().setVertices(mFrameVerts[i]);
+			frame.getGeometry().setNormals(frame.calculateNormals(indices));
+			frame.getGeometry().createVertexAndNormalBuffersOnly();
 		}
+	}
+	
+	public void duplicateAndAppendVertices(int frameNumber, int[] indices) {
+		float[] frameVerts = mFrameVerts[frameNumber];
+		int offset = frameVerts.length;
+		float[] newVerts = new float[offset + (indices.length * 3)];
+		
+		for(int i=0; i<indices.length; i++) {
+			int vi = offset + (i * 3);
+			int ovi = indices[i] * 3;
+			newVerts[vi] = frameVerts[ovi];
+			newVerts[vi+1] = frameVerts[ovi+1];
+			newVerts[vi+2] = frameVerts[ovi+2];
+		}
+
+		System.arraycopy(frameVerts, 0, newVerts, 0, offset);
+		mFrameVerts[frameNumber] = newVerts;
 	}
 	
 	private class VertexIndices {

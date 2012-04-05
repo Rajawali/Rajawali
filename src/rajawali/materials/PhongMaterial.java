@@ -23,13 +23,25 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"varying vec3 N, L, E, H;\n" +
 		"varying vec4 vColor;\n" +
 		
+		"\n#ifdef VERTEX_ANIM\n" +
+		"attribute vec4 aNextFramePosition;\n" +
+		"attribute vec3 aNextFrameNormal;\n" +
+		"uniform float uInterpolation;\n" +
+		"#endif\n\n" +
+		
 		"void main() {\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
+		"	vec4 position = aPosition;\n" +
+		"	vec3 normal = aNormal;\n" +
+		"	#ifdef VERTEX_ANIM\n" +
+		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
+		"	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);\n" +
+		"	#endif\n" +
+		"	gl_Position = uMVPMatrix * position;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		
-		"	vec4 eyePosition = uMMatrix  * aPosition;\n" + 
+		"	vec4 eyePosition = uMMatrix  * position;\n" + 
 		"	vec4 eyeLightPos = vec4(uLightPos, 1.0);\n" +
-		"	N = normalize(uNMatrix * aNormal);\n" +
+		"	N = normalize(uNMatrix * normal);\n" +
 		"	L = normalize(eyeLightPos.xyz - eyePosition.xyz);\n" + 
 		"	E = -normalize(eyePosition.xyz);\n" +
 		"	H = normalize(L + E);\n" +
@@ -74,11 +86,15 @@ public class PhongMaterial extends AAdvancedMaterial {
 	protected float mShininess;
 	
 	public PhongMaterial() {
-		this(mVShader, mFShader);
+		this(false);
 	}
 	
-	public PhongMaterial(String vertexShader, String fragmentShader) {
-		super(vertexShader, fragmentShader);
+	public PhongMaterial(boolean isAnimated) {
+		this(mVShader, mFShader, isAnimated);
+	}
+	
+	public PhongMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
+		super(vertexShader, fragmentShader, isAnimated);
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
 		mAmbientColor = new float[] { 0.2f, 0.2f, 0.2f, 1.0f };
 		mShininess = 96.0f;//
