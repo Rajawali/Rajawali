@@ -20,7 +20,6 @@ public class RajawaliActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         mSurfaceView = new GLSurfaceView(this);
         
         ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
