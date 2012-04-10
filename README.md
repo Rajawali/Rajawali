@@ -6,6 +6,9 @@ Rajawali is a 3D engine for Android based on OpenGL ES 2.0. It can be used for n
 
 [Announcing Rajawali: An OpenGL ES 2.0 Based 3D Framework For Android](http://www.rozengain.com/blog/2011/08/23/announcing-rajawali-an-opengl-es-2-0-based-3d-framework-for-android/)
 
+Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/master/build/rajawalilib.zip
+(Just extract it in your libs folder)
+
 ## Rajawali Examples On The Market
 
 [Download the free app](https://market.android.com/details?id=com.monyetmabuk.rajawali.tutorials)
