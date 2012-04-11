@@ -92,6 +92,10 @@ public class Animation3D {
 		
 	}
 	
+	public ITransformable3D getTransformable3D() {
+		return mTransformable3D;
+	}
+
 	public void setTransformable3D(ITransformable3D transformable3D) {
 		mTransformable3D = transformable3D;
 	}
