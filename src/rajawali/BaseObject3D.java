@@ -43,6 +43,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected int mNumChildren;
 	protected String mName;
 
+	protected boolean mAdditive = false;
 	protected boolean mDoubleSided = false;
 	protected boolean mTransparent = false;
 	protected boolean mForcedDepth = false;
@@ -111,6 +112,15 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 				GLES20.glDisable(GLES20.GL_BLEND);
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 				GLES20.glDepthMask(true);
+			}
+
+			if (mAdditive) {
+				// No depth testing
+				GLES20.glClearDepthf(1.0f);
+				GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+				GLES20.glEnable(GLES20.GL_BLEND);
+				GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
+				GLES20.glDepthMask(false);
 			}
 
 			if(pickerInfo != null && mIsPickingEnabled) {
@@ -223,6 +233,14 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	
 	public boolean isContainer() {
 		return mIsContainerOnly;
+	}
+	
+	public void setAdditive(boolean isAdditive) {
+		this.mAdditive = isAdditive;
+	}
+	
+	public boolean getAdditive() {
+		return mAdditive;
 	}
 	
 	public void setPosition(Number3D position) {
