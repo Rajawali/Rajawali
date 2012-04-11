@@ -58,6 +58,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected int mPickingColor;
 	protected boolean mIsPickingEnabled = false;
 	protected float[] mPickingColorArray;
+	
+	private int i;
 
 	public BaseObject3D() {
 		mChildren = new ArrayList<BaseObject3D>();
@@ -195,7 +197,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		if(mDrawBoundingBox)
 			mBoundingBox.render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 		
-		int i;
 		for (i = 0; i < mNumChildren; ++i) {
 			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 		}
