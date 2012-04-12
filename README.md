@@ -34,8 +34,10 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 
 ## Made with Rajawali
 
-* [A Liquid Cloud Live Wallpaper](https://market.android.com/details?id=com.formisk.aliquidcloud.free) 
-* [Skull Live Wallpaper](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.skull)
+[![A Liquid Cloud Live Wallpaper](http://www.rozengain.com/files/rajawali/a_liquid_cloud_live_wallpaper.png)](https://market.android.com/details?id=com.formisk.aliquidcloud.free)
+[![Cube Complex Live Wallpaper](http://www.rozengain.com/files/rajawali/cube_complex_live_wallpaper.png)](https://play.google.com/store/apps/details?id=com.ToxicBakery.lwp.cubecomplexfree)
+[![Skull Live Wallpaper](http://www.rozengain.com/files/rajawali/moving_skull_live_wallpaper.png)](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.skull)
+[![F5E Tiger Live Wallpaper](http://www.rozengain.com/files/rajawali/f5e_tiger_live_wallpaper.png)](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.f5tiger)
+
 * [Space Journey Live Wallpaper](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.spacejourney)
-* [F5E Tiger Live Wallpaper](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.f5tiger)
 * [Skull Live Wallpaper](https://market.android.com/details?id=com.monyetmabuk.wallpapers.skull)
