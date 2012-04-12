@@ -1,14 +1,17 @@
 package rajawali.util;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 import android.os.Environment;
 import android.util.Log;
 
 import rajawali.BaseObject3D;
 import rajawali.Geometry3D;
+import rajawali.renderer.RajawaliRenderer;
 
 public class MeshExporter {
 	private BaseObject3D mObject;
@@ -111,7 +114,28 @@ public class MeshExporter {
 	    }
 	}
 	
+	/**
+	 * Make sure this line is in your AndroidManifer.xml file, under <manifest>:
+	 * <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	 */
 	private void exportToSerialized() {
-		
+		FileOutputStream fos;
+		try {
+			File sdcardStorage = Environment.getExternalStorageDirectory();
+			String sdcardPath = sdcardStorage.getParent()
+					+ java.io.File.separator + sdcardStorage.getName();
+
+			File f = new File(sdcardPath + File.separator + mFileName);
+			fos = new FileOutputStream(f);
+			ObjectOutputStream os = new ObjectOutputStream(fos);
+
+			os.writeObject(mObject.toSerializedObject3D());
+			os.close();
+			Log.i(RajawaliRenderer.TAG, "Successfully serialized " + mFileName + " to SD card.");
+		} catch (Exception e) {
+			Log.e(RajawaliRenderer.TAG, "Serializing " + mFileName + " to SD card was unsuccessfull.");
+			e.printStackTrace();
+		}
+
 	}
 }

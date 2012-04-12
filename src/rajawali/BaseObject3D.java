@@ -1,8 +1,5 @@
 package rajawali;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import rajawali.lights.ALight;
@@ -16,7 +13,6 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
 import android.opengl.Matrix;
-import android.os.Environment;
 import android.util.Log;
 
 public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITransformable3D {
@@ -490,7 +486,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	}
 
 	public SerializedObject3D toSerializedObject3D() {
-		SerializedObject3D ser = new SerializedObject3D(mGeometry.getVertices().capacity(),
+		SerializedObject3D ser = new SerializedObject3D(
+				mGeometry.getVertices().capacity(),
 				mGeometry.getNormals().capacity(), mGeometry.getTextureCoords().capacity(),
 				mGeometry.getColors().capacity(), mGeometry.getIndices().capacity());
 
@@ -541,30 +538,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	public void setColor(int color, boolean createNewBuffer) {
 		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f,
 				Color.blue(color) / 255f, Color.alpha(color) / 255f, createNewBuffer);
-	}
-
-	/**
-	 * Make sure this line is in your AndroidManifer.xml file, under <manifest>:
-	 * <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	 */
-	public void serializeToSDCard(String fileName) {
-		FileOutputStream fos;
-		try {
-			File sdcardStorage = Environment.getExternalStorageDirectory();
-			String sdcardPath = sdcardStorage.getParent()
-					+ java.io.File.separator + sdcardStorage.getName();
-
-			File f = new File(sdcardPath + File.separator + fileName);
-			fos = new FileOutputStream(f);
-			ObjectOutputStream os = new ObjectOutputStream(fos);
-
-			os.writeObject(toSerializedObject3D());
-			os.close();
-			Log.i(RajawaliRenderer.TAG, "Successfully serialized " + fileName + " to SD card.");
-		} catch (Exception e) {
-			Log.e(RajawaliRenderer.TAG, "Serializing " + fileName + " to SD card was unsuccessfull.");
-			e.printStackTrace();
-		}
 	}
 
 	public int getPickingColor() {

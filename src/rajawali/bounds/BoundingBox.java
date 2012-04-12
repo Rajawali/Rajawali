@@ -44,13 +44,17 @@ public class BoundingBox implements IBoundingVolume {
 			mVisualBox.setDrawingMode(GLES20.GL_LINE_LOOP);
 		}
 		
-		float size = Math.abs(mTransformedMax.x - mTransformedMin.x);
+		mVisualBox.setScale(
+				Math.abs(mTransformedMax.x - mTransformedMin.x),
+				Math.abs(mTransformedMax.y - mTransformedMin.y),
+				Math.abs(mTransformedMax.z - mTransformedMin.z)
+				);
 		Matrix.setIdentityM(mTmpMatrix, 0);
 		mVisualBox.setPosition(
 				mTransformedMin.x + (mTransformedMax.x - mTransformedMin.x) * .5f, 
 				mTransformedMin.y + (mTransformedMax.y - mTransformedMin.y) * .5f, 
-				mTransformedMin.z + (mTransformedMax.z - mTransformedMin.z) * .5f);
-		mVisualBox.setScale(size);
+				mTransformedMin.z + (mTransformedMax.z - mTransformedMin.z) * .5f
+				);
 		mVisualBox.render(camera, projMatrix, vMatrix, mTmpMatrix, null);
 	}
 	
@@ -65,7 +69,7 @@ public class BoundingBox implements IBoundingVolume {
 		vertices.rewind();
 		
 		mMin = new Number3D(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-		mMax = new Number3D(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+		mMax = new Number3D(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
 		
 		Number3D vertex = new Number3D();
 		
@@ -137,5 +141,18 @@ public class BoundingBox implements IBoundingVolume {
 	
 	public Number3D getTransformedMax() {
 		return mTransformedMax;
+	}
+	
+	public boolean intersectsWith(IBoundingVolume boundingVolume) {
+		if(!(boundingVolume instanceof BoundingBox)) return false;
+		BoundingBox boundingBox = (BoundingBox)boundingVolume;
+		Number3D otherMin = boundingBox.getTransformedMin();
+		Number3D otherMax = boundingBox.getTransformedMax();
+		Number3D min = mTransformedMin;
+		Number3D max = mTransformedMax;		
+		
+		return (min.x < otherMax.x) && (max.x > otherMin.x) &&
+				(min.y < otherMax.y) && (max.y > otherMin.y) &&
+				(min.z < otherMax.z) && (max.z > otherMin.z);
 	}
 }
