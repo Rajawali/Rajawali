@@ -220,38 +220,27 @@ public class Camera implements ITransformable3D {
 		this.mUseRotationMatrix = useRotationMatrix;
 	}
 
-	@Override
 	public void setScale(float scale) {}
 
-	@Override
 	public void setScale(float scaleX, float scaleY, float scaleZ) {}
 
-	@Override
 	public void setScaleX(float scaleX) {}
 
-	@Override
 	public float getScaleX() { return 0; }
 
-	@Override
 	public void setScaleY(float scaleY) {}
 
-	@Override
 	public float getScaleY() { return 0; }
 
-	@Override
 	public void setScaleZ(float scaleZ) {}
 
-	@Override
 	public float getScaleZ() { return 0; }
 
-	@Override
 	public void setRotation(Number3D rotation) {
 		mRotation = rotation;
 	}
 
-	@Override
 	public Number3D getScale() { return null; }
 
-	@Override
 	public void setScale(Number3D scale) {}
 }

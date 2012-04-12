@@ -95,7 +95,6 @@ public class SwirlFilter extends AMaterial implements IPostProcessingFilter {
 		GLES20.glUniform2fv(muCenterHandle, 1, mCenter, 0);
 	}
 	
-	@Override
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);

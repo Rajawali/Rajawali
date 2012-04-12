@@ -10,7 +10,6 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.math.Number3D;
-import rajawali.primitives.BoundingBox;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import android.graphics.Color;
@@ -49,12 +48,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected boolean mForcedDepth = false;
 	protected boolean mHasCubemapTexture = false;
 	protected boolean mIsVisible = true;
+	protected boolean mShowBoundingVolume = false;
 	protected int mDrawingMode = GLES20.GL_TRIANGLES;
 
 	protected boolean mIsContainerOnly = true;
 	protected Number3D mLookAt;
-	protected BoundingBox mBoundingBox;
-	protected boolean mDrawBoundingBox;
 	protected int mPickingColor;
 	protected boolean mIsPickingEnabled = false;
 	protected float[] mPickingColorArray;
@@ -90,7 +88,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 			float[] textureCoords, float[] colors, short[] indices) {
 		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
 		mIsContainerOnly = false;
-		//mBoundingBox = new BoundingBox(this);
 	}
 	
 	protected void preRender() {}
@@ -203,10 +200,14 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 			GLES20.glDisable(GLES20.GL_BLEND);
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		}
-
-		if(mDrawBoundingBox)
-			mBoundingBox.render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 		
+		if(mShowBoundingVolume) {
+			if(mGeometry.hasBoundingBox())
+				mGeometry.getBoundingBox().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+			if(mGeometry.hasBoundingSphere())
+				mGeometry.getBoundingSphere().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+		}
+
 		for (i = 0; i < mNumChildren; ++i) {
 			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 		}
@@ -270,10 +271,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		return mPosition;
 	}
 	
-	public void setDrawBoundingBox(boolean draw) {
-		mDrawBoundingBox = draw;
-	}
-
 	public void setScreenCoordinates(float x, float y, int viewportWidth,
 			int viewportHeight, float eyeZ) {
 		float[] r1 = new float[16];
@@ -537,10 +534,6 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		mIsVisible = visible;
 	}
 	
-	public BoundingBox getBoundingBox() {
-		return mBoundingBox;
-	}
-	
 	public void setColor(int color) {
 		setColor(color, false);
 	}
@@ -589,23 +582,23 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		mIsPickingEnabled = true;
 	}
 
-	@Override
 	public Number3D getRotation() {
 		return mRotation;
 	}
 
-	@Override
 	public void setRotation(Number3D rotation) {
 		mPosition = rotation;
 	}
 
-	@Override
 	public Number3D getScale() {
 		return mScale;
 	}
 
-	@Override
 	public void setScale(Number3D scale) {
 		mScale = scale;
+	}
+
+	public void setShowBoundingVolume(boolean showBoundingVolume) {
+		this.mShowBoundingVolume = showBoundingVolume;
 	}
 }

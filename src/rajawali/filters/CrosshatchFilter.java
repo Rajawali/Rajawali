@@ -69,14 +69,12 @@ public class CrosshatchFilter extends AMaterial implements IPostProcessingFilter
 		return false;
 	}
 	
-	@Override
 	public void useProgram() {
 		super.useProgram();
 		GLES20.glUniform1f(muScreenWidthHandle, mScreenWidth);
 		GLES20.glUniform1f(muScreenHeightHandle, mScreenHeight);
 	}
 	
-	@Override
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);

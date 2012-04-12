@@ -29,7 +29,7 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 * [Rajawali Tutorial 12: Object Picking](http://www.rozengain.com/blog/2012/03/23/rajawali-tutorial-12-object-picking/)
 * [Rajawali Tutorial 13: Animation classes](http://www.rozengain.com/blog/2012/03/26/rajawali-tutorial-12-animation-classes/)
 * [Rajawali Tutorial 14: Bump/Normal Mapping](http://www.rozengain.com/blog/2012/03/26/rajawali-tutorial-13-bumpnormal-mapping/)
-* [Rajawali Tutorial 14: MD2 Animation](http://www.rozengain.com/blog/2012/04/04/rajawali-tutorial-15-md2-animation/)
+* [Rajawali Tutorial 15: MD2 Animation](http://www.rozengain.com/blog/2012/04/04/rajawali-tutorial-15-md2-animation/)
 
 
 ## Made with Rajawali

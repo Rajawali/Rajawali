@@ -1,5 +1,7 @@
 package rajawali.math;
 
+
+
 /**
  * Simple VO holding x,y, and z values. Plus helper math functions.
  * Care should be taken to avoid creating Number3d instances unnecessarily. 
@@ -105,6 +107,13 @@ public class Number3D
 		this.z *= n.z;
 	}
 	
+	public void multiply(final float[] matrix) {
+		float vx = x, vy = y, vz = z;
+		x = vx * matrix[0] + vy * matrix[4] + vz * matrix[8] + matrix[12];
+	    y = vx * matrix[1] + vy * matrix[5] + vz * matrix[9] + matrix[13];
+	    z = vx * matrix[2] + vy * matrix[6] + vz * matrix[10] + matrix[14];
+	}
+	
 	public float distanceTo(Number3D other)
 	{
 		return (float)Math.sqrt((x - other.x)*(x - other.x) + (y - other.y)*(y - other.y) + (z - other.z)*(z - other.z));
@@ -157,7 +166,13 @@ public class Number3D
 	@Override
 	public String toString()
 	{
-		return x + "," + y + "," + z; 
+		StringBuffer sb = new StringBuffer();
+		sb.append(((int)(x * 10000)) / 10000f);
+		sb.append(", ");
+		sb.append(((int)(y * 10000)) / 10000f);
+		sb.append(", ");
+		sb.append(((int)(z * 10000)) / 10000f);
+		return sb.toString(); 
 	}
 	
 	//

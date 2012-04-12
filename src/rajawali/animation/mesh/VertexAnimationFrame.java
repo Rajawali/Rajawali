@@ -12,22 +12,18 @@ public class VertexAnimationFrame implements IAnimationFrame {
 		mGeometry = new Geometry3D();
 	}
 	
-	@Override
 	public Geometry3D getGeometry() {
 		return mGeometry;
 	}
 
-	@Override
 	public void setGeometry(Geometry3D geometry) {
 		mGeometry = geometry;
 	}
 
-	@Override
 	public String getName() {
 		return mName;
 	}
 
-	@Override
 	public void setName(String name) {
 		mName = name;
 	}

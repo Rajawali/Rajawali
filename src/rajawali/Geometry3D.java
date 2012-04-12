@@ -6,6 +6,9 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import rajawali.bounds.BoundingBox;
+import rajawali.bounds.BoundingSphere;
+
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -27,6 +30,9 @@ public class Geometry3D {
 	protected int mTexCoordBufferHandle;
 	protected int mColorBufferHandle;
 	protected int mNormalBufferHandle;
+	
+	protected BoundingBox mBoundingBox;
+	protected BoundingSphere mBoundingSphere;
 	
 	protected enum BufferType {
 		FLOAT_BUFFER,
@@ -79,9 +85,9 @@ public class Geometry3D {
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
         
-        mTextureCoords.limit(0);	mTextureCoords = null;
-        mColors.limit(0);			mColors = null;
-        mIndices.limit(0);			mIndices = null;
+        //mTextureCoords.limit(0);	mTextureCoords = null;
+        //mColors.limit(0);			mColors = null;
+        //mIndices.limit(0);			mIndices = null;
 	}
 	
 	public void setData(float[] vertices, float[] normals,
@@ -117,11 +123,11 @@ public class Geometry3D {
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
         
-        mVertices.limit(0);			mVertices = null;
-        mNormals.limit(0);			mNormals = null;
-        mTextureCoords.limit(0);	mTextureCoords = null;
-        mColors.limit(0);			mColors = null;
-        mIndices.limit(0);			mIndices = null;
+//        mVertices.limit(0);			mVertices = null;
+//        mNormals.limit(0);			mNormals = null;
+//        mTextureCoords.limit(0);	mTextureCoords = null;
+//        mColors.limit(0);			mColors = null;
+//        mIndices.limit(0);			mIndices = null;
 	}
 	
 	public void createVertexAndNormalBuffersOnly() {
@@ -134,8 +140,8 @@ public class Geometry3D {
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-        mVertices.limit(0);			mVertices = null;
-        mNormals.limit(0);			mNormals = null;
+//        mVertices.limit(0);			mVertices = null;
+//        mNormals.limit(0);			mNormals = null;
 	}
 	
 	protected int createBuffer(BufferType type, Buffer buffer, int target) {
@@ -310,6 +316,26 @@ public class Geometry3D {
 		//buff.append(", colors: ");
 		//buff.append(mColors.capacity());
 		return buff.toString();
+	}
+	
+	public boolean hasBoundingBox() {
+		return mBoundingBox != null;
+	}
+	
+	public BoundingBox getBoundingBox() {
+		if(mBoundingBox == null)
+			mBoundingBox = new BoundingBox(this);
+		return mBoundingBox;
+	}
+
+	public boolean hasBoundingSphere() {
+		return mBoundingSphere != null;
+	}
+	
+	public BoundingSphere getBoundingSphere() {
+		if(mBoundingSphere == null)
+			mBoundingSphere = new BoundingSphere(this);
+		return mBoundingSphere;
 	}
 
 	public int getVertexBufferHandle() {
