@@ -28,6 +28,7 @@ public class ObjParser extends AParser {
     protected final String TEXCOORD = "vt";
     protected final String NORMAL = "vn";
     protected final String OBJECT = "o";
+    protected final String GROUP = "g";
     protected final String MATERIAL_LIB = "mtllib";
     protected final String USE_MATERIAL = "usemtl";
     protected final String NEW_MATERIAL = "newmtl";
@@ -43,7 +44,7 @@ public class ObjParser extends AParser {
 		InputStream fileIn = mResources.openRawResource(mResourceId);
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(fileIn));
 		String line;
-		ObjIndexData currObjIndexData = null;
+		ObjIndexData currObjIndexData = new ObjIndexData(new BaseObject3D());
 		ArrayList<ObjIndexData> objIndices = new ArrayList<ObjIndexData>();
 				
 		ArrayList<Float> vertices = new ArrayList<Float>();
@@ -98,11 +99,13 @@ public class ObjParser extends AParser {
 					normals.add(Float.parseFloat(parts.nextToken()));
                     normals.add(Float.parseFloat(parts.nextToken()));
                     normals.add(Float.parseFloat(parts.nextToken()));
-				} else if(type.equals(OBJECT)) {
-					String objName = parts.hasMoreTokens() ? parts.nextToken() : "";
-
+				} else if(type.equals(OBJECT) || type.equals(GROUP)) {
+					String objName = parts.hasMoreTokens() ? parts.nextToken() : "Object" + (int)(Math.random() * 10000);
 					Log.d(Wallpaper.TAG, "Parsing object: " + objName);
-					currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
+					if(currObjIndexData.targetObj.getName() != null)
+						currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
+					else
+						currObjIndexData.targetObj.setName(objName);
 					objIndices.add(currObjIndexData);
 				} else if(type.equals(MATERIAL_LIB)) {
 					if(!parts.hasMoreTokens()) continue;
@@ -114,6 +117,10 @@ public class ObjParser extends AParser {
 				}
 			}
 			buffer.close();
+			
+			if(objIndices.size() == 0) {
+				objIndices.add(currObjIndexData);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -229,6 +236,7 @@ public class ObjParser extends AParser {
 					if(numTokens == 0)
 						continue;
 					String type = parts.nextToken();
+					type.replace("\t", "");
 					
 					if(type.equals(MATERIAL_NAME)) {
 						if(matDef != null) mMaterials.add(matDef);
@@ -246,17 +254,17 @@ public class ObjParser extends AParser {
 					} else if(type.equals(ALPHA_1) || type.equals(ALPHA_2)) {
 						matDef.alpha = Float.parseFloat(parts.nextToken());
 					} else if(type.equals(AMBIENT_TEXTURE)) {
-						matDef.ambientTexture = getFileNameWithoutExtenstion(parts.nextToken());
+						matDef.ambientTexture = getFileNameWithoutExtension(parts.nextToken());
 					} else if(type.equals(DIFFUSE_TEXTURE)) {
-						matDef.diffuseTexture = getFileNameWithoutExtenstion(parts.nextToken());
+						matDef.diffuseTexture = getFileNameWithoutExtension(parts.nextToken());
 					} else if(type.equals(SPECULAR_COLOR_TEXTURE)) {
-						matDef.specularColorTexture = getFileNameWithoutExtenstion(parts.nextToken());
+						matDef.specularColorTexture = getFileNameWithoutExtension(parts.nextToken());
 					} else if(type.equals(SPECULAR_HIGHLIGHT_TEXTURE)) {
-						matDef.specularHightlightTexture = getFileNameWithoutExtenstion(parts.nextToken());
+						matDef.specularHightlightTexture = getFileNameWithoutExtension(parts.nextToken());
 					} else if(type.equals(ALPHA_TEXTURE_1) || type.equals(ALPHA_TEXTURE_2)) {
-						matDef.alphaTexture = getFileNameWithoutExtenstion(parts.nextToken());
+						matDef.alphaTexture = getFileNameWithoutExtension(parts.nextToken());
 					} else if(type.equals(BUMP_TEXTURE)) {
-						matDef.bumpTexture = getFileNameWithoutExtenstion(parts.nextToken());
+						matDef.bumpTexture = getFileNameWithoutExtension(parts.nextToken());
 					}
 				}
 				if(matDef != null) mMaterials.add(matDef);
@@ -299,7 +307,7 @@ public class ObjParser extends AParser {
 				phong.setShininess(matDef.specularCoefficient);
 			}
 			
-			if(hasTexture) {
+			if(hasTexture) {Log.d("Rajawali", mResourcePackage +" / " + matDef.diffuseTexture);
 				int identifier = mResources.getIdentifier(matDef.diffuseTexture, "drawable", mResourcePackage);
 				object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
 			}
@@ -316,8 +324,15 @@ public class ObjParser extends AParser {
 			return Color.rgb(r, g, b);
 		}
 		
-		private String getFileNameWithoutExtenstion(String fileName) {
-			return fileName.substring(0, fileName.lastIndexOf("."));
+		private String getFileNameWithoutExtension(String fileName) {
+			String fName = fileName.substring(0, fileName.lastIndexOf("."));
+			int indexOf = fName.lastIndexOf("\\");
+			if(indexOf > -1)
+				fName = fName.substring(indexOf + 1, fName.length());
+			indexOf = fName.lastIndexOf("/");
+			if(indexOf > -1)
+				fName = fName.substring(indexOf, fName.length());
+			return fName;
 		}
 	}
 }
