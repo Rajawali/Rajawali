@@ -31,7 +31,7 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 * [Rajawali Tutorial 14: Bump/Normal Mapping](http://www.rozengain.com/blog/2012/03/26/rajawali-tutorial-13-bumpnormal-mapping/)
 * [Rajawali Tutorial 15: MD2 Animation](http://www.rozengain.com/blog/2012/04/04/rajawali-tutorial-15-md2-animation/)
 * [Rajawali Tutorial 16: Collision Detection](http://www.rozengain.com/blog/2012/04/13/rajawali-tutorial-16-collision-detection/)
-
+* [Rajawali Tutorial 17: Importing .Obj Files](http://www.rozengain.com/blog/2012/04/13/rajawali-tutorial-17-importing-obj-files/)
 
 ## Made with Rajawali
 
