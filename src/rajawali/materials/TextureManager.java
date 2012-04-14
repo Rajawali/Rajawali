@@ -1,6 +1,6 @@
 package rajawali.materials;
 
-import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import rajawali.renderer.RajawaliRenderer;
@@ -84,11 +84,11 @@ public class TextureManager {
         return textureInfo;
 	}
 	
-	public TextureInfo addTexture(IntBuffer buffer, int width, int height) {
+	public TextureInfo addTexture(ByteBuffer buffer, int width, int height) {
 		return addTexture(buffer, width, height, TextureType.DIFFUSE);
 	}
 	
-	public TextureInfo addTexture(IntBuffer buffer, int width, int height, TextureType textureType) {
+	public TextureInfo addTexture(ByteBuffer buffer, int width, int height, TextureType textureType) {
 		if(mTextureInfoList.size() > mMaxTextures)
 			throw new RuntimeException("Max number of textures used");
 

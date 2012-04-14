@@ -187,7 +187,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mViewportWidth = width;
 		mViewportHeight = height;
-		Log.d("Rajawali", width +", "+height);
 		mCamera.setProjectionMatrix(width, height);
 
 		GLES20.glViewport(0, 0, width, height);

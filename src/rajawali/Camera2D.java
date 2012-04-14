@@ -11,7 +11,6 @@ public class Camera2D extends Camera {
 		setZ(-4.0f);
 	}
 
-	@Override
 	public void setProjectionMatrix(int widthNotUsed, int heightNotUsed) {
 		Matrix.orthoM(mProjMatrix, 0, (-mWidth/2.0f)+mPosition.x, (mWidth/2.0f)+mPosition.x, (-mHeight/2.0f)+mPosition.y, (mHeight/2.0f)+mPosition.y, mNearPlane, mFarPlane);
 	}

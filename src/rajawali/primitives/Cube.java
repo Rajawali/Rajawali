@@ -10,7 +10,7 @@ public class Cube extends BaseObject3D {
 	public Cube(float size) {
 		super();
 		mSize = size;
-		mHasCubemapTexture = true;
+		mHasCubemapTexture = false;
 		init();
 	}
 	
@@ -36,15 +36,15 @@ public class Cube extends BaseObject3D {
                 halfSize,-halfSize, halfSize, -halfSize,-halfSize, halfSize, -halfSize,-halfSize,-halfSize, halfSize,-halfSize,-halfSize,//bottom
                 };
 		
-		float t = mIsSkybox ? 1 : 1;
+		float t = 1;
 		
 		float[] textureCoords = {
-				t,t,t, -t,t,t, -t,-t,t, t,-t,t,  // front
-				t,t,t, t,-t,t, t,-t,-t, t,t,-t,  // up
-				t,-t,-t, -t,-t,-t, -t,t,-t, t,t,-t,  // back
-				-t,t,t, -t,t,-t, -t,-t,-t, -t,-t,t, // down
-				t,t,t, t,t,-t, -t,t,-t, -t,t,t,   // right
-				-t,-t,-t, t,-t,-t, t,-t,t, -t,-t,t,  // left
+				0, 0,	1, 0,  	1, 1, 	0, 1, // front
+				0, 0,	1, 0,  	1, 1, 	0, 1, // front
+				0, 0,	1, 0,  	1, 1, 	0, 1, // front
+				0, 0,	1, 0,  	1, 1, 	0, 1, // front
+				0, 0,	1, 0,  	1, 1, 	0, 1, // front
+				0, 0,	1, 0,  	1, 1, 	0, 1, // front
 		};
 		float[] skyboxTextureCoords = {
 				-t,t,t, t,t,t, t,-t,t, -t,-t,t,     // front
