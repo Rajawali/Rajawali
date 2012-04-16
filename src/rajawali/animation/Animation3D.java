@@ -37,16 +37,21 @@ public class Animation3D {
 	}
 	
 	class UpdateTimeTask extends TimerTask {
+		long millis;
+		float interpolatedTime;
+		
 		   public void run() {
-		      long millis = System.currentTimeMillis() - mStartTime;
+		      millis = System.currentTimeMillis() - mStartTime;
 		      if(mDirection == -1) millis = mDuration - millis;
-		      float interpolatedTime = mInterpolator.getInterpolation((float)millis / (float)mDuration);
+		      interpolatedTime = mInterpolator.getInterpolation((float)millis / (float)mDuration);
+		      setHasStarted(true);
 
 		      applyTransformation(interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime);
 		      if(mDirection == 1 && interpolatedTime >= 1 || mDirection == -1 && interpolatedTime <= 0)
 		      {
 		    	  if(mRepeatCount == mNumRepeats)
 		    	  {
+		    		  setHasEnded(true);
 					  cancel();
 					  for(Animation3DListener listener : mAnimationListeners) {
 					 	  listener.onAnimationEnd(mInstance);
