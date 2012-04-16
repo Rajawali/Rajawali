@@ -385,6 +385,10 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	public boolean isDoubleSided() {
 		return mDoubleSided;
 	}
+	
+	public boolean isVisible() {
+		return mIsVisible;
+	}
 
 	public void setDoubleSided(boolean doubleSided) {
 		this.mDoubleSided = doubleSided;
