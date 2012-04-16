@@ -3,7 +3,7 @@ package rajawali;
 import java.util.ArrayList;
 
 import rajawali.materials.AMaterial;
-import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.materials.TextureInfo;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 
@@ -27,4 +27,6 @@ public interface IObject3D {
 	public void setMaterial(AMaterial shader);
 	
 	public ArrayList<TextureInfo> getTextureInfoList();
+	
+	public void reload();
 }

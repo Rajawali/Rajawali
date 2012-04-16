@@ -13,7 +13,7 @@ public class ToonMaterial extends DiffuseMaterial {
 			"varying vec3 N, L;\n" +
 			"varying vec4 vColor;\n" +
 	 
-			"uniform sampler2D uTexture0;\n" +
+			"uniform sampler2D uDiffuseTexture;\n" +
 			"uniform bool uUseTexture;\n" +
 			"uniform float uLightPower;\n" +
 			"uniform vec4 uAmbientColor;\n" +

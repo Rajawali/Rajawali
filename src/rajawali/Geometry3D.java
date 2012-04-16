@@ -8,7 +8,6 @@ import java.nio.ShortBuffer;
 
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
-
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -24,6 +23,7 @@ public class Geometry3D {
 	protected int mNumIndices;
 	protected int mNumVertices;
 	protected String mName;
+	protected Geometry3D mOriginalGeometry;
 	
 	protected int mVertexBufferHandle;
 	protected int mIndexBufferHandle;
@@ -58,6 +58,7 @@ public class Geometry3D {
 		this.mTexCoordBufferHandle = geom.getTexCoordBufferHandle();
 		this.mColorBufferHandle = geom.getColorBufferHandle();
 		this.mNormalBufferHandle = geom.getNormalBufferHandle();
+		this.mOriginalGeometry = geom;
 	}
 	
 	public void setData(int vertexBufferHandle, int normalBufferHandle,
@@ -108,17 +109,26 @@ public class Geometry3D {
 	}
 	
 	public void createBuffers() {
-		mVertices.compact().position(0);
-		mNormals.compact().position(0);
-		mTextureCoords.compact().position(0);
-		mColors.compact().position(0);
-		mIndices.compact().position(0);
-		
-		mVertexBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mVertices,		GLES20.GL_ARRAY_BUFFER);
-		mNormalBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mNormals,		GLES20.GL_ARRAY_BUFFER);
-		mTexCoordBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mTextureCoords, GLES20.GL_ARRAY_BUFFER);
-		mColorBufferHandle 		= createBuffer(BufferType.FLOAT_BUFFER, mColors,		GLES20.GL_ARRAY_BUFFER);
-		mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndices,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+		if(mVertices != null) {
+			mVertices.compact().position(0);
+			mVertexBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mVertices,		GLES20.GL_ARRAY_BUFFER);
+		}
+		if(mNormals != null) {
+			mNormals.compact().position(0);
+			mNormalBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mNormals,		GLES20.GL_ARRAY_BUFFER);
+		}
+		if(mTextureCoords != null) {
+			mTextureCoords.compact().position(0);
+			mTexCoordBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mTextureCoords, GLES20.GL_ARRAY_BUFFER);
+		}
+		if(mColors != null) {
+			mColors.compact().position(0);
+			mColorBufferHandle 		= createBuffer(BufferType.FLOAT_BUFFER, mColors,		GLES20.GL_ARRAY_BUFFER);
+		}
+		if(mIndices != null) {
+			mIndices.compact().position(0);
+			mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndices,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+		}
 		
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -128,6 +138,10 @@ public class Geometry3D {
 //        mTextureCoords.limit(0);	mTextureCoords = null;
 //        mColors.limit(0);			mColors = null;
 //        mIndices.limit(0);			mIndices = null;
+	}
+	
+	public void reload() {
+		createBuffers();
 	}
 	
 	public void createVertexAndNormalBuffersOnly() {

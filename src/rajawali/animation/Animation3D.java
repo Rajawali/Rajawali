@@ -82,7 +82,18 @@ public class Animation3D {
 			mInterpolator = new LinearInterpolator();
 		reset();
 		if(mTimer == null) mTimer = TimerManager.getInstance().createNewTimer();
-		mTimer.scheduleAtFixedRate(new UpdateTimeTask(), mDelay, mUpdateRate);
+		try {
+			mTimer.scheduleAtFixedRate(new UpdateTimeTask(), mDelay, mUpdateRate);
+		} catch(IllegalStateException e) {
+			// timer was cancelled
+			mTimer = TimerManager.getInstance().createNewTimer();
+			// try once more
+			try {
+				mTimer.scheduleAtFixedRate(new UpdateTimeTask(), mDelay, mUpdateRate);
+			} catch(IllegalStateException ie) {
+				
+			}
+		}
 		for(Animation3DListener listener : mAnimationListeners) {
 			listener.onAnimationStart(this);
 		}

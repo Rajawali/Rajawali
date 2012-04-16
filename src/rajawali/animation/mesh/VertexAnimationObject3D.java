@@ -3,7 +3,6 @@ package rajawali.animation.mesh;
 
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
-	@Override
 	public void preRender() {
         if (!mIsPlaying || !mUpdateVertices)
                 return;
@@ -37,5 +36,12 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
         }
         
         mStartTime = mCurrentTime;
+	}
+	
+	public void reload() {
+		super.reload();
+		for(int i=0; i<mNumFrames; i++) {
+			mFrames.get(i).getGeometry().reload();
+		}
 	}
 }

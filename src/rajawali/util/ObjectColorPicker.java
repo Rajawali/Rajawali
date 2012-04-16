@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.materials.TextureInfo;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -34,6 +34,14 @@ public class ObjectColorPicker {
 		mFrameBufferHandle = frameBuffers[0];
 		mTextureInfo = mRenderer.getTextureManager().addTexture(null, mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
 		mIsInitialised = true;
+	}
+	
+	public void reload() {
+		if(!mIsInitialised) return;
+		int[] frameBuffers = new int[1];
+		GLES20.glGenFramebuffers(1, frameBuffers, 0);
+		mFrameBufferHandle = frameBuffers[0];
+		mPickerMaterial.reload();
 	}
 	
 	public void setOnObjectPickedListener(OnObjectPickedListener objectPickedListener) {

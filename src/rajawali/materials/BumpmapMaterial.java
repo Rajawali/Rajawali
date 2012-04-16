@@ -8,7 +8,7 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 			"varying vec3 N, L;\n" +
 			"varying vec4 vColor;\n" +
 			
-			"uniform sampler2D uTexture0;\n" +
+			"uniform sampler2D uDiffuseTexture;\n" +
 			"uniform sampler2D uNormalTexture;\n" +
 			"uniform bool uUseTexture;\n" +
 			"uniform float uLightPower;\n" +
@@ -20,7 +20,7 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 			"	normal.z = -normal.z;" +
 			"	normal = normalize(normal + normalize(N));" +
 		    "	float intensity = max(dot(normal, L), 0.0);" +
-			" 	vec3 color = intensity * texture2D(uTexture0, vTextureCoord).rgb;" +
+			" 	vec3 color = intensity * texture2D(uDiffuseTexture, vTextureCoord).rgb;" +
 		    "	gl_FragColor = vec4(color, 1.0) + uAmbientColor * uAmbientIntensity;\n" + 
 			"}";
 

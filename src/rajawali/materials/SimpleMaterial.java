@@ -21,13 +21,13 @@ public class SimpleMaterial extends AMaterial {
 		"precision mediump float;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
-		"uniform sampler2D uTexture0;\n" +
+		"uniform sampler2D uDiffuseTexture;\n" +
 		"varying vec4 vColor;\n" +
 
 		"uniform bool uUseTexture;\n" +
 
 		"void main() {\n" +
-		"	gl_FragColor = uUseTexture ? texture2D(uTexture0, vTextureCoord) : vColor;\n" +
+		"	gl_FragColor = uUseTexture ? texture2D(uDiffuseTexture, vTextureCoord) : vColor;\n" +
 		"}\n";
 	
 	public SimpleMaterial() {

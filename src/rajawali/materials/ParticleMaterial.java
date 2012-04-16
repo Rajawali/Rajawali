@@ -39,10 +39,10 @@ public class ParticleMaterial extends AMaterial {
 		"precision mediump float;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
-		"uniform sampler2D uTexture0;\n" +
+		"uniform sampler2D uDiffuseTexture;\n" +
 
 		"void main() {\n" +
-		"	gl_FragColor = texture2D(uTexture0, gl_PointCoord);\n" +
+		"	gl_FragColor = texture2D(uDiffuseTexture, gl_PointCoord);\n" +
 		"}\n";
 	
 	protected float mPointSize = 10.0f;

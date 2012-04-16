@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import rajawali.Camera;
 import rajawali.lights.ALight;
-import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
@@ -43,7 +42,7 @@ public abstract class AMaterial {
 	protected boolean mIsAnimated;
 	
 	public AMaterial() {
-		mTextureInfoList = new ArrayList<TextureManager.TextureInfo>();
+		mTextureInfoList = new ArrayList<TextureInfo>();
 		mCameraPosArray = new float[3];
 	}
 
@@ -53,6 +52,15 @@ public abstract class AMaterial {
 		mVertexShader = isAnimated ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mFragmentShader = fragmentShader;
 		setShaders(mVertexShader, mFragmentShader);
+	}
+	
+	public void reload() {
+		boolean useColor = mUseColor;
+		setShaders(mVertexShader, mFragmentShader);
+		for(int i=0; i<mNumTextures; i++) {
+			addTexture(mTextureInfoList.get(i), true);
+		}
+		mUseColor = useColor;
 	}
 
 	public void setShaders(String vertexShader, String fragmentShader) {
@@ -183,10 +191,16 @@ public abstract class AMaterial {
 	}
 
 	public void addTexture(TextureInfo textureInfo) {
-		int count = mTextureInfoList.size();
+		addTexture(textureInfo, false);
+	}
+	
+	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture) {
 		String textureName = "uTexture";
 
 		switch (textureInfo.getTextureType()) {
+		case DIFFUSE:
+			textureName = "uDiffuseTexture";
+			break;
 		case BUMP:
 			textureName = "uNormalTexture";
 			break;
@@ -199,21 +213,22 @@ public abstract class AMaterial {
 		case LOOKUP:
 			textureName = "uLookupTexture";
 			break;
-		default:
-			textureName += count;
+		case CUBE_MAP:
+			textureName = "uCubeMapTexture";
 			break;
 		}
 
 		int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
 		if (textureHandle == -1) {
-			Log.d(Wallpaper.TAG, toString());
 			throw new RuntimeException("Could not get attrib location for "
-					+ textureName);
+					+ textureName + ", " + textureInfo.getTextureType());
 		}
 		textureInfo.setUniformHandle(textureHandle);
 		mUseColor = false;
-		mTextureInfoList.add(textureInfo);
-		mNumTextures++;
+		if(!isExistingTexture) {
+			mTextureInfoList.add(textureInfo);
+			mNumTextures++;
+		}
 	}
 
 	public void setVertices(final int vertexBufferHandle) {

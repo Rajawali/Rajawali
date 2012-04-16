@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.materials.TextureInfo;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
@@ -31,7 +31,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected AMaterial mMaterial;
 	protected ALight mLight;
 	protected float mAlpha;
-	
+
 	protected Geometry3D mGeometry;
 
 	protected ArrayList<BaseObject3D> mChildren;
@@ -52,7 +52,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected int mPickingColor;
 	protected boolean mIsPickingEnabled = false;
 	protected float[] mPickingColorArray;
-	
+
 	private int i;
 
 	public BaseObject3D() {
@@ -70,34 +70,32 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 
 	public BaseObject3D(SerializedObject3D ser) {
 		this();
-		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(),
-				ser.getColors(), ser.getIndices());
+		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices());
 	}
 
-	public void setData(int vertexBufferHandle, int normalBufferHandle,
-			float[] textureCoords, float[] colors, short[] indices) {
+	public void setData(int vertexBufferHandle, int normalBufferHandle, float[] textureCoords, float[] colors, short[] indices) {
 		mGeometry.setData(vertexBufferHandle, normalBufferHandle, textureCoords, colors, indices);
 		mIsContainerOnly = false;
 	}
-	
-	public void setData(float[] vertices, float[] normals,
-			float[] textureCoords, float[] colors, short[] indices) {
+
+	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, short[] indices) {
 		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
 		mIsContainerOnly = false;
 	}
-	
-	protected void preRender() {}
+
+	protected void preRender() {
+	}
 
 	public void render(Camera camera, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
 		render(camera, projMatrix, vMatrix, null, pickerInfo);
 	}
 
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix,
-			final float[] parentMatrix, ColorPickerInfo pickerInfo) {
-		if(!mIsVisible) return;
-		
+	public void render(Camera camera, float[] projMatrix, float[] vMatrix, final float[] parentMatrix, ColorPickerInfo pickerInfo) {
+		if (!mIsVisible)
+			return;
+
 		preRender();
-		
+
 		if (!mIsContainerOnly) {
 			mProjMatrix = projMatrix;
 			if (!mDoubleSided)
@@ -122,7 +120,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 				GLES20.glDepthMask(false);
 			}
 
-			if(pickerInfo != null && mIsPickingEnabled) {
+			if (pickerInfo != null && mIsPickingEnabled) {
 				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
 				pickerMat.setPickingColor(mPickingColorArray);
 				pickerMat.useProgram();
@@ -139,7 +137,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-			
+
 			setShaderParams(camera);
 		}
 
@@ -149,7 +147,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 
 		Matrix.setIdentityM(mRotateMatrix, 0);
 
-		if(mLookAt == null) {
+		if (mLookAt == null) {
 			rotateM(mRotateMatrix, 0, mRotation.x, 1.0f, 0.0f, 0.0f);
 			rotateM(mRotateMatrix, 0, mRotation.y, 0.0f, 1.0f, 0.0f);
 			rotateM(mRotateMatrix, 0, mRotation.z, 0.0f, 0.0f, 1.0f);
@@ -169,38 +167,37 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
 
 		if (!mIsContainerOnly) {
-			if(pickerInfo == null)
-			{
+			if (pickerInfo == null) {
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
-	
+
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
 				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_SHORT, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-				
+
 				mMaterial.unbindTextures();
-			} else if(pickerInfo != null && mIsPickingEnabled) {
+			} else if (pickerInfo != null && mIsPickingEnabled) {
 				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
 				pickerMat.setMVPMatrix(mMVPMatrix);
 				pickerMat.setModelMatrix(mMMatrix);
 				pickerMat.setViewMatrix(vMatrix);
-	
+
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
 				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_SHORT, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-				
+
 				pickerMat.unbindTextures();
 			}
 			GLES20.glDisable(GLES20.GL_CULL_FACE);
 			GLES20.glDisable(GLES20.GL_BLEND);
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		}
-		
-		if(mShowBoundingVolume) {
-			if(mGeometry.hasBoundingBox())
+
+		if (mShowBoundingVolume) {
+			if (mGeometry.hasBoundingBox())
 				mGeometry.getBoundingBox().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
-			if(mGeometry.hasBoundingSphere())
+			if (mGeometry.hasBoundingSphere())
 				mGeometry.getBoundingSphere().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
 		}
 
@@ -209,8 +206,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		}
 	}
 
-	protected void rotateM(float[] m, int mOffset, float a, float x, float y,
-			float z) {
+	protected void rotateM(float[] m, int mOffset, float a, float x, float y, float z) {
 		Matrix.setIdentityM(mRotateMatrixTmp, 0);
 		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
 		System.arraycopy(m, 0, mTmpMatrix, 0, 16);
@@ -229,53 +225,66 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		int error;
 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
 
-			Log.e(RajawaliRenderer.TAG, op + ": glError " + error + " in class "
-					+ this.getClass().getName());
+			Log.e(RajawaliRenderer.TAG, op + ": glError " + error + " in class " + this.getClass().getName());
 			throw new RuntimeException(op + ": glError " + error);
 		}
+	}
+
+	public void reload() {
+		if(!mIsContainerOnly) {
+			mMaterial.reload();
+			mGeometry.reload();
+		}
+
+		for(int i=0; i<mNumChildren; i++) {
+			mChildren.get(i).reload();
+		}
+		
+		if(mGeometry.hasBoundingBox())
+			mGeometry.getBoundingBox().getVisual().reload();
+		if(mGeometry.hasBoundingSphere())
+			mGeometry.getBoundingSphere().getVisual().reload();
 	}
 	
 	public void isContainer(boolean isContainer) {
 		mIsContainerOnly = isContainer;
 	}
-	
+
 	public boolean isContainer() {
 		return mIsContainerOnly;
 	}
-	
+
 	public void setAdditive(boolean isAdditive) {
 		this.mAdditive = isAdditive;
 	}
-	
+
 	public boolean getAdditive() {
 		return mAdditive;
 	}
-	
+
 	public void setPosition(Number3D position) {
 		mPosition.x = position.x;
 		mPosition.y = position.y;
 		mPosition.z = position.z;
 	}
-	
+
 	public void setPosition(float x, float y, float z) {
 		mPosition.x = x;
 		mPosition.y = y;
 		mPosition.z = z;
 	}
-	
+
 	public Number3D getPosition() {
 		return mPosition;
 	}
-	
-	public void setScreenCoordinates(float x, float y, int viewportWidth,
-			int viewportHeight, float eyeZ) {
+
+	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ) {
 		float[] r1 = new float[16];
 		int[] viewport = new int[] { 0, 0, viewportWidth, viewportHeight };
 		float[] modelMatrix = new float[16];
 		Matrix.setIdentityM(modelMatrix, 0);
 
-		GLU.gluUnProject(x, viewportHeight - y, 0.0f, modelMatrix, 0,
-				mProjMatrix, 0, viewport, 0, r1, 0);
+		GLU.gluUnProject(x, viewportHeight - y, 0.0f, modelMatrix, 0, mProjMatrix, 0, viewport, 0, r1, 0);
 		setPosition(r1[0] * eyeZ, r1[1] * -eyeZ, 0);
 	}
 
@@ -391,7 +400,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 
 	public void setLight(ALight light) {
 		mLight = light;
-		for(int i=0; i<mChildren.size(); ++i) 
+		for (int i = 0; i < mChildren.size(); ++i)
 			mChildren.get(i).setLight(mLight);
 	}
 
@@ -423,6 +432,12 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		mNumChildren++;
 	}
 
+	public void removeChild(BaseObject3D child) {
+		if (mChildren.remove(child)) {
+			mNumChildren--;
+		}
+	}
+
 	public int getNumChildren() {
 		return mNumChildren;
 	}
@@ -442,11 +457,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	public Geometry3D getGeometry() {
 		return mGeometry;
 	}
-	
+
 	public void setMaterial(AMaterial material) {
 		setMaterial(material, true);
 	}
-	
+
 	public AMaterial getMaterial() {
 		return mMaterial;
 	}
@@ -454,7 +469,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	public void setMaterial(AMaterial material, boolean copyTextures) {
 		if (mMaterial != null && copyTextures)
 			mMaterial.copyTexturesTo(material);
-		else if(mMaterial != null && !copyTextures)
+		else if (mMaterial != null && !copyTextures)
 			mMaterial.getTextureInfoList().clear();
 		mMaterial = material;
 	}
@@ -486,10 +501,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	}
 
 	public SerializedObject3D toSerializedObject3D() {
-		SerializedObject3D ser = new SerializedObject3D(
-				mGeometry.getVertices().capacity(),
-				mGeometry.getNormals().capacity(), mGeometry.getTextureCoords().capacity(),
-				mGeometry.getColors().capacity(), mGeometry.getIndices().capacity());
+		SerializedObject3D ser = new SerializedObject3D(mGeometry.getVertices().capacity(), mGeometry.getNormals().capacity(), mGeometry.getTextureCoords()
+				.capacity(), mGeometry.getColors().capacity(), mGeometry.getIndices().capacity());
 
 		int i;
 
@@ -507,14 +520,13 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		return ser;
 	}
 
-	public BaseObject3D clone()
-	{
+	public BaseObject3D clone() {
 		BaseObject3D clone = new BaseObject3D();
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		return clone;
 	}
-	
+
 	public float getAlpha() {
 		return mAlpha;
 	}
@@ -526,18 +538,17 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	public void setLookAt(Number3D lookAt) {
 		mLookAt = lookAt;
 	}
-	
+
 	public void setVisible(boolean visible) {
 		mIsVisible = visible;
 	}
-	
+
 	public void setColor(int color) {
 		setColor(color, false);
 	}
-	
+
 	public void setColor(int color, boolean createNewBuffer) {
-		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f,
-				Color.blue(color) / 255f, Color.alpha(color) / 255f, createNewBuffer);
+		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f, createNewBuffer);
 	}
 
 	public int getPickingColor() {
@@ -545,7 +556,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	}
 
 	public void setPickingColor(int pickingColor) {
-		if(mPickingColorArray == null)
+		if (mPickingColorArray == null)
 			mPickingColorArray = new float[4];
 		this.mPickingColor = pickingColor;
 		mPickingColorArray[0] = Color.red(pickingColor) / 255f;

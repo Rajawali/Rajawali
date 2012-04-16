@@ -15,8 +15,8 @@ import rajawali.animation.TimerManager;
 import rajawali.filters.IPostProcessingFilter;
 import rajawali.materials.AMaterial;
 import rajawali.materials.SkyboxMaterial;
+import rajawali.materials.TextureInfo;
 import rajawali.materials.TextureManager;
-import rajawali.materials.TextureManager.TextureInfo;
 import rajawali.materials.TextureManager.TextureType;
 import rajawali.primitives.Cube;
 import rajawali.primitives.Plane;
@@ -52,6 +52,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected boolean mEnableDepthBuffer = true;
 
 	protected TextureManager mTextureManager;
+	/**
+	 * Deprecated. Use setSceneCachingEnabled(false) instead.
+	 */
+	@Deprecated
 	protected boolean mClearChildren = true;
 
 	protected Camera mCamera;
@@ -68,8 +72,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected TextureInfo mDepthBufferTexInfo;
 	protected Plane mPostProcessingQuad;
 	protected Camera2D mPostProcessingCam;
-	// -- temporary (dirty) fix
-	protected boolean mReloadFrameBufferTex;
+	protected boolean mReloadPickerInfo;
+	
+	private boolean mSceneInitialized;
+	/**
+	 * Scene caching stores all textures and relevant OpenGL-specific
+	 * data. This is used when the OpenGL context needs to be restored.
+	 * The context typically needs to be restored when the application
+	 * is re-activated or when a live wallpaper is rotated. 
+	 */
+	private boolean mSceneCachingEnabled;
 
 	public RajawaliRenderer(Context context) {
 		mContext = context;
@@ -78,6 +90,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
 		mAlpha = 0;
+		mSceneCachingEnabled = true;
 	}
 
 	public void setCamera(Camera mCamera) {
@@ -98,14 +111,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		ColorPickerInfo pickerInfo = mPickerInfo;
 
 		if (pickerInfo != null) {
+			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
+			mReloadPickerInfo = false;
 			pickerInfo.getPicker().bindFrameBuffer();
 			GLES20.glClearColor(0, 0, 0, 1);
 		} else {
 			if (mFilters.size() == 0)
 				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 			else {
-				if (mFrameBufferHandle == -1 || mReloadFrameBufferTex) {
-					Log.d("Rajawali", "TURUUUUUUUUUUUUUUUUUUU");
+				if (mFrameBufferHandle == -1) {
 					int[] frameBuffers = new int[1];
 					GLES20.glGenFramebuffers(1, frameBuffers, 0);
 					mFrameBufferHandle = frameBuffers[0];
@@ -124,8 +138,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 					mPostProcessingCam.setProjectionMatrix(0, 0);
 
 					mPostProcessingQuad.addTexture(mFrameBufferTexInfo);
-
-					mReloadFrameBufferTex = false;
 				}
 
 				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
@@ -134,7 +146,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 				if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
 					Log.d(RajawaliRenderer.TAG, "Could not bind post processing frame buffer." + status);
 					GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-					mReloadFrameBufferTex = true;
 				}
 				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 				GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mViewportWidth, mViewportHeight);
@@ -182,8 +193,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			GLES20.glClear(clearMask);
 
 			mPostProcessingQuad.render(mPostProcessingCam, mPostProcessingCam.getProjectionMatrix(), mPostProcessingCam.getViewMatrix(), null);
-			// mPostProcessingQuad.render(mCamera,
-			// mCamera.getProjectionMatrix(), mVMatrix, null);
 		}
 	}
 
@@ -191,27 +200,71 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		mViewportWidth = width;
 		mViewportHeight = height;
 		mCamera.setProjectionMatrix(width, height);
-
 		GLES20.glViewport(0, 0, width, height);
 	}
 
+	
+	/* Called when the OpenGL context is created or re-created. Don't set up your scene here,
+	 * use initScene() for that.
+	 * 
+	 * @see rajawali.renderer.RajawaliRenderer#initScene
+	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition.khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
+	 * 
+	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		GLES20.glFrontFace(GLES20.GL_CCW);
 		GLES20.glCullFace(GLES20.GL_BACK);
 
-		if (mTextureManager == null)
+		if (!mSceneInitialized) {
 			mTextureManager = new TextureManager();
-		else
-			mTextureManager.reset();
+			initScene();
+		}
 
-		if (mClearChildren) {
+		if (!mSceneCachingEnabled) {
+			mTextureManager.reset();
 			if (mNumChildren > 0) {
 				mChildren.clear();
 				mNumChildren = 0;
 			}
+		} else if(mSceneCachingEnabled && mSceneInitialized) {
+			mTextureManager.reload();
+			reloadChildren();
+			if(mSkybox != null)
+				mSkybox.reload();
+			if(mPostProcessingQuad != null)
+				mPostProcessingQuad.reload();
+			int[] frameBuffers = new int[1];
+			GLES20.glGenFramebuffers(1, frameBuffers, 0);
+			mFrameBufferHandle = frameBuffers[0];
+
+			int[] depthBuffers = new int[1];
+			GLES20.glGenRenderbuffers(1, depthBuffers, 0);
+			mDepthBufferHandle = depthBuffers[0];
+			
+			mReloadPickerInfo = true;
+		}
+		
+		mSceneInitialized = true;
+		startRendering();
+	}
+	
+	private void reloadChildren() {
+		for(int i=0; i<mNumChildren; i++) {
+			mChildren.get(i).reload();
 		}
 	}
 
+	/**
+	 * Scene construction should happen here, not in onSurfaceCreated()
+	 */
+	protected void initScene() {
+		
+	}
+	
+	protected void destroyScene() {
+		
+	}
+	
 	public void startRendering() {
 		if (mTimer != null) {
 			mTimer.cancel();
@@ -313,7 +366,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	public boolean removeChild(BaseObject3D child) {
 		boolean result = mChildren.remove(child);
 		mNumChildren = mChildren.size();
-		// mTextureManager.removeTextures(child.getTextureInfoList());
 		return result;
 	}
 
@@ -356,5 +408,17 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 
 	public void setBackgroundColor(int color) {
 		setBackgroundColor(Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color));
+	}
+	
+	public boolean getSceneInitialized() {
+		return mSceneInitialized;
+	}
+	
+	public void setSceneCachingEnabled(boolean enabled) {
+		mSceneCachingEnabled = enabled;
+	}
+	
+	public boolean getSceneCachingEnabled() {
+		return mSceneCachingEnabled;
 	}
 }

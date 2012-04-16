@@ -24,13 +24,13 @@ public class SkyboxMaterial extends AMaterial {
 			"precision mediump float;\n" +
 
 			"varying vec3 vTextureCoord;\n" +
-			"uniform samplerCube uTexture0;\n" +
+			"uniform samplerCube uCubeMapTexture;\n" +
 			"varying vec4 vColor;\n" +
 
 			"uniform bool uUseTexture;\n" +
 
 			"void main() {\n" +
-			"	gl_FragColor = textureCube(uTexture0, vTextureCoord);\n" +
+			"	gl_FragColor = textureCube(uCubeMapTexture, vTextureCoord);\n" +
 			"}\n";
 		
 	public SkyboxMaterial() {

@@ -116,16 +116,30 @@ public class ObjParser extends AParser {
                         
                         boolean hasuv = partLength >= 2 && !emptyVt;
                         boolean hasn = partLength == 3 || (partLength == 2 && emptyVt);
+                        short idx;
                         
                         for (int i = 1; i < 4; i++) {
                         	if(i > 1)
                         		subParts = new StringTokenizer(parts.nextToken(), "/");
+                        	idx = (short) (Short.parseShort(subParts.nextToken()));
 
-                            currObjIndexData.vertexIndices.add((short) (Short.parseShort(subParts.nextToken()) - 1));
+                        	if(idx < 0) idx = (short) ((short)(vertices.size() / 3) + idx);
+                        	else idx -= 1;
+                            currObjIndexData.vertexIndices.add(idx);
                             if (hasuv)
-                                currObjIndexData.texCoordIndices.add((short) (Short.parseShort(subParts.nextToken()) - 1));
+                            {
+                            	idx = (short) (Short.parseShort(subParts.nextToken()));
+                            	if(idx < 0) idx = (short) ((short)(texCoords.size() / 2) + idx);
+                            	else idx -= 1;
+                                currObjIndexData.texCoordIndices.add(idx);
+                            }
                             if (hasn)
-                                currObjIndexData.normalIndices.add((short) (Short.parseShort(subParts.nextToken()) - 1));
+                            {
+                            	idx = (short) (Short.parseShort(subParts.nextToken()));
+                            	if(idx < 0) idx = (short) ((short)(normals.size() / 3) + idx);
+                            	else idx -= 1;
+                                currObjIndexData.normalIndices.add(idx);
+                            }
                         }
 					}
 				} else if(type.equals(TEXCOORD)) {
@@ -272,7 +286,8 @@ public class ObjParser extends AParser {
 					if(numTokens == 0)
 						continue;
 					String type = parts.nextToken();
-					type.replace("\t", "");
+					type = type.replaceAll("\\t", "");
+					type = type.replaceAll(" ", "");
 					
 					if(type.equals(MATERIAL_NAME)) {
 						if(matDef != null) mMaterials.add(matDef);
@@ -343,7 +358,7 @@ public class ObjParser extends AParser {
 				phong.setShininess(matDef.specularCoefficient);
 			}
 			
-			if(hasTexture) {Log.d("Rajawali", mResourcePackage +" / " + matDef.diffuseTexture);
+			if(hasTexture) {
 				int identifier = mResources.getIdentifier(matDef.diffuseTexture, "drawable", mResourcePackage);
 				object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
 			}
@@ -368,7 +383,7 @@ public class ObjParser extends AParser {
 			indexOf = fName.lastIndexOf("/");
 			if(indexOf > -1)
 				fName = fName.substring(indexOf, fName.length());
-			return fName;
+			return fName.toLowerCase();
 		}
 	}
 }

@@ -1,6 +1,6 @@
 package rajawali.filters;
 
-import rajawali.materials.TextureManager.TextureInfo;
+import rajawali.materials.TextureInfo;
 
 
 public interface IPostProcessingFilter {

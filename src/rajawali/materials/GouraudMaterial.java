@@ -63,13 +63,13 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"varying vec4 vColor;\n" +
 		
 		"uniform vec4 uSpecularColor;\n" +
-		"uniform sampler2D uTexture0;\n" +
+		"uniform sampler2D uDiffuseTexture;\n" +
 		"uniform bool uUseTexture;\n" +
 		"uniform vec4 uAmbientColor;\n" +
 		"uniform vec4 uAmbientIntensity;\n" + 
 
 		"void main() {\n" +
-		"	vec4 texColor = uUseTexture ? texture2D(uTexture0, vTextureCoord) : vColor;\n" +
+		"	vec4 texColor = uUseTexture ? texture2D(uDiffuseTexture, vTextureCoord) : vColor;\n" +
 		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity;\n" +
 		"	gl_FragColor.a = texColor.a;\n" +
 		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
