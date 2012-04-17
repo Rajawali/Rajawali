@@ -21,6 +21,7 @@ import rajawali.materials.TextureManager.TextureType;
 import rajawali.primitives.Cube;
 import rajawali.primitives.Plane;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
+import rajawali.util.RajLog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -28,11 +29,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer {
-	public static final String TAG = "Rajawali";
-
 	protected Context mContext;
 
 	protected float mEyeZ = -4.0f;
@@ -145,7 +143,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 				GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mFrameBufferTexInfo.getTextureId(), 0);
 				int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
 				if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
-					Log.d(RajawaliRenderer.TAG, "Could not bind post processing frame buffer." + status);
+					RajLog.d("Could not bind post processing frame buffer." + status);
 					GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 				}
 				GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);

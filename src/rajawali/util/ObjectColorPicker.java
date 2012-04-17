@@ -10,7 +10,6 @@ import rajawali.materials.TextureInfo;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 public class ObjectColorPicker {
 	protected final int FLOAT_SIZE_BYTES = 4;
@@ -58,7 +57,7 @@ public class ObjectColorPicker {
 		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE)
 		{
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-			Log.d(RajawaliRenderer.TAG, "Could not bind FrameBuffer for color picking.");
+			RajLog.d("Could not bind FrameBuffer for color picking.");
 		}
 	}
 	
