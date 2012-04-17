@@ -30,6 +30,12 @@ public final class Number3D {
 		this.y = y;
 		this.z = z;
 	}
+	
+	public Number3D(double x, double y, double z) {
+		this.x = (float) x;
+		this.y = (float) y;
+		this.z = (float) z;
+	}
 
 	public void setAll(float x, float y, float z) {
 		this.x = x;
