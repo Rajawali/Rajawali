@@ -8,7 +8,6 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"uniform mat3 uNMatrix;\n" +
 		"uniform mat4 uMMatrix;\n" +
 		"uniform mat4 uVMatrix;\n" +
-		"uniform vec3 uLightPos;\n" +
 		
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
@@ -16,7 +15,8 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"attribute vec4 aColor;\n" +
 		
 		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 N, L;\n" +
+		"varying vec3 N;\n" +
+		"varying vec4 V;\n" +
 		"varying vec4 vColor;\n" +
 		
 		"\n#ifdef VERTEX_ANIM\n" +
@@ -35,9 +35,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	gl_Position = uMVPMatrix * position;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		"	N = normalize(uNMatrix * normal);\n" +
-		"	vec4 V = uMMatrix * position;\n" +
-		"   vec4 lightPos = vec4(uLightPos, 1.0);\n" +
-		"	L = normalize(vec3(lightPos - V));\n" +
+		"	V = uMMatrix * position;\n" +
 		"	vColor = aColor;\n" +
 		"}";
 		
@@ -45,17 +43,24 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"precision mediump float;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 N, L;\n" +
+		"varying vec3 N;\n" +
+		"varying vec4 V;\n" +
 		"varying vec4 vColor;\n" +
  
 		"uniform sampler2D uDiffuseTexture;\n" +
 		"uniform bool uUseTexture;\n" +
-		"uniform float uLightPower;\n" +
 		"uniform vec4 uAmbientColor;\n" +
-		"uniform vec4 uAmbientIntensity;\n" + 
-
+		"uniform vec4 uAmbientIntensity;\n" +
+		
+		M_LIGHTS_VARS +
+		
 		"void main() {\n" +
-		"	float intensity = uLightPower * clamp(dot(N, L), 0.0, 1.0);\n" +
+		"	float intensity = 0.0;\n" +
+		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
+		"  		vec4 lightPos = vec4(uLightPos[i], 1.0);\n" +
+		"		vec3 L = normalize(vec3(lightPos - V));\n" +
+		"		intensity += uLightPower[i] * clamp(dot(N, L), 0.0, 1.0);\n" +
+		"	}\n" +
 		"	if(uUseTexture==true) gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +
 		"	gl_FragColor = uAmbientIntensity * uAmbientColor + intensity * gl_FragColor;" +

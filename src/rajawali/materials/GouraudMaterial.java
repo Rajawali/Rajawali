@@ -1,9 +1,7 @@
 package rajawali.materials;
 
-import rajawali.wallpaper.Wallpaper;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 
 public class GouraudMaterial extends AAdvancedMaterial {
@@ -12,7 +10,8 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"uniform mat3 uNMatrix;\n" +
 		"uniform mat4 uMMatrix;\n" +
 		"uniform mat4 uVMatrix;\n" +
-		"uniform vec3 uLightPos;\n" +
+		"uniform vec4 uAmbientColor;\n" +
+		"uniform vec4 uAmbientIntensity;\n" +
 		
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
@@ -23,6 +22,8 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"varying float vSpecularIntensity;\n" +
 		"varying float vDiffuseIntensity;\n" +
 		"varying vec4 vColor;\n" +
+		
+		M_LIGHTS_VARS +
 		
 		"\n#ifdef VERTEX_ANIM\n" +
 		"attribute vec4 aNextFramePosition;\n" +
@@ -43,14 +44,18 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		
 		"	vec4 vertexPosCam = uMMatrix * position;\n" +
 		"	vec3 normalCam = normalize(uNMatrix * normal);\n" +
-		"	vec4 lightPosCam = vec4(uLightPos, 1.0);\n" +
+		
+		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
+		"		vec4 lightPosCam = vec4(uLightPos[i], 1.0);\n" +
 
-		"	vec3 lightVert = normalize(vec3(lightPosCam - vertexPosCam));\n" +
-		"	vec3 lightRefl = normalize(reflect(lightVert, normalCam));\n" +
+		"		vec3 lightVert = normalize(vec3(lightPosCam - vertexPosCam));\n" +
+		"		vec3 lightRefl = normalize(reflect(lightVert, normalCam));\n" +
 
-		"	vDiffuseIntensity = max(dot(lightVert, normalCam), 0.0);\n" +
-		"	vSpecularIntensity = max(dot(lightRefl, normalize(vec3(vertexPosCam))), 0.0);\n" +
-		"	vSpecularIntensity = pow(vSpecularIntensity, 6.0);\n" +
+		"		vDiffuseIntensity += uLightPower[i] * max(dot(lightVert, normalCam), 0.0);\n" +
+		"		float intens = uLightPower[i] * max(dot(lightRefl, normalize(vec3(vertexPosCam))), 0.0);\n" +
+		"		vSpecularIntensity += pow(intens, 6.0);\n" +
+		"	}" +
+		"	vSpecularIntensity = clamp(vSpecularIntensity, 0.0, 1.0);" +
 		"	vColor = aColor;\n" +
 		"}";
 		
@@ -62,21 +67,24 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"varying float vDiffuseIntensity;\n" +
 		"varying vec4 vColor;\n" +
 		
-		"uniform vec4 uSpecularColor;\n" +
 		"uniform sampler2D uDiffuseTexture;\n" +
 		"uniform bool uUseTexture;\n" +
 		"uniform vec4 uAmbientColor;\n" +
 		"uniform vec4 uAmbientIntensity;\n" + 
-
+		"uniform vec4 uSpecularColor;\n" +
+		"uniform vec4 uSpecularIntensity;\n" +
+		
 		"void main() {\n" +
 		"	vec4 texColor = uUseTexture ? texture2D(uDiffuseTexture, vTextureCoord) : vColor;\n" +
-		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity;\n" +
+		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity * uSpecularIntensity;\n" +
 		"	gl_FragColor.a = texColor.a;\n" +
 		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
 		"}";
 	
 	protected int muSpecularColorHandle;
+	protected int muSpecularIntensityHandle;
 	protected float[] mSpecularColor;
+	protected float[] mSpecularIntensity;
 	
 	public GouraudMaterial() {
 		this(false);
@@ -85,6 +93,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	public GouraudMaterial(boolean isAnimated) {
 		super(mVShader, mFShader, isAnimated);
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+		mSpecularIntensity = new float[] { .2f, .2f, .2f, 1.0f };
 	}
 	
 	public GouraudMaterial(float[] specularColor) {
@@ -96,6 +105,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	public void useProgram() {
 		super.useProgram();
 		GLES20.glUniform4fv(muSpecularColorHandle, 1, mSpecularColor, 0);
+		GLES20.glUniform4fv(muSpecularIntensityHandle, 1, mSpecularIntensity, 0);
 	}
 	
 	public void setSpecularColor(float[] color) {
@@ -110,13 +120,19 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		setSpecularColor(new float[] { Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color) });
 	}
 	
+	public void setSpecularIntensity(float[] intensity) {
+		mSpecularIntensity = intensity;
+	}
+	
+	public void setSpecularIntensity(float r, float g, float b, float a) {
+		setSpecularIntensity(new float[] { r, g, b, a });
+	}
+	
 	@Override
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);
-		muSpecularColorHandle = GLES20.glGetUniformLocation(mProgram, "uSpecularColor");
-		if(muSpecularColorHandle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uSpecularColor");
-		}
+		muSpecularColorHandle = getUniformLocation("uSpecularColor");
+		muSpecularIntensityHandle = getUniformLocation("uSpecularIntensity");
 	}
 }

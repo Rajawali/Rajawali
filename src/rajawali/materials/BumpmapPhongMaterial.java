@@ -5,8 +5,11 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 			"precision mediump float;\n" +
 
 			"varying vec2 vTextureCoord;\n" +
-			"varying vec3 N, L, E, H;\n" +
+			"varying vec3 N;\n" +
+			"varying vec3 L["+MAX_LIGHTS+"], H["+MAX_LIGHTS+"];\n" +
 			"varying vec4 vColor;\n" +
+			
+			M_LIGHTS_VARS +
 			
 			"uniform vec4 uSpecularColor;\n" +
 			"uniform vec4 uAmbientColor;\n" +
@@ -17,17 +20,19 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 			"uniform bool uUseTexture;\n" +
 
 			"void main() {\n" +
-			"	vec3 Normal = normalize(N);\n" +
-			"	vec3 Light  = normalize(L);\n" +
-			"	vec3 Eye    = normalize(E);\n" +
-			"	vec3 Half   = normalize(H);\n" +
+			"	float Kd, Ks;" +
 			
 			"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);" +
 			"	bumpnormal.z = -bumpnormal.z;" +
-			"	bumpnormal = normalize(bumpnormal + Normal);" +
+			"	bumpnormal = normalize(bumpnormal + N);" +
 			
-			"	float Kd = max(dot(bumpnormal, Light), 0.0);\n" + 
-			"	float Ks = pow(max(dot(Half, bumpnormal), 0.0), uShininess);\n" + 
+			"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
+			"		vec3 Half   = normalize(H[i]);\n" +
+			"		vec3 Light  = normalize(L[i]);\n" +
+			
+			"		Kd += max(dot(bumpnormal * uLightPower[i], Light), 0.0)  * uLightPower[i];\n" + 
+			"		Ks += pow(max(dot(Half, bumpnormal), 0.0), uShininess);\n" + 
+			"	}" +
 		    "	vec4 diffuse  = uUseTexture ? Kd * texture2D(uDiffuseTexture, vTextureCoord) : Kd * vColor;\n" + 
 		    "	vec4 specular = Ks * uSpecularColor;\n" + 
 		    "	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 

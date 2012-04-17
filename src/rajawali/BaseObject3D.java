@@ -1,6 +1,7 @@
 package rajawali;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
@@ -29,7 +30,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected float[] mTmpMatrix = new float[16];
 
 	protected AMaterial mMaterial;
-	protected ALight mLight;
+	protected Stack<ALight> mLights;
 	protected float mAlpha;
 
 	protected Geometry3D mGeometry;
@@ -61,6 +62,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		mRotation = new Number3D();
 		mScale = new Number3D(1, 1, 1);
 		mGeometry = new Geometry3D();
+		mLights = new Stack<ALight>();
 	}
 
 	public BaseObject3D(String name) {
@@ -214,7 +216,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	}
 
 	protected void setShaderParams(Camera camera) {
-		mMaterial.setLight(mLight);
+		mMaterial.setLights(mLights);
 	};
 
 	public void addTexture(TextureInfo textureInfo) {
@@ -402,14 +404,36 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		this.mTransparent = transparent;
 	}
 
-	public void setLight(ALight light) {
-		mLight = light;
+	public void setLights(Stack<ALight> lights) {
+		mLights = lights;
 		for (int i = 0; i < mChildren.size(); ++i)
-			mChildren.get(i).setLight(mLight);
+			mChildren.get(i).setLights(lights);
+	}
+	
+	public void addLight(ALight light) {
+		mLights.add(light);
+		for (int i = 0; i < mChildren.size(); ++i)
+			mChildren.get(i).setLights(mLights);
+	}
+	
+	/**
+	 * @deprecated Use addLight() instead
+	 * @param light
+	 */
+	public void setLight(ALight light) {
+		addLight(light);
 	}
 
+	/**
+	 * @deprecated use getLight(int index) instead
+	 * @return
+	 */
 	public ALight getLight() {
-		return mLight;
+		return mLights.get(0);
+	}
+	
+	public ALight getLight(int index) {
+		return mLights.get(index);
 	}
 
 	public int getDrawingMode() {

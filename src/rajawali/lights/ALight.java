@@ -6,7 +6,7 @@ import rajawali.math.Number3D;
 public abstract class ALight implements ITransformable3D {
 	protected float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
 	protected Number3D mPosition, mRotation;
-	protected float mPower = 1;
+	protected float mPower = .5f;
 	
 	protected boolean mUseObjectTransform;
 	

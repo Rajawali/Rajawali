@@ -5,21 +5,29 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 			"precision mediump float;\n" +
 
 			"varying vec2 vTextureCoord;\n" +
-			"varying vec3 N, L;\n" +
+			"varying vec3 N;\n" +
 			"varying vec4 vColor;\n" +
+			"varying vec4 V;\n" +
 			
 			"uniform sampler2D uDiffuseTexture;\n" +
 			"uniform sampler2D uNormalTexture;\n" +
 			"uniform bool uUseTexture;\n" +
-			"uniform float uLightPower;\n" +
 			"uniform vec4 uAmbientColor;\n" +
-			"uniform vec4 uAmbientIntensity;\n" + 
+			"uniform vec4 uAmbientIntensity;\n" +
+			
+			M_LIGHTS_VARS +
 
 			"void main() {\n" +
-			"	vec3 normal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);" +
-			"	normal.z = -normal.z;" +
-			"	normal = normalize(normal + normalize(N));" +
-		    "	float intensity = max(dot(normal, L), 0.0);" +
+			"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);" +
+			"	bumpnormal.z = -bumpnormal.z;" +
+			"	bumpnormal = normalize(bumpnormal + N);" +
+			
+		    "	float intensity = 0.0;" +
+		    "	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
+			"		vec4 lightPos = vec4(uLightPos[i], 1.0);\n" +
+			"		vec3 L = normalize(vec3(lightPos - V));\n" +
+			"		intensity += uLightPower[i] * max(dot(bumpnormal, L), 0.0);\n" +
+			"	}\n" +
 			" 	vec3 color = intensity * texture2D(uDiffuseTexture, vTextureCoord).rgb;" +
 		    "	gl_FragColor = vec4(color, 1.0) + uAmbientColor * uAmbientIntensity;\n" + 
 			"}";

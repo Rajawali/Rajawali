@@ -31,7 +31,7 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer {
-	public static String TAG = "Rajawali";
+	public static final String TAG = "Rajawali";
 
 	protected Context mContext;
 
@@ -62,6 +62,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
+	protected static int mMaxLights = 1;
 
 	protected ColorPickerInfo mPickerInfo;
 
@@ -420,5 +421,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	
 	public boolean getSceneCachingEnabled() {
 		return mSceneCachingEnabled;
+	}
+
+	public static int getMaxLights() {
+		return mMaxLights;
+	}
+
+	public static void setMaxLights(int maxLights) {
+		RajawaliRenderer.mMaxLights = maxLights;
 	}
 }

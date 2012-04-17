@@ -1,6 +1,7 @@
 package rajawali.materials;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import rajawali.Camera;
 import rajawali.lights.ALight;
@@ -26,10 +27,9 @@ public abstract class AMaterial {
 	protected int muUseTextureHandle;
 	protected int muMMatrixHandle;
 	protected int muVMatrixHandle;
-	protected int muLightPowerHandle;
 	protected int muInterpolationHandle;
 
-	protected ALight mLight;
+	protected Stack<ALight> mLights;
 	protected boolean mUseColor = false;
 
 	protected int mNumTextures = 0;
@@ -78,7 +78,6 @@ public abstract class AMaterial {
 		muMMatrixHandle = getUniformLocation("uMMatrix");
 		muVMatrixHandle = getUniformLocation("uVMatrix");
 		muUseTextureHandle = getUniformLocation("uUseTexture");
-		muLightPowerHandle = getUniformLocation("uLightPower");
 		
 		if(mIsAnimated == true) {
 			maNextFramePositionHandle = getAttribLocation("aNextFramePosition");
@@ -300,14 +299,12 @@ public abstract class AMaterial {
 				false, 0, 0);
 	}
 
-	public void setLight(ALight light) {
-		if (light == null)
+	public void setLights(Stack<ALight> lights) {
+		if(lights == null || lights.size() == 0)
 			return;
-		mLight = light;
-		if (muLightPowerHandle > -1)
-			GLES20.glUniform1f(muLightPowerHandle, mLight.getPower());
+		mLights = lights;
 	}
-
+	
 	public void setCamera(Camera camera) {
 		mCameraPosArray[0] = camera.getX();
 		mCameraPosArray[1] = camera.getY();

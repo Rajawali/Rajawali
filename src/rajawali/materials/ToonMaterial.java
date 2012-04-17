@@ -10,24 +10,31 @@ public class ToonMaterial extends DiffuseMaterial {
 			"precision mediump float;\n" +
 
 			"varying vec2 vTextureCoord;\n" +
-			"varying vec3 N, L;\n" +
+			"varying vec3 N;\n" +
+			"varying vec4 V;\n" +
 			"varying vec4 vColor;\n" +
 	 
 			"uniform sampler2D uDiffuseTexture;\n" +
 			"uniform bool uUseTexture;\n" +
-			"uniform float uLightPower;\n" +
 			"uniform vec4 uAmbientColor;\n" +
 			"uniform vec4 uAmbientIntensity;\n" + 
 			"uniform vec4 uToonColor0, uToonColor1, uToonColor2, uToonColor3;\n" +
+			
+			M_LIGHTS_VARS +			
 
 			"void main() {\n" +
-			"	float intensity = max(dot(L, N), 0.0);\n" +
+			"	float intensity = 0.0;\n" +
+			"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
+			"		vec4 lightPos = vec4(uLightPos[i], 1.0);\n" +
+			"		vec3 L = normalize(vec3(lightPos - V));\n" +
+			"		intensity += max(dot(L, N), 0.0) * uLightPower[i];" +
+			"	}" +
 			"	vec4 color = vColor;" +
 			"   if(intensity > .95) color = uToonColor0;" +
 			"   else if(intensity > .5) color = uToonColor1;" +
 			"   else if(intensity > .25) color = uToonColor2;" +
 			"   else color = uToonColor3;" +
-			"	color.rgb *= intensity * uLightPower;" +	
+			"	color.rgb *= intensity;" +	
 			"	color += uAmbientColor * uAmbientIntensity;" +
 			"	gl_FragColor = color;" +
 			"}";

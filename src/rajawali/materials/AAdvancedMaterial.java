@@ -1,18 +1,32 @@
 package rajawali.materials;
 
+import java.util.Stack;
+
 import rajawali.lights.ALight;
-import rajawali.lights.DirectionalLight;
+import rajawali.math.Number3D;
+import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
 public abstract class AAdvancedMaterial extends AMaterial {
+	protected static final int MAX_LIGHTS = RajawaliRenderer.getMaxLights(); 
+	
+	public static final String M_LIGHTS_VARS =
+			"uniform vec3 uLightPos[" +MAX_LIGHTS+ "];\n" +
+			"uniform float uLightPower[" +MAX_LIGHTS+ "];\n" +
+			"uniform vec3 uLightColor[" +MAX_LIGHTS+ "];\n";	
+	
 	protected int muLightPosHandle;
+	protected int muLightPowerHandle;
+	protected int muLightColorHandle;
 	protected int muNormalMatrixHandle;
 	protected int muAmbientColorHandle;
 	protected int muAmbientIntensityHandle;
 
 	protected float[] mNormalMatrix;
 	protected float[] mLightPos;
+	protected float[] mLightPower;
+	protected float[] mLightColor;
 	protected float[] mTmp, mTmp2;
 	protected float[] mAmbientColor, mAmbientIntensity;
 
@@ -30,35 +44,55 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	public AAdvancedMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
 		super(vertexShader, fragmentShader, isAnimated);
 		
+		final int maxLights = MAX_LIGHTS;
 		mNormalMatrix = new float[9];
 		mTmp = new float[9];
 		mTmp2 = new float[9];
-		mLightPos = new float[3];
 		mAmbientColor = new float[] {.2f, .2f, .2f, 1};
 		mAmbientIntensity = new float[] { .3f, .3f, .3f, 1 };
+		
+		mLightPos = new float[maxLights * 3];
+		mLightPower = new float[maxLights];
+		mLightColor = new float[mLightPos.length];
 	}
 	
 	@Override
-	public void setLight(ALight light) {
-		super.setLight(light);
-
-		DirectionalLight dirLight = (DirectionalLight)light;
-		mLightPos[0] = dirLight.getPosition().x;
-		mLightPos[1] = dirLight.getPosition().y;
-		mLightPos[2] = dirLight.getPosition().z;
-		GLES20.glUniform3fv(muLightPosHandle, 1, mLightPos, 0);
+	public void setLights(Stack<ALight> lights) {
+		super.setLights(lights);
+		
+		ALight light;
+		int index;
+		Number3D pos;
+		float[] color;
+		for(int i=0; i<MAX_LIGHTS; i++) {
+			light = mLights.get(i);
+			pos = light.getPosition();
+			color = light.getColor();
+			mLightPower[i] = light.getPower();
+			index = i*3;
+			mLightPos[index] = -pos.x;
+			mLightPos[index+1] = pos.y;
+			mLightPos[index+2] = pos.z;
+			mLightColor[index] = color[0];
+			mLightColor[index+1] = color[1];
+			mLightColor[index+1] = color[2];
+		}
+		
+		GLES20.glUniform3fv(muLightPosHandle, MAX_LIGHTS, mLightPos, 0);
+		GLES20.glUniform3fv(muLightColorHandle, MAX_LIGHTS, mLightColor, 0);
+		GLES20.glUniform1fv(muLightPowerHandle, MAX_LIGHTS, mLightPower, 0);
 	}
 	
-	public void setAmbientcolor(float[] color) {
+	public void setAmbientColor(float[] color) {
 		mAmbientColor = color;
 	}
 	
-	public void setAmbientcolor(float r, float g, float b, float a) {
-		setAmbientcolor(new float[] { r, g, b, a });
+	public void setAmbientColor(float r, float g, float b, float a) {
+		setAmbientColor(new float[] { r, g, b, a });
 	}
 	
-	public void setAmbientcolor(int color) {
-		setAmbientcolor(new float[] { Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color) });
+	public void setAmbientColor(int color) {
+		setAmbientColor(new float[] { Color.red(color) / 255, Color.green(color) / 255, Color.blue(color) / 255, Color.alpha(color) / 255 });
 	}
 	
 	public void setAmbientIntensity(float[] intensity) {
@@ -80,10 +114,12 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);
-		muLightPosHandle = getUniformLocation("uLightPos"); 
 		muNormalMatrixHandle = getUniformLocation("uNMatrix");
 		muAmbientColorHandle = getUniformLocation("uAmbientColor");
 		muAmbientIntensityHandle = getUniformLocation("uAmbientIntensity");
+		muLightPosHandle = getUniformLocation("uLightPos"); 
+		muLightColorHandle = getUniformLocation("uLightColor");
+		muLightPowerHandle = getUniformLocation("uLightPower");
 	}
 	
 	@Override
