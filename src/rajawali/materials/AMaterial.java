@@ -5,10 +5,8 @@ import java.util.Stack;
 
 import rajawali.Camera;
 import rajawali.lights.ALight;
-import rajawali.renderer.RajawaliRenderer;
-import rajawali.wallpaper.Wallpaper;
+import rajawali.util.RajLog;
 import android.opengl.GLES20;
-import android.util.Log;
 
 public abstract class AMaterial {
 	protected String mVertexShader;
@@ -94,11 +92,8 @@ public abstract class AMaterial {
 			int[] compiled = new int[1];
 			GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
 			if (compiled[0] == 0) {
-				Log.e(Wallpaper.TAG, "Could not compile "
-						+ (shaderType == 35632 ? "fragment" : "vertex")
-						+ " shader:");
-				Log.e(Wallpaper.TAG,
-						"Shader log: " + GLES20.glGetShaderInfoLog(shader));
+				RajLog.e("Could not compile " + (shaderType == 35632 ? "fragment" : "vertex") + " shader:");
+				RajLog.e("Shader log: " + GLES20.glGetShaderInfoLog(shader));
 				GLES20.glDeleteShader(shader);
 				shader = 0;
 			}
@@ -126,8 +121,8 @@ public abstract class AMaterial {
 			int[] linkStatus = new int[1];
 			GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);
 			if (linkStatus[0] != GLES20.GL_TRUE) {
-				Log.e(Wallpaper.TAG, "Could not link program: ");
-				Log.e(Wallpaper.TAG, GLES20.glGetProgramInfoLog(program));
+				RajLog.e("Could not link program: ");
+				RajLog.e(GLES20.glGetProgramInfoLog(program));
 				GLES20.glDeleteProgram(program);
 				program = 0;
 			}
@@ -138,8 +133,7 @@ public abstract class AMaterial {
 	protected int getUniformLocation(String name) {
 		int handle = GLES20.glGetUniformLocation(mProgram, name);
 		if (handle == -1) {
-			Log.d(RajawaliRenderer.TAG, "Could not get uniform location for "
-					+ name);
+			RajLog.d("Could not get uniform location for " + name);
 		}
 		return handle;
 	}
@@ -147,8 +141,7 @@ public abstract class AMaterial {
 	protected int getAttribLocation(String name) {
 		int handle = GLES20.glGetAttribLocation(mProgram, name);
 		if (handle == -1) {
-			Log.d(RajawaliRenderer.TAG, "Could not get attrib location for "
-					+ name);
+			RajLog.d("Could not get attrib location for " + name);
 		}
 		return handle;
 	}

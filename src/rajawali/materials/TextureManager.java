@@ -3,13 +3,12 @@ package rajawali.materials;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.RajLog;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
-import android.util.Log;
 
 /**
  * @author dennis.ippel
@@ -55,7 +54,7 @@ public class TextureManager {
 		int numTexUnits[] = new int[1];
 		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS, numTexUnits, 0);
 		mMaxTextures = numTexUnits[0];
-		Log.i(RajawaliRenderer.TAG, "MAX TEXTURES: " + mMaxTextures);
+		RajLog.i("MAX TEXTURES: " + mMaxTextures);
 		mTextureInfoList = new ArrayList<TextureInfo>(); 
 		mTextureSlots = new ArrayList<Integer>();
 		for(int i=0; i<mMaxTextures; ++i) {
