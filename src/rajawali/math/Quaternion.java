@@ -9,7 +9,7 @@ import rajawali.math.Number3D.Axis;
  *
  */
 public final class Quaternion {
-	public final float F_EPSILON = .0001f;
+	public final static float F_EPSILON = .001f;
 	public float w, x, y, z;
 
 	public Quaternion() {
@@ -31,7 +31,10 @@ public final class Quaternion {
 	}
 
 	public void fromAngleAxis(final float angle, final Axis axis) {
-		Number3D axisVector = Number3D.getAxisVector(axis);
+		fromAngleAxis(angle, Number3D.getAxisVector(axis));
+	}
+	
+	public void fromAngleAxis(final float angle, final Number3D axisVector) {
 		float radian = MathUtil.degreesToRadians(angle);
 		float halfAngle = radian * .5f;
 		float halfAngleSin = (float) Math.sin(halfAngle);
@@ -40,6 +43,50 @@ public final class Quaternion {
 		y = halfAngleSin * axisVector.y;
 		z = halfAngleSin * axisVector.z;
 	}
+	
+	public void fromRotationMatrix(final float[] rotMatrix)
+    {
+        // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
+        // article "Quaternion Calculus and Fast Animation".
+
+        float fTrace = rotMatrix[0]+rotMatrix[5]+rotMatrix[10];
+        float fRoot;
+
+        if ( fTrace > 0.0 )
+        {
+            // |w| > 1/2, may as well choose w > 1/2
+            fRoot = (float)Math.sqrt(fTrace + 1.0f);  // 2w
+            w = 0.5f*fRoot;
+            fRoot = 0.5f/fRoot;  // 1/(4w)
+            x = (rotMatrix[9]-rotMatrix[6])*fRoot;
+            y = (rotMatrix[2]-rotMatrix[8])*fRoot;
+            z = (rotMatrix[4]-rotMatrix[1])*fRoot;
+        }
+        else
+        {
+            // |w| <= 1/2
+            int[] s_iNext = new int[] { 1, 2, 0 };
+            int i = 0;
+            if ( rotMatrix[5] > rotMatrix[0] )
+                i = 1;
+            if ( rotMatrix[10] > rotMatrix[(i * 4) + i] )
+                i = 2;
+            int j = s_iNext[i];
+            int k = s_iNext[j];
+
+            fRoot = (float)Math.sqrt(rotMatrix[(i * 4) + i]-rotMatrix[(j * 4) + j]-rotMatrix[(k * 4) + k] + 1.0f);
+            float apkQuat[] = new float[] { x, y, z };
+            apkQuat[i] = 0.5f*fRoot;
+            fRoot = 0.5f/fRoot;
+            w = (rotMatrix[(k * 4) + j]-rotMatrix[(j * 4) + k])*fRoot;
+            apkQuat[j] = (rotMatrix[(j * 4) + i]+rotMatrix[(i * 4) + j])*fRoot;
+            apkQuat[k] = (rotMatrix[(k * 4) + i]+rotMatrix[(i * 4) + k])*fRoot;
+            
+            x = apkQuat[0];
+            y = apkQuat[1];
+            z = apkQuat[2];
+        }
+    }
 
 	public Number3D getXAxis() {
 		float fTy = 2.0f * y;
@@ -54,7 +101,7 @@ public final class Quaternion {
 		return new Number3D(1 - (fTyy + fTzz), fTxy + fTwz, fTxz - fTwy);
 	}
 
-	public Number3D getAxis() {
+	public Number3D getYAxis() {
 		float fTx = 2.0f * x;
 		float fTy = 2.0f * y;
 		float fTz = 2.0f * z;
@@ -245,7 +292,7 @@ public final class Quaternion {
 			tmp.multiply(fT);
 			result.add(tmp);
 			// taking the complement requires renormalisation
-			result.normalise();
+			result.normalize();
 			return result;
 		}
 	}
@@ -272,7 +319,7 @@ public final class Quaternion {
 		return result;
 	}
 
-	public float normalise() {
+	public float normalize() {
 		float len = norm();
 		float factor = 1.0f / (float) Math.sqrt(len);
 		multiply(factor);
@@ -329,6 +376,25 @@ public final class Quaternion {
 			return (float) Math.asin(-2 * (x * z - w * y));
 		}
 	}
+	
+
+	public float[] toRotationMatrix()
+	{
+		float x2 = x * x;
+		float y2 = y * y;
+		float z2 = z * z;
+		float xy = x * y;
+		float xz = x * z;
+		float yz = y * z;
+		float wx = w * x;
+		float wy = w * y;
+		float wz = w * z;
+	 
+		return new float[] {1.0f - 2.0f * (y2 + z2), 2.0f * (xy - wz), 2.0f * (xz + wy), 0.0f,
+				2.0f * (xy + wz), 1.0f - 2.0f * (x2 + z2), 2.0f * (yz - wx), 0.0f,
+				2.0f * (xz - wy), 2.0f * (yz + wx), 1.0f - 2.0f * (x2 + y2), 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f};
+	}
 
 	public Quaternion nlerp(float fT, final Quaternion rkP,
 			final Quaternion rkQ, boolean shortestPath) {
@@ -345,7 +411,15 @@ public final class Quaternion {
 			tmp.multiply(fT);
 			result.add(tmp);
 		}
-		result.normalise();
+		result.normalize();
 		return result;
+	}
+	
+	public static Quaternion getIdentity() {
+		return new Quaternion(1, 0, 0, 0);
+	}
+	
+	public String toString() {
+		return "Quaternion.w " + w + " .x: " + x + " .y: " + y + " .z: " + z; 
 	}
 }

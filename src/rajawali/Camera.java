@@ -23,8 +23,8 @@ public class Camera implements ITransformable3D {
 
 	public float[] getViewMatrix() {
 		if (mLookAt != null) {
-			Matrix.setLookAtM(mVMatrix, 0, mPosition.x, mPosition.y,
-					mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, 0f, 1.0f,
+			Matrix.setLookAtM(mVMatrix, 0, -mPosition.x, mPosition.y,
+					mPosition.z, -mLookAt.x, mLookAt.y, mLookAt.z, 0f, 1.0f,
 					0.0f);
 		} else {
 			if (mUseRotationMatrix == false) {
@@ -86,30 +86,18 @@ public class Camera implements ITransformable3D {
 		return mProjMatrix;
 	}
 
-	public void setLookAt(float lookAtX, float lookAtY, float lookAtZ) {
-		if (mLookAt == null)
-			mLookAt = new Number3D();
-		mLookAt.x = lookAtX;
-		mLookAt.y = lookAtY;
-		mLookAt.z = lookAtZ;
-	}
-
-	public void lookAt(BaseObject3D lookatObject) {
-		if (mLookAt == null)
-			mLookAt = new Number3D();
-		mLookAt.x = lookatObject.getX();
-		mLookAt.y = lookatObject.getY();
-		mLookAt.z = lookatObject.getZ();
-	}
-
-	public void lookAt(float x, float y, float z) {
-		if (mLookAt == null)
-			mLookAt = new Number3D();
+	public void setLookAt(float x, float y, float z) {
+		if(mLookAt == null) mLookAt = new Number3D();
 		mLookAt.x = x;
 		mLookAt.y = y;
 		mLookAt.z = z;
 	}
-
+	
+	public void setLookAt(Number3D lookAt) {
+		if(mLookAt == null) mLookAt = new Number3D();
+		setLookAt(lookAt.x, lookAt.y, lookAt.z);
+	}
+	
 	public float getX() {
 		return mPosition.x;
 	}
@@ -133,7 +121,7 @@ public class Camera implements ITransformable3D {
 	public void setZ(float z) {
 		mPosition.z = z;
 	}
-
+	
 	public float getLookAtX() {
 		return mLookAt.x;
 	}

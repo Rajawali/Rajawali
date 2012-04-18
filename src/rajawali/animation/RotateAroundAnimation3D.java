@@ -28,18 +28,18 @@ public class RotateAroundAnimation3D extends Animation3D {
 	protected void applyTransformation(float interpolatedTime) {
 		float radians = mDirection * 360f * interpolatedTime * PI_DIV_180;
 		
-		float cosVal = mCenter.x + ((float)Math.cos(radians) * mDistance);
-		float sinVal = mCenter.y + ((float)Math.sin(radians) * mDistance);
+		float cosVal = (float)Math.cos(radians) * mDistance;
+		float sinVal = (float)Math.sin(radians) * mDistance;
 		
 		if(mAxis == Axis.Z) {
-			mTransformable3D.setX(cosVal);
-			mTransformable3D.setY(sinVal);
+			mTransformable3D.setX(mCenter.x + cosVal);
+			mTransformable3D.setY(mCenter.y + sinVal);
 		} else if(mAxis == Axis.Y) {
-			mTransformable3D.setX(cosVal);
-			mTransformable3D.setZ(sinVal);
+			mTransformable3D.setX(mCenter.x + cosVal);
+			mTransformable3D.setZ(mCenter.z + sinVal);
 		} else if(mAxis == Axis.X) {
-			mTransformable3D.setY(cosVal);
-			mTransformable3D.setZ(sinVal);
+			mTransformable3D.setY(mCenter.x + cosVal);
+			mTransformable3D.setZ(mCenter.z + sinVal);
 		}
 	}
 }

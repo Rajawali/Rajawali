@@ -1,16 +1,15 @@
 package rajawali.math;
 
+
 public final class Number3D {
 	public float x;
 	public float y;
 	public float z;
 
 	private static Number3D _temp = new Number3D();
-	
+
 	public enum Axis {
-		X,
-		Y,
-		Z
+		X, Y, Z
 	}
 
 	public Number3D() {
@@ -30,7 +29,7 @@ public final class Number3D {
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	public Number3D(double x, double y, double z) {
 		this.x = (float) x;
 		this.y = (float) y;
@@ -56,8 +55,7 @@ public final class Number3D {
 	}
 
 	public void normalize() {
-		float mod = (float) Math.sqrt(this.x * this.x + this.y * this.y
-				+ this.z * this.z);
+		float mod = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
@@ -105,14 +103,11 @@ public final class Number3D {
 	}
 
 	public float distanceTo(Number3D other) {
-		return (float) Math.sqrt((x - other.x) * (x - other.x)
-				+ (y - other.y) * (y - other.y) + (z - other.z)
-				* (z - other.z));
+		return (float) Math.sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z));
 	}
 
 	public float length() {
-		return (float) Math.sqrt(this.x * this.x + this.y * this.y
-				+ this.z * this.z);
+		return (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 	}
 
 	public Number3D clone() {
@@ -179,18 +174,17 @@ public final class Number3D {
 	}
 
 	public static Number3D cross(Number3D v, Number3D w) {
-		return new Number3D((w.y * v.z) - (w.z * v.y), (w.z * v.x)
-				- (w.x * v.z), (w.x * v.y) - (w.y * v.x));
+		return new Number3D((w.y * v.z) - (w.z * v.y), (w.z * v.x) - (w.x * v.z), (w.x * v.y) - (w.y * v.x));
 	}
 
 	public static float dot(Number3D v, Number3D w) {
 		return (v.x * w.x + v.y * w.y + w.z * v.z);
 	}
-	
+
 	public static Number3D getAxisVector(Axis axis) {
 		Number3D axisVector = new Number3D();
-		
-		switch(axis) {
+
+		switch (axis) {
 		case X:
 			axisVector.setAll(1, 0, 0);
 			break;
@@ -198,10 +192,53 @@ public final class Number3D {
 			axisVector.setAll(0, 1, 0);
 			break;
 		case Z:
-			axisVector.setAll(1, 0, 0);
+			axisVector.setAll(0, 0, 1);
 			break;
 		}
-		
+
 		return axisVector;
+	}
+
+	
+	/**
+	 * http://ogre.sourcearchive.com/documentation/1.4.5/classOgre_1_1Vector3_eeef4472ad0c4d5f34a038a9f2faa819.html#eeef4472ad0c4d5f34a038a9f2faa819
+	 * 
+	 * @param direction
+	 * @return
+	 */
+	public Quaternion getRotationTo(Number3D direction) {
+		// Based on Stan Melax's article in Game Programming Gems
+		Quaternion q = new Quaternion();
+		// Copy, since cannot modify local
+		Number3D v0 = this;
+		Number3D v1 = direction;
+		v0.normalize();
+		v1.normalize();
+
+		float d = Number3D.dot(v0, v1);
+		// If dot == 1, vectors are the same
+		if (d >= 1.0f) {
+			Quaternion.getIdentity();
+		}
+		if (d < 0.000001f - 1.0f) {
+			// Generate an axis
+			Number3D axis = Number3D.cross(Number3D.getAxisVector(Axis.X), this);
+			if (axis.length() == 0) // pick another if colinear
+				axis = Number3D.cross(Number3D.getAxisVector(Axis.Y), this);
+			axis.normalize();
+			q.fromAngleAxis((float) Math.PI, axis);
+		} else {
+			float s = (float) Math.sqrt((1 + d) * 2);
+			float invs = 1f / s;
+
+			Number3D c = Number3D.cross(v0, v1);
+
+			q.x = c.x * invs;
+			q.y = c.y * invs;
+			q.z = c.z * invs;
+			q.w = s * 0.5f;
+			q.normalize();
+		}
+		return q;
 	}
 }

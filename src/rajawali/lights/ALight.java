@@ -145,4 +145,7 @@ public abstract class ALight implements ITransformable3D {
 
 	@Override
 	public void setScale(Number3D scale) {}
+	
+	public void setLookAt(float x, float y, float z) {}
+	public void setLookAt(Number3D lookAt) {}
 }

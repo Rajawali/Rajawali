@@ -9,36 +9,36 @@ public class TranslateAnimation3D extends Animation3D {
 	protected Number3D mDiffPosition;
 	protected Number3D mMultipliedPosition = new Number3D();
 	protected Number3D mAddedPosition = new Number3D();
-	protected BezierPath3D mBezierPath;
-	
+	protected boolean mOrientToPath = false;
+	protected ISpline mSplinePath;
+
 	public TranslateAnimation3D(Number3D toPosition) {
 		super();
 		mToPosition = toPosition;
 	}
-	
-	public TranslateAnimation3D(Number3D fromPosition, Number3D toPosition)
-	{
+
+	public TranslateAnimation3D(Number3D fromPosition, Number3D toPosition) {
 		super();
 		mFromPosition = fromPosition;
 		mToPosition = toPosition;
 	}
-	
-	public TranslateAnimation3D(BezierPath3D bezierPath) {
+
+	public TranslateAnimation3D(ISpline splinePath) {
 		super();
-		mBezierPath = bezierPath;
+		mSplinePath = splinePath;
 	}
-	
+
 	@Override
 	public void setTransformable3D(ITransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
-		if(mFromPosition == null)
+		if (mFromPosition == null)
 			mFromPosition = new Number3D(transformable3D.getPosition());
 	}
-	
+
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
-		if(mBezierPath == null) {
-			if(mDiffPosition == null)
+		if (mSplinePath == null) {
+			if (mDiffPosition == null)
 				mDiffPosition = Number3D.subtract(mToPosition, mFromPosition);
 			mMultipliedPosition.setAllFrom(mDiffPosition);
 			mMultipliedPosition.multiply(interpolatedTime);
@@ -46,7 +46,20 @@ public class TranslateAnimation3D extends Animation3D {
 			mAddedPosition.add(mMultipliedPosition);
 			mTransformable3D.getPosition().setAllFrom(mAddedPosition);
 		} else {
-			mTransformable3D.getPosition().setAllFrom(mBezierPath.calculatePoint(interpolatedTime));
+			Number3D pathPoint = mSplinePath.calculatePoint(interpolatedTime);
+			mTransformable3D.getPosition().setAllFrom(pathPoint);
+			if (mOrientToPath) {
+				mTransformable3D.setLookAt(mSplinePath.getCurrentTangent());
+			}
 		}
+	}
+
+	public boolean getOrientToPath() {
+		return mOrientToPath;
+	}
+
+	public void setOrientToPath(boolean orientToPath) {
+		this.mOrientToPath = orientToPath;
+		mSplinePath.setCalculateTangents(orientToPath);
 	}
 }

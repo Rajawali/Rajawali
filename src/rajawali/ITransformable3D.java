@@ -33,4 +33,7 @@ public interface ITransformable3D {
 	public float getScaleY();
 	public void setScaleZ(float scaleZ);
 	public float getScaleZ();
+	
+	public void setLookAt(float x, float y, float z);
+	public void setLookAt(Number3D lookAt);
 }
