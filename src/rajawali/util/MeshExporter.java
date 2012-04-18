@@ -6,12 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import android.os.Environment;
-import android.util.Log;
-
 import rajawali.BaseObject3D;
 import rajawali.Geometry3D;
-import rajawali.renderer.RajawaliRenderer;
+import android.os.Environment;
 
 public class MeshExporter {
 	private BaseObject3D mObject;
@@ -39,7 +36,7 @@ public class MeshExporter {
 	}
 	
 	private void exportToObj() {
-		Log.d("Rajawali", "Exporting " +mObject.getName()+ " as .obj file");
+		RajLog.d("Exporting " +mObject.getName()+ " as .obj file");
 		Geometry3D g = mObject.getGeometry();
 		StringBuffer sb = new StringBuffer();
 		
@@ -106,7 +103,7 @@ public class MeshExporter {
 	        writer.flush();
 	        writer.close();
 	        
-	        Log.d("Rajawali", ".obj export successful: " + sdcardPath + File.separator + mFileName);
+	        RajLog.d(".obj export successful: " + sdcardPath + File.separator + mFileName);
 	    }
 	    catch(IOException e)
 	    {
@@ -131,9 +128,9 @@ public class MeshExporter {
 
 			os.writeObject(mObject.toSerializedObject3D());
 			os.close();
-			Log.i(RajawaliRenderer.TAG, "Successfully serialized " + mFileName + " to SD card.");
+			RajLog.i("Successfully serialized " + mFileName + " to SD card.");
 		} catch (Exception e) {
-			Log.e(RajawaliRenderer.TAG, "Serializing " + mFileName + " to SD card was unsuccessfull.");
+			RajLog.e("Serializing " + mFileName + " to SD card was unsuccessfull.");
 			e.printStackTrace();
 		}
 
