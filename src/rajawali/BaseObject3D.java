@@ -9,13 +9,12 @@ import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureInfo;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
-import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
+import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITransformable3D {
 	protected Number3D mPosition, mRotation, mScale;
@@ -233,7 +232,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		int error;
 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
 
-			Log.e(RajawaliRenderer.TAG, op + ": glError " + error + " in class " + this.getClass().getName());
+			RajLog.e(op + ": glError " + error + " in class " + this.getClass().getName());
 			throw new RuntimeException(op + ": glError " + error);
 		}
 	}
