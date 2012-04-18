@@ -1,6 +1,5 @@
 package rajawali.materials;
 
-import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -70,14 +69,15 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"uniform bool uUseTexture;\n" +
 
 		"void main() {\n" +
-		"	float Kd, Ks;" +
+		"	float Kd = 0.0;" +
+		"	float Ks = 0.0;" +
 
 		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
-		"		vec3 Half   = normalize(H[i]);\n" +
-		"		vec3 Light  = normalize(L[i]);\n" +
+		"		vec3 Half   = H[i];\n" +
+		"		vec3 Light  = L[i];\n" +
 		
-		"		Kd += max(dot(N, Light), 0.0) * uLightPower[i];\n" + 
-		"		Ks += pow(max(dot(Half, N), 0.0), uShininess) * uLightPower[i];\n" +
+		"		Kd += max(dot(N, L[i]), 0.0) * uLightPower[i];\n" + 
+		"		Ks += pow(max(dot(H[i], N), 0.0), uShininess) * uLightPower[i];\n" +
 		"	}" +
 	    "	vec4 diffuse  = uUseTexture ? Kd * texture2D(uDiffuseTexture, vTextureCoord) : Kd * vColor;\n" + 
 	    "	vec4 specular = Ks * uSpecularColor;\n" + 
@@ -139,13 +139,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);
-		muSpecularColorHandle = GLES20.glGetUniformLocation(mProgram, "uSpecularColor");
-		if(muSpecularColorHandle == -1) {
-			RajLog.d("Could not get uniform location for uSpecularColor");
-		}
-		muShininessHandle = GLES20.glGetUniformLocation(mProgram, "uShininess");
-		if(muShininessHandle == -1) {
-			RajLog.d("Could not get uniform location for uShininess");
-		}
+		muSpecularColorHandle = getUniformLocation("uSpecularColor");
+		muShininessHandle = getUniformLocation("uShininess");
 	}
 }

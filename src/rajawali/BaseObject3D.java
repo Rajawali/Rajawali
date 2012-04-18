@@ -557,6 +557,8 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		BaseObject3D clone = new BaseObject3D();
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
+		clone.setMaterial(mMaterial);
+		clone.setScale(mScale);
 		return clone;
 	}
 

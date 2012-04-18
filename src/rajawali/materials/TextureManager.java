@@ -129,6 +129,7 @@ public class TextureManager {
         textureInfo.setWidth(width);
         textureInfo.setHeight(height);
         textureInfo.setBitmapConfig(bitmapConfig);
+        textureInfo.setMipmap(mipmap);
         if(!recycle)
         	textureInfo.setTexture(texture);
         if(buffer != null) {
@@ -173,6 +174,7 @@ public class TextureManager {
 		textureInfo.setHeight(textures[0].getHeight());
 		textureInfo.setTextureType(TextureType.CUBE_MAP);
 		textureInfo.setBitmapConfig(textures[0].getConfig());
+		textureInfo.setMipmap(mipmap);
 
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
 		if(mipmap)

@@ -59,7 +59,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
 		"  		vec4 lightPos = vec4(uLightPos[i], 1.0);\n" +
 		"		vec3 L = normalize(vec3(lightPos - V));\n" +
-		"		intensity += uLightPower[i] * clamp(dot(N, L), 0.0, 1.0);\n" +
+		"		intensity += uLightPower[i] * dot(N, L);\n" +
 		"	}\n" +
 		"	if(uUseTexture==true) gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +

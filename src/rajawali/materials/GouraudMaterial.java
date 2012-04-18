@@ -113,11 +113,14 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	}
 	
 	public void setSpecularColor(float r, float g, float b, float a) {
-		setSpecularColor(new float[] { r, g, b, a });
+		mSpecularColor[0] = r;
+		mSpecularColor[1] = g;
+		mSpecularColor[2] = b;
+		mSpecularColor[3] = a;
 	}
 	
 	public void setSpecularColor(int color) {
-		setSpecularColor(new float[] { Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color) });
+		setSpecularColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f);
 	}
 	
 	public void setSpecularIntensity(float[] intensity) {
@@ -125,7 +128,10 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	}
 	
 	public void setSpecularIntensity(float r, float g, float b, float a) {
-		setSpecularIntensity(new float[] { r, g, b, a });
+		mSpecularIntensity[0] = r;
+		mSpecularIntensity[1] = g;
+		mSpecularIntensity[2] = b;
+		mSpecularIntensity[3] = a;
 	}
 	
 	@Override
