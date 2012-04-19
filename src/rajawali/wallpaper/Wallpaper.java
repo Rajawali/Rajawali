@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
+import android.view.MotionEvent;
 
 public class Wallpaper extends GLWallpaperService {
     public static String TAG = "Rajawali";
@@ -260,6 +261,10 @@ public class Wallpaper extends GLWallpaperService {
 			renderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 		}
 		
+		@Override
+		public void onTouchEvent(MotionEvent event) {
+			renderer.onTouchEvent(event);
+		}		
 	}
 
 	@Override

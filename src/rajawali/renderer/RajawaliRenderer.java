@@ -29,6 +29,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.view.MotionEvent;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected Context mContext;
@@ -197,6 +198,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	
 	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
 	}
+	
+	public void onTouchEvent(MotionEvent event) {
+
+	}		
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mViewportWidth = width;
