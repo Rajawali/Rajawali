@@ -194,6 +194,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			mPostProcessingQuad.render(mPostProcessingCam, mPostProcessingCam.getProjectionMatrix(), mPostProcessingCam.getViewMatrix(), null);
 		}
 	}
+	
+	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
+	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mViewportWidth = width;
