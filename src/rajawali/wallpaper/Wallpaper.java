@@ -239,7 +239,7 @@ public class Wallpaper extends GLWallpaperService {
 	
 
 	protected class WallpaperEngine extends GLEngine {
-		//private WallpaperRenderer renderer;
+		private RajawaliRenderer renderer;
 
 		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer) {
 			super();
@@ -251,7 +251,15 @@ public class Wallpaper extends GLWallpaperService {
 			renderer.setSharedPreferences(preferences);
 			setRenderer(renderer);
 			setRenderMode(RENDERMODE_WHEN_DIRTY);
+			
+			this.renderer = renderer;
 		}
+		
+		@Override
+		public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
+			renderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+		}
+		
 	}
 
 	@Override
