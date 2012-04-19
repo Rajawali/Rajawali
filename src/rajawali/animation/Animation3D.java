@@ -133,6 +133,11 @@ public class Animation3D {
 		return mDuration;
 	}
 	
+	/**
+	 * AccelerateDecelerateInterpolator, AccelerateInterpolator, AnticipateInterpolator, AnticipateOvershootInterpolator, BounceInterpolator, CycleInterpolator, DecelerateInterpolator, LinearInterpolator, OvershootInterpolator
+	 * 
+	 * @param interpolator
+	 */
 	public void setInterpolator(Interpolator interpolator) {
 		mInterpolator = interpolator;
 	}

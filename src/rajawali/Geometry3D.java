@@ -34,7 +34,7 @@ public class Geometry3D {
 	protected BoundingBox mBoundingBox;
 	protected BoundingSphere mBoundingSphere;
 	
-	protected enum BufferType {
+	public enum BufferType {
 		FLOAT_BUFFER,
 		SHORT_BUFFER
 	}
@@ -158,7 +158,7 @@ public class Geometry3D {
 //        mNormals.limit(0);			mNormals = null;
 	}
 	
-	protected int createBuffer(BufferType type, Buffer buffer, int target) {
+	public int createBuffer(BufferType type, Buffer buffer, int target) {
 		int buff[] = new int[1];
 		GLES20.glGenBuffers(1, buff, 0);
 		int handle = buff[0];
