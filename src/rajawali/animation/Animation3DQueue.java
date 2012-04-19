@@ -22,7 +22,6 @@ public class Animation3DQueue implements Animation3DListener {
 		mAnimationListener = animationListener;
 	}
 
-	@Override
 	public void onAnimationEnd(Animation3D animation) {
 		if(mCurrentAnimation == mAnimations.size() - 1) {
 			if(mAnimationListener != null) mAnimationListener.onAnimationEnd(null);
@@ -33,11 +32,9 @@ public class Animation3DQueue implements Animation3DListener {
 		anim.start();
 	}
 
-	@Override
 	public void onAnimationRepeat(Animation3D animation) {
 	}
 
-	@Override
 	public void onAnimationStart(Animation3D animation) {
 		
 	}

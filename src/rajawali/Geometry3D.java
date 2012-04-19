@@ -141,7 +141,19 @@ public class Geometry3D {
 	}
 	
 	public void reload() {
+		if(mOriginalGeometry != null) {
+			//if(!mOriginalGeometry.isValid())
+			//	mOriginalGeometry.reload();
+			copyFromGeometry3D(mOriginalGeometry);
+		}
 		createBuffers();
+	}
+	
+	public boolean isValid() {
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mVertexBufferHandle);
+		int error = GLES20.glGetError();
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		return error == GLES20.GL_NO_ERROR;
 	}
 	
 	public void createVertexAndNormalBuffersOnly() {
@@ -294,8 +306,11 @@ public class Geometry3D {
 	
 	public void setColor(float r, float g, float b, float a, boolean createNewBuffer) {
 		if(mColors == null || mColors.limit() == 0)
+		{
 			mColors = ByteBuffer.allocateDirect(mNumVertices * 4 * FLOAT_SIZE_BYTES)
 			.order(ByteOrder.nativeOrder()).asFloatBuffer();
+			createNewBuffer = true;
+		}
 		
 		mColors.position(0);
 		
