@@ -75,20 +75,7 @@ public class Geometry3D {
 		mVertexBufferHandle = vertexBufferHandle;
 		mNormalBufferHandle = normalBufferHandle;
 		
-		mTextureCoords.compact().position(0);
-		mColors.compact().position(0);
-		mIndices.compact().position(0);
-		
-		mTexCoordBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mTextureCoords, GLES20.GL_ARRAY_BUFFER);
-		mColorBufferHandle 		= createBuffer(BufferType.FLOAT_BUFFER, mColors,		GLES20.GL_ARRAY_BUFFER);
-		mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndices,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
-		
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        
-        //mTextureCoords.limit(0);	mTextureCoords = null;
-        //mColors.limit(0);			mColors = null;
-        //mIndices.limit(0);			mIndices = null;
+		createBuffers();
 	}
 	
 	public void setData(float[] vertices, float[] normals,
@@ -132,18 +119,12 @@ public class Geometry3D {
 		
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        
-//        mVertices.limit(0);			mVertices = null;
-//        mNormals.limit(0);			mNormals = null;
-//        mTextureCoords.limit(0);	mTextureCoords = null;
-//        mColors.limit(0);			mColors = null;
-//        mIndices.limit(0);			mIndices = null;
 	}
 	
 	public void reload() {
 		if(mOriginalGeometry != null) {
-			//if(!mOriginalGeometry.isValid())
-			//	mOriginalGeometry.reload();
+			if(!mOriginalGeometry.isValid())
+				mOriginalGeometry.reload();
 			copyFromGeometry3D(mOriginalGeometry);
 		}
 		createBuffers();
@@ -165,9 +146,6 @@ public class Geometry3D {
 		
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-
-//        mVertices.limit(0);			mVertices = null;
-//        mNormals.limit(0);			mNormals = null;
 	}
 	
 	public int createBuffer(BufferType type, Buffer buffer, int target) {

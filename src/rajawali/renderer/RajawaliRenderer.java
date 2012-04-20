@@ -106,6 +106,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void onDrawFrame(GL10 glUnused) {
+		render();
+	}
+	
+	private void render() {
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
@@ -187,6 +191,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			pickerInfo.getPicker().createColorPickingTexture(pickerInfo);
 			pickerInfo = null;
 			mPickerInfo = null;
+			render();
+			
 		} else if (mFilters.size() > 0) {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 			GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
