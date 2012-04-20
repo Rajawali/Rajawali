@@ -270,6 +270,6 @@ public class Wallpaper extends GLWallpaperService {
 	@Override
 	public Engine onCreateEngine() {
 		
-		return null;//new WallpaperEngine(this.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE), getBaseContext(), albumCovers);
+		return null;
 	}
 }

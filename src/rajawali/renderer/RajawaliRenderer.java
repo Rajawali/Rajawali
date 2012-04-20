@@ -420,7 +420,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void setBackgroundColor(int color) {
-		setBackgroundColor(Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color));
+		setBackgroundColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f);
 	}
 	
 	public boolean getSceneInitialized() {
