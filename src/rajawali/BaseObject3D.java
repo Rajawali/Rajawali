@@ -558,7 +558,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
-		clone.setScale(mScale);
+		//clone.setScale(mScale);
 		return clone;
 	}
 
@@ -630,7 +630,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	}
 
 	public void setRotation(Number3D rotation) {
-		mPosition = rotation;
+		mRotation = rotation;
 	}
 	
 	public float[] getRotationMatrix() {
