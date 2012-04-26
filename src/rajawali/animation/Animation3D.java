@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import rajawali.ITransformable3D;
+import rajawali.ATransformable3D;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
@@ -28,7 +28,7 @@ public class Animation3D {
 	protected boolean mHasEnded;
 	protected List<Animation3DListener> mAnimationListeners = new ArrayList<Animation3DListener>();
 	protected Timer mTimer;
-	protected ITransformable3D mTransformable3D;
+	protected ATransformable3D mTransformable3D;
 	protected Animation3D mInstance;
 	
 	public Animation3D()
@@ -108,11 +108,11 @@ public class Animation3D {
 		
 	}
 	
-	public ITransformable3D getTransformable3D() {
+	public ATransformable3D getTransformable3D() {
 		return mTransformable3D;
 	}
 
-	public void setTransformable3D(ITransformable3D transformable3D) {
+	public void setTransformable3D(ATransformable3D transformable3D) {
 		mTransformable3D = transformable3D;
 	}
 	

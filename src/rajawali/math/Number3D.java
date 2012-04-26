@@ -54,8 +54,8 @@ public final class Number3D {
 		this.z = other.z;
 	}
 
-	public void normalize() {
-		float mod = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+	public float normalize() {
+		float mod = (float) Math.sqrt(x * x + y * y + z * z);
 
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
@@ -63,30 +63,39 @@ public final class Number3D {
 			this.y *= mod;
 			this.z *= mod;
 		}
+		
+		return mod;
 	}
 
+	public Number3D inverse() {
+		return new Number3D(-x, -y, -z);
+	}
+	
 	public void add(Number3D n) {
 		this.x += n.x;
 		this.y += n.y;
 		this.z += n.z;
 	}
 
-	public void add(float x, float y, float z) {
+	public Number3D add(float x, float y, float z) {
 		this.x += x;
 		this.y += y;
 		this.z += z;
+		return this;
 	}
 
-	public void subtract(Number3D n) {
+	public Number3D subtract(Number3D n) {
 		this.x -= n.x;
 		this.y -= n.y;
 		this.z -= n.z;
+		return this;
 	}
 
-	public void multiply(Float f) {
+	public Number3D multiply(Float f) {
 		this.x *= f;
 		this.y *= f;
 		this.z *= f;
+		return this;
 	}
 
 	public void multiply(Number3D n) {
@@ -174,11 +183,19 @@ public final class Number3D {
 	}
 
 	public static Number3D cross(Number3D v, Number3D w) {
-		return new Number3D((w.y * v.z) - (w.z * v.y), (w.z * v.x) - (w.x * v.z), (w.x * v.y) - (w.y * v.x));
+		return new Number3D(w.y * v.z - w.z * v.y, w.z * v.x - w.x * v.z, w.x * v.y - w.y * v.x);
+	}
+	
+	public Number3D cross(Number3D w) {
+		_temp.setAllFrom(this);
+		x = w.y * _temp.z - w.z * _temp.y;
+		y = w.z * _temp.x - w.x * _temp.z;
+		z = w.x * _temp.y - w.y * _temp.x;
+		return this;
 	}
 
 	public static float dot(Number3D v, Number3D w) {
-		return (v.x * w.x + v.y * w.y + w.z * v.z);
+		return v.x * w.x + v.y * w.y + v.z * w.z;
 	}
 
 	public static Number3D getAxisVector(Axis axis) {
@@ -218,7 +235,7 @@ public final class Number3D {
 		float d = Number3D.dot(v0, v1);
 		// If dot == 1, vectors are the same
 		if (d >= 1.0f) {
-			Quaternion.getIdentity();
+			q.setIdentity();
 		}
 		if (d < 0.000001f - 1.0f) {
 			// Generate an axis
@@ -226,7 +243,7 @@ public final class Number3D {
 			if (axis.length() == 0) // pick another if colinear
 				axis = Number3D.cross(Number3D.getAxisVector(Axis.Y), this);
 			axis.normalize();
-			q.fromAngleAxis((float) Math.PI, axis);
+			q.fromAngleAxis(MathUtil.radiansToDegrees((float) Math.PI), axis);
 		} else {
 			float s = (float) Math.sqrt((1 + d) * 2);
 			float invs = 1f / s;

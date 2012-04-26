@@ -8,7 +8,6 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureInfo;
 import rajawali.math.Number3D;
-import rajawali.math.Number3D.Axis;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import android.graphics.Color;
@@ -16,9 +15,7 @@ import android.opengl.GLES20;
 import android.opengl.GLU;
 import android.opengl.Matrix;
 
-public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITransformable3D {
-	protected Number3D mPosition, mRotation, mScale;
-
+public class BaseObject3D extends ATransformable3D implements IObject3D, Comparable<BaseObject3D> {
 	protected float[] mMVPMatrix = new float[16];
 	protected float[] mMMatrix = new float[16];
 	protected float[] mProjMatrix;
@@ -28,7 +25,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected float[] mRotateMatrix = new float[16];
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
-	protected float[] mLookAtMatrix = new float[16];
+	//protected float[] mLookAtMatrix = new float[16];
 
 	protected AMaterial mMaterial;
 	protected Stack<ALight> mLights;
@@ -50,7 +47,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	protected int mDrawingMode = GLES20.GL_TRIANGLES;
 
 	protected boolean mIsContainerOnly = true;
-	protected Number3D mLookAt;
+	//protected Number3D mLookAt;
 	protected Number3D mTmpRotX, mTmpRotY, mTmpRotZ;
 	protected int mPickingColor;
 	protected boolean mIsPickingEnabled = false;
@@ -59,13 +56,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 	private int i;
 
 	public BaseObject3D() {
+		super();
 		mChildren = new ArrayList<BaseObject3D>();
-		mPosition = new Number3D();
-		mRotation = new Number3D();
 		mTmpRotX = new Number3D();
 		mTmpRotY = new Number3D();
 		mTmpRotZ = new Number3D();
-		mScale = new Number3D(1, 1, 1);
 		mGeometry = new Geometry3D();
 		mLights = new Stack<ALight>();
 	}
@@ -154,13 +149,17 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 
 		Matrix.setIdentityM(mRotateMatrix, 0);
 
-		if (mLookAt == null) {
-			rotateM(mRotateMatrix, 0, mRotation.x, 1.0f, 0.0f, 0.0f);
-			rotateM(mRotateMatrix, 0, mRotation.y, 0.0f, 1.0f, 0.0f);
-			rotateM(mRotateMatrix, 0, mRotation.z, 0.0f, 0.0f, 1.0f);
-		} else if(mLookAt != null) {
+		setOrientation();
+		if(mLookAt == null) {
+			mOrientation.toRotationMatrix(mRotateMatrix);
+		} else {
 			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
 		}
+//			rotateM(mRotateMatrix, 0, mRotation.x, 1.0f, 0.0f, 0.0f);
+//			rotateM(mRotateMatrix, 0, mRotation.y, 0.0f, 1.0f, 0.0f);
+//			rotateM(mRotateMatrix, 0, mRotation.z, 0.0f, 0.0f, 1.0f);
+//		} else if(mLookAt != null) {
+//			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
 
 		Matrix.translateM(mMMatrix, 0, -mPosition.x, mPosition.y, mPosition.z);
 		Matrix.setIdentityM(mTmpMatrix, 0);
@@ -269,21 +268,7 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		return mAdditive;
 	}
 
-	public void setPosition(Number3D position) {
-		mPosition.x = position.x;
-		mPosition.y = position.y;
-		mPosition.z = position.z;
-	}
 
-	public void setPosition(float x, float y, float z) {
-		mPosition.x = x;
-		mPosition.y = y;
-		mPosition.z = z;
-	}
-
-	public Number3D getPosition() {
-		return mPosition;
-	}
 
 	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ) {
 		float[] r1 = new float[16];
@@ -299,96 +284,9 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		return mMMatrix;
 	}
 
-	public void setX(float x) {
-		mPosition.x = x;
-	}
 
-	public float getX() {
-		return mPosition.x;
-	}
 
-	public void setY(float y) {
-		mPosition.y = y;
-	}
-
-	public float getY() {
-		return mPosition.y;
-	}
-
-	public void setZ(float z) {
-		mPosition.z = z;
-	}
-
-	public float getZ() {
-		return mPosition.z;
-	}
-
-	public void setRotation(float rotX, float rotY, float rotZ) {
-		mRotation.x = rotX;
-		mRotation.y = rotY;
-		mRotation.z = rotZ;
-	}
-
-	public void setRotX(float rotX) {
-		mRotation.x = rotX;
-	}
-
-	public float getRotX() {
-		return mRotation.x;
-	}
-
-	public void setRotY(float rotY) {
-		mRotation.y = rotY;
-	}
-
-	public float getRotY() {
-		return mRotation.y;
-	}
-
-	public void setRotZ(float rotZ) {
-		mRotation.z = rotZ;
-	}
-
-	public float getRotZ() {
-		return mRotation.z;
-	}
-
-	public void setScale(float scale) {
-		mScale.x = scale;
-		mScale.y = scale;
-		mScale.z = scale;
-	}
-
-	public void setScale(float scaleX, float scaleY, float scaleZ) {
-		mScale.x = scaleX;
-		mScale.y = scaleY;
-		mScale.z = scaleZ;
-	}
-
-	public void setScaleX(float scaleX) {
-		mScale.x = scaleX;
-	}
-
-	public float getScaleX() {
-		return mScale.x;
-	}
-
-	public void setScaleY(float scaleY) {
-		mScale.y = scaleY;
-	}
-
-	public float getScaleY() {
-		return mScale.y;
-	}
-
-	public void setScaleZ(float scaleZ) {
-		mScale.z = scaleZ;
-	}
-
-	public float getScaleZ() {
-		return mScale.z;
-	}
-
+	
 	public boolean isDoubleSided() {
 		return mDoubleSided;
 	}
@@ -570,33 +468,33 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		this.mAlpha = alpha;
 	}
 
-	public void setLookAt(float x, float y, float z) {
-		mLookAt.x = -x;
-		mLookAt.y = y;
-		mLookAt.z = z;
-		
-		mTmpRotZ.setAllFrom(mLookAt);
-		mTmpRotZ.normalize();
-		
-		mTmpRotX = Number3D.cross(Number3D.getAxisVector(Axis.Y), mTmpRotZ);
-		mTmpRotX.normalize();
-		mTmpRotY = Number3D.cross(mTmpRotZ, mTmpRotX);
-		Matrix.setIdentityM(mLookAtMatrix, 0);
-		mLookAtMatrix[0] = mTmpRotX.x;
-		mLookAtMatrix[1] = mTmpRotX.y;
-		mLookAtMatrix[2] = mTmpRotX.z;
-		mLookAtMatrix[4] = mTmpRotY.x;
-		mLookAtMatrix[5] = mTmpRotY.y;
-		mLookAtMatrix[6] = mTmpRotY.z;
-		mLookAtMatrix[8] = mTmpRotZ.x;
-		mLookAtMatrix[9] = mTmpRotZ.y;
-		mLookAtMatrix[10] = mTmpRotZ.z;
-	}
-	
-	public void setLookAt(Number3D lookAt) {
-		if(mLookAt == null) mLookAt = new Number3D();
-		setLookAt(lookAt.x, lookAt.y, lookAt.z);
-	}
+//	public void setLookAt(float x, float y, float z) {
+//		mLookAt.x = -x;
+//		mLookAt.y = y;
+//		mLookAt.z = z;
+//		
+//		mTmpRotZ.setAllFrom(mLookAt);
+//		mTmpRotZ.normalize();
+//		
+//		mTmpRotX = Number3D.cross(Number3D.getAxisVector(Axis.Y), mTmpRotZ);
+//		mTmpRotX.normalize();
+//		mTmpRotY = Number3D.cross(mTmpRotZ, mTmpRotX);
+//		Matrix.setIdentityM(mLookAtMatrix, 0);
+//		mLookAtMatrix[0] = mTmpRotX.x;
+//		mLookAtMatrix[1] = mTmpRotX.y;
+//		mLookAtMatrix[2] = mTmpRotX.z;
+//		mLookAtMatrix[4] = mTmpRotY.x;
+//		mLookAtMatrix[5] = mTmpRotY.y;
+//		mLookAtMatrix[6] = mTmpRotY.z;
+//		mLookAtMatrix[8] = mTmpRotZ.x;
+//		mLookAtMatrix[9] = mTmpRotZ.y;
+//		mLookAtMatrix[10] = mTmpRotZ.z;
+//	}
+//	
+//	public void setLookAt(Number3D lookAt) {
+//		if(mLookAt == null) mLookAt = new Number3D();
+//		setLookAt(lookAt.x, lookAt.y, lookAt.z);
+//	}
 
 	public void setVisible(boolean visible) {
 		mIsVisible = visible;
@@ -625,27 +523,11 @@ public class BaseObject3D implements IObject3D, Comparable<BaseObject3D>, ITrans
 		mIsPickingEnabled = true;
 	}
 
-	public Number3D getRotation() {
-		return mRotation;
-	}
-
-	public void setRotation(Number3D rotation) {
-		mPosition = rotation;
+	public void setShowBoundingVolume(boolean showBoundingVolume) {
+		this.mShowBoundingVolume = showBoundingVolume;
 	}
 	
 	public float[] getRotationMatrix() {
 		return mRotateMatrix;
-	}
-	
-	public Number3D getScale() {
-		return mScale;
-	}
-
-	public void setScale(Number3D scale) {
-		mScale = scale;
-	}
-
-	public void setShowBoundingVolume(boolean showBoundingVolume) {
-		this.mShowBoundingVolume = showBoundingVolume;
 	}
 }

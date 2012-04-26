@@ -1,10 +1,8 @@
 package rajawali;
 
-import rajawali.math.Number3D;
 import android.opengl.Matrix;
 
-public class Camera implements ITransformable3D {
-	protected Number3D mPosition, mLookAt, mRotation;
+public class Camera extends ATransformable3D {
 	protected float[] mVMatrix = new float[16];
 	protected float[] mRotationMatrix = new float[16];
 	protected float[] mProjMatrix = new float[16];
@@ -16,9 +14,8 @@ public class Camera implements ITransformable3D {
 	protected float[] mTmpMatrix = new float[16];
 
 	public Camera() {
-		mPosition = new Number3D();
-		mRotation = new Number3D();
-		// mLookAt = new Number3D();
+		super();
+		mIsCamera = true;
 	}
 
 	public float[] getViewMatrix() {
@@ -27,15 +24,19 @@ public class Camera implements ITransformable3D {
 					mPosition.z, -mLookAt.x, mLookAt.y, mLookAt.z, 0f, 1.0f,
 					0.0f);
 		} else {
-			if (mUseRotationMatrix == false) {
-				Matrix.setIdentityM(mRotationMatrix, 0);
-				rotateM(mRotationMatrix, 0, -mRotation.x, 1.0f, 0.0f, 0.0f);
-				rotateM(mRotationMatrix, 0, -mRotation.y + 180, 0.0f, 1.0f, 0.0f);
-				rotateM(mRotationMatrix, 0, -mRotation.z, 0.0f, 0.0f, 1.0f);
+			if (mUseRotationMatrix == false && mRotationDirty) {
+//				Matrix.setIdentityM(mRotationMatrix, 0);
+//				rotateM(mRotationMatrix, 0, -mRotation.x, 1.0f, 0.0f, 0.0f);
+//				rotateM(mRotationMatrix, 0, -mRotation.y + 180, 0.0f, 1.0f, 0.0f);
+//				rotateM(mRotationMatrix, 0, -mRotation.z, 0.0f, 0.0f, 1.0f);
+				setOrientation();
+				//mOrientation.inverse();
+				mOrientation.toRotationMatrix(mRotationMatrix);
+				mRotationDirty = false;
 			}
 			Matrix.setIdentityM(mTmpMatrix, 0);
 			Matrix.setIdentityM(mVMatrix, 0);
-			Matrix.translateM(mTmpMatrix, 0, -mPosition.x, -mPosition.y,
+			Matrix.translateM(mTmpMatrix, 0, mPosition.x, -mPosition.y,
 					-mPosition.z);
 			Matrix.multiplyMM(mVMatrix, 0, mRotationMatrix, 0, mTmpMatrix, 0);
 		}
@@ -54,24 +55,6 @@ public class Camera implements ITransformable3D {
 		mRotationMatrix = m;
 	}
 
-	public void setPosition(float x, float y, float z) {
-		mPosition.x = x;
-		mPosition.y = y;
-		mPosition.z = z;
-	}
-
-	public void setPosition(Number3D position) {
-		mPosition = position;
-	}
-
-	public Number3D getPosition() {
-		return mPosition;
-	}
-
-	public Number3D getRotation() {
-		return mRotation;
-	}
-
 	public void setProjectionMatrix(int width, int height) {
 		float ratio = (float) width / height;
 		float frustumH = (float) Math.tan(getFieldOfView() / 360.0 * Math.PI)
@@ -84,96 +67,6 @@ public class Camera implements ITransformable3D {
 
 	public float[] getProjectionMatrix() {
 		return mProjMatrix;
-	}
-
-	public void setLookAt(float x, float y, float z) {
-		if(mLookAt == null) mLookAt = new Number3D();
-		mLookAt.x = x;
-		mLookAt.y = y;
-		mLookAt.z = z;
-	}
-	
-	public void setLookAt(Number3D lookAt) {
-		if(mLookAt == null) mLookAt = new Number3D();
-		setLookAt(lookAt.x, lookAt.y, lookAt.z);
-	}
-	
-	public float getX() {
-		return mPosition.x;
-	}
-
-	public void setX(float x) {
-		mPosition.x = x;
-	}
-
-	public float getY() {
-		return mPosition.y;
-	}
-
-	public void setY(float y) {
-		mPosition.y = y;
-	}
-
-	public float getZ() {
-		return mPosition.z;
-	}
-
-	public void setZ(float z) {
-		mPosition.z = z;
-	}
-	
-	public float getLookAtX() {
-		return mLookAt.x;
-	}
-
-	public void setLookAtX(float lookAtX) {
-		mLookAt.x = lookAtX;
-	}
-
-	public float getLookAtY() {
-		return mLookAt.y;
-	}
-
-	public void setLookAtY(float lookAtY) {
-		mLookAt.y = lookAtY;
-	}
-
-	public float getLookAtZ() {
-		return mLookAt.z;
-	}
-
-	public void setLookAtZ(float lookAtZ) {
-		mLookAt.z = lookAtZ;
-	}
-
-	public void setRotation(float rotX, float rotY, float rotZ) {
-		mRotation.x = rotX;
-		mRotation.y = rotY;
-		mRotation.z = rotZ;
-	}
-
-	public void setRotX(float rotX) {
-		mRotation.x = rotX;
-	}
-
-	public float getRotX() {
-		return mRotation.x;
-	}
-
-	public void setRotY(float rotY) {
-		mRotation.y = rotY;
-	}
-
-	public float getRotY() {
-		return mRotation.y;
-	}
-
-	public void setRotZ(float rotZ) {
-		mRotation.z = rotZ;
-	}
-
-	public float getRotZ() {
-		return mRotation.z;
 	}
 
 	public float getNearPlane() {
@@ -207,28 +100,4 @@ public class Camera implements ITransformable3D {
 	public void setUseRotationMatrix(boolean useRotationMatrix) {
 		this.mUseRotationMatrix = useRotationMatrix;
 	}
-
-	public void setScale(float scale) {}
-
-	public void setScale(float scaleX, float scaleY, float scaleZ) {}
-
-	public void setScaleX(float scaleX) {}
-
-	public float getScaleX() { return 0; }
-
-	public void setScaleY(float scaleY) {}
-
-	public float getScaleY() { return 0; }
-
-	public void setScaleZ(float scaleZ) {}
-
-	public float getScaleZ() { return 0; }
-
-	public void setRotation(Number3D rotation) {
-		mRotation = rotation;
-	}
-
-	public Number3D getScale() { return null; }
-
-	public void setScale(Number3D scale) {}
 }

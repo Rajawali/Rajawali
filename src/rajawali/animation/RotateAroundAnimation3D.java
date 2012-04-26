@@ -1,11 +1,9 @@
 package rajawali.animation;
 
 import rajawali.math.Number3D;
+import rajawali.math.Number3D.Axis;
 
 public class RotateAroundAnimation3D extends Animation3D {
-	public enum Axis {
-		X, Y, Z
-	}
 	protected final float PI_DIV_180 = 3.14159265f / 180;
 
 	protected Number3D mCenter;

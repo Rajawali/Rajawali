@@ -1,6 +1,6 @@
 package rajawali.animation;
 
-import rajawali.ITransformable3D;
+import rajawali.ATransformable3D;
 import rajawali.math.Number3D;
 
 public class ScaleAnimation3D extends Animation3D {
@@ -23,7 +23,7 @@ public class ScaleAnimation3D extends Animation3D {
 	}
 	
 	@Override
-	public void setTransformable3D(ITransformable3D transformable3D) {
+	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
 		if(mFromScale == null)
 			mFromScale = new Number3D(transformable3D.getScale());
