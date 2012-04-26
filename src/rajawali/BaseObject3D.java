@@ -267,8 +267,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		return mAdditive;
 	}
 
-
-
 	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ) {
 		float[] r1 = new float[16];
 		int[] viewport = new int[] { 0, 0, viewportWidth, viewportHeight };

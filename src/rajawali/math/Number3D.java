@@ -124,8 +124,8 @@ public final class Number3D {
 	}
 
 	public void rotateX(float angle) {
-		float cosRY = (float) Math.cos(angle);
-		float sinRY = (float) Math.sin(angle);
+		float cosRY = MathUtil.cos(angle);
+		float sinRY = MathUtil.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
@@ -134,8 +134,8 @@ public final class Number3D {
 	}
 
 	public void rotateY(float angle) {
-		float cosRY = (float) Math.cos(angle);
-		float sinRY = (float) Math.sin(angle);
+		float cosRY = MathUtil.cos(angle);
+		float sinRY = MathUtil.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
@@ -144,8 +144,8 @@ public final class Number3D {
 	}
 
 	public void rotateZ(float angle) {
-		float cosRY = (float) Math.cos(angle);
-		float sinRY = (float) Math.sin(angle);
+		float cosRY = MathUtil.cos(angle);
+		float sinRY = MathUtil.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
@@ -243,7 +243,7 @@ public final class Number3D {
 			if (axis.length() == 0) // pick another if colinear
 				axis = Number3D.cross(Number3D.getAxisVector(Axis.Y), this);
 			axis.normalize();
-			q.fromAngleAxis(MathUtil.radiansToDegrees((float) Math.PI), axis);
+			q.fromAngleAxis(MathUtil.radiansToDegrees(MathUtil.PI), axis);
 		} else {
 			float s = (float) Math.sqrt((1 + d) * 2);
 			float invs = 1f / s;

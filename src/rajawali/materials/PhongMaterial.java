@@ -73,11 +73,11 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	float Ks = 0.0;" +
 
 		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
-		"		vec3 Half   = H[i];\n" +
-		"		vec3 Light  = L[i];\n" +
+		"		vec3 Half   = normalize(H[i]);\n" +
+		"		vec3 Light  = normalize(L[i]);\n" +
 		
-		"		Kd += max(dot(N, L[i]), 0.0) * uLightPower[i];\n" + 
-		"		Ks += pow(max(dot(H[i], N), 0.0), uShininess) * uLightPower[i];\n" +
+		"		Kd += max(dot(N, Light), 0.0) * uLightPower[i];\n" + 
+		"		Ks += pow(max(dot(Half, N), 0.0), uShininess) * uLightPower[i];\n" +
 		"	}" +
 	    "	vec4 diffuse  = uUseTexture ? Kd * texture2D(uDiffuseTexture, vTextureCoord) : Kd * vColor;\n" + 
 	    "	vec4 specular = Ks * uSpecularColor;\n" + 

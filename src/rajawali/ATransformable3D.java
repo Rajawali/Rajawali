@@ -109,6 +109,15 @@ public abstract class ATransformable3D {
 		}
 	}
 	
+	public void rotateAround(Number3D axis, float angle) {
+		mOrientation.fromAngleAxis(angle, axis);
+		mRotationDirty = false;
+	}
+	
+	public Quaternion getOrientation() {
+		return new Quaternion(mOrientation);
+	}
+	
 	public void setRotation(Quaternion quat) {
 		mOrientation.setAllFrom(quat);
 		mRotationDirty = false;

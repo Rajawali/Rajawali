@@ -1,5 +1,6 @@
 package rajawali.animation;
 
+import rajawali.math.MathUtil;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
 
@@ -26,8 +27,8 @@ public class RotateAroundAnimation3D extends Animation3D {
 	protected void applyTransformation(float interpolatedTime) {
 		float radians = mDirection * 360f * interpolatedTime * PI_DIV_180;
 		
-		float cosVal = (float)Math.cos(radians) * mDistance;
-		float sinVal = (float)Math.sin(radians) * mDistance;
+		float cosVal = MathUtil.cos(radians) * mDistance;
+		float sinVal = MathUtil.sin(radians) * mDistance;
 		
 		if(mAxis == Axis.Z) {
 			mTransformable3D.setX(mCenter.x + cosVal);

@@ -1,5 +1,6 @@
 package rajawali;
 
+import rajawali.math.MathUtil;
 import android.opengl.Matrix;
 
 public class Camera extends ATransformable3D {
@@ -57,7 +58,7 @@ public class Camera extends ATransformable3D {
 
 	public void setProjectionMatrix(int width, int height) {
 		float ratio = (float) width / height;
-		float frustumH = (float) Math.tan(getFieldOfView() / 360.0 * Math.PI)
+		float frustumH = MathUtil.tan(getFieldOfView() / 360.0 * MathUtil.PI)
 				* getNearPlane();
 		float frustumW = frustumH * ratio;
 

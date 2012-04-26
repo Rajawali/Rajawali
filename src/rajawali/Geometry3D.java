@@ -10,6 +10,7 @@ import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.util.Log;
 
 public class Geometry3D {
 	public static final int FLOAT_SIZE_BYTES = 4;
@@ -116,25 +117,23 @@ public class Geometry3D {
 			mIndices.compact().position(0);
 			mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndices,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
 		}
-		
+
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
 	
 	public void reload() {
 		if(mOriginalGeometry != null) {
-			if(!mOriginalGeometry.isValid())
+			if(!mOriginalGeometry.isValid()) {
 				mOriginalGeometry.reload();
+			}
 			copyFromGeometry3D(mOriginalGeometry);
 		}
 		createBuffers();
 	}
 	
 	public boolean isValid() {
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mVertexBufferHandle);
-		int error = GLES20.glGetError();
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-		return error == GLES20.GL_NO_ERROR;
+		return GLES20.glIsBuffer(mVertexBufferHandle);
 	}
 	
 	public void createVertexAndNormalBuffersOnly() {

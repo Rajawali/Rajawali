@@ -28,8 +28,8 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 			"	bumpnormal = normalize(bumpnormal + N);" +
 			
 			"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
-			"		vec3 Half   = H[i];\n" +
-			"		vec3 Light  = L[i];\n" +
+			"		vec3 Half   = normalize(H[i]);\n" +
+			"		vec3 Light  = normalize(L[i]);\n" +
 			
 			"		Kd += max(dot(bumpnormal * uLightPower[i], Light), 0.0)  * uLightPower[i];\n" + 
 			"		Ks += pow(max(dot(Half, N), 0.0), uShininess);\n" + 

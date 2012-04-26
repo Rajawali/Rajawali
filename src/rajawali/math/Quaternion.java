@@ -56,8 +56,8 @@ public final class Quaternion {
 	public Quaternion fromAngleAxis(final float angle, final Number3D axisVector) {
 		float radian = MathUtil.degreesToRadians(angle);
 		float halfAngle = radian * .5f;
-		float halfAngleSin = (float) Math.sin(halfAngle);
-		w = (float) Math.cos(halfAngle);
+		float halfAngleSin = MathUtil.sin(halfAngle);
+		w = MathUtil.cos(halfAngle);
 		x = halfAngleSin * axisVector.x;
 		y = halfAngleSin * axisVector.y;
 		z = halfAngleSin * axisVector.z;
@@ -256,9 +256,9 @@ public final class Quaternion {
 
 	public Quaternion exp() {
 		float angle = (float) Math.sqrt(x * x + y * y + z * z);
-		float sin = (float) Math.sin(angle);
+		float sin = MathUtil.sin(angle);
 		Quaternion result = new Quaternion();
-		result.w = (float) Math.cos(angle);
+		result.w = MathUtil.cos(angle);
 
 		if (Math.abs(sin) >= F_EPSILON) {
 			float coeff = sin / angle;
@@ -280,7 +280,7 @@ public final class Quaternion {
 
 		if (Math.abs(w) < 1.0) {
 			float angle = (float) Math.acos(w);
-			float sin = (float) Math.sin(angle);
+			float sin = MathUtil.sin(angle);
 			if (Math.abs(sin) >= F_EPSILON) {
 				float fCoeff = angle / sin;
 				result.x = fCoeff * x;
@@ -320,8 +320,8 @@ public final class Quaternion {
 			float fSin = (float) Math.sqrt(1 - fCos * fCos);
 			float fAngle = (float) Math.atan2(fSin, fCos);
 			float fInvSin = 1.0f / fSin;
-			float fCoeff0 = (float) Math.sin((1.0f - fT) * fAngle) * fInvSin;
-			float fCoeff1 = (float) Math.sin(fT * fAngle) * fInvSin;
+			float fCoeff0 = MathUtil.sin((1.0f - fT) * fAngle) * fInvSin;
+			float fCoeff1 = MathUtil.sin(fT * fAngle) * fInvSin;
 			Quaternion result = new Quaternion(rkP);
 			Quaternion tmp = new Quaternion(rkT);
 			result.multiply(fCoeff0);
@@ -357,11 +357,11 @@ public final class Quaternion {
 		if (Math.abs(fAngle) < F_EPSILON)
 			return rkP;
 
-		float fSin = (float) Math.sin(fAngle);
+		float fSin = MathUtil.sin(fAngle);
 		float fPhase = MathUtil.PI * iExtraSpins * fT;
 		float fInvSin = 1.0f / fSin;
-		float fCoeff0 = (float) Math.sin((1.0 - fT) * fAngle - fPhase) * fInvSin;
-		float fCoeff1 = (float) Math.sin(fT * fAngle + fPhase) * fInvSin;
+		float fCoeff0 = MathUtil.sin((1.0 - fT) * fAngle - fPhase) * fInvSin;
+		float fCoeff1 = MathUtil.sin(fT * fAngle + fPhase) * fInvSin;
 		Quaternion result = new Quaternion(rkP);
 		Quaternion tmp = new Quaternion(rkQ);
 		result.multiply(fCoeff0);
