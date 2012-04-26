@@ -10,7 +10,6 @@ import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 public class Geometry3D {
 	public static final int FLOAT_SIZE_BYTES = 4;

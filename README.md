@@ -32,6 +32,9 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 * [Rajawali Tutorial 15: MD2 Animation](http://www.rozengain.com/blog/2012/04/04/rajawali-tutorial-15-md2-animation/)
 * [Rajawali Tutorial 16: Collision Detection](http://www.rozengain.com/blog/2012/04/13/rajawali-tutorial-16-collision-detection/)
 * [Rajawali Tutorial 17: Importing .Obj Files](http://www.rozengain.com/blog/2012/04/13/rajawali-tutorial-17-importing-obj-files/)
+* [Rajawali Tutorial 18: Drawing Lines](http://www.rozengain.com/blog/2012/04/26/rajawali-tutorial-18-drawing-lines/)
+* [Rajawali Tutorial 19: Catmull-Rom Splines](http://www.rozengain.com/blog/2012/04/26/rajawali-tutorial-19-catmull-rom-splines/)
+* [Rajawali Tutorial 20: Animated Sprites](http://www.rozengain.com/blog/2012/04/26/rajawali-tutorial-20-animated-sprites/)
 
 ## Made with Rajawali
 
