@@ -25,7 +25,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	protected float[] mRotateMatrix = new float[16];
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
-	//protected float[] mLookAtMatrix = new float[16];
 
 	protected AMaterial mMaterial;
 	protected Stack<ALight> mLights;
@@ -456,7 +455,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
-		clone.setScale(mScale);
 		return clone;
 	}
 
@@ -467,34 +465,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	public void setAlpha(float alpha) {
 		this.mAlpha = alpha;
 	}
-
-//	public void setLookAt(float x, float y, float z) {
-//		mLookAt.x = -x;
-//		mLookAt.y = y;
-//		mLookAt.z = z;
-//		
-//		mTmpRotZ.setAllFrom(mLookAt);
-//		mTmpRotZ.normalize();
-//		
-//		mTmpRotX = Number3D.cross(Number3D.getAxisVector(Axis.Y), mTmpRotZ);
-//		mTmpRotX.normalize();
-//		mTmpRotY = Number3D.cross(mTmpRotZ, mTmpRotX);
-//		Matrix.setIdentityM(mLookAtMatrix, 0);
-//		mLookAtMatrix[0] = mTmpRotX.x;
-//		mLookAtMatrix[1] = mTmpRotX.y;
-//		mLookAtMatrix[2] = mTmpRotX.z;
-//		mLookAtMatrix[4] = mTmpRotY.x;
-//		mLookAtMatrix[5] = mTmpRotY.y;
-//		mLookAtMatrix[6] = mTmpRotY.z;
-//		mLookAtMatrix[8] = mTmpRotZ.x;
-//		mLookAtMatrix[9] = mTmpRotZ.y;
-//		mLookAtMatrix[10] = mTmpRotZ.z;
-//	}
-//	
-//	public void setLookAt(Number3D lookAt) {
-//		if(mLookAt == null) mLookAt = new Number3D();
-//		setLookAt(lookAt.x, lookAt.y, lookAt.z);
-//	}
 
 	public void setVisible(boolean visible) {
 		mIsVisible = visible;
