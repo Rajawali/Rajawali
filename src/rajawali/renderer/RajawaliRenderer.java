@@ -45,7 +45,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	protected Timer mTimer;
 
 	protected float[] mVMatrix = new float[16];
-
+	protected float[] mPMatrix = new float[16];
 	protected Stack<BaseObject3D> mChildren;
 	protected int mNumChildren;
 	protected boolean mEnableDepthBuffer = true;
@@ -169,12 +169,18 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 
 		GLES20.glClear(clearMask);
 
+        //new row
+        mVMatrix = mCamera.getViewMatrix();//I think is better the first frame of skybox now is correct
+        mPMatrix = mCamera.getProjectionMatrix();
+        
+        
+        
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
 
 			mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
-			mSkybox.render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, pickerInfo);
+			mSkybox.render(mCamera, mPMatrix, mVMatrix, pickerInfo);
 
 			if (mEnableDepthBuffer) {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -182,9 +188,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 			}
 		}
 
-		mVMatrix = mCamera.getViewMatrix();
+        mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
+
+        
 		for (int i = 0; i < mNumChildren; i++) {
-			mChildren.get(i).render(mCamera, mCamera.getProjectionMatrix(), mVMatrix, pickerInfo);
+			mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
 		}
 
 		if (pickerInfo != null) {

@@ -3,6 +3,7 @@ package rajawali;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import rajawali.bounds.BoundingBox;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
@@ -28,7 +29,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 
 	protected AMaterial mMaterial;
 	protected Stack<ALight> mLights;
-	protected float mAlpha;
 
 	protected Geometry3D mGeometry;
 
@@ -52,6 +52,9 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	protected boolean mIsPickingEnabled = false;
 	protected float[] mPickingColorArray;
 
+	protected boolean mFrustumTest = false;
+	protected boolean mDoRender;
+		
 	private int i;
 
 	public BaseObject3D() {
@@ -96,8 +99,41 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 			return;
 
 		preRender();
+		
+		// -- move view matrix transformation first
+		Matrix.setIdentityM(mMMatrix, 0);
+		Matrix.setIdentityM(mScalematrix, 0);
+		Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
 
-		if (!mIsContainerOnly) {
+		Matrix.setIdentityM(mRotateMatrix, 0);
+
+		setOrientation();
+		if(mLookAt == null) {
+			mOrientation.toRotationMatrix(mRotateMatrix);
+		} else {
+			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
+		}
+
+		Matrix.translateM(mMMatrix, 0, -mPosition.x, mPosition.y, mPosition.z);
+		Matrix.setIdentityM(mTmpMatrix, 0);
+		Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
+		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
+		if (parentMatrix != null) {
+			Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
+			System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
+		}
+		Matrix.multiplyMM(mMVPMatrix, 0, vMatrix, 0, mMMatrix, 0);
+		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
+		
+		mDoRender = true; // only if mFrustrumTest == true it check frustum
+		if (mFrustumTest && mGeometry.hasBoundingBox()) {
+			BoundingBox bbox=mGeometry.getBoundingBox();
+			bbox.transform(mMMatrix);
+			if (!camera.mFrustum.boundsInFrustum(bbox)) {
+				mDoRender=false;
+			}
+		}
+		if (!mIsContainerOnly && mDoRender) {
 			mProjMatrix = projMatrix;
 			if (!mDoubleSided)
 				GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -140,40 +176,9 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
 			setShaderParams(camera);
-		}
 
-		Matrix.setIdentityM(mMMatrix, 0);
-		Matrix.setIdentityM(mScalematrix, 0);
-		Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
-
-		Matrix.setIdentityM(mRotateMatrix, 0);
-
-		setOrientation();
-		if(mLookAt == null) {
-			mOrientation.toRotationMatrix(mRotateMatrix);
-			
-		} else {
-			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
-		}
-//			rotateM(mRotateMatrix, 0, mRotation.x, 1.0f, 0.0f, 0.0f);
-//			rotateM(mRotateMatrix, 0, mRotation.y, 0.0f, 1.0f, 0.0f);
-//			rotateM(mRotateMatrix, 0, mRotation.z, 0.0f, 0.0f, 1.0f);
-//		} else if(mLookAt != null) {
-//			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
-
-		Matrix.translateM(mMMatrix, 0, -mPosition.x, mPosition.y, mPosition.z);
-		Matrix.setIdentityM(mTmpMatrix, 0);
-		Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
-		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
-		if (parentMatrix != null) {
-			Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
-			System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
-		}
-		Matrix.multiplyMM(mMVPMatrix, 0, vMatrix, 0, mMMatrix, 0);
-		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
-
-		if (!mIsContainerOnly) {
-			if (pickerInfo == null) {
+			if(pickerInfo == null)
+			{
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
@@ -206,7 +211,7 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 			if (mGeometry.hasBoundingSphere())
 				mGeometry.getBoundingSphere().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
 		}
-
+		//Draw children without frustum test
 		for (i = 0; i < mNumChildren; ++i) {
 			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 		}
@@ -281,9 +286,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	public float[] getModelMatrix() {
 		return mMMatrix;
 	}
-
-
-
 	
 	public boolean isDoubleSided() {
 		return mDoubleSided;
@@ -457,14 +459,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		return clone;
 	}
 
-	public float getAlpha() {
-		return mAlpha;
-	}
-
-	public void setAlpha(float alpha) {
-		this.mAlpha = alpha;
-	}
-
 	public void setVisible(boolean visible) {
 		mIsVisible = visible;
 	}
@@ -498,5 +492,9 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	
 	public float[] getRotationMatrix() {
 		return mRotateMatrix;
+	}
+	
+	public void setFrustumTest(boolean value){
+		mFrustumTest = value;
 	}
 }

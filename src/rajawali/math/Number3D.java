@@ -7,6 +7,23 @@ public final class Number3D {
 	public float x;
 	public float y;
 	public float z;
+	
+	public static final int M00 = 0;// 0;
+    public static final int M01 = 4;// 1;
+    public static final int M02 = 8;// 2;
+    public static final int M03 = 12;// 3;
+    public static final int M10 = 1;// 4;
+    public static final int M11 = 5;// 5;
+    public static final int M12 = 9;// 6;
+    public static final int M13 = 13;// 7;
+    public static final int M20 = 2;// 8;
+    public static final int M21 = 6;// 9;
+    public static final int M22 = 10;// 10;
+    public static final int M23 = 14;// 11;
+    public static final int M30 = 3;// 12;
+    public static final int M31 = 7;// 13;
+    public static final int M32 = 11;// 14;
+    public static final int M33 = 15;// 15;
 
 	private static Number3D _temp = new Number3D();
 
@@ -48,6 +65,17 @@ public final class Number3D {
 		this.x = (float) x;
 		this.y = (float) y;
 		this.z = (float) z;
+	}
+	
+	public void project(float[] mat){
+			
+          float l_w = x * mat[M30] + y * mat[M31] + z * mat[M32] + mat[M33];
+          
+          this.setAll(
+        		  (x * mat[M00] + y * mat[M01] + z * mat[M02] + mat[M03]) / l_w, 
+        		  (x * mat[M10] + y * mat[M11] + z * mat[M12] + mat[M13]) / l_w, 
+        		  (x * mat[M20] + y * mat[M21] + z * mat[M22] + mat[M23]) / l_w);
+          
 	}
 
 	public void setAllFrom(Number3D other) {

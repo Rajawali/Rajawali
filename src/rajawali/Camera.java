@@ -43,6 +43,18 @@ public class Camera extends ATransformable3D {
 		}
 		return mVMatrix;
 	}
+	public Frustum mFrustum=new Frustum(); // public for performance
+	private float[] mCombinedMatrix=new float[16];
+	//create invers matrix and apply to frustum object
+	public void updateFrustum(float[] pMatrix,float[] vMatrix) {
+		//float[] prj=this.getProjectionMatrix();	
+		Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
+		
+		Matrix.invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
+		
+		mFrustum.update(mTmpMatrix);
+		
+	}
 
 	protected void rotateM(float[] m, int mOffset, float a, float x, float y,
 			float z) {

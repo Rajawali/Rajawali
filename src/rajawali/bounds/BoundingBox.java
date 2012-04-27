@@ -22,6 +22,31 @@ public class BoundingBox implements IBoundingVolume {
 	protected Cube mVisualBox;
 	protected float[] mTmpMatrix = new float[16];
 	
+	public void copyPoints(Number3D[] pts){
+		
+		Number3D min = mTransformedMin;
+		Number3D max = mTransformedMax;
+		// -- bottom plane
+		// -- -x, -y, -z
+		pts[0].setAll(min.x, min.y, min.z);
+		// -- -x, -y,  z
+		pts[1].setAll(min.x, min.y, max.z);
+		// --  x, -y,  z
+		pts[2].setAll(max.x, min.y, max.z);
+		// --  x, -y, -z
+		pts[3].setAll(max.x, min.y, min.z);
+		
+		// -- top plane
+		// -- -x,  y, -z
+		pts[4].setAll(min.x, max.y, min.z);
+		// -- -x,  y,  z
+		pts[5].setAll(min.x, max.y, max.z);
+		// --  x,  y,  z
+		pts[6].setAll(max.x, max.y, max.z);
+		// --  x,  y, -z
+		pts[7].setAll(max.x, max.y, min.z);
+	}
+	
 	public BoundingBox() {
 		super();
 		mTransformedMin = new Number3D();
@@ -112,7 +137,7 @@ public class BoundingBox implements IBoundingVolume {
 		mPoints[7].setAll(mMax.x, mMax.y, mMin.z);
 	}
 	
-	public void transform(float[] matrix) {
+	public void transform(final float[] matrix) {
 		mTransformedMin.setAll(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 		mTransformedMax.setAll(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
 		
