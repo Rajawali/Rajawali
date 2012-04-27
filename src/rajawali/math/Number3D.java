@@ -1,5 +1,7 @@
 package rajawali.math;
 
+import android.util.FloatMath;
+
 
 public final class Number3D {
 	public float x;
@@ -55,7 +57,7 @@ public final class Number3D {
 	}
 
 	public float normalize() {
-		float mod = (float) Math.sqrt(x * x + y * y + z * z);
+		float mod = FloatMath.sqrt(x * x + y * y + z * z);
 
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
@@ -112,11 +114,11 @@ public final class Number3D {
 	}
 
 	public float distanceTo(Number3D other) {
-		return (float) Math.sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z));
+		return FloatMath.sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z));
 	}
 
 	public float length() {
-		return (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+		return FloatMath.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 	}
 
 	public Number3D clone() {
@@ -124,8 +126,8 @@ public final class Number3D {
 	}
 
 	public void rotateX(float angle) {
-		float cosRY = MathUtil.cos(angle);
-		float sinRY = MathUtil.sin(angle);
+		float cosRY = FloatMath.cos(angle);
+		float sinRY = FloatMath.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
@@ -134,8 +136,8 @@ public final class Number3D {
 	}
 
 	public void rotateY(float angle) {
-		float cosRY = MathUtil.cos(angle);
-		float sinRY = MathUtil.sin(angle);
+		float cosRY = FloatMath.cos(angle);
+		float sinRY = FloatMath.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
@@ -144,8 +146,8 @@ public final class Number3D {
 	}
 
 	public void rotateZ(float angle) {
-		float cosRY = MathUtil.cos(angle);
-		float sinRY = MathUtil.sin(angle);
+		float cosRY = FloatMath.cos(angle);
+		float sinRY = FloatMath.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
@@ -245,7 +247,7 @@ public final class Number3D {
 			axis.normalize();
 			q.fromAngleAxis(MathUtil.radiansToDegrees(MathUtil.PI), axis);
 		} else {
-			float s = (float) Math.sqrt((1 + d) * 2);
+			float s = FloatMath.sqrt((1 + d) * 2);
 			float invs = 1f / s;
 
 			Number3D c = Number3D.cross(v0, v1);

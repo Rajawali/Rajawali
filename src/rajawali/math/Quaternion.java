@@ -1,5 +1,6 @@
 package rajawali.math;
 
+import android.util.FloatMath;
 import rajawali.math.Number3D.Axis;
 
 /**
@@ -54,13 +55,15 @@ public final class Quaternion {
 	}
 	
 	public Quaternion fromAngleAxis(final float angle, final Number3D axisVector) {
+		axisVector.normalize();
 		float radian = MathUtil.degreesToRadians(angle);
 		float halfAngle = radian * .5f;
-		float halfAngleSin = MathUtil.sin(halfAngle);
-		w = MathUtil.cos(halfAngle);
+		float halfAngleSin = FloatMath.sin(halfAngle);
+		w = FloatMath.cos(halfAngle);
 		x = halfAngleSin * axisVector.x;
 		y = halfAngleSin * axisVector.y;
 		z = halfAngleSin * axisVector.z;
+		
 		return this;
 	}
 	
@@ -91,7 +94,7 @@ public final class Quaternion {
 		float length = x * x + y * y + z * z;
 		if (length > 0.0) {
 			angleAxis.setAngle(MathUtil.radiansToDegrees(2.0f * (float) Math.acos(w)));
-			float invLength = -(float) Math.sqrt(length);
+			float invLength = -FloatMath.sqrt(length);
 			angleAxis.getAxis().x = x * invLength;
 			angleAxis.getAxis().y = y * invLength;
 			angleAxis.getAxis().z = z * invLength;
@@ -114,7 +117,7 @@ public final class Quaternion {
 
 		if (fTrace > 0.0) {
 			// |w| > 1/2, may as well choose w > 1/2
-			fRoot = (float) Math.sqrt(fTrace + 1.0f); // 2w
+			fRoot = FloatMath.sqrt(fTrace + 1.0f); // 2w
 			w = 0.5f * fRoot;
 			fRoot = 0.5f / fRoot; // 1/(4w)
 			x = (rotMatrix[9] - rotMatrix[6]) * fRoot;
@@ -131,7 +134,7 @@ public final class Quaternion {
 			int j = s_iNext[i];
 			int k = s_iNext[j];
 
-			fRoot = (float) Math.sqrt(rotMatrix[(i * 4) + i] - rotMatrix[(j * 4) + j] - rotMatrix[(k * 4) + k] + 1.0f);
+			fRoot = FloatMath.sqrt(rotMatrix[(i * 4) + i] - rotMatrix[(j * 4) + j] - rotMatrix[(k * 4) + k] + 1.0f);
 			float apkQuat[] = new float[] { x, y, z };
 			apkQuat[i] = 0.5f * fRoot;
 			fRoot = 0.5f / fRoot;
@@ -255,10 +258,10 @@ public final class Quaternion {
 	}
 
 	public Quaternion exp() {
-		float angle = (float) Math.sqrt(x * x + y * y + z * z);
-		float sin = MathUtil.sin(angle);
+		float angle = FloatMath.sqrt(x * x + y * y + z * z);
+		float sin = FloatMath.sin(angle);
 		Quaternion result = new Quaternion();
-		result.w = MathUtil.cos(angle);
+		result.w = FloatMath.cos(angle);
 
 		if (Math.abs(sin) >= F_EPSILON) {
 			float coeff = sin / angle;
@@ -280,7 +283,7 @@ public final class Quaternion {
 
 		if (Math.abs(w) < 1.0) {
 			float angle = (float) Math.acos(w);
-			float sin = MathUtil.sin(angle);
+			float sin = FloatMath.sin(angle);
 			if (Math.abs(sin) >= F_EPSILON) {
 				float fCoeff = angle / sin;
 				result.x = fCoeff * x;
@@ -317,11 +320,11 @@ public final class Quaternion {
 
 		if (Math.abs(fCos) < 1 - F_EPSILON) {
 			// Standard case (slerp)
-			float fSin = (float) Math.sqrt(1 - fCos * fCos);
+			float fSin = FloatMath.sqrt(1 - fCos * fCos);
 			float fAngle = (float) Math.atan2(fSin, fCos);
 			float fInvSin = 1.0f / fSin;
-			float fCoeff0 = MathUtil.sin((1.0f - fT) * fAngle) * fInvSin;
-			float fCoeff1 = MathUtil.sin(fT * fAngle) * fInvSin;
+			float fCoeff0 = FloatMath.sin((1.0f - fT) * fAngle) * fInvSin;
+			float fCoeff1 = FloatMath.sin(fT * fAngle) * fInvSin;
 			Quaternion result = new Quaternion(rkP);
 			Quaternion tmp = new Quaternion(rkT);
 			result.multiply(fCoeff0);
@@ -357,11 +360,11 @@ public final class Quaternion {
 		if (Math.abs(fAngle) < F_EPSILON)
 			return rkP;
 
-		float fSin = MathUtil.sin(fAngle);
+		float fSin = FloatMath.sin(fAngle);
 		float fPhase = MathUtil.PI * iExtraSpins * fT;
 		float fInvSin = 1.0f / fSin;
-		float fCoeff0 = MathUtil.sin((1.0 - fT) * fAngle - fPhase) * fInvSin;
-		float fCoeff1 = MathUtil.sin(fT * fAngle + fPhase) * fInvSin;
+		float fCoeff0 = FloatMath.sin((1.0f - fT) * fAngle - fPhase) * fInvSin;
+		float fCoeff1 = FloatMath.sin(fT * fAngle + fPhase) * fInvSin;
 		Quaternion result = new Quaternion(rkP);
 		Quaternion tmp = new Quaternion(rkQ);
 		result.multiply(fCoeff0);
@@ -372,7 +375,7 @@ public final class Quaternion {
 
 	public float normalize() {
 		float len = norm();
-		float factor = 1.0f / (float) Math.sqrt(len);
+		float factor = 1.0f / FloatMath.sqrt(len);
 		multiply(factor);
 		return len;
 	}
@@ -513,7 +516,7 @@ public final class Quaternion {
         v1.normalize();
         v2.normalize();
 
-        double d = Number3D.dot(v1, v2);
+        float d = Number3D.dot(v1, v2);
 
         if (d >= 1.0f)
         {
@@ -554,7 +557,7 @@ public final class Quaternion {
             //               q.w = s * 0.5;
             //               q.normalise();
 
-            float s = (float)Math.sqrt((1 + d) * 2);
+            float s = FloatMath.sqrt((1f + d) * 2f);
             float invs = 1 / s;
 
             Number3D c = Number3D.cross(v1, v2);

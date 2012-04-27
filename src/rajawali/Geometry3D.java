@@ -4,7 +4,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
+import java.nio.IntBuffer;
 
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
@@ -13,13 +13,14 @@ import android.opengl.GLES20;
 
 public class Geometry3D {
 	public static final int FLOAT_SIZE_BYTES = 4;
+	public static final int INT_SIZE_BYTES = 4;
 	public static final int SHORT_SIZE_BYTES = 2;
 	
 	protected FloatBuffer mVertices;
 	protected FloatBuffer mNormals;
 	protected FloatBuffer mTextureCoords;
 	protected FloatBuffer mColors;
-	protected ShortBuffer mIndices;
+	protected IntBuffer mIndices;
 	protected int mNumIndices;
 	protected int mNumVertices;
 	protected String mName;
@@ -36,6 +37,7 @@ public class Geometry3D {
 	
 	public enum BufferType {
 		FLOAT_BUFFER,
+		INT_BUFFER,
 		SHORT_BUFFER
 	}
 	
@@ -62,7 +64,7 @@ public class Geometry3D {
 	}
 	
 	public void setData(int vertexBufferHandle, int normalBufferHandle,
-			float[] textureCoords, float[] colors, short[] indices) {
+			float[] textureCoords, float[] colors, int[] indices) {
 		if(textureCoords == null || textureCoords.length == 0)
 			textureCoords = new float[(mNumVertices / 3) * 2];
 		setTextureCoords(textureCoords);
@@ -79,7 +81,7 @@ public class Geometry3D {
 	}
 	
 	public void setData(float[] vertices, float[] normals,
-			float[] textureCoords, float[] colors, short[] indices) {
+			float[] textureCoords, float[] colors, int[] indices) {
 		setVertices(vertices);
 		setNormals(normals);
 		if(textureCoords == null || textureCoords.length == 0)
@@ -114,7 +116,7 @@ public class Geometry3D {
 		}
 		if(mIndices != null) {
 			mIndices.compact().position(0);
-			mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndices,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+			mIndexBufferHandle 		= createBuffer(BufferType.INT_BUFFER, mIndices,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
 		}
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -150,7 +152,9 @@ public class Geometry3D {
 		int buff[] = new int[1];
 		GLES20.glGenBuffers(1, buff, 0);
 		int handle = buff[0];
-		int byteSize = type == BufferType.FLOAT_BUFFER ? 4 : 2;
+		int byteSize = 4;
+		if(type == BufferType.SHORT_BUFFER)
+			byteSize = 2;
 		
 		GLES20.glBindBuffer(target, handle);
 		GLES20.glBufferData(target, buffer.limit() * byteSize, buffer, GLES20.GL_STATIC_DRAW);
@@ -210,10 +214,10 @@ public class Geometry3D {
 		return mNormals;
 	}
 	
-	public void setIndices(short[] indices) {
+	public void setIndices(int[] indices) {
 		if(mIndices == null) {
-			mIndices = ByteBuffer.allocateDirect(indices.length * SHORT_SIZE_BYTES)
-					.order(ByteOrder.nativeOrder()).asShortBuffer();
+			mIndices = ByteBuffer.allocateDirect(indices.length * INT_SIZE_BYTES)
+					.order(ByteOrder.nativeOrder()).asIntBuffer();
 			mIndices.put(indices).position(0);
 	
 			mNumIndices = indices.length;
@@ -222,7 +226,7 @@ public class Geometry3D {
 		}
 	}
 	
-	public ShortBuffer getIndices() {
+	public IntBuffer getIndices() {
 		return mIndices;
 	}
 	

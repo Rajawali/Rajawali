@@ -42,7 +42,7 @@ public class RotateAnimation3D extends Animation3D {
 		mRotationAngle = mRotateFrom + (interpolatedTime * mDegreesToRotate);
 		//Log.d("Rajawali", angle);
 		mQuat.fromAngleAxis(mRotationAngle, mRotationAxis);
-		mTransformable3D.setRotation(mQuat);
+		mTransformable3D.setOrientation(mQuat);
 	}
 
 	/**

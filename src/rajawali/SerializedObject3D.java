@@ -9,14 +9,14 @@ public class SerializedObject3D implements Serializable {
 	protected float[] mNormals;
 	protected float[] mTextureCoords;
 	protected float[] mColors;
-	protected short[] mIndices;
+	protected int[] mIndices;
 	
 	public SerializedObject3D(int numVertices, int numNormals, int numTextureCoords, int numColors, int numIndices) {
 		mVertices = new float[numVertices];
 		mNormals = new float[numNormals];
 		mTextureCoords = new float[numTextureCoords];
 		mColors = new float[numColors];
-		mIndices = new short[numIndices];
+		mIndices = new int[numIndices];
 	}
 	
 	public float[] getVertices() {
@@ -37,10 +37,10 @@ public class SerializedObject3D implements Serializable {
 	public void setTextureCoords(float[] textureCoords) {
 		this.mTextureCoords = textureCoords;
 	}
-	public short[] getIndices() {
+	public int[] getIndices() {
 		return mIndices;
 	}
-	public void setIndices(short[] indices) {
+	public void setIndices(int[] indices) {
 		this.mIndices = indices;
 	}
 

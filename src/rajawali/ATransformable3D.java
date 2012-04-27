@@ -108,8 +108,8 @@ public abstract class ATransformable3D {
 			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? -mRotation.z : mRotation.z, mAxisZ));
 		}
 	}
-	
-	public void rotateAround(Number3D axis, float angle) {
+
+ 	public void rotateAround(Number3D axis, float angle) {
 		mOrientation.fromAngleAxis(angle, axis);
 		mRotationDirty = false;
 	}
@@ -118,7 +118,7 @@ public abstract class ATransformable3D {
 		return new Quaternion(mOrientation);
 	}
 	
-	public void setRotation(Quaternion quat) {
+	public void setOrientation(Quaternion quat) {
 		mOrientation.setAllFrom(quat);
 		mRotationDirty = false;
 	}

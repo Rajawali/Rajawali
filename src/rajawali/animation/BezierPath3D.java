@@ -2,6 +2,8 @@ package rajawali.animation;
 
 import java.util.Stack;
 
+import android.util.FloatMath;
+
 import rajawali.math.Number3D;
 
 public class BezierPath3D implements ISpline {
@@ -41,7 +43,7 @@ public class BezierPath3D implements ISpline {
 	}
 	
 	protected Number3D p(float t) {
-		int currentIndex = (int) Math.floor((t == 1 ? t - .000001f : t) * mNumPoints);
+		int currentIndex = (int) FloatMath.floor((t == 1 ? t - .000001f : t) * mNumPoints);
 
 		CubicBezier3D currentPoint = mPoints.get(currentIndex);
 

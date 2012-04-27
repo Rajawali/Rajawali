@@ -74,12 +74,12 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices());
 	}
 
-	public void setData(int vertexBufferHandle, int normalBufferHandle, float[] textureCoords, float[] colors, short[] indices) {
+	public void setData(int vertexBufferHandle, int normalBufferHandle, float[] textureCoords, float[] colors, int[] indices) {
 		mGeometry.setData(vertexBufferHandle, normalBufferHandle, textureCoords, colors, indices);
 		mIsContainerOnly = false;
 	}
 
-	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, short[] indices) {
+	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices) {
 		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
 		mIsContainerOnly = false;
 	}
@@ -151,6 +151,7 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		setOrientation();
 		if(mLookAt == null) {
 			mOrientation.toRotationMatrix(mRotateMatrix);
+			
 		} else {
 			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
 		}
@@ -178,7 +179,7 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 				mMaterial.setViewMatrix(vMatrix);
 
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
-				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_SHORT, 0);
+				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_INT, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 				mMaterial.unbindTextures();
@@ -189,7 +190,7 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 				pickerMat.setViewMatrix(vMatrix);
 
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
-				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_SHORT, 0);
+				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_INT, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 				pickerMat.unbindTextures();

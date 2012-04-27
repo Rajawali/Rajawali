@@ -27,7 +27,7 @@ public class Sphere extends BaseObject3D {
 		float[] vertices = new float[numVertices * 3];
 		float[] normals = new float[numVertices * 3];
 		float[] colors = new float[numVertices * 4];
-		short[] indices = new short[numIndices]; 
+		int[] indices = new int[numIndices]; 
 		
 		int i, j;
 		int vertIndex = 0, index = 0;
@@ -57,20 +57,20 @@ public class Sphere extends BaseObject3D {
 					int d = (mSegmentsW + 1) * (j - 1) + i;
 					
 					if(j == mSegmentsH) {
-						indices[index++] = (short)a;
-						indices[index++] = (short)c;
-						indices[index++] = (short)d;
+						indices[index++] = a;
+						indices[index++] = c;
+						indices[index++] = d;
 					} else if(j==1) {
-						indices[index++] = (short)a;
-						indices[index++] = (short)b;
-						indices[index++] = (short)c;
+						indices[index++] = a;
+						indices[index++] = b;
+						indices[index++] = c;
 					} else {
-						indices[index++] = (short)a;
-						indices[index++] = (short)b;
-						indices[index++] = (short)c;
-						indices[index++] = (short)a;
-						indices[index++] = (short)c;
-						indices[index++] = (short)d;
+						indices[index++] = a;
+						indices[index++] = b;
+						indices[index++] = c;
+						indices[index++] = a;
+						indices[index++] = c;
+						indices[index++] = d;
 					}
 				}
 			}

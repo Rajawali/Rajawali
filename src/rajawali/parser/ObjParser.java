@@ -116,27 +116,27 @@ public class ObjParser extends AParser {
                         
                         boolean hasuv = partLength >= 2 && !emptyVt;
                         boolean hasn = partLength == 3 || (partLength == 2 && emptyVt);
-                        short idx;
+                        int idx;
                         
                         for (int i = 1; i < 4; i++) {
                         	if(i > 1)
                         		subParts = new StringTokenizer(parts.nextToken(), "/");
-                        	idx = (short) (Short.parseShort(subParts.nextToken()));
+                        	idx = Integer.parseInt(subParts.nextToken());
 
-                        	if(idx < 0) idx = (short) ((short)(vertices.size() / 3) + idx);
+                        	if(idx < 0) idx = (vertices.size() / 3) + idx;
                         	else idx -= 1;
                             currObjIndexData.vertexIndices.add(idx);
                             if (hasuv)
                             {
-                            	idx = (short) (Short.parseShort(subParts.nextToken()));
-                            	if(idx < 0) idx = (short) ((short)(texCoords.size() / 2) + idx);
+                            	idx = Integer.parseInt(subParts.nextToken());
+                            	if(idx < 0) idx = (texCoords.size() / 2) + idx;
                             	else idx -= 1;
                                 currObjIndexData.texCoordIndices.add(idx);
                             }
                             if (hasn)
                             {
-                            	idx = (short) (Short.parseShort(subParts.nextToken()));
-                            	if(idx < 0) idx = (short) ((short)(normals.size() / 3) + idx);
+                            	idx = Integer.parseInt(subParts.nextToken());
+                            	if(idx < 0) idx = (normals.size() / 3) + idx;
                             	else idx -= 1;
                                 currObjIndexData.normalIndices.add(idx);
                             }
@@ -186,24 +186,28 @@ public class ObjParser extends AParser {
 			float[] aTexCoords 	= new float[oid.texCoordIndices.size() * 2];
 			float[] aNormals 	= new float[oid.normalIndices.size() * 3];
 			float[] aColors		= new float[oid.colorIndices.size() * 4];
-			short[] aIndices 	= new short[oid.vertexIndices.size()];
+			int[] aIndices 		= new int[oid.vertexIndices.size()];
 			
 			for(i=0; i<oid.vertexIndices.size(); ++i) {
-				short faceIndex = (short)(oid.vertexIndices.get(i) * 3);
+				int faceIndex = oid.vertexIndices.get(i) * 3;
 				int vertexIndex = i * 3;
-				aVertices[vertexIndex] = vertices.get(faceIndex);
-				aVertices[vertexIndex+1] = vertices.get(faceIndex + 1);
-				aVertices[vertexIndex+2] = vertices.get(faceIndex + 2);
-				aIndices[i] = (short) i; 
+				try {
+					aVertices[vertexIndex] = vertices.get(faceIndex);
+					aVertices[vertexIndex+1] = vertices.get(faceIndex + 1);
+					aVertices[vertexIndex+2] = vertices.get(faceIndex + 2);
+					aIndices[i] = i;
+				} catch(ArrayIndexOutOfBoundsException e) {
+					Log.d("Rajawali", "ERREUR!! " + vertexIndex + ", " + faceIndex);
+				}
 			}
 			for(i=0; i<oid.texCoordIndices.size(); ++i) {
-				short texCoordIndex = (short)(oid.texCoordIndices.get(i) * 2);
+				int texCoordIndex = oid.texCoordIndices.get(i) * 2;
 				int ti = i * 2;
 				aTexCoords[ti] = texCoords.get(texCoordIndex);
 				aTexCoords[ti + 1] = texCoords.get(texCoordIndex + 1);
 			}
 			for(i=0; i<oid.colorIndices.size(); ++i) {
-				short colorIndex = (short)(oid.colorIndices.get(i) * 4);
+				int colorIndex = oid.colorIndices.get(i) * 4;
 				int ti = i * 4;
 				aTexCoords[ti] = texCoords.get(colorIndex);
 				aTexCoords[ti + 1] = texCoords.get(colorIndex + 1);
@@ -211,7 +215,7 @@ public class ObjParser extends AParser {
 				aTexCoords[ti + 3] = texCoords.get(colorIndex + 3);
 			}
 			for(i=0; i<oid.normalIndices.size(); ++i){
-				short normalIndex = (short)(oid.normalIndices.get(i) * 3);
+				int normalIndex = oid.normalIndices.get(i) * 3;
 				int ni = i * 3;
 				aNormals[ni] = normals.get(normalIndex);
 				aNormals[ni+1] = normals.get(normalIndex + 1);
@@ -230,19 +234,19 @@ public class ObjParser extends AParser {
 	protected class ObjIndexData {
 		public BaseObject3D targetObj;
 		
-		public ArrayList<Short> vertexIndices;
-		public ArrayList<Short> texCoordIndices;
-		public ArrayList<Short> colorIndices;
-		public ArrayList<Short> normalIndices;
+		public ArrayList<Integer> vertexIndices;
+		public ArrayList<Integer> texCoordIndices;
+		public ArrayList<Integer> colorIndices;
+		public ArrayList<Integer> normalIndices;
 		
 		public String materialName;
 		
 		public ObjIndexData(BaseObject3D targetObj) {
 			this.targetObj = targetObj;
-			vertexIndices = new ArrayList<Short>();
-			texCoordIndices = new ArrayList<Short>();
-			colorIndices = new ArrayList<Short>();
-			normalIndices = new ArrayList<Short>();
+			vertexIndices = new ArrayList<Integer>();
+			texCoordIndices = new ArrayList<Integer>();
+			colorIndices = new ArrayList<Integer>();
+			normalIndices = new ArrayList<Integer>();
 		}
 	}
 	

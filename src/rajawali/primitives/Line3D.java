@@ -33,7 +33,7 @@ public class Line3D extends BaseObject3D {
 		float[] textureCoords = new float[numVertices * 2];
 		float[] normals = new float[numVertices * 3];
 		float[] colors = new float[numVertices * 4];
-		short[] indices = new short[numVertices];
+		int[] indices = new int[numVertices];
 		float r = Color.red(mLineColor) / 255f;
 		float g = Color.green(mLineColor) / 255f;
 		float b = Color.blue(mLineColor) / 255f;

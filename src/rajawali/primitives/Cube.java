@@ -75,7 +75,7 @@ public class Cube extends BaseObject3D {
                 0,-n, 0,   0,-n, 0,   0,-n, 0,   0,-n, 0,     // bottom
 		};
 		
-		short[] indices = {
+		int[] indices = {
 				0,1,2, 0,2,3,
 				2, 1, 0, 2, 3, 0,
 				4,5,6, 4,6,7,
@@ -84,7 +84,7 @@ public class Cube extends BaseObject3D {
                 16,17,18, 16,18,19,
                 20,21,22, 20,22,23,
 		};
-		short[] skyboxIndices = {
+		int[] skyboxIndices = {
 				2,1,0, 3,2,0,
 				0,1,2, 0,3,2,
 				6,5,4, 7,6,4,

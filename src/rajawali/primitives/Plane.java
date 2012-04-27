@@ -39,7 +39,7 @@ public class Plane extends BaseObject3D {
         float[] textureCoords = new float[numVertices * 2];
         float[] normals = new float[numVertices * 3];
 		float[] colors = new float[numVertices * 4];
-        short[] indices = new short[mSegmentsW * mSegmentsH * 6];
+        int[] indices = new int[mSegmentsW * mSegmentsH * 6];
         int vertexCount = 0;
         int texCoordCount = 0;
         
@@ -79,13 +79,13 @@ public class Plane extends BaseObject3D {
                 int ur = lr - colspan;
                 int ul = ur - 1;
                 
-                indices[indexCount++] = (short)ul;
-                indices[indexCount++] = (short)ur;
-                indices[indexCount++] = (short)lr;
+                indices[indexCount++] = (int)ul;
+                indices[indexCount++] = (int)ur;
+                indices[indexCount++] = (int)lr;
                 
-                indices[indexCount++] = (short)ul;
-                indices[indexCount++] = (short)lr;
-                indices[indexCount++] = (short)ll;
+                indices[indexCount++] = (int)ul;
+                indices[indexCount++] = (int)lr;
+                indices[indexCount++] = (int)ll;
         	}
         }
         

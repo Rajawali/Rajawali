@@ -28,7 +28,7 @@ public class VertexAnimationFrame implements IAnimationFrame {
 		mName = name;
 	}
 	
-	public float[] calculateNormals(short[] indices) {
+	public float[] calculateNormals(int[] indices) {
 		float[] vertices = new float[mGeometry.getVertices().capacity()];
 		mGeometry.getVertices().get(vertices).position(0);
 		float[] faceNormals = new float[indices.length];

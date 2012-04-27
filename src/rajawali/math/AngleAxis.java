@@ -22,10 +22,16 @@ public class AngleAxis {
 	}
 
 	public Number3D getAxis() {
-		return mAxis.clone();
+		return mAxis;
 	}
 
 	public void setAxis(Number3D axis) {
 		mAxis.setAllFrom(axis);
+	}
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Angle: ").append(mAngle).append(" Axis: ").append(mAxis.toString());
+		return sb.toString();
 	}
 }

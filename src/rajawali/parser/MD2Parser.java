@@ -24,7 +24,7 @@ public class MD2Parser extends AParser implements IParser {
 	private Bitmap mTexture;
 	private VertexAnimationObject3D mObject;
 	private float[][] mFrameVerts;
-	private short[] mIndices;
+	private int[] mIndices;
 	private float[] mTextureCoords;
 
 	public MD2Parser(Resources resources, TextureManager textureManager, int resourceId) {
@@ -163,8 +163,8 @@ public class MD2Parser extends AParser implements IParser {
 				mHeader.offsetTriangles - 68, bytes.length
 						- mHeader.offsetTriangles);
 		LittleEndianDataInputStream is = new LittleEndianDataInputStream(ba);
-		short[] indices = new short[mHeader.numTriangles*3];
-		short[] uvIndices = new short[mHeader.numTriangles*3];
+		int[] indices = new int[mHeader.numTriangles*3];
+		int[] uvIndices = new int[mHeader.numTriangles*3];
 		int index = 0, uvIndex = 0;
 		
 		for (int i = 0; i < mHeader.numTriangles; i++) {
@@ -207,7 +207,7 @@ public class MD2Parser extends AParser implements IParser {
 		float[] reorderedTexCoords = new float[(mHeader.numVerts + changedIndices.size()) * 2];
 		
 		for (int i = 0; i < indices.length; i++) {
-			short fid = indices[i];
+			int fid = indices[i];
 			int uvid = uvIndices[i];
 
 			reorderedTexCoords[fid * 2] = texCoords[uvid * 2];
@@ -247,12 +247,12 @@ public class MD2Parser extends AParser implements IParser {
 	
 	private class VertexIndices {
 		@SuppressWarnings("unused")
-		public short index;
-		public short oldVertexIndex;
+		public int index;
+		public int oldVertexIndex;
 		@SuppressWarnings("unused")
-		public short newVertexIndex;
+		public int newVertexIndex;
 		
-		public VertexIndices(short index, short oldVertexIndex, short newVertexIndex) {
+		public VertexIndices(int index, int oldVertexIndex, int newVertexIndex) {
 			this.index = index;
 			this.oldVertexIndex = oldVertexIndex;
 			this.newVertexIndex = newVertexIndex;

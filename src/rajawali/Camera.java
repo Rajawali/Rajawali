@@ -58,7 +58,7 @@ public class Camera extends ATransformable3D {
 
 	public void setProjectionMatrix(int width, int height) {
 		float ratio = (float) width / height;
-		float frustumH = MathUtil.tan(getFieldOfView() / 360.0 * MathUtil.PI)
+		float frustumH = MathUtil.tan(getFieldOfView() / 360.0f * MathUtil.PI)
 				* getNearPlane();
 		float frustumW = frustumH * ratio;
 

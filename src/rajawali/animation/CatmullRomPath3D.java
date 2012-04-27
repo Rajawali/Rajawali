@@ -2,6 +2,8 @@ package rajawali.animation;
 
 import java.util.Stack;
 
+import android.util.FloatMath;
+
 import rajawali.math.Number3D;
 
 /**
@@ -55,7 +57,7 @@ public class CatmullRomPath3D implements ISpline {
 	}
 
 	protected Number3D p(float t) {
-		int currentIndex = 2 + (int)Math.floor((t == 1 ? t - .000001f : t) * (mNumPoints-3));
+		int currentIndex = 2 + (int)FloatMath.floor((t == 1 ? t - .000001f : t) * (mNumPoints-3));
 		float tdivnum = (t * (mNumPoints - 3)) - (currentIndex - 2);
 		mCurrentPoint.setAll(0, 0, 0);
 		

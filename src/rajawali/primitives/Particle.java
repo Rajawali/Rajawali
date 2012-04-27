@@ -41,7 +41,7 @@ public class Particle extends BaseObject3D {
 		float[] colors = new float[] {
 			1.0f, 1.0f, 1.0f, 1.0f	
 		};
-		short[] indices = new short[] {
+		int[] indices = new int[] {
 			0
 		};
 		
