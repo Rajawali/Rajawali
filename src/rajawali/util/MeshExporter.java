@@ -8,6 +8,9 @@ import java.io.ObjectOutputStream;
 
 import rajawali.BaseObject3D;
 import rajawali.Geometry3D;
+import rajawali.SerializedObject3D;
+import rajawali.animation.mesh.VertexAnimationFrame;
+import rajawali.animation.mesh.VertexAnimationObject3D;
 import android.os.Environment;
 
 public class MeshExporter {
@@ -126,7 +129,30 @@ public class MeshExporter {
 			fos = new FileOutputStream(f);
 			ObjectOutputStream os = new ObjectOutputStream(fos);
 
-			os.writeObject(mObject.toSerializedObject3D());
+			SerializedObject3D ser = mObject.toSerializedObject3D();
+			
+			if(mObject instanceof VertexAnimationObject3D) {
+				VertexAnimationObject3D o = (VertexAnimationObject3D)mObject;
+				int numFrames = o.getNumFrames();
+				float[][] vs = new float[numFrames][];
+				float[][] ns = new float[numFrames][];
+				
+				for( int i=0; i<numFrames; ++i) {
+					VertexAnimationFrame frame = (VertexAnimationFrame)o.getFrame(i);
+					Geometry3D geom = frame.getGeometry();
+					float[] v = new float[geom.getVertices().limit()];
+					geom.getVertices().get(v);
+					float[] n = new float[geom.getNormals().limit()];
+					geom.getNormals().get(n);
+					vs[i] = v;
+					ns[i] = n;
+				}
+				
+				ser.setFrameVertices(vs);
+				ser.setFrameNormals(ns);
+			}
+			
+			os.writeObject(ser);
 			os.close();
 			RajLog.i("Successfully serialized " + mFileName + " to SD card.");
 		} catch (Exception e) {

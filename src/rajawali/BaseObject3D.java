@@ -432,15 +432,20 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	}
 
 	public SerializedObject3D toSerializedObject3D() {
-		SerializedObject3D ser = new SerializedObject3D(mGeometry.getVertices().capacity(), mGeometry.getNormals().capacity(), mGeometry.getTextureCoords()
-				.capacity(), mGeometry.getColors().capacity(), mGeometry.getIndices().capacity());
+		SerializedObject3D ser = new SerializedObject3D(
+				mGeometry.getVertices().capacity(), 
+				mGeometry.getNormals().capacity(), 
+				mGeometry.getTextureCoords().capacity(), 
+				mGeometry.getColors().capacity(), 
+				mGeometry.getIndices().capacity());
 
 		int i;
 
 		for (i = 0; i < mGeometry.getVertices().capacity(); i++)
 			ser.getVertices()[i] = mGeometry.getVertices().get(i);
-		for (i = 0; i < mGeometry.getNormals().capacity(); i++)
-			ser.getNormals()[i] = mGeometry.getNormals().get(i);
+		if(mGeometry.getNormals() != null)
+			for (i = 0; i < mGeometry.getNormals().capacity(); i++)
+				ser.getNormals()[i] = mGeometry.getNormals().get(i);
 		for (i = 0; i < mGeometry.getTextureCoords().capacity(); i++)
 			ser.getTextureCoords()[i] = mGeometry.getTextureCoords().get(i);
 		for (i = 0; i < mGeometry.getColors().capacity(); i++)

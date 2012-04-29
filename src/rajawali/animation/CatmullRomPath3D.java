@@ -2,9 +2,8 @@ package rajawali.animation;
 
 import java.util.Stack;
 
-import android.util.FloatMath;
-
 import rajawali.math.Number3D;
+import android.util.FloatMath;
 
 /**
  * Derived from http://www.cse.unsw.edu.au/~lambert/splines/source.html

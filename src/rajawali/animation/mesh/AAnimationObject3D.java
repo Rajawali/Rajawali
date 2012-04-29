@@ -3,6 +3,7 @@ package rajawali.animation.mesh;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
+import rajawali.SerializedObject3D;
 
 public abstract class AAnimationObject3D extends BaseObject3D {
 	protected Stack<IAnimationFrame> mFrames;
@@ -22,6 +23,11 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 		super();
 		mFrames = new Stack<IAnimationFrame>();
 	}
+	
+	public AAnimationObject3D(SerializedObject3D ser) {
+		super(ser);
+		mFrames = new Stack<IAnimationFrame>();
+	}
 
 	public int getCurrentFrame() {
 		return mCurrentFrameIndex;
@@ -30,6 +36,14 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	public void addFrame(IAnimationFrame frame) {
 		mFrames.add(frame);
 		mNumFrames++;
+	}
+	
+	public int getNumFrames() {
+		return mNumFrames;
+	}
+	
+	public IAnimationFrame getFrame(int index) {
+		return mFrames.get(index);
 	}
 
 	public void setFrames(Stack<IAnimationFrame> frames) {

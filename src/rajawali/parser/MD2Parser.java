@@ -152,7 +152,6 @@ public class MD2Parser extends AParser implements IParser {
 				is.readUnsignedByte();
 				
 			}
-			//frame.getGeometry().setVertices(vertices);
 			mFrameVerts[i] = vertices;
 		}
 	}
@@ -189,7 +188,6 @@ public class MD2Parser extends AParser implements IParser {
 					
 					for(int k=j+1; k<numIndices; k++) {
 						if(indices[j] == indices[k] && uvIndices[j] == uvIndices[k]) {
-							//changedIndices.add(new VertexIndices((short)k, indices[k], newVertexIndex));
 							indices[k] = newVertexIndex;
 						}
 					}
@@ -214,8 +212,6 @@ public class MD2Parser extends AParser implements IParser {
 			reorderedTexCoords[fid * 2 + 1] = texCoords[uvid * 2 + 1];
 		}
 		
-		//mObject.getGeometry().setTextureCoords(reorderedTexCoords);
-		//mObject.getGeometry().setIndices(indices);
 		mTextureCoords = reorderedTexCoords;
 		mIndices = indices;
 		

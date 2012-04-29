@@ -188,6 +188,8 @@ public class Geometry3D {
 	}
 	
 	public FloatBuffer getVertices() {
+		if(mOriginalGeometry != null)
+			return mOriginalGeometry.getVertices();
 		return mVertices;
 	}
 	
@@ -211,6 +213,8 @@ public class Geometry3D {
 
 	
 	public FloatBuffer getNormals() {
+		if(mOriginalGeometry != null)
+			return mOriginalGeometry.getNormals();
 		return mNormals;
 	}
 	
@@ -227,6 +231,8 @@ public class Geometry3D {
 	}
 	
 	public IntBuffer getIndices() {
+		if(mIndices == null && mOriginalGeometry != null)
+			return mOriginalGeometry.getIndices();
 		return mIndices;
 	}
 	
@@ -242,6 +248,8 @@ public class Geometry3D {
 	}
 	
 	public FloatBuffer getTextureCoords() {
+		if(mTextureCoords == null && mOriginalGeometry != null)
+			return mOriginalGeometry.getTextureCoords();
 		return mTextureCoords;
 	}
 	
@@ -261,6 +269,8 @@ public class Geometry3D {
 	}
 	
 	public FloatBuffer getColors() {
+		if(mColors == null && mOriginalGeometry != null)
+			return mOriginalGeometry.getColors();
 		return mColors;
 	}
 	

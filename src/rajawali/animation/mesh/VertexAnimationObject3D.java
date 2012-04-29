@@ -1,6 +1,28 @@
 package rajawali.animation.mesh;
 
+import rajawali.SerializedObject3D;
+
 public class VertexAnimationObject3D extends AAnimationObject3D {
+	public VertexAnimationObject3D() {
+		super();
+	}
+	
+	public VertexAnimationObject3D(SerializedObject3D ser) {
+		super(ser);
+		float[][] v = ser.getFrameVertices();
+		float[][] n = ser.getFrameNormals();
+		
+		mNumFrames = v.length;
+		
+		for(int i=0; i<mNumFrames; ++i) {
+			VertexAnimationFrame frame = new VertexAnimationFrame();
+			frame.getGeometry().setVertices(v[i]);
+			frame.getGeometry().setNormals(n[i]);
+			frame.getGeometry().createVertexAndNormalBuffersOnly();
+			mFrames.add(frame);
+		}
+	}
+	
 	public void preRender() {
 		if (!mIsPlaying || !mUpdateVertices)
 			return;

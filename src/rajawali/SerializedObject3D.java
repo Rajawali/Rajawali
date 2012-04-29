@@ -10,6 +10,8 @@ public class SerializedObject3D implements Serializable {
 	protected float[] mTextureCoords;
 	protected float[] mColors;
 	protected int[] mIndices;
+	protected float[][] mFrameNormals;
+	protected float[][] mFrameVertices;
 	
 	public SerializedObject3D(int numVertices, int numNormals, int numTextureCoords, int numColors, int numIndices) {
 		mVertices = new float[numVertices];
@@ -50,5 +52,21 @@ public class SerializedObject3D implements Serializable {
 
 	public void setColors(float[] colors) {
 		this.mColors = colors;
+	}
+	
+	public void setFrameVertices(float[][] frameVertices) {
+		this.mFrameVertices = frameVertices;
+	}
+	
+	public float[][] getFrameVertices() {
+		return mFrameVertices;
+	}
+	
+	public void setFrameNormals(float[][] frameNormals) {
+		this.mFrameNormals = frameNormals;
+	}
+	
+	public float[][] getFrameNormals() {
+		return mFrameNormals;
 	}
 }
