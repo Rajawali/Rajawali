@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 
 public class SwirlFilter extends AMaterial implements IPostProcessingFilter {
 	protected static final String mVShader =
+		"precision mediump float;\n" +
 		"uniform mat4 uMVPMatrix;\n" +
 
 		"attribute vec4 aPosition;\n" +

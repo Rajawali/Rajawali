@@ -8,7 +8,6 @@ import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureInfo;
-import rajawali.math.Number3D;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import android.graphics.Color;
@@ -16,7 +15,17 @@ import android.opengl.GLES20;
 import android.opengl.GLU;
 import android.opengl.Matrix;
 
-public class BaseObject3D extends ATransformable3D implements IObject3D, Comparable<BaseObject3D> {
+/**
+ * This is the main object that all other 3D objects inherit from.
+ * 
+ * @author dennis.ippel
+ *
+ */
+/**
+ * @author dennis.ippel
+ *
+ */
+public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D> {
 	protected float[] mMVPMatrix = new float[16];
 	protected float[] mMMatrix = new float[16];
 	protected float[] mProjMatrix;
@@ -31,7 +40,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	protected Stack<ALight> mLights;
 
 	protected Geometry3D mGeometry;
-
 	protected ArrayList<BaseObject3D> mChildren;
 	protected int mNumChildren;
 	protected String mName;
@@ -46,8 +54,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	protected int mDrawingMode = GLES20.GL_TRIANGLES;
 
 	protected boolean mIsContainerOnly = true;
-	//protected Number3D mLookAt;
-	protected Number3D mTmpRotX, mTmpRotY, mTmpRotZ;
 	protected int mPickingColor;
 	protected boolean mIsPickingEnabled = false;
 	protected float[] mPickingColorArray;
@@ -60,9 +66,6 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	public BaseObject3D() {
 		super();
 		mChildren = new ArrayList<BaseObject3D>();
-		mTmpRotX = new Number3D();
-		mTmpRotY = new Number3D();
-		mTmpRotZ = new Number3D();
 		mGeometry = new Geometry3D();
 		mLights = new Stack<ALight>();
 	}
@@ -72,21 +75,57 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		mName = name;
 	}
 
+	/**
+	 * Creates a BaseObject3D from a serialized file. A serialized file can be a BaseObject3D but also
+	 * a VertexAnimationObject3D.
+	 * 
+	 * A serialized file can be created by the MeshExporter class. Example: 
+	 * 	<code>
+	  	Cube cube = new Cube(2);
+	 	MeshExporter exporter = new MeshExporter(cube);
+	 	exporter.export("myobject.ser", ExportType.SERIALIZED);
+	 	</code>
+	 * This saves the serialized file to the SD card.
+	 * 
+	 * @param ser
+	 */
 	public BaseObject3D(SerializedObject3D ser) {
 		this();
 		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices());
 	}
 
+	
+	/**
+	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
+	 * 
+	 * @param vertexBufferHandle	The handle to the vertex buffer
+	 * @param normalBufferHandle	The handle to the normal buffer
+	 * @param textureCoords			A float array containing texture coordinates
+	 * @param colors				A float array containing color values (rgba)
+	 * @param indices				An integer array containing face indices
+	 */
 	public void setData(int vertexBufferHandle, int normalBufferHandle, float[] textureCoords, float[] colors, int[] indices) {
 		mGeometry.setData(vertexBufferHandle, normalBufferHandle, textureCoords, colors, indices);
 		mIsContainerOnly = false;
 	}
 
+	/**
+	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
+	 * 
+	 * @param vertices				A float array containing vertex data
+	 * @param normals				A float array containing normal data
+	 * @param textureCoords			A float array containing texture coordinates
+	 * @param colors				A float array containing color values (rgba)
+	 * @param indices				An integer array containing face indices
+	 */
 	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices) {
 		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
 		mIsContainerOnly = false;
 	}
 
+	/**
+	 * Executed before the rendering process starts
+	 */
 	protected void preRender() {
 	}
 
@@ -94,6 +133,15 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		render(camera, projMatrix, vMatrix, null, pickerInfo);
 	}
 
+	/**
+	 * Renders the object
+	 * 
+	 * @param camera				The camera
+	 * @param projMatrix			The projection matrix
+	 * @param vMatrix				The view matrix
+	 * @param parentMatrix			This object's parent matrix
+	 * @param pickerInfo			The current color picker info. This is only used when an object is touched.
+	 */
 	public void render(Camera camera, float[] projMatrix, float[] vMatrix, final float[] parentMatrix, ColorPickerInfo pickerInfo) {
 		if (!mIsVisible)
 			return;
@@ -217,6 +265,19 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		}
 	}
 
+	/**
+	 * Optimized version of Matrix.rotateM(). Apparently the native version does a lot
+	 * of float[] allocations.
+	 * 
+	 * @see http://groups.google.com/group/android-developers/browse_thread/thread/b30dd2a437cfb076?pli=1
+	 * 
+	 * @param m			The matrix
+	 * @param mOffset	Matrix offset
+	 * @param a			The angle
+	 * @param x			x axis
+	 * @param y			y axis
+	 * @param z			z axis
+	 */
 	protected void rotateM(float[] m, int mOffset, float a, float x, float y, float z) {
 		Matrix.setIdentityM(mRotateMatrixTmp, 0);
 		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
@@ -224,10 +285,20 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		Matrix.multiplyMM(m, mOffset, mTmpMatrix, mOffset, mRotateMatrixTmp, 0);
 	}
 
+	/**
+	 * This is where the parameters for the shaders are set. It is called every frame.
+	 * 
+	 * @param camera
+	 */
 	protected void setShaderParams(Camera camera) {
 		mMaterial.setLights(mLights);
 	};
-
+	
+	/**
+	 * Adds a texture to this object
+	 * 
+	 * @parameter textureInfo
+	 */
 	public void addTexture(TextureInfo textureInfo) {
 		mMaterial.addTexture(textureInfo);
 	}
@@ -241,6 +312,11 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		}
 	}
 
+	/**
+	 * The reload method is called whenever the OpenGL context needs to be re-created.
+	 * When the OpenGL context was lost, the vertex, uv coord, index etc data needs
+	 * to be re-uploaded.
+	 */
 	public void reload() {
 		if(!mIsContainerOnly) {
 			mMaterial.reload();
@@ -272,7 +348,16 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	public boolean getAdditive() {
 		return mAdditive;
 	}
-
+	
+	/**
+	 * Maps screen coordinates to object coordinates
+	 * 
+	 * @param x
+	 * @param y
+	 * @param viewportWidth
+	 * @param viewportHeight
+	 * @param eyeZ
+	 */
 	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ) {
 		float[] r1 = new float[16];
 		int[] viewport = new int[] { 0, 0, viewportWidth, viewportHeight };
@@ -303,6 +388,13 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 		return mTransparent;
 	}
 
+	/**
+	 * Use this together with the alpha channel when calling BaseObject3D.setColor():
+	 * 0xaarrggbb. So for 50% transparent red, set transparent to true and call:	 * 
+	 * <code>setColor(0x7fff0000);</code>
+	 * 
+	 * @param transparent
+	 */
 	public void setTransparent(boolean transparent) {
 		this.mTransparent = transparent;
 	}
@@ -313,6 +405,11 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 			mChildren.get(i).setLights(lights);
 	}
 	
+	/**
+	 * Adds a light to this object.
+	 * 
+	 * @param light
+	 */
 	public void addLight(ALight light) {
 		mLights.add(light);
 		for (int i = 0; i < mChildren.size(); ++i)
@@ -342,11 +439,21 @@ public class BaseObject3D extends ATransformable3D implements IObject3D, Compara
 	public int getDrawingMode() {
 		return mDrawingMode;
 	}
-
+	
+	/**
+	 * Sets the OpenGL drawing mode. GLES20.GL_TRIANGLES is the default. Other values
+	 * can be GL_LINES, GL_LINE_LOOP, GL_LINE_LOOP, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP
+	 * 
+	 * 
+	 * @param drawingMode
+	 */
 	public void setDrawingMode(int drawingMode) {
 		this.mDrawingMode = drawingMode;
 	}
 
+	/**
+	 * Compares one object's depth to another object's depth 
+	 */
 	public int compareTo(BaseObject3D another) {
 		if (mForcedDepth)
 			return -1;
