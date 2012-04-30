@@ -108,8 +108,17 @@ public abstract class ATransformable3D {
 		}
 	}
 
- 	public void rotateAround(Number3D axis, float angle) {
-		mOrientation.fromAngleAxis(angle, axis);
+	public void rotateAround(Number3D axis, float angle) {
+		rotateAround(axis, angle);
+	}
+	
+ 	public void rotateAround(Number3D axis, float angle, boolean append) {
+ 		if(append) {
+ 			mTmpOrientation.fromAngleAxis(angle, axis);
+ 			mOrientation.multiply(mTmpOrientation);
+ 		} else {
+ 			mOrientation.fromAngleAxis(angle, axis);
+ 		}
 		mRotationDirty = false;
 	}
 	
