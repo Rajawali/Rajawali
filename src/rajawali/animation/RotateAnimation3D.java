@@ -11,9 +11,12 @@ public class RotateAnimation3D extends Animation3D {
 	protected float mRotationAngle;
 	protected Number3D mRotationAxis;
 	protected Quaternion mQuat;
-
+	protected Quaternion mQuatFrom;
+	protected boolean mCopyCurrentOrientation;
+	
 	public RotateAnimation3D(Axis axis, float degreesToRotate) {
 		this(axis, 0, degreesToRotate);
+		mCopyCurrentOrientation = true;
 	}
 	
 	public RotateAnimation3D(Axis axis, float rotateFrom, float degreesToRotate ) {
@@ -22,19 +25,31 @@ public class RotateAnimation3D extends Animation3D {
 	
 	public RotateAnimation3D(Number3D axis, float degreesToRotate ) {
 		this(axis, 0, degreesToRotate);
+		mCopyCurrentOrientation = true;
 	}
 
 	public RotateAnimation3D(Number3D axis, float rotateFrom, float degreesToRotate ) {
 		super();
 		mQuat = new Quaternion();
+		mQuatFrom = new Quaternion();
+		mQuatFrom.fromAngleAxis(rotateFrom, axis);
 		mRotationAxis = axis;
 		mRotateFrom = rotateFrom;
 		mDegreesToRotate = degreesToRotate;
 	}
 	
 	@Override
+	public void start() {
+		if(mCopyCurrentOrientation)
+			mQuatFrom.setAllFrom(mTransformable3D.getOrientation());
+		super.start();
+	}
+	
+	@Override
 	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
+		if(mCopyCurrentOrientation)
+			mQuatFrom.setAllFrom(transformable3D.getOrientation());
 	}
 	
 	@Override
@@ -42,6 +57,7 @@ public class RotateAnimation3D extends Animation3D {
 		mRotationAngle = mRotateFrom + (interpolatedTime * mDegreesToRotate);
 		//Log.d("Rajawali", angle);
 		mQuat.fromAngleAxis(mRotationAngle, mRotationAxis);
+		mQuat.multiply(mQuatFrom);
 		mTransformable3D.setOrientation(mQuat);
 	}
 
