@@ -23,6 +23,8 @@ public class RayPicker implements IObjectPicker {
 		RayPickingVisitor visitor = new RayPickingVisitor(pointNear, pointFar);
 		mRenderer.accept(visitor);
 		
+		// TODO: ray-triangle intersection test
+		
 		mObjectPickedListener.onObjectPicked(visitor.getPickedObject());
 	}
 }

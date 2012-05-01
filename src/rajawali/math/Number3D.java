@@ -227,6 +227,10 @@ public final class Number3D {
 	public static float dot(Number3D v, Number3D w) {
 		return v.x * w.x + v.y * w.y + v.z * w.z;
 	}
+	
+	public float dot(Number3D w) {
+		return x * w.x + y * w.y + z * w.z;
+	}
 
 	public static Number3D getAxisVector(Axis axis) {
 		Number3D axisVector = new Number3D();

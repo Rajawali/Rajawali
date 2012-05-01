@@ -4,7 +4,6 @@ import rajawali.BaseObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
-import rajawali.util.RajLog;
 
 public class RayPickingVisitor implements INodeVisitor {
 	private Number3D mRayStart;
@@ -28,7 +27,9 @@ public class RayPickingVisitor implements INodeVisitor {
 			bbox.transform(o.getModelMatrix());
 			
 			if(intersectsWith(bbox)) {
-				mPickedObject = o;
+				if(mPickedObject == null ||
+						(mPickedObject != null && o.getPosition().z < mPickedObject.getPosition().z))
+					mPickedObject = o;
 			}
 		}
 	}
