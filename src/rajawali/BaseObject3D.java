@@ -10,6 +10,8 @@ import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureInfo;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
+import rajawali.visitors.INode;
+import rajawali.visitors.INodeVisitor;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLU;
@@ -25,7 +27,7 @@ import android.opengl.Matrix;
  * @author dennis.ippel
  *
  */
-public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D> {
+public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D>, INode {
 	protected float[] mMVPMatrix = new float[16];
 	protected float[] mMMatrix = new float[16];
 	protected float[] mProjMatrix;
@@ -59,7 +61,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected float[] mPickingColorArray;
 
 	protected boolean mFrustumTest = false;
-	protected boolean mDoRender;
+	protected boolean mIsInFrustum;
 		
 	private int i;
 
@@ -173,15 +175,15 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		Matrix.multiplyMM(mMVPMatrix, 0, vMatrix, 0, mMMatrix, 0);
 		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
 		
-		mDoRender = true; // only if mFrustrumTest == true it check frustum
+		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
 			BoundingBox bbox=mGeometry.getBoundingBox();
 			bbox.transform(mMMatrix);
 			if (!camera.mFrustum.boundsInFrustum(bbox)) {
-				mDoRender=false;
+				mIsInFrustum=false;
 			}
 		}
-		if (!mIsContainerOnly && mDoRender) {
+		if (!mIsContainerOnly && mIsInFrustum) {
 			mProjMatrix = projMatrix;
 			if (!mDoubleSided)
 				GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -608,5 +610,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	
 	public void setFrustumTest(boolean value){
 		mFrustumTest = value;
+	}
+	
+	public void accept(INodeVisitor visitor) {
+		visitor.apply(this);
+	}
+	
+	public boolean isInFrustum() {
+		return mIsInFrustum;
 	}
 }

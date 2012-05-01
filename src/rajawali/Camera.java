@@ -13,10 +13,13 @@ public class Camera extends ATransformable3D {
 	protected boolean mUseRotationMatrix = false;
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
+	protected float[] mCombinedMatrix=new float[16];
+	public Frustum mFrustum;
 
 	public Camera() {
 		super();
 		mIsCamera = true;
+		mFrustum = new Frustum();
 	}
 
 	public float[] getViewMatrix() {
@@ -26,34 +29,22 @@ public class Camera extends ATransformable3D {
 					0.0f);
 		} else {
 			if (mUseRotationMatrix == false && mRotationDirty) {
-//				Matrix.setIdentityM(mRotationMatrix, 0);
-//				rotateM(mRotationMatrix, 0, -mRotation.x, 1.0f, 0.0f, 0.0f);
-//				rotateM(mRotationMatrix, 0, -mRotation.y + 180, 0.0f, 1.0f, 0.0f);
-//				rotateM(mRotationMatrix, 0, -mRotation.z, 0.0f, 0.0f, 1.0f);
 				setOrientation();
-				//mOrientation.inverse();
 				mOrientation.toRotationMatrix(mRotationMatrix);
 				mRotationDirty = false;
 			}
 			Matrix.setIdentityM(mTmpMatrix, 0);
 			Matrix.setIdentityM(mVMatrix, 0);
-			Matrix.translateM(mTmpMatrix, 0, mPosition.x, -mPosition.y,
-					-mPosition.z);
+			Matrix.translateM(mTmpMatrix, 0, mPosition.x, -mPosition.y, -mPosition.z);
 			Matrix.multiplyMM(mVMatrix, 0, mRotationMatrix, 0, mTmpMatrix, 0);
 		}
 		return mVMatrix;
 	}
-	public Frustum mFrustum=new Frustum(); // public for performance
-	private float[] mCombinedMatrix=new float[16];
-	//create invers matrix and apply to frustum object
+
 	public void updateFrustum(float[] pMatrix,float[] vMatrix) {
-		//float[] prj=this.getProjectionMatrix();	
 		Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
-		
 		Matrix.invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
-		
 		mFrustum.update(mTmpMatrix);
-		
 	}
 
 	protected void rotateM(float[] m, int mOffset, float a, float x, float y,

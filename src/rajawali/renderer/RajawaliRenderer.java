@@ -15,8 +15,11 @@ import rajawali.filters.IPostProcessingFilter;
 import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureInfo;
 import rajawali.materials.TextureManager;
+import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
+import rajawali.visitors.INode;
+import rajawali.visitors.INodeVisitor;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -24,9 +27,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.view.MotionEvent;
 
-public class RajawaliRenderer implements GLSurfaceView.Renderer {
+public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected Context mContext;
 
 	protected float mEyeZ = -4.0f;
@@ -277,6 +281,31 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 				mSurfaceView.requestRender();
 		}
 	}
+	
+	public Number3D unProject(float x, float y, float z) {
+		x = mViewportWidth - x;
+		y = mViewportHeight - y;
+		
+		float[] m = new float[16], mvpmatrix = new float[16],
+			    in = new float[4],
+			    out = new float[4];
+		
+		Matrix.multiplyMM(mvpmatrix, 0, mPMatrix, 0, mVMatrix, 0);
+		Matrix.invertM(m, 0, mvpmatrix, 0);
+
+	    in[0] = (x / (float)mViewportWidth) * 2 - 1;
+	    in[1] = (y / (float)mViewportHeight) * 2 - 1;
+	    in[2] = 2 * z - 1;
+	    in[3] = 1;
+
+	    Matrix.multiplyMV(out, 0, m, 0, in, 0);
+
+	    if (out[3]==0)
+	        return null;
+
+	    out[3] = 1/out[3];
+	    return new Number3D(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
+	}
 
 	public int getFrameRate() {
 		return mFrameRate;
@@ -341,6 +370,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 	public int getNumChildren() {
 		return mNumChildren;
 	}
+	
+	public Stack<BaseObject3D> getChildren() {
+		return mChildren;
+	}
 
 	protected boolean hasChild(BaseObject3D child) {
 		for (int i = 0; i < mNumChildren; ++i) {
@@ -358,6 +391,14 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer {
 		mPostProcessingRenderer.setFilter(filter);
 	}
 
+	public void accept(INodeVisitor visitor) {
+		visitor.apply(this);
+		for (int i = 0; i < mNumChildren; ++i) {
+			mChildren.get(i).accept(visitor);
+		}
+	}
+	
+	
 	public void removePostProcessingFilter(IPostProcessingFilter filter) {
 		mFilters.remove(filter);
 	}
