@@ -10,7 +10,7 @@ public class SimpleMaterial extends AMaterial {
 
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec4 vColor;\n" +		
-
+		
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +

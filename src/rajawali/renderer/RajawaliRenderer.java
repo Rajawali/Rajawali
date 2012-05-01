@@ -68,6 +68,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	protected Stack<IPostProcessingFilter> mFilters;
 	protected boolean mReloadPickerInfo;
+	protected static boolean mFogEnabled;
 	
 	private boolean mSceneInitialized;
 	/**
@@ -77,7 +78,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * is re-activated or when a live wallpaper is rotated. 
 	 */
 	private boolean mSceneCachingEnabled;
-
+	
 	public RajawaliRenderer(Context context) {
 		mContext = context;
 		mChildren = new Stack<BaseObject3D>();
@@ -396,8 +397,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		for (int i = 0; i < mNumChildren; ++i) {
 			mChildren.get(i).accept(visitor);
 		}
-	}
-	
+	}	
 	
 	public void removePostProcessingFilter(IPostProcessingFilter filter) {
 		mFilters.remove(filter);
@@ -434,6 +434,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return mSceneCachingEnabled;
 	}
 
+	public void setFogEnabled(boolean enabled) {
+		mFogEnabled = enabled;
+		mCamera.setFogEnabled(enabled);
+	}
+	
+	public static boolean getFogEnabled() {
+		return mFogEnabled;
+	}
+	
 	public static int getMaxLights() {
 		return mMaxLights;
 	}

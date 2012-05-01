@@ -15,6 +15,7 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 			"uniform vec4 uAmbientColor;\n" +
 			"uniform vec4 uAmbientIntensity;\n" +
 			
+			M_FOG_FRAGMENT_VARS +
 			M_LIGHTS_VARS +
 
 			"void main() {\n" +
@@ -29,7 +30,9 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 			"		intensity += uLightPower[i] * max(dot(bumpnormal, L), 0.0);\n" +
 			"	}\n" +
 			" 	vec3 color = intensity * texture2D(uDiffuseTexture, vTextureCoord).rgb;" +
+			M_FOG_FRAGMENT_CALC +
 		    "	gl_FragColor = vec4(color, 1.0) + uAmbientColor * uAmbientIntensity;\n" + 
+		    M_FOG_FRAGMENT_COLOR +
 			"}";
 
 	public BumpmapMaterial() {

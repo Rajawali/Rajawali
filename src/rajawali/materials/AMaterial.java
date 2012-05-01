@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import rajawali.Camera;
 import rajawali.lights.ALight;
+import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
@@ -49,6 +50,13 @@ public abstract class AMaterial {
 		mIsAnimated = isAnimated;
 		mVertexShader = isAnimated ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mFragmentShader = fragmentShader;
+		if(RajawaliRenderer.getFogEnabled())
+		{
+			mVertexShader = "#define FOG_ENABLED\n" + mVertexShader;
+			mFragmentShader = "#define FOG_ENABLED\n" + mFragmentShader;
+		}
+		RajLog.d(mVertexShader);
+		RajLog.d(mFragmentShader);
 		setShaders(mVertexShader, mFragmentShader);
 	}
 	

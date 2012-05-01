@@ -15,6 +15,11 @@ public class Camera extends ATransformable3D {
 	protected float[] mTmpMatrix = new float[16];
 	protected float[] mCombinedMatrix=new float[16];
 	public Frustum mFrustum;
+	
+	protected int mFogColor = 0xdddddd;
+	protected float mFogNear = 5;
+	protected float mFogFar = 25;
+	protected boolean mFogEnabled = false;
 
 	public Camera() {
 		super();
@@ -103,5 +108,37 @@ public class Camera extends ATransformable3D {
 
 	public void setUseRotationMatrix(boolean useRotationMatrix) {
 		this.mUseRotationMatrix = useRotationMatrix;
+	}
+
+	public int getFogColor() {
+		return mFogColor;
+	}
+
+	public void setFogColor(int fogColor) {
+		this.mFogColor = fogColor;
+	}
+
+	public float getFogNear() {
+		return mFogNear;
+	}
+
+	public void setFogNear(float fogNear) {
+		this.mFogNear = fogNear;
+	}
+
+	public float getFogFar() {
+		return mFogFar;
+	}
+
+	public void setFogFar(float fogFar) {
+		this.mFogFar = fogFar;
+	}
+
+	public boolean isFogEnabled() {
+		return mFogEnabled;
+	}
+
+	public void setFogEnabled(boolean fogEnabled) {
+		this.mFogEnabled = fogEnabled;
 	}
 }

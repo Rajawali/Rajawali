@@ -23,6 +23,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"varying float vDiffuseIntensity;\n" +
 		"varying vec4 vColor;\n" +
 		
+		M_FOG_VERTEX_VARS +
 		M_LIGHTS_VARS +
 		
 		"\n#ifdef VERTEX_ANIM\n" +
@@ -57,6 +58,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"	}" +
 		"	vSpecularIntensity = clamp(vSpecularIntensity, 0.0, 1.0);" +
 		"	vColor = aColor;\n" +
+		M_FOG_VERTEX_DEPTH +
 		"}";
 		
 	protected static final String mFShader = 
@@ -74,11 +76,15 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"uniform vec4 uSpecularColor;\n" +
 		"uniform vec4 uSpecularIntensity;\n" +
 		
+		M_FOG_FRAGMENT_VARS +	
+		
 		"void main() {\n" +
 		"	vec4 texColor = uUseTexture ? texture2D(uDiffuseTexture, vTextureCoord) : vColor;\n" +
 		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity * uSpecularIntensity;\n" +
 		"	gl_FragColor.a = texColor.a;\n" +
+		M_FOG_FRAGMENT_CALC +
 		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
+		M_FOG_FRAGMENT_COLOR +
 		"}";
 	
 	protected int muSpecularColorHandle;

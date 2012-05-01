@@ -9,6 +9,7 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 			"varying vec3 L["+MAX_LIGHTS+"], H["+MAX_LIGHTS+"];\n" +
 			"varying vec4 vColor;\n" +
 			
+			M_FOG_FRAGMENT_VARS +
 			M_LIGHTS_VARS +
 			
 			"uniform vec4 uSpecularColor;\n" +
@@ -37,7 +38,9 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 		    "	vec4 diffuse  = uUseTexture ? Kd * texture2D(uDiffuseTexture, vTextureCoord) : Kd * vColor;\n" + 
 		    "	vec4 specular = Ks * uSpecularColor;\n" + 
 		    "	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 
+		    M_FOG_FRAGMENT_CALC +
 		    "	gl_FragColor = ambient + diffuse + specular;\n" + 
+		    M_FOG_FRAGMENT_COLOR +	
 			"}";
 	
 	public BumpmapPhongMaterial() {

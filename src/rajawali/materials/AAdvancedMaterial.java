@@ -2,6 +2,7 @@ package rajawali.materials;
 
 import java.util.Stack;
 
+import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
@@ -16,19 +17,60 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			"uniform float uLightPower[" +MAX_LIGHTS+ "];\n" +
 			"uniform vec3 uLightColor[" +MAX_LIGHTS+ "];\n";	
 	
+	public static final String M_FOG_VERTEX_VARS =
+			"\n#ifdef FOG_ENABLED\n" +
+			"varying float vFogDepth;\n" +
+			"#endif\n\n";
+	public static final String M_FOG_VERTEX_DEPTH = 
+			"\n#ifdef FOG_ENABLED\n" +
+			"	vFogDepth = gl_Position.z;\n" +
+			"#endif\n\n";
+	public static final String M_FOG_FRAGMENT_VARS =
+			"\n#ifdef FOG_ENABLED\n" +
+			"uniform vec3 uFogColor;\n" +
+			"uniform float uFogNear;\n" +
+			"uniform float uFogFar;\n" +
+			"uniform bool uFogEnabled;\n" +
+			"varying float vFogDepth;\n" +
+			"#endif\n\n";
+	public static final String M_FOG_FRAGMENT_CALC = 
+			"\n#ifdef FOG_ENABLED\n" +
+			"	float fogDensity = 0.0;\n" +
+			"	if(uFogEnabled == true){\n" +
+			"		if (vFogDepth > uFogFar) {\n" +
+			"			fogDensity = 1.0;\n" +
+			"		}else if(vFogDepth > uFogNear) {\n" +
+			"			float newDepth = vFogDepth - uFogNear;\n" +
+			"			fogDensity = newDepth/(uFogFar - uFogNear);\n" +
+			"		}else if (vFogDepth < uFogNear) {\n" +
+			"			fogDensity = 0.0;\n" +
+			"		}\n" +
+			"	}\n" +
+			"#endif\n\n";
+	public static final String M_FOG_FRAGMENT_COLOR =
+			"\n#ifdef FOG_ENABLED\n" +
+			"	gl_FragColor = mix(gl_FragColor,vec4(uFogColor,1.0),fogDensity);\n" +
+			"#endif\n\n";
+
+	
 	protected int muLightPosHandle;
 	protected int muLightPowerHandle;
 	protected int muLightColorHandle;
 	protected int muNormalMatrixHandle;
 	protected int muAmbientColorHandle;
 	protected int muAmbientIntensityHandle;
-
+	protected int muFogColorHandle;
+	protected int muFogNearHandle;
+	protected int muFogFarHandle;
+	protected int muFogEnabledHandle;
+	
 	protected float[] mNormalMatrix;
 	protected float[] mLightPos;
 	protected float[] mLightPower;
 	protected float[] mLightColor;
 	protected float[] mTmp, mTmp2;
 	protected float[] mAmbientColor, mAmbientIntensity;
+	protected float[] mFogColor;
 
 	protected android.graphics.Matrix mTmpNormalMatrix = new android.graphics.Matrix();
 	protected android.graphics.Matrix mTmpMvMatrix = new android.graphics.Matrix();
@@ -54,6 +96,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mLightPos = new float[maxLights * 3];
 		mLightPower = new float[maxLights];
 		mLightColor = new float[mLightPos.length];
+		
+		mFogColor = new float[] { .8f, .8f, .8f };
 	}
 	
 	@Override
@@ -103,11 +147,43 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		setAmbientIntensity(new float[] { r, g, b, a });
 	}
 	
+	public void setFogColor(int color) {
+		mFogColor[0] = Color.red(color) / 255f;
+		mFogColor[1] = Color.green(color) / 255f;
+		mFogColor[2] = Color.blue(color) / 255f;
+		GLES20.glUniform3fv(muFogColorHandle, 1, mFogColor, 0);
+	}
+	
+	public void setFogNear(float near) {
+		GLES20.glUniform1f(muFogNearHandle, near);
+	}
+	
+	public void setFogFar(float far) {
+		GLES20.glUniform1f(muFogFarHandle, far);
+	}
+	
+	public void setFogEnabled(boolean enabled) {
+		GLES20.glUniform1i(muFogEnabledHandle, enabled == true ? GLES20.GL_TRUE : GLES20.GL_FALSE);
+	}
+	
 	@Override
 	public void useProgram() {
 		super.useProgram();
 		GLES20.glUniform4fv(muAmbientColorHandle, 1, mAmbientColor, 0);
 		GLES20.glUniform4fv(muAmbientIntensityHandle, 1, mAmbientIntensity, 0);
+	}
+	
+	@Override
+	public void setCamera(Camera camera) {
+		super.setCamera(camera);
+		if(camera.isFogEnabled()) {
+			setFogColor(camera.getFogColor());
+			setFogNear(camera.getFogNear());
+			setFogFar(camera.getFogFar());
+			setFogEnabled(true);
+		} else {
+			setFogEnabled(false);
+		}
 	}
 	
 	@Override
@@ -117,9 +193,15 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		muNormalMatrixHandle = getUniformLocation("uNMatrix");
 		muAmbientColorHandle = getUniformLocation("uAmbientColor");
 		muAmbientIntensityHandle = getUniformLocation("uAmbientIntensity");
+		
 		muLightPosHandle = getUniformLocation("uLightPos"); 
 		muLightColorHandle = getUniformLocation("uLightColor");
 		muLightPowerHandle = getUniformLocation("uLightPower");
+		
+		muFogColorHandle = getUniformLocation("uFogColor");
+		muFogNearHandle = getUniformLocation("uFogNear");
+		muFogFarHandle = getUniformLocation("uFogFar");
+		muFogEnabledHandle = getUniformLocation("uFogEnabled");
 	}
 	
 	@Override

@@ -12,6 +12,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"uniform mat4 uVMatrix;\n" +
 		
 		M_LIGHTS_VARS +
+		M_FOG_VERTEX_VARS +
 		
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
@@ -49,6 +50,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"		H[i] = normalize(L[i] + E);\n" +
 		"	}" +
 		"	vColor = aColor;\n" +
+		M_FOG_VERTEX_DEPTH +
 		"}";
 		
 	protected static final String mFShader = 
@@ -59,6 +61,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"varying vec3 L["+MAX_LIGHTS+"], H["+MAX_LIGHTS+"];\n" +
 		"varying vec4 vColor;\n" +
 		
+		M_FOG_FRAGMENT_VARS +
 		M_LIGHTS_VARS +
 		
 		"uniform vec4 uSpecularColor;\n" +
@@ -82,7 +85,9 @@ public class PhongMaterial extends AAdvancedMaterial {
 	    "	vec4 diffuse  = uUseTexture ? Kd * texture2D(uDiffuseTexture, vTextureCoord) : Kd * vColor;\n" + 
 	    "	vec4 specular = Ks * uSpecularColor;\n" + 
 	    "	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 
+	    M_FOG_FRAGMENT_CALC +
 	    "	gl_FragColor = ambient + diffuse + specular;\n" + 
+	    M_FOG_FRAGMENT_COLOR +
 		"}";
 	
 	protected int muSpecularColorHandle;

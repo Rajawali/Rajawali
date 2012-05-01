@@ -15,6 +15,8 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"varying vec3 vNormal;\n" +
 		"varying vec3 N, L;\n" +
 		
+		M_FOG_VERTEX_VARS +
+		
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
 		"	vec4 transfPos = uMMatrix * aPosition;\n" +
@@ -24,6 +26,7 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"	vTextureCoord = aTextureCoord;\n" +
 		"	L = uLightPos.xyz - aPosition.xyz;\n" +
 		"	vNormal = aNormal;\n" +
+		M_FOG_VERTEX_DEPTH +
 		"}\n";
 	
 	protected static final String mFShader = 
@@ -35,13 +38,17 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"varying vec3 N, L;\n" +
 		"varying vec3 vNormal;\n" +
 		"uniform vec4 uAmbientColor;\n" +
-		"uniform vec4 uAmbientIntensity;\n" + 
+		"uniform vec4 uAmbientIntensity;\n" +
+		
+		M_FOG_FRAGMENT_VARS +
 
 		"void main() {\n" +
 		"	float intensity = max(0.0, dot(normalize(N), normalize(L)));\n" +
 		"	gl_FragColor = textureCube(uCubeMapTexture, vReflectDir);\n" +
 		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
+		M_FOG_FRAGMENT_CALC +
 		"	gl_FragColor.rgb *= intensity;\n" +
+		M_FOG_FRAGMENT_COLOR +	
 		"}\n";
 	
 	public CubeMapMaterial() {

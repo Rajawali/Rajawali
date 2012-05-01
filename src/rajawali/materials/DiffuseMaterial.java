@@ -19,6 +19,8 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"varying vec4 V;\n" +
 		"varying vec4 vColor;\n" +
 		
+		M_FOG_VERTEX_VARS +
+		
 		"\n#ifdef VERTEX_ANIM\n" +
 		"attribute vec4 aNextFramePosition;\n" +
 		"attribute vec3 aNextFrameNormal;\n" +
@@ -37,9 +39,10 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	N = normalize(uNMatrix * normal);\n" +
 		"	V = uMMatrix * position;\n" +
 		"	vColor = aColor;\n" +
+		M_FOG_VERTEX_DEPTH +
 		"}";
 		
-	protected static final String mFShader = 
+	protected static final String mFShader =
 		"precision mediump float;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
@@ -52,6 +55,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"uniform vec4 uAmbientColor;\n" +
 		"uniform vec4 uAmbientIntensity;\n" +
 		
+		M_FOG_FRAGMENT_VARS +		
 		M_LIGHTS_VARS +
 		
 		"void main() {\n" +
@@ -63,7 +67,11 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	}\n" +
 		"	if(uUseTexture==true) gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +
+		
+		M_FOG_FRAGMENT_CALC +
+		
 		"	gl_FragColor = uAmbientIntensity * uAmbientColor + intensity * gl_FragColor;" +
+		M_FOG_FRAGMENT_COLOR +		
 		"}";
 	
 	public DiffuseMaterial() {

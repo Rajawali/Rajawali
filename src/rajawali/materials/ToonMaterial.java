@@ -20,6 +20,7 @@ public class ToonMaterial extends DiffuseMaterial {
 			"uniform vec4 uAmbientIntensity;\n" + 
 			"uniform vec4 uToonColor0, uToonColor1, uToonColor2, uToonColor3;\n" +
 			
+			M_FOG_FRAGMENT_VARS +
 			M_LIGHTS_VARS +			
 
 			"void main() {\n" +
@@ -36,7 +37,9 @@ public class ToonMaterial extends DiffuseMaterial {
 			"   else color = uToonColor3;" +
 			"	color.rgb *= intensity;" +	
 			"	color += uAmbientColor * uAmbientIntensity;" +
+			M_FOG_FRAGMENT_CALC +
 			"	gl_FragColor = color;" +
+			M_FOG_FRAGMENT_COLOR +	
 			"}";
 	
 	protected int muToonColor0Handle, muToonColor1Handle, muToonColor2Handle, muToonColor3Handle;
