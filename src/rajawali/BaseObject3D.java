@@ -62,6 +62,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	protected boolean mFrustumTest = false;
 	protected boolean mIsInFrustum;
+	
+	protected boolean mRenderChildrenAsBatch = false;
+	protected boolean mIsPartOfBatch = false;
 		
 	private int i;
 
@@ -214,13 +217,16 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				pickerMat.setCamera(camera);
 				pickerMat.setVertices(mGeometry.getVertexBufferHandle());
 			} else {
-				mMaterial.useProgram();
-				mMaterial.bindTextures();
-				mMaterial.setTextureCoords(mGeometry.getTexCoordBufferHandle(), mHasCubemapTexture);
-				mMaterial.setNormals(mGeometry.getNormalBufferHandle());
-				mMaterial.setColors(mGeometry.getColorBufferHandle());
-				mMaterial.setCamera(camera);
-				mMaterial.setVertices(mGeometry.getVertexBufferHandle());
+			  if(!mIsPartOfBatch) {
+			    mMaterial.useProgram();
+			    mMaterial.bindTextures();
+			  
+  				mMaterial.setTextureCoords(mGeometry.getTexCoordBufferHandle(), mHasCubemapTexture);
+  				mMaterial.setNormals(mGeometry.getNormalBufferHandle());
+  				mMaterial.setCamera(camera);
+  				mMaterial.setVertices(mGeometry.getVertexBufferHandle());
+			  }
+			  mMaterial.setColors(mGeometry.getColorBufferHandle());
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -236,8 +242,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
 				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_INT, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-
-				mMaterial.unbindTextures();
+				if(!mIsPartOfBatch) {
+				  mMaterial.unbindTextures();
+				}
 			} else if (pickerInfo != null && mIsPickingEnabled) {
 				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
 				pickerMat.setMVPMatrix(mMVPMatrix);
@@ -470,6 +477,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public void addChild(BaseObject3D child) {
 		mChildren.add(child);
 		mNumChildren++;
+		if(mRenderChildrenAsBatch)
+		  child.setPartOfBatch(true);
 	}
 
 	public void removeChild(BaseObject3D child) {
@@ -619,4 +628,24 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public boolean isInFrustum() {
 		return mIsInFrustum;
 	}
+
+  public boolean getRenderChildrenAsBatch()
+  {
+    return mRenderChildrenAsBatch;
+  }
+
+  public void setRenderChildrenAsBatch(boolean renderChildrenAsBatch)
+  {
+    this.mRenderChildrenAsBatch = renderChildrenAsBatch;
+  }
+
+  public boolean isPartOfBatch()
+  {
+    return mIsPartOfBatch;
+  }
+
+  public void setPartOfBatch(boolean isPartOfBatch)
+  {
+    this.mIsPartOfBatch = isPartOfBatch;
+  }
 }
