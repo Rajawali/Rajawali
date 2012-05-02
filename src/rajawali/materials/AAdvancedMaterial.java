@@ -97,7 +97,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mLightPower = new float[maxLights];
 		mLightColor = new float[mLightPos.length];
 		
-		mFogColor = new float[] { .8f, .8f, .8f };
+		if(RajawaliRenderer.isFogEnabled())
+			mFogColor = new float[] { .8f, .8f, .8f };
 	}
 	
 	@Override
@@ -198,10 +199,12 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		muLightColorHandle = getUniformLocation("uLightColor");
 		muLightPowerHandle = getUniformLocation("uLightPower");
 		
-		muFogColorHandle = getUniformLocation("uFogColor");
-		muFogNearHandle = getUniformLocation("uFogNear");
-		muFogFarHandle = getUniformLocation("uFogFar");
-		muFogEnabledHandle = getUniformLocation("uFogEnabled");
+		if(RajawaliRenderer.isFogEnabled()) {
+			muFogColorHandle = getUniformLocation("uFogColor");
+			muFogNearHandle = getUniformLocation("uFogNear");
+			muFogFarHandle = getUniformLocation("uFogFar");
+			muFogEnabledHandle = getUniformLocation("uFogEnabled");
+		}
 	}
 	
 	@Override

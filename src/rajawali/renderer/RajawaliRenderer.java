@@ -439,7 +439,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mCamera.setFogEnabled(enabled);
 	}
 	
-	public static boolean getFogEnabled() {
+	public static boolean isFogEnabled() {
 		return mFogEnabled;
 	}
 	

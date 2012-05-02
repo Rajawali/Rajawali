@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import rajawali.Camera;
 import rajawali.lights.ALight;
+import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
@@ -50,13 +51,11 @@ public abstract class AMaterial {
 		mIsAnimated = isAnimated;
 		mVertexShader = isAnimated ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mFragmentShader = fragmentShader;
-		if(RajawaliRenderer.getFogEnabled())
+		if(RajawaliRenderer.isFogEnabled())
 		{
 			mVertexShader = "#define FOG_ENABLED\n" + mVertexShader;
 			mFragmentShader = "#define FOG_ENABLED\n" + mFragmentShader;
 		}
-		RajLog.d(mVertexShader);
-		RajLog.d(mFragmentShader);
 		setShaders(mVertexShader, mFragmentShader);
 	}
 	
@@ -307,9 +306,10 @@ public abstract class AMaterial {
 	}
 	
 	public void setCamera(Camera camera) {
-		mCameraPosArray[0] = camera.getX();
-		mCameraPosArray[1] = camera.getY();
-		mCameraPosArray[2] = camera.getZ();
+		Number3D camPos = camera.getPosition();
+		mCameraPosArray[0] = camPos.x;
+		mCameraPosArray[1] = camPos.y;
+		mCameraPosArray[2] = camPos.z;
 		if (muCameraPositionHandle > -1)
 			GLES20.glUniform3fv(muCameraPositionHandle, 1, mCameraPosArray, 0);
 	}
