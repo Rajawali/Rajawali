@@ -226,7 +226,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
   				mMaterial.setCamera(camera);
   				mMaterial.setVertices(mGeometry.getVertexBufferHandle());
 			  }
-			  mMaterial.setColors(mGeometry.getColorBufferHandle());
+			  if(mMaterial.getUseColor())
+				  mMaterial.setColors(mGeometry.getColorBufferHandle());
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -242,7 +243,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
 				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), GLES20.GL_UNSIGNED_INT, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-				if(!mIsPartOfBatch) {
+				if(!mIsPartOfBatch && !mRenderChildrenAsBatch) {
 				  mMaterial.unbindTextures();
 				}
 			} else if (pickerInfo != null && mIsPickingEnabled) {
@@ -271,6 +272,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		//Draw children without frustum test
 		for (i = 0; i < mNumChildren; ++i) {
 			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
+		}
+		
+		if(mRenderChildrenAsBatch) {
+			mMaterial.unbindTextures();
 		}
 	}
 
@@ -578,7 +583,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		BaseObject3D clone = new BaseObject3D();
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		clone.setMaterial(mMaterial);
+		clone.setMaterial(mMaterial, false);
 		return clone;
 	}
 

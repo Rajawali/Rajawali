@@ -337,4 +337,8 @@ public abstract class AMaterial {
 	public void setUseColor(boolean value) {
 		mUseColor = value;
 	}
+	
+	public boolean getUseColor() {
+		return mUseColor;
+	}
 }
