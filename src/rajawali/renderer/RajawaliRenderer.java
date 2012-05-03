@@ -194,8 +194,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mViewportHeight = height;
 		mCamera.setProjectionMatrix(width, height);
 		GLES20.glViewport(0, 0, width, height);
-		mPostProcessingRenderer.setViewportWidth(width);
-		mPostProcessingRenderer.setViewportHeight(height);
 	}
 
 	

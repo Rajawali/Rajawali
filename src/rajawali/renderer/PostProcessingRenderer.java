@@ -5,6 +5,7 @@ import rajawali.filters.IPostProcessingFilter;
 import rajawali.materials.AMaterial;
 import rajawali.materials.TextureInfo;
 import rajawali.materials.TextureManager.TextureType;
+import rajawali.math.MathUtil;
 import rajawali.primitives.Plane;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
@@ -16,24 +17,35 @@ public final class PostProcessingRenderer {
 //	private TextureInfo mDepthBufferTexInfo;
 	private Plane mPostProcessingQuad;
 	private Camera2D mPostProcessingCam;
-	private int mViewportWidth, mViewportHeight;
+	private int mTextureSize;
 	private RajawaliRenderer mRenderer;
 	private IPostProcessingFilter mFilter;
 	private boolean mEnabled;
 	private boolean mInitialized;
 	
 	public PostProcessingRenderer(RajawaliRenderer renderer) {
+		this(renderer, -1);
+	}
+	
+	/**
+	 * 
+	 * @param renderer
+	 * @param frameBufferTextureSize	MathUtil.getClosestPowerOfTwo(mTextureSize) or 1024 (default)
+	 */
+	public PostProcessingRenderer(RajawaliRenderer renderer, int frameBufferTextureSize) {
 		mRenderer = renderer;
+		mTextureSize = frameBufferTextureSize;
 	}
 	
 	private void create() {
-		mViewportWidth = mRenderer.getViewportWidth();
-		mViewportHeight = mRenderer.getViewportHeight();
-		
 		int[] frameBuffers = new int[1];
 		GLES20.glGenFramebuffers(1, frameBuffers, 0);
 		mFrameBufferHandle = frameBuffers[0];
 		
+		if(mTextureSize == -1) {
+			mTextureSize = MathUtil.getClosestPowerOfTwo(mRenderer.getViewportWidth() > mRenderer.getViewportHeight() ? mRenderer.getViewportWidth() : mRenderer.getViewportHeight()) >> 1;
+		}
+
 		checkError("glGenFramebuffers", GLES20.glGetError());
 		
 		int[] depthBuffers = new int[1];
@@ -42,12 +54,13 @@ public final class PostProcessingRenderer {
 
 		checkError("glGenRenderbuffers", GLES20.glGetError());
 		
-		mFrameBufferTexInfo = mRenderer.getTextureManager().addTexture(null, mViewportWidth, mViewportHeight, TextureType.FRAME_BUFFER);
+		mFrameBufferTexInfo = mRenderer.getTextureManager().addTexture(null, mTextureSize, mTextureSize, TextureType.FRAME_BUFFER);
 
 		mPostProcessingQuad = new Plane(1, 1, 1, 1, 1);
 		mPostProcessingQuad.setMaterial((AMaterial)mFilter);
 		mPostProcessingQuad.setDoubleSided(true);
 		mPostProcessingQuad.setRotZ(-90);
+		mPostProcessingQuad.setRotY(180);
 		mPostProcessingCam = new Camera2D();
 		mPostProcessingCam.setProjectionMatrix(0, 0);
 
@@ -63,6 +76,8 @@ public final class PostProcessingRenderer {
 		if(!mInitialized)
 			create();
 		
+		GLES20.glViewport(0, 0, mTextureSize, mTextureSize);
+		
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mFrameBufferTexInfo.getTextureId(), 0);
 		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
@@ -71,13 +86,14 @@ public final class PostProcessingRenderer {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		}
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
-		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mViewportWidth, mViewportHeight);
+		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mTextureSize, mTextureSize);
 		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 	}
 	
 	public void unbind() {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
+		GLES20.glViewport(0, 0, mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
 	}
 	
 	public void destroy() {
@@ -109,14 +125,6 @@ public final class PostProcessingRenderer {
 
 	public void setEnabled(boolean enabled) {
 		this.mEnabled = enabled;
-	}
-	
-	public void setViewportWidth(int viewportWidth) {
-		mViewportWidth = viewportWidth;
-	}
-	
-	public void setViewportHeight(int viewportHeight) {
-		mViewportHeight = viewportHeight;
 	}
 	
 	public void checkError(String message, int status) {
