@@ -247,6 +247,7 @@ public class Wallpaper extends GLWallpaperService {
 
 			setEGLContextFactory(new ContextFactory());
 			setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0));
+			//setEGLConfigChooser(new ConfigChooser(8, 8, 8, 8, 16, 0));
 			
 			renderer.setEngine(this);
 			renderer.setSharedPreferences(preferences);
