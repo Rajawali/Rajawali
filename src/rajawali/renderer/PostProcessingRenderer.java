@@ -126,6 +126,10 @@ public final class PostProcessingRenderer {
 	public void setEnabled(boolean enabled) {
 		this.mEnabled = enabled;
 	}
+
+	public void setInitialized(boolean initialized) {
+		this.mInitialized = initialized;
+	}
 	
 	public void checkError(String message, int status) {
 		StringBuffer sb = new StringBuffer();
