@@ -71,6 +71,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected float[] mTmp, mTmp2;
 	protected float[] mAmbientColor, mAmbientIntensity;
 	protected float[] mFogColor;
+	protected float mFogNear, mFogFar;
+	protected boolean mFogEnabled;
 
 	protected android.graphics.Matrix mTmpNormalMatrix = new android.graphics.Matrix();
 	protected android.graphics.Matrix mTmpMvMatrix = new android.graphics.Matrix();
@@ -152,19 +154,18 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mFogColor[0] = Color.red(color) / 255f;
 		mFogColor[1] = Color.green(color) / 255f;
 		mFogColor[2] = Color.blue(color) / 255f;
-		GLES20.glUniform3fv(muFogColorHandle, 1, mFogColor, 0);
 	}
 	
 	public void setFogNear(float near) {
-		GLES20.glUniform1f(muFogNearHandle, near);
+		mFogNear = near;
 	}
 	
 	public void setFogFar(float far) {
-		GLES20.glUniform1f(muFogFarHandle, far);
+		mFogFar = far;
 	}
 	
 	public void setFogEnabled(boolean enabled) {
-		GLES20.glUniform1i(muFogEnabledHandle, enabled == true ? GLES20.GL_TRUE : GLES20.GL_FALSE);
+		mFogEnabled = enabled;
 	}
 	
 	@Override
@@ -172,6 +173,12 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		super.useProgram();
 		GLES20.glUniform4fv(muAmbientColorHandle, 1, mAmbientColor, 0);
 		GLES20.glUniform4fv(muAmbientIntensityHandle, 1, mAmbientIntensity, 0);
+		if(mFogEnabled) {
+			GLES20.glUniform3fv(muFogColorHandle, 1, mFogColor, 0);
+			GLES20.glUniform1f(muFogNearHandle, mFogNear);
+			GLES20.glUniform1f(muFogFarHandle, mFogFar);
+			GLES20.glUniform1i(muFogEnabledHandle, mFogEnabled == true ? GLES20.GL_TRUE : GLES20.GL_FALSE);
+		}
 	}
 	
 	@Override

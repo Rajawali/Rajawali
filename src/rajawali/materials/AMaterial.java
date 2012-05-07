@@ -182,7 +182,7 @@ public abstract class AMaterial {
 					: GLES20.GL_TEXTURE_2D;
 			GLES20.glDisable(type);
 			GLES20.glBindTexture(type, 0);
-		}
+		}		
 	}
 
 	public ArrayList<TextureInfo> getTextureInfoList() {

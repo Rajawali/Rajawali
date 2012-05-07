@@ -1,9 +1,7 @@
 package rajawali.materials;
 
-import rajawali.wallpaper.Wallpaper;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 public class ToonMaterial extends DiffuseMaterial {
 	protected static final String mFShader = 
@@ -70,22 +68,10 @@ public class ToonMaterial extends DiffuseMaterial {
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		super.setShaders(vertexShader, fragmentShader);
-		muToonColor0Handle = GLES20.glGetUniformLocation(mProgram, "uToonColor0");
-		if(muToonColor0Handle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uToonColor0");
-		}
-		muToonColor1Handle = GLES20.glGetUniformLocation(mProgram, "uToonColor1");
-		if(muToonColor1Handle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uToonColor1");
-		}
-		muToonColor2Handle = GLES20.glGetUniformLocation(mProgram, "uToonColor2");
-		if(muToonColor2Handle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uToonColor2");
-		}
-		muToonColor3Handle = GLES20.glGetUniformLocation(mProgram, "uToonColor3");
-		if(muToonColor3Handle == -1) {
-			Log.d(Wallpaper.TAG, "Could not get uniform location for uToonColor3");
-		}
+		muToonColor0Handle = getUniformLocation("uToonColor0");
+		muToonColor1Handle = getUniformLocation("uToonColor1");
+		muToonColor2Handle = getUniformLocation("uToonColor2");
+		muToonColor3Handle = getUniformLocation("uToonColor3");
 	}
 	
 	public void setToonColors(int color0, int color1, int color2, int color3) {

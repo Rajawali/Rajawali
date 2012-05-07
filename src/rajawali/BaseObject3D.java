@@ -202,12 +202,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			}
 
 			if (mAdditive) {
-				// No depth testing
-				GLES20.glClearDepthf(1.0f);
-				GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-				GLES20.glEnable(GLES20.GL_BLEND);
-				GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
-				GLES20.glDepthMask(false);
+	               // No depth testing
+	               GLES20.glClearDepthf(1.0f);
+	               GLES20.glEnable(GLES20.GL_DEPTH_TEST); //@JOEL - Additive should depth test, but not depth write. It must be rendered after opaque geometry, but its communicable, so sorting isn't necessary against other additive passes.
+	               GLES20.glEnable(GLES20.GL_BLEND);
+	               GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
+	               GLES20.glDepthMask(false);
 			}
 
 			if (pickerInfo != null && mIsPickingEnabled) {
@@ -525,6 +525,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mMaterial.copyTexturesTo(material);
 		else if (mMaterial != null && !copyTextures)
 			mMaterial.getTextureInfoList().clear();
+		mMaterial = null;
 		mMaterial = material;
 	}
 

@@ -108,15 +108,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onDrawFrame(GL10 glUnused) {
 		render();
 		++mFrameCount;
-    if (mFrameCount % 50 == 0) {
-        long now = System.nanoTime();
-        double elapsedS = (now - mStartTime) / 1.0e9;
-        double msPerFrame = (1000 * elapsedS / mFrameCount);
-        RajLog.d("ms / frame: " + msPerFrame + " - fps: " + (1000 / msPerFrame));
-
-        mFrameCount = 0;
-        mStartTime = now;
-    }
+	    if (mFrameCount % 50 == 0) {
+	        long now = System.nanoTime();
+	        double elapsedS = (now - mStartTime) / 1.0e9;
+	        double msPerFrame = (1000 * elapsedS / mFrameCount);
+	        RajLog.d("ms / frame: " + msPerFrame + " - fps: " + (1000 / msPerFrame));
+	
+	        mFrameCount = 0;
+	        mStartTime = now;
+	    }
 	}
 	
 	private void render() {

@@ -1,5 +1,6 @@
 package rajawali.math;
 
+import rajawali.util.RajLog;
 import android.util.FloatMath;
 
 
@@ -41,6 +42,13 @@ public final class Number3D {
 		this.x = from.x;
 		this.y = from.y;
 		this.z = from.z;
+	}
+	
+	public Number3D(String[] values) {
+		if(values.length != 3) RajLog.e("Number3D should be initialized with 3 values");
+		this.x = Float.parseFloat(values[0]);
+		this.y = Float.parseFloat(values[1]);
+		this.z = Float.parseFloat(values[2]);
 	}
 
 	public Number3D(float x, float y, float z) {
