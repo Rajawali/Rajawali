@@ -355,6 +355,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mChildren.add(child);
 		mNumChildren = mChildren.size();
 	}
+	
+	public void clearChildren() {
+		mChildren.clear();
+	}
 
 	protected void setSkybox(int front, int right, int back, int left, int up, int down) {
 		mSkybox = new Cube(700, true);
@@ -412,6 +416,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	public void removePostProcessingFilter(IPostProcessingFilter filter) {
 		mFilters.remove(filter);
+	}
+	
+	public void clearPostProcessingFilters() {
+		mFilters.clear();
+		mPostProcessingRenderer.unbind();
+		mPostProcessingRenderer.destroy();
+		mPostProcessingRenderer = new PostProcessingRenderer(this);
 	}
 
 	public int getViewportWidth() {
