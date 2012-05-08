@@ -11,17 +11,29 @@ import java.util.List;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
+import rajawali.Camera;
+import rajawali.lights.ALight;
+import rajawali.lights.DirectionalLight;
 import rajawali.materials.AMaterial;
+import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.PhongMaterial;
+import rajawali.materials.SimpleMaterial;
 import rajawali.math.Number3D;
+import rajawali.math.Vector2D;
 import rajawali.parser.AParser;
 import rajawali.parser.fbx.FBXValues.Connections.Connect;
 import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
 import rajawali.parser.fbx.FBXValues.FBXIntBuffer;
 import rajawali.parser.fbx.FBXValues.FBXMatrix;
+import rajawali.parser.fbx.FBXValues.Objects.Material;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
+import rajawali.parser.fbx.FBXValues.Objects.Texture;
+import rajawali.parser.fbx.FBXValues.Version5.FogOptions;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class FBXParser extends AParser {
 	private static final char COMMENT = ';';
@@ -32,6 +44,7 @@ public class FBXParser extends AParser {
 	private static final String LAYER = "Layer:";
 	private static final String PROPERTY = "Property:";
 	private static final String TYPE_VECTOR3D = "Vector3D";
+	private static final String TYPE_VECTOR = "Vector";
 	private static final String TYPE_COLOR = "Color";
 	private static final String TYPE_COLOR_RGB = "ColorRGB";
 	private static final String TYPE_LCL_TRANSLATION = "LclTranslation";
@@ -41,6 +54,15 @@ public class FBXParser extends AParser {
 	private static final String POSE = "Pose:";
 	private static final String POSE_NODE = "PoseNode:";
 	private static final String CONNECT = "Connect:";
+	private static final String TEXTURE = "Texture:";
+	private static final String FBX_U = "FBX";
+	private static final String FBX_L = FBX_U.toLowerCase();
+	
+	private static final String REGEX_CLEAN = "\\s|\\t|\\n";
+	private static final String REGEX_NO_SPACE_NO_QUOTE = "\\\"|\\s";
+	private static final String REGEX_NO_QUOTE = "\\\"";
+	private static final String REGEX_NO_FUNNY_CHARS = "\\W";
+	private static final String REPLACE_EMPTY = "";
 	
 	private FBXValues mFbx;
 	private Stack<Object> mObjStack;
@@ -59,10 +81,10 @@ public class FBXParser extends AParser {
 		InputStream fileIn = mResources.openRawResource(mResourceId);
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(fileIn));
 		String line;
-		
 		try {
 			while((line = buffer.readLine()) != null) {
-				if(line.length() == 0 || line.charAt(0) == COMMENT)
+				String repl = line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY);
+				if(repl.length() == 0 || repl.charAt(0) == COMMENT)
 					continue;
 				
 				readLine(buffer, line);
@@ -72,46 +94,142 @@ public class FBXParser extends AParser {
 			e.printStackTrace();
 		}
 		
+		// -- get lights
+		
+		Stack<Model> lights = mFbx.objects.getModelsByType(FBXValues.MODELTYPE_LIGHT);
+		int numLights = lights.size();
+		
+		RajawaliRenderer.setMaxLights(numLights == 0 ? 1 : numLights);
+		Stack<ALight> sceneLights = new Stack<ALight>();
+		
+		for(int i=0; i<numLights; ++i) {
+			Model l = lights.get(i);
+			// -- really need to add more light types
+			ALight light = new DirectionalLight();
+			light.setPosition(l.properties.lclTranslation);
+			light.setX(light.getX() * -1);
+			light.setRotation(l.properties.lclRotation);
+			light.setPower(l.properties.intensity / 100f);
+			light.setColor(l.properties.color);
+			sceneLights.add(light);
+		}
+		
+		if(numLights == 0)
+		{
+			ALight light = new DirectionalLight();
+			light.setPosition(2, 0, -5);
+			light.setPower(1);
+			sceneLights.add(light);
+		}
+		
+		// -- check fog
+		
+		if(mFbx.version5.fogOptions.fogEnable != null && mFbx.version5.fogOptions.fogEnable == 1) {
+			FogOptions fogOptions = mFbx.version5.fogOptions;
+			mRenderer.setFogEnabled(true);
+			Camera cam = mRenderer.getCamera();
+			cam.setFogEnabled(true);
+			cam.setFogNear(fogOptions.fogStart);
+			cam.setFogColor(fogOptions.fogColor.color);
+			mRenderer.setBackgroundColor(fogOptions.fogColor.color);
+		}
+	
+		// -- get meshes
+		
 		Stack<Model> models = mFbx.objects.getModelsByType(FBXValues.MODELTYPE_MESH);
 		
 		for(int i=0; i<models.size(); ++i) {
-			buildMesh(models.get(i));
+			buildMesh(models.get(i), sceneLights);
+		}
+		
+		// -- get cameras
+		
+		Stack<Model> cameras = mFbx.objects.getModelsByType(FBXValues.MODELTYPE_CAMERA);
+		Model camera = null;
+
+		for(int i=0; i<cameras.size(); ++i) {
+			if(cameras.get(i).hidden == null || !cameras.get(i).hidden.equals("True"))
+			{
+				camera = cameras.get(i);
+				break;
+			}
+		}
+
+		if(camera != null) {
+			Camera cam = mRenderer.getCamera();
+			cam.setPosition(camera.position);
+			cam.setX(mRenderer.getCamera().getX() * -1);
+			Number3D lookAt = camera.lookAt;
+			lookAt.x = -lookAt.x;
+			cam.setLookAt(lookAt);
+			cam.setNearPlane(camera.properties.nearPlane);
+			cam.setFarPlane(camera.properties.farPlane);
+			cam.setFieldOfView(camera.properties.fieldOfView);
 		}
 	}
 	
-	private void buildMesh(Model model) {
+	private void buildMesh(Model model, Stack<ALight> lights) {
 		BaseObject3D o = new BaseObject3D(model.name);
 		boolean hasUVs = model.layerElementUV.uVIndex != null;
 		
-		ArrayList<Integer> indices = new ArrayList<Integer>();
-		ArrayList<Float> uvs = new ArrayList<Float>();
-		int[] vidx = model.polygonVertexIndex.data;
-		int[] uvidx = null;
-		float[] uvdata = null;
+		int[] vidx 					= model.polygonVertexIndex.data;
+		int[] uvidx 				= null;
+		float[] modelVerts 			= model.vertices.data;
+		float[] modelNorm			= model.layerElementNormal.normals.data;
+		float[] modelUv		 		= null;
+
+		ArrayList<Integer> indices 	= new ArrayList<Integer>();
+		ArrayList<Float> vertices 	= new ArrayList<Float>();
+		ArrayList<Float> normals	= new ArrayList<Float>();
+		ArrayList<Float> uvs 		= null;
+		
 		if(hasUVs) {
+			uvs = new ArrayList<Float>();
 			uvidx = model.layerElementUV.uVIndex.data;
-			uvdata = model.layerElementUV.uV.data;
+			modelUv = model.layerElementUV.uV.data;
 		}
 		
 		int count = 0;
+		int indexCount = 0;
 		
 		for(int i=0; i<vidx.length; ++i) {
 			count++;
 			
 			if(vidx[i] < 0) {
 				if(count==3) {
-					indices.add(vidx[i-2]);
-					indices.add(vidx[i-1]);
-					indices.add((vidx[i] * -1)-1);
+					int index1 = vidx[i-2],
+						index2 = vidx[i-1],
+						index3 = (vidx[i] * -1) - 1;
+
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+
+					int[] ids = new int[] { index3 * 3, index2 * 3, index1 * 3 };
+					
+					for(int j=0; j<3; ++j)
+					{
+						int cid = ids[j];
+						for(int k=0; k<3; ++k) {
+							int mult = k == 0 ? -1 : 1;
+							vertices.add(modelVerts[cid+k] * mult);
+							normals.add(modelNorm[cid+k] * mult);
+						}
+					}
 					
 					if(hasUVs) {
-						int uvIndex1 = uvidx[vidx[i-2]] * 2;
-						int uvIndex2 = uvidx[vidx[i-1]] * 2;
-						int uvIndex3 = uvidx[(vidx[i] * -1)-1] * 2;
+						int uvIndex1 = uvidx[i] * 2;
+						int uvIndex2 = uvidx[i-1] * 2;
+						int uvIndex3 = uvidx[i-2] * 2;
+
+						uvs.add(modelUv[uvIndex1+0]);
+						uvs.add(modelUv[uvIndex1+1]);
 						
-						uvs.add(uvdata[uvIndex1]);	uvs.add(uvdata[uvIndex1+1]);
-						uvs.add(uvdata[uvIndex2]);	uvs.add(uvdata[uvIndex2+1]);
-						uvs.add(uvdata[uvIndex3]);	uvs.add(uvdata[uvIndex3+1]);
+						uvs.add(modelUv[uvIndex2+0]);
+						uvs.add(modelUv[uvIndex2+1]);
+						
+						uvs.add(modelUv[uvIndex3+0]);
+						uvs.add(modelUv[uvIndex3+1]);
 					}
 				} else {
 					int index1 = vidx[i-3];
@@ -119,42 +237,77 @@ public class FBXParser extends AParser {
 					int index3 = vidx[i-1];
 					int index4 = (vidx[i] * -1)-1;
 					
-					indices.add(index3);
-					indices.add(index4);
-					indices.add(index1);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
 					
-					indices.add(index2);
-					indices.add(index3);
-					indices.add(index1);
+					int[] ids = new int[] { 
+							index3 * 3, index2 * 3, index1 * 3, 
+							index3 * 3, index1 * 3, index4 * 3 };
+					
+					for(int j=0; j<6; ++j)
+					{
+						int cid = ids[j];
+						for(int k=0; k<3; ++k) {
+							int mult = k == 0 ? -1 : 1;
+							vertices.add(modelVerts[cid+k] * mult);
+							normals.add(modelNorm[cid+k] * mult);
+						}
+					}					
 					
 					if(hasUVs) {
-						int uvIndex1 = uvidx[index1] * 2;
-						int uvIndex2 = uvidx[index2] * 2;
-						int uvIndex3 = uvidx[index3] * 2;
-						int uvIndex4 = uvidx[index4] * 2;
+						int uvIndex1 = uvidx[i-3] * 2;
+						int uvIndex2 = uvidx[i-2] * 2;
+						int uvIndex3 = uvidx[i-1] * 2;
+						int uvIndex4 = uvidx[i] * 2;
 						
-						uvs.add(uvdata[uvIndex3]);	uvs.add(uvdata[uvIndex3+1]);
-						uvs.add(uvdata[uvIndex4]);	uvs.add(uvdata[uvIndex4+1]);
-						uvs.add(uvdata[uvIndex1]);	uvs.add(uvdata[uvIndex1+1]);	
-	
-						uvs.add(uvdata[uvIndex2]);	uvs.add(uvdata[uvIndex2+1]);
-						uvs.add(uvdata[uvIndex3]);	uvs.add(uvdata[uvIndex3+1]);
-						uvs.add(uvdata[uvIndex1]);	uvs.add(uvdata[uvIndex1+1]);
+						ids = new int[] { 
+							uvIndex3, uvIndex2, uvIndex1, 
+							uvIndex3, uvIndex1, uvIndex4 };
+						
+						for(int j=0; j<6; ++j) {
+							int cid = ids[j];
+							for(int k=0; k<2; ++k) {
+								if(k==0)
+									uvs.add(modelUv[cid + k]);
+								else
+									uvs.add(modelUv[cid + k]);
+							}
+						}
+						
 					}
 				}
 				count = 0;
 			}
 		}
-		o.setData(model.vertices.data, model.layerElementNormal.normals.data, hasUVs ? convertFloats(uvs) : null, null, convertIntegers(indices));
-		o.setMaterial(getMaterialForMesh(model.name));
-		//o.getMaterial().setUseColor(true);
+		
+		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null, convertIntegers(indices));
+		
+		vertices.clear();
+		vertices = null;
+		normals.clear();
+		normals = null;
+		if(hasUVs) {
+			uvs.clear();
+			uvs = null;
+		}
+		indices.clear();
+		indices = null;
+		
+		o.setMaterial(getMaterialForMesh(o, model.name));
+		o.getMaterial().setUseColor(true);
+		o.setLights(lights);
+		setMeshTextures(o, model.name);
+		
 		o.setPosition(model.properties.lclTranslation);
+		o.setX(o.getX() * -1);
 		o.setScale(model.properties.lclScaling);
 		o.setRotation(model.properties.lclRotation);
-//		o.setColor(Color.rgb((int)(model.properties.color.x * 255f), (int)(model.properties.color.y * 255f), (int)(model.properties.color.z * 255f)));		
 		
-		
-		//mRootObject.addChild(o);
+		mRootObject.addChild(o);
 	}
 	
 	public static int[] convertIntegers(List<Integer> integers)
@@ -177,29 +330,86 @@ public class FBXParser extends AParser {
 	    return ret;
 	}
 	
-	private AMaterial getMaterialForMesh(String name) {
-		AMaterial mat = null;
+	private void setMeshTextures(BaseObject3D o, String name) {
+		Stack<Texture> textures = mFbx.objects.textures;
+		Stack<Connect> connections = mFbx.connections.connections;
+		int numTex = textures.size();
+		int numCon = connections.size();
+		
+		for(int i=0; i<numTex; ++i) {
+			Texture tex = textures.get(i);
+			for(int j=0; j<numCon; ++j) {
+				Connect conn = connections.get(j);
+
+				if(conn.object2.equals(name) && conn.object1.equals(tex.textureName))
+				{
+					// -- one texture for now
+					String textureName = getFileNameWithoutExtension(tex.fileName).toLowerCase();
+					try {
+						int identifier = mResources.getIdentifier(textureName, "drawable", mResources.getResourcePackageName(mResourceId));
+						Bitmap texture = BitmapFactory.decodeResource(mResources, identifier);
+						o.addTexture(mTextureManager.addTexture(texture));
+					} catch(Exception e) {
+						RajLog.e("Could not load texture [" + textureName + "]: " + e.getMessage() );	
+					}
+					return;
+				}
+			}
+		}
+	}
+	
+	private AMaterial getMaterialForMesh(BaseObject3D o, String name) {
+		AMaterial mat = new SimpleMaterial();
+		Material material = null;
 		Stack<Connect> conns = mFbx.connections.connections;
 		int num = conns.size();
 		String materialName = null;
 		
 		for(int i=0; i<num; ++i) {
-			RajLog.i("Checking [" + name + "] against [" +conns.get(i).object2+ "]");
+			RajLog.d(conns.get(i).object2, name);
 			if(conns.get(i).object2.equals(name)) {
-				materialName = conns.get(i).object2;
-				RajLog.i("Found material " + conns.get(i).object1 + " for model " + conns.get(i).object2);
+				materialName = conns.get(i).object1;
 				break;
 			}
 		}
 		
 		if(materialName != null) {
+			Stack<Material> materials = mFbx.objects.materials;
+			num = materials.size();
+			for(int i=0; i<num; ++i) {
+				if(materials.get(i).name.equals(materialName)) {
+					material = materials.get(i);
+					break;
+				}
+			}
+		}
 		
+		if(material != null) {
+			if(material.shadingModel.equals("lambert") || material.shadingModel.equals("phong")) {
+				PhongMaterial phong = new PhongMaterial();
+				o.setColor(material.properties.diffuseColor);
+				phong.setAmbientColor(material.properties.ambientColor);
+				phong.setAmbientIntensity(material.properties.ambientFactor);
+				if(material.properties.specularColor != null)
+					phong.setSpecularColor(material.properties.specularColor);
+				if(material.properties.shininess != null)
+					phong.setShininess(material.properties.shininess);
+				mat = phong;
+			} else {
+				DiffuseMaterial diffuse = new DiffuseMaterial();
+				o.setColor(material.properties.diffuseColor);
+				diffuse.setAmbientColor(material.properties.ambientColor);
+				diffuse.setAmbientIntensity(material.properties.ambientFactor);
+				mat = diffuse;
+			}
 		}
 		
 		return mat;
 	}
 	
 	private void readLine(BufferedReader buffer, String line) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException {
+		//RajLog.d(line);
+		if(line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY).length() == 0) return;
 		if(line.contains("{")) {
 			
 			// -- found new object
@@ -208,21 +418,26 @@ public class FBXParser extends AParser {
 
 			if(line.contains(":")) {
 				if(line.contains(OBJECT_TYPE)) {
-					String val = line.split(":")[1].replaceAll("\\W", "");
+					String val = line.split(":")[1].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
 					Object ot = last.getClass().getDeclaredMethod("addObjectType", String.class).invoke(last, val);
 					mObjStack.push(ot);
 					return;
 				} else if(line.contains(MODEL)) {
 					String[] vals = line.split(",");
-					vals[0] = vals[0].split(" ")[1].replaceAll("\\\"", "");
-					vals[1] = vals[1].replaceAll("\\W", "");
+					if(vals.length < 2) {
+						// TODO add model object for Take
+						mObjStack.push(new Object());
+						return;
+					}
+					vals[0] = vals[0].split(": ")[1].replaceAll(REGEX_NO_QUOTE, REPLACE_EMPTY);
+					vals[1] = vals[1].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
 					
 					Object mo = last.getClass().getDeclaredMethod("addModel", String.class, String.class).invoke(last, vals[0], vals[1]);
 					mObjStack.push(mo);
 					return;
 				} else if(line.contains(MATERIAL) && !line.contains(LAYER_ELEMENT)) {
-					String[] vals = line.split(",");
-					vals[0] = vals[0].replaceAll("\\W", "");
+					String[] vals = line.split(": ")[1].split(",");
+					vals[0] = vals[0].replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY);
 					
 					Object ma = last.getClass().getDeclaredMethod("addMaterial", String.class).invoke(last, vals[0]);
 					mObjStack.push(ma);
@@ -234,19 +449,25 @@ public class FBXParser extends AParser {
 				} else if(line.contains(PROPERTIES)) {
 					line = "Properties";
 				} else if(line.contains(LAYER_ELEMENT)) {
-					line = line.replaceAll("\\W|\\d", "");
+					line = line.replaceAll("\\W|\\d", REPLACE_EMPTY);
 				} else if(line.contains(LAYER)) {
 					line = LAYER;
 				} else if(line.contains(POSE)) {
 					String val = line.split(":")[1];
 					String[] vals = val.split(",");
-					last.getClass().getDeclaredMethod("setPoseName", String.class).invoke(last, vals[0].replaceAll("\\W", ""));
+					last.getClass().getDeclaredMethod("setPoseName", String.class).invoke(last, vals[0].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY));
 					line = POSE;
+				} else if(line.contains(TEXTURE)) {
+					String val = line.split(": ")[1];
+					String[] vals = val.split(",");
+					Object te = last.getClass().getDeclaredMethod("addTexture", String.class, String.class).invoke(last, vals[0].replaceAll(REGEX_NO_QUOTE, REPLACE_EMPTY), vals[1].replace(REGEX_NO_QUOTE, REPLACE_EMPTY));
+					mObjStack.push(te);					
+					return;
 				}
 			}
 			
-			line = line.replaceAll("\\W", "");
-			line = line.replaceAll("FBX", "fbx");
+			line = line.replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
+			line = line.replaceAll(FBX_U, FBX_L);
 			line = line.substring(0,1).toLowerCase() + line.substring(1);
 			
 			try {
@@ -263,14 +484,14 @@ public class FBXParser extends AParser {
 			
 			mObjStack.pop();
 		} else {
-			
+
 			// -- found property
 			
 			Object last = mObjStack.peek();			
-			String[] spl = line.split(":");
+			String[] spl = line.split(": ");
 			if(spl.length == 0) return;
-			String prop = spl[0].replaceAll("\\W", "");
-			prop = prop.replaceAll("FBX", "fbx");
+			String prop = spl[0].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
+			prop = prop.replaceAll(FBX_U, FBX_L);
 			prop = prop.substring(0,1).toLowerCase() + prop.substring(1);
 			boolean processNextLine = false;
 			
@@ -281,23 +502,23 @@ public class FBXParser extends AParser {
 				
 				if(line.contains(PROPERTY)) {
 					String[] vals = val.split(",");
-					prop = vals[0].replaceAll("\\W", "");
+					prop = vals[0].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
 					prop = prop.substring(0,1).toLowerCase() + prop.substring(1);
-					String type = vals[1].replaceAll("\\W", "");
+					String type = vals[1].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
 				
 					if(type.equals(TYPE_VECTOR3D) || type.equals(TYPE_COLOR) || type.equals(TYPE_COLOR_RGB) || type.equals(TYPE_LCL_ROTATION) 
-							|| type.equals(TYPE_LCL_SCALING) || type.equals(TYPE_LCL_TRANSLATION)) {
+							|| type.equals(TYPE_LCL_SCALING) || type.equals(TYPE_LCL_TRANSLATION) || type.equals(TYPE_VECTOR)) {
 						val = vals[3] +","+vals[4]+","+vals[5];
 					} else {
 						if(vals.length < 4)
 							return;
-						val = vals[3];
+						val = vals[3].replaceAll(REGEX_NO_QUOTE, REPLACE_EMPTY);
 					}
 				} else if(line.contains(CONNECT)) {
 					String[] vals = line.substring(line.indexOf(':')).split(",");
 					
 					last.getClass().getDeclaredMethod("addConnection", String.class, String.class, String.class)
-					.invoke(last, vals[0].replaceAll("\\\"|\\s", ""), vals[1].replaceAll("\\\"|\\s", ""), vals[2].replaceAll("\\\"|\\s", ""));
+					.invoke(last, vals[0].replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY), vals[1].replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY), vals[2].replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY));
 					return;
 				}
 
@@ -305,20 +526,27 @@ public class FBXParser extends AParser {
 				Class<?> clazz = field.getType();
 				
 				if(clazz.equals(Integer.class))
-					field.set(obj, Integer.valueOf("0" + val.replaceAll("\\W", "")));
+				{
+					// TODO investigate why there are multiple values in TextureId sometimes
+					if(val.split(",").length > 0) val = val.split(",")[0];
+					field.set(obj, Integer.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));
+				}
 				else if(clazz.equals(String.class))
-					field.set(obj, val);
+					field.set(obj, val.replaceAll(REGEX_NO_QUOTE, REPLACE_EMPTY));
 				else if(clazz.equals(Long.class))
-					field.set(obj, Long.valueOf("0" + val.replaceAll("\\W", "")));		
-				else if(clazz.equals(Number3D.class))
+					field.set(obj, Long.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));		
+				else if(clazz.equals(Float.class))
+					field.set(obj, Float.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));		
+				else if(clazz.equals(Number3D.class)) {
 					field.set(obj, new Number3D(val.split(",")));
+				}
 				else if(clazz.equals(FBXFloatBuffer.class))
 				{
 					StringBuffer sb = new StringBuffer(val);
 					String noSpace;
 					while((line = buffer.readLine()) != null) {
-						noSpace = line.replaceAll("\\s", "");
-						if(noSpace.charAt(0) == ',')
+						noSpace = line.replaceAll("\\s", REPLACE_EMPTY);
+						if(noSpace.length() > 0 && noSpace.charAt(0) == ',')
 							sb.append(noSpace);
 						else
 						{
@@ -333,8 +561,8 @@ public class FBXParser extends AParser {
 					StringBuffer sb = new StringBuffer(val);
 					String noSpace;
 					while((line = buffer.readLine()) != null) {
-						noSpace = line.replaceAll("\\s", "");
-						if(noSpace.charAt(0) == ',')
+						noSpace = line.replaceAll("\\s", REPLACE_EMPTY);
+						if(noSpace.length() > 0 && noSpace.charAt(0) == ',')
 							sb.append(noSpace);
 						else
 						{
@@ -349,8 +577,8 @@ public class FBXParser extends AParser {
 					StringBuffer sb = new StringBuffer(val);
 					String noSpace;
 					while((line = buffer.readLine()) != null) {
-						noSpace = line.replaceAll("\\s", "");
-						if(noSpace.charAt(0) == ',')
+						noSpace = line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY);
+						if(noSpace.length() > 0 && noSpace.charAt(0) == ',')
 							sb.append(noSpace);
 						else
 						{
@@ -364,8 +592,12 @@ public class FBXParser extends AParser {
 				{
 					field.set(obj, new FBXColor4(val));
 				}
+				else if(clazz.equals(Vector2D.class))
+				{
+					field.set(obj, new Vector2D(val.replaceAll("\\s", REPLACE_EMPTY).split(",")));
+				}
 				
-				if(processNextLine)
+				if(processNextLine && line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY).length() > 0)
 					readLine(buffer, line);
 			} catch(NoSuchFieldException e) {
 				return;

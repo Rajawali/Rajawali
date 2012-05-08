@@ -1,5 +1,7 @@
 package rajawali.util;
 
+import java.util.List;
+
 import android.util.Log;
 
 public class RajLog {
@@ -11,6 +13,46 @@ public class RajLog {
 	public static final void d(String msg) {
 		if (_logDebug) {
 			Log.d(TAG, msg);
+		}
+	}
+	
+	public static final void d(float[] values) {
+		if(_logDebug) {
+			StringBuffer sb = new StringBuffer();
+			int len = values.length;
+			for(int i=0; i<len; ++i) {
+				sb.append(values[i]);
+				if(i < len-1)
+					sb.append(",");
+			}
+			
+			d(sb.toString());
+		}
+	}
+	
+	public static final void d(String... values) {
+		if(_logDebug) {
+			StringBuffer sb = new StringBuffer();
+			
+			for(String value : values) {
+				sb.append(value);
+				sb.append(", ");
+			}
+
+			d(sb.toString());
+		}
+	}
+
+	public static final void d(int[] values) {
+		if(_logDebug) {
+			StringBuffer sb = new StringBuffer();
+			int len = values.length;
+			for(int i=0; i<len; ++i) {
+				sb.append(values[i]);
+				if(i < len-1)
+					sb.append(",");
+			}
+			d(sb.toString());
 		}
 	}
 
@@ -37,5 +79,4 @@ public class RajLog {
 	public static final void wtf(String msg) {
 		Log.wtf(TAG, msg);
 	}
-
 }

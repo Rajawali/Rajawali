@@ -69,4 +69,15 @@ public abstract class AParser implements IParser {
 		public String alphaTexture;
 		public String bumpTexture;
 	}
+	
+	protected String getFileNameWithoutExtension(String fileName) {
+		String fName = fileName.substring(0, fileName.lastIndexOf("."));
+		int indexOf = fName.lastIndexOf("\\");
+		if(indexOf > -1)
+			fName = fName.substring(indexOf + 1, fName.length());
+		indexOf = fName.lastIndexOf("/");
+		if(indexOf > -1)
+			fName = fName.substring(indexOf + 1, fName.length());
+		return fName.toLowerCase().replaceAll("\\s", "_");
+	}
 }

@@ -134,6 +134,10 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mAmbientColor = color;
 	}
 	
+	public void setAmbientColor(Number3D color) {
+		setAmbientColor(color.x, color.y, color.z, 1);
+	}
+	
 	public void setAmbientColor(float r, float g, float b, float a) {
 		setAmbientColor(new float[] { r, g, b, a });
 	}
@@ -144,6 +148,13 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	
 	public void setAmbientIntensity(float[] intensity) {
 		mAmbientIntensity = intensity;
+	}
+	
+	public void setAmbientIntensity(float intensity) {
+		mAmbientIntensity[0] = intensity;
+		mAmbientIntensity[1] = intensity;
+		mAmbientIntensity[2] = intensity;
+		mAmbientIntensity[3] = 1;
 	}
 	
 	public void setAmbientIntensity(float r, float g, float b, float a) {

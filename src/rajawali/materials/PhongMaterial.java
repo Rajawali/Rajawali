@@ -1,5 +1,6 @@
 package rajawali.materials;
 
+import rajawali.math.Number3D;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -126,6 +127,13 @@ public class PhongMaterial extends AAdvancedMaterial {
 	
 	public void setSpecularColor(float[] color) {
 		mSpecularColor = color;
+	}
+	
+	public void setSpecularColor(Number3D color) {
+		mSpecularColor[0] = color.x;
+		mSpecularColor[1] = color.y;
+		mSpecularColor[2] = color.z;
+		mSpecularColor[3] = 1;
 	}
 	
 	public void setSpecularColor(float r, float g, float b, float a) {

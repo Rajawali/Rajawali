@@ -8,6 +8,7 @@ import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureInfo;
+import rajawali.math.Number3D;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
@@ -320,7 +321,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected void checkGlError(String op) {
 		int error;
 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-
 			RajLog.e(op + ": glError " + error + " in class " + this.getClass().getName());
 			throw new RuntimeException(op + ": glError " + error);
 		}
@@ -598,6 +598,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public void setColor(int color, boolean createNewBuffer) {
 		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f, createNewBuffer);
+	}
+	
+	public void setColor(Number3D color) {
+		setColor(Color.rgb((int)(color.x*255), (int)(color.y*255), (int)(color.z*255)));
 	}
 
 	public int getPickingColor() {

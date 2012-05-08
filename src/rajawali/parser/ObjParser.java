@@ -378,16 +378,5 @@ public class ObjParser extends AParser {
 			int b = (int)(Float.parseFloat(parts.nextToken()) * 255f);
 			return Color.rgb(r, g, b);
 		}
-		
-		private String getFileNameWithoutExtension(String fileName) {
-			String fName = fileName.substring(0, fileName.lastIndexOf("."));
-			int indexOf = fName.lastIndexOf("\\");
-			if(indexOf > -1)
-				fName = fName.substring(indexOf + 1, fName.length());
-			indexOf = fName.lastIndexOf("/");
-			if(indexOf > -1)
-				fName = fName.substring(indexOf, fName.length());
-			return fName.toLowerCase();
-		}
 	}
 }

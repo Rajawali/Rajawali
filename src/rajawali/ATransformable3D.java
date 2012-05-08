@@ -227,6 +227,10 @@ public abstract class ATransformable3D {
 	}
 	
 	public void setLookAt(Number3D lookAt) {
+		if(lookAt == null) {
+			mLookAt = null;
+			return;
+		}
 		setLookAt(lookAt.x,  lookAt.y, lookAt.z);
 	}
 }

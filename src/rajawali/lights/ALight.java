@@ -1,6 +1,7 @@
 package rajawali.lights;
 
 import rajawali.ATransformable3D;
+import rajawali.math.Number3D;
 
 public abstract class ALight extends ATransformable3D {
 	protected float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
@@ -14,6 +15,12 @@ public abstract class ALight extends ATransformable3D {
 	
 	public void setColor(final float r, final float g, final float b) {
 		mColor[0] = r; mColor[1] = g; mColor[2] = b;
+	}
+	
+	public void setColor(Number3D color) {
+		mColor[0] = color.x;
+		mColor[1] = color.y;
+		mColor[2] = color.z;
 	}
 	
 	public float[] getColor() {

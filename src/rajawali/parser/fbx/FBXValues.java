@@ -3,6 +3,7 @@ package rajawali.parser.fbx;
 import java.util.Stack;
 
 import rajawali.math.Number3D;
+import rajawali.math.Vector2D;
 import android.graphics.Color;
 
 public class FBXValues {
@@ -123,6 +124,24 @@ public class FBXValues {
 	protected class Relations {
 		public Stack<Model> models = new Stack<Model>();
 		public Stack<Material> materials = new Stack<Material>();
+		public Stack<Texture> textures = new Stack<Texture>();
+		
+		public Texture addTexture(String name, String type) {
+			Texture texture = new Texture(name, type);
+			textures.add(texture);
+			return texture;
+		}
+		
+		protected class Texture {
+			public String type;
+			public Integer version;
+			public String textureName;
+			
+			public Texture(String name, String type) {
+				this.textureName = name;
+				this.type = type;
+			}
+		}
 		
 		public Model addModel(String name, String type) {
 			Model model = new Model(name, type);
@@ -158,8 +177,50 @@ public class FBXValues {
 	protected class Objects {
 		public Stack<Model> models = new Stack<Model>();
 		public Stack<Material> materials = new Stack<Material>();
+		public Stack<Texture> textures = new Stack<Texture>();
 		public Pose pose = new Pose();
 		public GlobalSettings globalSettings = new GlobalSettings();
+		
+		public Texture addTexture(String name, String type) {
+			Texture texture = new Texture(name, type);
+			textures.add(texture);
+			return texture;
+		}
+		
+		protected class Texture {
+			public String type;
+			public Integer version;
+			public String textureName;
+			public String media;
+			public String fileName;
+			public String relativeFilename;
+			public Vector2D modelUVTranslation;
+			public Vector2D modelUVScaling;
+			public String texture_Alpha_Source;
+			public Properties properties = new Properties();
+			
+			public Texture(String name, String type) {
+				this.textureName = name;
+				this.type = type;
+			}
+			
+			protected class Properties {
+				public Number3D translation;
+				public Number3D rotation;
+				public Number3D scaling;
+				public Float textureAlpha;
+				public Integer textureTypeUse;
+				public Integer currentTextureBlendMode;
+				public Boolean useMaterial;
+				public Boolean useMipMap;
+				public Integer currentMappingType;
+				public Boolean uVSwap;
+				public Integer wrapModeU;
+				public Integer wrapModeV;
+				public Number3D textureRotationPivot;
+				public Number3D textureScalingPivot;
+			}
+		}
 		
 		protected class GlobalSettings {
 			public Integer version;
@@ -264,7 +325,7 @@ public class FBXValues {
 			public String name;
 			public String type;
 			public Integer version;
-			public Boolean hidden;
+			public String hidden;
 			public String culling;
 			public String typeFlags;
 			public Properties properties = new Properties();
@@ -296,6 +357,14 @@ public class FBXValues {
 				public Number3D scalingOffset;
 				public Number3D scalingPivot;
 				public Number3D color;
+				public Float intensity;
+				public Float fieldOfView;
+				public Float focalLength;
+				public Integer aspectW;
+				public Integer aspectH;
+				public Integer pixelAspectRatio;
+				public Float nearPlane;
+				public Float farPlane;
 			}
 			
 			protected class Layer {
