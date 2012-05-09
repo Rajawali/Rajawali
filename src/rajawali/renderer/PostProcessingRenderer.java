@@ -115,6 +115,8 @@ public final class PostProcessingRenderer {
 	
 	public void render() {
 		unbind();
+		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glDepthMask(true);
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 		mPostProcessingQuad.render(mPostProcessingCam, mPostProcessingCam.getProjectionMatrix(), mPostProcessingCam.getViewMatrix(), null);
 	}
