@@ -191,8 +191,12 @@ public class FBXParser extends AParser {
 		
 		int count = 0;
 		int indexCount = 0;
+		int[] triIds = new int[3];
+		int[] quadIds = new int[6];
+		int i = 0, j = 0, k = 0;
+		int vidxLen = vidx.length;
 		
-		for(int i=0; i<vidx.length; ++i) {
+		for(i=0; i<vidxLen; ++i) {
 			count++;
 			
 			if(vidx[i] < 0) {
@@ -205,31 +209,33 @@ public class FBXParser extends AParser {
 					indices.add(indexCount++);
 					indices.add(indexCount++);
 
-					int[] ids = new int[] { index3 * 3, index2 * 3, index1 * 3 };
+					triIds[0] = index1 * 3;
+					triIds[1] = index2 * 3;
+					triIds[2] = index3 * 3;
 					
-					for(int j=0; j<3; ++j)
+					for(j=0; j<3; ++j)
 					{
-						int cid = ids[j];
-						for(int k=0; k<3; ++k) {
-							int mult = k == 0 ? -1 : 1;
-							vertices.add(modelVerts[cid+k] * mult);
-							normals.add(modelNorm[cid+k] * mult);
+						int cid = triIds[j];
+						for(k=0; k<3; ++k) {
+							vertices.add(modelVerts[cid+k]);
+							int dir = i==0 ? -1 : 1; 
+							normals.add(modelNorm[cid+k] * dir);
 						}
 					}
 					
 					if(hasUVs) {
-						int uvIndex1 = uvidx[i] * 2;
+						int uvIndex3 = uvidx[i] * 2;
 						int uvIndex2 = uvidx[i-1] * 2;
-						int uvIndex3 = uvidx[i-2] * 2;
+						int uvIndex1 = uvidx[i-2] * 2;
 
 						uvs.add(modelUv[uvIndex1+0]);
-						uvs.add(modelUv[uvIndex1+1]);
+						uvs.add(1f-modelUv[uvIndex1+1]);
 						
 						uvs.add(modelUv[uvIndex2+0]);
-						uvs.add(modelUv[uvIndex2+1]);
+						uvs.add(1f-modelUv[uvIndex2+1]);
 						
 						uvs.add(modelUv[uvIndex3+0]);
-						uvs.add(modelUv[uvIndex3+1]);
+						uvs.add(1f-modelUv[uvIndex3+1]);
 					}
 				} else {
 					int index1 = vidx[i-3];
@@ -244,17 +250,19 @@ public class FBXParser extends AParser {
 					indices.add(indexCount++);
 					indices.add(indexCount++);
 					
-					int[] ids = new int[] { 
-							index3 * 3, index2 * 3, index1 * 3, 
-							index3 * 3, index1 * 3, index4 * 3 };
+					quadIds[0] = index1 * 3;
+					quadIds[1] = index2 * 3;
+					quadIds[2] = index3 * 3;
+					quadIds[3] = index4 * 3;
+					quadIds[4] = index1 * 3;
+					quadIds[5] = index3 * 3;
 					
-					for(int j=0; j<6; ++j)
+					for(j=0; j<6; ++j)
 					{
-						int cid = ids[j];
-						for(int k=0; k<3; ++k) {
-							int mult = k == 0 ? -1 : 1;
-							vertices.add(modelVerts[cid+k] * mult);
-							normals.add(modelNorm[cid+k] * mult);
+						int cid = quadIds[j];
+						for(k=0; k<3; ++k) {
+							vertices.add(modelVerts[cid+k]);
+							normals.add(modelNorm[cid+k]);
 						}
 					}					
 					
@@ -264,17 +272,20 @@ public class FBXParser extends AParser {
 						int uvIndex3 = uvidx[i-1] * 2;
 						int uvIndex4 = uvidx[i] * 2;
 						
-						ids = new int[] { 
-							uvIndex3, uvIndex2, uvIndex1, 
-							uvIndex3, uvIndex1, uvIndex4 };
+						quadIds[0] = uvIndex1;
+						quadIds[1] = uvIndex2;
+						quadIds[2] = uvIndex3;
+						quadIds[3] = uvIndex4;
+						quadIds[4] = uvIndex1;
+						quadIds[5] = uvIndex3;
 						
-						for(int j=0; j<6; ++j) {
-							int cid = ids[j];
-							for(int k=0; k<2; ++k) {
+						for(j=0; j<6; ++j) {
+							int cid = quadIds[j];
+							for(k=0; k<2; ++k) {
 								if(k==0)
 									uvs.add(modelUv[cid + k]);
 								else
-									uvs.add(modelUv[cid + k]);
+									uvs.add(1f-modelUv[cid + k]);
 							}
 						}
 						
@@ -306,6 +317,7 @@ public class FBXParser extends AParser {
 		o.setX(o.getX() * -1);
 		o.setScale(model.properties.lclScaling);
 		o.setRotation(model.properties.lclRotation);
+		o.setRotZ(-o.getRotZ());
 		
 		mRootObject.addChild(o);
 	}
@@ -313,7 +325,8 @@ public class FBXParser extends AParser {
 	public static int[] convertIntegers(List<Integer> integers)
 	{
 	    int[] ret = new int[integers.size()];
-	    for (int i=0; i < ret.length; i++)
+	    int len = ret.length;
+	    for (int i=0; i < len; ++i)
 	    {
 	        ret[i] = integers.get(i).intValue();
 	    }
@@ -323,7 +336,8 @@ public class FBXParser extends AParser {
 	public static float[] convertFloats(List<Float> floats)
 	{
 	    float[] ret = new float[floats.size()];
-	    for (int i=0; i < ret.length; i++)
+	    int len = ret.length;
+	    for (int i=0; i < len; ++i)
 	    {
 	        ret[i] = floats.get(i).floatValue();
 	    }
@@ -366,7 +380,6 @@ public class FBXParser extends AParser {
 		String materialName = null;
 		
 		for(int i=0; i<num; ++i) {
-			RajLog.d(conns.get(i).object2, name);
 			if(conns.get(i).object2.equals(name)) {
 				materialName = conns.get(i).object1;
 				break;
@@ -408,7 +421,6 @@ public class FBXParser extends AParser {
 	}
 	
 	private void readLine(BufferedReader buffer, String line) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException {
-		//RajLog.d(line);
 		if(line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY).length() == 0) return;
 		if(line.contains("{")) {
 			

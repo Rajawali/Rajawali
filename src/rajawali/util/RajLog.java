@@ -1,7 +1,5 @@
 package rajawali.util;
 
-import java.util.List;
-
 import android.util.Log;
 
 public class RajLog {
