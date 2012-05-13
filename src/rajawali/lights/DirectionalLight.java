@@ -1,15 +1,16 @@
 package rajawali.lights;
 
+
 public class DirectionalLight extends ALight {
 	protected float[] mDirection = new float[3];
 	
 	public DirectionalLight() {
-		super();
+		super(DIRECTIONAL_LIGHT);
 		setDirection(0, -1.0f, 1.0f);
 	}
 	
 	public DirectionalLight(float xDir, float yDir, float zDir) {
-		super();
+		super(DIRECTIONAL_LIGHT);
 		setDirection(xDir, yDir, zDir);
 	}
 	

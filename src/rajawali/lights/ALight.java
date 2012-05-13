@@ -4,13 +4,20 @@ import rajawali.ATransformable3D;
 import rajawali.math.Number3D;
 
 public abstract class ALight extends ATransformable3D {
+	public static final int DIRECTIONAL_LIGHT = 0;
+	public static final int POINT_LIGHT = 1;
+	
 	protected float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
+	protected float[] mPositionArray = new float[3];
+	protected float[] mDirectionArray = new float[3];
 	protected float mPower = .5f;
+	private int mLightType;
 	
 	protected boolean mUseObjectTransform;
 	
-	public ALight() {
+	public ALight(int lightType) {
 		super();
+		mLightType = lightType;
 	}
 	
 	public void setColor(final float r, final float g, final float b) {
@@ -41,5 +48,20 @@ public abstract class ALight extends ATransformable3D {
 
 	public void shouldUseObjectTransform(boolean useObjectTransform) {
 		this.mUseObjectTransform = useObjectTransform;
+	}
+
+	public int getLightType() {
+		return mLightType;
+	}
+
+	public void setLightType(int lightType) {
+		this.mLightType = lightType;
+	}
+	
+	public float[] getPositionArray() {
+		mPositionArray[0] = -mPosition.x;
+		mPositionArray[1] = mPosition.y;
+		mPositionArray[2] = mPosition.z;
+		return mPositionArray;
 	}
 }

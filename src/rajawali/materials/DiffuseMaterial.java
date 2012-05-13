@@ -1,7 +1,5 @@
 package rajawali.materials;
 
-
-
 public class DiffuseMaterial extends AAdvancedMaterial {
 	protected static final String mVShader = 
 		"uniform mat4 uMVPMatrix;\n" +
@@ -61,9 +59,16 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"void main() {\n" +
 		"	float intensity = 0.0;\n" +
 		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
-		"  		vec4 lightPos = vec4(uLightPos[i], 1.0);\n" +
-		"		vec3 L = normalize(vec3(lightPos - V));\n" +
-		"		intensity += uLightPower[i] * dot(N, L);\n" +
+		"		vec3 L = vec3(0.0);" +
+		"		float attenuation = 1.0;" +
+		"		if(uLightType[i] == POINT_LIGHT) {" +
+		"			L = normalize(uLightPosition[i] - V.xyz);\n" +
+		"			float dist = distance(V.xyz, uLightPosition[i]);\n" +
+		"			attenuation = 1.0 / (uLightAttenuation[i][1] + uLightAttenuation[i][2] * dist + uLightAttenuation[i][3] * dist * dist);\n" +
+		"		} else {" +
+		"			L = -normalize(uLightDirection[i]);" +
+		"		}" +
+		"		intensity += uLightPower[i] * max(dot(N, L), 0.1) * attenuation;\n" +
 		"	}\n" +
 		"	if(uUseTexture==true) gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"	else gl_FragColor = vColor;\n" +

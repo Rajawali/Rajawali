@@ -39,15 +39,14 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 * [Rajawali Tutorial 22: More Optimisation](http://www.rozengain.com/blog/2012/05/03/rajawali-tutorial-22-more-optimisation/)
 
 ## Tutorials By Others
-* [(Kean Walmsley from Autodesk) Creating a 3D viewer for our Apollonian service using Android – Part 1](http://through-the-interface.typepad.com/through_the_interface/2012/04/creating-a-3d-viewer-for-our-apollonian-service-using-android-part-1.html)
-* [(Kean Walmsley from Autodesk) Creating a 3D viewer for our Apollonian service using Android – Part 2](http://through-the-interface.typepad.com/through_the_interface/2012/05/creating-a-3d-viewer-for-our-apollonian-service-using-android-part-2.html)
+* (Kean Walmsley from Autodesk) Creating a 3D viewer for our Apollonian service using Android [Part 1](http://through-the-interface.typepad.com/through_the_interface/2012/04/creating-a-3d-viewer-for-our-apollonian-service-using-android-part-1.html) [Part 2](http://through-the-interface.typepad.com/through_the_interface/2012/05/creating-a-3d-viewer-for-our-apollonian-service-using-android-part-2.html) [Part 3](http://through-the-interface.typepad.com/through_the_interface/2012/05/creating-a-3d-viewer-for-our-apollonian-service-using-android-part-3.html)
 
 ## Made with Rajawali
 
 [![A Liquid Cloud Live Wallpaper](http://www.rozengain.com/files/rajawali/a_liquid_cloud_live_wallpaper.png)](https://market.android.com/details?id=com.formisk.aliquidcloud.free)
 [![Cube Complex Live Wallpaper](http://www.rozengain.com/files/rajawali/cube_complex_live_wallpaper.png)](https://play.google.com/store/apps/details?id=com.ToxicBakery.lwp.cubecomplexfree)
 [![Pyro Live Wallpaper](https://play.google.com/store/apps/details?id=com.pyroliveFREE)](hhttps://play.google.com/store/apps/details?id=com.pyroliveFREE)
-[![Skull Live Wallpaper](http://www.rozengain.com/files/rajawali/moving_skull_live_wallpaper.png)](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.skull)
+[![Autumn Grove Live Wallpaper](http://www.rozengain.com/files/rajawali/autumn_grove_live_wallpaper.png)](https://play.google.com/store/apps/details?id=com.PM.AutumnGrove3DFREE)
 [![F5E Tiger Live Wallpaper](http://www.rozengain.com/files/rajawali/pyro.jpg)](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.f5tiger)
 
 * [Space Journey Live Wallpaper](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.spacejourney)

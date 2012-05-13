@@ -99,7 +99,7 @@ public abstract class AMaterial {
 			int[] compiled = new int[1];
 			GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
 			if (compiled[0] == 0) {
-				RajLog.e("Could not compile " + (shaderType == 35632 ? "fragment" : "vertex") + " shader:");
+				RajLog.e("Could not compile " + (shaderType == GLES20.GL_FRAGMENT_SHADER ? "fragment" : "vertex") + " shader:");
 				RajLog.e("Shader log: " + GLES20.glGetShaderInfoLog(shader));
 				GLES20.glDeleteShader(shader);
 				shader = 0;

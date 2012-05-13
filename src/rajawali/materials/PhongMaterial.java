@@ -6,14 +6,13 @@ import android.opengl.GLES20;
 
 
 public class PhongMaterial extends AAdvancedMaterial {
-	protected static final String mVShader = 
+	protected static final String mVShader =
+		"precision mediump float;\n" +
+		"precision mediump int;\n" +
 		"uniform mat4 uMVPMatrix;\n" +
 		"uniform mat3 uNMatrix;\n" +
 		"uniform mat4 uMMatrix;\n" +
 		"uniform mat4 uVMatrix;\n" +
-		
-		M_LIGHTS_VARS +
-		M_FOG_VERTEX_VARS +
 		
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
@@ -21,9 +20,11 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"attribute vec4 aColor;\n" +
 		
 		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 N;\n" +
-		"varying vec3 L["+MAX_LIGHTS+"], H["+MAX_LIGHTS+"];\n" +
+		"varying vec3 vNormal;\n" +
+		"varying vec3 vEyeVec;\n" +
 		"varying vec4 vColor;\n" +
+
+		M_FOG_VERTEX_VARS +
 		
 		"\n#ifdef VERTEX_ANIM\n" +
 		"attribute vec4 aNextFramePosition;\n" +
@@ -41,25 +42,22 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	gl_Position = uMVPMatrix * position;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		
-		"	vec4 eyePosition = uMMatrix  * position;\n" + 
-		"	N = normalize(uNMatrix * normal);\n" +
-		"	vec3 E = -normalize(eyePosition.xyz);\n" +
+		"	vEyeVec = -vec3(uMMatrix  * position);\n" +
+		"	vNormal = uNMatrix * normal;\n" +
 		
-		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
-		"		vec4 eyeLightPos = vec4(uLightPos[i], 1.0);\n" +
-		"		L[i] = normalize(eyeLightPos.xyz - eyePosition.xyz);\n" + 
-		"		H[i] = normalize(L[i] + E);\n" +
-		"	}" +
 		"	vColor = aColor;\n" +
 		M_FOG_VERTEX_DEPTH +
 		"}";
 		
 	protected static final String mFShader = 
 		"precision mediump float;\n" +
+		"precision mediump int;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 N;\n" +
-		"varying vec3 L["+MAX_LIGHTS+"], H["+MAX_LIGHTS+"];\n" +
+		"varying vec3 vNormal;\n" +
+		"varying vec3 vLightDir["+MAX_LIGHTS+"];\n" +
+		"varying float vAttenuation["+MAX_LIGHTS+"];\n" +
+		"varying vec3 vEyeVec;\n" +
 		"varying vec4 vColor;\n" +
 		
 		M_FOG_FRAGMENT_VARS +
@@ -73,15 +71,26 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"uniform bool uUseTexture;\n" +
 
 		"void main() {\n" +
-		"	float Kd = 0.0;" +
-		"	float Ks = 0.0;" +
-
-		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
-		"		vec3 Half   = normalize(H[i]);\n" +
-		"		vec3 Light  = normalize(L[i]);\n" +
+		"	float Kd = 0.0;\n" +
+		"	float Ks = 0.0;\n" +
+		"	vec3 N = normalize(vNormal);\n" +
+		"	vec3 E = normalize(vEyeVec);\n" +
 		
-		"		Kd += max(dot(N, Light), 0.0) * uLightPower[i];\n" + 
-		"		Ks += pow(max(dot(Half, N), 0.0), uShininess) * uLightPower[i];\n" +
+		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {\n" +
+		"		vec3 L = vec3(0);\n" +
+		"		float attenuation = 1.0;\n" +
+		
+		"		if(uLightType[i] == POINT_LIGHT) {\n" +
+		"			L = normalize(uLightPosition[i] + vEyeVec);\n" +
+		"			float dist = distance(-vEyeVec, uLightPosition[i]);\n" +
+		"			attenuation = 1.0 / (uLightAttenuation[i][1] + uLightAttenuation[i][2] * dist + uLightAttenuation[i][3] * dist * dist);\n" +
+		"		} else {\n" +
+		"			L = normalize(-uLightDirection[i]);\n" +
+		"		}\n" +
+		
+		"		float NdotL = max(dot(N, L), 0.1);\n" +
+		"		Kd += NdotL * attenuation * uLightPower[i];\n" + 
+		"		Ks += pow(NdotL, uShininess) * attenuation * uLightPower[i];\n" +
 		"	}" +
 	    "	vec4 diffuse  = uUseTexture ? Kd * texture2D(uDiffuseTexture, vTextureCoord) : Kd * vColor;\n" + 
 	    "	vec4 specular = Ks * uSpecularColor;\n" + 
