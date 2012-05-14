@@ -13,29 +13,25 @@ public class ToonMaterial extends DiffuseMaterial {
 			"varying vec4 vColor;\n" +
 	 
 			"uniform sampler2D uDiffuseTexture;\n" +
-			"uniform bool uUseTexture;\n" +
 			"uniform vec4 uAmbientColor;\n" +
 			"uniform vec4 uAmbientIntensity;\n" + 
 			"uniform vec4 uToonColor0, uToonColor1, uToonColor2, uToonColor3;\n" +
 			
 			M_FOG_FRAGMENT_VARS +
-			M_LIGHTS_VARS +			
+			"%LIGHT_VARS%" +
 
 			"void main() {\n" +
 			"	float intensity = 0.0;\n" +
-			"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
-			"		vec3 L = vec3(0.0);" +
-			"		float attenuation = 1.0;" +
-			"		if(uLightType[i] == POINT_LIGHT) {" +
-			"			L = normalize(uLightPosition[i] - V.xyz);\n" +
-			"			float dist = distance(V.xyz, uLightPosition[i]);\n" +
-			"			attenuation = 1.0 / (uLightAttenuation[i][1] + uLightAttenuation[i][2] * dist + uLightAttenuation[i][3] * dist * dist);\n" +
-			"		} else {" +
-			"			L = -normalize(uLightDirection[i]);" +
-			"		}" +
-			"		intensity += uLightPower[i] * max(dot(N, L), 0.1) * attenuation;\n" +
-			"	}\n" +
-			"	vec4 color = vColor;" +
+			"	float dist = 0.0;\n" +
+			"	vec3 L = vec3(0.0);\n" +
+			
+			"%LIGHT_CODE%" +
+			
+			"#ifndef TEXTURED\n" +
+			"	vec4 color = vColor;\n" +
+			"#else\n" +
+			"	vec4 color = vec4(1.0);\n" +
+			"#endif\n" +
 			"   if(intensity > .95) color = uToonColor0;" +
 			"   else if(intensity > .5) color = uToonColor1;" +
 			"   else if(intensity > .25) color = uToonColor2;" +

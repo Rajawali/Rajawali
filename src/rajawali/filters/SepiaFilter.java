@@ -34,6 +34,7 @@ public class SepiaFilter extends AMaterial implements IPostProcessingFilter {
 			
 	public SepiaFilter() {
 		super(mVShader, mFShader, false);
+		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 	}
 	
 	public boolean usesDepthBuffer() {

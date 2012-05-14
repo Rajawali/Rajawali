@@ -1,7 +1,10 @@
 package rajawali.materials;
 
+import rajawali.lights.ALight;
+
 public class DiffuseMaterial extends AAdvancedMaterial {
 	protected static final String mVShader = 
+		"precision mediump float;\n" +
 		"uniform mat4 uMVPMatrix;\n" +
 		"uniform mat3 uNMatrix;\n" +
 		"uniform mat4 uMMatrix;\n" +
@@ -18,6 +21,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"varying vec4 vColor;\n" +
 		
 		M_FOG_VERTEX_VARS +
+		"%LIGHT_VARS%" +
 		
 		"\n#ifdef VERTEX_ANIM\n" +
 		"attribute vec4 aNextFramePosition;\n" +
@@ -27,6 +31,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		
 		"void main() {\n" +
 		"	vec4 position = aPosition;\n" +
+		"	float dist = 0.0;\n" +
 		"	vec3 normal = aNormal;\n" +
 		"	#ifdef VERTEX_ANIM\n" +
 		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
@@ -36,7 +41,12 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	vTextureCoord = aTextureCoord;\n" +
 		"	N = normalize(uNMatrix * normal);\n" +
 		"	V = uMMatrix * position;\n" +
+		"#ifndef TEXTURED\n" +
 		"	vColor = aColor;\n" +
+		"#endif\n" +
+		
+		"%LIGHT_CODE%" +
+		
 		M_FOG_VERTEX_DEPTH +
 		"}";
 		
@@ -49,29 +59,22 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"varying vec4 vColor;\n" +
  
 		"uniform sampler2D uDiffuseTexture;\n" +
-		"uniform bool uUseTexture;\n" +
 		"uniform vec4 uAmbientColor;\n" +
 		"uniform vec4 uAmbientIntensity;\n" +
 		
 		M_FOG_FRAGMENT_VARS +		
-		M_LIGHTS_VARS +
+		"%LIGHT_VARS%" +
 		
 		"void main() {\n" +
 		"	float intensity = 0.0;\n" +
-		"	for(int i=0; i<" +MAX_LIGHTS+ "; i++) {" +
-		"		vec3 L = vec3(0.0);" +
-		"		float attenuation = 1.0;" +
-		"		if(uLightType[i] == POINT_LIGHT) {" +
-		"			L = normalize(uLightPosition[i] - V.xyz);\n" +
-		"			float dist = distance(V.xyz, uLightPosition[i]);\n" +
-		"			attenuation = 1.0 / (uLightAttenuation[i][1] + uLightAttenuation[i][2] * dist + uLightAttenuation[i][3] * dist * dist);\n" +
-		"		} else {" +
-		"			L = -normalize(uLightDirection[i]);" +
-		"		}" +
-		"		intensity += uLightPower[i] * max(dot(N, L), 0.1) * attenuation;\n" +
-		"	}\n" +
-		"	if(uUseTexture==true) gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
-		"	else gl_FragColor = vColor;\n" +
+		"	float dist = 0.0;\n" +
+		"	vec3 L = vec3(0.0);\n" +
+		"%LIGHT_CODE%" +
+		"#ifdef TEXTURED\n" +
+		"	gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
+		"#else\n" +
+	    "	gl_FragColor = vColor;\n" +
+	    "#endif\n" +
 		
 		M_FOG_FRAGMENT_CALC +
 		
@@ -90,6 +93,28 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 	public DiffuseMaterial(boolean isAnimated) {
 		this(mVShader, mFShader, isAnimated);
 	}
+	
+	public void setShaders(String vertexShader, String fragmentShader) {
+		StringBuffer sb = new StringBuffer();
+		StringBuffer vc = new StringBuffer();
+		
+		for(int i=0; i<mLights.size(); ++i) {
+			ALight light = mLights.get(i);
+			
+			if(light.getLightType() == ALight.POINT_LIGHT) {
+				sb.append("L = normalize(uLightPosition").append(i).append(" - V.xyz);\n");
+				vc.append("dist = distance(V.xyz, uLightPosition").append(i).append(");\n");
+				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
+			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
+				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
+				sb.append("L = -normalize(uLightDirection").append(i).append(");");				
+			}
+			sb.append("intensity += uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(";\n");
+		}
+		
+		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", sb.toString()));
+	}
+
 	
 	public DiffuseMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader);

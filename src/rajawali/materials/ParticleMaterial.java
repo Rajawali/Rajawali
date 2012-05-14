@@ -96,11 +96,16 @@ public class ParticleMaterial extends AMaterial {
 	}
 	
 	public ParticleMaterial(boolean isAnimated) {
-		super(isAnimated ? "#define ANIMATED\n" + mVShader : mVShader, isAnimated ? "#define ANIMATED\n" + mFShader : mFShader, false);
+		super(mVShader, mFShader, false);
 		mDistanceAtt = new float[] {1, 1, 1};
 		mFriction = new float[3];
 		mCamPos = new float[3];		
-		mIsAnimated = isAnimated;		
+		mIsAnimated = isAnimated;
+		if(mIsAnimated) {
+			mUntouchedVertexShader = "\n#define ANIMATED\n" + mUntouchedVertexShader;
+			mUntouchedFragmentShader = "\n#define ANIMATED\n" + mUntouchedFragmentShader;
+		}
+		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 	}
 	
 	public void setPointSize(float pointSize) {

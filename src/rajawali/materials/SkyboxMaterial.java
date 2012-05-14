@@ -27,8 +27,6 @@ public class SkyboxMaterial extends AMaterial {
 			"uniform samplerCube uCubeMapTexture;\n" +
 			"varying vec4 vColor;\n" +
 
-			"uniform bool uUseTexture;\n" +
-
 			"void main() {\n" +
 			"	gl_FragColor = textureCube(uCubeMapTexture, vTextureCoord);\n" +
 			"}\n";
@@ -36,5 +34,6 @@ public class SkyboxMaterial extends AMaterial {
 	public SkyboxMaterial() {
 		super(mVShader, mFShader, false);
 		usesCubeMap = true;
+		setShaders(mVShader, mFShader);
 	}
 }

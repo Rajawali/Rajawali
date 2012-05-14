@@ -11,6 +11,8 @@ import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 public abstract class AMaterial {
+	protected String mUntouchedVertexShader;
+	protected String mUntouchedFragmentShader;
 	protected String mVertexShader;
 	protected String mFragmentShader;
 
@@ -24,7 +26,6 @@ public abstract class AMaterial {
 
 	protected int muMVPMatrixHandle;
 	protected int muCameraPositionHandle;
-	protected int muUseTextureHandle;
 	protected int muMMatrixHandle;
 	protected int muVMatrixHandle;
 	protected int muInterpolationHandle;
@@ -44,32 +45,39 @@ public abstract class AMaterial {
 	public AMaterial() {
 		mTextureInfoList = new ArrayList<TextureInfo>();
 		mCameraPosArray = new float[3];
+		mLights = new Stack<ALight>();
 	}
 
 	public AMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
 		this();
+		mUntouchedVertexShader = vertexShader;
+		mUntouchedFragmentShader = fragmentShader;
 		mIsAnimated = isAnimated;
-		mVertexShader = isAnimated ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
-		mFragmentShader = fragmentShader;
+	}
+	
+	public void reload() {
+		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+		for(int i=0; i<mNumTextures; i++) {
+			addTexture(mTextureInfoList.get(i), true);
+		}
+	}
+
+	public void setShaders() {
+		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+	}
+	
+	public void setShaders(String vertexShader, String fragmentShader) {
+		mVertexShader = mIsAnimated ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
+		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
+		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
+		
 		if(RajawaliRenderer.isFogEnabled())
 		{
 			mVertexShader = "#define FOG_ENABLED\n" + mVertexShader;
 			mFragmentShader = "#define FOG_ENABLED\n" + mFragmentShader;
 		}
-		setShaders(mVertexShader, mFragmentShader);
-	}
-	
-	public void reload() {
-		boolean useColor = mUseColor;
-		setShaders(mVertexShader, mFragmentShader);
-		for(int i=0; i<mNumTextures; i++) {
-			addTexture(mTextureInfoList.get(i), true);
-		}
-		mUseColor = useColor;
-	}
-
-	public void setShaders(String vertexShader, String fragmentShader) {
-		mProgram = createProgram(vertexShader, fragmentShader);
+		
+		mProgram = createProgram(mVertexShader, mFragmentShader);
 		if (mProgram == 0)
 			return;
 
@@ -82,7 +90,6 @@ public abstract class AMaterial {
 		muMVPMatrixHandle = getUniformLocation("uMVPMatrix");
 		muMMatrixHandle = getUniformLocation("uMMatrix");
 		muVMatrixHandle = getUniformLocation("uVMatrix");
-		muUseTextureHandle = getUniformLocation("uUseTexture");
 		
 		if(mIsAnimated == true) {
 			maNextFramePositionHandle = getAttribLocation("aNextFramePosition");
@@ -128,7 +135,7 @@ public abstract class AMaterial {
 			int[] linkStatus = new int[1];
 			GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);
 			if (linkStatus[0] != GLES20.GL_TRUE) {
-				RajLog.e("Could not link program: ");
+				RajLog.e("Could not link program in " + getClass().getCanonicalName() +": ");
 				RajLog.e(GLES20.glGetProgramInfoLog(program));
 				GLES20.glDeleteProgram(program);
 				program = 0;
@@ -155,8 +162,6 @@ public abstract class AMaterial {
 
 	public void useProgram() {
 		GLES20.glUseProgram(mProgram);
-		GLES20.glUniform1i(muUseTextureHandle,
-				mUseColor == false ? GLES20.GL_TRUE : GLES20.GL_FALSE);
 	}
 
 	public void bindTextures() {
@@ -219,7 +224,7 @@ public abstract class AMaterial {
 
 		int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
 		if (textureHandle == -1) {
-			throw new RuntimeException("Could not get attrib location for "
+			RajLog.d("Could not get attrib location for "
 					+ textureName + ", " + textureInfo.getTextureType());
 		}
 		textureInfo.setUniformHandle(textureHandle);
@@ -299,6 +304,10 @@ public abstract class AMaterial {
 				false, 0, 0);
 	}
 
+	public void setLightParams() {
+		
+	}
+	
 	public void setLights(Stack<ALight> lights) {
 		if(lights == null || lights.size() == 0)
 			return;
@@ -335,6 +344,10 @@ public abstract class AMaterial {
 	}
 
 	public void setUseColor(boolean value) {
+		if(value != mUseColor) {
+			mUseColor = value;
+			setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+		}
 		mUseColor = value;
 	}
 	

@@ -79,6 +79,7 @@ public class SwirlFilter extends AMaterial implements IPostProcessingFilter {
 		mRadius = radius;
 		mAngle = angle;
 		mTime = 1;
+		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 	}
 	
 	public boolean usesDepthBuffer() {

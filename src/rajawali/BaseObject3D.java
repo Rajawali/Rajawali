@@ -98,6 +98,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public BaseObject3D(SerializedObject3D ser) {
 		this();
 		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices());
+		mLights = new Stack<ALight>();
 	}
 
 	
@@ -306,7 +307,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param camera
 	 */
 	protected void setShaderParams(Camera camera) {
-		mMaterial.setLights(mLights);
+		mMaterial.setLightParams();
 	};
 	
 	/**
@@ -315,6 +316,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @parameter textureInfo
 	 */
 	public void addTexture(TextureInfo textureInfo) {
+		if(mLights.size() > 0) {
+			mMaterial.setUseColor(false);
+			mMaterial.setShaders();
+		}
 		mMaterial.addTexture(textureInfo);
 	}
 
@@ -417,6 +422,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mLights = lights;
 		for (int i = 0; i < mChildren.size(); ++i)
 			mChildren.get(i).setLights(lights);
+		if(mMaterial != null)
+			mMaterial.setLights(mLights);
 	}
 	
 	/**
@@ -428,6 +435,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mLights.add(light);
 		for (int i = 0; i < mChildren.size(); ++i)
 			mChildren.get(i).setLights(mLights);
+		if(mMaterial != null)
+			mMaterial.setLights(mLights);
 	}
 	
 	/**
@@ -514,6 +523,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public void setMaterial(AMaterial material) {
 		setMaterial(material, true);
+		material.setLights(mLights);
 	}
 
 	public AMaterial getMaterial() {

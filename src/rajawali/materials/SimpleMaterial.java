@@ -1,5 +1,6 @@
 package rajawali.materials;
 
+
 public class SimpleMaterial extends AMaterial {
 	protected static final String mVShader = 
 		"uniform mat4 uMVPMatrix;\n" +
@@ -24,17 +25,21 @@ public class SimpleMaterial extends AMaterial {
 		"uniform sampler2D uDiffuseTexture;\n" +
 		"varying vec4 vColor;\n" +
 
-		"uniform bool uUseTexture;\n" +
-
 		"void main() {\n" +
-		"	gl_FragColor = uUseTexture ? texture2D(uDiffuseTexture, vTextureCoord) : vColor;\n" +
+		"#ifdef TEXTURED\n" +
+		"	gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
+		"#else\n" +
+	    "	gl_FragColor = vColor;\n" +
+	    "#endif\n" +
 		"}\n";
 	
 	public SimpleMaterial() {
 		super(mVShader, mFShader, false);
+		reload();
 	}
 	
 	public SimpleMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader, false);
+		reload();
 	}
 }

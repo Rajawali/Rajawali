@@ -68,12 +68,11 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected int muFogNearHandle;
 	protected int muFogFarHandle;
 	protected int muFogEnabledHandle;
-	protected int muLightColorHandle;
-	protected int muLightPowerHandle;
-	protected int muLightTypeHandle;
-	protected int muLightPositionHandle;
-	protected int muLightDirectionHandle; 
-	protected int muLightAttenuationHandle;
+	protected int[] muLightColorHandles;
+	protected int[] muLightPowerHandles;
+	protected int[] muLightPositionHandles;
+	protected int[] muLightDirectionHandles; 
+	protected int[] muLightAttenuationHandles;
 		
 	protected float[] mNormalMatrix;
 	protected float[] mTmp, mTmp2;
@@ -82,13 +81,6 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected float mFogNear, mFogFar;
 	protected boolean mFogEnabled;
 	
-	protected float[] mLightColors;
-	protected float[] mLightPowers;
-	protected int[] mLightTypes;
-	protected float[] mLightPositions;
-	protected float[] mLightDirections;
-	protected float[] mLightAttenuations;
-
 	protected android.graphics.Matrix mTmpNormalMatrix = new android.graphics.Matrix();
 	protected android.graphics.Matrix mTmpMvMatrix = new android.graphics.Matrix();
 
@@ -108,13 +100,6 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mAmbientColor = new float[] {.2f, .2f, .2f, 1};
 		mAmbientIntensity = new float[] { .3f, .3f, .3f, 1 };		
 
-		mLightColors = new float[MAX_LIGHTS * 3];
-		mLightPowers = new float[MAX_LIGHTS];
-		mLightTypes = new int[MAX_LIGHTS];
-		mLightPositions = new float[MAX_LIGHTS * 3];
-		mLightDirections = new float[MAX_LIGHTS * 3];
-		mLightAttenuations = new float[MAX_LIGHTS * 4];
-		
 		if(RajawaliRenderer.isFogEnabled())
 			mFogColor = new float[] { .8f, .8f, .8f };
 	}
@@ -122,34 +107,21 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	@Override
 	public void setLights(Stack<ALight> lights) {
 		super.setLights(lights);
-		
-		int index3, index4;
-		for(int i=0; i<MAX_LIGHTS; ++i) {
-			index3 = i * 3;
-			index4 = i * 4;
+		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+	}
+	
+	@Override
+	public void setLightParams() {
+		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
-			float[] colors = light.getColor();
-			float[] position = light.getPositionArray();
-			
-			mLightColors[index3] = colors[0]; mLightColors[index3+1] = colors[1]; mLightColors[index3+2] = colors[2];
-			mLightPowers[i] = light.getPower();
-			mLightTypes[i] = light.getLightType();
-			mLightPositions[index3] = position[0]; mLightPositions[index3+1] = position[1]; mLightPositions[index3+2] = position[2];
-			if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
-				float[] direction = ((DirectionalLight)light).getDirection();
-				mLightDirections[index3] = -direction[0]; mLightDirections[index3+1] = direction[1]; mLightDirections[index3+2] = direction[2];
-			} else if(light.getLightType() == ALight.POINT_LIGHT) {
-				float[] attenuation = ((PointLight)light).getAttenuation();
-				mLightAttenuations[index4] = attenuation[0]; mLightAttenuations[index4+1] = attenuation[1]; mLightAttenuations[index4+2] = attenuation[2]; mLightAttenuations[index4+3] = attenuation[3]; 
-			}
-			
+			GLES20.glUniform3fv(muLightColorHandles[i], 1, light.getColor(), 0);
+			GLES20.glUniform1f(muLightPowerHandles[i], light.getPower());
+			GLES20.glUniform3fv(muLightPositionHandles[i], 1, light.getPositionArray(), 0);
+			if(light.getLightType() == ALight.DIRECTIONAL_LIGHT)
+				GLES20.glUniform3fv(muLightDirectionHandles[i], 1, ((DirectionalLight)light).getDirection(), 0);
+			else
+				GLES20.glUniform4fv(muLightAttenuationHandles[i], 1, ((PointLight)light).getAttenuation(), 0);
 		}
-		GLES20.glUniform3fv(muLightColorHandle, MAX_LIGHTS, mLightColors, 0);
-		GLES20.glUniform1fv(muLightPowerHandle, MAX_LIGHTS, mLightPowers, 0);
-		GLES20.glUniform1iv(muLightTypeHandle, MAX_LIGHTS, mLightTypes, 0);
-		GLES20.glUniform3fv(muLightPositionHandle, MAX_LIGHTS, mLightPositions, 0);
-		GLES20.glUniform3fv(muLightDirectionHandle, MAX_LIGHTS, mLightDirections, 0);
-		GLES20.glUniform4fv(muLightAttenuationHandle, MAX_LIGHTS, mLightAttenuations, 0);
 	}
 	
 	public void setAmbientColor(float[] color) {
@@ -230,17 +202,39 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	@Override
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
+		StringBuffer lightVars = new StringBuffer();
+		int numLights = mLights.size();
+		
+		for(int i=0; i<numLights; ++i) {
+			lightVars.append("uniform vec3 uLightColor").append(i).append(";\n");
+			lightVars.append("uniform float uLightPower").append(i).append(";\n");
+			lightVars.append("uniform int uLightType").append(i).append(";\n");
+			lightVars.append("uniform vec3 uLightPosition").append(i).append(";\n");
+			lightVars.append("uniform vec3 uLightDirection").append(i).append(";\n");
+			lightVars.append("uniform vec4 uLightAttenuation").append(i).append(";\n");
+			lightVars.append("varying float vAttenuation").append(i).append(";\n");
+		}
+		vertexShader = vertexShader.replace("%LIGHT_VARS%", lightVars.toString());
+		fragmentShader = fragmentShader.replace("%LIGHT_VARS%", lightVars.toString());
+		
 		super.setShaders(vertexShader, fragmentShader);
 		muNormalMatrixHandle = getUniformLocation("uNMatrix");
 		muAmbientColorHandle = getUniformLocation("uAmbientColor");
 		muAmbientIntensityHandle = getUniformLocation("uAmbientIntensity");
 		
-		muLightColorHandle = getUniformLocation("uLightColor");
-		muLightPowerHandle = getUniformLocation("uLightPower");
-		muLightTypeHandle = getUniformLocation("uLightType");
-		muLightPositionHandle = getUniformLocation("uLightPosition");
-		muLightDirectionHandle = getUniformLocation("uLightDirection");
-		muLightAttenuationHandle = getUniformLocation("uLightAttenuation");
+		muLightAttenuationHandles = new int[numLights];
+		muLightColorHandles = new int[numLights];
+		muLightDirectionHandles = new int[numLights];
+		muLightPositionHandles = new int[numLights];
+		muLightPowerHandles = new int[numLights];
+		
+		for(int i=0; i<mLights.size(); ++i) {
+			muLightColorHandles[i] 			= getUniformLocation("uLightColor" + i);
+			muLightPowerHandles[i] 			= getUniformLocation("uLightPower" + i);
+			muLightPositionHandles[i] 		= getUniformLocation("uLightPosition" + i);
+			muLightDirectionHandles[i] 		= getUniformLocation("uLightDirection" + i);
+			muLightAttenuationHandles[i] 	= getUniformLocation("uLightAttenuation" + i);
+		}
 		
 		if(RajawaliRenderer.isFogEnabled()) {
 			muFogColorHandle = getUniformLocation("uFogColor");
