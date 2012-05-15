@@ -1,15 +1,19 @@
 package rajawali;
 
 import java.nio.Buffer;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
+import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.os.Build;
 
 public class Geometry3D {
 	public static final int FLOAT_SIZE_BYTES = 4;
@@ -20,7 +24,8 @@ public class Geometry3D {
 	protected FloatBuffer mNormals;
 	protected FloatBuffer mTextureCoords;
 	protected FloatBuffer mColors;
-	protected IntBuffer mIndices;
+	protected IntBuffer mIndicesInt;
+	protected ShortBuffer mIndicesShort;
 	protected int mNumIndices;
 	protected int mNumVertices;
 	protected String mName;
@@ -31,6 +36,7 @@ public class Geometry3D {
 	protected int mTexCoordBufferHandle;
 	protected int mColorBufferHandle;
 	protected int mNormalBufferHandle;
+	protected boolean mOnlyShortBufferSupported = false;
 	
 	protected BoundingBox mBoundingBox;
 	protected BoundingSphere mBoundingSphere;
@@ -98,6 +104,11 @@ public class Geometry3D {
 	}
 	
 	public void createBuffers() {
+		// -- temp hack, need to figure out a proper solution.
+		//    the Galaxy S2
+		boolean isGalaxyS2 = Build.MODEL.equals("GT-I9100");
+
+		
 		if(mVertices != null) {
 			mVertices.compact().position(0);
 			mVertexBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mVertices,		GLES20.GL_ARRAY_BUFFER);
@@ -114,9 +125,34 @@ public class Geometry3D {
 			mColors.compact().position(0);
 			mColorBufferHandle 		= createBuffer(BufferType.FLOAT_BUFFER, mColors,		GLES20.GL_ARRAY_BUFFER);
 		}
-		if(mIndices != null) {
-			mIndices.compact().position(0);
-			mIndexBufferHandle 		= createBuffer(BufferType.INT_BUFFER, mIndices,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+		if(mIndicesInt != null && !mOnlyShortBufferSupported && !isGalaxyS2) {
+			mIndicesInt.compact().position(0);
+			mIndexBufferHandle 		= createBuffer(BufferType.INT_BUFFER, mIndicesInt,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+		}
+		int error = GLES20.glGetError();
+		
+		if(mOnlyShortBufferSupported || error != GLES20.GL_NO_ERROR || isGalaxyS2) {
+			mOnlyShortBufferSupported = true;
+			mIndicesInt.position(0);
+			mIndicesShort = ByteBuffer
+					.allocateDirect(mNumIndices * SHORT_SIZE_BYTES)
+					.order(ByteOrder.nativeOrder()).asShortBuffer();
+			
+			try {
+				for(int i=0; i<mNumIndices; ++i) {
+					mIndicesShort.put((short)mIndicesInt.get(i));
+				}
+			} catch(BufferOverflowException e) {
+				RajLog.e("Buffer overflow. Unfortunately your device doesn't supported int type index buffers. The mesh is too big.");
+				throw(e);
+			}
+			
+			mIndicesInt.clear();
+			mIndicesInt.limit();
+			mIndicesInt = null;
+			
+			mIndicesShort.compact().position(0);
+			mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndicesShort,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
 		}
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -158,6 +194,7 @@ public class Geometry3D {
 		
 		GLES20.glBindBuffer(target, handle);
 		GLES20.glBufferData(target, buffer.limit() * byteSize, buffer, GLES20.GL_STATIC_DRAW);
+		
 		return handle;		
 	}
 
@@ -219,21 +256,21 @@ public class Geometry3D {
 	}
 	
 	public void setIndices(int[] indices) {
-		if(mIndices == null) {
-			mIndices = ByteBuffer.allocateDirect(indices.length * INT_SIZE_BYTES)
+		if(mIndicesInt == null) {
+			mIndicesInt = ByteBuffer.allocateDirect(indices.length * INT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asIntBuffer();
-			mIndices.put(indices).position(0);
+			mIndicesInt.put(indices).position(0);
 	
 			mNumIndices = indices.length;
 		} else {
-			mIndices.put(indices);
+			mIndicesInt.put(indices);
 		}
 	}
 	
 	public IntBuffer getIndices() {
-		if(mIndices == null && mOriginalGeometry != null)
+		if(mIndicesInt == null && mOriginalGeometry != null)
 			return mOriginalGeometry.getIndices();
-		return mIndices;
+		return mIndicesInt;
 	}
 	
 	public void setTextureCoords(float[] textureCoords) {
@@ -325,7 +362,7 @@ public class Geometry3D {
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		buff.append("Geometry3D indices: ");
-		buff.append(mIndices.capacity());
+		buff.append(mIndicesInt.capacity());
 		buff.append(", vertices: ");
 		buff.append(mVertices.capacity());
 		buff.append(", normals: ");
@@ -395,5 +432,9 @@ public class Geometry3D {
 
 	public void setNormalBufferHandle(int normalBufferHandle) {
 		this.mNormalBufferHandle = normalBufferHandle;
+	}
+	
+	public boolean areOnlyShortBuffersSupported() {
+		return mOnlyShortBufferSupported;
 	}
 }

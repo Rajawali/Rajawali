@@ -252,6 +252,14 @@ public final class Quaternion {
 			return null;
 		}
 	}
+	
+	public void inverseSelf() {
+		float norm = norm();
+		if (norm > 0) {
+			float invNorm = 1.0f / norm;
+			setAll(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
+		}
+	}
 
 	public Quaternion unitInverse() {
 		return new Quaternion(w, -x, -y, -z);
