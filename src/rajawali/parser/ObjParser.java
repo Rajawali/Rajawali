@@ -102,46 +102,67 @@ public class ObjParser extends AParser {
 					vertices.add(Float.parseFloat(parts.nextToken()));
 					vertices.add(Float.parseFloat(parts.nextToken()));
 				} else if(type.equals(FACE)) {
-					if(numTokens != 4) {
-						throw new RuntimeException("Quads are not allowed. Make sure the model contains only triangles.");
-					} else {
-                        boolean emptyVt = line.indexOf("//") > -1;
-                        if(emptyVt) line = line.replace("//", "/");
-                        
-                        parts = new StringTokenizer(line);
-                        
-                        parts.nextToken();
-                        StringTokenizer subParts = new StringTokenizer(parts.nextToken(), "/");
-                        int partLength = subParts.countTokens();
-                        
-                        boolean hasuv = partLength >= 2 && !emptyVt;
-                        boolean hasn = partLength == 3 || (partLength == 2 && emptyVt);
-                        int idx;
-                        
-                        for (int i = 1; i < 4; i++) {
-                        	if(i > 1)
-                        		subParts = new StringTokenizer(parts.nextToken(), "/");
-                        	idx = Integer.parseInt(subParts.nextToken());
+					boolean isQuad = numTokens == 5;
+					int[] quadvids = new int[4];
+					int[] quadtids = new int[4];
+					int[] quadnids = new int[4];
+					
+                    boolean emptyVt = line.indexOf("//") > -1;
+                    if(emptyVt) line = line.replace("//", "/");
+                    
+                    parts = new StringTokenizer(line);
+                    
+                    parts.nextToken();
+                    StringTokenizer subParts = new StringTokenizer(parts.nextToken(), "/");
+                    int partLength = subParts.countTokens();
+                    
+                    boolean hasuv = partLength >= 2 && !emptyVt;
+                    boolean hasn = partLength == 3 || (partLength == 2 && emptyVt);
+                    int idx;
+                    
+                    for (int i = 1; i < numTokens; i++) {
+                    	if(i > 1)
+                    		subParts = new StringTokenizer(parts.nextToken(), "/");
+                    	idx = Integer.parseInt(subParts.nextToken());
 
-                        	if(idx < 0) idx = (vertices.size() / 3) + idx;
+                    	if(idx < 0) idx = (vertices.size() / 3) + idx;
+                    	else idx -= 1;
+                        if(!isQuad)
+                        	currObjIndexData.vertexIndices.add(idx);
+                        else 
+                        	quadvids[i-1] = idx;
+                        if (hasuv)
+                        {
+                        	idx = Integer.parseInt(subParts.nextToken());
+                        	if(idx < 0) idx = (texCoords.size() / 2) + idx;
                         	else idx -= 1;
-                            currObjIndexData.vertexIndices.add(idx);
-                            if (hasuv)
-                            {
-                            	idx = Integer.parseInt(subParts.nextToken());
-                            	if(idx < 0) idx = (texCoords.size() / 2) + idx;
-                            	else idx -= 1;
-                                currObjIndexData.texCoordIndices.add(idx);
-                            }
-                            if (hasn)
-                            {
-                            	idx = Integer.parseInt(subParts.nextToken());
-                            	if(idx < 0) idx = (normals.size() / 3) + idx;
-                            	else idx -= 1;
-                                currObjIndexData.normalIndices.add(idx);
-                            }
+                        	if(!isQuad)
+                        		currObjIndexData.texCoordIndices.add(idx);
+                        	else 
+                            	quadtids[i-1] = idx;
                         }
-					}
+                        if (hasn)
+                        {
+                        	idx = Integer.parseInt(subParts.nextToken());
+                        	if(idx < 0) idx = (normals.size() / 3) + idx;
+                        	else idx -= 1;
+                        	if(!isQuad)
+                        		currObjIndexData.normalIndices.add(idx);
+                        	else 
+                            	quadnids[i-1] = idx;
+                        }
+                    }
+                    
+                    if(isQuad) {
+                    	int[] indices = new int[] { 0, 1, 2, 0, 2, 3 };
+                    	
+                    	for(int i=0; i<6; ++i) {
+                    		int index = indices[i];
+                        	currObjIndexData.vertexIndices.add(quadvids[index]);
+                        	currObjIndexData.texCoordIndices.add(quadtids[index]);
+                        	currObjIndexData.normalIndices.add(quadnids[index]);
+                    	}
+                    }
 				} else if(type.equals(TEXCOORD)) {
 					texCoords.add(Float.parseFloat(parts.nextToken()));
                     texCoords.add(Float.parseFloat(parts.nextToken()) * -1f);
