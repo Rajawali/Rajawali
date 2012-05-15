@@ -102,9 +102,11 @@ public abstract class ATransformable3D {
 			mLookAtMatrix[9] = mTmpRotZ.y;
 			mLookAtMatrix[10] = mTmpRotZ.z;
 		} else {
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? -mRotation.x : -mRotation.x, mAxisX));
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? -mRotation.y + 180 : mRotation.y, mAxisY));
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? -mRotation.z : mRotation.z, mAxisZ));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? -mRotation.x : mRotation.x, mAxisX));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.y + 180 : mRotation.y, mAxisY));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.z : mRotation.z, mAxisZ));
+			if(mIsCamera)
+				mOrientation.inverseSelf();
 		}
 	}
 
