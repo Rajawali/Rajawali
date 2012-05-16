@@ -94,6 +94,10 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		this(mVShader, mFShader, isAnimated);
 	}
 	
+	public DiffuseMaterial(String vertexShader, String fragmentShader) {
+		super(vertexShader, fragmentShader);
+	}
+	
 	public void setShaders(String vertexShader, String fragmentShader) {
 		StringBuffer sb = new StringBuffer();
 		StringBuffer vc = new StringBuffer();
@@ -113,10 +117,5 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", sb.toString()));
-	}
-
-	
-	public DiffuseMaterial(String vertexShader, String fragmentShader) {
-		super(vertexShader, fragmentShader);
 	}
 }

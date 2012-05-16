@@ -2,7 +2,6 @@ package rajawali.primitives;
 
 
 import rajawali.BaseObject3D;
-import rajawali.materials.SimpleMaterial;
 
 
 public class Plane extends BaseObject3D {
@@ -31,8 +30,6 @@ public class Plane extends BaseObject3D {
 	}
 	
 	private void init() {
-		mMaterial = new SimpleMaterial();
-		
         int i, j;
         int numVertices = (mSegmentsW+1) * (mSegmentsH+1);
         float[] vertices = new float[numVertices * 3];

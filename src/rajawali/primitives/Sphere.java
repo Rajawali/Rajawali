@@ -1,7 +1,6 @@
 package rajawali.primitives;
 
 import rajawali.BaseObject3D;
-import rajawali.materials.DiffuseMaterial;
 
 
 public class Sphere extends BaseObject3D {
@@ -19,8 +18,6 @@ public class Sphere extends BaseObject3D {
 	}
 	
 	protected void init() {
-		mMaterial = new DiffuseMaterial();
-		//mShader = new SimpleShader();
 		int numVertices = (mSegmentsW + 1) * (mSegmentsH + 1);
 		int numIndices = 2 * mSegmentsW * (mSegmentsH - 1) * 3;
 		

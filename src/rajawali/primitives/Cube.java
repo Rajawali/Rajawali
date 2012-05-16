@@ -1,7 +1,6 @@
 package rajawali.primitives;
 
 import rajawali.BaseObject3D;
-import rajawali.materials.SimpleMaterial;
 
 public class Cube extends BaseObject3D {
 	private float mSize;
@@ -24,8 +23,6 @@ public class Cube extends BaseObject3D {
 	
 	private void init()
 	{
-		mMaterial = new SimpleMaterial();
-		
 		float halfSize = mSize * .5f;
 		float[] vertices = {
 				halfSize, halfSize, halfSize, -halfSize, halfSize, halfSize, -halfSize,-halfSize, halfSize, halfSize,-halfSize, halfSize, //0-1-halfSize-3 front

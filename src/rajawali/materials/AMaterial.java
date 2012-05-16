@@ -106,7 +106,7 @@ public abstract class AMaterial {
 			int[] compiled = new int[1];
 			GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
 			if (compiled[0] == 0) {
-				RajLog.e("Could not compile " + (shaderType == GLES20.GL_FRAGMENT_SHADER ? "fragment" : "vertex") + " shader:");
+				RajLog.e("[" +getClass().getName()+ "] Could not compile " + (shaderType == GLES20.GL_FRAGMENT_SHADER ? "fragment" : "vertex") + " shader:");
 				RajLog.e("Shader log: " + GLES20.glGetShaderInfoLog(shader));
 				GLES20.glDeleteShader(shader);
 				shader = 0;
@@ -137,6 +137,10 @@ public abstract class AMaterial {
 			if (linkStatus[0] != GLES20.GL_TRUE) {
 				RajLog.e("Could not link program in " + getClass().getCanonicalName() +": ");
 				RajLog.e(GLES20.glGetProgramInfoLog(program));
+				RajLog.d("-=-=-= VERTEX SHADER =-=-=-");
+				RajLog.d(mVertexShader);
+				RajLog.d("-=-=-= FRAGMENT SHADER =-=-=-");
+				RajLog.d(mFragmentShader);
 				GLES20.glDeleteProgram(program);
 				program = 0;
 			}
@@ -147,7 +151,7 @@ public abstract class AMaterial {
 	protected int getUniformLocation(String name) {
 		int handle = GLES20.glGetUniformLocation(mProgram, name);
 		if (handle == -1) {
-			RajLog.d("Could not get uniform location for " + name);
+			RajLog.d("[" +getClass().getName()+ "] Could not get uniform location for " + name);
 		}
 		return handle;
 	}
@@ -155,7 +159,7 @@ public abstract class AMaterial {
 	protected int getAttribLocation(String name) {
 		int handle = GLES20.glGetAttribLocation(mProgram, name);
 		if (handle == -1) {
-			RajLog.d("Could not get attrib location for " + name);
+			RajLog.d("[" +getClass().getName()+ "] Could not get attrib location for " + name);
 		}
 		return handle;
 	}
@@ -311,7 +315,12 @@ public abstract class AMaterial {
 	public void setLights(Stack<ALight> lights) {
 		if(lights == null || lights.size() == 0)
 			return;
-		mLights = lights;
+		for(int i=0; i<lights.size(); ++i) {
+			if(i>=mLights.size()) 
+				mLights.add(lights.get(i));
+			else
+				mLights.set(i, lights.get(i));
+		}
 	}
 	
 	public void setCamera(Camera camera) {
@@ -325,6 +334,7 @@ public abstract class AMaterial {
 
 	public String toString() {
 		StringBuffer out = new StringBuffer();
+		out.append("[" +getClass().getName()+ "]");
 		out.append("____ VERTEX SHADER ____\n");
 		out.append(mVertexShader);
 		out.append("____ FRAGMENT SHADER ____\n");
@@ -346,7 +356,8 @@ public abstract class AMaterial {
 	public void setUseColor(boolean value) {
 		if(value != mUseColor) {
 			mUseColor = value;
-			setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+			if(mLights.size() > 0 || !(this instanceof AAdvancedMaterial))
+				setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 		}
 		mUseColor = value;
 	}

@@ -35,11 +35,9 @@ public class SimpleMaterial extends AMaterial {
 	
 	public SimpleMaterial() {
 		super(mVShader, mFShader, false);
-		reload();
 	}
 	
 	public SimpleMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader, false);
-		reload();
 	}
 }

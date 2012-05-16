@@ -1,7 +1,6 @@
 package rajawali.materials;
 
 import rajawali.lights.ALight;
-import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -144,7 +143,6 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		mSpecularIntensity[3] = a;
 	}
 	
-	@Override
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		StringBuffer sb = new StringBuffer();
@@ -165,7 +163,6 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", sb.toString()), fragmentShader);
-		RajLog.i(mVertexShader);
 		muSpecularColorHandle = getUniformLocation("uSpecularColor");
 		muSpecularIntensityHandle = getUniformLocation("uSpecularIntensity");
 	}

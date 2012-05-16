@@ -2,7 +2,9 @@ package rajawali.primitives;
 
 import rajawali.BaseObject3D;
 import rajawali.Camera;
+import rajawali.materials.AMaterial;
 import rajawali.materials.ParticleMaterial;
+import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 
@@ -24,8 +26,6 @@ public class Particle extends BaseObject3D {
 	}
 	
 	protected void init() {
-		mMaterial = new ParticleMaterial();
-		mParticleShader = (ParticleMaterial)mMaterial;
 		setDrawingMode(GLES20.GL_POINTS);
 		setTransparent(true);
 		
@@ -48,9 +48,19 @@ public class Particle extends BaseObject3D {
 		setData(vertices, normals, textureCoords, colors, indices);
 	}
 	
+	public void setMaterial(AMaterial material, boolean copyTextures) {
+		super.setMaterial(material, copyTextures);
+		mParticleShader = (ParticleMaterial)material;
+	}
+	
 	@Override
 	protected void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
+		
+		if(mParticleShader == null) {
+			RajLog.e("[" +getClass().getName()+ "] You need to set a particle material first.");
+			throw new RuntimeException("You need to set a particle material first.");
+		}
 		mParticleShader.setCameraPosition(camera.getPosition());
 		mParticleShader.setPointSize(mPointSize);
 	}

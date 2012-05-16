@@ -3,7 +3,6 @@ package rajawali.primitives;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
-import rajawali.materials.SimpleMaterial;
 import rajawali.math.Number3D;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -22,8 +21,6 @@ public class Line3D extends BaseObject3D {
 	}	
 	
 	private void init() {
-		mMaterial = new SimpleMaterial();
-		mMaterial.setUseColor(true);
 		setDoubleSided(true);
 		setDrawingMode(GLES20.GL_LINE_STRIP);
 		

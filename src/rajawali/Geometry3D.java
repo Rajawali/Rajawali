@@ -104,10 +104,12 @@ public class Geometry3D {
 	}
 	
 	public void createBuffers() {
-		// -- temp hack, need to figure out a proper solution.
-		//    the Galaxy S2
-		boolean isGalaxyS2 = Build.MODEL.equals("GT-I9100");
-
+		// -- Temp hack, need to figure out a proper solution.
+		//    Galaxy S2 and Galaxy Y don't support GL_UNSIGNED_INT for
+		//    GL_ELEMENT_ARRAY_BUFFER. GLES20 doesn't seem to have a value
+		//    that can be inspected which indicates whether GL_UNSIGNED_INT
+		//    can be used or not. 
+		boolean isGalaxyS2 = Build.MODEL.equals("GT-I9100") || Build.MODEL.equals("GT-S5360");
 		
 		if(mVertices != null) {
 			mVertices.compact().position(0);
@@ -129,28 +131,29 @@ public class Geometry3D {
 			mIndicesInt.compact().position(0);
 			mIndexBufferHandle 		= createBuffer(BufferType.INT_BUFFER, mIndicesInt,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
 		}
-		int error = GLES20.glGetError();
 		
-		if(mOnlyShortBufferSupported || error != GLES20.GL_NO_ERROR || isGalaxyS2) {
+		if(mOnlyShortBufferSupported || isGalaxyS2) {
 			mOnlyShortBufferSupported = true;
-			mIndicesInt.position(0);
-			mIndicesShort = ByteBuffer
-					.allocateDirect(mNumIndices * SHORT_SIZE_BYTES)
-					.order(ByteOrder.nativeOrder()).asShortBuffer();
 			
-			try {
-				for(int i=0; i<mNumIndices; ++i) {
-					mIndicesShort.put((short)mIndicesInt.get(i));
+			if(mIndicesShort == null) {
+				mIndicesInt.position(0);
+				mIndicesShort = ByteBuffer
+						.allocateDirect(mNumIndices * SHORT_SIZE_BYTES)
+						.order(ByteOrder.nativeOrder()).asShortBuffer();
+				
+				try {
+					for(int i=0; i<mNumIndices; ++i) {
+						mIndicesShort.put((short)mIndicesInt.get(i));
+					}
+				} catch(BufferOverflowException e) {
+					RajLog.e("Buffer overflow. Unfortunately your device doesn't supported int type index buffers. The mesh is too big.");
+					throw(e);
 				}
-			} catch(BufferOverflowException e) {
-				RajLog.e("Buffer overflow. Unfortunately your device doesn't supported int type index buffers. The mesh is too big.");
-				throw(e);
+				
+				mIndicesInt.clear();
+				mIndicesInt.limit();
+				mIndicesInt = null;
 			}
-			
-			mIndicesInt.clear();
-			mIndicesInt.limit();
-			mIndicesInt = null;
-			
 			mIndicesShort.compact().position(0);
 			mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndicesShort,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
 		}

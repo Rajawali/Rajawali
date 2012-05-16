@@ -106,8 +106,22 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	
 	@Override
 	public void setLights(Stack<ALight> lights) {
-		super.setLights(lights);
-		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+		if(lights.size() != mLights.size() && lights.size() != 0) {
+			super.setLights(lights);
+			setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+		} else if(lights.size() != 0) {
+			boolean same = true;
+			for(int i=0; i<lights.size(); ++i)
+				if(lights.get(i) != mLights.get(i))
+					same = false;
+			if(!same)
+			{
+				super.setLights(lights);
+				setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+			}
+		} else {
+			super.setLights(lights);
+		}
 	}
 	
 	@Override

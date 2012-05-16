@@ -33,6 +33,8 @@ public class SkyboxMaterial extends AMaterial {
 		
 	public SkyboxMaterial() {
 		super(mVShader, mFShader, false);
+		mUntouchedVertexShader = new String(mVShader);
+		mUntouchedFragmentShader = new String(mFShader);
 		usesCubeMap = true;
 		setShaders(mVShader, mFShader);
 	}

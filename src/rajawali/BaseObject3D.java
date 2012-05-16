@@ -223,6 +223,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				pickerMat.setVertices(mGeometry.getVertexBufferHandle());
 			} else {
 			  if(!mIsPartOfBatch) {
+				 if(mMaterial == null) {
+					 RajLog.e("["+this.getClass().getName()+"] This object can't renderer because there's no material attached to it.");
+					 throw new RuntimeException("This object can't renderer because there's no material attached to it.");
+				 }
 			    mMaterial.useProgram();
 			    mMaterial.bindTextures();
 			  
@@ -319,9 +323,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @parameter textureInfo
 	 */
 	public void addTexture(TextureInfo textureInfo) {
+		if(mMaterial == null) {
+			RajLog.e("[" +getClass().getName()+ "] Material is null. Please add a material before adding a texture.");
+			throw new RuntimeException("Material is null. Please add a material first.");
+		}
+		
 		if(mLights.size() > 0) {
 			mMaterial.setUseColor(false);
-			mMaterial.setShaders();
 		}
 		mMaterial.addTexture(textureInfo);
 	}
