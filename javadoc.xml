@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="libs;C:\Program Files (x86)\Android\android-sdk\tools\support\annotations.jar" destdir="doc" doctitle="Rajawali 3D Engine For Android" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="rajawali.animation,fix.android.opengl,rajawali.preferences,rajawali.visitors,rajawali.bounds,rajawali.math,rajawali.renderer,rajawali.primitives,rajawali.parser.fbx,rajawali,rajawali.animation.mesh,rajawali.wallpaper,net.rbgrn.opengl,rajawali.lights,rajawali.materials,rajawali.filters,rajawali.parser,rajawali.util" source="1.6" sourcefiles="src/GLES20.java" sourcepath="src;gen" splitindex="true" use="true" version="true"/>
+    </target>
+</project>
