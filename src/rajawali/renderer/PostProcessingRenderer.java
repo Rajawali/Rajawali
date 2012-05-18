@@ -22,9 +22,22 @@ public final class PostProcessingRenderer {
 	private IPostProcessingFilter mFilter;
 	private boolean mEnabled;
 	private boolean mInitialized;
+	private int mQuadSegments = 1;
+	private PostProcessingQuality mQuality;
+	
+	public enum PostProcessingQuality {
+		HIGH,
+		MEDIUM,
+		LOW,
+		VERY_LOW
+	}
 	
 	public PostProcessingRenderer(RajawaliRenderer renderer) {
 		this(renderer, -1);
+	}
+	
+	public PostProcessingRenderer(RajawaliRenderer renderer, int frameBufferTextureSize) {
+		this(renderer, frameBufferTextureSize, PostProcessingQuality.MEDIUM);
 	}
 	
 	/**
@@ -32,9 +45,10 @@ public final class PostProcessingRenderer {
 	 * @param renderer
 	 * @param frameBufferTextureSize	MathUtil.getClosestPowerOfTwo(mTextureSize) or 1024 (default)
 	 */
-	public PostProcessingRenderer(RajawaliRenderer renderer, int frameBufferTextureSize) {
+	public PostProcessingRenderer(RajawaliRenderer renderer, int frameBufferTextureSize, PostProcessingQuality quality) {
 		mRenderer = renderer;
 		mTextureSize = frameBufferTextureSize;
+		mQuality = quality;
 	}
 	
 	private void create() {
@@ -43,8 +57,15 @@ public final class PostProcessingRenderer {
 		mFrameBufferHandle = frameBuffers[0];
 		
 		if(mTextureSize == -1) {
-			mTextureSize = MathUtil.getClosestPowerOfTwo(mRenderer.getViewportWidth() > mRenderer.getViewportHeight() ? mRenderer.getViewportWidth() : mRenderer.getViewportHeight()) >> 1;
+			mTextureSize = MathUtil.getClosestPowerOfTwo(mRenderer.getViewportWidth() > mRenderer.getViewportHeight() ? mRenderer.getViewportWidth() : mRenderer.getViewportHeight());
 		}
+		
+		if(mQuality == PostProcessingQuality.MEDIUM)
+			mTextureSize >>= 1;
+		else if(mQuality == PostProcessingQuality.LOW)
+			mTextureSize >>= 2;
+		else if(mQuality == PostProcessingQuality.VERY_LOW)
+			mTextureSize >>= 3;
 
 		checkError("glGenFramebuffers", GLES20.glGetError());
 		
@@ -56,7 +77,7 @@ public final class PostProcessingRenderer {
 		
 		mFrameBufferTexInfo = mRenderer.getTextureManager().addTexture(null, mTextureSize, mTextureSize, TextureType.FRAME_BUFFER);
 
-		mPostProcessingQuad = new Plane(1, 1, 1, 1, 1);
+		mPostProcessingQuad = new Plane(1, 1, 1, mQuadSegments, mQuadSegments);
 		mPostProcessingQuad.setMaterial((AMaterial)mFilter);
 		mPostProcessingQuad.setDoubleSided(true);
 		mPostProcessingQuad.setRotZ(-90);
@@ -176,5 +197,21 @@ public final class PostProcessingRenderer {
 		}
 		
 		RajLog.d(sb.toString());
+	}
+
+	public int getQuadSegments() {
+		return mQuadSegments;
+	}
+
+	public void setQuadSegments(int quadSegments) {
+		this.mQuadSegments = quadSegments;
+	}
+
+	public PostProcessingQuality getQuality() {
+		return mQuality;
+	}
+
+	public void setQuality(PostProcessingQuality quality) {
+		this.mQuality = quality;
 	}
 }

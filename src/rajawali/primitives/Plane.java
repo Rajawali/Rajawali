@@ -61,8 +61,7 @@ public class Plane extends BaseObject3D {
             	
             	vertexCount += 3;
             }
-        }
-        
+        }        
 
         int colspan = mSegmentsW + 1;
         int indexCount = 0;

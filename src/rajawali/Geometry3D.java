@@ -109,7 +109,7 @@ public class Geometry3D {
 		//    GL_ELEMENT_ARRAY_BUFFER. GLES20 doesn't seem to have a value
 		//    that can be inspected which indicates whether GL_UNSIGNED_INT
 		//    can be used or not. 
-		boolean isGalaxyS2 = Build.MODEL.equals("GT-I9100") || Build.MODEL.equals("GT-S5360");
+		boolean isGalaxyS2 = Build.MODEL.equals("GT-I9100") || Build.MODEL.equals("GT-S5360") || Build.MODEL.equals("GT-S5830");
 		
 		if(mVertices != null) {
 			mVertices.compact().position(0);

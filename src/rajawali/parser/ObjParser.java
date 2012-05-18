@@ -15,6 +15,7 @@ import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.materials.TextureManager.TextureType;
+import rajawali.util.RajLog;
 import rajawali.wallpaper.Wallpaper;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
@@ -238,6 +239,10 @@ public class ObjParser extends AParser {
 			for(i=0; i<oid.normalIndices.size(); ++i){
 				int normalIndex = oid.normalIndices.get(i) * 3;
 				int ni = i * 3;
+				if(normals.size() == 0) {
+					RajLog.e("["+getClass().getName()+"] There are no normals specified for this model. Please re-export with normals.");
+					throw new RuntimeException("["+getClass().getName()+"] There are no normals specified for this model. Please re-export with normals.");
+				}
 				aNormals[ni] = normals.get(normalIndex);
 				aNormals[ni+1] = normals.get(normalIndex + 1);
 				aNormals[ni+2] = normals.get(normalIndex + 2);
