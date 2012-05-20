@@ -3,24 +3,4 @@
       package="com.monyetmabuk.livewallpapers.photosdof"
       android:versionCode="1"
       android:versionName="1.0">
-
-    <application android:icon="@drawable/icon" android:label="@string/app_name">    	
-        <service android:name="com.monyetmabuk.livewallpapers.engine.wallpaper.Wallpaper"
-                  android:label="@string/app_name"
-                  android:permission="android.permission.BIND_WALLPAPER">
-            <intent-filter>
-                <action android:name="android.service.wallpaper.WallpaperService" />
-            </intent-filter>
-            <meta-data android:name="android.service.wallpaper" android:resource="@xml/albums" />
-        </service>
-        
-        <activity
-            android:label="@string/wallpaper_settings"
-            android:name="com.monyetmabuk.livewallpapers.engine.wallpaper.WallpaperSettings"            
-            android:exported="true">
-        </activity>
-    </application>
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>
-    <uses-feature android:glEsVersion="0x00020000"/>
-    <uses-feature android:name="android.software.live_wallpaper" />
 </manifest>
