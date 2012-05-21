@@ -32,6 +32,8 @@ import android.opengl.Matrix;
 import android.view.MotionEvent;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
+    protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
+
 	protected Context mContext;
 
 	protected float mEyeZ = -4.0f;
@@ -72,6 +74,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected Stack<IPostProcessingFilter> mFilters;
 	protected boolean mReloadPickerInfo;
 	protected static boolean mFogEnabled;
+	protected boolean mUsesCoverageAa;
 	
 	private boolean mSceneInitialized;
 	/**
@@ -146,6 +149,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			GLES20.glDepthFunc(GLES20.GL_LESS);
 			GLES20.glDepthMask(true);
 			GLES20.glClearDepthf(1.0f);
+		}
+		if (mUsesCoverageAa) {
+            clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
 
 		GLES20.glClear(clearMask);
@@ -459,6 +465,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void setFogEnabled(boolean enabled) {
 		mFogEnabled = enabled;
 		mCamera.setFogEnabled(enabled);
+	}
+	
+	public void setUsesCoverageAa(boolean value) {
+		mUsesCoverageAa = value;
 	}
 	
 	public static boolean isFogEnabled() {

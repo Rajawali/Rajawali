@@ -72,7 +72,6 @@ class EglHelper {
 		 * Get to the default display.
 		 */
 		this.mEglDisplay = this.mEgl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
-
 		/*
 		 * We can now initialize EGL for that display
 		 */

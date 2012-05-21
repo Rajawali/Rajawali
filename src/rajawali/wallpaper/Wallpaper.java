@@ -5,10 +5,9 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
-import rajawali.renderer.RajawaliRenderer;
-
-
 import net.rbgrn.opengl.GLWallpaperService;
+import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.RajLog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLSurfaceView;
@@ -18,6 +17,7 @@ import android.view.MotionEvent;
 public class Wallpaper extends GLWallpaperService {
     public static String TAG = "Rajawali";
     private static final boolean DEBUG = false;		
+    private static boolean mUsesCoverageAa;
 	public static final String SHARED_PREFS_NAME = "rajawalisharedprefs";
 
     private static class ContextFactory implements GLSurfaceView.EGLContextFactory {
@@ -46,21 +46,23 @@ public class Wallpaper extends GLWallpaperService {
     }
     
     private static class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
-
-        public ConfigChooser(int r, int g, int b, int a, int depth, int stencil) {
+        public ConfigChooser(int r, int g, int b, int a, int depth, int stencil, boolean useMultisample) {
             mRedSize = r;
             mGreenSize = g;
             mBlueSize = b;
             mAlphaSize = a;
             mDepthSize = depth;
             mStencilSize = stencil;
+            mUseMultiSample = useMultisample;
         }
 
         /* This EGL config specification is used to specify 2.0 rendering.
          * We use a minimum size of 4 bits for red/green/blue, but will
          * perform actual matching in chooseConfig() below.
          */
-        private static int EGL_OPENGL_ES2_BIT = 4;
+        private static final int EGL_OPENGL_ES2_BIT = 4;
+    	private static final int EGL_COVERAGE_BUFFERS_NV = 0x30E0;
+    	private static final int EGL_COVERAGE_SAMPLES_NV = 0x30E1;
         private static int[] s_configAttribs2 =
         {
             EGL10.EGL_RED_SIZE, 4,
@@ -69,24 +71,58 @@ public class Wallpaper extends GLWallpaperService {
             EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
             EGL10.EGL_NONE
         };
+        private static int[] s_configAttribsMultisamp1 =
+        {
+            EGL10.EGL_RED_SIZE, 5,
+            EGL10.EGL_GREEN_SIZE, 6,
+            EGL10.EGL_BLUE_SIZE, 5,
+            EGL10.EGL_DEPTH_SIZE, 16,
+            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+			EGL10.EGL_SAMPLE_BUFFERS, 1,
+			EGL10.EGL_SAMPLES, 2,
+            EGL10.EGL_NONE
+        };
+        private static int[] s_configAttribsMultisamp2 =
+        {
+            EGL10.EGL_RED_SIZE, 5,
+            EGL10.EGL_GREEN_SIZE, 6,
+            EGL10.EGL_BLUE_SIZE, 5,
+            EGL10.EGL_DEPTH_SIZE, 16,
+            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+			EGL_COVERAGE_BUFFERS_NV, 1,
+			EGL_COVERAGE_SAMPLES_NV, 2,
+            EGL10.EGL_NONE
+        };
 
         public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
-
             /* Get the number of minimally matching EGL configurations
              */
             int[] num_config = new int[1];
-            egl.eglChooseConfig(display, s_configAttribs2, null, 0, num_config);
-
+            int[] configAttribs = mUseMultiSample ? s_configAttribsMultisamp1 : s_configAttribs2;            
+            egl.eglChooseConfig(display, configAttribs, null, 0, num_config);
             int numConfigs = num_config[0];
 
             if (numConfigs <= 0) {
-                throw new IllegalArgumentException("No configs match configSpec");
+            	if(mUseMultiSample) {
+					// no multisampling, check for coverage multisampling
+            		configAttribs = s_configAttribsMultisamp2;
+            		egl.eglChooseConfig(display, configAttribs, null, 0, num_config);
+            		numConfigs = num_config[0];
+                    if (numConfigs <= 0) {
+                    	RajLog.e("Multisampling configuration failed. Multisampling is not possible on your device.");
+                    	throw new IllegalArgumentException("No configs match configSpec");
+                    } else {
+                    	mUsesCoverageAa = true;
+                    }
+            	} else {
+            		throw new IllegalArgumentException("No configs match configSpec");
+            	}
             }
 
             /* Allocate then read the array of minimally matching EGL configs
              */
             EGLConfig[] configs = new EGLConfig[numConfigs];
-            egl.eglChooseConfig(display, s_configAttribs2, configs, numConfigs, num_config);
+            egl.eglChooseConfig(display, configAttribs, configs, numConfigs, num_config);
 
             if (DEBUG) {
                  printConfigs(egl, display, configs);
@@ -229,6 +265,7 @@ public class Wallpaper extends GLWallpaperService {
         }
 
         // Subclasses can adjust these values:
+        protected boolean mUseMultiSample;
         protected int mRedSize;
         protected int mGreenSize;
         protected int mBlueSize;
@@ -242,14 +279,21 @@ public class Wallpaper extends GLWallpaperService {
 	protected class WallpaperEngine extends GLEngine {
 		private RajawaliRenderer renderer;
 
-		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer) {
+		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer)
+		{
+			this(preferences, context, renderer, false);
+		}
+		
+		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer,
+				boolean useMultisampling) {
 			super();
 
 			setEGLContextFactory(new ContextFactory());
-			setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0));
+			setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0, useMultisampling));
 			//setEGLConfigChooser(new ConfigChooser(8, 8, 8, 8, 16, 0));
 			
 			renderer.setEngine(this);
+			renderer.setUsesCoverageAa(mUsesCoverageAa);
 			renderer.setSharedPreferences(preferences);
 			setRenderer(renderer);
 			setRenderMode(RENDERMODE_WHEN_DIRTY);
