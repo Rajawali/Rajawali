@@ -1,8 +1,9 @@
 package rajawali.materials;
 
 import rajawali.lights.ALight;
+import android.opengl.GLES20;
 
-public class CubeMapMaterial extends AAdvancedMaterial {
+public class SphereMapMaterial extends AAdvancedMaterial {
 	protected static final String mVShader = 
 		"precision mediump float;\n" +
 
@@ -14,11 +15,14 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"attribute vec4 aPosition;\n" +
 		"attribute vec2 aTextureCoord;\n" +
 		"attribute vec3 aNormal;\n" +
+		"attribute vec4 aColor;\n" +
 		"varying vec2 vTextureCoord;\n" +
+		"varying vec2 vReflectTextureCoord;\n" +
 		"varying vec3 vReflectDir;\n" +
 		"varying vec3 vNormal;\n" +
 		"varying vec3 N;\n" +
 		"varying vec4 V;\n" +
+		"varying vec4 vColor;\n" +
 		
 		M_FOG_VERTEX_VARS +
 		"%LIGHT_VARS%" +
@@ -30,8 +34,14 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"	vec3 eyeDir = normalize(V.xyz - uCameraPosition.xyz);\n" +
 		"	N = normalize(uNMatrix * aNormal);\n" +
 		"	vReflectDir = reflect(eyeDir, N);\n" +
+		"	float m = 2.0 * sqrt(vReflectDir.x*vReflectDir.x + vReflectDir.y*vReflectDir.y + (vReflectDir.z+1.0)*(vReflectDir.z+1.0));\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
+		"	vReflectTextureCoord.s = vReflectDir.x/m + 0.5;\n" +
+		"	vReflectTextureCoord.t = vReflectDir.y/m + 0.5;\n" +
 		"	vNormal = aNormal;\n" +
+		"#ifndef TEXTURED\n" +
+		"	vColor = aColor;\n" +
+		"#endif\n" +
 		"%LIGHT_CODE%" +
 		M_FOG_VERTEX_DEPTH +
 		"}\n";
@@ -39,14 +49,19 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 	protected static final String mFShader = 
 		"precision mediump float;\n" +
 
+		"uniform sampler2D uDiffuseTexture;\n" +
+		"uniform sampler2D uSphereMapTexture;\n" +
+		"uniform vec4 uAmbientColor;\n" +
+		"uniform vec4 uAmbientIntensity;\n" +
+		"uniform float uSphereMapStrength;\n" +
+
+		"varying vec2 vReflectTextureCoord;\n" +
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec3 vReflectDir;\n" +
-		"uniform samplerCube uCubeMapTexture;\n" +
 		"varying vec3 N;\n" +
 		"varying vec4 V;\n" +
 		"varying vec3 vNormal;\n" +
-		"uniform vec4 uAmbientColor;\n" +
-		"uniform vec4 uAmbientIntensity;\n" +
+		"varying vec4 vColor;\n" +
 		
 		M_FOG_FRAGMENT_VARS +
 		"%LIGHT_VARS%" +
@@ -54,16 +69,31 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"void main() {\n" +
 		"	float intensity = 0.0;\n" +
 		"%LIGHT_CODE%" +
-		"	gl_FragColor = textureCube(uCubeMapTexture, vReflectDir);\n" +
+		"	vec4 reflColor = texture2D(uSphereMapTexture, vReflectTextureCoord);\n" +
+		"#ifdef TEXTURED\n" +		
+		"	vec4 diffColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
+		"#else\n" +
+	    "	vec4 diffColor = vColor;\n" +
+	    "#endif\n" +
+		"	gl_FragColor = diffColor + reflColor * uSphereMapStrength;\n" +
 		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
 		M_FOG_FRAGMENT_CALC +
 		"	gl_FragColor.rgb *= intensity;\n" +
 		M_FOG_FRAGMENT_COLOR +	
 		"}\n";
 	
-	public CubeMapMaterial() {
+	private int muSphereMapStrengthHandle;
+	
+	private float mSphereMapStrength = .4f;
+	
+	public SphereMapMaterial() {
 		super(mVShader, mFShader);
-		usesCubeMap = true;
+	}
+	
+	@Override
+	public void useProgram() {
+		super.useProgram();
+		GLES20.glUniform1f(muSphereMapStrengthHandle, mSphereMapStrength);
 	}
 	
 	public void setShaders(String vertexShader, String fragmentShader) {
@@ -87,5 +117,15 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", sb.toString()));
+		
+		muSphereMapStrengthHandle = getUniformLocation("uSphereMapStrength");
+	}
+
+	public float getSphereMapStrength() {
+		return mSphereMapStrength;
+	}
+
+	public void setSphereMapStrength(float sphereMapStrength) {
+		this.mSphereMapStrength = sphereMapStrength;
 	}
 }

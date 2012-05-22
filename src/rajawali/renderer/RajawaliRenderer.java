@@ -76,6 +76,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected static boolean mFogEnabled;
 	protected boolean mUsesCoverageAa;
 	
+	public static boolean supportsUIntBuffers = false;
+	
 	private boolean mSceneInitialized;
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
@@ -211,6 +213,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		
+		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
+		
 		GLES20.glFrontFace(GLES20.GL_CCW);
 		GLES20.glCullFace(GLES20.GL_BACK);
 

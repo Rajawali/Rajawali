@@ -10,10 +10,10 @@ import java.nio.ShortBuffer;
 
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
+import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.os.Build;
 
 public class Geometry3D {
 	public static final int FLOAT_SIZE_BYTES = 4;
@@ -104,12 +104,8 @@ public class Geometry3D {
 	}
 	
 	public void createBuffers() {
-		// -- Temp hack, need to figure out a proper solution.
-		//    Galaxy S2 and Galaxy Y don't support GL_UNSIGNED_INT for
-		//    GL_ELEMENT_ARRAY_BUFFER. GLES20 doesn't seem to have a value
-		//    that can be inspected which indicates whether GL_UNSIGNED_INT
-		//    can be used or not. 
-		boolean isGalaxyS2 = Build.MODEL.equals("GT-I9100") || Build.MODEL.equals("GT-S5360") || Build.MODEL.equals("GT-S5830");
+		boolean supportsUIntBuffers = RajawaliRenderer.supportsUIntBuffers;
+		RajLog.i("supportsUIntBuffers " + RajawaliRenderer.supportsUIntBuffers);
 		
 		if(mVertices != null) {
 			mVertices.compact().position(0);
@@ -127,12 +123,12 @@ public class Geometry3D {
 			mColors.compact().position(0);
 			mColorBufferHandle 		= createBuffer(BufferType.FLOAT_BUFFER, mColors,		GLES20.GL_ARRAY_BUFFER);
 		}
-		if(mIndicesInt != null && !mOnlyShortBufferSupported && !isGalaxyS2) {
+		if(mIndicesInt != null && !mOnlyShortBufferSupported && supportsUIntBuffers) {
 			mIndicesInt.compact().position(0);
 			mIndexBufferHandle 		= createBuffer(BufferType.INT_BUFFER, mIndicesInt,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
 		}
 		
-		if(mOnlyShortBufferSupported || isGalaxyS2) {
+		if(mOnlyShortBufferSupported || !supportsUIntBuffers) {
 			mOnlyShortBufferSupported = true;
 			
 			if(mIndicesShort == null) {

@@ -2,23 +2,15 @@ package net.rbgrn.opengl;
 
 import net.rbgrn.opengl.BaseConfigChooser.ComponentSizeChooser;
 import net.rbgrn.opengl.BaseConfigChooser.SimpleEGLConfigChooser;
-
 import android.opengl.GLSurfaceView.EGLConfigChooser;
 import android.opengl.GLSurfaceView.EGLContextFactory;
 import android.opengl.GLSurfaceView.EGLWindowSurfaceFactory;
 import android.opengl.GLSurfaceView.GLWrapper;
 import android.opengl.GLSurfaceView.Renderer;
 import android.service.wallpaper.WallpaperService;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class GLWallpaperService extends WallpaperService {
-	// ===========================================================
-	// Constants
-	// ===========================================================
-
-	private static final String TAG = "GLWallpaperService";
-	
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -117,21 +109,18 @@ public class GLWallpaperService extends WallpaperService {
 
 		@Override
 		public void onSurfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
-			// Log.d(TAG, "onSurfaceChanged()");
 			this.mGLThread.onWindowResize(width, height);
 			super.onSurfaceChanged(holder, format, width, height);
 		}
 
 		@Override
 		public void onSurfaceCreated(final SurfaceHolder holder) {
-			Log.d(TAG, "onSurfaceCreated()");
 			this.mGLThread.surfaceCreated(holder);
 			super.onSurfaceCreated(holder);
 		}
 
 		@Override
 		public void onSurfaceDestroyed(final SurfaceHolder holder) {
-			Log.d(TAG, "onSurfaceDestroyed()");
 			this.mGLThread.surfaceDestroyed();
 			super.onSurfaceDestroyed(holder);
 		}

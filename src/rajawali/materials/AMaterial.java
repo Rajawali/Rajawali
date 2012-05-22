@@ -224,6 +224,9 @@ public abstract class AMaterial {
 		case CUBE_MAP:
 			textureName = "uCubeMapTexture";
 			break;
+		case SPHERE_MAP:
+			textureName = "uSphereMapTexture";
+			break;
 		}
 
 		int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);

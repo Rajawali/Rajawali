@@ -8,6 +8,7 @@ import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureInfo;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.math.Number3D;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
@@ -328,7 +329,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			throw new RuntimeException("Material is null. Please add a material first.");
 		}
 		
-		if(mLights.size() > 0) {
+		if(mLights.size() > 0 && textureInfo.getTextureType() != TextureType.SPHERE_MAP) {
 			mMaterial.setUseColor(false);
 		}
 		mMaterial.addTexture(textureInfo);

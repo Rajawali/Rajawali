@@ -47,7 +47,8 @@ public class TextureManager {
 		FRAME_BUFFER,
 		DEPTH_BUFFER,
 		LOOKUP,
-		CUBE_MAP
+		CUBE_MAP,
+		SPHERE_MAP
 	};
 	
 	public TextureManager() {
