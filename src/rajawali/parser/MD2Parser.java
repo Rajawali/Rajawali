@@ -2,6 +2,9 @@ package rajawali.parser;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Stack;
@@ -12,7 +15,9 @@ import rajawali.animation.mesh.VertexAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.TextureManager;
+import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
+import rajawali.util.RajLog;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,6 +32,10 @@ public class MD2Parser extends AParser implements IParser {
 	private int[] mIndices;
 	private float[] mTextureCoords;
 
+	public MD2Parser(RajawaliRenderer renderer, String fileOnSDCard) {
+		super(renderer, fileOnSDCard);
+	}
+	
 	public MD2Parser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
@@ -38,8 +47,20 @@ public class MD2Parser extends AParser implements IParser {
 
 	@Override
 	public void parse() {
-		InputStream fileIn = mResources.openRawResource(mResourceId);
-		BufferedInputStream stream = new BufferedInputStream(fileIn);
+		super.parse();
+		BufferedInputStream stream = null;
+		if(mFile == null) {
+			InputStream fileIn = mResources.openRawResource(mResourceId);
+			stream = new BufferedInputStream(fileIn);
+		} else {
+			try {
+				stream = new BufferedInputStream(new FileInputStream(mFile));
+			} catch (FileNotFoundException e) {
+				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
+				e.printStackTrace();
+			}
+		}
+
 		mObject = new VertexAnimationObject3D();
 		mObject.setFps(10);
 
@@ -88,6 +109,8 @@ public class MD2Parser extends AParser implements IParser {
 			skinPath = skinPath.substring(skinPath.lastIndexOf("/") + 1,
 					skinPath.length());
 			StringBuffer textureName = new StringBuffer(skinPath.toLowerCase());
+			mCurrentTextureName = textureName.toString().trim();
+			if(mFile != null) continue;
 			int dotIndex = textureName.lastIndexOf(".");
 			if (dotIndex > -1)
 				textureName =  new StringBuffer(textureName.substring(0, dotIndex));
@@ -95,8 +118,20 @@ public class MD2Parser extends AParser implements IParser {
 			mCurrentTextureName = textureName.toString();
 		}
 		
-		int identifier = mResources.getIdentifier(mCurrentTextureName, "drawable", mResources.getResourcePackageName(mResourceId));
-		mTexture = BitmapFactory.decodeResource(mResources, identifier);
+		if(mFile == null) {
+			int identifier = mResources.getIdentifier(mCurrentTextureName, "drawable", mResources.getResourcePackageName(mResourceId));
+			mTexture = BitmapFactory.decodeResource(mResources, identifier);
+		} else {
+			try {
+				String filePath = mFile.getParent() + File.separatorChar + mCurrentTextureName;
+				RajLog.i(filePath);
+				mTexture = BitmapFactory.decodeFile(filePath);
+			} catch (Exception e) {
+				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + mCurrentTextureName);
+				e.printStackTrace();
+				return;
+			}
+		}
 	}
 
 	private float[] getTexCoords(BufferedInputStream stream, byte[] bytes)

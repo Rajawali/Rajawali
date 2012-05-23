@@ -1,6 +1,9 @@
 package rajawali.parser;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,6 +18,7 @@ import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.materials.TextureManager.TextureType;
+import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import rajawali.wallpaper.Wallpaper;
 import android.content.res.Resources;
@@ -72,14 +76,29 @@ public class ObjParser extends AParser {
     protected final String DIFFUSE_COLOR = "Kd";
     protected final String DIFFUSE_TEX_MAP = "map_Kd";
 	
+    public ObjParser(RajawaliRenderer renderer, String fileOnSDCard) {
+    	super(renderer, fileOnSDCard);
+    }
+    
 	public ObjParser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
 	
 	@Override
 	public void parse() {
-		InputStream fileIn = mResources.openRawResource(mResourceId);
-		BufferedReader buffer = new BufferedReader(new InputStreamReader(fileIn));
+		super.parse();
+		BufferedReader buffer = null;
+		if(mFile == null) {
+			InputStream fileIn = mResources.openRawResource(mResourceId);
+			buffer = new BufferedReader(new InputStreamReader(fileIn));
+		} else {
+			try {
+				buffer = new BufferedReader(new FileReader(mFile));
+			} catch (FileNotFoundException e) {
+				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
+				e.printStackTrace();
+			}
+		}
 		String line;
 		ObjIndexData currObjIndexData = new ObjIndexData(new BaseObject3D());
 		ArrayList<ObjIndexData> objIndices = new ArrayList<ObjIndexData>();
@@ -183,7 +202,10 @@ public class ObjParser extends AParser {
 					if(!parts.hasMoreTokens()) continue;
 					String materialLibPath = parts.nextToken().replace(".", "_");
 					Log.d(Wallpaper.TAG, "Found Material Lib: " + materialLibPath);
-					matLib.parse(materialLibPath, mResources.getResourceTypeName(mResourceId), mResources.getResourcePackageName(mResourceId));
+					if(mFile != null)
+						matLib.parse(materialLibPath, null, null);
+					else
+						matLib.parse(materialLibPath, mResources.getResourceTypeName(mResourceId), mResources.getResourcePackageName(mResourceId));
 				} else if(type.equals(USE_MATERIAL)) {
 					currObjIndexData.materialName = parts.nextToken();
 				}
@@ -300,11 +322,23 @@ public class ObjParser extends AParser {
 		}
 		
 		public void parse(String materialLibPath, String resourceType, String resourcePackage) {
-			mResourcePackage = resourcePackage;
-			int identifier = mResources.getIdentifier(materialLibPath, resourceType, resourcePackage);
+			BufferedReader buffer = null;
+			if(mFile == null) {
+				mResourcePackage = resourcePackage;
+				int identifier = mResources.getIdentifier(materialLibPath, resourceType, resourcePackage);
+				InputStream fileIn = mResources.openRawResource(identifier);
+				buffer = new BufferedReader(new InputStreamReader(fileIn));
+			} else {
+				try {
+					File materialFile = new File(mFile.getParent() + File.separatorChar + materialLibPath);
+					buffer = new BufferedReader(new FileReader(materialFile));
+				} catch (Exception e) {
+					RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
+					e.printStackTrace();
+					return;
+				}
+			}
 			
-			InputStream fileIn = mResources.openRawResource(identifier);
-			BufferedReader buffer = new BufferedReader(new InputStreamReader(fileIn));
 			String line;
 			MaterialDef matDef = null;
 			
@@ -335,17 +369,17 @@ public class ObjParser extends AParser {
 					} else if(type.equals(ALPHA_1) || type.equals(ALPHA_2)) {
 						matDef.alpha = Float.parseFloat(parts.nextToken());
 					} else if(type.equals(AMBIENT_TEXTURE)) {
-						matDef.ambientTexture = getFileNameWithoutExtension(parts.nextToken());
+						matDef.ambientTexture = parts.nextToken();
 					} else if(type.equals(DIFFUSE_TEXTURE)) {
-						matDef.diffuseTexture = getFileNameWithoutExtension(parts.nextToken());
+						matDef.diffuseTexture = parts.nextToken();
 					} else if(type.equals(SPECULAR_COLOR_TEXTURE)) {
-						matDef.specularColorTexture = getFileNameWithoutExtension(parts.nextToken());
+						matDef.specularColorTexture = parts.nextToken();
 					} else if(type.equals(SPECULAR_HIGHLIGHT_TEXTURE)) {
-						matDef.specularHightlightTexture = getFileNameWithoutExtension(parts.nextToken());
+						matDef.specularHightlightTexture = parts.nextToken();
 					} else if(type.equals(ALPHA_TEXTURE_1) || type.equals(ALPHA_TEXTURE_2)) {
-						matDef.alphaTexture = getFileNameWithoutExtension(parts.nextToken());
+						matDef.alphaTexture = parts.nextToken();
 					} else if(type.equals(BUMP_TEXTURE)) {
-						matDef.bumpTexture = getFileNameWithoutExtension(parts.nextToken());
+						matDef.bumpTexture = parts.nextToken();
 					}
 				}
 				if(matDef != null) mMaterials.add(matDef);
@@ -389,12 +423,34 @@ public class ObjParser extends AParser {
 			}
 			
 			if(hasTexture) {
-				int identifier = mResources.getIdentifier(matDef.diffuseTexture, "drawable", mResourcePackage);
-				object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
+				if(mFile == null) {
+					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.diffuseTexture), "drawable", mResourcePackage);
+					object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
+				} else {
+					try {
+						String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
+						object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeFile(filePath), TextureType.BUMP));
+					} catch (Exception e) {
+						RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + matDef.diffuseTexture);
+						e.printStackTrace();
+						return;
+					}
+				}
 			}
 			if(hasBump) {
-				int identifier = mResources.getIdentifier(matDef.bumpTexture, "drawable", mResourcePackage);
-				object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier), TextureType.BUMP));
+				if(mFile == null) {
+					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.bumpTexture), "drawable", mResourcePackage);
+					object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier), TextureType.BUMP));
+				} else {
+					try {
+						String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
+						object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeFile(filePath), TextureType.BUMP));
+					} catch (Exception e) {
+						RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + matDef.bumpTexture);
+						e.printStackTrace();
+						return;
+					}
+				}
 			}
 		}
 		

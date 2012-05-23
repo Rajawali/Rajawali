@@ -602,12 +602,17 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return ser;
 	}
 
-	public BaseObject3D clone() {
+	public BaseObject3D clone(boolean copyMaterial) {
 		BaseObject3D clone = new BaseObject3D();
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		clone.setMaterial(mMaterial, false);
+		if(copyMaterial) clone.setMaterial(mMaterial, false);
+		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 		return clone;
+	}
+	
+	public BaseObject3D clone() {
+		return clone(true);
 	}
 
 	public void setVisible(boolean visible) {

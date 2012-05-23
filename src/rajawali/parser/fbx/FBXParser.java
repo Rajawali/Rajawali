@@ -1,6 +1,9 @@
 package rajawali.parser.fbx;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,6 +21,7 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
 import rajawali.parser.AParser;
@@ -68,6 +72,14 @@ public class FBXParser extends AParser {
 	private Stack<Object> mObjStack;
 	private RajawaliRenderer mRenderer;
 	
+	public FBXParser(RajawaliRenderer renderer, String fileOnSDCard) {
+		super(renderer, fileOnSDCard);
+		mRenderer = renderer;
+		mObjStack = new Stack<Object>();
+		mFbx = new FBXValues();
+		mObjStack.add(mFbx);
+	}
+	
 	public FBXParser(RajawaliRenderer renderer, int resourceId) {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 		mRenderer = renderer;
@@ -78,8 +90,19 @@ public class FBXParser extends AParser {
 	
 	@Override
 	public void parse() {
-		InputStream fileIn = mResources.openRawResource(mResourceId);
-		BufferedReader buffer = new BufferedReader(new InputStreamReader(fileIn));
+		super.parse();
+		BufferedReader buffer = null;
+		if(mFile == null) {
+			InputStream fileIn = mResources.openRawResource(mResourceId);
+			buffer = new BufferedReader(new InputStreamReader(fileIn));
+		} else {
+			try {
+				buffer = new BufferedReader(new FileReader(mFile));
+			} catch (FileNotFoundException e) {
+				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
+				e.printStackTrace();
+			}
+		}
 		String line;
 		try {
 			while((line = buffer.readLine()) != null) {
@@ -358,10 +381,22 @@ public class FBXParser extends AParser {
 				if(conn.object2.equals(name) && conn.object1.equals(tex.textureName))
 				{
 					// -- one texture for now
-					String textureName = getFileNameWithoutExtension(tex.fileName).toLowerCase();
+					String textureName = tex.fileName;
 					try {
-						int identifier = mResources.getIdentifier(textureName, "drawable", mResources.getResourcePackageName(mResourceId));
-						Bitmap texture = BitmapFactory.decodeResource(mResources, identifier);
+						Bitmap texture = null;
+						if(mFile == null) {
+							int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(), "drawable", mResources.getResourcePackageName(mResourceId));
+							texture = BitmapFactory.decodeResource(mResources, identifier);
+						} else {
+							try {
+								String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(textureName);
+								texture = BitmapFactory.decodeFile(filePath);
+							} catch (Exception e) {
+								RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
+								e.printStackTrace();
+								return;
+							}
+						}
 						o.addTexture(mTextureManager.addTexture(texture));
 					} catch(Exception e) {
 						RajLog.e("Could not load texture [" + textureName + "]: " + e.getMessage() );	

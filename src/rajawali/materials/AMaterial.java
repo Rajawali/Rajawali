@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import rajawali.Camera;
 import rajawali.lights.ALight;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -235,7 +236,7 @@ public abstract class AMaterial {
 					+ textureName + ", " + textureInfo.getTextureType());
 		}
 		textureInfo.setUniformHandle(textureHandle);
-		mUseColor = false;
+		if(textureInfo.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
 		if(!isExistingTexture) {
 			mTextureInfoList.add(textureInfo);
 			mNumTextures++;
