@@ -1,5 +1,7 @@
 package rajawali;
 
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -596,9 +598,16 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			ser.getTextureCoords()[i] = mGeometry.getTextureCoords().get(i);
 		for (i = 0; i < mGeometry.getColors().capacity(); i++)
 			ser.getColors()[i] = mGeometry.getColors().get(i);
-		for (i = 0; i < mGeometry.getIndices().capacity(); i++)
-			ser.getIndices()[i] = mGeometry.getIndices().get(i);
-
+		if(!mGeometry.areOnlyShortBuffersSupported()) {
+			IntBuffer buff = (IntBuffer)mGeometry.getIndices();
+			for (i = 0; i < mGeometry.getIndices().capacity(); i++) 
+				ser.getIndices()[i] = buff.get(i);
+		} else {
+			ShortBuffer buff = (ShortBuffer)mGeometry.getIndices();
+			for (i = 0; i < mGeometry.getIndices().capacity(); i++) 
+				ser.getIndices()[i] = buff.get(i);
+		}
+		
 		return ser;
 	}
 

@@ -265,10 +265,10 @@ public class Geometry3D {
 		}
 	}
 	
-	public IntBuffer getIndices() {
+	public Buffer getIndices() {
 		if(mIndicesInt == null && mOriginalGeometry != null)
 			return mOriginalGeometry.getIndices();
-		return mIndicesInt;
+		return mOnlyShortBufferSupported ? mIndicesShort : mIndicesInt;
 	}
 	
 	public void setTextureCoords(float[] textureCoords) {

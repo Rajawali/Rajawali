@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import rajawali.BaseObject3D;
 import rajawali.Geometry3D;
@@ -82,10 +84,12 @@ public class MeshExporter {
 		
 		sb.append("\n");
 		
+		boolean isIntBuffer = g.getIndices() instanceof IntBuffer;
+		
 		for(int i=0; i<g.getIndices().capacity(); i++) {
 			if(i%3 == 0)
 				sb.append("\nf ");
-			int index = g.getIndices().get(i) + 1;
+			int index = isIntBuffer ? ((IntBuffer)g.getIndices()).get(i) + 1 : ((ShortBuffer)g.getIndices()).get(i) + 1;
 			sb.append(index);
 			sb.append("/");
 			sb.append(index);
