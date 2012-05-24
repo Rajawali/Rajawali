@@ -1,7 +1,6 @@
 package rajawali;
 
 import rajawali.math.AngleAxis;
-import rajawali.math.Matrix4;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
 import rajawali.math.Quaternion;
@@ -74,15 +73,12 @@ public abstract class ATransformable3D {
 	Number3D mTmpRotY = new Number3D();
 	Number3D mTmpRotZ = new Number3D();
 	float[] mLookAtMatrix = new float[16];
-	Matrix4 mmm;
 
 	public void setOrientation() {
 		if(!mRotationDirty && mLookAt == null) return;
 
 		mOrientation.setIdentity();
 		if(mLookAt != null) {
-			mLookAt.x = -mLookAt.x;
-
 			mTmpRotZ.setAllFrom(mLookAt);
 			mTmpRotZ.normalize();
 
@@ -222,7 +218,7 @@ public abstract class ATransformable3D {
 
 	public void setLookAt(float x, float y, float z) {
 		if(mLookAt == null) mLookAt = new Number3D();
-		mLookAt.x = x;
+		mLookAt.x = -x;
 		mLookAt.y = y;
 		mLookAt.z = z;
 		mRotationDirty = true;

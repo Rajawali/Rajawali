@@ -105,7 +105,6 @@ public class Geometry3D {
 	
 	public void createBuffers() {
 		boolean supportsUIntBuffers = RajawaliRenderer.supportsUIntBuffers;
-		RajLog.i("supportsUIntBuffers " + RajawaliRenderer.supportsUIntBuffers);
 		
 		if(mVertices != null) {
 			mVertices.compact().position(0);

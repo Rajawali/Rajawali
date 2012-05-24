@@ -1,7 +1,7 @@
 package rajawali.math;
 
-import android.util.FloatMath;
 import rajawali.math.Number3D.Axis;
+import android.util.FloatMath;
 
 /**
  * Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html
@@ -436,7 +436,7 @@ public final class Quaternion {
 			return (float) Math.asin(-2 * (x * z - w * y));
 		}
 	}
-
+	
 	public Matrix4 toRotationMatrix() {
 		Matrix4 matrix = new Matrix4();
 		toRotationMatrix(matrix);

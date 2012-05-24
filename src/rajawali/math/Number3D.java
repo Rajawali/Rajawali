@@ -109,10 +109,11 @@ public final class Number3D {
 		return new Number3D(-x, -y, -z);
 	}
 	
-	public void add(Number3D n) {
+	public Number3D add(Number3D n) {
 		this.x += n.x;
 		this.y += n.y;
 		this.z += n.z;
+		return this;
 	}
 
 	public Number3D add(float x, float y, float z) {
@@ -129,7 +130,7 @@ public final class Number3D {
 		return this;
 	}
 
-	public Number3D multiply(Float f) {
+	public Number3D multiply(float f) {
 		this.x *= f;
 		this.y *= f;
 		this.z *= f;

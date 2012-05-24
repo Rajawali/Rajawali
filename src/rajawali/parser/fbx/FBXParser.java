@@ -21,7 +21,6 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
-import rajawali.materials.TextureManager.TextureType;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
 import rajawali.parser.AParser;

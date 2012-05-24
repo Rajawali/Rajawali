@@ -56,7 +56,7 @@ public class CatmullRomPath3D implements ISpline {
 	}
 
 	protected Number3D p(float t) {
-		int currentIndex = 2 + (int)FloatMath.floor((t == 1 ? t - .000001f : t) * (mNumPoints-3));
+		int currentIndex = 2 + (int)FloatMath.floor((t == 1 ? t - DELTA : t) * (mNumPoints-3));
 		float tdivnum = (t * (mNumPoints - 3)) - (currentIndex - 2);
 		mCurrentPoint.setAll(0, 0, 0);
 		
@@ -74,13 +74,13 @@ public class CatmullRomPath3D implements ISpline {
 	protected float b(int i, float t) {
 		switch (i) {
 		case -2:
-			return ((-t + 2) * t - 1) * t / 2;
+			return ((-t + 2) * t - 1) * t / 2f;
 		case -1:
-			return (((3 * t - 5) * t) * t + 2) / 2;
+			return (((3 * t - 5) * t) * t + 2) / 2f;
 		case 0:
-			return ((-3 * t + 4) * t + 1) * t / 2;
+			return ((-3 * t + 4) * t + 1) * t / 2f;
 		case 1:
-			return ((t - 1) * t * t) / 2;
+			return ((t - 1) * t * t) / 2f;
 		}
 		return 0;
 	}

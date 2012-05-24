@@ -30,7 +30,7 @@ public class Camera extends ATransformable3D {
 	public float[] getViewMatrix() {
 		if (mLookAt != null) {
 			Matrix.setLookAtM(mVMatrix, 0, -mPosition.x, mPosition.y,
-					mPosition.z, -mLookAt.x, mLookAt.y, mLookAt.z, 0f, 1.0f,
+					mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, 0f, 1.0f,
 					0.0f);
 		} else {
 			if (mUseRotationMatrix == false && mRotationDirty) {
