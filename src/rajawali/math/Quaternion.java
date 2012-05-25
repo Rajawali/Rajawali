@@ -22,6 +22,7 @@ public final class Quaternion {
 	}
 
 	public Quaternion(float w, float x, float y, float z) {
+		this();
 		this.w = w;
 		this.x = x;
 		this.y = y;
@@ -29,6 +30,7 @@ public final class Quaternion {
 	}
 
 	public Quaternion(Quaternion other) {
+		this();
 		this.w = other.w;
 		this.x = other.x;
 		this.y = other.y;

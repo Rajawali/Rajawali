@@ -301,4 +301,8 @@ public final class Number3D {
 		}
 		return q;
 	}
+	
+	public static Number3D getUpVector() {
+		return new Number3D(0, 1, 0);
+	}
 }

@@ -97,6 +97,7 @@ public abstract class ATransformable3D {
 			mLookAtMatrix[8] = mTmpRotZ.x;
 			mLookAtMatrix[9] = mTmpRotZ.y;
 			mLookAtMatrix[10] = mTmpRotZ.z;
+			mOrientation.fromRotationMatrix(mLookAtMatrix);
 		} else {
 			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? -mRotation.x : mRotation.x, mAxisX));
 			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.y + 180 : mRotation.y, mAxisY));

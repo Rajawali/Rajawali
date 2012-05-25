@@ -130,7 +130,7 @@ public class Geometry3D {
 		if(mOnlyShortBufferSupported || !supportsUIntBuffers) {
 			mOnlyShortBufferSupported = true;
 			
-			if(mIndicesShort == null) {
+			if(mIndicesShort == null && mIndicesInt != null) {
 				mIndicesInt.position(0);
 				mIndicesShort = ByteBuffer
 						.allocateDirect(mNumIndices * SHORT_SIZE_BYTES)
@@ -149,8 +149,10 @@ public class Geometry3D {
 				mIndicesInt.limit();
 				mIndicesInt = null;
 			}
-			mIndicesShort.compact().position(0);
-			mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndicesShort,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+			if(mIndicesShort != null) {
+				mIndicesShort.compact().position(0);
+				mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndicesShort,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+			}
 		}
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);

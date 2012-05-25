@@ -204,6 +204,9 @@ public abstract class AMaterial {
 	}
 	
 	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture) {
+		// -- check if this texture is already in the list
+		if(mTextureInfoList.indexOf(textureInfo) > -1) return;		
+		
 		String textureName = "uTexture";
 
 		switch (textureInfo.getTextureType()) {
