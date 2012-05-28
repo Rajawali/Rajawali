@@ -1,9 +1,7 @@
 package rajawali;
 
-import android.opengl.Matrix;
 import rajawali.math.Number3D;
 import rajawali.math.Quaternion;
-import rajawali.util.RajLog;
 
 public class ChaseCamera extends Camera {
 	protected Number3D mCameraOffset;
