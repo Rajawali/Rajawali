@@ -18,6 +18,8 @@ public abstract class AMaterial {
 	protected String mFragmentShader;
 
 	protected int mProgram;
+	protected int mVShaderHandle;
+	protected int mFShaderHandle;
 	protected int maPositionHandle;
 	protected int maTextureHandle;
 	protected int maColorHandle;
@@ -58,8 +60,9 @@ public abstract class AMaterial {
 	
 	public void reload() {
 		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+
 		for(int i=0; i<mNumTextures; i++) {
-			addTexture(mTextureInfoList.get(i), true);
+			addTexture(mTextureInfoList.get(i), true, true);
 		}
 	}
 
@@ -97,6 +100,8 @@ public abstract class AMaterial {
 			maNextFrameNormalHandle = getAttribLocation("aNextFrameNormal");
 			muInterpolationHandle = getUniformLocation("uInterpolation");
 		}
+		
+		checkTextureHandles();
 	}
 
 	protected int loadShader(int shaderType, String source) {
@@ -117,20 +122,20 @@ public abstract class AMaterial {
 	}
 
 	protected int createProgram(String vertexSource, String fragmentSource) {
-		int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, vertexSource);
-		if (vertexShader == 0) {
+		mVShaderHandle = loadShader(GLES20.GL_VERTEX_SHADER, vertexSource);
+		if (mVShaderHandle == 0) {
 			return 0;
 		}
 
-		int pixelShader = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentSource);
-		if (pixelShader == 0) {
+		mFShaderHandle = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentSource);
+		if (mFShaderHandle == 0) {
 			return 0;
 		}
 
 		int program = GLES20.glCreateProgram();
 		if (program != 0) {
-			GLES20.glAttachShader(program, vertexShader);
-			GLES20.glAttachShader(program, pixelShader);
+			GLES20.glAttachShader(program, mVShaderHandle);
+			GLES20.glAttachShader(program, mFShaderHandle);
 			GLES20.glLinkProgram(program);
 
 			int[] linkStatus = new int[1];
@@ -163,6 +168,12 @@ public abstract class AMaterial {
 			RajLog.d("[" +getClass().getName()+ "] Could not get attrib location for " + name);
 		}
 		return handle;
+	}
+	
+	public void unload() {
+		GLES20.glDeleteShader(mVShaderHandle);
+		GLES20.glDeleteShader(mFShaderHandle);
+		GLES20.glDeleteProgram(mProgram);
 	}
 
 	public void useProgram() {
@@ -204,8 +215,12 @@ public abstract class AMaterial {
 	}
 	
 	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture) {
+		addTexture(textureInfo, isExistingTexture, false);
+	}
+	
+	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture, boolean reload) {
 		// -- check if this texture is already in the list
-		if(mTextureInfoList.indexOf(textureInfo) > -1) return;		
+		if(mTextureInfoList.indexOf(textureInfo) > -1 && !reload) return;		
 		
 		String textureName = "uTexture";
 
@@ -239,10 +254,23 @@ public abstract class AMaterial {
 					+ textureName + ", " + textureInfo.getTextureType());
 		}
 		textureInfo.setUniformHandle(textureHandle);
+		
 		if(textureInfo.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
 		if(!isExistingTexture) {
 			mTextureInfoList.add(textureInfo);
 			mNumTextures++;
+		}
+	}
+	
+	protected void checkTextureHandles() {
+		int num = mTextureInfoList.size();
+		for(int i=0; i<num; ++i) {
+			TextureInfo ti = mTextureInfoList.get(i);
+			if(ti.getUniformHandle() == -1) {
+				mTextureInfoList.remove(ti);
+				mNumTextures--;
+				addTexture(ti);
+			}
 		}
 	}
 

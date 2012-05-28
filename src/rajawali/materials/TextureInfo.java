@@ -87,7 +87,7 @@ public class TextureInfo {
 	}
 
 	public String toString() {
-		return "id: " + mTextureId + " slot: " + mTextureSlot + " handle: " + mUniformHandle;
+		return "id: " + mTextureId + " slot: " + mTextureSlot + " handle: " + mUniformHandle + " type: " + mTextureType;
 	}
 
 	public TextureType getTextureType() {
