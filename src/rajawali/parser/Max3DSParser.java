@@ -40,7 +40,6 @@ public class Max3DSParser extends AParser {
 	private int mChunkEndOffset;
 	private boolean mEndReached = false;
 	private int mObjects = -1;
-	//private String mCurrentMaterialKey;
 
 	public Max3DSParser(RajawaliRenderer renderer, int resourceID) {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceID);
@@ -101,7 +100,8 @@ public class Max3DSParser extends AParser {
 			readTexCoords(stream);
 			break;
 		case TEX_NAME:
-			//mCurrentMaterialKey = readString(stream);
+//			mCurrentMaterialKey = readString(stream);
+			skipRead(stream);
 			break;
 		case TEX_FILENAME:
 //			String fileName = readString(stream);
@@ -116,6 +116,7 @@ public class Max3DSParser extends AParser {
 //				texture.append(textureName);
 //
 //			textureAtlas.addBitmapAsset(new BitmapAsset(mCurrentMaterialKey, texture.toString()));
+			skipRead(stream);
 			break;
 		case TRI_MATERIAL:
 //			String materialName = readString(stream);
@@ -125,6 +126,7 @@ public class Max3DSParser extends AParser {
 //				int faceIndex = readShort(stream);
 //				co.faces.get(faceIndex).materialKey = materialName;
 //			}
+			skipRead(stream);
 			break;
 		case MATERIAL:
 			break;
