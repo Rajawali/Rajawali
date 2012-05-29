@@ -43,12 +43,20 @@ public abstract class AMaterial {
 	protected ArrayList<TextureInfo> mTextureInfoList;
 	protected boolean usesCubeMap = false;
 	
+	/**
+	 * The maximum number of available textures for this device.
+	 */
+	private int mMaxTextures;	
+	
 	protected boolean mIsAnimated;
 	
 	public AMaterial() {
 		mTextureInfoList = new ArrayList<TextureInfo>();
 		mCameraPosArray = new float[3];
 		mLights = new Stack<ALight>();
+		int numTexUnits[] = new int[1];
+		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS, numTexUnits, 0);
+		mMaxTextures = numTexUnits[0];
 	}
 
 	public AMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
@@ -188,10 +196,9 @@ public abstract class AMaterial {
 			int type = usesCubeMap ? GLES20.GL_TEXTURE_CUBE_MAP
 					: GLES20.GL_TEXTURE_2D;
 			GLES20.glEnable(type);
-			GLES20.glActiveTexture(ti.getTextureSlot());
+			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
 			GLES20.glBindTexture(type, ti.getTextureId());
-			GLES20.glUniform1i(ti.getUniformHandle(), ti.getTextureSlot()
-					- GLES20.GL_TEXTURE0);
+			GLES20.glUniform1i(ti.getUniformHandle(), i);
 		}
 	}
 
@@ -221,6 +228,10 @@ public abstract class AMaterial {
 	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture, boolean reload) {
 		// -- check if this texture is already in the list
 		if(mTextureInfoList.indexOf(textureInfo) > -1 && !reload) return;		
+		
+		if(mTextureInfoList.size() > mMaxTextures) {
+			RajLog.e("[" +getClass().getCanonicalName()+ "] Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
+		}
 		
 		String textureName = "uTexture";
 

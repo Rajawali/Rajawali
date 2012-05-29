@@ -16,10 +16,6 @@ public class TextureInfo {
 	 */
 	protected int mTextureId;
 	/**
-	 * OpenGL texture handle
-	 */
-	protected int mTextureSlot;
-	/**
 	 * The type of texture
 	 * 
 	 * @see TextureManager.TextureType
@@ -47,19 +43,17 @@ public class TextureInfo {
 	 */
 	protected int mBitmapFormat;
 
-	public TextureInfo(int textureId, int textureSlot) {
-		this(textureId, textureSlot, TextureType.DIFFUSE);
+	public TextureInfo(int textureId) {
+		this(textureId, TextureType.DIFFUSE);
 	}
 
-	public TextureInfo(int textureId, int textureSlot, TextureType textureType) {
+	public TextureInfo(int textureId, TextureType textureType) {
 		mTextureId = textureId;
-		mTextureSlot = textureSlot;
 		mTextureType = textureType;
 	}
 	
 	public void setFrom(TextureInfo other) {
 		mTextureId = other.getTextureId();
-		mTextureSlot = other.getTextureSlot();
 		mTextureType = other.getTextureType();
 		mUniformHandle = other.getUniformHandle();
 		mWidth = other.getWidth();
@@ -74,10 +68,6 @@ public class TextureInfo {
 		return mTextureId;
 	}
 
-	public int getTextureSlot() {
-		return mTextureSlot;
-	}
-
 	public void setUniformHandle(int handle) {
 		mUniformHandle = handle;
 	}
@@ -87,7 +77,7 @@ public class TextureInfo {
 	}
 
 	public String toString() {
-		return "id: " + mTextureId + " slot: " + mTextureSlot + " handle: " + mUniformHandle + " type: " + mTextureType;
+		return "id: " + mTextureId + " handle: " + mUniformHandle + " type: " + mTextureType;
 	}
 
 	public TextureType getTextureType() {

@@ -3,7 +3,6 @@ package rajawali.materials;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import rajawali.util.RajLog;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
@@ -19,14 +18,6 @@ public class TextureManager {
 	 * List containing texture information objects
 	 */
 	private ArrayList<TextureInfo> mTextureInfoList;
-	/**
-	 * This list contains all available OpenGL texture slots: GLES20.GL_TEXTURE0 - GLES20.GL_TEXTURE0 + mMaxTextures
-	 */
-	private ArrayList<Integer> mTextureSlots;
-	/**
-	 * The maximum number of available textures for this device.
-	 */
-	private int mMaxTextures;	
 	/**
 	 * Cube map faces
 	 */
@@ -52,15 +43,7 @@ public class TextureManager {
 	};
 	
 	public TextureManager() {
-		int numTexUnits[] = new int[1];
-		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS, numTexUnits, 0);
-		mMaxTextures = numTexUnits[0];
-		RajLog.i("MAX TEXTURES: " + mMaxTextures);
 		mTextureInfoList = new ArrayList<TextureInfo>(); 
-		mTextureSlots = new ArrayList<Integer>();
-		for(int i=0; i<mMaxTextures; ++i) {
-			mTextureSlots.add(GLES20.GL_TEXTURE0 + i);
-		}
 	}
 	
 	public TextureInfo addTexture(Bitmap texture) {
@@ -97,12 +80,6 @@ public class TextureManager {
 	}
 	
 	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture) {
-		if(mTextureInfoList.size() > mMaxTextures)
-			throw new RuntimeException("Max number of textures used");
-
-		int textureSlot = mTextureSlots.get(0);
-		mTextureSlots.remove(0);
-		
 		int bitmapFormat = bitmapConfig == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
 		
 		int[] textures = new int[1];
@@ -126,7 +103,7 @@ public class TextureManager {
         if(mipmap)
         	GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         
-        TextureInfo textureInfo = new TextureInfo(textureId, textureSlot, textureType);
+        TextureInfo textureInfo = new TextureInfo(textureId, textureType);
         textureInfo.setWidth(width);
         textureInfo.setHeight(height);
         textureInfo.setBitmapConfig(bitmapConfig);
@@ -160,14 +137,11 @@ public class TextureManager {
 	public TextureInfo addCubemapTextures(Bitmap[] textures, boolean mipmap, boolean recycle, boolean isExistingTexture) {
 		int[] textureIds = new int[1];
 		
-		int textureSlot = mTextureSlots.get(0);
-		mTextureSlots.remove(0);
-		
 		GLES20.glEnable(GLES20.GL_TEXTURE_CUBE_MAP);
 		GLES20.glGenTextures(1, textureIds, 0);
 		int textureId = textureIds[0];
 
-		TextureInfo textureInfo = new TextureInfo(textureId, textureSlot);
+		TextureInfo textureInfo = new TextureInfo(textureId);
 		if(!isExistingTexture) mTextureInfoList.add(textureInfo);
 
 		int bitmapFormat = textures[0].getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
@@ -211,24 +185,14 @@ public class TextureManager {
 		return mTextureInfoList.size();
 	}
 	
-	public void updateTexture(Integer textureId, int textureIndex, Bitmap texture) {
-		GLES20.glActiveTexture(textureIndex);
+	public void updateTexture(Integer textureId, Bitmap texture) {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId.intValue());
 		GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, texture);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 	
-	public void updateTexture(TextureInfo textureInfo, Bitmap texture) {
-		updateTexture(textureInfo.mTextureId, textureInfo.mTextureSlot, texture);
-	}
-	
 	public void reload() {
 		TextureInfo tInfo = null, newInfo = null;
-		
-		mTextureSlots.clear();
-		for(int i=0; i<mMaxTextures; ++i) {
-			mTextureSlots.add(GLES20.GL_TEXTURE0 + i);
-		}
 		
 		int len = getNumTextures(); 
 		
@@ -255,10 +219,6 @@ public class TextureManager {
 		GLES20.glDeleteTextures(count, textures, 0);
 		
 		mTextureInfoList.clear();
-		mTextureSlots.clear();
-		for(int i=0; i<mMaxTextures; ++i) {
-			mTextureSlots.add(GLES20.GL_TEXTURE0 + i);
-		}
 	}
 	
 	public void removeTextures(ArrayList<TextureInfo> textureInfoList) {
@@ -268,7 +228,6 @@ public class TextureManager {
 		for(i=0; i<count; ++i) {
 			Integer textureId = textureInfoList.get(i).getTextureId();
 			textures[i] = textureId.intValue();
-			mTextureSlots.add(textureInfoList.get(i).getTextureSlot());
 			mTextureInfoList.remove(textureInfoList.get(i));
 		}
 		textureInfoList.clear();
