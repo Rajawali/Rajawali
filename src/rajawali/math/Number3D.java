@@ -195,11 +195,11 @@ public final class Number3D {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(((int) (x * 10000)) / 10000f);
+		sb.append(x);
 		sb.append(", ");
-		sb.append(((int) (y * 10000)) / 10000f);
+		sb.append(y);
 		sb.append(", ");
-		sb.append(((int) (z * 10000)) / 10000f);
+		sb.append(z);
 		return sb.toString();
 	}
 

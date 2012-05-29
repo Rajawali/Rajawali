@@ -334,6 +334,7 @@ public class Geometry3D {
 	public void setColor(float r, float g, float b, float a, boolean createNewBuffer) {
 		if(mColors == null || mColors.limit() == 0)
 		{
+			RajLog.i("NUM VERTS " + mNumVertices);
 			mColors = ByteBuffer.allocateDirect(mNumVertices * 4 * FLOAT_SIZE_BYTES)
 			.order(ByteOrder.nativeOrder()).asFloatBuffer();
 			createNewBuffer = true;

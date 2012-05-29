@@ -27,10 +27,6 @@ import android.opengl.Matrix;
  * @author dennis.ippel
  *
  */
-/**
- * @author dennis.ippel
- *
- */
 public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D>, INode {
 	protected float[] mMVPMatrix = new float[16];
 	protected float[] mMMatrix = new float[16];
