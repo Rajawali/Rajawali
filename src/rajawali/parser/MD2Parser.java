@@ -89,7 +89,8 @@ public class MD2Parser extends AParser implements IParser {
 			mObject.getGeometry().copyFromGeometry3D(firstFrame.getGeometry());
 			mObject.setData(firstFrame.getGeometry().getVertexBufferHandle(), firstFrame.getGeometry().getNormalBufferHandle(), mTextureCoords, null, mIndices);
 			mObject.setMaterial(new DiffuseMaterial(true));
-			mObject.addTexture(mTextureManager.addTexture(mTexture));
+			if(mTexture != null)
+				mObject.addTexture(mTextureManager.addTexture(mTexture));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -119,6 +120,10 @@ public class MD2Parser extends AParser implements IParser {
 		}
 		
 		if(mFile == null) {
+			if(mCurrentTextureName == null) {
+				RajLog.e("[" + getClass().getCanonicalName() + "] No texture name was specified. No material will be created.");
+				return;
+			}
 			int identifier = mResources.getIdentifier(mCurrentTextureName, "drawable", mResources.getResourcePackageName(mResourceId));
 			mTexture = BitmapFactory.decodeResource(mResources, identifier);
 		} else {
@@ -162,11 +167,11 @@ public class MD2Parser extends AParser implements IParser {
 
 		for (int i = 0; i < mHeader.numFrames; i++) {
 			float scaleX = is.readFloat();
-			float scaleY = is.readFloat();
 			float scaleZ = is.readFloat();
+			float scaleY = is.readFloat();
 			float translateX = is.readFloat();
-			float translateY = is.readFloat();
 			float translateZ = is.readFloat();
+			float translateY = is.readFloat();
 			String name = is.readString(16);
 			IAnimationFrame frame = mFrames.get(i);
 			
@@ -180,9 +185,9 @@ public class MD2Parser extends AParser implements IParser {
 			int index = 0;
 			
 			for (int j = 0; j < mHeader.numVerts; j++) {
-				vertices[index+2] = scaleX * is.readUnsignedByte() + translateX;
+				vertices[index+0] = scaleX * is.readUnsignedByte() + translateX;
+				vertices[index+2] = scaleZ * is.readUnsignedByte() + translateZ;
 				vertices[index+1] = scaleY * is.readUnsignedByte() + translateY;
-				vertices[index+0] = scaleZ * is.readUnsignedByte() + translateZ;
 				index+=3;
 				is.readUnsignedByte();
 				

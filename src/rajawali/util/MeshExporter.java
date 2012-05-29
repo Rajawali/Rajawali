@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.zip.GZIPOutputStream;
 
 import rajawali.BaseObject3D;
 import rajawali.Geometry3D;
@@ -18,6 +19,7 @@ import android.os.Environment;
 public class MeshExporter {
 	private BaseObject3D mObject;
 	private String mFileName;
+	private boolean mCompressed;
 	
 	public enum ExportType {
 		SERIALIZED,
@@ -29,7 +31,12 @@ public class MeshExporter {
 	}
 	
 	public void export(String fileName, ExportType type) {
+		export(fileName, type, false);
+	}
+	
+	public void export(String fileName, ExportType type, boolean compressed) {
 		mFileName = fileName;
+		mCompressed = compressed;
 		switch(type) {
 		case SERIALIZED:
 			exportToSerialized();
@@ -131,7 +138,13 @@ public class MeshExporter {
 
 			File f = new File(sdcardPath + File.separator + mFileName);
 			fos = new FileOutputStream(f);
-			ObjectOutputStream os = new ObjectOutputStream(fos);
+			ObjectOutputStream os = null;
+			if(mCompressed) {
+				GZIPOutputStream gz = new GZIPOutputStream(fos);
+				os = new ObjectOutputStream(gz);
+			} else {
+				os = new ObjectOutputStream(fos);
+			}
 
 			SerializedObject3D ser = mObject.toSerializedObject3D();
 			

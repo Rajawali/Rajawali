@@ -87,7 +87,7 @@ public class VertexAnimationFrame implements IAnimationFrame {
 				}
 			}
 			vertexNormal.normalize();
-			vertNormals[i] = vertexNormal.x;
+			vertNormals[i] = -vertexNormal.x;
 			vertNormals[i+1] = vertexNormal.y;
 			vertNormals[i+2] = -vertexNormal.z;
 		}
