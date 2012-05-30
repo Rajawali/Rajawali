@@ -7,33 +7,53 @@ public class ChaseCamera extends Camera {
 	protected Number3D mCameraOffset;
 	protected BaseObject3D mObjectToChase;
 	protected Number3D mUpVector;
-			
+	protected float mSlerpFactor = .1f;
+	protected Quaternion mTmpOr;
 	
 	public ChaseCamera() {
-		this(new Number3D(0, 0, 10), null);
+		this(new Number3D(0, 3, 16), .1f, null);
 	}
 	
-	public ChaseCamera(Number3D cameraOffset) {
-		this(cameraOffset, null);
+	public ChaseCamera(Number3D cameraOffset, float slerpFactor) {
+		this(cameraOffset, .1f, null);
 	}
 
-	public ChaseCamera(Number3D cameraOffset, BaseObject3D objectToChase) {
+	public ChaseCamera(Number3D cameraOffset, float slerpFactor, BaseObject3D objectToChase) {
 		super();
+		mTmpOr = new Quaternion();
 		mUpVector = Number3D.getUpVector();
 		mCameraOffset = cameraOffset;
 		mObjectToChase = objectToChase;
+		mSlerpFactor = slerpFactor;
 	}
 	
 	public float[] getViewMatrix() {
 		mRotationDirty = false;
 		
-		mOrientation.setAllFrom(Quaternion.slerp(.1f, mOrientation, mObjectToChase.getOrientation(), true));
-		mPosition.setAllFrom(mObjectToChase.getOrientation().inverse().multiply(mCameraOffset));
+		mTmpOr.setAllFrom(mObjectToChase.getOrientation());
+		mOrientation.setAllFrom(Quaternion.slerp(mSlerpFactor, mOrientation, mTmpOr, false));
+		mTmpOr.inverseSelf();
+		mPosition.setAllFrom(mTmpOr.multiply(mCameraOffset));
 		mPosition.add(mObjectToChase.getPosition());
-		//mOrientation.inverseSelf();
 		mOrientation.toRotationMatrix(mRotationMatrix);
 
 		return super.getViewMatrix();
+	}
+
+	public void setCameraOffset(Number3D offset) {
+		mCameraOffset.setAllFrom(offset);
+	}
+	
+	public Number3D getCameraOffset() {
+		return mCameraOffset;
+	}
+	
+	public void setSlerpFactor(float factor) {
+		mSlerpFactor = factor;
+	}
+	
+	public float getSlerpFactor() {
+		return mSlerpFactor;
 	}
 
 	public BaseObject3D getObjectToChase() {
