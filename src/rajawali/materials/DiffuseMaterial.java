@@ -69,12 +69,12 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	float intensity = 0.0;\n" +
 		"	float dist = 0.0;\n" +
 		"	vec3 L = vec3(0.0);\n" +
-		"%LIGHT_CODE%" +
 		"#ifdef TEXTURED\n" +
 		"	gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"#else\n" +
 	    "	gl_FragColor = vColor;\n" +
 	    "#endif\n" +
+	    "%LIGHT_CODE%" +
 		
 		M_FOG_FRAGMENT_CALC +
 		
@@ -111,8 +111,9 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
-				sb.append("L = -normalize(uLightDirection").append(i).append(");");				
+				sb.append("L = -normalize(uLightDirection").append(i).append(");\n");				
 			}
+			//sb.append("gl_FragColor += vec4(uLightColor").append(i).append(", 1.0);\n");
 			sb.append("intensity += uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(";\n");
 		}
 		

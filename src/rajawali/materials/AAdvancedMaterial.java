@@ -14,17 +14,6 @@ import android.opengl.GLES20;
 public abstract class AAdvancedMaterial extends AMaterial {
 	protected static final int MAX_LIGHTS = RajawaliRenderer.getMaxLights(); 
 	
-	public static final String M_LIGHTS_VARS =
-			"const int DIRECTIONAL_LIGHT = 0;\n" +
-			"const int POINT_LIGHT = 1;\n" +
-			
-			"uniform vec3 	uLightColor[" + MAX_LIGHTS + "];\n" +
-			"uniform float 	uLightPower[" + MAX_LIGHTS + "];\n" +
-			"uniform int 	uLightType[" + MAX_LIGHTS + "];\n" +
-			"uniform vec3 	uLightPosition[" + MAX_LIGHTS + "];\n" +
-			"uniform vec3 	uLightDirection[" + MAX_LIGHTS + "];\n" +
-			"uniform vec4 	uLightAttenuation[" + MAX_LIGHTS + "];\n";
-	
 	public static final String M_FOG_VERTEX_VARS =
 			"\n#ifdef FOG_ENABLED\n" +
 			"varying float vFogDepth;\n" +
