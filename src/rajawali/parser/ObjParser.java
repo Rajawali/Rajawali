@@ -326,8 +326,13 @@ public class ObjParser extends AParser {
 			if(mFile == null) {
 				mResourcePackage = resourcePackage;
 				int identifier = mResources.getIdentifier(materialLibPath, resourceType, resourcePackage);
-				InputStream fileIn = mResources.openRawResource(identifier);
-				buffer = new BufferedReader(new InputStreamReader(fileIn));
+				try {
+					InputStream fileIn = mResources.openRawResource(identifier);
+					buffer = new BufferedReader(new InputStreamReader(fileIn));
+				} catch(Exception e) {
+					RajLog.e("["+getClass().getCanonicalName()+"] Could not find material library file (.mtl).");
+					return;
+				}
 			} else {
 				try {
 					File materialFile = new File(mFile.getParent() + File.separatorChar + materialLibPath);

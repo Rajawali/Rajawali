@@ -17,6 +17,7 @@ import rajawali.materials.TextureInfo;
 import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
+import rajawali.util.FPSUpdateListener;
 import rajawali.util.RajLog;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.visitors.INode;
@@ -38,6 +39,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	protected float mEyeZ = -4.0f;
 	protected int mFrameRate = 30;
+	protected double mLastMeasuredFPS;
+	protected FPSUpdateListener mFPSUpdateListener;
 
 	protected SharedPreferences preferences;
 
@@ -117,10 +120,14 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	        long now = System.nanoTime();
 	        double elapsedS = (now - mStartTime) / 1.0e9;
 	        double msPerFrame = (1000 * elapsedS / mFrameCount);
-	        RajLog.d("ms / frame: " + msPerFrame + " - fps: " + (1000 / msPerFrame));
+	        mLastMeasuredFPS = 1000 / msPerFrame;
+	        RajLog.d("ms / frame: " + msPerFrame + " - fps: " + mLastMeasuredFPS);
 	
 	        mFrameCount = 0;
 	        mStartTime = now;
+	        
+	        if(mFPSUpdateListener != null)
+	        	mFPSUpdateListener.onFPSUpdate(mLastMeasuredFPS);
 	    }
 	}
 	
@@ -486,5 +493,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public static void setMaxLights(int maxLights) {
 		RajawaliRenderer.mMaxLights = maxLights;
+	}
+	
+	public void setFPSUpdateListener(FPSUpdateListener listener) {
+		mFPSUpdateListener = listener;
 	}
 }

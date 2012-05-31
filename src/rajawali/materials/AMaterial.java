@@ -82,7 +82,7 @@ public abstract class AMaterial {
 		mVertexShader = mIsAnimated ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
 		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
-		
+
 		if(RajawaliRenderer.isFogEnabled())
 		{
 			mVertexShader = "#define FOG_ENABLED\n" + mVertexShader;

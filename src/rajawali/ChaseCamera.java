@@ -29,14 +29,16 @@ public class ChaseCamera extends Camera {
 	
 	public float[] getViewMatrix() {
 		mRotationDirty = false;
-		
-		mTmpOr.setAllFrom(mObjectToChase.getOrientation());
-		mOrientation.setAllFrom(Quaternion.slerp(mSlerpFactor, mOrientation, mTmpOr, false));
-		mTmpOr.inverseSelf();
-		mPosition.setAllFrom(mTmpOr.multiply(mCameraOffset));
-		mPosition.add(mObjectToChase.getPosition());
-		mOrientation.toRotationMatrix(mRotationMatrix);
+		mPosition.setAllFrom(mCameraOffset);
 
+		mTmpOr.setAllFrom(mObjectToChase.getOrientation());
+		mPosition.setAllFrom(mTmpOr.multiply(mCameraOffset));
+		mPosition.x *= -1;
+		mPosition.add(mObjectToChase.getPosition());
+		mTmpOr.inverseSelf();
+		mOrientation.setAllFrom(Quaternion.slerp(mSlerpFactor, mOrientation, mTmpOr, true));
+		mOrientation.toRotationMatrix(mRotationMatrix);
+		
 		return super.getViewMatrix();
 	}
 
