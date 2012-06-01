@@ -46,7 +46,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected int mNumChildren;
 	protected String mName;
 
-	protected boolean mAdditive = false;
 	protected boolean mDoubleSided = false;
 	protected boolean mTransparent = false;
 	protected boolean mForcedDepth = false;
@@ -66,6 +65,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	
 	protected boolean mRenderChildrenAsBatch = false;
 	protected boolean mIsPartOfBatch = false;
+	
+	protected boolean mEnableBlending = false;
+	protected int mBlendFuncSFactor;
+	protected int mBlendFuncDFactor;
+	protected boolean mEnableDepthTest = true;
+	protected boolean mEnableDepthMask = true;
 		
 	private int i;
 
@@ -194,25 +199,15 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mProjMatrix = projMatrix;
 			if (!mDoubleSided)
 				GLES20.glEnable(GLES20.GL_CULL_FACE);
-			if (mTransparent) {
+			if(mEnableBlending) {
 				GLES20.glEnable(GLES20.GL_BLEND);
-				GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-				GLES20.glDepthMask(false);
+				GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
 			} else {
 				GLES20.glDisable(GLES20.GL_BLEND);
-				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-				GLES20.glDepthMask(true);
 			}
-
-			if (mAdditive) {
-	               // No depth testing
-	               GLES20.glClearDepthf(1.0f);
-	               GLES20.glEnable(GLES20.GL_DEPTH_TEST); //@JOEL - Additive should depth test, but not depth write. It must be rendered after opaque geometry, but its communicable, so sorting isn't necessary against other additive passes.
-	               GLES20.glEnable(GLES20.GL_BLEND);
-	               GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
-	               GLES20.glDepthMask(false);
-			}
+			if(mEnableDepthTest) GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+			else GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			GLES20.glDepthMask(mEnableDepthMask);
 
 			if (pickerInfo != null && mIsPickingEnabled) {
 				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
@@ -370,14 +365,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mIsContainerOnly;
 	}
 
-	public void setAdditive(boolean isAdditive) {
-		this.mAdditive = isAdditive;
-	}
-
-	public boolean getAdditive() {
-		return mAdditive;
-	}
-	
 	/**
 	 * Maps screen coordinates to object coordinates
 	 * 
@@ -424,8 +411,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * 
 	 * @param transparent
 	 */
-	public void setTransparent(boolean transparent) {
-		this.mTransparent = transparent;
+	public void setTransparent(boolean value) {
+		this.mTransparent = value;
+		mEnableBlending = value;
+		setBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		mEnableDepthMask = !value;
 	}
 
 	public void setLights(Stack<ALight> lights) {
@@ -689,5 +679,34 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
   public void setPartOfBatch(boolean isPartOfBatch)
   {
     this.mIsPartOfBatch = isPartOfBatch;
+  }
+  
+  public void setBlendingEnabled(boolean value) {
+	  mEnableBlending = value;
+  }
+  
+  public boolean isBlendingEnabled() {
+	  return mEnableBlending;
+  }
+  
+  public void setBlendFunc(int sFactor, int dFactor) {
+	  mBlendFuncSFactor = sFactor;
+	  mBlendFuncDFactor = dFactor;
+  }
+
+  public void setDepthTestEnabled(boolean value) {
+	  mEnableDepthTest = value;
+  }
+  
+  public boolean isDepthTestEnabled() {
+	  return mEnableDepthTest;
+  }
+  
+  public void setDepthMaskEnabled(boolean value) {
+	  mEnableDepthMask = value;
+  }
+  
+  public boolean isDepthMaskEnabled() {
+	  return mEnableDepthMask;
   }
 }
