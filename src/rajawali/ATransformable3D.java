@@ -108,7 +108,7 @@ public abstract class ATransformable3D {
 	}
 
 	public void rotateAround(Number3D axis, float angle) {
-		rotateAround(axis, angle);
+		rotateAround(axis, angle, true);
 	}
 	
  	public void rotateAround(Number3D axis, float angle, boolean append) {
