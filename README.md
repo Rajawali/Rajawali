@@ -6,6 +6,8 @@ Rajawali is a 3D engine for Android based on OpenGL ES 2.0. It can be used for n
 
 [Announcing Rajawali: An OpenGL ES 2.0 Based 3D Framework For Android](http://www.rozengain.com/blog/2011/08/23/announcing-rajawali-an-opengl-es-2-0-based-3d-framework-for-android/)
 
+Want to contribute? I could use some help with the development of this engine. Just give me a shout if you're up for it :-) 
+
 Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/master/build/rajawalilib.zip
 (Just extract it in your libs folder)
 
@@ -51,9 +53,7 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 [![Pyro Live Wallpaper](https://play.google.com/store/apps/details?id=com.pyroliveFREE)](hhttps://play.google.com/store/apps/details?id=com.pyroliveFREE)
 [![Autumn Grove Live Wallpaper](http://www.rozengain.com/files/rajawali/autumn_grove_live_wallpaper.png)](https://play.google.com/store/apps/details?id=com.PM.AutumnGrove3DFREE)
 [![F5E Tiger Live Wallpaper](http://www.rozengain.com/files/rajawali/pyro.jpg)](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.f5tiger)
-
-* [Space Journey Live Wallpaper](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.spacejourney)
-* [Skull Live Wallpaper](https://market.android.com/details?id=com.monyetmabuk.wallpapers.skull)
+[![Het Journaal](http://www.rozengain.com/files/rajawali/rajawali-het-journaal.jpg)](https://play.google.com/store/apps/details?id=com.bw.journal)
 
 ## Current Todo List
 * Texture atlas
