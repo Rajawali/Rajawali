@@ -54,8 +54,12 @@ public class TextureManager {
 		return this.addTexture(texture, textureType, true, false);	
 	}
 	
+	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap) {
+	    return this.addTexture(texture, textureType, mipmap, false);
+	}
+
 	public TextureInfo addTexture(Bitmap texture, boolean mipmap, boolean recycle) {
-		return this.addTexture(texture, mipmap, recycle);
+	    return this.addTexture(texture, TextureType.DIFFUSE, mipmap, recycle);
 	}
 
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap, boolean recycle) {
@@ -137,7 +141,6 @@ public class TextureManager {
 	public TextureInfo addCubemapTextures(Bitmap[] textures, boolean mipmap, boolean recycle, boolean isExistingTexture) {
 		int[] textureIds = new int[1];
 		
-		GLES20.glEnable(GLES20.GL_TEXTURE_CUBE_MAP);
 		GLES20.glGenTextures(1, textureIds, 0);
 		int textureId = textureIds[0];
 
@@ -176,7 +179,6 @@ public class TextureManager {
         	textureInfo.setTextures(textures);
         
         GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
-        GLES20.glDisable(GLES20.GL_TEXTURE_CUBE_MAP);
         
 		return textureInfo;
 	}
