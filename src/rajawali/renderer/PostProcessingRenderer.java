@@ -72,8 +72,12 @@ public final class PostProcessingRenderer {
 		int[] depthBuffers = new int[1];
 		GLES20.glGenRenderbuffers(1, depthBuffers, 0);
 		mDepthBufferHandle = depthBuffers[0];
-
+		
 		checkError("glGenRenderbuffers", GLES20.glGetError());
+		
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mTextureSize, mTextureSize);
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 		
 		mFrameBufferTexInfo = mRenderer.getTextureManager().addTexture(null, mTextureSize, mTextureSize, TextureType.FRAME_BUFFER);
 
@@ -96,9 +100,7 @@ public final class PostProcessingRenderer {
 	public void bind() {
 		if(!mInitialized)
 			create();
-		
 		GLES20.glViewport(0, 0, mTextureSize, mTextureSize);
-		
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mFrameBufferTexInfo.getTextureId(), 0);
 		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
@@ -106,8 +108,6 @@ public final class PostProcessingRenderer {
 			RajLog.d("Could not bind post processing frame buffer." + status);
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		}
-		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
-		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mTextureSize, mTextureSize);
 		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 	}
 	

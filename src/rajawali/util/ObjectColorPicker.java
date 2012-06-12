@@ -50,15 +50,18 @@ public class ObjectColorPicker implements IObjectPicker {
 	public void bindFrameBuffer() {
 		if(!mIsInitialised)
 			initialise();
-		
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
-		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextureInfo.getTextureId(), 0);		
+		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextureInfo.getTextureId(), 0);
 		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
 		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE)
 		{
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 			RajLog.d("Could not bind FrameBuffer for color picking.");
 		}
+	}
+	
+	public void unbindFrameBuffer() {
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 	}
 	
 	public void registerObject(BaseObject3D object) {
@@ -93,7 +96,6 @@ public class ObjectColorPicker implements IObjectPicker {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 		GLES20.glReadPixels((int)pickerInfo.getX(), mRenderer.getViewportHeight() - (int)pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-		
 		pixelBuffer.rewind();
 		int r = pixelBuffer.get(0) & 0xff;
 		int g = pixelBuffer.get(1) & 0xff;

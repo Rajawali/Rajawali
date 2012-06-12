@@ -239,9 +239,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-
+			
 			setShaderParams(camera);
-
+			
 			if(pickerInfo == null)
 			{
 				mMaterial.setMVPMatrix(mMVPMatrix);

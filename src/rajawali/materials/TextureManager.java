@@ -143,17 +143,17 @@ public class TextureManager {
 		
 		GLES20.glGenTextures(1, textureIds, 0);
 		int textureId = textureIds[0];
-
+		
 		TextureInfo textureInfo = new TextureInfo(textureId);
 		if(!isExistingTexture) mTextureInfoList.add(textureInfo);
-
+		
 		int bitmapFormat = textures[0].getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
 		textureInfo.setWidth(textures[0].getWidth());
 		textureInfo.setHeight(textures[0].getHeight());
 		textureInfo.setTextureType(TextureType.CUBE_MAP);
 		textureInfo.setBitmapConfig(textures[0].getConfig());
 		textureInfo.setMipmap(mipmap);
-
+		
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
 		if(mipmap)
 			GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
@@ -162,24 +162,23 @@ public class TextureManager {
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-		
+        
         ByteBuffer pixelBuffer;
         
         for(int i=0; i<6; i++) {
         	pixelBuffer = bitmapToByteBuffer(textures[i]);
-        	
-        	GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_TRUE);
+        	GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
         	GLES20.glTexImage2D(CUBE_FACES[i], 0, bitmapFormat, textures[i].getWidth(), textures[i].getHeight(), 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
         	if(recycle) textures[i].recycle();
        		pixelBuffer.limit(0);
         }
+        
         if(mipmap) GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
-
+        
         if(!recycle)
         	textureInfo.setTextures(textures);
         
         GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
-        
 		return textureInfo;
 	}
 	

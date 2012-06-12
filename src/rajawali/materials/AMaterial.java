@@ -46,7 +46,8 @@ public abstract class AMaterial {
 	/**
 	 * The maximum number of available textures for this device.
 	 */
-	private int mMaxTextures;	
+	private int mMaxTextures;
+	private boolean mProgramCreated = false;
 	
 	protected boolean mIsAnimated;
 	
@@ -108,6 +109,8 @@ public abstract class AMaterial {
 			maNextFrameNormalHandle = getAttribLocation("aNextFrameNormal");
 			muInterpolationHandle = getUniformLocation("uInterpolation");
 		}
+		
+		mProgramCreated = true;
 		
 		checkTextureHandles();
 	}
@@ -257,12 +260,14 @@ public abstract class AMaterial {
 			break;
 		}
 
-		int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
-		if (textureHandle == -1) {
-			RajLog.d("Could not get attrib location for "
-					+ textureName + ", " + textureInfo.getTextureType());
+		if(mProgramCreated) {
+			int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
+			if (textureHandle == -1) {
+				RajLog.d("Could not get attrib location for "
+						+ textureName + ", " + textureInfo.getTextureType());
+			}
+			textureInfo.setUniformHandle(textureHandle);
 		}
-		textureInfo.setUniformHandle(textureHandle);
 		
 		if(textureInfo.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
 		if(!isExistingTexture) {

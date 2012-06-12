@@ -134,7 +134,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
-
+		
 		if (pickerInfo != null) {
 			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
 			mReloadPickerInfo = false;
@@ -166,7 +166,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
         mVMatrix = mCamera.getViewMatrix();
         mPMatrix = mCamera.getProjectionMatrix();
-        
+
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
@@ -181,16 +181,19 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 
         mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
-
+        
 		for (int i = 0; i < mNumChildren; i++) {
 			mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
 		}
-
+		
 		if (pickerInfo != null) {
+			
 			pickerInfo.getPicker().createColorPickingTexture(pickerInfo);
+			pickerInfo.getPicker().unbindFrameBuffer();
+			
 			pickerInfo = null;
 			mPickerInfo = null;
-			render();			
+			render();
 		} else if (mPostProcessingRenderer.isEnabled()) {
 			mPostProcessingRenderer.render();
 		}
@@ -218,8 +221,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition.khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
 	 * 
 	 */
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		
+	public void onSurfaceCreated(GL10 gl, EGLConfig config) {		
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 		
 		GLES20.glFrontFace(GLES20.GL_CCW);

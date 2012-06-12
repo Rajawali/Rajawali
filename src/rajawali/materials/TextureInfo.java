@@ -24,7 +24,7 @@ public class TextureInfo {
 	/**
 	 * The shader uniform handle for this texture
 	 */
-	protected int mUniformHandle;
+	protected int mUniformHandle = -1;
 	/**
 	 * Texture width
 	 */
