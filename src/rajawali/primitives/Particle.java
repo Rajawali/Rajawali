@@ -61,7 +61,7 @@ public class Particle extends BaseObject3D {
 			RajLog.e("[" +getClass().getName()+ "] You need to set a particle material first.");
 			throw new RuntimeException("You need to set a particle material first.");
 		}
-		mParticleShader.setCameraPosition(camera.getPosition());
+		mParticleShader.setCamera(camera);
 		mParticleShader.setPointSize(mPointSize);
 	}
 }

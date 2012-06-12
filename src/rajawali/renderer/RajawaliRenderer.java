@@ -18,7 +18,6 @@ import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
 import rajawali.util.FPSUpdateListener;
-import rajawali.util.RajLog;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
@@ -121,7 +120,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	        double elapsedS = (now - mStartTime) / 1.0e9;
 	        double msPerFrame = (1000 * elapsedS / mFrameCount);
 	        mLastMeasuredFPS = 1000 / msPerFrame;
-	        RajLog.d("ms / frame: " + msPerFrame + " - fps: " + mLastMeasuredFPS);
+	        //RajLog.d("ms / frame: " + msPerFrame + " - fps: " + mLastMeasuredFPS);
 	
 	        mFrameCount = 0;
 	        mStartTime = now;

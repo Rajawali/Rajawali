@@ -195,7 +195,6 @@ public abstract class AMaterial {
 			TextureInfo ti = mTextureInfoList.get(i);
 			int type = usesCubeMap ? GLES20.GL_TEXTURE_CUBE_MAP
 					: GLES20.GL_TEXTURE_2D;
-			GLES20.glEnable(type);
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
 			GLES20.glBindTexture(type, ti.getTextureId());
 			GLES20.glUniform1i(ti.getUniformHandle(), i);
@@ -208,9 +207,8 @@ public abstract class AMaterial {
 		for (int i = 0; i < num; i++) {
 			int type = usesCubeMap ? GLES20.GL_TEXTURE_CUBE_MAP
 					: GLES20.GL_TEXTURE_2D;
-			GLES20.glDisable(type);
 			GLES20.glBindTexture(type, 0);
-		}		
+		}
 	}
 
 	public ArrayList<TextureInfo> getTextureInfoList() {
@@ -380,7 +378,7 @@ public abstract class AMaterial {
 
 	public String toString() {
 		StringBuffer out = new StringBuffer();
-		out.append("[" +getClass().getName()+ "]");
+		out.append("[" +getClass().getName()+ "]\n");
 		out.append("____ VERTEX SHADER ____\n");
 		out.append(mVertexShader);
 		out.append("____ FRAGMENT SHADER ____\n");

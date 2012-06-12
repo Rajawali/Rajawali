@@ -38,8 +38,8 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		}
 
 		mMaterial.setInterpolation(mInterpolation);
-		mMaterial.setNextFrameVertices(nextFrame.getGeometry().getVertexBufferHandle());
-		mMaterial.setNextFrameNormals(nextFrame.getGeometry().getNormalBufferHandle());
+		mMaterial.setNextFrameVertices(nextFrame.getGeometry().getVertexBufferInfo().bufferHandle);
+		mMaterial.setNextFrameNormals(nextFrame.getGeometry().getNormalBufferInfo().bufferHandle);
 
 		mInterpolation += (float) mFps * (mCurrentTime - mStartTime) / 1000;
 
@@ -50,8 +50,8 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 			if (mCurrentFrameIndex >= mNumFrames)
 				mCurrentFrameIndex = 0;
 
-			mGeometry.setVertexBufferHandle(nextFrame.getGeometry().getVertexBufferHandle());
-			mGeometry.setNormalBufferHandle(nextFrame.getGeometry().getNormalBufferHandle());
+			mGeometry.setVertexBufferInfo(nextFrame.getGeometry().getVertexBufferInfo());
+			mGeometry.setNormalBufferInfo(nextFrame.getGeometry().getNormalBufferInfo());
 		}
 
 		mStartTime = mCurrentTime;

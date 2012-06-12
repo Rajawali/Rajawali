@@ -87,7 +87,7 @@ public class MD2Parser extends AParser implements IParser {
 			IAnimationFrame firstFrame = mFrames.get(0);
 			mObject.setColor(0xffffffff);
 			mObject.getGeometry().copyFromGeometry3D(firstFrame.getGeometry());
-			mObject.setData(firstFrame.getGeometry().getVertexBufferHandle(), firstFrame.getGeometry().getNormalBufferHandle(), mTextureCoords, null, mIndices);
+			mObject.setData(firstFrame.getGeometry().getVertexBufferInfo(), firstFrame.getGeometry().getNormalBufferInfo(), mTextureCoords, null, mIndices);
 			mObject.setMaterial(new DiffuseMaterial(true));
 			if(mTexture != null)
 				mObject.addTexture(mTextureManager.addTexture(mTexture));

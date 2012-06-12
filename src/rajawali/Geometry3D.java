@@ -31,11 +31,12 @@ public class Geometry3D {
 	protected String mName;
 	protected Geometry3D mOriginalGeometry;
 	
-	protected int mVertexBufferHandle;
-	protected int mIndexBufferHandle;
-	protected int mTexCoordBufferHandle;
-	protected int mColorBufferHandle;
-	protected int mNormalBufferHandle;
+	protected BufferInfo mVertexBufferInfo;
+	protected BufferInfo mIndexBufferInfo;
+	protected BufferInfo mTexCoordBufferInfo;
+	protected BufferInfo mColorBufferInfo;
+	protected BufferInfo mNormalBufferInfo;
+	
 	protected boolean mOnlyShortBufferSupported = false;
 	
 	protected BoundingBox mBoundingBox;
@@ -50,6 +51,11 @@ public class Geometry3D {
 	public Geometry3D() {
 		super();
 		mName = "";
+		mVertexBufferInfo = new BufferInfo();
+		mIndexBufferInfo = new BufferInfo();
+		mTexCoordBufferInfo = new BufferInfo();
+		mColorBufferInfo = new BufferInfo();
+		mNormalBufferInfo = new BufferInfo();
 	}
 	
 	public Geometry3D(String name) {
@@ -61,15 +67,15 @@ public class Geometry3D {
 		this.mName = geom.getName();
 		this.mNumIndices = geom.getNumIndices();
 		this.mNumVertices = geom.getNumVertices();
-		this.mVertexBufferHandle = geom.getVertexBufferHandle();
-		this.mIndexBufferHandle = geom.getIndexBufferHandle();
-		this.mTexCoordBufferHandle = geom.getTexCoordBufferHandle();
-		this.mColorBufferHandle = geom.getColorBufferHandle();
-		this.mNormalBufferHandle = geom.getNormalBufferHandle();
+		this.mVertexBufferInfo = geom.getVertexBufferInfo();
+		this.mIndexBufferInfo = geom.getIndexBufferInfo();
+		this.mTexCoordBufferInfo = geom.getTexCoordBufferInfo();
+		this.mColorBufferInfo = geom.getColorBufferInfo();
+		this.mNormalBufferInfo = geom.getNormalBufferInfo();
 		this.mOriginalGeometry = geom;
 	}
 	
-	public void setData(int vertexBufferHandle, int normalBufferHandle,
+	public void setData(BufferInfo vertexBufferInfo, BufferInfo normalBufferInfo,
 			float[] textureCoords, float[] colors, int[] indices) {
 		if(textureCoords == null || textureCoords.length == 0)
 			textureCoords = new float[(mNumVertices / 3) * 2];
@@ -80,14 +86,25 @@ public class Geometry3D {
 			setColors(colors);	
 		setIndices(indices);
 		
-		mVertexBufferHandle = vertexBufferHandle;
-		mNormalBufferHandle = normalBufferHandle;
+		mVertexBufferInfo = vertexBufferInfo;
+		mNormalBufferInfo = normalBufferInfo;
 		
 		createBuffers();
 	}
 	
 	public void setData(float[] vertices, float[] normals,
 			float[] textureCoords, float[] colors, int[] indices) {
+		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords, GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW);
+	}
+	
+	public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage,
+			float[] textureCoords, int textureCoordsUsage, float[] colors, int colorsUsage, 
+			int[] indices, int indicesUsage) {
+		mVertexBufferInfo.usage = verticesUsage;
+		mNormalBufferInfo.usage = normalsUsage;
+		mTexCoordBufferInfo.usage = textureCoordsUsage;
+		mColorBufferInfo.usage = colorsUsage;
+		mIndexBufferInfo.usage = indicesUsage;
 		setVertices(vertices);
 		setNormals(normals);
 		if(textureCoords == null || textureCoords.length == 0)
@@ -108,23 +125,23 @@ public class Geometry3D {
 		
 		if(mVertices != null) {
 			mVertices.compact().position(0);
-			mVertexBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mVertices,		GLES20.GL_ARRAY_BUFFER);
+			createBuffer(mVertexBufferInfo, BufferType.FLOAT_BUFFER, mVertices, GLES20.GL_ARRAY_BUFFER);
 		}
 		if(mNormals != null) {
 			mNormals.compact().position(0);
-			mNormalBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mNormals,		GLES20.GL_ARRAY_BUFFER);
+			createBuffer(mNormalBufferInfo, BufferType.FLOAT_BUFFER, mNormals, GLES20.GL_ARRAY_BUFFER);
 		}
 		if(mTextureCoords != null) {
 			mTextureCoords.compact().position(0);
-			mTexCoordBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mTextureCoords, GLES20.GL_ARRAY_BUFFER);
+			createBuffer(mTexCoordBufferInfo, BufferType.FLOAT_BUFFER, mTextureCoords, GLES20.GL_ARRAY_BUFFER);
 		}
 		if(mColors != null) {
 			mColors.compact().position(0);
-			mColorBufferHandle 		= createBuffer(BufferType.FLOAT_BUFFER, mColors,		GLES20.GL_ARRAY_BUFFER);
+			createBuffer(mColorBufferInfo, BufferType.FLOAT_BUFFER, mColors, GLES20.GL_ARRAY_BUFFER);
 		}
 		if(mIndicesInt != null && !mOnlyShortBufferSupported && supportsUIntBuffers) {
 			mIndicesInt.compact().position(0);
-			mIndexBufferHandle 		= createBuffer(BufferType.INT_BUFFER, mIndicesInt,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+			createBuffer(mIndexBufferInfo, BufferType.INT_BUFFER, mIndicesInt, GLES20.GL_ELEMENT_ARRAY_BUFFER);
 		}
 		
 		if(mOnlyShortBufferSupported || !supportsUIntBuffers) {
@@ -151,7 +168,7 @@ public class Geometry3D {
 			}
 			if(mIndicesShort != null) {
 				mIndicesShort.compact().position(0);
-				mIndexBufferHandle 		= createBuffer(BufferType.SHORT_BUFFER, mIndicesShort,		GLES20.GL_ELEMENT_ARRAY_BUFFER);
+				createBuffer(mIndexBufferInfo, BufferType.SHORT_BUFFER, mIndicesShort, GLES20.GL_ELEMENT_ARRAY_BUFFER);
 			}
 		}
 
@@ -170,32 +187,81 @@ public class Geometry3D {
 	}
 	
 	public boolean isValid() {
-		return GLES20.glIsBuffer(mVertexBufferHandle);
+		return GLES20.glIsBuffer(mVertexBufferInfo.bufferHandle);
 	}
 	
 	public void createVertexAndNormalBuffersOnly() {
 		mVertices.compact().position(0);
 		mNormals.compact().position(0);
 		
-		mVertexBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mVertices,		GLES20.GL_ARRAY_BUFFER);
-		mNormalBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mNormals,		GLES20.GL_ARRAY_BUFFER);
+		createBuffer(mVertexBufferInfo, BufferType.FLOAT_BUFFER, mVertices, GLES20.GL_ARRAY_BUFFER);
+		createBuffer(mNormalBufferInfo, BufferType.FLOAT_BUFFER, mNormals, GLES20.GL_ARRAY_BUFFER);
 		
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
 	
-	public int createBuffer(BufferType type, Buffer buffer, int target) {
+	public void createBuffer(BufferInfo bufferInfo, BufferType type, Buffer buffer, int target) {
+		createBuffer(bufferInfo, type, buffer, target, GLES20.GL_STATIC_DRAW);
+	}
+	
+	public void createBuffer(BufferInfo bufferInfo, BufferType type, Buffer buffer, int target, int usage) {
 		int buff[] = new int[1];
 		GLES20.glGenBuffers(1, buff, 0);
 		int handle = buff[0];
-		int byteSize = 4;
+		int byteSize = FLOAT_SIZE_BYTES;
 		if(type == BufferType.SHORT_BUFFER)
-			byteSize = 2;
+			byteSize = SHORT_SIZE_BYTES;
 		
 		GLES20.glBindBuffer(target, handle);
-		GLES20.glBufferData(target, buffer.limit() * byteSize, buffer, GLES20.GL_STATIC_DRAW);
+		GLES20.glBufferData(target, buffer.limit() * byteSize, buffer, usage);
 		
-		return handle;		
+		bufferInfo.buffer = buffer;
+		bufferInfo.bufferHandle = handle;
+		bufferInfo.bufferType = type;
+		bufferInfo.target = target;
+		bufferInfo.byteSize = byteSize;
+	}
+	
+	/**
+	 * Specifies the expected usage pattern of the data store. The symbolic constant must be GLES20.GL_STREAM_DRAW, GLES20.GL_STREAM_READ, GLES20.GL_STREAM_COPY, GLES20.GL_STATIC_DRAW, GLES20.GL_STATIC_READ, GLES20.GL_STATIC_COPY, GLES20.GL_DYNAMIC_DRAW, GLES20.GL_DYNAMIC_READ, or GLES20.GL_DYNAMIC_COPY.
+	 * 
+	 * usage is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. usage can be broken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. The frequency of access may be one of these:
+	 * <p>
+	 * STREAM
+	 * The data store contents will be modified once and used at most a few times.
+	 * <p>
+	 * STATIC
+	 * The data store contents will be modified once and used many times.
+	 * <p>
+	 * DYNAMIC
+	 * The data store contents will be modified repeatedly and used many times.
+	 * <p>
+	 * The nature of access may be one of these:
+	 * <p>
+	 * DRAW
+	 * The data store contents are modified by the application, and used as the source for GL drawing and image specification commands.
+	 * <p>
+	 * READ
+	 * The data store contents are modified by reading data from the GL, and used to return that data when queried by the application.
+	 * <p>
+	 * COPY
+	 * The data store contents are modified by reading data from the GL, and used as the source for GL drawing and image specification commands.
+	 * 
+	 * @param bufferHandle
+	 * @param usage
+	 */
+	public void changeBufferUsage(BufferInfo bufferInfo, final int usage) {
+		GLES20.glDeleteBuffers(1, new int[] { bufferInfo.bufferHandle }, 0);
+		createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.buffer, bufferInfo.target);
+	}
+	
+	public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index) {
+		int num = newData.limit();
+		int size = bufferInfo.byteSize * num;
+		GLES20.glBindBuffer(bufferInfo.target, bufferInfo.bufferHandle);
+		GLES20.glBufferSubData(bufferInfo.target, index * size, size, newData);
+		GLES20.glBindBuffer(bufferInfo.target, 0);
 	}
 
 	public void setVertices(float[] vertices) {
@@ -334,7 +400,7 @@ public class Geometry3D {
 	public void setColor(float r, float g, float b, float a, boolean createNewBuffer) {
 		if(mColors == null || mColors.limit() == 0)
 		{
-			RajLog.i("NUM VERTS " + mNumVertices);
+			mColorBufferInfo = new BufferInfo();
 			mColors = ByteBuffer.allocateDirect(mNumVertices * 4 * FLOAT_SIZE_BYTES)
 			.order(ByteOrder.nativeOrder()).asFloatBuffer();
 			createNewBuffer = true;
@@ -351,13 +417,12 @@ public class Geometry3D {
 		mColors.position(0);
 		
 		if(createNewBuffer == true) {
-			mColorBufferHandle 	= createBuffer(BufferType.FLOAT_BUFFER, mColors,		GLES20.GL_ARRAY_BUFFER);
-		}
-		
-		if(mColorBufferHandle > 0) {
-			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mColorBufferHandle);
+			createBuffer(mColorBufferInfo, BufferType.FLOAT_BUFFER, mColors, GLES20.GL_ARRAY_BUFFER);
+		} else {
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mColorBufferInfo.bufferHandle);
 			GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mColors.limit() * FLOAT_SIZE_BYTES, mColors, GLES20.GL_STATIC_DRAW);
 		}
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
 	
 	public String toString() {
@@ -370,8 +435,6 @@ public class Geometry3D {
 		buff.append(mNormals.capacity());
 		buff.append(", uvs: ");
 		buff.append(mTextureCoords.capacity());
-		//buff.append(", colors: ");
-		//buff.append(mColors.capacity());
 		return buff.toString();
 	}
 	
@@ -395,44 +458,44 @@ public class Geometry3D {
 		return mBoundingSphere;
 	}
 
-	public int getVertexBufferHandle() {
-		return mVertexBufferHandle;
+	public BufferInfo getVertexBufferInfo() {
+		return mVertexBufferInfo;
 	}
 
-	public void setVertexBufferHandle(int vertexBufferHandle) {
-		this.mVertexBufferHandle = vertexBufferHandle;
+	public void setVertexBufferInfo(BufferInfo vertexBufferInfo) {
+		this.mVertexBufferInfo = vertexBufferInfo;
 	}
 
-	public int getIndexBufferHandle() {
-		return mIndexBufferHandle;
+	public BufferInfo getIndexBufferInfo() {
+		return mIndexBufferInfo;
 	}
 
-	public void setIndexBufferHandle(int indexBufferHandle) {
-		this.mIndexBufferHandle = indexBufferHandle;
+	public void setIndexBufferInfo(BufferInfo indexBufferInfo) {
+		this.mIndexBufferInfo = indexBufferInfo;
 	}
 
-	public int getTexCoordBufferHandle() {
-		return mTexCoordBufferHandle;
+	public BufferInfo getTexCoordBufferInfo() {
+		return mTexCoordBufferInfo;
 	}
 
-	public void setTexCoordBufferHandle(int texCoordBufferHandle) {
-		this.mTexCoordBufferHandle = texCoordBufferHandle;
+	public void setTexCoordBufferInfo(BufferInfo texCoordBufferInfo) {
+		this.mTexCoordBufferInfo = texCoordBufferInfo;
 	}
 
-	public int getColorBufferHandle() {
-		return mColorBufferHandle;
+	public BufferInfo getColorBufferInfo() {
+		return mColorBufferInfo;
 	}
 
-	public void setColorBufferHandle(int colorBufferHandle) {
-		this.mColorBufferHandle = colorBufferHandle;
+	public void setColorBufferInfo(BufferInfo colorBufferInfo) {
+		this.mColorBufferInfo = colorBufferInfo;
 	}
 
-	public int getNormalBufferHandle() {
-		return mNormalBufferHandle;
+	public BufferInfo getNormalBufferInfo() {
+		return mNormalBufferInfo;
 	}
 
-	public void setNormalBufferHandle(int normalBufferHandle) {
-		this.mNormalBufferHandle = normalBufferHandle;
+	public void setNormalBufferInfo(BufferInfo normalBufferInfo) {
+		this.mNormalBufferInfo = normalBufferInfo;
 	}
 	
 	public boolean areOnlyShortBuffersSupported() {

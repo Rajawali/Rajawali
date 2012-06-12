@@ -38,7 +38,9 @@ public class ParticleMaterial extends AMaterial {
 		"		position.y += aVelocity.y * uFriction.y * uTime;\n" +
 		"		position.z += aVelocity.z * uFriction.z * uTime; }" +
 		"	gl_Position = uMVPMatrix * position;\n" +
-		"	float pdist = length(uCamPos - position.xyz);\n" +
+		"	vec3 cp = vec3(uCamPos);\n" +
+		"	cp.x *= -1.0;\n" +
+		"	float pdist = length(cp - position.xyz);\n" +
 		"	gl_PointSize = uPointSize / sqrt(uDistanceAtt.x + uDistanceAtt.y * pdist + uDistanceAtt.z * pdist * pdist);\n" +
 		"	#ifdef ANIMATED\n" +
 		"		vTextureCoord.s = mod(uCurrentFrame + aAnimOffset, uNumTileRows) * uTileSize;" +
@@ -99,7 +101,7 @@ public class ParticleMaterial extends AMaterial {
 		super(mVShader, mFShader, false);
 		mDistanceAtt = new float[] {1, 1, 1};
 		mFriction = new float[3];
-		mCamPos = new float[3];		
+		mCamPos = new float[3];
 		mIsAnimated = isAnimated;
 		if(mIsAnimated) {
 			mUntouchedVertexShader = "\n#define ANIMATED\n" + mUntouchedVertexShader;
@@ -123,10 +125,11 @@ public class ParticleMaterial extends AMaterial {
 		super.useProgram();
 	}
 	
-	public void setVelocity(FloatBuffer velocity) {
-    	velocity.position(0);
+	public void setVelocity(final int velocityBufferHandle) {
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, velocityBufferHandle);
 		GLES20.glEnableVertexAttribArray(maVelocityHandle);
-		GLES20.glVertexAttribPointer(maVelocityHandle, 3, GLES20.GL_FLOAT, false, 0, velocity);
+		fix.android.opengl.GLES20.glVertexAttribPointer(maVelocityHandle, 4, GLES20.GL_FLOAT, false,
+				0, 0);
     }
 	
 	public void setFriction(Number3D friction) {
@@ -144,7 +147,6 @@ public class ParticleMaterial extends AMaterial {
 	{
 		super.setShaders(vertexShader, fragmentShader);
 		muPointSizeHandle = getUniformLocation("uPointSize");
-		muCamPosHandle = getUniformLocation("uCamPos");
 		muDistanceAttHandle = getUniformLocation("uDistanceAtt");
 		
 		maVelocityHandle = getAttribLocation("aVelocity");

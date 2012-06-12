@@ -110,14 +110,14 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	/**
 	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
 	 * 
-	 * @param vertexBufferHandle	The handle to the vertex buffer
-	 * @param normalBufferHandle	The handle to the normal buffer
+	 * @param vertexBufferInfo	The handle to the vertex buffer
+	 * @param normalBufferInfo	The handle to the normal buffer
 	 * @param textureCoords			A float array containing texture coordinates
 	 * @param colors				A float array containing color values (rgba)
 	 * @param indices				An integer array containing face indices
 	 */
-	public void setData(int vertexBufferHandle, int normalBufferHandle, float[] textureCoords, float[] colors, int[] indices) {
-		mGeometry.setData(vertexBufferHandle, normalBufferHandle, textureCoords, colors, indices);
+	public void setData(BufferInfo vertexBufferInfo, BufferInfo normalBufferInfo, float[] textureCoords, float[] colors, int[] indices) {
+		mGeometry.setData(vertexBufferInfo, normalBufferInfo, textureCoords, colors, indices);
 		mIsContainerOnly = false;
 		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 	}
@@ -132,7 +132,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param indices				An integer array containing face indices
 	 */
 	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices) {
-		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
+		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords, GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW);
+	}
+	
+	public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage, float[] textureCoords, int textureCoordsUsage,
+			float[] colors, int colorsUsage, int[] indices, int indicesUsage) {
+		mGeometry.setData(vertices, verticesUsage, normals, normalsUsage, textureCoords, textureCoordsUsage, colors, colorsUsage, indices, indicesUsage);
 		mIsContainerOnly = false;
 		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 	}
@@ -214,7 +219,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				pickerMat.setPickingColor(mPickingColorArray);
 				pickerMat.useProgram();
 				pickerMat.setCamera(camera);
-				pickerMat.setVertices(mGeometry.getVertexBufferHandle());
+				pickerMat.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			} else {
 			  if(!mIsPartOfBatch) {
 				 if(mMaterial == null) {
@@ -224,13 +229,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			    mMaterial.useProgram();
 			    mMaterial.bindTextures();
 			  
-  				mMaterial.setTextureCoords(mGeometry.getTexCoordBufferHandle(), mHasCubemapTexture);
-  				mMaterial.setNormals(mGeometry.getNormalBufferHandle());
+  				mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
+  				mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
   				mMaterial.setCamera(camera);
-  				mMaterial.setVertices(mGeometry.getVertexBufferHandle());
+  				mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			  }
 			  if(mMaterial.getUseColor())
-				  mMaterial.setColors(mGeometry.getColorBufferHandle());
+				  mMaterial.setColors(mGeometry.getColorBufferInfo().bufferHandle);
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -243,7 +248,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
 
-				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
+				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
 				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 				if(!mIsPartOfBatch && !mRenderChildrenAsBatch) {
@@ -255,7 +260,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				pickerMat.setModelMatrix(mMMatrix);
 				pickerMat.setViewMatrix(vMatrix);
 
-				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferHandle());
+				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
 				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
