@@ -29,6 +29,10 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 		mFrames = new Stack<IAnimationFrame>();
 	}
 
+	public void setCurrentFrame(int frame) {
+		mCurrentFrameIndex = frame;
+	}
+	
 	public int getCurrentFrame() {
 		return mCurrentFrameIndex;
 	}
