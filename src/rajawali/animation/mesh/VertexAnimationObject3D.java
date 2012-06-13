@@ -58,10 +58,10 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 	}
 
 	public void reload() {
-		super.reload();
 		for (int i = 0; i < mNumFrames; i++) {
 			mFrames.get(i).getGeometry().reload();
 		}
+		super.reload();
 	}
 	
 	public VertexAnimationObject3D clone(boolean copyMaterial) {
@@ -69,7 +69,6 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		if(copyMaterial) clone.setMaterial(mMaterial, false);
-		//clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 		for(int i=0; i<mNumFrames; ++i) {
 			clone.addFrame(getFrame(i));
 		}

@@ -89,6 +89,8 @@ public class Geometry3D {
 		mVertexBufferInfo = vertexBufferInfo;
 		mNormalBufferInfo = normalBufferInfo;
 		
+		mOriginalGeometry = null;
+		
 		createBuffers();
 	}
 	
@@ -196,7 +198,7 @@ public class Geometry3D {
 		
 		createBuffer(mVertexBufferInfo, BufferType.FLOAT_BUFFER, mVertices, GLES20.GL_ARRAY_BUFFER);
 		createBuffer(mNormalBufferInfo, BufferType.FLOAT_BUFFER, mNormals, GLES20.GL_ARRAY_BUFFER);
-		
+
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
