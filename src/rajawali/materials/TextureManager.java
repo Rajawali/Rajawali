@@ -186,12 +186,28 @@ public class TextureManager {
 		return mTextureInfoList.size();
 	}
 	
+	/**
+	 * Please use updateTexture(TextureInfo textureInfo, Bitmap texture)
+	 * @deprecated
+	 * @param textureId
+	 * @param texture
+	 */
 	public void updateTexture(Integer textureId, Bitmap texture) {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId.intValue());
 		GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, texture);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 	
+	public void updateTexture(TextureInfo textureInfo, Bitmap texture) {
+		int bitmapFormat = texture.getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureInfo.getTextureId());
+		GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, texture, bitmapFormat, GLES20.GL_UNSIGNED_BYTE);
+        if(textureInfo.isMipmap())
+        	GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+	}
+
 	public void reload() {
 		TextureInfo tInfo = null, newInfo = null;
 		
