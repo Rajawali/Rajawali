@@ -703,4 +703,8 @@ public class Geometry3D {
 	public boolean areOnlyShortBuffersSupported() {
 		return mOnlyShortBufferSupported;
 	}
+	
+	public int getNumTriangles() {
+		return mVertices != null ? mVertices.limit() / 9 : 0;
+	}
 }

@@ -499,4 +499,14 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void setFPSUpdateListener(FPSUpdateListener listener) {
 		mFPSUpdateListener = listener;
 	}
+	
+	public int getNumTriangles() {
+		int triangleCount = 0;
+		for(int i=0; i<mNumChildren; ++i) {
+			BaseObject3D child = mChildren.get(i);
+			if(child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				triangleCount += mChildren.get(i).getGeometry().getVertices().limit() / 9;
+		}
+		return triangleCount;
+	}
 }

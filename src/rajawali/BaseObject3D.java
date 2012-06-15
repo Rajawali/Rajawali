@@ -618,7 +618,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public void setVisible(boolean visible) {
 		mIsVisible = visible;
 	}
-
+	
 	public void setColor(int color) {
 		setColor(color, false);
 	}
