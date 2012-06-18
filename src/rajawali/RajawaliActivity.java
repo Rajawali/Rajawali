@@ -25,6 +25,7 @@ public class RajawaliActivity extends Activity {
 	protected boolean mMultisamplingEnabled = false;
 	protected boolean mUsesCoverageAa;
 	private RajawaliRenderer mRajRenderer;
+	protected boolean checkOpenGLVersion = true;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,9 +33,11 @@ public class RajawaliActivity extends Activity {
         mSurfaceView = new GLSurfaceView(this);
         
         ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-        ConfigurationInfo info = am.getDeviceConfigurationInfo();
-        if(info.reqGlEsVersion < 0x20000)
-        	throw new Error("OpenGL ES 2.0 is not supported by this device");
+        if(checkOpenGLVersion) {
+        	ConfigurationInfo info = am.getDeviceConfigurationInfo();
+        	if(info.reqGlEsVersion < 0x20000)
+        		throw new Error("OpenGL ES 2.0 is not supported by this device");
+        }
         mSurfaceView.setEGLContextClientVersion(2);
         mLayout = new FrameLayout(this);
         mLayout.addView(mSurfaceView);
