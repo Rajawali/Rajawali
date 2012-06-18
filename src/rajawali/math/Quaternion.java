@@ -69,6 +69,26 @@ public final class Quaternion {
 		return this;
 	}
 	
+	public Quaternion fromEuler(final float heading, final float attitude, final float bank) {
+		float x = MathUtil.radiansToDegrees(heading);
+		float y = MathUtil.radiansToDegrees(attitude);
+		float z = MathUtil.radiansToDegrees(bank);
+	    float c1 = FloatMath.cos(x/2);
+	    float s1 = FloatMath.sin(x/2);
+	    float c2 = FloatMath.cos(y/2);
+	    float s2 = FloatMath.sin(y/2);
+	    float c3 = FloatMath.cos(z/2);
+	    float s3 = FloatMath.sin(z/2);
+	    float c1c2 = c1*c2;
+	    float s1s2 = s1*s2;
+	    w =c1c2*c3 - s1s2*s3;
+	  	x =c1c2*s3 + s1s2*c3;
+		y =s1*c2*c3 + c1*s2*s3;
+		z =c1*s2*c3 - s1*c2*s3;
+		
+		return this;
+	}
+	
 	public void fromAxes(final Number3D xAxis, final Number3D yAxis, final Number3D zAxis)
     {
         float[] kRot = new float[16];
