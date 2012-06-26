@@ -154,6 +154,8 @@ public class TextureManager {
 		textureInfo.setBitmapConfig(textures[0].getConfig());
 		textureInfo.setMipmap(mipmap);
 		
+		textureInfo.setIsCubeMap(true);
+		
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
 		if(mipmap)
 			GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
