@@ -38,6 +38,8 @@ public class TextureInfo {
 	protected boolean mMipmap;
 	protected Config mBitmapConfig;
 	
+	protected boolean isCubeMap = false;
+	
 	/**
 	 * OpenGL bitmap format
 	 */
@@ -74,6 +76,14 @@ public class TextureInfo {
 
 	public int getUniformHandle() {
 		return mUniformHandle;
+	}
+	
+	public boolean isCubeMap() {
+		return isCubeMap;
+	}
+	
+	public void setIsCubeMap(boolean cube) {
+		isCubeMap = cube;
 	}
 
 	public String toString() {

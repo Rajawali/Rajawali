@@ -196,7 +196,7 @@ public abstract class AMaterial {
 
 		for (int i = 0; i < num; i++) {
 			TextureInfo ti = mTextureInfoList.get(i);
-			int type = usesCubeMap ? GLES20.GL_TEXTURE_CUBE_MAP
+			int type = ti.isCubeMap() ? GLES20.GL_TEXTURE_CUBE_MAP
 					: GLES20.GL_TEXTURE_2D;
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
 			GLES20.glBindTexture(type, ti.getTextureId());
