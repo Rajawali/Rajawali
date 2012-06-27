@@ -1,6 +1,8 @@
 package rajawali.materials;
 
+import rajawali.materials.TextureManager.FilterType;
 import rajawali.materials.TextureManager.TextureType;
+import rajawali.materials.TextureManager.WrapType;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
@@ -37,6 +39,18 @@ public class TextureInfo {
 	protected Bitmap[] mTextures;
 	protected boolean mMipmap;
 	protected Config mBitmapConfig;
+	/**
+	 * The type of texture
+	 * 
+	 * @see TextureManager.WrapType
+	 */
+	protected WrapType mWrapType;
+	/**
+	 * The type of texture
+	 * 
+	 * @see TextureManager.FilterType
+	 */
+	protected FilterType mFilterType;
 	
 	/**
 	 * OpenGL bitmap format
@@ -134,5 +148,21 @@ public class TextureInfo {
 
 	public void setBitmapConfig(Config bitmapConfig) {
 		this.mBitmapConfig = bitmapConfig;
+	}
+	
+	public void setFilterType(FilterType filterType) {
+		this.mFilterType = filterType;
+	}
+	
+	public FilterType getFilterType() {
+		return mFilterType;
+	}
+	
+	public void setWrapType(WrapType wrapType) {
+		this.mWrapType = wrapType;
+	}
+	
+	public WrapType getWrapType() {
+		return mWrapType;
 	}
 }
