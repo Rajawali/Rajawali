@@ -42,6 +42,16 @@ public class TextureManager {
 		SPHERE_MAP
 	};
 	
+	public enum WrapType {
+		CLAMP,
+		REPEAT		
+	};
+	
+	public enum FilterType{
+		NEAREST,
+		LINEAR
+	};
+	
 	public TextureManager() {
 		mTextureInfoList = new ArrayList<TextureInfo>(); 
 	}
@@ -51,19 +61,26 @@ public class TextureManager {
 	}
 	
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType) {
-		return this.addTexture(texture, textureType, true, false);	
+		return this.addTexture(texture, textureType, true, false, WrapType.REPEAT, FilterType.LINEAR);	
 	}
 	
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap) {
-	    return this.addTexture(texture, textureType, mipmap, false);
+	    return this.addTexture(texture, textureType, mipmap, false, WrapType.REPEAT, FilterType.LINEAR);
 	}
 
 	public TextureInfo addTexture(Bitmap texture, boolean mipmap, boolean recycle) {
-	    return this.addTexture(texture, TextureType.DIFFUSE, mipmap, recycle);
+	    return this.addTexture(texture, TextureType.DIFFUSE, mipmap, recycle, WrapType.REPEAT, FilterType.LINEAR);
+	}
+	
+	public TextureInfo addTexture(Bitmap texture, TextureType textureType, WrapType wrapType, FilterType filterType) {
+		return this.addTexture(texture, textureType, true, false, wrapType, filterType);	
 	}
 
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap, boolean recycle) {
-		TextureInfo tInfo = addTexture(null, texture, texture.getWidth(), texture.getHeight(), textureType, texture.getConfig(), mipmap, recycle);
+		return this.addTexture(texture, textureType, mipmap, recycle, WrapType.REPEAT, FilterType.LINEAR);
+	}
+	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
+		TextureInfo tInfo = addTexture(null, texture, texture.getWidth(), texture.getHeight(), textureType, texture.getConfig(), mipmap, recycle, wrapType, filterType);
 		if(recycle)
 			texture.recycle();
 		else 
@@ -76,14 +93,14 @@ public class TextureManager {
 	}
 	
 	public TextureInfo addTexture(ByteBuffer buffer, int width, int height, TextureType textureType) {
-		return addTexture(buffer, null, width, height, textureType, Config.ARGB_8888, false, false);
+		return addTexture(buffer, null, width, height, textureType, Config.ARGB_8888, false, false, WrapType.REPEAT, FilterType.LINEAR);
 	}
 	
-	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle) {
-		return addTexture(buffer, texture, width, height, textureType, bitmapConfig, mipmap, recycle, false);
+	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
+		return addTexture(buffer, texture, width, height, textureType, bitmapConfig, mipmap, recycle, false, wrapType, filterType);
 	}
 	
-	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture) {
+	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		int bitmapFormat = bitmapConfig == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
 		
 		int[] textures = new int[1];
@@ -91,14 +108,31 @@ public class TextureManager {
 		int textureId = textures[0];
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);        
         
-		if(mipmap)
-        	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
-        else
-        	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+		if(mipmap){
+			if(filterType==FilterType.LINEAR)
+				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+			else
+				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST_MIPMAP_NEAREST);				
+		}else{
+			if(filterType==FilterType.LINEAR)
+		       	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+			else
+				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+		}
 
-		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+		if(filterType==FilterType.LINEAR)
+			GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+		else
+			GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+		
+		if(wrapType==WrapType.REPEAT){
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+        	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+		}else{
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+        	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+		}
+        	
         if(texture == null)
         	GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, width, height, 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, buffer);
         else
@@ -112,6 +146,8 @@ public class TextureManager {
         textureInfo.setHeight(height);
         textureInfo.setBitmapConfig(bitmapConfig);
         textureInfo.setMipmap(mipmap);
+        textureInfo.setWrapType(wrapType);
+        textureInfo.setFilterType(filterType);
         if(!recycle)
         	textureInfo.setTexture(texture);
         if(buffer != null) {
@@ -220,7 +256,7 @@ public class TextureManager {
 			if(tInfo.getTextureType() == TextureType.CUBE_MAP)
 				newInfo = addCubemapTextures(tInfo.getTextures(), tInfo.isMipmap(), false, true);
 			else
-				newInfo = addTexture(null, tInfo.getTexture(), tInfo.getWidth(), tInfo.getHeight(), tInfo.getTextureType(), tInfo.getBitmapConfig(), tInfo.isMipmap(), false, true);
+				newInfo = addTexture(null, tInfo.getTexture(), tInfo.getWidth(), tInfo.getHeight(), tInfo.getTextureType(), tInfo.getBitmapConfig(), tInfo.isMipmap(), false, true, tInfo.getWrapType(), tInfo.getFilterType());
 			tInfo.setFrom(newInfo);
 		}
 	}
