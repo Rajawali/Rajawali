@@ -118,7 +118,7 @@ public class MD2Parser extends AParser implements IParser {
 
 			mCurrentTextureName = textureName.toString();
 		}
-		
+		is.close();
 		if(mFile == null) {
 			if(mCurrentTextureName == null) {
 				RajLog.e("[" + getClass().getCanonicalName() + "] No texture name was specified. No material will be created.");
@@ -154,6 +154,7 @@ public class MD2Parser extends AParser implements IParser {
 			coords[buffIndex] = (float)is.readShort() / (float)mHeader.skinWidth;
 			coords[buffIndex + 1] = (float)is.readShort() / (float)mHeader.skinHeight;
 		}
+		is.close();
 		return coords;
 	}
 
@@ -194,6 +195,7 @@ public class MD2Parser extends AParser implements IParser {
 			}
 			mFrameVerts[i] = vertices;
 		}
+		is.close();
 	}
 
 	private void getTriangles(BufferedInputStream stream, byte[] bytes, float[] texCoords)
@@ -214,6 +216,7 @@ public class MD2Parser extends AParser implements IParser {
 			uvIndices[uvIndex++] = is.readShort();
 			uvIndices[uvIndex++] = is.readShort();
 		}
+		is.close();
 		
 		short newVertexIndex = (short)mHeader.numVerts;
 		int numIndices = indices.length;
