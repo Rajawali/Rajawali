@@ -59,7 +59,7 @@ public abstract class AMaterial {
 		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS, numTexUnits, 0);
 		mMaxTextures = numTexUnits[0];
 	}
-
+	
 	public AMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
 		this();
 		mUntouchedVertexShader = vertexShader;
@@ -177,6 +177,15 @@ public abstract class AMaterial {
 		GLES20.glDeleteShader(mVShaderHandle);
 		GLES20.glDeleteShader(mFShaderHandle);
 		GLES20.glDeleteProgram(mProgram);
+	}
+	
+	public void destroy() {
+		mModelViewMatrix = null;
+		mViewMatrix = null;
+		mCameraPosArray = null;
+		if(mLights != null) mLights.clear();
+		if(mTextureInfoList != null) mTextureInfoList.clear();
+		unload();
 	}
 
 	public void useProgram() {

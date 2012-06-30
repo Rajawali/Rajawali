@@ -268,4 +268,22 @@ public abstract class AAdvancedMaterial extends AMaterial {
 
 	    GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalMatrix, 0);
 	}
+	
+	public void destroy() {
+		super.destroy();
+		muLightAttenuationHandles = null;
+		muLightColorHandles = null;
+		muLightPowerHandles = null;
+		muLightPositionHandles = null;
+		muLightDirectionHandles = null;
+		muLightAttenuationHandles = null;
+		mNormalMatrix = null;
+		mTmp = null;
+		mTmp2 = null;
+		mAmbientColor = null;
+		mAmbientIntensity = null;
+		mFogColor = null;
+		mTmpNormalMatrix = null;
+		mTmpMvMatrix = null;
+	}
 }

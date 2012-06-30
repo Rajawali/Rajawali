@@ -624,6 +624,50 @@ public class Geometry3D {
 		return buff.toString();
 	}
 	
+	public void destroy() {
+		int[] buffers  = new int[5];
+	    buffers[0] = this.getIndexBufferInfo().bufferHandle;
+	    buffers[1] = this.getVertexBufferInfo().bufferHandle;
+	    buffers[2] = this.getNormalBufferInfo().bufferHandle;
+	    buffers[3] = this.getTexCoordBufferInfo().bufferHandle;
+	    buffers[4] = this.getColorBufferInfo().bufferHandle;
+	    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
+
+	    if(mVertices != null) mVertices.clear();
+	    if(mNormals != null) mNormals.clear();
+	    if(mTextureCoords != null) mTextureCoords.clear();
+	    if(mColors != null) mColors.clear();
+	    if(mIndicesInt != null) mIndicesInt.clear();
+	    if(mIndicesShort != null) mIndicesShort.clear();
+	    if(mOriginalGeometry != null) mOriginalGeometry.destroy();
+
+	    mVertices=null;
+	    mNormals=null;
+	    mTextureCoords=null;
+	    mColors=null;
+	    mIndicesInt=null;
+	    mIndicesShort=null;
+	    mOriginalGeometry=null;
+
+	    if(mVertexBufferInfo != null && mVertexBufferInfo.buffer != null) mVertexBufferInfo.buffer.clear();
+	    if(mIndexBufferInfo != null && mIndexBufferInfo.buffer != null) mIndexBufferInfo.buffer.clear();
+	    if(mColorBufferInfo != null && mColorBufferInfo.buffer != null)  mColorBufferInfo.buffer.clear();
+	    if(mNormalBufferInfo != null && mNormalBufferInfo.buffer != null) mNormalBufferInfo.buffer.clear();
+	    if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.buffer != null)  mTexCoordBufferInfo.buffer.clear();
+
+	    mVertexBufferInfo.buffer=null;
+	    mIndexBufferInfo.buffer=null;
+	    mColorBufferInfo.buffer=null;
+	    mNormalBufferInfo.buffer=null;
+	    mTexCoordBufferInfo.buffer=null;
+
+	    mVertexBufferInfo=null;
+	    mTexCoordBufferInfo=null;
+	    mColorBufferInfo=null;
+	    mNormalBufferInfo=null;
+	    mTexCoordBufferInfo=null;
+	}
+	
 	public boolean hasBoundingBox() {
 		return mBoundingBox != null;
 	}

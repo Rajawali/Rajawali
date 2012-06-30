@@ -85,7 +85,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		this();
 		mName = name;
 	}
-
+	
 	/**
 	 * Creates a BaseObject3D from a serialized file. A serialized file can be a BaseObject3D but also
 	 * a VertexAnimationObject3D.
@@ -714,4 +714,18 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
   public boolean isDepthMaskEnabled() {
 	  return mEnableDepthMask;
   }
+  
+	public void destroy() {
+		if(mLights != null) mLights.clear();
+		if(mGeometry != null) mGeometry.destroy();
+		if(mMaterial != null) mMaterial.destroy();
+		mLights = null;
+		mMaterial = null;
+		mGeometry = null;
+		for(int i=0; i<mNumChildren; ++i) {
+			mChildren.get(i).destroy();
+		}
+		mChildren.clear();
+		mChildren = null;
+	}
 }

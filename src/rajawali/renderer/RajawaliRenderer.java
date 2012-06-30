@@ -266,7 +266,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	protected void destroyScene() {
-		
+		for (int i = 0; i < mNumChildren; ++i) {
+			mChildren.get(i).destroy();
+		}
+		mChildren.clear();
+		mChildren = null;
 	}
 	
 	public void startRendering() {
@@ -283,6 +287,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		if (mTimer != null) {
 			mTimer.cancel();
 			mTimer.purge();
+			mTimer = null;
 		}
 	}
 
@@ -298,6 +303,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		TimerManager.getInstance().clear();
 		if (mTextureManager != null)
 			mTextureManager.reset();
+		destroyScene();
 	}
 
 	public void setSharedPreferences(SharedPreferences preferences) {
