@@ -166,19 +166,11 @@ public abstract class AMaterial {
 	}
 
 	protected int getUniformLocation(String name) {
-		int handle = GLES20.glGetUniformLocation(mProgram, name);
-		if (handle == -1) {
-			RajLog.d("[" +getClass().getName()+ "] Could not get uniform location for " + name);
-		}
-		return handle;
+		return GLES20.glGetUniformLocation(mProgram, name);
 	}
 
 	protected int getAttribLocation(String name) {
-		int handle = GLES20.glGetAttribLocation(mProgram, name);
-		if (handle == -1) {
-			RajLog.d("[" +getClass().getName()+ "] Could not get attrib location for " + name);
-		}
-		return handle;
+		return GLES20.glGetAttribLocation(mProgram, name);
 	}
 	
 	public void unload() {
@@ -216,6 +208,10 @@ public abstract class AMaterial {
 
 	public ArrayList<TextureInfo> getTextureInfoList() {
 		return mTextureInfoList;
+	}
+	
+	public void setTextureInfoList(ArrayList<TextureInfo> textureInfoList) {
+		mTextureInfoList = textureInfoList;
 	}
 
 	public void addTexture(TextureInfo textureInfo) {
@@ -289,33 +285,43 @@ public abstract class AMaterial {
 	}
 
 	public void setVertices(final int vertexBufferHandle) {
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle);
-		GLES20.glEnableVertexAttribArray(maPositionHandle);
-		fix.android.opengl.GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT,
-				false, 0, 0);
+		if(checkValidHandle(vertexBufferHandle, "vertex data")){
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle);
+			GLES20.glEnableVertexAttribArray(maPositionHandle);
+			fix.android.opengl.GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT,
+					false, 0, 0);
+		}
 	}
 
 	public void setTextureCoords(int textureCoordBufferHandle) {
-		setTextureCoords(textureCoordBufferHandle, false);
+		if(checkValidHandle(textureCoordBufferHandle, "texture coordinates"))
+			setTextureCoords(textureCoordBufferHandle, false);
 	}
 
 	public void setTextureCoords(final int textureCoordBufferHandle,
 			boolean hasCubemapTexture) {
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, textureCoordBufferHandle);
-		GLES20.glEnableVertexAttribArray(maTextureHandle);
-		fix.android.opengl.GLES20.glVertexAttribPointer(maTextureHandle,
-				hasCubemapTexture ? 3 : 2, GLES20.GL_FLOAT, false, 0, 0);
+		if(checkValidHandle(textureCoordBufferHandle, "texture coordinates"))
+		{
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, textureCoordBufferHandle);
+			GLES20.glEnableVertexAttribArray(maTextureHandle);
+			fix.android.opengl.GLES20.glVertexAttribPointer(maTextureHandle,
+					hasCubemapTexture ? 3 : 2, GLES20.GL_FLOAT, false, 0, 0);
+		}
 	}
 
 	public void setColors(final int colorBufferHandle) {
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBufferHandle);
-		GLES20.glEnableVertexAttribArray(maColorHandle);
-		fix.android.opengl.GLES20.glVertexAttribPointer(maColorHandle, 4, GLES20.GL_FLOAT, false,
-				0, 0);
+		if(checkValidHandle(colorBufferHandle, "color data"))
+		{
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBufferHandle);
+			GLES20.glEnableVertexAttribArray(maColorHandle);
+			fix.android.opengl.GLES20.glVertexAttribPointer(maColorHandle, 4, GLES20.GL_FLOAT,
+					false, 0, 0);
+		}
 	}
 
 	public void setNormals(final int normalBufferHandle) {
-		if (maNormalHandle > -1) {
+		if(checkValidHandle(normalBufferHandle, "normal data"))
+			if(checkValidHandle(maNormalHandle, null)){
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
 			GLES20.glEnableVertexAttribArray(maNormalHandle);
 			fix.android.opengl.GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT,
@@ -324,39 +330,59 @@ public abstract class AMaterial {
 	}
 
 	public void setMVPMatrix(float[] mvpMatrix) {
-		GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mvpMatrix, 0);
+		if(checkValidHandle(muMVPMatrixHandle, "mvp matrix"))
+			GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mvpMatrix, 0);
+
 	}
 
 	public void setModelMatrix(float[] modelMatrix) {
 		mModelViewMatrix = modelMatrix;
-		if (muMMatrixHandle > -1)
+		if(checkValidHandle(muMMatrixHandle, null))
 			GLES20.glUniformMatrix4fv(muMMatrixHandle, 1, false, modelMatrix, 0);
 	}
 
 	public void setViewMatrix(float[] viewMatrix) {
 		mViewMatrix = viewMatrix;
-		if (muVMatrixHandle > -1)
+		if(checkValidHandle(muMMatrixHandle, null))
 			GLES20.glUniformMatrix4fv(muVMatrixHandle, 1, false, viewMatrix, 0);
 	}
 	
 	public void setInterpolation(float interpolation) {
-		GLES20.glUniform1f(muInterpolationHandle, interpolation);
+		if(checkValidHandle(muInterpolationHandle, "interpolation"))
+			GLES20.glUniform1f(muInterpolationHandle, interpolation);
 	}
 	
 	public void setNextFrameVertices(final int vertexBufferHandle) {
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle);
-		GLES20.glEnableVertexAttribArray(maNextFramePositionHandle);
-		fix.android.opengl.GLES20.glVertexAttribPointer(maNextFramePositionHandle, 3, GLES20.GL_FLOAT,
-				false, 0, 0);
+		if(checkValidHandle(vertexBufferHandle, "NextFrameVertices")){
+			if(checkValidHandle(maNextFramePositionHandle, "maNextFramePositionHandle")){
+				GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle);
+				GLES20.glEnableVertexAttribArray(maNextFramePositionHandle);
+				fix.android.opengl.GLES20.glVertexAttribPointer(maNextFramePositionHandle, 3, GLES20.GL_FLOAT,
+						false, 0, 0);
+			}
+		}
 	}
 	
 	public void setNextFrameNormals(final int normalBufferHandle) {
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
-		GLES20.glEnableVertexAttribArray(maNormalHandle);
-		fix.android.opengl.GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT,
-				false, 0, 0);
+		if(checkValidHandle(normalBufferHandle, "NextFrameNormals")){
+			if(checkValidHandle(maNormalHandle, "maNormalHandle")){
+				GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
+				GLES20.glEnableVertexAttribArray(maNormalHandle);
+				fix.android.opengl.GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT,
+						false, 0, 0);
+			}
+		}
 	}
 
+	public boolean checkValidHandle(int handle, String message){
+		if(handle >= 0)
+			return true;
+		if(message != null)
+			RajLog.e("[" +getClass().getCanonicalName()+ "] Trying to set "+message+
+				" without a valid handle.");
+		return false;					
+	}
+	
 	public void setLightParams() {
 		
 	}
@@ -390,6 +416,8 @@ public abstract class AMaterial {
 		out.append(mFragmentShader);
 		return out.toString();
 	}
+	
+	
 
 	public float[] getModelViewMatrix() {
 		return mModelViewMatrix;
