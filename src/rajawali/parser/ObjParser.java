@@ -244,11 +244,13 @@ public class ObjParser extends AParser {
 					Log.d("Rajawali", "ERREUR!! " + vertexIndex + ", " + faceIndex);
 				}
 			}
-			for(i=0; i<oid.texCoordIndices.size(); ++i) {
-				int texCoordIndex = oid.texCoordIndices.get(i) * 2;
-				int ti = i * 2;
-				aTexCoords[ti] = texCoords.get(texCoordIndex);
-				aTexCoords[ti + 1] = texCoords.get(texCoordIndex + 1);
+			if(texCoords != null && texCoords.size() > 0) {
+				for(i=0; i<oid.texCoordIndices.size(); ++i) {
+					int texCoordIndex = oid.texCoordIndices.get(i) * 2;
+					int ti = i * 2;
+					aTexCoords[ti] = texCoords.get(texCoordIndex);
+					aTexCoords[ti + 1] = texCoords.get(texCoordIndex + 1);
+				}
 			}
 			for(i=0; i<oid.colorIndices.size(); ++i) {
 				int colorIndex = oid.colorIndices.get(i) * 4;
