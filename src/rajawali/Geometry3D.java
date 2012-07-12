@@ -626,11 +626,11 @@ public class Geometry3D {
 	
 	public void destroy() {
 		int[] buffers  = new int[5];
-	    buffers[0] = this.getIndexBufferInfo().bufferHandle;
-	    buffers[1] = this.getVertexBufferInfo().bufferHandle;
-	    buffers[2] = this.getNormalBufferInfo().bufferHandle;
-	    buffers[3] = this.getTexCoordBufferInfo().bufferHandle;
-	    buffers[4] = this.getColorBufferInfo().bufferHandle;
+	    if(mIndexBufferInfo != null) buffers[0] = mIndexBufferInfo.bufferHandle;
+	    if(mVertexBufferInfo != null) buffers[1] = mVertexBufferInfo.bufferHandle;
+	    if(mNormalBufferInfo != null) buffers[2] = mNormalBufferInfo.bufferHandle;
+	    if(mTexCoordBufferInfo != null) buffers[3] = mTexCoordBufferInfo.bufferHandle;
+	    if(mColorBufferInfo != null) buffers[4] = mColorBufferInfo.bufferHandle;
 	    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
 
 	    if(mVertices != null) mVertices.clear();
@@ -649,17 +649,11 @@ public class Geometry3D {
 	    mIndicesShort=null;
 	    mOriginalGeometry=null;
 
-	    if(mVertexBufferInfo != null && mVertexBufferInfo.buffer != null) mVertexBufferInfo.buffer.clear();
-	    if(mIndexBufferInfo != null && mIndexBufferInfo.buffer != null) mIndexBufferInfo.buffer.clear();
-	    if(mColorBufferInfo != null && mColorBufferInfo.buffer != null)  mColorBufferInfo.buffer.clear();
-	    if(mNormalBufferInfo != null && mNormalBufferInfo.buffer != null) mNormalBufferInfo.buffer.clear();
-	    if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.buffer != null)  mTexCoordBufferInfo.buffer.clear();
-
-	    mVertexBufferInfo.buffer=null;
-	    mIndexBufferInfo.buffer=null;
-	    mColorBufferInfo.buffer=null;
-	    mNormalBufferInfo.buffer=null;
-	    mTexCoordBufferInfo.buffer=null;
+	    if(mVertexBufferInfo != null && mVertexBufferInfo.buffer != null) { mVertexBufferInfo.buffer.clear(); mVertexBufferInfo.buffer=null; }
+	    if(mIndexBufferInfo != null && mIndexBufferInfo.buffer != null) { mIndexBufferInfo.buffer.clear(); mIndexBufferInfo.buffer=null; }
+	    if(mColorBufferInfo != null && mColorBufferInfo.buffer != null)  { mColorBufferInfo.buffer.clear(); mColorBufferInfo.buffer=null; }
+	    if(mNormalBufferInfo != null && mNormalBufferInfo.buffer != null) { mNormalBufferInfo.buffer.clear(); mNormalBufferInfo.buffer=null; }
+	    if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.buffer != null) { mTexCoordBufferInfo.buffer.clear(); mTexCoordBufferInfo.buffer=null; }
 
 	    mVertexBufferInfo=null;
 	    mTexCoordBufferInfo=null;
