@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 
 public class Wallpaper extends GLWallpaperService {
     public static String TAG = "Rajawali";
@@ -311,8 +312,16 @@ public class Wallpaper extends GLWallpaperService {
 			renderer.onTouchEvent(event);
 		}
 		
+		 @Override
+		 public void onCreate(SurfaceHolder surfaceHolder) 
+		 {
+			 super.onCreate(surfaceHolder);
+			 setTouchEventsEnabled(true);
+		 }   
+		
 		@Override
 		public void onDestroy() {
+			setTouchEventsEnabled(false);
 			super.onDestroy();
 			renderer.onSurfaceDestroyed();
 			renderer = null;

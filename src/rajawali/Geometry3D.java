@@ -402,6 +402,7 @@ public class Geometry3D {
 		
 		GLES20.glBindBuffer(target, handle);
 		GLES20.glBufferData(target, buffer.limit() * byteSize, buffer, usage);
+		GLES20.glBindBuffer(target, 0);
 		
 		bufferInfo.buffer = buffer;
 		bufferInfo.bufferHandle = handle;

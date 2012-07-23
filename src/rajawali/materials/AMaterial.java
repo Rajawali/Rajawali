@@ -213,6 +213,8 @@ public abstract class AMaterial {
 					: GLES20.GL_TEXTURE_2D;
 			GLES20.glBindTexture(type, 0);
 		}
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
 
 	public ArrayList<TextureInfo> getTextureInfoList() {
