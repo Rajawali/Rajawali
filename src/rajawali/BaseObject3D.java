@@ -572,23 +572,26 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public SerializedObject3D toSerializedObject3D() {
 		SerializedObject3D ser = new SerializedObject3D(
-				mGeometry.getVertices().capacity(), 
-				mGeometry.getNormals().capacity(), 
-				mGeometry.getTextureCoords().capacity(), 
-				mGeometry.getColors().capacity(), 
-				mGeometry.getIndices().capacity());
+				mGeometry.getVertices() != null ? mGeometry.getVertices().capacity() : 0, 
+				mGeometry.getNormals() != null ? mGeometry.getNormals().capacity() : 0, 
+				mGeometry.getTextureCoords() != null ? mGeometry.getTextureCoords().capacity() : 0, 
+				mGeometry.getColors() != null ? mGeometry.getColors().capacity() : 0, 
+				mGeometry.getIndices() != null ? mGeometry.getIndices().capacity() : 0);
 
 		int i;
 
-		for (i = 0; i < mGeometry.getVertices().capacity(); i++)
-			ser.getVertices()[i] = mGeometry.getVertices().get(i);
+		if(mGeometry.getVertices() != null)
+			for (i = 0; i < mGeometry.getVertices().capacity(); i++)
+				ser.getVertices()[i] = mGeometry.getVertices().get(i);
 		if(mGeometry.getNormals() != null)
 			for (i = 0; i < mGeometry.getNormals().capacity(); i++)
 				ser.getNormals()[i] = mGeometry.getNormals().get(i);
-		for (i = 0; i < mGeometry.getTextureCoords().capacity(); i++)
-			ser.getTextureCoords()[i] = mGeometry.getTextureCoords().get(i);
-		for (i = 0; i < mGeometry.getColors().capacity(); i++)
-			ser.getColors()[i] = mGeometry.getColors().get(i);
+		if(mGeometry.getTextureCoords() != null)
+			for (i = 0; i < mGeometry.getTextureCoords().capacity(); i++)
+				ser.getTextureCoords()[i] = mGeometry.getTextureCoords().get(i);
+		if(mGeometry.getColors() != null)
+			for (i = 0; i < mGeometry.getColors().capacity(); i++)
+				ser.getColors()[i] = mGeometry.getColors().get(i);
 		if(!mGeometry.areOnlyShortBuffersSupported()) {
 			IntBuffer buff = (IntBuffer)mGeometry.getIndices();
 			for (i = 0; i < mGeometry.getIndices().capacity(); i++) 
