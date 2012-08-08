@@ -41,6 +41,7 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 * [Rajawali Tutorial 22: More Optimisation](http://www.rozengain.com/blog/2012/05/03/rajawali-tutorial-22-more-optimisation/)
 * [Rajawali Tutorial 23: Custom Vertex Shader](http://www.rozengain.com/blog/2012/05/16/rajawali-tutorial-23-custom-vertex-shader/)
 * [Rajawali Tutorial 24: Using Geometry Data To Position And Rotate Objects](http://www.rozengain.com/blog/2012/05/30/rajawali-tutorial-24-using-geometry-data-to-position-and-rotate-objects/)
+* [Rajawali Tutorial 25: Video Material](http://www.rozengain.com/blog/2012/08/08/rajawali-tutorial-25-video-material/)
 
 ## Tutorials By Others
 * (Kean Walmsley from Autodesk) Creating a 3D viewer for our Apollonian service using Android [Part 1](http://through-the-interface.typepad.com/through_the_interface/2012/04/creating-a-3d-viewer-for-our-apollonian-service-using-android-part-1.html) [Part 2](http://through-the-interface.typepad.com/through_the_interface/2012/05/creating-a-3d-viewer-for-our-apollonian-service-using-android-part-2.html) [Part 3](http://through-the-interface.typepad.com/through_the_interface/2012/05/creating-a-3d-viewer-for-our-apollonian-service-using-android-part-3.html)
