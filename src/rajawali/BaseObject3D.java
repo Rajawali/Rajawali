@@ -166,7 +166,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			return;
 
 		preRender();
-		
+
 		// -- move view matrix transformation first
 		Matrix.setIdentityM(mMMatrix, 0);
 		Matrix.setIdentityM(mScalematrix, 0);

@@ -14,6 +14,7 @@ import android.opengl.GLUtils;
  *
  */
 public class TextureManager {
+	private static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 	/**
 	 * List containing texture information objects
 	 */
@@ -39,7 +40,8 @@ public class TextureManager {
 		DEPTH_BUFFER,
 		LOOKUP,
 		CUBE_MAP,
-		SPHERE_MAP
+		SPHERE_MAP,
+		VIDEO_TEXTURE
 	};
 	
 	public enum WrapType {
@@ -160,6 +162,58 @@ public class TextureManager {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);  
         
         return textureInfo;
+	}
+	
+	/**
+	 * This only works for API Level 15 and higher.
+	 * Thanks to Lubomir Panak (@drakh)
+	 * <p>
+	 * How to use:
+	 * <pre><code>
+	 * protected void initScene() {
+	 * 		super.initScene();
+	 * 		mLight = new DirectionalLight(0, 0, 1);
+	 * 		mCamera.setPosition(0, 0, -17);
+	 * 		
+	 * 		VideoMaterial material = new VideoMaterial();
+	 * 		TextureInfo tInfo = mTextureManager.addVideoTexture();
+	 * 		
+	 * 		mTexture = new SurfaceTexture(tInfo.getTextureId());
+	 * 		
+	 * 		mMediaPlayer = MediaPlayer.create(getContext(), R.raw.nemo);
+	 * 		mMediaPlayer.setSurface(new Surface(mTexture));
+	 * 		mMediaPlayer.start();
+	 * 		
+	 * 		BaseObject3D cube = new Plane(2, 2, 1, 1);
+	 * 		cube.setMaterial(material);
+	 * 		cube.addTexture(tInfo);
+	 * 		cube.addLight(mLight);
+	 * 		addChild(cube);
+	 * 	}
+	 * 
+	 * 	public void onDrawFrame(GL10 glUnused) {
+	 * 		mTexture.updateTexImage();
+	 * 		super.onDrawFrame(glUnused);
+	 * 	}
+	 * </code></pre>
+	 * @return
+	 */
+	public TextureInfo addVideoTexture() {
+		TextureType textureType = TextureType.VIDEO_TEXTURE;
+		int[] textures = new int[1];
+		GLES20.glGenTextures(1, textures, 0);
+		int textureId = textures[0];
+		GLES20.glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
+		GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
+				GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+		GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
+				GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+		GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
+				GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
+				GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+		TextureInfo textureInfo = new TextureInfo(textureId, textureType);
+		return textureInfo;
 	}
 	
 	public TextureInfo addCubemapTextures(Bitmap[] textures) {
