@@ -1,6 +1,8 @@
 package rajawali;
 
 import rajawali.math.MathUtil;
+import rajawali.math.Number3D;
+import rajawali.math.Number3D.Axis;
 import android.opengl.Matrix;
 
 public class Camera extends ATransformable3D {
@@ -10,6 +12,7 @@ public class Camera extends ATransformable3D {
 	protected float mNearPlane = 1.0f;
 	protected float mFarPlane = 120.0f;
 	protected float mFieldOfView = 45;
+	protected Number3D mUpAxis;
 	protected boolean mUseRotationMatrix = false;
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
@@ -23,6 +26,7 @@ public class Camera extends ATransformable3D {
 
 	public Camera() {
 		super();
+		mUpAxis = new Number3D(0, 1, 0);
 		mIsCamera = true;
 		mFrustum = new Frustum();
 	}
@@ -30,8 +34,8 @@ public class Camera extends ATransformable3D {
 	public float[] getViewMatrix() {
 		if (mLookAt != null) {
 			Matrix.setLookAtM(mVMatrix, 0, -mPosition.x, mPosition.y,
-					mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, 0f, 1.0f,
-					0.0f);
+					mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, mUpAxis.x, mUpAxis.y,
+					mUpAxis.z);
 		} else {
 			if (mUseRotationMatrix == false && mRotationDirty) {
 				setOrientation();
@@ -206,6 +210,23 @@ public class Camera extends ATransformable3D {
         return true;
     }
 
+    public void setUpAxis(float x, float y, float z) {
+    	mUpAxis.setAll(x, y, z);
+    }
+    
+    public void setUpAxis(Number3D upAxis) {
+    	mUpAxis.setAllFrom(upAxis);
+    }
+    
+    public void setUpAxis(Axis upAxis) {
+    	if(upAxis == Axis.X)
+    		mUpAxis.setAll(1, 0, 0);
+    	else if(upAxis == Axis.Y)
+    		mUpAxis.setAll(0, 1, 0);
+    	else
+    		mUpAxis.setAll(0, 0, 1);
+    }
+    
 	public float[] getProjectionMatrix() {
 		return mProjMatrix;
 	}
