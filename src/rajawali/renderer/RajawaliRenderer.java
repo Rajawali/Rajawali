@@ -392,7 +392,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		textures[0] = BitmapFactory.decodeResource(mContext.getResources(), left);
 		textures[1] = BitmapFactory.decodeResource(mContext.getResources(), right);
 		textures[2] = BitmapFactory.decodeResource(mContext.getResources(), up);
-		textures[3] = BitmapFactory.decodeResource(mContext.getResources(), down); //
+		textures[3] = BitmapFactory.decodeResource(mContext.getResources(), down);
 		textures[4] = BitmapFactory.decodeResource(mContext.getResources(), front);
 		textures[5] = BitmapFactory.decodeResource(mContext.getResources(), back);
 

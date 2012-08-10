@@ -330,12 +330,10 @@ public class Wallpaper extends GLWallpaperService {
 
 	@Override
 	public Engine onCreateEngine() {
-		
 		return null;
 	}
 	
 	@Override
 	public void onDestroy() {
-		
 	}
 }

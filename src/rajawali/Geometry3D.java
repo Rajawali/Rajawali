@@ -12,6 +12,7 @@ import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.BufferUtil;
 import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -471,10 +472,11 @@ public class Geometry3D {
 			mVertices = ByteBuffer
 					.allocateDirect(vertices.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
-			mVertices.put(vertices).position(0);
+			BufferUtil.copy(vertices, mVertices, vertices.length, 0);
+			mVertices.position(0);
 			mNumVertices = vertices.length / 3;
 		} else {
-			mVertices.put(vertices);
+			BufferUtil.copy(vertices, mVertices, vertices.length, 0);
 		}
 	}
 	
@@ -495,10 +497,12 @@ public class Geometry3D {
 		if(mNormals == null) {
 			mNormals = ByteBuffer.allocateDirect(normals.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
-			mNormals.put(normals).position(0);
+			BufferUtil.copy(normals, mNormals, normals.length, 0);
+			mNormals.position(0);
 		} else {
 			mNormals.position(0);
-			mNormals.put(normals);
+			BufferUtil.copy(normals, mNormals, normals.length, 0);
+			mNormals.position(0);
 		}
 	}
 	
@@ -539,9 +543,10 @@ public class Geometry3D {
 			mTextureCoords = ByteBuffer
 					.allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
-			mTextureCoords.put(textureCoords).position(0);
+			BufferUtil.copy(textureCoords, mTextureCoords, textureCoords.length, 0);
+			mTextureCoords.position(0);
 		} else {
-			mTextureCoords.put(textureCoords);
+			BufferUtil.copy(textureCoords, mTextureCoords, textureCoords.length, 0);
 		}
 	}
 	
@@ -560,9 +565,11 @@ public class Geometry3D {
 			mColors = ByteBuffer
 					.allocateDirect(colors.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
-			mColors.put(colors).position(0);
+			BufferUtil.copy(colors, mColors, colors.length, 0);
+			mColors.position(0);
 		} else {
-			mColors.put(colors);
+			BufferUtil.copy(colors, mColors, colors.length, 0);
+			mColors.position(0);
 		}
 	}
 	
