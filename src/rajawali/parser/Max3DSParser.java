@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
+import rajawali.materials.DiffuseMaterial;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -30,11 +31,12 @@ public class Max3DSParser extends AParser {
 	private final int TEX_FILENAME = 0xA300;
 	private final int MATERIAL = 0xAFFF;
 
-	private ArrayList<Number3D> mVertices = new ArrayList<Number3D>();
-	private Number3D[] mNormals;
-	private ArrayList<Number3D> mVertNormals = new ArrayList<Number3D>();
-	private ArrayList<Number3D> mTexCoords = new ArrayList<Number3D>();
-	private ArrayList<Integer> mIndices = new ArrayList<Integer>();
+	private ArrayList<ArrayList<Number3D>> mVertices = new ArrayList<ArrayList<Number3D>>();
+	private ArrayList<Number3D[]> mNormals = new ArrayList<Number3D[]>();
+	private ArrayList<ArrayList<Number3D>> mVertNormals = new ArrayList<ArrayList<Number3D>>();
+	private ArrayList<ArrayList<Number3D>> mTexCoords = new ArrayList<ArrayList<Number3D>>();
+	private ArrayList<ArrayList<Integer>> mIndices = new ArrayList<ArrayList<Integer>>();
+	private ArrayList<String> mObjNames = new ArrayList<String>();
 
 	private int mChunkID;
 	private int mChunkEndOffset;
@@ -62,7 +64,6 @@ public class Max3DSParser extends AParser {
 				readChunk(stream);
 			}
 
-			mObjects++;
 			build();
 			if (mRootObject.getNumChildren() == 1)
 				mRootObject = mRootObject.getChildAt(0);
@@ -83,10 +84,8 @@ public class Max3DSParser extends AParser {
 		case MESH_BLOCK:
 			break;
 		case OBJECT_BLOCK:
-			readString(stream);
 			mObjects++;
-			if (mObjects > 0)
-				build();
+			mObjNames.add(readString(stream));
 			break;
 		case TRIMESH:
 			break;
@@ -138,84 +137,108 @@ public class Max3DSParser extends AParser {
 	}
 
 	public void build() {
-		final int len = mIndices.size();
-		final float[] aVertices = new float[len * 3 * 3];
-		final float[] aNormals = new float[len * 3 * 3];
-		final float[] aTexCoords = new float[len * 3 * 2];
-		final int[] aIndices = new int[len * 3];
-
-		int ic = 0;
-		int itn = 0;
-		int itc = 0;
-		int ivi = 0;
-
-		Number3D coord;
-		Number3D texcoord;
-		Number3D normal;
-
-		for (int i = 0; i < len; i += 3) {
-			int v1 = mIndices.get(i);
-			int v2 = mIndices.get(i + 1);
-			int v3 = mIndices.get(i + 2);
-
-			coord = mVertices.get(v1);
-			aVertices[ic++] = coord.x;
-			aVertices[ic++] = coord.y;
-			aVertices[ic++] = coord.z;
-
-			aIndices[ivi] = ivi++;
-
-			coord = mVertices.get(v2);
-			aVertices[ic++] = coord.x;
-			aVertices[ic++] = coord.y;
-			aVertices[ic++] = coord.z;
-
-			aIndices[ivi] = ivi++;
-
-			coord = mVertices.get(v3);
-			aVertices[ic++] = coord.x;
-			aVertices[ic++] = coord.y;
-			aVertices[ic++] = coord.z;
-
-			aIndices[ivi] = ivi++;
-
-			texcoord = mTexCoords.get(v1);
-
-			aTexCoords[itc++] = texcoord.x;
-			aTexCoords[itc++] = texcoord.y;
-
-			texcoord = mTexCoords.get(v2);
-
-			aTexCoords[itc++] = texcoord.x;
-			aTexCoords[itc++] = texcoord.y;
-
-			texcoord = mTexCoords.get(v3);
-
-			aTexCoords[itc++] = texcoord.x;
-			aTexCoords[itc++] = texcoord.y;
-
-			normal = mVertNormals.get(v1);
-			aNormals[itn++] = normal.x;
-			aNormals[itn++] = normal.y;
-			aNormals[itn++] = normal.z;
-			normal = mVertNormals.get(v2);
-
-			aNormals[itn++] = normal.x;
-			aNormals[itn++] = normal.y;
-			aNormals[itn++] = normal.z;
-
-			normal = mVertNormals.get(v3);
-
-			aNormals[itn++] = normal.x;
-			aNormals[itn++] = normal.y;
-			aNormals[itn++] = normal.z;
+		int num = mVertices.size();
+		for(int j=0; j<num; ++j) {
+			ArrayList<Integer> indices = mIndices.get(j);
+			ArrayList<Number3D> vertices = mVertices.get(j);
+			ArrayList<Number3D> texCoords = null;
+			ArrayList<Number3D> vertNormals = mVertNormals.get(j);
+			
+			if(mTexCoords.size() > 0)
+				texCoords = mTexCoords.get(j);
+			
+			final int len = indices.size();
+			final float[] aVertices = new float[len * 3 * 3];
+			final float[] aNormals = new float[len * 3 * 3];
+			final float[] aTexCoords = new float[len * 3 * 2];
+			final int[] aIndices = new int[len * 3];
+	
+			int ic = 0;
+			int itn = 0;
+			int itc = 0;
+			int ivi = 0;
+	
+			Number3D coord;
+			Number3D texcoord;
+			Number3D normal;
+	
+			for (int i = 0; i < len; i += 3) {
+				int v1 = indices.get(i);
+				int v2 = indices.get(i + 1);
+				int v3 = indices.get(i + 2);
+	
+				coord = vertices.get(v1);
+				aVertices[ic++] = coord.x;
+				aVertices[ic++] = coord.y;
+				aVertices[ic++] = coord.z;
+	
+				aIndices[ivi] = ivi++;
+	
+				coord = vertices.get(v2);
+				aVertices[ic++] = coord.x;
+				aVertices[ic++] = coord.y;
+				aVertices[ic++] = coord.z;
+	
+				aIndices[ivi] = ivi++;
+	
+				coord = vertices.get(v3);
+				aVertices[ic++] = coord.x;
+				aVertices[ic++] = coord.y;
+				aVertices[ic++] = coord.z;
+	
+				aIndices[ivi] = ivi++;
+				
+				if(texCoords != null && texCoords.size() > 0) {
+					texcoord = texCoords.get(v1);
+		
+					aTexCoords[itc++] = texcoord.x;
+					aTexCoords[itc++] = texcoord.y;
+		
+					texcoord = texCoords.get(v2);
+		
+					aTexCoords[itc++] = texcoord.x;
+					aTexCoords[itc++] = texcoord.y;
+		
+					texcoord = texCoords.get(v3);
+		
+					aTexCoords[itc++] = texcoord.x;
+					aTexCoords[itc++] = texcoord.y;
+				}
+	
+				normal = vertNormals.get(v1);
+				aNormals[itn++] = normal.x;
+				aNormals[itn++] = normal.y;
+				aNormals[itn++] = normal.z;
+				normal = vertNormals.get(v2);
+	
+				aNormals[itn++] = normal.x;
+				aNormals[itn++] = normal.y;
+				aNormals[itn++] = normal.z;
+	
+				normal = vertNormals.get(v3);
+	
+				aNormals[itn++] = normal.x;
+				aNormals[itn++] = normal.y;
+				aNormals[itn++] = normal.z;
+			}
+			BaseObject3D targetObj = new BaseObject3D(mObjNames.get(j));
+			targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices);
+			// -- diffuse material with random color. for now.
+			DiffuseMaterial material = new DiffuseMaterial();
+			material.setUseColor(true);
+			targetObj.setMaterial(material);
+			targetObj.setColor(0xff000000 + (int)(Math.random() * 0xffffff));
+			mRootObject.addChild(targetObj);
 		}
-		BaseObject3D targetObj = new BaseObject3D();
-		targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices);
-		mRootObject.addChild(targetObj);
 	}
 
 	public void clear() {
+		for(int i=0; i<mObjects; ++i) {
+			mIndices.get(i).clear();
+			mVertNormals.get(i).clear();
+			mVertices.get(i).clear();
+			mTexCoords.get(i).clear();
+		}
 		mIndices.clear();
 		mVertNormals.clear();
 		mVertices.clear();
@@ -231,30 +254,37 @@ public class Max3DSParser extends AParser {
 	protected void readVertices(InputStream buffer) throws IOException {
 		float x, y, z;
 		int numVertices = readShort(buffer);
+		ArrayList<Number3D> vertices = new ArrayList<Number3D>();
 
 		for (int i = 0; i < numVertices; i++) {
 			x = readFloat(buffer);
 			y = readFloat(buffer);
 			z = readFloat(buffer);
 
-			mVertices.add(new Number3D(x, y, z));
+			vertices.add(new Number3D(x, y, z));
 		}
+		
+		mVertices.add(vertices);
 	}
 
 	protected void readTexCoords(InputStream buffer) throws IOException {
 		int numVertices = readShort(buffer);
-
+		ArrayList<Number3D> texCoords = new ArrayList<Number3D>();
+		
 		for (int i = 0; i < numVertices; i++) {
 			float x = 1f - readFloat(buffer);
 			float y = readFloat(buffer);
 
-			mTexCoords.add(new Number3D(x, y, 0));
+			texCoords.add(new Number3D(x, y, 0));
 		}
+		
+		mTexCoords.add(texCoords);
 	}
 
 	protected void readFaces(InputStream buffer) throws IOException {
 		int triangles = readShort(buffer);
-		mNormals = new Number3D[triangles];
+		Number3D[] normals = new Number3D[triangles];		
+		ArrayList<Integer> indices = new ArrayList<Integer>();
 
 		for (int i = 0; i < triangles; i++) {
 			int[] vertexIDs = new int[3];
@@ -263,39 +293,47 @@ public class Max3DSParser extends AParser {
 			vertexIDs[2] = readShort(buffer);
 			readShort(buffer);
 
-			mIndices.add(vertexIDs[0]);
-			mIndices.add(vertexIDs[1]);
-			mIndices.add(vertexIDs[2]);
+			indices.add(vertexIDs[0]);
+			indices.add(vertexIDs[1]);
+			indices.add(vertexIDs[2]);
 
 			Number3D normal = calculateFaceNormal(vertexIDs);
-			mNormals[i] = normal;
+			normals[i] = normal;
 		}
-
-		int numVertices = mVertices.size();
-		int numIndices = mIndices.size();
+		
+		mNormals.add(new Number3D[triangles]);
+		mIndices.add(indices);
+		
+		int numVertices = mVertices.get(mObjects).size();
+		int numIndices = indices.size();
+		
+		ArrayList<Number3D> vertNormals = new ArrayList<Number3D>();
 
 		for (int i = 0; i < numVertices; i++) {
 
 			Number3D vertexNormal = new Number3D();
 
 			for (int j = 0; j < numIndices; j += 3) {
-				int id1 = mIndices.get(j);
-				int id2 = mIndices.get(j + 1);
-				int id3 = mIndices.get(j + 2);
+				int id1 = indices.get(j);
+				int id2 = indices.get(j + 1);
+				int id3 = indices.get(j + 2);
 
 				if (id1 == i || id2 == i || id3 == i) {
-					vertexNormal.add(mNormals[j / 3]);
+					vertexNormal.add(normals[j / 3]);
 				}
 			}
 			vertexNormal.normalize();
-			mVertNormals.add(vertexNormal);
+			vertNormals.add(vertexNormal);
 		}
+		
+		mVertNormals.add(vertNormals);
 	}
 
 	private Number3D calculateFaceNormal(int[] vertexIDs) {
-		Number3D v1 = mVertices.get(vertexIDs[0]);
-		Number3D v2 = mVertices.get(vertexIDs[2]);
-		Number3D v3 = mVertices.get(vertexIDs[1]);
+		ArrayList<Number3D> vertices = mVertices.get(mObjects);
+		Number3D v1 = vertices.get(vertexIDs[0]);
+		Number3D v2 = vertices.get(vertexIDs[2]);
+		Number3D v3 = vertices.get(vertexIDs[1]);
 
 		Number3D vector1 = Number3D.subtract(v2, v1);
 		Number3D vector2 = Number3D.subtract(v3, v1);

@@ -530,7 +530,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		setMaterial(material, true);
 		material.setLights(mLights);
 	}
-
+	
 	public AMaterial getMaterial() {
 		return mMaterial;
 	}
