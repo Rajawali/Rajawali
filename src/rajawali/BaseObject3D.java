@@ -356,9 +356,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mChildren.get(i).reload();
 		}
 		
-		if(mGeometry.hasBoundingBox())
+		if(mGeometry.hasBoundingBox() && mGeometry.getBoundingBox().getVisual() != null)
 			mGeometry.getBoundingBox().getVisual().reload();
-		if(mGeometry.hasBoundingSphere())
+		if(mGeometry.hasBoundingSphere() && mGeometry.getBoundingSphere().getVisual() != null)
 			mGeometry.getBoundingSphere().getVisual().reload();
 	}
 	
