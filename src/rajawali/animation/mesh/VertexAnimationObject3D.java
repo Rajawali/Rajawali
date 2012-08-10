@@ -1,6 +1,7 @@
 package rajawali.animation.mesh;
 
 import rajawali.SerializedObject3D;
+import rajawali.util.RajLog;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
 	public VertexAnimationObject3D() {
@@ -11,6 +12,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		super(ser);
 		float[][] v = ser.getFrameVertices();
 		float[][] n = ser.getFrameNormals();
+		String[] frameNames = ser.getFrameNames();
 		
 		mNumFrames = v.length;
 		
@@ -19,6 +21,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 			frame.getGeometry().setVertices(v[i]);
 			frame.getGeometry().setNormals(n[i]);
 			frame.getGeometry().createVertexAndNormalBuffersOnly();
+			frame.setName(frameNames[i]);
 			mFrames.add(frame);
 		}
 	}
@@ -28,6 +31,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 			return;
 		mCurrentTime = System.currentTimeMillis();
 		VertexAnimationFrame currentFrame = (VertexAnimationFrame) mFrames.get(mCurrentFrameIndex);
+		RajLog.i("frame name " + currentFrame.getName());
 		VertexAnimationFrame nextFrame = (VertexAnimationFrame) mFrames.get((mCurrentFrameIndex + 1) % mNumFrames);
 		if (mCurrentFrameName != null && !mCurrentFrameName.equals(currentFrame.getName())) {
 			if (!mLoop)
@@ -79,5 +83,4 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 	public VertexAnimationObject3D clone() {
 		return clone(true);
 	}
-
 }

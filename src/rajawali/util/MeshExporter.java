@@ -153,6 +153,7 @@ public class MeshExporter {
 				int numFrames = o.getNumFrames();
 				float[][] vs = new float[numFrames][];
 				float[][] ns = new float[numFrames][];
+				String[] frameNames = new String[numFrames];
 				
 				for( int i=0; i<numFrames; ++i) {
 					VertexAnimationFrame frame = (VertexAnimationFrame)o.getFrame(i);
@@ -163,10 +164,12 @@ public class MeshExporter {
 					geom.getNormals().get(n);
 					vs[i] = v;
 					ns[i] = n;
+					frameNames[i] = frame.getName();
 				}
 				
 				ser.setFrameVertices(vs);
 				ser.setFrameNormals(ns);
+				ser.setFrameNames(frameNames);
 			}
 			
 			os.writeObject(ser);
