@@ -268,17 +268,17 @@ public class Max3DSParser extends AParser {
 	}
 
 	protected void readTexCoords(InputStream buffer) throws IOException {
-		int numVertices = readShort(buffer);
-		ArrayList<Number3D> texCoords = new ArrayList<Number3D>();
-		
-		for (int i = 0; i < numVertices; i++) {
-			float x = 1f - readFloat(buffer);
-			float y = readFloat(buffer);
-
-			texCoords.add(new Number3D(x, y, 0));
-		}
-		
-		mTexCoords.add(texCoords);
+	    int numVertices = readShort(buffer);
+	    ArrayList<Number3D> texCoords = new ArrayList<Number3D>();
+	
+	    for (int i = 0; i < numVertices; i++) {
+	        float x = readFloat(buffer);
+	        float y = 1-readFloat(buffer);
+	
+	        texCoords.add(new Number3D(x, y, 0));
+	    }
+	
+	    mTexCoords.add(texCoords);
 	}
 
 	protected void readFaces(InputStream buffer) throws IOException {
