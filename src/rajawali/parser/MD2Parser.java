@@ -36,6 +36,10 @@ public class MD2Parser extends AParser implements IParser {
 		super(renderer, fileOnSDCard);
 	}
 	
+	public MD2Parser(RajawaliRenderer renderer, int resourceId) {
+		this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
+	}
+	
 	public MD2Parser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
