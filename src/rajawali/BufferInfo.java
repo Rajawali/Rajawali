@@ -5,7 +5,7 @@ import java.nio.Buffer;
 import rajawali.Geometry3D.BufferType;
 
 public class BufferInfo {
-	public int bufferHandle;
+	public int bufferHandle = -1;
 	public BufferType bufferType;
 	public Buffer buffer;
 	public int target;

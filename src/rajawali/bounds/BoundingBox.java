@@ -55,6 +55,8 @@ public class BoundingBox implements IBoundingVolume {
 		mTmpMax = new Number3D();
 		mPoints = new Number3D[8];
 		mTmp = new Number3D[8];
+		mMin = new Number3D();
+		mMax = new Number3D();
 		for(int i=0; i<8; ++i) {
 			mPoints[i] = new Number3D();
 			mTmp[i] = new Number3D();
@@ -161,8 +163,16 @@ public class BoundingBox implements IBoundingVolume {
 		return mMin;
 	}
 	
+	public void setMin(Number3D min) {
+		mMin.setAllFrom(min);
+	}
+	
 	public Number3D getMax() {
 		return mMax;
+	}
+	
+	public void setMax(Number3D max) {
+		mMax.setAllFrom(max);
 	}
 
 	public Number3D getTransformedMin() {

@@ -146,6 +146,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * Executed before the rendering process starts
 	 */
 	protected void preRender() {
+		mGeometry.validateBuffers();
 	}
 
 	public void render(Camera camera, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {

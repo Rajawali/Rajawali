@@ -55,9 +55,7 @@ public abstract class AMaterial {
 		mTextureInfoList = new ArrayList<TextureInfo>();
 		mCameraPosArray = new float[3];
 		mLights = new Stack<ALight>();
-		int numTexUnits[] = new int[1];
-		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS, numTexUnits, 0);
-		mMaxTextures = numTexUnits[0];
+		mMaxTextures = queryMaxTextures();
 	}
 	
 	public AMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
@@ -65,6 +63,12 @@ public abstract class AMaterial {
 		mUntouchedVertexShader = vertexShader;
 		mUntouchedFragmentShader = fragmentShader;
 		mIsAnimated = isAnimated;
+	}
+	
+	protected int queryMaxTextures() {
+		int numTexUnits[] = new int[1];
+		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS, numTexUnits, 0);
+		return numTexUnits[0];
 	}
 	
 	public void reload() {
@@ -111,7 +115,7 @@ public abstract class AMaterial {
 		}
 		
 		mProgramCreated = true;
-		
+
 		checkTextureHandles();
 	}
 
@@ -189,6 +193,10 @@ public abstract class AMaterial {
 	}
 
 	public void useProgram() {
+		if(!mProgramCreated) {
+			mMaxTextures = queryMaxTextures();
+			reload();
+		}
 		GLES20.glUseProgram(mProgram);
 	}
 

@@ -44,6 +44,10 @@ public final class Quaternion {
 		this.z = other.z;
 	}
 	
+	public Quaternion clone() {
+		return new Quaternion(w, x, y, z);
+	}
+	
 	public void setAll(float w, float x, float y, float z) {
 		this.w = w;
 		this.x = x;
@@ -503,7 +507,19 @@ public final class Quaternion {
 		matrix[15] = 1;
 	}
 
-
+	public void computeW()
+	{
+	    float t = 1.0f - ( x * x ) - ( y * y ) - ( z * z );
+	    if ( t < 0.0f )
+	    {
+	        w = 0.0f;
+	    }
+	    else
+	    {
+	        w = -FloatMath.sqrt(t);
+	    }
+	}
+	
 	public Quaternion nlerp(float fT, final Quaternion rkP, final Quaternion rkQ, boolean shortestPath) {
 		Quaternion result = new Quaternion(rkP);
 		Quaternion tmp = new Quaternion(rkQ);

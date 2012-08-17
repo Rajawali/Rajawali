@@ -9,7 +9,10 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 import rajawali.animation.mesh.AAnimationObject3D;
+import rajawali.animation.mesh.BoneAnimationFrame;
 import rajawali.animation.mesh.BoneAnimationObject3D;
+import rajawali.animation.mesh.Skeleton;
+import rajawali.animation.mesh.SkeletonJoint;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
@@ -19,16 +22,20 @@ import rajawali.util.RajLog;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.opengl.Matrix;
-import android.util.FloatMath;
 
 public class MD5Parser extends AParser implements IParser {
 	private static final String MD5_VERSION = "MD5Version"; 
 	private static final String COMMAND_LINE = "commandline";
+	private static final String MD5MESH = "md5mesh";
+	private static final String MD5ANIM = "md5anim";
+	
 	private static final String NUM_JOINTS = "numJoints";
 	private static final String NUM_MESHES = "numMeshes";
 	private static final String NUM_VERTS = "numverts";
 	private static final String NUM_TRIS = "numtris";
 	private static final String NUM_WEIGHTS = "numweights";
+	private static final String NUM_FRAMES = "numFrames";
+	
 	private static final String JOINTS = "joints";
 	private static final String MESH = "mesh";
 	private static final String SHADER = "shader";
@@ -36,12 +43,25 @@ public class MD5Parser extends AParser implements IParser {
 	private static final String TRI = "tri";
 	private static final String WEIGHT = "weight";
 	
+	private static final String FRAME_RATE = "frameRate";
+	private static final String NUM_ANIMATED_COMPONENTS = "numAnimatedComponents";
+	private static final String HIERARCHY = "hierarchy";
+	private static final String BOUNDS = "bounds";
+	private static final String BASEFRAME = "baseframe";
+	private static final String FRAME = "frame";
+	
 	private int mNumJoints;
 	private int mNumMeshes;
+	private int mNumFrames;
 	private int mMeshIndex = 0;
+	private int mFrameRate;
+	@SuppressWarnings("unused")
+	private int mNumAnimatedComponents;
 	
-	private MD5Joint[] mJoints;
+	private SkeletonJoint[] mJoints;
 	private MD5Mesh[] mMeshes;
+	private BoneAnimationFrame[] mFrames;
+	private SkeletonJoint[] mBaseFrame;
 	
 	public float[][] mBindPoseMatrix;
 	public float[][] mInverseBindPoseMatrix;
@@ -95,7 +115,7 @@ public class MD5Parser extends AParser implements IParser {
 				} else if(type.equalsIgnoreCase(COMMAND_LINE)) { 
 				} else if(type.equalsIgnoreCase(NUM_JOINTS)) {
 					mNumJoints = Integer.parseInt(parts.nextToken());
-					mJoints = new MD5Joint[mNumJoints];
+					mJoints = new SkeletonJoint[mNumJoints];
 				} else if(type.equalsIgnoreCase(NUM_MESHES)) {
 					mNumMeshes = Integer.parseInt(parts.nextToken());
 					mMeshes = new MD5Mesh[mNumMeshes];
@@ -111,11 +131,76 @@ public class MD5Parser extends AParser implements IParser {
 			buildMeshes();
 			calculateNormals();
 			createObjects();
+			
+			parseAnimFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 			try {
 				buffer.close();
 			} catch(Exception ex) {}
+		}
+	}
+	
+	private void parseAnimFile() {
+		String meshFile = mResources.getString(mResourceId);
+		meshFile = meshFile.replace(MD5MESH, MD5ANIM);
+		meshFile = meshFile.substring(meshFile.lastIndexOf("/") + 1, meshFile.length());
+		int identifier = mResources.getIdentifier(meshFile, "raw", mResources.getResourcePackageName(mResourceId));
+		
+		if(identifier == 0) {
+			RajLog.d("No md5anim file found (looking for 'raw/" + meshFile + "').");
+			return;
+		}		
+
+		BufferedReader buffer = null;
+		if(mFile == null) {
+			InputStream fileIn = mResources.openRawResource(identifier);
+			buffer = new BufferedReader(new InputStreamReader(fileIn));
+		} else {
+			try {
+				buffer = new BufferedReader(new FileReader(mFile));
+			} catch (FileNotFoundException e) {
+				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
+				e.printStackTrace();
+			}
+		}
+		String line;
+		
+		try {
+			while((line = buffer.readLine()) != null) {
+				StringTokenizer parts = new StringTokenizer(line, " ");
+				int numTokens = parts.countTokens();
+				
+				if(numTokens == 0)
+					continue;
+				String type = parts.nextToken();
+				
+				if(type.equalsIgnoreCase(MD5_VERSION)) {
+				} else if(type.equalsIgnoreCase(COMMAND_LINE)) { 
+				} else if(type.equalsIgnoreCase(NUM_JOINTS)) {
+				} else if(type.equalsIgnoreCase(NUM_FRAMES)) {
+					mNumFrames = Integer.parseInt(parts.nextToken());
+					mFrames = new BoneAnimationFrame[mNumFrames];
+				} else if(type.equalsIgnoreCase(FRAME_RATE)) {
+					mFrameRate = Integer.parseInt(parts.nextToken());
+					for(int i=0; i<mRootObject.getNumChildren(); ++i)
+						((BoneAnimationObject3D)mRootObject.getChildAt(i)).setFps(mFrameRate);
+				} else if(type.equalsIgnoreCase(NUM_ANIMATED_COMPONENTS)) {
+					mNumAnimatedComponents = Integer.parseInt(parts.nextToken());
+				} else if(type.equalsIgnoreCase(HIERARCHY)) {
+					parseHierarchy(buffer);
+				} else if(type.equalsIgnoreCase(BOUNDS)) {
+					parseBounds(buffer);
+				} else if(type.equalsIgnoreCase(FRAME)) {
+					parseFrame(Integer.parseInt(parts.nextToken()), buffer);
+				} else if(type.equalsIgnoreCase(BASEFRAME)) {
+					mBaseFrame = new SkeletonJoint[mNumJoints];
+					parseBaseFrame(buffer);
+				}
+			}
+			buffer.close();
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -125,7 +210,7 @@ public class MD5Parser extends AParser implements IParser {
 			int count = 0;
 			
 			while((line = buffer.readLine()) != null) {
-				MD5Joint joint = new MD5Joint();
+				SkeletonJoint joint = new SkeletonJoint();
 				if(line.length() == 0)
 					continue;
 
@@ -136,40 +221,26 @@ public class MD5Parser extends AParser implements IParser {
 				
 				// -- Bone Name
 				int offset = line.lastIndexOf('"');
-				joint.name = line.substring(line.indexOf('"') + 1, offset);
+				joint.setName(line.substring(line.indexOf('"') + 1, offset));
 
 				// -- Parent Index
 				offset += 2;
-				joint.parentIndex = Integer.parseInt(line.substring(offset, line.indexOf(' ', offset)));
+				joint.setParentIndex(Integer.parseInt(line.substring(offset, line.indexOf(' ', offset))));
 				
 				// -- position
 				offset = line.indexOf(')');
 				String[] p = line.substring(line.indexOf('(') + 2, offset).split(" ");
-				joint.position.setAll(Float.parseFloat(p[0]), Float.parseFloat(p[2]), Float.parseFloat(p[1]));
+				joint.setPosition(Float.parseFloat(p[0]), Float.parseFloat(p[2]), Float.parseFloat(p[1]));
 				
 				// -- orientation
 				p = line.substring(line.indexOf('(', offset) + 2, line.lastIndexOf(')')).split(" ");
-				joint.orientation.setAll(1.0f, Float.parseFloat(p[0]), Float.parseFloat(p[2]), Float.parseFloat(p[1]));
-				computeQuaternionW(joint.orientation);
+				joint.setOrientation(Float.parseFloat(p[0]), Float.parseFloat(p[2]), Float.parseFloat(p[1]));
 				
 				mJoints[count++] = joint;
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public void computeQuaternionW(Quaternion q)
-	{
-	    float t = 1.0f - ( q.x * q.x ) - ( q.y * q.y ) - ( q.z * q.z );
-	    if ( t < 0.0f )
-	    {
-	        q.w = 0.0f;
-	    }
-	    else
-	    {
-	        q.w = -FloatMath.sqrt(t);
-	    }
 	}
 	
 	private void parseMesh(BufferedReader buffer) {
@@ -253,6 +324,149 @@ public class MD5Parser extends AParser implements IParser {
 		}
 	}
 	
+	private void parseHierarchy(BufferedReader buffer) {
+		try {
+			String line;
+			int index = 0;
+			
+			while((line = buffer.readLine()) != null) {
+				line = line.replace("\t", " ");
+				StringTokenizer parts = new StringTokenizer(line, " ");
+				int numTokens = parts.countTokens();
+
+				if(line.indexOf('}') > -1) return;
+				if(numTokens == 0) continue;
+				
+				SkeletonJoint joint = mJoints[index++];
+				// discard name
+				parts.nextToken();
+				// discard parent index
+				parts.nextToken();
+				joint.setNumComp(Integer.parseInt(parts.nextToken()));
+				joint.setFrameIndex(Integer.parseInt(parts.nextToken()));
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void parseBounds(BufferedReader buffer) {
+		try {
+			String line;
+			int index = 0;
+
+			while((line = buffer.readLine()) != null) {
+				line = line.replace("\t", " ");
+				StringTokenizer parts = new StringTokenizer(line, " ");
+				int numTokens = parts.countTokens();
+				if(line.indexOf('}') > -1) return;
+				if(numTokens == 0) continue;
+				
+				BoneAnimationFrame frame = new BoneAnimationFrame();
+				mFrames[index++] = frame;
+				// discard (
+				parts.nextToken();
+
+				Number3D min = new Number3D(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
+				// discard )
+				parts.nextToken();
+				// discard (
+				parts.nextToken();
+			
+				Number3D max = new Number3D(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
+				
+				frame.setBounds(min, max);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void parseFrame(int frameIndex, BufferedReader buffer) {
+		try {
+			String line;
+			int index = 0;
+			BoneAnimationFrame frame = mFrames[frameIndex];
+			frame.setFrameIndex(frameIndex);
+			Skeleton skeleton = frame.getSkeleton();
+			SkeletonJoint[] joints = new SkeletonJoint[mNumJoints];
+			
+			while((line = buffer.readLine()) != null) {
+				line = line.replace("\t", " ");
+				StringTokenizer parts = new StringTokenizer(line, " ");
+				int numTokens = parts.countTokens();
+				if(line.indexOf('}') > -1) return;
+				if(numTokens == 0) continue;
+				
+				float x = Float.parseFloat(parts.nextToken());
+				float y = Float.parseFloat(parts.nextToken());
+				float z = Float.parseFloat(parts.nextToken());
+				Number3D position = new Number3D(x, z, y);
+				x = Float.parseFloat(parts.nextToken());
+				y = Float.parseFloat(parts.nextToken());
+				z = Float.parseFloat(parts.nextToken());
+				Quaternion orientation = new Quaternion(1, x, z, y);
+				orientation.computeW();
+				
+				SkeletonJoint joint = new SkeletonJoint(mBaseFrame[index]);
+				SkeletonJoint jointInfo = mJoints[index];
+				
+				joint.setParentIndex(jointInfo.getParentIndex());
+				
+				if((jointInfo.getNumComp() & 1) == 1) joint.getPosition().x = position.x;
+				if((jointInfo.getNumComp() & 2) == 1) joint.getPosition().y = position.y;
+				if((jointInfo.getNumComp() & 4) == 1) joint.getPosition().z = position.z;
+				if((jointInfo.getNumComp() & 8) == 1) joint.getOrientation().x = orientation.x;
+				if((jointInfo.getNumComp() & 16) == 1) joint.getOrientation().y = orientation.y;
+				if((jointInfo.getNumComp() & 32) == 1) joint.getOrientation().z = orientation.z;
+				joint.getOrientation().computeW();
+				
+				joints[index++] = joint;
+			}
+			
+			skeleton.setJoints(joints);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void parseBaseFrame(BufferedReader buffer) {
+		try {
+			String line;
+			int index = 0;
+			
+			while((line = buffer.readLine()) != null) {
+				line = line.replace("\t", " ");
+				StringTokenizer parts = new StringTokenizer(line, " ");
+				int numTokens = parts.countTokens();
+				if(line.indexOf('}') > -1) return;
+				if(numTokens == 0) continue;
+				
+				SkeletonJoint joint = new SkeletonJoint();
+				mBaseFrame[index++] = joint;
+				
+				// ignore "("
+				parts.nextToken();
+				float x = Float.parseFloat(parts.nextToken());
+				float y = Float.parseFloat(parts.nextToken());
+				float z = Float.parseFloat(parts.nextToken());
+				joint.setPosition(x, z, y);
+				
+				// ignore ")"
+				parts.nextToken();
+				// ignore "("
+				parts.nextToken();
+				
+				x = Float.parseFloat(parts.nextToken());
+				y = Float.parseFloat(parts.nextToken());
+				z = Float.parseFloat(parts.nextToken());
+				joint.setOrientation(x, z, y);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void buildMeshes() {
 		for(int i=0; i<mNumMeshes; ++i) {
 			int boneIndex = 0;
@@ -268,11 +482,11 @@ public class MD5Parser extends AParser implements IParser {
 				
 				for(int k=0; k<vert.weightElem; ++k) {
 					MD5Weight weight = mesh.weights[vert.weightIndex + k];
-					MD5Joint joint = mJoints[weight.jointIndex];
+					SkeletonJoint joint = mJoints[weight.jointIndex];
 					
-					Number3D rotPos = joint.orientation.multiply(weight.position);
+					Number3D rotPos = joint.getOrientation().multiply(weight.position);
 					
-					Number3D pos = Number3D.add(joint.position, rotPos);
+					Number3D pos = Number3D.add(joint.getPosition(), rotPos);
 					pos.multiply(weight.weightValue);
 					position.add(pos);
 					
@@ -342,8 +556,8 @@ public class MD5Parser extends AParser implements IParser {
 				//    so the animated normal can be computed faster
 				for(int k=0; k<vert.weightElem; ++k) {
 					MD5Weight weight = mesh.weights[vert.weightIndex + k];
-					MD5Joint joint = mJoints[weight.jointIndex];
-					vert.normal.add(Number3D.multiply(joint.orientation.multiply(normal), weight.weightValue));
+					SkeletonJoint joint = mJoints[weight.jointIndex];
+					vert.normal.add(Number3D.multiply(joint.getOrientation().multiply(normal), weight.weightValue));
 				}
 			}
 		}
@@ -354,7 +568,7 @@ public class MD5Parser extends AParser implements IParser {
 		mInverseBindPoseMatrix = new float[mNumJoints][];
 		
 		for(int i=0; i<mNumJoints; ++i) {
-			MD5Joint joint = mJoints[i];
+			SkeletonJoint joint = mJoints[i];
 			
 			float[] boneTranslation = new float[16];
 			float[] boneRotation = new float[16];
@@ -364,8 +578,10 @@ public class MD5Parser extends AParser implements IParser {
 			Matrix.setIdentityM(boneTranslation, 0);
 			Matrix.setIdentityM(boneRotation, 0);
 			
-			Matrix.translateM(boneTranslation, 0, joint.position.x, joint.position.y, joint.position.z);
-			joint.orientation.toRotationMatrix(boneRotation);
+			Number3D jointPos = joint.getPosition();
+			
+			Matrix.translateM(boneTranslation, 0, jointPos.x, jointPos.y, jointPos.z);
+			joint.getOrientation().toRotationMatrix(boneRotation);
 			
 			Matrix.multiplyMM(boneMatrix, 0, boneTranslation, 0, boneRotation, 0);
 			Matrix.invertM(inverseBoneMatrix, 0, boneMatrix, 0);
@@ -376,9 +592,12 @@ public class MD5Parser extends AParser implements IParser {
 	}
 	
 	private void createObjects() {
+		mRootObject = new BoneAnimationObject3D();
+		
 		for(int i=0; i<mNumMeshes; ++i) {
 			MD5Mesh mesh = mMeshes[i];
 			BoneAnimationObject3D o = new BoneAnimationObject3D();
+			o.setNumJoints(mNumJoints);
 			o.setData(mesh.vertices, mesh.normals, mesh.texCoords, null, mesh.indices);
 			o.setBoneData(mesh.boneWeights, mesh.boneIndices);
 			
@@ -394,19 +613,7 @@ public class MD5Parser extends AParser implements IParser {
 				o.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
 			}
 			
-			if(mNumMeshes == 1) mRootObject = o;
-			else mRootObject.addChild(o);
-		}
-	}
-	
-	private class MD5Joint {
-		public String name;
-		public int parentIndex;
-		public Number3D position = new Number3D();
-		public Quaternion orientation = new Quaternion();
-		
-		public String toString() {
-			return name + ", " + parentIndex + " | " + position + " | " + orientation;
+			mRootObject.addChild(o);
 		}
 	}
 	

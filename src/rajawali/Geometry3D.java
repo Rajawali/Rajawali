@@ -410,6 +410,25 @@ public class Geometry3D {
 		bufferInfo.bufferType = type;
 		bufferInfo.target = target;
 		bufferInfo.byteSize = byteSize;
+		bufferInfo.usage = usage;
+	}
+	
+	public void createBuffer(BufferInfo bufferInfo) {
+		createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.buffer, bufferInfo.target, bufferInfo.usage);
+	}
+	
+	public void validateBuffers() {
+		if(mOriginalGeometry != null) return;
+		if(mVertexBufferInfo != null && mVertexBufferInfo.bufferHandle == 0)
+			createBuffer(mVertexBufferInfo);
+		if(mIndexBufferInfo != null && mIndexBufferInfo.bufferHandle == 0)
+			createBuffer(mIndexBufferInfo);
+		if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.bufferHandle == 0)
+			createBuffer(mTexCoordBufferInfo);
+		if(mColorBufferInfo != null && mColorBufferInfo.bufferHandle == 0)
+			createBuffer(mColorBufferInfo);
+		if(mNormalBufferInfo != null && mNormalBufferInfo.bufferHandle == 0)
+			createBuffer(mNormalBufferInfo);
 	}
 	
 	/**

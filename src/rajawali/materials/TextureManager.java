@@ -2,6 +2,7 @@ package rajawali.materials;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -14,6 +15,10 @@ import android.opengl.GLUtils;
  *
  */
 public class TextureManager {
+	private boolean mShouldValidateTextures;
+	private TextureInfo mCurrentValidatingTexInfo;
+	private Stack<TextureInfo> mTexturesToUpdate;
+	private boolean mShouldUpdateTextures;
 	private static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 	/**
 	 * List containing texture information objects
@@ -56,6 +61,7 @@ public class TextureManager {
 	
 	public TextureManager() {
 		mTextureInfoList = new ArrayList<TextureInfo>(); 
+		mTexturesToUpdate = new Stack<TextureInfo>();
 	}
 	
 	public TextureInfo addTexture(Bitmap texture) {
@@ -83,7 +89,7 @@ public class TextureManager {
 	}
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
 		TextureInfo tInfo = addTexture(null, texture, texture.getWidth(), texture.getHeight(), textureType, texture.getConfig(), mipmap, recycle, wrapType, filterType);
-		if(recycle)
+		if(recycle && tInfo.getTextureId() > 0)
 			texture.recycle();
 		else 
 			tInfo.setTexture(texture);
@@ -102,61 +108,79 @@ public class TextureManager {
 		return addTexture(buffer, texture, width, height, textureType, bitmapConfig, mipmap, recycle, false, wrapType, filterType);
 	}
 	
+	public TextureInfo addTexture(TextureInfo textureInfo) {
+		if(textureInfo.getTextureType() == TextureType.CUBE_MAP) {
+			addCubemapTextures(textureInfo.getTextures(), textureInfo.isMipmap(), textureInfo.shouldRecycle());
+		} else {
+			addTexture(textureInfo.getTexture(), textureInfo.getTextureType(), textureInfo.isMipmap(), textureInfo.shouldRecycle(), textureInfo.getWrapType(), textureInfo.getFilterType());
+		}
+		return textureInfo;
+	}
+	
 	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		int bitmapFormat = bitmapConfig == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
 		
 		int[] textures = new int[1];
 		GLES20.glGenTextures(1, textures, 0);
 		int textureId = textures[0];
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);        
-        
-		if(mipmap){
+		if(textureId > 0) {
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);        
+	        
+			if(mipmap){
+				if(filterType==FilterType.LINEAR)
+					GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+				else
+					GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST_MIPMAP_NEAREST);				
+			}else{
+				if(filterType==FilterType.LINEAR)
+			       	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+				else
+					GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+			}
+	
 			if(filterType==FilterType.LINEAR)
-				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 			else
-				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST_MIPMAP_NEAREST);				
-		}else{
-			if(filterType==FilterType.LINEAR)
-		       	GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-			else
-				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+			
+			if(wrapType==WrapType.REPEAT){
+				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+	        	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+			}else{
+				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+	        	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+			}
+	        	
+	        if(texture == null)
+	        	GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, width, height, 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, buffer);
+	        else
+	        	GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, texture, 0);
+	
+	        if(mipmap)
+	        	GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+		} else {
+			mShouldValidateTextures = true;
 		}
-
-		if(filterType==FilterType.LINEAR)
-			GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-		else
-			GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-		
-		if(wrapType==WrapType.REPEAT){
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-        	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-		}else{
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-		}
-        	
-        if(texture == null)
-        	GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, width, height, 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, buffer);
-        else
-        	GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, texture, 0);
-
-        if(mipmap)
-        	GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         
-        TextureInfo textureInfo = new TextureInfo(textureId, textureType);
-        textureInfo.setWidth(width);
-        textureInfo.setHeight(height);
-        textureInfo.setBitmapConfig(bitmapConfig);
-        textureInfo.setMipmap(mipmap);
-        textureInfo.setWrapType(wrapType);
-        textureInfo.setFilterType(filterType);
-        if(!recycle)
-        	textureInfo.setTexture(texture);
+        TextureInfo textureInfo = mCurrentValidatingTexInfo == null ?  new TextureInfo(textureId, textureType) : mCurrentValidatingTexInfo;
+        if(mCurrentValidatingTexInfo == null) {
+	        textureInfo.setWidth(width);
+	        textureInfo.setHeight(height);
+	        textureInfo.setBitmapConfig(bitmapConfig);
+	        textureInfo.setMipmap(mipmap);
+	        textureInfo.setWrapType(wrapType);
+	        textureInfo.setFilterType(filterType);
+	        textureInfo.shouldRecycle(recycle);
+	        if(!recycle)
+	        	textureInfo.setTexture(texture);
+        } else {
+        	textureInfo.setTextureId(textureId);
+        }
         if(buffer != null) {
         	buffer.limit(0);
         	buffer = null;
         }
-        if(!isExistingTexture)
+        if(!isExistingTexture && mCurrentValidatingTexInfo == null)
         	mTextureInfoList.add(textureInfo);
         
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);  
@@ -234,38 +258,46 @@ public class TextureManager {
 		GLES20.glGenTextures(1, textureIds, 0);
 		int textureId = textureIds[0];
 		
-		TextureInfo textureInfo = new TextureInfo(textureId);
-		if(!isExistingTexture) mTextureInfoList.add(textureInfo);
+		TextureInfo textureInfo = mCurrentValidatingTexInfo == null ?  new TextureInfo(textureId) : mCurrentValidatingTexInfo;
+		if(!isExistingTexture && mCurrentValidatingTexInfo == null) mTextureInfoList.add(textureInfo);
 		
 		int bitmapFormat = textures[0].getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
-		textureInfo.setWidth(textures[0].getWidth());
-		textureInfo.setHeight(textures[0].getHeight());
-		textureInfo.setTextureType(TextureType.CUBE_MAP);
-		textureInfo.setBitmapConfig(textures[0].getConfig());
-		textureInfo.setMipmap(mipmap);
+		if(mCurrentValidatingTexInfo == null) {
+			textureInfo.setWidth(textures[0].getWidth());
+			textureInfo.setHeight(textures[0].getHeight());
+			textureInfo.setTextureType(TextureType.CUBE_MAP);
+			textureInfo.setBitmapConfig(textures[0].getConfig());
+			textureInfo.setMipmap(mipmap);
+			textureInfo.shouldRecycle(recycle);			
+			textureInfo.setIsCubeMap(true);
+		} else {
+			textureInfo.setTextureId(textureId);
+		}
 		
-		textureInfo.setIsCubeMap(true);
-		
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
-		if(mipmap)
-			GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
-		else 
-			GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-        
-        ByteBuffer pixelBuffer;
-        
-        for(int i=0; i<6; i++) {
-        	pixelBuffer = bitmapToByteBuffer(textures[i]);
-        	GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
-        	GLES20.glTexImage2D(CUBE_FACES[i], 0, bitmapFormat, textures[i].getWidth(), textures[i].getHeight(), 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
-        	if(recycle) textures[i].recycle();
-       		pixelBuffer.limit(0);
-        }
-        
-        if(mipmap) GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
+		if(textureId > 0) {
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
+			if(mipmap)
+				GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+			else 
+				GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+	        GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+	        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+	        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+	        
+	        ByteBuffer pixelBuffer;
+	        
+	        for(int i=0; i<6; i++) {
+	        	pixelBuffer = bitmapToByteBuffer(textures[i]);
+	        	GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
+	        	GLES20.glTexImage2D(CUBE_FACES[i], 0, bitmapFormat, textures[i].getWidth(), textures[i].getHeight(), 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
+	        	if(recycle && textureId > 0) textures[i].recycle();
+	       		pixelBuffer.limit(0);
+	        }
+	        
+	        if(mipmap) GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
+		} else {
+			mShouldValidateTextures = true;
+		}
         
         if(!recycle)
         	textureInfo.setTextures(textures);
@@ -291,6 +323,13 @@ public class TextureManager {
 	}
 	
 	public void updateTexture(TextureInfo textureInfo, Bitmap texture) {
+		textureInfo.setTexture(texture);
+		mShouldUpdateTextures = true;
+		mTexturesToUpdate.add(textureInfo);
+	}
+	
+	public void updateTexture(TextureInfo textureInfo) {
+		Bitmap texture = textureInfo.getTexture();
 		int bitmapFormat = texture.getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureInfo.getTextureId());
 		GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, texture, bitmapFormat, GLES20.GL_UNSIGNED_BYTE);
@@ -345,6 +384,26 @@ public class TextureManager {
 	
 	public ArrayList<TextureInfo> getTextureInfoList() {
 		return mTextureInfoList;
+	}
+	
+	public void validateTextures() {
+		if(mShouldValidateTextures) {
+			int num = mTextureInfoList.size();
+			for(int i=0; i<num; ++i) {
+				TextureInfo inf = mTextureInfoList.get(i);
+				if(inf.getTextureId() == 0) {
+					mCurrentValidatingTexInfo = inf;
+					addTexture(inf);
+					mCurrentValidatingTexInfo = null;
+				}
+			}
+			mShouldValidateTextures = false;
+		}
+		if(mShouldUpdateTextures) {
+			while(!mTexturesToUpdate.isEmpty())
+				updateTexture(mTexturesToUpdate.pop());
+			mShouldUpdateTextures = false;
+		}
 	}
 	
 	public ByteBuffer bitmapToByteBuffer(Bitmap bitmap) {

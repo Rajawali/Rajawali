@@ -4,6 +4,10 @@ import rajawali.util.RajLog;
 import android.util.FloatMath;
 
 
+/**
+ * @author dennis.ippel
+ *
+ */
 public final class Number3D {
 	public float x;
 	public float y;
@@ -304,5 +308,30 @@ public final class Number3D {
 	
 	public static Number3D getUpVector() {
 		return new Number3D(0, 1, 0);
+	}
+	
+	public Number3D lerp(Number3D from, Number3D to, float amount)
+	{
+		Number3D out = new Number3D();
+		out.x = from.x + (to.x - from.x) * amount;
+		out.y = from.y + (to.y - from.y) * amount;
+		out.z = from.z + (to.z - from.z) * amount;
+		return out;
+	}
+	
+	/**
+	 * Performs a linear interpolation between from and to by the specified amount.
+	 * The result will be stored in the current object which means that the current
+	 * x, y, z values will be overridden.
+	 * 
+	 * @param from
+	 * @param to
+	 * @param amount
+	 */
+	public void lerpSelf(Number3D from, Number3D to, float amount)
+	{
+	  this.x = from.x + (to.x - from.x) * amount;
+	  this.y = from.y + (to.y - from.y) * amount;
+	  this.z = from.z + (to.z - from.z) * amount;
 	}
 }

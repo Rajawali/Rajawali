@@ -134,6 +134,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
+		mTextureManager.validateTextures();
 		
 		if (pickerInfo != null) {
 			if(mReloadPickerInfo) pickerInfo.getPicker().reload();

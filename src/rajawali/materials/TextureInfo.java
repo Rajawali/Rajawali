@@ -39,6 +39,7 @@ public class TextureInfo {
 	protected Bitmap[] mTextures;
 	protected boolean mMipmap;
 	protected Config mBitmapConfig;
+	protected boolean mShouldRecycle;
 	/**
 	 * The type of texture
 	 * 
@@ -78,6 +79,10 @@ public class TextureInfo {
 		mTextures = other.getTextures();
 		mMipmap = other.isMipmap();
 		mBitmapConfig = other.getBitmapConfig();
+	}
+	
+	public void setTextureId(int id) {
+		mTextureId = id;
 	}
 
 	public int getTextureId() {
@@ -174,5 +179,13 @@ public class TextureInfo {
 	
 	public WrapType getWrapType() {
 		return mWrapType;
+	}
+	
+	public boolean shouldRecycle() {
+		return mShouldRecycle;
+	}
+	
+	public void shouldRecycle(boolean should) {
+		mShouldRecycle = should;
 	}
 }
