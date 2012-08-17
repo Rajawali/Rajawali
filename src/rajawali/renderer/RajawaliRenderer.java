@@ -12,6 +12,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.animation.TimerManager;
 import rajawali.filters.IPostProcessingFilter;
+import rajawali.materials.SimpleMaterial;
 import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureInfo;
 import rajawali.materials.TextureManager;
@@ -386,6 +387,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mChildren.clear();
 	}
 
+	protected void setSkybox(int resourceId) {
+		mSkybox = new Cube(700, true, false);
+		mSkybox.setDoubleSided(true);
+		TextureInfo tInfo = mTextureManager.addTexture(BitmapFactory.decodeResource(mContext.getResources(), resourceId));
+		SimpleMaterial material = new SimpleMaterial();
+		material.addTexture(tInfo);
+		mSkybox.setMaterial(material);
+	}
+	
 	protected void setSkybox(int front, int right, int back, int left, int up, int down) {
 		mSkybox = new Cube(700, true);
 

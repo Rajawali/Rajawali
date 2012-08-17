@@ -21,6 +21,14 @@ public class Cube extends BaseObject3D {
 		init();
 	}
 	
+	public Cube(float size, boolean isSkybox, boolean hasCubemapTexture) {
+		super();
+		mIsSkybox = isSkybox;
+		mSize = size;
+		mHasCubemapTexture = hasCubemapTexture;
+		init();
+	}
+	
 	private void init()
 	{
 		float halfSize = mSize * .5f;
@@ -37,11 +45,11 @@ public class Cube extends BaseObject3D {
 		
 		float[] textureCoords = {
 				0, 0,	1, 0,  	1, 1, 	0, 1, // front
-				0, 0,	1, 0,  	1, 1, 	0, 1, // front
-				0, 0,	1, 0,  	1, 1, 	0, 1, // front
-				0, 0,	1, 0,  	1, 1, 	0, 1, // front
-				0, 0,	1, 0,  	1, 1, 	0, 1, // front
-				0, 0,	1, 0,  	1, 1, 	0, 1, // front
+				0, 0,	1, 0,  	1, 1, 	0, 1, // up
+				0, 0,	1, 0,  	1, 1, 	0, 1, // back
+				0, 0,	1, 0,  	1, 1, 	0, 1, // down
+				0, 0,	1, 0,  	1, 1, 	0, 1, // right
+				0, 0,	1, 0,  	1, 1, 	0, 1, // left
 		};
 		float[] skyboxTextureCoords = {
 				-t,t,t, t,t,t, t,-t,t, -t,-t,t,     // front
@@ -51,6 +59,16 @@ public class Cube extends BaseObject3D {
 				-t,t,t, -t,t,-t, t,t,-t, t,t,t,   // right
 				-t,-t,t, t,-t,t, t,-t,-t, -t,-t,-t,  // left
 		};
+		float[] skybox2TextureCoords = {
+				.25f, .3333f,	.5f, .3333f,  	.5f, .6666f, 	.25f, .6666f, 	// front
+				.25f, .3333f,	.25f, .6666f,	0, .6666f,		0, .3333f,		// left
+				1, .6666f, 		.75f, .6666f,	.75f, .3333f,	1, .3333f,		// back
+				.5f, .3333f,	.75f, .3333f,  	.75f, .6666f, 	.5f, .6666f, 	// right
+				.25f, .3333f, 	.25f, 0,		.5f, 0,  		.5f, .3333f, 	// up
+				.25f, .6666f,	.5f, .6666f,  	.5f, 1, 		.25f, 1 		// down
+		};
+		if(mIsSkybox && !mHasCubemapTexture)
+			skyboxTextureCoords = skybox2TextureCoords;
 		
 		float[] colors = {
 			1, 1, 1, 1, 	1, 1, 1, 1,		1, 1, 1, 1,		1, 1, 1, 1,
@@ -91,6 +109,6 @@ public class Cube extends BaseObject3D {
 				22, 21, 20, 23, 22, 20
 		};
 		
-		setData(vertices, normals, mIsSkybox ? skyboxTextureCoords : textureCoords, colors, mIsSkybox ? skyboxIndices : indices);
+		setData(vertices, normals, mIsSkybox ? skyboxTextureCoords : textureCoords, colors, mIsSkybox && mHasCubemapTexture ? skyboxIndices : indices);
 	}
 }
