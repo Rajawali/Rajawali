@@ -7,19 +7,19 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import rajawali.animation.TimerManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
-public class RajawaliActivity extends Activity {
+public class RajawaliActivity extends FragmentActivity {
 	protected GLSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
 	protected boolean mMultisamplingEnabled = false;
