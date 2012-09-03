@@ -51,6 +51,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"	vec3 L = vec3(0.0);\n" +
 		"	float dist = 0.0;\n" +
 		"	float attenuation = 1.0;\n" +
+		"	float NdotL = 0.0;\n" +
 
 		"%LIGHT_CODE%" +
 		"	vSpecularIntensity = clamp(vSpecularIntensity, 0.0, 1.0);\n" +
@@ -157,7 +158,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				sb.append("L = normalize(-uLightDirection").append(i).append(");");
 			}
-			sb.append("float NdotL = max(dot(N, L), 0.1);\n");
+			sb.append("NdotL = max(dot(N, L), 0.1);\n");
 			sb.append("vDiffuseIntensity += NdotL * attenuation * uLightPower").append(i).append(";\n");
 			sb.append("vSpecularIntensity += pow(NdotL, 6.0) * attenuation * uLightPower").append(i).append(";\n");
 		}
