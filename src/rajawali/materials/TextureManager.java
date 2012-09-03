@@ -284,14 +284,10 @@ public class TextureManager {
 	        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
 	        GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
 	        
-	        ByteBuffer pixelBuffer;
-	        
 	        for(int i=0; i<6; i++) {
-	        	pixelBuffer = bitmapToByteBuffer(textures[i]);
 	        	GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
-	        	GLES20.glTexImage2D(CUBE_FACES[i], 0, bitmapFormat, textures[i].getWidth(), textures[i].getHeight(), 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
+	        	GLUtils.texImage2D(CUBE_FACES[i], 0, textures[i], 0);
 	        	if(recycle && textureId > 0) textures[i].recycle();
-	       		pixelBuffer.limit(0);
 	        }
 	        
 	        if(mipmap) GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
@@ -406,26 +402,4 @@ public class TextureManager {
 		}
 	}
 	
-	public ByteBuffer bitmapToByteBuffer(Bitmap bitmap) {
-		final int width = bitmap.getWidth();
-		final int height = bitmap.getHeight();
-		final int channels = bitmap.getConfig() == Config.RGB_565 ? 3 : 4;
-		byte[] buffer = new byte[width * height * channels];
-		int pixel, index;
-
-		for (int y = 0; y < height; y++)
-			for (int x = 0; x < width; x++) {
-				pixel = bitmap.getPixel(x, y);
-				index = (y * width + x) * channels;				
-				buffer[index + 0] = (byte) Color.red(pixel);
-				buffer[index + 1] = (byte) Color.green(pixel);
-				buffer[index + 2] = (byte) Color.blue(pixel);
-				if(channels == 4)
-					buffer[index + 3] = (byte) Color.alpha(pixel);
-			}
-
-		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(buffer.length);
-		byteBuffer.put(buffer).position(0);
-		return byteBuffer;
-	}
 }
