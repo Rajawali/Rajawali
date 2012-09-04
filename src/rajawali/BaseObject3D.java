@@ -43,7 +43,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	protected Geometry3D mGeometry;
 	protected ArrayList<BaseObject3D> mChildren;
-	protected int mNumChildren;
 	protected String mName;
 
 	protected boolean mDoubleSided = false;
@@ -279,8 +278,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				mGeometry.getBoundingSphere().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
 		}
 		//Draw children without frustum test
-		for (i = 0; i < mNumChildren; ++i) {
-			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
+		for (BaseObject3D child : mChildren) {
+			child.render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 		}
 		
 		if(mRenderChildrenAsBatch) {
@@ -353,8 +352,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mGeometry.reload();
 		}
 
-		for(int i=0; i<mNumChildren; i++) {
-			mChildren.get(i).reload();
+		for (BaseObject3D child : mChildren) {
+			child.reload();
 		}
 		
 		if(mGeometry.hasBoundingBox() && mGeometry.getBoundingBox().getVisual() != null)
@@ -496,19 +495,16 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public void addChild(BaseObject3D child) {
 		mChildren.add(child);
-		mNumChildren++;
 		if(mRenderChildrenAsBatch)
 		  child.setPartOfBatch(true);
 	}
 
 	public void removeChild(BaseObject3D child) {
-		if (mChildren.remove(child)) {
-			mNumChildren--;
-		}
+		mChildren.remove(child);
 	}
 
 	public int getNumChildren() {
-		return mNumChildren;
+		return mChildren.size();
 	}
 
 	public BaseObject3D getChildAt(int index) {
@@ -516,9 +512,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	public BaseObject3D getChildByName(String name) {
-		for (int i = 0; i < mNumChildren; ++i)
-			if (mChildren.get(i).getName().equals(name))
-				return mChildren.get(i);
+		for (BaseObject3D child : mChildren)
+			if (child.getName().equals(name))
+				return child;
 
 		return null;
 	}
@@ -565,8 +561,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		int i;
 		ArrayList<TextureInfo> ti = mMaterial.getTextureInfoList();
 
-		for (i = 0; i < mNumChildren; ++i) {
-			ti.addAll(mChildren.get(i).getTextureInfoList());
+		for (BaseObject3D child : mChildren) {
+			ti.addAll(child.getTextureInfoList());
 		}
 		return ti;
 	}
@@ -726,8 +722,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mLights = null;
 		mMaterial = null;
 		mGeometry = null;
-		for(int i=0; i<mNumChildren; ++i) {
-			mChildren.get(i).destroy();
+		for (BaseObject3D child : mChildren) {
+			child.destroy();
 		}
 		mChildren.clear();
 		mChildren = null;

@@ -54,7 +54,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected float[] mVMatrix = new float[16];
 	protected float[] mPMatrix = new float[16];
 	protected Stack<BaseObject3D> mChildren;
-	protected int mNumChildren;
 	protected boolean mEnableDepthBuffer = true;
 
 	protected TextureManager mTextureManager;
@@ -184,8 +183,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
         mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
         
-		for (int i = 0; i < mNumChildren; i++) {
-			mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
+		for (BaseObject3D child : mChildren) {
+			child.render(mCamera, mPMatrix, mVMatrix, pickerInfo);
 		}
 		
 		if (pickerInfo != null) {
@@ -236,9 +235,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 		if (!mSceneCachingEnabled) {
 			mTextureManager.reset();
-			if (mNumChildren > 0) {
+			if (mChildren.size() > 0) {
 				mChildren.clear();
-				mNumChildren = 0;
 			}
 		} else if(mSceneCachingEnabled && mSceneInitialized) {
 			mTextureManager.reload();
@@ -255,8 +253,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	private void reloadChildren() {
-		for(int i=0; i<mNumChildren; i++) {
-			mChildren.get(i).reload();
+		for (BaseObject3D child : mChildren) {
+			child.reload();
 		}
 	}
 
@@ -268,8 +266,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	protected void destroyScene() {
-		for (int i = 0; i < mNumChildren; ++i) {
-			mChildren.get(i).destroy();
+		for (BaseObject3D child : mChildren) {
+			child.destroy();
 		}
 		mChildren.clear();
 		mChildren = null;
@@ -380,7 +378,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void addChild(BaseObject3D child) {
 		mChildren.add(child);
-		mNumChildren = mChildren.size();
 	}
 	
 	public void clearChildren() {
@@ -414,13 +411,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public boolean removeChild(BaseObject3D child) {
-		boolean result = mChildren.remove(child);
-		mNumChildren = mChildren.size();
-		return result;
+		return mChildren.remove(child);
 	}
 
 	public int getNumChildren() {
-		return mNumChildren;
+		return mChildren.size();
 	}
 	
 	public Stack<BaseObject3D> getChildren() {
@@ -428,11 +423,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	protected boolean hasChild(BaseObject3D child) {
-		for (int i = 0; i < mNumChildren; ++i) {
-			if (mChildren.get(i).equals(child))
-				return true;
-		}
-		return false;
+		return mChildren.contains(child);
 	}
 
 	public void addPostProcessingFilter(IPostProcessingFilter filter) {
@@ -445,8 +436,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void accept(INodeVisitor visitor) {
 		visitor.apply(this);
-		for (int i = 0; i < mNumChildren; ++i) {
-			mChildren.get(i).accept(visitor);
+		for (BaseObject3D child : mChildren) {
+			child.accept(visitor);
 		}
 	}	
 	
@@ -519,10 +510,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	public int getNumTriangles() {
 		int triangleCount = 0;
-		for(int i=0; i<mNumChildren; ++i) {
-			BaseObject3D child = mChildren.get(i);
-			if(child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
-				triangleCount += mChildren.get(i).getGeometry().getVertices().limit() / 9;
+		for (BaseObject3D child : mChildren) {
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				triangleCount += child.getGeometry().getVertices().limit() / 9;
 		}
 		return triangleCount;
 	}

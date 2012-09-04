@@ -90,8 +90,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	
 	public void play() {
 		super.play();
-		for(int i=0; i<mNumChildren; ++i) {
-			BaseObject3D child = mChildren.get(i);
+		for(BaseObject3D child : mChildren) {
 			if(child instanceof AAnimationObject3D)
 				((AAnimationObject3D)child).play();
 		}
