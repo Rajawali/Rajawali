@@ -499,8 +499,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		  child.setPartOfBatch(true);
 	}
 
-	public void removeChild(BaseObject3D child) {
-		mChildren.remove(child);
+	public boolean removeChild(BaseObject3D child) {
+		return mChildren.remove(child);
 	}
 
 	public int getNumChildren() {
