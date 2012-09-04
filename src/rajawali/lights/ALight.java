@@ -1,5 +1,6 @@
 package rajawali.lights;
 
+import android.graphics.Color;
 import rajawali.ATransformable3D;
 import rajawali.math.Number3D;
 
@@ -24,6 +25,12 @@ public abstract class ALight extends ATransformable3D {
 		mColor[0] = r; mColor[1] = g; mColor[2] = b;
 	}
 	
+	public void setColor(int color) {
+		mColor[0] = Color.red(color) / 255f;
+		mColor[1] = Color.green(color) / 255f;
+		mColor[2] = Color.blue(color) / 255f;
+	}
+
 	public void setColor(Number3D color) {
 		mColor[0] = color.x;
 		mColor[1] = color.y;
