@@ -15,4 +15,8 @@ public class Skeleton {
 	public SkeletonJoint getJoint(int index) {
 		return mJoints[index];
 	}
+	
+	public SkeletonJoint[] getJoints() {
+		return mJoints;
+	}
 }

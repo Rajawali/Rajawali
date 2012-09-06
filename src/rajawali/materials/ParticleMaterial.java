@@ -92,13 +92,14 @@ public class ParticleMaterial extends AMaterial {
 	protected int mCurrentFrame;
 	protected float mTileSize;
 	protected float mNumTileRows;
+	protected boolean mIsAnimated;
 	
 	public ParticleMaterial() {
 		this(false);
 	}
 	
 	public ParticleMaterial(boolean isAnimated) {
-		super(mVShader, mFShader, false);
+		super(mVShader, mFShader, NONE);
 		mDistanceAtt = new float[] {1, 1, 1};
 		mFriction = new float[3];
 		mCamPos = new float[3];

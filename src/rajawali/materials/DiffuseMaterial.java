@@ -37,6 +37,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
 		"	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);\n" +
 		"	#endif\n" +
+
 		"	gl_Position = uMVPMatrix * position;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		"	N = normalize(uNMatrix * normal);\n" +
@@ -92,6 +93,10 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 	
 	public DiffuseMaterial(boolean isAnimated) {
 		this(mVShader, mFShader, isAnimated);
+	}
+	
+	public DiffuseMaterial(int parameters) {
+		super(mVShader, mFShader, parameters);
 	}
 	
 	public DiffuseMaterial(String vertexShader, String fragmentShader) {

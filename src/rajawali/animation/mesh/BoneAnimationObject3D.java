@@ -1,54 +1,21 @@
 package rajawali.animation.mesh;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 
 import rajawali.BaseObject3D;
-import rajawali.math.Quaternion;
-import android.opengl.Matrix;
+import rajawali.math.Number3D;
+import rajawali.parser.MD5Parser.MD5Mesh;
+import rajawali.parser.MD5Parser.MD5Vert;
+import rajawali.parser.MD5Parser.MD5Weight;
 
 public class BoneAnimationObject3D extends AAnimationObject3D {
-	protected FloatBuffer mBoneWeights;
-	protected IntBuffer mBoneIndicesInt;
-	protected ShortBuffer mBoneIndicesShort;
-	protected int mNumJoints;
-	protected Skeleton mSkeleton;
-	protected float[] mTmpMatrix1;
-	protected float[] mTmpMatrix2;
-	protected float[] mTmpMatrix3;
+	private int mNumJoints;
+	private Skeleton mSkeleton;
+	private MD5Mesh mMesh;
 	
 	public BoneAnimationObject3D() {
 		super();
-		mTmpMatrix1 = new float[16];
-		mTmpMatrix2 = new float[16];
-		mTmpMatrix3 = new float[16];
 		mSkeleton = new Skeleton();
-	}
-	
-	public void setBoneData(float[] boneWeights, int[] boneIndices) {/*
-		Buffer indicesBuffer;
-		int indicesByteSize;
-		
-		if(mGeometry.areOnlyShortBuffersSupported())
-		{
-			mBoneIndicesShort = ByteBuffer
-					.allocateDirect(boneIndices.length * Geometry3D.SHORT_SIZE_BYTES)
-					.order(ByteOrder.nativeOrder()).asShortBuffer();
-			indicesBuffer = mBoneIndicesShort;
-			indicesByteSize = Geometry3D.SHORT_SIZE_BYTES;
-		} else {
-			mBoneIndicesInt = ByteBuffer
-					.allocateDirect(boneIndices.length * Geometry3D.INT_SIZE_BYTES)
-					.order(ByteOrder.nativeOrder()).asIntBuffer();
-			indicesBuffer = mBoneIndicesInt;
-			indicesByteSize = Geometry3D.INT_SIZE_BYTES;
-		}
-		
-		int[] buff = new int[2];
-		GLES20.glGenBuffers(2, buff, 0);
-		*/
-		//GLES20.glBindBuffer(target, buffer)
 	}
 	
 	public void preRender() {
@@ -63,17 +30,74 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		
 		for(int i=0; i<mNumJoints; ++i) {
 			SkeletonJoint joint = mSkeleton.getJoint(i);
+			//RajLog.i(mCurrentFrameIndex + ", " + currentFrame.getSkeleton());
 			SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
 			SkeletonJoint toJoint = nextFrame.getSkeleton().getJoint(i);
-			joint.getPosition().lerp(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
-			joint.getOrientation().setAllFrom(Quaternion.slerp(mInterpolation, fromJoint.getOrientation(), toJoint.getOrientation(), false));
-			Matrix.translateM(mTmpMatrix1, 0, joint.getPosition().x, joint.getPosition().y, joint.getPosition().z);
-			joint.getOrientation().toRotationMatrix(mTmpMatrix2);
-			Matrix.multiplyMM(mTmpMatrix3, 0, mTmpMatrix1, 0, mTmpMatrix2, 0);
-			joint.setMatrix(mTmpMatrix3);
+			//joint.getPosition().lerpSelf(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
+			//joint.getOrientation().setAllFrom(Quaternion.slerp(mInterpolation, fromJoint.getOrientation(), toJoint.getOrientation(), false));
+			joint.getPosition().setAllFrom(toJoint.getPosition());
+			joint.getOrientation().setAllFrom(toJoint.getOrientation());
+		}
+		
+		prepareMesh();
+		
+		if (mInterpolation >= 1) {
+			mInterpolation = 0;
+			mCurrentFrameIndex++;
+
+			if (mCurrentFrameIndex >= mNumFrames)
+				mCurrentFrameIndex = 0;
 		}
 		
 		mStartTime = mCurrentTime;
+	}
+	
+	private void prepareMesh()
+	{
+		Number3D position = new Number3D();
+		Number3D normal = new Number3D();
+		Number3D rotPos = new Number3D();
+		int index = 0;
+		
+		FloatBuffer vBuff = mGeometry.getVertices();
+		FloatBuffer nBuff = mGeometry.getNormals();
+		
+	    for(int i = 0; i<mMesh.numVerts; ++i)
+	    {
+	        MD5Vert vert = mMesh.verts[i];
+	        index = i * 3;
+	        
+	        position.setAll(0, 0, 0);
+	        normal.setAll(0, 0, 0);
+	 
+	        for ( int j = 0; j < vert.weightElem; ++j )
+	        {
+	            MD5Weight weight = mMesh.weights[vert.weightIndex + j];
+	            SkeletonJoint joint = mSkeleton.getJoint(weight.jointIndex);
+	 
+	            rotPos = joint.getOrientation().multiply(weight.position);
+	            
+				Number3D pos = Number3D.add(joint.getPosition(), rotPos);
+				pos.multiply(weight.weightValue);
+				position.add(pos);
+				
+				rotPos = joint.getOrientation().multiply(vert.normal);
+				rotPos.multiply(weight.weightValue);
+	            normal.add(rotPos);
+	        }
+	        
+	        //if(i==0) RajLog.i(position.toString());
+	        vBuff.put(index, position.x);
+	        vBuff.put(index+1, position.y);
+	        vBuff.put(index+2, position.z);
+	        
+	        nBuff.put(index, normal.x);
+	        nBuff.put(index+1, normal.y);
+	        nBuff.put(index+2, normal.z);
+	    }
+	    
+	    mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), vBuff, 0);
+	    mGeometry.changeBufferData(mGeometry.getNormalBufferInfo(), nBuff, 0);
 	}
 	
 	public void setNumJoints(int numJoints) {
@@ -86,6 +110,10 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	
 	public int getNumJoints() {
 		return mNumJoints;
+	}
+	
+	public void setMD5Mesh(MD5Mesh mesh) {
+		mMesh = mesh;
 	}
 	
 	public void play() {

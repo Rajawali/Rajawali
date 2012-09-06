@@ -77,11 +77,15 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader) {
-		this(vertexShader, fragmentShader, false);
+		this(vertexShader, fragmentShader, AMaterial.NONE);
 	}
 	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		super(vertexShader, fragmentShader, isAnimated);
+		this(vertexShader, fragmentShader, AMaterial.VERTEX_ANIMATION);
+	}
+	
+	public AAdvancedMaterial(String vertexShader, String fragmentShader, int parameters) {
+		super(vertexShader, fragmentShader, parameters);
 		mNormalMatrix = new float[9];
 		mTmp = new float[9];
 		mTmp2 = new float[9];

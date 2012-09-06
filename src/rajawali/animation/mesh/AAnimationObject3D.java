@@ -55,6 +55,14 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 		frames.trimToSize();
 		mNumFrames = frames.capacity();
 	}
+	
+	public void setFrames(IAnimationFrame[] frames) {
+		Stack<IAnimationFrame> f = new Stack<IAnimationFrame>();
+		for(int i=0; i<frames.length; ++i) {
+			f.add(frames[i]);
+		}
+		setFrames(f);
+	}
 
 	public void play() {
 		mStartTime = System.currentTimeMillis();

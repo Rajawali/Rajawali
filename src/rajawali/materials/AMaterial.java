@@ -12,6 +12,9 @@ import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 public abstract class AMaterial {
+	public static final int NONE				= 0;
+	public static final int VERTEX_ANIMATION 	= 1 << 0;
+	
 	protected String mUntouchedVertexShader;
 	protected String mUntouchedFragmentShader;
 	protected String mVertexShader;
@@ -49,7 +52,7 @@ public abstract class AMaterial {
 	private int mMaxTextures;
 	private boolean mProgramCreated = false;
 	
-	protected boolean mIsAnimated;
+	protected boolean mVertexAnimationEnabled;
 	
 	public AMaterial() {
 		mTextureInfoList = new ArrayList<TextureInfo>();
@@ -58,11 +61,20 @@ public abstract class AMaterial {
 		mMaxTextures = queryMaxTextures();
 	}
 	
-	public AMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
+	public AMaterial(String vertexShader, String fragmentShader, boolean vertexAnimationEnabled) {
+		this(vertexShader, fragmentShader, vertexAnimationEnabled ? VERTEX_ANIMATION : NONE);
+	}
+	
+	public AMaterial(String vertexShader, String fragmentShader, int parameters) {
 		this();
 		mUntouchedVertexShader = vertexShader;
 		mUntouchedFragmentShader = fragmentShader;
-		mIsAnimated = isAnimated;
+		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
+	}
+	
+	public AMaterial(int parameters) {
+		this();
+		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
 	}
 	
 	protected int queryMaxTextures() {
@@ -84,7 +96,7 @@ public abstract class AMaterial {
 	}
 	
 	public void setShaders(String vertexShader, String fragmentShader) {
-		mVertexShader = mIsAnimated ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
+		mVertexShader = mVertexAnimationEnabled ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
 		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
 
@@ -102,13 +114,13 @@ public abstract class AMaterial {
 		maNormalHandle = getAttribLocation("aNormal");
 		maTextureHandle = getAttribLocation("aTextureCoord");
 		maColorHandle = getAttribLocation("aColor");
-
+		
 		muCameraPositionHandle = getUniformLocation("uCameraPosition");
 		muMVPMatrixHandle = getUniformLocation("uMVPMatrix");
 		muMMatrixHandle = getUniformLocation("uMMatrix");
 		muVMatrixHandle = getUniformLocation("uVMatrix");
 		
-		if(mIsAnimated == true) {
+		if(mVertexAnimationEnabled == true) {
 			maNextFramePositionHandle = getAttribLocation("aNextFramePosition");
 			maNextFrameNormalHandle = getAttribLocation("aNextFrameNormal");
 			muInterpolationHandle = getUniformLocation("uInterpolation");
@@ -302,7 +314,7 @@ public abstract class AMaterial {
 			}
 		}
 	}
-
+	
 	public void setVertices(final int vertexBufferHandle) {
 		if(checkValidHandle(vertexBufferHandle, "vertex data")){
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle);
@@ -392,7 +404,7 @@ public abstract class AMaterial {
 			}
 		}
 	}
-
+	
 	public boolean checkValidHandle(int handle, String message){
 		if(handle >= 0)
 			return true;
