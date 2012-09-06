@@ -23,7 +23,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		
 		mCurrentTime = System.currentTimeMillis();
 		
-		BoneAnimationFrame currentFrame = (BoneAnimationFrame)mFrames.get(mCurrentFrameIndex);
+		//BoneAnimationFrame currentFrame = (BoneAnimationFrame)mFrames.get(mCurrentFrameIndex);
 		BoneAnimationFrame nextFrame = (BoneAnimationFrame)mFrames.get((mCurrentFrameIndex + 1) % mNumFrames);
 		
 		mInterpolation += (float) mFps * (mCurrentTime - mStartTime) / 1000;
@@ -31,7 +31,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		for(int i=0; i<mNumJoints; ++i) {
 			SkeletonJoint joint = mSkeleton.getJoint(i);
 			//RajLog.i(mCurrentFrameIndex + ", " + currentFrame.getSkeleton());
-			SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
+			//SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
 			SkeletonJoint toJoint = nextFrame.getSkeleton().getJoint(i);
 			//joint.getPosition().lerpSelf(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
 			//joint.getOrientation().setAllFrom(Quaternion.slerp(mInterpolation, fromJoint.getOrientation(), toJoint.getOrientation(), false));

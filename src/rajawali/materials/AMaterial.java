@@ -287,6 +287,21 @@ public abstract class AMaterial {
 			break;
 		}
 
+		// -- check if there are already diffuse texture in the list
+		int num = mTextureInfoList.size();
+		int numDiffuse = 0;
+		for(int i=0; i<num; ++i) {
+			TextureInfo ti = mTextureInfoList.get(i);
+			if(ti.getTextureType() == TextureType.DIFFUSE)
+				numDiffuse++;
+		}
+		
+		// -- if there are already diffuse textures in the list then append a
+		//    number (ie the second texture in the list will be called 
+		//    "uDiffuseTexture1", the third "uDiffuseTexture2", etc.
+		if(numDiffuse > 0)
+			textureName += numDiffuse;
+		
 		if(mProgramCreated) {
 			int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
 			if (textureHandle == -1) {

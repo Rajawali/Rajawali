@@ -71,8 +71,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected boolean mEnableDepthTest = true;
 	protected boolean mEnableDepthMask = true;
 		
-	private int i;
-
 	public BaseObject3D() {
 		super();
 		mChildren = new ArrayList<BaseObject3D>();
@@ -558,7 +556,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	public ArrayList<TextureInfo> getTextureInfoList() {
-		int i;
 		ArrayList<TextureInfo> ti = mMaterial.getTextureInfoList();
 
 		for (BaseObject3D child : mChildren) {

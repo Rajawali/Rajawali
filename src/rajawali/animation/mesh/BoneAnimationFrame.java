@@ -15,21 +15,17 @@ public class BoneAnimationFrame implements IAnimationFrame {
 		mSkeleton = new Skeleton();
 	}
 	
-	@Override
 	public Geometry3D getGeometry() {
 		return null;
 	}
 
-	@Override
 	public void setGeometry(Geometry3D geometry) {
 	}
 
-	@Override
 	public String getName() {
 		return mName;
 	}
 
-	@Override
 	public void setName(String name) {
 		mName = name;
 	}

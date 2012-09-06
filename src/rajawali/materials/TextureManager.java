@@ -6,7 +6,6 @@ import java.util.Stack;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
@@ -261,7 +260,6 @@ public class TextureManager {
 		TextureInfo textureInfo = mCurrentValidatingTexInfo == null ?  new TextureInfo(textureId) : mCurrentValidatingTexInfo;
 		if(!isExistingTexture && mCurrentValidatingTexInfo == null) mTextureInfoList.add(textureInfo);
 		
-		int bitmapFormat = textures[0].getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
 		if(mCurrentValidatingTexInfo == null) {
 			textureInfo.setWidth(textures[0].getWidth());
 			textureInfo.setHeight(textures[0].getHeight());
