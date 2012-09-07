@@ -465,18 +465,28 @@ public class Geometry3D {
 	}
 	
 	/**
-	 * Change a specific buffer's data. Either the whole buffer or a subset.
+	 * Change a specific buffer's data at the given offset to the end of the passed buffer.
 	 * 
 	 * @param bufferInfo
 	 * @param newData
 	 * @param index
 	 */
 	public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index) {
-		int num = newData.limit();
-		int size = bufferInfo.byteSize * num;
-		GLES20.glBindBuffer(bufferInfo.target, bufferInfo.bufferHandle);
-		GLES20.glBufferSubData(bufferInfo.target, index * size, size, newData);
-		GLES20.glBindBuffer(bufferInfo.target, 0);
+	    changeBufferData(bufferInfo, newData, index, newData.limit());
+	}
+
+	/**
+	 * Change a specific subset of the buffer's data at the given offset to the given length.
+	 * 
+	 * @param bufferInfo
+	 * @param newData
+	 * @param index
+	 * @param length
+	 */
+	public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, int length) {
+	    GLES20.glBindBuffer(bufferInfo.target, bufferInfo.bufferHandle);
+	    GLES20.glBufferSubData(bufferInfo.target, index * bufferInfo.byteSize, length * bufferInfo.byteSize, newData);
+	    GLES20.glBindBuffer(bufferInfo.target, 0);
 	}
 
 	public void setVertices(float[] vertices) {
