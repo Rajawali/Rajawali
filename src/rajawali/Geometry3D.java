@@ -501,6 +501,7 @@ public class Geometry3D {
 			mVertices = ByteBuffer
 					.allocateDirect(vertices.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
+			
 			BufferUtil.copy(vertices, mVertices, vertices.length, 0);
 			mVertices.position(0);
 			mNumVertices = vertices.length / 3;

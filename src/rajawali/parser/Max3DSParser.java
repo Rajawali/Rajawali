@@ -147,11 +147,11 @@ public class Max3DSParser extends AParser {
 			if(mTexCoords.size() > 0)
 				texCoords = mTexCoords.get(j);
 			
-			final int len = indices.size();
-			final float[] aVertices = new float[len * 3 * 3];
-			final float[] aNormals = new float[len * 3 * 3];
-			final float[] aTexCoords = new float[len * 3 * 2];
-			final int[] aIndices = new int[len * 3];
+			int len = indices.size();
+			float[] aVertices = new float[len * 3];
+			float[] aNormals = new float[len * 3];
+			float[] aTexCoords = new float[len * 2];
+			int[] aIndices = new int[len];
 	
 			int ic = 0;
 			int itn = 0;
@@ -161,13 +161,14 @@ public class Max3DSParser extends AParser {
 			Number3D coord;
 			Number3D texcoord;
 			Number3D normal;
-	
+			
 			for (int i = 0; i < len; i += 3) {
 				int v1 = indices.get(i);
 				int v2 = indices.get(i + 1);
 				int v3 = indices.get(i + 2);
 	
 				coord = vertices.get(v1);
+				
 				aVertices[ic++] = coord.x;
 				aVertices[ic++] = coord.y;
 				aVertices[ic++] = coord.z;
@@ -221,6 +222,7 @@ public class Max3DSParser extends AParser {
 				aNormals[itn++] = normal.y;
 				aNormals[itn++] = normal.z;
 			}
+			
 			BaseObject3D targetObj = new BaseObject3D(mObjNames.get(j));
 			targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices);
 			// -- diffuse material with random color. for now.
