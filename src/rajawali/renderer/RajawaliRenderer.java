@@ -228,7 +228,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		GLES20.glFrontFace(GLES20.GL_CCW);
 		GLES20.glCullFace(GLES20.GL_BACK);
 
-		if (!mSceneInitialized) {
+		if (mChildren == null)
+			mChildren = new Stack<BaseObject3D>();
+		
+		if (!mSceneInitialized) {			
 			mTextureManager = new TextureManager();
 			initScene();
 		}
