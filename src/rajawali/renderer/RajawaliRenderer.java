@@ -285,12 +285,20 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mTimer.schedule(new RequestRenderTask(), 0, (long) (1000 / mFrameRate));
 	}
 
-	protected void stopRendering() {
+	/**
+	 * Stop rendering the scene.
+	 *
+	 * @return true if rendering was stopped, false if rendering was already
+	 *         stopped (no action taken)
+	 */
+	protected boolean stopRendering() {
 		if (mTimer != null) {
 			mTimer.cancel();
 			mTimer.purge();
 			mTimer = null;
+			return true;
 		}
+		return false;
 	}
 
 	public void onVisibilityChanged(boolean visible) {
@@ -351,11 +359,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public void setFrameRate(int frameRate) {
-		this.mFrameRate = frameRate;
+		setFrameRate((float)frameRate);
 	}
 
 	public void setFrameRate(float frameRate) {
 		this.mFrameRate = frameRate;
+		if (stopRendering()) {
+			// Restart timer with new frequency
+			startRendering();
+		}
 	}
 
 	public float getRefreshRate() {
