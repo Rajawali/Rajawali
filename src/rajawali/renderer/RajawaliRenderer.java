@@ -31,6 +31,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
     protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
@@ -350,6 +351,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void setFrameRate(int frameRate) {
 		this.mFrameRate = frameRate;
+	}
+
+	public float getRefreshRate() {
+		return ((WindowManager) mContext
+		       .getSystemService(Context.WINDOW_SERVICE))
+		       .getDefaultDisplay()
+		       .getRefreshRate();
 	}
 
 	public GLEngine getEngine() {
