@@ -31,6 +31,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
     protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
@@ -38,7 +39,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected Context mContext;
 
 	protected float mEyeZ = -4.0f;
-	protected int mFrameRate = 30;
+	protected float mFrameRate;
 	protected double mLastMeasuredFPS;
 	protected FPSUpdateListener mFPSUpdateListener;
 
@@ -98,6 +99,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mAlpha = 0;
 		mSceneCachingEnabled = true;
 		mPostProcessingRenderer = new PostProcessingRenderer(this);
+		mFrameRate = getRefreshRate();
 	}
 
 	public void setCamera(Camera mCamera) {
@@ -280,15 +282,23 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 
 		mTimer = new Timer();
-		mTimer.schedule(new RequestRenderTask(), 0, 1000 / mFrameRate);
+		mTimer.schedule(new RequestRenderTask(), 0, (long) (1000 / mFrameRate));
 	}
 
-	protected void stopRendering() {
+	/**
+	 * Stop rendering the scene.
+	 *
+	 * @return true if rendering was stopped, false if rendering was already
+	 *         stopped (no action taken)
+	 */
+	protected boolean stopRendering() {
 		if (mTimer != null) {
 			mTimer.cancel();
 			mTimer.purge();
 			mTimer = null;
+			return true;
 		}
+		return false;
 	}
 
 	public void onVisibilityChanged(boolean visible) {
@@ -344,12 +354,27 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	    return new Number3D(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
 	}
 
-	public int getFrameRate() {
+	public float getFrameRate() {
 		return mFrameRate;
 	}
 
 	public void setFrameRate(int frameRate) {
+		setFrameRate((float)frameRate);
+	}
+
+	public void setFrameRate(float frameRate) {
 		this.mFrameRate = frameRate;
+		if (stopRendering()) {
+			// Restart timer with new frequency
+			startRendering();
+		}
+	}
+
+	public float getRefreshRate() {
+		return ((WindowManager) mContext
+		       .getSystemService(Context.WINDOW_SERVICE))
+		       .getDefaultDisplay()
+		       .getRefreshRate();
 	}
 
 	public GLEngine getEngine() {
