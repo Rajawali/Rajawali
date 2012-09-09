@@ -39,7 +39,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected Context mContext;
 
 	protected float mEyeZ = -4.0f;
-	protected int mFrameRate = 30;
+	protected float mFrameRate;
 	protected double mLastMeasuredFPS;
 	protected FPSUpdateListener mFPSUpdateListener;
 
@@ -99,6 +99,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mAlpha = 0;
 		mSceneCachingEnabled = true;
 		mPostProcessingRenderer = new PostProcessingRenderer(this);
+		mFrameRate = getRefreshRate();
 	}
 
 	public void setCamera(Camera mCamera) {
@@ -281,7 +282,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 
 		mTimer = new Timer();
-		mTimer.schedule(new RequestRenderTask(), 0, 1000 / mFrameRate);
+		mTimer.schedule(new RequestRenderTask(), 0, (long) (1000 / mFrameRate));
 	}
 
 	protected void stopRendering() {
@@ -345,11 +346,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	    return new Number3D(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
 	}
 
-	public int getFrameRate() {
+	public float getFrameRate() {
 		return mFrameRate;
 	}
 
 	public void setFrameRate(int frameRate) {
+		this.mFrameRate = frameRate;
+	}
+
+	public void setFrameRate(float frameRate) {
 		this.mFrameRate = frameRate;
 	}
 
