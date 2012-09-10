@@ -272,7 +272,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			child.destroy();
 		}
 		mChildren.clear();
-		mChildren = null;
 	}
 	
 	public void startRendering() {
