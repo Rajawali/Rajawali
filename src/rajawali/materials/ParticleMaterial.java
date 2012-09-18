@@ -6,7 +6,7 @@ import rajawali.math.Number3D;
 import android.opengl.GLES20;
 
 
-public class ParticleMaterial extends AMaterial {
+public class ParticleMaterial extends AParticleMaterial {
 	protected static final String mVShader = 
 		"precision mediump float;\n" +
 		"uniform mat4 uMVPMatrix;\n" +
@@ -97,9 +97,13 @@ public class ParticleMaterial extends AMaterial {
 	public ParticleMaterial() {
 		this(false);
 	}
-	
+
 	public ParticleMaterial(boolean isAnimated) {
-		super(mVShader, mFShader, NONE);
+		this(mVShader, mFShader, isAnimated);
+	}
+
+	public ParticleMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
+		super(vertexShader, fragmentShader, NONE);
 		mDistanceAtt = new float[] {1, 1, 1};
 		mFriction = new float[3];
 		mCamPos = new float[3];
