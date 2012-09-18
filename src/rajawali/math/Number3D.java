@@ -67,6 +67,10 @@ public final class Number3D {
 		this.z = (float) z;
 	}
 
+	public boolean equals(Number3D obj) {
+		return obj.x == this.x && obj.y == this.y && obj.z == this.z;
+	}
+
 	public void setAll(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
