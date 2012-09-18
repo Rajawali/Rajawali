@@ -85,9 +85,12 @@ public abstract class AMaterial {
 	
 	public void reload() {
 		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+		
+		mNumTextures = mTextureInfoList.size();
 
 		for(int i=0; i<mNumTextures; i++) {
-			addTexture(mTextureInfoList.get(i), true, true);
+			if(mTextureInfoList.get(i).getTexture() != null)
+				addTexture(mTextureInfoList.get(i), true, true);
 		}
 	}
 
@@ -253,6 +256,10 @@ public abstract class AMaterial {
 		addTexture(textureInfo, isExistingTexture, false);
 	}
 	
+	public void removeTexture(TextureInfo textureInfo) {
+		mTextureInfoList.remove(textureInfo);
+	}
+	
 	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture, boolean reload) {
 		// -- check if this texture is already in the list
 		if(mTextureInfoList.indexOf(textureInfo) > -1 && !reload) return;		
@@ -285,6 +292,8 @@ public abstract class AMaterial {
 		case SPHERE_MAP:
 			textureName = "uSphereMapTexture";
 			break;
+		case VIDEO_TEXTURE:
+			break;
 		}
 
 		// -- check if there are already diffuse texture in the list
@@ -299,8 +308,11 @@ public abstract class AMaterial {
 		// -- if there are already diffuse textures in the list then append a
 		//    number (ie the second texture in the list will be called 
 		//    "uDiffuseTexture1", the third "uDiffuseTexture2", etc.
-		if(numDiffuse > 0)
+		if(numDiffuse > 0 && textureInfo.getTextureType() == TextureType.DIFFUSE)
 			textureName += numDiffuse;
+
+		if(isExistingTexture)
+			textureName = textureInfo.getTextureName();
 		
 		if(mProgramCreated) {
 			int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
@@ -310,6 +322,9 @@ public abstract class AMaterial {
 			}
 			textureInfo.setUniformHandle(textureHandle);
 		}
+		
+		if(!isExistingTexture)
+			textureInfo.setTextureName(textureName);
 		
 		if(textureInfo.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
 		if(!isExistingTexture) {
@@ -323,9 +338,7 @@ public abstract class AMaterial {
 		for(int i=0; i<num; ++i) {
 			TextureInfo ti = mTextureInfoList.get(i);
 			if(ti.getUniformHandle() == -1) {
-				mTextureInfoList.remove(ti);
-				mNumTextures--;
-				addTexture(ti);
+				addTexture(ti, true, true);
 			}
 		}
 	}

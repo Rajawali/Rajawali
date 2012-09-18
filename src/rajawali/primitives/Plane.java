@@ -10,6 +10,7 @@ public class Plane extends BaseObject3D {
 	protected int mSegmentsW;
 	protected int mSegmentsH;
 	protected int mDirection;
+	protected boolean mRotatedTexCoords;
 	
 	public Plane() {
 		this(1f, 1f, 0, 3, 3);
@@ -19,14 +20,19 @@ public class Plane extends BaseObject3D {
 		this(width, height, 1, segmentsW, segmentsH);
 	}
 	
-	public Plane(float width, float height, int direction, int segmentsW, int segmentsH) {
+	public Plane(float width, float height, int direction, int segmentsW, int segmentsH, boolean rotatedTexCoords) {
 		super();
 		mWidth = width;
 		mHeight = height;
 		mSegmentsW = segmentsW;
 		mSegmentsH = segmentsH;
 		mDirection = direction;
+		mRotatedTexCoords = rotatedTexCoords;
 		init();
+	}
+	
+	public Plane(float width, float height, int direction, int segmentsW, int segmentsH) {
+		this(width, height, direction, segmentsW, segmentsH, false);
 	}
 	
 	private void init() {
@@ -52,8 +58,11 @@ public class Plane extends BaseObject3D {
 	            	vertices[vertexCount+2] = 0;
             	}
             	
-            	textureCoords[texCoordCount++] = (float)j / (float)mSegmentsW;
-            	textureCoords[texCoordCount++] = 1f - (float)i / (float)mSegmentsH;
+            	float t1 = (float)j / (float)mSegmentsW;
+            	float t2 = 1f - (float)i / (float)mSegmentsH;
+            	
+            	textureCoords[texCoordCount++] = mRotatedTexCoords ? t2 : t1;
+            	textureCoords[texCoordCount++] = mRotatedTexCoords ? 1.0f - t1 : t2;
             	
             	normals[vertexCount] = 0;
             	normals[vertexCount+1] = 1;

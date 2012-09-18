@@ -170,6 +170,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
         mVMatrix = mCamera.getViewMatrix();
         mPMatrix = mCamera.getProjectionMatrix();
 
+        
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
@@ -190,10 +191,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 		
 		if (pickerInfo != null) {
-			
 			pickerInfo.getPicker().createColorPickingTexture(pickerInfo);
 			pickerInfo.getPicker().unbindFrameBuffer();
-			
 			pickerInfo = null;
 			mPickerInfo = null;
 			render();

@@ -238,10 +238,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 			
-			setShaderParams(camera);
-			
 			if(pickerInfo == null)
 			{
+				setShaderParams(camera);
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
@@ -257,7 +256,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				pickerMat.setMVPMatrix(mMVPMatrix);
 				pickerMat.setModelMatrix(mMMatrix);
 				pickerMat.setViewMatrix(vMatrix);
-
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
 				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -329,6 +327,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mMaterial.setUseColor(false);
 		}
 		mMaterial.addTexture(textureInfo);
+	}
+	
+	public void removeTexture(TextureInfo textureInfo) {
+		mMaterial.removeTexture(textureInfo);
 	}
 
 	protected void checkGlError(String op) {

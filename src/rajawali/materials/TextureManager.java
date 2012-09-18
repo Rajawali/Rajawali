@@ -108,11 +108,21 @@ public class TextureManager {
 	}
 	
 	public TextureInfo addTexture(TextureInfo textureInfo) {
+		TextureInfo newInfo;
+		GLES20.glDeleteTextures(1, new int[] { textureInfo.getTextureId() }, 0);
+		TextureInfo oldInfo = new TextureInfo(textureInfo);
 		if(textureInfo.getTextureType() == TextureType.CUBE_MAP) {
-			addCubemapTextures(textureInfo.getTextures(), textureInfo.isMipmap(), textureInfo.shouldRecycle());
+			newInfo = addCubemapTextures(textureInfo.getTextures(), textureInfo.isMipmap(), textureInfo.shouldRecycle());
+		} else if(textureInfo.getTextureType() == TextureType.FRAME_BUFFER) {
+			newInfo = addTexture(null, textureInfo.getWidth(), textureInfo.getHeight(), TextureType.FRAME_BUFFER);
 		} else {
-			addTexture(textureInfo.getTexture(), textureInfo.getTextureType(), textureInfo.isMipmap(), textureInfo.shouldRecycle(), textureInfo.getWrapType(), textureInfo.getFilterType());
+			newInfo = addTexture(textureInfo.getTexture(), textureInfo.getTextureType(), textureInfo.isMipmap(), textureInfo.shouldRecycle(), textureInfo.getWrapType(), textureInfo.getFilterType());
 		}
+		// remove newly added texture info because we're sticking with the old one.
+		mTextureInfoList.remove(newInfo);
+		textureInfo.setFrom(newInfo);
+		textureInfo.setTextureName(oldInfo.getTextureName());
+
 		return textureInfo;
 	}
 	
@@ -334,17 +344,13 @@ public class TextureManager {
 	}
 
 	public void reload() {
-		TextureInfo tInfo = null, newInfo = null;
+		TextureInfo tInfo = null;
 		
 		int len = getNumTextures(); 
 		
 		for(int i=0; i<len; i++) {
 			tInfo = mTextureInfoList.get(i);
-			if(tInfo.getTextureType() == TextureType.CUBE_MAP)
-				newInfo = addCubemapTextures(tInfo.getTextures(), tInfo.isMipmap(), false, true);
-			else
-				newInfo = addTexture(null, tInfo.getTexture(), tInfo.getWidth(), tInfo.getHeight(), tInfo.getTextureType(), tInfo.getBitmapConfig(), tInfo.isMipmap(), false, true, tInfo.getWrapType(), tInfo.getFilterType());
-			tInfo.setFrom(newInfo);
+			tInfo.setFrom(addTexture(tInfo));
 		}
 	}
 	
@@ -361,6 +367,11 @@ public class TextureManager {
 		GLES20.glDeleteTextures(count, textures, 0);
 		
 		mTextureInfoList.clear();
+	}
+	
+	public void removeTexture(TextureInfo textureInfo) {
+		mTextureInfoList.remove(textureInfo);
+		GLES20.glDeleteTextures(1, new int[] { textureInfo.getTextureId() }, 0);
 	}
 	
 	public void removeTextures(ArrayList<TextureInfo> textureInfoList) {

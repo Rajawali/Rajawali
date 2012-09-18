@@ -67,13 +67,9 @@ public final class PostProcessingRenderer {
 		else if(mQuality == PostProcessingQuality.VERY_LOW)
 			mTextureSize >>= 3;
 
-		checkError("glGenFramebuffers", GLES20.glGetError());
-		
 		int[] depthBuffers = new int[1];
 		GLES20.glGenRenderbuffers(1, depthBuffers, 0);
 		mDepthBufferHandle = depthBuffers[0];
-		
-		checkError("glGenRenderbuffers", GLES20.glGetError());
 		
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mTextureSize, mTextureSize);
@@ -125,6 +121,7 @@ public final class PostProcessingRenderer {
 	public void reload() {
 		if(mPostProcessingQuad != null)
 			mPostProcessingQuad.reload();
+		
 		int[] frameBuffers = new int[1];
 		GLES20.glGenFramebuffers(1, frameBuffers, 0);
 		mFrameBufferHandle = frameBuffers[0];
@@ -132,6 +129,10 @@ public final class PostProcessingRenderer {
 		int[] depthBuffers = new int[1];
 		GLES20.glGenRenderbuffers(1, depthBuffers, 0);
 		mDepthBufferHandle = depthBuffers[0];
+		
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mTextureSize, mTextureSize);
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 	
 	public void render() {

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import rajawali.BaseObject3D;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureInfo;
+import rajawali.materials.TextureManager.TextureType;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -31,7 +32,7 @@ public class ObjectColorPicker implements IObjectPicker {
 		int[] frameBuffers = new int[1];
 		GLES20.glGenFramebuffers(1, frameBuffers, 0);
 		mFrameBufferHandle = frameBuffers[0];
-		mTextureInfo = mRenderer.getTextureManager().addTexture(null, mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		mTextureInfo = mRenderer.getTextureManager().addTexture(null, mRenderer.getViewportWidth(), mRenderer.getViewportHeight(), TextureType.FRAME_BUFFER);
 		mIsInitialised = true;
 	}
 	
@@ -93,7 +94,6 @@ public class ObjectColorPicker implements IObjectPicker {
 	public void createColorPickingTexture(ColorPickerInfo pickerInfo) {
 		ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
 		pixelBuffer.order(ByteOrder.nativeOrder());
-		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 		GLES20.glReadPixels((int)pickerInfo.getX(), mRenderer.getViewportHeight() - (int)pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		pixelBuffer.rewind();

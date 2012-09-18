@@ -133,7 +133,6 @@ public class MD2Parser extends AParser implements IParser {
 		} else {
 			try {
 				String filePath = mFile.getParent() + File.separatorChar + mCurrentTextureName;
-				RajLog.i(filePath);
 				mTexture = BitmapFactory.decodeFile(filePath);
 			} catch (Exception e) {
 				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + mCurrentTextureName);

@@ -23,6 +23,7 @@ public class TextureInfo {
 	 * @see TextureManager.TextureType
 	 */
 	protected TextureType mTextureType;
+	protected String mTextureName = "";
 	/**
 	 * The shader uniform handle for this texture
 	 */
@@ -60,6 +61,10 @@ public class TextureInfo {
 	 */
 	protected int mBitmapFormat;
 
+	public TextureInfo(TextureInfo other) {
+		setFrom(other);
+	}
+	
 	public TextureInfo(int textureId) {
 		this(textureId, TextureType.DIFFUSE);
 	}
@@ -79,6 +84,7 @@ public class TextureInfo {
 		mTextures = other.getTextures();
 		mMipmap = other.isMipmap();
 		mBitmapConfig = other.getBitmapConfig();
+		mTextureName = other.getTextureName();
 	}
 	
 	public void setTextureId(int id) {
@@ -87,6 +93,14 @@ public class TextureInfo {
 
 	public int getTextureId() {
 		return mTextureId;
+	}
+	
+	public void setTextureName(String name) {
+		mTextureName = name;
+	}
+	
+	public String getTextureName() {
+		return mTextureName;
 	}
 
 	public void setUniformHandle(int handle) {
@@ -106,7 +120,7 @@ public class TextureInfo {
 	}
 
 	public String toString() {
-		return "id: " + mTextureId + " handle: " + mUniformHandle + " type: " + mTextureType;
+		return "id: " + mTextureId + " handle: " + mUniformHandle + " type: " + mTextureType + " name: " + mTextureName;
 	}
 
 	public TextureType getTextureType() {
