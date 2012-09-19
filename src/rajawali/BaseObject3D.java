@@ -171,7 +171,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
 
 		Matrix.setIdentityM(mRotateMatrix, 0);
-
+		
 		setOrientation();
 		if(mLookAt == null) {
 			mOrientation.toRotationMatrix(mRotateMatrix);
@@ -198,6 +198,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				mIsInFrustum=false;
 			}
 		}
+		
 		if (!mIsContainerOnly && mIsInFrustum) {
 			mProjMatrix = projMatrix;
 			if (!mDoubleSided)
@@ -211,7 +212,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			if(mEnableDepthTest) GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 			else GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(mEnableDepthMask);
-
+			
 			if (pickerInfo != null && mIsPickingEnabled) {
 				ColorPickerMaterial pickerMat = pickerInfo.getPicker().getMaterial();
 				pickerMat.setPickingColor(mPickingColorArray);
@@ -224,18 +225,17 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 					 RajLog.e("["+this.getClass().getName()+"] This object can't renderer because there's no material attached to it.");
 					 throw new RuntimeException("This object can't renderer because there's no material attached to it.");
 				 }
-			    mMaterial.useProgram();
-			    mMaterial.bindTextures();
-			  
-  				mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
-  				mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
-  				mMaterial.setCamera(camera);
-  				mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
+				 mMaterial.useProgram();
+				 mMaterial.bindTextures();
+				 mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
+				 mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
+				 mMaterial.setCamera(camera);
+				 mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			  }
 			  if(mMaterial.getUseColor())
 				  mMaterial.setColors(mGeometry.getColorBufferInfo().bufferHandle);
 			}
-
+			
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 			
 			if(pickerInfo == null)

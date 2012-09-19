@@ -220,8 +220,7 @@ public abstract class AMaterial {
 
 		for (int i = 0; i < num; i++) {
 			TextureInfo ti = mTextureInfoList.get(i);
-			int type = ti.isCubeMap() ? GLES20.GL_TEXTURE_CUBE_MAP
-					: GLES20.GL_TEXTURE_2D;
+			int type = ti.isCubeMap() ? GLES20.GL_TEXTURE_CUBE_MAP : GLES20.GL_TEXTURE_2D;
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
 			GLES20.glBindTexture(type, ti.getTextureId());
 			GLES20.glUniform1i(ti.getUniformHandle(), i);
@@ -272,6 +271,7 @@ public abstract class AMaterial {
 
 		switch (textureInfo.getTextureType()) {
 		case DIFFUSE:
+		case VIDEO_TEXTURE:
 			textureName = "uDiffuseTexture";
 			break;
 		case BUMP:
@@ -291,8 +291,6 @@ public abstract class AMaterial {
 			break;
 		case SPHERE_MAP:
 			textureName = "uSphereMapTexture";
-			break;
-		case VIDEO_TEXTURE:
 			break;
 		}
 
@@ -469,10 +467,10 @@ public abstract class AMaterial {
 	public String toString() {
 		StringBuffer out = new StringBuffer();
 		out.append("[" +getClass().getName()+ "]\n");
-		out.append("____ VERTEX SHADER ____\n");
-		out.append(mVertexShader);
-		out.append("____ FRAGMENT SHADER ____\n");
-		out.append(mFragmentShader);
+		out.append("program: ").append(mProgram).append("\n");
+		out.append("vshader handle: ").append(mVShaderHandle).append("\n");
+		out.append("fshader handle: ").append(mFShaderHandle).append("\n");
+		out.append("program created: ").append(mProgramCreated).append("\n");
 		return out.toString();
 	}
 	

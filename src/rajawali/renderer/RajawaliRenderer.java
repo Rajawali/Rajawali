@@ -20,6 +20,7 @@ import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
 import rajawali.util.FPSUpdateListener;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
+import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
 import android.content.Context;
@@ -29,6 +30,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 import android.view.WindowManager;
@@ -186,8 +188,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
         mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
         
-		for (BaseObject3D child : mChildren) {
-			child.render(mCamera, mPMatrix, mVMatrix, pickerInfo);
+        synchronized (mChildren) {
+        	for (BaseObject3D child : mChildren) {
+        		child.render(mCamera, mPMatrix, mVMatrix, pickerInfo);
+        	}
 		}
 		
 		if (pickerInfo != null) {
@@ -400,11 +404,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public void addChild(BaseObject3D child) {
-		mChildren.add(child);
+		synchronized (mChildren) {
+			mChildren.add(child);
+		}
 	}
 	
 	public void clearChildren() {
-		mChildren.clear();
+		synchronized (mChildren) {
+			mChildren.clear();
+		}
 	}
 
 	protected void setSkybox(int resourceId) {
@@ -529,6 +537,20 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	public void setFPSUpdateListener(FPSUpdateListener listener) {
 		mFPSUpdateListener = listener;
+	}
+	
+	public static int checkGLError(String message) {
+		int error = GLES20.glGetError();
+		if(error != GLES20.GL_NO_ERROR)
+		{
+			StringBuffer sb = new StringBuffer();
+			if(message != null)
+				sb.append("[").append(message).append("] ");
+			sb.append("GLES20 Error: ");
+			sb.append(GLU.gluErrorString(error));
+			RajLog.e(sb.toString());
+		}
+		return error;
 	}
 	
 	public int getNumTriangles() {

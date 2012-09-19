@@ -651,14 +651,17 @@ public class Geometry3D {
 	
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
-		buff.append("Geometry3D indices: ");
-		buff.append(mIndicesInt.capacity());
-		buff.append(", vertices: ");
-		buff.append(mVertices.capacity());
-		buff.append(", normals: ");
-		buff.append(mNormals.capacity());
-		buff.append(", uvs: ");
-		buff.append(mTextureCoords.capacity());
+		if(mIndicesInt != null) buff.append("Geometry3D indices: ").append(mIndicesInt.capacity());
+		if(mVertices != null) buff.append(", vertices: ").append(mVertices.capacity());
+		if(mNormals != null) buff.append(", normals: ").append(mNormals.capacity());
+		if(mTextureCoords != null) buff.append(", uvs: ").append(mTextureCoords.capacity()).append("\n");
+		
+		if(mVertexBufferInfo != null) buff.append("vertex buffer handle: ").append(mVertexBufferInfo.bufferHandle).append("\n");
+	    if(mIndexBufferInfo != null) buff.append("index buffer handle: ").append(mIndexBufferInfo.bufferHandle).append("\n");
+	    if(mNormalBufferInfo != null) buff.append("normal buffer handle: ").append(mNormalBufferInfo.bufferHandle).append("\n");
+	    if(mTexCoordBufferInfo != null) buff.append("texcoord buffer handle: ").append(mTexCoordBufferInfo.bufferHandle).append("\n");
+	    if(mColorBufferInfo != null) buff.append("color buffer handle: ").append(mColorBufferInfo.bufferHandle).append("\n");
+		
 		return buff.toString();
 	}
 	
