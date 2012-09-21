@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
+@SuppressWarnings("deprecation")
 public class WallpaperSettings extends PreferenceActivity
 implements SharedPreferences.OnSharedPreferenceChangeListener {
 
