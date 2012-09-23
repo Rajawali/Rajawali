@@ -99,8 +99,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 */
 	public BaseObject3D(SerializedObject3D ser) {
 		this();
-		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices());
-		mLights = new Stack<ALight>();
+		setData(ser);
 	}
 
 	
@@ -131,7 +130,24 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices) {
 		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords, GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW);
 	}
-	
+
+	/**
+	 * Passes serialized data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
+	 *
+	 * A serialized file can be created by the MeshExporter class. Example:
+	 *	<code>
+		Cube cube = new Cube(2);
+		MeshExporter exporter = new MeshExporter(cube);
+		exporter.export("myobject.ser", ExportType.SERIALIZED);
+		</code>
+	 * This saves the serialized file to the SD card.
+	 *
+	 * @param ser
+	 */
+	public void setData(SerializedObject3D ser) {
+		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices());
+	}
+
 	public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage, float[] textureCoords, int textureCoordsUsage,
 			float[] colors, int colorsUsage, int[] indices, int indicesUsage) {
 		mGeometry.setData(vertices, verticesUsage, normals, normalsUsage, textureCoords, textureCoordsUsage, colors, colorsUsage, indices, indicesUsage);
