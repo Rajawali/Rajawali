@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
+@Deprecated
 public class RajawaliActivity extends Activity {
 	protected GLSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
