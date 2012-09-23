@@ -8,7 +8,7 @@ import android.util.FloatMath;
  * @author dennis.ippel
  *
  */
-public final class Number3D {
+public class Number3D {
 	public float x;
 	public float y;
 	public float z;
