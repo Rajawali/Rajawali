@@ -314,7 +314,7 @@ public class Number3D {
 		return new Number3D(0, 1, 0);
 	}
 	
-	public Number3D lerp(Number3D from, Number3D to, float amount)
+	public static Number3D lerp(Number3D from, Number3D to, float amount)
 	{
 		Number3D out = new Number3D();
 		out.x = from.x + (to.x - from.x) * amount;
