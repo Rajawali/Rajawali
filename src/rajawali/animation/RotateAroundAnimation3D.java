@@ -25,7 +25,7 @@ public class RotateAroundAnimation3D extends Animation3D {
 	
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
-		float radians = mDirection * 360f * interpolatedTime * PI_DIV_180;
+		float radians = 360f * interpolatedTime * PI_DIV_180;
 		
 		float cosVal = FloatMath.cos(radians) * mDistance;
 		float sinVal = FloatMath.sin(radians) * mDistance;
