@@ -122,6 +122,7 @@ public abstract class ATransformable3D {
 	}
 	
 	public Quaternion getOrientation() {
+		setOrientation(); // Force mOrientation to be recalculated
 		return new Quaternion(mOrientation);
 	}
 	
