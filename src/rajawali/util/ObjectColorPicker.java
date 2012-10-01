@@ -41,7 +41,9 @@ public class ObjectColorPicker implements IObjectPicker {
 		int[] frameBuffers = new int[1];
 		GLES20.glGenFramebuffers(1, frameBuffers, 0);
 		mFrameBufferHandle = frameBuffers[0];
-		mPickerMaterial.reload();
+		if (mPickerMaterial != null) {
+			mPickerMaterial.reload();
+		}
 	}
 	
 	public void setOnObjectPickedListener(OnObjectPickedListener objectPickedListener) {
