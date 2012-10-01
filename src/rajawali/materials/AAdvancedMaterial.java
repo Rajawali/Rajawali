@@ -46,7 +46,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			"#endif\n\n";
 	public static final String M_FOG_FRAGMENT_COLOR =
 			"\n#ifdef FOG_ENABLED\n" +
-			"	gl_FragColor = mix(gl_FragColor,vec4(uFogColor,1.0),fogDensity);\n" +
+			"	gl_FragColor.rgb = mix(gl_FragColor.rgb, uFogColor, fogDensity);\n" +
 			"#endif\n\n";
 	
 	protected int muNormalMatrixHandle;
