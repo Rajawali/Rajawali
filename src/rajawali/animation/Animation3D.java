@@ -6,6 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import rajawali.ATransformable3D;
+import android.os.SystemClock;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
@@ -41,7 +42,7 @@ public class Animation3D {
 		float interpolatedTime;
 		
 		   public void run() {
-		      millis = System.currentTimeMillis() - mStartTime;
+		      millis = SystemClock.uptimeMillis() - mStartTime;
 		      if(mDirection == -1) millis = mDuration - millis;
 		      interpolatedTime = mInterpolator.getInterpolation((float)millis / (float)mDuration);
 		      setHasStarted(true);
@@ -61,7 +62,7 @@ public class Animation3D {
 		    	  {
 		    		  if(mRepeatMode == REVERSE)
 		    			  mDirection *= -1;
-		    		  mStartTime = System.currentTimeMillis();
+		    		  mStartTime = SystemClock.uptimeMillis();
 		    		  mNumRepeats++;
 					  for(Animation3DListener listener : mAnimationListeners) {
 						  listener.onAnimationRepeat(mInstance);
@@ -78,7 +79,7 @@ public class Animation3D {
 	}
 	
 	public void reset() {
-		mStartTime = System.currentTimeMillis();
+		mStartTime = SystemClock.uptimeMillis();
 		mNumRepeats = 0;
 	}
 	

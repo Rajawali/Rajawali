@@ -2,6 +2,8 @@ package rajawali.animation.mesh;
 
 import java.util.Stack;
 
+import android.os.SystemClock;
+
 import rajawali.BaseObject3D;
 import rajawali.SerializedObject3D;
 
@@ -65,7 +67,7 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	}
 
 	public void play() {
-		mStartTime = System.currentTimeMillis();
+		mStartTime = SystemClock.uptimeMillis();
 		mIsPlaying = true;
 		mCurrentFrameName = null;
 		mLoop = false;
@@ -82,7 +84,7 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 			}
 		}
 
-		mStartTime = System.currentTimeMillis();
+		mStartTime = SystemClock.uptimeMillis();
 		mIsPlaying = true;
 	}
 
