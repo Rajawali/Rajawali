@@ -400,7 +400,7 @@ public abstract class AMaterial {
 
 	public void setViewMatrix(float[] viewMatrix) {
 		mViewMatrix = viewMatrix;
-		if(checkValidHandle(muMMatrixHandle, null))
+		if(checkValidHandle(muVMatrixHandle, null))
 			GLES20.glUniformMatrix4fv(muVMatrixHandle, 1, false, viewMatrix, 0);
 	}
 	
