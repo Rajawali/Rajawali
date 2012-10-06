@@ -37,7 +37,7 @@ public class RotateAroundAnimation3D extends Animation3D {
 			mTransformable3D.setX(mCenter.x + cosVal);
 			mTransformable3D.setZ(mCenter.z + sinVal);
 		} else if(mAxis == Axis.X) {
-			mTransformable3D.setY(mCenter.x + cosVal);
+			mTransformable3D.setY(mCenter.y + cosVal);
 			mTransformable3D.setZ(mCenter.z + sinVal);
 		}
 	}
