@@ -1,5 +1,7 @@
 package rajawali.animation.mesh;
 
+import android.os.SystemClock;
+
 import rajawali.SerializedObject3D;
 import rajawali.util.RajLog;
 
@@ -29,7 +31,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 	public void preRender() {
 		if (!mIsPlaying || !mUpdateVertices)
 			return;
-		mCurrentTime = System.currentTimeMillis();
+		mCurrentTime = SystemClock.uptimeMillis();
 		VertexAnimationFrame currentFrame = (VertexAnimationFrame) mFrames.get(mCurrentFrameIndex);
 		RajLog.i("frame name " + currentFrame.getName());
 		VertexAnimationFrame nextFrame = (VertexAnimationFrame) mFrames.get((mCurrentFrameIndex + 1) % mNumFrames);
