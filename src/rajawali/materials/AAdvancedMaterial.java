@@ -81,7 +81,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		this(vertexShader, fragmentShader, AMaterial.VERTEX_ANIMATION);
+		this(vertexShader, fragmentShader,
+				isAnimated ? AMaterial.VERTEX_ANIMATION : AMaterial.NONE);
 	}
 	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader, int parameters) {
