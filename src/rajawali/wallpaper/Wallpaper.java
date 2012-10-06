@@ -11,6 +11,7 @@ import rajawali.util.RajLog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLSurfaceView;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -310,6 +311,12 @@ public class Wallpaper extends GLWallpaperService {
 		@Override
 		public void onTouchEvent(MotionEvent event) {
 			renderer.onTouchEvent(event);
+		}
+		
+		@Override
+		public void setOffsetNotificationsEnabled(boolean enabled) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+				super.setOffsetNotificationsEnabled(enabled);
 		}
 		
 		 @Override
