@@ -2,6 +2,8 @@ package rajawali.animation.mesh;
 
 import java.nio.FloatBuffer;
 
+import android.os.SystemClock;
+
 import rajawali.BaseObject3D;
 import rajawali.math.Number3D;
 import rajawali.parser.MD5Parser.MD5Mesh;
@@ -21,7 +23,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	public void preRender() {
 		if(!mIsPlaying || mIsContainerOnly) return;
 		
-		mCurrentTime = System.currentTimeMillis();
+		mCurrentTime = SystemClock.uptimeMillis();
 		
 		//BoneAnimationFrame currentFrame = (BoneAnimationFrame)mFrames.get(mCurrentFrameIndex);
 		BoneAnimationFrame nextFrame = (BoneAnimationFrame)mFrames.get((mCurrentFrameIndex + 1) % mNumFrames);
