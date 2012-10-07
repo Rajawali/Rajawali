@@ -27,6 +27,7 @@ public class Animation3D {
 	protected long mUpdateRate = 1000 / 60;
 	protected boolean mHasStarted;
 	protected boolean mHasEnded;
+	protected boolean mIsPaused;
 	protected List<Animation3DListener> mAnimationListeners = new ArrayList<Animation3DListener>();
 	protected Timer mTimer;
 	protected ATransformable3D mTransformable3D;
@@ -39,9 +40,21 @@ public class Animation3D {
 	class UpdateTimeTask extends TimerTask {
 		long millis;
 		float interpolatedTime;
+		long timeInPause;
+		boolean wasPaused = false;
 
 		public void run() {
+			if (mIsPaused) {
+				if (!wasPaused)	timeInPause = SystemClock.uptimeMillis();
+				wasPaused = true;
+				return;
+			} else {
+				if (wasPaused) mStartTime += SystemClock.uptimeMillis() - timeInPause;
+				wasPaused = false;
+			}
+
 			millis = SystemClock.uptimeMillis() - mStartTime;
+
 			if (mDirection == -1)
 				millis = mDuration - millis;
 			interpolatedTime = mInterpolator.getInterpolation((float) millis / (float) mDuration);
@@ -179,6 +192,14 @@ public class Animation3D {
 		this.mHasEnded = hasEnded;
 	}
 
+	public void setPaused(boolean doPause) {
+		mIsPaused = doPause;
+	}
+	
+	public boolean isPaused() {
+		return mIsPaused;
+	}
+	
 	public long getDelay() {
 		return mDelay;
 	}
