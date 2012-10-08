@@ -44,12 +44,12 @@ public class Cube extends BaseObject3D {
 		float t = 1;
 		
 		float[] textureCoords = {
-				0, 0,	1, 0,  	1, 1, 	0, 1, // front
-				0, 0,	1, 0,  	1, 1, 	0, 1, // up
-				0, 0,	1, 0,  	1, 1, 	0, 1, // back
-				0, 0,	1, 0,  	1, 1, 	0, 1, // down
-				0, 0,	1, 0,  	1, 1, 	0, 1, // right
-				0, 0,	1, 0,  	1, 1, 	0, 1, // left
+				0, 1,	1, 1,  	1, 0, 	0, 0, // front
+				0, 1,	1, 1,  	1, 0, 	0, 0, // up
+				0, 1,	1, 1,  	1, 0, 	0, 0, // back
+				0, 1,	1, 1,  	1, 0, 	0, 0, // down
+				0, 1,	1, 1,  	1, 0, 	0, 0, // right
+				0, 1,	1, 1,  	1, 0, 	0, 0, // left
 		};
 		float[] skyboxTextureCoords = {
 				-t,t,t, t,t,t, t,-t,t, -t,-t,t,     // front
