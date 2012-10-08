@@ -325,22 +325,10 @@ public class Wallpaper extends GLWallpaperService {
 			 super.onCreate(surfaceHolder);
 			 setTouchEventsEnabled(true);
 		 }   
-		
-		@Override
-		public void onDestroy() {
-			setTouchEventsEnabled(false);
-			super.onDestroy();
-			renderer.onSurfaceDestroyed();
-			renderer = null;
-		}
 	}
 
 	@Override
 	public Engine onCreateEngine() {
 		return null;
-	}
-	
-	@Override
-	public void onDestroy() {
 	}
 }
