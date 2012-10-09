@@ -17,6 +17,7 @@ public class ObjectColorPicker implements IObjectPicker {
 	protected final int FLOAT_SIZE_BYTES = 4;
 
 	private ArrayList<BaseObject3D> mObjectLookup;
+	private int mColorIndex = 0;
 	private RajawaliRenderer mRenderer;
 	private int mFrameBufferHandle = -1;
 	private int mDepthBufferHandle = -1;
@@ -84,27 +85,11 @@ public class ObjectColorPicker implements IObjectPicker {
 	}
 
 	public void registerObject(BaseObject3D object) {
-		int color = getUniqueColor();
-		mObjectLookup.add(object);
-		object.setPickingColor(color);
-	}
-
-	private int getUniqueColor() {
-		int color = 0;
-		boolean isUnique = false;
-
-		while (!isUnique) {
-			isUnique = true;
-			color = Color.rgb((int) (Math.random() * 255f), (int) (Math.random() * 255f),
-					(int) (Math.random() * 255f));
-			if (color == 0xff000000)
-				isUnique = false; // background color
-			for (int i = 0; i < mObjectLookup.size(); ++i)
-				if (mObjectLookup.get(i).getPickingColor() == color)
-					isUnique = false;
+		if (!mObjectLookup.contains(object)) {
+			mObjectLookup.add(object);
+			object.setPickingColor(mColorIndex);
+			mColorIndex++;
 		}
-
-		return color;
 	}
 
 	public void getObjectAt(float x, float y) {
@@ -119,16 +104,15 @@ public class ObjectColorPicker implements IObjectPicker {
 				pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		pixelBuffer.rewind();
+
 		int r = pixelBuffer.get(0) & 0xff;
 		int g = pixelBuffer.get(1) & 0xff;
 		int b = pixelBuffer.get(2) & 0xff;
+		int a = pixelBuffer.get(3) & 0xff;
+		int index = Color.argb(a, r, g, b);
 
-		for (int i = 0; i < mObjectLookup.size(); i++) {
-			int test = mObjectLookup.get(i).getPickingColor();
-			if (Color.red(test) == r && Color.green(test) == g && Color.blue(test) == b) {
-				mObjectPickedListener.onObjectPicked(mObjectLookup.get(i));
-				break;
-			}
+		if (0 <= index && index < mObjectLookup.size() && mObjectPickedListener != null) {
+			mObjectPickedListener.onObjectPicked(mObjectLookup.get(index));
 		}
 	}
 
