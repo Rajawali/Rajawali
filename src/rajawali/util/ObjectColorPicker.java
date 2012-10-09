@@ -18,6 +18,7 @@ public class ObjectColorPicker implements IObjectPicker {
 	private ArrayList<BaseObject3D> mObjectLookup;
 	private RajawaliRenderer mRenderer;
 	private int mFrameBufferHandle = -1;
+	private int mDepthBufferHandle = -1;
 	private TextureInfo mTextureInfo;
 	private boolean mIsInitialised = false;
 	private ColorPickerMaterial mPickerMaterial;
@@ -29,19 +30,29 @@ public class ObjectColorPicker implements IObjectPicker {
 	}
 	
 	public void initialise() {
-		int[] frameBuffers = new int[1];
-		GLES20.glGenFramebuffers(1, frameBuffers, 0);
-		mFrameBufferHandle = frameBuffers[0];
+		genBuffers();
 		mTextureInfo = mRenderer.getTextureManager().addTexture(null, mRenderer.getViewportWidth(), mRenderer.getViewportHeight(), TextureType.FRAME_BUFFER);
 		mIsInitialised = true;
 	}
 	
 	public void reload() {
 		if(!mIsInitialised) return;
+		genBuffers();
+		mPickerMaterial.reload();
+	}
+
+	public void genBuffers() {
 		int[] frameBuffers = new int[1];
 		GLES20.glGenFramebuffers(1, frameBuffers, 0);
 		mFrameBufferHandle = frameBuffers[0];
-		mPickerMaterial.reload();
+
+		int[] depthBuffers = new int[1];
+		GLES20.glGenRenderbuffers(1, depthBuffers, 0);
+		mDepthBufferHandle = depthBuffers[0];
+
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 	
 	public void setOnObjectPickedListener(OnObjectPickedListener objectPickedListener) {
@@ -59,10 +70,12 @@ public class ObjectColorPicker implements IObjectPicker {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 			RajLog.d("Could not bind FrameBuffer for color picking.");
 		}
+		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 	}
 	
 	public void unbindFrameBuffer() {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 	
 	public void registerObject(BaseObject3D object) {
