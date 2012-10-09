@@ -144,7 +144,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
 			mReloadPickerInfo = false;
 			pickerInfo.getPicker().bindFrameBuffer();
-			GLES20.glClearColor(0, 0, 0, 1);
+			GLES20.glClearColor(255, 255, 255, 255);
 		} else {
 			if (mFilters.size() == 0)
 				GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
