@@ -13,30 +13,33 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 
 public class ObjectColorPicker implements IObjectPicker {
+
 	protected final int FLOAT_SIZE_BYTES = 4;
-	
+
 	private ArrayList<BaseObject3D> mObjectLookup;
 	private RajawaliRenderer mRenderer;
 	private int mFrameBufferHandle = -1;
 	private int mDepthBufferHandle = -1;
 	private TextureInfo mTextureInfo;
-	private boolean mIsInitialised = false;
+	private boolean mIsInitialized = false;
 	private ColorPickerMaterial mPickerMaterial;
 	private OnObjectPickedListener mObjectPickedListener;
-	
+
 	public ObjectColorPicker(RajawaliRenderer renderer) {
 		mObjectLookup = new ArrayList<BaseObject3D>();
 		mRenderer = renderer;
 	}
-	
-	public void initialise() {
+
+	public void initialize() {
 		genBuffers();
-		mTextureInfo = mRenderer.getTextureManager().addTexture(null, mRenderer.getViewportWidth(), mRenderer.getViewportHeight(), TextureType.FRAME_BUFFER);
-		mIsInitialised = true;
+		mTextureInfo = mRenderer.getTextureManager().addTexture(null, mRenderer.getViewportWidth(),
+				mRenderer.getViewportHeight(), TextureType.FRAME_BUFFER);
+		mIsInitialized = true;
 	}
-	
+
 	public void reload() {
-		if(!mIsInitialised) return;
+		if (!mIsInitialized)
+			return;
 		genBuffers();
 		mPickerMaterial.reload();
 	}
@@ -51,113 +54,119 @@ public class ObjectColorPicker implements IObjectPicker {
 		mDepthBufferHandle = depthBuffers[0];
 
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
-		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16,
+				mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
-	
+
 	public void setOnObjectPickedListener(OnObjectPickedListener objectPickedListener) {
 		mObjectPickedListener = objectPickedListener;
 	}
-	
+
 	public void bindFrameBuffer() {
-		if(!mIsInitialised)
-			initialise();
+		if (!mIsInitialized)
+			initialize();
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
-		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextureInfo.getTextureId(), 0);
+		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
+				GLES20.GL_TEXTURE_2D, mTextureInfo.getTextureId(), 0);
 		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
-		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE)
-		{
+		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 			RajLog.d("Could not bind FrameBuffer for color picking.");
 		}
-		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
+				GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 	}
-	
+
 	public void unbindFrameBuffer() {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
-	
+
 	public void registerObject(BaseObject3D object) {
 		int color = getUniqueColor();
 		mObjectLookup.add(object);
 		object.setPickingColor(color);
 	}
-	
+
 	private int getUniqueColor() {
 		int color = 0;
 		boolean isUnique = false;
-		
-		while(!isUnique) {
+
+		while (!isUnique) {
 			isUnique = true;
-			color = Color.rgb((int)(Math.random() * 255f), (int)(Math.random() * 255f), (int)(Math.random() * 255f));
-			if(color == 0xff000000) isUnique = false; // background color			
-			for(int i=0; i<mObjectLookup.size(); ++i)
-				if(mObjectLookup.get(i).getPickingColor() == color)
+			color = Color.rgb((int) (Math.random() * 255f), (int) (Math.random() * 255f),
+					(int) (Math.random() * 255f));
+			if (color == 0xff000000)
+				isUnique = false; // background color
+			for (int i = 0; i < mObjectLookup.size(); ++i)
+				if (mObjectLookup.get(i).getPickingColor() == color)
 					isUnique = false;
 		}
-		
+
 		return color;
 	}
-	
+
 	public void getObjectAt(float x, float y) {
 		mRenderer.requestColorPickingTexture(new ColorPickerInfo(x, y, this));
 	}
-	
+
 	public void createColorPickingTexture(ColorPickerInfo pickerInfo) {
 		ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
 		pixelBuffer.order(ByteOrder.nativeOrder());
-		GLES20.glReadPixels((int)pickerInfo.getX(), mRenderer.getViewportHeight() - (int)pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
+		GLES20.glReadPixels((int) pickerInfo.getX(), mRenderer.getViewportHeight()
+				- (int) pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
+				pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		pixelBuffer.rewind();
 		int r = pixelBuffer.get(0) & 0xff;
 		int g = pixelBuffer.get(1) & 0xff;
 		int b = pixelBuffer.get(2) & 0xff;
-		
-		for(int i=0; i<mObjectLookup.size(); i++) {
+
+		for (int i = 0; i < mObjectLookup.size(); i++) {
 			int test = mObjectLookup.get(i).getPickingColor();
-			if(Color.red(test) == r && Color.green(test) == g && Color.blue(test) == b)
-			{
+			if (Color.red(test) == r && Color.green(test) == g && Color.blue(test) == b) {
 				mObjectPickedListener.onObjectPicked(mObjectLookup.get(i));
 				break;
 			}
 		}
 	}
-	
+
 	public ColorPickerMaterial getMaterial() {
-		if(mPickerMaterial == null)
+		if (mPickerMaterial == null)
 			mPickerMaterial = new ColorPickerMaterial();
 		return mPickerMaterial;
 	}
-	
+
 	public class ColorPickerInfo {
+
 		private float mX;
 		private float mY;
 		private ObjectColorPicker mPicker;
 		private ByteBuffer mColorPickerBuffer;
-		
+
 		public ColorPickerInfo(float x, float y, ObjectColorPicker picker) {
 			mX = x;
 			mY = y;
 			mPicker = picker;
 		}
-		
+
 		public ObjectColorPicker getPicker() {
 			return mPicker;
 		}
-		
+
 		public float getX() {
 			return mX;
 		}
-		
+
 		public float getY() {
 			return mY;
 		}
-		
+
 		public void setColorPickerBuffer(ByteBuffer buffer) {
 			mColorPickerBuffer = buffer;
 		}
-		
+
 		public ByteBuffer getColorPickerBuffer() {
 			return mColorPickerBuffer;
 		}
