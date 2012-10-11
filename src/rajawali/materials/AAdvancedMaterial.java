@@ -15,40 +15,49 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected static final int MAX_LIGHTS = RajawaliRenderer.getMaxLights(); 
 	
 	public static final String M_FOG_VERTEX_VARS =
-			"\n#ifdef FOG_ENABLED\n" +
-			"varying float vFogDepth;\n" +
-			"#endif\n\n";
-	public static final String M_FOG_VERTEX_DEPTH = 
-			"\n#ifdef FOG_ENABLED\n" +
-			"	vFogDepth = gl_Position.z;\n" +
-			"#endif\n\n";
-	public static final String M_FOG_FRAGMENT_VARS =
-			"\n#ifdef FOG_ENABLED\n" +
-			"uniform vec3 uFogColor;\n" +
-			"uniform float uFogNear;\n" +
-			"uniform float uFogFar;\n" +
-			"uniform bool uFogEnabled;\n" +
-			"varying float vFogDepth;\n" +
-			"#endif\n\n";
-	public static final String M_FOG_FRAGMENT_CALC = 
-			"\n#ifdef FOG_ENABLED\n" +
-			"	float fogDensity = 0.0;\n" +
-			"	if(uFogEnabled == true){\n" +
-			"		if (vFogDepth > uFogFar) {\n" +
-			"			fogDensity = 1.0;\n" +
-			"		}else if(vFogDepth > uFogNear) {\n" +
-			"			float newDepth = vFogDepth - uFogNear;\n" +
-			"			fogDensity = newDepth/(uFogFar - uFogNear);\n" +
-			"		}else if (vFogDepth < uFogNear) {\n" +
-			"			fogDensity = 0.0;\n" +
+			"#ifdef FOG_ENABLED\n" +
+			"	uniform float uFogNear;\n" +
+			"	uniform float uFogFar;\n" +
+			"	uniform bool uFogEnabled;\n" +
+			"	varying float vFogDensity;\n" +
+			"#endif\n";
+	public static final String M_FOG_VERTEX_DENSITY = 
+			"#ifdef FOG_ENABLED\n" +
+			"	vFogDensity = 0.0;\n" +
+			"	float fogDepth = gl_Position.z;\n" +
+			"	if (uFogEnabled == true){\n" +
+			"		if (fogDepth <= uFogNear) {\n" +
+			"			vFogDensity = 0.0;\n" +
+			"		} else if (fogDepth >= uFogFar) {\n" +
+			"			vFogDensity = 1.0;\n" +
+			"		} else {\n" +
+			"			vFogDensity = (fogDepth - uFogNear) / (uFogFar - uFogNear);\n" +
 			"		}\n" +
 			"	}\n" +
-			"#endif\n\n";
+			"#endif\n";
+	public static final String M_FOG_FRAGMENT_VARS =
+			"#ifdef FOG_ENABLED\n" +
+			"	uniform vec3 uFogColor;\n" +
+			"	varying float vFogDensity;\n" +
+			"#endif\n";
 	public static final String M_FOG_FRAGMENT_COLOR =
-			"\n#ifdef FOG_ENABLED\n" +
-			"	gl_FragColor.rgb = mix(gl_FragColor.rgb, uFogColor, fogDensity);\n" +
-			"#endif\n\n";
-	
+			"#ifdef FOG_ENABLED\n" +
+			"	gl_FragColor.rgb = mix(gl_FragColor.rgb, uFogColor, vFogDensity);\n" +
+			"#endif\n";
+
+	/**
+	 * @deprecated Replaced by {@link #M_FOG_VERTEX_DENSITY}
+	 */
+	@Deprecated
+	public static final String M_FOG_VERTEX_DEPTH = M_FOG_VERTEX_DENSITY;
+
+	/**
+	 * @deprecated No longer needed (density calculation moved to
+	 *             {@link #M_FOG_VERTEX_DENSITY} in the vertex shader)
+	 */
+	@Deprecated
+	public static final String M_FOG_FRAGMENT_CALC = "";
+
 	protected int muNormalMatrixHandle;
 	protected int muAmbientColorHandle;
 	protected int muAmbientIntensityHandle;

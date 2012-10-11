@@ -58,7 +58,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"#ifndef TEXTURED\n" +
 		"	vColor = aColor;\n" +
 		"#endif\n" +
-		M_FOG_VERTEX_DEPTH +
+		M_FOG_VERTEX_DENSITY +
 		"}";
 		
 	protected static final String mFShader = 
@@ -86,7 +86,6 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	    "#endif\n" +
 		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity * uSpecularIntensity;\n" +
 		"	gl_FragColor.a = texColor.a;\n" +
-		M_FOG_FRAGMENT_CALC +
 		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
 		M_FOG_FRAGMENT_COLOR +
 		"}";

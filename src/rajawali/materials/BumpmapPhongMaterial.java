@@ -42,7 +42,6 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 		    "#endif\n" +
 		    "	vec4 specular = Ks * uSpecularColor;\n" + 
 		    "	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 
-		    M_FOG_FRAGMENT_CALC +
 		    "	gl_FragColor = ambient + diffuse + specular;\n" + 
 		    M_FOG_FRAGMENT_COLOR +	
 			"}";

@@ -48,7 +48,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		
 		"%LIGHT_CODE%" +
 		
-		M_FOG_VERTEX_DEPTH +
+		M_FOG_VERTEX_DENSITY +
 		"}";
 		
 	protected static final String mFShader =
@@ -75,10 +75,9 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"#else\n" +
 	    "	gl_FragColor = vColor;\n" +
 	    "#endif\n" +
+
 	    "%LIGHT_CODE%" +
-		
-		M_FOG_FRAGMENT_CALC +
-		
+
 		"	gl_FragColor.rgb = uAmbientIntensity.rgb * uAmbientColor.rgb + intensity * gl_FragColor.rgb;\n" +
 		M_FOG_FRAGMENT_COLOR +		
 		"}";

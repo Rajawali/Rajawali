@@ -33,7 +33,7 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"	vTextureCoord = aTextureCoord;\n" +
 		"	vNormal = aNormal;\n" +
 		"%LIGHT_CODE%" +
-		M_FOG_VERTEX_DEPTH +
+		M_FOG_VERTEX_DENSITY +
 		"}\n";
 	
 	protected static final String mFShader = 
@@ -56,7 +56,6 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"%LIGHT_CODE%" +
 		"	gl_FragColor = textureCube(uCubeMapTexture, vReflectDir);\n" +
 		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
-		M_FOG_FRAGMENT_CALC +
 		"	gl_FragColor.rgb *= intensity;\n" +
 		M_FOG_FRAGMENT_COLOR +	
 		"}\n";

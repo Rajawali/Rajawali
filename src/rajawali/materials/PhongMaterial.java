@@ -51,7 +51,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"%LIGHT_CODE%" +
 		
 		"	vColor = aColor;\n" +
-		M_FOG_VERTEX_DEPTH +
+		M_FOG_VERTEX_DENSITY +
 		"}";
 		
 	protected static final String mFShader = 
@@ -92,7 +92,6 @@ public class PhongMaterial extends AAdvancedMaterial {
 
 	    "	vec4 specular = Ks * uSpecularColor;\n" + 
 	    "	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 
-	    M_FOG_FRAGMENT_CALC +
 	    "	gl_FragColor = ambient + diffuse + specular;\n" + 
 	    M_FOG_FRAGMENT_COLOR +
 		"}";

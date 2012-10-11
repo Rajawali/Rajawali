@@ -15,7 +15,7 @@ public class MaskedMaterial extends AAdvancedMaterial {
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
-		M_FOG_VERTEX_DEPTH +
+		M_FOG_VERTEX_DENSITY +
 		"}\n";
 	
 	protected static final String mFShader = 
@@ -30,7 +30,6 @@ public class MaskedMaterial extends AAdvancedMaterial {
 		"	vec4 tex = texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"	if(tex.a < 0.5)\n" +
 		"		discard;\n" +
-		M_FOG_FRAGMENT_CALC +
 		"	gl_FragColor = tex;\n" +
 		M_FOG_FRAGMENT_COLOR +
 		"}\n";

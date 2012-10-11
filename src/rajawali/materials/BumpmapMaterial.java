@@ -27,7 +27,6 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 		    "	vec3 L = vec3(0.0);\n" +
 		    "%LIGHT_CODE%" +
 			" 	vec3 color = intensity * texture2D(uDiffuseTexture, vTextureCoord).rgb;" +
-			M_FOG_FRAGMENT_CALC +
 		    "	gl_FragColor = vec4(color, 1.0) + uAmbientColor * uAmbientIntensity;\n" + 
 		    M_FOG_FRAGMENT_COLOR +
 			"}";

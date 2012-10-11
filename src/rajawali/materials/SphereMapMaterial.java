@@ -43,7 +43,7 @@ public class SphereMapMaterial extends AAdvancedMaterial {
 		"	vColor = aColor;\n" +
 		"#endif\n" +
 		"%LIGHT_CODE%" +
-		M_FOG_VERTEX_DEPTH +
+		M_FOG_VERTEX_DENSITY +
 		"}\n";
 	
 	protected static final String mFShader = 
@@ -77,7 +77,6 @@ public class SphereMapMaterial extends AAdvancedMaterial {
 	    "#endif\n" +
 		"	gl_FragColor = diffColor + reflColor * uSphereMapStrength;\n" +
 		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
-		M_FOG_FRAGMENT_CALC +
 		"	gl_FragColor.rgb *= intensity;\n" +
 		M_FOG_FRAGMENT_COLOR +	
 		"}\n";

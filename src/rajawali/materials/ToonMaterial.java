@@ -32,16 +32,15 @@ public class ToonMaterial extends DiffuseMaterial {
 			"#else\n" +
 			"	vec4 color = vec4(1.0);\n" +
 			"#endif\n" +
-			"   if(intensity > .95) color = uToonColor0;" +
-			"   else if(intensity > .5) color = uToonColor1;" +
-			"   else if(intensity > .25) color = uToonColor2;" +
-			"   else color = uToonColor3;" +
-			"	color.rgb *= intensity;" +	
-			"	color += uAmbientColor * uAmbientIntensity;" +
-			M_FOG_FRAGMENT_CALC +
-			"	gl_FragColor = color;" +
+			"   if(intensity > .95) color = uToonColor0;\n" +
+			"   else if(intensity > .5) color = uToonColor1;\n" +
+			"   else if(intensity > .25) color = uToonColor2;\n" +
+			"   else color = uToonColor3;\n" +
+			"	color.rgb *= intensity;\n" +	
+			"	color += uAmbientColor * uAmbientIntensity;\n" +
+			"	gl_FragColor = color;\n" +
 			M_FOG_FRAGMENT_COLOR +	
-			"}";
+			"}\n";
 	
 	protected int muToonColor0Handle, muToonColor1Handle, muToonColor2Handle, muToonColor3Handle;
 	protected float[] mToonColor0, mToonColor1, mToonColor2, mToonColor3;
