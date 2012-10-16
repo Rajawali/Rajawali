@@ -24,15 +24,9 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	public static final String M_FOG_VERTEX_DENSITY = 
 			"#ifdef FOG_ENABLED\n" +
 			"	vFogDensity = 0.0;\n" +
-			"	float fogDepth = gl_Position.z;\n" +
 			"	if (uFogEnabled == true){\n" +
-			"		if (fogDepth <= uFogNear) {\n" +
-			"			vFogDensity = 0.0;\n" +
-			"		} else if (fogDepth >= uFogFar) {\n" +
-			"			vFogDensity = 1.0;\n" +
-			"		} else {\n" +
-			"			vFogDensity = (fogDepth - uFogNear) / (uFogFar - uFogNear);\n" +
-			"		}\n" +
+			"		vFogDensity = (gl_Position.z - uFogNear) / (uFogFar - uFogNear);\n" +
+			"		vFogDensity = clamp(vFogDensity, 0.0, 1.0);\n" +
 			"	}\n" +
 			"#endif\n";
 	public static final String M_FOG_FRAGMENT_VARS =
