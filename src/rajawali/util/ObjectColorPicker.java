@@ -32,9 +32,10 @@ public class ObjectColorPicker implements IObjectPicker {
 	}
 
 	public void initialize() {
+		int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		mTextureInfo = mRenderer.getTextureManager().addTexture(null, size, size,
+				TextureType.FRAME_BUFFER);
 		genBuffers();
-		mTextureInfo = mRenderer.getTextureManager().addTexture(null, mRenderer.getViewportWidth(),
-				mRenderer.getViewportHeight(), TextureType.FRAME_BUFFER);
 		mIsInitialized = true;
 	}
 
@@ -56,7 +57,7 @@ public class ObjectColorPicker implements IObjectPicker {
 
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16,
-				mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+				mTextureInfo.getWidth(), mTextureInfo.getHeight());
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 
