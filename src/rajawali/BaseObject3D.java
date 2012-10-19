@@ -622,6 +622,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		clone.isContainer(mIsContainerOnly);
 		if(copyMaterial) clone.setMaterial(mMaterial, false);
 		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
+		clone.mTransparent = this.mTransparent;
+		clone.mEnableBlending = this.mEnableBlending;
+		clone.mBlendFuncSFactor = this.mBlendFuncSFactor;
+		clone.mBlendFuncDFactor = this.mBlendFuncDFactor;
+		clone.mEnableDepthTest = this.mEnableDepthTest;
+		clone.mEnableDepthMask = this.mEnableDepthMask;
 	}
 
 	public BaseObject3D clone(boolean copyMaterial) {
