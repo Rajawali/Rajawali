@@ -147,7 +147,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	public void setAmbientColor(int color) {
-		setAmbientColor(new float[] { Color.red(color) / 255, Color.green(color) / 255, Color.blue(color) / 255, Color.alpha(color) / 255 });
+		setAmbientColor(new float[] { Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f });
 	}
 	
 	public void setAmbientIntensity(float[] intensity) {
