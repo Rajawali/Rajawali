@@ -305,12 +305,14 @@ public class Wallpaper extends GLWallpaperService {
 		
 		@Override
 		public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
-			renderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+			if (renderer != null)
+				renderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 		}
 		
 		@Override
 		public void onTouchEvent(MotionEvent event) {
-			renderer.onTouchEvent(event);
+			if (renderer != null)
+				renderer.onTouchEvent(event);
 		}
 		
 		@Override
