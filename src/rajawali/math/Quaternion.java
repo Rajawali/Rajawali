@@ -74,9 +74,9 @@ public final class Quaternion {
 	}
 	
 	public Quaternion fromEuler(final float heading, final float attitude, final float bank) {
-		float x = MathUtil.radiansToDegrees(heading);
-		float y = MathUtil.radiansToDegrees(attitude);
-		float z = MathUtil.radiansToDegrees(bank);
+		float x = MathUtil.degreesToRadians(heading);
+		float y = MathUtil.degreesToRadians(attitude);
+		float z = MathUtil.degreesToRadians(bank);
 	    float c1 = FloatMath.cos(x/2);
 	    float s1 = FloatMath.sin(x/2);
 	    float c2 = FloatMath.cos(y/2);
