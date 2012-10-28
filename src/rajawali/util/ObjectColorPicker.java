@@ -36,6 +36,7 @@ public class ObjectColorPicker implements IObjectPicker {
 		mTextureInfo = mRenderer.getTextureManager().addTexture(null, size, size,
 				TextureType.FRAME_BUFFER);
 		genBuffers();
+		mPickerMaterial = new ColorPickerMaterial();
 		mIsInitialized = true;
 	}
 
@@ -118,8 +119,6 @@ public class ObjectColorPicker implements IObjectPicker {
 	}
 
 	public ColorPickerMaterial getMaterial() {
-		if (mPickerMaterial == null)
-			mPickerMaterial = new ColorPickerMaterial();
 		return mPickerMaterial;
 	}
 
