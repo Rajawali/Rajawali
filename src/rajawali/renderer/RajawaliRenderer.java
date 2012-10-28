@@ -271,6 +271,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	protected void destroyScene() {
+		mSceneInitialized = false;
 		for (BaseObject3D child : mChildren) {
 			child.destroy();
 		}
