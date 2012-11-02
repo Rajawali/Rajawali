@@ -45,7 +45,7 @@ public class Animation3D {
 		long timeInPause;
 		boolean wasPaused = false;
 
-		public void run() {			
+		public void run() {	
 			if (mIsPaused) {
 				if (!wasPaused)	timeInPause = SystemClock.uptimeMillis();
 				wasPaused = true;
