@@ -85,10 +85,10 @@ public final class Quaternion {
 		float s3 = FloatMath.sin(z / 2);
 		float c1c2 = c1 * c2;
 		float s1s2 = s1 * s2;
-		w = c1c2 * c3 - s1s2 * s3;
-		x = c1c2 * s3 + s1s2 * c3;
-		y = s1 * c2 * c3 + c1 * s2 * s3;
-		z = c1 * s2 * c3 - s1 * c2 * s3;
+		this.w = c1c2 * c3 - s1s2 * s3;
+		this.x = c1c2 * s3 + s1s2 * c3;
+		this.y = s1 * c2 * c3 + c1 * s2 * s3;
+		this.z = c1 * s2 * c3 - s1 * c2 * s3;
 
 		return this;
 	}
