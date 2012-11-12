@@ -16,6 +16,8 @@ public class Animation3D {
 	public static final int REVERSE = 2;
 
 	protected long mDuration;
+	protected long mStart = -1;
+	protected long mLength = -1;
 	protected Interpolator mInterpolator;
 	protected int mRepeatCount;
 	protected int mRepeatMode = RESTART;
@@ -43,7 +45,7 @@ public class Animation3D {
 		long timeInPause;
 		boolean wasPaused = false;
 
-		public void run() {
+		public void run() {	
 			if (mIsPaused) {
 				if (!wasPaused)	timeInPause = SystemClock.uptimeMillis();
 				wasPaused = true;
@@ -54,14 +56,7 @@ public class Animation3D {
 			}
 
 			millis = SystemClock.uptimeMillis() - mStartTime;
-
-			if (mDirection == -1)
-				millis = mDuration - millis;
-			interpolatedTime = mInterpolator.getInterpolation((float) millis / (float) mDuration);
-			setHasStarted(true);
-
-			applyTransformation(interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime);
-			if (mDirection == 1 && interpolatedTime >= 1 || mDirection == -1 && interpolatedTime <= 0) {
+			if (millis > mDuration) {
 				if (mRepeatCount == mNumRepeats) {
 					setHasEnded(true);
 					cancel();
@@ -77,6 +72,20 @@ public class Animation3D {
 						listener.onAnimationRepeat(mInstance);
 					}
 				}
+				
+				millis %= mDuration;
+			}
+			
+			if (mDirection == -1) {
+				millis = mDuration - millis;
+			}
+			
+			if (millis > mStart && millis < (mStart + mLength)) {
+				float diff = (float) (millis - mStart);
+				interpolatedTime = mInterpolator.getInterpolation(diff / (float) mLength);
+				setHasStarted(true);
+
+				applyTransformation(interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime);
 			}
 		}
 	}
@@ -138,10 +147,32 @@ public class Animation3D {
 
 	public void setDuration(long duration) {
 		mDuration = duration;
+		if (mLength < 0) {
+			mLength = mDuration;
+		}
+		if (mStart < 0) {
+			mStart = 0;
+		}
 	}
 
 	public long getDuration() {
 		return mDuration;
+	}
+
+	public void setStart(long start) {
+		mStart = start;
+	}
+
+	public long getStart() {
+		return mStart;
+	}
+
+	public void setLength(long length) {
+		mLength = length;
+	}
+
+	public long getLength() {
+		return mLength;
 	}
 
 	/**
