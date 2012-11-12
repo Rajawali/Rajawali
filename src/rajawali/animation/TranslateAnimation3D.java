@@ -1,6 +1,8 @@
 package rajawali.animation;
 
+import android.view.animation.Interpolator;
 import rajawali.ATransformable3D;
+import rajawali.BaseObject3D;
 import rajawali.math.Number3D;
 
 public class TranslateAnimation3D extends Animation3D {
@@ -28,6 +30,42 @@ public class TranslateAnimation3D extends Animation3D {
 		mSplinePath = splinePath;
 	}
 
+	public TranslateAnimation3D(BaseObject3D object, Number3D toPosition, long duration, long start, long length, int repeatCount, int repeatMode, Interpolator interpolator) {
+		this(toPosition);
+
+		setTransformable3D(object);
+		setDuration(duration);
+		setStart(start);
+		setLength(length);
+		setRepeatCount(repeatCount);
+		setRepeatMode(repeatMode);
+		setInterpolator(interpolator);
+	}
+
+	public TranslateAnimation3D(BaseObject3D object, Number3D fromPosition, Number3D toPosition, long duration, long start, long length, int repeatCount, int repeatMode, Interpolator interpolator) {
+		this(fromPosition, toPosition);
+
+		setTransformable3D(object);
+		setDuration(duration);
+		setStart(start);
+		setLength(length);
+		setRepeatCount(repeatCount);
+		setRepeatMode(repeatMode);
+		setInterpolator(interpolator);
+	}
+
+	public TranslateAnimation3D(BaseObject3D object, ISpline splinePath, long duration, long start, long length, int repeatCount, int repeatMode, Interpolator interpolator) {
+		this(splinePath);
+
+		setTransformable3D(object);
+		setDuration(duration);
+		setStart(start);
+		setLength(length);
+		setRepeatCount(repeatCount);
+		setRepeatMode(repeatMode);
+		setInterpolator(interpolator);
+	}
+	
 	@Override
 	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
