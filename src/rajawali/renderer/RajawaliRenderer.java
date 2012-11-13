@@ -83,7 +83,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	public static boolean supportsUIntBuffers = false;
 	
-	private boolean mSceneInitialized;
+	protected boolean mSceneInitialized;
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
 	 * data. This is used when the OpenGL context needs to be restored.
