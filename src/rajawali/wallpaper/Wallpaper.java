@@ -339,6 +339,12 @@ public class Wallpaper extends GLWallpaperService {
 			renderer.onSurfaceDestroyed();
 			renderer = null;
 		}
+
+		@Override
+		public void onVisibilityChanged(boolean visible) {
+			super.onVisibilityChanged(visible);
+			renderer.onVisibilityChanged(visible);
+		}
 	}
 
 	@Override
