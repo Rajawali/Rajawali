@@ -751,6 +751,5 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			child.destroy();
 		}
 		mChildren.clear();
-		mChildren = null;
 	}
 }
