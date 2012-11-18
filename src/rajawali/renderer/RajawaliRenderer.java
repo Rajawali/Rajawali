@@ -7,7 +7,6 @@ import java.util.TimerTask;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import net.rbgrn.opengl.GLWallpaperService.GLEngine;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.animation.TimerManager;
@@ -32,6 +31,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.opengl.Matrix;
+import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
@@ -48,7 +48,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected SharedPreferences preferences;
 
 	protected int mViewportWidth, mViewportHeight;
-	protected GLEngine mEngine;
+	protected WallpaperService.Engine mWallpaperEngine;
 	protected GLSurfaceView mSurfaceView;
 	protected Timer mTimer;
 	protected int mFrameCount;
@@ -325,10 +325,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	private class RequestRenderTask extends TimerTask {
 		public void run() {
-			if (mEngine != null && mEngine.isVisible())
-				mEngine.requestRender();
-			else if (mSurfaceView != null)
+			if (mSurfaceView != null) {
 				mSurfaceView.requestRender();
+			}
 		}
 	}
 	
@@ -380,12 +379,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		       .getRefreshRate();
 	}
 
-	public GLEngine getEngine() {
-		return mEngine;
+	public WallpaperService.Engine getEngine() {
+		return mWallpaperEngine;
 	}
 
-	public void setEngine(GLEngine engine) {
-		this.mEngine = engine;
+	public void setEngine(WallpaperService.Engine engine) {
+		this.mWallpaperEngine = engine;
 	}
 
 	public GLSurfaceView getSurfaceView() {
