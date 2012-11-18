@@ -333,14 +333,14 @@ public abstract class Wallpaper extends WallpaperService {
 
 		@Override
 		public void onSurfaceDestroyed(SurfaceHolder holder) {
-			mRenderer.onSurfaceDestroyed();
-			mRenderer = null;
 			super.onSurfaceDestroyed(holder);
 		}
 
 		@Override
 		public void onDestroy() {
 			setTouchEventsEnabled(false);
+			mRenderer.onSurfaceDestroyed();
+			mRenderer = null;
 			mSurfaceView.onDestroy();
 			super.onDestroy();
 		}
