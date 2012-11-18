@@ -299,8 +299,10 @@ public abstract class Wallpaper extends WallpaperService {
 			}
 		}
 
+		protected Context mContext;
 		protected RajawaliRenderer mRenderer;
 		protected GLWallpaperSurfaceView mSurfaceView;
+		protected boolean mMultisampling;
 
 		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer) {
 			this(preferences, context, renderer, false);
@@ -308,20 +310,11 @@ public abstract class Wallpaper extends WallpaperService {
 
 		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer,
 				boolean useMultisampling) {
+			mContext = context;
 			mRenderer = renderer;
-			mSurfaceView = new GLWallpaperSurfaceView(context);
-
-			mSurfaceView.setEGLContextFactory(new ContextFactory());
-			mSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0, useMultisampling));
-			// mSurfaceView.setEGLConfigChooser(new ConfigChooser(8, 8, 8, 8, 16, 0));
-
-			mRenderer.setEngine(this);
-			mRenderer.setUsesCoverageAa(mUsesCoverageAa);
 			mRenderer.setSharedPreferences(preferences);
-			mRenderer.setSurfaceView(mSurfaceView);
-
-			mSurfaceView.setRenderer(mRenderer);
-			mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+			mRenderer.setEngine(this);
+			mMultisampling = useMultisampling;
 		}
 
 		@Override
@@ -348,17 +341,32 @@ public abstract class Wallpaper extends WallpaperService {
 		}
 
 		@Override
-		public void onCreate(SurfaceHolder surfaceHolder)
-		{
-			super.onCreate(surfaceHolder);
+		public void onCreate(SurfaceHolder holder) {
+			super.onCreate(holder);
+
+			mSurfaceView = new GLWallpaperSurfaceView(mContext);
+			mSurfaceView.setEGLContextFactory(new ContextFactory());
+			mSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0, mMultisampling));
+			// mSurfaceView.setEGLConfigChooser(new ConfigChooser(8, 8, 8, 8, 16, 0));
+			mSurfaceView.setRenderer(mRenderer);
+			mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
+			mRenderer.setUsesCoverageAa(mUsesCoverageAa);
+			mRenderer.setSurfaceView(mSurfaceView);
+
 			setTouchEventsEnabled(true);
+		}
+
+		@Override
+		public void onSurfaceDestroyed(SurfaceHolder holder) {
+			mRenderer.onSurfaceDestroyed();
+			mRenderer = null;
+			super.onSurfaceDestroyed(holder);
 		}
 
 		@Override
 		public void onDestroy() {
 			setTouchEventsEnabled(false);
-			mRenderer.onSurfaceDestroyed();
-			mRenderer = null;
 			mSurfaceView.onDestroy();
 			super.onDestroy();
 		}
