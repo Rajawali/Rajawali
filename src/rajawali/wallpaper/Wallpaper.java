@@ -24,32 +24,6 @@ public abstract class Wallpaper extends WallpaperService {
 	private static boolean mUsesCoverageAa;
 	public static final String SHARED_PREFS_NAME = "rajawalisharedprefs";
 
-	private static class ContextFactory implements GLSurfaceView.EGLContextFactory {
-
-		private static final int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
-
-		public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig) {
-			Log.d(TAG, "Creating OpenGL ES 2.0 context");
-			checkEglError("Before eglCreateContext", egl);
-			int[] attrib_list = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE };
-			EGLContext context = egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, attrib_list);
-			checkEglError("After eglCreateContext", egl);
-
-			return context;
-		}
-
-		public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) {
-			egl.eglDestroyContext(display, context);
-		}
-	}
-
-	private static void checkEglError(String prompt, EGL10 egl) {
-		int error;
-		while ((error = egl.eglGetError()) != EGL10.EGL_SUCCESS) {
-			Log.e(TAG, String.format("%s: EGL error: 0x%x", prompt, error));
-		}
-	}
-
 	private static class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 
 		public ConfigChooser(int r, int g, int b, int a, int depth, int stencil, boolean useMultisample) {
@@ -345,7 +319,7 @@ public abstract class Wallpaper extends WallpaperService {
 			super.onCreate(holder);
 
 			mSurfaceView = new GLWallpaperSurfaceView(mContext);
-			mSurfaceView.setEGLContextFactory(new ContextFactory());
+			mSurfaceView.setEGLContextClientVersion(2);
 			mSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0, mMultisampling));
 			// mSurfaceView.setEGLConfigChooser(new ConfigChooser(8, 8, 8, 8, 16, 0));
 			mSurfaceView.setRenderer(mRenderer);
