@@ -320,6 +320,7 @@ public class TextureManager {
 	 * @param textureId
 	 * @param texture
 	 */
+	@Deprecated
 	public void updateTexture(Integer textureId, Bitmap texture) {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId.intValue());
 		GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, texture);

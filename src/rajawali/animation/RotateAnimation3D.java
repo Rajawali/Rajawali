@@ -65,6 +65,7 @@ public class RotateAnimation3D extends Animation3D {
 	 * @deprecated use RotateAnimation3D(axis, degreesToRotate) or RotateAnimation(axis, rotateFrom, degreesToRotate)
 	 * @param toRotate
 	 */
+	@Deprecated
 	public RotateAnimation3D(Number3D toRotate) {
 	}
 	
@@ -73,6 +74,7 @@ public class RotateAnimation3D extends Animation3D {
 	 * @param fromRotate
 	 * @param toRotate
 	 */
+	@Deprecated
 	public RotateAnimation3D(Number3D fromRotate, Number3D toRotate) {
 	}
 }

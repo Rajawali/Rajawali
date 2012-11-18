@@ -493,6 +493,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @deprecated Use addLight() instead
 	 * @param light
 	 */
+	@Deprecated
 	public void setLight(ALight light) {
 		addLight(light);
 	}
@@ -501,6 +502,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @deprecated use getLight(int index) instead
 	 * @return
 	 */
+	@Deprecated
 	public ALight getLight() {
 		return mLights.get(0);
 	}
