@@ -56,6 +56,7 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 [![A Liquid Cloud Live Wallpaper](http://www.rozengain.com/files/rajawali/a_liquid_cloud_live_wallpaper.png)](https://market.android.com/details?id=com.formisk.aliquidcloud.free)
 [![Cube Complex Live Wallpaper](http://www.rozengain.com/files/rajawali/cube_complex_live_wallpaper.png)](https://play.google.com/store/apps/details?id=com.ToxicBakery.lwp.cubecomplexfree)
 [![Pyro Live Wallpaper](http://www.rozengain.com/files/rajawali/pyro.jpg)](https://play.google.com/store/apps/details?id=com.pyroliveFREE)
+[![Neurons Live Wallpaper](http://i.imgur.com/hGwVH.png)](https://play.google.com/store/apps/details?id=com.jayschwa.android.wallpaper.neurons)
 [![Autumn Grove Live Wallpaper](http://www.rozengain.com/files/rajawali/autumn_grove_live_wallpaper.png)](https://play.google.com/store/apps/details?id=com.PM.AutumnGrove3DFREE)
 [![F5E Tiger Live Wallpaper](http://www.rozengain.com/files/rajawali/f5e_tiger_live_wallpaper.png)](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.f5tiger)
 [![Het Journaal](http://www.rozengain.com/files/rajawali/rajawali-het-journaal.jpg)](https://play.google.com/store/apps/details?id=com.bw.journal)
