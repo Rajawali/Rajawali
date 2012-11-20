@@ -27,8 +27,8 @@ import android.graphics.Color;
 import android.util.Log;
 
 /**
- * The most important thing is that the model should be triangulated. Rajawali doesn’t accept quads, only tris. In Blender, this is an option you can select in the exporter. In a program like MeshLab, this is done automatically.
- * At the moment, Rajawali also doesn’t support per-face textures. This is on the todo list.
+ * The most important thing is that the model should be triangulated. Rajawali doesnï¿½t accept quads, only tris. In Blender, this is an option you can select in the exporter. In a program like MeshLab, this is done automatically.
+ * At the moment, Rajawali also doesnï¿½t support per-face textures. This is on the todo list.
  * <p>
  * The options that should be checked when exporting from blender are:
  * <ul>
@@ -40,7 +40,7 @@ import android.util.Log;
  * <li>Objects as OBJ Objects
  * </ul>
  * <p>
- * The files should be written to your “res/raw” folder in your ADT project. Usually you’ll get errors in the console when you do this. The Android SDK ignores file extensions so it’ll regard the .obj and .mtl files as duplicates. The way to fix this is to rename the files. For instance:
+ * The files should be written to your ï¿½res/rawï¿½ folder in your ADT project. Usually youï¿½ll get errors in the console when you do this. The Android SDK ignores file extensions so itï¿½ll regard the .obj and .mtl files as duplicates. The way to fix this is to rename the files. For instance:
  * - myobject.obj > myobject_obj
  * - myobject.mtl > myobject_mtl
  * The parser replaces any dots in file names, so this should be picked up automatically by the parser. Path fragments in front of file names (also texture paths) are discarded so you can leave them as is.
@@ -49,7 +49,7 @@ import android.util.Log;
  * <p>
  * If it still throws errors check if there are any funny characters or unsupported texture formats (like bmp).
  * <p>
- * Just as a reminder, here’s the code that takes care of the parsing:
+ * Just as a reminder, hereï¿½s the code that takes care of the parsing:
  * <pre>
  * {@code
  * ObjParser objParser = new ObjParser(mContext.getResources(), mTextureManager, R.raw.myobject_obj);
@@ -185,7 +185,7 @@ public class ObjParser extends AParser {
                     }
 				} else if(type.equals(TEXCOORD)) {
 					texCoords.add(Float.parseFloat(parts.nextToken()));
-                    texCoords.add(Float.parseFloat(parts.nextToken()) * -1f);
+                    texCoords.add(1f - Float.parseFloat(parts.nextToken()));
 				} else if(type.equals(NORMAL)) {
 					normals.add(Float.parseFloat(parts.nextToken()));
                     normals.add(Float.parseFloat(parts.nextToken()));
