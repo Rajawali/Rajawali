@@ -422,10 +422,10 @@ public abstract class AMaterial {
 	
 	public void setNextFrameNormals(final int normalBufferHandle) {
 		if(checkValidHandle(normalBufferHandle, "NextFrameNormals")){
-			if(checkValidHandle(maNormalHandle, "maNormalHandle")){
+			if(checkValidHandle(maNextFrameNormalHandle, "maNextFrameNormalHandle")){
 				GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
-				GLES20.glEnableVertexAttribArray(maNormalHandle);
-				fix.android.opengl.GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT,
+				GLES20.glEnableVertexAttribArray(maNextFrameNormalHandle);
+				fix.android.opengl.GLES20.glVertexAttribPointer(maNextFrameNormalHandle, 3, GLES20.GL_FLOAT,
 						false, 0, 0);
 			}
 		}
