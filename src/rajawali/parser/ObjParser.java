@@ -63,7 +63,7 @@ import android.util.Log;
  * @author dennis.ippel
  *
  */
-public class ObjParser extends AParser {
+public class ObjParser extends AMeshParser {
     protected final String VERTEX = "v";
     protected final String FACE = "f";
     protected final String TEXCOORD = "vt";
@@ -85,7 +85,7 @@ public class ObjParser extends AParser {
 	}
 	
 	@Override
-	public void parse() {
+	public ObjParser parse() {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
@@ -279,6 +279,8 @@ public class ObjParser extends AParser {
 		
 		if(mRootObject.getNumChildren() == 1)
 			mRootObject = mRootObject.getChildAt(0);
+		
+		return this;
 	}
 	
 	protected class ObjIndexData {

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Stack;
 
 import rajawali.animation.mesh.AAnimationObject3D;
@@ -22,7 +23,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class MD2Parser extends AParser implements IParser {
+public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 	private MD2Header mHeader;
 	private String mCurrentTextureName;
 	private Stack<IAnimationFrame> mFrames;
@@ -44,13 +45,11 @@ public class MD2Parser extends AParser implements IParser {
 		super(resources, textureManager, resourceId);
 	}
 
-	@Override
 	public AAnimationObject3D getParsedAnimationObject() {	
 		return (AAnimationObject3D)mRootObject;
 	}
 
-	@Override
-	public void parse() {
+	public MD2Parser parse() {
 		super.parse();
 		BufferedInputStream stream = null;
 		if(mFile == null) {
@@ -100,6 +99,8 @@ public class MD2Parser extends AParser implements IParser {
 		}
 		mObject.isContainer(false);
 		mRootObject = mObject;
+		
+		return this;
 	}
 
 	private void getMaterials(BufferedInputStream stream, byte[] bytes)
@@ -113,7 +114,7 @@ public class MD2Parser extends AParser implements IParser {
 
 			skinPath = skinPath.substring(skinPath.lastIndexOf("/") + 1,
 					skinPath.length());
-			StringBuffer textureName = new StringBuffer(skinPath.toLowerCase());
+			StringBuffer textureName = new StringBuffer(skinPath.toLowerCase(Locale.ENGLISH));
 			mCurrentTextureName = textureName.toString().trim();
 			if(mFile != null) continue;
 			int dotIndex = textureName.lastIndexOf(".");

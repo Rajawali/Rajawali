@@ -23,7 +23,7 @@ import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
-import rajawali.parser.AParser;
+import rajawali.parser.AMeshParser;
 import rajawali.parser.fbx.FBXValues.Connections.Connect;
 import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
@@ -38,7 +38,7 @@ import rajawali.util.RajLog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class FBXParser extends AParser {
+public class FBXParser extends AMeshParser {
 	private static final char COMMENT = ';';
 	private static final String OBJECT_TYPE = "ObjectType:";
 	private static final String MODEL = "Model:";
@@ -88,7 +88,7 @@ public class FBXParser extends AParser {
 	}
 	
 	@Override
-	public void parse() {
+	public FBXParser parse() {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
@@ -188,6 +188,8 @@ public class FBXParser extends AParser {
 			cam.setFarPlane(camera.properties.farPlane);
 			cam.setFieldOfView(camera.properties.fieldOfView);
 		}
+		
+		return this;
 	}
 	
 	private void buildMesh(Model model, Stack<ALight> lights) {

@@ -15,14 +15,14 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected static final int MAX_LIGHTS = RajawaliRenderer.getMaxLights(); 
 	
 	public static final String M_FOG_VERTEX_VARS =
-			"#ifdef FOG_ENABLED\n" +
+			"\n#ifdef FOG_ENABLED\n" +
 			"	uniform float uFogNear;\n" +
 			"	uniform float uFogFar;\n" +
 			"	uniform bool uFogEnabled;\n" +
 			"	varying float vFogDensity;\n" +
 			"#endif\n";
 	public static final String M_FOG_VERTEX_DENSITY = 
-			"#ifdef FOG_ENABLED\n" +
+			"\n#ifdef FOG_ENABLED\n" +
 			"	vFogDensity = 0.0;\n" +
 			"	if (uFogEnabled == true){\n" +
 			"		vFogDensity = (gl_Position.z - uFogNear) / (uFogFar - uFogNear);\n" +
@@ -30,12 +30,12 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			"	}\n" +
 			"#endif\n";
 	public static final String M_FOG_FRAGMENT_VARS =
-			"#ifdef FOG_ENABLED\n" +
+			"\n#ifdef FOG_ENABLED\n" +
 			"	uniform vec3 uFogColor;\n" +
 			"	varying float vFogDensity;\n" +
 			"#endif\n";
 	public static final String M_FOG_FRAGMENT_COLOR =
-			"#ifdef FOG_ENABLED\n" +
+			"\n#ifdef FOG_ENABLED\n" +
 			"	gl_FragColor.rgb = mix(gl_FragColor.rgb, uFogColor, vFogDensity);\n" +
 			"#endif\n";
 

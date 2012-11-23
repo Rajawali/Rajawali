@@ -17,7 +17,7 @@ import rajawali.util.RajLog;
  * @author lacasrac
  *
  */
-public class Max3DSParser extends AParser {
+public class Max3DSParser extends AMeshParser {
 	private final int IDENTIFIER_3DS = 0x4D4D;
 	private final int MESH_BLOCK = 0x3D3D;
 	private final int OBJECT_BLOCK = 0x4000;
@@ -48,7 +48,7 @@ public class Max3DSParser extends AParser {
 	}
 
 	@Override
-	public void parse() {
+	public Max3DSParser parse() {
 		RajLog.i("Start parsing 3DS");
 
 		InputStream stream = mResources.openRawResource(mResourceId);
@@ -57,7 +57,7 @@ public class Max3DSParser extends AParser {
 			readHeader(stream);
 			if (mChunkID != IDENTIFIER_3DS) {
 				RajLog.e("Not a valid 3DS file");
-				return;
+				return null;
 			}
 
 			while (!mEndReached) {
@@ -75,6 +75,8 @@ public class Max3DSParser extends AParser {
 			RajLog.e("Error parsing");
 			e.printStackTrace();
 		}
+		
+		return this;
 	}
 
 	void readChunk(InputStream stream) throws IOException {

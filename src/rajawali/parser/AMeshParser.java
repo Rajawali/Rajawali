@@ -5,14 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import rajawali.BaseObject3D;
-import rajawali.animation.mesh.AAnimationObject3D;
 import rajawali.materials.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import android.content.res.Resources;
 import android.os.Environment;
 
 
-public abstract class AParser implements IParser {
+public abstract class AMeshParser implements IMeshParser {
 	protected TextureManager mTextureManager;
 	protected Resources mResources;
 	protected int mResourceId;
@@ -21,31 +20,28 @@ public abstract class AParser implements IParser {
 	
 	protected BaseObject3D mRootObject;
 
-	public AParser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public AMeshParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		this(renderer.getContext().getResources(), renderer.getTextureManager(), 0);
 		mFileOnSDCard = fileOnSDCard;
 	}
 	
-	public AParser(Resources resources, TextureManager textureManager, int resourceId) {
+	public AMeshParser(Resources resources, TextureManager textureManager, int resourceId) {
 		mTextureManager = textureManager;
 		mResources = resources;
 		mResourceId = resourceId;
 		mRootObject = new BaseObject3D();
 	}
 	
-	public void parse() {
+	public AMeshParser parse() {
 		if(mFileOnSDCard != null) {
 			File sdcard = Environment.getExternalStorageDirectory();
 			mFile = new File(sdcard, mFileOnSDCard);
 		}
+		return this;
 	}
 
 	public BaseObject3D getParsedObject() {
 		return mRootObject;
-	}
-	
-	public AAnimationObject3D getParsedAnimationObject() {
-		return null;
 	}
 	
 	protected String readString(InputStream stream) throws IOException {

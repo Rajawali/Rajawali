@@ -6,9 +6,9 @@ import android.os.SystemClock;
 
 import rajawali.BaseObject3D;
 import rajawali.math.Number3D;
-import rajawali.parser.MD5Parser.MD5Mesh;
-import rajawali.parser.MD5Parser.MD5Vert;
-import rajawali.parser.MD5Parser.MD5Weight;
+import rajawali.parser.md5.MD5MeshParser.MD5Mesh;
+import rajawali.parser.md5.MD5MeshParser.MD5Vert;
+import rajawali.parser.md5.MD5MeshParser.MD5Weight;
 
 public class BoneAnimationObject3D extends AAnimationObject3D {
 	private int mNumJoints;
