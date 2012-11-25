@@ -2,18 +2,20 @@ package rajawali.animation.mesh;
 
 import java.nio.FloatBuffer;
 
-import android.os.SystemClock;
-
 import rajawali.BaseObject3D;
 import rajawali.math.Number3D;
+import rajawali.math.Quaternion;
 import rajawali.parser.md5.MD5MeshParser.MD5Mesh;
 import rajawali.parser.md5.MD5MeshParser.MD5Vert;
 import rajawali.parser.md5.MD5MeshParser.MD5Weight;
+import rajawali.util.RajLog;
+import android.os.SystemClock;
 
 public class BoneAnimationObject3D extends AAnimationObject3D {
 	private int mNumJoints;
 	private Skeleton mSkeleton;
 	private MD5Mesh mMesh;
+	private BoneAnimationSequence mSequence;
 	
 	public BoneAnimationObject3D() {
 		super();
@@ -25,20 +27,18 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		
 		mCurrentTime = SystemClock.uptimeMillis();
 		
-		//BoneAnimationFrame currentFrame = (BoneAnimationFrame)mFrames.get(mCurrentFrameIndex);
-		BoneAnimationFrame nextFrame = (BoneAnimationFrame)mFrames.get((mCurrentFrameIndex + 1) % mNumFrames);
-		
-		mInterpolation += (float) mFps * (mCurrentTime - mStartTime) / 1000;
+		BoneAnimationFrame currentFrame = (BoneAnimationFrame)mSequence.getFrame(mCurrentFrameIndex);
+		BoneAnimationFrame nextFrame = (BoneAnimationFrame)mSequence.getFrame((mCurrentFrameIndex + 1) % mNumFrames);
+
+		mInterpolation += (float) mFps * (mCurrentTime - mStartTime) / 1000.f;
 		
 		for(int i=0; i<mNumJoints; ++i) {
 			SkeletonJoint joint = mSkeleton.getJoint(i);
-			//RajLog.i(mCurrentFrameIndex + ", " + currentFrame.getSkeleton());
-			//SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
+			SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
 			SkeletonJoint toJoint = nextFrame.getSkeleton().getJoint(i);
-			//joint.getPosition().lerpSelf(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
-			//joint.getOrientation().setAllFrom(Quaternion.slerp(mInterpolation, fromJoint.getOrientation(), toJoint.getOrientation(), false));
-			joint.getPosition().setAllFrom(toJoint.getPosition());
-			joint.getOrientation().setAllFrom(toJoint.getOrientation());
+			joint.setParentIndex(fromJoint.getParentIndex());
+			joint.getPosition().lerpSelf(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
+			joint.getOrientation().setAllFrom(Quaternion.slerp(mInterpolation, fromJoint.getOrientation(), toJoint.getOrientation(), false));
 		}
 		
 		prepareMesh();
@@ -63,6 +63,10 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		
 		FloatBuffer vBuff = mGeometry.getVertices();
 		FloatBuffer nBuff = mGeometry.getNormals();
+		vBuff.clear();
+		nBuff.clear();
+		vBuff.position(0);
+		nBuff.position(0);
 		
 	    for(int i = 0; i<mMesh.numVerts; ++i)
 	    {
@@ -76,7 +80,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	        {
 	            MD5Weight weight = mMesh.weights[vert.weightIndex + j];
 	            SkeletonJoint joint = mSkeleton.getJoint(weight.jointIndex);
-	 
+
 	            rotPos = joint.getOrientation().multiply(weight.position);
 	            
 				Number3D pos = Number3D.add(joint.getPosition(), rotPos);
@@ -88,7 +92,6 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	            normal.add(rotPos);
 	        }
 	        
-	        //if(i==0) RajLog.i(position.toString());
 	        vBuff.put(index, position.x);
 	        vBuff.put(index+1, position.y);
 	        vBuff.put(index+2, position.z);
@@ -98,8 +101,11 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	        nBuff.put(index+2, normal.z);
 	    }
 	    
+	    vBuff.position(0);
+	    nBuff.position(0);
+	    
 	    mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), vBuff, 0);
-	    mGeometry.changeBufferData(mGeometry.getNormalBufferInfo(), nBuff, 0);
+	   mGeometry.changeBufferData(mGeometry.getNormalBufferInfo(), nBuff, 0);
 	}
 	
 	public void setNumJoints(int numJoints) {
@@ -119,10 +125,42 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	}
 	
 	public void play() {
+		if(mSequence == null)
+		{
+			RajLog.e("[BoneAnimationObject3D.play()] Cannot play animation. No sequence was set.");
+			return;
+		}
 		super.play();
-		for(BaseObject3D child : mChildren) {
+		for(BaseObject3D child : mChildren)
 			if(child instanceof AAnimationObject3D)
 				((AAnimationObject3D)child).play();
+	}
+	
+	public void setAnimationSequence(BoneAnimationSequence sequence)
+	{
+		mSequence = sequence;
+		if(sequence != null && sequence.getFrames() != null)
+		{
+			mNumFrames = sequence.getFrames().length;
+			
+			for(BaseObject3D child : mChildren) 
+				if(child instanceof BoneAnimationObject3D)
+					((BoneAnimationObject3D)child).setAnimationSequence(sequence);
 		}
+	}
+	
+	public BoneAnimationSequence getAnimationSequence()
+	{
+		return mSequence;
+	}
+	
+	public void setJoints(SkeletonJoint[] joints)
+	{
+		mSkeleton.setJoints(joints);
+	}
+	
+	public Skeleton getSkeleton()
+	{
+		return mSkeleton;
 	}
 }

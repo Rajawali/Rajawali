@@ -9,10 +9,7 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 import rajawali.animation.mesh.AAnimationObject3D;
-import rajawali.animation.mesh.BoneAnimationFrame;
 import rajawali.animation.mesh.BoneAnimationObject3D;
-import rajawali.animation.mesh.BoneAnimationSequence;
-import rajawali.animation.mesh.Skeleton;
 import rajawali.animation.mesh.SkeletonJoint;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.TextureManager;
@@ -23,6 +20,7 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
@@ -34,7 +32,6 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	private static final String NUM_VERTS = "numverts";
 	private static final String NUM_TRIS = "numtris";
 	private static final String NUM_WEIGHTS = "numweights";
-	private static final String NUM_FRAMES = "numFrames";
 	
 	private static final String JOINTS = "joints";
 	private static final String MESH = "mesh";
@@ -43,20 +40,12 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	private static final String TRI = "tri";
 	private static final String WEIGHT = "weight";
 	
-	private static final String FRAME_RATE = "frameRate";
-	private static final String NUM_ANIMATED_COMPONENTS = "numAnimatedComponents";
-	private static final String HIERARCHY = "hierarchy";
-	private static final String BOUNDS = "bounds";
-	private static final String BASEFRAME = "baseframe";
-	private static final String FRAME = "frame";
-	
 	private int mNumJoints;
 	private int mNumMeshes;
 	private int mMeshIndex = 0;
 	
-	private SkeletonJoint[] mJoints;
 	private MD5Mesh[] mMeshes;
-	private SkeletonJoint[] mBaseFrame;
+	private SkeletonJoint[] mJoints;
 	
 	public float[][] mBindPoseMatrix;
 	public float[][] mInverseBindPoseMatrix;
@@ -125,12 +114,6 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			buildMeshes();
 			calculateNormals();
 			createObjects();
-			
-			/*parseAnimFile();
-			
-			for(int i=0; i<mNumMeshes; i++) {
-				((BoneAnimationObject3D)mRootObject.getChildAt(i)).setFrames(mFrames);
-			}*/
 		} catch (IOException e) {
 			e.printStackTrace();
 			try {
@@ -139,76 +122,6 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 		}
 		
 		return this;
-	}
-	
-	public BoneAnimationSequence parseAnimFile(int resourceId, String name) {
-		String meshFile = mResources.getString(mResourceId);
-		int identifier = mResources.getIdentifier(meshFile, "raw", mResources.getResourcePackageName(resourceId));
-		
-		if(identifier == 0) {
-			RajLog.d("No md5anim file found (looking for 'raw/" + meshFile + "').");
-			return null;
-		}		
-
-		BufferedReader buffer = null;
-		if(mFile == null) {
-			InputStream fileIn = mResources.openRawResource(identifier);
-			buffer = new BufferedReader(new InputStreamReader(fileIn));
-		} else {
-			try {
-				buffer = new BufferedReader(new FileReader(mFile));
-			} catch (FileNotFoundException e) {
-				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
-				e.printStackTrace();
-			}
-		}
-		
-		BoneAnimationSequence sequence = new BoneAnimationSequence(name);
-		BoneAnimationFrame[] frames = null;
-		float[] frameData = null;
-		String line;
-		
-		try {
-			while((line = buffer.readLine()) != null) {
-				StringTokenizer parts = new StringTokenizer(line, " ");
-				int numTokens = parts.countTokens();
-				
-				if(numTokens == 0)
-					continue;
-				String type = parts.nextToken();
-				
-				if(type.equalsIgnoreCase(MD5_VERSION)) {
-				} else if(type.equalsIgnoreCase(COMMAND_LINE)) { 
-				} else if(type.equalsIgnoreCase(NUM_JOINTS)) {
-				} else if(type.equalsIgnoreCase(NUM_FRAMES)) {
-					sequence.setNumFrames(Integer.parseInt(parts.nextToken()));
-					frames = new BoneAnimationFrame[sequence.getNumFrames()];
-				} else if(type.equalsIgnoreCase(FRAME_RATE)) {
-					sequence.setFrameRate(Integer.parseInt(parts.nextToken()));
-					for(int i=0; i<mRootObject.getNumChildren(); ++i)
-						((BoneAnimationObject3D)mRootObject.getChildAt(i)).setFps(sequence.getFrameRate());
-				} else if(type.equalsIgnoreCase(NUM_ANIMATED_COMPONENTS)) {
-					frameData = new float[Integer.parseInt(parts.nextToken())];
-				} else if(type.equalsIgnoreCase(HIERARCHY)) {
-					parseHierarchy(buffer);
-				} else if(type.equalsIgnoreCase(BOUNDS)) {
-					parseBounds(frames, buffer);
-				} else if(type.equalsIgnoreCase(FRAME)) {
-					parseFrame(frames, frameData, Integer.parseInt(parts.nextToken()), buffer);
-				} else if(type.equalsIgnoreCase(BASEFRAME)) {
-					mBaseFrame = new SkeletonJoint[mNumJoints];
-					parseBaseFrame(buffer);
-				}
-			}
-			buffer.close();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		sequence.setFrames(frames);
-		sequence.setFrameData(frameData);
-		
-		return sequence;
 	}
 	
 	private void parseJoints(BufferedReader buffer) {
@@ -242,6 +155,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				// -- orientation
 				p = line.substring(line.indexOf('(', offset) + 2, line.lastIndexOf(')')).split(" ");
 				joint.setOrientation(Float.parseFloat(p[0]), Float.parseFloat(p[2]), Float.parseFloat(p[1]));
+				joint.getOrientation().computeW();
 				
 				mJoints[count++] = joint;
 			}
@@ -331,186 +245,6 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 		}
 	}
 	
-	private void parseHierarchy(BufferedReader buffer) {
-		try {
-			String line;
-			int index = 0;
-			
-			while((line = buffer.readLine()) != null) {
-				line = line.replace("\t", " ");
-				StringTokenizer parts = new StringTokenizer(line, " ");
-				int numTokens = parts.countTokens();
-
-				if(line.indexOf('}') > -1) return;
-				if(numTokens == 0) continue;
-				
-				SkeletonJoint joint = mJoints[index++];
-				// discard name
-				parts.nextToken();
-				// discard parent index
-				parts.nextToken();
-				joint.setNumComp(Integer.parseInt(parts.nextToken()));
-				joint.setFrameIndex(Integer.parseInt(parts.nextToken()));
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void parseBounds(BoneAnimationFrame[] frames, BufferedReader buffer) {
-		try {
-			String line;
-			int index = 0;
-
-			while((line = buffer.readLine()) != null) {
-				line = line.replace("\t", " ");
-				StringTokenizer parts = new StringTokenizer(line, " ");
-				int numTokens = parts.countTokens();
-				if(line.indexOf('}') > -1) return;
-				if(numTokens == 0) continue;
-				
-				BoneAnimationFrame frame = new BoneAnimationFrame();
-				frames[index++] = frame;
-				// discard (
-				parts.nextToken();
-
-				Number3D min = new Number3D(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
-				// discard )
-				parts.nextToken();
-				// discard (
-				parts.nextToken();
-			
-				Number3D max = new Number3D(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
-				
-				frame.setBounds(min, max);
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void parseFrame(BoneAnimationFrame[] frames, float[] frameData, int frameIndex, BufferedReader buffer) {
-		try {
-			String line;
-			int index = 0;
-			BoneAnimationFrame frame = frames[frameIndex];
-			frame.setFrameIndex(frameIndex);
-			Skeleton skeleton = frame.getSkeleton();
-			SkeletonJoint[] joints = new SkeletonJoint[mNumJoints];
-			
-			while((line = buffer.readLine()) != null) {
-				line = line.replace("\t", " ");
-				StringTokenizer parts = new StringTokenizer(line, " ");
-				int numTokens = parts.countTokens();
-				if(line.indexOf('}') > -1) {
-					skeleton.setJoints(joints);
-					buildFrameSkeleton(frameData, skeleton);
-					return;
-				}
-				if(numTokens == 0) continue;
-
-				// -- position (x, y, z)
-				frameData[index++] = Float.parseFloat(parts.nextToken());
-				frameData[index++] = Float.parseFloat(parts.nextToken());
-				frameData[index++] = Float.parseFloat(parts.nextToken());
-
-				// -- orientation (x, y, z)
-				frameData[index++] = Float.parseFloat(parts.nextToken());
-				frameData[index++] = Float.parseFloat(parts.nextToken());
-				frameData[index++] = Float.parseFloat(parts.nextToken());
-				/*
-				SkeletonJoint joint = new SkeletonJoint(mBaseFrame[index]);
-				SkeletonJoint jointInfo = mJoints[index];
-				
-				joint.setParentIndex(jointInfo.getParentIndex());
-				
-				if((jointInfo.getNumComp() & 1) == 1) joint.getPosition().x = position.x;
-				if((jointInfo.getNumComp() & 2) == 1) joint.getPosition().y = position.y;
-				if((jointInfo.getNumComp() & 4) == 1) joint.getPosition().z = position.z;
-				if((jointInfo.getNumComp() & 8) == 1) joint.getOrientation().x = orientation.x;
-				if((jointInfo.getNumComp() & 16) == 1) joint.getOrientation().y = orientation.y;
-				if((jointInfo.getNumComp() & 32) == 1) joint.getOrientation().z = orientation.z;
-				joint.getOrientation().computeW();
-				
-				joints[index++] = joint;
-				*/
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void buildFrameSkeleton(float[] frameData, Skeleton skeleton) {
-		for(int i=0; i<mNumJoints; ++i) {
-			SkeletonJoint joint = new SkeletonJoint(mBaseFrame[i]);
-			SkeletonJoint jointInfo = mJoints[i];
-		
-			joint.setParentIndex(jointInfo.getParentIndex());
-			
-			int j = 0;
-			int frameIndex = jointInfo.getFrameIndex();
-			
-			if((jointInfo.getNumComp() & 1) == 1) joint.getPosition().x = frameData[frameIndex + j++];
-			if((jointInfo.getNumComp() & 2) == 1) joint.getPosition().z = frameData[frameIndex + j++];
-			if((jointInfo.getNumComp() & 4) == 1) joint.getPosition().y = frameData[frameIndex + j++];
-			if((jointInfo.getNumComp() & 8) == 1) joint.getOrientation().x = frameData[frameIndex + j++];
-			if((jointInfo.getNumComp() & 16) == 1) joint.getOrientation().z = frameData[frameIndex + j++];
-			if((jointInfo.getNumComp() & 32) == 1) joint.getOrientation().y = frameData[frameIndex + j++];
-			joint.getOrientation().computeW();
-			/*
-			joints[index++] = joint;
-			
-			SkeletonJoint joint = skeleton.getJoint(i);
-			SkeletonJoint jointInfo = mJoints[i];
-			if (joint.getParentIndex() >= 0 ) // Has a parent joint
-	        {
-	            SkeletonJoint parentJoint = skeleton.getJoint(jointInfo.getParentIndex());
-	            Number3D rotPos = parentJoint.getOrientation().multiply(joint.getPosition());
-	 
-	            joint.getPosition().setAllFrom(Number3D.add(parentJoint.getPosition(), rotPos));
-	            joint.getOrientation().multiply(parentJoint.getOrientation());
-	            joint.getOrientation().normalize();
-	        }*/
-		}
-	}
-	
-	private void parseBaseFrame(BufferedReader buffer) {
-		try {
-			String line;
-			int index = 0;
-			
-			while((line = buffer.readLine()) != null) {
-				line = line.replace("\t", " ");
-				StringTokenizer parts = new StringTokenizer(line, " ");
-				int numTokens = parts.countTokens();
-				if(line.indexOf('}') > -1) return;
-				if(numTokens == 0) continue;
-				
-				SkeletonJoint joint = new SkeletonJoint();
-				mBaseFrame[index++] = joint;
-				
-				// ignore "("
-				parts.nextToken();
-				float x = Float.parseFloat(parts.nextToken());
-				float y = Float.parseFloat(parts.nextToken());
-				float z = Float.parseFloat(parts.nextToken());
-				joint.setPosition(x, z, y);
-				
-				// ignore ")"
-				parts.nextToken();
-				// ignore "("
-				parts.nextToken();
-				
-				x = Float.parseFloat(parts.nextToken());
-				y = Float.parseFloat(parts.nextToken());
-				z = Float.parseFloat(parts.nextToken());
-				joint.setOrientation(x, z, y);
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void buildMeshes() {
 		for(int i=0; i<mNumMeshes; ++i) {
 			int boneIndex = 0;
@@ -642,8 +376,16 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			MD5Mesh mesh = mMeshes[i];
 			BoneAnimationObject3D o = new BoneAnimationObject3D();
 			o.setNumJoints(mNumJoints);
-			o.setData(mesh.vertices, mesh.normals, mesh.texCoords, null, mesh.indices);
+			o.setData(
+					mesh.vertices, GLES20.GL_STREAM_DRAW,
+					mesh.normals, GLES20.GL_STREAM_DRAW,
+					mesh.texCoords, GLES20.GL_STATIC_DRAW,
+					null, GLES20.GL_STATIC_DRAW,
+					mesh.indices, GLES20.GL_STATIC_DRAW
+					);			
+			o.setJoints(mJoints);
 			o.setMD5Mesh(mesh);
+			o.setName("MD5Mesh_" + i);
 			
 			boolean hasTexture = mesh.shader != null && mesh.shader.length() > 0;
 			

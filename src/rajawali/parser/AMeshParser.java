@@ -1,68 +1,32 @@
 package rajawali.parser;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
 import rajawali.BaseObject3D;
 import rajawali.materials.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import android.content.res.Resources;
-import android.os.Environment;
 
-
-public abstract class AMeshParser implements IMeshParser {
+public abstract class AMeshParser extends AParser implements IMeshParser {
 	protected TextureManager mTextureManager;
-	protected Resources mResources;
-	protected int mResourceId;
-	protected String mFileOnSDCard;
-	protected File mFile;
 	
 	protected BaseObject3D mRootObject;
 
 	public AMeshParser(RajawaliRenderer renderer, String fileOnSDCard) {
-		this(renderer.getContext().getResources(), renderer.getTextureManager(), 0);
-		mFileOnSDCard = fileOnSDCard;
+		super(renderer, fileOnSDCard);
 	}
 	
 	public AMeshParser(Resources resources, TextureManager textureManager, int resourceId) {
+		super(resources, resourceId);
 		mTextureManager = textureManager;
-		mResources = resources;
-		mResourceId = resourceId;
 		mRootObject = new BaseObject3D();
 	}
 	
 	public AMeshParser parse() {
-		if(mFileOnSDCard != null) {
-			File sdcard = Environment.getExternalStorageDirectory();
-			mFile = new File(sdcard, mFileOnSDCard);
-		}
+		super.parse();
 		return this;
 	}
 
 	public BaseObject3D getParsedObject() {
 		return mRootObject;
-	}
-	
-	protected String readString(InputStream stream) throws IOException {
-        String result = new String();
-        byte inByte;
-        while ((inByte = (byte) stream.read()) != 0)
-                result += (char) inByte;
-        return result;
-	}
-	
-	protected int readInt(InputStream stream) throws IOException {
-	        return stream.read() | (stream.read() << 8) | (stream.read() << 16)
-	                        | (stream.read() << 24);
-	}
-	
-	protected int readShort(InputStream stream) throws IOException {
-	        return (stream.read() | (stream.read() << 8));
-	}
-	
-	protected float readFloat(InputStream stream) throws IOException {
-	        return Float.intBitsToFloat(readInt(stream));
 	}
 	
 	protected class MaterialDef {
@@ -78,27 +42,5 @@ public abstract class AMeshParser implements IMeshParser {
 		public String specularHightlightTexture;
 		public String alphaTexture;
 		public String bumpTexture;
-	}
-	
-	protected String getOnlyFileName(String fileName) {
-		String fName = new String(fileName);
-		int indexOf = fName.lastIndexOf("\\");
-		if(indexOf > -1)
-			fName = fName.substring(indexOf + 1, fName.length());
-		indexOf = fName.lastIndexOf("/");
-		if(indexOf > -1)
-			fName = fName.substring(indexOf + 1, fName.length());
-		return fName.toLowerCase().replaceAll("\\s", "_");
-	}
-	
-	protected String getFileNameWithoutExtension(String fileName) {
-		String fName = fileName.substring(0, fileName.lastIndexOf("."));
-		int indexOf = fName.lastIndexOf("\\");
-		if(indexOf > -1)
-			fName = fName.substring(indexOf + 1, fName.length());
-		indexOf = fName.lastIndexOf("/");
-		if(indexOf > -1)
-			fName = fName.substring(indexOf + 1, fName.length());
-		return fName.toLowerCase().replaceAll("\\s", "_");
 	}
 }

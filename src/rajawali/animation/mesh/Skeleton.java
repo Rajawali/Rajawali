@@ -16,6 +16,10 @@ public class Skeleton {
 		return mJoints[index];
 	}
 	
+	public void setJoint(int index, SkeletonJoint joint) {
+		mJoints[index] = joint;
+	}
+	
 	public SkeletonJoint[] getJoints() {
 		return mJoints;
 	}

@@ -22,6 +22,11 @@ public class BoneAnimationSequence implements IAnimationSequence {
 		return mFrames;
 	}
 	
+	public BoneAnimationFrame getFrame(int index)
+	{
+		return mFrames[index];
+	}
+	
 	public void setFrameData(float[] frameData)
 	{
 		mFrameData = frameData;

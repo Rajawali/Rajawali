@@ -381,7 +381,7 @@ public class Geometry3D {
 	 * @param target
 	 */
 	public void createBuffer(BufferInfo bufferInfo, BufferType type, Buffer buffer, int target) {
-		createBuffer(bufferInfo, type, buffer, target, GLES20.GL_STATIC_DRAW);
+		createBuffer(bufferInfo, type, buffer, target, bufferInfo.usage);
 	}
 	
 	/**
@@ -472,7 +472,7 @@ public class Geometry3D {
 	 * @param index
 	 */
 	public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index) {
-	    changeBufferData(bufferInfo, newData, index, newData.limit());
+	    changeBufferData(bufferInfo, newData, index, newData.capacity());
 	}
 
 	/**
@@ -484,8 +484,9 @@ public class Geometry3D {
 	 * @param length
 	 */
 	public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, int length) {
+		newData.rewind();
 	    GLES20.glBindBuffer(bufferInfo.target, bufferInfo.bufferHandle);
-	    GLES20.glBufferSubData(bufferInfo.target, index * bufferInfo.byteSize, length * bufferInfo.byteSize, newData);
+	    GLES20.glBufferSubData(bufferInfo.target, index * bufferInfo.byteSize, length * FLOAT_SIZE_BYTES, newData);
 	    GLES20.glBindBuffer(bufferInfo.target, 0);
 	}
 

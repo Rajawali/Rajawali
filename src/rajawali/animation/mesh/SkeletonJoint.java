@@ -7,8 +7,8 @@ public class SkeletonJoint {
 	private String mName;
 	private int mParentIndex;
 	private int mIndex;
-	private int mFrameIndex;
-	private int mNumComp;
+	private int mStartIndex;
+	private int mFlags;
 	private Number3D mPosition;
 	private Quaternion mOrientation;
 	private float[] mMatrix;
@@ -44,6 +44,12 @@ public class SkeletonJoint {
 		mPosition.setAll(x, y, z);
 	}
 	
+	public void setPosition(Number3D position) {
+		mPosition.x = position.x;
+		mPosition.y = position.y;
+		mPosition.z = position.z;
+	}
+	
 	public Number3D getPosition() {
 		return mPosition;
 	}
@@ -66,25 +72,27 @@ public class SkeletonJoint {
 		sb.append("index: ").append(mIndex);
 		sb.append(", name: ").append(mName);
 		sb.append(", parentIndex: ").append(mParentIndex);
-		sb.append(", position: ").append(mPosition);
-		sb.append(", orientation: ").append(mOrientation);
+//		sb.append(", position: ").append(mPosition);
+	//	sb.append(", orientation: ").append(mOrientation);
+		sb.append(", startIndex: ").append(mStartIndex);
+		sb.append(", flags: ").append(mFlags);
 		return sb.toString();
 	}
 
-	public int getFrameIndex() {
-		return mFrameIndex;
+	public int getStartIndex() {
+		return mStartIndex;
 	}
 
-	public void setFrameIndex(int frameIndex) {
-		this.mFrameIndex = frameIndex;
+	public void setStartIndex(int startIndex) {
+		this.mStartIndex = startIndex;
 	}
 
-	public int getNumComp() {
-		return mNumComp;
+	public int getFlags() {
+		return mFlags;
 	}
 
-	public void setNumComp(int numComp) {
-		this.mNumComp = numComp;
+	public void setFlags(int flags) {
+		this.mFlags = flags;
 	}
 	
 	public float[] getMatrix() {
@@ -93,5 +101,13 @@ public class SkeletonJoint {
 	
 	public void setMatrix(float[] values) {
 		System.arraycopy(values, 0, mMatrix, 0, 16);
+	}
+	
+	public void setIndex(int index) {
+		mIndex = index;
+	}
+	
+	public int getIndex() {
+		return mIndex;
 	}
 }
