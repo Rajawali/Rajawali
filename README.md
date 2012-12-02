@@ -1,4 +1,4 @@
-## Rajawali
+# Rajawali
 
 [![Sample Live Screensavers](http://www.rozengain.com/files/rajawali/rajawali-3d-can-jet.jpg)](http://www.rozengain.com/blog/2011/08/23/announcing-rajawali-an-opengl-es-2-0-based-3d-framework-for-android/)
 [![Sample Game](http://www.rozengain.com/files/spotlights/rajawali-game.jpg)](http://www.rozengain.com/blog/2011/08/23/announcing-rajawali-an-opengl-es-2-0-based-3d-framework-for-android/)
@@ -6,10 +6,11 @@ Rajawali is a 3D engine for Android based on OpenGL ES 2.0. It can be used for n
 
 [Announcing Rajawali: An OpenGL ES 2.0 Based 3D Framework For Android](http://www.rozengain.com/blog/2011/08/23/announcing-rajawali-an-opengl-es-2-0-based-3d-framework-for-android/)
 
-Want to contribute? I could use some help with the development of this engine. Just give me a shout if you're up for it :-) 
+## Using Rajawali
 
-Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/master/build/rajawalilib.zip
-(Just extract it in your libs folder)
+1. Clone or download a copy of the Rajawali source code.
+2. Import the Rajawali project into Eclipse.
+3. In your project's settings, [add a library reference](https://developer.android.com/tools/projects/projects-eclipse.html#ReferencingLibraryProject) to Rajawali.
 
 ## Rajawali Examples On The Market
 
@@ -56,6 +57,7 @@ Download the compiled library here: https://github.com/MasDennis/Rajawali/raw/ma
 [![A Liquid Cloud Live Wallpaper](http://www.rozengain.com/files/rajawali/a_liquid_cloud_live_wallpaper.png)](https://market.android.com/details?id=com.formisk.aliquidcloud.free)
 [![Cube Complex Live Wallpaper](http://www.rozengain.com/files/rajawali/cube_complex_live_wallpaper.png)](https://play.google.com/store/apps/details?id=com.ToxicBakery.lwp.cubecomplexfree)
 [![Pyro Live Wallpaper](http://www.rozengain.com/files/rajawali/pyro.jpg)](https://play.google.com/store/apps/details?id=com.pyroliveFREE)
+[![Neurons Live Wallpaper](http://i.imgur.com/hGwVH.png)](https://play.google.com/store/apps/details?id=com.jayschwa.android.wallpaper.neurons)
 [![Autumn Grove Live Wallpaper](http://www.rozengain.com/files/rajawali/autumn_grove_live_wallpaper.png)](https://play.google.com/store/apps/details?id=com.PM.AutumnGrove3DFREE)
 [![F5E Tiger Live Wallpaper](http://www.rozengain.com/files/rajawali/f5e_tiger_live_wallpaper.png)](https://market.android.com/details?id=com.monyetmabuk.livewallpapers.f5tiger)
 [![Het Journaal](http://www.rozengain.com/files/rajawali/rajawali-het-journaal.jpg)](https://play.google.com/store/apps/details?id=com.bw.journal)

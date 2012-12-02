@@ -86,7 +86,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	    "#endif\n" +
 		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity * uSpecularIntensity;\n" +
 		"	gl_FragColor.a = texColor.a;\n" +
-		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
+		"	gl_FragColor += uAmbientColor * uAmbientIntensity;\n" +
 		M_FOG_FRAGMENT_COLOR +
 		"}";
 	

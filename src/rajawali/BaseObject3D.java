@@ -684,6 +684,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public void setColor(int color, boolean createNewBuffer) {
 		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f,
 				Color.alpha(color) / 255f, createNewBuffer);
+		if (mMaterial != null) {
+			mMaterial.setUseColor(true);
+		}
 	}
 
 	public void setColor(Number3D color) {
