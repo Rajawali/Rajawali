@@ -32,7 +32,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 	public void preRender() {
 		if (!mIsPlaying)
 			return;
-		mCurrentTime = SystemClock.uptimeMillis();
+		long mCurrentTime = SystemClock.uptimeMillis();
 		VertexAnimationFrame currentFrame = (VertexAnimationFrame) mFrames.get(mCurrentFrameIndex);
 		RajLog.i("frame name " + currentFrame.getName());
 		VertexAnimationFrame nextFrame = (VertexAnimationFrame) mFrames.get((mCurrentFrameIndex + 1) % mNumFrames);

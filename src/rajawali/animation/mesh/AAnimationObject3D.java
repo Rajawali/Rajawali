@@ -13,7 +13,6 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	protected int mNumFrames;
 	protected int mCurrentFrameIndex;
 	protected long mStartTime;
-	protected long mCurrentTime;
 	protected boolean mIsPlaying;
 	protected float mInterpolation;
 	protected String mCurrentFrameName;
@@ -96,6 +95,7 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	public void stop() {
 		mIsPlaying = false;
 		mCurrentFrameIndex = 0;
+		mInterpolation = 0;
 	}
 
 	public void pause() {

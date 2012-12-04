@@ -25,7 +25,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	public void preRender() {
 		if(!mIsPlaying || mIsContainerOnly) return;
 		
-		mCurrentTime = SystemClock.uptimeMillis();
+		long mCurrentTime = SystemClock.uptimeMillis();
 		
 		BoneAnimationFrame currentFrame = (BoneAnimationFrame)mSequence.getFrame(mCurrentFrameIndex);
 		BoneAnimationFrame nextFrame = (BoneAnimationFrame)mSequence.getFrame((mCurrentFrameIndex + 1) % mNumFrames);
