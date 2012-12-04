@@ -96,6 +96,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 			mObject.setColor(0xffffffff);
 			if (mTexture != null)
 				mObject.addTexture(mTextureManager.addTexture(mTexture));
+			stream.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
