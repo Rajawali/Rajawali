@@ -6,19 +6,20 @@ import rajawali.SerializedObject3D;
 import rajawali.util.RajLog;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
+
 	public VertexAnimationObject3D() {
 		super();
 	}
-	
+
 	public VertexAnimationObject3D(SerializedObject3D ser) {
 		super(ser);
 		float[][] v = ser.getFrameVertices();
 		float[][] n = ser.getFrameNormals();
 		String[] frameNames = ser.getFrameNames();
-		
+
 		mNumFrames = v.length;
-		
-		for(int i=0; i<mNumFrames; ++i) {
+
+		for (int i = 0; i < mNumFrames; ++i) {
 			VertexAnimationFrame frame = new VertexAnimationFrame();
 			frame.getGeometry().setVertices(v[i]);
 			frame.getGeometry().setNormals(n[i]);
@@ -27,7 +28,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 			mFrames.add(frame);
 		}
 	}
-	
+
 	public void preRender() {
 		if (!mIsPlaying || !mUpdateVertices)
 			return;
@@ -69,19 +70,20 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		}
 		super.reload();
 	}
-	
+
 	public VertexAnimationObject3D clone(boolean copyMaterial) {
 		VertexAnimationObject3D clone = new VertexAnimationObject3D();
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		if(copyMaterial) clone.setMaterial(mMaterial, false);
-		for(int i=0; i<mNumFrames; ++i) {
+		if (copyMaterial)
+			clone.setMaterial(mMaterial, false);
+		for (int i = 0; i < mNumFrames; ++i) {
 			clone.addFrame(getFrame(i));
 		}
 		clone.setFps(mFps);
 		return clone;
 	}
-	
+
 	public VertexAnimationObject3D clone() {
 		return clone(true);
 	}

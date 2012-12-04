@@ -8,6 +8,7 @@ import rajawali.BaseObject3D;
 import rajawali.SerializedObject3D;
 
 public abstract class AAnimationObject3D extends BaseObject3D {
+
 	protected Stack<IAnimationFrame> mFrames;
 	protected int mNumFrames;
 	protected int mCurrentFrameIndex;
@@ -25,7 +26,7 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 		super();
 		mFrames = new Stack<IAnimationFrame>();
 	}
-	
+
 	public AAnimationObject3D(SerializedObject3D ser) {
 		super(ser);
 		mFrames = new Stack<IAnimationFrame>();
@@ -34,7 +35,7 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	public void setCurrentFrame(int frame) {
 		mCurrentFrameIndex = frame;
 	}
-	
+
 	public int getCurrentFrame() {
 		return mCurrentFrameIndex;
 	}
@@ -43,11 +44,11 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 		mFrames.add(frame);
 		mNumFrames++;
 	}
-	
+
 	public int getNumFrames() {
 		return mNumFrames;
 	}
-	
+
 	public IAnimationFrame getFrame(int index) {
 		return mFrames.get(index);
 	}
@@ -57,10 +58,10 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 		frames.trimToSize();
 		mNumFrames = frames.capacity();
 	}
-	
+
 	public void setFrames(IAnimationFrame[] frames) {
 		Stack<IAnimationFrame> f = new Stack<IAnimationFrame>();
-		for(int i=0; i<frames.length; ++i) {
+		for (int i = 0; i < frames.length; ++i) {
 			f.add(frames[i]);
 		}
 		setFrames(f);
@@ -101,7 +102,7 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	public void pause() {
 		mIsPlaying = false;
 	}
-	
+
 	public int getFps() {
 		return mFps;
 	}
