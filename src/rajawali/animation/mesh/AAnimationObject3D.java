@@ -6,6 +6,7 @@ import android.os.SystemClock;
 
 import rajawali.BaseObject3D;
 import rajawali.SerializedObject3D;
+import rajawali.util.RajLog;
 
 public abstract class AAnimationObject3D extends BaseObject3D {
 
@@ -16,7 +17,8 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	protected boolean mIsPlaying;
 	protected float mInterpolation;
 	protected String mCurrentFrameName;
-	protected int mLoopStartIndex;
+	protected int mStartFrameIndex = -1;
+	protected int mEndFrameIndex = -1;
 	protected boolean mLoop = false;
 	protected int mFps = 30;
 
@@ -66,35 +68,61 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	}
 
 	public void play() {
-		mStartTime = SystemClock.uptimeMillis();
-		mIsPlaying = true;
-		mCurrentFrameName = null;
-		mLoop = false;
+		play(null);
+	}
+
+	public void play(boolean loop) {
+		play();
+		mLoop = loop;
 	}
 
 	public void play(String name) {
-		mCurrentFrameIndex = 0;
-		mCurrentFrameName = name;
+		int start = mStartFrameIndex;
+		int end = mEndFrameIndex;
 
-		for (int i = 0; i < mNumFrames; i++) {
-			if (mFrames.get(i).getName().equals(name)) {
-				mLoopStartIndex = mCurrentFrameIndex = i;
-				break;
+		if (name != null) {
+			start = -1;
+			end = -1;
+			for (int i = 0; i < mNumFrames; i++) {
+				if (mFrames.get(i).getName().equals(name)) {
+					if (start < 0) {
+						start = i;
+					}
+					end = i;
+				} else if (end >= 0) {
+					break;
+				}
+			}
+			if (start < 0) {
+				RajLog.e("Frame '" + name + "' not found");
 			}
 		}
 
+		if (start < 0 || end < 0) {
+			// Use all frames by default
+			start = 0;
+			end = mNumFrames - 1;
+		}
+		if (!isPlaying() || start > mCurrentFrameIndex || mCurrentFrameIndex > end) {
+			// Do not disrupt frame position if it is already playing the animation
+			mCurrentFrameIndex = start;
+		}
+		mStartFrameIndex = start;
+		mEndFrameIndex = end;
 		mStartTime = SystemClock.uptimeMillis();
 		mIsPlaying = true;
 	}
 
 	public void play(String name, boolean loop) {
-		this.mLoop = loop;
 		play(name);
+		mLoop = loop;
 	}
 
 	public void stop() {
 		mIsPlaying = false;
 		mCurrentFrameIndex = 0;
+		mStartFrameIndex = -1;
+		mEndFrameIndex = -1;
 		mInterpolation = 0;
 	}
 

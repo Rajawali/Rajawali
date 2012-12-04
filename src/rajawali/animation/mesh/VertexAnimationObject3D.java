@@ -2,8 +2,9 @@ package rajawali.animation.mesh;
 
 import android.os.SystemClock;
 
+import rajawali.Camera;
+import rajawali.Geometry3D;
 import rajawali.SerializedObject3D;
-import rajawali.util.RajLog;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
 
@@ -29,39 +30,55 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		}
 	}
 
-	public void preRender() {
-		if (!mIsPlaying)
-			return;
-		long mCurrentTime = SystemClock.uptimeMillis();
-		VertexAnimationFrame currentFrame = (VertexAnimationFrame) mFrames.get(mCurrentFrameIndex);
-		RajLog.i("frame name " + currentFrame.getName());
-		VertexAnimationFrame nextFrame = (VertexAnimationFrame) mFrames.get((mCurrentFrameIndex + 1) % mNumFrames);
-		if (mCurrentFrameName != null && !mCurrentFrameName.equals(currentFrame.getName())) {
-			if (!mLoop)
-				stop();
-			else
-				mCurrentFrameIndex = mLoopStartIndex;
-			return;
+	public void setShaderParams(Camera camera) {
+		super.setShaderParams(camera);
+
+		long now = SystemClock.uptimeMillis();
+
+		// Calculate interpolation and frame delta (if playing)
+		if (isPlaying()) {
+			mInterpolation += (float) (now - mStartTime) * mFps / 1000;
+			mCurrentFrameIndex += (int) mInterpolation; // advance frame if interpolation >= 1
+			if (mCurrentFrameIndex > mEndFrameIndex) {
+				if (mLoop) {
+					mCurrentFrameIndex -= mStartFrameIndex;
+					mCurrentFrameIndex %= mEndFrameIndex - mStartFrameIndex;
+					mCurrentFrameIndex += mStartFrameIndex;
+				} else {
+					mCurrentFrameIndex = mEndFrameIndex;
+					pause();
+				}
+			}
+			mInterpolation -= (int) mInterpolation; // clamp to [0, 1)
 		}
 
+		// Update geometry (if current frame is different from before)
+		Geometry3D currentGeometry = ((VertexAnimationFrame) mFrames.get(mCurrentFrameIndex)).getGeometry();
+		if (mGeometry.getVertexBufferInfo() != currentGeometry.getVertexBufferInfo()) {
+			mGeometry.setVertexBufferInfo(currentGeometry.getVertexBufferInfo());
+			mGeometry.setNormalBufferInfo(currentGeometry.getNormalBufferInfo());
+		}
+
+		// Find geometry for next frame in sequence
+		Geometry3D nextGeometry = currentGeometry;
+		int nextFrame = mCurrentFrameIndex + 1;
+		if (nextFrame > mEndFrameIndex) {
+			if (mLoop) {
+				nextFrame = mStartFrameIndex;
+			} else {
+				nextFrame = mEndFrameIndex;
+			}
+		}
+		if (nextFrame >= 0 && nextFrame < mNumFrames) {
+			nextGeometry = ((VertexAnimationFrame) mFrames.get(nextFrame)).getGeometry();
+		}
+
+		// Set shader parameters
 		mMaterial.setInterpolation(mInterpolation);
-		mMaterial.setNextFrameVertices(nextFrame.getGeometry().getVertexBufferInfo().bufferHandle);
-		mMaterial.setNextFrameNormals(nextFrame.getGeometry().getNormalBufferInfo().bufferHandle);
+		mMaterial.setNextFrameVertices(nextGeometry.getVertexBufferInfo().bufferHandle);
+		mMaterial.setNextFrameNormals(nextGeometry.getNormalBufferInfo().bufferHandle);
 
-		mInterpolation += (float) mFps * (mCurrentTime - mStartTime) / 1000;
-
-		if (mInterpolation >= 1) {
-			mInterpolation = 0;
-			mCurrentFrameIndex++;
-
-			if (mCurrentFrameIndex >= mNumFrames)
-				mCurrentFrameIndex = 0;
-
-			mGeometry.setVertexBufferInfo(nextFrame.getGeometry().getVertexBufferInfo());
-			mGeometry.setNormalBufferInfo(nextFrame.getGeometry().getNormalBufferInfo());
-		}
-
-		mStartTime = mCurrentTime;
+		mStartTime = now;
 	}
 
 	public void reload() {

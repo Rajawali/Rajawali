@@ -266,6 +266,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 								"This object can't renderer because there's no material attached to it.");
 					}
 					mMaterial.useProgram();
+					setShaderParams(camera);
 					mMaterial.bindTextures();
 					mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
 					mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
@@ -280,7 +281,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 			if (pickerInfo == null)
 			{
-				setShaderParams(camera);
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
