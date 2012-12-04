@@ -30,7 +30,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 	}
 
 	public void preRender() {
-		if (!mIsPlaying || !mUpdateVertices)
+		if (!mIsPlaying)
 			return;
 		mCurrentTime = SystemClock.uptimeMillis();
 		VertexAnimationFrame currentFrame = (VertexAnimationFrame) mFrames.get(mCurrentFrameIndex);

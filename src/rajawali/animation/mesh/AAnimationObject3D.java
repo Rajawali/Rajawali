@@ -16,7 +16,6 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 	protected long mCurrentTime;
 	protected boolean mIsPlaying;
 	protected float mInterpolation;
-	protected boolean mUpdateVertices = true;
 	protected String mCurrentFrameName;
 	protected int mLoopStartIndex;
 	protected boolean mLoop = false;
