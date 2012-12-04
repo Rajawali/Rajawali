@@ -102,6 +102,10 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 		mIsPlaying = false;
 	}
 
+	public boolean isPlaying() {
+		return mIsPlaying;
+	}
+
 	public int getFps() {
 		return mFps;
 	}
