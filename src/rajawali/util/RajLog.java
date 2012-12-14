@@ -67,7 +67,7 @@ public class RajLog {
 	}
 
 	public static final void v(String msg) {
-		Log.e(TAG, msg);
+		Log.v(TAG, msg);
 	}
 
 	public static final void w(String msg) {

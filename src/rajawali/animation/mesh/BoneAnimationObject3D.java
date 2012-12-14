@@ -3,6 +3,7 @@ package rajawali.animation.mesh;
 import java.nio.FloatBuffer;
 
 import rajawali.BaseObject3D;
+import rajawali.Camera;
 import rajawali.math.Number3D;
 import rajawali.math.Quaternion;
 import rajawali.parser.md5.MD5MeshParser.MD5Mesh;
@@ -22,10 +23,12 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		mSkeleton = new Skeleton();
 	}
 	
-	public void preRender() {
+	public void setShaderParams(Camera camera) {
+		super.setShaderParams(camera);
+
 		if(!mIsPlaying || mIsContainerOnly) return;
 		
-		mCurrentTime = SystemClock.uptimeMillis();
+		long mCurrentTime = SystemClock.uptimeMillis();
 		
 		BoneAnimationFrame currentFrame = (BoneAnimationFrame)mSequence.getFrame(mCurrentFrameIndex);
 		BoneAnimationFrame nextFrame = (BoneAnimationFrame)mSequence.getFrame((mCurrentFrameIndex + 1) % mNumFrames);
