@@ -68,12 +68,12 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 	public void setShaders(String vertexShader, String fragmentShader) {
 		StringBuffer sb = new StringBuffer();
 		StringBuffer vc = new StringBuffer();
-		
+
+		sb.append("vec3 L = vec3(0.0);\n");
+
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
-			
-			sb.append("vec3 L = vec3(0.0);\n");
-			
+
 			if(light.getLightType() == ALight.POINT_LIGHT) {
 				sb.append("L = normalize(uLightPosition").append(i).append(" - V.xyz);\n");
 				vc.append("dist = distance(V.xyz, uLightPosition").append(i).append(");\n");
