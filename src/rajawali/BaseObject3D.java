@@ -65,6 +65,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	protected boolean mRenderChildrenAsBatch = false;
 	protected boolean mIsPartOfBatch = false;
+	protected boolean mManageMaterial = true;
 
 	protected boolean mEnableBlending = false;
 	protected int mBlendFuncSFactor;
@@ -394,7 +395,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 */
 	public void reload() {
 		if (!mIsContainerOnly) {
-			mMaterial.reload();
+			if (mManageMaterial)
+				mMaterial.reload();
 			mGeometry.reload();
 		}
 
@@ -746,6 +748,16 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public void setPartOfBatch(boolean isPartOfBatch)
 	{
 		this.mIsPartOfBatch = isPartOfBatch;
+	}
+
+	public boolean getManageMaterial()
+	{
+		return mManageMaterial;
+	}
+	
+	public void setManageMaterial(boolean manageMaterial)
+	{
+		this.mManageMaterial = manageMaterial;
 	}
 
 	public void setBlendingEnabled(boolean value) {
