@@ -588,7 +588,7 @@ public final class Quaternion {
 
             axis.normalize();
 
-            q.fromAngleAxis(MathUtil.degreesToRadians(180), axis);
+            q.fromAngleAxis(180, axis);
         }
         else
         {
