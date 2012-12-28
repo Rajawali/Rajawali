@@ -28,6 +28,7 @@ public class Sphere extends BaseObject3D {
 
 		int i, j;
 		int vertIndex = 0, index = 0;
+		final float normLen = 1.0f / mRadius;
 
 		for (j = 0; j <= mSegmentsH; ++j) {
 			float horAngle = PI * j / mSegmentsH;
@@ -38,7 +39,6 @@ public class Sphere extends BaseObject3D {
 				float verAngle = 2.0f * PI * i / mSegmentsW;
 				float x = ringRadius * (float) Math.cos(verAngle);
 				float y = ringRadius * (float) Math.sin(verAngle);
-				float normLen = 1.0f / (float) Math.sqrt(x * x + y * y + z * z);
 
 				normals[vertIndex] = x * normLen;
 				vertices[vertIndex++] = x;
