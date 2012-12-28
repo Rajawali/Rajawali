@@ -44,7 +44,6 @@ public abstract class AMaterial {
 	protected float[] mViewMatrix;
 	protected float[] mCameraPosArray;
 	protected ArrayList<TextureInfo> mTextureInfoList;
-	protected boolean usesCubeMap = false;
 	
 	/**
 	 * The maximum number of available textures for this device.
@@ -231,7 +230,8 @@ public abstract class AMaterial {
 		int num = mTextureInfoList.size();
 
 		for (int i = 0; i < num; i++) {
-			int type = usesCubeMap ? GLES20.GL_TEXTURE_CUBE_MAP
+			TextureInfo ti = mTextureInfoList.get(i);
+			int type = ti.isCubeMap() ? GLES20.GL_TEXTURE_CUBE_MAP
 					: GLES20.GL_TEXTURE_2D;
 			GLES20.glBindTexture(type, 0);
 		}

@@ -59,7 +59,6 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 	
 	public CubeMapMaterial() {
 		super(mVShader, mFShader);
-		usesCubeMap = true;
 	}
 	
 	public void setShaders(String vertexShader, String fragmentShader) {

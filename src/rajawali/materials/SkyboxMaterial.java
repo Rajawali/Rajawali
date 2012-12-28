@@ -1,7 +1,5 @@
 package rajawali.materials;
 
-
-
 public class SkyboxMaterial extends AMaterial {
 	protected static final String mVShader = 
 			"uniform mat4 uMVPMatrix;\n" +
@@ -35,7 +33,6 @@ public class SkyboxMaterial extends AMaterial {
 		super(mVShader, mFShader, false);
 		mUntouchedVertexShader = new String(mVShader);
 		mUntouchedFragmentShader = new String(mFShader);
-		usesCubeMap = true;
 		setShaders(mVShader, mFShader);
 	}
 }
