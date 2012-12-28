@@ -26,7 +26,7 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"	float dist = 0.0;\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
 		"	V = uMMatrix * aPosition;\n" +
-		"	vec3 eyeDir = normalize(V.xyz - uCameraPosition.xyz);\n" +
+		"	vec3 eyeDir = V.xyz - uCameraPosition;\n" +
 		"	N = normalize(uNMatrix * aNormal);\n" +
 		"	vReflectDir = reflect(eyeDir, N);\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
