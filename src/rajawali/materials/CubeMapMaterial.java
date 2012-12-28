@@ -16,7 +16,6 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"attribute vec3 aNormal;\n" +
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec3 vReflectDir;\n" +
-		"varying vec3 vNormal;\n" +
 		"varying vec3 N;\n" +
 		"varying vec4 V;\n" +
 		
@@ -31,7 +30,6 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"	N = normalize(uNMatrix * aNormal);\n" +
 		"	vReflectDir = reflect(eyeDir, N);\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
-		"	vNormal = aNormal;\n" +
 		"%LIGHT_CODE%" +
 		M_FOG_VERTEX_DENSITY +
 		"}\n";
@@ -44,7 +42,6 @@ public class CubeMapMaterial extends AAdvancedMaterial {
 		"uniform samplerCube uCubeMapTexture;\n" +
 		"varying vec3 N;\n" +
 		"varying vec4 V;\n" +
-		"varying vec3 vNormal;\n" +
 		"uniform vec4 uAmbientColor;\n" +
 		"uniform vec4 uAmbientIntensity;\n" +
 		
