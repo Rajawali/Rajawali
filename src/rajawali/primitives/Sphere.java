@@ -32,7 +32,7 @@ public class Sphere extends BaseObject3D {
 
 		for (j = 0; j <= mSegmentsH; ++j) {
 			float horAngle = PI * j / mSegmentsH;
-			float z = -mRadius * (float) Math.cos(horAngle);
+			float z = mRadius * (float) Math.cos(horAngle);
 			float ringRadius = mRadius * (float) Math.sin(horAngle);
 
 			for (i = 0; i <= mSegmentsW; ++i) {
@@ -42,8 +42,8 @@ public class Sphere extends BaseObject3D {
 
 				normals[vertIndex] = x * normLen;
 				vertices[vertIndex++] = x;
-				normals[vertIndex] = -z * normLen;
-				vertices[vertIndex++] = -z;
+				normals[vertIndex] = z * normLen;
+				vertices[vertIndex++] = z;
 				normals[vertIndex] = y * normLen;
 				vertices[vertIndex++] = y;
 
