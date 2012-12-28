@@ -4,7 +4,7 @@ import rajawali.BaseObject3D;
 
 public class Sphere extends BaseObject3D {
 
-	private final float PI = 3.14159265f;
+	private final float PI = (float) Math.PI;
 	private float mRadius;
 	private int mSegmentsW;
 	private int mSegmentsH;
