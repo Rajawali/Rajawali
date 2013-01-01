@@ -4,7 +4,8 @@ import java.util.Stack;
 import java.util.Timer;
 
 public class TimerManager {
-	private static TimerManager mInstance;
+	private static final ThreadLocal<TimerManager> mThreadLocalManager =
+		new ThreadLocal<TimerManager>();
 	private Stack<Timer> mTimers;
 	
 	private TimerManager() {
@@ -33,7 +34,13 @@ public class TimerManager {
 	
 	public static TimerManager getInstance()
 	{
-		if(mInstance == null) mInstance = new TimerManager();
-		return mInstance;
+		TimerManager instance = mThreadLocalManager.get();
+		if(instance == null)
+		{
+			instance = new TimerManager();
+			mThreadLocalManager.set(instance);
+		}
+
+		return instance;
 	}
 }
