@@ -92,7 +92,8 @@ public class Animation3D {
 
 	public void cancel() {
 		if (mTimer != null) {
-			TimerManager.getInstance().killTimer(mTimer);
+			mTimer.cancel();
+			mTimer.purge();
 		}
 	}
 
@@ -106,12 +107,12 @@ public class Animation3D {
 			mInterpolator = new LinearInterpolator();
 		reset();
 		if (mTimer == null)
-			mTimer = TimerManager.getInstance().createNewTimer();
+			mTimer = new Timer();
 		try {
 			mTimer.scheduleAtFixedRate(new UpdateTimeTask(), mDelay, mUpdateRate);
 		} catch (IllegalStateException e) {
 			// timer was cancelled
-			mTimer = TimerManager.getInstance().createNewTimer();
+			mTimer = new Timer();
 			// try once more
 			try {
 				mTimer.scheduleAtFixedRate(new UpdateTimeTask(), mDelay, mUpdateRate);

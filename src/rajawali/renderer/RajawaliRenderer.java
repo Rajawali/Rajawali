@@ -9,7 +9,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import rajawali.BaseObject3D;
 import rajawali.Camera;
-import rajawali.animation.TimerManager;
+import rajawali.animation.Animation3D;
 import rajawali.filters.IPostProcessingFilter;
 import rajawali.materials.SimpleMaterial;
 import rajawali.materials.SkyboxMaterial;
@@ -57,6 +57,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected float[] mVMatrix = new float[16];
 	protected float[] mPMatrix = new float[16];
 	protected Stack<BaseObject3D> mChildren;
+	protected Stack<Animation3D> mAnims;
 	protected boolean mEnableDepthBuffer = true;
 
 	protected TextureManager mTextureManager;
@@ -95,6 +96,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public RajawaliRenderer(Context context) {
 		mContext = context;
 		mChildren = new Stack<BaseObject3D>();
+		mAnims = new Stack<Animation3D>();
 		mFilters = new Stack<IPostProcessingFilter>();
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
@@ -272,6 +274,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	protected void destroyScene() {
 		mSceneInitialized = false;
+		stopAnims();
+		mAnims.clear();
 		for (BaseObject3D child : mChildren) {
 			child.destroy();
 		}
@@ -279,6 +283,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	public void startRendering() {
+		startAnims();
+
 		if (mTimer != null) {
 			mTimer.cancel();
 			mTimer.purge();
@@ -299,6 +305,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			mTimer.cancel();
 			mTimer.purge();
 			mTimer = null;
+			pauseAnims();
 			return true;
 		}
 		return false;
@@ -313,7 +320,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void onSurfaceDestroyed() {
 		stopRendering();
-		TimerManager.getInstance().clear();
 		if (mTextureManager != null)
 			mTextureManager.reset();
 		destroyScene();
@@ -377,6 +383,46 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		       .getSystemService(Context.WINDOW_SERVICE))
 		       .getDefaultDisplay()
 		       .getRefreshRate();
+	}
+
+	public void addAnim(Animation3D anim) {
+		if (!mAnims.contains(anim)) {
+			mAnims.add(anim);
+		}
+	}
+
+	public boolean removeAnim(Animation3D anim) {
+		final boolean removed = mAnims.remove(anim);
+		if (removed) {
+			anim.cancel();
+		}
+		return removed;
+	}
+
+	public void startAnims() {
+		for (Animation3D anim : mAnims) {
+			if (anim.isHasStarted()) {
+				if (anim.isPaused()) {
+					anim.setPaused(false);
+				}
+			} else {
+				anim.start();
+			}
+		}
+	}
+
+	public void pauseAnims() {
+		for (Animation3D anim : mAnims) {
+			if (anim.isHasStarted()) {
+				anim.setPaused(true);
+			}
+		}
+	}
+
+	public void stopAnims() {
+		for (Animation3D anim : mAnims) {
+			anim.cancel();
+		}
 	}
 
 	public WallpaperService.Engine getEngine() {
