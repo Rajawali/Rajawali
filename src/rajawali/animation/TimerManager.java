@@ -30,6 +30,7 @@ public class TimerManager {
 			mTimers.get(i).purge();
 		}
 		mTimers.clear();
+		mThreadLocalManager.remove();
 	}
 	
 	public static TimerManager getInstance()
