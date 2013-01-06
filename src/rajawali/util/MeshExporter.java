@@ -20,6 +20,7 @@ public class MeshExporter {
 	private BaseObject3D mObject;
 	private String mFileName;
 	private boolean mCompressed;
+	private File mExportDir = null;
 	
 	public enum ExportType {
 		SERIALIZED,
@@ -28,6 +29,10 @@ public class MeshExporter {
 	
 	public MeshExporter(BaseObject3D objectToExport) {
 		mObject = objectToExport;
+	}
+	
+	public void setExportDirectory(File exportDir){
+		mExportDir = exportDir;
 	}
 	
 	public void export(String fileName, ExportType type) {
@@ -45,6 +50,23 @@ public class MeshExporter {
 			exportToObj();
 			break;
 		}
+	}
+	
+	// The path's validity is the user's responsibility.
+	// Any problems are taken care of by the try blocks in the private export methods.
+	
+	private File getExportFile(){
+		File path;
+		if(mExportDir == null)
+			path = Environment.getExternalStorageDirectory();
+		else
+			path = mExportDir;
+		
+		// I don't know why the previous directory construction had to be so complex.
+		// This constructor does the exact same thing, if I'm not mistaken.
+		return new File(path, mFileName);
+		
+		
 	}
 	
 	private void exportToObj() {
@@ -107,11 +129,9 @@ public class MeshExporter {
 		
 		try
 	    {
-			File sdcardStorage = Environment.getExternalStorageDirectory();
-			String sdcardPath = sdcardStorage.getParent()
-					+ java.io.File.separator + sdcardStorage.getName();
+			
 
-			File f = new File(sdcardPath + File.separator + mFileName);
+			File f = getExportFile();
 	        FileWriter writer = new FileWriter(f);
 	        writer.append(sb.toString());
 	        writer.flush();
@@ -131,12 +151,8 @@ public class MeshExporter {
 	 */
 	private void exportToSerialized() {
 		FileOutputStream fos;
-		try {
-			File sdcardStorage = Environment.getExternalStorageDirectory();
-			String sdcardPath = sdcardStorage.getParent()
-					+ java.io.File.separator + sdcardStorage.getName();
-
-			File f = new File(sdcardPath + File.separator + mFileName);
+		try {			
+			File f = getExportFile();
 			fos = new FileOutputStream(f);
 			ObjectOutputStream os = null;
 			if(mCompressed) {
