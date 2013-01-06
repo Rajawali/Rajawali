@@ -59,6 +59,8 @@ public class MeshExporter {
 		File path;
 		if(mExportDir == null)
 			path = Environment.getExternalStorageDirectory();
+		else
+			path = mExportDir;
 		
 		// I don't know why the previous directory construction had to be so complex.
 		// This constructor does the exact same thing, if I'm not mistaken.
