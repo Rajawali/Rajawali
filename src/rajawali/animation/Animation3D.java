@@ -86,6 +86,10 @@ public class Animation3D {
 				setHasStarted(true);
 
 				applyTransformation(interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime);
+				
+				for (Animation3DListener listener : mAnimationListeners) {
+					listener.onAnimationUpdate(mInstance, interpolatedTime);
+				}
 			}
 		}
 	}
