@@ -29,8 +29,8 @@ public class SimpleMaterial extends AMaterial {
 		"#ifdef TEXTURED\n" +
 		"	gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"#else\n" +
-	    "	gl_FragColor = vColor;\n" +
-	    "#endif\n" +
+		"	gl_FragColor = vColor;\n" +
+		"#endif\n" +
 		"}\n";
 	
 	public SimpleMaterial() {
