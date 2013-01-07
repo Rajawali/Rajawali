@@ -39,6 +39,10 @@ public class Animation3DQueue implements Animation3DListener {
 		
 	}
 	
+	public void onAnimationUpdate(Animation3D animation, float interpolatedTime) {
+		
+	}
+	
 	public void start() {
 		if(mAnimations.size() == 0) return;
 		Animation3D animation = mAnimations.get(0);

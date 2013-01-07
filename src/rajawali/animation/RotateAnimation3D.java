@@ -1,5 +1,6 @@
 package rajawali.animation;
 
+import android.util.Log;
 import rajawali.ATransformable3D;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
@@ -55,7 +56,7 @@ public class RotateAnimation3D extends Animation3D {
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
 		mRotationAngle = mRotateFrom + (interpolatedTime * mDegreesToRotate);
-		//Log.d("Rajawali", angle);
+		//Log.d("Rajawali", "" + mRotationAngle);
 		mQuat.fromAngleAxis(mRotationAngle, mRotationAxis);
 		mQuat.multiply(mQuatFrom);
 		mTransformable3D.setOrientation(mQuat);
