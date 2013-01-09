@@ -42,7 +42,7 @@ public class SpecularMaskMaterial extends PhongMaterial {
 		"#else\n" +
 		"   vec4 diffuse  = Kd * vColor;\n" +
 		"#endif\n" +
-		"   vec4 specular = Ks * uSpecularColor * (1.0 - texture2D(uSpecularTexture, vTextureCoord));\n" +
+		"   vec4 specular = Ks * uSpecularColor * texture2D(uSpecularTexture, vTextureCoord);\n" +
 		"   vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" +
 		"   gl_FragColor  = ambient + diffuse + specular;\n" +
 		M_FOG_FRAGMENT_COLOR +
@@ -73,7 +73,7 @@ public class SpecularMaskMaterial extends PhongMaterial {
 				fc.append("L = normalize(-uLightDirection").append(i).append(");\n");
 			}
 			
-			fc.append("NdotL = max(dot(bumpnormal, L), 0.05);\n");
+			fc.append("NdotL = max(dot(bumpnormal, L), 0.1);\n");
 			fc.append("Kd += NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 			fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 		}
