@@ -40,6 +40,7 @@ public class TextureManager {
 	public enum TextureType {
 		DIFFUSE,
 		BUMP,
+		SPECULAR,
 		FRAME_BUFFER,
 		DEPTH_BUFFER,
 		LOOKUP,

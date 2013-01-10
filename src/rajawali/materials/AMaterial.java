@@ -277,6 +277,9 @@ public abstract class AMaterial {
 		case BUMP:
 			textureName = "uNormalTexture";
 			break;
+		case SPECULAR:
+			textureName = "uSpecularTexture";
+			break;
 		case FRAME_BUFFER:
 			textureName = "uFrameBufferTexture";
 			break;
