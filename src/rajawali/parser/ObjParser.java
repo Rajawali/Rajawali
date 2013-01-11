@@ -110,6 +110,9 @@ public class ObjParser extends AMeshParser {
 		
 		try {
 			while((line = buffer.readLine()) != null) {
+				// Skip comments and empty lines.
+				if(line.length() == 0 || line.charAt(0) == '#')
+					continue;
 				StringTokenizer parts = new StringTokenizer(line, " ");
 				int numTokens = parts.countTokens();
 				
@@ -353,6 +356,9 @@ public class ObjParser extends AMeshParser {
 			
 			try {
 				while((line = buffer.readLine()) != null) {
+					// Skip comments and empty lines.
+					if(line.length() == 0 || line.charAt(0) == '#')
+						continue;
 					StringTokenizer parts = new StringTokenizer(line, " ");
 					int numTokens = parts.countTokens();
 					
