@@ -574,7 +574,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public void setMaterial(AMaterial material) {
 		setMaterial(material, true);
-		material.setLights(mLights);
 	}
 
 	public AMaterial getMaterial() {
@@ -588,6 +587,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mMaterial.getTextureInfoList().clear();
 		mMaterial = null;
 		mMaterial = material;
+		mMaterial.setLights(mLights);
 	}
 
 	public void setName(String name) {
