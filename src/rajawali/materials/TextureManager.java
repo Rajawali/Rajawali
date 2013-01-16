@@ -33,6 +33,10 @@ public class TextureManager {
 	private static final int GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG		= 0x8C01;
 	private static final int GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG	= 0x8C02;
 	private static final int GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG	= 0x8C03;
+
+	// S3 texture compression constants
+	private static final int GL_COMPRESSED_RGB_S3TC_DXT1_EXT		= 0x83F0;
+	private static final int GL_COMPRESSED_RGBA_S3TC_DXT1_EXT		= 0x83F1;
 	
 	/**
 	 * List containing texture information objects
@@ -69,6 +73,7 @@ public class TextureManager {
 		ETC1,
 		PALETTED,
 		ATC,
+		DXT1,
 		PVRTC
 	};
 	
@@ -92,6 +97,11 @@ public class TextureManager {
 		RGB,
 		RGBA_EXPLICIT,
 		RGBA_INTERPOLATED
+	};
+	
+	public enum Dxt1Format {
+		RGB,
+		RGBA
 	};
 	
 	public enum PvrtcFormat {
@@ -333,6 +343,30 @@ public class TextureManager {
 				break;
 		}
 		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.PVRTC, internalformat);
+	}
+	
+	public TextureInfo addDxt1Texture(ByteBuffer buffer, int width, int height, TextureType textureType, Dxt1Format format) {
+		return addDxt1Texture(buffer, width, height, textureType, format, false, WrapType.REPEAT, FilterType.LINEAR);
+	}
+	
+	/**
+	 * Adds and binds DXT1 variant of S3 compressed texture.
+	 * 
+	 * This method will only work in devices that support S3 texture compression. Most Nvidia Tegra2 GPU
+	 * based devices such as Motorola Xoom, and Atrix support S3 texture comrpession. 
+	 */
+	public TextureInfo addDxt1Texture(ByteBuffer buffer, int width, int height, TextureType textureType, Dxt1Format format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		int internalformat;
+		switch (format) {
+			case RGB:
+				internalformat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+				break;
+			case RGBA:
+			default:
+				internalformat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				break;
+		}
+		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.DXT1, internalformat);
 	}
 	
 	public TextureInfo addPvrtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, PvrtcFormat format) {
