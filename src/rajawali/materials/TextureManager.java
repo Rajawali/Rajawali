@@ -84,6 +84,7 @@ public class TextureManager {
 		NONE,
 		ETC1,
 		PALETTED,
+		THREEDC,
 		ATC,
 		DXT1,
 		PVRTC
@@ -110,6 +111,11 @@ public class TextureManager {
 		PALETTE8_R5_G6_B5,
 		PALETTE8_RGBA4,
 		PALETTE8_RGB5_A1
+	};
+	
+	public enum ThreeDcFormat {
+		X,
+		XY
 	};
 	
 	public enum AtcFormat {
@@ -380,6 +386,21 @@ public class TextureManager {
 		}
 		
 		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.PALETTED, internalformat);
+	}
+	
+	public TextureInfo add3dcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, ThreeDcFormat format) {
+		return add3dcTexture(buffer, width, height, textureType, format, false, WrapType.REPEAT, FilterType.LINEAR);
+	}
+	
+	/**
+	 * Adds and binds ATI 3Dc compressed texture. This compression type is most used for
+	 * compressing normal map textures.
+	 */
+	public TextureInfo add3dcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, ThreeDcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		if (format == ThreeDcFormat.X) 
+			return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.THREEDC, GLES11Ext.GL_3DC_X_AMD);
+		else
+			return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.THREEDC, GLES11Ext.GL_3DC_XY_AMD);
 	}
 	
 	public TextureInfo addAtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, AtcFormat format) {
