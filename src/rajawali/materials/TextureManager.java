@@ -26,9 +26,21 @@ public class TextureManager {
 	private boolean mShouldUpdateTextures;
 	private static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 	
-	// PowerVR Texture compression constants
+	// Paletted texture constants
 	// Referenced from OpenGL ES 2.0 extension C header from Khronos Group
 	// http://www.khronos.org/registry/gles/api/2.0/gl2ext.h
+	private static final int GL_PALETTE4_RGB8_OES					= 0x8B90;
+	private static final int GL_PALETTE4_RGBA8_OES					= 0x8B91;
+	private static final int GL_PALETTE4_R5_G6_B5_OES				= 0x8B92;
+	private static final int GL_PALETTE4_RGBA4_OES					= 0x8B93;
+	private static final int GL_PALETTE4_RGB5_A1_OES				= 0x8B94;
+	private static final int GL_PALETTE8_RGB8_OES					= 0x8B95;
+	private static final int GL_PALETTE8_RGBA8_OES					= 0x8B96;
+	private static final int GL_PALETTE8_R5_G6_B5_OES				= 0x8B97;
+	private static final int GL_PALETTE8_RGBA4_OES					= 0x8B98;
+	private static final int GL_PALETTE8_RGB5_A1_OES				= 0x8B99;
+	
+	// PowerVR Texture compression constants
 	private static final int GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG		= 0x8C00;
 	private static final int GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG		= 0x8C01;
 	private static final int GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG	= 0x8C02;
@@ -87,10 +99,17 @@ public class TextureManager {
 		LINEAR
 	};
 	
-	public enum PaletteConfig {
-		RGBA_4444,
-		RGBA_5551,
-		RGB_565
+	public enum PaletteFormat {
+		PALETTE4_RGB8,
+		PALETTE4_RGBA8,
+		PALETTE4_R5_G6_B5,
+		PALETTE4_RGBA4,
+		PALETTE4_RGB5_A1,
+		PALETTE8_RGB8,
+		PALETTE8_RGBA8,
+		PALETTE8_R5_G6_B5,
+		PALETTE8_RGBA4,
+		PALETTE8_RGB5_A1
 	};
 	
 	public enum AtcFormat {
@@ -315,6 +334,52 @@ public class TextureManager {
 	
 	public TextureInfo addEtc1Texture(ByteBuffer buffer, int width, int height, TextureType textureType, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.ETC1, ETC1.ETC1_RGB8_OES);
+	}
+	
+	public TextureInfo addPalettedTexture(ByteBuffer buffer, int width, int height, TextureType textureType, PaletteFormat format) {
+		return addPalettedTexture(buffer, width, height, textureType, format, false, WrapType.REPEAT, FilterType.LINEAR);
+	}
+	
+	/**
+	 * Adds and binds paletted texture. Automatic mipmap generation is disabled.
+	 */
+	public TextureInfo addPalettedTexture(ByteBuffer buffer, int width, int height, TextureType textureType, PaletteFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		int internalformat;
+		switch (format) {
+			case PALETTE4_RGB8:
+				internalformat = GL_PALETTE4_RGB8_OES;
+				break;
+			case PALETTE4_RGBA8:
+				internalformat = GL_PALETTE4_RGBA8_OES;
+				break;
+			case PALETTE4_R5_G6_B5:
+				internalformat = GL_PALETTE4_R5_G6_B5_OES;
+				break;
+			case PALETTE4_RGBA4:
+				internalformat = GL_PALETTE4_RGBA4_OES;
+				break;
+			case PALETTE4_RGB5_A1:
+				internalformat = GL_PALETTE4_RGB5_A1_OES;
+				break;
+			case PALETTE8_RGB8:
+				internalformat = GL_PALETTE8_RGB8_OES;
+				break;
+			case PALETTE8_RGBA8:
+			default:
+				internalformat = GL_PALETTE8_RGBA8_OES;
+				break;
+			case PALETTE8_R5_G6_B5:
+				internalformat = GL_PALETTE8_R5_G6_B5_OES;
+				break;
+			case PALETTE8_RGBA4:
+				internalformat = GL_PALETTE8_RGBA4_OES;
+				break;
+			case PALETTE8_RGB5_A1:
+				internalformat = GL_PALETTE8_RGB5_A1_OES;
+				break;
+		}
+		
+		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.PALETTED, internalformat);
 	}
 	
 	public TextureInfo addAtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, AtcFormat format) {
