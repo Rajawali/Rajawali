@@ -3,6 +3,7 @@ package rajawali.materials;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -292,6 +293,22 @@ public class TextureManager {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);  
         
         return textureInfo;
+	}
+	
+	/**
+	 * Dynamically generates an ETC1 texture on-the-fly from given bitmap
+	 * and automatically binds the newly generated texture.
+	 */
+	public TextureInfo addEtc1Texture(Bitmap bitmap, TextureType textureType) {
+		int imageSize = bitmap.getRowBytes() * bitmap.getHeight();
+		ByteBuffer uncompressedBuffer = ByteBuffer.allocateDirect(imageSize);
+		bitmap.copyPixelsToBuffer(uncompressedBuffer);
+		uncompressedBuffer.position(0);
+		
+		ByteBuffer compressedBuffer = ByteBuffer.allocateDirect(ETC1.getEncodedDataSize(bitmap.getWidth(), bitmap.getHeight())).order(ByteOrder.nativeOrder());
+		ETC1.encodeImage(uncompressedBuffer, bitmap.getWidth(), bitmap.getHeight(), 2, 2 * bitmap.getWidth(), compressedBuffer);
+		
+		return addEtc1Texture(compressedBuffer, bitmap.getWidth(), bitmap.getHeight(), textureType);
 	}
 	
 	/**
