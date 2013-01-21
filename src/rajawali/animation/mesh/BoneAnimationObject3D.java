@@ -1,60 +1,82 @@
 package rajawali.animation.mesh;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import rajawali.BaseObject3D;
+import rajawali.BufferInfo;
 import rajawali.Camera;
+import rajawali.Geometry3D.BufferType;
+import rajawali.materials.GPUSkinningMaterial;
 import rajawali.math.Number3D;
-import rajawali.math.Quaternion;
 import rajawali.parser.md5.MD5MeshParser.MD5Mesh;
 import rajawali.parser.md5.MD5MeshParser.MD5Vert;
 import rajawali.parser.md5.MD5MeshParser.MD5Weight;
+import rajawali.util.BufferUtil;
 import rajawali.util.RajLog;
-import android.os.SystemClock;
+import android.opengl.GLES20;
 
+/*
+ * Making Skeleton a top level objet, besouse it is shared 
+ * between all the meshes and needs to be animated only once per rendering cycle
+ */
 public class BoneAnimationObject3D extends AAnimationObject3D {
-	private int mNumJoints;
-	private Skeleton mSkeleton;
+	private static final int FLOAT_SIZE_BYTES = 4;
+	public int mNumJoints;
+	public AnimationSkeleton mSkeleton;
 	private MD5Mesh mMesh;
 	private BoneAnimationSequence mSequence;
+	public float[] boneWeights1, boneIndexes1, boneWeights2, boneIndexes2;
+	
+	protected BufferInfo mboneWeights1BufferInfo = new BufferInfo();
+	protected BufferInfo mboneIndexes1BufferInfo = new BufferInfo();
+	protected BufferInfo mboneWeights2BufferInfo = new BufferInfo();
+	protected BufferInfo mboneIndexes2BufferInfo = new BufferInfo();
+	
+	/**
+	 * FloatBuffer containing first 4 bone weights
+	 */
+	protected FloatBuffer mboneWeights1;
+	
+	/**
+	 * FloatBuffer containing first 4 bone indexes
+	 */
+	protected FloatBuffer mboneIndexes1;
+	
+	/**
+	 * FloatBuffer containing bone weights if the maxWeightCoun > 4
+	 */
+	protected FloatBuffer mboneWeights2;
+	
+	/**
+	 * FloatBuffer containing bone indexes if the maxWeightCoun > 4
+	 * Current implementation supports up to 8 joint weights per vertex 
+	 */
+	protected FloatBuffer mboneIndexes2;
+	
+	
 	
 	public BoneAnimationObject3D() {
 		super();
-		mSkeleton = new Skeleton();
+		mSkeleton = null;
 	}
 	
 	public void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
-
+		if(mMaterial instanceof GPUSkinningMaterial) {
+			GPUSkinningMaterial material = (GPUSkinningMaterial) mMaterial;
+			material.setBone1Indexes(mboneIndexes1BufferInfo.bufferHandle);
+			material.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
+			if(mMesh.maxNumWeights>4){
+				material.setBone2Indexes(mboneIndexes2BufferInfo.bufferHandle);
+				material.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
+			}
+			material.setBoneMatrix(mSkeleton.uBoneMatrix);
+			return;
+		}
 		if(!mIsPlaying || mIsContainerOnly) return;
-		
-		long mCurrentTime = SystemClock.uptimeMillis();
-		
-		BoneAnimationFrame currentFrame = (BoneAnimationFrame)mSequence.getFrame(mCurrentFrameIndex);
-		BoneAnimationFrame nextFrame = (BoneAnimationFrame)mSequence.getFrame((mCurrentFrameIndex + 1) % mNumFrames);
-
-		mInterpolation += (float) mFps * (mCurrentTime - mStartTime) / 1000.f;
-		
-		for(int i=0; i<mNumJoints; ++i) {
-			SkeletonJoint joint = mSkeleton.getJoint(i);
-			SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
-			SkeletonJoint toJoint = nextFrame.getSkeleton().getJoint(i);
-			joint.setParentIndex(fromJoint.getParentIndex());
-			joint.getPosition().lerpSelf(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
-			joint.getOrientation().setAllFrom(Quaternion.slerp(mInterpolation, fromJoint.getOrientation(), toJoint.getOrientation(), false));
-		}
-		
 		prepareMesh();
-		
-		if (mInterpolation >= 1) {
-			mInterpolation = 0;
-			mCurrentFrameIndex++;
-
-			if (mCurrentFrameIndex >= mNumFrames)
-				mCurrentFrameIndex = 0;
-		}
-		
-		mStartTime = mCurrentTime;
 	}
 	
 	private void prepareMesh()
@@ -111,20 +133,45 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	   mGeometry.changeBufferData(mGeometry.getNormalBufferInfo(), nBuff, 0);
 	}
 	
-	public void setNumJoints(int numJoints) {
-		mNumJoints = numJoints;
-		SkeletonJoint[] joints = new SkeletonJoint[numJoints];
-		for(int i=0; i<numJoints; ++i)
-			joints[i] = new SkeletonJoint();
-		mSkeleton.setJoints(joints);
-	}
 	
-	public int getNumJoints() {
-		return mNumJoints;
+	public void setSkeleton(BaseObject3D skeleton){
+		if(skeleton instanceof AnimationSkeleton){
+			mSkeleton = (AnimationSkeleton) skeleton;
+			mNumJoints = mSkeleton.getJoints().length;
+		}
+		else 
+			throw new RuntimeException(
+					"Skeleton must be of type AnimationSkeleton!");
 	}
 	
 	public void setMD5Mesh(MD5Mesh mesh) {
 		mMesh = mesh;
+		prepareBoneWeightaAndIndexea();
+		mboneIndexes1 = alocateBuffer(mboneIndexes1, boneIndexes1);
+		mboneWeights1 = alocateBuffer(mboneWeights1, boneWeights1);
+		mGeometry.createBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes1, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.createBuffer(mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights1, GLES20.GL_ARRAY_BUFFER);
+		if (mMesh.maxNumWeights>4) {
+			mboneIndexes2 = alocateBuffer(mboneIndexes2, boneIndexes2);
+			mboneWeights2 = alocateBuffer(mboneWeights2, boneWeights2);
+			mGeometry.createBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes2, GLES20.GL_ARRAY_BUFFER);
+			mGeometry.createBuffer(mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights2, GLES20.GL_ARRAY_BUFFER);
+		}
+	}
+	
+	
+	private FloatBuffer alocateBuffer(FloatBuffer buffer, float[] data){
+		if(buffer == null) {
+			buffer = ByteBuffer
+					.allocateDirect(data.length * FLOAT_SIZE_BYTES * 4)
+					.order(ByteOrder.nativeOrder()).asFloatBuffer();
+			
+			BufferUtil.copy(data, buffer, data.length, 0);
+			buffer.position(0);
+		} else {
+			BufferUtil.copy(data, buffer, data.length, 0);
+		}
+		return buffer;
 	}
 	
 	public void play() {
@@ -152,18 +199,33 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		}
 	}
 	
-	public BoneAnimationSequence getAnimationSequence()
-	{
-		return mSequence;
+	
+	/*
+	 * Creates boneWeights and boneIndexes arrays
+	 * 
+	 * 
+	 */
+	public void prepareBoneWeightaAndIndexea(){
+		int weightStep = 4;//mMesh.maxNumWeights<4?4:8;
+		boneWeights1 = new float[mMesh.numVerts*4];
+		boneIndexes1 = new float[mMesh.numVerts*4];
+		boneWeights2 = new float[mMesh.numVerts*4];
+		boneIndexes2 = new float[mMesh.numVerts*4];
+		for(int i=0;i<mMesh.numVerts; i++){
+			MD5Vert vert = mMesh.verts[i];
+			for (int j = 0; j < vert.weightElem; ++j) {
+				MD5Weight weight = mMesh.weights[vert.weightIndex + j];
+				
+				if(j<4){
+					boneWeights1[weightStep*i+j] = weight.weightValue;
+					boneIndexes1[weightStep*i+j] = weight.jointIndex;
+				}else {
+					boneWeights2[weightStep*i+j] = weight.weightValue;
+					boneIndexes2[weightStep*i+j] = weight.jointIndex;
+				}
+			}
+		}
 	}
 	
-	public void setJoints(SkeletonJoint[] joints)
-	{
-		mSkeleton.setJoints(joints);
-	}
 	
-	public Skeleton getSkeleton()
-	{
-		return mSkeleton;
-	}
 }
