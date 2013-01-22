@@ -10,8 +10,9 @@ import java.util.StringTokenizer;
 
 import rajawali.animation.mesh.AAnimationObject3D;
 import rajawali.animation.mesh.BoneAnimationObject3D;
+import rajawali.animation.mesh.AnimationSkeleton;
 import rajawali.animation.mesh.SkeletonJoint;
-import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.GPUSkinningMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.parser.AMeshParser;
@@ -47,7 +48,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	private MD5Mesh[] mMeshes;
 	private SkeletonJoint[] mJoints;
 	
-	public float[][] mBindPoseMatrix;
+	public float[] mBindPoseMatrix;
 	public float[][] mInverseBindPoseMatrix;
 	
 	public MD5MeshParser(RajawaliRenderer renderer, String fileOnSDCard) {
@@ -213,6 +214,8 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 					vert.weightIndex = Integer.parseInt(parts.nextToken());
 					vert.weightElem = Integer.parseInt(parts.nextToken());
 					mesh.numWeightElems += vert.weightElem;
+					
+					mesh.maxNumWeights = Math.max(mesh.maxNumWeights, vert.weightElem);// MAXIMUM 
 
 					mesh.verts[index] = vert;
 				} else if(type.equalsIgnoreCase(NUM_TRIS)) {
@@ -342,7 +345,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	}
 	
 	private void buildBindPose() {
-		mBindPoseMatrix = new float[mNumJoints][];
+		mBindPoseMatrix = new float[mNumJoints*16];
 		mInverseBindPoseMatrix = new float[mNumJoints][];
 		
 		for(int i=0; i<mNumJoints; ++i) {
@@ -364,18 +367,22 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			Matrix.multiplyMM(boneMatrix, 0, boneTranslation, 0, boneRotation, 0);
 			Matrix.invertM(inverseBoneMatrix, 0, boneMatrix, 0);
 			
-			mBindPoseMatrix[i] = boneMatrix;
+			for(int j=0; j<16; j++){
+				mBindPoseMatrix[i + j] = boneMatrix[j];
+			}
 			mInverseBindPoseMatrix[i] = inverseBoneMatrix;
 		}
 	}
 	
 	private void createObjects() {
-		mRootObject = new BoneAnimationObject3D();
-		
+		AnimationSkeleton root = new AnimationSkeleton();
+		root.uBoneMatrix = mBindPoseMatrix;
+		root.mInverseBindPoseMatrix = mInverseBindPoseMatrix;
+		root.setJoints(mJoints);
+		mRootObject = root;
 		for(int i=0; i<mNumMeshes; ++i) {
 			MD5Mesh mesh = mMeshes[i];
 			BoneAnimationObject3D o = new BoneAnimationObject3D();
-			o.setNumJoints(mNumJoints);
 			o.setData(
 					mesh.vertices, GLES20.GL_STREAM_DRAW,
 					mesh.normals, GLES20.GL_STREAM_DRAW,
@@ -383,13 +390,14 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 					null, GLES20.GL_STATIC_DRAW,
 					mesh.indices, GLES20.GL_STATIC_DRAW
 					);			
-			o.setJoints(mJoints);
 			o.setMD5Mesh(mesh);
 			o.setName("MD5Mesh_" + i);
+			o.setSkeleton(mRootObject);
 			
 			boolean hasTexture = mesh.shader != null && mesh.shader.length() > 0;
 			
-			DiffuseMaterial mat = new DiffuseMaterial();
+//			DiffuseMaterial mat = new DiffuseMaterial();
+			GPUSkinningMaterial mat = new GPUSkinningMaterial(mNumJoints, mesh.maxNumWeights);
 			o.setMaterial(mat);
 			if(!hasTexture) {
 				mat.setUseColor(!hasTexture);
@@ -409,6 +417,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 		public int numTris;
 		public int numWeights;
 		public int numWeightElems = 0;
+		public int maxNumWeights=0;
 		public MD5Vert[] verts;
 		public int[][] tris;
 		public MD5Weight[] weights;
