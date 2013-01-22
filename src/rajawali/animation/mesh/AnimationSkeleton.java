@@ -160,4 +160,19 @@ public class AnimationSkeleton extends AAnimationObject3D {
 		setShaderParams(camera);
 		super.render(camera, projMatrix, vMatrix, parentMatrix, pickerInfo);
 	}
+	
+	@Override
+	public void destroy() {
+	    int[] buffers  = new int[1];
+	    if(mBoneMatricesBufferInfo != null) buffers[0] = mBoneMatricesBufferInfo.bufferHandle;
+	    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
+
+	    if(mBoneMatrices != null) mBoneMatrices.clear();
+	    
+	    mBoneMatrices=null;
+	   
+
+	    if(mBoneMatricesBufferInfo != null && mBoneMatricesBufferInfo.buffer != null) { mBoneMatricesBufferInfo.buffer.clear(); mBoneMatricesBufferInfo.buffer=null; }
+	    super.destroy();
+	}
 }
