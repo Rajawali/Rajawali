@@ -1,5 +1,8 @@
 package rajawali.materials;
 
+import java.nio.ByteBuffer;
+
+import rajawali.materials.TextureManager.CompressionType;
 import rajawali.materials.TextureManager.FilterType;
 import rajawali.materials.TextureManager.TextureType;
 import rajawali.materials.TextureManager.WrapType;
@@ -41,6 +44,11 @@ public class TextureInfo {
 	protected boolean mMipmap;
 	protected Config mBitmapConfig;
 	protected boolean mShouldRecycle;
+	
+	protected CompressionType mCompressionType;
+	protected int mInternalFormat;
+	protected ByteBuffer mBuffer;
+	
 	/**
 	 * The type of texture
 	 * 
@@ -85,6 +93,9 @@ public class TextureInfo {
 		mMipmap = other.isMipmap();
 		mBitmapConfig = other.getBitmapConfig();
 		mTextureName = other.getTextureName();
+		mInternalFormat = other.getInternalFormat();
+		mCompressionType = other.getCompressionType();
+		mBuffer = other.getBuffer();
 	}
 	
 	public void setTextureId(int id) {
@@ -163,6 +174,34 @@ public class TextureInfo {
 		this.mTextures = textures;
 	}
 
+	public boolean isCompressed() {
+		return mCompressionType != CompressionType.NONE;
+	}
+	
+	public int getInternalFormat() {
+		return mInternalFormat;
+	}
+	
+	public void setInternalFormat(int internalformat) {
+		this.mInternalFormat = internalformat;
+	}
+	
+	public CompressionType getCompressionType() {
+		return this.mCompressionType;
+	}
+	
+	public void setCompressionType(CompressionType compressionType) {
+		this.mCompressionType = compressionType;
+	}
+
+	public ByteBuffer getBuffer() {
+		return this.mBuffer;
+	}
+	
+	public void setBuffer(ByteBuffer buffer) {
+		this.mBuffer = buffer;
+	}
+	
 	public boolean isMipmap() {
 		return mMipmap;
 	}
