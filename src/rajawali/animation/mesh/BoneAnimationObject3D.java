@@ -227,5 +227,33 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		}
 	}
 	
+	@Override
+	public void destroy() {
+	    int[] buffers  = new int[4];
+	    if(mboneIndexes1BufferInfo != null) buffers[0] = mboneIndexes1BufferInfo.bufferHandle;
+	    if(mboneWeights1BufferInfo != null) buffers[1] = mboneIndexes1BufferInfo.bufferHandle;
+	    if(mboneIndexes2BufferInfo != null) buffers[0] = mboneIndexes2BufferInfo.bufferHandle;
+	    if(mboneWeights2BufferInfo != null) buffers[1] = mboneIndexes2BufferInfo.bufferHandle;
+	    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
+
+	    if(mboneIndexes1 != null) mboneIndexes1.clear();
+	    if(mboneWeights1 != null) mboneWeights1.clear();
+	    if(mboneIndexes2 != null) mboneIndexes2.clear();
+	    if(mboneWeights2 != null) mboneWeights2.clear();
+
+	    mboneIndexes1=null;
+	    mboneWeights1=null;
+	    mboneIndexes2=null;
+	    mboneWeights2=null;
+	    
+
+	    if(mboneIndexes1BufferInfo != null && mboneIndexes1BufferInfo.buffer != null) { mboneIndexes1BufferInfo.buffer.clear(); mboneIndexes1BufferInfo.buffer=null; }
+	    if(mboneWeights1BufferInfo != null && mboneWeights1BufferInfo.buffer != null) { mboneWeights1BufferInfo.buffer.clear(); mboneWeights1BufferInfo.buffer=null; }
+	    if(mboneIndexes2BufferInfo != null && mboneIndexes2BufferInfo.buffer != null) { mboneIndexes2BufferInfo.buffer.clear(); mboneIndexes2BufferInfo.buffer=null; }
+	    if(mboneWeights2BufferInfo != null && mboneWeights2BufferInfo.buffer != null) { mboneWeights2BufferInfo.buffer.clear(); mboneWeights2BufferInfo.buffer=null; }
+	    
+	    super.destroy();
+	}
+	
 	
 }
