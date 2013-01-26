@@ -44,6 +44,7 @@ public class Animation3D {
 		float interpolatedTime;
 		long timeInPause;
 		boolean wasPaused = false;
+		int i, j;
 
 		public void run() {	
 			if (mIsPaused) {
@@ -60,9 +61,8 @@ public class Animation3D {
 				if (mRepeatCount == mNumRepeats) {
 					setHasEnded(true);
 					cancel();
-					for (Animation3DListener listener : mAnimationListeners) {
-						listener.onAnimationEnd(mInstance);
-					}
+					for (i = 0, j = mAnimationListeners.size(); i < j; i++)
+						mAnimationListeners.get(i).onAnimationEnd(mInstance);
 				} else {
 					if (mRepeatMode == REVERSE)
 						mDirection *= -1;
@@ -87,9 +87,8 @@ public class Animation3D {
 
 				applyTransformation(interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime);
 				
-				for (Animation3DListener listener : mAnimationListeners) {
-					listener.onAnimationUpdate(mInstance, interpolatedTime);
-				}
+				for (i = 0, j = mAnimationListeners.size(); i < j; i++)
+					mAnimationListeners.get(i).onAnimationUpdate(mInstance, interpolatedTime);
 			}
 		}
 	}
