@@ -68,7 +68,7 @@ public class GPUSkinningMaterial extends PhongMaterial{
 			"	vTextureCoord = aTextureCoord;\n" +
 			
 			"	vEyeVec = -vec3(uMMatrix  * position);\n" +
-			"	vNormal = mat3(TransformedMatrix) * normal;\n" +
+			"	vNormal = mat3(uMMatrix) * mat3(TransformedMatrix) * normal;\n"
 			
 			"%LIGHT_CODE%" +
 			
