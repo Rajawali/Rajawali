@@ -1,6 +1,5 @@
 package rajawali.renderer;
 
-import java.io.File;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,11 +16,8 @@ import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureInfo;
 import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
-import rajawali.parser.ObjParser;
 import rajawali.primitives.Cube;
 import rajawali.util.FPSUpdateListener;
-import rajawali.util.MeshExporter;
-import rajawali.util.MeshExporter.ExportType;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
@@ -193,9 +189,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
         mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
         
         synchronized (mChildren) {
-        	for (BaseObject3D child : mChildren) {
-        		child.render(mCamera, mPMatrix, mVMatrix, pickerInfo);
-        	}
+			for (int i = 0, j = mChildren.size(); i < j; i++)
+        		mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
 		}
 		
 		if (pickerInfo != null) {
@@ -565,26 +560,4 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 		return triangleCount;
 	}
-	
-	public void serializeObj(int resourceId, String outputName){
-		serializeObj(resourceId, outputName, false, null);
-	}
-	
-	public void serializeObj(int resourceId, String outputName, Boolean compress){
-		serializeObj(resourceId, outputName, compress, null);
-	}
-	
-	public void serializeObj(int resourceId, String outputName, File exportDir){
-		serializeObj(resourceId, outputName, false, exportDir);
-	}
-
-	public void serializeObj(int resourceId, String outputName, Boolean compress, File exportDir){
-		ObjParser objParser = new ObjParser(mContext.getResources(), mTextureManager, resourceId);
-		objParser.parse();
-		BaseObject3D serializer = objParser.getParsedObject();
-		MeshExporter exporter = new MeshExporter(serializer);
-		exporter.setExportDirectory(exportDir);
-		exporter.export(outputName, ExportType.SERIALIZED, compress);
-	}
-
 }
