@@ -317,9 +317,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				mGeometry.getBoundingSphere().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
 		}
 		// Draw children without frustum test
-		for (BaseObject3D child : mChildren) {
-			child.render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
-		}
+		for (int i = 0, j = mChildren.size(); i < j; i++)
+			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
 
 		if (mRenderChildrenAsBatch) {
 			mMaterial.unbindTextures();

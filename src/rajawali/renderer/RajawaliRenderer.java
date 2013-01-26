@@ -189,9 +189,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
         mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
         
         synchronized (mChildren) {
-        	for (BaseObject3D child : mChildren) {
-        		child.render(mCamera, mPMatrix, mVMatrix, pickerInfo);
-        	}
+			for (int i = 0, j = mChildren.size(); i < j; i++)
+        		mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
 		}
 		
 		if (pickerInfo != null) {
