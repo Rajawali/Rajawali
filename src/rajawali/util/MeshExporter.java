@@ -194,23 +194,24 @@ public class MeshExporter {
 
 	}
 	
-	public void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName){
+	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName){
 		serializeObj(context, textureManager, resourceId, outputName, false, null);
 	}
 
-	public void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress){
+	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress){
 		serializeObj(context, textureManager, resourceId, outputName, compress, null);
 	}
 
-	public void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, File exportDir){
+	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, File exportDir){
 		serializeObj(context, textureManager, resourceId, outputName, false, exportDir);
 	}
 
-	public void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress, File exportDir){
+	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress, File exportDir){
 		ObjParser objParser = new ObjParser(context.getResources(), textureManager, resourceId);
 		objParser.parse();
-		mObject = objParser.getParsedObject();
-		mExportDir = exportDir;
-		export(outputName, ExportType.SERIALIZED, compress);
-	}
+		BaseObject3D obj = objParser.getParsedObject();
+		MeshExporter exporter = new MeshExporter(obj);
+		exporter.setExportDirectory(exportDir);
+		exporter.export(outputName, ExportType.SERIALIZED, compress);
+	}	
 }
