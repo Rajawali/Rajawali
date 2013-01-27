@@ -14,6 +14,9 @@ import rajawali.Geometry3D;
 import rajawali.SerializedObject3D;
 import rajawali.animation.mesh.VertexAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationObject3D;
+import rajawali.materials.TextureManager;
+import rajawali.parser.ObjParser;
+import android.content.Context;
 import android.os.Environment;
 
 public class MeshExporter {
@@ -189,5 +192,25 @@ public class MeshExporter {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName){
+		serializeObj(context, textureManager, resourceId, outputName, false, null);
+	}
+
+	public void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress){
+		serializeObj(context, textureManager, resourceId, outputName, compress, null);
+	}
+
+	public void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, File exportDir){
+		serializeObj(context, textureManager, resourceId, outputName, false, exportDir);
+	}
+
+	public void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress, File exportDir){
+		ObjParser objParser = new ObjParser(context.getResources(), textureManager, resourceId);
+		objParser.parse();
+		mObject = objParser.getParsedObject();
+		mExportDir = exportDir;
+		export(outputName, ExportType.SERIALIZED, compress);
 	}
 }
