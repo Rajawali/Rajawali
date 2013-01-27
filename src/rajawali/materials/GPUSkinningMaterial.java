@@ -1,7 +1,6 @@
 package rajawali.materials;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 
 public class GPUSkinningMaterial extends PhongMaterial{
@@ -68,8 +67,8 @@ public class GPUSkinningMaterial extends PhongMaterial{
 			"	vTextureCoord = aTextureCoord;\n" +
 			
 			"	vEyeVec = -vec3(uMMatrix  * position);\n" +
-			"	vNormal = mat3(uMMatrix) * mat3(TransformedMatrix) * normal;\n"
-			
+			"	vNormal = mat3(uMMatrix) * mat3(TransformedMatrix) * normal;\n" +
+
 			"%LIGHT_CODE%" +
 			
 			"	vColor = aColor;\n" +
