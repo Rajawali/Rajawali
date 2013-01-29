@@ -73,6 +73,7 @@ public class TextureManager {
 		DIFFUSE,
 		BUMP,
 		SPECULAR,
+		ALPHA,
 		FRAME_BUFFER,
 		DEPTH_BUFFER,
 		LOOKUP,
