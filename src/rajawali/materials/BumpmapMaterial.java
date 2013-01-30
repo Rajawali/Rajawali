@@ -20,13 +20,14 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 			"%LIGHT_VARS%" +
 
 			"void main() {\n" +
+			"   vec3 Kd = vec3(0.0);\n" +
 			"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);" +
 			"	bumpnormal.z = -bumpnormal.z;" +
 			"	bumpnormal = normalize(bumpnormal + N);" +
 		    "	float intensity = 0.0;" +
 		    "	vec3 L = vec3(0.0);\n" +
 		    "%LIGHT_CODE%" +
-			" 	vec3 color = intensity * texture2D(uDiffuseTexture, vTextureCoord).rgb;" +
+			" 	vec3 color = Kd * intensity * texture2D(uDiffuseTexture, vTextureCoord).rgb;" +
 		    "	gl_FragColor = vec4(color, 1.0) + uAmbientColor * uAmbientIntensity;\n" + 
 		    M_FOG_FRAGMENT_COLOR +
 			"}";
@@ -58,6 +59,7 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 				sb.append("L = -normalize(uLightDirection").append(i).append(");");				
 			}
 			sb.append("intensity += uLightPower").append(i).append(" * max(dot(bumpnormal, L), 0.1) * vAttenuation").append(i).append(";\n");
+			sb.append("Kd += uLightColor").append(i).append(";\n");
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", sb.toString()));
