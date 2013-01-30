@@ -77,8 +77,9 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 	    "#endif\n" +
 
 	    "%LIGHT_CODE%" +
-
-		"	gl_FragColor.rgb = uAmbientIntensity.rgb * uAmbientColor.rgb + Kd * gl_FragColor.rgb;\n" +
+		"	vec3 ambient = uAmbientIntensity.rgb * uAmbientColor.rgb;\n" +
+		"	vec3 diffuse = Kd * gl_FragColor.rgb;\n" +
+		"	gl_FragColor.rgb = ambient + diffuse;\n" +
 		M_FOG_FRAGMENT_COLOR +		
 		"}";
 	
