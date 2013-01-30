@@ -280,6 +280,9 @@ public abstract class AMaterial {
 		case SPECULAR:
 			textureName = "uSpecularTexture";
 			break;
+		case ALPHA:
+			textureName = "uAlphaTexture";
+			break;
 		case FRAME_BUFFER:
 			textureName = "uFrameBufferTexture";
 			break;

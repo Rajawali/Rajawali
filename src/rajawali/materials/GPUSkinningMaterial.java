@@ -1,7 +1,6 @@
 package rajawali.materials;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 
 public class GPUSkinningMaterial extends PhongMaterial{

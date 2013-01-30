@@ -81,7 +81,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected static boolean mFogEnabled;
 	protected boolean mUsesCoverageAa;
 	
+	protected String mCompressionType = "NONE";
+	
 	public static boolean supportsUIntBuffers = false;
+	
 	
 	protected boolean mSceneInitialized;
 	/**
@@ -228,6 +231,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {		
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
+		setCompressionType(gl);
 		
 		GLES20.glFrontFace(GLES20.GL_CCW);
 		GLES20.glCullFace(GLES20.GL_BACK);
@@ -255,6 +259,20 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mSceneInitialized = true;
 		startRendering();
 	}
+	
+	private void setCompressionType(GL10 gl){
+		String s = gl.glGetString(GL10.GL_EXTENSIONS);
+		if (s.contains("GL_IMG_texture_compression_pvrtc")){
+			mCompressionType = "PVR";
+		}else if (s.contains("GL_AMD_compressed_ATC_texture") || s.contains("GL_ATI_texture_compression_atitc")){
+			mCompressionType = "ATC";
+		}else if (s.contains("GL_OES_texture_compression_S3TC") || s.contains("GL_EXT_texture_compression_s3tc")){
+			mCompressionType = "S3TC";
+		}else{
+			mCompressionType = "NONE";
+		}
+	}
+
 	
 	private void reloadChildren() {
 		for (BaseObject3D child : mChildren) {
