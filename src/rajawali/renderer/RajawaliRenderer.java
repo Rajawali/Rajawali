@@ -257,9 +257,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	private void reloadChildren() {
-		for (BaseObject3D child : mChildren) {
-			child.reload();
-		}
+		for (int i = 0, j = mChildren.size(); i < j; i++)
+			mChildren.get(i).reload();
 	}
 
 	/**
@@ -271,9 +270,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	protected void destroyScene() {
 		mSceneInitialized = false;
-		for (BaseObject3D child : mChildren) {
-			child.destroy();
-		}
+		for (int i = 0, j = mChildren.size(); i < j; i++)
+			mChildren.get(i).destroy();
 		mChildren.clear();
 	}
 	
@@ -466,9 +464,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void accept(INodeVisitor visitor) {
 		visitor.apply(this);
-		for (BaseObject3D child : mChildren) {
-			child.accept(visitor);
-		}
+		for (int i = 0, j = mChildren.size(); i < j; i++)
+			mChildren.get(i).accept(visitor);
 	}	
 	
 	public void removePostProcessingFilter(IPostProcessingFilter filter) {
@@ -554,9 +551,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	public int getNumTriangles() {
 		int triangleCount = 0;
-		for (BaseObject3D child : mChildren) {
-			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
-				triangleCount += child.getGeometry().getVertices().limit() / 9;
+		for (int i=0,j=mChildren.size();i<j;i++) {
+			if (mChildren.get(i).getGeometry() != null && mChildren.get(i).getGeometry().getVertices() != null && mChildren.get(i).isVisible())
+				triangleCount += mChildren.get(i).getGeometry().getVertices().limit() / 9;
 		}
 		return triangleCount;
 	}

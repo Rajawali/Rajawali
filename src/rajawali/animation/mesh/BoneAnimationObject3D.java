@@ -181,9 +181,9 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 			return;
 		}
 		super.play();
-		for(BaseObject3D child : mChildren)
-			if(child instanceof AAnimationObject3D)
-				((AAnimationObject3D)child).play();
+		for (int i = 0, j = mChildren.size(); i < j; i++)
+			if (mChildren.get(i) instanceof AAnimationObject3D)
+				((AAnimationObject3D) mChildren.get(i)).play();
 	}
 	
 	public void setAnimationSequence(BoneAnimationSequence sequence)
@@ -193,9 +193,9 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		{
 			mNumFrames = sequence.getFrames().length;
 			
-			for(BaseObject3D child : mChildren) 
-				if(child instanceof BoneAnimationObject3D)
-					((BoneAnimationObject3D)child).setAnimationSequence(sequence);
+			for (int i = 0, j = mChildren.size(); i < j; i++)
+				if (mChildren.get(i) instanceof BoneAnimationObject3D)
+					((BoneAnimationObject3D) mChildren.get(i)).setAnimationSequence(sequence);
 		}
 	}
 	
