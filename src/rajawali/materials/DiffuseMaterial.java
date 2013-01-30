@@ -67,6 +67,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"%LIGHT_VARS%" +
 		
 		"void main() {\n" +
+		"	float intensity = 0.0;\n" +
 		"	vec3 Kd = vec3(0.0);\n" +
 		"	float dist = 0.0;\n" +
 		"	vec3 L = vec3(0.0);\n" +
@@ -78,7 +79,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 
 	    "%LIGHT_CODE%" +
 		"	vec3 ambient = uAmbientIntensity.rgb * uAmbientColor.rgb;\n" +
-		"	vec3 diffuse = Kd * gl_FragColor.rgb;\n" +
+		"	vec3 diffuse = Kd * intensity * gl_FragColor.rgb;\n" +
 		"	gl_FragColor.rgb = ambient + diffuse;\n" +
 		M_FOG_FRAGMENT_COLOR +		
 		"}";
@@ -118,7 +119,8 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
 				sb.append("L = -normalize(uLightDirection").append(i).append(");\n");				
 			}
-			sb.append("Kd += uLightColor").append(i).append(" * (uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(");\n");
+			sb.append("intesity += uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(");\n");
+			sb.append("Kd += uLightColor").append(i).append(" * intensity;\n");
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", sb.toString()));

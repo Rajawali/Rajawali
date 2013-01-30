@@ -24,6 +24,7 @@ public class ToonMaterial extends DiffuseMaterial {
 			"	float intensity = 0.0;\n" +
 			"	float dist = 0.0;\n" +
 			"	vec3 L = vec3(0.0);\n" +
+			"	vec3 Kd = vec3(0.0);\n" +
 			
 			"%LIGHT_CODE%" +
 			
@@ -36,7 +37,7 @@ public class ToonMaterial extends DiffuseMaterial {
 			"   else if(intensity > .5) color = uToonColor1;\n" +
 			"   else if(intensity > .25) color = uToonColor2;\n" +
 			"   else color = uToonColor3;\n" +
-			"	color.rgb *= intensity;\n" +	
+			"	color.rgb *= Kd * intensity;\n" +	
 			"	color += uAmbientColor * uAmbientIntensity;\n" +
 			"	gl_FragColor = color;\n" +
 			M_FOG_FRAGMENT_COLOR +	
