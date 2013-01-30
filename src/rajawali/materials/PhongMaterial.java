@@ -73,7 +73,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"uniform float uShininess;\n" +
 
 		"void main() {\n" +
-		"	float Kd = 0.0;\n" +
+		"	vec4 Kd = vec4(0.0);\n" +
 		"	float Ks = 0.0;\n" +
 		"	float NdotL = 0.0;\n" +
 		"	vec3 L = vec3(0.0);\n" +
@@ -171,9 +171,8 @@ public class PhongMaterial extends AAdvancedMaterial {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
 				fc.append("L = normalize(-uLightDirection").append(i).append(");\n");
 			}
-		
 			fc.append("NdotL = max(dot(N, L), 0.1);\n");
-			fc.append("Kd += NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n"); 
+			fc.append("Kd.rgb += uLightColor").append(i).append("* (NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(");\n"); 
 			fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 		}
 		
