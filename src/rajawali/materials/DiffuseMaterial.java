@@ -119,7 +119,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
 				sb.append("L = -normalize(uLightDirection").append(i).append(");\n");				
 			}
-			sb.append("intesity += uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(");\n");
+			sb.append("intensity += uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(";\n");
 			sb.append("Kd += uLightColor").append(i).append(";\n");
 		}
 		
