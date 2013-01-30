@@ -74,6 +74,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 
 		"void main() {\n" +
 		"	vec4 Kd = vec4(0.0);\n" +
+		"	float intensity = 0.0;\n" +
 		"	float Ks = 0.0;\n" +
 		"	float NdotL = 0.0;\n" +
 		"	vec3 L = vec3(0.0);\n" +
@@ -83,7 +84,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	vec3 E = normalize(vEyeVec);\n" +
 
 		"%LIGHT_CODE%" +
-		
+		"	Kd *= intensity;\n" +		
 		"#ifdef TEXTURED\n" +
 		"	vec4 diffuse = Kd * texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"#else\n" +
@@ -172,7 +173,8 @@ public class PhongMaterial extends AAdvancedMaterial {
 				fc.append("L = normalize(-uLightDirection").append(i).append(");\n");
 			}
 			fc.append("NdotL = max(dot(N, L), 0.1);\n");
-			fc.append("Kd.rgb += uLightColor").append(i).append("* (NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(");\n"); 
+			fc.append("intensity += NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n"); 
+			fc.append("Kd.rgb += uLightColor").append(i).append(";\n");
 			fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 		}
 		
