@@ -68,9 +68,8 @@ public class Animation3D {
 						mDirection *= -1;
 					mStartTime = SystemClock.uptimeMillis();
 					mNumRepeats++;
-					for (Animation3DListener listener : mAnimationListeners) {
-						listener.onAnimationRepeat(mInstance);
-					}
+					for (i = 0, j = mAnimationListeners.size(); i < j; i++)
+						mAnimationListeners.get(i).onAnimationRepeat(mInstance);
 				}
 				
 				millis = mDuration;
@@ -122,9 +121,8 @@ public class Animation3D {
 
 			}
 		}
-		for (Animation3DListener listener : mAnimationListeners) {
-			listener.onAnimationStart(this);
-		}
+		for (int i = 0, j = mAnimationListeners.size(); i < j; i++)
+			mAnimationListeners.get(i).onAnimationStart(this);
 	}
 
 	protected void applyTransformation(float interpolatedTime) {
