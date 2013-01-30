@@ -445,7 +445,7 @@ public class TextureManager {
 				internalformat = GLES11Ext.GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD;
 				break;
 		}
-		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.PVRTC, internalformat);
+		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.ATC, internalformat);
 	}
 	
 	public TextureInfo addDxt1Texture(ByteBuffer buffer, int width, int height, TextureType textureType, Dxt1Format format) {
