@@ -120,7 +120,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 				sb.append("L = -normalize(uLightDirection").append(i).append(");\n");				
 			}
 			sb.append("intesity += uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(");\n");
-			sb.append("Kd += uLightColor").append(i).append(" * intensity;\n");
+			sb.append("Kd += uLightColor").append(i).append(";\n");
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", sb.toString()));
