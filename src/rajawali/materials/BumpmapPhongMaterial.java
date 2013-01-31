@@ -35,7 +35,7 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 			"	bumpnormal = normalize(bumpnormal + N);" +
 			
 			"%LIGHT_CODE%" +
-			"	Kd *= intensity;\n" +		
+
 			"#ifdef TEXTURED\n" +
 		    "	vec4 diffuse  = Kd * texture2D(uDiffuseTexture, vTextureCoord);\n" +
 			"#else\n" +
@@ -75,7 +75,7 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 		
 			fc.append("NdotL = max(dot(bumpnormal, L), 0.1);\n");
 			fc.append("intensity += NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
-			fc.append("Kd.rgb += uLightColor").append(i).append(";\n");
+			fc.append("Kd.rgb += uLightColor").append(i).append(" * NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 			fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 		}
 		

@@ -37,7 +37,7 @@ public class ToonMaterial extends DiffuseMaterial {
 			"   else if(intensity > .5) color = uToonColor1;\n" +
 			"   else if(intensity > .25) color = uToonColor2;\n" +
 			"   else color = uToonColor3;\n" +
-			"	color.rgb *= Kd * intensity;\n" +	
+			"	color.rgb *= Kd;\n" +	
 			"	color += uAmbientColor * uAmbientIntensity;\n" +
 			"	gl_FragColor = color;\n" +
 			M_FOG_FRAGMENT_COLOR +	
