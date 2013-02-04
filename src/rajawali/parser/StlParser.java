@@ -130,7 +130,8 @@ public class StlParser extends AMeshParser {
 
 				// Cleanup
 				buffer.close();
-				fileIn.close();
+				if (fileIn != null)
+					fileIn.close();
 
 			} else {
 				/**
@@ -196,7 +197,8 @@ public class StlParser extends AMeshParser {
 
 				// Cleanup
 				dis.close();
-				fileIn.close();
+				if (fileIn != null)
+					fileIn.close();
 			}
 
 		} catch (FileNotFoundException e) {
