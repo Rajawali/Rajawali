@@ -1,11 +1,11 @@
 package rajawali.parser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +15,26 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
 import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 
 /**
  * STL Parser written using the ASCII format as describe on Wikipedia.
  * 
  * http://en.wikipedia.org/wiki/STL_(file_format)
  * 
+ * TODO More testing, Nexus 7 specifically has some issues with certain models. Nexus 4 works fine with same 'problem'
+ * models. 
+ * TODO Add a feature for ASCII to Binary conversion.
+ * 
  * @author Ian Thomas - toxicbakery@gmail.com
  */
 public class StlParser extends AMeshParser {
 
-	private final List<Float> vertices = new ArrayList<Float>();
-	private final List<Float> normals = new ArrayList<Float>();
+	public enum StlType {
+		UNKNOWN,
+		ASCII,
+		BINARY
+	}
 
 	public StlParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
@@ -38,168 +46,48 @@ public class StlParser extends AMeshParser {
 
 	@Override
 	public AMeshParser parse() {
-		super.parse();
+		return parse(StlType.UNKNOWN);
+	}
 
+	public AMeshParser parse(StlType type) {
+		super.parse();
 		try {
+
 			// Open the file
 			BufferedReader buffer = null;
-			InputStream fileIn = null;
-			if (mFile == null) {
-				fileIn = mResources.openRawResource(mResourceId);
-				buffer = new BufferedReader(new InputStreamReader(fileIn));
-			} else {
-				buffer = new BufferedReader(new FileReader(mFile));
-			}
+			LittleEndianDataInputStream dis = null;
 
-			String line = buffer.readLine();
+			switch (type) {
+			case UNKNOWN:
+				buffer = getBufferedReader();
+				// Determine if ASCII or Binary
+				boolean isASCII = isASCII(buffer);
 
-			// Determine if ASCII or Binary
-			boolean isASCII = false;
-			char[] readAhead = new char[300];
-			buffer.mark(readAhead.length);
-			buffer.read(readAhead, 0, readAhead.length);
-			String readAheadString = new String(readAhead);
-			if (readAheadString.contains("facet normal") && readAheadString.contains("outer loop"))
-				isASCII = true;
-			buffer.reset();
-
-			// Determine ASCII or Binary format
-			if (isASCII) {
-				/**
-				 * ASCII
-				 */
-
-				RajLog.i("StlPaser: Reading ASCII");
-
-				int nextOffset, prevOffset, i, insert;
-				float[] tempNorms = new float[3];
-
-				// Read the facet
-				while ((line = buffer.readLine()) != null) {
-
-					if (line.contains("facet normal")) {
-
-						nextOffset = line.lastIndexOf(" ");
-						tempNorms[2] = Float.parseFloat(line.substring(nextOffset + 1));
-
-						prevOffset = nextOffset;
-						nextOffset = line.lastIndexOf(" ", prevOffset - 1);
-						tempNorms[1] = Float.parseFloat(line.substring(nextOffset + 1, prevOffset));
-
-						prevOffset = nextOffset;
-						nextOffset = line.lastIndexOf(" ", prevOffset - 1);
-						tempNorms[0] = Float.parseFloat(line.substring(nextOffset + 1, prevOffset));
-
-						// Need to duplicate the normal for each vertex of the triangle
-						for (i = 0; i < 3; i++) {
-							normals.add(tempNorms[0]);
-							normals.add(tempNorms[1]);
-							normals.add(tempNorms[2]);
-						}
-
-					} else if (line.contains("vertex")) {
-
-						insert = vertices.size();
-
-						nextOffset = line.lastIndexOf(" ");
-						vertices.add(Float.parseFloat(line.substring(nextOffset + 1)));
-
-						prevOffset = nextOffset;
-						nextOffset = line.lastIndexOf(" ", prevOffset - 1);
-						vertices.add(insert, Float.parseFloat(line.substring(nextOffset + 1, prevOffset)));
-
-						prevOffset = nextOffset;
-						nextOffset = line.lastIndexOf(" ", prevOffset - 1);
-						vertices.add(insert, Float.parseFloat(line.substring(nextOffset + 1, prevOffset)));
-					}
-				}
-
-				float[] verticesArr = new float[vertices.size()];
-				float[] normalsArr = new float[normals.size()];
-				int[] indicesArr = new int[verticesArr.length / 3];
-
-				for (i = 0; i < verticesArr.length; i++) {
-					verticesArr[i] = vertices.get(i);
-					normalsArr[i] = normals.get(i);
-				}
-
-				for (i = 0; i < indicesArr.length; i++)
-					indicesArr[i] = i;
-
-				mRootObject.setData(verticesArr, normalsArr, null, null, indicesArr);
-
-				// Cleanup
-				buffer.close();
-				if (fileIn != null)
-					fileIn.close();
-
-			} else {
-				/**
-				 * BINARY
-				 */
-				RajLog.i("StlPaser: Reading Binary");
-				// Switch to a DataInputStream
-				buffer.close();
-				fileIn.close();
-
-				LittleEndianDataInputStream dis = null;
-				if (mFile == null) {
-					fileIn = mResources.openRawResource(mResourceId);
-					dis = new LittleEndianDataInputStream(fileIn);
+				// Determine ASCII or Binary format
+				if (isASCII) {
+					readASCII(buffer);
 				} else {
-					dis = new LittleEndianDataInputStream(new FileInputStream(mFile));
+
+					// Switch to a LittleEndianDataInputStream (all values in binary are stored in little endian format)
+					buffer.close();
+					dis = getLittleEndianInputStream();
+					readBinary(dis);
 				}
-
-				// Skip the header
-				dis.skip(80);
-
-				// Read the number of facets (have to convert the uint to a long
-				int facetCount = dis.readInt();
-
-				float[] verticesArr = new float[facetCount * 9];
-				float[] normalsArr = new float[facetCount * 9];
-				int[] indicesArr = new int[facetCount * 3];
-				float[] tempNorms = new float[3];
-				int vertPos = 0, normPos = 0;
-
-				for (int i = 0; i < indicesArr.length; i++)
-					indicesArr[i] = i;
-
-				// Read all the facets
-				while(dis.available() > 0) {
-					
-					// Read normals
-					for (int j = 0; j < 3; j++) {
-						tempNorms[j] = dis.readFloat();
-						if (Float.isNaN(tempNorms[j]) || Float.isInfinite(tempNorms[j])) {
-							RajLog.w("STL contains bad normals of NaN or Infinite!");
-							tempNorms[0] = 0;
-							tempNorms[1] = 0;
-							tempNorms[2] = 0;
-							break;
-						}
-					}
-					
-					for (int j = 0; j < 3; j++) {
-						normalsArr[normPos++] = tempNorms[0];
-						normalsArr[normPos++] = tempNorms[1];
-						normalsArr[normPos++] = tempNorms[2];
-					}
-					
-					// Read vertices
-					for (int j = 0; j<9;j++)
-						verticesArr[vertPos++] = dis.readFloat();
-					
-					dis.skip(2);
-				}
-				
-				mRootObject.setData(verticesArr, normalsArr, null, null, indicesArr);
-
-				// Cleanup
-				dis.close();
-				if (fileIn != null)
-					fileIn.close();
+			case ASCII:
+				buffer = getBufferedReader();
+				readASCII(buffer);
+				break;
+			case BINARY:
+				dis = getLittleEndianInputStream();
+				readBinary(dis);
+				break;
 			}
+
+			// Cleanup
+			if (buffer != null)
+				buffer.close();
+			if (dis != null)
+				dis.close();
 
 		} catch (FileNotFoundException e) {
 			RajLog.e("[" + getClass().getCanonicalName() + "] Could not find file.");
@@ -216,6 +104,228 @@ public class StlParser extends AMeshParser {
 		}
 
 		return this;
+	}
+
+	private BufferedReader getBufferedReader() throws FileNotFoundException {
+		BufferedReader buffer = null;
+
+		if (mFile == null) {
+			buffer = new BufferedReader(new InputStreamReader(mResources.openRawResource(mResourceId)));
+		} else {
+			buffer = new BufferedReader(new FileReader(mFile));
+		}
+
+		return buffer;
+	}
+
+	private LittleEndianDataInputStream getLittleEndianInputStream() throws FileNotFoundException {
+		LittleEndianDataInputStream dis = null;
+
+		if (mFile == null) {
+			dis = new LittleEndianDataInputStream(mResources.openRawResource(mResourceId));
+		} else {
+			dis = new LittleEndianDataInputStream(new FileInputStream(mFile));
+		}
+
+		return dis;
+	}
+
+	/**
+	 * Read stream as ASCII. While this works well, ASCII is painfully slow on mobile devices due to tight memory
+	 * constraints and lower processing power compared to desktops. It is advisable to use the binary parser whenever
+	 * possible.
+	 * 
+	 * @param buffer
+	 * @throws NumberFormatException
+	 * @throws IOException
+	 */
+	private void readASCII(final BufferedReader buffer) throws NumberFormatException, IOException {
+		RajLog.i("StlPaser: Reading ASCII");
+
+		final List<Float> vertices = new ArrayList<Float>();
+		final List<Float> normals = new ArrayList<Float>();
+		final float[] tempNorms = new float[3];
+		
+		int nextOffset, prevOffset, i, insert;
+		String line;
+
+		// Skip the first line
+		line = buffer.readLine();
+
+		// Read the facet
+		while ((line = buffer.readLine()) != null) {
+			
+			// Only read lines containing facet normal and vertex. No reason to read others
+
+			if (line.contains("facet normal ")) {
+
+				nextOffset = line.lastIndexOf(" ");
+				tempNorms[2] = Float.parseFloat(line.substring(nextOffset + 1));
+
+				prevOffset = nextOffset;
+				nextOffset = line.lastIndexOf(" ", prevOffset - 1);
+				tempNorms[1] = Float.parseFloat(line.substring(nextOffset + 1, prevOffset));
+
+				prevOffset = nextOffset;
+				nextOffset = line.lastIndexOf(" ", prevOffset - 1);
+				tempNorms[0] = Float.parseFloat(line.substring(nextOffset + 1, prevOffset));
+
+				// Need to duplicate the normal for each vertex of the triangle
+				for (i = 0; i < 3; i++) {
+					normals.add(tempNorms[0]);
+					normals.add(tempNorms[1]);
+					normals.add(tempNorms[2]);
+				}
+
+			} else if (line.contains("vertex ")) {
+
+				insert = vertices.size();
+
+				nextOffset = line.lastIndexOf(" ");
+				vertices.add(Float.parseFloat(line.substring(nextOffset + 1)));
+
+				prevOffset = nextOffset;
+				nextOffset = line.lastIndexOf(" ", prevOffset - 1);
+				vertices.add(insert, Float.parseFloat(line.substring(nextOffset + 1, prevOffset)));
+
+				prevOffset = nextOffset;
+				nextOffset = line.lastIndexOf(" ", prevOffset - 1);
+				vertices.add(insert, Float.parseFloat(line.substring(nextOffset + 1, prevOffset)));
+			}
+		}
+
+		float[] verticesArr = new float[vertices.size()];
+		float[] normalsArr = new float[normals.size()];
+		for (i = 0; i < verticesArr.length; i++) {
+			verticesArr[i] = vertices.get(i);
+			normalsArr[i] = normals.get(i);
+		}
+		
+		// Cleanup
+		vertices.clear();
+		normals.clear();
+
+		int[] indicesArr = new int[verticesArr.length / 3];
+		for (i = 0; i < indicesArr.length; i++)
+			indicesArr[i] = i;
+
+		mRootObject.setData(verticesArr, normalsArr, null, null, indicesArr);
+	}
+
+	/**
+	 * Read stream as binary STL. This is significantly faster than ASCII parsing. Additionally binary files are much
+	 * more compressed allowing smaller file sizes for larger models compared to ASCII.
+	 * 
+	 * @param dis
+	 * @throws IOException
+	 */
+	private void readBinary(final LittleEndianDataInputStream dis) throws IOException {
+		RajLog.i("StlPaser: Reading Binary");
+
+		// Skip the header
+		dis.skip(80);
+
+		// Read the number of facets (have to convert the uint to a long
+		int facetCount = dis.readInt();
+
+		float[] verticesArr = new float[facetCount * 9];
+		float[] normalsArr = new float[facetCount * 9];
+		int[] indicesArr = new int[facetCount * 3];
+		float[] tempNorms = new float[3];
+		int vertPos = 0, normPos = 0;
+
+		for (int i = 0; i < indicesArr.length; i++)
+			indicesArr[i] = i;
+
+		// Read all the facets
+		while (dis.available() > 0) {
+
+			// Read normals
+			for (int j = 0; j < 3; j++) {
+				tempNorms[j] = dis.readFloat();
+				if (Float.isNaN(tempNorms[j]) || Float.isInfinite(tempNorms[j])) {
+					RajLog.w("STL contains bad normals of NaN or Infinite!");
+					tempNorms[0] = 0;
+					tempNorms[1] = 0;
+					tempNorms[2] = 0;
+					break;
+				}
+			}
+
+			for (int j = 0; j < 3; j++) {
+				normalsArr[normPos++] = tempNorms[0];
+				normalsArr[normPos++] = tempNorms[1];
+				normalsArr[normPos++] = tempNorms[2];
+			}
+
+			// Read vertices
+			for (int j = 0; j < 9; j++)
+				verticesArr[vertPos++] = dis.readFloat();
+
+			dis.skip(2);
+		}
+
+		mRootObject.setData(verticesArr, normalsArr, null, null, indicesArr);
+	}
+
+	/**
+	 * Determine if a given file appears to be in ASCII format.
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 * @throws StlParseException
+	 */
+	public static final boolean isASCII(File file) throws IOException, StlParseException {
+		if (file.exists())
+			throw new StlParseException("Passed file does not exist.");
+
+		if (!file.isFile())
+			throw new StlParseException("This is not a file.");
+
+		final BufferedReader buffer = new BufferedReader(new FileReader(file));
+		boolean isASCII = isASCII(buffer);
+		buffer.close();
+
+		return isASCII;
+	}
+
+	/**
+	 * Determine if a given resource appears to be in ASCII format.
+	 * 
+	 * @param res
+	 * @param resId
+	 * @return
+	 * @throws IOException
+	 */
+	public static final boolean isASCII(Resources res, int resId) throws IOException, NotFoundException {
+		BufferedReader buffer = new BufferedReader(new InputStreamReader(res.openRawResource(resId)));
+		boolean isASCII = isASCII(buffer);
+		buffer.close();
+
+		return isASCII;
+	}
+
+	/**
+	 * Determine if a given BufferedReader appears to be in ASCII format.
+	 * 
+	 * @param buffer
+	 * @return
+	 * @throws IOException
+	 */
+	public static final boolean isASCII(BufferedReader buffer) throws IOException {
+		final char[] readAhead = new char[300];
+		buffer.mark(readAhead.length);
+		buffer.read(readAhead, 0, readAhead.length);
+		buffer.reset();
+		final String readAheadString = new String(readAhead);
+
+		// If the following text is present, then this is likely an ascii file
+		if (readAheadString.contains("facet normal") && readAheadString.contains("outer loop"))
+			return true;
+
+		// Likely a binary file
+		return false;
 	}
 
 	public static final class StlParseException extends Exception {
