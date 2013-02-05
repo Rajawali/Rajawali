@@ -12,6 +12,7 @@ public abstract class AMeshParser extends AParser implements IMeshParser {
 
 	public AMeshParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
+		mRootObject = new BaseObject3D();
 	}
 	
 	public AMeshParser(Resources resources, TextureManager textureManager, int resourceId) {
