@@ -60,7 +60,8 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 	{
 		StringBuffer fc = new StringBuffer();
 		StringBuffer vc = new StringBuffer();
-		
+		fc.append("float normPower = 0.0");
+
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
 
@@ -74,8 +75,9 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 			}
 		
 			fc.append("NdotL = max(dot(bumpnormal, L), 0.1);\n");
-			fc.append("intensity += NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
-			fc.append("Kd.rgb += uLightColor").append(i).append(" * NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
+			fc.append("normPower = NdotL * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
+			fc.append("intensity += normPower;\n");
+			fc.append("Kd.rgb += uLightColor").append(i).append(" * normPower;\n");
 			fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 		}
 		
