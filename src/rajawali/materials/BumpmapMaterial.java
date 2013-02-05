@@ -47,7 +47,7 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 	public void setShaders(String vertexShader, String fragmentShader) {
 		StringBuffer fc = new StringBuffer();
 		StringBuffer vc = new StringBuffer();
-		fc.append("float normPower = 0.0");
+		fc.append("float normPower = 0.0;\n");
 		
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);

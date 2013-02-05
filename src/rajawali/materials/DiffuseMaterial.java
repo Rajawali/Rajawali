@@ -107,7 +107,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 	public void setShaders(String vertexShader, String fragmentShader) {
 		StringBuffer fc = new StringBuffer();
 		StringBuffer vc = new StringBuffer();
-		fc.append("float normPower = 0.0");
+		fc.append("float normPower = 0.0;\n");
 
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
@@ -121,7 +121,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 				fc.append("L = -normalize(uLightDirection").append(i).append(");\n");				
 			}
 			fc.append("normPower =  uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(";\n");
-			fc.append("intensity +=  normPower\n");
+			fc.append("intensity +=  normPower;\n");
 			fc.append("Kd += uLightColor").append(i).append(" * normPower;\n");
 		}
 		

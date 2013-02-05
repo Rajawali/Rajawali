@@ -158,7 +158,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 	{
 		StringBuffer fc = new StringBuffer();
 		StringBuffer vc = new StringBuffer();
-		fc.append("float normPower = 0.0");
+		fc.append("float normPower = 0.0;\n");
 		
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
