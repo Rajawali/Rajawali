@@ -22,8 +22,10 @@ public class SimpleMaterial extends AMaterial {
 		"precision mediump float;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
-		"uniform sampler2D uDiffuseTexture;\n" +
 		"varying vec4 vColor;\n" +
+
+		"uniform sampler2D uDiffuseTexture;\n" +
+		"uniform sampler2D uAlphaTexture;\n" +
 
 		"void main() {\n" +
 		"#ifdef TEXTURED\n" +
@@ -31,15 +33,22 @@ public class SimpleMaterial extends AMaterial {
 		"#else\n" +
 		"	gl_FragColor = vColor;\n" +
 		"#endif\n" +
+
+	    "#ifdef ALPHA\n" +
+		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
+	    "	gl_FragColor.a = alpha;\n" + 		
+	    "#endif\n" +		
 		"}\n";
 	
 	public SimpleMaterial() {
-		super(mVShader, mFShader, false);
-		setShaders();
+		this(mVShader, mFShader);
 	}
 	
 	public SimpleMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader, false);
-		setShaders();
+	}
+	
+	public void setShaders(String vertexShader, String fragmentShader) {
+		super.setShaders(vertexShader, fragmentShader);
 	}
 }
