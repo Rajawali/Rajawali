@@ -87,7 +87,11 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 	    "#endif\n" +
 
 		"	vec4 ambient = uAmbientIntensity * uAmbientColor;\n" +
+<<<<<<< HEAD
 		"	gl_FragColor = ambient + diffuse;\n" +
+=======
+		"	gl_FragColor = diffuse + ambient;\n" +
+>>>>>>> refs/heads/phong_ks_fix
 		
 	    "#ifdef ALPHA\n" +
 		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +

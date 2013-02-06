@@ -132,7 +132,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 	public PhongMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
 		super(vertexShader, fragmentShader, isAnimated);
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-		mShininess = 96.0f;//
+		mShininess = 96.0f;
 	}
 	
 	public PhongMaterial(float[] specularColor, float[] ambientColor, float shininess) {
@@ -187,10 +187,15 @@ public class PhongMaterial extends AAdvancedMaterial {
 				vc.append("dist = distance(-vEyeVec, uLightPosition").append(i).append(");\n");
 				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
-				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
 				fc.append("L = normalize(-uLightDirection").append(i).append(");\n");
 			}
+<<<<<<< HEAD
 			fc.append("normPower = uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(";\n");
+=======
+			
+			fc.append("NdotL = max(dot(N, L), 0.1);\n");
+			fc.append("normPower = uLightPower").append(i).append(" * NdotL * vAttenuation").append(i).append(";\n");
+>>>>>>> refs/heads/phong_ks_fix
 			fc.append("intensity += normPower;\n"); 
 			fc.append("Kd.rgb += uLightColor").append(i).append(" * normPower;\n"); 
 			fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
