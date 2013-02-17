@@ -94,10 +94,11 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"#endif\n" +
 
 		"#ifdef SPEC\n" +
-		"   vSpecular *= texture2D(uSpecularTexture, vTextureCoord);\n" +
+		"   vec4 specular = vSpecular * texture2D(uSpecularTexture, vTextureCoord);\n" +
+		"#else\n" +
+		"	vec4 specular  = vSpecular;\n" +
 		"#endif\n" +
 		
-		"	vec4 specular  = vSpecular;\n" + 		
 		"	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 
 		"	gl_FragColor = diffuse + specular + ambient;\n" +
 		
