@@ -10,14 +10,14 @@ public class SimpleMaterial extends AMaterial {
 		"attribute vec4 aColor;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
-		"varying vec4 vColor;\n" +		
-		
+		"varying vec4 vColor;\n" +
+
 		"void main() {\n" +
 		"	gl_Position = uMVPMatrix * aPosition;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
 		"	vColor = aColor;\n" +
 		"}\n";
-	
+
 	protected static final String mFShader = 
 		"precision mediump float;\n" +
 
@@ -34,20 +34,20 @@ public class SimpleMaterial extends AMaterial {
 		"	gl_FragColor = vColor;\n" +
 		"#endif\n" +
 
-	    "#ifdef ALPHA\n" +
+		"#ifdef ALPHA\n" +
 		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
-	    "	gl_FragColor.a = alpha;\n" + 		
-	    "#endif\n" +		
+		"	gl_FragColor.a = alpha;\n" +
+		"#endif\n" +
 		"}\n";
-	
+
 	public SimpleMaterial() {
 		this(mVShader, mFShader);
 	}
-	
+
 	public SimpleMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader, false);
 	}
-	
+
 	public void setShaders(String vertexShader, String fragmentShader) {
 		super.setShaders(vertexShader, fragmentShader);
 	}
