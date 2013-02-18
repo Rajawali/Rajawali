@@ -47,6 +47,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected String mName;
 
 	protected boolean mDoubleSided = false;
+	protected boolean mBackSided = false;
 	protected boolean mTransparent = false;
 	protected boolean mForcedDepth = false;
 	protected boolean mHasCubemapTexture = false;
@@ -238,8 +239,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		if (!mIsContainerOnly && mIsInFrustum) {
 			mProjMatrix = projMatrix;
-			if (!mDoubleSided)
+			if (!mDoubleSided) {
 				GLES20.glEnable(GLES20.GL_CULL_FACE);
+				if (mBackSided)
+					GLES20.glCullFace(GLES20.GL_FRONT);
+				else
+					GLES20.glCullFace(GLES20.GL_BACK);
+			}
 			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
 				GLES20.glEnable(GLES20.GL_BLEND);
 				GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
@@ -442,6 +448,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public boolean isDoubleSided() {
 		return mDoubleSided;
 	}
+	
+	public boolean isBackSided() {
+		return mBackSided;
+	}
 
 	public boolean isVisible() {
 		return mIsVisible;
@@ -449,6 +459,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public void setDoubleSided(boolean doubleSided) {
 		this.mDoubleSided = doubleSided;
+	}
+	
+	public void setBackSided(boolean backSided) {
+		this.mBackSided = backSided;
 	}
 
 	public boolean isTransparent() {
