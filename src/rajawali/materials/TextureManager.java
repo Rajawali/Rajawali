@@ -75,7 +75,7 @@ public class TextureManager {
 		BUMP,
 		NORMAL_MAP,
 		@Deprecated 
-		SPEC,
+		SPECULAR,
 		SPECULAR_MAP,
 		ALPHA_MAP,
 		FRAME_BUFFER,

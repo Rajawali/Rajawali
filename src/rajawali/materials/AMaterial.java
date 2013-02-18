@@ -290,7 +290,7 @@ public abstract class AMaterial {
 			textureName = "uNormalTexture";
 			mUseNormalMap = true;
 			break;
-		case SPEC:
+		case SPECULAR:
 			textureName = "uSpecularTexture";
 			mUseSpecMap = true;
 			break;
