@@ -3,7 +3,7 @@ package rajawali.materials;
 import rajawali.lights.ALight;
 
 public class DiffuseMaterial extends AAdvancedMaterial {
-	protected static final String mVShader =
+	protected static final String mVShader = 
 		"precision mediump float;\n" +
 		"uniform mat4 uMVPMatrix;\n" +
 		"uniform mat3 uNMatrix;\n" +
@@ -16,8 +16,8 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"attribute vec4 aColor;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 vNormal;\n" +
-		"varying vec3 vEyeVec;\n" +
+		"varying vec3 N;\n" +
+		"varying vec4 V;\n" +
 		"varying vec4 vColor;\n" +
 
 		M_FOG_VERTEX_VARS +
@@ -30,21 +30,24 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"#endif\n\n" +
 
 		"void main() {\n" +
-		"	float dist = 0.0;\n" +
 		"	vec4 position = aPosition;\n" +
+		"	float dist = 0.0;\n" +
 		"	vec3 normal = aNormal;\n" +
 		"	#ifdef VERTEX_ANIM\n" +
 		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
 		"	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);\n" +
 		"	#endif\n" +
+
 		"	gl_Position = uMVPMatrix * position;\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
-		"	vEyeVec = vec3(uMMatrix * position);\n" +
-		"	vNormal = normalize(uNMatrix * normal);\n" +
+		"	N = normalize(uNMatrix * normal);\n" +
+		"	V = uMMatrix * position;\n" +
+		"#ifndef TEXTURED\n" +
+		"	vColor = aColor;\n" +
+		"#endif\n" +
 
 		"%LIGHT_CODE%" +
 
-		"	vColor = aColor;\n" +
 		M_FOG_VERTEX_DENSITY +
 		"}";
 
@@ -52,48 +55,33 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"precision mediump float;\n" +
 
 		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 vNormal;\n" +
-		"varying vec3 vEyeVec;\n" +
+		"varying vec3 N;\n" +
+		"varying vec4 V;\n" +
 		"varying vec4 vColor;\n" +
  
+		"uniform sampler2D uDiffuseTexture;\n" +
+		"uniform vec4 uAmbientColor;\n" +
+		"uniform vec4 uAmbientIntensity;\n" +
+
 		M_FOG_FRAGMENT_VARS +		
 		"%LIGHT_VARS%" +
 
-		"uniform vec4 uAmbientColor;\n" +
-		"uniform vec4 uAmbientIntensity;\n" +
-		"uniform sampler2D uDiffuseTexture;\n" +
-		"uniform sampler2D uNormalTexture;\n" +
-		"uniform sampler2D uAlphaTexture;\n" +
-
 		"void main() {\n" +
-		"	vec4 Kd = vec4(0.0);\n" +
 		"	float intensity = 0.0;\n" +
-		"	vec3 N = normalize(vNormal);\n" +
+		"	vec3 Kd = vec3(0.0);\n" +
+		"	float dist = 0.0;\n" +
 		"	vec3 L = vec3(0.0);\n" +
-
-		"#ifdef BUMP\n" +
-		"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);\n" +
-		"	bumpnormal.z = -bumpnormal.z;\n" +
-		"	N = normalize(N + bumpnormal);\n" +
-		"#endif\n" +
-
-		"%LIGHT_CODE%" +
-
 		"#ifdef TEXTURED\n" +
-		"	vec4 diffuse = Kd * texture2D(uDiffuseTexture, vTextureCoord);\n" +
+		"	gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"#else\n" +
-		"	vec4 diffuse = Kd * vColor;\n" +
-		"#endif\n" +
+	    "	gl_FragColor = vColor;\n" +
+	    "#endif\n" +
 
-		"	vec4 ambient = uAmbientIntensity * uAmbientColor;\n" +
-		"	gl_FragColor = diffuse + ambient;\n" +
-
-		"#ifdef ALPHA\n" +
-		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
-		"	gl_FragColor.a = alpha;\n" + 
-		"#endif\n" +
-
-		M_FOG_FRAGMENT_COLOR +
+	    "%LIGHT_CODE%" +
+		"	vec3 ambient = uAmbientIntensity.rgb * uAmbientColor.rgb;\n" +
+		"	vec3 diffuse = Kd * gl_FragColor.rgb;\n" +
+		"	gl_FragColor.rgb = ambient + diffuse;\n" +
+		M_FOG_FRAGMENT_COLOR +		
 		"}";
 
 	public DiffuseMaterial() {
@@ -125,16 +113,16 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 			ALight light = mLights.get(i);
 
 			if(light.getLightType() == ALight.POINT_LIGHT) {
-				vc.append("dist = distance(vEyeVec, uLightPosition").append(i).append(");\n");
+				fc.append("L = normalize(uLightPosition").append(i).append(" - V.xyz);\n");
+				vc.append("dist = distance(V.xyz, uLightPosition").append(i).append(");\n");
 				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
-				fc.append("L = normalize(uLightPosition").append(i).append(" - vEyeVec);\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
-				fc.append("L = -normalize(uLightDirection").append(i).append(");\n");
+				fc.append("L = -normalize(uLightDirection").append(i).append(");\n");				
 			}
-			fc.append("normPower = uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(";\n");
-			fc.append("intensity += normPower;\n");
-			fc.append("Kd.rgb += uLightColor").append(i).append(" * normPower;\n");
+			fc.append("normPower =  uLightPower").append(i).append(" * max(dot(N, L), 0.1) * vAttenuation").append(i).append(";\n");
+			fc.append("intensity +=  normPower;\n");
+			fc.append("Kd += uLightColor").append(i).append(" * normPower;\n");
 		}
 
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", fc.toString()));

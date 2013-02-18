@@ -39,7 +39,7 @@ public abstract class AMaterial {
 	protected Stack<ALight> mLights;
 	protected boolean mUseColor = false;
 	protected boolean mUseAlphaMap = false;
-	protected boolean mUseBumpMap = false;
+	protected boolean mUseNormalMap = false;
 	protected boolean mUseSpecMap = false;
 
 	protected int mNumTextures = 0;
@@ -105,7 +105,7 @@ public abstract class AMaterial {
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
 		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
 		mFragmentShader = mUseAlphaMap ? "#define ALPHA\n" + mFragmentShader : mFragmentShader;
-		mFragmentShader = mUseBumpMap ? "#define BUMP\n" + mFragmentShader : mFragmentShader;
+		mFragmentShader = mUseNormalMap ? "#define NORMAL\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseSpecMap ? "#define SPEC\n" + mFragmentShader : mFragmentShader;
 
 		if(RajawaliRenderer.isFogEnabled())
@@ -265,6 +265,7 @@ public abstract class AMaterial {
 		mTextureInfoList.remove(textureInfo);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture, boolean reload) {
 		// -- check if this texture is already in the list
 		if(mTextureInfoList.indexOf(textureInfo) > -1 && !reload)
@@ -283,13 +284,21 @@ public abstract class AMaterial {
 			break;
 		case BUMP:
 			textureName = "uNormalTexture";
-			mUseBumpMap = true;
+			mUseNormalMap = true;
 			break;
-		case SPECULAR:
+		case NORMAL_MAP:
+			textureName = "uNormalTexture";
+			mUseNormalMap = true;
+			break;
+		case SPEC:
 			textureName = "uSpecularTexture";
 			mUseSpecMap = true;
 			break;
-		case ALPHA:
+		case SPECULAR_MAP:
+			textureName = "uSpecularTexture";
+			mUseSpecMap = true;
+			break;
+		case ALPHA_MAP:
 			textureName = "uAlphaTexture";
 			mUseAlphaMap = true;
 			break;

@@ -67,13 +67,17 @@ public class TextureManager {
 			GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 	/**
-	 * Texture types. Can be DIFFUSE, BUMP, FRAME_BUFFER, DEPTH_BUFFER, LOOKUP, CUBE_MAP
+	 * Texture types. Can be DIFFUSE, BUMP, NORMAL_MAP, SPEC, SPECULAR_MAP, ALPHA_MAP, FRAME_BUFFER, DEPTH_BUFFER, LOOKUP, CUBE_MAP
 	 */
 	public enum TextureType {
 		DIFFUSE,
+		@Deprecated 
 		BUMP,
-		SPECULAR,
-		ALPHA,
+		NORMAL_MAP,
+		@Deprecated 
+		SPEC,
+		SPECULAR_MAP,
+		ALPHA_MAP,
 		FRAME_BUFFER,
 		DEPTH_BUFFER,
 		LOOKUP,

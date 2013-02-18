@@ -84,10 +84,10 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	vec3 N = normalize(vNormal);\n" +
 		"	vec3 L = vec3(0.0);\n" +
 
-		"#ifdef BUMP\n" +		
-		"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);\n" +
-		"	bumpnormal.z = -bumpnormal.z;\n" +
-		"	N = normalize(N + bumpnormal);\n" +
+		"#ifdef NORMAL\n" +		
+		"	vec3 normalmap = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);\n" +
+		"	normalmap.z = -normalmap.z;\n" +
+		"	N = normalize(N + normalmap);\n" +
 		"#endif\n" +
 
 		"%LIGHT_CODE%" +
@@ -104,7 +104,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	vec4 specular = Ks * uSpecularColor;\n" + 
 		"#endif\n" +
 
-		"	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 
+		"	vec4 ambient = uAmbientIntensity * uAmbientColor;\n" + 
 		"	gl_FragColor = ambient + diffuse + specular;\n" + 	
 
 		"#ifdef ALPHA\n" +
@@ -187,6 +187,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 				fc.append("L = normalize(uLightPosition").append(i).append(" + vEyeVec);\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
+				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
 				fc.append("L = normalize(-uLightDirection").append(i).append(");\n");
 			}
 
@@ -196,7 +197,6 @@ public class PhongMaterial extends AAdvancedMaterial {
 			fc.append("Kd.rgb += uLightColor").append(i).append(" * normPower;\n"); 
 			fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 		}
-
 		super.setShaders(
 				vertexShader.replace("%LIGHT_CODE%", vc.toString()), 
 				fragmentShader.replace("%LIGHT_CODE%", fc.toString())
