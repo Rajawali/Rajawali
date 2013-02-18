@@ -84,7 +84,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	vec3 N = normalize(vNormal);\n" +
 		"	vec3 L = vec3(0.0);\n" +
 
-		"#ifdef NORMAL\n" +		
+		"#ifdef NORMAL_MAP\n" +		
 		"	vec3 normalmap = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);\n" +
 		"	normalmap.z = -normalmap.z;\n" +
 		"	N = normalize(N + normalmap);\n" +
@@ -98,7 +98,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	vec4 diffuse = Kd * vColor;\n" +
 		"#endif\n" +
 
-		"#ifdef SPEC\n" +
+		"#ifdef SPECULAR_MAP\n" +
 		"   vec4 specular = Ks * uSpecularColor * texture2D(uSpecularTexture, vTextureCoord);\n" +
 		"#else\n" +
 		"	vec4 specular = Ks * uSpecularColor;\n" + 
@@ -107,7 +107,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	vec4 ambient = uAmbientIntensity * uAmbientColor;\n" + 
 		"	gl_FragColor = ambient + diffuse + specular;\n" + 	
 
-		"#ifdef ALPHA\n" +
+		"#ifdef ALPHA_MAP\n" +
 		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
 		"	gl_FragColor.a = alpha;\n" + 		
 		"#endif\n" +

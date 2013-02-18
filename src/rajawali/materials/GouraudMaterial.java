@@ -87,7 +87,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	    "	vec4 diffuse = vDiffuseIntensity * vColor;\n" +
 	    "#endif\n" +
 	    
-		"#ifdef SPEC\n" +
+		"#ifdef SPECULAR_MAP\n" +
 		"   vec4 specular = uSpecularColor * vSpecularIntensity * uSpecularIntensity * texture2D(uSpecularTexture, vTextureCoord);\n" +
 		"#else\n" +
 		"	vec4 specular = uSpecularColor * vSpecularIntensity * uSpecularIntensity;\n" + 
@@ -96,7 +96,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"	vec4 ambient = uAmbientIntensity * uAmbientColor;\n" + 	    
 		"	gl_FragColor = diffuse + specular;\n" +
 		
-		"#ifdef ALPHA\n" +
+		"#ifdef ALPHA_MAP\n" +
 		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
 		"	gl_FragColor.a = alpha;\n" +
 		"#else\n" +

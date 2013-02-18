@@ -104,9 +104,9 @@ public abstract class AMaterial {
 		mVertexShader = mVertexAnimationEnabled ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
 		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
-		mFragmentShader = mUseAlphaMap ? "#define ALPHA\n" + mFragmentShader : mFragmentShader;
-		mFragmentShader = mUseNormalMap ? "#define NORMAL\n" + mFragmentShader : mFragmentShader;
-		mFragmentShader = mUseSpecMap ? "#define SPEC\n" + mFragmentShader : mFragmentShader;
+		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;
+		mFragmentShader = mUseNormalMap ? "#define NORMAL_MAP\n" + mFragmentShader : mFragmentShader;
+		mFragmentShader = mUseSpecMap ? "#define SPECULAR_MAP\n" + mFragmentShader : mFragmentShader;
 
 		if(RajawaliRenderer.isFogEnabled())
 		{
@@ -286,19 +286,11 @@ public abstract class AMaterial {
 			textureName = "uNormalTexture";
 			mUseNormalMap = true;
 			break;
-		case NORMAL_MAP:
-			textureName = "uNormalTexture";
-			mUseNormalMap = true;
-			break;
 		case SPECULAR:
 			textureName = "uSpecularTexture";
 			mUseSpecMap = true;
 			break;
-		case SPECULAR_MAP:
-			textureName = "uSpecularTexture";
-			mUseSpecMap = true;
-			break;
-		case ALPHA_MAP:
+		case ALPHA:
 			textureName = "uAlphaTexture";
 			mUseAlphaMap = true;
 			break;
