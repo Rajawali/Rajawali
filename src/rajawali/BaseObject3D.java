@@ -241,10 +241,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mProjMatrix = projMatrix;
 			if (!mDoubleSided) {
 				GLES20.glEnable(GLES20.GL_CULL_FACE);
-				if (mBackSided)
+				if (mBackSided) {
 					GLES20.glCullFace(GLES20.GL_FRONT);
-				else
+					GLES20.glFrontFace(GLES20.GL_CW);
+				} else {
 					GLES20.glCullFace(GLES20.GL_BACK);
+					GLES20.glFrontFace(GLES20.GL_CCW);
+				}
 			}
 			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
 				GLES20.glEnable(GLES20.GL_BLEND);
