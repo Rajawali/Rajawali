@@ -265,7 +265,6 @@ public abstract class AMaterial {
 		mTextureInfoList.remove(textureInfo);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture, boolean reload) {
 		// -- check if this texture is already in the list
 		if(mTextureInfoList.indexOf(textureInfo) > -1 && !reload)
