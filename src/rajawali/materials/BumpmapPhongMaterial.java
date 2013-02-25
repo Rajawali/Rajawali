@@ -72,6 +72,7 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				fc.append("L = normalize(-uLightDirection").append(i).append(");\n");
+				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
 			}
 		
 			fc.append("NdotL = max(dot(bumpnormal, L), 0.1);\n");
