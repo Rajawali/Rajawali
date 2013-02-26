@@ -34,7 +34,7 @@ public class SimpleMaterial extends AMaterial {
 		"	gl_FragColor = vColor;\n" +
 		"#endif\n" +
 
-		"#ifdef ALPHA\n" +
+		"#ifdef ALPHA_MAP\n" +
 		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
 		"	gl_FragColor.a = alpha;\n" +
 		"#endif\n" +
