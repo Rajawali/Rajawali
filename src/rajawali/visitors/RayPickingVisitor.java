@@ -2,6 +2,7 @@ package rajawali.visitors;
 
 import rajawali.BaseObject3D;
 import rajawali.bounds.BoundingBox;
+import rajawali.bounds.BoundingSphere;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
 
@@ -22,14 +23,28 @@ public class RayPickingVisitor implements INodeVisitor {
 			BaseObject3D o = (BaseObject3D)node;
 			if(!o.isVisible() || !o.isInFrustum()) return;
 			//RajLog.d("VISITING " + o.getName());
-			BoundingBox bbox = o.getGeometry().getBoundingBox();
-			bbox.calculateBounds(o.getGeometry());
-			bbox.transform(o.getModelMatrix());
 			
-			if(intersectsWith(bbox)) {
-				if(mPickedObject == null ||
-						(mPickedObject != null && o.getPosition().z < mPickedObject.getPosition().z))
-					mPickedObject = o;
+			if (o.getGeometry().hasBoundingSphere()) {
+				BoundingSphere bsphere = o.getGeometry().getBoundingSphere();
+				bsphere.calculateBounds(o.getGeometry());
+				bsphere.transform(o.getModelMatrix());
+				
+				if(intersectsWith(bsphere)) {
+					if(mPickedObject == null ||
+							(mPickedObject != null && o.getPosition().z < mPickedObject.getPosition().z))
+						mPickedObject = o;
+				}
+			} else {
+				// Assume bounding box if no bound sphere found.
+				BoundingBox bbox = o.getGeometry().getBoundingBox();
+				bbox.calculateBounds(o.getGeometry());
+				bbox.transform(o.getModelMatrix());
+				
+				if(intersectsWith(bbox)) {
+					if(mPickedObject == null ||
+							(mPickedObject != null && o.getPosition().z < mPickedObject.getPosition().z))
+						mPickedObject = o;
+				}
 			}
 		}
 	}
@@ -60,6 +75,62 @@ public class RayPickingVisitor implements INodeVisitor {
 			return true;
 
 		return false;
+	}
+	
+	private boolean intersectsWith(BoundingSphere bsphere) {
+		Number3D raySta = new Number3D(mRayStart);
+		Number3D rayEnd = new Number3D(mRayEnd);
+		Number3D rayDir = rayEnd.subtract(raySta);
+		rayDir.normalize();
+		
+		Number3D center = bsphere.getPosition();
+		float radius = bsphere.getRadius();
+		float radius2 = radius * radius;
+		
+		/*
+		 * Refer to http://paulbourke.net/geometry/circlesphere/ for mathematics
+		 * behind ray-sphere intersection.
+		 */
+		float a = Number3D.dot(rayDir, rayDir);
+		float b = 2.0f * Number3D.dot(rayDir, Number3D.subtract(raySta, center));
+		float c = Number3D.dot(center, center) + Number3D.dot(raySta, raySta) - 2.0f * Number3D.dot(center, raySta) - radius2;
+		
+		// Test for intersection.
+		float result = b * b - 4.0f * a * c;
+		
+		if (result < 0) return false;
+		
+		float distSqrt = (float)Math.sqrt(result);
+		float q;
+		
+		if (b < 0)
+			q = (-b - distSqrt) / 2.0f;
+		else
+			q = (-b + distSqrt) / 2.0f;
+		
+		
+		float t0 = q / 1;
+		float t1 = c / q;
+		
+		// If t0 is larger than t1, swap them around.
+		if (t0 > t1) {
+			float temp = t0;
+			t0 = t1;
+			t1 = temp;
+		}
+		
+		// If t1 is less than zero, the object is in the ray's negative direction
+		// and consequently ray misses the sphere.
+		if (t1 < 0) return false;
+		
+		// If t0 is less than zero, intersection point is at t1.
+		if (t0 < 0) {
+			mHitPoint.setAllFrom(raySta.add(Number3D.multiply(rayDir, t1)));
+			return true;
+		} else {
+			mHitPoint.setAllFrom(raySta.add(Number3D.multiply(rayDir, t0)));
+			return true;
+		}
 	}
 	
 	private boolean getIntersection( float fDst1, float fDst2, Number3D P1, Number3D P2) {
