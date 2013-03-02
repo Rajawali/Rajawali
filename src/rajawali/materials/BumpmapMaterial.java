@@ -58,6 +58,7 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				fc.append("L = -normalize(uLightDirection").append(i).append(");");				
+				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
 			}
 			fc.append("normPower = uLightPower").append(i).append(" * max(dot(bumpnormal, L), 0.1) * vAttenuation").append(i).append(";\n");
 			fc.append("intensity += normPower;\n");
