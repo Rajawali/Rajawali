@@ -24,6 +24,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"varying vec2 vTextureCoord;\n" +
 		"varying float vSpecularIntensity;\n" +
 		"varying float vDiffuseIntensity;\n" +
+		"varying vec3 vLightColor;\n" +
 		"varying vec4 vColor;\n" +
 		
 		M_FOG_VERTEX_VARS +
@@ -56,7 +57,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"%LIGHT_CODE%" +
 		"	vSpecularIntensity = clamp(vSpecularIntensity, 0.0, 1.0);\n" +
 		"#ifndef TEXTURED\n" +
-		"	vColor = aColor;\n" +
+		"	vColor = vec4(vLightColor, 1.0) * aColor;\n" +
 		"#endif\n" +
 		M_FOG_VERTEX_DENSITY +
 		"}";
@@ -67,6 +68,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"varying vec2 vTextureCoord;\n" +
 		"varying float vSpecularIntensity;\n" +
 		"varying float vDiffuseIntensity;\n" +
+		"varying vec3 vLightColor;\n" +
 		"varying vec4 vColor;\n" +
 		
 		"uniform sampler2D uDiffuseTexture;\n" +
@@ -82,7 +84,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		
 		"void main() {\n" +
 		"#ifdef TEXTURED\n" +
-		"	vec4 diffuse = vDiffuseIntensity * texture2D(uDiffuseTexture, vTextureCoord);\n" +
+		"	vec4 diffuse = vec4(vLightColor, 1.0) * vDiffuseIntensity * texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"#else\n" +
 	    "	vec4 diffuse = vDiffuseIntensity * vColor;\n" +
 	    "#endif\n" +
@@ -162,7 +164,8 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		StringBuffer vc = new StringBuffer();
-		
+		vc.append("float normPower = 0.0;\n");
+
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
 
@@ -174,7 +177,9 @@ public class GouraudMaterial extends AAdvancedMaterial {
 				vc.append("L = normalize(-uLightDirection").append(i).append(");");
 			}
 			vc.append("NdotL = max(dot(N, L), 0.1);\n");
-			vc.append("vDiffuseIntensity += NdotL * attenuation * uLightPower").append(i).append(";\n");
+			vc.append("normPower += NdotL * attenuation * uLightPower").append(i).append(";\n");
+			vc.append("vDiffuseIntensity += normPower;\n");
+			vc.append("vLightColor +=normPower * uLightColor").append(i).append(";\n");
 			vc.append("vSpecularIntensity += pow(NdotL, 6.0) * attenuation * uLightPower").append(i).append(";\n");
 		}
 		
