@@ -9,26 +9,26 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"uniform mat3 uNMatrix;\n" +
 		"uniform mat4 uMMatrix;\n" +
 		"uniform mat4 uVMatrix;\n" +
-		
+
 		"attribute vec4 aPosition;\n" +
 		"attribute vec3 aNormal;\n" +
 		"attribute vec2 aTextureCoord;\n" +
 		"attribute vec4 aColor;\n" +
-		
+
 		"varying vec2 vTextureCoord;\n" +
 		"varying vec3 N;\n" +
 		"varying vec4 V;\n" +
 		"varying vec4 vColor;\n" +
-		
+
 		M_FOG_VERTEX_VARS +
 		"%LIGHT_VARS%" +
-		
+
 		"\n#ifdef VERTEX_ANIM\n" +
 		"attribute vec4 aNextFramePosition;\n" +
 		"attribute vec3 aNextFrameNormal;\n" +
 		"uniform float uInterpolation;\n" +
 		"#endif\n\n" +
-		
+
 		"void main() {\n" +
 		"	vec4 position = aPosition;\n" +
 		"	float dist = 0.0;\n" +
@@ -45,12 +45,12 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"#ifndef TEXTURED\n" +
 		"	vColor = aColor;\n" +
 		"#endif\n" +
-		
+
 		"%LIGHT_CODE%" +
-		
+
 		M_FOG_VERTEX_DENSITY +
 		"}";
-		
+
 	protected static final String mFShader =
 		"precision mediump float;\n" +
 
@@ -62,10 +62,10 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"uniform sampler2D uDiffuseTexture;\n" +
 		"uniform vec4 uAmbientColor;\n" +
 		"uniform vec4 uAmbientIntensity;\n" +
-		
+
 		M_FOG_FRAGMENT_VARS +		
 		"%LIGHT_VARS%" +
-		
+
 		"void main() {\n" +
 		"	float intensity = 0.0;\n" +
 		"	vec3 Kd = vec3(0.0);\n" +
@@ -83,27 +83,27 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	gl_FragColor.rgb = ambient + diffuse;\n" +
 		M_FOG_FRAGMENT_COLOR +		
 		"}";
-	
+
 	public DiffuseMaterial() {
 		this(false);
 	}
-	
+
 	public DiffuseMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
 		super(vertexShader, fragmentShader, isAnimated);
 	}
-	
+
 	public DiffuseMaterial(boolean isAnimated) {
 		this(mVShader, mFShader, isAnimated);
 	}
-	
+
 	public DiffuseMaterial(int parameters) {
 		super(mVShader, mFShader, parameters);
 	}
-	
+
 	public DiffuseMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader);
 	}
-	
+
 	public void setShaders(String vertexShader, String fragmentShader) {
 		StringBuffer fc = new StringBuffer();
 		StringBuffer vc = new StringBuffer();
@@ -111,7 +111,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
-			
+
 			if(light.getLightType() == ALight.POINT_LIGHT) {
 				fc.append("L = normalize(uLightPosition").append(i).append(" - V.xyz);\n");
 				vc.append("dist = distance(V.xyz, uLightPosition").append(i).append(");\n");
@@ -124,7 +124,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 			fc.append("intensity +=  normPower;\n");
 			fc.append("Kd += uLightColor").append(i).append(" * normPower;\n");
 		}
-		
+
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", fc.toString()));
 	}
 }
