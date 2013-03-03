@@ -106,17 +106,20 @@ public final class Intersector {
 	 * @return True if there is an intersection, false otherwise.
 	 */
 	public static boolean intersectRaySphere(Number3D rayStart, Number3D rayEnd, Number3D sphereCenter, float sphereRadius, Number3D hitPoint) {
-		Number3D rayDir = Number3D.subtract(rayEnd, rayStart);
-		rayDir.normalize();
+		rayStart = new Number3D(rayStart);
+		rayEnd = new Number3D(rayEnd);
+		Number3D dir = Number3D.subtract(rayEnd, rayStart);
+		dir.normalize();
 		
+		sphereCenter = new Number3D(sphereCenter);
 		float radius2 = sphereRadius * sphereRadius;
 		
 		/*
 		 * Refer to http://paulbourke.net/geometry/circlesphere/ for mathematics
 		 * behind ray-sphere intersection.
 		 */
-		float a = Number3D.dot(rayDir, rayDir);
-		float b = 2.0f * Number3D.dot(rayDir, Number3D.subtract(rayStart, sphereCenter));
+		float a = Number3D.dot(dir, dir);
+		float b = 2.0f * Number3D.dot(dir, Number3D.subtract(rayStart, sphereCenter));
 		float c = Number3D.dot(sphereCenter, sphereCenter) + Number3D.dot(rayStart, rayStart) - 2.0f * Number3D.dot(sphereCenter, rayStart) - radius2;
 		
 		// Test for intersection.
@@ -150,10 +153,10 @@ public final class Intersector {
 		
 		// If t0 is less than zero, intersection point is at t1.
 		if (t0 < 0) {
-			if (hitPoint != null) hitPoint.setAllFrom(rayStart.add(Number3D.multiply(rayDir, t1)));
+			hitPoint = rayStart.add(Number3D.multiply(dir, t1));
 			return true;
 		} else {
-			if (hitPoint != null) hitPoint.setAllFrom(rayStart.add(Number3D.multiply(rayDir, t0)));
+			hitPoint = rayStart.add(Number3D.multiply(dir, t0));
 			return true;
 		}
 	}
