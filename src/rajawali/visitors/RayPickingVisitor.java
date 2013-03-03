@@ -2,8 +2,10 @@ package rajawali.visitors;
 
 import rajawali.BaseObject3D;
 import rajawali.bounds.BoundingBox;
+import rajawali.bounds.BoundingSphere;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
+import rajawali.util.Intersector;
 
 public class RayPickingVisitor implements INodeVisitor {
 	private Number3D mRayStart;
@@ -22,14 +24,28 @@ public class RayPickingVisitor implements INodeVisitor {
 			BaseObject3D o = (BaseObject3D)node;
 			if(!o.isVisible() || !o.isInFrustum()) return;
 			//RajLog.d("VISITING " + o.getName());
-			BoundingBox bbox = o.getGeometry().getBoundingBox();
-			bbox.calculateBounds(o.getGeometry());
-			bbox.transform(o.getModelMatrix());
 			
-			if(intersectsWith(bbox)) {
-				if(mPickedObject == null ||
-						(mPickedObject != null && o.getPosition().z < mPickedObject.getPosition().z))
-					mPickedObject = o;
+			if (o.getGeometry().hasBoundingSphere()) {
+				BoundingSphere bsphere = o.getGeometry().getBoundingSphere();
+				bsphere.calculateBounds(o.getGeometry());
+				bsphere.transform(o.getModelMatrix());
+				
+				if(intersectsWith(bsphere)) {
+					if(mPickedObject == null ||
+							(mPickedObject != null && o.getPosition().z < mPickedObject.getPosition().z))
+						mPickedObject = o;
+				}
+			} else {
+				// Assume bounding box if no bounding sphere found.
+				BoundingBox bbox = o.getGeometry().getBoundingBox();
+				bbox.calculateBounds(o.getGeometry());
+				bbox.transform(o.getModelMatrix());
+				
+				if(intersectsWith(bbox)) {
+					if(mPickedObject == null ||
+							(mPickedObject != null && o.getPosition().z < mPickedObject.getPosition().z))
+						mPickedObject = o;
+				}
 			}
 		}
 	}
@@ -60,6 +76,10 @@ public class RayPickingVisitor implements INodeVisitor {
 			return true;
 
 		return false;
+	}
+	
+	private boolean intersectsWith(BoundingSphere bsphere) {
+		return Intersector.intersectRaySphere(mRayStart, mRayEnd, bsphere.getPosition(), bsphere.getRadius(), mHitPoint);
 	}
 	
 	private boolean getIntersection( float fDst1, float fDst2, Number3D P1, Number3D P2) {
