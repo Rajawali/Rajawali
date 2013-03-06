@@ -4,7 +4,6 @@
 package rajawali.renderer.plugins;
 
 import android.opengl.GLES20;
-import android.util.Log;
 import rajawali.Geometry3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -109,12 +108,14 @@ public abstract class Plugin implements IRendererPlugin {
 		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
 	}
 	
-	private void setShaders(String vertexShader, String fragmentShader) {
+	protected void setShaders(String vertexShader, String fragmentShader) {
 		mVertexShader = vertexShader;
 		mFragmentShader = fragmentShader;
 		mProgram = createProgram(vertexShader, fragmentShader);
-		if (mProgram == 0)
-			Log.e("LensFlareManager", "Failed to create program");
+		if (mProgram == 0) {
+			RajLog.e("Failed to create program");
+			return;
+		}
 		
 		mProgramCreated = true;
 	}
