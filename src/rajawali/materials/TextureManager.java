@@ -198,7 +198,11 @@ public class TextureManager {
 			} else if(textureInfo.getTextureType() == TextureType.FRAME_BUFFER) {
 				newInfo = addTexture(null, textureInfo.getWidth(), textureInfo.getHeight(), TextureType.FRAME_BUFFER);
 			} else {
-				newInfo = addTexture(textureInfo.getTexture(), textureInfo.getTextureType(), textureInfo.isMipmap(), textureInfo.shouldRecycle(), textureInfo.getWrapType(), textureInfo.getFilterType());
+				if (textureInfo.getTexture() == null) {
+					newInfo = addTexture(textureInfo.getBuffer(), null, textureInfo.getWidth(), textureInfo.getHeight(), textureInfo.getTextureType(), textureInfo.getBitmapConfig(), false, false, textureInfo.getWrapType(), textureInfo.getFilterType());
+				} else {
+					newInfo = addTexture(textureInfo.getTexture(), textureInfo.getTextureType(), textureInfo.isMipmap(), textureInfo.shouldRecycle(), textureInfo.getWrapType(), textureInfo.getFilterType());
+				}
 			}
 		} else {
 			newInfo = addTexture(textureInfo.getBuffer(), null, textureInfo.getWidth(), textureInfo.getHeight(), textureInfo.getTextureType(), null, false, false, false, textureInfo.getWrapType(), textureInfo.getFilterType(), textureInfo.getCompressionType(), textureInfo.getInternalFormat());
