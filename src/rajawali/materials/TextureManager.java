@@ -5,7 +5,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -54,7 +57,7 @@ public class TextureManager {
 	/**
 	 * List containing texture information objects
 	 */
-	private ArrayList<TextureInfo> mTextureInfoList;
+	private List<TextureInfo> mTextureInfoList;
 	/**
 	 * Cube map faces
 	 */
@@ -139,7 +142,7 @@ public class TextureManager {
 	};
 	
 	public TextureManager() {
-		mTextureInfoList = new ArrayList<TextureInfo>(); 
+		mTextureInfoList = Collections.synchronizedList(new CopyOnWriteArrayList<TextureInfo>()); 
 		mTexturesToUpdate = new Stack<TextureInfo>();
 	}
 	
@@ -699,21 +702,25 @@ public class TextureManager {
 		GLES20.glDeleteTextures(count, textures, 0);
 	}
 	
-	public ArrayList<TextureInfo> getTextureInfoList() {
+	public List<TextureInfo> getTextureInfoList() {
 		return mTextureInfoList;
 	}
 	
 	public void validateTextures() {
 		if(mShouldValidateTextures) {
-			int num = mTextureInfoList.size();
-			for(int i=0; i<num; ++i) {
-				TextureInfo inf = mTextureInfoList.get(i);
-				if(inf.getTextureId() == 0) {
-					mCurrentValidatingTexInfo = inf;
+			// Iterating a temporary list is better for the memory
+			// consumption than using iterators.
+			List<TextureInfo> tempList = new ArrayList<TextureInfo>();
+			tempList.addAll(mTextureInfoList);
+
+		    for (int i = 0; i < tempList.size(); ++i) {
+		    	TextureInfo inf = tempList.get(i);
+		    	if(inf.getTextureId() == 0) {
+		    		mCurrentValidatingTexInfo = inf;
 					addTexture(inf);
 					mCurrentValidatingTexInfo = null;
-				}
-			}
+		    	}
+		    }
 			mShouldValidateTextures = false;
 		}
 		if(mShouldUpdateTextures) {
