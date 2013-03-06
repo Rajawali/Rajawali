@@ -17,6 +17,7 @@ import rajawali.materials.TextureInfo;
 import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
+import rajawali.renderer.plugins.IRendererPlugin;
 import rajawali.util.FPSUpdateListener;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
@@ -92,10 +93,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	private boolean mSceneCachingEnabled;
 	
+	protected Stack<IRendererPlugin> mPlugins;
+	
 	public RajawaliRenderer(Context context) {
 		mContext = context;
 		mChildren = new Stack<BaseObject3D>();
 		mFilters = new Stack<IPostProcessingFilter>();
+		mPlugins = new Stack<IRendererPlugin>();
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
 		mAlpha = 0;
@@ -202,6 +206,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		} else if (mPostProcessingRenderer.isEnabled()) {
 			mPostProcessingRenderer.render();
 		}
+		
+		synchronized (mPlugins) {
+			for (int i = 0, j = mPlugins.size(); i < j; i++)
+				mPlugins.get(i).render();
+		}
 	}
 	
 	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
@@ -248,7 +257,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			if(mSkybox != null)
 				mSkybox.reload();
 			mPostProcessingRenderer.reload();
-			
+			reloadPlugins();
 			mReloadPickerInfo = true;
 		}
 		
@@ -259,6 +268,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	private void reloadChildren() {
 		for (int i = 0, j = mChildren.size(); i < j; i++)
 			mChildren.get(i).reload();
+	}
+	
+	private void reloadPlugins() {
+		for (int i = 0, j = mPlugins.size(); i < j; i++)
+			mPlugins.get(i).reload();
 	}
 
 	/**
