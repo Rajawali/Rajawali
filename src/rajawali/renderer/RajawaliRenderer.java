@@ -426,6 +426,18 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 
+	public void addPlugin(IRendererPlugin plugin) {
+		synchronized (mPlugins) {
+			mPlugins.add(plugin);
+		}
+	}
+	
+	public void clearPlugins() {
+		synchronized (mPlugins) {
+			mPlugins.clear();
+		}
+	}
+	
 	protected void setSkybox(int resourceId) {
 		mSkybox = new Cube(700, true, false);
 		mSkybox.setDoubleSided(true);
@@ -454,6 +466,22 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public boolean removeChild(BaseObject3D child) {
 		return mChildren.remove(child);
+	}
+	
+	public boolean removePlugin(IRendererPlugin plugin) {
+		return mPlugins.remove(plugin);
+	}
+	
+	public int getNumPlugins() {
+		return mPlugins.size();
+	}
+	
+	public Stack<IRendererPlugin> getPlugins() {
+		return mPlugins;
+	}
+	
+	public boolean hasPlugin(IRendererPlugin plugin) {
+		return mPlugins.contains(plugin);
 	}
 
 	public int getNumChildren() {
