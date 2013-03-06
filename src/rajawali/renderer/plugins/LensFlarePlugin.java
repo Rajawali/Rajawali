@@ -128,22 +128,32 @@ public final class LensFlarePlugin extends Plugin {
 			"\n" +
 			"void main() {\n" +
 			"   if (uRenderType == 1) {\n" +
-			"      gl_FragColor = vec4(1.0, 0.0, 1.0, 0.0);\n" +
+			"      gl_FragColor = vec4(texture2D(uMap, vTextureCoord).rgb, 0.0);\n" +
 			"   } else if (uRenderType == 2) {\n" +
 			"      gl_FragColor = texture2D(uMap, vTextureCoord);\n" +
 			"   } else {\n" +
-			"      vec4 visibility = texture2D(uOcclusionMap, vec2(0.5, 0.1)) +\n" +
+			/*"      vec4 visibility = texture2D(uOcclusionMap, vec2(0.1, 0.1)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.5, 0.1)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.9, 0.1)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.1, 0.5)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.5, 0.5)) +\n" +
 			"                        texture2D(uOcclusionMap, vec2(0.9, 0.5)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.1, 0.9)) +\n" +
 			"                        texture2D(uOcclusionMap, vec2(0.5, 0.9)) +\n" +
-			"                        texture2D(uOcclusionMap, vec2(0.1, 0.5));\n" +
-			"      float finalVisibility = (visibility.r / 4.0) * (1.0 - visibility.g / 4.0) *\n" +
-			"                              (visibility.b / 4.0) * (1.0 - visibility.a / 4.0);\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.9, 0.9));\n" +
+			"      float finalVisibility = (visibility.r / 9.0) * (1.0 - visibility.g / 9.0) *\n" +
+			"                              (visibility.b / 9.0) * (1.0 - visibility.a / 9.0);\n" +
 			//"      finalVisibility = 0.5;\n" +*/ 
-			/*"      float finalVisibility = texture2D(uOcclusionMap, vec2(0.5, 0.1)).a +\n" +
+			"      float finalVisibility = texture2D(uOcclusionMap, vec2(0.1, 0.1)).a +\n" +
+			"                              texture2D(uOcclusionMap, vec2(0.5, 0.1)).a +\n" +
+			"                              texture2D(uOcclusionMap, vec2(0.9, 0.1)).a +\n" +
+			"                              texture2D(uOcclusionMap, vec2(0.1, 0.5)).a +\n" +
+			"                              texture2D(uOcclusionMap, vec2(0.5, 0.5)).a +\n" +
 			"                              texture2D(uOcclusionMap, vec2(0.9, 0.5)).a +\n" +
+			"                              texture2D(uOcclusionMap, vec2(0.1, 0.9)).a +\n" +
 			"                              texture2D(uOcclusionMap, vec2(0.5, 0.9)).a +\n" +
-			"                              texture2D(uOcclusionMap, vec2(0.1, 0.5)).a;\n" +
-			"      finalVisibility = (1.0 - finalVisibility / 4.0);\n" +*/
+			"                              texture2D(uOcclusionMap, vec2(0.9, 0.9)).a;\n" +
+			"      finalVisibility = (1.0 - finalVisibility / 4.0);\n" +
 			"\n" +
 			"      vec4 texture = texture2D(uMap, vTextureCoord);\n" +
 			"      if (uDebugMode == 1) {\n" +
@@ -373,8 +383,6 @@ public final class LensFlarePlugin extends Plugin {
 					// Third render pass.
 					GLES20.glUniform1i(muRenderTypeHandle, 3);
 					GLES20.glEnable(GLES20.GL_BLEND);
-					GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
-					GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
 					
 					// DEBUG - Shows the current uMap and uOcclusionMap textures.
 					// NOTE: UNCOMMENT IF THE LENS FLARE DOES NOT GET OCCLUDED.
@@ -424,8 +432,6 @@ public final class LensFlarePlugin extends Plugin {
 							GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 							GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, sprite.getTexture().getTextureId());
 							
-							GLES20.glEnable(GLES20.GL_BLEND);
-							GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
 							GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
 							
 							// Draw the elements.
