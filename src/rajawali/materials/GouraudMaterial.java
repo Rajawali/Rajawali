@@ -72,6 +72,8 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"varying vec4 vColor;\n" +
 		
 		"uniform sampler2D uDiffuseTexture;\n" +
+		"uniform sampler2D uSpecularTexture;\n" +
+		"uniform sampler2D uAlphaTexture;\n" +
 		"uniform vec4 uAmbientColor;\n" +
 		"uniform vec4 uAmbientIntensity;\n" + 
 		"uniform vec4 uSpecularColor;\n" +
@@ -82,13 +84,27 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		
 		"void main() {\n" +
 		"#ifdef TEXTURED\n" +
-		"	vec4 texColor = vec4(vLightColor, 1.0) * texture2D(uDiffuseTexture, vTextureCoord);\n" +
+		"	vec4 diffuse = vec4(vLightColor, 1.0) * vDiffuseIntensity * texture2D(uDiffuseTexture, vTextureCoord);\n" +
 		"#else\n" +
-	    "	vec4 texColor = vColor;\n" +
+	    "	vec4 diffuse = vDiffuseIntensity * vColor;\n" +
 	    "#endif\n" +
-		"	gl_FragColor = texColor * vDiffuseIntensity + uSpecularColor * vSpecularIntensity * uSpecularIntensity;\n" +
-		"	gl_FragColor.a = texColor.a;\n" +
-		"	gl_FragColor += uAmbientColor * uAmbientIntensity;\n" +
+	    
+		"#ifdef SPECULAR_MAP\n" +
+		"   vec4 specular = uSpecularColor * vSpecularIntensity * uSpecularIntensity * texture2D(uSpecularTexture, vTextureCoord);\n" +
+		"#else\n" +
+		"	vec4 specular = uSpecularColor * vSpecularIntensity * uSpecularIntensity;\n" + 
+		"#endif\n" +
+		
+		"	vec4 ambient = uAmbientIntensity * uAmbientColor;\n" + 	    
+		"	gl_FragColor = diffuse + specular;\n" +
+		
+		"#ifdef ALPHA_MAP\n" +
+		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
+		"	gl_FragColor.a = alpha;\n" +
+		"#else\n" +
+		"	gl_FragColor.a = diffuse.a;\n" +
+		"#endif\n" +
+		"	gl_FragColor += ambient;\n" +
 		M_FOG_FRAGMENT_COLOR +
 		"}";
 	
@@ -147,27 +163,27 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
-		StringBuffer sb = new StringBuffer();
-		sb.append("float normPower = 0.0;\n");
-		
+		StringBuffer vc = new StringBuffer();
+		vc.append("float normPower = 0.0;\n");
+
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
 
 			if(light.getLightType() == ALight.POINT_LIGHT) {
-				sb.append("L = normalize(uLightPosition").append(i).append(" + E);\n");
-				sb.append("dist = distance(-E, uLightPosition").append(i).append(");\n");
-				sb.append("attenuation = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
+				vc.append("L = normalize(uLightPosition").append(i).append(" + E);\n");
+				vc.append("dist = distance(-E, uLightPosition").append(i).append(");\n");
+				vc.append("attenuation = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
-				sb.append("L = normalize(-uLightDirection").append(i).append(");");
+				vc.append("L = normalize(-uLightDirection").append(i).append(");");
 			}
-			sb.append("NdotL = max(dot(N, L), 0.1);\n");
-			sb.append("normPower += NdotL * attenuation * uLightPower").append(i).append(";\n");
-			sb.append("vDiffuseIntensity += normPower;\n");
-			sb.append("vLightColor +=normPower * uLightColor").append(i).append(";\n");
-			sb.append("vSpecularIntensity += pow(NdotL, 6.0) * attenuation * uLightPower").append(i).append(";\n");
+			vc.append("NdotL = max(dot(N, L), 0.1);\n");
+			vc.append("normPower += NdotL * attenuation * uLightPower").append(i).append(";\n");
+			vc.append("vDiffuseIntensity += normPower;\n");
+			vc.append("vLightColor +=normPower * uLightColor").append(i).append(";\n");
+			vc.append("vSpecularIntensity += pow(NdotL, 6.0) * attenuation * uLightPower").append(i).append(";\n");
 		}
 		
-		super.setShaders(vertexShader.replace("%LIGHT_CODE%", sb.toString()), fragmentShader);
+		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader);
 		muSpecularColorHandle = getUniformLocation("uSpecularColor");
 		muSpecularIntensityHandle = getUniformLocation("uSpecularIntensity");
 	}
