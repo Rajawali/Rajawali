@@ -38,6 +38,9 @@ public abstract class AMaterial {
 
 	protected Stack<ALight> mLights;
 	protected boolean mUseColor = false;
+	protected boolean mUseAlphaMap = false;
+	protected boolean mUseNormalMap = false;
+	protected boolean mUseSpecMap = false;
 
 	protected int mNumTextures = 0;
 	protected float[] mModelViewMatrix;
@@ -101,6 +104,9 @@ public abstract class AMaterial {
 		mVertexShader = mVertexAnimationEnabled ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
 		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
+		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;
+		mFragmentShader = mUseNormalMap ? "#define NORMAL_MAP\n" + mFragmentShader : mFragmentShader;
+		mFragmentShader = mUseSpecMap ? "#define SPECULAR_MAP\n" + mFragmentShader : mFragmentShader;
 
 		if(RajawaliRenderer.isFogEnabled())
 		{
@@ -262,7 +268,7 @@ public abstract class AMaterial {
 	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture, boolean reload) {
 		// -- check if this texture is already in the list
 		if(mTextureInfoList.indexOf(textureInfo) > -1 && !reload) return;		
-		
+
 		if(mTextureInfoList.size() > mMaxTextures) {
 			RajLog.e("[" +getClass().getCanonicalName()+ "] Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
 		}
@@ -276,12 +282,15 @@ public abstract class AMaterial {
 			break;
 		case BUMP:
 			textureName = "uNormalTexture";
+			mUseNormalMap = true;
 			break;
 		case SPECULAR:
 			textureName = "uSpecularTexture";
+			mUseSpecMap = true;
 			break;
 		case ALPHA:
 			textureName = "uAlphaTexture";
+			mUseAlphaMap = true;
 			break;
 		case FRAME_BUFFER:
 			textureName = "uFrameBufferTexture";
