@@ -96,7 +96,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"#endif\n" +
 		
 		"	vec4 ambient = uAmbientIntensity * uAmbientColor;\n" + 	    
-		"	gl_FragColor = diffuse + specular;\n" +
+		"	gl_FragColor = diffuse + specular + ambient;\n" +
 		
 		"#ifdef ALPHA_MAP\n" +
 		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
@@ -104,7 +104,6 @@ public class GouraudMaterial extends AAdvancedMaterial {
 		"#else\n" +
 		"	gl_FragColor.a = diffuse.a;\n" +
 		"#endif\n" +
-		"	gl_FragColor += ambient;\n" +
 		M_FOG_FRAGMENT_COLOR +
 		"}";
 	
