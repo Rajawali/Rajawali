@@ -218,6 +218,10 @@ public abstract class ATransformable3D {
 		mScale = scale;
 	}
 
+	public Number3D getLookAt() {
+		return mLookAt;
+	}
+	
 	public void setLookAt(float x, float y, float z) {
 		if(mLookAt == null) mLookAt = new Number3D();
 		mLookAt.x = -x;
