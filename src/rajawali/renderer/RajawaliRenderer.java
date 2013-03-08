@@ -251,6 +251,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			if (mChildren.size() > 0) {
 				mChildren.clear();
 			}
+			if (mPlugins.size() > 0) {
+				mPlugins.clear();
+			}
 		} else if(mSceneCachingEnabled && mSceneInitialized) {
 			mTextureManager.reload();
 			reloadChildren();
@@ -287,6 +290,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		for (int i = 0, j = mChildren.size(); i < j; i++)
 			mChildren.get(i).destroy();
 		mChildren.clear();
+		
+		for (int i = 0, j = mPlugins.size(); i < j; i++)
+			mPlugins.get(i).destroy();
+		mPlugins.clear();
 	}
 	
 	public void startRendering() {
