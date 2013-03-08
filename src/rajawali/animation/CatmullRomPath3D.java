@@ -1,9 +1,10 @@
 package rajawali.animation;
 
-import java.util.Stack;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import rajawali.math.Number3D;
-import android.util.FloatMath;
 
 /**
  * Derived from http://www.cse.unsw.edu.au/~lambert/splines/source.html
@@ -14,7 +15,7 @@ import android.util.FloatMath;
 public class CatmullRomPath3D implements ISpline {
 	protected static final int EPSILON = 36;
 	protected static final float DELTA = .00001f;
-	protected Stack<Number3D> mPoints;
+	protected List<Number3D> mPoints;
 	protected int mNumPoints;
 	protected int mSelectedIndex = -1;
 	protected Number3D mCurrentTangent;
@@ -22,7 +23,7 @@ public class CatmullRomPath3D implements ISpline {
 	protected boolean mCalculateTangents;
 
 	public CatmullRomPath3D() {
-		mPoints = new Stack<Number3D>();
+		mPoints = Collections.synchronizedList(new CopyOnWriteArrayList<Number3D>());
 		mCurrentTangent = new Number3D();
 		mCurrentPoint = new Number3D();
 	}
@@ -56,9 +57,13 @@ public class CatmullRomPath3D implements ISpline {
 	}
 
 	protected Number3D p(float t) {
-		int currentIndex = 2 + (int)FloatMath.floor((t == 1 ? t - DELTA : t) * (mNumPoints-3));
+		int currentIndex = 2 + (int)Math.floor((t == 1 ? t - DELTA : t) * (mNumPoints-3));
 		float tdivnum = (t * (mNumPoints - 3)) - (currentIndex - 2);
 		mCurrentPoint.setAll(0, 0, 0);
+		
+		// Limit the bounds for AccelerateDecelerateInterpolator
+		currentIndex = Math.max(currentIndex, 2);
+		currentIndex = Math.min(currentIndex, mPoints.size() - 2);
 		
 		for (int j = -2; j <= 1; j++) {
 			float b = b(j, tdivnum);
