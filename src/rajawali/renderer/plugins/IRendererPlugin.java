@@ -10,6 +10,8 @@ package rajawali.renderer.plugins;
  * @author Andrew Jo
  */
 public interface IRendererPlugin {
+	public void destroy();
+	
 	public void reload();
 	
 	/**
