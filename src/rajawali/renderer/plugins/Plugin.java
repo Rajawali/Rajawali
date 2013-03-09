@@ -68,6 +68,18 @@ public abstract class Plugin implements IRendererPlugin {
 		return program;
 	}
 	
+	public void destroy() {
+		unload();
+	}
+	
+	protected int getUniformLocation(String name) {
+		return GLES20.glGetUniformLocation(mProgram, name);
+	}
+
+	protected int getAttribLocation(String name) {
+		return GLES20.glGetAttribLocation(mProgram, name);
+	}
+	
 	/**
 	 * Be sure to set up all the GL buffers and other initializations here.  
 	 */
@@ -118,6 +130,15 @@ public abstract class Plugin implements IRendererPlugin {
 		}
 		
 		mProgramCreated = true;
+	}
+	
+	/**
+	 * Unloads and deletes references to the shader program
+	 */
+	public void unload() {
+		GLES20.glDeleteShader(mVShaderHandle);
+		GLES20.glDeleteShader(mFShaderHandle);
+		GLES20.glDeleteProgram(mProgram);
 	}
 	
 	protected void useProgram(int programHandle) {
