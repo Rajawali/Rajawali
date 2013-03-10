@@ -16,6 +16,7 @@ import rajawali.materials.TextureManager.WrapType;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.RajLog;
 import rajawali.extras.LensFlare;
 import rajawali.extras.LensFlare.FlareInfo;
 
@@ -24,6 +25,7 @@ import rajawali.extras.LensFlare.FlareInfo;
  * @author Andrew Jo
  *
  */
+@SuppressWarnings("unused")
 public final class LensFlarePlugin extends Plugin {
 	private static final String mVShaderVertexTexture =
 			"precision highp float;\n" +
@@ -49,15 +51,15 @@ public final class LensFlarePlugin extends Plugin {
 			"      vec4 visibility = texture2D(uOcclusionMap, vec2(0.1, 0.1)) +\n" +
 			"                        texture2D(uOcclusionMap, vec2(0.5, 0.1)) +\n" +
 			"                        texture2D(uOcclusionMap, vec2(0.9, 0.1)) +\n" +
-			"                        texture2D(uOcclusionMap, vec2(0.9, 0.5)) +\n" +
-			"                        texture2D(uOcclusionMap, vec2(0.9, 0.9)) +\n" +
-			"                        texture2D(uOcclusionMap, vec2(0.5, 0.9)) +\n" +
-			"                        texture2D(uOcclusionMap, vec2(0.1, 0.9)) +\n" +
 			"                        texture2D(uOcclusionMap, vec2(0.1, 0.5)) +\n" +
-			"                        texture2D(uOcclusionMap, vec2(0.5, 0.5));\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.5, 0.5)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.9, 0.5)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.1, 0.9)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.5, 0.9)) +\n" +
+			"                        texture2D(uOcclusionMap, vec2(0.9, 0.9));\n" +
 			"\n" +
 			"      vVisibility = (visibility.r / 9.0) * (1.0 - visibility.g / 9.0) *\n" +
-			"                    (visibility.b / 9.0) * (1.0 - visibility.a / 9.0);\n" +
+			"                    (visibility.b / 9.0) * (visibility.a / 9.0);\n" +
 			"\n" +
 			"      pos.x = cos(uRotation) * aPosition.x - sin(uRotation) * aPosition.y;\n" +
 			"      pos.y = sin(uRotation) * aPosition.x + cos(uRotation) * aPosition.y;\n" +
@@ -73,6 +75,7 @@ public final class LensFlarePlugin extends Plugin {
 	        "uniform sampler2D uMap;\n" +
 	        "uniform float uOpacity;\n" +
 	        "uniform vec3 uColor;\n" +
+	        "uniform lowp int uDebugMode;\n" +
 	        "\n" +
 	        "varying vec2 vTextureCoord;\n" +
 	        "varying float vVisibility;\n" +
@@ -84,7 +87,11 @@ public final class LensFlarePlugin extends Plugin {
 	        "      gl_FragColor = texture2D(uMap, vTextureCoord);\n" +
 	        "   } else {\n" +
 	        "      vec4 texture = texture2D(uMap, vTextureCoord);\n" +
-	        "      texture.a *= uOpacity * vVisibility;\n" +
+	        "      if (uDebugMode == 1) {\n" +
+	        "         texture.a = 1.0;\n" +
+	        "      } else {\n" +
+	        "         texture.a *= uOpacity * vVisibility;\n" +
+	        "      }\n" +
 	        "      gl_FragColor = texture;\n" +
 	        "      gl_FragColor.rgb *= uColor;\n" +
 	        "   }\n" +
@@ -190,7 +197,7 @@ public final class LensFlarePlugin extends Plugin {
 	private int muColorHandle;
 	private int muMapTextureHandle;
 	private int muOcclusionMapTextureHandle;
-	// private int muDebugModeHandle; // UNCOMMENT TO USE DEBUG MODE
+	private int muDebugModeHandle; // UNCOMMENT TO USE DEBUG MODE
 	
 	private TextureInfo mMapTexture;
 	private TextureInfo mOcclusionMapTexture;
@@ -255,10 +262,12 @@ public final class LensFlarePlugin extends Plugin {
         mOcclusionMapTexture = mRenderer.getTextureManager().addTexture(null, null, 16, 16, TextureType.LOOKUP, Config.ARGB_8888, false, false, WrapType.CLAMP, FilterType.NEAREST);
         
         // Set up shader program.
-        if (mVertexTextureSupported)
-        	setShaders(mVShaderVertexTexture, mFShaderVertexTexture);
-        else
-	        setShaders(mVShaderNoVertexTexture, mFShaderNoVertexTexture);
+        // Currently vertex texture shader causes problems on Adreno 320 GPUs.
+        //if (mVertexTextureSupported) {
+        //	setShaders(mVShaderVertexTexture, mFShaderVertexTexture);
+        //} else {
+	    setShaders(mVShaderNoVertexTexture, mFShaderNoVertexTexture);
+		//}
 	}
 
 	public void addLensFlare(LensFlare lensFlare) {
@@ -275,7 +284,7 @@ public final class LensFlarePlugin extends Plugin {
 	
 	@Override
 	public void render() {
-		int f, i, j;
+		int f, i, numLensFlares = mLensFlares.size();
 		// Calculate world space position to normalized screen space.
 		float viewportWidth = mRenderer.getViewportWidth(), viewportHeight = mRenderer.getViewportHeight();
 		float invAspect = viewportHeight / viewportWidth;
@@ -284,9 +293,9 @@ public final class LensFlarePlugin extends Plugin {
 		float halfViewportWidth = viewportWidth / 2;
 		float halfViewportHeight = viewportHeight / 2;
 		Number3D screenPosition = new Number3D();
-		Vector2D screenPositionPixels = new Vector2D();
+		float screenPositionPixels_x, screenPositionPixels_y;
 		Camera camera = mRenderer.getCamera();
-		float[] viewMatrix = camera.getViewMatrix(), projMatrix = camera.getProjectionMatrix();
+		float[] viewMatrix = camera.getViewMatrix().clone(), projMatrix = camera.getProjectionMatrix().clone();
 		
 		useProgram(mProgram);
 		
@@ -311,8 +320,14 @@ public final class LensFlarePlugin extends Plugin {
 		GLES20.glDisable(GLES20.GL_CULL_FACE);
 		GLES20.glDepthMask(false);
 		
+		// Calculate camera direction vector.
+		Number3D cameraPosition = camera.getPosition().clone();
+		Number3D cameraLookAt = camera.getLookAt() != null ? camera.getLookAt().clone() : new Number3D(0, 0, 1);
+		Number3D cameraDirection = cameraLookAt.clone().subtract(cameraPosition);
+		cameraDirection.normalize();
+		
 		synchronized (mLensFlares) {
-			for (i = 0, j = mLensFlares.size(); i < j; i++) {
+			for (i = 0; i < numLensFlares; i++) {
 				size = 16 / viewportHeight;
 				scale.x = size * invAspect;
 				scale.y = size;
@@ -320,33 +335,29 @@ public final class LensFlarePlugin extends Plugin {
 				LensFlare lensFlare = mLensFlares.get(i);
 				
 				// Calculate normalized device coordinates.
-				screenPosition.setAllFrom(lensFlare.getPosition());
+				screenPosition.setAllFrom(lensFlare.getPosition().clone());
 				screenPosition.multiply(viewMatrix);
 				screenPosition.project(projMatrix);
 				
 				// Calculate actual device coordinates.
-				screenPositionPixels.x = screenPosition.x * halfViewportWidth + halfViewportWidth;
-				screenPositionPixels.y = screenPosition.y * halfViewportHeight + halfViewportHeight;
+				screenPositionPixels_x = screenPosition.x * halfViewportWidth + halfViewportWidth;
+				screenPositionPixels_y = screenPosition.y * halfViewportHeight + halfViewportHeight;
 				
 				// Calculate the angle between the camera and the light vector.
-				Number3D lightSourceDirection = new Number3D(lensFlare.getPosition());
-				lightSourceDirection.normalize();
-				Number3D cameraPosition = new Number3D(camera.getPosition());
-				Number3D cameraLookAt = new Number3D(camera.getLookAt());
-				Number3D cameraDirection = new Number3D(cameraLookAt.subtract(cameraPosition));
-				cameraDirection.normalize();
-				float angleLightToCamera = cameraDirection.dot(lightSourceDirection);
+				Number3D lightToCamDirection = lensFlare.getPosition().clone().subtract(cameraPosition);
+				lightToCamDirection.normalize();
+				float angleLightCamera = lightToCamDirection.dot(cameraDirection);
 				
 				// Camera needs to be facing towards the light and the light should come within the
 				// viewing frustum.
-				if (angleLightToCamera > 0 &&
-						screenPositionPixels.x > 0 && screenPositionPixels.x < viewportWidth &&
-						screenPositionPixels.y > 0 && screenPositionPixels.y < viewportHeight) {
+				if (mVertexTextureSupported || (angleLightCamera > 0 &&
+						screenPositionPixels_x > 0 && screenPositionPixels_x < viewportWidth &&
+						screenPositionPixels_y > 0 && screenPositionPixels_y < viewportHeight)) {
 					// Bind current framebuffer to texture.
 					GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 					GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mMapTexture.getTextureId());
 					GLES20.glCopyTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGB, 
-							(int)screenPositionPixels.x - 8, (int)screenPositionPixels.y - 8, 16, 16, 0);
+							(int)screenPositionPixels_x - 8, (int)screenPositionPixels_y - 8, 16, 16, 0);
 					
 					// First render pass.
 					GLES20.glUniform1i(muRenderTypeHandle, 1);
@@ -364,7 +375,7 @@ public final class LensFlarePlugin extends Plugin {
 					GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 					GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mOcclusionMapTexture.getTextureId());
 					GLES20.glCopyTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 
-							(int)screenPositionPixels.x - 8, (int)screenPositionPixels.y - 8, 16, 16, 0);
+							(int)screenPositionPixels_x - 8, (int)screenPositionPixels_y - 8, 16, 16, 0);
 					
 					// Second render pass.
 					GLES20.glUniform1i(muRenderTypeHandle, 2);
@@ -384,7 +395,7 @@ public final class LensFlarePlugin extends Plugin {
 					GLES20.glUniform1i(muRenderTypeHandle, 3);
 					GLES20.glEnable(GLES20.GL_BLEND);
 					
-					// DEBUG - Shows the current uMap and uOcclusionMap textures.
+					// DEBUG - Shows the current uMap and uOcclusionMap textures on screen.
 					// NOTE: UNCOMMENT IF THE LENS FLARE DOES NOT GET OCCLUDED.
 					// IF THE OCCLUSION TEXTURE IS EMPTY, YOU ARE USING RGB_565 IN YOUR EGL CONFIG.
 					// SWITCH TO RGBA_8888.
@@ -432,6 +443,7 @@ public final class LensFlarePlugin extends Plugin {
 							GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 							GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, sprite.getTexture().getTextureId());
 							
+							//GLES20.glBlendEquation(GLES20.GL_FUNC_ADD);
 							GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
 							
 							// Draw the elements.
@@ -456,19 +468,19 @@ public final class LensFlarePlugin extends Plugin {
 	}
 	
 	@Override
-	protected void setShaders(String vertexShader, String fragmentShader) {
+	public void setShaders(String vertexShader, String fragmentShader) {
 		super.setShaders(vertexShader, fragmentShader);
 		
-		maPositionHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
-		maTextureCoordHandle = GLES20.glGetAttribLocation(mProgram, "aTextureCoord");
-		muRenderTypeHandle = GLES20.glGetUniformLocation(mProgram, "uRenderType");
-		muScreenPositionHandle = GLES20.glGetUniformLocation(mProgram, "uScreenPosition");
-		muRotationHandle = GLES20.glGetUniformLocation(mProgram, "uRotation");
-		muScaleHandle = GLES20.glGetUniformLocation(mProgram, "uScale");
-		muOpacityHandle = GLES20.glGetUniformLocation(mProgram, "uOpacity");
-		muColorHandle = GLES20.glGetUniformLocation(mProgram, "uColor");
-		muMapTextureHandle = GLES20.glGetUniformLocation(mProgram, "uMap");
-		muOcclusionMapTextureHandle = GLES20.glGetUniformLocation(mProgram, "uOcclusionMap");
-		// muDebugModeHandle = GLES20.glGetUniformLocation(mProgram, "uDebugMode"); // UNCOMMENT TO USE DEBUG MODE
+		maPositionHandle = getAttribLocation("aPosition");
+		maTextureCoordHandle = getAttribLocation("aTextureCoord");
+		muRenderTypeHandle = getUniformLocation("uRenderType");
+		muScreenPositionHandle = getUniformLocation("uScreenPosition");
+		muRotationHandle = getUniformLocation("uRotation");
+		muScaleHandle = getUniformLocation("uScale");
+		muOpacityHandle = getUniformLocation("uOpacity");
+		muColorHandle = getUniformLocation("uColor");
+		muMapTextureHandle = getUniformLocation("uMap");
+		muOcclusionMapTextureHandle = getUniformLocation("uOcclusionMap");
+		muDebugModeHandle = GLES20.glGetUniformLocation(mProgram, "uDebugMode"); // UNCOMMENT TO USE DEBUG MODE
 	}
 }
