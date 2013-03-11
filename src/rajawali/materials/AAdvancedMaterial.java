@@ -5,6 +5,7 @@ import java.util.Stack;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
+import rajawali.lights.SpotLight;
 import rajawali.lights.PointLight;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
@@ -64,6 +65,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected int[] muLightPositionHandles;
 	protected int[] muLightDirectionHandles; 
 	protected int[] muLightAttenuationHandles;
+	protected int[] muSpotCutoffAngleHandles;
+	protected int[] muSpotFalloffHandles;
 		
 	protected float[] mNormalMatrix;
 	protected float[] mTmp, mTmp2;
@@ -129,6 +132,13 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			GLES20.glUniform3fv(muLightPositionHandles[i], 1, light.getPositionArray(), 0);
 			if(light.getLightType() == ALight.DIRECTIONAL_LIGHT)
 				GLES20.glUniform3fv(muLightDirectionHandles[i], 1, ((DirectionalLight)light).getDirection(), 0);
+			else if(light.getLightType() == ALight.SPOT_LIGHT)
+			{
+				GLES20.glUniform3fv(muLightDirectionHandles[i], 1, ((SpotLight)light).getDirection(), 0);
+				GLES20.glUniform4fv(muLightAttenuationHandles[i], 1, ((SpotLight)light).getAttenuation(), 0);
+				GLES20.glUniform1f(muSpotCutoffAngleHandles[i], ((SpotLight)light).getCutoffAngle());
+				GLES20.glUniform1f(muSpotFalloffHandles[i], ((SpotLight)light).getFalloff());
+			}
 			else
 				GLES20.glUniform4fv(muLightAttenuationHandles[i], 1, ((PointLight)light).getAttenuation(), 0);
 		}
@@ -223,6 +233,9 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			lightVars.append("uniform vec3 uLightDirection").append(i).append(";\n");
 			lightVars.append("uniform vec4 uLightAttenuation").append(i).append(";\n");
 			lightVars.append("varying float vAttenuation").append(i).append(";\n");
+			lightVars.append("uniform float uSpotExponent").append(i).append(";\n");
+			lightVars.append("uniform float uSpotCutoffAngle").append(i).append(";\n");
+			lightVars.append("uniform float uSpotFalloff").append(i).append(";\n");
 		}
 		vertexShader = vertexShader.replace("%LIGHT_VARS%", lightVars.toString());
 		fragmentShader = fragmentShader.replace("%LIGHT_VARS%", lightVars.toString());
@@ -237,6 +250,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		muLightDirectionHandles = new int[numLights];
 		muLightPositionHandles = new int[numLights];
 		muLightPowerHandles = new int[numLights];
+		muSpotCutoffAngleHandles = new int[numLights];
+		muSpotFalloffHandles = new int[numLights];
 		
 		for(int i=0; i<mLights.size(); ++i) {
 			muLightColorHandles[i] 			= getUniformLocation("uLightColor" + i);
@@ -244,6 +259,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			muLightPositionHandles[i] 		= getUniformLocation("uLightPosition" + i);
 			muLightDirectionHandles[i] 		= getUniformLocation("uLightDirection" + i);
 			muLightAttenuationHandles[i] 	= getUniformLocation("uLightAttenuation" + i);
+			muSpotCutoffAngleHandles[i] 	= getUniformLocation("uSpotCutoffAngle" + i);
+			muSpotFalloffHandles[i] 		= getUniformLocation("uSpotFalloff" + i);
 		}
 		
 		if(RajawaliRenderer.isFogEnabled()) {
@@ -279,12 +296,13 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	
 	public void destroy() {
 		super.destroy();
-		muLightAttenuationHandles = null;
 		muLightColorHandles = null;
 		muLightPowerHandles = null;
 		muLightPositionHandles = null;
 		muLightDirectionHandles = null;
 		muLightAttenuationHandles = null;
+		muSpotCutoffAngleHandles = null;
+		muSpotFalloffHandles = null;
 		mNormalMatrix = null;
 		mTmp = null;
 		mTmp2 = null;
