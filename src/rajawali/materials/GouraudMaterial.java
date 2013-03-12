@@ -164,7 +164,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
 		StringBuffer vc = new StringBuffer();
-		vc.append("float normPower = 0.0;\n");
+		vc.append("float power = 0.0;\n");
 
 		for(int i=0; i<mLights.size(); ++i) {
 			ALight light = mLights.get(i);
@@ -173,14 +173,36 @@ public class GouraudMaterial extends AAdvancedMaterial {
 				vc.append("L = normalize(uLightPosition").append(i).append(" + E);\n");
 				vc.append("dist = distance(-E, uLightPosition").append(i).append(");\n");
 				vc.append("attenuation = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
-			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
+			} else if(light.getLightType() == ALight.SPOT_LIGHT) {
+				vc.append("dist = distance(-E, uLightPosition").append(i).append(");\n");
+				vc.append("attenuation = (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
+				vc.append("L = normalize(uLightPosition").append(i).append(" + E);\n");
+				vc.append("vec3 spotDir").append(i).append(" = normalize(-uLightDirection").append(i).append(");\n");
+				vc.append("float spot_factor = dot( L, spotDir").append(i).append(" );\n");
+				vc.append("if( uSpotCutoffAngle").append(i).append(" < 180.0 ) {\n");
+					vc.append("if( spot_factor >= cos( radians( uSpotCutoffAngle").append(i).append(") ) ) {\n");
+						vc.append("spot_factor = (1.0 - (1.0 - spot_factor) * 1.0/(1.0 - cos( radians( uSpotCutoffAngle").append(i).append("))));\n");
+						vc.append("spot_factor = pow(spot_factor, uSpotFalloff").append(i).append("* 1.0/spot_factor);\n");
+					vc.append("}\n");
+					vc.append("else {\n");
+						vc.append("spot_factor = 0.0;\n");
+					vc.append("}\n");
+					vc.append("L = vec3(L.y, -L.x, L.z);\n");
+					vc.append("}\n");
+			}  else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("L = normalize(-uLightDirection").append(i).append(");");
 			}
 			vc.append("NdotL = max(dot(N, L), 0.1);\n");
-			vc.append("normPower += NdotL * attenuation * uLightPower").append(i).append(";\n");
-			vc.append("vDiffuseIntensity += normPower;\n");
-			vc.append("vLightColor +=normPower * uLightColor").append(i).append(";\n");
-			vc.append("vSpecularIntensity += pow(NdotL, 6.0) * attenuation * uLightPower").append(i).append(";\n");
+			vc.append("power = NdotL * attenuation * uLightPower").append(i).append(";\n");
+			vc.append("vDiffuseIntensity += power;\n");
+			if(light.getLightType() == ALight.SPOT_LIGHT){
+				vc.append("vLightColor += uLightColor").append(i).append(" * spot_factor;\n");
+				vc.append("vSpecularIntensity += pow(NdotL, 6.0) * spot_factor;\n");
+			}
+			else{
+				vc.append("vLightColor += power * uLightColor").append(i).append(";\n");
+				vc.append("vSpecularIntensity += pow(NdotL, 6.0) * attenuation * uLightPower").append(i).append(";\n");
+			}
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader);

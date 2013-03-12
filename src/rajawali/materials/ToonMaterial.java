@@ -23,6 +23,8 @@ public class ToonMaterial extends DiffuseMaterial {
 			"void main() {\n" +
 			"	float intensity = 0.0;\n" +
 			"	float dist = 0.0;\n" +
+			"   float power = 0.0;\n" +
+			"	float NdotL = 0.0;\n" +
 			"	vec3 L = vec3(0.0);\n" +
 			"	vec3 Kd = vec3(0.0);\n" +
 			

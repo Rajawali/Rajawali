@@ -78,10 +78,9 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"void main() {\n" +
 		"	vec4 Kd = vec4(0.0);\n" +
 		"	float intensity = 0.0;\n" +
-		"	float attenuation = 1.0;\n" +
 		"	float Ks = 0.0;\n" +
 		"	float NdotL = 0.0;\n" +
-		"   float normPower = 0.0;\n" +
+		"   float power = 0.0;\n" +
 		"	vec3 N = normalize(vNormal);\n" +
 		"	vec3 L = vec3(0.0);\n" +
 
@@ -200,6 +199,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 					fc.append("else {\n");
 						fc.append("spot_factor = 0.0;\n");
 					fc.append("}\n");
+					fc.append("L = vec3(L.y, -L.x, L.z);\n");
 					fc.append("}\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
@@ -207,14 +207,14 @@ public class PhongMaterial extends AAdvancedMaterial {
 			}
 
 			fc.append("NdotL = max(dot(N, L), 0.1);\n");
-			fc.append("normPower = uLightPower").append(i).append(" * NdotL * vAttenuation").append(i).append(";\n");
-			fc.append("intensity += normPower;\n"); 
+			fc.append("power = uLightPower").append(i).append(" * NdotL * vAttenuation").append(i).append(";\n");
+			fc.append("intensity += power;\n"); 
 			if(light.getLightType() == ALight.SPOT_LIGHT){
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * spot_factor;\n");
-				fc.append("Ks += pow(NdotL, uShininess) * spot_factor;\n");
+				fc.append("Kd.rgb += uLightColor").append(i).append(" * spot_factor * power;\n");
+				fc.append("Ks += pow(NdotL, uShininess) * spot_factor * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 			}
 			else{
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * normPower;\n"); 
+				fc.append("Kd.rgb += uLightColor").append(i).append(" * power;\n"); 
 				fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 			}
 		}
