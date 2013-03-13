@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import rajawali.util.RajLog;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.opengl.ETC1;
@@ -170,7 +173,7 @@ public class TextureManager {
 		return this.addTexture(texture, textureType, mipmap, recycle, WrapType.REPEAT, FilterType.LINEAR);
 	}
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
-		TextureInfo tInfo = addTexture(null, texture, texture.getWidth(), texture.getHeight(), textureType, texture.getConfig(), mipmap, recycle, wrapType, filterType);
+		TextureInfo tInfo = addTexture(new ByteBuffer[0], texture, texture.getWidth(), texture.getHeight(), textureType, texture.getConfig(), mipmap, recycle, wrapType, filterType);
 		if(recycle && tInfo.getTextureId() > 0)
 			texture.recycle();
 		else 
@@ -186,8 +189,12 @@ public class TextureManager {
 		return addTexture(buffer, null, width, height, textureType, Config.ARGB_8888, false, false, WrapType.REPEAT, FilterType.LINEAR);
 	}
 	
-	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
+	public TextureInfo addTexture(ByteBuffer[] buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
 		return addTexture(buffer, texture, width, height, textureType, bitmapConfig, mipmap, recycle, false, wrapType, filterType);
+	}
+	
+	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
+		return addTexture(new ByteBuffer[] { buffer }, texture, width, height, textureType, bitmapConfig, mipmap, recycle, false, wrapType, filterType);
 	}
 	
 	public TextureInfo addTexture(TextureInfo textureInfo) {
@@ -219,11 +226,15 @@ public class TextureManager {
 		return textureInfo;
 	}
 	
-	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+	public TextureInfo addTexture(ByteBuffer[] buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		return addTexture(buffer, texture, width, height, textureType, bitmapConfig, mipmap, recycle, isExistingTexture, wrapType, filterType, CompressionType.NONE, 0);
 	}
 	
-	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture, WrapType wrapType, FilterType filterType, CompressionType compressionType, int compressionFormat) {
+	public TextureInfo addTexture(ByteBuffer buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		return addTexture(new ByteBuffer[] { buffer }, texture, width, height, textureType, bitmapConfig, mipmap, recycle, isExistingTexture, wrapType, filterType, CompressionType.NONE, 0);
+	}
+	
+	public TextureInfo addTexture(ByteBuffer[] buffer, Bitmap texture, int width, int height, TextureType textureType, Config bitmapConfig, boolean mipmap, boolean recycle, boolean isExistingTexture, WrapType wrapType, FilterType filterType, CompressionType compressionType, int compressionFormat) {
 		int bitmapFormat = bitmapConfig == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
 		
 		int[] textures = new int[1];
@@ -232,7 +243,9 @@ public class TextureManager {
 		if(textureId > 0) {
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);        
 	        
-			if(mipmap && compressionType == CompressionType.NONE){
+			if((mipmap && compressionType == CompressionType.NONE) || 
+					// Manual mipmapped textures are included
+					(buffer.length > 1)){
 				if(filterType==FilterType.LINEAR)
 					GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
 				else
@@ -258,10 +271,29 @@ public class TextureManager {
 			}
 	        	
 	        if(texture == null) {
-	        	if (compressionType == CompressionType.NONE) 
-        			GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, width, height, 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, buffer);	        		
-	        	else
-	        		GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, 0, compressionFormat, width, height, 0, buffer.capacity(), buffer);
+	        	if (compressionType == CompressionType.NONE) {
+	        		if ((buffer != null && buffer.length == 0) || buffer == null) {
+	        			GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, width, height, 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, null);
+	        		} else {
+	        			int w = width, h = height;
+		        		for (int i = 0; i < buffer.length; i++) {
+		        			GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, i, bitmapFormat, w, h, 0, bitmapFormat, GLES20.GL_UNSIGNED_BYTE, buffer[i]);
+		        			w = w > 1 ? w / 2 : 1;
+		        			h = h > 1 ? h / 2 : 1;
+		        		}
+	        		}
+	        	} else { 
+	        		if ((buffer != null && buffer.length == 0) || buffer == null) {
+	        			GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, 0, compressionFormat, width, height, 0, 0, null);
+	        		} else {
+	        			int w = width, h = height;
+		        		for (int i = 0; i < buffer.length; i++) {
+	        				GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, i, compressionFormat, w, h, 0, buffer[i].capacity(), buffer[i]);
+	        				w = w > 1 ? w / 2 : 1;
+	        				h = h > 1 ? h / 2 : 1;
+		        		}
+	        		}
+	        	}
 	        } else
 	        	GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, texture, 0);
 	
@@ -291,10 +323,12 @@ public class TextureManager {
         } else {
         	textureInfo.setTextureId(textureId);
         }
-        if(buffer != null) {
-        	buffer.limit(0);
-        	buffer = null;
+        for (int i = 0; i < buffer.length; i++) {
+        	if(buffer[i] != null) {
+        		buffer[i].limit(0);
+        	}
         }
+        buffer = null;
         if(!isExistingTexture && mCurrentValidatingTexInfo == null)
         	mTextureInfoList.add(textureInfo);
         
@@ -349,6 +383,43 @@ public class TextureManager {
 		return textureInfo;
 	}
 	
+	/**
+	 * Add mipmap-chained ETC1 texture. 
+	 * @param context
+	 * @param resourceIds
+	 * @return
+	 */
+	public TextureInfo addEtc1Texture(Context context, int[] resourceIds, TextureType textureType, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		if (resourceIds == null) return null;
+		ByteBuffer[] mipmapChain = new ByteBuffer[resourceIds.length];
+		int mip_0_width = 1, mip_0_height = 1;
+		try {
+			for (int i = 0, length = resourceIds.length; i < length; i++) {
+				ETC1Util.ETC1Texture texture = ETC1Util.createTexture(context.getResources().openRawResource(resourceIds[i]));
+				mipmapChain[i] = texture.getData();
+				if (i == 0) {
+					mip_0_width = texture.getWidth();
+					mip_0_height = texture.getHeight();
+				}
+			}
+		} catch (IOException e) {
+			RajLog.e(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return addTexture(mipmapChain, null, mip_0_width, mip_0_height, textureType, null, true, false, isExistingTexture, wrapType, filterType, CompressionType.ETC1, ETC1.ETC1_RGB8_OES);
+	}
+	
+	/**
+	 * Add mipmap-chained ETC1 texture. 
+	 * @param context
+	 * @param resourceIds
+	 * @return
+	 */
+	public TextureInfo addEtc1Texture(Context context, int[] resourceIds, TextureType textureType) {
+		return addEtc1Texture(context, resourceIds, textureType, false, WrapType.REPEAT, FilterType.LINEAR);
+	}
+	
 	public TextureInfo addEtc1Texture(ByteBuffer buffer, int width, int height) {
 		return addEtc1Texture(buffer, width, height, TextureType.DIFFUSE);
 	}
@@ -364,6 +435,10 @@ public class TextureManager {
 	}
 	
 	public TextureInfo addEtc1Texture(ByteBuffer buffer, int width, int height, TextureType textureType, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		return addTexture(new ByteBuffer[] { buffer }, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.ETC1, ETC1.ETC1_RGB8_OES);
+	}
+	
+	public TextureInfo addEtc1Texture(ByteBuffer[] buffer, int width, int height, TextureType textureType, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.ETC1, ETC1.ETC1_RGB8_OES);
 	}
 	
@@ -372,9 +447,9 @@ public class TextureManager {
 	}
 	
 	/**
-	 * Adds and binds paletted texture. Automatic mipmap generation is disabled.
+	 * Adds and binds paletted texture. Pass in multiple buffer corresponding to different mipmap levels.
 	 */
-	public TextureInfo addPalettedTexture(ByteBuffer buffer, int width, int height, TextureType textureType, PaletteFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+	public TextureInfo addPalettedTexture(ByteBuffer[] buffer, int width, int height, TextureType textureType, PaletteFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		int internalformat;
 		switch (format) {
 			case PALETTE4_RGB8:
@@ -413,6 +488,10 @@ public class TextureManager {
 		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.PALETTED, internalformat);
 	}
 	
+	public TextureInfo addPalettedTexture(ByteBuffer buffer, int width, int height, TextureType textureType, PaletteFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		return addPalettedTexture(new ByteBuffer[] { buffer }, width, height, textureType, format, isExistingTexture, wrapType, filterType);
+	}
+	
 	public TextureInfo add3dcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, ThreeDcFormat format) {
 		return add3dcTexture(buffer, width, height, textureType, format, false, WrapType.REPEAT, FilterType.LINEAR);
 	}
@@ -421,11 +500,15 @@ public class TextureManager {
 	 * Adds and binds ATI 3Dc compressed texture. This compression type is most used for
 	 * compressing normal map textures.
 	 */
-	public TextureInfo add3dcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, ThreeDcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+	public TextureInfo add3dcTexture(ByteBuffer[] buffer, int width, int height, TextureType textureType, ThreeDcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		if (format == ThreeDcFormat.X) 
 			return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.THREEDC, GLES11Ext.GL_3DC_X_AMD);
 		else
 			return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.THREEDC, GLES11Ext.GL_3DC_XY_AMD);
+	}
+	
+	public TextureInfo add3dcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, ThreeDcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		return add3dcTexture(new ByteBuffer[] { buffer }, width, height, textureType, format, isExistingTexture, wrapType, filterType);
 	}
 	
 	public TextureInfo addAtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, AtcFormat format) {
@@ -433,13 +516,13 @@ public class TextureManager {
 	}
 	
 	/**
-	 * Adds and binds AMD compressed texture. Due to limitations with compressed textures, 
-	 * automatic mipmap generation is disabled.
+	 * Adds and binds AMD compressed texture. To use mipmaps, pass in more than one items in the buffer, 
+	 * starting with mipmap level 0.
 	 * 
 	 * This method will only work on devices that support AMD texture compression. Most Adreno GPU
 	 * based devices such as Nexus One and HTC Desire support AMD texture compression.
 	 */
-	public TextureInfo addAtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, AtcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+	public TextureInfo addAtcTexture(ByteBuffer[] buffer, int width, int height, TextureType textureType, AtcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		int internalformat;
 		switch(format) {
 			case RGB:
@@ -456,6 +539,10 @@ public class TextureManager {
 		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.ATC, internalformat);
 	}
 	
+	public TextureInfo addAtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, AtcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		return addAtcTexture(new ByteBuffer[] { buffer }, width, height, textureType, format, isExistingTexture, wrapType, filterType);
+	}
+	
 	public TextureInfo addDxt1Texture(ByteBuffer buffer, int width, int height, TextureType textureType, Dxt1Format format) {
 		return addDxt1Texture(buffer, width, height, textureType, format, false, WrapType.REPEAT, FilterType.LINEAR);
 	}
@@ -466,7 +553,7 @@ public class TextureManager {
 	 * This method will only work in devices that support S3 texture compression. Most Nvidia Tegra2 GPU
 	 * based devices such as Motorola Xoom, and Atrix support S3 texture comrpession. 
 	 */
-	public TextureInfo addDxt1Texture(ByteBuffer buffer, int width, int height, TextureType textureType, Dxt1Format format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+	public TextureInfo addDxt1Texture(ByteBuffer[] buffer, int width, int height, TextureType textureType, Dxt1Format format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		int internalformat;
 		switch (format) {
 			case RGB:
@@ -480,6 +567,10 @@ public class TextureManager {
 		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.DXT1, internalformat);
 	}
 	
+	public TextureInfo addDxt1Texture(ByteBuffer buffer, int width, int height, TextureType textureType, Dxt1Format format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		return addDxt1Texture(new ByteBuffer[] { buffer }, width, height, textureType, format, isExistingTexture, wrapType, filterType);
+	}
+	
 	public TextureInfo addPvrtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, PvrtcFormat format) {
 		return addPvrtcTexture(buffer, width, height, textureType, format, false, WrapType.REPEAT, FilterType.LINEAR);
 	}
@@ -491,7 +582,7 @@ public class TextureManager {
 	 * This method will only work on devices that support PowerVR texture compression. Most PowerVR GPU
 	 * based devices such as Nexus S and Galaxy S3 support AMD texture compression.
 	 */
-	public TextureInfo addPvrtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, PvrtcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+	public TextureInfo addPvrtcTexture(ByteBuffer[] buffer, int width, int height, TextureType textureType, PvrtcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		int internalformat;
 		switch (format) {
 			case RGB_2BPP:
@@ -509,6 +600,10 @@ public class TextureManager {
 				break;
 		}
 		return addTexture(buffer, null, width, height, textureType, null, false, false, isExistingTexture, wrapType, filterType, CompressionType.PVRTC, internalformat);
+	}
+	
+	public TextureInfo addPvrtcTexture(ByteBuffer buffer, int width, int height, TextureType textureType, PvrtcFormat format, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+		return addPvrtcTexture(new ByteBuffer[] { buffer }, width, height, textureType, format, isExistingTexture, wrapType, filterType);
 	}
 	
 	/**

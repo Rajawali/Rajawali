@@ -3,6 +3,7 @@
  */
 package rajawali.renderer.plugins;
 
+import java.nio.ByteBuffer;
 import java.util.Stack;
 
 import android.graphics.Bitmap.Config;
@@ -258,8 +259,8 @@ public final class LensFlarePlugin extends Plugin {
         setData(vertices, normals, textureCoords, colors, indices);
         
         // Set up lookup textures.
-        mMapTexture = mRenderer.getTextureManager().addTexture(null, null, 16, 16, TextureType.LOOKUP, Config.RGB_565, false, false, WrapType.CLAMP, FilterType.NEAREST);
-        mOcclusionMapTexture = mRenderer.getTextureManager().addTexture(null, null, 16, 16, TextureType.LOOKUP, Config.ARGB_8888, false, false, WrapType.CLAMP, FilterType.NEAREST);
+        mMapTexture = mRenderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.RGB_565, false, false, WrapType.CLAMP, FilterType.NEAREST);
+        mOcclusionMapTexture = mRenderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.ARGB_8888, false, false, WrapType.CLAMP, FilterType.NEAREST);
         
         // Set up shader program.
         // Currently vertex texture shader causes problems on Adreno 320 GPUs.
@@ -351,8 +352,8 @@ public final class LensFlarePlugin extends Plugin {
 				// Camera needs to be facing towards the light and the light should come within the
 				// viewing frustum.
 				if (mVertexTextureSupported || (angleLightCamera > 0 &&
-						screenPositionPixels_x > 0 && screenPositionPixels_x < viewportWidth &&
-						screenPositionPixels_y > 0 && screenPositionPixels_y < viewportHeight)) {
+						screenPositionPixels_x > -64 && screenPositionPixels_x < viewportWidth + 64 &&
+						screenPositionPixels_y > -64 && screenPositionPixels_y < viewportHeight + 64)) {
 					// Bind current framebuffer to texture.
 					GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 					GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mMapTexture.getTextureId());

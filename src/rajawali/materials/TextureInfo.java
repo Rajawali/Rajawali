@@ -47,7 +47,7 @@ public class TextureInfo {
 	
 	protected CompressionType mCompressionType;
 	protected int mInternalFormat;
-	protected ByteBuffer mBuffer;
+	protected ByteBuffer[] mBuffer;
 	
 	/**
 	 * The type of texture
@@ -194,11 +194,11 @@ public class TextureInfo {
 		this.mCompressionType = compressionType;
 	}
 
-	public ByteBuffer getBuffer() {
+	public ByteBuffer[] getBuffer() {
 		return this.mBuffer;
 	}
 	
-	public void setBuffer(ByteBuffer buffer) {
+	public void setBuffer(ByteBuffer[] buffer) {
 		this.mBuffer = buffer;
 	}
 	
