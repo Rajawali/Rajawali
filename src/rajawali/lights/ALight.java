@@ -6,6 +6,7 @@ import rajawali.math.Number3D;
 public abstract class ALight extends ATransformable3D {
 	public static final int DIRECTIONAL_LIGHT = 0;
 	public static final int POINT_LIGHT = 1;
+	public static final int SPOT_LIGHT = 2;
 
 	protected float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
 	protected float[] mPositionArray = new float[3];
