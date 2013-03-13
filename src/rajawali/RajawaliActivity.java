@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ public class RajawaliActivity extends Activity {
 	protected boolean mMultisamplingEnabled = false;
 	protected boolean mUsesCoverageAa;
 	private RajawaliRenderer mRajRenderer;
-	protected boolean checkOpenGLVersion = true;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class RajawaliActivity extends Activity {
         mSurfaceView = new GLSurfaceView(this);
         
         ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-        if(checkOpenGLVersion) {
+        if(!Build.FINGERPRINT.startsWith("generic")) {
         	ConfigurationInfo info = am.getDeviceConfigurationInfo();
         	if(info.reqGlEsVersion < 0x20000)
         		throw new Error("OpenGL ES 2.0 is not supported by this device");
