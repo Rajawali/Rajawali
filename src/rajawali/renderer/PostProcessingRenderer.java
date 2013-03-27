@@ -151,6 +151,10 @@ public final class PostProcessingRenderer {
 		this.mEnabled = enabled;
 	}
 
+	public boolean isInitialized() {
+		return mEnabled;
+	}
+
 	public void setInitialized(boolean initialized) {
 		this.mInitialized = initialized;
 	}
