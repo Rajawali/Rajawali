@@ -152,7 +152,7 @@ public final class PostProcessingRenderer {
 	}
 
 	public boolean isInitialized() {
-		return mEnabled;
+		return mInitialized;
 	}
 
 	public void setInitialized(boolean initialized) {
