@@ -23,6 +23,11 @@ public class Camera extends ATransformable3D {
 	protected float mFogNear = 5;
 	protected float mFogFar = 25;
 	protected boolean mFogEnabled = false;
+	
+	// Camera's localized vectors
+	protected Number3D mRightVector;
+	protected Number3D mUpVector;
+	protected Number3D mLookVector;
 
 	public Camera() {
 		super();
@@ -33,9 +38,20 @@ public class Camera extends ATransformable3D {
 
 	public float[] getViewMatrix() {
 		if (mLookAt != null) {
-			Matrix.setLookAtM(mVMatrix, 0, -mPosition.x, mPosition.y,
+			/*Matrix.setLookAtM(mVMatrix, 0, -mPosition.x, mPosition.y,
 					mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, mUpAxis.x, mUpAxis.y,
-					mUpAxis.z);
+					mUpAxis.z);*/
+			Number3D position = mPosition.clone();
+			position.x = position.x;
+			position.y = -position.y;
+			position.z = -position.z;
+			mVMatrix[0] = mRightVector.x; mVMatrix[1] = mUpVector.x; mVMatrix[2] = -mLookVector.x; mVMatrix[3] = 0.0f;
+			mVMatrix[4] = mRightVector.y; mVMatrix[5] = mUpVector.y; mVMatrix[6] = -mLookVector.y; mVMatrix[7] = 0.0f;
+			mVMatrix[8] = mRightVector.z; mVMatrix[9] = mUpVector.z; mVMatrix[10] = -mLookVector.z; mVMatrix[11] = 0.0f;
+			mVMatrix[12] = Number3D.dot(position, mRightVector);
+			mVMatrix[13] = Number3D.dot(position, mUpVector);
+			mVMatrix[14] = -Number3D.dot(position, mLookVector);
+			mVMatrix[15] = 1.0f;
 		} else {
 			if (mUseRotationMatrix == false && mRotationDirty) {
 				setOrientation();
@@ -293,5 +309,88 @@ public class Camera extends ATransformable3D {
 
 	public void setFogEnabled(boolean fogEnabled) {
 		this.mFogEnabled = fogEnabled;
+	}
+	
+	protected void setLocalAxes() {
+		float centerX = mLookAt.x, centerY = mLookAt.y, centerZ = mLookAt.z;
+		float eyeX = -mPosition.x, eyeY = mPosition.y, eyeZ = mPosition.z;
+		float upX = mUpAxis.x, upY = mUpAxis.y, upZ = mUpAxis.z;
+		
+		float fx = centerX - eyeX;
+		float fy = centerY - eyeY;
+		float fz = centerZ - eyeZ;
+		mLookVector = new Number3D(fx, fy, fz);
+		mLookVector.normalize();
+		
+		// Local X axis is perpendicular to the up axis and the local Z axis
+		float sx = fy * upZ - fz * upY;
+		float sy = fz * upX - fx * upZ;
+		float sz = fx * upY - fy * upX;
+		mRightVector = new Number3D(sx, sy, sz);
+		mRightVector.normalize();
+		
+		// Local Y axis is perpendicular to the X axis and the local Z axis
+		float ux = sy * fz - sz * fy;
+		float uy = sz * fx - sx * fz;
+		float uz = sx * fy - sy * fx; 
+		mUpVector = new Number3D(ux, uy, uz);
+		mUpVector.normalize();
+	}
+	
+	@Override
+	public void setLookAt(float x, float y, float z) {
+		super.setLookAt(x, y, z);
+		setLocalAxes();
+	}
+	
+	@Override
+	public void setPosition(Number3D position) {
+		super.setPosition(position);
+		if (mLookAt != null) setLocalAxes();
+	}
+	
+	@Override
+	public void setPosition(float x, float y, float z) {
+		super.setPosition(x, y, z);
+		if (mLookAt != null) setLocalAxes();
+	}
+	
+	public void pitch(float angle) {
+		float sinVal = (float)Math.sin(MathUtil.degreesToRadians(angle));
+		float cosVal = (float)Math.cos(MathUtil.degreesToRadians(angle));
+		
+		Number3D tempZ = mLookVector.clone();
+		mLookVector = new Number3D(cosVal * tempZ.x + sinVal * mUpVector.x,
+				cosVal * tempZ.y + sinVal * mUpVector.y,
+				cosVal * tempZ.z + sinVal * mUpVector.z);
+		mUpVector = new Number3D(cosVal * mUpVector.x - sinVal * tempZ.x,
+				cosVal * mUpVector.y - sinVal * tempZ.y,
+				cosVal * mUpVector.z - sinVal * tempZ.z);
+	}
+	
+	public void yaw(float angle) {
+		float sinVal = (float)Math.sin(MathUtil.degreesToRadians(angle));
+		float cosVal = (float)Math.cos(MathUtil.degreesToRadians(angle));
+		
+		Number3D tempX = mRightVector.clone();
+		mRightVector = new Number3D(cosVal * tempX.x + sinVal * mLookVector.x,
+				cosVal * tempX.y + sinVal * mLookVector.y,
+				cosVal * tempX.z + sinVal * mLookVector.z);
+		mLookVector = new Number3D(cosVal * mLookVector.z - sinVal * tempX.x,
+				cosVal * mLookVector.y - sinVal * tempX.y,
+				cosVal * mLookVector.z - sinVal * tempX.z);
+	}
+	
+	public void roll(float angle) {
+		float sinVal = (float)Math.sin(MathUtil.degreesToRadians(angle));
+		float cosVal = (float)Math.cos(MathUtil.degreesToRadians(angle));
+		
+		Number3D tempY = mUpVector.clone();
+		mUpVector = new Number3D(cosVal * tempY.x - sinVal * mRightVector.x,
+				cosVal * tempY.y - sinVal * mRightVector.y,
+				cosVal * tempY.z - sinVal * mRightVector.z);
+		mRightVector = new Number3D(cosVal * mRightVector.x + sinVal * tempY.x,
+				cosVal * mRightVector.y + sinVal * tempY.y,
+				cosVal * mRightVector.z + sinVal * tempY.z);
 	}
 }
