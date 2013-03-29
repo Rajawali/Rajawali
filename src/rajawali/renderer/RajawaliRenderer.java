@@ -259,7 +259,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			reloadChildren();
 			if(mSkybox != null)
 				mSkybox.reload();
-			mPostProcessingRenderer.reload();
+			if(mPostProcessingRenderer.isInitialized())
+				mPostProcessingRenderer.reload();
 			reloadPlugins();
 			mReloadPickerInfo = true;
 		}
