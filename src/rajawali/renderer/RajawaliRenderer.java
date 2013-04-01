@@ -37,7 +37,7 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
-    protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
+	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
 
 	protected Context mContext;
 
@@ -81,9 +81,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected boolean mReloadPickerInfo;
 	protected static boolean mFogEnabled;
 	protected boolean mUsesCoverageAa;
-	
+
 	public static boolean supportsUIntBuffers = false;
-	
+
 	protected boolean mSceneInitialized;
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
@@ -92,9 +92,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * is re-activated or when a live wallpaper is rotated. 
 	 */
 	private boolean mSceneCachingEnabled;
-	
+
 	protected Stack<IRendererPlugin> mPlugins;
-	
+
 	public RajawaliRenderer(Context context) {
 		mContext = context;
 		mChildren = new Stack<BaseObject3D>();
@@ -123,27 +123,27 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onDrawFrame(GL10 glUnused) {
 		render();
 		++mFrameCount;
-	    if (mFrameCount % 50 == 0) {
-	        long now = System.nanoTime();
-	        double elapsedS = (now - mStartTime) / 1.0e9;
-	        double msPerFrame = (1000 * elapsedS / mFrameCount);
-	        mLastMeasuredFPS = 1000 / msPerFrame;
-	        //RajLog.d("ms / frame: " + msPerFrame + " - fps: " + mLastMeasuredFPS);
-	
-	        mFrameCount = 0;
-	        mStartTime = now;
-	        
-	        if(mFPSUpdateListener != null)
-	        	mFPSUpdateListener.onFPSUpdate(mLastMeasuredFPS);
-	    }
+		if (mFrameCount % 50 == 0) {
+			long now = System.nanoTime();
+			double elapsedS = (now - mStartTime) / 1.0e9;
+			double msPerFrame = (1000 * elapsedS / mFrameCount);
+			mLastMeasuredFPS = 1000 / msPerFrame;
+			//RajLog.d("ms / frame: " + msPerFrame + " - fps: " + mLastMeasuredFPS);
+
+			mFrameCount = 0;
+			mStartTime = now;
+
+			if(mFPSUpdateListener != null)
+				mFPSUpdateListener.onFPSUpdate(mLastMeasuredFPS);
+		}
 	}
-	
+
 	private void render() {
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
 		mTextureManager.validateTextures();
-		
+
 		if (pickerInfo != null) {
 			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
 			mReloadPickerInfo = false;
@@ -168,15 +168,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			GLES20.glClearDepthf(1.0f);
 		}
 		if (mUsesCoverageAa) {
-            clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
+			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
 
 		GLES20.glClear(clearMask);
 
-        mVMatrix = mCamera.getViewMatrix();
-        mPMatrix = mCamera.getProjectionMatrix();
+		mVMatrix = mCamera.getViewMatrix();
+		mPMatrix = mCamera.getProjectionMatrix();
 
-        
+
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
@@ -190,13 +190,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			}
 		}
 
-        mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
-        
-        synchronized (mChildren) {
+		mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
+
+		synchronized (mChildren) {
 			for (int i = 0, j = mChildren.size(); i < j; i++)
-        		mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
+				mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
 		}
-		
+
 		if (pickerInfo != null) {
 			pickerInfo.getPicker().createColorPickingTexture(pickerInfo);
 			pickerInfo.getPicker().unbindFrameBuffer();
@@ -206,16 +206,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		} else if (mPostProcessingRenderer.isEnabled()) {
 			mPostProcessingRenderer.render();
 		}
-		
+
 		synchronized (mPlugins) {
 			for (int i = 0, j = mPlugins.size(); i < j; i++)
 				mPlugins.get(i).render();
 		}
 	}
-	
+
 	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
 	}
-	
+
 	public void onTouchEvent(MotionEvent event) {
 
 	}		
@@ -227,7 +227,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		GLES20.glViewport(0, 0, width, height);
 	}
 
-	
+
 	/* Called when the OpenGL context is created or re-created. Don't set up your scene here,
 	 * use initScene() for that.
 	 * 
@@ -237,7 +237,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {		
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
-		
+
 		GLES20.glFrontFace(GLES20.GL_CCW);
 		GLES20.glCullFace(GLES20.GL_BACK);
 
@@ -248,11 +248,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 		if (!mSceneCachingEnabled) {
 			mTextureManager.reset();
-			if (mChildren.size() > 0) {
-				mChildren.clear();
+			synchronized (mChildren) {
+				if (mChildren.size() > 0) {
+					mChildren.clear();
+				}
 			}
-			if (mPlugins.size() > 0) {
-				mPlugins.clear();
+			synchronized (mPlugins) {
+				if (mPlugins.size() > 0) {
+					mPlugins.clear();
+				}
 			}
 		} else if(mSceneCachingEnabled && mSceneInitialized) {
 			mTextureManager.reload();
@@ -264,39 +268,46 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			reloadPlugins();
 			mReloadPickerInfo = true;
 		}
-		
+
 		mSceneInitialized = true;
 		startRendering();
 	}
-	
+
 	private void reloadChildren() {
-		for (int i = 0, j = mChildren.size(); i < j; i++)
-			mChildren.get(i).reload();
+		synchronized (mChildren) {
+			for (int i = 0, j = mChildren.size(); i < j; i++)
+				mChildren.get(i).reload();
+		}
 	}
-	
+
 	private void reloadPlugins() {
-		for (int i = 0, j = mPlugins.size(); i < j; i++)
-			mPlugins.get(i).reload();
+		synchronized (mPlugins) {
+			for (int i = 0, j = mPlugins.size(); i < j; i++)
+				mPlugins.get(i).reload();
+		}
 	}
 
 	/**
 	 * Scene construction should happen here, not in onSurfaceCreated()
 	 */
 	protected void initScene() {
-		
+
 	}
-	
+
 	protected void destroyScene() {
 		mSceneInitialized = false;
-		for (int i = 0, j = mChildren.size(); i < j; i++)
-			mChildren.get(i).destroy();
-		mChildren.clear();
-		
-		for (int i = 0, j = mPlugins.size(); i < j; i++)
-			mPlugins.get(i).destroy();
-		mPlugins.clear();
+		synchronized (mChildren) {
+			for (int i = 0, j = mChildren.size(); i < j; i++)
+				mChildren.get(i).destroy();
+			mChildren.clear();
+		}
+		synchronized (mPlugins) {
+			for (int i = 0, j = mPlugins.size(); i < j; i++)
+				mPlugins.get(i).destroy();
+			mPlugins.clear();
+		}
 	}
-	
+
 	public void startRendering() {
 		if (mTimer != null) {
 			mTimer.cancel();
@@ -349,30 +360,30 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			}
 		}
 	}
-	
+
 	public Number3D unProject(float x, float y, float z) {
 		x = mViewportWidth - x;
 		y = mViewportHeight - y;
-		
+
 		float[] m = new float[16], mvpmatrix = new float[16],
-			    in = new float[4],
-			    out = new float[4];
-		
+				in = new float[4],
+				out = new float[4];
+
 		Matrix.multiplyMM(mvpmatrix, 0, mPMatrix, 0, mVMatrix, 0);
 		Matrix.invertM(m, 0, mvpmatrix, 0);
 
-	    in[0] = (x / (float)mViewportWidth) * 2 - 1;
-	    in[1] = (y / (float)mViewportHeight) * 2 - 1;
-	    in[2] = 2 * z - 1;
-	    in[3] = 1;
+		in[0] = (x / (float)mViewportWidth) * 2 - 1;
+		in[1] = (y / (float)mViewportHeight) * 2 - 1;
+		in[2] = 2 * z - 1;
+		in[3] = 1;
 
-	    Matrix.multiplyMV(out, 0, m, 0, in, 0);
+		Matrix.multiplyMV(out, 0, m, 0, in, 0);
 
-	    if (out[3]==0)
-	        return null;
+		if (out[3]==0)
+			return null;
 
-	    out[3] = 1/out[3];
-	    return new Number3D(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
+		out[3] = 1/out[3];
+		return new Number3D(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
 	}
 
 	public float getFrameRate() {
@@ -393,9 +404,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public float getRefreshRate() {
 		return ((WindowManager) mContext
-		       .getSystemService(Context.WINDOW_SERVICE))
-		       .getDefaultDisplay()
-		       .getRefreshRate();
+				.getSystemService(Context.WINDOW_SERVICE))
+				.getDefaultDisplay()
+				.getRefreshRate();
 	}
 
 	public WallpaperService.Engine getEngine() {
@@ -427,7 +438,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			mChildren.add(child);
 		}
 	}
-	
+
 	public void clearChildren() {
 		synchronized (mChildren) {
 			mChildren.clear();
@@ -439,13 +450,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			mPlugins.add(plugin);
 		}
 	}
-	
+
 	public void clearPlugins() {
 		synchronized (mPlugins) {
 			mPlugins.clear();
 		}
 	}
-	
+
 	protected void setSkybox(int resourceId) {
 		mSkybox = new Cube(700, true, false);
 		mSkybox.setDoubleSided(true);
@@ -454,7 +465,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		material.addTexture(tInfo);
 		mSkybox.setMaterial(material);
 	}
-	
+
 	protected void setSkybox(int front, int right, int back, int left, int up, int down) {
 		mSkybox = new Cube(700, true);
 
@@ -473,35 +484,51 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public boolean removeChild(BaseObject3D child) {
-		return mChildren.remove(child);
+		synchronized (mChildren) {
+			return mChildren.remove(child);
+		}
 	}
-	
+
 	public boolean removePlugin(IRendererPlugin plugin) {
-		return mPlugins.remove(plugin);
+		synchronized (mPlugins) {
+			return mPlugins.remove(plugin);
+		}
 	}
-	
+
 	public int getNumPlugins() {
-		return mPlugins.size();
+		synchronized (mPlugins) {
+			return mPlugins.size();
+		}
 	}
-	
+
 	public Stack<IRendererPlugin> getPlugins() {
-		return mPlugins;
+		synchronized (mPlugins) {
+			return mPlugins;
+		}
 	}
-	
+
 	public boolean hasPlugin(IRendererPlugin plugin) {
-		return mPlugins.contains(plugin);
+		synchronized (mPlugins) {
+			return mPlugins.contains(plugin);
+		}
 	}
 
 	public int getNumChildren() {
-		return mChildren.size();
+		synchronized (mChildren) { 
+			return mChildren.size();
+		}
 	}
-	
+
 	public Stack<BaseObject3D> getChildren() {
-		return mChildren;
+		synchronized (mChildren) {
+			return mChildren;
+		}
 	}
 
 	protected boolean hasChild(BaseObject3D child) {
-		return mChildren.contains(child);
+		synchronized (mChildren) {
+			return mChildren.contains(child);
+		}
 	}
 
 	public void addPostProcessingFilter(IPostProcessingFilter filter) {
@@ -514,14 +541,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void accept(INodeVisitor visitor) {
 		visitor.apply(this);
-		for (int i = 0, j = mChildren.size(); i < j; i++)
-			mChildren.get(i).accept(visitor);
+		synchronized (mChildren) {
+			for (int i = 0, j = mChildren.size(); i < j; i++)
+				mChildren.get(i).accept(visitor);
+		}
 	}	
-	
+
 	public void removePostProcessingFilter(IPostProcessingFilter filter) {
 		mFilters.remove(filter);
 	}
-	
+
 	public void clearPostProcessingFilters() {
 		mFilters.clear();
 		mPostProcessingRenderer.unbind();
@@ -547,15 +576,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void setBackgroundColor(int color) {
 		setBackgroundColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f);
 	}
-	
+
 	public boolean getSceneInitialized() {
 		return mSceneInitialized;
 	}
-	
+
 	public void setSceneCachingEnabled(boolean enabled) {
 		mSceneCachingEnabled = enabled;
 	}
-	
+
 	public boolean getSceneCachingEnabled() {
 		return mSceneCachingEnabled;
 	}
@@ -564,15 +593,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mFogEnabled = enabled;
 		mCamera.setFogEnabled(enabled);
 	}
-	
+
 	public void setUsesCoverageAa(boolean value) {
 		mUsesCoverageAa = value;
 	}
-	
+
 	public static boolean isFogEnabled() {
 		return mFogEnabled;
 	}
-	
+
 	public static int getMaxLights() {
 		return mMaxLights;
 	}
@@ -580,11 +609,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public static void setMaxLights(int maxLights) {
 		RajawaliRenderer.mMaxLights = maxLights;
 	}
-	
+
 	public void setFPSUpdateListener(FPSUpdateListener listener) {
 		mFPSUpdateListener = listener;
 	}
-	
+
 	public static int checkGLError(String message) {
 		int error = GLES20.glGetError();
 		if(error != GLES20.GL_NO_ERROR)
@@ -598,13 +627,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 		return error;
 	}
-	
+
 	public int getNumTriangles() {
 		int triangleCount = 0;
-		for (int i=0,j=mChildren.size();i<j;i++) {
-			if (mChildren.get(i).getGeometry() != null && mChildren.get(i).getGeometry().getVertices() != null && mChildren.get(i).isVisible())
-				triangleCount += mChildren.get(i).getGeometry().getVertices().limit() / 9;
+		synchronized (mChildren) {
+			for (int i=0,j=mChildren.size();i<j;i++) {
+				if (mChildren.get(i).getGeometry() != null && mChildren.get(i).getGeometry().getVertices() != null && mChildren.get(i).isVisible())
+					triangleCount += mChildren.get(i).getGeometry().getVertices().limit() / 9;
+			}
+			return triangleCount;
 		}
-		return triangleCount;
 	}
 }
