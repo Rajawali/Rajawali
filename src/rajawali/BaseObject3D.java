@@ -3,7 +3,9 @@ package rajawali;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-import java.util.Stack;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import rajawali.bounds.BoundingBox;
 import rajawali.lights.ALight;
@@ -40,10 +42,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected float[] mTmpMatrix = new float[16];
 
 	protected AMaterial mMaterial;
-	protected Stack<ALight> mLights;
+	protected List<ALight> mLights;
 
 	protected Geometry3D mGeometry;
-	protected ArrayList<BaseObject3D> mChildren;
+	protected List<BaseObject3D> mChildren;
 	protected String mName;
 
 	protected boolean mDoubleSided = false;
@@ -76,9 +78,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public BaseObject3D() {
 		super();
-		mChildren = new ArrayList<BaseObject3D>();
+		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mGeometry = new Geometry3D();
-		mLights = new Stack<ALight>();
+		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
 	}
 
 	public BaseObject3D(String name) {
@@ -485,7 +487,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mEnableDepthMask = !value;
 	}
 
-	public void setLights(Stack<ALight> lights) {
+	public void setLights(List<ALight> lights) {
 		mLights = lights;
 		for (int i = 0; i < mChildren.size(); ++i)
 			mChildren.get(i).setLights(lights);
