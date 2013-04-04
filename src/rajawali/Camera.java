@@ -3,6 +3,7 @@ package rajawali;
 import rajawali.math.MathUtil;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
+import rajawali.math.Quaternion;
 import android.opengl.Matrix;
 
 public class Camera extends ATransformable3D {
@@ -23,9 +24,17 @@ public class Camera extends ATransformable3D {
 	protected float mFogNear = 5;
 	protected float mFogFar = 25;
 	protected boolean mFogEnabled = false;
+	
+	// Camera's localized vectors
+	protected Number3D mRightVector;
+	protected Number3D mUpVector;
+	protected Number3D mLookVector;
+	
+	protected Quaternion mLocalOrientation;
 
 	public Camera() {
 		super();
+		mLocalOrientation = Quaternion.getIdentity();
 		mUpAxis = new Number3D(0, 1, 0);
 		mIsCamera = true;
 		mFrustum = new Frustum();
@@ -36,6 +45,10 @@ public class Camera extends ATransformable3D {
 			Matrix.setLookAtM(mVMatrix, 0, -mPosition.x, mPosition.y,
 					mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, mUpAxis.x, mUpAxis.y,
 					mUpAxis.z);
+			
+			mLocalOrientation.fromEuler(mRotation.y, mRotation.z, mRotation.x);
+			mLocalOrientation.toRotationMatrix(mRotationMatrix);
+			Matrix.multiplyMM(mVMatrix, 0, mRotationMatrix, 0, mVMatrix, 0);
 		} else {
 			if (mUseRotationMatrix == false && mRotationDirty) {
 				setOrientation();

@@ -79,7 +79,7 @@ public class Animation3D {
 				millis = mDuration - millis;
 			}
 			
-			if (millis > mStart && millis <= (mStart + mLength)) {
+			if (millis > mStart && millis < (mStart + mLength)) {
 				float diff = (float) (millis - mStart);
 				interpolatedTime = mInterpolator.getInterpolation(diff / (float) mLength);
 				setHasStarted(true);

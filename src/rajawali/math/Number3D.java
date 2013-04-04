@@ -1,7 +1,6 @@
 package rajawali.math;
 
 import rajawali.util.RajLog;
-import android.util.FloatMath;
 
 
 /**
@@ -101,7 +100,7 @@ public class Number3D {
 	}
 
 	public float normalize() {
-		float mod = FloatMath.sqrt(x * x + y * y + z * z);
+		double mod = Math.sqrt(x * x + y * y + z * z);
 
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
@@ -110,7 +109,7 @@ public class Number3D {
 			this.z *= mod;
 		}
 		
-		return mod;
+		return (float)mod;
 	}
 
 	public Number3D inverse() {
@@ -159,11 +158,11 @@ public class Number3D {
 	}
 
 	public float distanceTo(Number3D other) {
-		return FloatMath.sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z));
+		return (float)Math.sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z));
 	}
 
 	public float length() {
-		return FloatMath.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+		return (float)Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 	}
 
 	public Number3D clone() {
@@ -171,33 +170,33 @@ public class Number3D {
 	}
 
 	public void rotateX(float angle) {
-		float cosRY = FloatMath.cos(angle);
-		float sinRY = FloatMath.sin(angle);
+		double cosRY = Math.cos(angle);
+		double sinRY = Math.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
-		this.y = (_temp.y * cosRY) - (_temp.z * sinRY);
-		this.z = (_temp.y * sinRY) + (_temp.z * cosRY);
+		this.y = (float)((_temp.y * cosRY) - (_temp.z * sinRY));
+		this.z = (float)((_temp.y * sinRY) + (_temp.z * cosRY));
 	}
 
 	public void rotateY(float angle) {
-		float cosRY = FloatMath.cos(angle);
-		float sinRY = FloatMath.sin(angle);
+		double cosRY = Math.cos(angle);
+		double sinRY = Math.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
-		this.x = (_temp.x * cosRY) + (_temp.z * sinRY);
-		this.z = (_temp.x * -sinRY) + (_temp.z * cosRY);
+		this.x = (float)((_temp.x * cosRY) + (_temp.z * sinRY));
+		this.z = (float)((_temp.x * -sinRY) + (_temp.z * cosRY));
 	}
 
 	public void rotateZ(float angle) {
-		float cosRY = FloatMath.cos(angle);
-		float sinRY = FloatMath.sin(angle);
+		double cosRY = Math.cos(angle);
+		double sinRY = Math.sin(angle);
 
 		_temp.setAll(this.x, this.y, this.z);
 
-		this.x = (_temp.x * cosRY) - (_temp.y * sinRY);
-		this.y = (_temp.x * sinRY) + (_temp.y * cosRY);
+		this.x = (float)((_temp.x * cosRY) - (_temp.y * sinRY));
+		this.y = (float)((_temp.x * sinRY) + (_temp.y * cosRY));
 	}
 
 	@Override
@@ -296,15 +295,15 @@ public class Number3D {
 			axis.normalize();
 			q.fromAngleAxis(MathUtil.radiansToDegrees(MathUtil.PI), axis);
 		} else {
-			float s = FloatMath.sqrt((1 + d) * 2);
-			float invs = 1f / s;
+			double s = Math.sqrt((1 + d) * 2);
+			double invs = 1f / s;
 
 			Number3D c = Number3D.cross(v0, v1);
 
-			q.x = c.x * invs;
-			q.y = c.y * invs;
-			q.z = c.z * invs;
-			q.w = s * 0.5f;
+			q.x = (float)(c.x * invs);
+			q.y = (float)(c.y * invs);
+			q.z = (float)(c.z * invs);
+			q.w = (float)(s * 0.5);
 			q.normalize();
 		}
 		return q;
