@@ -1,6 +1,7 @@
 package rajawali.materials;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import rajawali.Camera;
@@ -459,7 +460,7 @@ public abstract class AMaterial {
 		
 	}
 	
-	public void setLights(Stack<ALight> lights) {
+	public void setLights(List<ALight> lights) {
 		if(lights == null || lights.size() == 0)
 			return;
 		for(int i=0; i<lights.size(); ++i) {

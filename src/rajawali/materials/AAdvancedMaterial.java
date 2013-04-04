@@ -1,12 +1,12 @@
 package rajawali.materials;
 
-import java.util.Stack;
+import java.util.List;
 
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
-import rajawali.lights.SpotLight;
 import rajawali.lights.PointLight;
+import rajawali.lights.SpotLight;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
@@ -104,7 +104,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	@Override
-	public void setLights(Stack<ALight> lights) {
+	public void setLights(List<ALight> lights) {
 		if(lights.size() != mLights.size() && lights.size() != 0) {
 			super.setLights(lights);
 			setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
