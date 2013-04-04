@@ -81,6 +81,14 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mGeometry = new Geometry3D();
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
+		
+		//Initialize the matrices to identity
+		Matrix.setIdentityM(mMMatrix, 0);
+		Matrix.setIdentityM(mScalematrix, 0);
+		Matrix.setIdentityM(mRotateMatrix, 0);
+		Matrix.setIdentityM(mRotateMatrixTmp, 0);
+		Matrix.setIdentityM(mTranslateMatrix, 0);
+		Matrix.setIdentityM(mTmpMatrix, 0);
 	}
 
 	public BaseObject3D(String name) {
