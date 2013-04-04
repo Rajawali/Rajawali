@@ -80,7 +80,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mGeometry = new Geometry3D();
 		mLights = new Stack<ALight>();
 		Matrix.setIdentityM(mMMatrix, 0);
-		Matrix.setIdentityM(mProjMatrix, 0);
 		Matrix.setIdentityM(mScalematrix, 0);
 		Matrix.setIdentityM(mTranslateMatrix, 0);
 		Matrix.setIdentityM(mRotateMatrix, 0);
