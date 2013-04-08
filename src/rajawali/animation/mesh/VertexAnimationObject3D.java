@@ -1,5 +1,6 @@
 package rajawali.animation.mesh;
 
+import android.opengl.GLES20;
 import android.os.SystemClock;
 
 import rajawali.Camera;
@@ -98,6 +99,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 			clone.addFrame(getFrame(i));
 		}
 		clone.setFps(mFps);
+		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 		return clone;
 	}
 
