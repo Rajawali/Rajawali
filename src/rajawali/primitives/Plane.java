@@ -65,8 +65,8 @@ public class Plane extends BaseObject3D {
             	textureCoords[texCoordCount++] = mRotatedTexCoords ? 1.0f - t1 : t2;
             	
             	normals[vertexCount] = 0;
-            	normals[vertexCount+1] = 1;
-            	normals[vertexCount+2] = 0;
+            	normals[vertexCount+1] = mDirection == 0 ? 1 : 0;
+            	normals[vertexCount+2] = mDirection == 0 ? 0 : -1;
             	
             	vertexCount += 3;
             }
