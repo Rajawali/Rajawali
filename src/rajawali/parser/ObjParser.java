@@ -417,7 +417,7 @@ public class ObjParser extends AMeshParser {
 
 			boolean hasTexture = matDef != null && matDef.diffuseTexture != null;
 			boolean hasBump = matDef != null && matDef.bumpTexture != null;
-			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000;
+			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000 && matDef.specularCoefficient > 0;
 			
 			AMaterial mat = null;
 			
