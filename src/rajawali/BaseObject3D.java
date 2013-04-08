@@ -661,14 +661,17 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		if (mGeometry.getColors() != null)
 			for (i = 0; i < mGeometry.getColors().capacity(); i++)
 				ser.getColors()[i] = mGeometry.getColors().get(i);
-		if (!mGeometry.areOnlyShortBuffersSupported()) {
-			IntBuffer buff = (IntBuffer) mGeometry.getIndices();
-			for (i = 0; i < mGeometry.getIndices().capacity(); i++)
-				ser.getIndices()[i] = buff.get(i);
-		} else {
-			ShortBuffer buff = (ShortBuffer) mGeometry.getIndices();
-			for (i = 0; i < mGeometry.getIndices().capacity(); i++)
-				ser.getIndices()[i] = buff.get(i);
+		if (mGeometry.getIndices() != null)
+		{
+			if (!mGeometry.areOnlyShortBuffersSupported()) {
+				IntBuffer buff = (IntBuffer) mGeometry.getIndices();
+				for (i = 0; i < mGeometry.getIndices().capacity(); i++)
+					ser.getIndices()[i] = buff.get(i);
+			} else {
+				ShortBuffer buff = (ShortBuffer) mGeometry.getIndices();
+				for (i = 0; i < mGeometry.getIndices().capacity(); i++)
+					ser.getIndices()[i] = buff.get(i);
+			}
 		}
 
 		return ser;
