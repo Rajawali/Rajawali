@@ -112,6 +112,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void setCamera(Camera mCamera) {
 		this.mCamera = mCamera;
+		mCamera.setProjectionMatrix(mViewportWidth, mViewportHeight);
 	}
 
 	public Camera getCamera() {
