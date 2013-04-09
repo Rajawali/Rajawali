@@ -719,6 +719,28 @@ public class TextureManager {
 		return textureInfo;
 	}
 	
+	public void updateCubemapTextures(TextureInfo textureInfo, Bitmap[] textures)
+	{
+		textureInfo.setTextures(textures);
+		mShouldUpdateTextures = true;
+		mTexturesToUpdate.add(textureInfo);
+	}
+	
+	public void updateCubemapTextures(TextureInfo textureInfo)
+	{
+		Bitmap[] textures = textureInfo.getTextures();
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureInfo.getTextureId());
+		
+		for(int i=0; i<6; i++) {
+			int bitmapFormat = textures[i].getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
+			GLUtils.texSubImage2D(CUBE_FACES[i], 0, 0, 0, textures[i], bitmapFormat, GLES20.GL_UNSIGNED_BYTE);
+		}
+		if(textureInfo.isMipmap())
+        	GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+	}
+	
 	public int getNumTextures() {
 		return mTextureInfoList.size();
 	}
@@ -820,7 +842,13 @@ public class TextureManager {
 		}
 		if(mShouldUpdateTextures) {
 			while(!mTexturesToUpdate.isEmpty())
-				updateTexture(mTexturesToUpdate.pop());
+			{
+				TextureInfo tInfo = mTexturesToUpdate.pop();
+				if(tInfo.isCubeMap())
+					updateCubemapTextures(tInfo);
+				else
+					updateTexture(tInfo);
+			}
 			mShouldUpdateTextures = false;
 		}
 	}

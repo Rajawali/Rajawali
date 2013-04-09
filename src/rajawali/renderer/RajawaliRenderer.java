@@ -75,6 +75,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
+	protected TextureInfo mSkyboxTextureInfo;
 	protected static int mMaxLights = 1;
 
 	protected ColorPickerInfo mPickerInfo;
@@ -437,15 +438,17 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	protected void setSkybox(int resourceId) {
+		mCamera.setFarPlane(1000);
 		mSkybox = new Cube(700, true, false);
 		mSkybox.setDoubleSided(true);
-		TextureInfo tInfo = mTextureManager.addTexture(BitmapFactory.decodeResource(mContext.getResources(), resourceId));
+		mSkyboxTextureInfo = mTextureManager.addTexture(BitmapFactory.decodeResource(mContext.getResources(), resourceId));
 		SimpleMaterial material = new SimpleMaterial();
-		material.addTexture(tInfo);
+		material.addTexture(mSkyboxTextureInfo);
 		mSkybox.setMaterial(material);
 	}
 
 	protected void setSkybox(int front, int right, int back, int left, int up, int down) {
+		mCamera.setFarPlane(1000);
 		mSkybox = new Cube(700, true);
 
 		Bitmap[] textures = new Bitmap[6];
@@ -456,10 +459,26 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		textures[4] = BitmapFactory.decodeResource(mContext.getResources(), front);
 		textures[5] = BitmapFactory.decodeResource(mContext.getResources(), back);
 
-		TextureInfo tInfo = mTextureManager.addCubemapTextures(textures);
+		mSkyboxTextureInfo = mTextureManager.addCubemapTextures(textures);
 		SkyboxMaterial mat = new SkyboxMaterial();
-		mat.addTexture(tInfo);
+		mat.addTexture(mSkyboxTextureInfo);
 		mSkybox.setMaterial(mat);
+	}
+	
+	protected void updateSkybox(int resourceId) {
+		mTextureManager.updateTexture(mSkyboxTextureInfo, BitmapFactory.decodeResource(mContext.getResources(), resourceId));
+	}
+	
+	protected void updateSkybox(int front, int right, int back, int left, int up, int down) {
+		Bitmap[] textures = new Bitmap[6];
+		textures[0] = BitmapFactory.decodeResource(mContext.getResources(), left);
+		textures[1] = BitmapFactory.decodeResource(mContext.getResources(), right);
+		textures[2] = BitmapFactory.decodeResource(mContext.getResources(), up);
+		textures[3] = BitmapFactory.decodeResource(mContext.getResources(), down);
+		textures[4] = BitmapFactory.decodeResource(mContext.getResources(), front);
+		textures[5] = BitmapFactory.decodeResource(mContext.getResources(), back);
+
+		mTextureManager.updateCubemapTextures(mSkyboxTextureInfo, textures);
 	}
 
 	public boolean removeChild(BaseObject3D child) {
