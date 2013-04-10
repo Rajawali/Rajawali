@@ -16,6 +16,7 @@ public class OrthographicCamera extends Camera
 	{
 		float aspect = (float)width / (float)height;
 		Matrix.orthoM(mProjMatrix, 0, -aspect, aspect, -1, 1, getNearPlane(), getFarPlane());
+		mProjMatrix[15] = mZoom;
 	}
 	
 	public void setZoom(float zoom)
