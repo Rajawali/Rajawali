@@ -19,6 +19,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
+/**
+ * Use this class if you are you supporting SDK 8-10 (2.2-2.3.3).
+ */
 public class RajawaliFragmentActivity extends FragmentActivity {
 	protected GLSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
