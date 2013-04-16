@@ -39,7 +39,6 @@ public class ParticleMaterial extends AParticleMaterial {
 		"		position.z += aVelocity.z * uFriction.z * uTime; }" +
 		"	gl_Position = uMVPMatrix * position;\n" +
 		"	vec3 cp = vec3(uCamPos);\n" +
-		"	cp.x *= -1.0;\n" +
 		"	float pdist = length(cp - position.xyz);\n" +
 		"	gl_PointSize = uPointSize / sqrt(uDistanceAtt.x + uDistanceAtt.y * pdist + uDistanceAtt.z * pdist * pdist);\n" +
 		"	#ifdef ANIMATED\n" +

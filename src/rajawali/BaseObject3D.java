@@ -227,7 +227,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
 		}
 
-		Matrix.translateM(mMMatrix, 0, -mPosition.x, mPosition.y, mPosition.z);
+		Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
 		Matrix.setIdentityM(mTmpMatrix, 0);
 		Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
 		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);

@@ -131,7 +131,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 					fc.append("else {\n");
 						fc.append("spot_factor = 0.0;\n");
 					fc.append("}\n");
-					fc.append("L = vec3(L.y, -L.x, L.z);\n");
+					fc.append("L = vec3(L.y, L.x, L.z);\n");
 					fc.append("}\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");

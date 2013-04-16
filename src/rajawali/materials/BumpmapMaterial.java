@@ -22,7 +22,6 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 			"void main() {\n" +
 			"   vec3 Kd = vec3(0.0);\n" +
 			"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);" +
-			"	bumpnormal.z = -bumpnormal.z;" +
 			"	bumpnormal = normalize(bumpnormal + N);" +
 		    "	float intensity = 0.0;" +
 		    "	vec3 L = vec3(0.0);\n" +

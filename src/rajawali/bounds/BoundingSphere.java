@@ -56,7 +56,6 @@ public class BoundingSphere implements IBoundingVolume {
 	public void transform(float[] matrix) {
 		mPosition.setAll(0, 0, 0);
 		mPosition.multiply(matrix);
-		mPosition.x = -mPosition.x;
 		
 		mTmpPos.setAll(matrix[0], matrix[1], matrix[2]);
 		mScaleValues[0] = mTmpPos.length();

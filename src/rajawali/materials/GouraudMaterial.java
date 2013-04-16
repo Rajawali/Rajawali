@@ -186,7 +186,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 					vc.append("else {\n");
 						vc.append("spot_factor = 0.0;\n");
 					vc.append("}\n");
-					vc.append("L = vec3(L.y, -L.x, L.z);\n");
+					vc.append("L = vec3(L.y, L.x, L.z);\n");
 					vc.append("}\n");
 			}  else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("L = normalize(-uLightDirection").append(i).append(");");

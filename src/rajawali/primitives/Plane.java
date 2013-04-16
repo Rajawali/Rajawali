@@ -54,7 +54,7 @@ public class Plane extends BaseObject3D {
 	            	vertices[vertexCount+2] = ((float)j / (float)mSegmentsH - 0.5f) * mHeight;
             	}
             	else {
-	            	vertices[vertexCount+1] = ((float)j / (float)mSegmentsH - 0.5f) * mHeight;
+	            	vertices[vertexCount+1] = ((float)j / (float)mSegmentsH - 0.5f) * -mHeight;
 	            	vertices[vertexCount+2] = 0;
             	}
             	
@@ -66,7 +66,7 @@ public class Plane extends BaseObject3D {
             	
             	normals[vertexCount] = 0;
             	normals[vertexCount+1] = mDirection == 0 ? 1 : 0;
-            	normals[vertexCount+2] = mDirection == 0 ? 0 : -1;
+            	normals[vertexCount+2] = mDirection == 0 ? 0 : 1;
             	
             	vertexCount += 3;
             }

@@ -1,9 +1,9 @@
 package rajawali.animation;
 
-import android.view.animation.Interpolator;
 import rajawali.ATransformable3D;
 import rajawali.BaseObject3D;
 import rajawali.math.Number3D;
+import android.view.animation.Interpolator;
 
 public class TranslateAnimation3D extends Animation3D {
 	protected Number3D mToPosition;
@@ -13,7 +13,8 @@ public class TranslateAnimation3D extends Animation3D {
 	protected Number3D mAddedPosition = new Number3D();
 	protected boolean mOrientToPath = false;
 	protected ISpline mSplinePath;
-
+	protected float mDelta;
+	
 	public TranslateAnimation3D(Number3D toPosition) {
 		super();
 		mToPosition = toPosition;
@@ -75,6 +76,7 @@ public class TranslateAnimation3D extends Animation3D {
 
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
+		super.applyTransformation(interpolatedTime);
 		if (mSplinePath == null) {
 			if (mDiffPosition == null)
 				mDiffPosition = Number3D.subtract(mToPosition, mFromPosition);
@@ -88,7 +90,7 @@ public class TranslateAnimation3D extends Animation3D {
 			mTransformable3D.getPosition().setAllFrom(pathPoint);
 
 			if (mOrientToPath) {
-				mTransformable3D.setLookAt(mSplinePath.getCurrentTangent());
+				mTransformable3D.setLookAt(mSplinePath.calculatePoint(interpolatedTime + (mDelta * mDirection)));
 			}
 		}
 	}
@@ -100,5 +102,10 @@ public class TranslateAnimation3D extends Animation3D {
 	public void setOrientToPath(boolean orientToPath) {
 		this.mOrientToPath = orientToPath;
 		mSplinePath.setCalculateTangents(orientToPath);
+	}
+	
+	public void setDuration(long duration) {
+		super.setDuration(duration);
+		mDelta = 300.f / duration;
 	}
 }

@@ -34,6 +34,7 @@ public class Animation3D {
 	protected Timer mTimer;
 	protected ATransformable3D mTransformable3D;
 	protected Animation3D mInstance;
+	protected float mInterpolatedTime;
 
 	public Animation3D() {
 		mInstance = this;
@@ -126,7 +127,11 @@ public class Animation3D {
 	}
 
 	protected void applyTransformation(float interpolatedTime) {
-
+		this.mInterpolatedTime = interpolatedTime;
+	}
+	
+	public float getCurrentTime() {
+		return this.mInterpolatedTime; 
 	}
 
 	public ATransformable3D getTransformable3D() {

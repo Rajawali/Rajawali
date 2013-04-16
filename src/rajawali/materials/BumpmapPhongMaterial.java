@@ -31,7 +31,6 @@ public class BumpmapPhongMaterial extends PhongMaterial {
 			"	vec3 E = normalize(vEyeVec);\n" +
 			"	vec3 L = vec3(0.0);\n" +
 			"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);" +
-			"	bumpnormal.z = -bumpnormal.z;" +
 			"	bumpnormal = normalize(bumpnormal + N);" +
 			
 			"%LIGHT_CODE%" +

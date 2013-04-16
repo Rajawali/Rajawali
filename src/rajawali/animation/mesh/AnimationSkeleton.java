@@ -4,18 +4,17 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import android.opengl.GLES20;
-import android.opengl.Matrix;
-import android.os.SystemClock;
-import rajawali.BaseObject3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D.BufferType;
 import rajawali.math.Number3D;
 import rajawali.math.Quaternion;
 import rajawali.util.BufferUtil;
-import rajawali.util.RajLog;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
+import rajawali.util.RajLog;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
+import android.os.SystemClock;
 
 public class AnimationSkeleton extends AAnimationObject3D {
 
