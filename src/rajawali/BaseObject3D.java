@@ -695,6 +695,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public BaseObject3D clone(boolean copyMaterial) {
 		BaseObject3D clone = new BaseObject3D();
 		cloneTo(clone, copyMaterial);
+		clone.setRotation(getRotation());
+		clone.setScale(getScale());
 		return clone;
 	}
 

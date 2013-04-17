@@ -98,6 +98,8 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		for (int i = 0; i < mNumFrames; ++i) {
 			clone.addFrame(getFrame(i));
 		}
+		clone.setRotation(getRotation());
+		clone.setScale(getScale());
 		clone.setFps(mFps);
 		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 		return clone;
