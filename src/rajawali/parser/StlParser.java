@@ -45,11 +45,11 @@ public class StlParser extends AMeshParser {
 	}
 
 	@Override
-	public AMeshParser parse() {
+	public AMeshParser parse() throws ParsingException {
 		return parse(StlType.UNKNOWN);
 	}
 
-	public AMeshParser parse(StlType type) {
+	public AMeshParser parse(StlType type) throws ParsingException {
 		super.parse();
 		try {
 
@@ -73,6 +73,7 @@ public class StlParser extends AMeshParser {
 					dis = getLittleEndianInputStream();
 					readBinary(dis);
 				}
+				break;
 			case ASCII:
 				buffer = getBufferedReader();
 				readASCII(buffer);
@@ -91,16 +92,16 @@ public class StlParser extends AMeshParser {
 
 		} catch (FileNotFoundException e) {
 			RajLog.e("[" + getClass().getCanonicalName() + "] Could not find file.");
-			e.printStackTrace();
+			throw new ParsingException("File not found.", e);
 		} catch (NumberFormatException e) {
-			// Failed to parse a number
-			e.printStackTrace();
+			RajLog.e(e.getMessage());
+			throw new ParsingException("Unexpected value.", e);
 		} catch (IOException e) {
-			// File Errors
-			e.printStackTrace();
+			RajLog.e(e.getMessage());
+			throw new ParsingException("File reading failed.", e);
 		} catch (Exception e) {
-			// o.O
-			e.printStackTrace();
+			RajLog.e(e.getMessage());
+			throw new ParsingException("Unexpected exception occured.", e);
 		}
 
 		return this;
@@ -328,7 +329,7 @@ public class StlParser extends AMeshParser {
 		return false;
 	}
 
-	public static final class StlParseException extends Exception {
+	public static final class StlParseException extends ParsingException {
 
 		private static final long serialVersionUID = -5098120548044169618L;
 
