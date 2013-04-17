@@ -9,8 +9,8 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 import rajawali.animation.mesh.AAnimationObject3D;
-import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.AnimationSkeleton;
+import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.SkeletonJoint;
 import rajawali.materials.GPUSkinningMaterial;
 import rajawali.materials.TextureManager;
@@ -68,7 +68,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	}
 	
 	@Override
-	public MD5MeshParser parse() {
+	public MD5MeshParser parse() throws ParsingException {
 		super.parse();
 		
 		BufferedReader buffer = null;

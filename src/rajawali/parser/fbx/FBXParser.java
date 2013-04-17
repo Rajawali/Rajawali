@@ -88,7 +88,7 @@ public class FBXParser extends AMeshParser {
 	}
 	
 	@Override
-	public FBXParser parse() {
+	public FBXParser parse() throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {

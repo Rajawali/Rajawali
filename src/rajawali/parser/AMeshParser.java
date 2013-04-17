@@ -21,7 +21,7 @@ public abstract class AMeshParser extends AParser implements IMeshParser {
 		mRootObject = new BaseObject3D();
 	}
 	
-	public AMeshParser parse() {
+	public AMeshParser parse() throws ParsingException {
 		super.parse();
 		return this;
 	}

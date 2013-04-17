@@ -50,7 +50,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 		return (AAnimationObject3D) mRootObject;
 	}
 
-	public MD2Parser parse() {
+	public MD2Parser parse() throws ParsingException {
 		super.parse();
 		BufferedInputStream stream = null;
 		if (mFile == null) {
