@@ -39,7 +39,33 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			"\n#ifdef FOG_ENABLED\n" +
 			"	gl_FragColor.rgb = mix(gl_FragColor.rgb, uFogColor, vFogDensity);\n" +
 			"#endif\n";
+	public static final String M_SKELETAL_ANIM_VERTEX_VARS = 
+			"\n#ifdef SKELETAL_ANIM\n" + 
+			"uniform mat4 uBoneMatrix[%NUM_JOINTS%];\n" +
+			"attribute vec4 vBoneIndex1;\n" +
+			"attribute vec4 vBoneWeight1;\n" +
+			"	#ifdef VERTEX_WEIGHT_8\n" +
+			"		attribute vec4 vBoneIndex2;\n" +
+			"		attribute vec4 vBoneWeight2;\n" +
+			"	#endif\n" + 
+			"#endif\n";
+	public static final String M_SKELETAL_ANIM_VERTEX_MATRIX =
+			"\n#ifdef SKELETAL_ANIM\n" +
+			"mat4 TransformedMatrix = (vBoneWeight1.x * uBoneMatrix[int(vBoneIndex1.x)]) + \n" +
+			"	(vBoneWeight1.y * uBoneMatrix[int(vBoneIndex1.y)]) + \n" +
+			"	(vBoneWeight1.z * uBoneMatrix[int(vBoneIndex1.z)]) + \n" +
+			"	(vBoneWeight1.w * uBoneMatrix[int(vBoneIndex1.w)]);\n" +
+			
+			"	#ifdef VERTEX_WEIGHT_8\n" +
+			"		TransformedMatrix = TransformedMatrix + (vBoneWeight2.x * uBoneMatrix[int(vBoneIndex2.x)]) + \n" +
+			"		(vBoneWeight2.y * uBoneMatrix[int(vBoneIndex2.y)]) + \n" +
+			"		(vBoneWeight2.z * uBoneMatrix[int(vBoneIndex2.z)]) + \n" +
+			 "		(vBoneWeight2.w * uBoneMatrix[int(vBoneIndex2.w)]);\n"	+
+			"	#endif\n" +
+			"#endif\n";
 
+
+	
 	/**
 	 * @deprecated Replaced by {@link #M_FOG_VERTEX_DENSITY}
 	 */
@@ -74,6 +100,16 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected float[] mFogColor;
 	protected float mFogNear, mFogFar;
 	protected boolean mFogEnabled;
+
+	// -- skeletal animation
+	private int mvBoneIndex1Handle;
+	private int mvBoneWeight1Handle;
+	private int mvBoneIndex2Handle;
+	private int mvBoneWeight2Handle;
+	private int muBoneMatrixHandle;
+	
+	private int mNumJoints;
+	private int mMaxWeights;
 	
 	protected android.graphics.Matrix mTmpNormalMatrix = new android.graphics.Matrix();
 	protected android.graphics.Matrix mTmpMvMatrix = new android.graphics.Matrix();
@@ -193,6 +229,57 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mFogEnabled = enabled;
 	}
 	
+	public void setNumJoints(int numJoints)
+	{
+		mNumJoints = numJoints;
+	}
+	
+	public void setMaxWeights(int maxWeights)
+	{
+		mMaxWeights = maxWeights;
+	}	
+	
+	public void setBone1Indexes(final int boneIndex1BufferHandle) {
+		if(checkValidHandle(boneIndex1BufferHandle, "bone indexes 1 data")){
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneIndex1BufferHandle);
+			GLES20.glEnableVertexAttribArray(mvBoneIndex1Handle);
+			fix.android.opengl.GLES20.glVertexAttribPointer(mvBoneIndex1Handle, 4, GLES20.GL_FLOAT,
+					false, 0, 0);
+		}
+	}
+	
+	public void setBone2Indexes(final int boneIndex2BufferHandle) {
+		if(checkValidHandle(boneIndex2BufferHandle, "bone indexes 2 data")){
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneIndex2BufferHandle);
+			GLES20.glEnableVertexAttribArray(mvBoneIndex2Handle);
+			fix.android.opengl.GLES20.glVertexAttribPointer(mvBoneIndex2Handle, 4, GLES20.GL_FLOAT,
+					false, 0, 0);
+		}
+	}
+	
+	public void setBone1Weights(final int boneWeights1BufferHandle) {
+		if(checkValidHandle(boneWeights1BufferHandle, "bone weights 1 data")){
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneWeights1BufferHandle);
+			GLES20.glEnableVertexAttribArray(mvBoneWeight1Handle);
+			fix.android.opengl.GLES20.glVertexAttribPointer(mvBoneWeight1Handle, 4, GLES20.GL_FLOAT,
+					false, 0, 0);
+		}
+	}
+	
+	public void setBone2Weights(final int boneWeights2BufferHandle) {
+		if(checkValidHandle(boneWeights2BufferHandle, "bone weights 2 data")){
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneWeights2BufferHandle);
+			GLES20.glEnableVertexAttribArray(mvBoneWeight2Handle);
+			fix.android.opengl.GLES20.glVertexAttribPointer(mvBoneWeight2Handle, 4, GLES20.GL_FLOAT,
+					false, 0, 0);
+		}
+	}
+	
+	public void setBoneMatrix(float[] boneMatrix) {
+		if(checkValidHandle(muBoneMatrixHandle, null))
+			GLES20.glUniformMatrix4fv(muBoneMatrixHandle, mNumJoints, false, boneMatrix, 0);
+	}
+	
 	@Override
 	public void useProgram() {
 		super.useProgram();
@@ -238,6 +325,12 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			lightVars.append("uniform float uSpotFalloff").append(i).append(";\n");
 		}
 		vertexShader = vertexShader.replace("%LIGHT_VARS%", lightVars.toString());
+		if(mSkeletalAnimationEnabled)
+		{
+			if(mMaxWeights > 4)
+			vertexShader = "\n#define VERTEX_WEIGHT_8\n" + vertexShader;	
+			vertexShader = vertexShader.replace("%NUM_JOINTS%", Integer.toString(mNumJoints));
+		}
 		fragmentShader = fragmentShader.replace("%LIGHT_VARS%", lightVars.toString());
 		
 		super.setShaders(vertexShader, fragmentShader);
@@ -268,6 +361,19 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			muFogNearHandle = getUniformLocation("uFogNear");
 			muFogFarHandle = getUniformLocation("uFogFar");
 			muFogEnabledHandle = getUniformLocation("uFogEnabled");
+		}
+		
+		if(mSkeletalAnimationEnabled)
+		{
+			mvBoneIndex1Handle = getAttribLocation("vBoneIndex1");
+			mvBoneWeight1Handle = getAttribLocation("vBoneWeight1");
+			
+			if(mMaxWeights>4){//TODO check if maxWeights > 8 -> throw exception
+				mvBoneIndex2Handle = getAttribLocation("vBoneIndex2");
+				mvBoneWeight2Handle = getAttribLocation("vBoneWeight2");
+			}
+			
+			muBoneMatrixHandle = getUniformLocation("uBoneMatrix");
 		}
 	}
 	

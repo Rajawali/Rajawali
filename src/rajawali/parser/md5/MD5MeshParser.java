@@ -12,7 +12,8 @@ import rajawali.animation.mesh.AAnimationObject3D;
 import rajawali.animation.mesh.AnimationSkeleton;
 import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.SkeletonJoint;
-import rajawali.materials.GPUSkinningMaterial;
+import rajawali.materials.AMaterial;
+import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.parser.AMeshParser;
@@ -396,7 +397,9 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			
 			boolean hasTexture = mesh.shader != null && mesh.shader.length() > 0;
 			
-			GPUSkinningMaterial mat = new GPUSkinningMaterial(mNumJoints, mesh.maxNumWeights);
+			DiffuseMaterial mat = new DiffuseMaterial(AMaterial.SKELETAL_ANIMATION);
+			mat.setNumJoints(mNumJoints);
+			mat.setMaxWeights(mesh.maxNumWeights);
 			o.setMaterial(mat);
 			if(!hasTexture) {
 				mat.setUseColor(!hasTexture);

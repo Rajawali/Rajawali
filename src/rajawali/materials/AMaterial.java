@@ -15,6 +15,7 @@ import android.opengl.GLES20;
 public abstract class AMaterial {
 	public static final int NONE				= 0;
 	public static final int VERTEX_ANIMATION 	= 1 << 0;
+	public static final int SKELETAL_ANIMATION	= 1 << 1;
 	
 	protected String mUntouchedVertexShader;
 	protected String mUntouchedFragmentShader;
@@ -56,6 +57,7 @@ public abstract class AMaterial {
 	private boolean mProgramCreated = false;
 	
 	protected boolean mVertexAnimationEnabled;
+	protected boolean mSkeletalAnimationEnabled;
 	
 	public AMaterial() {
 		mTextureInfoList = new ArrayList<TextureInfo>();
@@ -73,11 +75,13 @@ public abstract class AMaterial {
 		mUntouchedVertexShader = vertexShader;
 		mUntouchedFragmentShader = fragmentShader;
 		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
+		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
 	}
 	
 	public AMaterial(int parameters) {
 		this();
 		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
+		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
 	}
 	
 	protected int queryMaxTextures() {
@@ -103,6 +107,7 @@ public abstract class AMaterial {
 	
 	public void setShaders(String vertexShader, String fragmentShader) {
 		mVertexShader = mVertexAnimationEnabled ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
+		mVertexShader = mSkeletalAnimationEnabled ? "#define SKELETAL_ANIM\n" + mVertexShader : mVertexShader;
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
 		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
 		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;

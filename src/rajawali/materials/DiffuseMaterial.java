@@ -22,6 +22,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		
 		M_FOG_VERTEX_VARS +
 		"%LIGHT_VARS%" +
+		M_SKELETAL_ANIM_VERTEX_VARS + 
 		
 		"\n#ifdef VERTEX_ANIM\n" +
 		"attribute vec4 aNextFramePosition;\n" +
@@ -30,6 +31,9 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"#endif\n\n" +
 		
 		"void main() {\n" +
+		
+		M_SKELETAL_ANIM_VERTEX_MATRIX +
+		
 		"	vec4 position = aPosition;\n" +
 		"	float dist = 0.0;\n" +
 		"	vec3 normal = aNormal;\n" +
@@ -37,10 +41,18 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
 		"	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);\n" +
 		"	#endif\n" +
-
+		
+		"#ifdef SKELETAL_ANIM\n" +
+		"	gl_Position = uMVPMatrix * TransformedMatrix * position;\n" +
+		"#else\n" +
 		"	gl_Position = uMVPMatrix * position;\n" +
+		"#endif\n" +
 		"	vTextureCoord = aTextureCoord;\n" +
+		"#ifdef SKELETAL_ANIM\n" +
+		"	N = normalize(uNMatrix * mat3(TransformedMatrix) * normal);\n" +
+		"#else\n" +
 		"	N = normalize(uNMatrix * normal);\n" +
+		"#endif\n" +
 		"	V = uMMatrix * position;\n" +
 		"#ifndef TEXTURED\n" +
 		"	vColor = aColor;\n" +

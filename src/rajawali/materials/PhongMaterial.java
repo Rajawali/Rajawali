@@ -27,6 +27,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 
 		M_FOG_VERTEX_VARS +
 		"%LIGHT_VARS%" +
+		M_SKELETAL_ANIM_VERTEX_VARS +
 
 		"\n#ifdef VERTEX_ANIM\n" +
 		"attribute vec4 aNextFramePosition;\n" +
@@ -35,6 +36,9 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"#endif\n\n" +
 
 		"void main() {\n" +
+		
+		M_SKELETAL_ANIM_VERTEX_MATRIX +
+		
 		"	float dist = 0.0;\n" +
 		"	vec4 position = aPosition;\n" +
 		"	vec3 normal = aNormal;\n" +
@@ -42,11 +46,22 @@ public class PhongMaterial extends AAdvancedMaterial {
 		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
 		"	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);\n" +
 		"	#endif\n" +
+		
+		"#ifdef SKELETAL_ANIM\n" +
+		"	gl_Position = uMVPMatrix * TransformedMatrix * position;\n" +
+		"#else\n" +
 		"	gl_Position = uMVPMatrix * position;\n" +
+		"#endif\n" +
+		
 		"	vTextureCoord = aTextureCoord;\n" +
 
 		"	vEyeVec = -vec3(uMMatrix  * position);\n" +
+		
+		"#ifdef SKELETAL_ANIM\n" +
+		"	vNormal = normalize(uNMatrix * mat3(TransformedMatrix) * normal);\n" +
+		"#else\n" +
 		"	vNormal = normalize(uNMatrix * normal);\n" +
+		"#endif\n" +
 
 		"%LIGHT_CODE%" +
 
@@ -127,6 +142,12 @@ public class PhongMaterial extends AAdvancedMaterial {
 
 	public PhongMaterial(boolean isAnimated) {
 		this(mVShader, mFShader, isAnimated);
+	}
+	
+	public PhongMaterial(int parameters) {
+		super(mVShader, mFShader, parameters);
+		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+		mShininess = 96.0f;
 	}
 
 	public PhongMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {

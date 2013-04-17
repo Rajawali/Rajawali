@@ -8,8 +8,7 @@ import rajawali.BaseObject3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D.BufferType;
-import rajawali.materials.GPUSkinningMaterial;
-import rajawali.math.Number3D;
+import rajawali.materials.AAdvancedMaterial;
 import rajawali.parser.md5.MD5MeshParser.MD5Mesh;
 import rajawali.parser.md5.MD5MeshParser.MD5Vert;
 import rajawali.parser.md5.MD5MeshParser.MD5Weight;
@@ -53,9 +52,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	 * FloatBuffer containing bone indexes if the maxWeightCoun > 4
 	 * Current implementation supports up to 8 joint weights per vertex 
 	 */
-	protected FloatBuffer mboneIndexes2;
-	
-	
+	protected FloatBuffer mboneIndexes2;	
 	
 	public BoneAnimationObject3D() {
 		super();
@@ -64,75 +61,15 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	
 	public void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
-		if(mMaterial instanceof GPUSkinningMaterial) {
-			GPUSkinningMaterial material = (GPUSkinningMaterial) mMaterial;
-			material.setBone1Indexes(mboneIndexes1BufferInfo.bufferHandle);
-			material.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
-			if(mMesh.maxNumWeights>4){
-				material.setBone2Indexes(mboneIndexes2BufferInfo.bufferHandle);
-				material.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
-			}
-			material.setBoneMatrix(mSkeleton.uBoneMatrix);
-			return;
+		AAdvancedMaterial material = (AAdvancedMaterial)mMaterial;
+		material.setBone1Indexes(mboneIndexes1BufferInfo.bufferHandle);
+		material.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
+		if(mMesh.maxNumWeights>4){
+			material.setBone2Indexes(mboneIndexes2BufferInfo.bufferHandle);
+			material.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
 		}
-		if(!mIsPlaying || mIsContainerOnly) return;
-		prepareMesh();
+		material.setBoneMatrix(mSkeleton.uBoneMatrix);
 	}
-	
-	private void prepareMesh()
-	{
-		Number3D position = new Number3D();
-		Number3D normal = new Number3D();
-		Number3D rotPos = new Number3D();
-		int index = 0;
-		
-		FloatBuffer vBuff = mGeometry.getVertices();
-		FloatBuffer nBuff = mGeometry.getNormals();
-		vBuff.clear();
-		nBuff.clear();
-		vBuff.position(0);
-		nBuff.position(0);
-		
-	    for(int i = 0; i<mMesh.numVerts; ++i)
-	    {
-	        MD5Vert vert = mMesh.verts[i];
-	        index = i * 3;
-	        
-	        position.setAll(0, 0, 0);
-	        normal.setAll(0, 0, 0);
-	 
-	        for ( int j = 0; j < vert.weightElem; ++j )
-	        {
-	            MD5Weight weight = mMesh.weights[vert.weightIndex + j];
-	            SkeletonJoint joint = mSkeleton.getJoint(weight.jointIndex);
-
-	            rotPos = joint.getOrientation().multiply(weight.position);
-	            
-				Number3D pos = Number3D.add(joint.getPosition(), rotPos);
-				pos.multiply(weight.weightValue);
-				position.add(pos);
-				
-				rotPos = joint.getOrientation().multiply(vert.normal);
-				rotPos.multiply(weight.weightValue);
-	            normal.add(rotPos);
-	        }
-	        
-	        vBuff.put(index, position.x);
-	        vBuff.put(index+1, position.y);
-	        vBuff.put(index+2, position.z);
-	        
-	        nBuff.put(index, normal.x);
-	        nBuff.put(index+1, normal.y);
-	        nBuff.put(index+2, normal.z);
-	    }
-	    
-	    vBuff.position(0);
-	    nBuff.position(0);
-	    
-	    mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), vBuff, 0);
-	   mGeometry.changeBufferData(mGeometry.getNormalBufferInfo(), nBuff, 0);
-	}
-	
 	
 	public void setSkeleton(BaseObject3D skeleton){
 		if(skeleton instanceof AnimationSkeleton){
@@ -157,8 +94,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 			mGeometry.createBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes2, GLES20.GL_ARRAY_BUFFER);
 			mGeometry.createBuffer(mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights2, GLES20.GL_ARRAY_BUFFER);
 		}
-	}
-	
+	}	
 	
 	private FloatBuffer alocateBuffer(FloatBuffer buffer, float[] data){
 		if(buffer == null) {
@@ -253,7 +189,5 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	    if(mboneWeights2BufferInfo != null && mboneWeights2BufferInfo.buffer != null) { mboneWeights2BufferInfo.buffer.clear(); mboneWeights2BufferInfo.buffer=null; }
 	    
 	    super.destroy();
-	}
-	
-	
+	}	
 }
