@@ -127,6 +127,13 @@ public class ParticleMaterial extends AParticleMaterial {
 	@Override
 	public void useProgram() {
 		super.useProgram();
+		GLES20.glUniform3fv(muCamPosHandle, 1, mCamPos, 0);
+		GLES20.glUniform3fv(muDistanceAttHandle, 1, mDistanceAtt, 0);
+		GLES20.glUniform3fv(muFrictionHandle, 1, mFriction, 0);
+		GLES20.glUniform1f(muTimeHandle, mTime);
+		GLES20.glUniform1f(muCurrentFrameHandle, mCurrentFrame);
+		GLES20.glUniform1f(muTileSizeHandle, mTileSize);
+		GLES20.glUniform1f(muNumTileRowsHandle, mNumTileRows);
 	}
 	
 	public void setVelocity(final int velocityBufferHandle) {
@@ -138,12 +145,10 @@ public class ParticleMaterial extends AParticleMaterial {
 	
 	public void setFriction(Number3D friction) {
 		mFriction[0] = friction.x; mFriction[1] = friction.y; mFriction[2] = friction.z;
-		GLES20.glUniform3fv(muFrictionHandle, 1, mFriction, 0);
 	}
 	
 	public void setTime(float time) {
 		mTime = time;
-		GLES20.glUniform1f(muTimeHandle, mTime);
 	}
 	
 	@Override
@@ -171,22 +176,17 @@ public class ParticleMaterial extends AParticleMaterial {
 	
 	public void setCurrentFrame(int currentFrame) {
 		mCurrentFrame = currentFrame;
-		GLES20.glUniform1f(muCurrentFrameHandle, mCurrentFrame);
 	}
 	
 	public void setTileSize(float tileSize) {
 		mTileSize = tileSize;
-		GLES20.glUniform1f(muTileSizeHandle, mTileSize);
 	}
 	
 	public void setNumTileRows(int numTileRows) {
 		mNumTileRows = numTileRows;
-		GLES20.glUniform1f(muNumTileRowsHandle, mNumTileRows);
 	}
 	
 	public void setCameraPosition(Number3D cameraPos) {
 		mCamPos[0] = cameraPos.x; mCamPos[1] = cameraPos.y; mCamPos[2] = cameraPos.z;
-		GLES20.glUniform3fv(muCamPosHandle, 1, mCamPos, 0);
-		GLES20.glUniform3fv(muDistanceAttHandle, 1, mDistanceAtt, 0);
 	}
 }
