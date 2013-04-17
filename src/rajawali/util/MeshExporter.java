@@ -207,11 +207,16 @@ public class MeshExporter {
 	}
 
 	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress, File exportDir){
-		ObjParser objParser = new ObjParser(context.getResources(), textureManager, resourceId);
-		objParser.parse();
-		BaseObject3D obj = objParser.getParsedObject();
-		MeshExporter exporter = new MeshExporter(obj);
-		exporter.setExportDirectory(exportDir);
-		exporter.export(outputName, ExportType.SERIALIZED, compress);
+		final ObjParser objParser = new ObjParser(context.getResources(), textureManager, resourceId);
+		try {
+			objParser.parse();
+			final BaseObject3D obj = objParser.getParsedObject();
+			final MeshExporter exporter = new MeshExporter(obj);
+			exporter.setExportDirectory(exportDir);
+			exporter.export(outputName, ExportType.SERIALIZED, compress);
+		} catch (Exception e) {
+			RajLog.e("Failed to serialize obj: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}	
 }

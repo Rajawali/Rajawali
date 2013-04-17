@@ -85,7 +85,7 @@ public class ObjParser extends AMeshParser {
 	}
 	
 	@Override
-	public ObjParser parse() {
+	public ObjParser parse() throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
