@@ -146,7 +146,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	
 	public void setMD5Mesh(MD5Mesh mesh) {
 		mMesh = mesh;
-		prepareBoneWeightaAndIndexea();
+		prepareBoneWeightsAndIndexes();
 		mboneIndexes1 = alocateBuffer(mboneIndexes1, boneIndexes1);
 		mboneWeights1 = alocateBuffer(mboneWeights1, boneWeights1);
 		mGeometry.createBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes1, GLES20.GL_ARRAY_BUFFER);
@@ -205,7 +205,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	 * 
 	 * 
 	 */
-	public void prepareBoneWeightaAndIndexea(){
+	public void prepareBoneWeightsAndIndexes(){
 		int weightStep = 4;//mMesh.maxNumWeights<4?4:8;
 		boneWeights1 = new float[mMesh.numVerts*4];
 		boneIndexes1 = new float[mMesh.numVerts*4];

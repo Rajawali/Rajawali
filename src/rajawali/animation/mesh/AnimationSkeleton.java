@@ -25,7 +25,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 	public float[][] mInverseBindPoseMatrix;
 	public float[] uBoneMatrix;
 
-	public BufferInfo mBoneMatricesBufferInfo = new BufferInfo();;
+	public BufferInfo mBoneMatricesBufferInfo = new BufferInfo();
 
 	/**
 	 * FloatBuffer containing joint transformation matrices
@@ -33,7 +33,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 	protected FloatBuffer mBoneMatrices;
 
 	public AnimationSkeleton() {
-
+		
 	}
 
 	public void setJoints(SkeletonJoint[] joints) {
@@ -82,7 +82,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 
 	public void setShaderParams(Camera camera) {
 		//TODO setting light params for container objects
-		super.setShaderParams(camera);
+		//super.setShaderParams(camera);
 
 		if (!mIsPlaying)
 			return;

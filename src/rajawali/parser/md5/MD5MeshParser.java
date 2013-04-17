@@ -396,7 +396,6 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			
 			boolean hasTexture = mesh.shader != null && mesh.shader.length() > 0;
 			
-//			DiffuseMaterial mat = new DiffuseMaterial();
 			GPUSkinningMaterial mat = new GPUSkinningMaterial(mNumJoints, mesh.maxNumWeights);
 			o.setMaterial(mat);
 			if(!hasTexture) {
@@ -405,7 +404,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			} else {
 				int identifier = mResources.getIdentifier(mesh.shader, "drawable", mResources.getResourcePackageName(mResourceId));
 				if(identifier == 0) {
-					RajLog.e("Couldn't find texture.");
+					RajLog.e("Couldn't find texture " + mesh.shader);
 					break;
 				}
 				o.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
