@@ -48,7 +48,7 @@ public class Max3DSParser extends AMeshParser {
 	}
 
 	@Override
-	public Max3DSParser parse() {
+	public AMeshParser parse() throws ParsingException {
 		RajLog.i("Start parsing 3DS");
 
 		InputStream stream = mResources.openRawResource(mResourceId);
@@ -73,7 +73,7 @@ public class Max3DSParser extends AMeshParser {
 			RajLog.i("End parsing 3DS");
 		} catch (IOException e) {
 			RajLog.e("Error parsing");
-			e.printStackTrace();
+			throw new ParsingException(e);
 		}
 		
 		return this;

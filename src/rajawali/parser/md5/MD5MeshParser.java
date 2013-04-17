@@ -80,7 +80,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				buffer = new BufferedReader(new FileReader(mFile));
 			} catch (FileNotFoundException e) {
 				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
-				e.printStackTrace();
+				throw new ParsingException(e);
 			}
 		}
 		String line;
@@ -116,10 +116,10 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			calculateNormals();
 			createObjects();
 		} catch (IOException e) {
-			e.printStackTrace();
 			try {
 				buffer.close();
 			} catch(Exception ex) {}
+			throw new ParsingException(e);
 		}
 		
 		return this;
