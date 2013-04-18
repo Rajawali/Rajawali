@@ -45,9 +45,16 @@ public class Animation3D {
 		float interpolatedTime;
 		long timeInPause;
 		boolean wasPaused = false;
+		boolean firstRun = true;
 		int i, j;
 
 		public void run() {	
+			if(firstRun)
+			{
+				firstRun = false;
+				mStartTime = SystemClock.uptimeMillis();
+			}
+			
 			if (mIsPaused) {
 				if (!wasPaused)	timeInPause = SystemClock.uptimeMillis();
 				wasPaused = true;
