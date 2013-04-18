@@ -161,6 +161,12 @@ public class AnimationSkeleton extends AAnimationObject3D {
 	}
 	
 	@Override
+	public void reload() {
+		super.reload();
+		mGeometry.createBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, mBoneMatrices, GLES20.GL_ARRAY_BUFFER);
+	}
+	
+	@Override
 	public void destroy() {
 	    int[] buffers  = new int[1];
 	    if(mBoneMatricesBufferInfo != null) buffers[0] = mBoneMatricesBufferInfo.bufferHandle;

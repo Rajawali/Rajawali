@@ -163,6 +163,16 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		}
 	}
 	
+	public void reload() {
+		super.reload();
+		mGeometry.createBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes1, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.createBuffer(mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights1, GLES20.GL_ARRAY_BUFFER);
+		if (mMesh.maxNumWeights>4) {
+			mGeometry.createBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes2, GLES20.GL_ARRAY_BUFFER);
+			mGeometry.createBuffer(mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights2, GLES20.GL_ARRAY_BUFFER);
+		}
+	}
+	
 	@Override
 	public void destroy() {
 	    int[] buffers  = new int[4];
