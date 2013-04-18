@@ -208,7 +208,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 */
 	public void render(Camera camera, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
 			ColorPickerInfo pickerInfo) {
-		if (!mIsVisible)
+		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
 
 		preRender();
@@ -305,10 +305,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
 
-				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
-				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,
-						0);
-				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+				if(mIsVisible)
+				{
+					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
+					fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,
+							0);
+					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+				}
 				if (!mIsPartOfBatch && !mRenderChildrenAsBatch) {
 					mMaterial.unbindTextures();
 				}
