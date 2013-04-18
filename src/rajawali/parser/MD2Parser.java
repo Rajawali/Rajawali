@@ -61,7 +61,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 				stream = new BufferedInputStream(new FileInputStream(mFile));
 			} catch (FileNotFoundException e) {
 				RajLog.e("[" + getClass().getCanonicalName() + "] Could not find file.");
-				e.printStackTrace();
+				throw new ParsingException(e);
 			}
 		}
 
@@ -98,7 +98,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 				mObject.addTexture(mTextureManager.addTexture(mTexture));
 			stream.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new ParsingException(e);
 		}
 		mObject.isContainer(false);
 		mRootObject = mObject;
