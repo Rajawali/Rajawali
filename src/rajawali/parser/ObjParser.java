@@ -219,7 +219,7 @@ public class ObjParser extends AMeshParser {
 				objIndices.add(currObjIndexData);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new ParsingException(e);
 		}
 		
 		
@@ -268,7 +268,7 @@ public class ObjParser extends AMeshParser {
 				int ni = i * 3;
 				if(normals.size() == 0) {
 					RajLog.e("["+getClass().getName()+"] There are no normals specified for this model. Please re-export with normals.");
-					throw new RuntimeException("["+getClass().getName()+"] There are no normals specified for this model. Please re-export with normals.");
+					throw new ParsingException("["+getClass().getName()+"] There are no normals specified for this model. Please re-export with normals.");
 				}
 				aNormals[ni] = normals.get(normalIndex);
 				aNormals[ni+1] = normals.get(normalIndex + 1);
