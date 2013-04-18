@@ -684,6 +684,7 @@ public class TextureManager {
 			textureInfo.setHeight(textures[0].getHeight());
 			textureInfo.setTextureType(TextureType.CUBE_MAP);
 			textureInfo.setBitmapConfig(textures[0].getConfig());
+			textureInfo.setCompressionType(CompressionType.NONE);
 			textureInfo.setMipmap(mipmap);
 			textureInfo.shouldRecycle(recycle);			
 			textureInfo.setIsCubeMap(true);
