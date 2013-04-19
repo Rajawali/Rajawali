@@ -71,7 +71,23 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	@Deprecated
 	protected boolean mClearChildren = true;
 
+	/**
+	* The camera currently in use.
+	* Not thread safe for speed, should
+	* only be used by GL thread (onDrawFrame() and render())
+	* or prior to rendering such as initScene(). 
+	*/
 	protected Camera mCamera;
+	/**
+	* List of all cameras in the scene.
+	*/
+	protected List<Camera> mCameras; 
+	/**
+	* Temporary camera which will be switched to by the GL thread.
+	* Guarded by mNextCameraLock
+	*/
+	protected Camera mNextCamera;
+	private final Object mNextCameraLock = new Object();
 
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
@@ -108,6 +124,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mFilters = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingFilter>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCamera = new Camera();
+		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
+		addCamera(mCamera);
 		mCamera.setZ(mEyeZ);
 		mAlpha = 0;
 		mSceneCachingEnabled = true;
@@ -115,13 +133,92 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mFrameRate = getRefreshRate();
 	}
 
-	public void setCamera(Camera mCamera) {
-		this.mCamera = mCamera;
-		mCamera.setProjectionMatrix(mViewportWidth, mViewportHeight);
+	/**
+	* Sets the camera currently being used to display the scene.
+	* 
+	* @param mCamera Camera object to display the scene with.
+	*/
+	public void setCamera(Camera camera) {
+		synchronized (mNextCameraLock) {
+			mNextCamera = camera;
+		}
+	}
+	  
+	/**
+	* Sets the camera currently being used to display the scene.
+	* 
+	* @param camera Index of the camera to use.
+	*/
+	public void setCamera(int camera) {
+		setCamera(mCameras.get(camera));
 	}
 
+	/**
+	* Fetches the camera currently being used to display the scene.
+	* Note that the camera is not thread safe so this should be used
+	* with extreme caution.
+	* 
+	* @return Camera object currently used for the scene.
+	* @see {@link RajawaliRenderer#mCamera}
+	*/
 	public Camera getCamera() {
 		return this.mCamera;
+	}
+	
+	/**
+	* Fetches the specified camera. 
+	* 
+	* @param camera Index of the camera to fetch.
+	* @return Camera which was retrieved.
+	*/
+	public Camera getCamera(int camera) {
+		return mCameras.get(camera);
+	}
+	
+	/**
+	* Adds a camera to the renderer.
+	* 
+	* @param camera Camera object to add.
+	*/
+	public void addCamera(Camera camera) {
+		mCameras.add(camera);
+	}
+	  
+	/**
+	* Adds a camera to the renderer at the specified location
+	* in the list.
+	* 
+	* @param camera Camera object to add.
+	* @param location Integer index to add it at.
+	*/
+	public void addCamera(Camera camera, int location) {
+		mCameras.add(location, camera);
+	}
+	  
+	/**
+	* Adds a camera with the option to switch to it immediately
+	* 
+	* @param camera The Camera to add.
+	* @param useNow Boolean indicating if we should switch to this
+	* camera immediately.
+	*/
+	public void addCamera(Camera camera, boolean useNow) {
+		addCamera(camera);
+		setCamera(camera);
+	}
+	  
+	/**
+	* Adds a camera at the specified index with an option to switch to it
+	* immediately.
+	* 
+	* @param camera The Camera to add.
+	* @param location The index to add the camera at.
+	* @param useNow Boolean indicating if we should switch to this
+	* camera immediately.
+	*/
+	public void addCamera(Camera camera, int location, boolean useNow) {
+		addCamera(camera, location);
+		setCamera(camera);
 	}
 
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
@@ -129,6 +226,14 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public void onDrawFrame(GL10 glUnused) {
+		synchronized (mNextCameraLock) { 
+			//Check if we need to switch the camera, and if so, do it.
+			if (mNextCamera != null) {
+				mCamera = mNextCamera;
+				mNextCamera = null;
+				mCamera.setProjectionMatrix(mViewportWidth, mViewportHeight);
+			}
+		}
 		render();
 		++mFrameCount;
 		if (mFrameCount % 50 == 0) {
