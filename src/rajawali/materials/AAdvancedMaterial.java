@@ -64,7 +64,6 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			"	#endif\n" +
 			"#endif\n";
 
-
 	
 	/**
 	 * @deprecated Replaced by {@link #M_FOG_VERTEX_DENSITY}
@@ -118,6 +117,14 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		super();
 	}
 	
+	public AAdvancedMaterial(int vertex_resID, int fragment_resID) {
+		this(RawMaterialLoader.fetch(vertex_resID), RawMaterialLoader.fetch(fragment_resID), AMaterial.NONE);
+	}
+	
+	public AAdvancedMaterial(int vertex_resID, int fragment_resID, boolean isAnimated) {
+		this(RawMaterialLoader.fetch(vertex_resID), RawMaterialLoader.fetch(fragment_resID), isAnimated);
+	}
+	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader) {
 		this(vertexShader, fragmentShader, AMaterial.NONE);
 	}
@@ -125,6 +132,10 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	public AAdvancedMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
 		this(vertexShader, fragmentShader,
 				isAnimated ? AMaterial.VERTEX_ANIMATION : AMaterial.NONE);
+	}
+	
+	public AAdvancedMaterial(int vertex_resID, int fragment_resID, int parameters) {
+		this(RawMaterialLoader.fetch(vertex_resID), RawMaterialLoader.fetch(fragment_resID), parameters);
 	}
 	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader, int parameters) {
@@ -309,6 +320,9 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	@Override
 	public void setShaders(String vertexShader, String fragmentShader)
 	{
+		vertexShader = replaceShaderVars(vertexShader);
+		fragmentShader = replaceShaderVars(fragmentShader);
+		
 		StringBuffer lightVars = new StringBuffer();
 		int numLights = mLights.size();
 		
@@ -417,5 +431,27 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mFogColor = null;
 		mTmpNormalMatrix = null;
 		mTmpMvMatrix = null;
+	}
+	
+	private final String replaceShaderVars(String shader) {
+		if (shader.contains("M_FOG_VERTEX_VARS"))
+			shader = shader.replace("M_FOG_VERTEX_VARS", M_FOG_VERTEX_VARS);
+		
+		if (shader.contains("M_FOG_VERTEX_DENSITY"))
+			shader = shader.replace("M_FOG_VERTEX_DENSITY", M_FOG_VERTEX_DENSITY);
+		
+		if (shader.contains("M_FOG_FRAGMENT_VARS"))
+			shader = shader.replace("M_FOG_FRAGMENT_VARS", M_FOG_FRAGMENT_VARS);
+		
+		if (shader.contains("M_FOG_FRAGMENT_COLOR"))
+			shader = shader.replace("M_FOG_FRAGMENT_COLOR", M_FOG_FRAGMENT_COLOR);
+		
+		if (shader.contains("M_SKELETAL_ANIM_VERTEX_VARS"))
+			shader = shader.replace("M_SKELETAL_ANIM_VERTEX_VARS", M_SKELETAL_ANIM_VERTEX_VARS);
+		
+		if (shader.contains("M_SKELETAL_ANIM_VERTEX_MATRIX"))
+			shader = shader.replace("M_SKELETAL_ANIM_VERTEX_MATRIX", M_SKELETAL_ANIM_VERTEX_MATRIX);
+		
+		return shader;
 	}
 }

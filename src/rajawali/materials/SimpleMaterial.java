@@ -1,47 +1,15 @@
 package rajawali.materials;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
 
 public class SimpleMaterial extends AMaterial {
-	protected static final String mVShader = 
-		"uniform mat4 uMVPMatrix;\n" +
-
-		"attribute vec4 aPosition;\n" +
-		"attribute vec2 aTextureCoord;\n" +
-		"attribute vec4 aColor;\n" +
-
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec4 vColor;\n" +
-
-		"void main() {\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
-		"	vTextureCoord = aTextureCoord;\n" +
-		"	vColor = aColor;\n" +
-		"}\n";
-
-	protected static final String mFShader = 
-		"precision mediump float;\n" +
-
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec4 vColor;\n" +
-
-		"uniform sampler2D uDiffuseTexture;\n" +
-		"uniform sampler2D uAlphaTexture;\n" +
-
-		"void main() {\n" +
-		"#ifdef TEXTURED\n" +
-		"	gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
-		"#else\n" +
-		"	gl_FragColor = vColor;\n" +
-		"#endif\n" +
-
-		"#ifdef ALPHA_MAP\n" +
-		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
-		"	gl_FragColor.a = alpha;\n" +
-		"#endif\n" +
-		"}\n";
 
 	public SimpleMaterial() {
-		this(mVShader, mFShader);
+		super(R.raw.simple_material_vertex, R.raw.simple_material_fragment, false);
+	}
+	
+	public SimpleMaterial(int vertex_resID, int fragment_resID) {
+		super(vertex_resID, fragment_resID, false);
 	}
 
 	public SimpleMaterial(String vertexShader, String fragmentShader) {

@@ -8,6 +8,10 @@ public abstract class AParticleMaterial extends AMaterial {
 			boolean vertexAnimationEnabled) {
 		super(vertexShader, fragmentShader, vertexAnimationEnabled);
 	}
+	
+	public AParticleMaterial(int vertex_resID, int fragment_resID, boolean vertexAnimationEnabled) {
+		super(vertex_resID, fragment_resID, vertexAnimationEnabled);
+	}
 
 	public AParticleMaterial(String vertexShader, String fragmentShader,
 			int parameters) {

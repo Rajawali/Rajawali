@@ -1,59 +1,18 @@
 package rajawali.materials;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 import rajawali.lights.ALight;
 import rajawali.materials.PhongMaterial;
 
 public class SpecularMaskMaterial extends PhongMaterial {
-	protected static final String mFShader =
-		"precision mediump float;\n" +
-		"precision mediump int;\n" +
-		
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 vNormal;\n" +
-		"varying vec3 vEyeVec;\n" +
-		"varying vec4 vColor;\n" +
-		
-		M_FOG_FRAGMENT_VARS +
-		"%LIGHT_VARS%" +
-		
-		"uniform vec4 uSpecularColor;\n" +
-		"uniform vec4 uAmbientColor;\n" +
-		"uniform vec4 uAmbientIntensity;\n" +
-		"uniform sampler2D uDiffuseTexture;\n" +
-		"uniform sampler2D uNormalTexture;\n" +
-		"uniform sampler2D uSpecularTexture;\n" +
-		"uniform float uShininess;\n" +
-		
-		"void main() {\n" +
-		"   float Kd = 0.0;\n" +
-		"   float Ks = 0.0;\n" +
-		"   float NdotL = 0.0;\n" +
-		"   vec3 N = normalize(vNormal);\n" +
-		"   vec3 E = normalize(vEyeVec);\n" +
-		"   vec3 L = vec3(0.0);\n" +
-		"   vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);\n" +
-		"   bumpnormal.z = -bumpnormal.z;\n" +
-		"   bumpnormal = normalize(bumpnormal + N);\n" +
-		
-		"%LIGHT_CODE%" +
-		
-		"#ifdef TEXTURED\n" +
-		"   vec4 diffuse  = Kd * texture2D(uDiffuseTexture, vTextureCoord);\n" +
-		"#else\n" +
-		"   vec4 diffuse  = Kd * vColor;\n" +
-		"#endif\n" +
-		"   vec4 specular = Ks * uSpecularColor * texture2D(uSpecularTexture, vTextureCoord);\n" +
-		"   vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" +
-		"   gl_FragColor  = ambient + diffuse + specular;\n" +
-		M_FOG_FRAGMENT_COLOR +
-		"}";
 	
 	public SpecularMaskMaterial() {
 		this(false);
 	}
 	
 	public SpecularMaskMaterial(boolean isAnimated) {
-		super(PhongMaterial.mVShader, mFShader, isAnimated);
+		super(R.raw.phong_material_vertex, R.raw.specular_mask_material_fragment, isAnimated);
 	}
 	
 	@Override

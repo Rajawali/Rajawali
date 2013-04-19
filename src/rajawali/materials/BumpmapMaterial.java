@@ -1,35 +1,10 @@
 package rajawali.materials;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 import rajawali.lights.ALight;
 
 public class BumpmapMaterial extends AAdvancedMaterial {
-		protected static final String mFShader = 
-			"precision mediump float;\n" +
-
-			"varying vec2 vTextureCoord;\n" +
-			"varying vec3 N;\n" +
-			"varying vec4 V;\n" +
-			"varying vec4 vColor;\n" +
-			
-			"uniform sampler2D uDiffuseTexture;\n" +
-			"uniform sampler2D uNormalTexture;\n" +
-			"uniform vec4 uAmbientColor;\n" +
-			"uniform vec4 uAmbientIntensity;\n" +
-			
-			M_FOG_FRAGMENT_VARS +
-			"%LIGHT_VARS%" +
-
-			"void main() {\n" +
-			"   vec3 Kd = vec3(0.0);\n" +
-			"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);" +
-			"	bumpnormal = normalize(bumpnormal + N);" +
-		    "	float intensity = 0.0;" +
-		    "	vec3 L = vec3(0.0);\n" +
-		    "%LIGHT_CODE%" +
-			" 	vec3 color = Kd * texture2D(uDiffuseTexture, vTextureCoord).rgb;" +
-		    "	gl_FragColor = vec4(color, 1.0) + uAmbientColor * uAmbientIntensity;\n" + 
-		    M_FOG_FRAGMENT_COLOR +
-			"}";
 
 	public BumpmapMaterial() {
 		this(false);
@@ -40,7 +15,7 @@ public class BumpmapMaterial extends AAdvancedMaterial {
 	}
 	
 	public BumpmapMaterial(boolean isAnimated) {
-		this(DiffuseMaterial.mVShader, mFShader, isAnimated);
+		super(R.raw.diffuse_material_vertex, R.raw.bumpmap_material_fragment, isAnimated);
 	}
 	
 	public void setShaders(String vertexShader, String fragmentShader) {

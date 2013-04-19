@@ -3,48 +3,9 @@ package rajawali.materials;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
-public class ToonMaterial extends DiffuseMaterial {
-	protected static final String mFShader = 
-			"precision mediump float;\n" +
+import com.monyetmabuk.livewallpapers.photosdof.R;
 
-			"varying vec2 vTextureCoord;\n" +
-			"varying vec3 N;\n" +
-			"varying vec4 V;\n" +
-			"varying vec4 vColor;\n" +
-	 
-			"uniform sampler2D uDiffuseTexture;\n" +
-			"uniform vec4 uAmbientColor;\n" +
-			"uniform vec4 uAmbientIntensity;\n" + 
-			"uniform vec4 uToonColor0, uToonColor1, uToonColor2, uToonColor3;\n" +
-			
-			M_FOG_FRAGMENT_VARS +
-			"%LIGHT_VARS%" +
-
-			"void main() {\n" +
-			"	float intensity = 0.0;\n" +
-			"	float dist = 0.0;\n" +
-			"   float power = 0.0;\n" +
-			"	float NdotL = 0.0;\n" +
-			"	vec3 L = vec3(0.0);\n" +
-			"	vec3 Kd = vec3(0.0);\n" +
-			
-			"%LIGHT_CODE%" +
-			
-			"#ifndef TEXTURED\n" +
-			"	vec4 color = vColor;\n" +
-			"#else\n" +
-			"	vec4 color = vec4(1.0);\n" +
-			"#endif\n" +
-			"   if(intensity > .95) color = uToonColor0;\n" +
-			"   else if(intensity > .5) color = uToonColor1;\n" +
-			"   else if(intensity > .25) color = uToonColor2;\n" +
-			"   else color = uToonColor3;\n" +
-			"	color.rgb *= Kd;\n" +	
-			"	color += uAmbientColor * uAmbientIntensity;\n" +
-			"	gl_FragColor = color;\n" +
-			M_FOG_FRAGMENT_COLOR +	
-			"}\n";
-	
+public class ToonMaterial extends DiffuseMaterial {	
 	protected int muToonColor0Handle, muToonColor1Handle, muToonColor2Handle, muToonColor3Handle;
 	protected float[] mToonColor0, mToonColor1, mToonColor2, mToonColor3;
 	
@@ -53,7 +14,7 @@ public class ToonMaterial extends DiffuseMaterial {
 	}
 	
 	public ToonMaterial(boolean isAnimated) {
-		super(DiffuseMaterial.mVShader, mFShader, isAnimated);
+		super(R.raw.diffuse_material_vertex, R.raw.toon_material_fragment, isAnimated);
 		mToonColor0 = new float[] { 1, .5f, .5f, 1 };
 		mToonColor1 = new float[] { .6f, .3f, .3f, 1 };
 		mToonColor2 = new float[] { .4f, .2f, .2f, 1 };
