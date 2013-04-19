@@ -14,20 +14,20 @@ varying vec4 V;
 varying vec3 vNormal;
 varying vec4 vColor;
 
-M_FOG_FRAGMENT_VARS
+%FOG_FRAGMENT_VARS%
 %LIGHT_VARS%
 
 void main() {
-	float intensity = 0.0;
+   float intensity = 0.0;
 %LIGHT_CODE%
-	vec4 reflColor = texture2D(uSphereMapTexture, vReflectTextureCoord);
+   vec4 reflColor = texture2D(uSphereMapTexture, vReflectTextureCoord);
 #ifdef TEXTURED
-	vec4 diffColor = texture2D(uDiffuseTexture, vTextureCoord);
+   vec4 diffColor = texture2D(uDiffuseTexture, vTextureCoord);
 #else
-	vec4 diffColor = vColor;
+   vec4 diffColor = vColor;
 #endif
-	gl_FragColor = diffColor + reflColor * uSphereMapStrength;
-	gl_FragColor += uAmbientColor * uAmbientIntensity;
-	gl_FragColor.rgb *= intensity;
+   gl_FragColor = diffColor + reflColor * uSphereMapStrength;
+   gl_FragColor += uAmbientColor * uAmbientIntensity;
+   gl_FragColor.rgb *= intensity;
 M_FOG_FRAGMENT_COLOR
 }

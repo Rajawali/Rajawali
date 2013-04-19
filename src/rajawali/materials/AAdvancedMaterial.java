@@ -434,20 +434,20 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	private final String replaceShaderVars(String shader) {
-		if (shader.contains("M_FOG_VERTEX_VARS"))
-			shader = shader.replace("M_FOG_VERTEX_VARS", M_FOG_VERTEX_VARS);
+		if (shader.contains("%FOG_VERTEX_VARS%"))
+			shader = shader.replace("%FOG_VERTEX_VARS%", M_FOG_VERTEX_VARS);
 		
 		if (shader.contains("M_FOG_VERTEX_DENSITY"))
 			shader = shader.replace("M_FOG_VERTEX_DENSITY", M_FOG_VERTEX_DENSITY);
 		
-		if (shader.contains("M_FOG_FRAGMENT_VARS"))
-			shader = shader.replace("M_FOG_FRAGMENT_VARS", M_FOG_FRAGMENT_VARS);
+		if (shader.contains("%FOG_FRAGMENT_VARS%"))
+			shader = shader.replace("%FOG_FRAGMENT_VARS%", M_FOG_FRAGMENT_VARS);
 		
 		if (shader.contains("M_FOG_FRAGMENT_COLOR"))
 			shader = shader.replace("M_FOG_FRAGMENT_COLOR", M_FOG_FRAGMENT_COLOR);
 		
-		if (shader.contains("M_SKELETAL_ANIM_VERTEX_VARS"))
-			shader = shader.replace("M_SKELETAL_ANIM_VERTEX_VARS", M_SKELETAL_ANIM_VERTEX_VARS);
+		if (shader.contains("%SKELETAL_ANIM_VERTEX_VARS%"))
+			shader = shader.replace("%SKELETAL_ANIM_VERTEX_VARS%", M_SKELETAL_ANIM_VERTEX_VARS);
 		
 		if (shader.contains("M_SKELETAL_ANIM_VERTEX_MATRIX"))
 			shader = shader.replace("M_SKELETAL_ANIM_VERTEX_MATRIX", M_SKELETAL_ANIM_VERTEX_MATRIX);
