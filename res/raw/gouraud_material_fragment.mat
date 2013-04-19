@@ -14,30 +14,30 @@ uniform vec4 uAmbientIntensity;
 uniform vec4 uSpecularColor;
 uniform vec4 uSpecularIntensity;
 
-		M_FOG_FRAGMENT_VARS
+      %FOG_FRAGMENT_VARS%
 %LIGHT_VARS%
 
 void main() {
 #ifdef TEXTURED
-	vec4 diffuse = vec4(vLightColor, 1.0) * vDiffuseIntensity * texture2D(uDiffuseTexture, vTextureCoord);
+   vec4 diffuse = vec4(vLightColor, 1.0) * vDiffuseIntensity * texture2D(uDiffuseTexture, vTextureCoord);
 #else
-	vec4 diffuse = vDiffuseIntensity * vColor;
+   vec4 diffuse = vDiffuseIntensity * vColor;
 #endif
 
 #ifdef SPECULAR_MAP
    vec4 specular = uSpecularColor * vSpecularIntensity * uSpecularIntensity * texture2D(uSpecularTexture, vTextureCoord);
 #else
-	vec4 specular = uSpecularColor * vSpecularIntensity * uSpecularIntensity; 
+   vec4 specular = uSpecularColor * vSpecularIntensity * uSpecularIntensity; 
 #endif
 
-	vec4 ambient = uAmbientIntensity * uAmbientColor; 	    
-	gl_FragColor = diffuse + specular + ambient;
+   vec4 ambient = uAmbientIntensity * uAmbientColor;      
+   gl_FragColor = diffuse + specular + ambient;
 
 #ifdef ALPHA_MAP
-	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;
-	gl_FragColor.a = alpha;
+   float alpha = texture2D(uAlphaTexture, vTextureCoord).r;
+   gl_FragColor.a = alpha;
 #else
-	gl_FragColor.a = diffuse.a;
+   gl_FragColor.a = diffuse.a;
 #endif
-		M_FOG_FRAGMENT_COLOR
+      M_FOG_FRAGMENT_COLOR
 }

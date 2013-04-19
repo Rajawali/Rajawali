@@ -17,23 +17,23 @@ varying vec3 N;
 varying vec4 V;
 varying vec4 vColor;
 
-M_FOG_VERTEX_VARS
+%FOG_VERTEX_VARS%
 %LIGHT_VARS%
 
 void main() {
-	float dist = 0.0;
-	gl_Position = uMVPMatrix * aPosition;
-	V = uMMatrix * aPosition;
-	vec3 eyeDir = normalize(V.xyz - uCameraPosition.xyz);
-	N = normalize(uNMatrix * aNormal);
-	vReflectDir = reflect(eyeDir, N);
-	float m = 2.0 * sqrt(vReflectDir.x*vReflectDir.x + vReflectDir.y*vReflectDir.y + (vReflectDir.z+1.0)*(vReflectDir.z+1.0));
-	vTextureCoord = aTextureCoord;
-	vReflectTextureCoord.s = vReflectDir.x/m + 0.5;
-	vReflectTextureCoord.t = vReflectDir.y/m + 0.5;
-	vNormal = aNormal;
+   float dist = 0.0;
+   gl_Position = uMVPMatrix * aPosition;
+   V = uMMatrix * aPosition;
+   vec3 eyeDir = normalize(V.xyz - uCameraPosition.xyz);
+   N = normalize(uNMatrix * aNormal);
+   vReflectDir = reflect(eyeDir, N);
+   float m = 2.0 * sqrt(vReflectDir.x*vReflectDir.x + vReflectDir.y*vReflectDir.y + (vReflectDir.z+1.0)*(vReflectDir.z+1.0));
+   vTextureCoord = aTextureCoord;
+   vReflectTextureCoord.s = vReflectDir.x/m + 0.5;
+   vReflectTextureCoord.t = vReflectDir.y/m + 0.5;
+   vNormal = aNormal;
 #ifndef TEXTURED
-	vColor = aColor;
+   vColor = aColor;
 #endif
 %LIGHT_CODE%
 M_FOG_VERTEX_DENSITY

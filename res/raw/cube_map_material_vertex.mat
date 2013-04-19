@@ -13,17 +13,17 @@ varying vec3 vReflectDir;
 varying vec3 N;
 varying vec4 V;
 
-M_FOG_VERTEX_VARS
+%FOG_VERTEX_VARS%
 %LIGHT_VARS%
 
 void main() {
-	float dist = 0.0;
-	gl_Position = uMVPMatrix * aPosition;
-	V = uMMatrix * aPosition;
-	vec3 eyeDir = V.xyz - uCameraPosition * -1.0;
-	N = normalize(uNMatrix * aNormal);
-	vReflectDir = reflect(eyeDir, N);
-	vTextureCoord = aTextureCoord;
+   float dist = 0.0;
+   gl_Position = uMVPMatrix * aPosition;
+   V = uMMatrix * aPosition;
+   vec3 eyeDir = V.xyz - uCameraPosition * -1.0;
+   N = normalize(uNMatrix * aNormal);
+   vReflectDir = reflect(eyeDir, N);
+   vTextureCoord = aTextureCoord;
 %LIGHT_CODE%
 M_FOG_VERTEX_DENSITY
 }

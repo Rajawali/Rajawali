@@ -19,7 +19,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	}
 	
 	public GouraudMaterial(boolean isAnimated) {
-		super(R.raw.gouraund_material_vertex, R.raw.gouraund_material_fragment, isAnimated);
+		super(R.raw.gouraud_material_vertex, R.raw.gouraud_material_fragment, isAnimated);
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
 		mSpecularIntensity = new float[] { 1f, 1f, 1f, 1.0f };
 	}

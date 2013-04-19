@@ -14,9 +14,9 @@ varying vec3 N;
 varying vec4 V;
 varying vec4 vColor;
 
-M_FOG_VERTEX_VARS
+%FOG_VERTEX_VARS%
 %LIGHT_VARS%
-M_SKELETAL_ANIM_VERTEX_VARS 
+%SKELETAL_ANIM_VERTEX_VARS% 
 
 #ifdef VERTEX_ANIM
 attribute vec4 aNextFramePosition;
@@ -28,28 +28,28 @@ void main() {
 
 M_SKELETAL_ANIM_VERTEX_MATRIX
 
-	vec4 position = aPosition;
-	float dist = 0.0;
-	vec3 normal = aNormal;
-	#ifdef VERTEX_ANIM
-	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);
-	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);
-	#endif
+   vec4 position = aPosition;
+   float dist = 0.0;
+   vec3 normal = aNormal;
+   #ifdef VERTEX_ANIM
+   position = aPosition + uInterpolation * (aNextFramePosition - aPosition);
+   normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);
+   #endif
 
 #ifdef SKELETAL_ANIM
-	gl_Position = uMVPMatrix * TransformedMatrix * position;
+   gl_Position = uMVPMatrix * TransformedMatrix * position;
 #else
-	gl_Position = uMVPMatrix * position;
+   gl_Position = uMVPMatrix * position;
 #endif
-	vTextureCoord = aTextureCoord;
+   vTextureCoord = aTextureCoord;
 #ifdef SKELETAL_ANIM
-	N = normalize(uNMatrix * mat3(TransformedMatrix) * normal);
+   N = normalize(uNMatrix * mat3(TransformedMatrix) * normal);
 #else
-	N = normalize(uNMatrix * normal);
+   N = normalize(uNMatrix * normal);
 #endif
-	V = uMMatrix * position;
+   V = uMMatrix * position;
 #ifndef TEXTURED
-	vColor = aColor;
+   vColor = aColor;
 #endif
 
 %LIGHT_CODE%

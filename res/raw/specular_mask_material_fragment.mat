@@ -6,7 +6,7 @@ varying vec3 vNormal;
 varying vec3 vEyeVec;
 varying vec4 vColor;
 
-M_FOG_FRAGMENT_VARS
+%FOG_FRAGMENT_VARS%
 %LIGHT_VARS%
 
 uniform vec4 uSpecularColor;
