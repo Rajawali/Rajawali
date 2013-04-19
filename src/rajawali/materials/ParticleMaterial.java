@@ -2,72 +2,13 @@ package rajawali.materials;
 
 import java.nio.FloatBuffer;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 import rajawali.math.Number3D;
 import android.opengl.GLES20;
 
 
 public class ParticleMaterial extends AParticleMaterial {
-	protected static final String mVShader = 
-		"precision mediump float;\n" +
-		"uniform mat4 uMVPMatrix;\n" +
-		"uniform float uPointSize;\n" +
-		"uniform mat4 uMMatrix;\n" +
-		"uniform vec3 uCamPos;\n" +
-		"uniform vec3 uDistanceAtt;\n" +
-		"uniform vec3 uFriction;\n" +
-		"uniform float uTime;\n" +
-		"uniform bool uMultiParticlesEnabled;\n" +
-		
-		"#ifdef ANIMATED\n" +
-		"uniform float uCurrentFrame;\n" +
-		"uniform float uTileSize;\n" +
-		"uniform float uNumTileRows;\n" +
-		"attribute float aAnimOffset;\n" +
-		"#endif\n" +
-		
-		"attribute vec4 aPosition;\n" +		
-		"attribute vec2 aTextureCoord;\n" +
-		"attribute vec3 aVelocity;\n" +
-		
-		"varying vec2 vTextureCoord;\n" +
-
-		"void main() {\n" +
-		"	vec4 position = vec4(aPosition);\n" +
-		"	if(uMultiParticlesEnabled){" +
-		"		position.x += aVelocity.x * uFriction.x * uTime;\n" +
-		"		position.y += aVelocity.y * uFriction.y * uTime;\n" +
-		"		position.z += aVelocity.z * uFriction.z * uTime; }" +
-		"	gl_Position = uMVPMatrix * position;\n" +
-		"	vec3 cp = vec3(uCamPos);\n" +
-		"	float pdist = length(cp - position.xyz);\n" +
-		"	gl_PointSize = uPointSize / sqrt(uDistanceAtt.x + uDistanceAtt.y * pdist + uDistanceAtt.z * pdist * pdist);\n" +
-		"	#ifdef ANIMATED\n" +
-		"		vTextureCoord.s = mod(uCurrentFrame + aAnimOffset, uNumTileRows) * uTileSize;" +
-		"		vTextureCoord.t = uTileSize * floor((uCurrentFrame + aAnimOffset ) / uNumTileRows);\n" +
-		"	#else\n" +
-		"		vTextureCoord = aTextureCoord;\n" +
-		"	#endif\n" +
-		"}\n";
-	
-	protected static final String mFShader = 
-		"precision mediump float;\n" +
-
-		"varying vec2 vTextureCoord;\n" +
-		"uniform sampler2D uDiffuseTexture;\n" +
-		
-		"#ifdef ANIMATED\n" +
-		"uniform float uTileSize;\n" +
-		"uniform float uNumTileRows;\n" +
-		"#endif\n" +
-
-		"void main() {\n" +
-		"	\n#ifdef ANIMATED\n" +
-		"		vec2 realTexCoord = vTextureCoord + (gl_PointCoord / uNumTileRows);" +
-		"		gl_FragColor = texture2D(uDiffuseTexture, realTexCoord);\n" +
-		"	#else\n" +
-		"		gl_FragColor = texture2D(uDiffuseTexture, gl_PointCoord);\n" +
-		"	#endif\n" +
-		"}\n";
 	
 	protected float mPointSize = 10.0f;
 	
@@ -98,7 +39,7 @@ public class ParticleMaterial extends AParticleMaterial {
 	}
 
 	public ParticleMaterial(boolean isAnimated) {
-		this(mVShader, mFShader, isAnimated);
+		this(RawMaterialLoader.fetch(R.raw.particle_material_vertex), RawMaterialLoader.fetch(R.raw.particle_material_fragment), isAnimated);
 	}
 
 	public ParticleMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {

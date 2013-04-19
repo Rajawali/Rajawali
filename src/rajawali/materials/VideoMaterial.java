@@ -1,5 +1,7 @@
 package rajawali.materials;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 /**
  * This only works for API Level 15 and higher.
  * Thanks to Lubomir Panak (@drakh)
@@ -38,40 +40,9 @@ package rajawali.materials;
  *
  */
 public class VideoMaterial extends AMaterial {
-	protected static final String mVShader = 
-		"uniform mat4 uMVPMatrix;\n" +
-
-		"attribute vec4 aPosition;\n" +
-		"attribute vec2 aTextureCoord;\n" +
-		"attribute vec4 aColor;\n" +
-
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec4 vColor;\n" +		
-		
-		"void main() {\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
-		"	vTextureCoord = aTextureCoord;\n" +
-		"	vColor = aColor;\n" +
-		"}\n";
-	
-	protected static final String mFShader = 
-		"#extension GL_OES_EGL_image_external : require\n"+
-		"precision mediump float;\n" +
-
-		"varying vec2 vTextureCoord;\n" +
-		"uniform samplerExternalOES uDiffuseTexture;\n"+
-		"varying vec4 vColor;\n" +
-
-		"void main() {\n" +
-		"#ifdef TEXTURED\n" +
-		"	gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
-		"#else\n" +
-	    "	gl_FragColor = vColor;\n" +
-	    "#endif\n" +
-		"}\n";
 	
 	public VideoMaterial() {
-		super(mVShader, mFShader, false);
+		super(R.raw.video_material_vertex, R.raw.video_material_fragment, false);
 		setShaders();
 	}
 	
