@@ -13,6 +13,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.animation.TimerManager;
 import rajawali.filters.IPostProcessingFilter;
+import rajawali.materials.AMaterial;
 import rajawali.materials.SimpleMaterial;
 import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureInfo;
@@ -43,7 +44,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	protected Context mContext;
 
-	protected float mEyeZ = -4.0f;
+	protected float mEyeZ = 4.0f;
 	protected float mFrameRate;
 	protected double mLastMeasuredFPS;
 	protected FPSUpdateListener mFPSUpdateListener;
@@ -75,6 +76,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
+	protected TextureInfo mSkyboxTextureInfo;
 	protected static int mMaxLights = 1;
 
 	protected ColorPickerInfo mPickerInfo;
@@ -98,6 +100,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected List<IRendererPlugin> mPlugins;
 
 	public RajawaliRenderer(Context context) {
+		RajLog.i("IMPORTANT: Rajawali's coordinate system has changed. It now reflects");
+		RajLog.i("the OpenGL standard. Please invert the camera's z coordinate or");
+		RajLog.i("call mCamera.setLookAt(0, 0, 0).");
+		
+		AMaterial.setLoaderContext(context);
+		
 		mContext = context;
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mFilters = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingFilter>());
@@ -112,6 +120,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void setCamera(Camera mCamera) {
 		this.mCamera = mCamera;
+		mCamera.setProjectionMatrix(mViewportWidth, mViewportHeight);
 	}
 
 	public Camera getCamera() {
@@ -178,7 +187,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
 
-
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
@@ -194,7 +202,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 		mCamera.updateFrustum(mPMatrix,mVMatrix); //update frustum plane
 
-		for (int i = 0, j = mChildren.size(); i < j; i++)
+		for (int i = 0; i < mChildren.size(); i++)
 			mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
 
 		if (pickerInfo != null) {
@@ -268,7 +276,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	private void reloadChildren() {
-		for (int i = 0, j = mChildren.size(); i < j; i++)
+		for (int i = 0; i < mChildren.size(); i++)
 			mChildren.get(i).reload();
 	}
 
@@ -286,7 +294,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	protected void destroyScene() {
 		mSceneInitialized = false;
-		for (int i = 0, j = mChildren.size(); i < j; i++)
+		for (int i = 0; i < mChildren.size(); i++)
 			mChildren.get(i).destroy();
 		mChildren.clear();
 		for (int i = 0, j = mPlugins.size(); i < j; i++)
@@ -436,15 +444,17 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	protected void setSkybox(int resourceId) {
+		mCamera.setFarPlane(1000);
 		mSkybox = new Cube(700, true, false);
 		mSkybox.setDoubleSided(true);
-		TextureInfo tInfo = mTextureManager.addTexture(BitmapFactory.decodeResource(mContext.getResources(), resourceId));
+		mSkyboxTextureInfo = mTextureManager.addTexture(BitmapFactory.decodeResource(mContext.getResources(), resourceId));
 		SimpleMaterial material = new SimpleMaterial();
-		material.addTexture(tInfo);
+		material.addTexture(mSkyboxTextureInfo);
 		mSkybox.setMaterial(material);
 	}
 
 	protected void setSkybox(int front, int right, int back, int left, int up, int down) {
+		mCamera.setFarPlane(1000);
 		mSkybox = new Cube(700, true);
 
 		Bitmap[] textures = new Bitmap[6];
@@ -455,10 +465,26 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		textures[4] = BitmapFactory.decodeResource(mContext.getResources(), front);
 		textures[5] = BitmapFactory.decodeResource(mContext.getResources(), back);
 
-		TextureInfo tInfo = mTextureManager.addCubemapTextures(textures);
+		mSkyboxTextureInfo = mTextureManager.addCubemapTextures(textures);
 		SkyboxMaterial mat = new SkyboxMaterial();
-		mat.addTexture(tInfo);
+		mat.addTexture(mSkyboxTextureInfo);
 		mSkybox.setMaterial(mat);
+	}
+	
+	protected void updateSkybox(int resourceId) {
+		mTextureManager.updateTexture(mSkyboxTextureInfo, BitmapFactory.decodeResource(mContext.getResources(), resourceId));
+	}
+	
+	protected void updateSkybox(int front, int right, int back, int left, int up, int down) {
+		Bitmap[] textures = new Bitmap[6];
+		textures[0] = BitmapFactory.decodeResource(mContext.getResources(), left);
+		textures[1] = BitmapFactory.decodeResource(mContext.getResources(), right);
+		textures[2] = BitmapFactory.decodeResource(mContext.getResources(), up);
+		textures[3] = BitmapFactory.decodeResource(mContext.getResources(), down);
+		textures[4] = BitmapFactory.decodeResource(mContext.getResources(), front);
+		textures[5] = BitmapFactory.decodeResource(mContext.getResources(), back);
+
+		mTextureManager.updateCubemapTextures(mSkyboxTextureInfo, textures);
 	}
 
 	public boolean removeChild(BaseObject3D child) {
@@ -503,7 +529,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void accept(INodeVisitor visitor) {
 		visitor.apply(this);
-		for (int i = 0, j = mChildren.size(); i < j; i++)
+		for (int i = 0; i < mChildren.size(); i++)
 			mChildren.get(i).accept(visitor);
 	}	
 
@@ -590,7 +616,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public int getNumTriangles() {
 		int triangleCount = 0;
-		for (int i=0,j=mChildren.size();i<j;i++) {
+		for (int i = 0; i < mChildren.size(); i++) {
 			if (mChildren.get(i).getGeometry() != null && mChildren.get(i).getGeometry().getVertices() != null && mChildren.get(i).isVisible())
 				triangleCount += mChildren.get(i).getGeometry().getVertices().limit() / 9;
 		}

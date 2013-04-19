@@ -1,6 +1,10 @@
 package rajawali.materials;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -10,11 +14,15 @@ import rajawali.materials.TextureManager.TextureType;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.Resources;
 import android.opengl.GLES20;
 
 public abstract class AMaterial {
 	public static final int NONE				= 0;
 	public static final int VERTEX_ANIMATION 	= 1 << 0;
+	public static final int SKELETAL_ANIMATION	= 1 << 1;
 	
 	protected String mUntouchedVertexShader;
 	protected String mUntouchedFragmentShader;
@@ -56,6 +64,7 @@ public abstract class AMaterial {
 	private boolean mProgramCreated = false;
 	
 	protected boolean mVertexAnimationEnabled;
+	protected boolean mSkeletalAnimationEnabled;
 	
 	public AMaterial() {
 		mTextureInfoList = new ArrayList<TextureInfo>();
@@ -73,11 +82,21 @@ public abstract class AMaterial {
 		mUntouchedVertexShader = vertexShader;
 		mUntouchedFragmentShader = fragmentShader;
 		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
+		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
 	}
 	
 	public AMaterial(int parameters) {
 		this();
 		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
+		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
+	}
+	
+	public AMaterial(int vertex_res, int fragment_res) {
+		this(vertex_res, fragment_res, false);
+	}
+	
+	public AMaterial(int vertex_res, int fragment_res, boolean vertexAnimationEnabled) {
+		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res), vertexAnimationEnabled);
 	}
 	
 	protected int queryMaxTextures() {
@@ -103,6 +122,7 @@ public abstract class AMaterial {
 	
 	public void setShaders(String vertexShader, String fragmentShader) {
 		mVertexShader = mVertexAnimationEnabled ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
+		mVertexShader = mSkeletalAnimationEnabled ? "#define SKELETAL_ANIM\n" + mVertexShader : mVertexShader;
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
 		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
 		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;
@@ -114,7 +134,7 @@ public abstract class AMaterial {
 			mVertexShader = "#define FOG_ENABLED\n" + mVertexShader;
 			mFragmentShader = "#define FOG_ENABLED\n" + mFragmentShader;
 		}
-		
+
 		mProgram = createProgram(mVertexShader, mFragmentShader);
 		if (mProgram == 0)
 			return;
@@ -514,5 +534,68 @@ public abstract class AMaterial {
 	
 	public boolean getUseColor() {
 		return mUseColor;
+	}
+	
+	/**
+	 * Pass the context to be used for resource loading. This should only be called internally by the renderer.
+	 * 
+	 * This is kind of a hack but I do not see any better way to load resources for materials.
+	 * 
+	 * @param context
+	 */
+	public static final void setLoaderContext(final Context context) {
+		RawMaterialLoader.mContext = new WeakReference<Context>(context);
+	}
+	
+	/**
+	 * Internal class for managing shader loading.
+	 * 
+	 * This class is mostly internal unfortunately loading of resources requires context so this class has help from
+	 * AMaterial to statically pass the context and store it as a weak reference. Unfortunately there is no way around
+	 * this that I can see but I am open for suggestions of a better solution.
+	 * 
+	 * @author Ian Thomas (toxicbakery aka damnusernames http://toxicbakery.com/)
+	 * 
+	 */
+	protected static final class RawMaterialLoader {
+
+		@SuppressLint("UseSparseArrays")
+		private static final HashMap<Integer, String> mRawMaterials = new HashMap<Integer, String>();
+
+		// Prevent memory leaks as referencing the context can be dangerous.
+		public static WeakReference<Context> mContext;
+
+		/**
+		 * Read a material from the raw resources folder. Subsequent calls will return from memory.
+		 * 
+		 * @param resID
+		 * @return
+		 */
+		public static final String fetch(final int resID) {
+			if (mRawMaterials.containsKey(resID))
+				return mRawMaterials.get(resID);
+
+			final StringBuilder sb = new StringBuilder();
+			
+			try {
+				final Resources res = mContext.get().getResources();
+				final InputStreamReader isr = new InputStreamReader(res.openRawResource(resID));
+				final BufferedReader br = new BufferedReader(isr);
+				
+				String line;
+				while ((line = br.readLine()) != null)
+					sb.append(line).append("\n");
+				
+				mRawMaterials.put(resID, sb.toString());
+				
+				isr.close();
+				br.close();
+			} catch (Exception e) {
+				RajLog.e("Failed to read material: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			return mRawMaterials.get(resID);
+		}
 	}
 }

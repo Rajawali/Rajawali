@@ -4,18 +4,17 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import android.opengl.GLES20;
-import android.opengl.Matrix;
-import android.os.SystemClock;
-import rajawali.BaseObject3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D.BufferType;
 import rajawali.math.Number3D;
 import rajawali.math.Quaternion;
 import rajawali.util.BufferUtil;
-import rajawali.util.RajLog;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
+import rajawali.util.RajLog;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
+import android.os.SystemClock;
 
 public class AnimationSkeleton extends AAnimationObject3D {
 
@@ -26,7 +25,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 	public float[][] mInverseBindPoseMatrix;
 	public float[] uBoneMatrix;
 
-	public BufferInfo mBoneMatricesBufferInfo = new BufferInfo();;
+	public BufferInfo mBoneMatricesBufferInfo = new BufferInfo();
 
 	/**
 	 * FloatBuffer containing joint transformation matrices
@@ -34,7 +33,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 	protected FloatBuffer mBoneMatrices;
 
 	public AnimationSkeleton() {
-
+		
 	}
 
 	public void setJoints(SkeletonJoint[] joints) {
@@ -83,7 +82,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 
 	public void setShaderParams(Camera camera) {
 		//TODO setting light params for container objects
-		super.setShaderParams(camera);
+		//super.setShaderParams(camera);
 
 		if (!mIsPlaying)
 			return;
@@ -159,6 +158,12 @@ public class AnimationSkeleton extends AAnimationObject3D {
 			ColorPickerInfo pickerInfo) {
 		setShaderParams(camera);
 		super.render(camera, projMatrix, vMatrix, parentMatrix, pickerInfo);
+	}
+	
+	@Override
+	public void reload() {
+		super.reload();
+		mGeometry.createBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, mBoneMatrices, GLES20.GL_ARRAY_BUFFER);
 	}
 	
 	@Override

@@ -85,7 +85,7 @@ public class ObjParser extends AMeshParser {
 	}
 	
 	@Override
-	public ObjParser parse() {
+	public ObjParser parse() throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
@@ -219,7 +219,7 @@ public class ObjParser extends AMeshParser {
 				objIndices.add(currObjIndexData);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new ParsingException(e);
 		}
 		
 		
@@ -268,7 +268,7 @@ public class ObjParser extends AMeshParser {
 				int ni = i * 3;
 				if(normals.size() == 0) {
 					RajLog.e("["+getClass().getName()+"] There are no normals specified for this model. Please re-export with normals.");
-					throw new RuntimeException("["+getClass().getName()+"] There are no normals specified for this model. Please re-export with normals.");
+					throw new ParsingException("["+getClass().getName()+"] There are no normals specified for this model. Please re-export with normals.");
 				}
 				aNormals[ni] = normals.get(normalIndex);
 				aNormals[ni+1] = normals.get(normalIndex + 1);
@@ -417,7 +417,7 @@ public class ObjParser extends AMeshParser {
 
 			boolean hasTexture = matDef != null && matDef.diffuseTexture != null;
 			boolean hasBump = matDef != null && matDef.bumpTexture != null;
-			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000;
+			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000 && matDef.specularCoefficient > 0;
 			
 			AMaterial mat = null;
 			

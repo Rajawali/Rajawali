@@ -9,10 +9,11 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 import rajawali.animation.mesh.AAnimationObject3D;
-import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.AnimationSkeleton;
+import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.SkeletonJoint;
-import rajawali.materials.GPUSkinningMaterial;
+import rajawali.materials.AMaterial;
+import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.parser.AMeshParser;
@@ -68,7 +69,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	}
 	
 	@Override
-	public MD5MeshParser parse() {
+	public MD5MeshParser parse() throws ParsingException {
 		super.parse();
 		
 		BufferedReader buffer = null;
@@ -80,7 +81,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				buffer = new BufferedReader(new FileReader(mFile));
 			} catch (FileNotFoundException e) {
 				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
-				e.printStackTrace();
+				throw new ParsingException(e);
 			}
 		}
 		String line;
@@ -116,10 +117,10 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			calculateNormals();
 			createObjects();
 		} catch (IOException e) {
-			e.printStackTrace();
 			try {
 				buffer.close();
 			} catch(Exception ex) {}
+			throw new ParsingException(e);
 		}
 		
 		return this;
@@ -396,14 +397,19 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			
 			boolean hasTexture = mesh.shader != null && mesh.shader.length() > 0;
 			
-//			DiffuseMaterial mat = new DiffuseMaterial();
-			GPUSkinningMaterial mat = new GPUSkinningMaterial(mNumJoints, mesh.maxNumWeights);
+			DiffuseMaterial mat = new DiffuseMaterial(AMaterial.SKELETAL_ANIMATION);
+			mat.setNumJoints(mNumJoints);
+			mat.setMaxWeights(mesh.maxNumWeights);
 			o.setMaterial(mat);
 			if(!hasTexture) {
 				mat.setUseColor(!hasTexture);
 				o.setColor(0xff000000 + (int)(Math.random() * 0xffffff));
 			} else {
 				int identifier = mResources.getIdentifier(mesh.shader, "drawable", mResources.getResourcePackageName(mResourceId));
+				if(identifier == 0) {
+					RajLog.e("Couldn't find texture " + mesh.shader);
+					break;
+				}
 				o.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
 			}
 			

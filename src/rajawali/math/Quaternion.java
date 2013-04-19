@@ -1,7 +1,6 @@
 package rajawali.math;
 
 import rajawali.math.Number3D.Axis;
-import android.util.FloatMath;
 
 /**
  * Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html
@@ -64,8 +63,8 @@ public final class Quaternion {
 		axisVector.normalize();
 		float radian = MathUtil.degreesToRadians(angle);
 		float halfAngle = radian * .5f;
-		float halfAngleSin = FloatMath.sin(halfAngle);
-		w = FloatMath.cos(halfAngle);
+		float halfAngleSin = (float)Math.sin(halfAngle);
+		w = (float)Math.cos(halfAngle);
 		x = halfAngleSin * axisVector.x;
 		y = halfAngleSin * axisVector.y;
 		z = halfAngleSin * axisVector.z;
@@ -77,12 +76,12 @@ public final class Quaternion {
 		float x = MathUtil.degreesToRadians(heading);
 		float y = MathUtil.degreesToRadians(attitude);
 		float z = MathUtil.degreesToRadians(bank);
-		float c1 = FloatMath.cos(x / 2);
-		float s1 = FloatMath.sin(x / 2);
-		float c2 = FloatMath.cos(y / 2);
-		float s2 = FloatMath.sin(y / 2);
-		float c3 = FloatMath.cos(z / 2);
-		float s3 = FloatMath.sin(z / 2);
+		float c1 = (float)Math.cos(x / 2);
+		float s1 = (float)Math.sin(x / 2);
+		float c2 = (float)Math.cos(y / 2);
+		float s2 = (float)Math.sin(y / 2);
+		float c3 = (float)Math.cos(z / 2);
+		float s3 = (float)Math.sin(z / 2);
 		float c1c2 = c1 * c2;
 		float s1s2 = s1 * s2;
 		this.w = c1c2 * c3 - s1s2 * s3;
@@ -120,7 +119,7 @@ public final class Quaternion {
 		float length = x * x + y * y + z * z;
 		if (length > 0.0) {
 			angleAxis.setAngle(MathUtil.radiansToDegrees(2.0f * (float) Math.acos(w)));
-			float invLength = -FloatMath.sqrt(length);
+			float invLength = -(float)Math.sqrt(length);
 			angleAxis.getAxis().x = x * invLength;
 			angleAxis.getAxis().y = y * invLength;
 			angleAxis.getAxis().z = z * invLength;
@@ -143,7 +142,7 @@ public final class Quaternion {
 
 		if (fTrace > 0.0) {
 			// |w| > 1/2, may as well choose w > 1/2
-			fRoot = FloatMath.sqrt(fTrace + 1.0f); // 2w
+			fRoot = (float)Math.sqrt(fTrace + 1.0f); // 2w
 			w = 0.5f * fRoot;
 			fRoot = 0.5f / fRoot; // 1/(4w)
 			x = (rotMatrix[9] - rotMatrix[6]) * fRoot;
@@ -160,7 +159,7 @@ public final class Quaternion {
 			int j = s_iNext[i];
 			int k = s_iNext[j];
 
-			fRoot = FloatMath.sqrt(rotMatrix[(i * 4) + i] - rotMatrix[(j * 4) + j] - rotMatrix[(k * 4) + k] + 1.0f);
+			fRoot = (float)Math.sqrt(rotMatrix[(i * 4) + i] - rotMatrix[(j * 4) + j] - rotMatrix[(k * 4) + k] + 1.0f);
 			float apkQuat[] = new float[] { x, y, z };
 			apkQuat[i] = 0.5f * fRoot;
 			fRoot = 0.5f / fRoot;
@@ -292,10 +291,10 @@ public final class Quaternion {
 	}
 
 	public Quaternion exp() {
-		float angle = FloatMath.sqrt(x * x + y * y + z * z);
-		float sin = FloatMath.sin(angle);
+		float angle = (float)Math.sqrt(x * x + y * y + z * z);
+		float sin = (float)Math.sin(angle);
 		Quaternion result = new Quaternion();
-		result.w = FloatMath.cos(angle);
+		result.w = (float)Math.cos(angle);
 
 		if (Math.abs(sin) >= F_EPSILON) {
 			float coeff = sin / angle;
@@ -317,7 +316,7 @@ public final class Quaternion {
 
 		if (Math.abs(w) < 1.0) {
 			float angle = (float) Math.acos(w);
-			float sin = FloatMath.sin(angle);
+			float sin = (float)Math.sin(angle);
 			if (Math.abs(sin) >= F_EPSILON) {
 				float fCoeff = angle / sin;
 				result.x = fCoeff * x;
@@ -354,11 +353,11 @@ public final class Quaternion {
 
 		if (Math.abs(fCos) < 1 - F_EPSILON) {
 			// Standard case (slerp)
-			float fSin = FloatMath.sqrt(1 - fCos * fCos);
+			float fSin = (float)Math.sqrt(1 - fCos * fCos);
 			float fAngle = (float) Math.atan2(fSin, fCos);
 			float fInvSin = 1.0f / fSin;
-			float fCoeff0 = FloatMath.sin((1.0f - fT) * fAngle) * fInvSin;
-			float fCoeff1 = FloatMath.sin(fT * fAngle) * fInvSin;
+			float fCoeff0 = (float)Math.sin((1.0f - fT) * fAngle) * fInvSin;
+			float fCoeff1 = (float)Math.sin(fT * fAngle) * fInvSin;
 			Quaternion result = new Quaternion(rkP);
 			Quaternion tmp = new Quaternion(rkT);
 			result.multiply(fCoeff0);
@@ -394,11 +393,11 @@ public final class Quaternion {
 		if (Math.abs(fAngle) < F_EPSILON)
 			return rkP;
 
-		float fSin = FloatMath.sin(fAngle);
+		float fSin = (float)Math.sin(fAngle);
 		float fPhase = MathUtil.PI * iExtraSpins * fT;
 		float fInvSin = 1.0f / fSin;
-		float fCoeff0 = FloatMath.sin((1.0f - fT) * fAngle - fPhase) * fInvSin;
-		float fCoeff1 = FloatMath.sin(fT * fAngle + fPhase) * fInvSin;
+		float fCoeff0 = (float)Math.sin((1.0f - fT) * fAngle - fPhase) * fInvSin;
+		float fCoeff1 = (float)Math.sin(fT * fAngle + fPhase) * fInvSin;
 		Quaternion result = new Quaternion(rkP);
 		Quaternion tmp = new Quaternion(rkQ);
 		result.multiply(fCoeff0);
@@ -409,7 +408,7 @@ public final class Quaternion {
 
 	public float normalize() {
 		float len = norm();
-		float factor = 1.0f / FloatMath.sqrt(len);
+		float factor = 1.0f / (float)Math.sqrt(len);
 		multiply(factor);
 		return len;
 	}
@@ -516,7 +515,7 @@ public final class Quaternion {
 	    }
 	    else
 	    {
-	        w = -FloatMath.sqrt(t);
+	        w = -(float)Math.sqrt(t);
 	    }
 	}
 	
@@ -603,7 +602,7 @@ public final class Quaternion {
             //               q.w = s * 0.5;
             //               q.normalise();
 
-            float s = FloatMath.sqrt((1f + d) * 2f);
+            float s = (float)Math.sqrt((1f + d) * 2f);
             float invs = 1 / s;
 
             Number3D c = Number3D.cross(v1, v2);

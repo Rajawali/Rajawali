@@ -88,7 +88,7 @@ public class FBXParser extends AMeshParser {
 	}
 	
 	@Override
-	public FBXParser parse() {
+	public FBXParser parse() throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
@@ -99,7 +99,7 @@ public class FBXParser extends AMeshParser {
 				buffer = new BufferedReader(new FileReader(mFile));
 			} catch (FileNotFoundException e) {
 				RajLog.e("["+getClass().getCanonicalName()+"] Could not find file.");
-				e.printStackTrace();
+				throw new ParsingException(e);
 			}
 		}
 		String line;
@@ -113,7 +113,7 @@ public class FBXParser extends AMeshParser {
 			}
 			buffer.close();
 		} catch(Exception e) {
-			e.printStackTrace();
+			throw new ParsingException(e);
 		}
 		
 		// -- get lights

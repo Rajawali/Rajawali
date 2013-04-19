@@ -1,37 +1,18 @@
 package rajawali.materials;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 import rajawali.wallpaper.Wallpaper;
 import android.opengl.GLES20;
 import android.util.Log;
 
 public class ColorPickerMaterial extends AMaterial {
-	protected static final String mVShader = 
-		"uniform mat4 uMVPMatrix;\n" +
-		"uniform vec4 uPickingColor;\n" +
-
-		"attribute vec4 aPosition;\n" +
-
-		"varying vec4 vColor;\n" +		
-
-		"void main() {\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
-		"	vColor = uPickingColor;\n" +
-		"}\n";
-	
-	protected static final String mFShader = 
-		"precision mediump float;\n" +
-
-		"varying vec4 vColor;\n" +
-
-		"void main() {\n" +
-		"	gl_FragColor = vColor;\n" +
-		"}\n";
 	
 	protected int muPickingColorHandle;
 	protected float[] mPickingColor;
 	
 	public ColorPickerMaterial() {
-		super(mVShader, mFShader, false);		
+		super(R.raw.color_picker_material_vertex, R.raw.color_picker_material_fragment);	
 		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 	}
 	

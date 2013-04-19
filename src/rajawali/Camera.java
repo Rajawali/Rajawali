@@ -8,6 +8,7 @@ import android.opengl.Matrix;
 
 public class Camera extends ATransformable3D {
 	protected float[] mVMatrix = new float[16];
+	protected float[] mInvVMatrix = new float[16];
 	protected float[] mRotationMatrix = new float[16];
 	protected float[] mProjMatrix = new float[16];
 	protected float mNearPlane = 1.0f;
@@ -42,7 +43,7 @@ public class Camera extends ATransformable3D {
 
 	public float[] getViewMatrix() {
 		if (mLookAt != null) {
-			Matrix.setLookAtM(mVMatrix, 0, -mPosition.x, mPosition.y,
+			Matrix.setLookAtM(mVMatrix, 0, mPosition.x, mPosition.y,
 					mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, mUpAxis.x, mUpAxis.y,
 					mUpAxis.z);
 			
@@ -57,16 +58,16 @@ public class Camera extends ATransformable3D {
 			}
 			Matrix.setIdentityM(mTmpMatrix, 0);
 			Matrix.setIdentityM(mVMatrix, 0);
-			Matrix.translateM(mTmpMatrix, 0, mPosition.x, -mPosition.y, -mPosition.z);
+			Matrix.translateM(mTmpMatrix, 0, -mPosition.x, -mPosition.y, -mPosition.z);
 			Matrix.multiplyMM(mVMatrix, 0, mRotationMatrix, 0, mTmpMatrix, 0);
 		}
 		return mVMatrix;
 	}
-
+	
 	public void updateFrustum(float[] pMatrix,float[] vMatrix) {
 		Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
 		invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
-		mFrustum.update(mTmpMatrix);
+		mFrustum.update(mCombinedMatrix);
 	}
 
 	protected void rotateM(float[] m, int mOffset, float a, float x, float y,

@@ -68,7 +68,7 @@ public abstract class ALight extends ATransformable3D {
 	}
 
 	public float[] getPositionArray() {
-		mPositionArray[0] = -mPosition.x;
+		mPositionArray[0] = mPosition.x;
 		mPositionArray[1] = mPosition.y;
 		mPositionArray[2] = mPosition.z;
 		return mPositionArray;

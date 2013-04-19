@@ -62,6 +62,7 @@ public class RotationAnimation3D extends Animation3D {
 	
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
+		super.applyTransformation(interpolatedTime);
 		Number3D rotation = mTransformable3D.getRotation();
 		
 		float xAngleCurrent = (interpolatedTime * mXRotate);

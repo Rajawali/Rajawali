@@ -81,6 +81,14 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mGeometry = new Geometry3D();
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
+		
+		//Initialize the matrices to identity
+		Matrix.setIdentityM(mMMatrix, 0);
+		Matrix.setIdentityM(mScalematrix, 0);
+		Matrix.setIdentityM(mRotateMatrix, 0);
+		Matrix.setIdentityM(mRotateMatrixTmp, 0);
+		Matrix.setIdentityM(mTranslateMatrix, 0);
+		Matrix.setIdentityM(mTmpMatrix, 0);
 	}
 
 	public BaseObject3D(String name) {
@@ -200,7 +208,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 */
 	public void render(Camera camera, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
 			ColorPickerInfo pickerInfo) {
-		if (!mIsVisible)
+		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
 
 		preRender();
@@ -219,7 +227,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
 		}
 
-		Matrix.translateM(mMMatrix, 0, -mPosition.x, mPosition.y, mPosition.z);
+		Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
 		Matrix.setIdentityM(mTmpMatrix, 0);
 		Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
 		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
@@ -297,10 +305,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
 
-				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
-				fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,
-						0);
-				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+				if(mIsVisible)
+				{
+					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
+					fix.android.opengl.GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,
+							0);
+					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+				}
 				if (!mIsPartOfBatch && !mRenderChildrenAsBatch) {
 					mMaterial.unbindTextures();
 				}
@@ -653,14 +664,17 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		if (mGeometry.getColors() != null)
 			for (i = 0; i < mGeometry.getColors().capacity(); i++)
 				ser.getColors()[i] = mGeometry.getColors().get(i);
-		if (!mGeometry.areOnlyShortBuffersSupported()) {
-			IntBuffer buff = (IntBuffer) mGeometry.getIndices();
-			for (i = 0; i < mGeometry.getIndices().capacity(); i++)
-				ser.getIndices()[i] = buff.get(i);
-		} else {
-			ShortBuffer buff = (ShortBuffer) mGeometry.getIndices();
-			for (i = 0; i < mGeometry.getIndices().capacity(); i++)
-				ser.getIndices()[i] = buff.get(i);
+		if (mGeometry.getIndices() != null)
+		{
+			if (!mGeometry.areOnlyShortBuffersSupported()) {
+				IntBuffer buff = (IntBuffer) mGeometry.getIndices();
+				for (i = 0; i < mGeometry.getIndices().capacity(); i++)
+					ser.getIndices()[i] = buff.get(i);
+			} else {
+				ShortBuffer buff = (ShortBuffer) mGeometry.getIndices();
+				for (i = 0; i < mGeometry.getIndices().capacity(); i++)
+					ser.getIndices()[i] = buff.get(i);
+			}
 		}
 
 		return ser;
@@ -684,6 +698,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public BaseObject3D clone(boolean copyMaterial) {
 		BaseObject3D clone = new BaseObject3D();
 		cloneTo(clone, copyMaterial);
+		clone.setRotation(getRotation());
+		clone.setScale(getScale());
 		return clone;
 	}
 
