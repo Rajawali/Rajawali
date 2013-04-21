@@ -13,6 +13,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.animation.TimerManager;
 import rajawali.filters.IPostProcessingFilter;
+import rajawali.materials.AMaterial;
 import rajawali.materials.SimpleMaterial;
 import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.TextureInfo;
@@ -43,7 +44,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	protected Context mContext;
 
-	protected float mEyeZ = -4.0f;
+	protected float mEyeZ = 4.0f;
 	protected float mFrameRate;
 	protected double mLastMeasuredFPS;
 	protected FPSUpdateListener mFPSUpdateListener;
@@ -99,6 +100,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected List<IRendererPlugin> mPlugins;
 
 	public RajawaliRenderer(Context context) {
+		RajLog.i("IMPORTANT: Rajawali's coordinate system has changed. It now reflects");
+		RajLog.i("the OpenGL standard. Please invert the camera's z coordinate or");
+		RajLog.i("call mCamera.setLookAt(0, 0, 0).");
+		
+		AMaterial.setLoaderContext(context);
+		
 		mContext = context;
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mFilters = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingFilter>());
@@ -179,7 +186,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
-
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);

@@ -22,7 +22,7 @@ public class TouchRippleFilter extends AMaterial implements IPostProcessingFilte
 			"varying vec2 vTextureCoord;\n" +
 			
 			"vec2 processTouch(vec2 touch, float time) {\n" +
-			"	vec2 pos = vec2(aPosition.y + .5, 1.0 - (aPosition.x + .5));" +
+			"	vec2 pos = vec2(1.0 - (aPosition.y + .5), 1.0 - (aPosition.x + .5));" +
 			"	pos *= uRatio;\n" +
 			"	touch *= uRatio;\n" +
 			"	vec2 diff = normalize(touch - pos);\n" +

@@ -5,115 +5,10 @@ import rajawali.math.Number3D;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 
 public class PhongMaterial extends AAdvancedMaterial {
-	protected static final String mVShader =
-		"precision mediump float;\n" +
-		"precision mediump int;\n" +
-		"uniform mat4 uMVPMatrix;\n" +
-		"uniform mat3 uNMatrix;\n" +
-		"uniform mat4 uMMatrix;\n" +
-		"uniform mat4 uVMatrix;\n" +
-
-		"attribute vec4 aPosition;\n" +
-		"attribute vec3 aNormal;\n" +
-		"attribute vec2 aTextureCoord;\n" +
-		"attribute vec4 aColor;\n" +
-
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 vNormal;\n" +
-		"varying vec3 vEyeVec;\n" +
-		"varying vec4 vColor;\n" +
-
-		M_FOG_VERTEX_VARS +
-		"%LIGHT_VARS%" +
-
-		"\n#ifdef VERTEX_ANIM\n" +
-		"attribute vec4 aNextFramePosition;\n" +
-		"attribute vec3 aNextFrameNormal;\n" +
-		"uniform float uInterpolation;\n" +
-		"#endif\n\n" +
-
-		"void main() {\n" +
-		"	float dist = 0.0;\n" +
-		"	vec4 position = aPosition;\n" +
-		"	vec3 normal = aNormal;\n" +
-		"	#ifdef VERTEX_ANIM\n" +
-		"	position = aPosition + uInterpolation * (aNextFramePosition - aPosition);\n" +
-		"	normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);\n" +
-		"	#endif\n" +
-		"	gl_Position = uMVPMatrix * position;\n" +
-		"	vTextureCoord = aTextureCoord;\n" +
-
-		"	vEyeVec = -vec3(uMMatrix  * position);\n" +
-		"	vNormal = normalize(uNMatrix * normal);\n" +
-
-		"%LIGHT_CODE%" +
-
-		"	vColor = aColor;\n" +
-		M_FOG_VERTEX_DENSITY +
-		"}";
-
-	protected static final String mFShader = 
-		"precision mediump float;\n" +
-		"precision mediump int;\n" +
-
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 vNormal;\n" +
-		"varying vec3 vEyeVec;\n" +
-		"varying vec4 vColor;\n" +
-
-		M_FOG_FRAGMENT_VARS +
-		"%LIGHT_VARS%" +
-
-		"uniform float uShininess;\n" +
-		"uniform vec4 uSpecularColor;\n" +
-		"uniform vec4 uAmbientColor;\n" +
-		"uniform vec4 uAmbientIntensity;\n" + 
-		"uniform sampler2D uDiffuseTexture;\n" +
-		"uniform sampler2D uNormalTexture;\n" +
-		"uniform sampler2D uSpecularTexture;\n" +
-		"uniform sampler2D uAlphaTexture;\n" +
-
-		"void main() {\n" +
-		"	vec4 Kd = vec4(0.0);\n" +
-		"	float intensity = 0.0;\n" +
-		"	float Ks = 0.0;\n" +
-		"	float NdotL = 0.0;\n" +
-		"   float power = 0.0;\n" +
-		"	vec3 N = normalize(vNormal);\n" +
-		"	vec3 L = vec3(0.0);\n" +
-
-		"#ifdef NORMAL_MAP\n" +		
-		"	vec3 normalmap = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);\n" +
-		"	normalmap.z = -normalmap.z;\n" +
-		"	N = normalize(N + normalmap);\n" +
-		"#endif\n" +
-
-		"%LIGHT_CODE%" +
-
-		"#ifdef TEXTURED\n" +
-		"	vec4 diffuse = Kd * texture2D(uDiffuseTexture, vTextureCoord);\n" +
-		"#else\n" +
-		"	vec4 diffuse = Kd * vColor;\n" +
-		"#endif\n" +
-
-		"#ifdef SPECULAR_MAP\n" +
-		"   vec4 specular = Ks * uSpecularColor * texture2D(uSpecularTexture, vTextureCoord);\n" +
-		"#else\n" +
-		"	vec4 specular = Ks * uSpecularColor;\n" + 
-		"#endif\n" +
-
-		"	vec4 ambient = uAmbientIntensity * uAmbientColor;\n" + 
-		"	gl_FragColor = ambient + diffuse + specular;\n" + 	
-
-		"#ifdef ALPHA_MAP\n" +
-		"	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;\n" +
-		"	gl_FragColor.a = alpha;\n" + 		
-		"#endif\n" +
-
-		M_FOG_FRAGMENT_COLOR +
-		"}";
 
 	protected int muSpecularColorHandle;
 	protected int muShininessHandle;
@@ -126,7 +21,19 @@ public class PhongMaterial extends AAdvancedMaterial {
 	}
 
 	public PhongMaterial(boolean isAnimated) {
-		this(mVShader, mFShader, isAnimated);
+		this(R.raw.phong_material_vertex, R.raw.phong_material_fragment, isAnimated);
+	}
+	
+	public PhongMaterial(int parameters) {
+		super(R.raw.phong_material_vertex, R.raw.phong_material_fragment, parameters);
+		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+		mShininess = 96.0f;
+	}
+	
+	public PhongMaterial(int vertex_resID, int fragment_resID, boolean isAnimated) {
+		super(vertex_resID, fragment_resID, isAnimated);
+		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+		mShininess = 96.0f;
 	}
 
 	public PhongMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {

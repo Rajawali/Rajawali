@@ -148,7 +148,6 @@ public class BoundingBox implements IBoundingVolume {
 			Number3D d = mTmp[mI];
 			d.setAllFrom(o);
 			d.multiply(matrix);
-			d.x = -d.x;
 			
 			if(d.x < mTransformedMin.x) mTransformedMin.x = d.x;
 			if(d.y < mTransformedMin.y) mTransformedMin.y = d.y;

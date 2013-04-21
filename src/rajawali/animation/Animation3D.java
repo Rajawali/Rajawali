@@ -34,6 +34,7 @@ public class Animation3D {
 	protected Timer mTimer;
 	protected ATransformable3D mTransformable3D;
 	protected Animation3D mInstance;
+	protected float mInterpolatedTime;
 
 	public Animation3D() {
 		mInstance = this;
@@ -44,9 +45,16 @@ public class Animation3D {
 		float interpolatedTime;
 		long timeInPause;
 		boolean wasPaused = false;
+		boolean firstRun = true;
 		int i, j;
 
 		public void run() {	
+			if(firstRun)
+			{
+				firstRun = false;
+				mStartTime = SystemClock.uptimeMillis();
+			}
+			
 			if (mIsPaused) {
 				if (!wasPaused)	timeInPause = SystemClock.uptimeMillis();
 				wasPaused = true;
@@ -126,7 +134,11 @@ public class Animation3D {
 	}
 
 	protected void applyTransformation(float interpolatedTime) {
-
+		this.mInterpolatedTime = interpolatedTime;
+	}
+	
+	public float getCurrentTime() {
+		return this.mInterpolatedTime; 
 	}
 
 	public ATransformable3D getTransformable3D() {

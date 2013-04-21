@@ -1,92 +1,18 @@
 package rajawali.materials;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 import rajawali.lights.ALight;
 import android.opengl.GLES20;
 
 public class SphereMapMaterial extends AAdvancedMaterial {
-	protected static final String mVShader = 
-		"precision mediump float;\n" +
-
-		"uniform mat4 uMVPMatrix;\n" +
-		"uniform mat4 uMMatrix;\n" +
-		"uniform mat3 uNMatrix;\n" +
-		"uniform vec3 uLightPos;\n" +
-		"uniform vec3 uCameraPosition;\n" +
-		"attribute vec4 aPosition;\n" +
-		"attribute vec2 aTextureCoord;\n" +
-		"attribute vec3 aNormal;\n" +
-		"attribute vec4 aColor;\n" +
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec2 vReflectTextureCoord;\n" +
-		"varying vec3 vReflectDir;\n" +
-		"varying vec3 vNormal;\n" +
-		"varying vec3 N;\n" +
-		"varying vec4 V;\n" +
-		"varying vec4 vColor;\n" +
-		
-		M_FOG_VERTEX_VARS +
-		"%LIGHT_VARS%" +
-		
-		"void main() {\n" +
-		"	float dist = 0.0;\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
-		"	V = uMMatrix * aPosition;\n" +
-		"	vec3 eyeDir = normalize(V.xyz - uCameraPosition.xyz);\n" +
-		"	N = normalize(uNMatrix * aNormal);\n" +
-		"	vReflectDir = reflect(eyeDir, N);\n" +
-		"	float m = 2.0 * sqrt(vReflectDir.x*vReflectDir.x + vReflectDir.y*vReflectDir.y + (vReflectDir.z+1.0)*(vReflectDir.z+1.0));\n" +
-		"	vTextureCoord = aTextureCoord;\n" +
-		"	vReflectTextureCoord.s = vReflectDir.x/m + 0.5;\n" +
-		"	vReflectTextureCoord.t = vReflectDir.y/m + 0.5;\n" +
-		"	vNormal = aNormal;\n" +
-		"#ifndef TEXTURED\n" +
-		"	vColor = aColor;\n" +
-		"#endif\n" +
-		"%LIGHT_CODE%" +
-		M_FOG_VERTEX_DENSITY +
-		"}\n";
-	
-	protected static final String mFShader = 
-		"precision mediump float;\n" +
-
-		"uniform sampler2D uDiffuseTexture;\n" +
-		"uniform sampler2D uSphereMapTexture;\n" +
-		"uniform vec4 uAmbientColor;\n" +
-		"uniform vec4 uAmbientIntensity;\n" +
-		"uniform float uSphereMapStrength;\n" +
-
-		"varying vec2 vReflectTextureCoord;\n" +
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 vReflectDir;\n" +
-		"varying vec3 N;\n" +
-		"varying vec4 V;\n" +
-		"varying vec3 vNormal;\n" +
-		"varying vec4 vColor;\n" +
-		
-		M_FOG_FRAGMENT_VARS +
-		"%LIGHT_VARS%" +
-
-		"void main() {\n" +
-		"	float intensity = 0.0;\n" +
-		"%LIGHT_CODE%" +
-		"	vec4 reflColor = texture2D(uSphereMapTexture, vReflectTextureCoord);\n" +
-		"#ifdef TEXTURED\n" +		
-		"	vec4 diffColor = texture2D(uDiffuseTexture, vTextureCoord);\n" +
-		"#else\n" +
-	    "	vec4 diffColor = vColor;\n" +
-	    "#endif\n" +
-		"	gl_FragColor = diffColor + reflColor * uSphereMapStrength;\n" +
-		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
-		"	gl_FragColor.rgb *= intensity;\n" +
-		M_FOG_FRAGMENT_COLOR +	
-		"}\n";
 	
 	private int muSphereMapStrengthHandle;
 	
 	private float mSphereMapStrength = .4f;
 	
 	public SphereMapMaterial() {
-		super(mVShader, mFShader);
+		super(R.raw.sphere_material_vertex, R.raw.sphere_material_fragment);
 	}
 	
 	@Override

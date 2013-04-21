@@ -2,57 +2,16 @@ package rajawali.materials;
 
 import rajawali.lights.ALight;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 public class BumpmapPhongMaterial extends PhongMaterial {
-	protected static final String mFShader = 
-			"precision mediump float;\n" +
-			"precision mediump int;\n" +
-
-			"varying vec2 vTextureCoord;\n" +
-			"varying vec3 vNormal;\n" +
-			"varying vec3 vEyeVec;\n" +
-			"varying vec4 vColor;\n" +
-			
-			M_FOG_FRAGMENT_VARS +
-			"%LIGHT_VARS%" +
-			
-			"uniform vec4 uSpecularColor;\n" +
-			"uniform vec4 uAmbientColor;\n" +
-			"uniform vec4 uAmbientIntensity;\n" + 
-			"uniform sampler2D uDiffuseTexture;\n" +
-			"uniform sampler2D uNormalTexture;\n" +
-			"uniform float uShininess;\n" +
-
-			"void main() {\n" +
-			"	vec4 Kd = vec4(0.0);" +
-			"	float intensity = 0.0;" +
-			"	float Ks = 0.0;" +
-			"	float NdotL = 0.0;\n" +
-			"	vec3 N = normalize(vNormal);\n" +
-			"	vec3 E = normalize(vEyeVec);\n" +
-			"	vec3 L = vec3(0.0);\n" +
-			"	vec3 bumpnormal = normalize(texture2D(uNormalTexture, vTextureCoord).rgb * 2.0 - 1.0);" +
-			"	bumpnormal.z = -bumpnormal.z;" +
-			"	bumpnormal = normalize(bumpnormal + N);" +
-			
-			"%LIGHT_CODE%" +
-
-			"#ifdef TEXTURED\n" +
-		    "	vec4 diffuse  = Kd * texture2D(uDiffuseTexture, vTextureCoord);\n" +
-			"#else\n" +
-		    "	vec4 diffuse  = Kd * vColor;\n" +
-		    "#endif\n" +
-		    "	vec4 specular = Ks * uSpecularColor;\n" + 
-		    "	vec4 ambient  = uAmbientIntensity * uAmbientColor;\n" + 
-		    "	gl_FragColor = ambient + diffuse + specular;\n" + 
-		    M_FOG_FRAGMENT_COLOR +	
-			"}";
 	
 	public BumpmapPhongMaterial() {
 		this(false);
 	}
 	
 	public BumpmapPhongMaterial(boolean isAnimated) {
-		super(PhongMaterial.mVShader, mFShader, isAnimated);
+		super(R.raw.phong_material_vertex, R.raw.bumpmap_phong_material, isAnimated);
 	}
 	
 	@Override

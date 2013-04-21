@@ -8,7 +8,8 @@ public class Camera2D extends Camera {
 		super();
 		mWidth = 1.0f;
 		mHeight = 1.0f;
-		setZ(-4.0f);
+		setZ(4.0f);
+		setLookAt(0, 0, 0);
 	}
 
 	public void setProjectionMatrix(int widthNotUsed, int heightNotUsed) {

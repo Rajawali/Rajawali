@@ -2,64 +2,12 @@ package rajawali.materials;
 
 import rajawali.lights.ALight;
 
+import com.monyetmabuk.livewallpapers.photosdof.R;
+
 public class CubeMapMaterial extends AAdvancedMaterial {
-	protected static final String mVShader = 
-		"precision mediump float;\n" +
-
-		"uniform mat4 uMVPMatrix;\n" +
-		"uniform mat4 uMMatrix;\n" +
-		"uniform mat3 uNMatrix;\n" +
-		"uniform vec3 uLightPos;\n" +
-		"uniform vec3 uCameraPosition;\n" +
-		"attribute vec4 aPosition;\n" +
-		"attribute vec2 aTextureCoord;\n" +
-		"attribute vec3 aNormal;\n" +
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 vReflectDir;\n" +
-		"varying vec3 N;\n" +
-		"varying vec4 V;\n" +
-		
-		M_FOG_VERTEX_VARS +
-		"%LIGHT_VARS%" +
-		
-		"void main() {\n" +
-		"	float dist = 0.0;\n" +
-		"	gl_Position = uMVPMatrix * aPosition;\n" +
-		"	V = uMMatrix * aPosition;\n" +
-		"	vec3 eyeDir = V.xyz - uCameraPosition;\n" +
-		"	eyeDir.x = V.x + uCameraPosition.x;\n" +
-		"	N = normalize(uNMatrix * aNormal);\n" +
-		"	vReflectDir = reflect(eyeDir, N);\n" +
-		"	vTextureCoord = aTextureCoord;\n" +
-		"%LIGHT_CODE%" +
-		M_FOG_VERTEX_DENSITY +
-		"}\n";
-	
-	protected static final String mFShader = 
-		"precision mediump float;\n" +
-
-		"varying vec2 vTextureCoord;\n" +
-		"varying vec3 vReflectDir;\n" +
-		"uniform samplerCube uCubeMapTexture;\n" +
-		"varying vec3 N;\n" +
-		"varying vec4 V;\n" +
-		"uniform vec4 uAmbientColor;\n" +
-		"uniform vec4 uAmbientIntensity;\n" +
-		
-		M_FOG_FRAGMENT_VARS +
-		"%LIGHT_VARS%" +
-
-		"void main() {\n" +
-		"	float intensity = 0.0;\n" +
-		"%LIGHT_CODE%" +
-		"	gl_FragColor = textureCube(uCubeMapTexture, vReflectDir);\n" +
-		"	gl_FragColor += uAmbientColor * uAmbientIntensity;" +
-		"	gl_FragColor.rgb *= intensity;\n" +
-		M_FOG_FRAGMENT_COLOR +	
-		"}\n";
 	
 	public CubeMapMaterial() {
-		super(mVShader, mFShader);
+		super(R.raw.cube_map_material_vertex, R.raw.cube_map_material_fragment);
 	}
 	
 	public void setShaders(String vertexShader, String fragmentShader) {

@@ -39,7 +39,7 @@ public class Line3D extends BaseObject3D {
 		for(int i=0; i<numVertices; i++) {
 			Number3D point = mPoints.get(i);
 			int index = i * 3;
-			vertices[index] = -point.x;
+			vertices[index] = point.x;
 			vertices[index+1] = point.y;
 			vertices[index+2] = point.z;
 			normals[index] = 0;

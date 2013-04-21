@@ -50,7 +50,7 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 		mAnimationName = animationName;
 	}
 
-	public MD5AnimParser parse() {
+	public MD5AnimParser parse() throws ParsingException {
 		super.parse();
 		
 		BufferedReader buffer = null;

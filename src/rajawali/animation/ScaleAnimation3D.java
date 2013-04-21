@@ -31,6 +31,7 @@ public class ScaleAnimation3D extends Animation3D {
 	
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
+		super.applyTransformation(interpolatedTime);
 		if(mDiffScale == null)
 			mDiffScale = Number3D.subtract(mToScale, mFromScale);
 		mMultipliedScale.setAllFrom(mDiffScale);

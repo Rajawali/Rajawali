@@ -7,18 +7,26 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import rajawali.animation.TimerManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
+/**
+ * For SDK 11 and higher (3.0+) devices, this is the preferred
+ * way of managing the Rajawali engine. Note that this class
+ * CAN NOT be used if you are supporting SDK 8-10 (2.2-2.3.3).
+ */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class RajawaliFragment extends Fragment 
 {
 	protected GLSurfaceView mSurfaceView;

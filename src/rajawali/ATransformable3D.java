@@ -78,14 +78,26 @@ public abstract class ATransformable3D {
 		if(!mRotationDirty && mLookAt == null) return;
 
 		mOrientation.setIdentity();
-		if(mLookAt != null) {
+		if(mLookAt != null) {			
 			mTmpRotZ.setAllFrom(mLookAt);
+			mTmpRotZ.subtract(mPosition);
 			mTmpRotZ.normalize();
-
-			mTmpRotX = Number3D.cross(mAxisY, mTmpRotZ);
+			
+			if(mTmpRotZ.length() == 0)
+				mTmpRotZ.z = 1;
+			
+			mTmpRotX.setAllFrom(mAxisY);
+			mTmpRotX.cross(mTmpRotZ);
 			mTmpRotX.normalize();
-			mTmpRotY = Number3D.cross(mTmpRotZ, mTmpRotX);
-			mTmpRotY.normalize();
+			
+			if(mTmpRotX.length() == 0) {
+				mTmpRotZ.x += .0001f;
+				mTmpRotX.cross(mTmpRotZ);
+				mTmpRotX.normalize();
+			}
+			
+			mTmpRotY.setAllFrom(mTmpRotZ);
+			mTmpRotY.cross(mTmpRotX);
 			
 			Matrix.setIdentityM(mLookAtMatrix, 0);
 			mLookAtMatrix[0] = mTmpRotX.x;
@@ -97,11 +109,10 @@ public abstract class ATransformable3D {
 			mLookAtMatrix[8] = mTmpRotZ.x;
 			mLookAtMatrix[9] = mTmpRotZ.y;
 			mLookAtMatrix[10] = mTmpRotZ.z;
-			mOrientation.fromRotationMatrix(mLookAtMatrix);
 		} else {
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.y + 180 : mRotation.y, mAxisY));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.y : mRotation.y, mAxisY));
 			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.z : mRotation.z, mAxisZ));
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? -mRotation.x : mRotation.x, mAxisX));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.x : mRotation.x, mAxisX));
 			if(mIsCamera)
 				mOrientation.inverseSelf();
 		}
@@ -224,7 +235,7 @@ public abstract class ATransformable3D {
 	
 	public void setLookAt(float x, float y, float z) {
 		if(mLookAt == null) mLookAt = new Number3D();
-		mLookAt.x = -x;
+		mLookAt.x = x;
 		mLookAt.y = y;
 		mLookAt.z = z;
 		mRotationDirty = true;

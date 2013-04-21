@@ -37,7 +37,6 @@ public class SpotLight extends ALight {
 		super.setLookAt(x, y, z);
 		Number3D dir = new Number3D(x, y, z);
 		dir.subtract(mPosition);
-		dir.x = -dir.x;
 		dir.normalize();
 		setDirection(dir);
 	}

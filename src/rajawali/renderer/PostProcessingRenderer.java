@@ -77,7 +77,7 @@ public final class PostProcessingRenderer {
 		
 		mFrameBufferTexInfo = mRenderer.getTextureManager().addTexture(null, mTextureSize, mTextureSize, TextureType.FRAME_BUFFER);
 
-		mPostProcessingQuad = new Plane(1, 1, 1, mQuadSegments, mQuadSegments);
+		mPostProcessingQuad = new Plane(1, 1, mQuadSegments, mQuadSegments);
 		mPostProcessingQuad.setMaterial((AMaterial)mFilter);
 		mPostProcessingQuad.setDoubleSided(true);
 		mPostProcessingQuad.setRotZ(-90);

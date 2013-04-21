@@ -54,6 +54,7 @@ public class RotateAnimation3D extends Animation3D {
 	
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
+		super.applyTransformation(interpolatedTime);
 		mRotationAngle = mRotateFrom + (interpolatedTime * mDegreesToRotate);
 		mQuat.fromAngleAxis(mRotationAngle, mRotationAxis);
 		mQuat.multiply(mQuatFrom);

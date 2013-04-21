@@ -2,7 +2,6 @@ package rajawali.animation;
 
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
-import android.util.FloatMath;
 
 public class RotateAroundAnimation3D extends Animation3D {
 	protected final float PI_DIV_180 = 3.14159265f / 180;
@@ -25,10 +24,11 @@ public class RotateAroundAnimation3D extends Animation3D {
 	
 	@Override
 	protected void applyTransformation(float interpolatedTime) {
+		super.applyTransformation(interpolatedTime);
 		float radians = 360f * interpolatedTime * PI_DIV_180;
 		
-		float cosVal = FloatMath.cos(radians) * mDistance;
-		float sinVal = FloatMath.sin(radians) * mDistance;
+		float cosVal = (float)Math.cos(radians) * mDistance;
+		float sinVal = (float)Math.sin(radians) * mDistance;
 		
 		if(mAxis == Axis.Z) {
 			mTransformable3D.setX(mCenter.x + cosVal);
