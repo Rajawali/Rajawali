@@ -248,7 +248,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		GLES20.glCullFace(GLES20.GL_BACK);
 
 		if (!mSceneInitialized) {
-			mTextureManager = new TextureManager();
+			mTextureManager = new TextureManager(mContext);
 			initScene();
 		}
 

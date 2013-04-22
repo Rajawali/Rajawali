@@ -15,6 +15,7 @@ import rajawali.util.RajLog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.opengl.ETC1;
 import android.opengl.ETC1Util;
 import android.opengl.GLES11Ext;
@@ -27,6 +28,7 @@ import android.util.Log;
  *
  */
 public class TextureManager {
+	private Context mContext;
 	private boolean mShouldValidateTextures;
 	private TextureInfo mCurrentValidatingTexInfo;
 	private Stack<TextureInfo> mTexturesToUpdate;
@@ -144,15 +146,47 @@ public class TextureManager {
 		RGBA_4BPP
 	};
 	
-	public TextureManager() {
+	public TextureManager(Context context) {
 		mTextureInfoList = Collections.synchronizedList(new CopyOnWriteArrayList<TextureInfo>()); 
 		mTexturesToUpdate = new Stack<TextureInfo>();
+		mContext = context;
+	}
+	
+	public TextureInfo addTexture(int resID) {
+		return addTexture(getBitmap(resID));
+	}
+	public TextureInfo addTexture(int resID, TextureType textureType) {
+		return this.addTexture(getBitmap(resID), textureType, true, false, WrapType.REPEAT, FilterType.LINEAR);	
+	}
+	
+	public TextureInfo addTexture(int resID, TextureType textureType, boolean mipmap) {
+	    return this.addTexture(getBitmap(resID), textureType, mipmap, false, WrapType.REPEAT, FilterType.LINEAR);
+	}
+
+	public TextureInfo addTexture(int resID, boolean mipmap, boolean recycle) {
+	    return this.addTexture(getBitmap(resID), TextureType.DIFFUSE, mipmap, recycle, WrapType.REPEAT, FilterType.LINEAR);
+	}
+	
+	public TextureInfo addTexture(int resID, TextureType textureType, WrapType wrapType, FilterType filterType) {
+		return this.addTexture(getBitmap(resID), textureType, true, false, wrapType, filterType);	
+	}
+
+	public TextureInfo addTexture(int resID, TextureType textureType, boolean mipmap, boolean recycle) {
+		return this.addTexture(getBitmap(resID), textureType, mipmap, recycle, WrapType.REPEAT, FilterType.LINEAR);
+	}
+	public TextureInfo addTexture(int resID, TextureType textureType, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
+		final Bitmap texture = getBitmap(resID);
+		TextureInfo tInfo = addTexture(new ByteBuffer[0], texture, texture.getWidth(), texture.getHeight(), textureType, texture.getConfig(), mipmap, recycle, wrapType, filterType);
+		if(recycle && tInfo.getTextureId() > 0)
+			texture.recycle();
+		else 
+			tInfo.setTexture(texture);
+		return tInfo;
 	}
 	
 	public TextureInfo addTexture(Bitmap texture) {
 		return addTexture(texture, TextureType.DIFFUSE);
 	}
-	
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType) {
 		return this.addTexture(texture, textureType, true, false, WrapType.REPEAT, FilterType.LINEAR);	
 	}
@@ -338,8 +372,24 @@ public class TextureManager {
 	}
 	
 	/**
-	 * Dynamically generates an ETC1 texture on-the-fly from given bitmap
-	 * and automatically binds the newly generated texture.
+	 * Dynamically generates an ETC1 texture on-the-fly from given resource ID and automatically binds the newly
+	 * generated texture.
+	 * 
+	 * @param resID
+	 * @param textureType
+	 * @return
+	 */
+	public TextureInfo addEtc1Texture(int resID, TextureType textureType) {
+		return addEtc1Texture(getBitmap(resID), textureType);
+	}
+	
+	/**
+	 * Dynamically generates an ETC1 texture on-the-fly from given bitmap and automatically binds the newly generated
+	 * texture.
+	 * 
+	 * @param bitmap
+	 * @param textureType
+	 * @return
 	 */
 	public TextureInfo addEtc1Texture(Bitmap bitmap, TextureType textureType) {
 		int imageSize = bitmap.getRowBytes() * bitmap.getHeight();
@@ -389,13 +439,13 @@ public class TextureManager {
 	 * @param resourceIds
 	 * @return
 	 */
-	public TextureInfo addEtc1Texture(Context context, int[] resourceIds, TextureType textureType, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
+	public TextureInfo addEtc1Texture(int[] resourceIds, TextureType textureType, boolean isExistingTexture, WrapType wrapType, FilterType filterType) {
 		if (resourceIds == null) return null;
 		ByteBuffer[] mipmapChain = new ByteBuffer[resourceIds.length];
 		int mip_0_width = 1, mip_0_height = 1;
 		try {
 			for (int i = 0, length = resourceIds.length; i < length; i++) {
-				ETC1Util.ETC1Texture texture = ETC1Util.createTexture(context.getResources().openRawResource(resourceIds[i]));
+				ETC1Util.ETC1Texture texture = ETC1Util.createTexture(mContext.getResources().openRawResource(resourceIds[i]));
 				mipmapChain[i] = texture.getData();
 				if (i == 0) {
 					mip_0_width = texture.getWidth();
@@ -416,8 +466,8 @@ public class TextureManager {
 	 * @param resourceIds
 	 * @return
 	 */
-	public TextureInfo addEtc1Texture(Context context, int[] resourceIds, TextureType textureType) {
-		return addEtc1Texture(context, resourceIds, textureType, false, WrapType.REPEAT, FilterType.LINEAR);
+	public TextureInfo addEtc1Texture(int[] resourceIds, TextureType textureType) {
+		return addEtc1Texture(resourceIds, textureType, false, WrapType.REPEAT, FilterType.LINEAR);
 	}
 	
 	public TextureInfo addEtc1Texture(ByteBuffer buffer, int width, int height) {
@@ -658,18 +708,32 @@ public class TextureManager {
 		return textureInfo;
 	}
 	
+	public TextureInfo addCubemapTextures(int[] textures) {
+		return addCubemapTextures(textures, false);
+	}
+	public TextureInfo addCubemapTextures(int[] textures, boolean mipmap) {
+		return addCubemapTextures(textures, false, false);
+	}
+	public TextureInfo addCubemapTextures(int[] textures, boolean mipmap, boolean recycle) {
+		return addCubemapTextures(textures, mipmap, recycle, false);
+	}
+	public TextureInfo addCubemapTextures(int[] textures, boolean mipmap, boolean recycle, boolean isExistingTexture) {
+		final Bitmap[] bitmapTextures = new Bitmap[textures.length];
+		for (int i=0;i<textures.length;i++)
+			bitmapTextures[i] = getBitmap(textures[i]);
+		
+		return addCubemapTextures(bitmapTextures, mipmap, recycle, isExistingTexture);
+	}
+	
 	public TextureInfo addCubemapTextures(Bitmap[] textures) {
 		return addCubemapTextures(textures, false);
 	}
-	
 	public TextureInfo addCubemapTextures(Bitmap[] textures, boolean mipmap) {
 		return addCubemapTextures(textures, false, false);
 	}
-	
 	public TextureInfo addCubemapTextures(Bitmap[] textures, boolean mipmap, boolean recycle) {
 		return addCubemapTextures(textures, mipmap, recycle, false);
 	}
-	
 	public TextureInfo addCubemapTextures(Bitmap[] textures, boolean mipmap, boolean recycle, boolean isExistingTexture) {
 		int[] textureIds = new int[1];
 		
@@ -852,6 +916,16 @@ public class TextureManager {
 			}
 			mShouldUpdateTextures = false;
 		}
+	}
+	
+	/**
+	 * Retrieve a bitmap for the given resource.
+	 * 
+	 * @param resID
+	 * @return
+	 */
+	private final Bitmap getBitmap(int resID) {
+		return BitmapFactory.decodeResource(mContext.getResources(), resID);
 	}
 	
 }
