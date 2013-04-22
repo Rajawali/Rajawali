@@ -4,7 +4,7 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 
-import rajawali.animation.TimerManager;
+import rajawali.animationold.TimerManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.annotation.TargetApi;
