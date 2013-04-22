@@ -179,20 +179,23 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	* Adds a camera to the renderer.
 	* 
 	* @param camera Camera object to add.
+	* @return int The index the new camera was added at.
 	*/
-	public void addCamera(Camera camera) {
+	public int addCamera(Camera camera) {
 		mCameras.add(camera);
+		return (mCameras.size() - 1);
 	}
 	  
 	/**
-	* Adds a camera to the renderer at the specified location
-	* in the list.
+	* Replaces a camera in the renderer at the specified location
+	* in the list. This does not validate the index, so if it is not
+	* contained in the list already, an exception will be thrown.
 	* 
 	* @param camera Camera object to add.
-	* @param location Integer index to add it at.
+	* @param location Integer index of the camera to replace.
 	*/
-	public void addCamera(Camera camera, int location) {
-		mCameras.add(location, camera);
+	public void replaceCamera(Camera camera, int location) {
+		mCameras.set(location, camera);
 	}
 	  
 	/**
@@ -201,24 +204,26 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	* @param camera The Camera to add.
 	* @param useNow Boolean indicating if we should switch to this
 	* camera immediately.
+	* @return int The index the new camera was added at.
 	*/
-	public void addCamera(Camera camera, boolean useNow) {
-		addCamera(camera);
-		setCamera(camera);
+	public int addCamera(Camera camera, boolean useNow) {
+		int index = addCamera(camera);
+		if (useNow) setCamera(camera);
+		return index;
 	}
 	  
 	/**
-	* Adds a camera at the specified index with an option to switch to it
+	* Replaces a camera at the specified index with an option to switch to it
 	* immediately.
 	* 
 	* @param camera The Camera to add.
-	* @param location The index to add the camera at.
+	* @param location The index of the camera to replace.
 	* @param useNow Boolean indicating if we should switch to this
 	* camera immediately.
 	*/
-	public void addCamera(Camera camera, int location, boolean useNow) {
-		addCamera(camera, location);
-		setCamera(camera);
+	public void replaceCamera(Camera camera, int location, boolean useNow) {
+		replaceCamera(camera, location);
+		if (useNow) setCamera(camera);
 	}
 
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
