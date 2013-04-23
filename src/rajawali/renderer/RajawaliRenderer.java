@@ -1,10 +1,12 @@
 package rajawali.renderer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -60,7 +62,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	protected float[] mVMatrix = new float[16];
 	protected float[] mPMatrix = new float[16];
-	protected List<BaseObject3D> mChildren;
+	private List<BaseObject3D> mChildren;
 	protected boolean mEnableDepthBuffer = true;
 
 	protected TextureManager mTextureManager;
@@ -82,12 +84,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	/**
 	* List of all cameras in the scene.
 	*/
-	protected List<Camera> mCameras; 
+	private List<Camera> mCameras; 
 	/**
 	* Temporary camera which will be switched to by the GL thread.
 	* Guarded by mNextCameraLock
 	*/
-	protected Camera mNextCamera;
+	private Camera mNextCamera;
 	private final Object mNextCameraLock = new Object();
 
 	protected float mRed, mBlue, mGreen, mAlpha;
@@ -113,7 +115,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	private boolean mSceneCachingEnabled;
 
-	protected List<IRendererPlugin> mPlugins;
+	private List<IRendererPlugin> mPlugins;
+	
+	/**
+	 * Frame task queue. Adding, removing or replacing members
+	 * such as children, cameras, plugins, etc is now prohibited
+	 * outside the use of this queue. The render thread will automatically
+	 * handle the necessary operations at an appropriate time, ensuring 
+	 * thread safety and general correct operation.
+	 */
+	private LinkedBlockingQueue<AFrameTask> mFrameTaskQueue;
 
 	public RajawaliRenderer(Context context) {
 		RajLog.i("IMPORTANT: Rajawali's coordinate system has changed. It now reflects");
@@ -134,6 +145,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mSceneCachingEnabled = true;
 		mPostProcessingRenderer = new PostProcessingRenderer(this);
 		mFrameRate = getRefreshRate();
+		mFrameTaskQueue = new LinkedBlockingQueue<AFrameTask>();
 	}
 
 	/**
@@ -232,6 +244,76 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
+	
+	/**
+	 * Internal method for performing frame tasks. Should be called at the
+	 * start of onDrawFrame() prior to render().
+	 */
+	private void performFrameTasks() {
+		/*
+		 * This synchronization is not necessary for thread safety per-se.
+		 * It is required to guarantee that it is not possible to end up in
+		 * a perpetual task loop though. If a thread was adding tasks at the
+		 * same rate they were being removed, because of the internal locking
+		 * mechanics of the queue, we could produce tasks as they were being
+		 * consumed, resulting in perpetually processing them and never drawing.
+		 */
+		synchronized (mFrameTaskQueue) {
+			//Fetch the first task
+			AFrameTask taskObject = mFrameTaskQueue.poll();
+			while (taskObject != null) {
+				AFrameTask.TYPE type = taskObject.getFrameTaskType();
+				switch (type) {
+				case ANIMATION:
+					//TODO: Hanlde animations
+					break;
+				case CAMERA:
+					//TODO: Handle cameras
+					break;
+				case LIGHT:
+					//TODO: Handle lights
+					break;
+				case OBJECT3D:
+					handleObject3DTask(taskObject);
+					break;
+				case PLUGIN:
+					//TODO: Handle plugins
+					break;
+				case TEXTURE:
+					//TODO: Handle textures
+					break;
+				}
+				//Retrieve the next task
+				taskObject = mFrameTaskQueue.poll();
+			}
+		}
+	}
+	
+	/**
+	 * Internal method for handling a BaseObject3D task.
+	 * 
+	 * @param taskObject The task.
+	 */
+	private void handleObject3DTask(AFrameTask taskObject) {
+		AFrameTask.TASK task = taskObject.getTask();
+		int index = taskObject.getIndex();
+		BaseObject3D child = (BaseObject3D) taskObject;
+		switch (task) {
+		case NONE:
+			return;
+		case ADD:
+			internalAddChild(child, index);
+			break;
+		case REMOVE:
+			internalRemoveChild(child, index);
+			break;
+		case REMOVE_ALL:
+			internalClearChildren();
+			break;
+		case REPLACE:
+			break;
+		}
+	}
 
 	public void onDrawFrame(GL10 glUnused) {
 		synchronized (mNextCameraLock) { 
@@ -242,6 +324,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 				mCamera.setProjectionMatrix(mViewportWidth, mViewportHeight);
 			}
 		}
+		
+		performFrameTasks();
+		
 		render();
 		++mFrameCount;
 		if (mFrameCount % 50 == 0) {
@@ -537,12 +622,161 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return mTextureManager;
 	}
 
-	public void addChild(BaseObject3D child) {
-		mChildren.add(child);
+	/**
+	 * Internal method for adding {@link BaseObject3D} children.
+	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param child {@link BaseObject3D} to add.
+	 * @param int index to add the child at. 
+	 */
+	private void internalAddChild(BaseObject3D child, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mChildren.add(child);
+		} else {
+			mChildren.add(index, child);
+		}
+	}
+	
+	/**
+	 * Requests that the renderer add a child object.
+	 * 
+	 * @param child {@link BaseObject3D} to add.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean addChild(BaseObject3D child) {
+		return addChild(child, AFrameTask.UNUSED_INDEX);
+	}
+	
+	/**
+	 * Requests that the renderer add a child object at an index.
+	 * 
+	 * @param child {@link BaseObject3D} to add.
+	 * @param int The index to add at.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean addChild(BaseObject3D child, int index) {
+		AFrameTask task = (AFrameTask) child;
+		task.setTask(AFrameTask.TASK.ADD);
+		task.setIndex(index);
+		synchronized (mFrameTaskQueue) {
+			if (!mFrameTaskQueue.offer(task)) {
+				RajLog.e("[" + getClass().getName() + "] Failed to insert add child task.");
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+	
+	/**
+	 * Internal method for removing {@link BaseObject3D} children.
+	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
+	 * 
+	 * This takes an index for the removal. 
+	 * 
+	 * @param child {@link BaseObject3D} to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the child at. 
+	 */
+	public void internalRemoveChild(BaseObject3D child, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mChildren.remove(child);
+		} else {
+			mChildren.remove(index);
+		}
+	}
+	
+	/**
+	 * Requests that the renderer remove a specific child object.
+	 * 
+	 * @param child {@link BaseObject3D} child to remove.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean removeChild(BaseObject3D child) {
+		return removeChild(child, AFrameTask.UNUSED_INDEX);
+	}
+	
+	/**
+	 * Requests that the renderer remove a child object at the specified
+	 * index.
+	 * 
+	 * @param child {@link BaseObject3D} child to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the child at.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean removeChild(BaseObject3D child, int index) {
+		AFrameTask task = (AFrameTask) child;
+		task.setTask(AFrameTask.TASK.REMOVE);
+		task.setIndex(index);
+		synchronized (mFrameTaskQueue) {
+			if (!mFrameTaskQueue.offer(task)) {
+				RajLog.e("[" + getClass().getName() + "] Failed to insert remove child task.");
+				return false;
+			} else {
+				return true;
+			}
+		}
 	}
 
-	public void clearChildren() {
+	/**
+	 * Internal method for removing all {@link BaseObject3D} children.
+	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
+	 */
+	private void internalClearChildren() {
 		mChildren.clear();
+	}
+	
+	/**
+	 * Requests that the renderer remove all children.
+	 * @return
+	 */
+	public boolean clearChildren() {
+		//Create a temp blank object
+		AFrameTask task = new BaseObject3D();
+		task.setTask(AFrameTask.TASK.REMOVE_ALL);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		synchronized (mFrameTaskQueue) {
+			if (!mFrameTaskQueue.offer(task)) {
+				RajLog.e("[" + getClass().getName() + "] Failed to insert remove all children task.");
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+	
+	/**
+	 * Creates a shallow copy of the internal child list. 
+	 * 
+	 * @return ArrayList containing the children.
+	 */
+	public ArrayList<BaseObject3D> getChildrenCopy() {
+		ArrayList<BaseObject3D> list = new ArrayList<BaseObject3D>();
+		list.addAll(mChildren);
+		return list;
+	}
+
+	/**
+	 * Tests if the specified {@link BaseObject3D} is a child of the renderer.
+	 * 
+	 * @param child {@link BaseObject3D} to check for.
+	 * @return boolean indicating child's presence as a child of the renderer.
+	 */
+	protected boolean hasChild(BaseObject3D child) {
+		//Thread safety deferred to the List.
+		return mChildren.contains(child);
+	}
+	
+	/**
+	 * Retrieve the number of children.
+	 * 
+	 * @return The current number of children.
+	 */
+	public int getNumChildren() {
+		//Thread safety defered to the List
+		return mChildren.size();
 	}
 
 	public void addPlugin(IRendererPlugin plugin) {
@@ -597,10 +831,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mTextureManager.updateCubemapTextures(mSkyboxTextureInfo, textures);
 	}
 
-	public boolean removeChild(BaseObject3D child) {
-		return mChildren.remove(child);
-	}
-
 	public boolean removePlugin(IRendererPlugin plugin) {
 		return mPlugins.remove(plugin);
 	}
@@ -615,18 +845,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public boolean hasPlugin(IRendererPlugin plugin) {
 		return mPlugins.contains(plugin);
-	}
-
-	public int getNumChildren() {
-		return mChildren.size();
-	}
-
-	public List<BaseObject3D> getChildren() {
-		return mChildren;
-	}
-
-	protected boolean hasChild(BaseObject3D child) {
-		return mChildren.contains(child);
 	}
 
 	public void addPostProcessingFilter(IPostProcessingFilter filter) {

@@ -3,17 +3,18 @@
  */
 package rajawali.renderer.plugins;
 
-import android.opengl.GLES20;
 import rajawali.Geometry3D;
+import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
+import android.opengl.GLES20;
 
 
 /**
  * Most plugins should generally inherit from this Plugin abstract class.
  * @author Andrew Jo
  */
-public abstract class Plugin implements IRendererPlugin {
+public abstract class Plugin extends AFrameTask implements IRendererPlugin {
 	protected Geometry3D mGeometry;
 	protected RajawaliRenderer mRenderer;
 	
@@ -147,5 +148,9 @@ public abstract class Plugin implements IRendererPlugin {
 		}
 		// Signal that we'll be using the shader program.
 		GLES20.glUseProgram(programHandle);
+	}
+	
+	public AFrameTask.TYPE getFrameTaskType() {
+		return AFrameTask.TYPE.PLUGIN;
 	}
 }
