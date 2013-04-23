@@ -964,9 +964,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public int getNumTriangles() {
 		int triangleCount = 0;
-		for (int i = 0; i < mChildren.size(); i++) {
-			if (mChildren.get(i).getGeometry() != null && mChildren.get(i).getGeometry().getVertices() != null && mChildren.get(i).isVisible())
-				triangleCount += mChildren.get(i).getGeometry().getVertices().limit() / 9;
+		ArrayList<BaseObject3D> children = getChildrenCopy();
+		for (int i = 0, j = children.size(); i < j; i++) {
+			if (children.get(i).getGeometry() != null && children.get(i).getGeometry().getVertices() != null && children.get(i).isVisible())
+				triangleCount += children.get(i).getGeometry().getVertices().limit() / 9;
 		}
 		return triangleCount;
 	}
