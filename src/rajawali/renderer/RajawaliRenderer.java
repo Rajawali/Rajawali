@@ -246,6 +246,18 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
+	 * Adds a task to the frame task queue.
+	 * 
+	 * @param task AFrameTask to be added.
+	 * @return boolean True on successful addition to queue.
+	 */
+	private boolean addTaskToQueue(AFrameTask task) {
+		synchronized (mFrameTaskQueue) {
+			return mFrameTaskQueue.offer(task);
+		}
+	}
+	
+	/**
 	 * Internal method for performing frame tasks. Should be called at the
 	 * start of onDrawFrame() prior to render().
 	 */
@@ -648,14 +660,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		AFrameTask task = (AFrameTask) child;
 		task.setTask(AFrameTask.TASK.REPLACE);
 		task.setIndex(index);
-		synchronized (mFrameTaskQueue) {
-			if (!mFrameTaskQueue.offer(task)) {
-				RajLog.e("[" + getClass().getName() + "] Failed to insert replace child task.");
-				return false;
-			} else {
-				return true;
-			}
-		}
+		return addTaskToQueue(task);
 	}
 
 	/**
@@ -697,14 +702,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		AFrameTask task = (AFrameTask) child;
 		task.setTask(AFrameTask.TASK.ADD);
 		task.setIndex(index);
-		synchronized (mFrameTaskQueue) {
-			if (!mFrameTaskQueue.offer(task)) {
-				RajLog.e("[" + getClass().getName() + "] Failed to insert add child task.");
-				return false;
-			} else {
-				return true;
-			}
-		}
+		return addTaskToQueue(task);
 	}
 	
 	/**
@@ -746,14 +744,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		AFrameTask task = (AFrameTask) child;
 		task.setTask(AFrameTask.TASK.REMOVE);
 		task.setIndex(index);
-		synchronized (mFrameTaskQueue) {
-			if (!mFrameTaskQueue.offer(task)) {
-				RajLog.e("[" + getClass().getName() + "] Failed to insert remove child task.");
-				return false;
-			} else {
-				return true;
-			}
-		}
+		return addTaskToQueue(task);
 	}
 
 	/**
@@ -773,14 +764,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		AFrameTask task = new BaseObject3D();
 		task.setTask(AFrameTask.TASK.REMOVE_ALL);
 		task.setIndex(AFrameTask.UNUSED_INDEX);
-		synchronized (mFrameTaskQueue) {
-			if (!mFrameTaskQueue.offer(task)) {
-				RajLog.e("[" + getClass().getName() + "] Failed to insert remove all children task.");
-				return false;
-			} else {
-				return true;
-			}
-		}
+		return addTaskToQueue(task);
 	}
 	
 	/**
