@@ -64,7 +64,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected float[] mVMatrix = new float[16];
 	protected float[] mPMatrix = new float[16];
 	protected List<BaseObject3D> mChildren;
-	protected List<Animation3D> mAnimations;
+	private List<Animation3D> mAnimations;
 	protected boolean mEnableDepthBuffer = true;
 
 	protected TextureManager mTextureManager;
@@ -286,8 +286,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	private void render() {
-		final float deltaTime = (SystemClock.uptimeMillis() - mLastRender) / 1000;
-		mLastRender = SystemClock.uptimeMillis();
+		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
+		mLastRender = SystemClock.elapsedRealtime();
 		
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 
