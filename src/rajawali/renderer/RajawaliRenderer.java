@@ -311,6 +311,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalClearChildren();
 			break;
 		case REPLACE:
+			internalReplaceChild(child, index);
 			break;
 		}
 	}
@@ -620,6 +621,41 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public TextureManager getTextureManager() {
 		return mTextureManager;
+	}
+	
+	/**
+	 * Internal method for replacing a {@link BaseObject3D} child at the
+	 * specified index. This method assumes the index is correct and performs
+	 * no checks.
+	 * 
+	 * @param child {@link BaseObject3D} The new child for the specified index.
+	 * @param index integer index to effect. 
+	 */
+	private void internalReplaceChild(BaseObject3D child, int index) {
+		mChildren.set(index, child);
+	}
+	
+	/**
+	 * Requests that the renderer replace the child at the specified index
+	 * with a new child. This method assumes the index is correct and performs
+	 * no checks.
+	 * 
+	 * @param child {@link BaseObject3D} The new child for the specified index.
+	 * @param index integer index to effect. 
+	 * @return
+	 */
+	public boolean replaceChildAt(BaseObject3D child, int index) {
+		AFrameTask task = (AFrameTask) child;
+		task.setTask(AFrameTask.TASK.REPLACE);
+		task.setIndex(index);
+		synchronized (mFrameTaskQueue) {
+			if (!mFrameTaskQueue.offer(task)) {
+				RajLog.e("[" + getClass().getName() + "] Failed to insert replace child task.");
+				return false;
+			} else {
+				return true;
+			}
+		}
 	}
 
 	/**
