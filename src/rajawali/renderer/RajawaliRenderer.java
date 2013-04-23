@@ -23,6 +23,7 @@ import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
 import rajawali.renderer.plugins.IRendererPlugin;
+import rajawali.renderer.plugins.Plugin;
 import rajawali.util.FPSUpdateListener;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
@@ -286,10 +287,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 					//TODO: Handle lights
 					break;
 				case OBJECT3D:
-					handleObject3DTask(taskObject);
+					handleObject3DTask(taskObject.getTask(), taskObject.getIndex(), (BaseObject3D) taskObject);
 					break;
 				case PLUGIN:
-					//TODO: Handle plugins
+					handlePluginTask(taskObject.getTask(), taskObject.getIndex(), (IRendererPlugin) taskObject);
 					break;
 				case TEXTURE:
 					//TODO: Handle textures
@@ -302,14 +303,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
-	 * Internal method for handling a BaseObject3D task.
+	 * Internal method for handling a {@link BaseObject3D} task.
 	 * 
-	 * @param taskObject The task.
+	 * @param task {@link AFrameTask.TASK} The task to perform.
+	 * @param int The index to act on, if any.
+	 * @param child The {@link BaseObject3D} child to perform the task with.
 	 */
-	private void handleObject3DTask(AFrameTask taskObject) {
-		AFrameTask.TASK task = taskObject.getTask();
-		int index = taskObject.getIndex();
-		BaseObject3D child = (BaseObject3D) taskObject;
+	private void handleObject3DTask(AFrameTask.TASK task, int index, BaseObject3D child) {
 		switch (task) {
 		case NONE:
 			return;
@@ -324,6 +324,32 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			break;
 		case REPLACE:
 			internalReplaceChild(child, index);
+			break;
+		}
+	}
+	
+	/**
+	 * Internal method for handling a {@link IRendererPlugin} task.
+	 * 
+	 * @param task {@link AFrameTask.TASK} The task to perform.
+	 * @param int The index to act on, if any.
+	 * @param plugin The {@link IRendererPlugin} child to perform the task with.
+	 */
+	private void handlePluginTask(AFrameTask.TASK task, int index, IRendererPlugin plugin) {
+		switch (task) {
+		case NONE:
+			return;
+		case ADD:
+			internalAddPlugin(plugin, index);
+			break;
+		case REMOVE:
+			internalRemovePlugin(plugin, index);
+			break;
+		case REMOVE_ALL:
+			internalClearPlugins();
+			break;
+		case REPLACE:
+			internalReplacePlugin(plugin, index);
 			break;
 		}
 	}
@@ -635,178 +661,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return mTextureManager;
 	}
 	
-	/**
-	 * Internal method for replacing a {@link BaseObject3D} child at the
-	 * specified index. This method assumes the index is correct and performs
-	 * no checks.
-	 * 
-	 * @param child {@link BaseObject3D} The new child for the specified index.
-	 * @param index integer index to effect. 
-	 */
-	private void internalReplaceChild(BaseObject3D child, int index) {
-		mChildren.set(index, child);
-	}
-	
-	/**
-	 * Requests that the renderer replace the child at the specified index
-	 * with a new child. This method assumes the index is correct and performs
-	 * no checks.
-	 * 
-	 * @param child {@link BaseObject3D} The new child for the specified index.
-	 * @param index integer index to effect. 
-	 * @return
-	 */
-	public boolean replaceChildAt(BaseObject3D child, int index) {
-		AFrameTask task = (AFrameTask) child;
-		task.setTask(AFrameTask.TASK.REPLACE);
-		task.setIndex(index);
-		return addTaskToQueue(task);
-	}
-
-	/**
-	 * Internal method for adding {@link BaseObject3D} children.
-	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
-	 * 
-	 * This takes an index for the addition, but it is pretty
-	 * meaningless.
-	 * 
-	 * @param child {@link BaseObject3D} to add.
-	 * @param int index to add the child at. 
-	 */
-	private void internalAddChild(BaseObject3D child, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mChildren.add(child);
-		} else {
-			mChildren.add(index, child);
-		}
-	}
-	
-	/**
-	 * Requests that the renderer add a child object.
-	 * 
-	 * @param child {@link BaseObject3D} to add.
-	 * @return boolean indicating if the request was successfully queued.
-	 */
-	public boolean addChild(BaseObject3D child) {
-		return addChild(child, AFrameTask.UNUSED_INDEX);
-	}
-	
-	/**
-	 * Requests that the renderer add a child object at an index.
-	 * 
-	 * @param child {@link BaseObject3D} to add.
-	 * @param int The index to add at.
-	 * @return boolean indicating if the request was successfully queued.
-	 */
-	public boolean addChild(BaseObject3D child, int index) {
-		AFrameTask task = (AFrameTask) child;
-		task.setTask(AFrameTask.TASK.ADD);
-		task.setIndex(index);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Internal method for removing {@link BaseObject3D} children.
-	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
-	 * 
-	 * This takes an index for the removal. 
-	 * 
-	 * @param child {@link BaseObject3D} to remove. If index is used, this is ignored.
-	 * @param index integer index to remove the child at. 
-	 */
-	public void internalRemoveChild(BaseObject3D child, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mChildren.remove(child);
-		} else {
-			mChildren.remove(index);
-		}
-	}
-	
-	/**
-	 * Requests that the renderer remove a specific child object.
-	 * 
-	 * @param child {@link BaseObject3D} child to remove.
-	 * @return boolean indicating if the request was successfully queued.
-	 */
-	public boolean removeChild(BaseObject3D child) {
-		return removeChild(child, AFrameTask.UNUSED_INDEX);
-	}
-	
-	/**
-	 * Requests that the renderer remove a child object at the specified
-	 * index.
-	 * 
-	 * @param child {@link BaseObject3D} child to remove. If index is used, this is ignored.
-	 * @param index integer index to remove the child at.
-	 * @return boolean indicating if the request was successfully queued.
-	 */
-	public boolean removeChild(BaseObject3D child, int index) {
-		AFrameTask task = (AFrameTask) child;
-		task.setTask(AFrameTask.TASK.REMOVE);
-		task.setIndex(index);
-		return addTaskToQueue(task);
-	}
-
-	/**
-	 * Internal method for removing all {@link BaseObject3D} children.
-	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
-	 */
-	private void internalClearChildren() {
-		mChildren.clear();
-	}
-	
-	/**
-	 * Requests that the renderer remove all children.
-	 * @return
-	 */
-	public boolean clearChildren() {
-		//Create a temp blank object
-		AFrameTask task = new BaseObject3D();
-		task.setTask(AFrameTask.TASK.REMOVE_ALL);
-		task.setIndex(AFrameTask.UNUSED_INDEX);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Creates a shallow copy of the internal child list. 
-	 * 
-	 * @return ArrayList containing the children.
-	 */
-	public ArrayList<BaseObject3D> getChildrenCopy() {
-		ArrayList<BaseObject3D> list = new ArrayList<BaseObject3D>();
-		list.addAll(mChildren);
-		return list;
-	}
-
-	/**
-	 * Tests if the specified {@link BaseObject3D} is a child of the renderer.
-	 * 
-	 * @param child {@link BaseObject3D} to check for.
-	 * @return boolean indicating child's presence as a child of the renderer.
-	 */
-	protected boolean hasChild(BaseObject3D child) {
-		//Thread safety deferred to the List.
-		return mChildren.contains(child);
-	}
-	
-	/**
-	 * Retrieve the number of children.
-	 * 
-	 * @return The current number of children.
-	 */
-	public int getNumChildren() {
-		//Thread safety defered to the List
-		return mChildren.size();
-	}
-
-	public void addPlugin(IRendererPlugin plugin) {
-		mPlugins.add(plugin);
-	}
-
-	public void clearPlugins() {
-		mPlugins.clear();
-	}
-
 	protected void setSkybox(int resourceId) {
 		mCamera.setFarPlane(1000);
 		mSkybox = new Cube(700, true, false);
@@ -850,21 +704,334 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 		mTextureManager.updateCubemapTextures(mSkyboxTextureInfo, textures);
 	}
+	
+	/**
+	 * Internal method for replacing a {@link BaseObject3D} child at the
+	 * specified index. This method assumes the index is correct and performs
+	 * no checks.
+	 * 
+	 * @param child {@link BaseObject3D} The new child for the specified index.
+	 * @param index integer index to effect. 
+	 */
+	private void internalReplaceChild(BaseObject3D child, int index) {
+		mChildren.set(index, child);
+	}
+	
+	/**
+	 * Internal method for adding {@link BaseObject3D} children.
+	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param child {@link BaseObject3D} to add.
+	 * @param int index to add the child at. 
+	 */
+	private void internalAddChild(BaseObject3D child, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mChildren.add(child);
+		} else {
+			mChildren.add(index, child);
+		}
+	}
+	
+	/**
+	 * Internal method for removing {@link BaseObject3D} children.
+	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
+	 * 
+	 * This takes an index for the removal. 
+	 * 
+	 * @param child {@link BaseObject3D} to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the child at. 
+	 */
+	private void internalRemoveChild(BaseObject3D child, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mChildren.remove(child);
+		} else {
+			mChildren.remove(index);
+		}
+	}
+	
+	/**
+	 * Internal method for removing all {@link BaseObject3D} children.
+	 * Should only be called through {@link #handleObject3DTask(AFrameTask)}
+	 */
+	private void internalClearChildren() {
+		mChildren.clear();
+	}
+	
+	/**
+	 * Requests that the renderer replace the child at the specified index
+	 * with a new child. This method assumes the index is correct and performs
+	 * no checks.
+	 * 
+	 * @param child {@link BaseObject3D} The new child for the specified index.
+	 * @param index integer index to effect. 
+	 * @return
+	 */
+	public boolean replaceChildAt(BaseObject3D child, int index) {
+		AFrameTask task = (AFrameTask) child;
+		task.setTask(AFrameTask.TASK.REPLACE);
+		task.setIndex(index);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Requests that the renderer add a child object.
+	 * 
+	 * @param child {@link BaseObject3D} to add.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean addChild(BaseObject3D child) {
+		return addChild(child, AFrameTask.UNUSED_INDEX);
+	}
+	
+	/**
+	 * Requests that the renderer add a child object at an index.
+	 * 
+	 * @param child {@link BaseObject3D} to add.
+	 * @param int The index to add at.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean addChild(BaseObject3D child, int index) {
+		AFrameTask task = (AFrameTask) child;
+		task.setTask(AFrameTask.TASK.ADD);
+		task.setIndex(index);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Requests that the renderer remove a specific child object.
+	 * 
+	 * @param child {@link BaseObject3D} child to remove.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean removeChild(BaseObject3D child) {
+		return removeChild(child, AFrameTask.UNUSED_INDEX);
+	}
+	
+	/**
+	 * Requests that the renderer remove a child object at the specified
+	 * index.
+	 * 
+	 * @param child {@link BaseObject3D} child to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the child at.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean removeChild(BaseObject3D child, int index) {
+		AFrameTask task = (AFrameTask) child;
+		task.setTask(AFrameTask.TASK.REMOVE);
+		task.setIndex(index);
+		return addTaskToQueue(task);
+	}
 
+	/**
+	 * Requests that the renderer remove all children.
+	 * 
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean clearChildren() {
+		AFrameTask task = new RemoveAllTask(AFrameTask.TYPE.OBJECT3D);
+		task.setTask(AFrameTask.TASK.REMOVE_ALL);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Creates a shallow copy of the internal child list. 
+	 * 
+	 * @return ArrayList containing the children.
+	 */
+	public ArrayList<BaseObject3D> getChildrenCopy() {
+		ArrayList<BaseObject3D> list = new ArrayList<BaseObject3D>();
+		list.addAll(mChildren);
+		return list;
+	}
+
+	/**
+	 * Tests if the specified {@link BaseObject3D} is a child of the renderer.
+	 * 
+	 * @param child {@link BaseObject3D} to check for.
+	 * @return boolean indicating child's presence as a child of the renderer.
+	 */
+	protected boolean hasChild(BaseObject3D child) {
+		//Thread safety deferred to the List.
+		return mChildren.contains(child);
+	}
+	
+	/**
+	 * Retrieve the number of children.
+	 * 
+	 * @return The current number of children.
+	 */
+	public int getNumChildren() {
+		//Thread safety deferred to the List
+		return mChildren.size();
+	}
+
+	/**
+	 * Internal method for replacing a {@link IRendererPlugin} at the
+	 * specified index. This method assumes the index is correct and performs
+	 * no checks.
+	 * 
+	 * @param plugin {@link IRendererPlugin} The new child for the specified index.
+	 * @param index integer index to effect. 
+	 */
+	private void internalReplacePlugin(IRendererPlugin plugin, int index) {
+		mPlugins.set(index, plugin);
+	}
+	
+	/**
+	 * Internal method for adding {@link IRendererPlugin} renderer.
+	 * Should only be called through {@link #handlePluginTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param plugin {@link IRendererPlugin} to add.
+	 * @param int index to add the child at. 
+	 */
+	private void internalAddPlugin(IRendererPlugin plugin, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mPlugins.add(plugin);
+		} else {
+			mPlugins.add(index, plugin);
+		}
+	}
+	
+	/**
+	 * Internal method for removing {@link IRendererPlugin} renderer.
+	 * Should only be called through {@link #handlePluginTask(AFrameTask)}
+	 * 
+	 * This takes an index for the removal. 
+	 * 
+	 * @param plugin {@link IRendererPlugin} to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the child at. 
+	 */
+	private void internalRemovePlugin(IRendererPlugin plugin, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mPlugins.remove(plugin);
+		} else {
+			mPlugins.remove(index);
+		}
+	}
+	
+	/**
+	 * Internal method for removing all {@link IRendererPlugin} renderers.
+	 * Should only be called through {@link #handlePluginTask(AFrameTask)}
+	 */
+	private void internalClearPlugins() {
+		mPlugins.clear();
+	}
+	
+	/**
+	 * Requests that the renderer replace the plugin at the specified index
+	 * with a new plugin. This method assumes the index is correct and performs
+	 * no checks.
+	 * 
+	 * @param plugin {@link IRendererPlugin} The new plugin for the specified index.
+	 * @param index integer index to effect. 
+	 * @return
+	 */
+	public boolean replacePluginAt(IRendererPlugin plugin, int index) {
+		AFrameTask task = (AFrameTask) plugin;
+		task.setTask(AFrameTask.TASK.REPLACE);
+		task.setIndex(index);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Requests that the renderer add a plugin to the list.
+	 * 
+	 * @param plugin {@link IRendererPlugin} to add.
+	 * @param int The index to add at.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public void addPlugin(IRendererPlugin plugin) {
+		addPlugin(plugin, AFrameTask.UNUSED_INDEX);
+	}
+	
+	/**
+	 * Requests that the renderer add a plugin at an index.
+	 * 
+	 * @param plugin {@link IRendererPlugin} to add.
+	 * @param int The index to add at.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean addPlugin(IRendererPlugin plugin, int index) {
+		AFrameTask task = (AFrameTask) plugin;
+		task.setTask(AFrameTask.TASK.ADD);
+		task.setIndex(index);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Requests that the renderer remove a specific child object.
+	 * 
+	 * @param child {@link IRendererPlugin} child to remove.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
 	public boolean removePlugin(IRendererPlugin plugin) {
-		return mPlugins.remove(plugin);
+		return removePlugin(plugin, AFrameTask.UNUSED_INDEX);
+	}
+	
+	/**
+	 * Requests that the renderer remove a child object at the specified
+	 * index.
+	 * 
+	 * @param child {@link IRendererPlugin} child to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the child at.
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean removePlugin(IRendererPlugin plugin, int index) {
+		AFrameTask task = (AFrameTask) plugin;
+		task.setTask(AFrameTask.TASK.REMOVE);
+		task.setIndex(index);
+		return addTaskToQueue(task);
 	}
 
-	public int getNumPlugins() {
-		return mPlugins.size();
+	/**
+	 * Requests that the renderer remove all plugins.
+	 * 
+	 * @return boolean indicating if the request was successfully queued.
+	 */
+	public boolean clearPlugins() {
+		AFrameTask task = new RemoveAllTask(AFrameTask.TYPE.PLUGIN);
+		task.setTask(AFrameTask.TASK.REMOVE_ALL);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Creates a shallow copy of the internal plugin list. 
+	 * 
+	 * @return ArrayList containing the plugins.
+	 */
+	public ArrayList<IRendererPlugin> getPluginsCopy() {
+		ArrayList<IRendererPlugin> list = new ArrayList<IRendererPlugin>();
+		list.addAll(mPlugins);
+		return list;
 	}
 
-	public List<IRendererPlugin> getPlugins() {
-		return mPlugins;
-	}
-
-	public boolean hasPlugin(IRendererPlugin plugin) {
+	/**
+	 * Tests if the specified {@link IRendererPlugin} is a plugin of the renderer.
+	 * 
+	 * @param plugin {@link IRendererPlugin} to check for.
+	 * @return boolean indicating plugin's presence as a plugin of the renderer.
+	 */
+	protected boolean hasPlugin(IRendererPlugin plugin) {
+		//Thread safety deferred to the List.
 		return mPlugins.contains(plugin);
+	}
+	
+	/**
+	 * Retrieve the number of plugins.
+	 * 
+	 * @return The current number of plugins.
+	 */
+	public int getNumPlugins() {
+		//Thread safety deferred to the List
+		return mPlugins.size();
 	}
 
 	public void addPostProcessingFilter(IPostProcessingFilter filter) {
