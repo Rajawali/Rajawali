@@ -9,7 +9,9 @@ public class RotateAnimation3D extends Animation3D {
 	protected double mDegreesToRotate;
 	protected double mRotateFrom;
 	protected double mRotationAngle;
-	protected double mRotateX, mRotateY, mRotateZ;
+	protected double mRotateX;
+	protected double mRotateY;
+	protected double mRotateZ;
 	protected Number3D mRotationAxis;
 	protected Quaternion mQuat;
 	protected Quaternion mQuatFrom;
