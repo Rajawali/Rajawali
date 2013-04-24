@@ -21,13 +21,16 @@ public abstract class AFrameTask {
 	 * <p>NONE - Do nothing. <br>
 	 * ADD - Adds an object to the related list. If an 
 	 * index is specified. <br>
+	 * ADD_ALL - Adds all objects from a collection to the
+	 * related list.<br>
 	 * REMOVE - Removes an object from the related list. 
 	 * If object is null, an index must be specified.<br>
-	 * REMOVE_ALL - Removes all objects from the related list.<br>
+	 * REMOVE_ALL - Removes all objects from the related list, or
+	 * if a collection is specified, all the matching objects.<br>
 	 * REPLACE - Replaces an object in the related list 
 	 * at the specified index.</p>
 	 */
-	public enum TASK {NONE, ADD, REMOVE, REMOVE_ALL, REPLACE};
+	public enum TASK {NONE, ADD, ADD_ALL, REMOVE, REMOVE_ALL, REPLACE};
 	
 	/**
 	 * The type of object this task is acting on.
@@ -36,6 +39,7 @@ public abstract class AFrameTask {
 	
 	private AFrameTask.TASK mFrameTask = AFrameTask.TASK.NONE; //The task to perform
 	private int mFrameTaskIndex = UNUSED_INDEX; //The index to replace, if relevant
+	private AFrameTask mReplaceObject; //The AFrameTask object to replace if used
 	
 	static final int UNUSED_INDEX = -1;
 	
@@ -78,5 +82,23 @@ public abstract class AFrameTask {
 	 */
 	void setIndex(int index) {
 		mFrameTaskIndex = index;
+	}
+	
+	/**
+	 * Gets the {@link AFrameTask} object this one replaces.
+	 * 
+	 * @return {@link AFrameTask} which needs to be replaced.
+	 */
+	public AFrameTask getReplaceObject() {
+		return mReplaceObject;
+	}
+	
+	/**
+	 * Sets the target for replacement.
+	 * 
+	 * @param object {@link AFrameTask} object to be replaced with this one.
+	 */
+	void setReplaceObject(AFrameTask object) {
+		mReplaceObject = object;
 	}
 }

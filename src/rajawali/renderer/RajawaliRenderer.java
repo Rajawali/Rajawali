@@ -1,6 +1,7 @@
 package rajawali.renderer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -209,6 +210,132 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
+	 * Queue an addition task. The added object will be placed
+	 * at the end of the renderer's list.
+	 * 
+	 * @param task {@link AFrameTask} to be added.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueAddTask(AFrameTask task) {
+		task.setTask(AFrameTask.TASK.ADD);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue an addition task. The added object will be placed
+	 * at the specified index in the renderer's list, or the end
+	 * if out of range. 
+	 * 
+	 * @param task {@link AFrameTask} to be added.
+	 * @param index Integer index to place the object at.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueAddTask(AFrameTask task, int index) {
+		task.setTask(AFrameTask.TASK.ADD);
+		task.setIndex(index);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue a removal task. The removal will occur at the specified
+	 * index, or at the end of the list if out of range.
+	 * 
+	 * @param type {@link AFrameTask.TYPE} Which list to remove from.
+	 * @param index Integer index to remove the object at.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueRemoveTask(AFrameTask.TYPE type, int index) {
+		EmptyTask task = new EmptyTask(type);
+		task.setTask(AFrameTask.TASK.REMOVE);
+		task.setIndex(index);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue a removal task to remove the specified object.
+	 * 
+	 * @param task {@link AFrameTask} to be removed.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueRemoveTask(AFrameTask task) {
+		task.setTask(AFrameTask.TASK.REMOVE);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue a replacement task to replace the object at the
+	 * specified index with a new one. Replaces the object at
+	 * the end of the list if index is out of range.
+	 * 
+	 * @param index Integer index of the object to replace.
+	 * @param replace {@link AFrameTask} the object to be replaced.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueReplaceTask(int index, AFrameTask replace) {
+		EmptyTask task = new EmptyTask(replace.getFrameTaskType());
+		task.setTask(AFrameTask.TASK.REPLACE);
+		task.setIndex(index);
+		task.setReplaceObject(replace);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue a replacement task to replace the specified object with the new one.
+	 * 
+	 * @param task {@link AFrameTask} the new object.
+	 * @param replace {@link AFrameTask} the object to be replaced.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueReplaceTask(AFrameTask task, AFrameTask replace) {
+		task.setTask(AFrameTask.TASK.REPLACE);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		task.setReplaceObject(replace);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue an add all task to add all objects from the given collection.
+	 * 
+	 * @param collection {@link Collection} containing all the objects to add.
+	 * @return boolean True if the task was successfully queued. 
+	 */
+	public boolean queueAddAllTask(Collection<AFrameTask> collection) {
+		GroupTask task = new GroupTask(collection);
+		task.setTask(AFrameTask.TASK.ADD_ALL);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue a remove all task which will clear the related list.
+	 * 
+	 * @param type {@link AFrameTask.TYPE} Which object list to clear (Cameras, BaseObject3D, etc)
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueRemoveAllTask(AFrameTask.TYPE type) {
+		GroupTask task = new GroupTask(type);
+		task.setTask(AFrameTask.TASK.REMOVE_ALL);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue a remove all task which will remove all objects from the given collection
+	 * from the related list.
+	 * 
+	 * @param collection {@link Collection} containing all the objects to be removed.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueRemoveAllTask(Collection<AFrameTask> collection) { 
+		GroupTask task = new GroupTask(collection);
+		task.setTask(AFrameTask.TASK.REMOVE_ALL);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+	
+	/**
 	 * Internal method for performing frame tasks. Should be called at the
 	 * start of onDrawFrame() prior to render().
 	 */
@@ -228,7 +355,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 				AFrameTask.TYPE type = taskObject.getFrameTaskType();
 				switch (type) {
 				case ANIMATION:
-					//TODO: Hanlde animations
+					//TODO: Handle animations
 					break;
 				case CAMERA:
 					handleCameraTask(taskObject.getTask(), taskObject.getIndex(), (Camera) taskObject);
@@ -807,7 +934,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @return boolean indicating if the request was successfully queued.
 	 */
 	public boolean clearChildren() {
-		AFrameTask task = new RemoveAllTask(AFrameTask.TYPE.OBJECT3D);
+		AFrameTask task = new GroupTask(AFrameTask.TYPE.OBJECT3D);
 		task.setTask(AFrameTask.TASK.REMOVE_ALL);
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		return addTaskToQueue(task);
@@ -972,7 +1099,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @return boolean indicating if the request was successfully queued.
 	 */
 	public boolean clearPlugins() {
-		AFrameTask task = new RemoveAllTask(AFrameTask.TYPE.PLUGIN);
+		AFrameTask task = new GroupTask(AFrameTask.TYPE.PLUGIN);
 		task.setTask(AFrameTask.TASK.REMOVE_ALL);
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		return addTaskToQueue(task);
