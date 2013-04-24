@@ -2,11 +2,11 @@ package rajawali.renderer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -23,7 +23,6 @@ import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
 import rajawali.renderer.plugins.IRendererPlugin;
-import rajawali.renderer.plugins.Plugin;
 import rajawali.util.FPSUpdateListener;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
@@ -125,7 +124,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * handle the necessary operations at an appropriate time, ensuring 
 	 * thread safety and general correct operation.
 	 */
-	private LinkedBlockingQueue<AFrameTask> mFrameTaskQueue;
+	private LinkedList<AFrameTask> mFrameTaskQueue;
 
 	public RajawaliRenderer(Context context) {
 		RajLog.i("IMPORTANT: Rajawali's coordinate system has changed. It now reflects");
@@ -146,7 +145,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mSceneCachingEnabled = true;
 		mPostProcessingRenderer = new PostProcessingRenderer(this);
 		mFrameRate = getRefreshRate();
-		mFrameTaskQueue = new LinkedBlockingQueue<AFrameTask>();
+		mFrameTaskQueue = new LinkedList<AFrameTask>();
 	}
 
 	/**
