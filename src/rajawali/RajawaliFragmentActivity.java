@@ -4,7 +4,6 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 
-import rajawali.animationold.TimerManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.app.ActivityManager;
@@ -163,7 +162,6 @@ public class RajawaliFragmentActivity extends FragmentActivity {
     @Override
     protected void onPause() {
     	super.onPause();
-    	TimerManager.getInstance().clear();
     	mSurfaceView.onPause();
     }
 

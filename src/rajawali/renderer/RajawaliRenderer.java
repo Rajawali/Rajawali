@@ -12,7 +12,6 @@ import javax.microedition.khronos.opengles.GL10;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.animation.Animation3D;
-import rajawali.animationold.TimerManager;
 import rajawali.filters.IPostProcessingFilter;
 import rajawali.materials.AMaterial;
 import rajawali.materials.SimpleMaterial;
@@ -482,7 +481,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void onSurfaceDestroyed() {
 		stopRendering();
-		TimerManager.getInstance().clear();
 		if (mTextureManager != null)
 			mTextureManager.reset();
 		destroyScene();
