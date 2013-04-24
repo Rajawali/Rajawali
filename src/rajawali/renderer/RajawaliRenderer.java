@@ -182,6 +182,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return mCamera;
 	}
 	
+	/**
+	* Fetches the specified camera. 
+	* 
+	* @param camera Index of the camera to fetch.
+	* @return Camera which was retrieved.
+	*/
+	public Camera getCamera(int camera) {
+		return mCameras.get(camera);
+	}
+	
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
@@ -1084,7 +1094,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	* camera immediately.
 	* @return boolean indicating if the request was successfully queued.
 	*/
-	public boolean replaceCamera(Camera camera, int location, boolean useNow) {
+	public boolean replaceCameraAt(Camera camera, int location, boolean useNow) {
 		boolean retval = replaceCameraAt(camera, location);
 		if (useNow) setCamera(camera);
 		return retval;
@@ -1104,8 +1114,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	/**
 	* Adds a camera with the option to switch to it immediately
 	* 
-	* @param camera The Camera to add.
-	* @param useNow Boolean indicating if we should switch to this
+	* @param camera The {@link Camera} to add.
+	* @param useNow boolean indicating if we should switch to this
 	* camera immediately.
 	* @return int The index the new camera was added at.
 	*/
@@ -1115,16 +1125,19 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return index;
 	}
 	
+	
+	
 	/**
-	* Fetches the specified camera. 
-	* 
-	* @param camera Index of the camera to fetch.
-	* @return Camera which was retrieved.
-	*/
-	public Camera getCamera(int camera) {
-		return mCameras.get(camera);
+	 * Creates a shallow copy of the internal cameras list. 
+	 * 
+	 * @return ArrayList containing the cameras.
+	 */
+	public ArrayList<Camera> getCamerasCopy() {
+		ArrayList<Camera> list = new ArrayList<Camera>();
+		list.addAll(mCameras);
+		return list;
 	}
-	  
+	
 	/**
 	 * Retrieve the number of cameras.
 	 * 
