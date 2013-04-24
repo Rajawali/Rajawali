@@ -97,14 +97,14 @@ public class PhongMaterial extends AAdvancedMaterial {
 				vc.append("vAttenuation").append(i).append(" = (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 				fc.append("L = normalize(uLightPosition").append(i).append(" + vEyeVec);\n");
 				fc.append("vec3 spotDir").append(i).append(" = normalize(-uLightDirection").append(i).append(");\n");
-				fc.append("float spot_factor = dot( L, spotDir").append(i).append(" );\n");
+				fc.append("float spot_factor").append(i).append(" = dot( L, spotDir").append(i).append(" );\n");
 				fc.append("if( uSpotCutoffAngle").append(i).append(" < 180.0 ) {\n");
-					fc.append("if( spot_factor >= cos( radians( uSpotCutoffAngle").append(i).append(") ) ) {\n");
-						fc.append("spot_factor = (1.0 - (1.0 - spot_factor) * 1.0/(1.0 - cos( radians( uSpotCutoffAngle").append(i).append("))));\n");
-						fc.append("spot_factor = pow(spot_factor, uSpotFalloff").append(i).append("* 1.0/spot_factor);\n");
+					fc.append("if( spot_factor").append(i).append(" >= cos( radians( uSpotCutoffAngle").append(i).append(") ) ) {\n");
+						fc.append("spot_factor").append(i).append(" = (1.0 - (1.0 - spot_factor").append(i).append(") * 1.0/(1.0 - cos( radians( uSpotCutoffAngle").append(i).append("))));\n");
+						fc.append("spot_factor").append(i).append(" = pow(spot_factor").append(i).append(", uSpotFalloff").append(i).append("* 1.0/spot_factor").append(i).append(");\n");
 					fc.append("}\n");
 					fc.append("else {\n");
-						fc.append("spot_factor = 0.0;\n");
+						fc.append("spot_factor").append(i).append(" = 0.0;\n");
 					fc.append("}\n");
 					fc.append("L = vec3(L.y, -L.x, L.z);\n");
 					fc.append("}\n");
@@ -117,8 +117,8 @@ public class PhongMaterial extends AAdvancedMaterial {
 			fc.append("power = uLightPower").append(i).append(" * NdotL * vAttenuation").append(i).append(";\n");
 			fc.append("intensity += power;\n"); 
 			if(light.getLightType() == ALight.SPOT_LIGHT){
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * spot_factor * power;\n");
-				fc.append("Ks += pow(NdotL, uShininess) * spot_factor * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
+				fc.append("Kd.rgb += uLightColor").append(i).append(" * spot_factor").append(i).append(" * power;\n");
+				fc.append("Ks += pow(NdotL, uShininess) * spot_factor").append(i).append(" * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 			}
 			else{
 				fc.append("Kd.rgb += uLightColor").append(i).append(" * power;\n"); 
