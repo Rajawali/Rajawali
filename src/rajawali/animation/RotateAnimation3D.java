@@ -90,14 +90,5 @@ public class RotateAnimation3D extends Animation3D {
 			mTransformable3D.setOrientation(Quaternion.slerp((float)mInterpolatedTime, mQuatFrom, mQuat, true));
 		}
 	}
-	
-	/**
-	 * @deprecated use RotateAnimation3D(axis, degreesToRotate) or RotateAnimation(axis, rotateFrom, degreesToRotate) 
-	 * @param fromRotate
-	 * @param toRotate
-	 */
-	@Deprecated
-	public RotateAnimation3D(Number3D fromRotate, Number3D toRotate) {
-	}
 }
 
