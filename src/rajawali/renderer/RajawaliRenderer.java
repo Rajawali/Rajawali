@@ -123,6 +123,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * outside the use of this queue. The render thread will automatically
 	 * handle the necessary operations at an appropriate time, ensuring 
 	 * thread safety and general correct operation.
+	 * 
+	 * Guarded by itself
 	 */
 	private LinkedList<AFrameTask> mFrameTaskQueue;
 
@@ -139,7 +141,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCamera = new Camera();
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
-		addCamera(mCamera);
+		internalAddCamera(mCamera, AFrameTask.UNUSED_INDEX);
 		mCamera.setZ(mEyeZ);
 		mAlpha = 0;
 		mSceneCachingEnabled = true;
@@ -177,70 +179,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	* @see {@link RajawaliRenderer#mCamera}
 	*/
 	public Camera getCamera() {
-		return this.mCamera;
+		return mCamera;
 	}
 	
-	/**
-	* Fetches the specified camera. 
-	* 
-	* @param camera Index of the camera to fetch.
-	* @return Camera which was retrieved.
-	*/
-	public Camera getCamera(int camera) {
-		return mCameras.get(camera);
-	}
-	
-	/**
-	* Adds a camera to the renderer.
-	* 
-	* @param camera Camera object to add.
-	* @return int The index the new camera was added at.
-	*/
-	public int addCamera(Camera camera) {
-		mCameras.add(camera);
-		return (mCameras.size() - 1);
-	}
-	  
-	/**
-	* Replaces a camera in the renderer at the specified location
-	* in the list. This does not validate the index, so if it is not
-	* contained in the list already, an exception will be thrown.
-	* 
-	* @param camera Camera object to add.
-	* @param location Integer index of the camera to replace.
-	*/
-	public void replaceCamera(Camera camera, int location) {
-		mCameras.set(location, camera);
-	}
-	  
-	/**
-	* Adds a camera with the option to switch to it immediately
-	* 
-	* @param camera The Camera to add.
-	* @param useNow Boolean indicating if we should switch to this
-	* camera immediately.
-	* @return int The index the new camera was added at.
-	*/
-	public int addCamera(Camera camera, boolean useNow) {
-		int index = addCamera(camera);
-		if (useNow) setCamera(camera);
-		return index;
-	}
-	  
-	/**
-	* Replaces a camera at the specified index with an option to switch to it
-	* immediately.
-	* 
-	* @param camera The Camera to add.
-	* @param location The index of the camera to replace.
-	* @param useNow Boolean indicating if we should switch to this
-	* camera immediately.
-	*/
-	public void replaceCamera(Camera camera, int location, boolean useNow) {
-		replaceCamera(camera, location);
-		if (useNow) setCamera(camera);
-	}
-
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
@@ -280,7 +221,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 					//TODO: Hanlde animations
 					break;
 				case CAMERA:
-					//TODO: Handle cameras
+					handleCameraTask(taskObject.getTask(), taskObject.getIndex(), (Camera) taskObject);
 					break;
 				case LIGHT:
 					//TODO: Handle lights
@@ -332,7 +273,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 * @param task {@link AFrameTask.TASK} The task to perform.
 	 * @param int The index to act on, if any.
-	 * @param plugin The {@link IRendererPlugin} child to perform the task with.
+	 * @param plugin The {@link IRendererPlugin} to perform the task with.
 	 */
 	private void handlePluginTask(AFrameTask.TASK task, int index, IRendererPlugin plugin) {
 		switch (task) {
@@ -349,6 +290,32 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			break;
 		case REPLACE:
 			internalReplacePlugin(plugin, index);
+			break;
+		}
+	}
+	
+	/**
+	 * Internal method for handling a {@link IRendererPlugin} task.
+	 * 
+	 * @param task {@link AFrameTask.TASK} The task to perform.
+	 * @param int The index to act on, if any.
+	 * @param camera The {@link Camera} to perform the task with.
+	 */
+	private void handleCameraTask(AFrameTask.TASK task, int index, Camera camera) {
+		switch (task) {
+		case NONE:
+			return;
+		case ADD:
+			internalAddCamera(camera, index);
+			break;
+		case REMOVE:
+			internalRemoveCamera(camera, index);
+			break;
+		case REMOVE_ALL:
+			internalClearCamera();
+			break;
+		case REPLACE:
+			internalReplaceCamera(camera, index);
 			break;
 		}
 	}
@@ -1033,6 +1000,141 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return mPlugins.size();
 	}
 
+	/**
+	 * Internal method for replacing a {@link Camera} at the
+	 * specified index. This method assumes the index is correct and performs
+	 * no checks.
+	 * 
+	 * @param camera {@link Camera} The new camera for the specified index.
+	 * @param index integer index to effect. 
+	 */
+	private void internalReplaceCamera(Camera camera, int index) {
+		mCameras.set(index, camera);
+	}
+	
+	/**
+	 * Internal method for adding a {@link Camera}.
+	 * Should only be called through {@link #handleCameraTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param camera {@link Camera} to add.
+	 * @param int index to add the camera at. 
+	 */
+	private void internalAddCamera(Camera camera, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mCameras.add(camera);
+		} else {
+			mCameras.add(index, camera);
+		}
+	}
+	
+	/**
+	 * Internal method for removing a {@link Camera}.
+	 * Should only be called through {@link #handleCameraTask(AFrameTask)}
+	 * 
+	 * This takes an index for the removal. 
+	 * 
+	 * @param camera {@link Camera} to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the camera at. 
+	 */
+	private void internalRemoveCamera(Camera camera, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mCameras.remove(camera);
+		} else {
+			mCameras.remove(index);
+		}
+	}
+	
+	/**
+	 * Internal method for removing all {@link Camera} from the camera list.
+	 * Should only be called through {@link #handleCameraTask(AFrameTask)}
+	 * Note that this will re-add the current camera.
+	 */
+	private void internalClearCamera() {
+		mCameras.clear();
+		mCameras.add(mCamera);
+	}
+	
+	/**
+	* Requests the renderer to replace a camera in the renderer at 
+	* the specified location in the list. This does not validate 
+	* the index, so if it is not contained in the list already, 
+	* an exception will be thrown.
+	* 
+	* @param camera Camera object to add.
+	* @param index Integer index of the camera to replace.
+	* @return boolean indicating if the request was successfully queued.
+	*/
+	public boolean replaceCameraAt(Camera camera, int index) {
+		AFrameTask task = (AFrameTask) camera;
+		task.setTask(AFrameTask.TASK.REPLACE);
+		task.setIndex(index);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	* Requests the renderer to replace a camera at the specified
+	* index with an option to switch to it immediately.
+	* 
+	* @param camera The Camera to add.
+	* @param location The index of the camera to replace.
+	* @param useNow Boolean indicating if we should switch to this
+	* camera immediately.
+	* @return boolean indicating if the request was successfully queued.
+	*/
+	public boolean replaceCamera(Camera camera, int location, boolean useNow) {
+		boolean retval = replaceCameraAt(camera, location);
+		if (useNow) setCamera(camera);
+		return retval;
+	}
+	
+	/**
+	* Adds a camera to the renderer.
+	* 
+	* @param camera Camera object to add.
+	* @return int The index the new camera was added at.
+	*/
+	public int addCamera(Camera camera) {
+		mCameras.add(camera);
+		return (mCameras.size() - 1);
+	}
+	  
+	/**
+	* Adds a camera with the option to switch to it immediately
+	* 
+	* @param camera The Camera to add.
+	* @param useNow Boolean indicating if we should switch to this
+	* camera immediately.
+	* @return int The index the new camera was added at.
+	*/
+	public int addCamera(Camera camera, boolean useNow) {
+		int index = addCamera(camera);
+		if (useNow) setCamera(camera);
+		return index;
+	}
+	
+	/**
+	* Fetches the specified camera. 
+	* 
+	* @param camera Index of the camera to fetch.
+	* @return Camera which was retrieved.
+	*/
+	public Camera getCamera(int camera) {
+		return mCameras.get(camera);
+	}
+	  
+	/**
+	 * Retrieve the number of cameras.
+	 * 
+	 * @return The current number of cameras.
+	 */
+	public int getNumCameras() {
+		//Thread safety deferred to the List
+		return mCameras.size();
+	}	
+	
 	public void addPostProcessingFilter(IPostProcessingFilter filter) {
 		if(mFilters.size() > 0)
 			mFilters.remove(0);
