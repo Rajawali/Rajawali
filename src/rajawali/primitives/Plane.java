@@ -39,8 +39,8 @@ public class Plane extends BaseObject3D {
 				vertices[vertexCount + 1] = ((float) j / (float) mSegmentsH - 0.5f) * mHeight;
 				vertices[vertexCount + 2] = 0;
 
-				textureCoords[texCoordCount++] = (float) j / (float) mSegmentsW;
-				textureCoords[texCoordCount++] = 1.0f - (float) i / (float) mSegmentsH;
+				textureCoords[texCoordCount++] = (float) i / (float) mSegmentsW;
+				textureCoords[texCoordCount++] = 1.0f - (float) j / (float) mSegmentsH;
 
 				normals[vertexCount] = 0;
 				normals[vertexCount + 1] = 0;
