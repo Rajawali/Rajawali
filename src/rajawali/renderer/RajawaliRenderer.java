@@ -163,7 +163,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @return
 	 */
 	public boolean registerAnimation(Animation3D anim) {
-		return mAnimations.add(anim);
+		return queueAddTask(anim);
+		//return mAnimations.add(anim);
 	}
 	
 	/**
@@ -173,7 +174,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @return
 	 */
 	public boolean unregisterAnimation(Animation3D anim) {
-		return mAnimations.remove(anim);
+		return queueRemoveTask(anim);
+		//return mAnimations.remove(anim);
 	}
 
 	/**
