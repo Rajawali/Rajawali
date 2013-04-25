@@ -46,13 +46,12 @@ void main() {
 #endif
 
 #ifdef ALPHA_MASK
-	if(alpha < uAlphaMaskingThreshold)
+	if(alpha < uAlphaMaskingThreshold){
 		discard;
-	
-	gl_FragColor = color;
-#else
-	gl_FragColor = color;
+	}
 #endif
 
-      M_FOG_FRAGMENT_COLOR
+gl_FragColor = color;
+
+M_FOG_FRAGMENT_COLOR
 }

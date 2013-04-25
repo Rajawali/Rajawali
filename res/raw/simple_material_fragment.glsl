@@ -22,11 +22,10 @@ void main() {
 #endif
 
 #ifdef ALPHA_MASK
-	if(color.a < uAlphaMaskingThreshold)
-		discard;
-	
-	gl_FragColor = color;
-#else
-	gl_FragColor = color;
+	if(color.a < uAlphaMaskingThreshold){
+		discard;	
+	}
 #endif
+
+gl_FragColor = color;
 }
