@@ -79,14 +79,14 @@ public class GouraudMaterial extends AAdvancedMaterial {
 				vc.append("attenuation = (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 				vc.append("L = normalize(uLightPosition").append(i).append(" + E);\n");
 				vc.append("vec3 spotDir").append(i).append(" = normalize(-uLightDirection").append(i).append(");\n");
-				vc.append("float spot_factor = dot( L, spotDir").append(i).append(" );\n");
+				vc.append("float spot_factor").append(i).append(" = dot( L, spotDir").append(i).append(" );\n");
 				vc.append("if( uSpotCutoffAngle").append(i).append(" < 180.0 ) {\n");
-					vc.append("if( spot_factor >= cos( radians( uSpotCutoffAngle").append(i).append(") ) ) {\n");
-						vc.append("spot_factor = (1.0 - (1.0 - spot_factor) * 1.0/(1.0 - cos( radians( uSpotCutoffAngle").append(i).append("))));\n");
-						vc.append("spot_factor = pow(spot_factor, uSpotFalloff").append(i).append("* 1.0/spot_factor);\n");
+					vc.append("if( spot_factor").append(i).append(" >= cos( radians( uSpotCutoffAngle").append(i).append(") ) ) {\n");
+						vc.append("spot_factor").append(i).append(" = (1.0 - (1.0 - spot_factor").append(i).append(") * 1.0/(1.0 - cos( radians( uSpotCutoffAngle").append(i).append("))));\n");
+						vc.append("spot_factor").append(i).append(" = pow(spot_factor").append(i).append(", uSpotFalloff").append(i).append("* 1.0/spot_factor").append(i).append(");\n");
 					vc.append("}\n");
 					vc.append("else {\n");
-						vc.append("spot_factor = 0.0;\n");
+						vc.append("spot_factor").append(i).append(" = 0.0;\n");
 					vc.append("}\n");
 					vc.append("L = vec3(L.y, L.x, L.z);\n");
 					vc.append("}\n");
@@ -97,8 +97,8 @@ public class GouraudMaterial extends AAdvancedMaterial {
 			vc.append("power = NdotL * attenuation * uLightPower").append(i).append(";\n");
 			vc.append("vDiffuseIntensity += power;\n");
 			if(light.getLightType() == ALight.SPOT_LIGHT){
-				vc.append("vLightColor += uLightColor").append(i).append(" * spot_factor;\n");
-				vc.append("vSpecularIntensity += pow(NdotL, 6.0) * spot_factor;\n");
+				vc.append("vLightColor += uLightColor").append(i).append(" * spot_factor").append(i).append(";\n");
+				vc.append("vSpecularIntensity += pow(NdotL, 6.0) * spot_factor").append(i).append(";\n");
 			}
 			else{
 				vc.append("vLightColor += power * uLightColor").append(i).append(";\n");

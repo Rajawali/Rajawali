@@ -1,11 +1,10 @@
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
-import rajawali.BaseObject3D;
 import rajawali.math.Number3D;
-import android.view.animation.Interpolator;
 
 public class TranslateAnimation3D extends Animation3D {
+
 	protected Number3D mToPosition;
 	protected Number3D mFromPosition;
 	protected Number3D mDiffPosition;
@@ -13,8 +12,7 @@ public class TranslateAnimation3D extends Animation3D {
 	protected Number3D mAddedPosition = new Number3D();
 	protected boolean mOrientToPath = false;
 	protected ISpline mSplinePath;
-	protected float mDelta;
-	
+
 	public TranslateAnimation3D(Number3D toPosition) {
 		super();
 		mToPosition = toPosition;
@@ -31,42 +29,6 @@ public class TranslateAnimation3D extends Animation3D {
 		mSplinePath = splinePath;
 	}
 
-	public TranslateAnimation3D(BaseObject3D object, Number3D toPosition, long duration, long start, long length, int repeatCount, int repeatMode, Interpolator interpolator) {
-		this(toPosition);
-
-		setTransformable3D(object);
-		setDuration(duration);
-		setStart(start);
-		setLength(length);
-		setRepeatCount(repeatCount);
-		setRepeatMode(repeatMode);
-		setInterpolator(interpolator);
-	}
-
-	public TranslateAnimation3D(BaseObject3D object, Number3D fromPosition, Number3D toPosition, long duration, long start, long length, int repeatCount, int repeatMode, Interpolator interpolator) {
-		this(fromPosition, toPosition);
-
-		setTransformable3D(object);
-		setDuration(duration);
-		setStart(start);
-		setLength(length);
-		setRepeatCount(repeatCount);
-		setRepeatMode(repeatMode);
-		setInterpolator(interpolator);
-	}
-
-	public TranslateAnimation3D(BaseObject3D object, ISpline splinePath, long duration, long start, long length, int repeatCount, int repeatMode, Interpolator interpolator) {
-		this(splinePath);
-
-		setTransformable3D(object);
-		setDuration(duration);
-		setStart(start);
-		setLength(length);
-		setRepeatCount(repeatCount);
-		setRepeatMode(repeatMode);
-		setInterpolator(interpolator);
-	}
-	
 	@Override
 	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
@@ -75,23 +37,22 @@ public class TranslateAnimation3D extends Animation3D {
 	}
 
 	@Override
-	protected void applyTransformation(float interpolatedTime) {
-		super.applyTransformation(interpolatedTime);
+	protected void applyTransformation() {
 		if (mSplinePath == null) {
 			if (mDiffPosition == null)
 				mDiffPosition = Number3D.subtract(mToPosition, mFromPosition);
 			mMultipliedPosition.setAllFrom(mDiffPosition);
-			mMultipliedPosition.multiply(interpolatedTime);
+			mMultipliedPosition.multiply((float) mInterpolatedTime);
 			mAddedPosition.setAllFrom(mFromPosition);
 			mAddedPosition.add(mMultipliedPosition);
 			mTransformable3D.getPosition().setAllFrom(mAddedPosition);
 		} else {
-			Number3D pathPoint = mSplinePath.calculatePoint(interpolatedTime);
+			Number3D pathPoint = mSplinePath.calculatePoint((float) mInterpolatedTime);
 			mTransformable3D.getPosition().setAllFrom(pathPoint);
 
-			if (mOrientToPath) {
-				mTransformable3D.setLookAt(mSplinePath.calculatePoint(interpolatedTime + (mDelta * mDirection)));
-			}
+			if (mOrientToPath)
+				mTransformable3D.setLookAt(mSplinePath
+						.calculatePoint((float) (mInterpolatedTime + (mElapsedTime * (mIsReversing ? -1 : 1)))));
 		}
 	}
 
@@ -100,12 +61,15 @@ public class TranslateAnimation3D extends Animation3D {
 	}
 
 	public void setOrientToPath(boolean orientToPath) {
-		this.mOrientToPath = orientToPath;
+		if (mSplinePath == null)
+			throw new RuntimeException("You must set a spline path before orientation to path is possible.");
+
+		mOrientToPath = orientToPath;
 		mSplinePath.setCalculateTangents(orientToPath);
 	}
-	
+
 	public void setDuration(long duration) {
 		super.setDuration(duration);
-		mDelta = 300.f / duration;
 	}
+
 }
