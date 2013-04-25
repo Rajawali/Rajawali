@@ -144,10 +144,14 @@ public abstract class Animation3D {
 	/**
 	 * Register a listener for animations. Use {@link #unregisterListener(IAnimation3DListener)} to remove a listener.
 	 * 
+	 * @throws RuntimeException Thrown when called while animation {@link #isPlaying()} is true
 	 * @param animationListener
 	 * @return
 	 */
 	public boolean registerListener(IAnimation3DListener animationListener) {
+		if (isPlaying())
+			throw new RuntimeException("Listeners can only be added and removed when the animation is not playing.");
+		
 		return mAnimationListeners.add(animationListener);
 	}
 
@@ -264,10 +268,14 @@ public abstract class Animation3D {
 	 * Unregister a given listener. Use {@link #registerListener(IAnimation3DListener)} to add a listener. Returns true
 	 * on success.
 	 * 
+	 * @throws RuntimeException Thrown when called while animation {@link #isPlaying()} is true 
 	 * @param animationListener
 	 * @return {@link Boolean}
 	 */
 	public boolean unregisterListener(IAnimation3DListener animationListener) {
+		if (isPlaying())
+			throw new RuntimeException("Listeners can only be added and removed when the animation is not playing.");
+			
 		return mAnimationListeners.remove(animationListener);
 	}
 
