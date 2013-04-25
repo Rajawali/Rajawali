@@ -2,261 +2,380 @@ package rajawali.animation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import rajawali.ATransformable3D;
-import android.os.SystemClock;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-public class Animation3D {
-	public static final int INFINITE = -1;
-	public static final int RESTART = 1;
-	public static final int REVERSE = 2;
+public abstract class Animation3D {
 
-	protected long mDuration;
-	protected long mStart = -1;
-	protected long mLength = -1;
-	protected Interpolator mInterpolator;
+	public enum RepeatMode {
+		NONE, INFINITE, RESTART, REVERSE, REVERSE_INFINITE
+	}
+
+	protected final List<IAnimation3DListener> mAnimationListeners;
+
+	// Settings
+	protected boolean mPaused = true;
+	protected boolean mPlaying;
+	protected boolean mEnded;
 	protected int mRepeatCount;
-	protected int mRepeatMode = RESTART;
-	protected int mNumRepeats;
-	protected int mDirection = 1;
-	protected long mStartOffset;
-	protected long mStartTime;
-	protected long mDelay;
-	protected long mUpdateRate = 1000 / 60;
-	protected boolean mHasStarted;
-	protected boolean mHasEnded;
-	protected boolean mIsPaused;
-	protected List<Animation3DListener> mAnimationListeners = new ArrayList<Animation3DListener>();
-	protected Timer mTimer;
+	protected double mDelay;
+	protected double mDuration;
+	protected double mStartTime;
 	protected ATransformable3D mTransformable3D;
-	protected Animation3D mInstance;
-	protected float mInterpolatedTime;
+	protected Interpolator mInterpolator = new LinearInterpolator();
+	protected RepeatMode mRepeatMode = RepeatMode.NONE;
+
+	// Internal
+	protected boolean mIsReversing;
+	protected boolean mIsStarted;
+	protected double mDelayCount;
+	protected double mElapsedTime;
+	protected double mInterpolatedTime;
+	protected int mNumRepeat;
 
 	public Animation3D() {
-		mInstance = this;
-	}
-
-	class UpdateTimeTask extends TimerTask {
-		long millis;
-		float interpolatedTime;
-		long timeInPause;
-		boolean wasPaused = false;
-		boolean firstRun = true;
-		int i, j;
-
-		public void run() {	
-			if(firstRun)
-			{
-				firstRun = false;
-				mStartTime = SystemClock.uptimeMillis();
-			}
-			
-			if (mIsPaused) {
-				if (!wasPaused)	timeInPause = SystemClock.uptimeMillis();
-				wasPaused = true;
-				return;
-			} else {
-				if (wasPaused) mStartTime += SystemClock.uptimeMillis() - timeInPause;
-				wasPaused = false;
-			}
-
-			millis = SystemClock.uptimeMillis() - mStartTime;
-			if (millis > mDuration) {
-				if (mRepeatCount == mNumRepeats) {
-					setHasEnded(true);
-					cancel();
-					for (i = 0, j = mAnimationListeners.size(); i < j; i++)
-						mAnimationListeners.get(i).onAnimationEnd(mInstance);
-				} else {
-					if (mRepeatMode == REVERSE)
-						mDirection *= -1;
-					mStartTime = SystemClock.uptimeMillis();
-					mNumRepeats++;
-					for (i = 0, j = mAnimationListeners.size(); i < j; i++)
-						mAnimationListeners.get(i).onAnimationRepeat(mInstance);
-				}
-				
-				millis = mDuration;
-			}
-			
-			if (mDirection == -1) {
-				millis = mDuration - millis;
-			}
-			
-			if (millis > mStart && millis < (mStart + mLength)) {
-				float diff = (float) (millis - mStart);
-				interpolatedTime = mInterpolator.getInterpolation(diff / (float) mLength);
-				setHasStarted(true);
-
-				applyTransformation(interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime);
-				
-				for (i = 0, j = mAnimationListeners.size(); i < j; i++)
-					mAnimationListeners.get(i).onAnimationUpdate(mInstance, interpolatedTime);
-			}
-		}
-	}
-
-	public void cancel() {
-		if (mTimer != null) {
-			TimerManager.getInstance().killTimer(mTimer);
-		}
-	}
-
-	public void reset() {
-		mStartTime = SystemClock.uptimeMillis();
-		mNumRepeats = 0;
-	}
-
-	public void start() {
-		if (mInterpolator == null)
-			mInterpolator = new LinearInterpolator();
-		reset();
-		if (mTimer == null)
-			mTimer = TimerManager.getInstance().createNewTimer();
-		try {
-			mTimer.scheduleAtFixedRate(new UpdateTimeTask(), mDelay, mUpdateRate);
-		} catch (IllegalStateException e) {
-			// timer was cancelled
-			mTimer = TimerManager.getInstance().createNewTimer();
-			// try once more
-			try {
-				mTimer.scheduleAtFixedRate(new UpdateTimeTask(), mDelay, mUpdateRate);
-			} catch (IllegalStateException ie) {
-
-			}
-		}
-		for (int i = 0, j = mAnimationListeners.size(); i < j; i++)
-			mAnimationListeners.get(i).onAnimationStart(this);
-	}
-
-	protected void applyTransformation(float interpolatedTime) {
-		this.mInterpolatedTime = interpolatedTime;
-	}
-	
-	public float getCurrentTime() {
-		return this.mInterpolatedTime; 
-	}
-
-	public ATransformable3D getTransformable3D() {
-		return mTransformable3D;
-	}
-
-	public void setTransformable3D(ATransformable3D transformable3D) {
-		mTransformable3D = transformable3D;
-	}
-
-	public void setAnimationListener(Animation3DListener animationListener) {
-		mAnimationListeners.clear();
-		mAnimationListeners.add(animationListener);
-	}
-
-	public void addAnimationListener(Animation3DListener animationListener) {
-		mAnimationListeners.add(animationListener);
-	}
-
-	public void setDuration(long duration) {
-		mDuration = duration;
-		if (mLength < 0) {
-			mLength = mDuration;
-		}
-		if (mStart < 0) {
-			mStart = 0;
-		}
-	}
-
-	public long getDuration() {
-		return mDuration;
-	}
-
-	public void setStart(long start) {
-		mStart = start;
-	}
-
-	public long getStart() {
-		return mStart;
-	}
-
-	public void setLength(long length) {
-		mLength = length;
-	}
-
-	public long getLength() {
-		return mLength;
+		mAnimationListeners = new ArrayList<IAnimation3DListener>();
 	}
 
 	/**
-	 * AccelerateDecelerateInterpolator, AccelerateInterpolator,
-	 * AnticipateInterpolator, AnticipateOvershootInterpolator,
-	 * BounceInterpolator, CycleInterpolator, DecelerateInterpolator,
-	 * LinearInterpolator, OvershootInterpolator
+	 * Get the animation delay in delta time.
+	 * 
+	 * @return {@link Double}
+	 */
+	public double getDelayD() {
+		return mDelay;
+	}
+
+	/**
+	 * Get the animation delay in milliseconds.
+	 * 
+	 * @return {@link Long}
+	 */
+	public long getDelay() {
+		return (long) (mDelay * 1000d);
+	}
+
+	/**
+	 * Get the animation duration in delta time.
+	 * 
+	 * @return {@link Double}
+	 */
+	public double getDurationD() {
+		return mDuration;
+	}
+
+	/**
+	 * Get the animation duration in milliseconds.
+	 * 
+	 * @return {@link Long}
+	 */
+	public long getDuration() {
+		return (long) (mDuration * 1000d);
+	}
+
+	/**
+	 * Returns the {@link Interpolator} of the animation.
+	 * 
+	 * @return {@link Interpolator}
+	 */
+	public Interpolator getInterpolator() {
+		return mInterpolator;
+	}
+
+	/**
+	 * Returns the {@link RepeatMode} of the animation.
+	 * 
+	 * @return {@link RepeatMode}
+	 */
+	public RepeatMode getRepeatMode() {
+		return mRepeatMode;
+	}
+
+	/**
+	 * Determine if an animation has ended.
+	 * 
+	 * @return {@link Boolean}
+	 */
+	public boolean isEnded() {
+		return mEnded;
+	}
+
+	/**
+	 * Determine if an animation is currently paused.
+	 * 
+	 * @return {@link Boolean}
+	 */
+	public boolean isPaused() {
+		return mPaused;
+	}
+
+	/**
+	 * Determine if an animation is currently playing.
+	 * 
+	 * @return {@link Boolean}
+	 */
+	public boolean isPlaying() {
+		return mPlaying;
+	}
+
+	/**
+	 * Pause an animation. Use {{@link #play()} to continue.
+	 */
+	public void pause() {
+		mPaused = true;
+		mPlaying = false;
+	}
+
+	/**
+	 * Start an animation for the first time or continue from a paused state. Use {{@link #pause()} to halt an
+	 * animation. Throws {@link RuntimeException} if no {@link ATransformable3D} object has been set.
+	 */
+	public void play() {
+		mEnded = false;
+		mPaused = false;
+		mPlaying = true;
+
+		if (mTransformable3D == null)
+			throw new RuntimeException("Transformable object never set, nothing to animate!");
+	}
+
+	/**
+	 * Register a listener for animations. Use {@link #unregisterListener(IAnimation3DListener)} to remove a listener.
+	 * 
+	 * @param animationListener
+	 * @return
+	 */
+	public boolean registerListener(IAnimation3DListener animationListener) {
+		return mAnimationListeners.add(animationListener);
+	}
+
+	/**
+	 * Stop the animation and set the elapsed time to zero.
+	 */
+	public void reset() {
+		mEnded = false;
+		mIsStarted = false;
+		mPaused = true;
+		mPlaying = false;
+		mElapsedTime = 0;
+	}
+
+	/**
+	 * Set the delay of the animation in delta time. This is not treated as part of the duration.
+	 * 
+	 * @param duration
+	 */
+	public void setDelay(double delay) {
+		mDelay = delay;
+	}
+
+	/**
+	 * Set the delay of the animation in milliseconds. This is not treated as part of the duration.
+	 * 
+	 * @param duration
+	 */
+	public void setDelay(long delay) {
+		mDelay = delay / 1000d;
+	}
+
+	/**
+	 * Set the duration of the animation in delta time. This is counted separate of the delay if any.
+	 * 
+	 * @param duration
+	 */
+	public void setDuration(double duration) {
+		mDuration = duration;
+	}
+
+	/**
+	 * Set the duration of the animation in milliseconds. This is counted separate of the delay if any.
+	 * 
+	 * @param duration
+	 */
+	public void setDuration(long duration) {
+		mDuration = duration / 1000d;
+	}
+
+	/**
+	 * Set the {@link Interpolator} to use for the animation.
 	 * 
 	 * @param interpolator
+	 *            Default is {@link LinearInterpolator}
 	 */
 	public void setInterpolator(Interpolator interpolator) {
 		mInterpolator = interpolator;
 	}
 
-	public Interpolator getInterpolator() {
-		return mInterpolator;
-	}
-
+	/**
+	 * Set the number of times to repeat the animation. Repeat count will be ignored for {@link RepeatMode#NONE},
+	 * {@link RepeatMode#INFINITE}, and {@link RepeatMode#REVERSE_INFINITE}. When using {@link RepeatMode#REVERSE} each
+	 * direction change will be counted against the repeat count.
+	 * 
+	 * @param repeatCount
+	 */
 	public void setRepeatCount(int repeatCount) {
 		mRepeatCount = repeatCount;
 	}
 
-	public int getRepeatCount() {
-		return mRepeatCount;
-	}
-
-	public void setRepeatMode(int repeatMode) {
+	/**
+	 * Set the repeat mode of the animation using {@link RepeatMode}.
+	 * 
+	 * @param repeatMode
+	 */
+	public void setRepeatMode(RepeatMode repeatMode) {
 		mRepeatMode = repeatMode;
 	}
 
-	public int getRepeatMode() {
-		return mRepeatMode;
+	/**
+	 * Set the start time in delta time, that is less than the duration, which to start the animation. Setting a time
+	 * outside the animation duration will throw a {@link RuntimeException}.
+	 * 
+	 * @param time
+	 */
+	public void setStartTime(double startTime) {
+		if (startTime < mDuration)
+			mStartTime = startTime;
+		else
+			throw new RuntimeException("Animation start time must be less the duration.");
 	}
 
-	public boolean isHasStarted() {
-		return mHasStarted;
+	/**
+	 * Set the start time in milliseconds, that is less than the duration, which to start the animation. Setting a time
+	 * outside the animation duration will throw a {@link RuntimeException}.
+	 * 
+	 * @param time
+	 */
+	public void setStartTime(long startTime) {
+		setStartTime(startTime / 1000d);
 	}
 
-	public void setHasStarted(boolean hasStarted) {
-		this.mHasStarted = hasStarted;
+	/**
+	 * Set the transformable object to be manipulated by the animation.
+	 * 
+	 * @param transformable3D
+	 */
+	public void setTransformable3D(ATransformable3D transformable3D) {
+		mTransformable3D = transformable3D;
 	}
 
-	public boolean isHasEnded() {
-		return mHasEnded;
+	/**
+	 * Unregister a given listener. Use {@link #registerListener(IAnimation3DListener)} to add a listener. Returns true
+	 * on success.
+	 * 
+	 * @param animationListener
+	 * @return {@link Boolean}
+	 */
+	public boolean unregisterListener(IAnimation3DListener animationListener) {
+		return mAnimationListeners.remove(animationListener);
 	}
 
-	public void setHasEnded(boolean hasEnded) {
-		this.mHasEnded = hasEnded;
+	/**
+	 * Calculate the elapsed time and interpolated time of the animation. Also responsible for firing animation events.
+	 * 
+	 * @param deltaTime
+	 */
+	public void update(final double deltaTime) {
+		if (mPaused)
+			return;
+
+		// Do not run the animation until the delay is over
+		if (mDelayCount < mDelay) {
+			mDelayCount += deltaTime;
+			return;
+		}
+
+		// Announce the start of the animation
+		if (!mIsStarted) {
+			mIsStarted = true;
+			mElapsedTime = mStartTime;
+			eventStart();
+		}
+
+		// Update the elapsed time
+		mElapsedTime += deltaTime;
+		eventUpdate(deltaTime);
+
+		// End of animation reached
+		if (mElapsedTime >= mDuration) {
+			mEnded = true;
+			mPaused = false;
+			mPlaying = false;
+
+			switch (mRepeatMode) {
+			case NONE:
+				eventEnd();
+				return;
+			case REVERSE_INFINITE:
+				// Reverse and fall through.
+				mIsReversing = !mIsReversing;
+			case INFINITE:
+				mElapsedTime -= mDuration;
+				play();
+				eventRepeat();
+				break;
+			case RESTART:
+				if (mRepeatCount > mNumRepeat) {
+					mNumRepeat++;
+					reset();
+					play();
+					eventRepeat();
+				} else {
+					eventEnd();
+					return;
+				}
+				break;
+			case REVERSE:
+				if (mRepeatCount > mNumRepeat) {
+					mIsReversing = !mIsReversing;
+					mNumRepeat++;
+					reset();
+					play();
+					eventRepeat();
+				} else {
+					eventEnd();
+					return;
+				}
+				break;
+			}
+		}
+
+		// Calculate the interpolated time
+		final float interpolatedTime = 1f - mInterpolator
+				.getInterpolation((float) ((mDuration - mElapsedTime) / mDuration));
+		mInterpolatedTime = interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime;
+
+		if (mIsReversing)
+			mInterpolatedTime = 1 - mInterpolatedTime;
+
+		applyTransformation();
 	}
 
-	public void setPaused(boolean doPause) {
-		mIsPaused = doPause;
-	}
-	
-	public boolean isPaused() {
-		return mIsPaused;
-	}
-	
-	public long getDelay() {
-		return mDelay;
+	/**
+	 * Perform object manipulation here. Use the {@link #mInterpolatedTime}, a value determined by the
+	 * {@link #setInterpolator(Interpolator)}, to manipulate objects.
+	 */
+	protected abstract void applyTransformation();
+
+	protected void eventEnd() {
+		for (int i = 0, j = mAnimationListeners.size(); i < j; i++)
+			mAnimationListeners.get(i).onAnimationEnd(this);
 	}
 
-	public void setDelay(long delay) {
-		mDelay = delay;
+	protected void eventRepeat() {
+		for (int i = 0, j = mAnimationListeners.size(); i < j; i++)
+			mAnimationListeners.get(i).onAnimationRepeat(this);
 	}
 
-	public long getUpdateRate() {
-		return mUpdateRate;
+	protected void eventStart() {
+		for (int i = 0, j = mAnimationListeners.size(); i < j; i++)
+			mAnimationListeners.get(i).onAnimationStart(this);
 	}
 
-	public void setUpdateRate(long updateRate) {
-		this.mUpdateRate = updateRate;
+	protected void eventUpdate(double interpolatedTime) {
+		for (int i = 0, j = mAnimationListeners.size(); i < j; i++)
+			mAnimationListeners.get(i).onAnimationUpdate(this, interpolatedTime);
 	}
+
 }
