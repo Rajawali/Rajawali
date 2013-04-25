@@ -23,6 +23,7 @@ public abstract class AMaterial {
 	public static final int NONE				= 0;
 	public static final int VERTEX_ANIMATION 	= 1 << 0;
 	public static final int SKELETAL_ANIMATION	= 1 << 1;
+	public static final int ALPHA_MASKING		= 1 << 2;
 	
 	protected String mUntouchedVertexShader;
 	protected String mUntouchedFragmentShader;
@@ -65,6 +66,7 @@ public abstract class AMaterial {
 	
 	protected boolean mVertexAnimationEnabled;
 	protected boolean mSkeletalAnimationEnabled;
+	protected boolean mAlphaMaskingEnabled;
 	
 	public AMaterial() {
 		mTextureInfoList = new ArrayList<TextureInfo>();
@@ -83,12 +85,14 @@ public abstract class AMaterial {
 		mUntouchedFragmentShader = fragmentShader;
 		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
 		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
+		mAlphaMaskingEnabled = (parameters & ALPHA_MASKING) != 0;
 	}
 	
 	public AMaterial(int parameters) {
 		this();
 		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
 		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
+		mAlphaMaskingEnabled = (parameters & ALPHA_MASKING) != 0;
 	}
 	
 	public AMaterial(int vertex_res, int fragment_res) {
@@ -97,6 +101,10 @@ public abstract class AMaterial {
 	
 	public AMaterial(int vertex_res, int fragment_res, boolean vertexAnimationEnabled) {
 		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res), vertexAnimationEnabled);
+	}
+	
+	public AMaterial(int vertex_res, int fragment_res, int parameters) {
+		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res), parameters);
 	}
 	
 	protected int queryMaxTextures() {
@@ -125,6 +133,7 @@ public abstract class AMaterial {
 		mVertexShader = mSkeletalAnimationEnabled ? "#define SKELETAL_ANIM\n" + mVertexShader : mVertexShader;
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
 		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
+		mFragmentShader = mAlphaMaskingEnabled ? "#define ALPHA_MASK\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseNormalMap ? "#define NORMAL_MAP\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseSpecMap ? "#define SPECULAR_MAP\n" + mFragmentShader : mFragmentShader;
@@ -535,7 +544,7 @@ public abstract class AMaterial {
 	public boolean getUseColor() {
 		return mUseColor;
 	}
-	
+		
 	/**
 	 * Pass the context to be used for resource loading. This should only be called internally by the renderer.
 	 * 

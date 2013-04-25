@@ -7,14 +7,23 @@ uniform sampler2D uDiffuseTexture;
 uniform sampler2D uAlphaTexture;
 
 void main() {
+
 #ifdef TEXTURED
-	gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);
+	vec4 color = texture2D(uDiffuseTexture, vTextureCoord);
 #else
-	gl_FragColor = vColor;
+	vec4 color = vColor;
 #endif
 
 #ifdef ALPHA_MAP
-	float alpha = texture2D(uAlphaTexture, vTextureCoord).r;
-	gl_FragColor.a = alpha;
+	color.a = texture2D(uAlphaTexture, vTextureCoord).r;
+#endif
+
+#ifdef ALPHA_MASK
+	if(color.a < 0.5)
+		discard;
+	
+	gl_FragColor = color;
+#else
+	gl_FragColor = color;
 #endif
 }

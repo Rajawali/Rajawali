@@ -36,9 +36,11 @@ void main() {
 %LIGHT_CODE%
 
 #ifdef TEXTURED
-   vec4 diffuse = Kd * texture2D(uDiffuseTexture, vTextureCoord);
+   vec4 diffuse = texture2D(uDiffuseTexture, vTextureCoord);
+   diffuse.rgb *= Kd.rgb;
 #else
-   vec4 diffuse = Kd * vColor;
+   vec4 diffuse = vColor;
+   diffuse.rgb *= Kd.rgb;
 #endif
 
 #ifdef SPECULAR_MAP
@@ -48,11 +50,21 @@ void main() {
 #endif
 
    vec4 ambient = uAmbientIntensity * uAmbientColor; 
-   gl_FragColor = ambient + diffuse + specular;    
+   vec4 color = ambient + diffuse + specular;
+   float alpha = diffuse.a;
 
 #ifdef ALPHA_MAP
-   float alpha = texture2D(uAlphaTexture, vTextureCoord).r;
-   gl_FragColor.a = alpha; 
+   alpha = texture2D(uAlphaTexture, vTextureCoord).r;
+   color.a = alpha;
+#endif
+
+#ifdef ALPHA_MASK
+	if(alpha < 0.5)
+		discard;
+	
+	gl_FragColor = color;
+#else
+	gl_FragColor = color;
 #endif
 
 M_FOG_FRAGMENT_COLOR
