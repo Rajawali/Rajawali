@@ -764,7 +764,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			//internalReplaceAnimation((Animation3D) task, (Animation3D) task.getReplaceObject(), task.getIndex());
+			internalReplaceAnimation((Animation3D) task, (Animation3D) task.getReplaceObject(), task.getIndex());
 			break;
 		case CAMERA:
 			internalReplaceCamera((Camera) task, (Camera) task.getReplaceObject(), task.getIndex());
@@ -793,7 +793,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			//internalAddAnimation((Animation3D) task, task.getIndex());
+			internalAddAnimation((Animation3D) task, task.getIndex());
 			break;
 		case CAMERA:
 			internalAddCamera((Camera) task, task.getIndex());
@@ -822,7 +822,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			//internalRemoveAnimation((Animation3D) task, task.getIndex());
+			internalRemoveAnimation((Animation3D) task, task.getIndex());
 			break;
 		case CAMERA:
 			internalRemoveCamera((Camera) task, task.getIndex());
@@ -856,7 +856,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		switch (type) {
 		case ANIMATION:
 			for (i = 0; i < j; ++i) {
-				//internalAddAnimation((Animation3D) tasks[i], AFrameTask.UNUSED_INDEX);
+				internalAddAnimation((Animation3D) tasks[i], AFrameTask.UNUSED_INDEX);
 			}
 			break;
 		case CAMERA:
@@ -902,7 +902,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 				internalClearAnimations();
 			} else {
 				for (i = 0; i < j; ++i) {
-					//internalRemoveAnimation((Animation3D) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalRemoveAnimation((Animation3D) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
@@ -953,9 +953,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	private void internalReplaceAnimation(Animation3D anim, Animation3D replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
-			//mAnimations.set(index, anim);
+			mAnimations.set(index, anim);
 		} else {
-			//mAnimations.set(mChildren.indexOf(replace), anim);
+			mAnimations.set(mChildren.indexOf(replace), anim);
 		}
 	}
 	
@@ -971,9 +971,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	private void internalAddAnimation(Animation3D anim, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
-			//mAnimations.add(child);
+			mAnimations.add(anim);
 		} else {
-			//mAnimations.add(index, child);
+			mAnimations.add(index, anim);
 		}
 	}
 	
@@ -988,9 +988,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	private void internalRemoveAnimation(Animation3D anim, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
-			//mAnimations.remove(anim);
+			mAnimations.remove(anim);
 		} else {
-			//mAnimations.remove(index);
+			mAnimations.remove(index);
 		}
 	}
 	
@@ -999,7 +999,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
 	 */
 	private void internalClearAnimations() {
-		//mAnimations.clear();
+		mAnimations.clear();
 	}
 	
 	/**
