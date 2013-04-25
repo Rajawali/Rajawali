@@ -488,7 +488,7 @@ public abstract class AMaterial {
 	 * Set the threshold for alpha masking. The default value is .5f
 	 * 
 	 * 
-	 * @param threshold Pixels with alpha values below this number will be discarded (range 0 - 1)
+	 * @param {@link float} threshold Pixels with alpha values below this number will be discarded (range 0 - 1)
 	 */
 	
 	public void setAlphaMaskingThreshold(float threshold) {
@@ -538,7 +538,11 @@ public abstract class AMaterial {
 		return out.toString();
 	}
 	
-	
+	/**
+	 * Get the model-space to view-space matrix
+	 * 
+	 * @return {@link float[]}
+	 */
 
 	public float[] getModelViewMatrix() {
 		return mModelViewMatrix;
@@ -551,6 +555,11 @@ public abstract class AMaterial {
 			shader.addTexture(mTextureInfoList.get(i));
 	}
 
+	/**
+	 * Set the material to use a color value rather than a texture
+	 * 
+	 * @param value {@link boolean}
+	 */
 	public void setUseColor(boolean value) {
 		if(value != mUseColor) {
 			mUseColor = value;
@@ -560,6 +569,11 @@ public abstract class AMaterial {
 		mUseColor = value;
 	}
 	
+	/**
+	 *  Determine if color is used.
+	 *  
+	 * @return {@link boolean}
+	 */
 	public boolean getUseColor() {
 		return mUseColor;
 	}
