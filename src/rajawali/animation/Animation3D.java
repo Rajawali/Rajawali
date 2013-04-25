@@ -5,7 +5,6 @@ import java.util.List;
 
 import rajawali.ATransformable3D;
 import rajawali.renderer.AFrameTask;
-import rajawali.renderer.AFrameTask.TYPE;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
@@ -123,7 +122,7 @@ public abstract class Animation3D extends AFrameTask {
 	}
 
 	/**
-	 * Pause an animation. Use {{@link #play()} to continue.
+	 * Pause an animation. Use {@link #play()} to continue.
 	 */
 	public void pause() {
 		mPaused = true;
