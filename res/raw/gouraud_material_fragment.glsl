@@ -14,6 +14,10 @@ uniform vec4 uAmbientIntensity;
 uniform vec4 uSpecularColor;
 uniform vec4 uSpecularIntensity;
 
+#ifdef ALPHA_MASK
+	uniform float uAlphaMaskingThreshold;
+#endif
+
 %FOG_FRAGMENT_VARS%
 %LIGHT_VARS%
 
@@ -42,7 +46,7 @@ void main() {
 #endif
 
 #ifdef ALPHA_MASK
-	if(alpha < 0.5)
+	if(alpha < uAlphaMaskingThreshold)
 		discard;
 	
 	gl_FragColor = color;

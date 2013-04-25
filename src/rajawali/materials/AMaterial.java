@@ -45,6 +45,7 @@ public abstract class AMaterial {
 	protected int muMMatrixHandle;
 	protected int muVMatrixHandle;
 	protected int muInterpolationHandle;
+	protected int muAlphaMaskingThresholdHandle;
 
 	protected Stack<ALight> mLights;
 	protected boolean mUseColor = false;
@@ -53,6 +54,7 @@ public abstract class AMaterial {
 	protected boolean mUseSpecMap = false;
 
 	protected int mNumTextures = 0;
+	protected float mAlphaMaskingThreshold = .5f;
 	protected float[] mModelViewMatrix;
 	protected float[] mViewMatrix;
 	protected float[] mCameraPosArray;
@@ -164,6 +166,10 @@ public abstract class AMaterial {
 			muInterpolationHandle = getUniformLocation("uInterpolation");
 		}
 		
+		if(mAlphaMaskingEnabled == true) {
+			muAlphaMaskingThresholdHandle = getUniformLocation("uAlphaMaskingThreshold");
+		}
+		
 		mProgramCreated = true;
 
 		checkTextureHandles();
@@ -248,6 +254,8 @@ public abstract class AMaterial {
 			reload();
 		}
 		GLES20.glUseProgram(mProgram);
+		if(checkValidHandle(muAlphaMaskingThresholdHandle, "alpha masking threshold"))
+			GLES20.glUniform1f(muAlphaMaskingThresholdHandle, mAlphaMaskingThreshold);
 	}
 
 	public void bindTextures() {
@@ -474,6 +482,17 @@ public abstract class AMaterial {
 						false, 0, 0);
 			}
 		}
+	}
+	
+	/**
+	 * Set the threshold for alpha masking. The default value is .5f
+	 * 
+	 * 
+	 * @param threshold Pixels with alpha values below this number will be discarded (range 0 - 1)
+	 */
+	
+	public void setAlphaMaskingThreshold(float threshold) {
+		mAlphaMaskingThreshold = threshold;
 	}
 	
 	public boolean checkValidHandle(int handle, String message){

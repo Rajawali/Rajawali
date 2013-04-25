@@ -23,7 +23,12 @@ public class PhongMaterial extends AAdvancedMaterial {
 	public PhongMaterial(boolean isAnimated) {
 		this(R.raw.phong_material_vertex, R.raw.phong_material_fragment, isAnimated);
 	}
-	
+
+	/**
+	 * Constructor to pass parameters directly
+	 * 
+	 * @param parameters Use bitwise parameters from `AMaterial`
+	 */
 	public PhongMaterial(int parameters) {
 		super(R.raw.phong_material_vertex, R.raw.phong_material_fragment, parameters);
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };

@@ -18,6 +18,10 @@ uniform sampler2D uNormalTexture;
 uniform sampler2D uSpecularTexture;
 uniform sampler2D uAlphaTexture;
 
+#ifdef ALPHA_MASK
+	uniform float uAlphaMaskingThreshold;
+#endif
+
 void main() {
    vec4 Kd = vec4(0.0);
    float intensity = 0.0;
@@ -59,7 +63,7 @@ void main() {
 #endif
 
 #ifdef ALPHA_MASK
-	if(alpha < 0.5)
+	if(alpha < uAlphaMaskingThreshold)
 		discard;
 	
 	gl_FragColor = color;

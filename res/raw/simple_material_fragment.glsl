@@ -5,6 +5,9 @@ varying vec4 vColor;
 
 uniform sampler2D uDiffuseTexture;
 uniform sampler2D uAlphaTexture;
+#ifdef ALPHA_MASK
+	uniform float uAlphaMaskingThreshold;
+#endif
 
 void main() {
 
@@ -19,7 +22,7 @@ void main() {
 #endif
 
 #ifdef ALPHA_MASK
-	if(color.a < 0.5)
+	if(color.a < uAlphaMaskingThreshold)
 		discard;
 	
 	gl_FragColor = color;
