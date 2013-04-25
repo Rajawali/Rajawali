@@ -3,9 +3,8 @@ package rajawali.animation;
 import rajawali.ATransformable3D;
 import rajawali.math.Number3D;
 
-
 public class TranslateAnimation3D extends Animation3D {
-	
+
 	protected Number3D mToPosition;
 	protected Number3D mFromPosition;
 	protected Number3D mDiffPosition;
@@ -52,7 +51,8 @@ public class TranslateAnimation3D extends Animation3D {
 			mTransformable3D.getPosition().setAllFrom(pathPoint);
 
 			if (mOrientToPath)
-				mTransformable3D.setLookAt(mSplinePath.calculatePoint((float) (mInterpolatedTime + (mElapsedTime * (mIsReversing ? -1 : 1)))));
+				mTransformable3D.setLookAt(mSplinePath
+						.calculatePoint((float) (mInterpolatedTime + (mElapsedTime * (mIsReversing ? -1 : 1)))));
 		}
 	}
 
@@ -63,7 +63,7 @@ public class TranslateAnimation3D extends Animation3D {
 	public void setOrientToPath(boolean orientToPath) {
 		if (mSplinePath == null)
 			throw new RuntimeException("You must set a spline path before orientation to path is possible.");
-		
+
 		mOrientToPath = orientToPath;
 		mSplinePath.setCalculateTangents(orientToPath);
 	}

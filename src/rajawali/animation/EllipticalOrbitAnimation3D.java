@@ -9,6 +9,7 @@ import rajawali.math.Number3D.Axis;
  *
  */
 public class EllipticalOrbitAnimation3D extends Animation3D {
+
 	// Pre-calculated for performance optimization
 	protected final double PI_DIV_180 = 0.01745329251994329576923690768489;
 
@@ -34,8 +35,8 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param direction Direction of the orbit.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, 
-			double eccentricity, OrbitDirection direction) {
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity,
+			OrbitDirection direction) {
 		super();
 		mFocalPoint = focalPoint;
 		mPeriapsis = periapsis;
@@ -59,11 +60,10 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	
 	@Override
 	protected void applyTransformation() {
-		// Everything here is stored in double precision because single precision
-		// floating point causes a major overflow. Number3D still stores internally in
-		// single precision so all the calculation will be done in here until Number3D
-		// is completely overhauled. Theory behind math in this method can be looked up
-		// easily on Wikipedia.
+		// Everything here is stored in double precision because single precision floating point causes a major
+		// overflow. Number3D still stores internally in single precision so all the calculation will be done in here
+		// until Number3D is completely overhauled. Theory behind math in this method can be looked up easily on
+		// Wikipedia.
 		
 		// Angle in radians (interpolated time from 0 to 1 results in radian angle 0 to 2PI)
 		double angle = (mDirection == OrbitDirection.CLOCKWISE ? -1 : 1) * 360f * mInterpolatedTime * PI_DIV_180;
@@ -71,14 +71,13 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		// Calculate the distances of periapsis and apoapsis to the focal point.
 		double periapsisRadius = mPeriapsis.distanceTo(mFocalPoint);
 		double apoapsisRadius = periapsisRadius * (1 + mEccentricity) / (1 - mEccentricity);
-		
+
 		// Get the apoapsis point which will be needed to calculate the center point of the ellipse.
-		// NOTE: Discard least significant digits after 8th decimal places to lower the computational
-		// error epsilon.
+		// NOTE: Discard least significant digits after 8th decimal places to lower the computational error epsilon.
 		double uAx = (Math.round(mFocalPoint.x * 1e8) - Math.round(mPeriapsis.x * 1e8)) / 1e8;
 		double uAy = (Math.round(mFocalPoint.y * 1e8) - Math.round(mPeriapsis.y * 1e8)) / 1e8;
 		double uAz = (Math.round(mFocalPoint.z * 1e8) - Math.round(mPeriapsis.z * 1e8)) / 1e8;
-		double mod = Math.sqrt(uAx*uAx + uAy*uAy + uAz*uAz);
+		double mod = Math.sqrt(uAx * uAx + uAy * uAy + uAz * uAz);
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
 			uAx *= mod;
@@ -91,15 +90,15 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		double apoapsisPos_x = Math.round((apoapsisDir_x + mFocalPoint.x) * 1e8) / 1e8;
 		double apoapsisPos_y = Math.round((apoapsisDir_y + mFocalPoint.y) * 1e8) / 1e8;
 		double apoapsisPos_z = Math.round((apoapsisDir_z + mFocalPoint.z) * 1e8) / 1e8;
-		
+
 		// Midpoint between apoapsis and periapsis is the center of the ellipse.
 		double center_x = Math.round(((mPeriapsis.x + apoapsisPos_x) / 2) * 1e8) / 1e8;
 		double center_y = Math.round(((mPeriapsis.y + apoapsisPos_y) / 2) * 1e8) / 1e8;
 		double center_z = Math.round(((mPeriapsis.z + apoapsisPos_z) / 2) * 1e8) / 1e8;
-		
+
 		// Calculate semiminor axis length.
 		double b = Math.sqrt(periapsisRadius * apoapsisRadius);
-		
+
 		// Direction vector to periapsis from the center point and ascending node from the center point
 		double semimajorAxis_x = Math.round((mPeriapsis.x - center_x) * 1e8) / 1e8;
 		double semimajorAxis_y = Math.round((mPeriapsis.y - center_y) * 1e8) / 1e8;
@@ -107,14 +106,15 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		double unitSemiMajorAxis_x = semimajorAxis_x;
 		double unitSemiMajorAxis_y = semimajorAxis_y;
 		double unitSemiMajorAxis_z = semimajorAxis_z;
-		mod = Math.sqrt(semimajorAxis_x*semimajorAxis_x + semimajorAxis_y*semimajorAxis_y + semimajorAxis_z*semimajorAxis_z);
+		mod = Math.sqrt(semimajorAxis_x * semimajorAxis_x + semimajorAxis_y * semimajorAxis_y + semimajorAxis_z
+				* semimajorAxis_z);
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
 			unitSemiMajorAxis_x *= mod;
 			unitSemiMajorAxis_y *= mod;
 			unitSemiMajorAxis_z *= mod;
 		}
-		
+
 		// Translate normal vector to the center point.
 		Number3D unitNormal = mNormal.clone();
 		unitNormal.normalize();
@@ -124,22 +124,24 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		double normalCenter_x = center_x + uNx;
 		double normalCenter_y = center_y + uNy;
 		double normalCenter_z = center_z + uNz;
-		mod = Math.sqrt(normalCenter_x*normalCenter_x + normalCenter_y*normalCenter_y + normalCenter_z*normalCenter_z);
+		mod = Math.sqrt(normalCenter_x * normalCenter_x + normalCenter_y * normalCenter_y + normalCenter_z
+				* normalCenter_z);
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
 			normalCenter_x *= mod;
 			normalCenter_y *= mod;
 			normalCenter_z *= mod;
 		}
-		
+
 		// We can calculate the semiminor axis from unit vector of cross product of semimajor axis and the normal.
-		Number3D unitSemiminorAxis = Number3D.cross(new Number3D(unitSemiMajorAxis_x, unitSemiMajorAxis_y, unitSemiMajorAxis_z), new Number3D(normalCenter_x, normalCenter_y, normalCenter_z));
-		Number3D semiminorAxis = Number3D.multiply(unitSemiminorAxis, (float)b);
-		
+		Number3D unitSemiminorAxis = Number3D.cross(new Number3D(unitSemiMajorAxis_x, unitSemiMajorAxis_y,
+				unitSemiMajorAxis_z), new Number3D(normalCenter_x, normalCenter_y, normalCenter_z));
+		Number3D semiminorAxis = Number3D.multiply(unitSemiminorAxis, (float) b);
+
 		// Parametric equation for ellipse in 3D space.
 		double x = center_x + (Math.cos(angle) * semimajorAxis_x) + (Math.sin(angle) * semiminorAxis.x);
 		double y = center_y + (Math.cos(angle) * semimajorAxis_y) + (Math.sin(angle) * semiminorAxis.y);
 		double z = center_z + (Math.cos(angle) * semimajorAxis_z) + (Math.sin(angle) * semiminorAxis.z);
-		mTransformable3D.setPosition((float)x, (float)y, (float)z);
+		mTransformable3D.setPosition((float) x, (float) y, (float) z);
 	}
 }

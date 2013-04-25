@@ -345,7 +345,7 @@ public abstract class Animation3D {
 		final float interpolatedTime = 1f - mInterpolator
 				.getInterpolation((float) ((mDuration - mElapsedTime) / mDuration));
 		mInterpolatedTime = interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime;
-		
+
 		if (mIsReversing)
 			mInterpolatedTime = 1 - mInterpolatedTime;
 

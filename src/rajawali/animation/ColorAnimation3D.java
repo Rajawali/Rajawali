@@ -26,14 +26,13 @@ public class ColorAnimation3D extends Animation3D {
 		mToAlpha = toColor >>> 24;
 	}
 
-	public void setBaseObject3D(BaseObject3D baseObject3D) {
-		super.setTransformable3D(baseObject3D);
-	}
-
 	@Override
-	public void setTransformable3D(ATransformable3D transformable3d) {
-		throw new RuntimeException(
-				"ColorAnimation3D does not use setTransformable3D, please use setBaseObject3D instead.");
+	public void setTransformable3D(ATransformable3D transformable3D) {
+		super.setTransformable3D(transformable3D);
+		if (!(transformable3D instanceof BaseObject3D)) {
+			throw new RuntimeException(
+					"ColorAnimation3D requires the passed transformable3D to be an instance of BaseObject3D.");
+		}
 	}
 
 	@Override
