@@ -12,4 +12,4 @@ void main() {
 #else
 	gl_FragColor = vColor;
 #endif
-}\n";
+}
