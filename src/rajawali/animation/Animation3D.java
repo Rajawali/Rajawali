@@ -285,7 +285,7 @@ public abstract class Animation3D {
 	 * @param deltaTime
 	 */
 	public void update(final double deltaTime) {
-		if (mPaused)
+		if (mPaused || !mPlaying)
 			return;
 
 		// Do not run the animation until the delay is over
