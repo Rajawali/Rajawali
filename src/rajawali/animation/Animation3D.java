@@ -306,7 +306,6 @@ public abstract class Animation3D {
 
 		// Update the elapsed time
 		mElapsedTime += deltaTime;
-		eventUpdate(deltaTime);
 
 		// End of animation reached
 		if (mElapsedTime >= mDuration && !mEnded) {
@@ -359,8 +358,9 @@ public abstract class Animation3D {
 
 		if (mIsReversing)
 			mInterpolatedTime = 1 - mInterpolatedTime;
-
+		
 		applyTransformation();
+		eventUpdate(mInterpolatedTime);
 	}
 
 	/**
