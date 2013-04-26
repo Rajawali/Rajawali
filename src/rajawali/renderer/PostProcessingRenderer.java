@@ -116,6 +116,8 @@ public final class PostProcessingRenderer {
 	public void destroy() {
 		GLES20.glDeleteFramebuffers(1, new int[] { mFrameBufferHandle }, 0);
 		GLES20.glDeleteRenderbuffers(1, new int[] { mDepthBufferHandle }, 0);
+		
+		if (mFrameBufferTexInfo!=null) mRenderer.getTextureManager().removeTexture(mFrameBufferTexInfo);
 	}
 	
 	public void reload() {
