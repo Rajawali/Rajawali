@@ -153,7 +153,10 @@ public abstract class Animation3D extends AFrameTask {
 		if (isPlaying())
 			throw new RuntimeException("Listeners can only be added and removed when the animation is not playing.");
 		
-		return mAnimationListeners.add(animationListener);
+		if (!mAnimationListeners.contains(animationListener))
+			return mAnimationListeners.add(animationListener);
+		else
+			return false;
 	}
 
 	/**
@@ -286,7 +289,7 @@ public abstract class Animation3D extends AFrameTask {
 	 * @param deltaTime
 	 */
 	public void update(final double deltaTime) {
-		if (mPaused)
+		if (mPaused || !mPlaying)
 			return;
 
 		// Do not run the animation until the delay is over
@@ -307,7 +310,7 @@ public abstract class Animation3D extends AFrameTask {
 		eventUpdate(deltaTime);
 
 		// End of animation reached
-		if (mElapsedTime >= mDuration) {
+		if (mElapsedTime >= mDuration && !mEnded) {
 			mEnded = true;
 			mPaused = false;
 			mPlaying = false;
@@ -351,8 +354,8 @@ public abstract class Animation3D extends AFrameTask {
 		}
 
 		// Calculate the interpolated time
-		final float interpolatedTime = 1f - mInterpolator
-				.getInterpolation((float) ((mDuration - mElapsedTime) / mDuration));
+		final float interpolatedTime = mInterpolator
+				.getInterpolation((float) ((mElapsedTime) / mDuration));
 		mInterpolatedTime = interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime;
 
 		if (mIsReversing)
