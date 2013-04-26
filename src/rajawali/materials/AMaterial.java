@@ -488,7 +488,7 @@ public abstract class AMaterial {
 	 * Set the threshold for alpha masking. The default value is .5f
 	 * 
 	 * 
-	 * @param {@link float} threshold Pixels with alpha values below this number will be discarded (range 0 - 1)
+	 * @param threshold Pixels with alpha values below this number will be discarded (range 0 - 1)
 	 */
 	
 	public void setAlphaMaskingThreshold(float threshold) {
