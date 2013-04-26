@@ -152,7 +152,10 @@ public abstract class Animation3D {
 		if (isPlaying())
 			throw new RuntimeException("Listeners can only be added and removed when the animation is not playing.");
 		
-		return mAnimationListeners.add(animationListener);
+		if (!mAnimationListeners.contains(animationListener))
+			return mAnimationListeners.add(animationListener);
+		else
+			return false;
 	}
 
 	/**
@@ -306,7 +309,7 @@ public abstract class Animation3D {
 		eventUpdate(deltaTime);
 
 		// End of animation reached
-		if (mElapsedTime >= mDuration) {
+		if (mElapsedTime >= mDuration && !mEnded) {
 			mEnded = true;
 			mPaused = false;
 			mPlaying = false;
@@ -350,8 +353,8 @@ public abstract class Animation3D {
 		}
 
 		// Calculate the interpolated time
-		final float interpolatedTime = 1f - mInterpolator
-				.getInterpolation((float) ((mDuration - mElapsedTime) / mDuration));
+		final float interpolatedTime = mInterpolator
+				.getInterpolation((float) ((mElapsedTime) / mDuration));
 		mInterpolatedTime = interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime;
 
 		if (mIsReversing)
