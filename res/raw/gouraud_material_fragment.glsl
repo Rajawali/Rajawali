@@ -14,14 +14,20 @@ uniform vec4 uAmbientIntensity;
 uniform vec4 uSpecularColor;
 uniform vec4 uSpecularIntensity;
 
-      %FOG_FRAGMENT_VARS%
+#ifdef ALPHA_MASK
+	uniform float uAlphaMaskingThreshold;
+#endif
+
+%FOG_FRAGMENT_VARS%
 %LIGHT_VARS%
 
 void main() {
 #ifdef TEXTURED
-   vec4 diffuse = vec4(vLightColor, 1.0) * vDiffuseIntensity * texture2D(uDiffuseTexture, vTextureCoord);
+   vec4 diffuse = texture2D(uDiffuseTexture, vTextureCoord);
+   diffuse.rgb *= vLightColor * vDiffuseIntensity;
 #else
-   vec4 diffuse = vDiffuseIntensity * vColor;
+   vec4 diffuse = vColor;
+   diffuse.rgb *= vDiffuseIntensity;
 #endif
 
 #ifdef SPECULAR_MAP
@@ -31,13 +37,21 @@ void main() {
 #endif
 
    vec4 ambient = uAmbientIntensity * uAmbientColor;      
-   gl_FragColor = diffuse + specular + ambient;
+   vec4 color = diffuse + specular + ambient;
+   float alpha = diffuse.a;
 
 #ifdef ALPHA_MAP
-   float alpha = texture2D(uAlphaTexture, vTextureCoord).r;
-   gl_FragColor.a = alpha;
-#else
-   gl_FragColor.a = diffuse.a;
+   alpha = texture2D(uAlphaTexture, vTextureCoord).r;
+   color.a = alpha;
 #endif
-      M_FOG_FRAGMENT_COLOR
+
+#ifdef ALPHA_MASK
+	if(alpha < uAlphaMaskingThreshold){
+		discard;
+	}
+#endif
+
+gl_FragColor = color;
+
+M_FOG_FRAGMENT_COLOR
 }
