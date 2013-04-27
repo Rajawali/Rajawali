@@ -342,7 +342,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		
 		// Update all registered animations
 		for (int i = 0; i < mAnimations.size(); i++) {
-			mAnimations.get(i).update(deltaTime);
+			Animation3D anim = mAnimations.get(i);
+			if (anim.isPlaying())
+				anim.update(deltaTime);
 		}
 
 		for (int i = 0; i < mChildren.size(); i++)
