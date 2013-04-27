@@ -12,6 +12,7 @@ import rajawali.materials.AAdvancedMaterial;
 import rajawali.parser.md5.MD5MeshParser.MD5Mesh;
 import rajawali.parser.md5.MD5MeshParser.MD5Vert;
 import rajawali.parser.md5.MD5MeshParser.MD5Weight;
+import rajawali.util.BufferUtil;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
@@ -101,10 +102,10 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 					.allocateDirect(data.length * FLOAT_SIZE_BYTES * 4)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 			
-			buffer.put(data);
+			BufferUtil.copy(data, buffer, data.length, 0);
 			buffer.position(0);
 		} else {
-			buffer.put(data);
+			BufferUtil.copy(data, buffer, data.length, 0);
 		}
 		return buffer;
 	}

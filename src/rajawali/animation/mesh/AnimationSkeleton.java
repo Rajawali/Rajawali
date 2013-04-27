@@ -9,6 +9,7 @@ import rajawali.Camera;
 import rajawali.Geometry3D.BufferType;
 import rajawali.math.Number3D;
 import rajawali.math.Quaternion;
+import rajawali.util.BufferUtil;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
@@ -45,10 +46,10 @@ public class AnimationSkeleton extends AAnimationObject3D {
 					.allocateDirect(joints.length * FLOAT_SIZE_BYTES * 16)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
-			mBoneMatrices.put(uBoneMatrix);
+			BufferUtil.copy(uBoneMatrix, mBoneMatrices, uBoneMatrix.length, 0);
 			mBoneMatrices.position(0);
 		} else {
-			mBoneMatrices.put(uBoneMatrix);
+			BufferUtil.copy(uBoneMatrix, mBoneMatrices, uBoneMatrix.length, 0);
 		}
 		mGeometry.createBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, mBoneMatrices, GLES20.GL_ARRAY_BUFFER);
 	}
