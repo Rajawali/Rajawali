@@ -189,7 +189,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 			if (name.indexOf("_") > 0)
 				name = name.subSequence(0, name.lastIndexOf("_")).toString();
 			else
-				name = name.substring(0, 6).replaceAll("[0-9]{1,2}$", "");
+				name = name.trim().replaceAll("[0-9]{1,2}$", "");
 			frame.setName(name);
 
 			float vertices[] = new float[mHeader.numVerts * 3];
