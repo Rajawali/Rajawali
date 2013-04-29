@@ -307,7 +307,21 @@ public abstract class Animation3D extends AFrameTask {
 
 		// Update the elapsed time
 		mElapsedTime += deltaTime;
-		eventUpdate(deltaTime);
+		
+		// Calculate the interpolated time
+		final float interpolatedTime = mInterpolator
+				.getInterpolation((float) ((mElapsedTime) / mDuration));
+		mInterpolatedTime = interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime;
+
+		// Adjust for reverse play back.
+		if (mIsReversing)
+			mInterpolatedTime = 1 - mInterpolatedTime;
+		
+		// Call the overridden implementation of the animation.
+		applyTransformation();
+		
+		// Notification event of animation frame completion.
+		eventUpdate(mInterpolatedTime);
 
 		// End of animation reached
 		if (mElapsedTime >= mDuration && !mEnded) {
@@ -352,16 +366,6 @@ public abstract class Animation3D extends AFrameTask {
 				break;
 			}
 		}
-
-		// Calculate the interpolated time
-		final float interpolatedTime = mInterpolator
-				.getInterpolation((float) ((mElapsedTime) / mDuration));
-		mInterpolatedTime = interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime;
-
-		if (mIsReversing)
-			mInterpolatedTime = 1 - mInterpolatedTime;
-
-		applyTransformation();
 	}
 
 	/**

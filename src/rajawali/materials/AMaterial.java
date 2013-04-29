@@ -398,7 +398,7 @@ public abstract class AMaterial {
 		if(checkValidHandle(vertexBufferHandle, "vertex data")){
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle);
 			GLES20.glEnableVertexAttribArray(maPositionHandle);
-			fix.android.opengl.GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT,
+			GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT,
 					false, 0, 0);
 		}
 	}
@@ -414,7 +414,7 @@ public abstract class AMaterial {
 		{
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, textureCoordBufferHandle);
 			GLES20.glEnableVertexAttribArray(maTextureHandle);
-			fix.android.opengl.GLES20.glVertexAttribPointer(maTextureHandle,
+			GLES20.glVertexAttribPointer(maTextureHandle,
 					hasCubemapTexture ? 3 : 2, GLES20.GL_FLOAT, false, 0, 0);
 		}
 	}
@@ -424,7 +424,7 @@ public abstract class AMaterial {
 		{
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBufferHandle);
 			GLES20.glEnableVertexAttribArray(maColorHandle);
-			fix.android.opengl.GLES20.glVertexAttribPointer(maColorHandle, 4, GLES20.GL_FLOAT,
+			GLES20.glVertexAttribPointer(maColorHandle, 4, GLES20.GL_FLOAT,
 					false, 0, 0);
 		}
 	}
@@ -434,7 +434,7 @@ public abstract class AMaterial {
 			if(checkValidHandle(maNormalHandle, null)){
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
 			GLES20.glEnableVertexAttribArray(maNormalHandle);
-			fix.android.opengl.GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT,
+			GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT,
 					false, 0, 0);
 		}
 	}
@@ -467,7 +467,7 @@ public abstract class AMaterial {
 			if(checkValidHandle(maNextFramePositionHandle, "maNextFramePositionHandle")){
 				GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle);
 				GLES20.glEnableVertexAttribArray(maNextFramePositionHandle);
-				fix.android.opengl.GLES20.glVertexAttribPointer(maNextFramePositionHandle, 3, GLES20.GL_FLOAT,
+				GLES20.glVertexAttribPointer(maNextFramePositionHandle, 3, GLES20.GL_FLOAT,
 						false, 0, 0);
 			}
 		}
@@ -478,7 +478,7 @@ public abstract class AMaterial {
 			if(checkValidHandle(maNextFrameNormalHandle, "maNextFrameNormalHandle")){
 				GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
 				GLES20.glEnableVertexAttribArray(maNextFrameNormalHandle);
-				fix.android.opengl.GLES20.glVertexAttribPointer(maNextFrameNormalHandle, 3, GLES20.GL_FLOAT,
+				GLES20.glVertexAttribPointer(maNextFrameNormalHandle, 3, GLES20.GL_FLOAT,
 						false, 0, 0);
 			}
 		}

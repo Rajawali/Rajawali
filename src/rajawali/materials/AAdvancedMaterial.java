@@ -254,7 +254,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		if(checkValidHandle(boneIndex1BufferHandle, "bone indexes 1 data")){
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneIndex1BufferHandle);
 			GLES20.glEnableVertexAttribArray(mvBoneIndex1Handle);
-			fix.android.opengl.GLES20.glVertexAttribPointer(mvBoneIndex1Handle, 4, GLES20.GL_FLOAT,
+			GLES20.glVertexAttribPointer(mvBoneIndex1Handle, 4, GLES20.GL_FLOAT,
 					false, 0, 0);
 		}
 	}
@@ -263,7 +263,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		if(checkValidHandle(boneIndex2BufferHandle, "bone indexes 2 data")){
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneIndex2BufferHandle);
 			GLES20.glEnableVertexAttribArray(mvBoneIndex2Handle);
-			fix.android.opengl.GLES20.glVertexAttribPointer(mvBoneIndex2Handle, 4, GLES20.GL_FLOAT,
+			GLES20.glVertexAttribPointer(mvBoneIndex2Handle, 4, GLES20.GL_FLOAT,
 					false, 0, 0);
 		}
 	}
@@ -272,7 +272,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		if(checkValidHandle(boneWeights1BufferHandle, "bone weights 1 data")){
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneWeights1BufferHandle);
 			GLES20.glEnableVertexAttribArray(mvBoneWeight1Handle);
-			fix.android.opengl.GLES20.glVertexAttribPointer(mvBoneWeight1Handle, 4, GLES20.GL_FLOAT,
+			GLES20.glVertexAttribPointer(mvBoneWeight1Handle, 4, GLES20.GL_FLOAT,
 					false, 0, 0);
 		}
 	}
@@ -281,7 +281,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		if(checkValidHandle(boneWeights2BufferHandle, "bone weights 2 data")){
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneWeights2BufferHandle);
 			GLES20.glEnableVertexAttribArray(mvBoneWeight2Handle);
-			fix.android.opengl.GLES20.glVertexAttribPointer(mvBoneWeight2Handle, 4, GLES20.GL_FLOAT,
+			GLES20.glVertexAttribPointer(mvBoneWeight2Handle, 4, GLES20.GL_FLOAT,
 					false, 0, 0);
 		}
 	}

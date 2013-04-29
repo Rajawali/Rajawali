@@ -303,13 +303,13 @@ public final class LensFlarePlugin extends Plugin {
 		// Push the VBOs to the GPU.
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGeometry.getVertexBufferInfo().bufferHandle);
 		GLES20.glEnableVertexAttribArray(maPositionHandle);
-		fix.android.opengl.GLES20.glVertexAttribPointer(maPositionHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
+		GLES20.glVertexAttribPointer(maPositionHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		
 		// Push texture coordinates to the GPU.
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGeometry.getTexCoordBufferInfo().bufferHandle);
 		GLES20.glEnableVertexAttribArray(maTextureCoordHandle);
-		fix.android.opengl.GLES20.glVertexAttribPointer(maTextureCoordHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
+		GLES20.glVertexAttribPointer(maTextureCoordHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
 		
 		// Push vertex element indices to the GPU.
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
@@ -368,7 +368,7 @@ public final class LensFlarePlugin extends Plugin {
 					GLES20.glDisable(GLES20.GL_BLEND);
 					GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 					
-					fix.android.opengl.GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, 
+					GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, 
 							mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT, 
 							0);
 					
@@ -384,7 +384,7 @@ public final class LensFlarePlugin extends Plugin {
 					
 					GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 					GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mMapTexture.getTextureId());
-					fix.android.opengl.GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, 
+					GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, 
 							mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT, 
 							0);
 					
@@ -448,10 +448,8 @@ public final class LensFlarePlugin extends Plugin {
 							GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
 							
 							// Draw the elements.
-							fix.android.opengl.GLES20.glDrawElements(GLES20.GL_TRIANGLES,
-									mGeometry.getNumIndices(),
-									mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT,
-									0);
+							GLES20.glDrawElements(GLES20.GL_TRIANGLES, mGeometry.getNumIndices(),
+									mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT, 0);
 							
 							// Unbind texture.
 							GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
