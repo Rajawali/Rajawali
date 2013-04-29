@@ -7,7 +7,7 @@ Pull Request Guidelines
 * Source code format is hygienic
   * No trailing or inconsistent whitespace.
   * No exceptionally long lines.
-  * Consistent placement of brackets
+  * Consistent placement of brackets.
   * ...etc.
   * _Hint: Use Eclipse's auto-formatter on affected files (but please use a separate commit)._
 * Commit history is hygienic:
@@ -17,3 +17,8 @@ Pull Request Guidelines
   * _Hint: `git rebase -i` can cleanup most of these issues._
 
 Pull requests for branches that are still in development should be prefixed with `WIP:`.
+
+License
+-------
+
+By contributing code to Rajawali, you are agreeing to release it under the [Apache License, Version 2.0](http://opensource.org/licenses/Apache-2.0).
