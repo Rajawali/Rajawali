@@ -4,9 +4,10 @@ import rajawali.math.AngleAxis;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
 import rajawali.math.Quaternion;
+import rajawali.renderer.AFrameTask;
 import android.opengl.Matrix;
 
-public abstract class ATransformable3D {
+public abstract class ATransformable3D extends AFrameTask {
 	protected Number3D mPosition, mRotation, mScale;
 	protected Quaternion mOrientation;
 	protected Quaternion mTmpOrientation;
