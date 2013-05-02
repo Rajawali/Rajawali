@@ -2,6 +2,7 @@ package rajawali.lights;
 
 import rajawali.ATransformable3D;
 import rajawali.math.Number3D;
+import rajawali.renderer.AFrameTask;
 
 public abstract class ALight extends ATransformable3D {
 	public static final int DIRECTIONAL_LIGHT = 0;
@@ -72,5 +73,10 @@ public abstract class ALight extends ATransformable3D {
 		mPositionArray[1] = mPosition.y;
 		mPositionArray[2] = mPosition.z;
 		return mPositionArray;
+	}
+	
+	@Override
+	public AFrameTask.TYPE getFrameTaskType() {
+		return AFrameTask.TYPE.LIGHT;
 	}
 }

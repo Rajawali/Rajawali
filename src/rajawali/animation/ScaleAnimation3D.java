@@ -38,8 +38,7 @@ public class ScaleAnimation3D extends Animation3D {
 		mMultipliedScale.multiply((float) mInterpolatedTime);
 		mAddedScale.setAllFrom(mFromScale);
 		mAddedScale.add(mMultipliedScale);
-
-		mTransformable3D.getScale().setAllFrom(mAddedScale);
+		mTransformable3D.setScale(mAddedScale);
 	}
 
 }
