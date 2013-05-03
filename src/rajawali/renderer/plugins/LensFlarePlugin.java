@@ -295,7 +295,7 @@ public final class LensFlarePlugin extends Plugin {
 		float halfViewportHeight = viewportHeight / 2;
 		Number3D screenPosition = new Number3D();
 		float screenPositionPixels_x, screenPositionPixels_y;
-		Camera camera = mRenderer.getCamera();
+		Camera camera = mRenderer.getCurrentScene().getCamera();
 		float[] viewMatrix = camera.getViewMatrix().clone(), projMatrix = camera.getProjectionMatrix().clone();
 		
 		useProgram(mProgram);

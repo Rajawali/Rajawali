@@ -1,6 +1,7 @@
 package rajawali.bounds;
 
 import java.nio.FloatBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import rajawali.BaseObject3D;
 import rajawali.Camera;
@@ -21,6 +22,7 @@ public class BoundingBox implements IBoundingVolume {
 	protected int mI;
 	protected Cube mVisualBox;
 	protected float[] mTmpMatrix = new float[16];
+	protected AtomicInteger mBoundingColor = new AtomicInteger(0xffffff00);
 	
 	public void copyPoints(Number3D[] pts){
 		
@@ -68,7 +70,7 @@ public class BoundingBox implements IBoundingVolume {
 			mVisualBox = new Cube(1);
 			mVisualBox.setMaterial(new SimpleMaterial());
 			mVisualBox.getMaterial().setUseColor(true);
-			mVisualBox.setColor(0xffffff00);
+			mVisualBox.setColor(mBoundingColor.get());
 			mVisualBox.setDrawingMode(GLES20.GL_LINE_LOOP);
 		}
 		
@@ -83,6 +85,7 @@ public class BoundingBox implements IBoundingVolume {
 				mTransformedMin.y + (mTransformedMax.y - mTransformedMin.y) * .5f, 
 				mTransformedMin.z + (mTransformedMax.z - mTransformedMin.z) * .5f
 				);
+		
 		mVisualBox.render(camera, projMatrix, vMatrix, mTmpMatrix, null);
 	}
 	
@@ -94,6 +97,17 @@ public class BoundingBox implements IBoundingVolume {
 	
 	public BaseObject3D getVisual() {
 		return mVisualBox;
+	}
+	
+	public void setBoundingColor(int color) {
+		mBoundingColor.set(color);
+		if (mVisualBox != null) {
+			mVisualBox.setColor(color);
+		}
+	}
+	
+	public int getBoundingColor() {
+		return mBoundingColor.get();
 	}
 	
 	public void calculateBounds(Geometry3D geometry) {
@@ -118,6 +132,10 @@ public class BoundingBox implements IBoundingVolume {
 			if(vertex.z > mMax.z) mMax.z = vertex.z;
 		}
 		
+		calculatePoints();
+	}
+	
+	public void calculatePoints() {
 		// -- bottom plane
 		// -- -x, -y, -z
 		mPoints[0].setAll(mMin.x, mMin.y, mMin.z);
@@ -127,7 +145,7 @@ public class BoundingBox implements IBoundingVolume {
 		mPoints[2].setAll(mMax.x, mMin.y, mMax.z);
 		// --  x, -y, -z
 		mPoints[3].setAll(mMax.x, mMin.y, mMin.z);
-		
+
 		// -- top plane
 		// -- -x,  y, -z
 		mPoints[4].setAll(mMin.x, mMax.y, mMin.z);
@@ -195,7 +213,42 @@ public class BoundingBox implements IBoundingVolume {
 				(min.z < otherMax.z) && (max.z > otherMin.z);
 	}
 	
+	@Override
 	public String toString() {
 		return "BoundingBox min: " + mTransformedMin + " max: " + mTransformedMax;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.bounds.IBoundingVolume#contains(rajawali.bounds.IBoundingVolume)
+	 */
+	/*public boolean contains(IBoundingVolume boundingVolume) {
+		if(!(boundingVolume instanceof BoundingBox)) return false;
+		BoundingBox boundingBox = (BoundingBox)boundingVolume;
+		Number3D otherMin = boundingBox.getTransformedMin();
+		Number3D otherMax = boundingBox.getTransformedMax();
+		Number3D min = mTransformedMin;
+		Number3D max = mTransformedMax;		
+		
+		return (max.x >= otherMax.x) && (min.x <= otherMin.x) &&
+				(max.y >= otherMax.y) && (min.y <= otherMin.y) &&
+				(max.z >= otherMax.z) && (min.z <= otherMin.z);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.bounds.IBoundingVolume#isContainedBy(rajawali.bounds.IBoundingVolume)
+	 */
+	/*public boolean isContainedBy(IBoundingVolume boundingVolume) {
+		if(!(boundingVolume instanceof BoundingBox)) return false;
+		BoundingBox boundingBox = (BoundingBox)boundingVolume;
+		Number3D otherMin = boundingBox.getTransformedMin();
+		Number3D otherMax = boundingBox.getTransformedMax();
+		Number3D min = mTransformedMin;
+		Number3D max = mTransformedMax;		
+		
+		return (max.x <= otherMax.x) && (min.x >= otherMin.x) &&
+				(max.y <= otherMax.y) && (min.y >= otherMin.y) &&
+				(max.z <= otherMax.z) && (min.z >= otherMin.z);
+	}*/
 }

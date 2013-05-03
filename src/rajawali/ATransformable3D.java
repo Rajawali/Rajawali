@@ -1,12 +1,16 @@
 package rajawali;
 
+import rajawali.bounds.IBoundingVolume;
 import rajawali.math.AngleAxis;
 import rajawali.math.Number3D;
 import rajawali.math.Number3D.Axis;
 import rajawali.math.Quaternion;
+import rajawali.renderer.AFrameTask;
+import rajawali.scenegraph.IGraphNode;
+import rajawali.scenegraph.IGraphNodeMember;
 import android.opengl.Matrix;
 
-public abstract class ATransformable3D {
+public abstract class ATransformable3D extends AFrameTask implements IGraphNodeMember {
 	protected Number3D mPosition, mRotation, mScale;
 	protected Quaternion mOrientation;
 	protected Quaternion mTmpOrientation;
@@ -17,6 +21,9 @@ public abstract class ATransformable3D {
 	protected Number3D mTmpAxis, mTmpVec;
 	protected boolean mIsCamera, mQuatWasSet;
 	protected AngleAxis mAngleAxis; 
+	
+	protected IGraphNode mGraphNode;
+	protected boolean mInsideGraph = false; //Default to being outside the graph
 	
 	public ATransformable3D() {
 		mPosition = new Number3D();
@@ -35,10 +42,12 @@ public abstract class ATransformable3D {
 	
 	public void setPosition(Number3D position) {
 		mPosition.setAllFrom(position);
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public void setPosition(float x, float y, float z) {
 		mPosition.setAll(x, y, z);
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public Number3D getPosition() {
@@ -47,6 +56,7 @@ public abstract class ATransformable3D {
 	
 	public void setX(float x) {
 		mPosition.x = x;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public float getX() {
@@ -55,6 +65,7 @@ public abstract class ATransformable3D {
 
 	public void setY(float y) {
 		mPosition.y = y;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public float getY() {
@@ -63,6 +74,7 @@ public abstract class ATransformable3D {
 
 	public void setZ(float z) {
 		mPosition.z = z;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public float getZ() {
@@ -116,6 +128,7 @@ public abstract class ATransformable3D {
 			if(mIsCamera)
 				mOrientation.inverseSelf();
 		}
+		//if (mGraphNode != null) mGraphNode.updateObject(this); //TODO: This may cause problems
 	}
 
 	public void rotateAround(Number3D axis, float angle) {
@@ -130,6 +143,7 @@ public abstract class ATransformable3D {
  			mOrientation.fromAngleAxis(angle, axis);
  		}
 		mRotationDirty = false;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 	
 	public Quaternion getOrientation() {
@@ -140,6 +154,7 @@ public abstract class ATransformable3D {
 	public void setOrientation(Quaternion quat) {
 		mOrientation.setAllFrom(quat);
 		mRotationDirty = false;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 	
 	public void setRotation(float rotX, float rotY, float rotZ) {
@@ -147,6 +162,7 @@ public abstract class ATransformable3D {
 		mRotation.y = rotY;
 		mRotation.z = rotZ;
 		mRotationDirty = true;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 	
 	public void setRotX(float rotX) {
@@ -189,16 +205,19 @@ public abstract class ATransformable3D {
 		mScale.x = scale;
 		mScale.y = scale;
 		mScale.z = scale;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public void setScale(float scaleX, float scaleY, float scaleZ) {
 		mScale.x = scaleX;
 		mScale.y = scaleY;
 		mScale.z = scaleZ;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public void setScaleX(float scaleX) {
 		mScale.x = scaleX;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public float getScaleX() {
@@ -207,6 +226,7 @@ public abstract class ATransformable3D {
 
 	public void setScaleY(float scaleY) {
 		mScale.y = scaleY;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public float getScaleY() {
@@ -215,6 +235,7 @@ public abstract class ATransformable3D {
 
 	public void setScaleZ(float scaleZ) {
 		mScale.z = scaleZ;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public float getScaleZ() {
@@ -227,6 +248,7 @@ public abstract class ATransformable3D {
 
 	public void setScale(Number3D scale) {
 		mScale = scale;
+		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
 	public Number3D getLookAt() {
@@ -247,5 +269,46 @@ public abstract class ATransformable3D {
 			return;
 		}
 		setLookAt(lookAt.x,  lookAt.y, lookAt.z);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scenegraph.IGraphNodeMember#setGraphNode(rajawali.scenegraph.IGraphNode)
+	 */
+	public void setGraphNode(IGraphNode node, boolean inside) {
+		mGraphNode = node;
+		mInsideGraph = inside;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scenegraph.IGraphNodeMember#getGraphNode()
+	 */
+	public IGraphNode getGraphNode() {
+		return mGraphNode;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scenegraph.IGraphNodeMember#isInGraph()
+	 */
+	public boolean isInGraph() {
+		return mInsideGraph;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scenegraph.IGraphNodeMember#getTransformedBoundingVolume()
+	 */
+	public IBoundingVolume getTransformedBoundingVolume() {
+		return null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scenegraph.IGraphNodeMember#getScenePosition()
+	 */
+	public Number3D getScenePosition() {
+		return mPosition;
 	}
 }

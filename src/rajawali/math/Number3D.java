@@ -116,6 +116,12 @@ public class Number3D {
 		return new Number3D(-x, -y, -z);
 	}
 	
+	public void absoluteValue() {
+		x = Math.abs(x);
+		y = Math.abs(y);
+		z = Math.abs(z);
+	}
+	
 	public Number3D add(Number3D n) {
 		this.x += n.x;
 		this.y += n.y;

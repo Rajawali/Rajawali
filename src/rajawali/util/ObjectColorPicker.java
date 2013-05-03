@@ -95,7 +95,7 @@ public class ObjectColorPicker implements IObjectPicker {
 	}
 
 	public void getObjectAt(float x, float y) {
-		mRenderer.requestColorPickingTexture(new ColorPickerInfo(x, y, this));
+		mRenderer.getCurrentScene().requestColorPickingTexture(new ColorPickerInfo(x, y, this));
 	}
 
 	public void createColorPickingTexture(ColorPickerInfo pickerInfo) {

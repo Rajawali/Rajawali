@@ -145,8 +145,8 @@ public class FBXParser extends AMeshParser {
 		}
 		
 		// -- check fog
-		
-		if(mFbx.version5.fogOptions.fogEnable != null && mFbx.version5.fogOptions.fogEnable == 1) {
+		//TODO: FIX
+		/*if(mFbx.version5.fogOptions.fogEnable != null && mFbx.version5.fogOptions.fogEnable == 1) {
 			FogOptions fogOptions = mFbx.version5.fogOptions;
 			mRenderer.setFogEnabled(true);
 			Camera cam = mRenderer.getCamera();
@@ -154,7 +154,7 @@ public class FBXParser extends AMeshParser {
 			cam.setFogNear(fogOptions.fogStart);
 			cam.setFogColor(fogOptions.fogColor.color);
 			mRenderer.setBackgroundColor(fogOptions.fogColor.color);
-		}
+		}*/
 	
 		// -- get meshes
 		
@@ -177,7 +177,7 @@ public class FBXParser extends AMeshParser {
 			}
 		}
 
-		if(camera != null) {
+		/*if(camera != null) { //TODO: FIX
 			Camera cam = mRenderer.getCamera();
 			cam.setPosition(camera.position);
 			cam.setX(mRenderer.getCamera().getX() * -1);
@@ -187,7 +187,7 @@ public class FBXParser extends AMeshParser {
 			cam.setNearPlane(camera.properties.nearPlane);
 			cam.setFarPlane(camera.properties.farPlane);
 			cam.setFieldOfView(camera.properties.fieldOfView);
-		}
+		}*/
 		
 		return this;
 	}
