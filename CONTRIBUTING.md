@@ -1,3 +1,18 @@
+Posting Issues Guidelines
+-------------------------
+
+While the Rajawali collaborators are very happy to assist and provide support for the library, they are all doing this voluntarily on their personal time and are not compensated whatsoever for their efforts. So before you post, please read the guidelines below.
+* When submitting a support issue about a question, please make sure it is related to the Rajawali library. Below are some common support questions we get that has nothing to do with Rajawali and should be asked elsewhere such as [Stack Overflow](http://www.stackoverflow.com/):
+  * How to use SharedPreferences and preference listeners in your application
+  * How to capture touch events and detect gestures
+  * How to use broadcast receivers to receive system events
+  * Anything about custom GLSL shaders themselves (submitting support issue on getting them hooked up to Rajawali is fine as long as you tried the tutorial [here](https://github.com/MasDennis/Rajawali/wiki/Tutorial-09-Creating-a-Custom-Material---GLSL-Shader) first)
+* Search the Issues list before you submit an issue. If you are new to the Rajawali framework, chances are, somebody asked a similar question before you did. We often notice that same questions that have been answered before get asked over and over again. Below are the most common answered questions that pop back up:
+  * [How to import Rajawali library into your project](https://github.com/MasDennis/Rajawali/wiki/Importing-Rajawali-and-RajawaliExamples)
+  * [How to use object parsers to import exported 3D objects into your scene](https://github.com/MasDennis/Rajawali/wiki/Tutorial-02-Creating-a-Live-Wallpaper-and-Importing-a-Model)
+* When submitting an issue, please be as constructive. Non-constructive questions such as merely asking for more examples will be viewed as asking us to do your work for you. These issues will be closed immediately by our collaborators.
+* If you think there is a bug in the library, please provide exact details to reproduce the bug and stack traces (in case of runtime exceptions) when submitting an issue.
+
 Pull Request Guidelines
 -----------------------
 
