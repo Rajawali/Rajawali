@@ -12,6 +12,7 @@ public class TranslateAnimation3D extends Animation3D {
 	protected Number3D mAddedPosition = new Number3D();
 	protected boolean mOrientToPath = false;
 	protected ISpline mSplinePath;
+	protected float mLookatDelta;
 
 	public TranslateAnimation3D(Number3D toPosition) {
 		super();
@@ -52,7 +53,7 @@ public class TranslateAnimation3D extends Animation3D {
 
 			if (mOrientToPath)
 				mTransformable3D.setLookAt(mSplinePath
-						.calculatePoint((float) (mInterpolatedTime + (mElapsedTime * (mIsReversing ? -1 : 1)))));
+						.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1)))));
 		}
 	}
 
@@ -70,6 +71,6 @@ public class TranslateAnimation3D extends Animation3D {
 
 	public void setDuration(long duration) {
 		super.setDuration(duration);
+		mLookatDelta = 300.f / duration;
 	}
-
 }
