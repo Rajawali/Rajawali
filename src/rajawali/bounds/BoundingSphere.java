@@ -20,6 +20,7 @@ public class BoundingSphere implements IBoundingVolume {
 	protected Number3D mTmpPos;
 	protected float mDist, mMinDist, mScale;
 	protected float[] mScaleValues;
+	protected int mBoundingColor = 0xffffff00;
 	
 	public BoundingSphere() {
 		super();
@@ -36,6 +37,14 @@ public class BoundingSphere implements IBoundingVolume {
 	
 	public BaseObject3D getVisual() {
 		return mVisualSphere;
+	}
+	
+	public void setBoundingColor(int color) {
+		mBoundingColor = color;
+	}
+	
+	public int getBoundingColor() {
+		return mBoundingColor;
 	}
 	
 	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
@@ -89,12 +98,21 @@ public class BoundingSphere implements IBoundingVolume {
 		return mRadius;
 	}
 	
+	public float getScaledRadius() {
+		return (mRadius*mScale);
+	}
+	
 	public Number3D getPosition() {
 		return mPosition;
 	}
 	
 	public float getScale() {
 		return mScale;
+	}
+	
+	@Override
+	public String toString() {
+		return "BoundingSphere radius: " + Float.toString(getScaledRadius());
 	}
 	
 	public boolean intersectsWith(IBoundingVolume boundingVolume) {
@@ -109,4 +127,14 @@ public class BoundingSphere implements IBoundingVolume {
 		
 		return mDist < mMinDist * mMinDist;
 	}
+
+	/*public boolean contains(IBoundingVolume boundingVolume) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isContainedBy(IBoundingVolume boundingVolume) {
+		// TODO Auto-generated method stub
+		return false;
+	}*/
 }

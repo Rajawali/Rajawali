@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rajawali.ATransformable3D;
+import rajawali.renderer.AFrameTask;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-public abstract class Animation3D {
+public abstract class Animation3D extends AFrameTask {
 
 	public enum RepeatMode {
 		NONE, INFINITE, RESTART, REVERSE, REVERSE_INFINITE
@@ -391,6 +392,10 @@ public abstract class Animation3D {
 	protected void eventUpdate(double interpolatedTime) {
 		for (int i = 0, j = mAnimationListeners.size(); i < j; i++)
 			mAnimationListeners.get(i).onAnimationUpdate(this, interpolatedTime);
+	}
+
+	public AFrameTask.TYPE getFrameTaskType() {
+		return AFrameTask.TYPE.ANIMATION;
 	}
 
 }
