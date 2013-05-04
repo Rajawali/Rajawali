@@ -191,6 +191,38 @@ public class Geometry3D {
 		return result;
 	}
 	
+	public static float[] getArrayFromBuffer(FloatBuffer buffer) {
+		float[] array = null;
+		if (buffer.hasArray()) {
+			array = buffer.array();
+		} else {
+			buffer.rewind();
+			array = new float[buffer.capacity()];
+			buffer.get(array);		
+		}
+		return array;
+	}
+	
+	public static int[] getArrayFromBuffer(Buffer buffer) {
+		int[] array = null;
+		if (buffer.hasArray()) {
+			array = (int[]) buffer.array();
+		} else {
+			buffer.rewind();
+			array = new int[buffer.capacity()];
+			if (buffer instanceof IntBuffer) {
+				((IntBuffer) buffer).get(array);
+			} else if (buffer instanceof ShortBuffer) {
+				int count = 0;
+				while (buffer.hasRemaining()) {
+					array[count] = (int) (((ShortBuffer) buffer).get());
+					++count;
+				}
+			}
+		}
+		return array;
+	}
+	
 	/**
 	 * Copies another Geometry3D's BufferInfo objects. This means that it
 	 * doesn't copy or clone the actual data. It will just use the pointers
@@ -210,83 +242,77 @@ public class Geometry3D {
 	}
 	
 	/**
-	 * Adds the geometry from the incoming geometries with the specified offset.
+	 * Adds the geometry from the incoming geometry with the specified offset.
 	 * Note that the offset is only applied to the vertex positions.
 	 * 
-	 * @param offset {@link Number3D} containing the offset in each direction.
-	 * @param geometries List of {@link Geometry3D} to be added.
+	 * @param offset {@link Number3D} containing the offset in each direction. Can be null.
+	 * @param geometry {@link Geometry3D} to be added.
 	 */
-	public void addFromGeometry3D(Number3D offset, Geometry3D ... geometries) {
+	public void addFromGeometry3D(Number3D offset, Geometry3D geometry) {
 		float[] newVertices = null;
 		float[] newNormals = null;
 		float[] newColors = null;
 		float[] newTextureCoords = null;
 		int[] newIntIndices = null;
+		float[] mVerticesArray = null;
+		float[] mNormalsArray = null;
+		float[] mColorsArray = null;
+		float[] mTextureCoordsArray = null;
+		int[] mIndicesArray = null;
+
+		mVerticesArray = getArrayFromBuffer(mVertices);
+		mNormalsArray = getArrayFromBuffer(mNormals);
+		mColorsArray = getArrayFromBuffer(mColors);
+		mTextureCoordsArray = getArrayFromBuffer(mTextureCoords);
+		mIndicesArray = getArrayFromBuffer(mIndicesInt);
+
 		int axis = 0;
 		int position = 0;
-		if (geometries.length == 1) {
-			FloatBuffer addVertices = geometries[0].getVertices();
-			addVertices.rewind();
-			while (addVertices.hasRemaining()) {
-				position = addVertices.position();
+		float[] addVertices = getArrayFromBuffer(geometry.getVertices());
+		if (offset != null) {
+			for (int i = 0, j = addVertices.length; i < j; ++i) {
 				switch (axis) {
 				case 0:
-					addVertices.put(position, offset.x + addVertices.get());
+					addVertices[i] += offset.x;
 					break;
 				case 1:
-					addVertices.put(position, offset.y + addVertices.get());
+					addVertices[i] += offset.y;
 					break;
 				case 2:
-					addVertices.put(position, offset.z + addVertices.get());
+					addVertices[i] += offset.z;
 					break;
 				}
 				++axis;
 				if (axis > 2)
 					axis = 0;
 			}
-			FloatBuffer addNormals = geometries[0].getNormals();
-			FloatBuffer addColors = geometries[0].getColors();
-			FloatBuffer addTextureCoords = geometries[0].getTextureCoords();
-			Buffer addIndices = geometries[0].getIndices();
-			newVertices = concatAllFloat(mVertices.array(), addVertices.array());
-			newNormals = concatAllFloat(mNormals.array(), addNormals.array());
-			newColors = concatAllFloat(mColors.array(), addColors.array());
-			newTextureCoords = concatAllFloat(mTextureCoords.array(), addTextureCoords.array());
-			newIntIndices = concatAllInt(mIndicesInt.array(), (int[]) addIndices.array());
-		} else {
-			ArrayList<float[]> vertices = new ArrayList<float[]>();
-			ArrayList<float[]> normals = new ArrayList<float[]>();
-			ArrayList<float[]> textures = new ArrayList<float[]>();
-			ArrayList<float[]> colors = new ArrayList<float[]>();
-			ArrayList<int[]> indices = new ArrayList<int[]>();
-			for (Geometry3D geom : geometries) { //This will be such a long process the for-each wont matter
-				FloatBuffer addVertices = geom.getVertices();
-				addVertices.rewind();
-				while (addVertices.hasRemaining()) {
-					position = addVertices.position();
-					switch (axis) {
-					case 0:
-						addVertices.put(position, offset.x + addVertices.get());
-						break;
-					case 1:
-						addVertices.put(position, offset.y + addVertices.get());
-						break;
-					case 2:
-						addVertices.put(position, offset.z + addVertices.get());
-						break;
-					}
-					++axis;
-					if (axis > 2)
-						axis = 0;
-				}
-				vertices.add(addVertices.array());
-				normals.add(geom.getNormals().array());
-				textures.add(geom.getTextureCoords().array());
-				colors.add(geom.getColors().array());
-				indices.add((int[]) geom.getIndices().array());
-			}
 		}
-		setData(newVertices, newNormals, newTextureCoords, newColors, newIntIndices);
+		float[] addNormals = getArrayFromBuffer(geometry.getNormals());
+		float[] addColors = getArrayFromBuffer(geometry.getColors());
+		float[] addTextureCoords = getArrayFromBuffer(geometry.getTextureCoords());
+		int[] addIndices = getArrayFromBuffer(geometry.getIndices());
+		newVertices = concatAllFloat(mVerticesArray, addVertices);
+		newNormals = concatAllFloat(mNormalsArray, addNormals);
+		newColors = concatAllFloat(mColorsArray, addColors);
+		newTextureCoords = concatAllFloat(mTextureCoordsArray, addTextureCoords);
+		newIntIndices = concatAllInt(mIndicesArray, (int[]) addIndices);
+		setVertices(newVertices, true);
+		mNormals = null;
+		setNormals(newNormals);
+		if(newTextureCoords == null || newTextureCoords.length == 0)
+			newTextureCoords = new float[(newVertices.length / 3) * 2];
+		mTextureCoords = null;
+		setTextureCoords(newTextureCoords);
+		mColors = null;
+		if(newColors == null || newColors.length == 0)
+			setColors(0xff000000 + (int)(Math.random() * 0xffffff));
+		else
+			setColors(newColors);	
+		mIndicesInt = null;
+		mIndicesShort = null;
+		setIndices(newIntIndices);
+
+		createBuffers();
 	}
 	
 	/**
