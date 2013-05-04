@@ -65,6 +65,22 @@ public class RenderTarget {
 		this(width, height, 0, 0, true, true, true, GLES20.GL_UNSIGNED_BYTE, Config.ARGB_8888, FilterType.LINEAR, WrapType.CLAMP);
 	}
 	
+	@Override
+	public RenderTarget clone() {
+		return new RenderTarget(
+				mWidth,
+				mHeight,
+				mOffsetX,
+				mOffsetY,
+				mDepthBuffer,
+				mStencilBuffer,
+				mGenerateMipmaps,
+				mGLType,
+				mBitmapConfig,
+				mFilterType,
+				mWrapType);
+	}
+	
 	/**
 	 * Returns whether depth buffer has been enabled for this render target.
 	 * @return True if depth buffer is enabled, false otherwise.
