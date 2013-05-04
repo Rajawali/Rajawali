@@ -7,10 +7,13 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
+import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Color;
@@ -143,6 +146,52 @@ public class Geometry3D {
 	}
 	
 	/**
+	 * Concatenates a list of float arrays into a single array.
+	 * 
+	 * @param arrays The arrays.
+	 * @return The concatenated array.
+	 * 
+	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
+	 */
+	public static float[] concatAllFloat(float[] ... arrays) {
+		int totalLength = 0;
+		int number = arrays.length;
+		for (int i = 0; i < number; ++i) {
+			totalLength += arrays[i].length;
+		}
+		float[] result = Arrays.copyOf(arrays[0], totalLength);
+		int offset = arrays[0].length;
+		for (int i = 1; i < number; ++i) {
+			System.arraycopy(arrays[i], 0, result, offset, arrays[i].length);
+			offset += arrays[i].length;
+		}
+		return result;
+	}
+	
+	/**
+	 * Concatenates a list of int arrays into a single array.
+	 * 
+	 * @param arrays The arrays.
+	 * @return The concatenated array.
+	 * 
+	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
+	 */
+	public static int[] concatAllInt(int[] ... arrays) {
+		int totalLength = 0;
+		int number = arrays.length;
+		for (int i = 0; i < number; ++i) {
+			totalLength += arrays[i].length;
+		}
+		int[] result = Arrays.copyOf(arrays[0], totalLength);
+		int offset = arrays[0].length;
+		for (int i = 1; i < number; ++i) {
+			System.arraycopy(arrays[i], 0, result, offset, arrays[i].length);
+			offset += arrays[i].length;
+		}
+		return result;
+	}
+	
+	/**
 	 * Copies another Geometry3D's BufferInfo objects. This means that it
 	 * doesn't copy or clone the actual data. It will just use the pointers
 	 * to the other Geometry3D's buffers.
@@ -158,6 +207,86 @@ public class Geometry3D {
 		if(mColors == null) this.mColorBufferInfo = geom.getColorBufferInfo();
 		this.mNormalBufferInfo = geom.getNormalBufferInfo();
 		this.mOriginalGeometry = geom;
+	}
+	
+	/**
+	 * Adds the geometry from the incoming geometries with the specified offset.
+	 * Note that the offset is only applied to the vertex positions.
+	 * 
+	 * @param offset {@link Number3D} containing the offset in each direction.
+	 * @param geometries List of {@link Geometry3D} to be added.
+	 */
+	public void addFromGeometry3D(Number3D offset, Geometry3D ... geometries) {
+		float[] newVertices = null;
+		float[] newNormals = null;
+		float[] newColors = null;
+		float[] newTextureCoords = null;
+		int[] newIntIndices = null;
+		int axis = 0;
+		int position = 0;
+		if (geometries.length == 1) {
+			FloatBuffer addVertices = geometries[0].getVertices();
+			addVertices.rewind();
+			while (addVertices.hasRemaining()) {
+				position = addVertices.position();
+				switch (axis) {
+				case 0:
+					addVertices.put(position, offset.x + addVertices.get());
+					break;
+				case 1:
+					addVertices.put(position, offset.y + addVertices.get());
+					break;
+				case 2:
+					addVertices.put(position, offset.z + addVertices.get());
+					break;
+				}
+				++axis;
+				if (axis > 2)
+					axis = 0;
+			}
+			FloatBuffer addNormals = geometries[0].getNormals();
+			FloatBuffer addColors = geometries[0].getColors();
+			FloatBuffer addTextureCoords = geometries[0].getTextureCoords();
+			Buffer addIndices = geometries[0].getIndices();
+			newVertices = concatAllFloat(mVertices.array(), addVertices.array());
+			newNormals = concatAllFloat(mNormals.array(), addNormals.array());
+			newColors = concatAllFloat(mColors.array(), addColors.array());
+			newTextureCoords = concatAllFloat(mTextureCoords.array(), addTextureCoords.array());
+			newIntIndices = concatAllInt(mIndicesInt.array(), (int[]) addIndices.array());
+		} else {
+			ArrayList<float[]> vertices = new ArrayList<float[]>();
+			ArrayList<float[]> normals = new ArrayList<float[]>();
+			ArrayList<float[]> textures = new ArrayList<float[]>();
+			ArrayList<float[]> colors = new ArrayList<float[]>();
+			ArrayList<int[]> indices = new ArrayList<int[]>();
+			for (Geometry3D geom : geometries) { //This will be such a long process the for-each wont matter
+				FloatBuffer addVertices = geom.getVertices();
+				addVertices.rewind();
+				while (addVertices.hasRemaining()) {
+					position = addVertices.position();
+					switch (axis) {
+					case 0:
+						addVertices.put(position, offset.x + addVertices.get());
+						break;
+					case 1:
+						addVertices.put(position, offset.y + addVertices.get());
+						break;
+					case 2:
+						addVertices.put(position, offset.z + addVertices.get());
+						break;
+					}
+					++axis;
+					if (axis > 2)
+						axis = 0;
+				}
+				vertices.add(addVertices.array());
+				normals.add(geom.getNormals().array());
+				textures.add(geom.getTextureCoords().array());
+				colors.add(geom.getColors().array());
+				indices.add((int[]) geom.getIndices().array());
+			}
+		}
+		setData(newVertices, newNormals, newTextureCoords, newColors, newIntIndices);
 	}
 	
 	/**
