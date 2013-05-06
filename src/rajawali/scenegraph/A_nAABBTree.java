@@ -705,14 +705,14 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					}
 					if (fits_in_child >= 0) { //If a single child was marked
 						Log.i("Rajawali", "Fits in a single child.");
-						local_container.removeFromMembers(object);
+						container.removeFromMembers(object);
 						mChildren[fits_in_child].internalAddObject(object);
 						updated = true;
 					} else { //TODO: WORKS
 						Log.i("Rajwali", "Fits in multiple children, leaving in place.");
 						updated = true;
 					}
-				} else {
+				} else { //TODO: WORKS
 					Log.i("Rajawali", "No children so we are leaving in same node.");
 					if (!object.isInGraph()) {
 						Log.i("Rajawali", "Removing from outside graph and moving to inside root.");
@@ -722,18 +722,15 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					updated = true;
 				}
 			} else {
-				//Log.v("Rajawali", "OUTSIDE");
+				Log.v("Rajawali", "OUTSIDE");
 				if (local_container.mParent == null) { //TODO: WORKS
-					//Log.v("Rajawali", "OUTSIDE");
-					//Log.i("Rajawali", "Container is root node. Adding to outside.");
 					if (object.isInGraph()) {
 						local_container.removeFromMembers(object);
 						local_container.addToOutside(object);
 					}
-					//Log.e("Rajawali", "Node after addToOutside: " + object.getGraphNode());
 					updated = true;
-				} else {
-					Log.i("Rajawali", "Container is not root (" + local_container + "). Moving search up a level.");
+				} else { //TODO: WORKS
+					Log.i("Rajawali", "Container is not root (" + local_container + "). Moving search up a level to: " + local_container.mParent);
 					local_container = local_container.mParent;
 				}
 			}
