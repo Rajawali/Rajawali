@@ -317,7 +317,7 @@ public class Camera extends ATransformable3D {
 	 */
 	@Override
 	public IBoundingVolume getTransformedBoundingVolume() {
-		return mFrustum.getBoundingBox();
+		return mFrustum;
 	}
 	
 	@Override

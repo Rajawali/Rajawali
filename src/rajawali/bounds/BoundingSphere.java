@@ -128,6 +128,10 @@ public class BoundingSphere implements IBoundingVolume {
 		return mDist < mMinDist * mMinDist;
 	}
 
+	public VOLUME_SHAPE getVolumeShape() {
+		return VOLUME_SHAPE.SPHERE;
+	}
+
 	/*public boolean contains(IBoundingVolume boundingVolume) {
 		// TODO Auto-generated method stub
 		return false;

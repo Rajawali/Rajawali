@@ -218,6 +218,10 @@ public class BoundingBox implements IBoundingVolume {
 		return "BoundingBox min: " + mTransformedMin + " max: " + mTransformedMax;
 	}
 
+	public VOLUME_SHAPE getVolumeShape() {
+		return VOLUME_SHAPE.BOX;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see rajawali.bounds.IBoundingVolume#contains(rajawali.bounds.IBoundingVolume)
