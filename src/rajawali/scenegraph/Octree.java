@@ -1,6 +1,5 @@
 package rajawali.scenegraph;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -205,7 +204,7 @@ public class Octree extends A_nAABBTree {
 
 	@Override
 	public String toString() {
-		String str = "Octant: " + mChildRegion + " member/outside count: " + mMembers.size() + "/";
+		String str = "Level " + mLevel + " Octant: " + mChildRegion + " in/out count: " + mMembers.size() + "/";
 		if (mParent == null) {
 			str = str + mOutside.size();
 		} else {

@@ -6,7 +6,7 @@ import rajawali.Geometry3D;
 
 public interface IBoundingVolume {
 	
-	public static final int DEFAULT_COLOR = 0xFFFFFF00;
+	public static final int DEFAULT_COLOR = 0xFFFFFFFF;
 	
 	public enum VOLUME_SHAPE {BOX, SPHERE, FRUSTUM, CONE};
 	
