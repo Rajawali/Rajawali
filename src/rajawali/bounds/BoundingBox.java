@@ -22,7 +22,7 @@ public class BoundingBox implements IBoundingVolume {
 	protected int mI;
 	protected Cube mVisualBox;
 	protected float[] mTmpMatrix = new float[16];
-	protected AtomicInteger mBoundingColor = new AtomicInteger(0xffffff00);
+	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
 	
 	public void copyPoints(Number3D[] pts){
 		

@@ -697,9 +697,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		A_nAABBTree local_container = container;
 		boolean updated = false;
 		while (!updated) {
-			Log.v("Rajawali", "Local container is: " + local_container);
+			//Log.v("Rajawali", "Local container is: " + local_container);
 			if (local_container.contains(object.getTransformedBoundingVolume())) {
-				Log.v("Rajawali", "INSIDE. Is in graph? " + object.isInGraph());
+				//Log.v("Rajawali", "INSIDE. Is in graph? " + object.isInGraph());
 				int fits_in_child = -1;
 				if (mSplit) {
 					for (int j = 0; j < CHILD_COUNT; ++j) {
@@ -715,7 +715,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 						}
 					}
 					if (fits_in_child >= 0) { //If a single child was marked
-						Log.i("Rajawali", "Fits in a single child.");
+						//Log.i("Rajawali", "Fits in a single child.");
 						if (object.isInGraph()) {
 							container.removeFromMembers(object); //First remove from the original container
 						} else {
@@ -724,7 +724,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 						mChildren[fits_in_child].internalAddObject(object); //We want the child to check its children
 						updated = true;
 					} else {
-						Log.i("Rajwali", "Fits in multiple children, leaving in place. In Graph? " + object.isInGraph());
+						//Log.i("Rajwali", "Fits in multiple children, leaving in place. In Graph? " + object.isInGraph());
 						if (!object.isInGraph()) { //If we werent inside before, mark that we are now
 							container.mOutside.remove(object);
 							local_container.internalAddObject(object);
@@ -734,18 +734,14 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				} else {
 					if (local_container.equals(container)) {
 						//We are dealing with the initial update
-						Log.i("Rajawali", "No children so we are leaving in same node. In Graph? " + object.isInGraph());
+						//Log.i("Rajawali", "No children so we are leaving in same node. In Graph? " + object.isInGraph());
 						if (!object.isInGraph()) {
-							Log.i("Rajawali", "Removing from outside graph and moving to inside root.");
-							Log.w("Rajawali", "Container: " + object.getGraphNode());
-							Log.w("Rajawali", "Removing from: " + container);
-							boolean ret = container.mOutside.remove(object);
-							Log.w("Rajawali", "Remove Return value: " + ret);
+							container.mOutside.remove(object);
 							local_container.internalAddObject(object);
 						}
 					} else {
 						//We are dealing with a recursive update
-						Log.i("Rajawali", "No children so move to this node.");
+						//Log.i("Rajawali", "No children so move to this node.");
 						container.removeFromMembers(object); //First remove from the original container
 						local_container.internalAddObject(object); //Now add to the local container, which could be the root
 					}
@@ -754,15 +750,15 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			} else { //If we are outside the container currently of interest
 				if (local_container.mParent == null) { //If root node
 					if (object.isInGraph()) { //If its in the graph, remove it to outside
-						Log.i("Rajawali", "Moving from inside graph to outside.");
+						//Log.i("Rajawali", "Moving from inside graph to outside.");
 						container.removeFromMembers(object); //First remove from the original container
 						local_container.addToOutside(object);
 					} else { //else nothing needs to be done
-						Log.i("Rajawali", "Was already outside...");
+						//Log.i("Rajawali", "Was already outside...");
 					}
 					updated = true;
 				} else { //If container is not root node, pass the call up
-					Log.i("Rajawali", "Container is not root (" + local_container + "). Moving search up a level to: " + local_container.mParent);
+					//Log.i("Rajawali", "Container is not root (" + local_container + "). Moving search up a level to: " + local_container.mParent);
 					local_container = local_container.mParent;
 				}
 			}

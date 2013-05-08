@@ -1,5 +1,6 @@
 package rajawali;
 
+import rajawali.bounds.BoundingFrustum;
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.MathUtil;
 import rajawali.math.Number3D;
@@ -21,7 +22,7 @@ public class Camera extends ATransformable3D {
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
 	protected float[] mCombinedMatrix=new float[16];
-	public Frustum mFrustum;
+	public BoundingFrustum mFrustum;
 	
 	protected int mFogColor = 0xdddddd;
 	protected float mFogNear = 5;
@@ -40,7 +41,7 @@ public class Camera extends ATransformable3D {
 		mLocalOrientation = Quaternion.getIdentity();
 		mUpAxis = new Number3D(0, 1, 0);
 		mIsCamera = true;
-		mFrustum = new Frustum();
+		mFrustum = new BoundingFrustum();
 	}
 
 	public float[] getViewMatrix() {

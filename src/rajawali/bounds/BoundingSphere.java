@@ -1,6 +1,7 @@
 package rajawali.bounds;
 
 import java.nio.FloatBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import rajawali.BaseObject3D;
 import rajawali.Camera;
@@ -20,7 +21,7 @@ public class BoundingSphere implements IBoundingVolume {
 	protected Number3D mTmpPos;
 	protected float mDist, mMinDist, mScale;
 	protected float[] mScaleValues;
-	protected int mBoundingColor = 0xffffff00;
+	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
 	
 	public BoundingSphere() {
 		super();
@@ -40,11 +41,11 @@ public class BoundingSphere implements IBoundingVolume {
 	}
 	
 	public void setBoundingColor(int color) {
-		mBoundingColor = color;
+		mBoundingColor.set(color);
 	}
 	
 	public int getBoundingColor() {
-		return mBoundingColor;
+		return mBoundingColor.get();
 	}
 	
 	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
@@ -131,14 +132,4 @@ public class BoundingSphere implements IBoundingVolume {
 	public VOLUME_SHAPE getVolumeShape() {
 		return VOLUME_SHAPE.SPHERE;
 	}
-
-	/*public boolean contains(IBoundingVolume boundingVolume) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isContainedBy(IBoundingVolume boundingVolume) {
-		// TODO Auto-generated method stub
-		return false;
-	}*/
 }
