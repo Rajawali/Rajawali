@@ -19,6 +19,7 @@ import rajawali.renderer.AFrameTask;
 import rajawali.renderer.EmptyTask;
 import rajawali.renderer.GroupTask;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.renderer.RenderTarget;
 import rajawali.renderer.plugins.IRendererPlugin;
 import rajawali.scenegraph.IGraphNode;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
@@ -545,7 +546,7 @@ public class RajawaliScene extends AFrameTask {
 		return (mPickerInfo != null);
 	}
 	
-	public void render(double deltaTime) {
+	public void render(double deltaTime, RenderTarget renderTarget) {
 		performFrameTasks(); //Handle the task queue
 		synchronized (mNextSkyboxLock) {
 			//Check if we need to switch the skybox, and if so, do it.
@@ -631,7 +632,7 @@ public class RajawaliScene extends AFrameTask {
 			pickerInfo.getPicker().unbindFrameBuffer();
 			pickerInfo = null;
 			mPickerInfo = null;
-			render(deltaTime); //TODO Possible timing error here
+			render(deltaTime, renderTarget); //TODO Possible timing error here
 		}
 
 		synchronized (mPlugins) {
