@@ -207,6 +207,7 @@ public class TextureManager {
 		return this.addTexture(texture, textureType, mipmap, recycle, WrapType.REPEAT, FilterType.LINEAR);
 	}
 	public TextureInfo addTexture(Bitmap texture, TextureType textureType, boolean mipmap, boolean recycle, WrapType wrapType, FilterType filterType) {
+		checkPOT(texture);
 		TextureInfo tInfo = addTexture(new ByteBuffer[0], texture, texture.getWidth(), texture.getHeight(), textureType, texture.getConfig(), mipmap, recycle, wrapType, filterType);
 		if(recycle && tInfo.getTextureId() > 0)
 			texture.recycle();
@@ -916,6 +917,17 @@ public class TextureManager {
 			}
 			mShouldUpdateTextures = false;
 		}
+	}
+	
+	private static final void checkPOT(final Bitmap bitmap) {
+		if (bitmap == null)
+			throw new RuntimeException("Null pointer passed for power of two check.");
+		
+		final int x = bitmap.getWidth();
+		final int y = bitmap.getHeight();
+		
+		if (!((x != 0) && (x & (x - 1)) == 0) || !((y != 0) && (y & (y - 1)) == 0))
+			RajLog.w("Loaded texture is not a power of two! Texture may fail to render on certain devices.");
 	}
 	
 	/**
