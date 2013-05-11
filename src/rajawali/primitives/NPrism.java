@@ -44,7 +44,7 @@ public class NPrism extends BaseObject3D {
 	 * @param height Double the height of the prism.
 	 */
 	public NPrism(int sides, double radiusTop, double radiusBase, double height) {
-		if (sides > 3) throw new IllegalArgumentException("Prisms must have at least 3 sides!");
+		if (sides < 3) throw new IllegalArgumentException("Prisms must have at least 3 sides!");
 		mRadiusTop = radiusTop;
 		mRadiusBase = radiusBase;
 		mFrustumHeight = height;
