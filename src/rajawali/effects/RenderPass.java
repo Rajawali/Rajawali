@@ -6,12 +6,21 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
 
+/**
+ * A render pass used for primarily rendering a scene to a framebuffer target.
+ * @author Andrew Jo (andrewjo@gmail.com)
+ */
 public class RenderPass extends APass {
 	protected RajawaliScene mScene;
 	protected int mClearColor;
 	protected int mOldClearColor;
 	
-	public RenderPass(RajawaliScene scene, int clearColor, float clearAlpha) {
+	/**
+	 * Instantiates a new RenderPass object.
+	 * @param scene RajawaliScene instance to render for this pass
+	 * @param clearColor Color of the background to clear before rendering the scene
+	 */
+	public RenderPass(RajawaliScene scene, int clearColor) {
 		mScene = scene;
 		mClearColor = clearColor;
 		mOldClearColor = 0x00000000;
