@@ -11,6 +11,17 @@ public class ScaleAnimation3D extends Animation3D {
 	protected Number3D mMultipliedScale = new Number3D();
 	protected Number3D mAddedScale = new Number3D();
 
+
+	public ScaleAnimation3D(float toScale) {
+		super();
+		mToScale 	= new Number3D(toScale);
+	}
+	public ScaleAnimation3D(float fromScale, float toScale) {
+		super();
+		mToScale 	= new Number3D(toScale);
+		mFromScale 	= new Number3D(fromScale);
+	}
+	
 	public ScaleAnimation3D(Number3D toScale) {
 		super();
 		mToScale = toScale;

@@ -55,9 +55,9 @@ public class Camera extends ATransformable3D {
 		} else {
 			if (mUseRotationMatrix == false && mRotationDirty) {
 				setOrientation();
-				mOrientation.toRotationMatrix(mRotationMatrix);
 				mRotationDirty = false;
 			}
+			mOrientation.toRotationMatrix(mRotationMatrix);
 			Matrix.setIdentityM(mTmpMatrix, 0);
 			Matrix.setIdentityM(mVMatrix, 0);
 			Matrix.translateM(mTmpMatrix, 0, -mPosition.x, -mPosition.y, -mPosition.z);

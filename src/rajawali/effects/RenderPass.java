@@ -30,7 +30,7 @@ public class RenderPass extends APass {
 		}
 		
 		// Render the current scene.
-		mScene.render(deltaTime);
+		mScene.render(deltaTime, readBuffer);
 		
 		// Restore the old background color.
 		if (mClearColor != 0x00000000) {

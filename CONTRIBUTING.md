@@ -12,6 +12,8 @@ While the Rajawali collaborators are very happy to assist and provide support fo
   * [How to use object parsers to import exported 3D objects into your scene](https://github.com/MasDennis/Rajawali/wiki/Tutorial-02-Creating-a-Live-Wallpaper-and-Importing-a-Model)
 * When submitting an issue, please be as constructive as possible. Non-constructive questions such as merely asking for more examples will be viewed as asking us to do your work for you. These issues will be closed immediately by our collaborators.
 * If you think there is a bug in the library, please provide exact details to reproduce the bug and stack traces (in case of runtime exceptions) when submitting an issue.
+* Please use Markdown to format your issue and to properly format your code. This ensures better readability for others which helps to receive better support. Hard-to-understand submission resulting from poorly formatted post will result in immediate closure by our collaborators.
+* Rajawali is documented and supported in language that is more widely used internationally: English. Our collaborators are located all over the globe in America, Asia, and Europe and use English to collaborate and provide support. Please submit your issues written in comprehensive English so that our collaborators and others around the world may be able to easily read and understand what your issue is. Submissions written in any other languages or in very uncomprehensive English will be closed. If English is not your native tongue, please use a translator and we will do our best to accommodate.
 
 Pull Request Guidelines
 -----------------------

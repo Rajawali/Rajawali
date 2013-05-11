@@ -40,6 +40,12 @@ public class Number3D {
 		this.y = 0;
 		this.z = 0;
 	}
+	
+	public Number3D(float from) {
+		this.x = from;
+		this.y = from;
+		this.z = from;
+	}
 
 	public Number3D(Number3D from) {
 		this.x = from.x;

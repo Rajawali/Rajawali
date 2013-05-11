@@ -424,7 +424,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			int color = mCurrentScene.getBackgroundColor();
 			GLES20.glClearColor(Color.red(color)/255f, Color.green(color)/255f, Color.blue(color)/255f, Color.alpha(color)/255f);
 		}
-		mCurrentScene.render(deltaTime);
+		mCurrentScene.render(deltaTime, null);
 	}
 
 	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
