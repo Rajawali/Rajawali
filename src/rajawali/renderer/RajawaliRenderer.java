@@ -1078,6 +1078,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			sb.append("Renderer                  : ").append(mGL10.glGetString(GL10.GL_RENDERER)).append("\n");
 			sb.append("Version                   : ").append(mGL10.glGetString(GL10.GL_VERSION)).append("\n");
 			
+			int[] maxTextureImageUnits = new int[1];
+			mGL10.glGetIntegerv(GL10.GL_MAX_TEXTURE_UNITS, maxTextureImageUnits, 0);
+			sb.append("Max. Texture Units        : ").append(maxTextureImageUnits[0]);
+			GLES20.glGetIntegerv(GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, maxTextureImageUnits, 0);
+			sb.append("Max. Vertex Texture Units : ").append(maxTextureImageUnits[0]);
+			
 			String extensions = mGL10.glGetString(GL10.GL_EXTENSIONS);
 			String[] ext = extensions.split(" ");
 			int extLength = ext.length;
