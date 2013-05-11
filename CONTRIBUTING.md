@@ -1,5 +1,5 @@
-Posting Issues Guidelines
--------------------------
+Issue Submission Guidelines
+---------------------------
 
 While the Rajawali collaborators are very happy to assist and provide support for the library, they are all doing this voluntarily on their personal time and are not compensated whatsoever for their efforts. So before you post, please read the guidelines below.
 * When submitting a support issue about a question, please make sure it is related to the Rajawali library. Below are some common support questions we get that has nothing to do with Rajawali and should be asked elsewhere such as [Stack Overflow](http://www.stackoverflow.com/):
