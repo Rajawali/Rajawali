@@ -147,9 +147,15 @@ public class EffectComposer {
 				swapBuffers();
 			}
 			
-			//if (pass instanceof MaskPass) {
-			//} else if (pass instanceof ClearMaskPass) {
-			//}
+			// If the current pass is a mask pass, notify the next pass that mask is active.
+			if (pass instanceof MaskPass)
+				maskActive = true;
+			else if (pass instanceof ClearMaskPass)
+				maskActive = false;
 		}
+	}
+	
+	public boolean isEmpty() {
+		return mPasses.isEmpty();
 	}
 }
