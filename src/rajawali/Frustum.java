@@ -6,7 +6,6 @@ import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.primitives.Sphere;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class Frustum {
 	private Number3D[] mTmp = new Number3D[8];

@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.SerializedObject3D;
+import rajawali.materials.TextureManager.TextureManagerException;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
 
@@ -93,8 +94,13 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		VertexAnimationObject3D clone = new VertexAnimationObject3D();
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		if (copyMaterial)
-			clone.setMaterial(mMaterial, false);
+		try {
+			if (copyMaterial)
+				clone.setMaterial(mMaterial, false);
+		} catch(TextureManagerException tme) {
+			tme.printStackTrace();
+		}
+		
 		for (int i = 0; i < mNumFrames; ++i) {
 			clone.addFrame(getFrame(i));
 		}

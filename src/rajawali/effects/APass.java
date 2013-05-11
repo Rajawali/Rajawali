@@ -2,6 +2,7 @@ package rajawali.effects;
 
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
+import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 
 /**
  * Defines a rendering pass which is needed for multiple rendering passes.
@@ -33,5 +34,5 @@ public abstract class APass {
 		return mNeedsSwap;
 	}
 	
-	public void render(RajawaliRenderer renderer, RenderTarget writeTarget, RenderTarget readTarget, double deltaTime) {}
+	public void render(RajawaliRenderer renderer, RenderTarget writeTarget, RenderTarget readTarget, double deltaTime) throws ObjectColorPickerException {}
 }

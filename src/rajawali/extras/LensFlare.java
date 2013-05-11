@@ -2,7 +2,7 @@ package rajawali.extras;
 
 import java.util.ArrayList;
 
-import rajawali.materials.TextureInfo;
+import rajawali.materials.Texture;
 import rajawali.math.Number3D;
 
 /**
@@ -16,22 +16,22 @@ public class LensFlare {
 	protected Number3D mPosition;
 	protected boolean mOccluded;
 	
-	public LensFlare(TextureInfo texture, int size, float distance, Number3D color) {
+	public LensFlare(Texture texture, int size, float distance, Number3D color) {
 		mLensFlares = new ArrayList<FlareInfo>();
 		mPositionScreen = new Number3D();
 		mPosition = new Number3D();
 		addLensFlare(texture, size, distance, color);
 	}
 	
-	public void addLensFlare(TextureInfo texture) {
+	public void addLensFlare(Texture texture) {
 		addLensFlare(texture, -1, 0, new Number3D(1, 1, 1));
 	}
 	
-	public void addLensFlare(TextureInfo texture, int size, float distance, Number3D color) {
+	public void addLensFlare(Texture texture, int size, float distance, Number3D color) {
 		addLensFlare(texture, size, distance, color, 1);
 	}
 	
-	public void addLensFlare(TextureInfo texture, int size, float distance, Number3D color, float opacity) {
+	public void addLensFlare(Texture texture, int size, float distance, Number3D color, float opacity) {
 		distance = Math.min(distance, Math.max(0, distance));
 		mLensFlares.add(new FlareInfo(texture, size, distance, new Number3D(), color, opacity));
 	}
@@ -86,7 +86,7 @@ public class LensFlare {
 	}
 	
 	public class FlareInfo {
-		protected TextureInfo mTexture;
+		protected Texture mTexture;
 		protected int mSize;
 		protected float mDistance;
 		protected Number3D mColor;
@@ -96,7 +96,7 @@ public class LensFlare {
 		protected float mRotation;
 		protected float mWantedRotation;
 		
-		public FlareInfo(TextureInfo texture, int size, float distance, 
+		public FlareInfo(Texture texture, int size, float distance, 
 				Number3D screenPosition, Number3D color, float opacity) {
 			mTexture = texture;
 			mSize = size;
@@ -137,7 +137,7 @@ public class LensFlare {
 			return mSize;
 		}
 		
-		public TextureInfo getTexture() {
+		public Texture getTexture() {
 			return mTexture;
 		}
 		
@@ -191,7 +191,7 @@ public class LensFlare {
 			mSize = size;
 		}
 		
-		public void setTexture(TextureInfo texture) {
+		public void setTexture(Texture texture) {
 			mTexture = texture;
 		}
 

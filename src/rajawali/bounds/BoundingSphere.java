@@ -6,6 +6,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
+import rajawali.materials.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.primitives.Sphere;
 import android.opengl.GLES20;
@@ -49,11 +50,15 @@ public class BoundingSphere implements IBoundingVolume {
 	
 	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisualSphere == null) {
-			mVisualSphere = new Sphere(1, 8, 8);
-			mVisualSphere.setMaterial(new SimpleMaterial());
-			mVisualSphere.getMaterial().setUseColor(true);
-			mVisualSphere.setColor(0xffffff00);
-			mVisualSphere.setDrawingMode(GLES20.GL_LINE_LOOP);
+			try {
+				mVisualSphere = new Sphere(1, 8, 8);
+				mVisualSphere.setMaterial(new SimpleMaterial());
+				mVisualSphere.getMaterial().setUseColor(true);
+				mVisualSphere.setColor(0xffffff00);
+				mVisualSphere.setDrawingMode(GLES20.GL_LINE_LOOP);
+			} catch(TextureManagerException tme) {
+				tme.printStackTrace();
+			}
 		}
 
 		Matrix.setIdentityM(mTmpMatrix, 0);

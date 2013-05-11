@@ -12,7 +12,9 @@ import rajawali.Camera;
 import rajawali.animation.Animation3D;
 import rajawali.materials.SimpleMaterial;
 import rajawali.materials.SkyboxMaterial;
-import rajawali.materials.TextureInfo;
+import rajawali.materials.Texture;
+import rajawali.materials.Texture.TextureType;
+import rajawali.materials.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
@@ -25,6 +27,7 @@ import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
+import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -58,7 +61,7 @@ public class RajawaliScene extends AFrameTask {
 	*/
 	private Cube mNextSkybox;
 	private final Object mNextSkyboxLock = new Object();
-	protected TextureInfo mSkyboxTextureInfo;
+	protected Texture mSkyboxTextureInfo;
 	
 	protected ColorPickerInfo mPickerInfo;
 	protected boolean mReloadPickerInfo;
@@ -426,8 +429,9 @@ public class RajawaliScene extends AFrameTask {
 	 * Creates a skybox with the specified single texture.
 	 * 
 	 * @param resourceId int Resouce id of the skybox texture.
+	 * @throws TextureManagerException 
 	 */
-	public void setSkybox(int resourceId) {
+	public void setSkybox(int resourceId) throws TextureManagerException {
 		synchronized (mCameras) {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
 				mCameras.get(i).setFarPlane(1000);
@@ -435,8 +439,8 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true, false);
 			mNextSkybox.setDoubleSided(true);
-			mSkyboxTextureInfo = mRenderer.getTextureManager().addTexture(BitmapFactory.decodeResource(
-					mRenderer.getContext().getResources(), resourceId));
+			mSkyboxTextureInfo = new Texture(TextureType.DIFFUSE);
+			mSkyboxTextureInfo.setBitmap(BitmapFactory.decodeResource(mRenderer.getContext().getResources(), resourceId));
 			SimpleMaterial material = new SimpleMaterial();
 			material.addTexture(mSkyboxTextureInfo);
 			mNextSkybox.setMaterial(material);
@@ -452,8 +456,9 @@ public class RajawaliScene extends AFrameTask {
 	 * @param left int Resource id for the left face.
 	 * @param up int Resource id for the up face.
 	 * @param down int Resource id for the down face.
+	 * @throws TextureManagerException 
 	 */
-	public void setSkybox(int front, int right, int back, int left, int up, int down) {
+	public void setSkybox(int front, int right, int back, int left, int up, int down) throws TextureManagerException {
 		synchronized (mCameras) {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
 				mCameras.get(i).setFarPlane(1000);
@@ -469,7 +474,10 @@ public class RajawaliScene extends AFrameTask {
 			textures[4] = BitmapFactory.decodeResource(context.getResources(), front);
 			textures[5] = BitmapFactory.decodeResource(context.getResources(), back);
 
-			mSkyboxTextureInfo = mRenderer.getTextureManager().addCubemapTextures(textures);
+			mSkyboxTextureInfo = new Texture(TextureType.CUBE_MAP);
+			mSkyboxTextureInfo.setBitmaps(textures);
+
+			mRenderer.getTextureManager().addTexture(mSkyboxTextureInfo);
 			SkyboxMaterial mat = new SkyboxMaterial();
 			mat.addTexture(mSkyboxTextureInfo);
 			mNextSkybox.setMaterial(mat);
@@ -495,8 +503,9 @@ public class RajawaliScene extends AFrameTask {
 	 * @param left int Resource id for the left face.
 	 * @param up int Resource id for the up face.
 	 * @param down int Resource id for the down face.
+	 * @throws TextureManagerException 
 	 */
-	public void updateSkybox(int front, int right, int back, int left, int up, int down) {
+	public void updateSkybox(int front, int right, int back, int left, int up, int down) throws TextureManagerException {
 		Context context = mRenderer.getContext();
 		Bitmap[] textures = new Bitmap[6];
 		textures[0] = BitmapFactory.decodeResource(context.getResources(), left);
@@ -506,7 +515,9 @@ public class RajawaliScene extends AFrameTask {
 		textures[4] = BitmapFactory.decodeResource(context.getResources(), front);
 		textures[5] = BitmapFactory.decodeResource(context.getResources(), back);
 
-		mRenderer.getTextureManager().updateCubemapTextures(mSkyboxTextureInfo, textures);
+		mSkyboxTextureInfo.setBitmaps(textures);
+		
+		mRenderer.getTextureManager().updateTexture(mSkyboxTextureInfo);
 	}
 	
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
@@ -570,7 +581,12 @@ public class RajawaliScene extends AFrameTask {
 		if (pickerInfo != null) {
 			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
 			mReloadPickerInfo = false;
-			pickerInfo.getPicker().bindFrameBuffer();
+			try {
+				pickerInfo.getPicker().bindFrameBuffer();
+			} catch (ObjectColorPickerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		} else {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);

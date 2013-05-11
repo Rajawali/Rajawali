@@ -1,7 +1,8 @@
 package rajawali.renderer;
 
-import rajawali.materials.TextureManager.FilterType;
-import rajawali.materials.TextureManager.WrapType;
+import rajawali.materials.Texture.FilterType;
+import rajawali.materials.Texture.WrapType;
+import rajawali.materials.TextureManager;
 import android.graphics.Bitmap.Config;
 
 /**

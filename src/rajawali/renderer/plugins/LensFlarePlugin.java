@@ -6,20 +6,18 @@ package rajawali.renderer.plugins;
 import java.nio.ByteBuffer;
 import java.util.Stack;
 
-import android.graphics.Bitmap.Config;
-import android.opengl.GLES20;
-
 import rajawali.Camera;
-import rajawali.materials.TextureInfo;
-import rajawali.materials.TextureManager.FilterType;
-import rajawali.materials.TextureManager.TextureType;
-import rajawali.materials.TextureManager.WrapType;
+import rajawali.extras.LensFlare;
+import rajawali.extras.LensFlare.FlareInfo;
+import rajawali.materials.Texture;
+import rajawali.materials.Texture.FilterType;
+import rajawali.materials.Texture.TextureType;
+import rajawali.materials.Texture.WrapType;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
 import rajawali.renderer.RajawaliRenderer;
-import rajawali.util.RajLog;
-import rajawali.extras.LensFlare;
-import rajawali.extras.LensFlare.FlareInfo;
+import android.graphics.Bitmap.Config;
+import android.opengl.GLES20;
 
 
 /**
@@ -200,8 +198,8 @@ public final class LensFlarePlugin extends Plugin {
 	private int muOcclusionMapTextureHandle;
 	private int muDebugModeHandle; // UNCOMMENT TO USE DEBUG MODE
 	
-	private TextureInfo mMapTexture;
-	private TextureInfo mOcclusionMapTexture;
+	private Texture mMapTexture;
+	private Texture mOcclusionMapTexture;
 	
 	public LensFlarePlugin(RajawaliRenderer renderer) {
 		super(renderer);
@@ -258,10 +256,14 @@ public final class LensFlarePlugin extends Plugin {
         // Set geometry data.
         setData(vertices, normals, textureCoords, colors, indices);
         
+        // TODO: deal with this
+        /*
         // Set up lookup textures.
+        mMapTexture = new TextureConfig(TextureType.LOOKUP);
+        mMapTexture.setBuffers(new ByteBuffer[0]);
         mMapTexture = mRenderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.RGB_565, false, false, WrapType.CLAMP, FilterType.NEAREST);
         mOcclusionMapTexture = mRenderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.ARGB_8888, false, false, WrapType.CLAMP, FilterType.NEAREST);
-        
+        */
         // Set up shader program.
         // Currently vertex texture shader causes problems on Adreno 320 GPUs.
         //if (mVertexTextureSupported) {

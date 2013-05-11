@@ -2,7 +2,6 @@ package rajawali;
 
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,8 +11,7 @@ import rajawali.bounds.IBoundingVolume;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.TextureInfo;
-import rajawali.materials.TextureManager.TextureType;
+import rajawali.materials.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
@@ -384,27 +382,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mMaterial.setLightParams();
 	};
 
-	/**
-	 * Adds a texture to this object
-	 * 
-	 * @parameter textureInfo
-	 */
-	public void addTexture(TextureInfo textureInfo) {
-		if (mMaterial == null) {
-			RajLog.e("[" + getClass().getName() + "] Material is null. Please add a material before adding a texture.");
-			throw new RuntimeException("Material is null. Please add a material first.");
-		}
-
-		if (mLights.size() > 0 && textureInfo.getTextureType() != TextureType.SPHERE_MAP) {
-			mMaterial.setUseColor(false);
-		}
-		mMaterial.addTexture(textureInfo);
-	}
-
-	public void removeTexture(TextureInfo textureInfo) {
-		mMaterial.removeTexture(textureInfo);
-	}
-
 	protected void checkGlError(String op) {
 		int error;
 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
@@ -603,7 +580,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mGeometry;
 	}
 
-	public void setMaterial(AMaterial material) {
+	public void setMaterial(AMaterial material) throws TextureManagerException {
 		setMaterial(material, true);
 		material.setLights(mLights);
 	}
@@ -612,11 +589,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mMaterial;
 	}
 
-	public void setMaterial(AMaterial material, boolean copyTextures) {
+	public void setMaterial(AMaterial material, boolean copyTextures) throws TextureManagerException {
 		if (mMaterial != null && copyTextures)
 			mMaterial.copyTexturesTo(material);
 		else if (mMaterial != null && !copyTextures)
-			mMaterial.getTextureInfoList().clear();
+			mMaterial.getTextureList().clear();
 		mMaterial = null;
 		mMaterial = material;
 	}
@@ -636,7 +613,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public void setForcedDepth(boolean forcedDepth) {
 		this.mForcedDepth = forcedDepth;
 	}
-
+/*
 	public ArrayList<TextureInfo> getTextureInfoList() {
 		ArrayList<TextureInfo> ti = mMaterial.getTextureInfoList();
 
@@ -644,7 +621,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			ti.addAll(mChildren.get(i).getTextureInfoList());
 		return ti;
 	}
-
+*/
 	public SerializedObject3D toSerializedObject3D() {
 		SerializedObject3D ser = new SerializedObject3D(
 				mGeometry.getVertices() != null ? mGeometry.getVertices().capacity() : 0,
@@ -686,8 +663,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected void cloneTo(BaseObject3D clone, boolean copyMaterial) {
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		if (copyMaterial)
-			clone.setMaterial(mMaterial, false);
+		try {
+			if (copyMaterial)
+				clone.setMaterial(mMaterial, false);
+		} catch(TextureManagerException tme) {
+			tme.printStackTrace();
+		}
 		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
 				: GLES20.GL_UNSIGNED_INT;
 		clone.mTransparent = this.mTransparent;

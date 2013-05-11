@@ -14,7 +14,10 @@ import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.SkeletonJoint;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.Texture;
+import rajawali.materials.Texture.TextureType;
 import rajawali.materials.TextureManager;
+import rajawali.materials.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.IAnimatedMeshParser;
@@ -116,6 +119,11 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			buildMeshes();
 			calculateNormals();
 			createObjects();
+		} catch(TextureManagerException tme) {
+			try {
+				buffer.close();
+			} catch(Exception ex) {}
+			throw new ParsingException(tme);
 		} catch (IOException e) {
 			try {
 				buffer.close();
@@ -375,7 +383,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 		}
 	}
 	
-	private void createObjects() {
+	private void createObjects() throws TextureManagerException {
 		AnimationSkeleton root = new AnimationSkeleton();
 		root.uBoneMatrix = mBindPoseMatrix;
 		root.mInverseBindPoseMatrix = mInverseBindPoseMatrix;
@@ -410,7 +418,9 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 					RajLog.e("Couldn't find texture " + mesh.shader);
 					break;
 				}
-				o.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
+				Texture texture = new Texture(TextureType.DIFFUSE);
+				texture.setBitmap(BitmapFactory.decodeResource(mResources, identifier));
+				mat.addTexture(texture);
 			}
 			
 			mRootObject.addChild(o);

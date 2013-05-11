@@ -3,8 +3,9 @@ package rajawali.renderer;
 import rajawali.Camera2D;
 import rajawali.filters.IPostProcessingFilter;
 import rajawali.materials.AMaterial;
-import rajawali.materials.TextureInfo;
-import rajawali.materials.TextureManager.TextureType;
+import rajawali.materials.Texture;
+import rajawali.materials.Texture.TextureType;
+import rajawali.materials.TextureManager.TextureManagerException;
 import rajawali.math.MathUtil;
 import rajawali.primitives.Plane;
 import rajawali.util.RajLog;
@@ -13,7 +14,7 @@ import android.opengl.GLES20;
 public final class PostProcessingRenderer {
 	private int mFrameBufferHandle;
 	private int mDepthBufferHandle;
-	private TextureInfo mFrameBufferTexInfo;
+	private Texture mFrameBufferTexture;
 //	private TextureInfo mDepthBufferTexInfo;
 	private Plane mPostProcessingQuad;
 	private Camera2D mPostProcessingCam;
@@ -51,7 +52,7 @@ public final class PostProcessingRenderer {
 		mQuality = quality;
 	}
 	
-	private void create() {
+	private void create() throws TextureManagerException {
 		int[] frameBuffers = new int[1];
 		GLES20.glGenFramebuffers(1, frameBuffers, 0);
 		mFrameBufferHandle = frameBuffers[0];
@@ -75,7 +76,15 @@ public final class PostProcessingRenderer {
 		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mTextureSize, mTextureSize);
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 		
-		mFrameBufferTexInfo = mRenderer.getTextureManager().addTexture(null, mTextureSize, mTextureSize, TextureType.FRAME_BUFFER);
+		try {
+			mFrameBufferTexture = new Texture(TextureType.FRAME_BUFFER);
+			mFrameBufferTexture.setWidth(mTextureSize);
+			mFrameBufferTexture.setHeight(mTextureSize);
+			mFrameBufferTexture = mRenderer.getTextureManager().addTexture(mFrameBufferTexture);
+		} catch(TextureManagerException tme) {
+			// TODO: deal with it
+			tme.printStackTrace();
+		}
 
 		mPostProcessingQuad = new Plane(1, 1, mQuadSegments, mQuadSegments);
 		mPostProcessingQuad.setMaterial((AMaterial)mFilter);
@@ -85,7 +94,7 @@ public final class PostProcessingRenderer {
 		mPostProcessingCam = new Camera2D();
 		mPostProcessingCam.setProjectionMatrix(0, 0);
 
-		mPostProcessingQuad.addTexture(mFrameBufferTexInfo);
+		((AMaterial)mFilter).addTexture(mFrameBufferTexture);
 		mInitialized = true;
 	}
 	
@@ -94,11 +103,15 @@ public final class PostProcessingRenderer {
 	}
 	
 	public void bind() {
-		if(!mInitialized)
-			create();
+		try {
+			if(!mInitialized)
+				create();
+		} catch(TextureManagerException tme) {
+			tme.printStackTrace();
+		}
 		GLES20.glViewport(0, 0, mTextureSize, mTextureSize);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
-		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mFrameBufferTexInfo.getTextureId(), 0);
+		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mFrameBufferTexture.getTextureId(), 0);
 		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
 		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
 			RajLog.d("Could not bind post processing frame buffer." + status);
@@ -117,7 +130,7 @@ public final class PostProcessingRenderer {
 		GLES20.glDeleteFramebuffers(1, new int[] { mFrameBufferHandle }, 0);
 		GLES20.glDeleteRenderbuffers(1, new int[] { mDepthBufferHandle }, 0);
 		
-		if (mFrameBufferTexInfo!=null) mRenderer.getTextureManager().removeTexture(mFrameBufferTexInfo);
+		if (mFrameBufferTexture!=null) mRenderer.getTextureManager().removeTexture(mFrameBufferTexture);
 	}
 	
 	public void reload() {

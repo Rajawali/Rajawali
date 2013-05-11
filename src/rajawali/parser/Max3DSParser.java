@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -64,7 +65,11 @@ public class Max3DSParser extends AMeshParser {
 				readChunk(stream);
 			}
 
-			build();
+			try {
+				build();
+			} catch(TextureManagerException tme) {
+				throw new ParsingException(tme);
+			}
 			if (mRootObject.getNumChildren() == 1)
 				mRootObject = mRootObject.getChildAt(0);
 
@@ -138,7 +143,7 @@ public class Max3DSParser extends AMeshParser {
 		}
 	}
 
-	public void build() {
+	public void build() throws TextureManagerException {
 		int num = mVertices.size();
 		for(int j=0; j<num; ++j) {
 			ArrayList<Integer> indices = mIndices.get(j);

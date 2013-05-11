@@ -14,13 +14,15 @@ import java.util.List;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
-import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
+import rajawali.materials.Texture;
+import rajawali.materials.Texture.TextureType;
+import rajawali.materials.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
 import rajawali.parser.AMeshParser;
@@ -31,8 +33,6 @@ import rajawali.parser.fbx.FBXValues.FBXIntBuffer;
 import rajawali.parser.fbx.FBXValues.FBXMatrix;
 import rajawali.parser.fbx.FBXValues.Objects.Material;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
-import rajawali.parser.fbx.FBXValues.Objects.Texture;
-import rajawali.parser.fbx.FBXValues.Version5.FogOptions;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap;
@@ -160,8 +160,12 @@ public class FBXParser extends AMeshParser {
 		
 		Stack<Model> models = mFbx.objects.getModelsByType(FBXValues.MODELTYPE_MESH);
 		
-		for(int i=0; i<models.size(); ++i) {
-			buildMesh(models.get(i), sceneLights);
+		try {
+			for(int i=0; i<models.size(); ++i) {
+				buildMesh(models.get(i), sceneLights);
+			}
+		} catch(TextureManagerException tme) {
+			throw new ParsingException(tme);
 		}
 		
 		// -- get cameras
@@ -192,7 +196,7 @@ public class FBXParser extends AMeshParser {
 		return this;
 	}
 	
-	private void buildMesh(Model model, Stack<ALight> lights) {
+	private void buildMesh(Model model, Stack<ALight> lights) throws TextureManagerException, ParsingException {
 		BaseObject3D o = new BaseObject3D(model.name);
 		boolean hasUVs = model.layerElementUV.uVIndex != null;
 		
@@ -368,14 +372,14 @@ public class FBXParser extends AMeshParser {
 	    return ret;
 	}
 	
-	private void setMeshTextures(BaseObject3D o, String name) {
-		Stack<Texture> textures = mFbx.objects.textures;
+	private void setMeshTextures(BaseObject3D o, String name) throws TextureManagerException, ParsingException {
+		Stack<FBXValues.Objects.Texture> textures = mFbx.objects.textures;
 		Stack<Connect> connections = mFbx.connections.connections;
 		int numTex = textures.size();
 		int numCon = connections.size();
 		
 		for(int i=0; i<numTex; ++i) {
-			Texture tex = textures.get(i);
+			FBXValues.Objects.Texture tex = textures.get(i);
 			for(int j=0; j<numCon; ++j) {
 				Connect conn = connections.get(j);
 
@@ -383,25 +387,22 @@ public class FBXParser extends AMeshParser {
 				{
 					// -- one texture for now
 					String textureName = tex.fileName;
-					try {
-						Bitmap texture = null;
-						if(mFile == null) {
-							int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(), "drawable", mResources.getResourcePackageName(mResourceId));
-							texture = BitmapFactory.decodeResource(mResources, identifier);
-						} else {
-							try {
-								String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(textureName);
-								texture = BitmapFactory.decodeFile(filePath);
-							} catch (Exception e) {
-								RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
-								e.printStackTrace();
-								return;
-							}
+
+					Bitmap texture = null;
+					if(mFile == null) {
+						int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(), "drawable", mResources.getResourcePackageName(mResourceId));
+						texture = BitmapFactory.decodeResource(mResources, identifier);
+					} else {
+						try {
+							String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(textureName);
+							texture = BitmapFactory.decodeFile(filePath);
+						} catch (Exception e) {
+							throw new ParsingException("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
 						}
-						o.addTexture(mTextureManager.addTexture(texture));
-					} catch(Exception e) {
-						RajLog.e("Could not load texture [" + textureName + "]: " + e.getMessage() );	
 					}
+					Texture textureConfig = new Texture(TextureType.DIFFUSE);
+					textureConfig.setBitmap(texture);
+					o.getMaterial().addTexture(textureConfig);
 					return;
 				}
 			}
