@@ -50,7 +50,6 @@ public class BoundingBox implements IBoundingVolume {
 	}
 	
 	public BoundingBox() {
-		super();
 		mTransformedMin = new Number3D();
 		mTransformedMax = new Number3D();
 		mTmpMin = new Number3D();

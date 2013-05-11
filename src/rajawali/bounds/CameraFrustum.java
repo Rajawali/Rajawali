@@ -8,12 +8,23 @@ import rajawali.Geometry3D;
 import rajawali.math.Number3D;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
+import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
+import android.util.Log;
 
-public class BoundingFrustum implements IBoundingVolume {
+public class CameraFrustum implements IBoundingVolume {
+	
 	private Number3D[] mTmp = new Number3D[8];
 	protected Sphere mVisualSphere;
 	protected float[] mTmpMatrix = new float[16];
+	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
+	public final Plane[] mPlanes = new Plane[6];     
+
+	protected final Number3D[] mPlanePoints = { 
+			new Number3D(), new Number3D(), new Number3D(), new Number3D(), 
+			new Number3D(), new Number3D(), new Number3D(), new Number3D() 
+	}; 
+	
 	protected static final Number3D[] mClipSpacePlanePoints = { 
 		new Number3D(-1, -1, -1), 
 		new Number3D( 1, -1, -1), 
@@ -22,19 +33,11 @@ public class BoundingFrustum implements IBoundingVolume {
 		new Number3D(-1, -1,  1), 
 		new Number3D( 1, -1,  1), 
 		new Number3D( 1,  1,  1),
-		new Number3D(-1,  1,  1)}; 
-
-	public final Plane[] planes = new Plane[6];     
-
-	protected final Number3D[] planePoints = { new Number3D(), new Number3D(), new Number3D(), new Number3D(), 
-			new Number3D(), new Number3D(), new Number3D(), new Number3D() 
-	};      
+		new Number3D(-1,  1,  1)};
 	
-	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
-
-	public BoundingFrustum() {
+	public CameraFrustum() {
 		for(int i = 0; i < 6; i++) {
-			planes[i] = new Plane(new Number3D(), 0);
+			mPlanes[i] = new Plane(new Number3D(), 0);
 		}
 		for(int i=0;i<8;i++){
 			mTmp[i]=new Number3D();
@@ -44,22 +47,21 @@ public class BoundingFrustum implements IBoundingVolume {
 	public void update(float[] inverseProjectionView) {             
 
 		for(int i = 0; i < 8; i++) {
-			planePoints[i].setAllFrom(mClipSpacePlanePoints[i]);
-			planePoints[i].project(inverseProjectionView);   
+			mPlanePoints[i].setAllFrom(mClipSpacePlanePoints[i]);
+			mPlanePoints[i].project(inverseProjectionView);   
 		}
 
-		planes[0].set(planePoints[1], planePoints[0], planePoints[2]);
-		planes[1].set(planePoints[4], planePoints[5], planePoints[7]);
-		planes[2].set(planePoints[0], planePoints[4], planePoints[3]);
-		planes[3].set(planePoints[5], planePoints[1], planePoints[6]);
-		planes[4].set(planePoints[2], planePoints[3], planePoints[6]);
-		planes[5].set(planePoints[4], planePoints[0], planePoints[1]);
+		mPlanes[0].set(mPlanePoints[1], mPlanePoints[0], mPlanePoints[2]);
+		mPlanes[1].set(mPlanePoints[4], mPlanePoints[5], mPlanePoints[7]);
+		mPlanes[2].set(mPlanePoints[0], mPlanePoints[4], mPlanePoints[3]);
+		mPlanes[3].set(mPlanePoints[5], mPlanePoints[1], mPlanePoints[6]);
+		mPlanes[4].set(mPlanePoints[2], mPlanePoints[3], mPlanePoints[6]);
+		mPlanes[5].set(mPlanePoints[4], mPlanePoints[0], mPlanePoints[1]);
 	}       
 
-
 	public boolean sphereInFrustum (Number3D center, float radius) {
-		for (int i = 0; i < planes.length; i++)
-			if (planes[i].distance(center) < -radius) return false;
+		for (int i = 0; i < mPlanes.length; i++)
+			if (mPlanes[i].distance(center) < -radius) return false;
 
 		return true;
 	}
@@ -71,7 +73,7 @@ public class BoundingFrustum implements IBoundingVolume {
 		for (int i = 0; i < 6; i++) {
 			isout= 0;
 			for (int j = 0; j < 8; j++)
-				if (planes[i].getPointSide(corners[j]) == PlaneSide.Back){ isout++; }
+				if (mPlanes[i].getPointSide(corners[j]) == PlaneSide.Back){ isout++; }
 
 			if (isout == 8) { 
 				return false;
@@ -82,8 +84,8 @@ public class BoundingFrustum implements IBoundingVolume {
 	}
 
 	public boolean pointInFrustum (Number3D point) {
-		for (int i = 0; i < planes.length; i++) {
-			PlaneSide result = planes[i].getPointSide(point);
+		for (int i = 0; i < mPlanes.length; i++) {
+			PlaneSide result = mPlanes[i].getPointSide(point);
 			if (result == PlaneSide.Back) {return false;}
 		}
 		return true;
@@ -91,7 +93,6 @@ public class BoundingFrustum implements IBoundingVolume {
 
 	public void calculateBounds(Geometry3D geometry) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
@@ -115,14 +116,30 @@ public class BoundingFrustum implements IBoundingVolume {
 	}
 
 	public void setBoundingColor(int color) {
-		mBoundingColor.set(color);
+		// TODO Auto-generated method stub
+		
 	}
 
 	public int getBoundingColor() {
-		return mBoundingColor.get();
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	public VOLUME_SHAPE getVolumeShape() {
 		return VOLUME_SHAPE.FRUSTUM;
+	}
+	
+	protected static class CameraVisibleFrustum extends NPrism {
+
+		private CameraFrustum mParent;
+		
+		public CameraVisibleFrustum(CameraFrustum parent, int sides, double radiusTop, 
+				double radiusBase, double height) {
+			super(sides, radiusTop, radiusBase, height);
+			mParent = parent;
+		}
+		
+		
+		
 	}
 }

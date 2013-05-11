@@ -24,7 +24,6 @@ public class BoundingSphere implements IBoundingVolume {
 	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
 	
 	public BoundingSphere() {
-		super();
 		mPosition = new Number3D();
 		mTmpPos = new Number3D();
 		mScaleValues = new float[3];
