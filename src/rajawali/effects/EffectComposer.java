@@ -4,18 +4,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.Camera2D;
-import rajawali.materials.textures.ATexture.FilterType;
-import rajawali.materials.textures.ATexture.WrapType;
-import rajawali.primitives.Plane;
-import rajawali.renderer.RajawaliRenderer;
-import rajawali.renderer.RenderTarget;
 import android.content.Context;
 import android.graphics.Bitmap.Config;
 import android.graphics.Point;
 import android.opengl.GLES20;
 import android.view.Display;
 import android.view.WindowManager;
+
+import rajawali.Camera2D;
+import rajawali.materials.TextureManager.FilterType;
+import rajawali.materials.TextureManager.WrapType;
+import rajawali.primitives.Plane;
+import rajawali.renderer.RajawaliRenderer;
+import rajawali.renderer.RenderTarget;
+import rajawali.scene.RajawaliScene;
+import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 
 public class EffectComposer {
 	protected RajawaliRenderer mRenderer;
@@ -30,6 +33,7 @@ public class EffectComposer {
 	
 	protected Camera2D mCamera = new Camera2D();
 	protected Plane mPostProcessingQuad = new Plane(1, 1, 1, 1);
+	protected RajawaliScene mScene = new RajawaliScene(mRenderer, GRAPH_TYPE.NONE);
 	
 	public EffectComposer(RajawaliRenderer renderer, RenderTarget renderTarget) {
 		mRenderer = renderer;
@@ -62,6 +66,15 @@ public class EffectComposer {
 		mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<APass>());
 		
 		mCamera.setProjectionMatrix(0, 0);
+		
+		// Set up a scene with just a 2D camera and a fullscreen quad.
+		mPostProcessingQuad.setRotZ(90);
+		mScene.addChild(mPostProcessingQuad);
+		mScene.replaceAndSwitchCamera(mScene.getCamera(), mCamera);
+	}
+	
+	public EffectComposer(RajawaliRenderer renderer) {
+		this(renderer, null);
 	}
 	
 	/**
@@ -146,9 +159,19 @@ public class EffectComposer {
 				swapBuffers();
 			}
 			
-			//if (pass instanceof MaskPass) {
-			//} else if (pass instanceof ClearMaskPass) {
-			//}
+			// If the current pass is a mask pass, notify the next pass that mask is active.
+			if (pass instanceof MaskPass)
+				maskActive = true;
+			else if (pass instanceof ClearMaskPass)
+				maskActive = false;
 		}
+	}
+	
+	public boolean isEmpty() {
+		return mPasses.isEmpty();
+	}
+	
+	public RajawaliScene getScene() {
+		return mScene;
 	}
 }
