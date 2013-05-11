@@ -1,5 +1,5 @@
-Posting Issues Guidelines
--------------------------
+Issue Submission Guidelines
+---------------------------
 
 While the Rajawali collaborators are very happy to assist and provide support for the library, they are all doing this voluntarily on their personal time and are not compensated whatsoever for their efforts. So before you post, please read the guidelines below.
 * When submitting a support issue about a question, please make sure it is related to the Rajawali library. Below are some common support questions we get that has nothing to do with Rajawali and should be asked elsewhere such as [Stack Overflow](http://www.stackoverflow.com/):
@@ -14,6 +14,7 @@ While the Rajawali collaborators are very happy to assist and provide support fo
 * If you think there is a bug in the library, please provide exact details to reproduce the bug and stack traces (in case of runtime exceptions) when submitting an issue.
 * Please use Markdown to format your issue and to properly format your code. This ensures better readability for others which helps to receive better support. Hard-to-understand submission resulting from poorly formatted post will result in immediate closure by our collaborators.
 * Rajawali is documented and supported in language that is more widely used internationally: English. Our collaborators are located all over the globe in America, Asia, and Europe and use English to collaborate and provide support. Please submit your issues written in comprehensive English so that our collaborators and others around the world may be able to easily read and understand what your issue is. Submissions written in any other languages or in very uncomprehensive English will be closed. If English is not your native tongue, please use a translator and we will do our best to accommodate.
+* If there are no activity within the issue thread for 10 days, it will be deemed stale by our collaborators and will be closed. You may re-open the issue after 10 days if you need further help. When the issue is solved, please mention whether the issue was helpful (it would also be nice to thank whoever helped solve the issue) and close the issue.
 
 Pull Request Guidelines
 -----------------------
