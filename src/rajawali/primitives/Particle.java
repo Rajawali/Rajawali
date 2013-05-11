@@ -3,7 +3,7 @@ package rajawali.primitives;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.materials.AParticleMaterial;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 

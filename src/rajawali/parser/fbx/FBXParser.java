@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
@@ -20,9 +21,8 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
-import rajawali.materials.Texture;
-import rajawali.materials.Texture.TextureType;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
 import rajawali.parser.AMeshParser;
@@ -388,21 +388,19 @@ public class FBXParser extends AMeshParser {
 					// -- one texture for now
 					String textureName = tex.fileName;
 
-					Bitmap texture = null;
+					Bitmap bitmap = null;
 					if(mFile == null) {
-						int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(), "drawable", mResources.getResourcePackageName(mResourceId));
-						texture = BitmapFactory.decodeResource(mResources, identifier);
+						int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(Locale.getDefault()), "drawable", mResources.getResourcePackageName(mResourceId));
+						bitmap = BitmapFactory.decodeResource(mResources, identifier);
 					} else {
 						try {
 							String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(textureName);
-							texture = BitmapFactory.decodeFile(filePath);
+							bitmap = BitmapFactory.decodeFile(filePath);
 						} catch (Exception e) {
 							throw new ParsingException("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
 						}
 					}
-					Texture textureConfig = new Texture(TextureType.DIFFUSE);
-					textureConfig.setBitmap(texture);
-					o.getMaterial().addTexture(textureConfig);
+					o.getMaterial().addTexture(new Texture(textureName, bitmap));
 					return;
 				}
 			}

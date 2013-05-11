@@ -15,9 +15,8 @@ import rajawali.animation.mesh.IAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.Texture;
-import rajawali.materials.Texture.TextureType;
-import rajawali.materials.TextureManager;
+import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
@@ -99,9 +98,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 			mObject.setColor(0xffffffff);
 			if (mTexture != null)
 			{
-				Texture texture = new Texture(TextureType.DIFFUSE);
-				texture.setBitmap(mTexture);				
-				material.addTexture(mTextureManager.addTexture(texture, mTexture));
+				material.addTexture(new Texture(mCurrentTextureName, mTexture));
 			}
 			stream.close();
 		} catch (Exception e) {

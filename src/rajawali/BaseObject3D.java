@@ -11,7 +11,7 @@ import rajawali.bounds.IBoundingVolume;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;

@@ -6,9 +6,8 @@ import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.Texture;
-import rajawali.materials.Texture.TextureType;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.FrameBufferTexture;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -22,7 +21,7 @@ public class ObjectColorPicker implements IObjectPicker {
 	private RajawaliRenderer mRenderer;
 	private int mFrameBufferHandle = -1;
 	private int mDepthBufferHandle = -1;
-	private Texture mTexture;
+	private FrameBufferTexture mTexture;
 	private boolean mIsInitialized = false;
 	private ColorPickerMaterial mPickerMaterial;
 	private OnObjectPickedListener mObjectPickedListener;
@@ -34,7 +33,7 @@ public class ObjectColorPicker implements IObjectPicker {
 
 	public void initialize() throws TextureManagerException {
 		int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		mTexture = new Texture(TextureType.FRAME_BUFFER);
+		mTexture = new FrameBufferTexture("colorPickerTexture");
 		mTexture.setWidth(size);
 		mTexture.setHeight(size);
 		mRenderer.getTextureManager().addTexture(mTexture);

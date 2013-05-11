@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.materials.TextureManager;
+import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;

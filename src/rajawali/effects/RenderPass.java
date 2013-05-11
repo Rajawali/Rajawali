@@ -1,11 +1,10 @@
 package rajawali.effects;
 
-import android.graphics.Color;
-import android.opengl.GLES20;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
-import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
+import android.graphics.Color;
+import android.opengl.GLES20;
 
 public class RenderPass extends APass {
 	protected RajawaliScene mScene;
@@ -22,7 +21,7 @@ public class RenderPass extends APass {
 		mNeedsSwap = false;
 	}
 	
-	public void render(RajawaliRenderer renderer, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) throws ObjectColorPickerException {
+	public void render(RajawaliRenderer renderer, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
 		// Set the background color with that of current render pass.
 		if (mClearColor != 0x00000000) {
 			mOldClearColor = renderer.getCurrentScene().getBackgroundColor();

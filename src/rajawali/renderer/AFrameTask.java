@@ -30,12 +30,12 @@ public abstract class AFrameTask {
 	 * REPLACE - Replaces an object in the related list 
 	 * at the specified index.</p>
 	 */
-	public enum TASK {NONE, ADD, ADD_ALL, REMOVE, REMOVE_ALL, REPLACE};
+	public enum TASK {NONE, ADD, ADD_ALL, REMOVE, REMOVE_ALL, REPLACE, RESET, RELOAD};
 	
 	/**
 	 * The type of object this task is acting on.
 	 */
-	public enum TYPE {ANIMATION, CAMERA, LIGHT, OBJECT3D, PLUGIN, TEXTURE, SCENE};
+	public enum TYPE {ANIMATION, CAMERA, LIGHT, OBJECT3D, PLUGIN, TEXTURE, SCENE, TEXTURE_MANAGER};
 	
 	private AFrameTask.TASK mFrameTask = AFrameTask.TASK.NONE; //The task to perform
 	private int mFrameTaskIndex = UNUSED_INDEX; //The index to replace, if relevant

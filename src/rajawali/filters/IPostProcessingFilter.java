@@ -1,10 +1,10 @@
 package rajawali.filters;
 
-import rajawali.materials.Texture;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 
 
 public interface IPostProcessingFilter {
-	public void addTexture(Texture textureInfo) throws TextureManagerException;
+	public void addTexture(ATexture texture) throws TextureManagerException;
 	public boolean usesDepthBuffer();
 }

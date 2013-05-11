@@ -1,7 +1,7 @@
 package rajawali.parser;
 
 import rajawali.BaseObject3D;
-import rajawali.materials.TextureManager;
+import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import android.content.res.Resources;
 

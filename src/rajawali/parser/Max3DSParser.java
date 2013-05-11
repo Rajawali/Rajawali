@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;

@@ -6,7 +6,7 @@ import android.os.SystemClock;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.SerializedObject3D;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
 

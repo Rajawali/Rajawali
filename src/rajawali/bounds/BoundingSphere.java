@@ -6,7 +6,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.primitives.Sphere;
 import android.opengl.GLES20;

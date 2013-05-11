@@ -14,7 +14,7 @@ import rajawali.Geometry3D;
 import rajawali.SerializedObject3D;
 import rajawali.animation.mesh.VertexAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationObject3D;
-import rajawali.materials.TextureManager;
+import rajawali.materials.textures.TextureManager;
 import rajawali.parser.ObjParser;
 import android.content.Context;
 import android.os.Environment;

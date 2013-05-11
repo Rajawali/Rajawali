@@ -3,20 +3,15 @@
  */
 package rajawali.renderer.plugins;
 
-import java.nio.ByteBuffer;
 import java.util.Stack;
 
 import rajawali.Camera;
 import rajawali.extras.LensFlare;
 import rajawali.extras.LensFlare.FlareInfo;
-import rajawali.materials.Texture;
-import rajawali.materials.Texture.FilterType;
-import rajawali.materials.Texture.TextureType;
-import rajawali.materials.Texture.WrapType;
+import rajawali.materials.textures.ASingleTexture;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
 import rajawali.renderer.RajawaliRenderer;
-import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
 
@@ -198,8 +193,8 @@ public final class LensFlarePlugin extends Plugin {
 	private int muOcclusionMapTextureHandle;
 	private int muDebugModeHandle; // UNCOMMENT TO USE DEBUG MODE
 	
-	private Texture mMapTexture;
-	private Texture mOcclusionMapTexture;
+	private ASingleTexture mMapTexture;
+	private ASingleTexture mOcclusionMapTexture;
 	
 	public LensFlarePlugin(RajawaliRenderer renderer) {
 		super(renderer);

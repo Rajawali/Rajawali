@@ -2,7 +2,7 @@ package rajawali.extras;
 
 import java.util.ArrayList;
 
-import rajawali.materials.Texture;
+import rajawali.materials.textures.ASingleTexture;
 import rajawali.math.Number3D;
 
 /**
@@ -16,22 +16,22 @@ public class LensFlare {
 	protected Number3D mPosition;
 	protected boolean mOccluded;
 	
-	public LensFlare(Texture texture, int size, float distance, Number3D color) {
+	public LensFlare(ASingleTexture texture, int size, float distance, Number3D color) {
 		mLensFlares = new ArrayList<FlareInfo>();
 		mPositionScreen = new Number3D();
 		mPosition = new Number3D();
 		addLensFlare(texture, size, distance, color);
 	}
 	
-	public void addLensFlare(Texture texture) {
+	public void addLensFlare(ASingleTexture texture) {
 		addLensFlare(texture, -1, 0, new Number3D(1, 1, 1));
 	}
 	
-	public void addLensFlare(Texture texture, int size, float distance, Number3D color) {
+	public void addLensFlare(ASingleTexture texture, int size, float distance, Number3D color) {
 		addLensFlare(texture, size, distance, color, 1);
 	}
 	
-	public void addLensFlare(Texture texture, int size, float distance, Number3D color, float opacity) {
+	public void addLensFlare(ASingleTexture texture, int size, float distance, Number3D color, float opacity) {
 		distance = Math.min(distance, Math.max(0, distance));
 		mLensFlares.add(new FlareInfo(texture, size, distance, new Number3D(), color, opacity));
 	}
@@ -86,7 +86,7 @@ public class LensFlare {
 	}
 	
 	public class FlareInfo {
-		protected Texture mTexture;
+		protected ASingleTexture mTexture;
 		protected int mSize;
 		protected float mDistance;
 		protected Number3D mColor;
@@ -96,7 +96,7 @@ public class LensFlare {
 		protected float mRotation;
 		protected float mWantedRotation;
 		
-		public FlareInfo(Texture texture, int size, float distance, 
+		public FlareInfo(ASingleTexture texture, int size, float distance, 
 				Number3D screenPosition, Number3D color, float opacity) {
 			mTexture = texture;
 			mSize = size;
@@ -137,7 +137,7 @@ public class LensFlare {
 			return mSize;
 		}
 		
-		public Texture getTexture() {
+		public ASingleTexture getTexture() {
 			return mTexture;
 		}
 		
@@ -191,7 +191,7 @@ public class LensFlare {
 			mSize = size;
 		}
 		
-		public void setTexture(Texture texture) {
+		public void setTexture(ASingleTexture texture) {
 			mTexture = texture;
 		}
 

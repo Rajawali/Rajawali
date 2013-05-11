@@ -16,10 +16,10 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.BumpmapMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
-import rajawali.materials.Texture;
-import rajawali.materials.Texture.TextureType;
-import rajawali.materials.TextureManager;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.BumpmapTexture;
+import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import rajawali.wallpaper.Wallpaper;
@@ -446,27 +446,19 @@ public class ObjParser extends AMeshParser {
 			if(hasTexture) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.diffuseTexture), "drawable", mResourcePackage);
-					Texture texture = new Texture(TextureType.DIFFUSE);
-					texture.setBitmap(BitmapFactory.decodeResource(mResources, identifier));
-					mat.addTexture(texture);
+					mat.addTexture(new Texture(identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
-					Texture texture = new Texture(TextureType.DIFFUSE);
-					texture.setBitmap(BitmapFactory.decodeFile(filePath));
-					mat.addTexture(texture);
+					mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), BitmapFactory.decodeFile(filePath)));
 				}
 			}
 			if(hasBump) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.bumpTexture), "drawable", mResourcePackage);
-					Texture textureConfig = new Texture(TextureType.BUMP);
-					textureConfig.setBitmap(BitmapFactory.decodeResource(mResources, identifier));
-					mat.addTexture(textureConfig);
+					mat.addTexture(new BumpmapTexture(identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
-					Texture textureConfig = new Texture(TextureType.BUMP);
-					textureConfig.setBitmap(BitmapFactory.decodeFile(filePath));
-					mat.addTexture(textureConfig);
+					mat.addTexture(new BumpmapTexture(getOnlyFileName(matDef.bumpTexture), BitmapFactory.decodeFile(filePath)));
 				}
 			}
 		}

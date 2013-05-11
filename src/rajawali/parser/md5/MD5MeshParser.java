@@ -14,17 +14,15 @@ import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.SkeletonJoint;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.Texture;
-import rajawali.materials.Texture.TextureType;
-import rajawali.materials.TextureManager;
-import rajawali.materials.TextureManager.TextureManagerException;
+import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager;
+import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.IAnimatedMeshParser;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
@@ -418,9 +416,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 					RajLog.e("Couldn't find texture " + mesh.shader);
 					break;
 				}
-				Texture texture = new Texture(TextureType.DIFFUSE);
-				texture.setBitmap(BitmapFactory.decodeResource(mResources, identifier));
-				mat.addTexture(texture);
+				mat.addTexture(new Texture(identifier));
 			}
 			
 			mRootObject.addChild(o);
