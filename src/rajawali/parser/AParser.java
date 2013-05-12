@@ -42,7 +42,8 @@ public abstract class AParser implements IParser {
 		if(mFile == null && mFileOnSDCard != null)
 			mFile = new File(Environment.getExternalStorageDirectory(), mFileOnSDCard);
 		
-		RajLog.d("Parsing: " + mFile.getAbsolutePath());
+		if (mFile != null)
+			RajLog.d("Parsing: " + mFile.getAbsolutePath());
 		return this;
 	}
 	
