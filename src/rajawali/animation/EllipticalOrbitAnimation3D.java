@@ -26,7 +26,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	protected Number3D mNormal;
 	protected double mEccentricity;
 	protected OrbitDirection mDirection;
-	protected int mAngle;
+	protected double mAngle;
 	
 	/**
 	 * Defines an elliptical orbit around a point.
@@ -36,7 +36,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param direction Direction of the orbit.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity, int angle,
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity, double angle,
 			OrbitDirection direction) {
 		super();
 		mFocalPoint = focalPoint;
@@ -55,7 +55,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param angle Degrees to rotate.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity, int angle) {
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity, double angle) {
 		super();
 		mFocalPoint = focalPoint;
 		mPeriapsis = periapsis;
@@ -63,8 +63,8 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		mEccentricity = eccentricity;
 		mAngle = angle;
 		
-		if (mAngle<0) mDirection = OrbitDirection.CLOCKWISE; else mDirection = OrbitDirection.COUNTERCLOCKWISE; 
-		mAngle=Math.abs(mAngle);
+		mDirection = (mAngle < 0) ? OrbitDirection.CLOCKWISE : OrbitDirection.COUNTERCLOCKWISE; 
+		mAngle = Math.abs(mAngle);
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param angle Degrees to rotate.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, int angle) {
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, double angle) {
 		this(focalPoint, periapsis, Number3D.getAxisVector(Axis.Y), eccentricity, angle);
 	}
 	
@@ -85,7 +85,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param direction Direction of the orbit.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, int angle,
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, double angle,
 			OrbitDirection direction) {
 		this(focalPoint, periapsis, Number3D.getAxisVector(Axis.Y), eccentricity, angle, direction);
 	}
