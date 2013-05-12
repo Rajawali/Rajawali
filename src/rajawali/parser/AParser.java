@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Locale;
 
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.RajLog;
 import android.content.res.Resources;
 import android.os.Environment;
 
@@ -32,11 +33,16 @@ public abstract class AParser implements IParser {
 		mResourceId = resourceId;
 	}
 	
+	public AParser(RajawaliRenderer renderer, File file) {
+		this(renderer.getContext().getResources(), 0);
+		mFile = file;
+	}
+	
 	public IParser parse() throws ParsingException {
-		if(mFileOnSDCard != null) {
-			File sdcard = Environment.getExternalStorageDirectory();
-			mFile = new File(sdcard, mFileOnSDCard);
-		}
+		if(mFile == null && mFileOnSDCard != null)
+			mFile = new File(Environment.getExternalStorageDirectory(), mFileOnSDCard);
+		
+		RajLog.d("Parsing: " + mFile.getAbsolutePath());
 		return this;
 	}
 	
