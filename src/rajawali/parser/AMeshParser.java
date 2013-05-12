@@ -1,5 +1,7 @@
 package rajawali.parser;
 
+import java.io.File;
+
 import rajawali.BaseObject3D;
 import rajawali.materials.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
@@ -18,6 +20,12 @@ public abstract class AMeshParser extends AParser implements IMeshParser {
 	public AMeshParser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, resourceId);
 		mTextureManager = textureManager;
+		mRootObject = new BaseObject3D();
+	}
+	
+	
+	public AMeshParser(RajawaliRenderer renderer, File file) {
+		super(renderer, file);
 		mRootObject = new BaseObject3D();
 	}
 	
