@@ -43,6 +43,10 @@ public class StlParser extends AMeshParser {
 	public StlParser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
+	
+	public StlParser(RajawaliRenderer renderer, File file) {
+		super(renderer, file);
+	}
 
 	@Override
 	public AMeshParser parse() throws ParsingException {
