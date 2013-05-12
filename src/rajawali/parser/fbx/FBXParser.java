@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
-import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.materials.AMaterial;
@@ -32,7 +31,6 @@ import rajawali.parser.fbx.FBXValues.FBXMatrix;
 import rajawali.parser.fbx.FBXValues.Objects.Material;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
 import rajawali.parser.fbx.FBXValues.Objects.Texture;
-import rajawali.parser.fbx.FBXValues.Version5.FogOptions;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap;
@@ -73,14 +71,20 @@ public class FBXParser extends AMeshParser {
 	
 	public FBXParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
-		mRenderer = renderer;
-		mObjStack = new Stack<Object>();
-		mFbx = new FBXValues();
-		mObjStack.add(mFbx);
+		init(renderer);
 	}
 	
 	public FBXParser(RajawaliRenderer renderer, int resourceId) {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
+		init(renderer);
+	}
+	
+	public FBXParser(RajawaliRenderer renderer, File file) {
+		super(renderer, file);
+		init(renderer);
+	}
+	
+	private final void init(RajawaliRenderer renderer) {
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
 		mFbx = new FBXValues();
