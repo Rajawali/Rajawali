@@ -13,9 +13,9 @@ import rajawali.animation.Animation3D;
 import rajawali.materials.SimpleMaterial;
 import rajawali.materials.SkyboxMaterial;
 import rajawali.materials.textures.ATexture;
-import rajawali.materials.textures.CubemapTexture;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
@@ -429,9 +429,9 @@ public class RajawaliScene extends AFrameTask {
 	 * Creates a skybox with the specified single texture.
 	 * 
 	 * @param resourceId int Resouce id of the skybox texture.
-	 * @throws TextureManagerException 
+	 * @throws TextureException 
 	 */
-	public void setSkybox(int resourceId) throws TextureManagerException {
+	public void setSkybox(int resourceId) throws TextureException {
 		synchronized (mCameras) {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
 				mCameras.get(i).setFarPlane(1000);
@@ -455,9 +455,9 @@ public class RajawaliScene extends AFrameTask {
 	 * @param left int Resource id for the left face.
 	 * @param up int Resource id for the up face.
 	 * @param down int Resource id for the down face.
-	 * @throws TextureManagerException 
+	 * @throws TextureException 
 	 */
-	public void setSkybox(int front, int right, int back, int left, int up, int down) throws TextureManagerException {
+	public void setSkybox(int front, int right, int back, int left, int up, int down) throws TextureException {
 		synchronized (mCameras) {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
 				mCameras.get(i).setFarPlane(1000);
@@ -467,7 +467,7 @@ public class RajawaliScene extends AFrameTask {
 			Resources res = mRenderer.getContext().getResources();
 			int[] resourceIds = new int[] { front, right, back, left, up, down };
 			
-			mSkyboxTexture = new CubemapTexture(res.getResourceEntryName(front), resourceIds);
+			mSkyboxTexture = new CubeMapTexture(res.getResourceEntryName(front), resourceIds);
 			SkyboxMaterial mat = new SkyboxMaterial();
 			mat.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(mat);
@@ -501,12 +501,12 @@ public class RajawaliScene extends AFrameTask {
 	 * @throws Exception 
 	 */
 	public void updateSkybox(int front, int right, int back, int left, int up, int down) throws Exception {
-		if(mSkyboxTexture.getClass() != CubemapTexture.class)
+		if(mSkyboxTexture.getClass() != CubeMapTexture.class)
 			throw new Exception("The skybox texture cannot be updated. It is not a cube map texture.");
 
 		int[] resourceIds = new int[] { front, right, back, left, up, down };
 
-		CubemapTexture cubemap = (CubemapTexture)mSkyboxTexture;
+		CubeMapTexture cubemap = (CubeMapTexture)mSkyboxTexture;
 		cubemap.setResourceIds(resourceIds);
 		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}

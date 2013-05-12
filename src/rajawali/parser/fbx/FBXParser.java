@@ -21,8 +21,8 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
+import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.math.Vector2D;
 import rajawali.parser.AMeshParser;
@@ -164,7 +164,7 @@ public class FBXParser extends AMeshParser {
 			for(int i=0; i<models.size(); ++i) {
 				buildMesh(models.get(i), sceneLights);
 			}
-		} catch(TextureManagerException tme) {
+		} catch(TextureException tme) {
 			throw new ParsingException(tme);
 		}
 		
@@ -196,7 +196,7 @@ public class FBXParser extends AMeshParser {
 		return this;
 	}
 	
-	private void buildMesh(Model model, Stack<ALight> lights) throws TextureManagerException, ParsingException {
+	private void buildMesh(Model model, Stack<ALight> lights) throws TextureException, ParsingException {
 		BaseObject3D o = new BaseObject3D(model.name);
 		boolean hasUVs = model.layerElementUV.uVIndex != null;
 		
@@ -372,7 +372,7 @@ public class FBXParser extends AMeshParser {
 	    return ret;
 	}
 	
-	private void setMeshTextures(BaseObject3D o, String name) throws TextureManagerException, ParsingException {
+	private void setMeshTextures(BaseObject3D o, String name) throws TextureException, ParsingException {
 		Stack<FBXValues.Objects.Texture> textures = mFbx.objects.textures;
 		Stack<Connect> connections = mFbx.connections.connections;
 		int numTex = textures.size();

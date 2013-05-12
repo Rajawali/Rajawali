@@ -22,6 +22,7 @@ import rajawali.materials.textures.TextureManager;
 import rajawali.math.Number3D;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.FPSUpdateListener;
+import rajawali.util.ObjectColorPicker;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
@@ -48,7 +49,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected int mViewportWidth, mViewportHeight; //Height and width of GL viewport
 	protected WallpaperService.Engine mWallpaperEngine; //Concrete wallpaper instance
 	protected GLSurfaceView mSurfaceView; //The rendering surface
-	protected GL10 mGL10; // Reference to GL10 context. This is used to dump system information
+	public static GL10 mGL10; // Reference to GL10 context. This is used to dump system information
 	
 	protected TextureManager mTextureManager; //Texture manager for ALL textures across ALL scenes.
 	
@@ -547,7 +548,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onSurfaceDestroyed() {
 		stopRendering();
 		if (mTextureManager != null)
-			mTextureManager.reset();
+			mTextureManager.taskReset();
 		synchronized (mScenes) {
 			for (int i = 0, j = mScenes.size(); i < j; ++i)
 				mScenes.get(i).destroyScene();
@@ -684,6 +685,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 					break;
 				case RESET:
 					handleResetTask(taskObject);
+					break;
+				case INITIALIZE:
+					handleInitializeTask(taskObject);
 					break;
 				}
 				//Retrieve the next task
@@ -832,6 +836,21 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 	
+	/**
+	 * Internal method for handling reset tasks.
+	 * 
+	 * @param task {@link AFrameTask} object to process.
+	 */
+	private void handleInitializeTask(AFrameTask task) {
+		AFrameTask.TYPE type = task.getFrameTaskType();
+		switch (type) {
+		case COLOR_PICKER:
+			((ObjectColorPicker)task).initialize(); 
+		default:
+			break;
+		}
+	}
+
 	/**
 	 * Internal method for replacing a {@link RajawaliScene} object. If index is
 	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
@@ -1080,6 +1099,19 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		return addTaskToQueue(task);
 	}
+	
+	/**
+	 * Queue an initialization task. The added object will be initialized.
+	 * 
+	 * @param task {@link AFrameTask} to be added.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueInitializeTask(AFrameTask task) {
+		task.setTask(AFrameTask.TASK.INITIALIZE);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+
 	
 	public void accept(INodeVisitor visitor) { //TODO: Handle
 		visitor.apply(this);

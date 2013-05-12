@@ -1,5 +1,10 @@
 package rajawali.materials.textures;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import rajawali.materials.AMaterial;
 import rajawali.renderer.AFrameTask;
 import android.graphics.Bitmap.Config;
 
@@ -42,11 +47,11 @@ public abstract class ATexture extends AFrameTask {
 	/**
 	 * The texture id that is used by Rajawali
 	 */
-	protected int mTextureId;
+	protected int mTextureId = -1;
 	/**
 	 * The uniform handle represents the sampler location in the shader program
 	 */
-	protected int mUniformHandle;
+	protected int mUniformHandle = -1;
 	/**
 	 * Texture width
 	 */
@@ -95,6 +100,10 @@ public abstract class ATexture extends AFrameTask {
 	 * (color depth) as well as the ability to display transparent/translucent colors. See {@link Config}.
 	 */
 	protected Config mBitmapConfig;
+	/**
+	 * A list of materials that use this texture. 
+	 */
+	private List<AMaterial> mMaterialsUsingTexture;
 	
 	/**
 	 * Creates a new ATexture instance with the specified texture type
@@ -103,15 +112,18 @@ public abstract class ATexture extends AFrameTask {
 	 */
 	public ATexture(TextureType textureType, String textureName)
 	{
+		this();
 		mTextureType = textureType;
 		mTextureName = textureName;
 		mMipmap = false;
 		mShouldRecycle = false;
-		mWrapType = WrapType.CLAMP;
+		mWrapType = WrapType.REPEAT;
 		mFilterType = FilterType.LINEAR;
 	}
 	
-	protected ATexture() {}
+	protected ATexture() {
+		mMaterialsUsingTexture = Collections.synchronizedList(new CopyOnWriteArrayList<AMaterial>());
+	}
 
 	/**
 	 * Creates a new TextureConfig instance and copies all properties from another TextureConfig object.
@@ -341,11 +353,31 @@ public abstract class ATexture extends AFrameTask {
 		return TYPE.TEXTURE;
 	}
 	
+	public boolean registerMaterial(AMaterial material) {
+		if(isMaterialRegistered(material)) return false;
+		mMaterialsUsingTexture.add(material);
+		return true;
+	}
+	
+	public boolean unregisterMaterial(AMaterial material) {
+		return mMaterialsUsingTexture.remove(material);
+	}
+	
+	private boolean isMaterialRegistered(AMaterial material) {
+		int count = mMaterialsUsingTexture.size();
+		for(int i=0; i<count; i++)
+		{
+			if(mMaterialsUsingTexture.get(i) == material)
+				return true;
+		}
+		return false;
+	}
+	
 	abstract void add() throws TextureException;
 	abstract void remove() throws TextureException;
 	abstract void replace() throws TextureException;
 	abstract void reset() throws TextureException;
-	
+
 	public static class TextureException extends Exception {
 		private static final long serialVersionUID = -4218033240897223177L;
 

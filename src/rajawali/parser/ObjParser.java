@@ -16,10 +16,10 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.BumpmapMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
+import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.BumpmapTexture;
 import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import rajawali.wallpaper.Wallpaper;
@@ -280,7 +280,7 @@ public class ObjParser extends AMeshParser {
 			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
 			try {
 				matLib.setMaterial(oid.targetObj, oid.materialName);
-			} catch(TextureManagerException tme) {
+			} catch(TextureException tme) {
 				throw new ParsingException(tme);
 			}
 			mRootObject.addChild(oid.targetObj);
@@ -410,7 +410,7 @@ public class ObjParser extends AMeshParser {
 			}
 		}
 		
-		public void setMaterial(BaseObject3D object, String materialName) throws TextureManagerException {
+		public void setMaterial(BaseObject3D object, String materialName) throws TextureException {
 			MaterialDef matDef = null;
 			
 			for(int i=0; i<mMaterials.size(); ++i) {

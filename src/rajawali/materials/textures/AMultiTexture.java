@@ -60,12 +60,12 @@ public abstract class AMultiTexture extends ATexture {
 	{
 		mResourceIds = resourceIds;
 		int numResources = resourceIds.length;
-		Bitmap[] bitmaps = new Bitmap[numResources];
+		mBitmaps = new Bitmap[numResources];
 		Context context = TextureManager.getInstance().getContext();
 
 		for(int i=0; i<numResources; i++)
 		{
-			bitmaps[i] = BitmapFactory.decodeResource(context.getResources(), resourceIds[i]); 
+			mBitmaps[i] = BitmapFactory.decodeResource(context.getResources(), resourceIds[i]); 
 		}
 	}
 	

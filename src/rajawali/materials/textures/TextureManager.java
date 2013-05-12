@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.RajLog;
 import android.content.Context;
 import android.opengl.GLES20;
 
@@ -15,14 +16,13 @@ import android.opengl.GLES20;
  * 
  */
 public final class TextureManager extends AFrameTask {
+
 	private static TextureManager instance = null;
 
 	private Context mContext;
 	private RajawaliRenderer mRenderer;
 
 	private List<ATexture> mTextureList;
-
-	//private static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 
 	private TextureManager()
 	{
@@ -31,13 +31,13 @@ public final class TextureManager extends AFrameTask {
 
 	public static TextureManager getInstance()
 	{
-		if(instance == null)
+		if (instance == null)
 		{
 			instance = new TextureManager();
 		}
 		return instance;
 	}
-	
+
 	public ATexture addTexture(ATexture texture) {
 		mRenderer.queueAddTask(texture);
 		return texture;
@@ -45,13 +45,37 @@ public final class TextureManager extends AFrameTask {
 
 	public void taskAdd(ATexture texture)
 	{
+		taskAdd(texture, false);
+	}
+
+	private void taskAdd(ATexture texture, boolean isUpdatingAfterContextWasLost)
+	{
+		if (!isUpdatingAfterContextWasLost)
+		{
+			// -- check if texture exists already
+			int count = mTextureList.size();
+			for (int i = 0; i < count; i++)
+			{
+				if (mTextureList.get(i).getTextureName().equals(texture.getTextureName()))
+				{
+					if(mTextureList.get(i) != texture)
+						texture.setFrom(mTextureList.get(i));
+					else
+						return;
+				}
+			}
+		}
+
 		try {
 			texture.add();
 		} catch (TextureException e) {
 			throw new RuntimeException(e);
 		}
-		// TODO: Check texture name
-		mTextureList.add(texture);
+
+		if (!isUpdatingAfterContextWasLost)
+			mTextureList.add(texture);
+
+		RajLog.i("texture list size: " + mTextureList.size());
 	}
 
 	public void replaceTexture(ATexture texture)
@@ -63,11 +87,11 @@ public final class TextureManager extends AFrameTask {
 	{
 		try {
 			texture.replace();
-		} catch(TextureException e) {
+		} catch (TextureException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void removeTexture(ATexture texture) {
 		mRenderer.queueRemoveTask(texture);
 	}
@@ -86,7 +110,7 @@ public final class TextureManager extends AFrameTask {
 	{
 		try {
 			texture.remove();
-		} catch(TextureException e) {
+		} catch (TextureException e) {
 			throw new RuntimeException(e);
 		}
 		mTextureList.remove(texture);
@@ -96,41 +120,42 @@ public final class TextureManager extends AFrameTask {
 	{
 		mRenderer.queueReloadTask(this);
 	}
-	
+
 	public void taskReload()
 	{
 		int len = mTextureList.size();
-		for(int i=0; i<len; i++)
+		for (int i = 0; i < len; i++)
 		{
 			ATexture texture = mTextureList.get(i);
-			taskAdd(texture);
+			taskAdd(texture, true);
 		}
 	}
 
 	public void reset()
-	{
+	{RajLog.i("Resetting texture manager");
 		mRenderer.queueResetTask(this);
 	}
 
 	public void taskReset()
 	{
+		RajLog.i("Resetting texture manager part 2");
 		try {
 			int count = mTextureList.size();
 			int[] textures = new int[count];
-			for(int i=0; i<count; i++)
+			for (int i = 0; i < count; i++)
 			{
 				ATexture texture = mTextureList.get(i);
 				texture.reset();
 				textures[i] = texture.getTextureId();
 			}
-			
+
 			GLES20.glDeleteTextures(count, textures, 0);
 			mTextureList.clear();
-		} catch(TextureException e) {
+		} catch (TextureException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void validateTextures()
 	{
 		// TODO: validate
@@ -144,12 +169,12 @@ public final class TextureManager extends AFrameTask {
 	public int getNumTextures() {
 		return mTextureList.size();
 	}
-	
+
 	public void setContext(Context context)
 	{
 		mContext = context;
 	}
-	
+
 	public Context getContext()
 	{
 		return mContext;
@@ -159,18 +184,19 @@ public final class TextureManager extends AFrameTask {
 	{
 		mRenderer = renderer;
 	}
-	
+
 	public RajawaliRenderer getRenderer()
 	{
 		return mRenderer;
 	}
-	
+
 	public TYPE getFrameTaskType() {
 		return TYPE.TEXTURE_MANAGER;
-	}		
-	
+	}
+
 	public static class TextureManagerException extends Exception
 	{
+
 		private static final long serialVersionUID = 2046770147250128945L;
 
 		public TextureManagerException() {

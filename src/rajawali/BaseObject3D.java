@@ -11,7 +11,7 @@ import rajawali.bounds.IBoundingVolume;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
+import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.math.Number3D;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
@@ -580,8 +580,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mGeometry;
 	}
 
-	public void setMaterial(AMaterial material) throws TextureManagerException {
-		setMaterial(material, true);
+	public void setMaterial(AMaterial material) {
+		try {
+			setMaterial(material, true);
+		} catch(TextureException e) {
+			throw new RuntimeException(e);
+		}
 		material.setLights(mLights);
 	}
 
@@ -589,7 +593,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mMaterial;
 	}
 
-	public void setMaterial(AMaterial material, boolean copyTextures) throws TextureManagerException {
+	public void setMaterial(AMaterial material, boolean copyTextures) throws TextureException {
 		if (mMaterial != null && copyTextures)
 			mMaterial.copyTexturesTo(material);
 		else if (mMaterial != null && !copyTextures)
@@ -666,7 +670,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		try {
 			if (copyMaterial)
 				clone.setMaterial(mMaterial, false);
-		} catch(TextureManagerException tme) {
+		} catch(TextureException tme) {
 			tme.printStackTrace();
 		}
 		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT

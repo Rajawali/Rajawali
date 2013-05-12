@@ -39,6 +39,7 @@ public class FrameBufferTexture extends ATexture {
         	GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
 			GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, mWidth, mHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+			setTextureId(textureId);
 		}
 	}
 

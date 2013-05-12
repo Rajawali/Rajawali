@@ -11,9 +11,9 @@ import java.util.Stack;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.TextureManager;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -177,7 +177,10 @@ public abstract class AMaterial {
 		
 		mProgramCreated = true;
 
-		checkTextureHandles();
+		int count = mTextureList.size();
+		for(int i=0; i<count; i++)
+			setTextureParameters(mTextureList.get(i), false);
+//		checkTextureHandles();
 	}
 
 	protected int loadShader(int shaderType, String source) {
@@ -259,7 +262,7 @@ public abstract class AMaterial {
 			reload();
 		}
 		GLES20.glUseProgram(mProgram);
-		if(checkValidHandle(muAlphaMaskingThresholdHandle, "alpha masking threshold"))
+		if(mAlphaMaskingEnabled == true && checkValidHandle(muAlphaMaskingThresholdHandle, "alpha masking threshold"))
 			GLES20.glUniform1f(muAlphaMaskingThresholdHandle, mAlphaMaskingThreshold);
 	}
 
@@ -296,29 +299,29 @@ public abstract class AMaterial {
 		mTextureList = textureList;
 	}
 
-	public void addTexture(ATexture texture) throws TextureManagerException {
+	public void addTexture(ATexture texture) throws TextureException {
+		if(mTextureList.indexOf(texture) > -1) return;
+		if(mTextureList.size() + 1 > mMaxTextures) {
+			throw new TextureException("Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
+		}
+		mTextureList.add(texture);
+		mNumTextures = mTextureList.size();
 		TextureManager.getInstance().addTexture(texture);
-		addTexture(texture, false);
-	}
-	
-	public void addTexture(ATexture texture, boolean isExistingTexture) {
-		addTexture(texture, isExistingTexture, false);
+		texture.registerMaterial(this);
+		if(mProgramCreated)
+			setTextureParameters(texture, false);
 	}
 	
 	public void removeTexture(ATexture texture) {
 		mTextureList.remove(texture);
+		texture.unregisterMaterial(this);
 	}
 	
-	public void addTexture(ATexture texture, boolean isExistingTexture, boolean reload) {
-		// -- check if this texture is already in the list
-		if(mTextureList.indexOf(texture) > -1 && !reload) return;		
-
-		if(mTextureList.size() > mMaxTextures) {
-			RajLog.e("[" +getClass().getCanonicalName()+ "] Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
-		}
+	private void setTextureParameters(ATexture texture, boolean isExistingTexture) {
+		if(texture.getUniformHandle() > -1) return;
 		
-		String textureName = "uTexture";
-
+		String textureName = "uTexture";		
+		
 		switch (texture.getTextureType()) {
 		case DIFFUSE:
 		case VIDEO_TEXTURE:
@@ -365,7 +368,7 @@ public abstract class AMaterial {
 		// -- if there are already diffuse textures in the list then append a
 		//    number (ie the second texture in the list will be called 
 		//    "uDiffuseTexture1", the third "uDiffuseTexture2", etc.
-		if(numDiffuse > 0 && texture.getTextureType() == TextureType.DIFFUSE)
+		if(numDiffuse > 1 && texture.getTextureType() == TextureType.DIFFUSE)
 			textureName += numDiffuse;
 
 		if(isExistingTexture)
@@ -380,16 +383,9 @@ public abstract class AMaterial {
 			texture.setUniformHandle(textureHandle);
 		}
 		
-		if(!isExistingTexture)
-			texture.setTextureName(textureName);
-		
 		if(texture.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
-		if(!isExistingTexture) {
-			mTextureList.add(texture);
-			mNumTextures++;
-		}
 	}
-	
+/*	
 	protected void checkTextureHandles() {
 		int num = mTextureList.size();
 		for(int i=0; i<num; ++i) {
@@ -398,7 +394,7 @@ public abstract class AMaterial {
 				addTexture(textureConfig, true, true);
 			}
 		}
-	}
+	}*/
 	
 	public void setVertices(final int vertexBufferHandle) {
 		if(checkValidHandle(vertexBufferHandle, "vertex data")){
@@ -554,7 +550,7 @@ public abstract class AMaterial {
 		return mModelViewMatrix;
 	}
 
-	public void copyTexturesTo(AMaterial material) throws TextureManagerException {
+	public void copyTexturesTo(AMaterial material) throws TextureException {
 		int num = mTextureList.size();
 
 		for (int i = 0; i < num; ++i)

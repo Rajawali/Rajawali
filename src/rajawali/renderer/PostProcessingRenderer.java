@@ -3,8 +3,8 @@ package rajawali.renderer;
 import rajawali.Camera2D;
 import rajawali.filters.IPostProcessingFilter;
 import rajawali.materials.AMaterial;
+import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.FrameBufferTexture;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.MathUtil;
 import rajawali.primitives.Plane;
 import rajawali.util.RajLog;
@@ -51,7 +51,7 @@ public final class PostProcessingRenderer {
 		mQuality = quality;
 	}
 	
-	private void create() throws TextureManagerException {
+	private void create() throws TextureException {
 		int[] frameBuffers = new int[1];
 		GLES20.glGenFramebuffers(1, frameBuffers, 0);
 		mFrameBufferHandle = frameBuffers[0];
@@ -99,7 +99,7 @@ public final class PostProcessingRenderer {
 		try {
 			if(!mInitialized)
 				create();
-		} catch(TextureManagerException tme) {
+		} catch(TextureException tme) {
 			tme.printStackTrace();
 		}
 		GLES20.glViewport(0, 0, mTextureSize, mTextureSize);

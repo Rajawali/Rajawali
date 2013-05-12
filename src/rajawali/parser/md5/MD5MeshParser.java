@@ -14,9 +14,9 @@ import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.SkeletonJoint;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
 import rajawali.math.Number3D;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.IAnimatedMeshParser;
@@ -117,7 +117,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			buildMeshes();
 			calculateNormals();
 			createObjects();
-		} catch(TextureManagerException tme) {
+		} catch(TextureException tme) {
 			try {
 				buffer.close();
 			} catch(Exception ex) {}
@@ -381,7 +381,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 		}
 	}
 	
-	private void createObjects() throws TextureManagerException {
+	private void createObjects() throws TextureException {
 		AnimationSkeleton root = new AnimationSkeleton();
 		root.uBoneMatrix = mBindPoseMatrix;
 		root.mInverseBindPoseMatrix = mInverseBindPoseMatrix;

@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import rajawali.BaseObject3D;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.textures.FrameBufferTexture;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
+import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
-public class ObjectColorPicker implements IObjectPicker {
+public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
 	protected final int FLOAT_SIZE_BYTES = 4;
 
@@ -29,14 +29,16 @@ public class ObjectColorPicker implements IObjectPicker {
 	public ObjectColorPicker(RajawaliRenderer renderer) {
 		mObjectLookup = new ArrayList<BaseObject3D>();
 		mRenderer = renderer;
+		mRenderer.queueInitializeTask(this);
 	}
 
-	public void initialize() throws TextureManagerException {
+	public void initialize() {
 		int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
 		mTexture = new FrameBufferTexture("colorPickerTexture");
 		mTexture.setWidth(size);
 		mTexture.setHeight(size);
-		mRenderer.getTextureManager().addTexture(mTexture);
+		// -- safe to use taskAdd because initalize is called in a thread safe manner
+		mRenderer.getTextureManager().taskAdd(mTexture);
 		genBuffers();
 		mPickerMaterial = new ColorPickerMaterial();
 		mIsInitialized = true;
@@ -69,11 +71,10 @@ public class ObjectColorPicker implements IObjectPicker {
 	}
 
 	public void bindFrameBuffer() throws ObjectColorPickerException {
-		try {
-			if (!mIsInitialized)
-				initialize();
-		} catch(TextureManagerException tme) {
-			throw new ObjectColorPickerException(tme);
+		if (!mIsInitialized)
+		{
+			mRenderer.queueInitializeTask(this);
+			return;
 		}
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
@@ -81,7 +82,7 @@ public class ObjectColorPicker implements IObjectPicker {
 		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
 		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-			RajLog.d("Could not bind FrameBuffer for color picking.");
+			RajLog.d("Could not bind FrameBuffer for color picking." + mTexture.getTextureId());
 		}
 		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
 				GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
@@ -181,5 +182,10 @@ public class ObjectColorPicker implements IObjectPicker {
 			super(msg, throwable);
 		}
 		
+	}
+
+	@Override
+	public TYPE getFrameTaskType() {
+		return TYPE.COLOR_PICKER;
 	}
 }
