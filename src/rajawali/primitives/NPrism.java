@@ -73,6 +73,10 @@ public class NPrism extends BaseObject3D {
 		init();
 	}
 	
+	protected NPrism() {
+		
+	}
+	
 	protected double calculateMinorAxis(double major) {
 		return Math.sqrt(Math.pow(major, 2.0)*(1 - Math.pow(mEccentricity, 2.0)));
 	}

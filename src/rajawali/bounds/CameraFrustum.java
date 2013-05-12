@@ -5,11 +5,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
+import rajawali.materials.SimpleMaterial;
 import rajawali.math.Number3D;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
@@ -19,6 +22,10 @@ public class CameraFrustum implements IBoundingVolume {
 	protected float[] mTmpMatrix = new float[16];
 	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
 	public final Plane[] mPlanes = new Plane[6];     
+	
+	protected CameraVisibleFrustum mVisibleFrustum;
+	
+	protected static final double ROOT2_2 = Math.sqrt(2.0)/2.0;
 
 	protected final Number3D[] mPlanePoints = { 
 			new Number3D(), new Number3D(), new Number3D(), new Number3D(), 
@@ -57,6 +64,10 @@ public class CameraFrustum implements IBoundingVolume {
 		mPlanes[3].set(mPlanePoints[5], mPlanePoints[1], mPlanePoints[6]);
 		mPlanes[4].set(mPlanePoints[2], mPlanePoints[3], mPlanePoints[6]);
 		mPlanes[5].set(mPlanePoints[4], mPlanePoints[0], mPlanePoints[1]);
+		
+		if (mVisibleFrustum != null) {
+			mVisibleFrustum.update();
+		}
 	}       
 
 	public boolean sphereInFrustum (Number3D center, float radius) {
@@ -96,8 +107,17 @@ public class CameraFrustum implements IBoundingVolume {
 	}
 
 	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
-		// TODO Auto-generated method stub
+		if(mVisibleFrustum == null) {
+			mVisibleFrustum = new CameraVisibleFrustum(this);
+			mVisibleFrustum.setMaterial(new SimpleMaterial());
+			mVisibleFrustum.getMaterial().setUseColor(true);
+			mVisibleFrustum.setColor(mBoundingColor.get());
+			mVisibleFrustum.setDrawingMode(GLES20.GL_LINE_LOOP);
+		}
 		
+		Matrix.setIdentityM(mTmpMatrix, 0);
+		
+		mVisibleFrustum.render(camera, projMatrix, vMatrix, mTmpMatrix, null);
 	}
 
 	public void transform(float[] matrix) {
@@ -133,13 +153,32 @@ public class CameraFrustum implements IBoundingVolume {
 
 		private CameraFrustum mParent;
 		
-		public CameraVisibleFrustum(CameraFrustum parent, int sides, double radiusTop, 
-				double radiusBase, double height) {
-			super(sides, radiusTop, radiusBase, height);
+		public CameraVisibleFrustum(CameraFrustum parent) {
 			mParent = parent;
 		}
 		
+		private void update() {
+			double near, far;
+			Number3D corner = mParent.mPlanePoints[6];
+			mRadiusTop = corner.x*ROOT2_2;
+			mMinorTop = corner.y*ROOT2_2;
+			near = corner.z;
+			corner = mParent.mPlanePoints[2];
+			mRadiusBase = corner.x*ROOT2_2;
+			mMinorBase = corner.y*ROOT2_2;
+			far = corner.z;
+			double major_squared = Math.pow(mRadiusBase, 2.0);
+			double minor_squared = Math.pow(mMinorBase, 2.0);
+			mEccentricity = Math.sqrt((major_squared-minor_squared)/major_squared);
+			mSideCount = 4;
+			mHeight = Math.abs(far - near);
+			init();
+		}
 		
-		
+		@Override
+		protected void init() {
+			super.init();
+			Log.i("Camera", "Creating camera frustum");
+		}
 	}
 }
