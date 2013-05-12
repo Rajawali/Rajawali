@@ -15,6 +15,7 @@ import javax.microedition.khronos.opengles.GL10;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.animation.Animation3D;
+import rajawali.effects.APass;
 import rajawali.effects.EffectComposer;
 import rajawali.materials.AMaterial;
 import rajawali.materials.textures.ATexture;
@@ -26,10 +27,8 @@ import rajawali.util.ObjectColorPicker;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ConfigurationInfo;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -1191,59 +1190,5 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 				mScenes.get(i).setUsesCoverageAa(usesCoverageAa);
 			}
 		}
-	}
-	
-	/**
-	 * Outputs System and OpenGL information. This function should be called 
-	 * from initScene. 
-	 */
-	public void logSystemInformation()
-	{
-		StringBuffer sb = new StringBuffer();
-		sb.append("-=-=-=- Device Information -=-=-=-\n");
-		sb.append("Brand                    : ").append(android.os.Build.BRAND).append("\n");
-		sb.append("Manufacturer             : ").append(android.os.Build.MANUFACTURER).append("\n");
-		sb.append("Model                    : ").append(android.os.Build.MODEL).append("\n");
-		sb.append("Bootloader               : ").append(android.os.Build.BOARD).append("\n");
-		sb.append("CPU ABI                  : ").append(android.os.Build.CPU_ABI).append("\n");
-		sb.append("CPU ABI 2                : ").append(android.os.Build.CPU_ABI2).append("\n");
-		sb.append("-=-=-=- /Device Information -=-=-=-\n");
-
-		sb.append("-=-=-=- OpenGL Information -=-=-=-\n");
-		if(mGL10 != null)
-		{
-			final ActivityManager activityManager = (ActivityManager)getContext().getSystemService(Context.ACTIVITY_SERVICE);
-			final ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
-			sb.append("OpenGL ES 2.0 Support     : ").append(configurationInfo.reqGlEsVersion >= 0x20000).append("\n");
-			sb.append("Vendor                    : ").append(mGL10.glGetString(GL10.GL_VENDOR)).append("\n");
-			sb.append("Renderer                  : ").append(mGL10.glGetString(GL10.GL_RENDERER)).append("\n");
-			sb.append("Version                   : ").append(mGL10.glGetString(GL10.GL_VERSION)).append("\n");
-			
-			int[] maxTextureImageUnits = new int[1];
-			mGL10.glGetIntegerv(GL10.GL_MAX_TEXTURE_UNITS, maxTextureImageUnits, 0);
-			sb.append("Max. Texture Units        : ").append(maxTextureImageUnits[0]);
-			GLES20.glGetIntegerv(GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, maxTextureImageUnits, 0);
-			sb.append("Max. Vertex Texture Units : ").append(maxTextureImageUnits[0]);
-			
-			String extensions = mGL10.glGetString(GL10.GL_EXTENSIONS);
-			String[] ext = extensions.split(" ");
-			int extLength = ext.length;
-			
-			if(extLength > 0)
-			{
-				sb.append("Extensions                : ").append(ext[0]).append("\n");
-				for(int i=1; i<extLength; i++)
-				{
-					sb.append("                          : ").append(ext[i]).append("\n");
-				}
-			}
-		}
-		else 
-		{
-			sb.append("OpenGL info             : Cannot find OpenGL information. Please call this function from initScene().\n");
-		}
-		sb.append("-=-=-=- /OpenGL Information -=-=-=-\n");
-		
-		RajLog.i(sb.toString());		
 	}
 }

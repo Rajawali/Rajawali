@@ -1,5 +1,7 @@
 package rajawali.util;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import android.util.Log;
 
 public class RajLog {
@@ -7,6 +9,7 @@ public class RajLog {
 	public static final String TAG = "Rajawali";
 
 	private static boolean _logDebug = true;
+	private static GL10 gl;
 
 	public static final void d(String msg) {
 		if (_logDebug) {
@@ -76,5 +79,54 @@ public class RajLog {
 
 	public static final void wtf(String msg) {
 		Log.wtf(TAG, msg);
+	}
+	
+	public static final void setGL10(GL10 gl) {
+		RajLog.gl = gl;
+	}
+	
+	/**
+	 * Outputs System and OpenGL information. This function should be called 
+	 * from initScene. 
+	 */
+	public static void systemInformation()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("-=-=-=- Device Information -=-=-=-\n");
+		sb.append("Brand                     : ").append(android.os.Build.BRAND).append("\n");
+		sb.append("Manufacturer              : ").append(android.os.Build.MANUFACTURER).append("\n");
+		sb.append("Model                     : ").append(android.os.Build.MODEL).append("\n");
+		sb.append("Bootloader                : ").append(android.os.Build.BOARD).append("\n");
+		sb.append("CPU ABI                   : ").append(android.os.Build.CPU_ABI).append("\n");
+		sb.append("CPU ABI 2                 : ").append(android.os.Build.CPU_ABI2).append("\n");
+		sb.append("-=-=-=- /Device Information -=-=-=-\n\n");
+
+		sb.append("-=-=-=- OpenGL Information -=-=-=-\n");
+		if(RajLog.gl != null)
+		{
+			sb.append("Vendor                    : ").append(RajLog.gl.glGetString(GL10.GL_VENDOR)).append("\n");
+			sb.append("Renderer                  : ").append(RajLog.gl.glGetString(GL10.GL_RENDERER)).append("\n");
+			sb.append("Version                   : ").append(RajLog.gl.glGetString(GL10.GL_VERSION)).append("\n");
+			
+			String extensions = RajLog.gl.glGetString(GL10.GL_EXTENSIONS);
+			String[] ext = extensions.split(" ");
+			int extLength = ext.length;
+			
+			if(extLength > 0)
+			{
+				sb.append("Extensions                : ").append(ext[0]).append("\n");
+				for(int i=1; i<extLength; i++)
+				{
+					sb.append("                          : ").append(ext[i]).append("\n");
+				}
+			}
+		}
+		else 
+		{
+			sb.append("OpenGL info             : Cannot find OpenGL information. Please call this function from initScene().\n");
+		}
+		sb.append("-=-=-=- /OpenGL Information -=-=-=-\n");
+		
+		RajLog.i(sb.toString());		
 	}
 }

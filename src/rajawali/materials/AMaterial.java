@@ -179,8 +179,7 @@ public abstract class AMaterial {
 
 		int count = mTextureList.size();
 		for(int i=0; i<count; i++)
-			setTextureParameters(mTextureList.get(i), false);
-//		checkTextureHandles();
+			setTextureParameters(mTextureList.get(i));
 	}
 
 	protected int loadShader(int shaderType, String source) {
@@ -308,17 +307,6 @@ public abstract class AMaterial {
 		mNumTextures = mTextureList.size();
 		TextureManager.getInstance().addTexture(texture);
 		texture.registerMaterial(this);
-		if(mProgramCreated)
-			setTextureParameters(texture, false);
-	}
-	
-	public void removeTexture(ATexture texture) {
-		mTextureList.remove(texture);
-		texture.unregisterMaterial(this);
-	}
-	
-	private void setTextureParameters(ATexture texture, boolean isExistingTexture) {
-		if(texture.getUniformHandle() > -1) return;
 		
 		String textureName = "uTexture";		
 		
@@ -370,31 +358,33 @@ public abstract class AMaterial {
 		//    "uDiffuseTexture1", the third "uDiffuseTexture2", etc.
 		if(numDiffuse > 1 && texture.getTextureType() == TextureType.DIFFUSE)
 			textureName += numDiffuse;
+		
+		texture.setTextureName(textureName);
+		RajLog.i("textureName: " + textureName);
+		
+		if(texture.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
 
-		if(isExistingTexture)
-			textureName = texture.getTextureName();
+		if(mProgramCreated)
+			setTextureParameters(texture);
+	}
+	
+	public void removeTexture(ATexture texture) {
+		mTextureList.remove(texture);
+		texture.unregisterMaterial(this);
+	}
+	
+	private void setTextureParameters(ATexture texture) {
+		if(texture.getUniformHandle() > -1) return;
 		
 		if(mProgramCreated) {
-			int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
+			int textureHandle = GLES20.glGetUniformLocation(mProgram, texture.getTextureName());
 			if (textureHandle == -1) {
 				RajLog.d("Could not get attrib location for "
-						+ textureName + ", " + texture.getTextureType());
+						+ texture.getTextureName() + ", " + texture.getTextureType());
 			}
 			texture.setUniformHandle(textureHandle);
 		}
-		
-		if(texture.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
 	}
-/*	
-	protected void checkTextureHandles() {
-		int num = mTextureList.size();
-		for(int i=0; i<num; ++i) {
-			ATexture textureConfig = mTextureList.get(i);
-			if(textureConfig.getUniformHandle() == -1) {
-				addTexture(textureConfig, true, true);
-			}
-		}
-	}*/
 	
 	public void setVertices(final int vertexBufferHandle) {
 		if(checkValidHandle(vertexBufferHandle, "vertex data")){

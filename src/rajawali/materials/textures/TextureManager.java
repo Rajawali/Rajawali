@@ -7,7 +7,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
-import rajawali.util.RajLog;
 import android.content.Context;
 import android.opengl.GLES20;
 
@@ -74,8 +73,6 @@ public final class TextureManager extends AFrameTask {
 
 		if (!isUpdatingAfterContextWasLost)
 			mTextureList.add(texture);
-
-		RajLog.i("texture list size: " + mTextureList.size());
 	}
 
 	public void replaceTexture(ATexture texture)
@@ -132,13 +129,12 @@ public final class TextureManager extends AFrameTask {
 	}
 
 	public void reset()
-	{RajLog.i("Resetting texture manager");
+	{
 		mRenderer.queueResetTask(this);
 	}
 
 	public void taskReset()
 	{
-		RajLog.i("Resetting texture manager part 2");
 		try {
 			int count = mTextureList.size();
 			int[] textures = new int[count];
