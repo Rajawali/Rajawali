@@ -6,7 +6,7 @@ import rajawali.math.Number3D.Axis;
 /**
  * Animation that orbits {@link ATransformable3D} object around a point. 
  * @author Andrew Jo
- *
+ * @updated androidder
  */
 public class EllipticalOrbitAnimation3D extends Animation3D {
 
@@ -26,6 +26,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	protected Number3D mNormal;
 	protected double mEccentricity;
 	protected OrbitDirection mDirection;
+	protected int mAngle;
 	
 	/**
 	 * Defines an elliptical orbit around a point.
@@ -35,7 +36,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param direction Direction of the orbit.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity,
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity, int angle,
 			OrbitDirection direction) {
 		super();
 		mFocalPoint = focalPoint;
@@ -43,8 +44,39 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		mNormal = normal.clone();
 		mEccentricity = eccentricity;
 		mDirection = direction;
+		mAngle = angle;
 	}
 	
+	/**
+	 * Defines an elliptical orbit around a point.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param normal Normal to the orbital plane. This defines the orbital inclination.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param angle Degrees to rotate.
+	 */
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity, int angle) {
+		super();
+		mFocalPoint = focalPoint;
+		mPeriapsis = periapsis;
+		mNormal = normal.clone();
+		mEccentricity = eccentricity;
+		mAngle = angle;
+		
+		if (mAngle<0) mDirection = OrbitDirection.CLOCKWISE; else mDirection = OrbitDirection.COUNTERCLOCKWISE; 
+		mAngle=Math.abs(mAngle);
+	}
+	
+	/**
+	 * Defines an elliptical orbit around a point with no orbital inclination.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param angle Degrees to rotate.
+	 */
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, int angle) {
+		this(focalPoint, periapsis, Number3D.getAxisVector(Axis.Y), eccentricity, angle);
+	}
 	
 	/**
 	 * Defines an elliptical orbit around a point with no orbital inclination.
@@ -53,9 +85,9 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param direction Direction of the orbit.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity,
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, int angle,
 			OrbitDirection direction) {
-		this(focalPoint, periapsis, Number3D.getAxisVector(Axis.Y), eccentricity, direction);
+		this(focalPoint, periapsis, Number3D.getAxisVector(Axis.Y), eccentricity, angle, direction);
 	}
 	
 	@Override
@@ -66,7 +98,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		// Wikipedia.
 		
 		// Angle in radians (interpolated time from 0 to 1 results in radian angle 0 to 2PI)
-		double angle = (mDirection == OrbitDirection.CLOCKWISE ? -1 : 1) * 360f * mInterpolatedTime * PI_DIV_180;
+		double angle = (mDirection == OrbitDirection.CLOCKWISE ? -1 : 1) * mAngle * mInterpolatedTime * PI_DIV_180;
 		
 		// Calculate the distances of periapsis and apoapsis to the focal point.
 		double periapsisRadius = mPeriapsis.distanceTo(mFocalPoint);
