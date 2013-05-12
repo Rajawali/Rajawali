@@ -86,6 +86,10 @@ public class ObjParser extends AMeshParser {
 		super(resources, textureManager, resourceId);
 	}
 	
+	public ObjParser(RajawaliRenderer renderer, File file) {
+		super(renderer, file);
+	}
+	
 	@Override
 	public ObjParser parse() throws ParsingException {
 		super.parse();

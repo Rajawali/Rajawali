@@ -46,6 +46,10 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 	public MD2Parser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
+	
+	public MD2Parser(RajawaliRenderer renderer, File file) {
+		super(renderer, file);
+	}
 
 	public AAnimationObject3D getParsedAnimationObject() {
 		return (AAnimationObject3D) mRootObject;
