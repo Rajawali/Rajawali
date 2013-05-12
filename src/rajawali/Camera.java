@@ -9,6 +9,12 @@ import rajawali.renderer.AFrameTask;
 import android.opengl.Matrix;
 
 public class Camera extends ATransformable3D {
+	
+	protected final Object mFrustumLock = new Object();
+	
+	/**
+	 * The following members are all guarded by {@link #mFrustumLock}
+	 */
 	protected float[] mVMatrix = new float[16];
 	protected float[] mInvVMatrix = new float[16];
 	protected float[] mRotationMatrix = new float[16];
@@ -16,6 +22,8 @@ public class Camera extends ATransformable3D {
 	protected float mNearPlane = 1.0f;
 	protected float mFarPlane = 120.0f;
 	protected float mFieldOfView = 45;
+	protected int mLastWidth;
+	protected int mLastHeight;
 	protected Number3D mUpAxis;
 	protected boolean mUseRotationMatrix = false;
 	protected float[] mRotateMatrixTmp = new float[16];
@@ -23,18 +31,20 @@ public class Camera extends ATransformable3D {
 	protected float[] mCombinedMatrix=new float[16];
 	public Frustum mFrustum;
 	
+	// Camera's localized vectors
+	protected Number3D mRightVector;
+	protected Number3D mUpVector;
+	protected Number3D mLookVector;
+	protected Quaternion mLocalOrientation;
+	/**
+	 * End guarded members
+	 */
+		
 	protected int mFogColor = 0xdddddd;
 	protected float mFogNear = 5;
 	protected float mFogFar = 25;
 	protected boolean mFogEnabled = false;
 	
-	// Camera's localized vectors
-	protected Number3D mRightVector;
-	protected Number3D mUpVector;
-	protected Number3D mLookVector;
-	
-	protected Quaternion mLocalOrientation;
-
 	public Camera() {
 		super();
 		mLocalOrientation = Quaternion.getIdentity();
@@ -44,54 +54,66 @@ public class Camera extends ATransformable3D {
 	}
 
 	public float[] getViewMatrix() {
-		if (mLookAt != null) {
-			Matrix.setLookAtM(mVMatrix, 0, mPosition.x, mPosition.y,
-					mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, mUpAxis.x, mUpAxis.y,
-					mUpAxis.z);
-			
-			mLocalOrientation.fromEuler(mRotation.y, mRotation.z, mRotation.x);
-			mLocalOrientation.toRotationMatrix(mRotationMatrix);
-			Matrix.multiplyMM(mVMatrix, 0, mRotationMatrix, 0, mVMatrix, 0);
-		} else {
-			if (mUseRotationMatrix == false && mRotationDirty) {
-				setOrientation();
-				mRotationDirty = false;
+		synchronized (mFrustumLock) {
+			if (mLookAt != null) {
+				Matrix.setLookAtM(mVMatrix, 0, mPosition.x, mPosition.y,
+						mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, mUpAxis.x, mUpAxis.y,
+						mUpAxis.z);
+
+				mLocalOrientation.fromEuler(mRotation.y, mRotation.z, mRotation.x);
+				mLocalOrientation.toRotationMatrix(mRotationMatrix);
+				Matrix.multiplyMM(mVMatrix, 0, mRotationMatrix, 0, mVMatrix, 0);
+			} else {
+				if (mUseRotationMatrix == false && mRotationDirty) {
+					setOrientation();
+					mRotationDirty = false;
+				}
+				mOrientation.toRotationMatrix(mRotationMatrix);
+				Matrix.setIdentityM(mTmpMatrix, 0);
+				Matrix.setIdentityM(mVMatrix, 0);
+				Matrix.translateM(mTmpMatrix, 0, -mPosition.x, -mPosition.y, -mPosition.z);
+				Matrix.multiplyMM(mVMatrix, 0, mRotationMatrix, 0, mTmpMatrix, 0);
 			}
-			mOrientation.toRotationMatrix(mRotationMatrix);
-			Matrix.setIdentityM(mTmpMatrix, 0);
-			Matrix.setIdentityM(mVMatrix, 0);
-			Matrix.translateM(mTmpMatrix, 0, -mPosition.x, -mPosition.y, -mPosition.z);
-			Matrix.multiplyMM(mVMatrix, 0, mRotationMatrix, 0, mTmpMatrix, 0);
+			return mVMatrix;
 		}
-		return mVMatrix;
 	}
 	
 	public void updateFrustum(float[] pMatrix,float[] vMatrix) {
-		Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
-		invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
-		mFrustum.update(mCombinedMatrix);
+		synchronized (mFrustumLock) {
+			Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
+			invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
+			mFrustum.update(mCombinedMatrix);
+		}
 	}
 
 	protected void rotateM(float[] m, int mOffset, float a, float x, float y,
 			float z) {
-		Matrix.setIdentityM(mRotateMatrixTmp, 0);
-		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
-		System.arraycopy(m, 0, mTmpMatrix, 0, 16);
-		Matrix.multiplyMM(m, mOffset, mTmpMatrix, mOffset, mRotateMatrixTmp, 0);
+		synchronized (mFrustumLock) {
+			Matrix.setIdentityM(mRotateMatrixTmp, 0);
+			Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
+			System.arraycopy(m, 0, mTmpMatrix, 0, 16);
+			Matrix.multiplyMM(m, mOffset, mTmpMatrix, mOffset, mRotateMatrixTmp, 0);
+		}
 	}
 
 	public void setRotationMatrix(float[] m) {
-		mRotationMatrix = m;
+		synchronized (mFrustumLock) {
+			mRotationMatrix = m;
+		}
 	}
 
 	public void setProjectionMatrix(int width, int height) {
-		float ratio = (float) width / height;
-		float frustumH = MathUtil.tan(getFieldOfView() / 360.0f * MathUtil.PI)
-				* getNearPlane();
-		float frustumW = frustumH * ratio;
+		synchronized (mFrustumLock) {
+			mLastWidth = width;
+			mLastHeight = height;
+			float ratio = (float) width / height;
+			float frustumH = MathUtil.tan(getFieldOfView() / 360.0f * MathUtil.PI)
+					* getNearPlane();
+			float frustumW = frustumH * ratio;
 
-		Matrix.frustumM(mProjMatrix, 0, -frustumW, frustumW, -frustumH,
-				frustumH, getNearPlane(), getFarPlane());
+			Matrix.frustumM(mProjMatrix, 0, -frustumW, frustumW, -frustumH,
+					frustumH, getNearPlane(), getFarPlane());
+		}
 	}
 	
 	 /**
@@ -227,56 +249,83 @@ public class Camera extends ATransformable3D {
     }
 
     public void setUpAxis(float x, float y, float z) {
-    	mUpAxis.setAll(x, y, z);
+    	synchronized (mFrustumLock) {
+    		mUpAxis.setAll(x, y, z);
+    	}
     }
     
     public void setUpAxis(Number3D upAxis) {
-    	mUpAxis.setAllFrom(upAxis);
+    	synchronized (mFrustumLock) {
+    		mUpAxis.setAllFrom(upAxis);
+    	}
     }
     
     public void setUpAxis(Axis upAxis) {
-    	if(upAxis == Axis.X)
-    		mUpAxis.setAll(1, 0, 0);
-    	else if(upAxis == Axis.Y)
-    		mUpAxis.setAll(0, 1, 0);
-    	else
-    		mUpAxis.setAll(0, 0, 1);
+    	synchronized (mFrustumLock) {
+    		if(upAxis == Axis.X)
+    			mUpAxis.setAll(1, 0, 0);
+    		else if(upAxis == Axis.Y)
+    			mUpAxis.setAll(0, 1, 0);
+    		else
+    			mUpAxis.setAll(0, 0, 1);
+    	}
     }
     
 	public float[] getProjectionMatrix() {
-		return mProjMatrix;
+		synchronized (mFrustumLock) {
+			return mProjMatrix;
+		}
 	}
 
 	public float getNearPlane() {
-		return mNearPlane;
+		synchronized (mFrustumLock) {
+			return mNearPlane;
+		}
 	}
 
 	public void setNearPlane(float nearPlane) {
-		this.mNearPlane = nearPlane;
+		synchronized (mFrustumLock) {
+			mNearPlane = nearPlane;
+			setProjectionMatrix(mLastWidth, mLastHeight);
+		}
 	}
 
 	public float getFarPlane() {
-		return mFarPlane;
+		synchronized (mFrustumLock) {
+			return mFarPlane;
+		}
 	}
 
 	public void setFarPlane(float farPlane) {
-		this.mFarPlane = farPlane;
+		synchronized (mFrustumLock) {
+			mFarPlane = farPlane;
+			setProjectionMatrix(mLastWidth, mLastHeight);
+		}
 	}
 
 	public float getFieldOfView() {
-		return mFieldOfView;
+		synchronized (mFrustumLock) {
+			return mFieldOfView;
+		}
 	}
 
 	public void setFieldOfView(float fieldOfView) {
-		this.mFieldOfView = fieldOfView;
+		synchronized (mFrustumLock) {
+			mFieldOfView = fieldOfView;
+			setProjectionMatrix(mLastWidth, mLastHeight);
+		}
 	}
 
 	public boolean getUseRotationMatrix() {
-		return mUseRotationMatrix;
+		synchronized (mFrustumLock) {
+			return mUseRotationMatrix;
+		}
 	}
 
 	public void setUseRotationMatrix(boolean useRotationMatrix) {
-		this.mUseRotationMatrix = useRotationMatrix;
+		synchronized (mFrustumLock) {
+			mUseRotationMatrix = useRotationMatrix;
+		}
 	}
 
 	public int getFogColor() {
@@ -284,7 +333,7 @@ public class Camera extends ATransformable3D {
 	}
 
 	public void setFogColor(int fogColor) {
-		this.mFogColor = fogColor;
+		mFogColor = fogColor;
 	}
 
 	public float getFogNear() {
@@ -292,7 +341,7 @@ public class Camera extends ATransformable3D {
 	}
 
 	public void setFogNear(float fogNear) {
-		this.mFogNear = fogNear;
+		mFogNear = fogNear;
 	}
 
 	public float getFogFar() {
@@ -300,7 +349,7 @@ public class Camera extends ATransformable3D {
 	}
 
 	public void setFogFar(float fogFar) {
-		this.mFogFar = fogFar;
+		mFogFar = fogFar;
 	}
 
 	public boolean isFogEnabled() {
@@ -308,7 +357,7 @@ public class Camera extends ATransformable3D {
 	}
 
 	public void setFogEnabled(boolean fogEnabled) {
-		this.mFogEnabled = fogEnabled;
+		mFogEnabled = fogEnabled;
 	}
 
 	/*
@@ -317,7 +366,9 @@ public class Camera extends ATransformable3D {
 	 */
 	@Override
 	public IBoundingVolume getTransformedBoundingVolume() {
-		return mFrustum.getBoundingBox();
+		synchronized (mFrustumLock) {
+			return mFrustum.getBoundingBox();
+		}
 	}
 	
 	@Override
