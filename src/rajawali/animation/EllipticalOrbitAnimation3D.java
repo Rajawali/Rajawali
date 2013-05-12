@@ -36,6 +36,26 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param direction Direction of the orbit.
 	 */
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity,
+			OrbitDirection direction) {
+		super();
+		mFocalPoint = focalPoint;
+		mPeriapsis = periapsis;
+		mNormal = normal.clone();
+		mEccentricity = eccentricity;
+		mDirection = direction;
+		mAngle = 360.0;
+	}
+	
+	/**
+	 * Defines an elliptical orbit around a point.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param normal Normal to the orbital plane. This defines the orbital inclination.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param angle Double Degrees to orbit.
+	 * @param direction Direction of the orbit.
+	 */
 	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity, double angle,
 			OrbitDirection direction) {
 		super();
@@ -65,6 +85,17 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		
 		mDirection = (mAngle < 0) ? OrbitDirection.CLOCKWISE : OrbitDirection.COUNTERCLOCKWISE; 
 		mAngle = Math.abs(mAngle);
+	}
+	
+	/**
+	 * Defines an elliptical orbit around a point with no orbital inclination.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param direction Direction of the orbit.
+	 */
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, OrbitDirection direction) {
+		this(focalPoint, periapsis, Number3D.getAxisVector(Axis.Y), eccentricity, direction);
 	}
 	
 	/**
