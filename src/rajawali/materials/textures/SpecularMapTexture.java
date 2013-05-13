@@ -24,6 +24,11 @@ public class SpecularMapTexture extends ASingleTexture {
 		super(TextureType.SPECULAR, textureName, bitmap);
 	}
 	
+	public SpecularMapTexture(String textureName, ACompressedTexture compressedTexture)
+	{
+		super(TextureType.SPECULAR, textureName, compressedTexture);
+	}
+	
 	public SpecularMapTexture clone() {
 		return new SpecularMapTexture(this);
 	}

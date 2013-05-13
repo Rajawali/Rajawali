@@ -315,7 +315,7 @@ public abstract class AMaterial {
 		case VIDEO_TEXTURE:
 			textureName = "uDiffuseTexture";
 			break;
-		case BUMP:
+		case NORMAL:
 			textureName = "uNormalTexture";
 			mUseNormalMap = true;
 			break;

@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
@@ -42,7 +42,12 @@ public abstract class ASingleTexture extends ATexture
 		this(textureType, textureName);
 		setBitmap(bitmap);
 	}
-
+	
+	public ASingleTexture(TextureType textureType, String textureName, ACompressedTexture compressedTexture)
+	{
+		super(textureType, textureName, compressedTexture);
+	}
+	
 	public ASingleTexture(ASingleTexture other)
 	{
 		super(other);
@@ -100,6 +105,16 @@ public abstract class ASingleTexture extends ATexture
 
 	void add() throws TextureException
 	{
+		if(mCompressedTexture != null)
+		{
+			mCompressedTexture.add();
+			setWidth(mCompressedTexture.getWidth());
+			setHeight(mCompressedTexture.getHeight());
+			setTextureId(mCompressedTexture.getTextureId());
+			setUniformHandle(mCompressedTexture.getUniformHandle());
+			return;
+		}
+		
 		if (mBitmap == null && (mByteBuffer == null || mByteBuffer.limit() == 0))
 			throw new TextureException("Texture could not be added because there is no Bitmap or ByteBuffer set.");
 
@@ -182,11 +197,24 @@ public abstract class ASingleTexture extends ATexture
 
 	void remove() throws TextureException
 	{
-		GLES20.glDeleteTextures(1, new int[] { mTextureId }, 0);
+		if(mCompressedTexture != null)
+			mCompressedTexture.remove();
+		else
+			GLES20.glDeleteTextures(1, new int[] { mTextureId }, 0);
 	}
 
 	void replace() throws TextureException
 	{
+		if(mCompressedTexture != null)
+		{
+			mCompressedTexture.replace();
+			setWidth(mCompressedTexture.getWidth());
+			setHeight(mCompressedTexture.getHeight());
+			setTextureId(mCompressedTexture.getTextureId());
+			setUniformHandle(mCompressedTexture.getUniformHandle());
+			return;
+		}
+		
 		if (mBitmap == null && (mByteBuffer == null || mByteBuffer.limit() == 0))
 			throw new TextureException("Texture could not be replaced because there is no Bitmap or ByteBuffer set.");
 
@@ -216,6 +244,12 @@ public abstract class ASingleTexture extends ATexture
 	
 	void reset() throws TextureException
 	{
+		if(mCompressedTexture != null)
+		{
+			mCompressedTexture.reset();
+			return;
+		}
+		
 		if(mBitmap != null)
 		{
 			mBitmap.recycle();

@@ -14,7 +14,7 @@ public abstract class ATexture extends AFrameTask {
 	 */
 	public enum TextureType {
 		DIFFUSE,
-		BUMP,
+		NORMAL,
 		SPECULAR,
 		ALPHA,
 		FRAME_BUFFER,
@@ -22,7 +22,8 @@ public abstract class ATexture extends AFrameTask {
 		LOOKUP,
 		CUBE_MAP,
 		SPHERE_MAP,
-		VIDEO_TEXTURE
+		VIDEO_TEXTURE,
+		COMPRESSED
 	};
 
 	/**
@@ -104,6 +105,7 @@ public abstract class ATexture extends AFrameTask {
 	 * A list of materials that use this texture. 
 	 */
 	private List<AMaterial> mMaterialsUsingTexture;
+	protected ACompressedTexture mCompressedTexture;
 	
 	/**
 	 * Creates a new ATexture instance with the specified texture type
@@ -119,6 +121,12 @@ public abstract class ATexture extends AFrameTask {
 		mShouldRecycle = false;
 		mWrapType = WrapType.REPEAT;
 		mFilterType = FilterType.LINEAR;
+	}
+	
+	public ATexture(TextureType textureType, String textureName, ACompressedTexture compressedTexture)
+	{
+		this(textureType, textureName);
+		setCompressedTexture(compressedTexture);
 	}
 	
 	protected ATexture() {
@@ -160,6 +168,7 @@ public abstract class ATexture extends AFrameTask {
 		mWrapType = other.getWrapType();
 		mFilterType = other.getFilterType();
 		mBitmapConfig = other.getBitmapConfig();
+		mCompressedTexture = other.getCompressedTexture();
 	}
 	
 	/**
@@ -371,6 +380,16 @@ public abstract class ATexture extends AFrameTask {
 				return true;
 		}
 		return false;
+	}
+	
+	public void setCompressedTexture(ACompressedTexture compressedTexture)
+	{
+		mCompressedTexture = compressedTexture;
+	}
+	
+	public ACompressedTexture getCompressedTexture()
+	{
+		return mCompressedTexture;
 	}
 	
 	abstract void add() throws TextureException;

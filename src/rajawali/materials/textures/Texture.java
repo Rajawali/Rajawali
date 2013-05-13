@@ -24,6 +24,11 @@ public class Texture extends ASingleTexture {
 		super(TextureType.DIFFUSE, textureName, bitmap);
 	}
 	
+	public Texture(String textureName, ACompressedTexture compressedTexture)
+	{
+		super(TextureType.DIFFUSE, textureName, compressedTexture);
+	}
+	
 	public Texture clone() {
 		return new Texture(this);
 	}

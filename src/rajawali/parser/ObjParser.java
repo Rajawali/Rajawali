@@ -13,11 +13,11 @@ import java.util.StringTokenizer;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.AMaterial;
-import rajawali.materials.BumpmapMaterial;
+import rajawali.materials.NormalMapMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
-import rajawali.materials.textures.BumpmapTexture;
+import rajawali.materials.textures.NormalMapTexture;
 import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
@@ -434,7 +434,7 @@ public class ObjParser extends AMeshParser {
 			if(hasSpecular && !hasBump)
 				mat = new PhongMaterial();
 			else if(hasBump)
-				mat = new BumpmapMaterial();
+				mat = new NormalMapMaterial();
 			else
 				mat = new DiffuseMaterial();
 
@@ -459,10 +459,10 @@ public class ObjParser extends AMeshParser {
 			if(hasBump) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.bumpTexture), "drawable", mResourcePackage);
-					mat.addTexture(new BumpmapTexture(identifier));
+					mat.addTexture(new NormalMapTexture(identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
-					mat.addTexture(new BumpmapTexture(getOnlyFileName(matDef.bumpTexture), BitmapFactory.decodeFile(filePath)));
+					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture), BitmapFactory.decodeFile(filePath)));
 				}
 			}
 		}

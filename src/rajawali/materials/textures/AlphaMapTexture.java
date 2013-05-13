@@ -23,6 +23,11 @@ public class AlphaMapTexture extends ASingleTexture {
 		super(TextureType.ALPHA, textureName, bitmap);
 	}
 	
+	public AlphaMapTexture(String textureName, ACompressedTexture compressedTexture)
+	{
+		super(TextureType.ALPHA, textureName, compressedTexture);
+	}
+	
 	public AlphaMapTexture clone() {
 		return new AlphaMapTexture(this);
 	}

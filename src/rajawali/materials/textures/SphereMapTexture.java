@@ -23,6 +23,11 @@ public class SphereMapTexture extends ASingleTexture {
 	{
 		super(TextureType.SPHERE_MAP, textureName, bitmap);
 	}
+	
+	public SphereMapTexture(String textureName, ACompressedTexture compressedTexture)
+	{
+		super(TextureType.SPHERE_MAP, textureName, compressedTexture);
+	}
 
 	@Override
 	public SphereMapTexture clone() {
