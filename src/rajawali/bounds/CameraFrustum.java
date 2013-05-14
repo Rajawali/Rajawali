@@ -52,7 +52,6 @@ public class CameraFrustum implements IBoundingVolume {
 	}
 
 	public void update(float[] inverseProjectionView) {             
-
 		for(int i = 0; i < 8; i++) {
 			mPlanePoints[i].setAllFrom(mClipSpacePlanePoints[i]);
 			mPlanePoints[i].project(inverseProjectionView);   
@@ -64,10 +63,6 @@ public class CameraFrustum implements IBoundingVolume {
 		mPlanes[3].set(mPlanePoints[5], mPlanePoints[1], mPlanePoints[6]);
 		mPlanes[4].set(mPlanePoints[2], mPlanePoints[3], mPlanePoints[6]);
 		mPlanes[5].set(mPlanePoints[4], mPlanePoints[0], mPlanePoints[1]);
-		
-		if (mVisibleFrustum != null) {
-			mVisibleFrustum.update();
-		}
 	}       
 
 	public boolean sphereInFrustum (Number3D center, float radius) {
@@ -107,17 +102,18 @@ public class CameraFrustum implements IBoundingVolume {
 	}
 
 	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
+		Log.i("CameraFrustum", "Drawing Frustum");
 		if(mVisibleFrustum == null) {
-			mVisibleFrustum = new CameraVisibleFrustum(this);
+			Log.i("CameraFrustum", "Creating new frustum.");
+			mVisibleFrustum = new CameraVisibleFrustum(this, 4, 1, 1, 1);
 			mVisibleFrustum.setMaterial(new SimpleMaterial());
 			mVisibleFrustum.getMaterial().setUseColor(true);
 			mVisibleFrustum.setColor(mBoundingColor.get());
 			mVisibleFrustum.setDrawingMode(GLES20.GL_LINE_LOOP);
 		}
-		
-		Matrix.setIdentityM(mTmpMatrix, 0);
-		
-		mVisibleFrustum.render(camera, projMatrix, vMatrix, mTmpMatrix, null);
+		mVisibleFrustum.update(true);
+		//Matrix.setIdentityM(mTmpMatrix, 0);
+		mVisibleFrustum.render(camera, projMatrix, vMatrix, null, null);
 	}
 
 	public void transform(float[] matrix) {
@@ -153,32 +149,29 @@ public class CameraFrustum implements IBoundingVolume {
 
 		private CameraFrustum mParent;
 		
-		public CameraVisibleFrustum(CameraFrustum parent) {
+		public CameraVisibleFrustum(CameraFrustum parent, int sides, double radiusTop, double radiusBase, double height) {
+			super(sides, radiusTop, radiusBase, height);
 			mParent = parent;
+			update(false);
 		}
 		
-		private void update() {
+		private void update(boolean update) {
 			double near, far;
 			Number3D corner = mParent.mPlanePoints[6];
 			mRadiusTop = corner.x*ROOT2_2;
 			mMinorTop = corner.y*ROOT2_2;
+			Log.d("UPDATE", "Near corner: " + corner);
 			near = corner.z;
 			corner = mParent.mPlanePoints[2];
+			Log.d("UPDATE", "Far corner: " + corner);
 			mRadiusBase = corner.x*ROOT2_2;
 			mMinorBase = corner.y*ROOT2_2;
 			far = corner.z;
 			double major_squared = Math.pow(mRadiusBase, 2.0);
 			double minor_squared = Math.pow(mMinorBase, 2.0);
 			mEccentricity = Math.sqrt((major_squared-minor_squared)/major_squared);
-			mSideCount = 4;
 			mHeight = Math.abs(far - near);
-			init();
-		}
-		
-		@Override
-		protected void init() {
-			super.init();
-			Log.i("Camera", "Creating camera frustum");
+			init(update);
 		}
 	}
 }

@@ -1,5 +1,10 @@
 package rajawali.primitives;
 
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+
 import rajawali.BaseObject3D;
 import rajawali.math.Number3D;
 
@@ -70,7 +75,7 @@ public class NPrism extends BaseObject3D {
 		mRadiusBase = radiusBase;
 		mMinorBase = calculateMinorAxis(mRadiusBase);
 		mHeight = height;
-		init();
+		init(false);
 	}
 	
 	protected NPrism() {
@@ -81,7 +86,7 @@ public class NPrism extends BaseObject3D {
 		return Math.sqrt(Math.pow(major, 2.0)*(1 - Math.pow(mEccentricity, 2.0)));
 	}
 
-	protected void init() {
+	protected void init(boolean update) {
 		int vertex_count = 6*mSideCount + 2;
 		int tri_count = 4*mSideCount;
 		int top_center_index = 3*vertex_count - 6;
@@ -266,6 +271,50 @@ public class NPrism extends BaseObject3D {
 			colors[i] = 1.0f;
 		}
 
-		setData(vertices, normals, texture, colors, indices);
+		if (update) {
+			updateBufferData(vertices, normals, texture, colors, indices);			
+		} else {
+			mGeometry.setData(vertices, normals, texture, colors, indices);
+		}
+	}
+	
+	protected void updateBufferData(float[] vertices, float[] normals, float[] texture, 
+			float[] colors, int[] indices) {
+		mGeometry.setVertices(vertices, true);
+		mGeometry.setNormals(normals);
+		
+		/*FloatBuffer buffer = mGeometry.getVertices();
+		buffer.clear(); buffer.put(vertices);
+		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
+		buffer = mGeometry.getNormals();
+		buffer.clear(); buffer.put(normals);
+		buffer.rewind();
+		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
+		buffer = mGeometry.getTextureCoords();
+		buffer.clear(); buffer.put(texture);
+		buffer.rewind();
+		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
+		buffer = mGeometry.getColors();
+		buffer.clear(); buffer.put(colors);
+		buffer.rewind();
+		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
+		Buffer indices_buffer = mGeometry.getIndices();
+		indices_buffer.clear();
+		if (mGeometry.areOnlyShortBuffersSupported()) {
+			ShortBuffer shortBuffer = (ShortBuffer) indices_buffer;
+			int length = indices.length;
+			short[] shortIndices = new short[length];
+			for (int i = 0; i < length; ++i) {
+				shortIndices[i] = (short) indices[i];
+			}
+			shortBuffer.put(shortIndices);
+			shortBuffer.rewind();
+			mGeometry.changeBufferData(mGeometry.getIndexBufferInfo(), shortBuffer, 0);
+		} else {
+			IntBuffer intBuffer = (IntBuffer) indices_buffer;
+			intBuffer.put(indices);
+			intBuffer.rewind();
+			mGeometry.changeBufferData(mGeometry.getIndexBufferInfo(), intBuffer, 0);
+		}*/
 	}
 }
