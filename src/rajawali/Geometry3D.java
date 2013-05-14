@@ -7,7 +7,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import rajawali.animation.mesh.VertexAnimationObject3D;
@@ -18,6 +17,7 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.util.Log;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored.
@@ -264,10 +264,14 @@ public class Geometry3D {
 		mNormalsArray = getArrayFromBuffer(mNormals);
 		mColorsArray = getArrayFromBuffer(mColors);
 		mTextureCoordsArray = getArrayFromBuffer(mTextureCoords);
-		mIndicesArray = getArrayFromBuffer(mIndicesInt);
+		if (!mOnlyShortBufferSupported) {
+			mIndicesArray = getArrayFromBuffer(mIndicesInt);
+		}
+        else {
+        	mIndicesArray = getArrayFromBuffer(mIndicesShort);
+        }
 
 		int axis = 0;
-		int position = 0;
 		float[] addVertices = getArrayFromBuffer(geometry.getVertices());
 		if (offset != null) {
 			for (int i = 0, j = addVertices.length; i < j; ++i) {
@@ -291,6 +295,10 @@ public class Geometry3D {
 		float[] addColors = getArrayFromBuffer(geometry.getColors());
 		float[] addTextureCoords = getArrayFromBuffer(geometry.getTextureCoords());
 		int[] addIndices = getArrayFromBuffer(geometry.getIndices());
+		int index_offset = (mVerticesArray.length/3);
+		for (int i = 0, j = addIndices.length; i < j; ++i) {
+			addIndices[i] += index_offset;
+		}
 		newVertices = concatAllFloat(mVerticesArray, addVertices);
 		newNormals = concatAllFloat(mNormalsArray, addNormals);
 		newColors = concatAllFloat(mColorsArray, addColors);
