@@ -1,4 +1,4 @@
-package rajawali.scenegraph;
+package rajawali.scene.scenegraph;
 
 import java.util.Collection;
 

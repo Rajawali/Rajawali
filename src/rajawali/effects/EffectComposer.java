@@ -18,7 +18,7 @@ import rajawali.primitives.Plane;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
-import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
+import rajawali.scene.scenegraph.IGraphNode.GRAPH_TYPE;
 
 public class EffectComposer {
 	protected RajawaliRenderer mRenderer;

@@ -12,7 +12,6 @@ import rajawali.math.Plane.PlaneSide;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
@@ -113,7 +112,7 @@ public class CameraFrustum implements IBoundingVolume {
 		}
 		mVisibleFrustum.update(true);
 		//Matrix.setIdentityM(mTmpMatrix, 0);
-		mVisibleFrustum.render(camera, projMatrix, vMatrix, null, null);
+		mVisibleFrustum.render(camera, projMatrix, vMatrix, mMatrix, null);
 	}
 
 	public void transform(float[] matrix) {
@@ -127,8 +126,7 @@ public class CameraFrustum implements IBoundingVolume {
 	}
 
 	public BaseObject3D getVisual() {
-		// TODO Auto-generated method stub
-		return null;
+		return mVisibleFrustum;
 	}
 
 	public void setBoundingColor(int color) {

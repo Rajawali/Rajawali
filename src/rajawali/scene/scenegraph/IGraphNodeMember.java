@@ -1,4 +1,4 @@
-package rajawali.scenegraph;
+package rajawali.scene.scenegraph;
 
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.Number3D;

@@ -20,6 +20,8 @@ public class Camera extends ATransformable3D {
 	protected float[] mInvVMatrix = new float[16];
 	protected float[] mRotationMatrix = new float[16];
 	protected float[] mProjMatrix = new float[16];
+	protected float[] mMMatrix = new float[16];
+	protected float[] mRotateMatrix = new float[16];
 	protected float mNearPlane = 1.0f;
 	protected float mFarPlane = 120.0f;
 	protected float mFieldOfView = 45;
@@ -53,6 +55,31 @@ public class Camera extends ATransformable3D {
 		mIsCamera = true;
 		mFrustum = new CameraFrustum();
 	}
+	
+	public void calculateModelMatrix() {
+		synchronized (mFrustumLock) {
+			Matrix.setIdentityM(mMMatrix, 0);
+			Matrix.setIdentityM(mRotateMatrix, 0);
+
+			setOrientation();
+			if (mLookAt == null) {
+				mOrientation.toRotationMatrix(mRotateMatrix);
+			} else {
+				System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
+			}
+
+			Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
+			Matrix.setIdentityM(mTmpMatrix, 0);
+			Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mRotateMatrix, 0);
+			System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
+		}
+	}
+	
+	public float[] getModelMatrix() {
+		synchronized (mFrustumLock) {
+			return mMMatrix;
+		}
+	}
 
 	public float[] getViewMatrix() {
 		synchronized (mFrustumLock) {
@@ -81,6 +108,7 @@ public class Camera extends ATransformable3D {
 	
 	public void updateFrustum(float[] pMatrix,float[] vMatrix) {
 		synchronized (mFrustumLock) {
+			calculateModelMatrix();
 			Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
 			Matrix.invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
 			mFrustum.update(mCombinedMatrix);

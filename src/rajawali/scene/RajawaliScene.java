@@ -21,10 +21,10 @@ import rajawali.renderer.GroupTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.renderer.plugins.IRendererPlugin;
-import rajawali.scenegraph.IGraphNode;
-import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
-import rajawali.scenegraph.IGraphNodeMember;
-import rajawali.scenegraph.Octree;
+import rajawali.scene.scenegraph.IGraphNode;
+import rajawali.scene.scenegraph.IGraphNodeMember;
+import rajawali.scene.scenegraph.Octree;
+import rajawali.scene.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -593,6 +593,7 @@ public class RajawaliScene extends AFrameTask {
 
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
+		mCamera.updateFrustum(mPMatrix, mVMatrix); //update frustum plane
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -607,7 +608,6 @@ public class RajawaliScene extends AFrameTask {
 			}
 		}
 
-		mCamera.updateFrustum(mPMatrix, mVMatrix); //update frustum plane
 		
 		// Update all registered animations
 		synchronized (mAnimations) {
