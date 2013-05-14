@@ -15,6 +15,8 @@ import javax.microedition.khronos.opengles.GL10;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.animation.Animation3D;
+import rajawali.effects.APass;
+import rajawali.effects.EffectComposer;
 import rajawali.materials.AMaterial;
 import rajawali.materials.TextureManager;
 import rajawali.math.Number3D;
@@ -95,6 +97,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	private RajawaliScene mNextScene; //The scene which the renderer should switch to on the next frame.
 	private final Object mNextSceneLock = new Object(); //Scene switching lock
 	
+	/**
+	 * Effect composer for post processing. If the effect composer is empty,
+	 * RajawaliRenderer will render the scene normally to screen. If there are
+	 * {@link APass} instances in the composer list, it will skip rendering the
+	 * current scene and call render on the effect composer instead which will
+	 * handle scene render passes of its own.
+	 */
+	protected EffectComposer mEffectComposer;
+	
 	public RajawaliRenderer(Context context) {
 		RajLog.i("IMPORTANT: Rajawali's coordinate system has changed. It now reflects");
 		RajLog.i("the OpenGL standard. Please invert the camera's z coordinate or");
@@ -112,6 +123,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajawaliScene defaultScene = new RajawaliScene(this);
 		mScenes.add(defaultScene);
 		mCurrentScene = defaultScene;
+		
+		mEffectComposer = new EffectComposer(this);
 	}
 	
 	/**
@@ -423,7 +436,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			int color = mCurrentScene.getBackgroundColor();
 			GLES20.glClearColor(Color.red(color)/255f, Color.green(color)/255f, Color.blue(color)/255f, Color.alpha(color)/255f);
 		}
-		mCurrentScene.render(deltaTime);
+		mCurrentScene.render(deltaTime, null);
 	}
 
 	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
@@ -448,7 +461,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition.khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
 	 * 
 	 */
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {		
+	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		RajLog.setGL10(gl);
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 
 		GLES20.glFrontFace(GLES20.GL_CCW);
