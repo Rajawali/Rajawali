@@ -259,6 +259,7 @@ public class Geometry3D {
 		float[] mTextureCoordsArray = null;
 		int[] mIndicesArray = null;
 
+		//Get the old data
 		mVerticesArray = getFloatArrayFromBuffer(mVertices);
 		mNormalsArray = getFloatArrayFromBuffer(mNormals);
 		mColorsArray = getFloatArrayFromBuffer(mColors);
@@ -268,6 +269,8 @@ public class Geometry3D {
 		} else {
         	mIndicesArray = getIntArrayFromBuffer(mIndicesShort);
         }
+		
+		//Get the new data, offset the vertices
 		int axis = 0;
 		float[] addVertices = getFloatArrayFromBuffer(geometry.getVertices());
 		if (offset != null) {
@@ -296,28 +299,27 @@ public class Geometry3D {
 		for (int i = 0, j = addIndices.length; i < j; ++i) {
 			addIndices[i] += index_offset;
 		}
+		
+		//Concatenate the old and new data
 		newVertices = concatAllFloat(mVerticesArray, addVertices);
 		newNormals = concatAllFloat(mNormalsArray, addNormals);
 		newColors = concatAllFloat(mColorsArray, addColors);
 		newTextureCoords = concatAllFloat(mTextureCoordsArray, addTextureCoords);
 		newIntIndices = concatAllInt(mIndicesArray, (int[]) addIndices);
+		
+		//Set the new data
 		setVertices(newVertices, true);
 		mNormals = null;
 		setNormals(newNormals);
-		if(newTextureCoords == null || newTextureCoords.length == 0)
-			newTextureCoords = new float[(newVertices.length / 3) * 2];
 		mTextureCoords = null;
 		setTextureCoords(newTextureCoords);
 		mColors = null;
-		if(newColors == null || newColors.length == 0) {
-			setColors(0xff000000 + (int)(Math.random() * 0xffffff));
-		} else {
-			setColors(newColors);
-		}
+		setColors(newColors);
 		mIndicesInt = null;
 		mIndicesShort = null;
 		setIndices(newIntIndices);
 
+		//Create the new buffers
 		createBuffers();
 	}
 	
