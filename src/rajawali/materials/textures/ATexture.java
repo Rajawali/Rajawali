@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import rajawali.materials.AMaterial;
 import rajawali.renderer.AFrameTask;
 import android.graphics.Bitmap.Config;
+import android.opengl.GLES20;
 
 public abstract class ATexture extends AFrameTask {
 	/**
@@ -106,6 +107,7 @@ public abstract class ATexture extends AFrameTask {
 	 */
 	private List<AMaterial> mMaterialsUsingTexture;
 	protected ACompressedTexture mCompressedTexture;
+	protected int mGLTextureType = GLES20.GL_TEXTURE_2D;
 	
 	/**
 	 * Creates a new ATexture instance with the specified texture type
@@ -169,6 +171,7 @@ public abstract class ATexture extends AFrameTask {
 		mFilterType = other.getFilterType();
 		mBitmapConfig = other.getBitmapConfig();
 		mCompressedTexture = other.getCompressedTexture();
+		mGLTextureType = other.getGLTextureType();
 	}
 	
 	/**
@@ -356,6 +359,15 @@ public abstract class ATexture extends AFrameTask {
 	 */
 	public void setBitmapConfig(Config bitmapConfig) {
 		this.mBitmapConfig = bitmapConfig;
+	}
+	
+	public int getGLTextureType()
+	{
+		return mGLTextureType;
+	}
+	
+	public void setGLTextureType(int glTextureType) {
+		mGLTextureType = glTextureType;
 	}
 	
 	public TYPE getFrameTaskType() {

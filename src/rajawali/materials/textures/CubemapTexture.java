@@ -27,24 +27,28 @@ public class CubeMapTexture extends AMultiTexture {
 	{
 		super(TextureType.CUBE_MAP, textureName);
 		setWrapType(WrapType.CLAMP);
+		setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
 	}
 	
 	public CubeMapTexture(String textureName, int[] resourceIds)
 	{
 		super(TextureType.CUBE_MAP, textureName, resourceIds);
 		setWrapType(WrapType.CLAMP);
+		setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
 	}
 	
 	public CubeMapTexture(String textureName, Bitmap[] bitmaps)
 	{
 		super(TextureType.CUBE_MAP, textureName, bitmaps);
 		setWrapType(WrapType.CLAMP);
+		setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
 	}
 	
 	public CubeMapTexture(String textureName, ByteBuffer[] byteBuffers)
 	{
 		super(TextureType.CUBE_MAP, textureName, byteBuffers);
 		setWrapType(WrapType.CLAMP);
+		setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
 	}
 	
 	public CubeMapTexture clone() {

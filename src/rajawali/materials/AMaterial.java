@@ -20,6 +20,7 @@ import rajawali.util.RajLog;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
 public abstract class AMaterial {
@@ -269,11 +270,10 @@ public abstract class AMaterial {
 		int num = mTextureList.size();
 
 		for (int i = 0; i < num; i++) {
-			ATexture textureConfig = mTextureList.get(i);
-			int type = textureConfig.getTextureType() == TextureType.CUBE_MAP ? GLES20.GL_TEXTURE_CUBE_MAP : GLES20.GL_TEXTURE_2D;
+			ATexture texture = mTextureList.get(i);
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
-			GLES20.glBindTexture(type, textureConfig.getTextureId());
-			GLES20.glUniform1i(textureConfig.getUniformHandle(), i);
+			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+			GLES20.glUniform1i(texture.getUniformHandle(), i);
 		}
 	}
 

@@ -1,14 +1,22 @@
 package rajawali.materials.textures;
 
+import android.graphics.SurfaceTexture;
+import android.media.MediaPlayer;
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.view.Surface;
 
 public class VideoTexture extends ATexture {
 
 	private final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
-
-	public VideoTexture(String textureName)
+	private MediaPlayer mMediaPlayer;
+	private SurfaceTexture mSurfaceTexture;
+	
+	public VideoTexture(String textureName, MediaPlayer mediaPlayer)
 	{
 		super(TextureType.VIDEO_TEXTURE, textureName);
+		mMediaPlayer = mediaPlayer;
+		setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
 	}
 
 	public VideoTexture(VideoTexture other)
@@ -33,10 +41,14 @@ public class VideoTexture extends ATexture {
 				GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
 				GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+		setTextureId(textureId);
+		mSurfaceTexture = new SurfaceTexture(textureId);
+		mMediaPlayer.setSurface(new Surface(mSurfaceTexture));
 	}
 
 	void remove() throws TextureException {
 		GLES20.glDeleteTextures(1, new int[] { mTextureId }, 0);
+		mSurfaceTexture.release();
 	}
 
 	void replace() throws TextureException {
@@ -44,6 +56,12 @@ public class VideoTexture extends ATexture {
 	}
 
 	void reset() throws TextureException {
-		return;
+		mSurfaceTexture.release();
+	}
+	
+	public void update()
+	{
+		if(mSurfaceTexture != null)
+			mSurfaceTexture.updateTexImage();
 	}
 }

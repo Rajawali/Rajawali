@@ -152,11 +152,6 @@ public final class TextureManager extends AFrameTask {
 		}
 	}
 
-	public void validateTextures()
-	{
-		// TODO: validate
-	}
-
 	/**
 	 * Returns the number of textures currently managed.
 	 * 

@@ -48,7 +48,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected int mViewportWidth, mViewportHeight; //Height and width of GL viewport
 	protected WallpaperService.Engine mWallpaperEngine; //Concrete wallpaper instance
 	protected GLSurfaceView mSurfaceView; //The rendering surface
-	public static GL10 mGL10; // Reference to GL10 context. This is used to dump system information
 	
 	protected TextureManager mTextureManager; //Texture manager for ALL textures across ALL scenes.
 	
@@ -115,19 +114,17 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajLog.i("call mCamera.setLookAt(0, 0, 0).");
 		
 		AMaterial.setLoaderContext(context);
-		
+
 		mContext = context;
 		mFrameRate = getRefreshRate();
 		mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
 		mSceneQueue = new LinkedList<AFrameTask>();
 		mSceneCachingEnabled = true;
 		mSceneInitialized = false;
-		
+
 		RajawaliScene defaultScene = new RajawaliScene(this);
 		mScenes.add(defaultScene);
 		mCurrentScene = defaultScene;
-		
-		mEffectComposer = new EffectComposer(this);
 	}
 	
 	/**
@@ -433,8 +430,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
 		mLastRender = SystemClock.elapsedRealtime();
 		
-		mTextureManager.validateTextures();
-
 		if (!mCurrentScene.hasPickerInfo()) {
 			int color = mCurrentScene.getBackgroundColor();
 			GLES20.glClearColor(Color.red(color)/255f, Color.green(color)/255f, Color.blue(color)/255f, Color.alpha(color)/255f);
@@ -465,13 +460,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		mGL10 = gl;
+		RajLog.setGL10(gl);
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 
 		GLES20.glFrontFace(GLES20.GL_CCW);
 		GLES20.glCullFace(GLES20.GL_BACK);
 
 		if (!mSceneInitialized) {
+			mEffectComposer = new EffectComposer(this);
+			
 			mTextureManager = TextureManager.getInstance();
 			mTextureManager.setContext(this.getContext());
 			mTextureManager.setRenderer(this);
