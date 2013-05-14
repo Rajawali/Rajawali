@@ -1,10 +1,5 @@
 package rajawali.primitives;
 
-import java.nio.Buffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-
 import rajawali.BaseObject3D;
 import rajawali.math.Number3D;
 
@@ -274,19 +269,15 @@ public class NPrism extends BaseObject3D {
 		if (update) {
 			updateBufferData(vertices, normals, texture, colors, indices);			
 		} else {
-			mGeometry.setData(vertices, normals, texture, colors, indices);
+			setData(vertices, normals, texture, colors, indices);
 		}
 	}
 	
 	protected void updateBufferData(float[] vertices, float[] normals, float[] texture, 
 			float[] colors, int[] indices) {
 		mGeometry.setVertices(vertices, true);
-		mGeometry.setNormals(normals);
-		
-		/*FloatBuffer buffer = mGeometry.getVertices();
-		buffer.clear(); buffer.put(vertices);
-		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
-		buffer = mGeometry.getNormals();
+		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), mGeometry.getVertices(), 0);
+		/*buffer = mGeometry.getNormals();
 		buffer.clear(); buffer.put(normals);
 		buffer.rewind();
 		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
@@ -297,8 +288,8 @@ public class NPrism extends BaseObject3D {
 		buffer = mGeometry.getColors();
 		buffer.clear(); buffer.put(colors);
 		buffer.rewind();
-		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
-		Buffer indices_buffer = mGeometry.getIndices();
+		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);*/
+		/*Buffer indices_buffer = mGeometry.getIndices();
 		indices_buffer.clear();
 		if (mGeometry.areOnlyShortBuffersSupported()) {
 			ShortBuffer shortBuffer = (ShortBuffer) indices_buffer;
