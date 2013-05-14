@@ -190,7 +190,7 @@ public class Geometry3D {
 		return result;
 	}
 	
-	public static float[] getArrayFromBuffer(FloatBuffer buffer) {
+	public static float[] getFloatArrayFromBuffer(FloatBuffer buffer) {
 		float[] array = null;
 		if (buffer.hasArray()) {
 			array = buffer.array();
@@ -202,7 +202,7 @@ public class Geometry3D {
 		return array;
 	}
 	
-	public static int[] getArrayFromBuffer(Buffer buffer) {
+	public static int[] getIntArrayFromBuffer(Buffer buffer) {
 		int[] array = null;
 		if (buffer.hasArray()) {
 			array = (int[]) buffer.array();
@@ -259,17 +259,17 @@ public class Geometry3D {
 		float[] mTextureCoordsArray = null;
 		int[] mIndicesArray = null;
 
-		mVerticesArray = getArrayFromBuffer(mVertices);
-		mNormalsArray = getArrayFromBuffer(mNormals);
-		mColorsArray = getArrayFromBuffer(mColors);
-		mTextureCoordsArray = getArrayFromBuffer(mTextureCoords);
+		mVerticesArray = getFloatArrayFromBuffer(mVertices);
+		mNormalsArray = getFloatArrayFromBuffer(mNormals);
+		mColorsArray = getFloatArrayFromBuffer(mColors);
+		mTextureCoordsArray = getFloatArrayFromBuffer(mTextureCoords);
 		if (!mOnlyShortBufferSupported) {
-			mIndicesArray = getArrayFromBuffer(mIndicesInt);
+			mIndicesArray = getIntArrayFromBuffer(mIndicesInt);
 		} else {
-        	mIndicesArray = getArrayFromBuffer(mIndicesShort);
+        	mIndicesArray = getIntArrayFromBuffer(mIndicesShort);
         }
 		int axis = 0;
-		float[] addVertices = getArrayFromBuffer(geometry.getVertices());
+		float[] addVertices = getFloatArrayFromBuffer(geometry.getVertices());
 		if (offset != null) {
 			for (int i = 0, j = addVertices.length; i < j; ++i) {
 				switch (axis) {
@@ -288,10 +288,10 @@ public class Geometry3D {
 					axis = 0;
 			}
 		}
-		float[] addNormals = getArrayFromBuffer(geometry.getNormals());
-		float[] addColors = getArrayFromBuffer(geometry.getColors());
-		float[] addTextureCoords = getArrayFromBuffer(geometry.getTextureCoords());
-		int[] addIndices = getArrayFromBuffer(geometry.getIndices());
+		float[] addNormals = getFloatArrayFromBuffer(geometry.getNormals());
+		float[] addColors = getFloatArrayFromBuffer(geometry.getColors());
+		float[] addTextureCoords = getFloatArrayFromBuffer(geometry.getTextureCoords());
+		int[] addIndices = getIntArrayFromBuffer(geometry.getIndices());
 		int index_offset = (mVerticesArray.length/3);
 		for (int i = 0, j = addIndices.length; i < j; ++i) {
 			addIndices[i] += index_offset;
