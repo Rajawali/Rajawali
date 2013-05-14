@@ -265,11 +265,9 @@ public class Geometry3D {
 		mTextureCoordsArray = getArrayFromBuffer(mTextureCoords);
 		if (!mOnlyShortBufferSupported) {
 			mIndicesArray = getArrayFromBuffer(mIndicesInt);
-		}
-        else {
+		} else {
         	mIndicesArray = getArrayFromBuffer(mIndicesShort);
         }
-
 		int axis = 0;
 		float[] addVertices = getArrayFromBuffer(geometry.getVertices());
 		if (offset != null) {
