@@ -154,13 +154,13 @@ public class Geometry3D {
 	 */
 	public static float[] concatAllFloat(float[] ... arrays) {
 		int totalLength = 0;
-		int number = arrays.length;
-		for (int i = 0; i < number; ++i) {
+		final int subArrayCount = arrays.length;
+		for (int i = 0; i < subArrayCount; ++i) {
 			totalLength += arrays[i].length;
 		}
 		float[] result = Arrays.copyOf(arrays[0], totalLength);
 		int offset = arrays[0].length;
-		for (int i = 1; i < number; ++i) {
+		for (int i = 1; i < subArrayCount; ++i) {
 			System.arraycopy(arrays[i], 0, result, offset, arrays[i].length);
 			offset += arrays[i].length;
 		}
@@ -177,13 +177,13 @@ public class Geometry3D {
 	 */
 	public static int[] concatAllInt(int[] ... arrays) {
 		int totalLength = 0;
-		int number = arrays.length;
-		for (int i = 0; i < number; ++i) {
+		final int subArrayCount = arrays.length;
+		for (int i = 0; i < subArrayCount; ++i) {
 			totalLength += arrays[i].length;
 		}
 		int[] result = Arrays.copyOf(arrays[0], totalLength);
 		int offset = arrays[0].length;
-		for (int i = 1; i < number; ++i) {
+		for (int i = 1; i < subArrayCount; ++i) {
 			System.arraycopy(arrays[i], 0, result, offset, arrays[i].length);
 			offset += arrays[i].length;
 		}
