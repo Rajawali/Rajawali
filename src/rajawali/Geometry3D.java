@@ -17,7 +17,6 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored.
@@ -312,10 +311,11 @@ public class Geometry3D {
 		mTextureCoords = null;
 		setTextureCoords(newTextureCoords);
 		mColors = null;
-		if(newColors == null || newColors.length == 0)
+		if(newColors == null || newColors.length == 0) {
 			setColors(0xff000000 + (int)(Math.random() * 0xffffff));
-		else
-			setColors(newColors);	
+		} else {
+			setColors(newColors);
+		}
 		mIndicesInt = null;
 		mIndicesShort = null;
 		setIndices(newIntIndices);
