@@ -11,6 +11,7 @@ import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
+import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -106,7 +107,7 @@ public class CameraFrustum implements IBoundingVolume {
 			mVisibleFrustum.setMaterial(new SimpleMaterial());
 			mVisibleFrustum.getMaterial().setUseColor(true);
 			mVisibleFrustum.setColor(mBoundingColor.get());
-			//mVisibleFrustum.setDrawingMode(GLES20.GL_LINE_LOOP);
+			mVisibleFrustum.setDrawingMode(GLES20.GL_LINE_LOOP);
 		}
 		mVisibleFrustum.update(true);
 		Matrix.setIdentityM(mTmpMatrix, 0);
@@ -148,33 +149,25 @@ public class CameraFrustum implements IBoundingVolume {
 		public CameraVisibleFrustum(CameraFrustum parent, int sides, double radiusTop, double radiusBase, double height) {
 			super(sides, radiusTop, radiusBase, height);
 			mParent = parent;
-			//update(false);
 		}
 		
 		private void update(boolean update) {
 			double near, far;
-			Log.d("UPDATE", "Corners:");
 			for (int i = 0; i < 8; ++i) {
-				Log.d("UPDATE", "Corner[" + i + "]: " + mParent.mPlanePoints[i]);
 			}
-			Number3D corner = mParent.mPlanePoints[6];
+			Number3D corner = mParent.mPlanePoints[2];
 			mRadiusTop = corner.x*ROOT2_2;
 			mMinorTop = corner.y*ROOT2_2;
-			Log.d("UPDATE", "Top Major: " + mRadiusTop + " Top Minor: " + mMinorTop);
 			Log.d("UPDATE", "Near corner: " + corner);
 			near = corner.z;
-			corner = mParent.mPlanePoints[2];
-			Log.d("UPDATE", "Far corner: " + corner);
+			corner = mParent.mPlanePoints[6];
 			mRadiusBase = corner.x*ROOT2_2;
 			mMinorBase = corner.y*ROOT2_2;
-			Log.d("UPDATE", "Base Major: " + mRadiusBase + " Base Minor: " + mMinorBase);
 			far = corner.z;
 			double major_squared = Math.pow(mRadiusBase, 2.0);
 			double minor_squared = Math.pow(mMinorBase, 2.0);
 			mEccentricity = Math.sqrt((major_squared-minor_squared)/major_squared);
-			Log.d("UPDATE", "Eccentricity: " + mEccentricity);
 			mHeight = Math.abs(far - near);
-			Log.d("UPDATE", "Height: " + mHeight);
 			init(update);
 		}
 	}

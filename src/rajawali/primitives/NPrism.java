@@ -277,35 +277,5 @@ public class NPrism extends BaseObject3D {
 			float[] colors, int[] indices) {
 		mGeometry.setVertices(vertices, true);
 		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), mGeometry.getVertices(), 0);
-		/*buffer = mGeometry.getNormals();
-		buffer.clear(); buffer.put(normals);
-		buffer.rewind();
-		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
-		buffer = mGeometry.getTextureCoords();
-		buffer.clear(); buffer.put(texture);
-		buffer.rewind();
-		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);
-		buffer = mGeometry.getColors();
-		buffer.clear(); buffer.put(colors);
-		buffer.rewind();
-		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), buffer, 0);*/
-		/*Buffer indices_buffer = mGeometry.getIndices();
-		indices_buffer.clear();
-		if (mGeometry.areOnlyShortBuffersSupported()) {
-			ShortBuffer shortBuffer = (ShortBuffer) indices_buffer;
-			int length = indices.length;
-			short[] shortIndices = new short[length];
-			for (int i = 0; i < length; ++i) {
-				shortIndices[i] = (short) indices[i];
-			}
-			shortBuffer.put(shortIndices);
-			shortBuffer.rewind();
-			mGeometry.changeBufferData(mGeometry.getIndexBufferInfo(), shortBuffer, 0);
-		} else {
-			IntBuffer intBuffer = (IntBuffer) indices_buffer;
-			intBuffer.put(indices);
-			intBuffer.rewind();
-			mGeometry.changeBufferData(mGeometry.getIndexBufferInfo(), intBuffer, 0);
-		}*/
 	}
 }
