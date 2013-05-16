@@ -121,6 +121,33 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		this(focalPoint, periapsis, Number3D.getAxisVector(Axis.Y), eccentricity, angle, direction);
 	}
 	
+
+	/**
+	 * Defines an elliptical orbit around a point with no orbital inclination.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param axis Axis of the orbit.
+	 * @param angle Degrees to rotate.
+	 */
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, Axis axis, double angle) {
+		this(focalPoint, periapsis, Number3D.getAxisVector(axis), eccentricity, angle);
+	}
+	/**
+	 * Defines an elliptical orbit around a point with no orbital inclination.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param axis Axis of the orbit.
+	 * @param direction Direction of the orbit.
+	 */
+	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity, double angle, Axis axis,
+			OrbitDirection direction) {
+		this(focalPoint, periapsis, Number3D.getAxisVector(axis), eccentricity, angle, direction);
+	}
+	
+
+	
 	@Override
 	protected void applyTransformation() {
 		// Everything here is stored in double precision because single precision floating point causes a major
