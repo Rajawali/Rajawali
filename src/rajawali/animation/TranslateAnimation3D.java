@@ -74,4 +74,11 @@ public class TranslateAnimation3D extends Animation3D {
 		super.setDuration(duration);
 		mLookatDelta = 300.f / duration;
 	}
+	
+	@Override
+	public void reset() {
+		super.reset();
+		// Diff position needs to be reset or future uses of animation will cause unexpected translations.
+		mDiffPosition = null;
+	}
 }
