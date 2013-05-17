@@ -65,6 +65,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected boolean mEnableDepthBuffer = true; //Do we use the depth buffer?
 	protected static boolean mFogEnabled; //Is camera fog enabled?
 	protected static int mMaxLights = 1; //How many lights max?
+	protected int mLastReportedGLError = 0; // Keep track of the last reported OpenGL error
 
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
@@ -419,6 +420,19 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 			if(mFPSUpdateListener != null)
 				mFPSUpdateListener.onFPSUpdate(mLastMeasuredFPS); //Update the FPS listener
+		}
+		
+		int error = glUnused.glGetError();
+		
+		if(error > 0)
+		{
+			if(error != mLastReportedGLError)
+			{
+				RajLog.e("OpenGL Error: " + GLU.gluErrorString(error));
+				mLastReportedGLError = error;
+			}
+		} else {
+			mLastReportedGLError = 0;
 		}
 	}
 

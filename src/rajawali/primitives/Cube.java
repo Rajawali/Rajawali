@@ -107,6 +107,6 @@ public class Cube extends BaseObject3D {
 				22, 21, 20, 23, 22, 20
 		};
 		
-		setData(vertices, normals, mIsSkybox ? skyboxTextureCoords : textureCoords, colors, mIsSkybox && mHasCubemapTexture ? skyboxIndices : indices);
+		setData(vertices, normals, mIsSkybox || mHasCubemapTexture ? skyboxTextureCoords : textureCoords, colors, mIsSkybox && mHasCubemapTexture ? skyboxIndices : indices);
 	}
 }
