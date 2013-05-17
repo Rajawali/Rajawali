@@ -20,7 +20,6 @@ import rajawali.util.RajLog;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
 public abstract class AMaterial {
@@ -360,7 +359,6 @@ public abstract class AMaterial {
 			textureName += numDiffuse;
 		
 		texture.setTextureName(textureName);
-		RajLog.i("textureName: " + textureName);
 		
 		if(texture.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
 

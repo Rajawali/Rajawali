@@ -1,13 +1,11 @@
 package rajawali.animation.mesh;
 
-import android.opengl.GLES20;
-import android.os.SystemClock;
-
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.SerializedObject3D;
 import rajawali.materials.textures.ATexture.TextureException;
-import rajawali.materials.textures.TextureManager.TextureManagerException;
+import android.opengl.GLES20;
+import android.os.SystemClock;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
 

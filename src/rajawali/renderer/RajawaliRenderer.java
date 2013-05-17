@@ -109,9 +109,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected EffectComposer mEffectComposer;
 	
 	public RajawaliRenderer(Context context) {
-		RajLog.i("IMPORTANT: Rajawali's coordinate system has changed. It now reflects");
-		RajLog.i("the OpenGL standard. Please invert the camera's z coordinate or");
-		RajLog.i("call mCamera.setLookAt(0, 0, 0).");
+		RajLog.i("Rajawali | Anchor Steam | Dev Branch");
+		RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
 		
 		AMaterial.setLoaderContext(context);
 
@@ -471,7 +470,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			
 			mTextureManager = TextureManager.getInstance();
 			mTextureManager.setContext(this.getContext());
-			mTextureManager.setRenderer(this);
+			mTextureManager.registerRenderer(this);
 			
 			initScene();
 		}
@@ -543,8 +542,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void onSurfaceDestroyed() {
 		stopRendering();
+		mTextureManager.unregisterRenderer(this);
 		if (mTextureManager != null)
-			mTextureManager.taskReset();
+			mTextureManager.taskReset(this);
 		synchronized (mScenes) {
 			for (int i = 0, j = mScenes.size(); i < j; ++i)
 				mScenes.get(i).destroyScene();

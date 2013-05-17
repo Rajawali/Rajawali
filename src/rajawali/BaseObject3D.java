@@ -296,6 +296,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 					mMaterial.setCamera(camera);
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
+				
 				if (mMaterial.getUseColor())
 					mMaterial.setColors(mGeometry.getColorBufferInfo().bufferHandle);
 			}

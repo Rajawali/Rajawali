@@ -105,9 +105,20 @@ public abstract class ATexture extends AFrameTask {
 	/**
 	 * A list of materials that use this texture. 
 	 */
-	private List<AMaterial> mMaterialsUsingTexture;
+	protected List<AMaterial> mMaterialsUsingTexture;
+	/**
+	 * The optional compressed texture
+	 */
 	protected ACompressedTexture mCompressedTexture;
+	/**
+	 * The OpenGL texture type
+	 */
 	protected int mGLTextureType = GLES20.GL_TEXTURE_2D;
+	/**
+	 * This texture's unique owner identity String. This is usually the 
+	 * fully qualified name of the {@link RajawaliRenderer} instance.  
+	 */
+	protected String mOwnerIdentity;
 	
 	/**
 	 * Creates a new ATexture instance with the specified texture type
@@ -372,6 +383,16 @@ public abstract class ATexture extends AFrameTask {
 	
 	public TYPE getFrameTaskType() {
 		return TYPE.TEXTURE;
+	}
+	
+	public void setOwnerIdentity(String identity)
+	{
+		mOwnerIdentity = identity;
+	}
+	
+	public String getOwnerIdentity()
+	{
+		return mOwnerIdentity;
 	}
 	
 	public boolean registerMaterial(AMaterial material) {
