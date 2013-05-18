@@ -113,6 +113,7 @@ public class RajawaliScene extends AFrameTask {
 		mCamera.setZ(mEyeZ);
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
 		mCameras.add(mCamera);
+		resetGLState();
 	}
 	
 	public RajawaliScene(RajawaliRenderer renderer, GRAPH_TYPE type) {
@@ -544,6 +545,16 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	public boolean hasPickerInfo() {
 		return (mPickerInfo != null);
+	}
+	
+	/**
+	 * Applies the Rajawali default GL state to the driver. Developers who wish
+	 * to change this default behavior can override this method.
+	 */
+	protected void resetGLState() {
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glCullFace(GLES20.GL_BACK);
+		GLES20.glFrontFace(GLES20.GL_CCW);
 	}
 	
 	public void render(double deltaTime, RenderTarget renderTarget) {

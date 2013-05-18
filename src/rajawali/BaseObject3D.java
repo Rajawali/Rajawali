@@ -255,14 +255,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		if (!mIsContainerOnly && mIsInFrustum) {
 			mProjMatrix = projMatrix;
-			if (!mDoubleSided) {
-				GLES20.glEnable(GLES20.GL_CULL_FACE);
-				if (mBackSided) {
-					GLES20.glCullFace(GLES20.GL_FRONT);
-				} else {
-					GLES20.glCullFace(GLES20.GL_BACK);
-					GLES20.glFrontFace(GLES20.GL_CCW);
-				}
+			if (mDoubleSided) {
+				GLES20.glDisable(GLES20.GL_CULL_FACE);
+			} else if (mBackSided) {
+				GLES20.glCullFace(GLES20.GL_FRONT);
 			}
 			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
 				GLES20.glEnable(GLES20.GL_BLEND);
@@ -330,7 +326,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 				pickerMat.unbindTextures();
 			}
-			GLES20.glDisable(GLES20.GL_CULL_FACE);
+			//GLES20.glDisable(GLES20.GL_CULL_FACE);
 			GLES20.glDisable(GLES20.GL_BLEND);
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		}
@@ -347,6 +343,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		if (mRenderChildrenAsBatch) {
 			mMaterial.unbindTextures();
+		}
+		
+		if (mDoubleSided) {
+			GLES20.glEnable(GLES20.GL_CULL_FACE);
+		} else if (mBackSided) {
+			GLES20.glCullFace(GLES20.GL_BACK);
 		}
 	}
 
