@@ -1282,91 +1282,6 @@ public class RajawaliScene extends AFrameTask {
 	}
 
 	/**
-	 * Retrieve the number of triangles this scene contains, recursive method
-	 * 
-	 * @return int the total triangle count for the scene.
-	 */
-	public int getNumTriangles() {
-		int triangleCount = 0;
-		ArrayList<BaseObject3D> children = getChildrenCopy();
-		
-		for (int i = 0, j = children.size(); i < j; i++) {
-			BaseObject3D child = children.get(i);
-			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
-				if (child.getNumChildren() > 0) {
-					triangleCount += child.getNumTriangles(child);
-				} else {
-					triangleCount += child.getGeometry().getVertices().limit() / 9;
-				}
-		}
-		return triangleCount;
-	}
-	
-	
-	/**
-	 * Retrieve the number of objects on the screen, recursive method
-	 * 
-	 * @return int the total object count for the screen.
-	 */
-	public int getNumObjects() {
-		int objectCount = 0;
-		ArrayList<BaseObject3D> children = getChildrenCopy();
-		
-		for (int i = 0, j = children.size(); i < j; i++) {
-			BaseObject3D child = children.get(i);
-			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
-				if (child.getNumChildren() > 0) {
-					objectCount += child.getNumObjects(child) + 1;
-				} else {
-					objectCount++;
-				}
-		}
-		return objectCount;
-	}
-		
-	/**
-	 * Retrieve the number of triangles this scene contains, recursive method
-	 * 
-	 * @return int the total triangle count for the scene.
-	 */
-	public int getNumTriangles() {
-		int triangleCount = 0;
-		ArrayList<BaseObject3D> children = getChildrenCopy();
-		
-		for (int i = 0, j = children.size(); i < j; i++) {
-			BaseObject3D child = children.get(i);
-			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
-				if (child.getNumChildren() > 0) {
-					triangleCount += child.getNumTriangles(child);
-				} else {
-					triangleCount += child.getGeometry().getVertices().limit() / 9;
-				}
-		}
-		return triangleCount;
-	}
-	
-	/**
-	 * Retrieve the number of objects on the screen, recursive method
-	 * 
-	 * @return int the total object count for the screen.
-	 */
-	public int getNumObjects() {
-		int objectCount = 0;
-		ArrayList<BaseObject3D> children = getChildrenCopy();
-		
-		for (int i = 0, j = children.size(); i < j; i++) {
-			BaseObject3D child = children.get(i);
-			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
-				if (child.getNumChildren() > 0) {
-					objectCount += child.getNumObjects(child) + 1;
-				} else {
-					objectCount++;
-				}
-		}
-		return objectCount;
-	}
-	
-	/**
 	 * Internal method for replacing a {@link IRendererPlugin}. If index is
 	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
@@ -1548,19 +1463,48 @@ public class RajawaliScene extends AFrameTask {
 	}
 
 	/**
-	 * Retrieve the number of triangles this scene contains.
+	 * Retrieve the number of triangles this scene contains, recursive method
 	 * 
 	 * @return int the total triangle count for the scene.
 	 */
 	public int getNumTriangles() {
 		int triangleCount = 0;
 		ArrayList<BaseObject3D> children = getChildrenCopy();
+		
 		for (int i = 0, j = children.size(); i < j; i++) {
-			if (children.get(i).getGeometry() != null && children.get(i).getGeometry().getVertices() != null && children.get(i).isVisible())
-				triangleCount += children.get(i).getGeometry().getVertices().limit() / 9;
+			BaseObject3D child = children.get(i);
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				if (child.getNumChildren() > 0) {
+					triangleCount += child.getNumTriangles();
+				} else {
+					triangleCount += child.getGeometry().getVertices().limit() / 9;
+				}
 		}
 		return triangleCount;
 	}
+	
+	
+	/**
+	 * Retrieve the number of objects on the screen, recursive method
+	 * 
+	 * @return int the total object count for the screen.
+	 */
+	public int getNumObjects() {
+		int objectCount = 0;
+		ArrayList<BaseObject3D> children = getChildrenCopy();
+		
+		for (int i = 0, j = children.size(); i < j; i++) {
+			BaseObject3D child = children.get(i);
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				if (child.getNumChildren() > 0) {
+					objectCount += child.getNumObjects() + 1;
+				} else {
+					objectCount++;
+				}
+		}
+		return objectCount;
+	}
+	
 
 	@Override
 	public TYPE getFrameTaskType() {
