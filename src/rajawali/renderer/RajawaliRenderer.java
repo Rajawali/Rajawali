@@ -20,7 +20,7 @@ import rajawali.effects.EffectComposer;
 import rajawali.materials.AMaterial;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.FPSUpdateListener;
 import rajawali.util.ObjectColorPicker;
@@ -577,7 +577,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 
-	public Number3D unProject(float x, float y, float z) {
+	public Vector3 unProject(float x, float y, float z) {
 		x = mViewportWidth - x;
 		y = mViewportHeight - y;
 
@@ -599,7 +599,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			return null;
 
 		out[3] = 1/out[3];
-		return new Number3D(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
+		return new Vector3(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
 	}
 
 	public float getFrameRate() {

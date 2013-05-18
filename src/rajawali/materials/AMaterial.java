@@ -14,7 +14,7 @@ import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.TextureManager;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.annotation.SuppressLint;
@@ -510,7 +510,7 @@ public abstract class AMaterial {
 	}
 	
 	public void setCamera(Camera camera) {
-		Number3D camPos = camera.getPosition();
+		Vector3 camPos = camera.getPosition();
 		mCameraPosArray[0] = camPos.x;
 		mCameraPosArray[1] = camPos.y;
 		mCameraPosArray[2] = camPos.z;

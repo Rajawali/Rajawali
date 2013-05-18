@@ -16,7 +16,7 @@ import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.EmptyTask;
@@ -141,26 +141,26 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	 * Fetch the minimum bounds of the scene.
 	 * 
-	 * @return {@link Number3D} containing the minimum values along each axis.
+	 * @return {@link Vector3} containing the minimum values along each axis.
 	 */
-	public Number3D getSceneMinBound() {
+	public Vector3 getSceneMinBound() {
 		if (mSceneGraph != null) {
 			return mSceneGraph.getSceneMinBound();
 		} else {
-			return new Number3D(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+			return new Vector3(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
 		}
 	}
 	
 	/**
 	 * Fetch the maximum bounds of the scene.
 	 * 
-	 * @return {@link Number3D} containing the maximum values along each axis.
+	 * @return {@link Vector3} containing the maximum values along each axis.
 	 */
-	public Number3D getSceneMaxBound() {
+	public Vector3 getSceneMaxBound() {
 		if (mSceneGraph != null) {
 			return mSceneGraph.getSceneMaxBound();
 		} else {
-			return new Number3D(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+			return new Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 		}
 	}
 	

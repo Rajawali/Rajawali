@@ -7,7 +7,7 @@ import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -195,7 +195,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mAmbientColor = color;
 	}
 	
-	public void setAmbientColor(Number3D color) {
+	public void setAmbientColor(Vector3 color) {
 		setAmbientColor(color.x, color.y, color.z, 1);
 	}
 	

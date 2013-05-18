@@ -12,7 +12,7 @@ import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
@@ -712,7 +712,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}
 	}
 
-	public void setColor(Number3D color) {
+	public void setColor(Vector3 color) {
 		setColor(Color.rgb((int) (color.x * 255), (int) (color.y * 255), (int) (color.z * 255)));
 	}
 

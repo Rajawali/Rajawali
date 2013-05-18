@@ -7,7 +7,7 @@ import java.nio.FloatBuffer;
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D.BufferType;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.math.Quaternion;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
@@ -113,7 +113,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 			Matrix.setIdentityM(boneMatrix, 0);
 			Matrix.setIdentityM(resultMatrix, 0);
 
-			Number3D jointPos = joint.getPosition();
+			Vector3 jointPos = joint.getPosition();
 			Matrix.translateM(boneTranslation, 0, jointPos.x, jointPos.y, jointPos.z);			
 			joint.getOrientation().toRotationMatrix(boneRotation);
 			Matrix.multiplyMM(boneMatrix, 0, boneTranslation, 0, boneRotation, 0);

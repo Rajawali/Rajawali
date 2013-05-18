@@ -1,6 +1,6 @@
 package rajawali.math;
 
-import rajawali.math.Number3D.Axis;
+import rajawali.math.Vector3.Axis;
 
 /**
  * Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html
@@ -11,13 +11,13 @@ import rajawali.math.Number3D.Axis;
 public final class Quaternion {
 	public final static float F_EPSILON = .001f;
 	public float w, x, y, z;
-	private Number3D mTmpVec1, mTmpVec2, mTmpVec3;
+	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
 
 	public Quaternion() {
 		setIdentity();
-		mTmpVec1 = new Number3D();
-		mTmpVec2 = new Number3D();
-		mTmpVec3 = new Number3D();
+		mTmpVec1 = new Vector3();
+		mTmpVec2 = new Vector3();
+		mTmpVec3 = new Vector3();
 	}
 
 	public Quaternion(float w, float x, float y, float z) {
@@ -55,11 +55,11 @@ public final class Quaternion {
 	}
 
 	public Quaternion fromAngleAxis(final float angle, final Axis axis) {
-		fromAngleAxis(angle, Number3D.getAxisVector(axis));
+		fromAngleAxis(angle, Vector3.getAxisVector(axis));
 		return this;
 	}
 	
-	public Quaternion fromAngleAxis(final float angle, final Number3D axisVector) {
+	public Quaternion fromAngleAxis(final float angle, final Vector3 axisVector) {
 		axisVector.normalize();
 		float radian = MathUtil.degreesToRadians(angle);
 		float halfAngle = radian * .5f;
@@ -92,7 +92,7 @@ public final class Quaternion {
 		return this;
 	}
 	
-	public void fromAxes(final Number3D xAxis, final Number3D yAxis, final Number3D zAxis)
+	public void fromAxes(final Vector3 xAxis, final Vector3 yAxis, final Vector3 zAxis)
     {
         float[] kRot = new float[16];
 
@@ -173,7 +173,7 @@ public final class Quaternion {
 		}
 	}
 
-	public Number3D getXAxis() {
+	public Vector3 getXAxis() {
 		float fTy = 2.0f * y;
 		float fTz = 2.0f * z;
 		float fTwy = fTy * w;
@@ -183,10 +183,10 @@ public final class Quaternion {
 		float fTyy = fTy * y;
 		float fTzz = fTz * z;
 
-		return new Number3D(1 - (fTyy + fTzz), fTxy + fTwz, fTxz - fTwy);
+		return new Vector3(1 - (fTyy + fTzz), fTxy + fTwz, fTxz - fTwy);
 	}
 
-	public Number3D getYAxis() {
+	public Vector3 getYAxis() {
 		float fTx = 2.0f * x;
 		float fTy = 2.0f * y;
 		float fTz = 2.0f * z;
@@ -197,10 +197,10 @@ public final class Quaternion {
 		float fTyz = fTz * y;
 		float fTzz = fTz * z;
 
-		return new Number3D(fTxy - fTwz, 1 - (fTxx + fTzz), fTyz + fTwx);
+		return new Vector3(fTxy - fTwz, 1 - (fTxx + fTzz), fTyz + fTwx);
 	}
 
-	public Number3D getZAxis() {
+	public Vector3 getZAxis() {
 		float fTx = 2.0f * x;
 		float fTy = 2.0f * y;
 		float fTz = 2.0f * z;
@@ -211,7 +211,7 @@ public final class Quaternion {
 		float fTyy = fTy * y;
 		float fTyz = fTz * y;
 
-		return new Number3D(fTxz + fTwy, fTyz - fTwx, 1 - (fTxx + fTyy));
+		return new Vector3(fTxz + fTwy, fTyz - fTwx, 1 - (fTxx + fTyy));
 	}
 
 	public void add(Quaternion other) {
@@ -247,10 +247,10 @@ public final class Quaternion {
 		z = tW * other.z + tZ * other.w + tX * other.y - tY * other.x;
 	}
 
-	public Number3D multiply(final Number3D vector) {
+	public Vector3 multiply(final Vector3 vector) {
 		mTmpVec3.setAll(x, y, z);
-		mTmpVec1 = Number3D.cross(mTmpVec3, vector);
-		mTmpVec2 = Number3D.cross(mTmpVec3, mTmpVec1);
+		mTmpVec1 = Vector3.cross(mTmpVec3, vector);
+		mTmpVec2 = Vector3.cross(mTmpVec3, mTmpVec1);
 		mTmpVec1.multiply(2.0f * w);
 		mTmpVec2.multiply(2.0f);
 
@@ -553,15 +553,15 @@ public final class Quaternion {
 		return "Quaternion.w " + w + " .x: " + x + " .y: " + y + " .z: " + z;
 	}
 	
-	public static Quaternion getRotationTo(final Number3D src, final Number3D dest)
+	public static Quaternion getRotationTo(final Vector3 src, final Vector3 dest)
     {
         Quaternion q = new Quaternion();
-        Number3D v1 = new Number3D(src);
-        Number3D v2 = new Number3D(dest);
+        Vector3 v1 = new Vector3(src);
+        Vector3 v2 = new Vector3(dest);
         v1.normalize();
         v2.normalize();
 
-        float d = Number3D.dot(v1, v2);
+        float d = Vector3.dot(v1, v2);
 
         if (d >= 1.0f)
         {
@@ -578,11 +578,11 @@ public final class Quaternion {
             //                   q.FromAngleAxis(Radian(Math::PI), axis);
 
             // Generate an axis
-            Number3D axis = Number3D.cross(Number3D.getAxisVector(Axis.X), v1);
+            Vector3 axis = Vector3.cross(Vector3.getAxisVector(Axis.X), v1);
 
             if (axis.length() == 0.0f)
             {
-                axis = Number3D.cross(Number3D.getAxisVector(Axis.Y), v1);
+                axis = Vector3.cross(Vector3.getAxisVector(Axis.Y), v1);
             }
 
             axis.normalize();
@@ -605,7 +605,7 @@ public final class Quaternion {
             float s = (float)Math.sqrt((1f + d) * 2f);
             float invs = 1 / s;
 
-            Number3D c = Number3D.cross(v1, v2);
+            Vector3 c = Vector3.cross(v1, v2);
 
             q.x = (float) (c.x * invs);
             q.y = (float) (c.y * invs);

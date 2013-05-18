@@ -2,7 +2,7 @@ package rajawali.animation.mesh;
 
 import rajawali.Geometry3D;
 import rajawali.bounds.BoundingBox;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 
 public class BoneAnimationFrame implements IAnimationFrame {
 	private String mName;
@@ -30,7 +30,7 @@ public class BoneAnimationFrame implements IAnimationFrame {
 		mName = name;
 	}
 	
-	public void setBounds(Number3D min, Number3D max) {
+	public void setBounds(Vector3 min, Vector3 max) {
 		mBounds.setMin(min);
 		mBounds.setMax(max);
 	}

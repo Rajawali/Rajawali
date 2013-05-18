@@ -12,7 +12,7 @@ import java.util.Arrays;
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Color;
@@ -244,10 +244,10 @@ public class Geometry3D {
 	 * Adds the geometry from the incoming geometry with the specified offset.
 	 * Note that the offset is only applied to the vertex positions.
 	 * 
-	 * @param offset {@link Number3D} containing the offset in each direction. Can be null.
+	 * @param offset {@link Vector3} containing the offset in each direction. Can be null.
 	 * @param geometry {@link Geometry3D} to be added.
 	 */
-	public void addFromGeometry3D(Number3D offset, Geometry3D geometry) {
+	public void addFromGeometry3D(Vector3 offset, Geometry3D geometry) {
 		float[] newVertices = null;
 		float[] newNormals = null;
 		float[] newColors = null;

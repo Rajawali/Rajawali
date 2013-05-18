@@ -23,8 +23,8 @@ import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
-import rajawali.math.Number3D;
-import rajawali.math.Vector2D;
+import rajawali.math.Vector3;
+import rajawali.math.Vector2;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.fbx.FBXValues.Connections.Connect;
 import rajawali.parser.fbx.FBXValues.FBXColor4;
@@ -584,8 +584,8 @@ public class FBXParser extends AMeshParser {
 					field.set(obj, Long.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));		
 				else if(clazz.equals(Float.class))
 					field.set(obj, Float.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));		
-				else if(clazz.equals(Number3D.class)) {
-					field.set(obj, new Number3D(val.split(",")));
+				else if(clazz.equals(Vector3.class)) {
+					field.set(obj, new Vector3(val.split(",")));
 				}
 				else if(clazz.equals(FBXFloatBuffer.class))
 				{
@@ -639,9 +639,9 @@ public class FBXParser extends AMeshParser {
 				{
 					field.set(obj, new FBXColor4(val));
 				}
-				else if(clazz.equals(Vector2D.class))
+				else if(clazz.equals(Vector2.class))
 				{
-					field.set(obj, new Vector2D(val.replaceAll("\\s", REPLACE_EMPTY).split(",")));
+					field.set(obj, new Vector2(val.replaceAll("\\s", REPLACE_EMPTY).split(",")));
 				}
 				
 				if(processNextLine && line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY).length() > 0)

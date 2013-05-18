@@ -9,8 +9,8 @@ import rajawali.Camera;
 import rajawali.extras.LensFlare;
 import rajawali.extras.LensFlare.FlareInfo;
 import rajawali.materials.textures.ASingleTexture;
-import rajawali.math.Number3D;
-import rajawali.math.Vector2D;
+import rajawali.math.Vector3;
+import rajawali.math.Vector2;
 import rajawali.renderer.RajawaliRenderer;
 import android.opengl.GLES20;
 
@@ -287,10 +287,10 @@ public final class LensFlarePlugin extends Plugin {
 		float viewportWidth = mRenderer.getViewportWidth(), viewportHeight = mRenderer.getViewportHeight();
 		float invAspect = viewportHeight / viewportWidth;
 		float size;
-		Vector2D scale = new Vector2D();
+		Vector2 scale = new Vector2();
 		float halfViewportWidth = viewportWidth / 2;
 		float halfViewportHeight = viewportHeight / 2;
-		Number3D screenPosition = new Number3D();
+		Vector3 screenPosition = new Vector3();
 		float screenPositionPixels_x, screenPositionPixels_y;
 		Camera camera = mRenderer.getCurrentScene().getCamera();
 		float[] viewMatrix = camera.getViewMatrix().clone(), projMatrix = camera.getProjectionMatrix().clone();
@@ -319,16 +319,16 @@ public final class LensFlarePlugin extends Plugin {
 		GLES20.glDepthMask(false);
 		
 		// Calculate camera direction vector.
-		Number3D cameraPosition = camera.getPosition().clone();
-		Number3D cameraLookAt = camera.getLookAt() != null ? camera.getLookAt().clone() : new Number3D(0, 0, 1);
-		Number3D cameraDirection = cameraLookAt.clone().subtract(cameraPosition);
+		Vector3 cameraPosition = camera.getPosition().clone();
+		Vector3 cameraLookAt = camera.getLookAt() != null ? camera.getLookAt().clone() : new Vector3(0, 0, 1);
+		Vector3 cameraDirection = cameraLookAt.clone().subtract(cameraPosition);
 		cameraDirection.normalize();
 		
 		synchronized (mLensFlares) {
 			for (i = 0; i < numLensFlares; i++) {
 				size = 16 / viewportHeight;
-				scale.x = size * invAspect;
-				scale.y = size;
+				scale.setX(size * invAspect);
+				scale.setY(size);
 				
 				LensFlare lensFlare = mLensFlares.get(i);
 				
@@ -342,7 +342,7 @@ public final class LensFlarePlugin extends Plugin {
 				screenPositionPixels_y = screenPosition.y * halfViewportHeight + halfViewportHeight;
 				
 				// Calculate the angle between the camera and the light vector.
-				Number3D lightToCamDirection = lensFlare.getPosition().clone().subtract(cameraPosition);
+				Vector3 lightToCamDirection = lensFlare.getPosition().clone().subtract(cameraPosition);
 				lightToCamDirection.normalize();
 				float angleLightCamera = lightToCamDirection.dot(cameraDirection);
 				
@@ -359,7 +359,7 @@ public final class LensFlarePlugin extends Plugin {
 					
 					// First render pass.
 					GLES20.glUniform1i(muRenderTypeHandle, 1);
-					GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.x, scale.y }, 0);
+					GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.getX(), scale.getY() }, 0);
 					GLES20.glUniform3fv(muScreenPositionHandle, 1, new float[] { screenPosition.x, screenPosition.y, screenPosition.z }, 0);
 					
 					GLES20.glDisable(GLES20.GL_BLEND);
@@ -428,11 +428,11 @@ public final class LensFlarePlugin extends Plugin {
 							// Calculate pixel size to normalized size
 							size = sprite.getSize() * sprite.getScale() / viewportHeight;
 							
-							scale.x = size * invAspect;
-							scale.y = size;
+							scale.setX(size * invAspect);
+							scale.setY(size);
 							
 							GLES20.glUniform3fv(muScreenPositionHandle, 1, new float[] { screenPosition.x, screenPosition.y, screenPosition.z }, 0);
-							GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.x, scale.y }, 0);
+							GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.getX(), scale.getY() }, 0);
 							GLES20.glUniform1f(muRotationHandle, sprite.getRotation());
 							
 							GLES20.glUniform1f(muOpacityHandle, sprite.getOpacity());

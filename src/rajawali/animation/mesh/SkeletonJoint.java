@@ -1,6 +1,6 @@
 package rajawali.animation.mesh;
 
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.math.Quaternion;
 
 public class SkeletonJoint {
@@ -9,12 +9,12 @@ public class SkeletonJoint {
 	private int mIndex;
 	private int mStartIndex;
 	private int mFlags;
-	private Number3D mPosition;
+	private Vector3 mPosition;
 	private Quaternion mOrientation;
 	private float[] mMatrix;
 	
 	public SkeletonJoint() {
-		mPosition = new Number3D();
+		mPosition = new Vector3();
 		mOrientation = new Quaternion();
 		mMatrix = new float[16];
 	}
@@ -44,13 +44,13 @@ public class SkeletonJoint {
 		mPosition.setAll(x, y, z);
 	}
 	
-	public void setPosition(Number3D position) {
+	public void setPosition(Vector3 position) {
 		mPosition.x = position.x;
 		mPosition.y = position.y;
 		mPosition.z = position.z;
 	}
 	
-	public Number3D getPosition() {
+	public Vector3 getPosition() {
 		return mPosition;
 	}
 	

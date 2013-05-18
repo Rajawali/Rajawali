@@ -12,12 +12,15 @@ import rajawali.animation.mesh.AAnimationObject3D;
 import rajawali.animation.mesh.AnimationSkeleton;
 import rajawali.animation.mesh.BoneAnimationObject3D;
 import rajawali.animation.mesh.SkeletonJoint;
+import rajawali.animation.mesh.SkeletonMeshData;
+import rajawali.animation.mesh.SkeletonMeshData.BoneVertex;
+import rajawali.animation.mesh.SkeletonMeshData.BoneWeight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.IAnimatedMeshParser;
 import rajawali.renderer.RajawaliRenderer;
@@ -47,7 +50,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	private int mNumMeshes;
 	private int mMeshIndex = 0;
 	
-	private MD5Mesh[] mMeshes;
+	private SkeletonMeshData[] mMeshes;
 	private SkeletonJoint[] mJoints;
 	
 	public float[] mBindPoseMatrix;
@@ -104,7 +107,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 					mJoints = new SkeletonJoint[mNumJoints];
 				} else if(type.equalsIgnoreCase(NUM_MESHES)) {
 					mNumMeshes = Integer.parseInt(parts.nextToken());
-					mMeshes = new MD5Mesh[mNumMeshes];
+					mMeshes = new SkeletonMeshData[mNumMeshes];
 				} else if(type.equalsIgnoreCase(JOINTS)) {
 					parseJoints(buffer);
 				} else if(type.equals(MESH)) {
@@ -175,7 +178,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	private void parseMesh(BufferedReader buffer) {
 		try {
 			String line;
-			MD5Mesh mesh = new MD5Mesh();
+			SkeletonMeshData mesh = new SkeletonMeshData();
 			
 			while((line = buffer.readLine()) != null) {
 				line = line.replace("\t", "");
@@ -191,63 +194,64 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				String type = parts.nextToken();
 				
 				if(type.equalsIgnoreCase(SHADER)) {
-					mesh.shader = parts.nextToken();
-					mesh.shader = mesh.shader.replace("\"", "");
-					if(mesh.shader.length() == 0) continue;
+					String shader = parts.nextToken();
+					shader = shader.replace("\"", "");
+					mesh.setTextureName(shader);
+					if(shader.length() == 0) continue;
 					
-					int lastDelim = mesh.shader.lastIndexOf("/");
+					int lastDelim = shader.lastIndexOf("/");
 					if(lastDelim == -1)
-						lastDelim = mesh.shader.lastIndexOf("\\");
+						lastDelim = shader.lastIndexOf("\\");
 					if(lastDelim > -1)
-						mesh.shader = mesh.shader.substring(lastDelim + 1, mesh.shader.length());
+						mesh.setTextureName(shader.substring(lastDelim + 1, shader.length()));
 					
-					int dot = mesh.shader.lastIndexOf(".");
+					int dot = shader.lastIndexOf(".");
 					if(dot > -1)
-						mesh.shader = mesh.shader.substring(0, dot);
+						mesh.setTextureName(shader.substring(0, dot));
 				} else if(type.equalsIgnoreCase(NUM_VERTS)) {
-					mesh.numVerts = Integer.parseInt(parts.nextToken());
-					mesh.verts = new MD5Vert[mesh.numVerts];
+					mesh.setNumVertices(Integer.parseInt(parts.nextToken()));
+					mesh.setBoneVertices(new SkeletonMeshData.BoneVertex[mesh.getNumVertices()]);
 				} else if(type.equalsIgnoreCase(VERT)) {
 					int index = Integer.parseInt(parts.nextToken());
-					MD5Vert vert = new MD5Vert();
+					BoneVertex vert = new BoneVertex();
 
 					// -- ignore '('
 					parts.nextToken();
-					vert.texU = Float.parseFloat(parts.nextToken());
-					vert.texV = Float.parseFloat(parts.nextToken());
+					vert.setTextureCoordinate(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
 
 					// -- ignore ')'
 					parts.nextToken();
-					vert.weightIndex = Integer.parseInt(parts.nextToken());
-					vert.weightElem = Integer.parseInt(parts.nextToken());
-					mesh.numWeightElems += vert.weightElem;
+					vert.setWeightIndex(Integer.parseInt(parts.nextToken()));
+					vert.setNumWeights(Integer.parseInt(parts.nextToken()));
+					mesh.addNumWeightsToTotal(vert.getNumWeights());
 					
-					mesh.maxNumWeights = Math.max(mesh.maxNumWeights, vert.weightElem);// MAXIMUM 
+					mesh.setMaxBoneWeightsPerVertex(Math.max(mesh.getMaxBoneWeightsPerVertex(), vert.getNumWeights()));// MAXIMUM 
 
-					mesh.verts[index] = vert;
+					mesh.addBoneVertex(index, vert);
 				} else if(type.equalsIgnoreCase(NUM_TRIS)) {
-					mesh.numTris = Integer.parseInt(parts.nextToken());
-					mesh.tris = new int[mesh.numTris][];
+					mesh.setNumTriangles(Integer.parseInt(parts.nextToken()));
+					mesh.setTriangles(new int[mesh.getNumTriangles()][]);
 				} else if(type.equalsIgnoreCase(TRI)) {
 					int index = Integer.parseInt(parts.nextToken());
-					mesh.tris[index] = new int[] { Integer.parseInt(parts.nextToken()), Integer.parseInt(parts.nextToken()), Integer.parseInt(parts.nextToken()) };
+					mesh.addTriangle(index, Integer.parseInt(parts.nextToken()), Integer.parseInt(parts.nextToken()), Integer.parseInt(parts.nextToken()));
 				} else if(type.equalsIgnoreCase(NUM_WEIGHTS)) {
-					mesh.numWeights = Integer.parseInt(parts.nextToken());
-					mesh.weights = new MD5Weight[mesh.numWeights];
+					mesh.setNumWeights(Integer.parseInt(parts.nextToken()));
+					mesh.setBoneWeights(new SkeletonMeshData.BoneWeight[mesh.getNumWeights()]);
 				} else if(type.equalsIgnoreCase(WEIGHT)) {
 					int index = Integer.parseInt(parts.nextToken());
 					
-					MD5Weight weight = new MD5Weight();
-					weight.jointIndex = Integer.parseInt(parts.nextToken());
-					weight.weightValue = Float.parseFloat(parts.nextToken());
+					SkeletonMeshData.BoneWeight weight = new SkeletonMeshData.BoneWeight();
+					weight.setJointIndex(Integer.parseInt(parts.nextToken()));
+					weight.setWeightValue(Float.parseFloat(parts.nextToken()));
 					
-					mesh.weights[index] = weight;
+					mesh.addBoneWeight(index, weight);
 					
 					// -- ignore '('
 					parts.nextToken();
-					weight.position.x = Float.parseFloat(parts.nextToken());
-					weight.position.z = Float.parseFloat(parts.nextToken());
-					weight.position.y = Float.parseFloat(parts.nextToken());
+					float x = Float.parseFloat(parts.nextToken());
+					float z = Float.parseFloat(parts.nextToken());
+					float y = Float.parseFloat(parts.nextToken());
+					weight.setPosition(x, y, z);
 				}
 			}
 		} catch(Exception e) {
@@ -258,94 +262,100 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	private void buildMeshes() {
 		for(int i=0; i<mNumMeshes; ++i) {
 			int boneIndex = 0;
-			MD5Mesh mesh = mMeshes[i];
-			mesh.vertices = new float[mesh.numVerts * 3];
-			mesh.boneIndices = new int[mesh.numWeightElems];
-			mesh.boneWeights = new float[mesh.numWeightElems]; 
-			mesh.texCoords = new float[mesh.numVerts * 2];
+			SkeletonMeshData mesh = mMeshes[i];
+			mesh.setVertices(new float[mesh.getNumVertices() * 3]);
+			mesh.setBoneIndices(new int[mesh.getNumWeights()]);
+			mesh.setWeights(new float[mesh.getNumWeights()]);
+			mesh.setTextureCoordinates(new float[mesh.getNumVertices() * 2]);
 			
-			for(int j=0; j<mesh.numVerts; ++j) {
-				MD5Vert vert = mesh.verts[j];
-				Number3D position = new Number3D();
+			int numVerts = mesh.getNumVertices();
+			
+			for(int j=0; j<numVerts; ++j) {
+				BoneVertex vert = mesh.getBoneVertexAt(j);
+				Vector3 position = new Vector3();
 				
-				for(int k=0; k<vert.weightElem; ++k) {
-					MD5Weight weight = mesh.weights[vert.weightIndex + k];
-					SkeletonJoint joint = mJoints[weight.jointIndex];
+				int numWeights = vert.getNumWeights();
+				
+				for(int k=0; k<numWeights; ++k) {
+					BoneWeight weight = mesh.getWeightAt(vert.getWeightIndex() + k);
+					SkeletonJoint joint = mJoints[weight.getJointIndex()];
 					
-					Number3D rotPos = joint.getOrientation().multiply(weight.position);
+					Vector3 rotPos = joint.getOrientation().multiply(weight.getPosition());
 					
-					Number3D pos = Number3D.add(joint.getPosition(), rotPos);
-					pos.multiply(weight.weightValue);
+					Vector3 pos = Vector3.add(joint.getPosition(), rotPos);
+					pos.multiply(weight.getWeightValue());
 					position.add(pos);
 					
-					mesh.boneIndices[boneIndex] = weight.jointIndex;
-					mesh.boneWeights[boneIndex++] = weight.weightValue;
+					mesh.setBoneIndex(boneIndex, weight.getJointIndex());
+					mesh.setWeightValue(boneIndex++, weight.getWeightValue());
 				}
 				
 				int vertIndex = j * 3;
-				mesh.vertices[vertIndex] = position.x;
-				mesh.vertices[vertIndex+1] = position.y;
-				mesh.vertices[vertIndex+2] = position.z;
+				mesh.setVertex(vertIndex, position.x, position.y, position.z);
 				
 				int uvIndex = j * 2;
-				mesh.texCoords[uvIndex] = vert.texU;
-				mesh.texCoords[uvIndex + 1] = vert.texV;
+				mesh.setTextureCoordinate(uvIndex, vert.getTextureCoordinate().getX(), vert.getTextureCoordinate().getY());
 			}
 		}
 	}
 	
 	private void calculateNormals() {
 		for(int i=0; i<mNumMeshes; ++i) {
-			MD5Mesh mesh = mMeshes[i];
-			mesh.indices = new int[mesh.numTris * 3];
-			int index = 0;
+			SkeletonMeshData mesh = mMeshes[i];
+			int numTriangles = mesh.getNumTriangles();
 			
-			for(int j=0; j<mesh.numTris; ++j) {
-				int index0 = mesh.tris[j][0];
-				int index1 = mesh.tris[j][1];
-				int index2 = mesh.tris[j][2];
+			mesh.setIndices(new int[numTriangles * 3]);
+			int index = 0;
+						
+			for(int j=0; j<numTriangles; ++j) {
+				int[] triangle = mesh.getTriangle(j);
+				int index0 = triangle[0];
+				int index1 = triangle[1];
+				int index2 = triangle[2];
 				
-				mesh.indices[index++] = index0;
-				mesh.indices[index++] = index1;
-				mesh.indices[index++] = index2;
+				mesh.setIndex(index++, index0);
+				mesh.setIndex(index++, index1);
+				mesh.setIndex(index++, index2);
 				
 				int index03 = index0 * 3;
 				int index13 = index1 * 3;
 				int index23 = index2 * 3;
 				
-				Number3D v0 = new Number3D(mesh.vertices[index03], mesh.vertices[index03 + 1], mesh.vertices[index03 + 2]);
-				Number3D v1 = new Number3D(mesh.vertices[index13], mesh.vertices[index13 + 1], mesh.vertices[index13 + 2]);
-				Number3D v2 = new Number3D(mesh.vertices[index23], mesh.vertices[index23 + 1], mesh.vertices[index23 + 2]);
+				Vector3 v0 = new Vector3(mesh.getVertexComponent(index03), mesh.getVertexComponent(index03 + 1), mesh.getVertexComponent(index03 + 2));
+				Vector3 v1 = new Vector3(mesh.getVertexComponent(index13), mesh.getVertexComponent(index13 + 1), mesh.getVertexComponent(index13 + 2));
+				Vector3 v2 = new Vector3(mesh.getVertexComponent(index23), mesh.getVertexComponent(index23 + 1), mesh.getVertexComponent(index23 + 2));
 				
-				Number3D normal = Number3D.cross(Number3D.subtract(v2, v0), Number3D.subtract(v1, v0));
+				Vector3 normal = Vector3.cross(Vector3.subtract(v2, v0), Vector3.subtract(v1, v0));
 				
-				mesh.verts[index0].normal.add(normal);
-				mesh.verts[index1].normal.add(normal);
-				mesh.verts[index2].normal.add(normal);
+				mesh.getBoneVertex(index0).getNormal().add(normal);
+				mesh.getBoneVertex(index1).getNormal().add(normal);
+				mesh.getBoneVertex(index2).getNormal().add(normal);
 			}
 			
-			if(mesh.normals == null) mesh.normals = new float[mesh.numVerts * 3];
-			
-			for(int j=0; j<mesh.numVerts; ++j) {
-				MD5Vert vert = mesh.verts[j];
-				Number3D normal = vert.normal.clone();
-				vert.normal.normalize();
+			int numVertices = mesh.getNumVertices();
+			if(mesh.getNormals() == null) mesh.setNormals(new float[numVertices * 3]);
+		
+			for(int j=0; j<numVertices; ++j) {
+				BoneVertex vert = mesh.getBoneVertex(j);
+				Vector3 normal = vert.getNormal().clone();
+				vert.getNormal().normalize();
 				
 				normal.normalize();
 				
 				int normIndex = j * 3;
-				mesh.normals[normIndex] = normal.x;
-				mesh.normals[normIndex+1] = normal.y;
-				mesh.normals[normIndex+2] = normal.z;
+				mesh.setNormalComponent(normIndex, normal.x);
+				mesh.setNormalComponent(normIndex+1, normal.y);
+				mesh.setNormalComponent(normIndex+2, normal.z);
 				
-				vert.normal.setAll(0, 0, 0);
+				vert.getNormal().setAll(0, 0, 0);
 				
 				// -- bind-pose normal to joint-local
 				//    so the animated normal can be computed faster
-				for(int k=0; k<vert.weightElem; ++k) {
-					MD5Weight weight = mesh.weights[vert.weightIndex + k];
-					SkeletonJoint joint = mJoints[weight.jointIndex];
-					vert.normal.add(Number3D.multiply(joint.getOrientation().multiply(normal), weight.weightValue));
+				int numWeights = vert.getNumWeights();
+				for(int k=0; k<numWeights; ++k) {
+					BoneWeight weight = mesh.getBoneWeight(vert.getWeightIndex() + k);
+					SkeletonJoint joint = mJoints[weight.getJointIndex()];
+					vert.getNormal().add(Vector3.multiply(joint.getOrientation().multiply(normal), weight.getWeightValue()));
 				}
 			}
 		}
@@ -366,7 +376,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			Matrix.setIdentityM(boneTranslation, 0);
 			Matrix.setIdentityM(boneRotation, 0);
 			
-			Number3D jointPos = joint.getPosition();
+			Vector3 jointPos = joint.getPosition();
 			
 			Matrix.translateM(boneTranslation, 0, jointPos.x, jointPos.y, jointPos.z);
 			joint.getOrientation().toRotationMatrix(boneRotation);
@@ -381,85 +391,44 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 		}
 	}
 	
-	private void createObjects() throws TextureException {
+	private void createObjects() throws TextureException, ParsingException {
 		AnimationSkeleton root = new AnimationSkeleton();
 		root.uBoneMatrix = mBindPoseMatrix;
 		root.mInverseBindPoseMatrix = mInverseBindPoseMatrix;
 		root.setJoints(mJoints);
 		mRootObject = root;
 		for(int i=0; i<mNumMeshes; ++i) {
-			MD5Mesh mesh = mMeshes[i];
+			SkeletonMeshData mesh = mMeshes[i];
 			BoneAnimationObject3D o = new BoneAnimationObject3D();
 			o.setData(
-					mesh.vertices, GLES20.GL_STREAM_DRAW,
-					mesh.normals, GLES20.GL_STREAM_DRAW,
-					mesh.texCoords, GLES20.GL_STATIC_DRAW,
+					mesh.getVertices(), GLES20.GL_STREAM_DRAW,
+					mesh.getNormals(), GLES20.GL_STREAM_DRAW,
+					mesh.getTextureCoordinates(), GLES20.GL_STATIC_DRAW,
 					null, GLES20.GL_STATIC_DRAW,
-					mesh.indices, GLES20.GL_STATIC_DRAW
+					mesh.getIndices(), GLES20.GL_STATIC_DRAW
 					);			
-			o.setMD5Mesh(mesh);
+			o.setSkeletonMeshData(mesh);
 			o.setName("MD5Mesh_" + i);
 			o.setSkeleton(mRootObject);
 			
-			boolean hasTexture = mesh.shader != null && mesh.shader.length() > 0;
+			boolean hasTexture = mesh.getTextureName() != null && mesh.getTextureName().length() > 0;
 			
 			DiffuseMaterial mat = new DiffuseMaterial(AMaterial.SKELETAL_ANIMATION);
 			mat.setNumJoints(mNumJoints);
-			mat.setMaxWeights(mesh.maxNumWeights);
+			mat.setMaxWeights(mesh.getMaxBoneWeightsPerVertex());
 			o.setMaterial(mat);
 			if(!hasTexture) {
 				mat.setUseColor(!hasTexture);
 				o.setColor(0xff000000 + (int)(Math.random() * 0xffffff));
 			} else {
-				int identifier = mResources.getIdentifier(mesh.shader, "drawable", mResources.getResourcePackageName(mResourceId));
+				int identifier = mResources.getIdentifier(mesh.getTextureName(), "drawable", mResources.getResourcePackageName(mResourceId));
 				if(identifier == 0) {
-					RajLog.e("Couldn't find texture " + mesh.shader);
-					break;
+					throw new ParsingException("Couldn't find texture " + mesh.getTextureName());
 				}
 				mat.addTexture(new Texture(identifier));
 			}
 			
 			mRootObject.addChild(o);
-		}
-	}
-	
-	public class MD5Mesh {
-		public String shader;
-		public int numVerts;
-		public int numTris;
-		public int numWeights;
-		public int numWeightElems = 0;
-		public int maxNumWeights=0;
-		public MD5Vert[] verts;
-		public int[][] tris;
-		public MD5Weight[] weights;
-		public float[] vertices;
-		public float[] normals;
-		public int[] indices;
-		public int[] boneIndices;
-		public float[] boneWeights;
-		public float[] texCoords;
-	}
-	
-	public class MD5Vert {
-		public float texU;
-		public float texV;
-		public int weightIndex;
-		public int weightElem;	
-		public Number3D normal = new Number3D();
-		
-		public String toString() {
-			return texU + ", " + texV + ", " + weightIndex + ", " + weightElem;
-		}
-	}
-	
-	public class MD5Weight {
-		public int jointIndex;
-		public float weightValue;
-		public Number3D position = new Number3D();
-		
-		public String toString() {
-			return jointIndex + ", " + weightValue + ", " + position.toString();
 		}
 	}
 }

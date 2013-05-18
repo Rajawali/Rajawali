@@ -12,7 +12,7 @@ import rajawali.animation.mesh.BoneAnimationSequence;
 import rajawali.animation.mesh.IAnimationSequence;
 import rajawali.animation.mesh.Skeleton;
 import rajawali.animation.mesh.SkeletonJoint;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.parser.AParser;
 import rajawali.parser.IAnimationSequenceParser;
 import rajawali.renderer.RajawaliRenderer;
@@ -162,13 +162,13 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 				// discard (
 				parts.nextToken();
 
-				Number3D min = new Number3D(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
+				Vector3 min = new Vector3(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
 				// discard )
 				parts.nextToken();
 				// discard (
 				parts.nextToken();
 			
-				Number3D max = new Number3D(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
+				Vector3 max = new Vector3(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
 				
 				frame.setBounds(min, max);
 			}
@@ -228,9 +228,9 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 			if (joint.getParentIndex() >= 0 ) // Has a parent joint
 	        {
 	            SkeletonJoint parentJoint = skeleton.getJoint(joint.getParentIndex());
-	            Number3D rotPos = parentJoint.getOrientation().multiply(joint.getPosition()).clone();
+	            Vector3 rotPos = parentJoint.getOrientation().multiply(joint.getPosition()).clone();
 	 
-	            joint.getPosition().setAllFrom(Number3D.add(parentJoint.getPosition(), rotPos));
+	            joint.getPosition().setAllFrom(Vector3.add(parentJoint.getPosition(), rotPos));
 	            joint.getOrientation().multiply(parentJoint.getOrientation());
 	            joint.getOrientation().normalize();
 	        }

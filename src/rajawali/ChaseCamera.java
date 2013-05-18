@@ -1,27 +1,27 @@
 package rajawali;
 
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.math.Quaternion;
 
 public class ChaseCamera extends Camera {
-	protected Number3D mCameraOffset;
+	protected Vector3 mCameraOffset;
 	protected BaseObject3D mObjectToChase;
-	protected Number3D mUpVector;
+	protected Vector3 mUpVector;
 	protected float mSlerpFactor = .1f;
 	protected Quaternion mTmpOr;
 	
 	public ChaseCamera() {
-		this(new Number3D(0, 3, 16), .1f, null);
+		this(new Vector3(0, 3, 16), .1f, null);
 	}
 	
-	public ChaseCamera(Number3D cameraOffset, float slerpFactor) {
+	public ChaseCamera(Vector3 cameraOffset, float slerpFactor) {
 		this(cameraOffset, .1f, null);
 	}
 
-	public ChaseCamera(Number3D cameraOffset, float slerpFactor, BaseObject3D objectToChase) {
+	public ChaseCamera(Vector3 cameraOffset, float slerpFactor, BaseObject3D objectToChase) {
 		super();
 		mTmpOr = new Quaternion();
-		mUpVector = Number3D.getUpVector();
+		mUpVector = Vector3.getUpVector();
 		mCameraOffset = cameraOffset;
 		mObjectToChase = objectToChase;
 		mSlerpFactor = slerpFactor;
@@ -41,11 +41,11 @@ public class ChaseCamera extends Camera {
 		return super.getViewMatrix();
 	}
 
-	public void setCameraOffset(Number3D offset) {
+	public void setCameraOffset(Vector3 offset) {
 		mCameraOffset.setAllFrom(offset);
 	}
 	
-	public Number3D getCameraOffset() {
+	public Vector3 getCameraOffset() {
 		return mCameraOffset;
 	}
 	

@@ -4,6 +4,15 @@ Rajawali "Anchor Steam" Development Branch
 "Anchor Steam", the next Rajawali version contains significant changes to the API.
 Here's what's new:
 
+# Number3D
+
+The `Number3D` class has been refactored into `Vector3` which is way more appropriate.
+This will most likely affect a lot of your code.
+
+# Vector2D
+
+The `Vector2D` has been refactored into `Vector2` which falls in line with the new `Vector3` class.
+
 # Scenes
 
 # Multiple Cameras
