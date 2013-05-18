@@ -561,6 +561,45 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mChildren.remove(child);
 	}
 
+	/**
+	 * Retrieve the number of triangles of the object, recursive method
+	 * 
+	 * @return int the total triangle count for the object.
+	 */
+	public int getNumTriangles() {
+		int triangleCount = 0;
+		
+		for (int i = 0, j = getNumChildren(); i < j; i++) {
+			BaseObject3D child = getChildAt(i);
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				if (child.getNumChildren() > 0) {
+					triangleCount += child.getNumTriangles();
+				} else {
+					triangleCount += child.getGeometry().getVertices().limit() / 9;
+				}
+		}
+		return triangleCount;
+	}
+	/**
+	 * Retrieve the number of objects in the object, recursive method
+	 * 
+	 * @return int the total object count for the object.
+	 */
+	public int getNumObjects() {
+		int objectCount = 0;
+		
+		for (int i = 0, j = getNumChildren(); i < j; i++) {
+			BaseObject3D child = getChildAt(i);
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				if (child.getNumChildren() > 0) {
+					objectCount += child.getNumObjects() + 1;
+				} else {
+					objectCount++;
+				}
+		}
+		return objectCount;
+	}
+
 	public int getNumChildren() {
 		return mChildren.size();
 	}
