@@ -1,5 +1,6 @@
 package rajawali;
 
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.TextureInfo;
 import rajawali.materials.TextureManager.TextureType;
+import rajawali.materials.textures.TextureAtlas;
+import rajawali.materials.textures.TexturePacker.Tile;
 import rajawali.math.Number3D;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
@@ -822,6 +825,27 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public boolean isDepthMaskEnabled() {
 		return mEnableDepthMask;
+	}
+	
+	/**
+	 * Maps the (x,y) coordinates of <code>tileName</code> in <code>atlas</code>
+	 * to the TextureCoordinates of this BaseObject3D
+	 * 
+	 * @param tileName
+	 * @param atlas
+	 */
+	public void setAtlasTile(String tileName, TextureAtlas atlas) {
+		Tile tile = atlas.getTileNamed(tileName);
+		FloatBuffer fb = this.getGeometry().getTextureCoords();
+		for(int i = 0; i < fb.capacity(); i++){
+			float uvIn = fb.get(i);
+			float uvOut;
+			if(i%2 == 0)
+				uvOut = (uvIn * (tile.width/atlas.getWidth())) + tile.x/atlas.getWidth();
+			else
+				uvOut = (uvIn * (tile.height/atlas.getHeight())) + tile.y/atlas.getHeight();
+			fb.put(i, uvOut);
+		}
 	}
 
 	public void destroy() {
