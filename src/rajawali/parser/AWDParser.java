@@ -45,8 +45,6 @@ public class AWDParser extends AParser {
 	protected int awdHeaderCompression;
 	protected int awdHeaderBodyLength;
 
-	private boolean mDebug;
-
 	public AWDParser(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 		init();
@@ -110,13 +108,11 @@ public class AWDParser extends AParser {
 			awdHeaderBodyLength = dis.readInt();
 
 			// Debug Headers
-			if (mDebug) {
-				RajLog.i("AWD Header Data");
-				RajLog.i(" Version: " + awdHeaderVersion + "." + awdHeaderRevision);
-				RajLog.i(" Is Streaming: " + awdHeaderFlagStreaming);
-				RajLog.i(" Compression: " + getCompression());
-				RajLog.i(" Body Length: " + awdHeaderBodyLength);
-			}
+			RajLog.d("AWD Header Data");
+			RajLog.d(" Version: " + awdHeaderVersion + "." + awdHeaderRevision);
+			RajLog.d(" Is Streaming: " + awdHeaderFlagStreaming);
+			RajLog.d(" Compression: " + getCompression());
+			RajLog.d(" Body Length: " + awdHeaderBodyLength);
 
 			// Check streaming
 			if (awdHeaderFlagStreaming)
@@ -127,66 +123,68 @@ public class AWDParser extends AParser {
 				throw new ParsingException("Compression is not currently supported. Document compressed as: "
 						+ getCompression());
 
+			// Store the blocks so that they may be referenced by other blocks
+			final SparseArray<BlockHeader> blockDataList = new SparseArray<BlockHeader>();
+
 			// Read file blocks
 			try {
 				do {
 					// Read header data
-					int blockID = dis.readInt();
-					int blockNamespace = dis.read();
-					int blockType = dis.read();
-					int blockFlags = dis.read();
-					int blockLength = dis.readInt();
+					final BlockHeader blockHeader = new BlockHeader();
+					blockHeader.id = dis.readInt();
+					blockHeader.namespace = dis.read();
+					blockHeader.type = dis.read();
+					blockHeader.flags = dis.read();
+					blockHeader.dataLength = dis.readInt();
+
+					// Add the block to the list of blocks for reference
+					blockDataList.put(blockHeader.id, blockHeader);
 
 					// Debug
-					if (mDebug) {
-						RajLog.i("Reading Block");
-						RajLog.i(" Block ID: " + blockID);
-						RajLog.i(" Block Namespace: " + blockNamespace);
-						RajLog.i(" Block Type: " + blockType);
-						RajLog.i(" Block Highprecision: " + ((blockFlags & 0x0001) == 1));
-						RajLog.i(" Block Length: " + blockLength);
-					}
+					RajLog.d("Reading Block");
+					RajLog.d(blockHeader.toString());
 
 					// Store the blockID
-					blockIds.add(blockID);
+					blockIds.add(blockHeader.id);
 
 					// Look for the Block Parser class.
 					@SuppressWarnings("unchecked")
 					final Class<ABlockParser> blockClass = (Class<ABlockParser>) blockParserClassesMap.get(getClassID(
-							blockNamespace, blockType));
+							blockHeader.namespace, blockHeader.type));
 
 					// Instantiate the block parser and call parseBlock if found otherwise skip the block
 					if (blockClass != null) {
+
+						// Reflect all the things!
 						final ABlockParser parser = (ABlockParser) Class.forName(blockClass.getName()).getConstructor()
 								.newInstance();
-						parser.parseBlock(dis, blockLength, mDebug);
-					} else {
-						if (mDebug)
-							RajLog.i(" Skipping unknown block.");
 
-						dis.skip(blockLength);
+						// Assign the parser for future reference
+						blockHeader.parser = parser;
+
+						RajLog.d(" Parsing block with: " + parser.getClass().getSimpleName());
+
+						// Begin parsing
+						parser.parseBlock(dis, blockHeader);
+					} else {
+						RajLog.d(" Skipping unknown block.");
+
+						dis.skip(blockHeader.dataLength);
 					}
 				} while (true);
 			} catch (IOException e) {
 				// End of blocks reached
+				RajLog.d("End of blocks reached.");
+				RajLog.d(e.getMessage());
 			}
 
 		} catch (Exception e) {
 			throw new ParsingException("Unexpected header. File is not in AWD format.");
 		}
 
-		if (mDebug)
-			RajLog.i("Finished Parsing in " + (SystemClock.elapsedRealtime() - startTime));
+		RajLog.d("Finished Parsing in " + (SystemClock.elapsedRealtime() - startTime));
 
 		return this;
-	}
-
-	/**
-	 * Enable debugging for AWD parsing. This is useful for finding and correcting problems in parser and malformed
-	 * documents.
-	 */
-	public void enableDebug() {
-		mDebug = true;
 	}
 
 	/**
@@ -256,7 +254,29 @@ public class AWDParser extends AParser {
 	 */
 	public interface IBlockParser {
 
-		void parseBlock(LittleEndianDataInputStream dis, int blockLength, boolean debug) throws Exception;
+		void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception;
+	}
+
+	public static final class BlockHeader {
+
+		public int id;
+		public int namespace;
+		public int type;
+		public int flags;
+		public int dataLength;
+		public IBlockParser parser;
+
+		@Override
+		public String toString() {
+			final StringBuilder sb = new StringBuilder();
+			sb.append(" Block ID: ").append(id).append("\n");
+			sb.append(" Block Namespace: ").append(namespace).append("\n");
+			sb.append(" Block Type: ").append(type).append("\n");
+			sb.append(" Block Highprecision: ").append((flags & 0x0001) == 1).append("\n");
+			sb.append(" Block Length: ").append(dataLength).append("\n");
+			sb.append(" Block Length: ").append(dataLength).append("\n");
+			return sb.toString();
+		}
 	}
 
 }
