@@ -90,7 +90,7 @@ public class RotateAnimation3D extends Animation3D {
 			mQuat.multiply(mQuatFrom);
 			mTransformable3D.setOrientation(mQuat);
 		} else {
-			mTransformable3D.setOrientation(Quaternion.slerp((float) mInterpolatedTime, mQuatFrom, mQuat, true));
+			mTransformable3D.setOrientation(Quaternion.slerp(mQuatFrom, mQuat, (float)mInterpolatedTime));
 		}
 	}
 }

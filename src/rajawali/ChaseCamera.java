@@ -35,7 +35,7 @@ public class ChaseCamera extends Camera {
 		mPosition.setAllFrom(mTmpOr.multiply(mCameraOffset));
 		mPosition.add(mObjectToChase.getPosition());
 		mTmpOr.inverseSelf();
-		mOrientation.setAllFrom(Quaternion.slerp(mSlerpFactor, mOrientation, mTmpOr, true));
+		mOrientation.setAllFrom(Quaternion.slerp(mOrientation, mTmpOr, mSlerpFactor));
 		mOrientation.toRotationMatrix(mRotationMatrix);
 		
 		return super.getViewMatrix();

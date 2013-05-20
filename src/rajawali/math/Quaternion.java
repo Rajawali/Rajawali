@@ -340,71 +340,55 @@ public final class Quaternion {
 		return (Math.abs(angle) <= tolerance) || MathUtil.realEqual(angle, MathUtil.PI, tolerance);
 	}
 
-	public static Quaternion slerp(float fT, final Quaternion rkP, final Quaternion rkQ, boolean shortestPath) {
-		float fCos = rkP.dot(rkQ);
-		Quaternion rkT = new Quaternion();
+	public static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+		Quaternion qr = null;
+        // Create a local quaternion to store the interpolated quaternion
+        if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
+            qr = new Quaternion(q1);
+            return qr;
+        }
 
-		if (fCos < 0.0f && shortestPath) {
-			fCos = -fCos;
-			rkT = rkQ.inverse();
-		} else {
-			rkT = rkQ;
-		}
+        float result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z)
+                + (q1.w * q2.w);
 
-		if (Math.abs(fCos) < 1 - F_EPSILON) {
-			// Standard case (slerp)
-			float fSin = (float)Math.sqrt(1 - fCos * fCos);
-			float fAngle = (float) Math.atan2(fSin, fCos);
-			float fInvSin = 1.0f / fSin;
-			float fCoeff0 = (float)Math.sin((1.0f - fT) * fAngle) * fInvSin;
-			float fCoeff1 = (float)Math.sin(fT * fAngle) * fInvSin;
-			Quaternion result = new Quaternion(rkP);
-			Quaternion tmp = new Quaternion(rkT);
-			result.multiply(fCoeff0);
-			tmp.multiply(fCoeff1);
-			result.add(tmp);
-			return result;
-		} else {
-			// There are two situations:
-			// 1. "rkP" and "rkQ" are very close (fCos ~= +1), so we can do a
-			// linear
-			// interpolation safely.
-			// 2. "rkP" and "rkQ" are almost inverse of each other (fCos ~= -1),
-			// there
-			// are an infinite number of possibilities interpolation. but we
-			// haven't
-			// have method to fix this case, so just use linear interpolation
-			// here.
-			Quaternion result = new Quaternion(rkP);
-			Quaternion tmp = new Quaternion(rkT);
-			result.multiply(1.0f - fT);
-			tmp.multiply(fT);
-			result.add(tmp);
-			// taking the complement requires renormalisation
-			result.normalize();
-			return result;
-		}
-	}
+        if (result < 0.0f) {
+            // Negate the second quaternion and the result of the dot product
+            q2.x = -q2.x;
+            q2.y = -q2.y;
+            q2.z = -q2.z;
+            q2.w = -q2.w;
+            result = -result;
+        }
 
-	public Quaternion slerpExtraSpins(float fT, final Quaternion rkP, final Quaternion rkQ, int iExtraSpins) {
-		float fCos = rkP.dot(rkQ);
-		float fAngle = (float) Math.acos(fCos);
+        // Set the first and second scale for the interpolation
+        float scale0 = 1 - t;
+        float scale1 = t;
 
-		if (Math.abs(fAngle) < F_EPSILON)
-			return rkP;
+        // Check if the angle between the 2 quaternions was big enough to
+        // warrant such calculations
+        if ((1 - result) > 0.1f) {// Get the angle between the 2 quaternions,
+            // and then store the sin() of that angle
+            float theta = (float)Math.acos(result);
+            float invSinTheta = 1f / (float)Math.sin(theta);
 
-		float fSin = (float)Math.sin(fAngle);
-		float fPhase = MathUtil.PI * iExtraSpins * fT;
-		float fInvSin = 1.0f / fSin;
-		float fCoeff0 = (float)Math.sin((1.0f - fT) * fAngle - fPhase) * fInvSin;
-		float fCoeff1 = (float)Math.sin(fT * fAngle + fPhase) * fInvSin;
-		Quaternion result = new Quaternion(rkP);
-		Quaternion tmp = new Quaternion(rkQ);
-		result.multiply(fCoeff0);
-		tmp.multiply(fCoeff1);
-		result.add(tmp);
-		return result;
-	}
+            // Calculate the scale for q1 and q2, according to the angle and
+            // it's sine value
+            scale0 = (float)Math.sin((1 - t) * theta) * invSinTheta;
+            scale1 = (float)Math.sin((t * theta)) * invSinTheta;
+        }
+
+        // Calculate the x, y, z and w values for the quaternion by using a
+        // special
+        // form of linear interpolation for quaternions.
+        qr = new Quaternion();
+        qr.x = (scale0 * q1.x) + (scale1 * q2.x);
+        qr.y = (scale0 * q1.y) + (scale1 * q2.y);
+        qr.z = (scale0 * q1.z) + (scale1 * q2.z);
+        qr.w = (scale0 * q1.w) + (scale1 * q2.w);
+
+        // Return the interpolated quaternion
+        return qr;
+    }
 
 	public float normalize() {
 		float len = norm();
@@ -519,7 +503,7 @@ public final class Quaternion {
 	    }
 	}
 	
-	public Quaternion nlerp(float fT, final Quaternion rkP, final Quaternion rkQ, boolean shortestPath) {
+	public static Quaternion nlerp(float fT, final Quaternion rkP, final Quaternion rkQ, boolean shortestPath) {
 		Quaternion result = new Quaternion(rkP);
 		Quaternion tmp = new Quaternion(rkQ);
 		float fCos = result.dot(tmp);
@@ -536,7 +520,7 @@ public final class Quaternion {
 		result.normalize();
 		return result;
 	}
-
+	
 	public Quaternion setIdentity() {
 		w = 1;
 		x = 0;

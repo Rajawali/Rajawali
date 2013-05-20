@@ -8,22 +8,22 @@ import rajawali.BaseObject3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D.BufferType;
-import rajawali.animation.mesh.SkeletonMeshData.BoneVertex;
-import rajawali.animation.mesh.SkeletonMeshData.BoneWeight;
 import rajawali.materials.AAdvancedMaterial;
+import rajawali.math.Vector2;
+import rajawali.math.Vector3;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 /*
- * Making Skeleton a top level objet, besouse it is shared between all the meshes and needs to be animated only once per
- * rendering cycle
+ * Making Skeleton a top level object, because it is shared between all the meshes and needs to be animated only once
+ * per rendering cycle
  */
-public class BoneAnimationObject3D extends AAnimationObject3D {
+public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 
 	private static final int FLOAT_SIZE_BYTES = 4;
 	public int mNumJoints;
-	public AnimationSkeleton mSkeleton;
-	private BoneAnimationSequence mSequence;
+	public SkeletalAnimationObject3D mSkeleton;
+	private SkeletalAnimationSequence mSequence;
 	public float[] boneWeights1, boneIndexes1, boneWeights2, boneIndexes2;
 
 	private BufferInfo mboneWeights1BufferInfo = new BufferInfo();
@@ -51,9 +51,13 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	 * weights per vertex
 	 */
 	protected FloatBuffer mboneIndexes2;
-	private SkeletonMeshData mMesh;
+	// private SkeletonMeshData mMesh;
+	protected int mMaxBoneWeightsPerVertex;
+	private int mNumVertices;
+	private BoneVertex[] mVertices;
+	private BoneWeight[] mWeights;
 
-	public BoneAnimationObject3D() {
+	public SkeletalAnimationChildObject3D() {
 		super();
 		mSkeleton = null;
 	}
@@ -63,7 +67,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		AAdvancedMaterial material = (AAdvancedMaterial) mMaterial;
 		material.setBone1Indexes(mboneIndexes1BufferInfo.bufferHandle);
 		material.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
-		if (mMesh.getMaxBoneWeightsPerVertex() > 4) {
+		if (mMaxBoneWeightsPerVertex > 4) {
 			material.setBone2Indexes(mboneIndexes2BufferInfo.bufferHandle);
 			material.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
 		}
@@ -71,8 +75,8 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	}
 
 	public void setSkeleton(BaseObject3D skeleton) {
-		if (skeleton instanceof AnimationSkeleton) {
-			mSkeleton = (AnimationSkeleton) skeleton;
+		if (skeleton instanceof SkeletalAnimationObject3D) {
+			mSkeleton = (SkeletalAnimationObject3D) skeleton;
 			mNumJoints = mSkeleton.getJoints().length;
 		}
 		else
@@ -80,14 +84,17 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 					"Skeleton must be of type AnimationSkeleton!");
 	}
 
-	public void setSkeletonMeshData(SkeletonMeshData mesh) {
-		mMesh = mesh;
+	public void setSkeletonMeshData(int numVertices, BoneVertex[] vertices, int numWeights, BoneWeight[] weights) {
+		mNumVertices = numVertices;
+		mVertices = vertices;
+		mWeights = weights;
+
 		prepareBoneWeightsAndIndices();
 		mboneIndexes1 = alocateBuffer(mboneIndexes1, boneIndexes1);
 		mboneWeights1 = alocateBuffer(mboneWeights1, boneWeights1);
 		mGeometry.createBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes1, GLES20.GL_ARRAY_BUFFER);
 		mGeometry.createBuffer(mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights1, GLES20.GL_ARRAY_BUFFER);
-		if (mMesh.getMaxBoneWeightsPerVertex() > 4) {
+		if (mMaxBoneWeightsPerVertex > 4) {
 			mboneIndexes2 = alocateBuffer(mboneIndexes2, boneIndexes2);
 			mboneWeights2 = alocateBuffer(mboneWeights2, boneWeights2);
 			mGeometry.createBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes2,
@@ -123,7 +130,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 				((AAnimationObject3D) mChildren.get(i)).play();
 	}
 
-	public void setAnimationSequence(BoneAnimationSequence sequence)
+	public void setAnimationSequence(SkeletalAnimationSequence sequence)
 	{
 		mSequence = sequence;
 		if (sequence != null && sequence.getFrames() != null)
@@ -131,8 +138,8 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 			mNumFrames = sequence.getFrames().length;
 
 			for (int i = 0, j = mChildren.size(); i < j; i++)
-				if (mChildren.get(i) instanceof BoneAnimationObject3D)
-					((BoneAnimationObject3D) mChildren.get(i)).setAnimationSequence(sequence);
+				if (mChildren.get(i) instanceof SkeletalAnimationChildObject3D)
+					((SkeletalAnimationChildObject3D) mChildren.get(i)).setAnimationSequence(sequence);
 		}
 	}
 
@@ -141,23 +148,22 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 	 */
 	public void prepareBoneWeightsAndIndices() {
 		int weightStep = 4;
-		int numVertices = mMesh.getNumVertices();
-		boneWeights1 = new float[numVertices * 4];
-		boneIndexes1 = new float[numVertices * 4];
-		boneWeights2 = new float[numVertices * 4];
-		boneIndexes2 = new float[numVertices * 4];
-		for (int i = 0; i < numVertices; i++) {
-			BoneVertex vert = mMesh.getBoneVertex(i);
-			for (int j = 0; j < vert.getNumWeights(); ++j) {
-				BoneWeight weight = mMesh.getBoneWeight(vert.getWeightIndex() + j);
+		boneWeights1 = new float[mNumVertices * 4];
+		boneIndexes1 = new float[mNumVertices * 4];
+		boneWeights2 = new float[mNumVertices * 4];
+		boneIndexes2 = new float[mNumVertices * 4];
+		for (int i = 0; i < mNumVertices; i++) {
+			BoneVertex vert = mVertices[i];
+			for (int j = 0; j < vert.numWeights; ++j) {
+				BoneWeight weight = mWeights[vert.weightIndex + j];
 
 				if (j < 4) {
-					boneWeights1[weightStep * i + j] = weight.getWeightValue();
-					boneIndexes1[weightStep * i + j] = weight.getJointIndex();
+					boneWeights1[weightStep * i + j] = weight.weightValue;
+					boneIndexes1[weightStep * i + j] = weight.jointIndex;
 				} else {
 					int jj = j % 4;
-					boneWeights2[weightStep * i + jj] = weight.getWeightValue();
-					boneIndexes2[weightStep * i + jj] = weight.getJointIndex();
+					boneWeights2[weightStep * i + jj] = weight.weightValue;
+					boneIndexes2[weightStep * i + jj] = weight.jointIndex;
 				}
 			}
 		}
@@ -167,7 +173,7 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		super.reload();
 		mGeometry.createBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes1, GLES20.GL_ARRAY_BUFFER);
 		mGeometry.createBuffer(mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights1, GLES20.GL_ARRAY_BUFFER);
-		if (mMesh.getMaxBoneWeightsPerVertex() > 4) {
+		if (mMaxBoneWeightsPerVertex > 4) {
 			mGeometry.createBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes2,
 					GLES20.GL_ARRAY_BUFFER);
 			mGeometry.createBuffer(mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights2,
@@ -220,5 +226,31 @@ public class BoneAnimationObject3D extends AAnimationObject3D {
 		}
 
 		super.destroy();
+	}
+
+	public void setMaxBoneWeightsPerVertex(int maxBoneWeightsPerVertex)
+	{
+		mMaxBoneWeightsPerVertex = maxBoneWeightsPerVertex;
+	}
+
+	public int getMaxBoneWeightsPerVertex()
+	{
+		return mMaxBoneWeightsPerVertex;
+	}
+
+	public static class BoneVertex {
+
+		public Vector2 textureCoordinate = new Vector2();
+		public Vector3 normal = new Vector3();
+		public int weightIndex;
+		public int numWeights;
+	}
+
+	public static class BoneWeight
+	{
+
+		public int jointIndex;
+		public float weightValue;
+		public Vector3 position = new Vector3();
 	}
 }

@@ -6,21 +6,21 @@ import java.nio.FloatBuffer;
 
 import rajawali.BufferInfo;
 import rajawali.Camera;
+import rajawali.Geometry3D;
 import rajawali.Geometry3D.BufferType;
-import rajawali.math.Vector3;
+import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.math.Quaternion;
+import rajawali.math.Vector3;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
-public class AnimationSkeleton extends AAnimationObject3D {
-
-	public static final int FLOAT_SIZE_BYTES = 4;
+public class SkeletalAnimationObject3D extends AAnimationObject3D {
 
 	private SkeletonJoint[] mJoints;
-	private BoneAnimationSequence mSequence;
+	private SkeletalAnimationSequence mSequence;
 	public float[][] mInverseBindPoseMatrix;
 	public float[] uBoneMatrix;
 
@@ -31,7 +31,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 	 */
 	protected FloatBuffer mBoneMatrices;
 
-	public AnimationSkeleton() {
+	public SkeletalAnimationObject3D() {
 		
 	}
 
@@ -42,7 +42,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 				mBoneMatrices.clear();
 			}
 			mBoneMatrices = ByteBuffer
-					.allocateDirect(joints.length * FLOAT_SIZE_BYTES * 16)
+					.allocateDirect(joints.length * Geometry3D.FLOAT_SIZE_BYTES * 16)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
 			mBoneMatrices.put(uBoneMatrix);
@@ -61,7 +61,7 @@ public class AnimationSkeleton extends AAnimationObject3D {
 		return mJoints;
 	}
 
-	public void setAnimationSequence(BoneAnimationSequence sequence)
+	public void setAnimationSequence(SkeletalAnimationSequence sequence)
 	{
 		mSequence = sequence;
 		if (sequence != null && sequence.getFrames() != null)
@@ -69,12 +69,12 @@ public class AnimationSkeleton extends AAnimationObject3D {
 			mNumFrames = sequence.getFrames().length;
 			
 			for (int i = 0, j = mChildren.size(); i < j; i++)
-				if (mChildren.get(i) instanceof BoneAnimationObject3D)
-					((BoneAnimationObject3D) mChildren.get(i)).setAnimationSequence(sequence);
+				if (mChildren.get(i) instanceof SkeletalAnimationChildObject3D)
+					((SkeletalAnimationChildObject3D) mChildren.get(i)).setAnimationSequence(sequence);
 		}
 	}
 
-	public BoneAnimationSequence getAnimationSequence()
+	public SkeletalAnimationSequence getAnimationSequence()
 	{
 		return mSequence;
 	}
@@ -90,8 +90,8 @@ public class AnimationSkeleton extends AAnimationObject3D {
 
 		long mCurrentTime = SystemClock.uptimeMillis();
 
-		BoneAnimationFrame currentFrame = (BoneAnimationFrame) mSequence.getFrame(mCurrentFrameIndex);
-		BoneAnimationFrame nextFrame = (BoneAnimationFrame) mSequence.getFrame((mCurrentFrameIndex + 1) % mNumFrames);
+		SkeletalAnimationFrame currentFrame = (SkeletalAnimationFrame) mSequence.getFrame(mCurrentFrameIndex);
+		SkeletalAnimationFrame nextFrame = (SkeletalAnimationFrame) mSequence.getFrame((mCurrentFrameIndex + 1) % mNumFrames);
 
 		mInterpolation += (float) mFps * (mCurrentTime - mStartTime) / 1000.f;
 		
@@ -105,8 +105,8 @@ public class AnimationSkeleton extends AAnimationObject3D {
 			SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
 			SkeletonJoint toJoint = nextFrame.getSkeleton().getJoint(i);
 			joint.setParentIndex(fromJoint.getParentIndex());
-			joint.getPosition().lerpSelf(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
-			joint.getOrientation().setAllFrom(Quaternion.slerp(mInterpolation, fromJoint.getOrientation(), toJoint.getOrientation(), false));
+			joint.getPosition().lerpSelf(fromJoint.getPosition(), toJoint.getPosition(), (float)mInterpolation);
+			joint.getOrientation().setAllFrom(Quaternion.slerp(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation));
 
 			Matrix.setIdentityM(boneTranslation, 0);
 			Matrix.setIdentityM(boneRotation, 0);
@@ -127,6 +127,12 @@ public class AnimationSkeleton extends AAnimationObject3D {
 			}
 		}
 
+if(mBreakNow)
+{
+	RajLog.i("interp: " + mInterpolation + ", frame: " + mCurrentFrameIndex);
+	RajLog.i("sss");
+}
+	
 		mGeometry.changeBufferData(mBoneMatricesBufferInfo, mBoneMatrices, 0);
 
 		if (mInterpolation >= 1) {
@@ -138,6 +144,11 @@ public class AnimationSkeleton extends AAnimationObject3D {
 		}
 
 		mStartTime = mCurrentTime;
+	}
+	private boolean mBreakNow = false;
+	public void breakNow()
+	{
+		mBreakNow = true;
 	}
 
 	public void play() {
@@ -174,7 +185,6 @@ public class AnimationSkeleton extends AAnimationObject3D {
 	    if(mBoneMatrices != null) mBoneMatrices.clear();
 	    
 	    mBoneMatrices=null;
-	   
 
 	    if(mBoneMatricesBufferInfo != null && mBoneMatricesBufferInfo.buffer != null) { mBoneMatricesBufferInfo.buffer.clear(); mBoneMatricesBufferInfo.buffer=null; }
 	    super.destroy();

@@ -1,28 +1,28 @@
 package rajawali.animation.mesh;
 
-public class BoneAnimationSequence implements IAnimationSequence {
-	private BoneAnimationFrame[] mFrames;
+public class SkeletalAnimationSequence implements IAnimationSequence {
+	private SkeletalAnimationFrame[] mFrames;
 	private float[] mFrameData;
 	private String mName;
 	private int mNumFrames;
 	private int mFrameRate;
 	
-	public BoneAnimationSequence(String name)
+	public SkeletalAnimationSequence(String name)
 	{
 		mName = name;
 	}
 
-	public void setFrames(BoneAnimationFrame[] frames)
+	public void setFrames(SkeletalAnimationFrame[] frames)
 	{
 		mFrames = frames;
 	}
 	
-	public BoneAnimationFrame[] getFrames()
+	public SkeletalAnimationFrame[] getFrames()
 	{
 		return mFrames;
 	}
 	
-	public BoneAnimationFrame getFrame(int index)
+	public SkeletalAnimationFrame getFrame(int index)
 	{
 		return mFrames[index];
 	}

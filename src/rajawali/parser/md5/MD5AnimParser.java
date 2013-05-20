@@ -7,11 +7,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-import rajawali.animation.mesh.BoneAnimationFrame;
-import rajawali.animation.mesh.BoneAnimationSequence;
 import rajawali.animation.mesh.IAnimationSequence;
-import rajawali.animation.mesh.Skeleton;
-import rajawali.animation.mesh.SkeletonJoint;
+import rajawali.animation.mesh.SkeletalAnimationFrame;
+import rajawali.animation.mesh.SkeletalAnimationFrame.Skeleton;
+import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
+import rajawali.animation.mesh.SkeletalAnimationSequence;
 import rajawali.math.Vector3;
 import rajawali.parser.AParser;
 import rajawali.parser.IAnimationSequenceParser;
@@ -31,7 +31,7 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 	private static final String BASEFRAME = "baseframe";
 	private static final String FRAME = "frame";
 	
-	private BoneAnimationSequence mSequence;
+	private SkeletalAnimationSequence mSequence;
 	private String mAnimationName;
 	private SkeletonJoint[] mBaseFrame;
 	private SkeletonJoint[] mJoints;
@@ -66,8 +66,8 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 			}
 		}
 		
-		mSequence = new BoneAnimationSequence(mAnimationName);
-		BoneAnimationFrame[] frames = null;
+		mSequence = new SkeletalAnimationSequence(mAnimationName);
+		SkeletalAnimationFrame[] frames = null;
 		String line;
 		
 		try {
@@ -87,7 +87,7 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 					mJoints = new SkeletonJoint[mNumJoints];
 				} else if(type.equalsIgnoreCase(NUM_FRAMES)) {
 					mSequence.setNumFrames(Integer.parseInt(parts.nextToken()));
-					frames = new BoneAnimationFrame[mSequence.getNumFrames()];
+					frames = new SkeletalAnimationFrame[mSequence.getNumFrames()];
 				} else if(type.equalsIgnoreCase(FRAME_RATE)) {
 					mSequence.setFrameRate(Integer.parseInt(parts.nextToken()));
 				} else if(type.equalsIgnoreCase(NUM_ANIMATED_COMPONENTS)) {
@@ -146,7 +146,7 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 		}
 	}
 	
-	private void parseBounds(BoneAnimationFrame[] frames, BufferedReader buffer) {
+	private void parseBounds(SkeletalAnimationFrame[] frames, BufferedReader buffer) {
 		try {
 			String line;
 			int index = 0;
@@ -157,7 +157,7 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 				if(line.indexOf('}') > -1) return;
 				if(numTokens == 0) continue;
 				
-				BoneAnimationFrame frame = new BoneAnimationFrame();
+				SkeletalAnimationFrame frame = new SkeletalAnimationFrame();
 				frames[index++] = frame;
 				// discard (
 				parts.nextToken();
@@ -177,10 +177,10 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 		}
 	}
 	
-	private void parseFrame(BoneAnimationFrame[] frames, int frameIndex, BufferedReader buffer) {
+	private void parseFrame(SkeletalAnimationFrame[] frames, int frameIndex, BufferedReader buffer) {
 		try {
 			String line;
-			BoneAnimationFrame frame = frames[frameIndex];
+			SkeletalAnimationFrame frame = frames[frameIndex];
 			frame.setFrameIndex(frameIndex);
 			Skeleton skeleton = frame.getSkeleton();
 			SkeletonJoint[] joints = new SkeletonJoint[mNumJoints];
