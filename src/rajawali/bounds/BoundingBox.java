@@ -72,6 +72,7 @@ public class BoundingBox implements IBoundingVolume {
 			mVisualBox.getMaterial().setUseColor(true);
 			mVisualBox.setColor(mBoundingColor.get());
 			mVisualBox.setDrawingMode(GLES20.GL_LINE_LOOP);
+			mVisualBox.setDoubleSided(true);
 		}
 		
 		mVisualBox.setScale(

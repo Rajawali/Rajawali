@@ -223,6 +223,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * 
 	 * @param camera
 	 *            The camera
+	 * @param vpMatrix
+	 * 			  The view-projection matrix
 	 * @param projMatrix
 	 *            The projection matrix
 	 * @param vMatrix
@@ -263,8 +265,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
 				GLES20.glEnable(GLES20.GL_BLEND);
 				GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
-			} else {
-				GLES20.glDisable(GLES20.GL_BLEND);
 			}
 			if (!mEnableDepthTest) GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			
@@ -322,12 +322,16 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 				pickerMat.unbindTextures();
 			}
+			
+			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
+				GLES20.glDisable(GLES20.GL_BLEND);
+			}
+			
 			if (mDoubleSided) {
 				GLES20.glEnable(GLES20.GL_CULL_FACE);
 			} else if (mBackSided) {
 				GLES20.glCullFace(GLES20.GL_BACK);
 			}
-			GLES20.glDisable(GLES20.GL_BLEND);
 			if (!mEnableDepthTest) {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 				GLES20.glDepthFunc(GLES20.GL_LESS);

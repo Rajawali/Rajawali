@@ -54,6 +54,7 @@ public class BoundingSphere implements IBoundingVolume {
 			mVisualSphere.getMaterial().setUseColor(true);
 			mVisualSphere.setColor(0xffffff00);
 			mVisualSphere.setDrawingMode(GLES20.GL_LINE_LOOP);
+			mVisualSphere.setDoubleSided(true);
 		}
 
 		Matrix.setIdentityM(mTmpMatrix, 0);
