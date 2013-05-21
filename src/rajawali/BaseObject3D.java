@@ -266,10 +266,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			} else {
 				GLES20.glDisable(GLES20.GL_BLEND);
 			}
-			if (mEnableDepthTest)
-				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-			else
-				GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			if (!mEnableDepthTest) GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			
 			GLES20.glDepthMask(mEnableDepthMask);
 
 			if (pickerInfo != null && mIsPickingEnabled) {
@@ -326,9 +324,16 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 				pickerMat.unbindTextures();
 			}
-			//GLES20.glDisable(GLES20.GL_CULL_FACE);
+			if (mDoubleSided) {
+				GLES20.glEnable(GLES20.GL_CULL_FACE);
+			} else if (mBackSided) {
+				GLES20.glCullFace(GLES20.GL_BACK);
+			}
 			GLES20.glDisable(GLES20.GL_BLEND);
-			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			if (!mEnableDepthTest) {
+				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+				GLES20.glDepthFunc(GLES20.GL_LESS);
+			}
 		}
 
 		if (mShowBoundingVolume) {
@@ -343,12 +348,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		if (mRenderChildrenAsBatch) {
 			mMaterial.unbindTextures();
-		}
-		
-		if (mDoubleSided) {
-			GLES20.glEnable(GLES20.GL_CULL_FACE);
-		} else if (mBackSided) {
-			GLES20.glCullFace(GLES20.GL_BACK);
 		}
 	}
 
