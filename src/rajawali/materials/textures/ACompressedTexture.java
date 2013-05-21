@@ -34,17 +34,18 @@ public abstract class ACompressedTexture extends ATexture {
 	protected ACompressedTexture() {
 		super();
 		mTextureType = TextureType.COMPRESSED;
+		mWrapType = WrapType.REPEAT;
 	}
 
 	public ACompressedTexture(ACompressedTexture other)
 	{
-		super();
+		this();
 		setFrom(other);
 	}
 
 	public ACompressedTexture(String textureName)
 	{
-		super();
+		this();
 		mTextureType = TextureType.COMPRESSED;
 		mTextureName = textureName;
 	}

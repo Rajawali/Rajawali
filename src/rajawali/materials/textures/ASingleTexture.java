@@ -2,6 +2,9 @@ package rajawali.materials.textures;
 
 import java.nio.ByteBuffer;
 
+import rajawali.materials.textures.ATexture.FilterType;
+import rajawali.materials.textures.ATexture.WrapType;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -260,5 +263,25 @@ public abstract class ASingleTexture extends ATexture
 			mByteBuffer.clear();
 			mByteBuffer = null;
 		}
+	}
+	
+	/**
+	 * @param wrapType
+	 *            the texture wrap type. See {@link WrapType}.
+	 */
+	public void setWrapType(WrapType wrapType) {
+		super.setWrapType(wrapType);
+		if(mCompressedTexture != null)
+			mCompressedTexture.setWrapType(wrapType);
+	}
+
+	/**
+	 * @param filterType
+	 *            Texture filtering type. See {@link FilterType}.
+	 */
+	public void setFilterType(FilterType filterType) {
+		super.setFilterType(filterType);
+		if(mCompressedTexture != null)
+			mCompressedTexture.setFilterType(filterType);
 	}
 }
