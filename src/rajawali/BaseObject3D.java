@@ -298,14 +298,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-			if (pickerInfo == null)
-			{
+			if (pickerInfo == null) {
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
 
-				if(mIsVisible)
-				{
+				if(mIsVisible) {
 					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
 					GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,	0);
 					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
