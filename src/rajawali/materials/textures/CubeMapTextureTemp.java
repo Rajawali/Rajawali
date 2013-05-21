@@ -8,7 +8,7 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
 
-public class CubeMapTexture extends AMultiTexture {
+public class CubeMapTextureTemp extends AMultiTexture {
 	public final int[] CUBE_FACES = new int[] {
 			GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
 			GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -18,41 +18,41 @@ public class CubeMapTexture extends AMultiTexture {
 			GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 	
-	public CubeMapTexture(CubeMapTexture other)
+	public CubeMapTextureTemp(CubeMapTextureTemp other)
 	{
 		super(other);
 	}
 	
-	public CubeMapTexture(String textureName)
+	public CubeMapTextureTemp(String textureName)
 	{
 		super(TextureType.CUBE_MAP, textureName);
 		setWrapType(WrapType.CLAMP);
 		setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
 	}
 	
-	public CubeMapTexture(String textureName, int[] resourceIds)
+	public CubeMapTextureTemp(String textureName, int[] resourceIds)
 	{
 		super(TextureType.CUBE_MAP, textureName, resourceIds);
 		setWrapType(WrapType.CLAMP);
 		setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
 	}
 	
-	public CubeMapTexture(String textureName, Bitmap[] bitmaps)
+	public CubeMapTextureTemp(String textureName, Bitmap[] bitmaps)
 	{
 		super(TextureType.CUBE_MAP, textureName, bitmaps);
 		setWrapType(WrapType.CLAMP);
 		setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
 	}
 	
-	public CubeMapTexture(String textureName, ByteBuffer[] byteBuffers)
+	public CubeMapTextureTemp(String textureName, ByteBuffer[] byteBuffers)
 	{
 		super(TextureType.CUBE_MAP, textureName, byteBuffers);
 		setWrapType(WrapType.CLAMP);
 		setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
 	}
 	
-	public CubeMapTexture clone() {
-		return new CubeMapTexture(this);
+	public CubeMapTextureTemp clone() {
+		return new CubeMapTextureTemp(this);
 	}
 
 	@Override
