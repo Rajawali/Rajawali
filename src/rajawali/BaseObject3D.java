@@ -214,8 +214,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}
 	}
 
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
-		render(camera, projMatrix, vMatrix, null, pickerInfo);
+	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
+		render(camera, vpMatrix, projMatrix, vMatrix, null, pickerInfo);
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param pickerInfo
 	 *            The current color picker info. This is only used when an object is touched.
 	 */
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
+	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
 			ColorPickerInfo pickerInfo) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
@@ -241,8 +241,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		// -- move view matrix transformation first
 		calculateModelMatrix(parentMatrix);
-		Matrix.multiplyMM(mMVPMatrix, 0, vMatrix, 0, mMMatrix, 0);
-		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
+		//Create MVP Matrix from View-Projection Matrix
+		Matrix.multiplyMM(mMVPMatrix, 0, vpMatrix, 0, mMMatrix, 0);
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {

@@ -31,6 +31,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -48,8 +49,10 @@ public class RajawaliScene extends AFrameTask {
 	
 	protected RajawaliRenderer mRenderer;
 	
-	protected float[] mVMatrix = new float[16];
-	protected float[] mPMatrix = new float[16];
+	//All of these get passed to an object when it needs to draw itself
+	protected float[] mVMatrix = new float[16]; //The view matrix
+	protected float[] mPMatrix = new float[16]; //The projection matrix
+	protected float[] mVPMatrix = new float[16]; //The view-projection matrix
 	
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
@@ -604,13 +607,15 @@ public class RajawaliScene extends AFrameTask {
 
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
+		//Pre-multiply View and Projection matricies once for speed
+		Matrix.multiplyMM(mVPMatrix, 0, mPMatrix, 0, mVMatrix, 0);
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
 
 			mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
-			mSkybox.render(mCamera, mPMatrix, mVMatrix, pickerInfo);
+			mSkybox.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
 
 			if (mEnableDepthBuffer) {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -631,7 +636,7 @@ public class RajawaliScene extends AFrameTask {
 
 		synchronized (mChildren) {
 			for (int i = 0, j = mChildren.size(); i < j; ++i) 
-				mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
+				mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
 		}
 
 		if (mDisplaySceneGraph) {
