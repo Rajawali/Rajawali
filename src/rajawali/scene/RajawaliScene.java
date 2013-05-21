@@ -12,8 +12,11 @@ import rajawali.Camera;
 import rajawali.animation.Animation3D;
 import rajawali.materials.SimpleMaterial;
 import rajawali.materials.SkyboxMaterial;
-import rajawali.materials.TextureInfo;
-import rajawali.math.Number3D;
+import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.CubeMapTexture;
+import rajawali.materials.textures.Texture;
+import rajawali.math.Vector3;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.EmptyTask;
@@ -26,9 +29,8 @@ import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -62,7 +64,7 @@ public class RajawaliScene extends AFrameTask {
 	*/
 	private Cube mNextSkybox;
 	private final Object mNextSkyboxLock = new Object();
-	protected TextureInfo mSkyboxTextureInfo;
+	protected ATexture mSkyboxTexture;
 	
 	protected ColorPickerInfo mPickerInfo;
 	protected boolean mReloadPickerInfo;
@@ -143,26 +145,26 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	 * Fetch the minimum bounds of the scene.
 	 * 
-	 * @return {@link Number3D} containing the minimum values along each axis.
+	 * @return {@link Vector3} containing the minimum values along each axis.
 	 */
-	public Number3D getSceneMinBound() {
+	public Vector3 getSceneMinBound() {
 		if (mSceneGraph != null) {
 			return mSceneGraph.getSceneMinBound();
 		} else {
-			return new Number3D(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+			return new Vector3(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
 		}
 	}
 	
 	/**
 	 * Fetch the maximum bounds of the scene.
 	 * 
-	 * @return {@link Number3D} containing the maximum values along each axis.
+	 * @return {@link Vector3} containing the maximum values along each axis.
 	 */
-	public Number3D getSceneMaxBound() {
+	public Vector3 getSceneMaxBound() {
 		if (mSceneGraph != null) {
 			return mSceneGraph.getSceneMaxBound();
 		} else {
-			return new Number3D(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+			return new Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 		}
 	}
 	
@@ -431,8 +433,9 @@ public class RajawaliScene extends AFrameTask {
 	 * Creates a skybox with the specified single texture.
 	 * 
 	 * @param resourceId int Resouce id of the skybox texture.
+	 * @throws TextureException 
 	 */
-	public void setSkybox(int resourceId) {
+	public void setSkybox(int resourceId) throws TextureException {
 		synchronized (mCameras) {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
 				mCameras.get(i).setFarPlane(1000);
@@ -440,10 +443,9 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true, false);
 			mNextSkybox.setDoubleSided(true);
-			mSkyboxTextureInfo = mRenderer.getTextureManager().addTexture(BitmapFactory.decodeResource(
-					mRenderer.getContext().getResources(), resourceId));
+			mSkyboxTexture = new Texture(resourceId);
 			SimpleMaterial material = new SimpleMaterial();
-			material.addTexture(mSkyboxTextureInfo);
+			material.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(material);
 		}
 	}
@@ -457,26 +459,21 @@ public class RajawaliScene extends AFrameTask {
 	 * @param left int Resource id for the left face.
 	 * @param up int Resource id for the up face.
 	 * @param down int Resource id for the down face.
+	 * @throws TextureException 
 	 */
-	public void setSkybox(int front, int right, int back, int left, int up, int down) {
+	public void setSkybox(int front, int right, int back, int left, int up, int down) throws TextureException {
 		synchronized (mCameras) {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
 				mCameras.get(i).setFarPlane(1000);
 		}
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true);
-			Context context = mRenderer.getContext();
-			Bitmap[] textures = new Bitmap[6];
-			textures[0] = BitmapFactory.decodeResource(context.getResources(), left);
-			textures[1] = BitmapFactory.decodeResource(context.getResources(), right);
-			textures[2] = BitmapFactory.decodeResource(context.getResources(), up);
-			textures[3] = BitmapFactory.decodeResource(context.getResources(), down);
-			textures[4] = BitmapFactory.decodeResource(context.getResources(), front);
-			textures[5] = BitmapFactory.decodeResource(context.getResources(), back);
-
-			mSkyboxTextureInfo = mRenderer.getTextureManager().addCubemapTextures(textures);
+			Resources res = mRenderer.getContext().getResources();
+			int[] resourceIds = new int[] { front, right, back, left, up, down };
+			
+			mSkyboxTexture = new CubeMapTexture(res.getResourceEntryName(front), resourceIds);
 			SkyboxMaterial mat = new SkyboxMaterial();
-			mat.addTexture(mSkyboxTextureInfo);
+			mat.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(mat);
 		}
 	}
@@ -485,10 +482,15 @@ public class RajawaliScene extends AFrameTask {
 	 * Updates the sky box textures with a single texture. 
 	 * 
 	 * @param resourceId int the resource id of the new texture.
+	 * @throws Exception 
 	 */
-	public void updateSkybox(int resourceId) {
-		mRenderer.getTextureManager().updateTexture(mSkyboxTextureInfo, BitmapFactory.decodeResource(
-				mRenderer.getContext().getResources(), resourceId));
+	public void updateSkybox(int resourceId) throws Exception {
+		if(mSkyboxTexture.getClass() != Texture.class)
+			throw new Exception("The skybox texture cannot be updated.");
+		
+		Texture texture = (Texture)mSkyboxTexture;
+		texture.setResourceId(resourceId);
+		mRenderer.getTextureManager().replaceTexture(texture);
 	}
 	
 	/**
@@ -500,18 +502,17 @@ public class RajawaliScene extends AFrameTask {
 	 * @param left int Resource id for the left face.
 	 * @param up int Resource id for the up face.
 	 * @param down int Resource id for the down face.
+	 * @throws Exception 
 	 */
-	public void updateSkybox(int front, int right, int back, int left, int up, int down) {
-		Context context = mRenderer.getContext();
-		Bitmap[] textures = new Bitmap[6];
-		textures[0] = BitmapFactory.decodeResource(context.getResources(), left);
-		textures[1] = BitmapFactory.decodeResource(context.getResources(), right);
-		textures[2] = BitmapFactory.decodeResource(context.getResources(), up);
-		textures[3] = BitmapFactory.decodeResource(context.getResources(), down);
-		textures[4] = BitmapFactory.decodeResource(context.getResources(), front);
-		textures[5] = BitmapFactory.decodeResource(context.getResources(), back);
+	public void updateSkybox(int front, int right, int back, int left, int up, int down) throws Exception {
+		if(mSkyboxTexture.getClass() != CubeMapTexture.class)
+			throw new Exception("The skybox texture cannot be updated. It is not a cube map texture.");
 
-		mRenderer.getTextureManager().updateCubemapTextures(mSkyboxTextureInfo, textures);
+		int[] resourceIds = new int[] { front, right, back, left, up, down };
+
+		CubeMapTexture cubemap = (CubeMapTexture)mSkyboxTexture;
+		cubemap.setResourceIds(resourceIds);
+		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}
 	
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
@@ -586,7 +587,12 @@ public class RajawaliScene extends AFrameTask {
 		if (pickerInfo != null) {
 			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
 			mReloadPickerInfo = false;
-			pickerInfo.getPicker().bindFrameBuffer();
+			try {
+				pickerInfo.getPicker().bindFrameBuffer();
+			} catch (ObjectColorPickerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		} else {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
@@ -1480,19 +1486,48 @@ public class RajawaliScene extends AFrameTask {
 	}
 
 	/**
-	 * Retrieve the number of triangles this scene contains.
+	 * Retrieve the number of triangles this scene contains, recursive method
 	 * 
 	 * @return int the total triangle count for the scene.
 	 */
 	public int getNumTriangles() {
 		int triangleCount = 0;
 		ArrayList<BaseObject3D> children = getChildrenCopy();
+		
 		for (int i = 0, j = children.size(); i < j; i++) {
-			if (children.get(i).getGeometry() != null && children.get(i).getGeometry().getVertices() != null && children.get(i).isVisible())
-				triangleCount += children.get(i).getGeometry().getVertices().limit() / 9;
+			BaseObject3D child = children.get(i);
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				if (child.getNumChildren() > 0) {
+					triangleCount += child.getNumTriangles();
+				} else {
+					triangleCount += child.getGeometry().getVertices().limit() / 9;
+				}
 		}
 		return triangleCount;
 	}
+	
+	
+	/**
+	 * Retrieve the number of objects on the screen, recursive method
+	 * 
+	 * @return int the total object count for the screen.
+	 */
+	public int getNumObjects() {
+		int objectCount = 0;
+		ArrayList<BaseObject3D> children = getChildrenCopy();
+		
+		for (int i = 0, j = children.size(); i < j; i++) {
+			BaseObject3D child = children.get(i);
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				if (child.getNumChildren() > 0) {
+					objectCount += child.getNumObjects() + 1;
+				} else {
+					objectCount++;
+				}
+		}
+		return objectCount;
+	}
+	
 
 	@Override
 	public TYPE getFrameTaskType() {

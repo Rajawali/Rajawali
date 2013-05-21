@@ -2,8 +2,8 @@ package rajawali;
 
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.MathUtil;
-import rajawali.math.Number3D;
-import rajawali.math.Number3D.Axis;
+import rajawali.math.Vector3;
+import rajawali.math.Vector3.Axis;
 import rajawali.math.Quaternion;
 import rajawali.renderer.AFrameTask;
 import android.opengl.Matrix;
@@ -24,7 +24,7 @@ public class Camera extends ATransformable3D {
 	protected float mFieldOfView = 45;
 	protected int mLastWidth;
 	protected int mLastHeight;
-	protected Number3D mUpAxis;
+	protected Vector3 mUpAxis;
 	protected boolean mUseRotationMatrix = false;
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
@@ -32,9 +32,9 @@ public class Camera extends ATransformable3D {
 	public Frustum mFrustum;
 	
 	// Camera's localized vectors
-	protected Number3D mRightVector;
-	protected Number3D mUpVector;
-	protected Number3D mLookVector;
+	protected Vector3 mRightVector;
+	protected Vector3 mUpVector;
+	protected Vector3 mLookVector;
 	protected Quaternion mLocalOrientation;
 	/**
 	 * End guarded members
@@ -48,7 +48,7 @@ public class Camera extends ATransformable3D {
 	public Camera() {
 		super();
 		mLocalOrientation = Quaternion.getIdentity();
-		mUpAxis = new Number3D(0, 1, 0);
+		mUpAxis = new Vector3(0, 1, 0);
 		mIsCamera = true;
 		mFrustum = new Frustum();
 	}
@@ -122,7 +122,7 @@ public class Camera extends ATransformable3D {
     	}
     }
     
-    public void setUpAxis(Number3D upAxis) {
+    public void setUpAxis(Vector3 upAxis) {
     	synchronized (mFrustumLock) {
     		mUpAxis.setAllFrom(upAxis);
     	}

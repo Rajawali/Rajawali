@@ -4,21 +4,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import rajawali.Camera2D;
+import rajawali.materials.textures.ATexture.FilterType;
+import rajawali.materials.textures.ATexture.WrapType;
+import rajawali.primitives.Plane;
+import rajawali.renderer.RajawaliRenderer;
+import rajawali.renderer.RenderTarget;
+import rajawali.scene.RajawaliScene;
+import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import android.content.Context;
 import android.graphics.Bitmap.Config;
 import android.graphics.Point;
 import android.opengl.GLES20;
 import android.view.Display;
 import android.view.WindowManager;
-
-import rajawali.Camera2D;
-import rajawali.materials.TextureManager.FilterType;
-import rajawali.materials.TextureManager.WrapType;
-import rajawali.primitives.Plane;
-import rajawali.renderer.RajawaliRenderer;
-import rajawali.renderer.RenderTarget;
-import rajawali.scene.RajawaliScene;
-import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 
 public class EffectComposer {
 	protected RajawaliRenderer mRenderer;

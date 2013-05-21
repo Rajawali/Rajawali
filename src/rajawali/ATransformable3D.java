@@ -2,8 +2,8 @@ package rajawali;
 
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.AngleAxis;
-import rajawali.math.Number3D;
-import rajawali.math.Number3D.Axis;
+import rajawali.math.Vector3;
+import rajawali.math.Vector3.Axis;
 import rajawali.math.Quaternion;
 import rajawali.renderer.AFrameTask;
 import rajawali.scenegraph.IGraphNode;
@@ -11,14 +11,14 @@ import rajawali.scenegraph.IGraphNodeMember;
 import android.opengl.Matrix;
 
 public abstract class ATransformable3D extends AFrameTask implements IGraphNodeMember {
-	protected Number3D mPosition, mRotation, mScale;
+	protected Vector3 mPosition, mRotation, mScale;
 	protected Quaternion mOrientation;
 	protected Quaternion mTmpOrientation;
-	protected Number3D mRotationAxis;
-	protected Number3D mAxisX, mAxisY, mAxisZ;
+	protected Vector3 mRotationAxis;
+	protected Vector3 mAxisX, mAxisY, mAxisZ;
 	protected boolean mRotationDirty;
-	protected Number3D mLookAt;
-	protected Number3D mTmpAxis, mTmpVec;
+	protected Vector3 mLookAt;
+	protected Vector3 mTmpAxis, mTmpVec;
 	protected boolean mIsCamera, mQuatWasSet;
 	protected AngleAxis mAngleAxis; 
 	
@@ -26,21 +26,21 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	protected boolean mInsideGraph = false; //Default to being outside the graph
 	
 	public ATransformable3D() {
-		mPosition = new Number3D();
-		mRotation = new Number3D();
-		mScale = new Number3D(1, 1, 1);
+		mPosition = new Vector3();
+		mRotation = new Vector3();
+		mScale = new Vector3(1, 1, 1);
 		mOrientation = new Quaternion();
 		mTmpOrientation = new Quaternion();
-		mAxisX = Number3D.getAxisVector(Axis.X);
-		mAxisY = Number3D.getAxisVector(Axis.Y);
-		mAxisZ = Number3D.getAxisVector(Axis.Z);
-		mTmpAxis = new Number3D();
-		mTmpVec = new Number3D();
+		mAxisX = Vector3.getAxisVector(Axis.X);
+		mAxisY = Vector3.getAxisVector(Axis.Y);
+		mAxisZ = Vector3.getAxisVector(Axis.Z);
+		mTmpAxis = new Vector3();
+		mTmpVec = new Vector3();
 		mAngleAxis = new AngleAxis();
 		mRotationDirty = true;
 	}
 	
-	public void setPosition(Number3D position) {
+	public void setPosition(Vector3 position) {
 		mPosition.setAllFrom(position);
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
@@ -50,7 +50,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public Number3D getPosition() {
+	public Vector3 getPosition() {
 		return mPosition;
 	}
 	
@@ -81,9 +81,9 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		return mPosition.z;
 	}
 	
-	Number3D mTmpRotX = new Number3D();
-	Number3D mTmpRotY = new Number3D();
-	Number3D mTmpRotZ = new Number3D();
+	Vector3 mTmpRotX = new Vector3();
+	Vector3 mTmpRotY = new Vector3();
+	Vector3 mTmpRotZ = new Vector3();
 	float[] mLookAtMatrix = new float[16];
 
 	public void setOrientation() {
@@ -131,11 +131,11 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		//if (mGraphNode != null) mGraphNode.updateObject(this); //TODO: This may cause problems
 	}
 
-	public void rotateAround(Number3D axis, float angle) {
+	public void rotateAround(Vector3 axis, float angle) {
 		rotateAround(axis, angle, true);
 	}
 	
- 	public void rotateAround(Number3D axis, float angle, boolean append) {
+ 	public void rotateAround(Vector3 axis, float angle, boolean append) {
  		if(append) {
  			mTmpOrientation.fromAngleAxis(angle, axis);
  			mOrientation.multiply(mTmpOrientation);
@@ -192,11 +192,11 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		return mRotation.z;
 	}
 	
-	public Number3D getRotation() {
+	public Vector3 getRotation() {
 		return mRotation;
 	}
 
-	public void setRotation(Number3D rotation) {
+	public void setRotation(Vector3 rotation) {
 		mRotation.setAllFrom(rotation);
 		mRotationDirty = true;
 	}
@@ -242,28 +242,28 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		return mScale.z;
 	}
 	
-	public Number3D getScale() {
+	public Vector3 getScale() {
 		return mScale;
 	}
 
-	public void setScale(Number3D scale) {
+	public void setScale(Vector3 scale) {
 		mScale = scale;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public Number3D getLookAt() {
+	public Vector3 getLookAt() {
 		return mLookAt;
 	}
 	
 	public void setLookAt(float x, float y, float z) {
-		if(mLookAt == null) mLookAt = new Number3D();
+		if(mLookAt == null) mLookAt = new Vector3();
 		mLookAt.x = x;
 		mLookAt.y = y;
 		mLookAt.z = z;
 		mRotationDirty = true;
 	}
 	
-	public void setLookAt(Number3D lookAt) {
+	public void setLookAt(Vector3 lookAt) {
 		if(lookAt == null) {
 			mLookAt = null;
 			return;
@@ -308,7 +308,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNodeMember#getScenePosition()
 	 */
-	public Number3D getScenePosition() {
+	public Vector3 getScenePosition() {
 		return mPosition;
 	}
 }
