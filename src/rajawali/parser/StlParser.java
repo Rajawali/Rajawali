@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.materials.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
@@ -38,9 +37,13 @@ public class StlParser extends AMeshParser {
 	public StlParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
+	
+	public StlParser() {
+		super(null, "");
+	}
 
-	public StlParser(Resources resources, TextureManager textureManager, int resourceId) {
-		super(resources, textureManager, resourceId);
+	public StlParser(Resources resources, int resourceId) {
+		super(resources, null, resourceId);
 	}
 	
 	public StlParser(RajawaliRenderer renderer, File file) {

@@ -35,10 +35,12 @@ public class AWDParser extends AParser {
 		LZMA
 	}
 
-	protected final SparseArray<Class<? extends ABlockParser>> blockParserClassesMap = new SparseArray<Class<? extends ABlockParser>>();
-	protected final List<Integer> blockIds = new ArrayList<Integer>();
+	protected final List<BaseObject3D> baseObjects = new ArrayList<BaseObject3D>();
+	protected final SparseArray<BlockHeader> blockDataList = new SparseArray<BlockHeader>();
+	
+	private final List<IBlockParser> blockParsers = new ArrayList<IBlockParser>();
+	private final SparseArray<Class<? extends ABlockParser>> blockParserClassesMap = new SparseArray<Class<? extends ABlockParser>>();
 
-	protected BaseObject3D baseObject3D;
 	protected int awdHeaderVersion;
 	protected int awdHeaderRevision;
 	protected boolean awdHeaderFlagStreaming;
@@ -60,18 +62,6 @@ public class AWDParser extends AParser {
 		init();
 	}
 
-	/**
-	 * Get the class identifier for the provided block namespace and typeID. This is useful for finding and setting
-	 * classes in the parser map.
-	 * 
-	 * @param namespace
-	 * @param typeID
-	 * @return
-	 */
-	protected static int getClassID(int namespace, int typeID) {
-		return (short) ((namespace << 8) | typeID);
-	}
-
 	protected void init() {
 		blockParserClassesMap.put(getClassID(0, 1), BlockTriangleGeometry.class);
 	}
@@ -79,6 +69,8 @@ public class AWDParser extends AParser {
 	@Override
 	public IParser parse() throws ParsingException {
 		super.parse();
+
+		onRegisterBlockClasses(blockParserClassesMap);
 
 		long startTime = SystemClock.elapsedRealtime();
 
@@ -102,7 +94,7 @@ public class AWDParser extends AParser {
 			// Read remaining header data
 			awdHeaderVersion = dis.read();
 			awdHeaderRevision = dis.read();
-			awdHeaderFlagStreaming = (dis.readShort() & 0x0001) == 1;
+			awdHeaderFlagStreaming = (dis.readShort() & 0x1) == 0x1;
 			awdHeaderCompression = dis.read();
 			// INFO Body length is for integrity checking, ignored when streaming
 			awdHeaderBodyLength = dis.readInt();
@@ -123,9 +115,6 @@ public class AWDParser extends AParser {
 				throw new ParsingException("Compression is not currently supported. Document compressed as: "
 						+ getCompression());
 
-			// Store the blocks so that they may be referenced by other blocks
-			final SparseArray<BlockHeader> blockDataList = new SparseArray<BlockHeader>();
-
 			// Read file blocks
 			try {
 				do {
@@ -136,6 +125,9 @@ public class AWDParser extends AParser {
 					blockHeader.type = dis.read();
 					blockHeader.flags = dis.read();
 					blockHeader.dataLength = dis.readInt();
+					
+					if ((blockHeader.flags & 0x1) == 0x1)
+						throw new ParsingException("High precision models are not supported.");
 
 					// Add the block to the list of blocks for reference
 					blockDataList.put(blockHeader.id, blockHeader);
@@ -144,33 +136,32 @@ public class AWDParser extends AParser {
 					RajLog.d("Reading Block");
 					RajLog.d(blockHeader.toString());
 
-					// Store the blockID
-					blockIds.add(blockHeader.id);
-
 					// Look for the Block Parser class.
 					@SuppressWarnings("unchecked")
 					final Class<ABlockParser> blockClass = (Class<ABlockParser>) blockParserClassesMap.get(getClassID(
 							blockHeader.namespace, blockHeader.type));
 
-					// Instantiate the block parser and call parseBlock if found otherwise skip the block
-					if (blockClass != null) {
-
-						// Reflect all the things!
-						final ABlockParser parser = (ABlockParser) Class.forName(blockClass.getName()).getConstructor()
-								.newInstance();
-
-						// Assign the parser for future reference
-						blockHeader.parser = parser;
-
-						RajLog.d(" Parsing block with: " + parser.getClass().getSimpleName());
-
-						// Begin parsing
-						parser.parseBlock(dis, blockHeader);
-					} else {
+					// Skip unknown blocks
+					if (blockClass == null) {
 						RajLog.d(" Skipping unknown block.");
-
 						dis.skip(blockHeader.dataLength);
+						continue;
 					}
+
+					// Instantiate the block parser
+					final ABlockParser parser = (ABlockParser) Class.forName(blockClass.getName()).getConstructor()
+							.newInstance();
+
+					// Add the parser to the list of block parsers
+					blockParsers.add(parser);
+
+					// Assign the parser for future reference
+					blockHeader.parser = parser;
+
+					RajLog.d(" Parsing block with: " + parser.getClass().getSimpleName());
+
+					// Begin parsing
+					parser.parseBlock(dis, blockHeader);
 				} while (true);
 			} catch (IOException e) {
 				// End of blocks reached
@@ -179,12 +170,51 @@ public class AWDParser extends AParser {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new ParsingException("Unexpected header. File is not in AWD format.");
 		}
+
+		onBlockParsingFinished(blockParsers);
 
 		RajLog.d("Finished Parsing in " + (SystemClock.elapsedRealtime() - startTime));
 
 		return this;
+	}
+
+	/**
+	 * Get the parsed object or objects. This is returns each model independent of a scene regardless of if a scene
+	 * exists or not.
+	 * 
+	 * @param alwaysUseContainer
+	 *            When false, a single model will be returned as a BaseObject3D. When true, or when more than one model
+	 *            exists, the models will be returned as children of a container.
+	 * @return
+	 */
+	public BaseObject3D getParsedObject(boolean alwaysUseContainer) {
+		// If only one object
+		if (!alwaysUseContainer && baseObjects.size() == 1)
+			return baseObjects.get(0);
+
+		final BaseObject3D container = new BaseObject3D();
+		container.isContainer(true);
+		for (int i = 0, j = baseObjects.size(); i < j; i++)
+			container.addChild(baseObjects.get(i));
+
+		return container;
+	}
+
+	/**
+	 * Get the block header for the given block id. Block id is determined by the AWD file and dependencies must be
+	 * parsed before referencing is possible.
+	 * 
+	 * @param blockID
+	 * @return
+	 */
+	public BlockHeader getBlockByID(int blockID) {
+		if (blockDataList.indexOfKey(blockID) < 0)
+			throw new RuntimeException("Block parsing referenced non existant id: " + blockID);
+
+		return blockDataList.get(blockID);
 	}
 
 	/**
@@ -198,25 +228,6 @@ public class AWDParser extends AParser {
 		} catch (Exception e) {
 			throw new RuntimeException("Unknown compression setting detected!");
 		}
-	}
-
-	/**
-	 * Get the parsed {@link BaseObject3D}. This will typically be a blank or broken object if parsing failed.
-	 * 
-	 * @return
-	 */
-	public BaseObject3D getParsedObject() {
-		return baseObject3D;
-	}
-
-	/**
-	 * Get the parsed {@link RajawaliScene}. This is not yet implemented and instead throws a runtime error.
-	 * 
-	 * @return
-	 */
-	public RajawaliScene getParsedScene() {
-		// TODO Add some awesome.
-		throw new RuntimeException("Scene parsing not yet implemented.");
 	}
 
 	/**
@@ -241,18 +252,39 @@ public class AWDParser extends AParser {
 	 * This is called when all blocks have finished parsing. This is the time to modify any block data as needed from
 	 * the passed list before conversion to {@link BaseObject3D} or {@link RajawaliScene} occurs.
 	 */
-	public void onBlockParsingFinished(List<ABlockParser> blockParsers) {}
+	public void onBlockParsingFinished(List<IBlockParser> blockParsers) {
+		for (int i = 0, j = blockParsers.size(); i < j; i++) {
+			if (blockParsers.get(i).getBaseObject3D() != null)
+				baseObjects.add(blockParsers.get(i).getBaseObject3D());
+		}
+	}
+
+	/**
+	 * Get the class identifier for the provided block namespace and typeID. This is useful for finding and setting
+	 * classes in the parser map.
+	 * 
+	 * @param namespace
+	 * @param typeID
+	 * @return
+	 */
+	protected static int getClassID(int namespace, int typeID) {
+		return (short) ((namespace << 8) | typeID);
+	}
 
 	/**
 	 * If necessary, register additional {@link ABlockParser} classes here.
+	 * 
+	 * @param blockParserClassesMap
 	 */
-	public void onRegisterBlockClasses() {}
+	protected void onRegisterBlockClasses(SparseArray<Class<? extends ABlockParser>> blockParserClassesMap) {}
 
 	/**
 	 * Interface implemented by {@link ABlockParser}. This interface should not be implemented directly, instead extend
 	 * {@link ABlockParser}.
 	 */
 	public interface IBlockParser {
+
+		BaseObject3D getBaseObject3D();
 
 		void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception;
 	}
@@ -273,7 +305,6 @@ public class AWDParser extends AParser {
 			sb.append(" Block Namespace: ").append(namespace).append("\n");
 			sb.append(" Block Type: ").append(type).append("\n");
 			sb.append(" Block Highprecision: ").append((flags & 0x0001) == 1).append("\n");
-			sb.append(" Block Length: ").append(dataLength).append("\n");
 			sb.append(" Block Length: ").append(dataLength).append("\n");
 			return sb.toString();
 		}
