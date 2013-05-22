@@ -1,12 +1,12 @@
 package rajawali.animation;
 
-import rajawali.math.Number3D;
-import rajawali.math.Number3D.Axis;
+import rajawali.math.Vector3;
+import rajawali.math.Vector3.Axis;
 
 /**
  * Animation that orbits {@link ATransformable3D} object around a point. 
  * @author Andrew Jo
- *
+ * @updated androidder
  */
 public class EllipticalOrbitAnimation3D extends Animation3D {
 
@@ -21,11 +21,12 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		COUNTERCLOCKWISE
 	}
 	
-	protected Number3D mFocalPoint;
-	protected Number3D mPeriapsis;
-	protected Number3D mNormal;
+	protected Vector3 mFocalPoint;
+	protected Vector3 mPeriapsis;
+	protected Vector3 mNormal;
 	protected double mEccentricity;
 	protected OrbitDirection mDirection;
+	protected double mAngle;
 	
 	/**
 	 * Defines an elliptical orbit around a point.
@@ -35,7 +36,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param direction Direction of the orbit.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, Number3D normal, double eccentricity,
+	public EllipticalOrbitAnimation3D(Vector3 focalPoint, Vector3 periapsis, Vector3 normal, double eccentricity,
 			OrbitDirection direction) {
 		super();
 		mFocalPoint = focalPoint;
@@ -43,8 +44,48 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		mNormal = normal.clone();
 		mEccentricity = eccentricity;
 		mDirection = direction;
+		mAngle = 360.0;
 	}
 	
+	/**
+	 * Defines an elliptical orbit around a point.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param normal Normal to the orbital plane. This defines the orbital inclination.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param angle Double Degrees to orbit.
+	 * @param direction Direction of the orbit.
+	 */
+	public EllipticalOrbitAnimation3D(Vector3 focalPoint, Vector3 periapsis, Vector3 normal, double eccentricity, double angle,
+			OrbitDirection direction) {
+		super();
+		mFocalPoint = focalPoint;
+		mPeriapsis = periapsis;
+		mNormal = normal.clone();
+		mEccentricity = eccentricity;
+		mDirection = direction;
+		mAngle = angle;
+	}
+	
+	/**
+	 * Defines an elliptical orbit around a point.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param normal Normal to the orbital plane. This defines the orbital inclination.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param angle Degrees to rotate.
+	 */
+	public EllipticalOrbitAnimation3D(Vector3 focalPoint, Vector3 periapsis, Vector3 normal, double eccentricity, double angle) {
+		super();
+		mFocalPoint = focalPoint;
+		mPeriapsis = periapsis;
+		mNormal = normal.clone();
+		mEccentricity = eccentricity;
+		mAngle = angle;
+		
+		mDirection = (mAngle < 0) ? OrbitDirection.CLOCKWISE : OrbitDirection.COUNTERCLOCKWISE; 
+		mAngle = Math.abs(mAngle);
+	}
 	
 	/**
 	 * Defines an elliptical orbit around a point with no orbital inclination.
@@ -53,10 +94,59 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
 	 * @param direction Direction of the orbit.
 	 */
-	public EllipticalOrbitAnimation3D(Number3D focalPoint, Number3D periapsis, double eccentricity,
-			OrbitDirection direction) {
-		this(focalPoint, periapsis, Number3D.getAxisVector(Axis.Y), eccentricity, direction);
+	public EllipticalOrbitAnimation3D(Vector3 focalPoint, Vector3 periapsis, double eccentricity, OrbitDirection direction) {
+		this(focalPoint, periapsis, Vector3.getAxisVector(Axis.Y), eccentricity, direction);
 	}
+	
+	/**
+	 * Defines an elliptical orbit around a point with no orbital inclination.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param angle Degrees to rotate.
+	 */
+	public EllipticalOrbitAnimation3D(Vector3 focalPoint, Vector3 periapsis, double eccentricity, double angle) {
+		this(focalPoint, periapsis, Vector3.getAxisVector(Axis.Y), eccentricity, angle);
+	}
+	
+	/**
+	 * Defines an elliptical orbit around a point with no orbital inclination.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param direction Direction of the orbit.
+	 */
+	public EllipticalOrbitAnimation3D(Vector3 focalPoint, Vector3 periapsis, double eccentricity, double angle,
+			OrbitDirection direction) {
+		this(focalPoint, periapsis, Vector3.getAxisVector(Axis.Y), eccentricity, angle, direction);
+	}
+	
+
+	/**
+	 * Defines an elliptical orbit around a point with no orbital inclination.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param axis Axis of the orbit.
+	 * @param angle Degrees to rotate.
+	 */
+	public EllipticalOrbitAnimation3D(Vector3 focalPoint, Vector3 periapsis, double eccentricity, Axis axis, double angle) {
+		this(focalPoint, periapsis, Vector3.getAxisVector(axis), eccentricity, angle);
+	}
+	/**
+	 * Defines an elliptical orbit around a point with no orbital inclination.
+	 * @param focalPoint Point which the {@link ATransformable3D} orbits around.
+	 * @param periapsis Point which the object passes closest to the focal point.
+	 * @param eccentricity Eccentricity of the orbit. Zero value results in a circular orbit.
+	 * @param axis Axis of the orbit.
+	 * @param direction Direction of the orbit.
+	 */
+	public EllipticalOrbitAnimation3D(Vector3 focalPoint, Vector3 periapsis, double eccentricity, double angle, Axis axis,
+			OrbitDirection direction) {
+		this(focalPoint, periapsis, Vector3.getAxisVector(axis), eccentricity, angle, direction);
+	}
+	
+
 	
 	@Override
 	protected void applyTransformation() {
@@ -66,7 +156,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		// Wikipedia.
 		
 		// Angle in radians (interpolated time from 0 to 1 results in radian angle 0 to 2PI)
-		double angle = (mDirection == OrbitDirection.CLOCKWISE ? -1 : 1) * 360f * mInterpolatedTime * PI_DIV_180;
+		double angle = (mDirection == OrbitDirection.CLOCKWISE ? -1 : 1) * mAngle * mInterpolatedTime * PI_DIV_180;
 		
 		// Calculate the distances of periapsis and apoapsis to the focal point.
 		double periapsisRadius = mPeriapsis.distanceTo(mFocalPoint);
@@ -116,7 +206,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		}
 
 		// Translate normal vector to the center point.
-		Number3D unitNormal = mNormal.clone();
+		Vector3 unitNormal = mNormal.clone();
 		unitNormal.normalize();
 		double uNx = Math.round(unitNormal.x * 1e8) / 1e8;
 		double uNy = Math.round(unitNormal.y * 1e8) / 1e8;
@@ -134,9 +224,9 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		}
 
 		// We can calculate the semiminor axis from unit vector of cross product of semimajor axis and the normal.
-		Number3D unitSemiminorAxis = Number3D.cross(new Number3D(unitSemiMajorAxis_x, unitSemiMajorAxis_y,
-				unitSemiMajorAxis_z), new Number3D(normalCenter_x, normalCenter_y, normalCenter_z));
-		Number3D semiminorAxis = Number3D.multiply(unitSemiminorAxis, (float) b);
+		Vector3 unitSemiminorAxis = Vector3.cross(new Vector3(unitSemiMajorAxis_x, unitSemiMajorAxis_y,
+				unitSemiMajorAxis_z), new Vector3(normalCenter_x, normalCenter_y, normalCenter_z));
+		Vector3 semiminorAxis = Vector3.multiply(unitSemiminorAxis, (float) b);
 
 		// Parametric equation for ellipse in 3D space.
 		double x = center_x + (Math.cos(angle) * semimajorAxis_x) + (Math.sin(angle) * semiminorAxis.x);

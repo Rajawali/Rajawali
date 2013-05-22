@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.util.RajLog;
 
 
@@ -99,7 +99,7 @@ public class Octree extends A_nAABBTree {
 		mMembers = Collections.synchronizedList(new CopyOnWriteArrayList<IGraphNodeMember>());
 		if (mParent == null) //mOutside should not be used for children, thus we want to force the Null pointer.
 			mOutside = Collections.synchronizedList(new CopyOnWriteArrayList<IGraphNodeMember>());
-		mChildLengths = new Number3D();
+		mChildLengths = new Vector3();
 	}
 
 	/*
@@ -107,14 +107,14 @@ public class Octree extends A_nAABBTree {
 	 * @see rajawali.scenegraph.A_nAABBTree#setChildRegion(int, rajawali.math.Number3D)
 	 */
 	@Override
-	protected void setChildRegion(int octant, Number3D side_lengths) {
+	protected void setChildRegion(int octant, Vector3 side_lengths) {
 		mChildRegion = octant;
-		Number3D min = mParent.getMin();
-		Number3D max = mParent.getMax();
+		Vector3 min = mParent.getMin();
+		Vector3 max = mParent.getMax();
 		switch (mChildRegion) {
 		case 0: //+X/+Y/+Z
 			mMax.setAllFrom(mParent.getMax());
-			mMin.setAllFrom(Number3D.subtract(mMax, side_lengths));
+			mMin.setAllFrom(Vector3.subtract(mMax, side_lengths));
 			break;
 		case 1: //-X/+Y/+Z 
 			mMax.x = min.x + side_lengths.x;
@@ -158,7 +158,7 @@ public class Octree extends A_nAABBTree {
 			break;
 		case 6: //-X/-Y/-Z
 			mMin.setAllFrom(min);
-			mMax.setAllFrom(Number3D.add(mMin, side_lengths));
+			mMax.setAllFrom(Vector3.add(mMin, side_lengths));
 			break;
 		case 7: //+X/-Y/-Z
 			mMax.x = max.x;

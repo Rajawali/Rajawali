@@ -7,10 +7,12 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
+import rajawali.math.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Color;
@@ -143,6 +145,84 @@ public class Geometry3D {
 	}
 	
 	/**
+	 * Concatenates a list of float arrays into a single array.
+	 * 
+	 * @param arrays The arrays.
+	 * @return The concatenated array.
+	 * 
+	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
+	 */
+	public static float[] concatAllFloat(float[] ... arrays) {
+		int totalLength = 0;
+		final int subArrayCount = arrays.length;
+		for (int i = 0; i < subArrayCount; ++i) {
+			totalLength += arrays[i].length;
+		}
+		float[] result = Arrays.copyOf(arrays[0], totalLength);
+		int offset = arrays[0].length;
+		for (int i = 1; i < subArrayCount; ++i) {
+			System.arraycopy(arrays[i], 0, result, offset, arrays[i].length);
+			offset += arrays[i].length;
+		}
+		return result;
+	}
+	
+	/**
+	 * Concatenates a list of int arrays into a single array.
+	 * 
+	 * @param arrays The arrays.
+	 * @return The concatenated array.
+	 * 
+	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
+	 */
+	public static int[] concatAllInt(int[] ... arrays) {
+		int totalLength = 0;
+		final int subArrayCount = arrays.length;
+		for (int i = 0; i < subArrayCount; ++i) {
+			totalLength += arrays[i].length;
+		}
+		int[] result = Arrays.copyOf(arrays[0], totalLength);
+		int offset = arrays[0].length;
+		for (int i = 1; i < subArrayCount; ++i) {
+			System.arraycopy(arrays[i], 0, result, offset, arrays[i].length);
+			offset += arrays[i].length;
+		}
+		return result;
+	}
+	
+	public static float[] getFloatArrayFromBuffer(FloatBuffer buffer) {
+		float[] array = null;
+		if (buffer.hasArray()) {
+			array = buffer.array();
+		} else {
+			buffer.rewind();
+			array = new float[buffer.capacity()];
+			buffer.get(array);		
+		}
+		return array;
+	}
+	
+	public static int[] getIntArrayFromBuffer(Buffer buffer) {
+		int[] array = null;
+		if (buffer.hasArray()) {
+			array = (int[]) buffer.array();
+		} else {
+			buffer.rewind();
+			array = new int[buffer.capacity()];
+			if (buffer instanceof IntBuffer) {
+				((IntBuffer) buffer).get(array);
+			} else if (buffer instanceof ShortBuffer) {
+				int count = 0;
+				while (buffer.hasRemaining()) {
+					array[count] = (int) (((ShortBuffer) buffer).get());
+					++count;
+				}
+			}
+		}
+		return array;
+	}
+	
+	/**
 	 * Copies another Geometry3D's BufferInfo objects. This means that it
 	 * doesn't copy or clone the actual data. It will just use the pointers
 	 * to the other Geometry3D's buffers.
@@ -158,6 +238,89 @@ public class Geometry3D {
 		if(mColors == null) this.mColorBufferInfo = geom.getColorBufferInfo();
 		this.mNormalBufferInfo = geom.getNormalBufferInfo();
 		this.mOriginalGeometry = geom;
+	}
+	
+	/**
+	 * Adds the geometry from the incoming geometry with the specified offset.
+	 * Note that the offset is only applied to the vertex positions.
+	 * 
+	 * @param offset {@link Vector3} containing the offset in each direction. Can be null.
+	 * @param geometry {@link Geometry3D} to be added.
+	 */
+	public void addFromGeometry3D(Vector3 offset, Geometry3D geometry) {
+		float[] newVertices = null;
+		float[] newNormals = null;
+		float[] newColors = null;
+		float[] newTextureCoords = null;
+		int[] newIntIndices = null;
+		float[] mVerticesArray = null;
+		float[] mNormalsArray = null;
+		float[] mColorsArray = null;
+		float[] mTextureCoordsArray = null;
+		int[] mIndicesArray = null;
+
+		//Get the old data
+		mVerticesArray = getFloatArrayFromBuffer(mVertices);
+		mNormalsArray = getFloatArrayFromBuffer(mNormals);
+		mColorsArray = getFloatArrayFromBuffer(mColors);
+		mTextureCoordsArray = getFloatArrayFromBuffer(mTextureCoords);
+		if (!mOnlyShortBufferSupported) {
+			mIndicesArray = getIntArrayFromBuffer(mIndicesInt);
+		} else {
+        	mIndicesArray = getIntArrayFromBuffer(mIndicesShort);
+        }
+		
+		//Get the new data, offset the vertices
+		int axis = 0;
+		float[] addVertices = getFloatArrayFromBuffer(geometry.getVertices());
+		if (offset != null) {
+			for (int i = 0, j = addVertices.length; i < j; ++i) {
+				switch (axis) {
+				case 0:
+					addVertices[i] += offset.x;
+					break;
+				case 1:
+					addVertices[i] += offset.y;
+					break;
+				case 2:
+					addVertices[i] += offset.z;
+					break;
+				}
+				++axis;
+				if (axis > 2)
+					axis = 0;
+			}
+		}
+		float[] addNormals = getFloatArrayFromBuffer(geometry.getNormals());
+		float[] addColors = getFloatArrayFromBuffer(geometry.getColors());
+		float[] addTextureCoords = getFloatArrayFromBuffer(geometry.getTextureCoords());
+		int[] addIndices = getIntArrayFromBuffer(geometry.getIndices());
+		int index_offset = (mVerticesArray.length/3);
+		for (int i = 0, j = addIndices.length; i < j; ++i) {
+			addIndices[i] += index_offset;
+		}
+		
+		//Concatenate the old and new data
+		newVertices = concatAllFloat(mVerticesArray, addVertices);
+		newNormals = concatAllFloat(mNormalsArray, addNormals);
+		newColors = concatAllFloat(mColorsArray, addColors);
+		newTextureCoords = concatAllFloat(mTextureCoordsArray, addTextureCoords);
+		newIntIndices = concatAllInt(mIndicesArray, (int[]) addIndices);
+		
+		//Set the new data
+		setVertices(newVertices, true);
+		mNormals = null;
+		setNormals(newNormals);
+		mTextureCoords = null;
+		setTextureCoords(newTextureCoords);
+		mColors = null;
+		setColors(newColors);
+		mIndicesInt = null;
+		mIndicesShort = null;
+		setIndices(newIntIndices);
+
+		//Create the new buffers
+		createBuffers();
 	}
 	
 	/**

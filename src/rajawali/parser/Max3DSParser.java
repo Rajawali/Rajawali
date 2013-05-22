@@ -1,12 +1,16 @@
 package rajawali.parser;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.DiffuseMaterial;
-import rajawali.math.Number3D;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.math.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 
@@ -15,9 +19,10 @@ import rajawali.util.RajLog;
  * 
  * @author dennis.ippel
  * @author lacasrac
- *
+ * 
  */
 public class Max3DSParser extends AMeshParser {
+
 	private final int IDENTIFIER_3DS = 0x4D4D;
 	private final int MESH_BLOCK = 0x3D3D;
 	private final int OBJECT_BLOCK = 0x4000;
@@ -31,10 +36,10 @@ public class Max3DSParser extends AMeshParser {
 	private final int TEX_FILENAME = 0xA300;
 	private final int MATERIAL = 0xAFFF;
 
-	private ArrayList<ArrayList<Number3D>> mVertices = new ArrayList<ArrayList<Number3D>>();
-	private ArrayList<Number3D[]> mNormals = new ArrayList<Number3D[]>();
-	private ArrayList<ArrayList<Number3D>> mVertNormals = new ArrayList<ArrayList<Number3D>>();
-	private ArrayList<ArrayList<Number3D>> mTexCoords = new ArrayList<ArrayList<Number3D>>();
+	private ArrayList<ArrayList<Vector3>> mVertices = new ArrayList<ArrayList<Vector3>>();
+	private ArrayList<Vector3[]> mNormals = new ArrayList<Vector3[]>();
+	private ArrayList<ArrayList<Vector3>> mVertNormals = new ArrayList<ArrayList<Vector3>>();
+	private ArrayList<ArrayList<Vector3>> mTexCoords = new ArrayList<ArrayList<Vector3>>();
 	private ArrayList<ArrayList<Integer>> mIndices = new ArrayList<ArrayList<Integer>>();
 	private ArrayList<String> mObjNames = new ArrayList<String>();
 
@@ -47,11 +52,24 @@ public class Max3DSParser extends AMeshParser {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceID);
 	}
 
+	public Max3DSParser(RajawaliRenderer renderer, File file) {
+		super(renderer, file);
+	}
+
 	@Override
 	public AMeshParser parse() throws ParsingException {
 		RajLog.i("Start parsing 3DS");
 
-		InputStream stream = mResources.openRawResource(mResourceId);
+		final InputStream stream;
+		if (mFile == null) {
+			stream = new BufferedInputStream(mResources.openRawResource(mResourceId));
+		} else {
+			try {
+				stream = new BufferedInputStream(new FileInputStream(mFile));
+			} catch (Exception e) {
+				throw new ParsingException(e);
+			}
+		}
 
 		try {
 			readHeader(stream);
@@ -64,7 +82,11 @@ public class Max3DSParser extends AMeshParser {
 				readChunk(stream);
 			}
 
-			build();
+			try {
+				build();
+			} catch(TextureException tme) {
+				throw new ParsingException(tme);
+			}
 			if (mRootObject.getNumChildren() == 1)
 				mRootObject = mRootObject.getChildAt(0);
 
@@ -75,7 +97,7 @@ public class Max3DSParser extends AMeshParser {
 			RajLog.e("Error parsing");
 			throw new ParsingException(e);
 		}
-		
+
 		return this;
 	}
 
@@ -101,32 +123,32 @@ public class Max3DSParser extends AMeshParser {
 			readTexCoords(stream);
 			break;
 		case TEX_NAME:
-//			mCurrentMaterialKey = readString(stream);
+			// mCurrentMaterialKey = readString(stream);
 			skipRead(stream);
 			break;
 		case TEX_FILENAME:
-//			String fileName = readString(stream);
-//			StringBuffer texture = new StringBuffer(packageID);
-//			texture.append(":drawable/");
-//
-//			StringBuffer textureName = new StringBuffer(fileName.toLowerCase());
-//			int dotIndex = textureName.lastIndexOf(".");
-//			if (dotIndex > -1)
-//				texture.append(textureName.substring(0, dotIndex));
-//			else
-//				texture.append(textureName);
-//
-//			textureAtlas.addBitmapAsset(new BitmapAsset(mCurrentMaterialKey, texture.toString()));
+			// String fileName = readString(stream);
+			// StringBuffer texture = new StringBuffer(packageID);
+			// texture.append(":drawable/");
+			//
+			// StringBuffer textureName = new StringBuffer(fileName.toLowerCase());
+			// int dotIndex = textureName.lastIndexOf(".");
+			// if (dotIndex > -1)
+			// texture.append(textureName.substring(0, dotIndex));
+			// else
+			// texture.append(textureName);
+			//
+			// textureAtlas.addBitmapAsset(new BitmapAsset(mCurrentMaterialKey, texture.toString()));
 			skipRead(stream);
 			break;
 		case TRI_MATERIAL:
-//			String materialName = readString(stream);
-//			int numFaces = readShort(stream);
-//
-//			for (int i = 0; i < numFaces; i++) {
-//				int faceIndex = readShort(stream);
-//				co.faces.get(faceIndex).materialKey = materialName;
-//			}
+			// String materialName = readString(stream);
+			// int numFaces = readShort(stream);
+			//
+			// for (int i = 0; i < numFaces; i++) {
+			// int faceIndex = readShort(stream);
+			// co.faces.get(faceIndex).materialKey = materialName;
+			// }
 			skipRead(stream);
 			break;
 		case MATERIAL:
@@ -138,106 +160,106 @@ public class Max3DSParser extends AMeshParser {
 		}
 	}
 
-	public void build() {
+	public void build() throws TextureException {
 		int num = mVertices.size();
-		for(int j=0; j<num; ++j) {
+		for (int j = 0; j < num; ++j) {
 			ArrayList<Integer> indices = mIndices.get(j);
-			ArrayList<Number3D> vertices = mVertices.get(j);
-			ArrayList<Number3D> texCoords = null;
-			ArrayList<Number3D> vertNormals = mVertNormals.get(j);
-			
-			if(mTexCoords.size() > 0)
+			ArrayList<Vector3> vertices = mVertices.get(j);
+			ArrayList<Vector3> texCoords = null;
+			ArrayList<Vector3> vertNormals = mVertNormals.get(j);
+
+			if (mTexCoords.size() > 0)
 				texCoords = mTexCoords.get(j);
-			
+
 			int len = indices.size();
 			float[] aVertices = new float[len * 3];
 			float[] aNormals = new float[len * 3];
 			float[] aTexCoords = new float[len * 2];
 			int[] aIndices = new int[len];
-	
+
 			int ic = 0;
 			int itn = 0;
 			int itc = 0;
 			int ivi = 0;
-	
-			Number3D coord;
-			Number3D texcoord;
-			Number3D normal;
-			
+
+			Vector3 coord;
+			Vector3 texcoord;
+			Vector3 normal;
+
 			for (int i = 0; i < len; i += 3) {
 				int v1 = indices.get(i);
 				int v2 = indices.get(i + 1);
 				int v3 = indices.get(i + 2);
-	
+
 				coord = vertices.get(v1);
-				
+
 				aVertices[ic++] = coord.x;
 				aVertices[ic++] = coord.y;
 				aVertices[ic++] = coord.z;
-	
+
 				aIndices[ivi] = ivi++;
-	
+
 				coord = vertices.get(v2);
 				aVertices[ic++] = coord.x;
 				aVertices[ic++] = coord.y;
 				aVertices[ic++] = coord.z;
-	
+
 				aIndices[ivi] = ivi++;
-	
+
 				coord = vertices.get(v3);
 				aVertices[ic++] = coord.x;
 				aVertices[ic++] = coord.y;
 				aVertices[ic++] = coord.z;
-	
+
 				aIndices[ivi] = ivi++;
-				
-				if(texCoords != null && texCoords.size() > 0) {
+
+				if (texCoords != null && texCoords.size() > 0) {
 					texcoord = texCoords.get(v1);
-		
+
 					aTexCoords[itc++] = texcoord.x;
 					aTexCoords[itc++] = texcoord.y;
-		
+
 					texcoord = texCoords.get(v2);
-		
+
 					aTexCoords[itc++] = texcoord.x;
 					aTexCoords[itc++] = texcoord.y;
-		
+
 					texcoord = texCoords.get(v3);
-		
+
 					aTexCoords[itc++] = texcoord.x;
 					aTexCoords[itc++] = texcoord.y;
 				}
-	
+
 				normal = vertNormals.get(v1);
 				aNormals[itn++] = normal.x;
 				aNormals[itn++] = normal.y;
 				aNormals[itn++] = normal.z;
 				normal = vertNormals.get(v2);
-	
+
 				aNormals[itn++] = normal.x;
 				aNormals[itn++] = normal.y;
 				aNormals[itn++] = normal.z;
-	
+
 				normal = vertNormals.get(v3);
-	
+
 				aNormals[itn++] = normal.x;
 				aNormals[itn++] = normal.y;
 				aNormals[itn++] = normal.z;
 			}
-			
+
 			BaseObject3D targetObj = new BaseObject3D(mObjNames.get(j));
 			targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices);
 			// -- diffuse material with random color. for now.
 			DiffuseMaterial material = new DiffuseMaterial();
 			material.setUseColor(true);
 			targetObj.setMaterial(material);
-			targetObj.setColor(0xff000000 + (int)(Math.random() * 0xffffff));
+			targetObj.setColor(0xff000000 + (int) (Math.random() * 0xffffff));
 			mRootObject.addChild(targetObj);
 		}
 	}
 
 	public void clear() {
-		for(int i=0; i<mObjects; ++i) {
+		for (int i = 0; i < mObjects; ++i) {
 			mIndices.get(i).clear();
 			mVertNormals.get(i).clear();
 			mVertices.get(i).clear();
@@ -258,36 +280,36 @@ public class Max3DSParser extends AMeshParser {
 	protected void readVertices(InputStream buffer) throws IOException {
 		float x, y, z;
 		int numVertices = readShort(buffer);
-		ArrayList<Number3D> vertices = new ArrayList<Number3D>();
+		ArrayList<Vector3> vertices = new ArrayList<Vector3>();
 
 		for (int i = 0; i < numVertices; i++) {
 			x = readFloat(buffer);
 			y = readFloat(buffer);
 			z = readFloat(buffer);
 
-			vertices.add(new Number3D(x, y, z));
+			vertices.add(new Vector3(x, y, z));
 		}
-		
+
 		mVertices.add(vertices);
 	}
 
 	protected void readTexCoords(InputStream buffer) throws IOException {
-	    int numVertices = readShort(buffer);
-	    ArrayList<Number3D> texCoords = new ArrayList<Number3D>();
-	
-	    for (int i = 0; i < numVertices; i++) {
-	        float x = readFloat(buffer);
-	        float y = 1-readFloat(buffer);
-	
-	        texCoords.add(new Number3D(x, y, 0));
-	    }
-	
-	    mTexCoords.add(texCoords);
+		int numVertices = readShort(buffer);
+		ArrayList<Vector3> texCoords = new ArrayList<Vector3>();
+
+		for (int i = 0; i < numVertices; i++) {
+			float x = readFloat(buffer);
+			float y = 1 - readFloat(buffer);
+
+			texCoords.add(new Vector3(x, y, 0));
+		}
+
+		mTexCoords.add(texCoords);
 	}
 
 	protected void readFaces(InputStream buffer) throws IOException {
 		int triangles = readShort(buffer);
-		Number3D[] normals = new Number3D[triangles];		
+		Vector3[] normals = new Vector3[triangles];
 		ArrayList<Integer> indices = new ArrayList<Integer>();
 
 		for (int i = 0; i < triangles; i++) {
@@ -301,21 +323,21 @@ public class Max3DSParser extends AMeshParser {
 			indices.add(vertexIDs[1]);
 			indices.add(vertexIDs[2]);
 
-			Number3D normal = calculateFaceNormal(vertexIDs);
+			Vector3 normal = calculateFaceNormal(vertexIDs);
 			normals[i] = normal;
 		}
-		
-		mNormals.add(new Number3D[triangles]);
+
+		mNormals.add(new Vector3[triangles]);
 		mIndices.add(indices);
-		
+
 		int numVertices = mVertices.get(mObjects).size();
 		int numIndices = indices.size();
-		
-		ArrayList<Number3D> vertNormals = new ArrayList<Number3D>();
+
+		ArrayList<Vector3> vertNormals = new ArrayList<Vector3>();
 
 		for (int i = 0; i < numVertices; i++) {
 
-			Number3D vertexNormal = new Number3D();
+			Vector3 vertexNormal = new Vector3();
 
 			for (int j = 0; j < numIndices; j += 3) {
 				int id1 = indices.get(j);
@@ -329,20 +351,20 @@ public class Max3DSParser extends AMeshParser {
 			vertexNormal.normalize();
 			vertNormals.add(vertexNormal);
 		}
-		
+
 		mVertNormals.add(vertNormals);
 	}
 
-	private Number3D calculateFaceNormal(int[] vertexIDs) {
-		ArrayList<Number3D> vertices = mVertices.get(mObjects);
-		Number3D v1 = vertices.get(vertexIDs[0]);
-		Number3D v2 = vertices.get(vertexIDs[2]);
-		Number3D v3 = vertices.get(vertexIDs[1]);
+	private Vector3 calculateFaceNormal(int[] vertexIDs) {
+		ArrayList<Vector3> vertices = mVertices.get(mObjects);
+		Vector3 v1 = vertices.get(vertexIDs[0]);
+		Vector3 v2 = vertices.get(vertexIDs[2]);
+		Vector3 v3 = vertices.get(vertexIDs[1]);
 
-		Number3D vector1 = Number3D.subtract(v2, v1);
-		Number3D vector2 = Number3D.subtract(v3, v1);
+		Vector3 vector1 = Vector3.subtract(v2, v1);
+		Vector3 vector2 = Vector3.subtract(v3, v1);
 
-		Number3D normal = Number3D.cross(vector1, vector2);
+		Vector3 normal = Vector3.cross(vector1, vector2);
 		normal.normalize();
 		return normal;
 	}
