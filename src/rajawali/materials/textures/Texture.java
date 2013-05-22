@@ -24,6 +24,10 @@ public class Texture extends ASingleTexture {
 		super(TextureType.DIFFUSE, textureName, bitmap);
 	}
 	
+	public Texture(String textureName, TextureAtlas atlas)
+	{
+		super(TextureType.DIFFUSE, textureName, atlas.getTileNamed("boat_int_prp_tex").getPage());
+	}
 	public Texture(String textureName, ACompressedTexture compressedTexture)
 	{
 		super(TextureType.DIFFUSE, textureName, compressedTexture);
