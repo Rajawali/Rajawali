@@ -129,6 +129,12 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				buffer.close();
 			} catch (Exception ex) {}
 			throw new ParsingException(e);
+		} finally {
+			mMeshes = null;
+			mJoints = null;
+
+			mBindPoseMatrix = null;
+			mInverseBindPoseMatrix = null;
 		}
 
 		return this;
@@ -434,11 +440,13 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			}
 
 			mRootObject.addChild(o);
+			
+			mesh.destroy();
+			mesh = null;
 		}
 	}
 
 	private class SkeletonMeshData {
-
 		public String textureName;
 		public int numVertices;
 		public int numTriangles;
@@ -452,5 +460,17 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 		public int[] indices;
 		public float[] textureCoordinates;
 		public float[] weights;
+		
+		public void destroy()
+		{
+			boneVertices = null;
+			boneWeights = null;
+			triangles = null;
+			vertices = null;
+			normals = null;
+			indices = null;
+			textureCoordinates = null;
+			weights = null;
+		}
 	}
 }

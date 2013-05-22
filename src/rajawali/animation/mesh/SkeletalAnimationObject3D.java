@@ -16,11 +16,16 @@ import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.SystemClock;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 public class SkeletalAnimationObject3D extends AAnimationObject3D {
 
 	private SkeletonJoint[] mJoints;
 	private SkeletalAnimationSequence mSequence;
+	private SkeletalAnimationSequence mNextSequence;
+	private int mTransitionDuration;
+	private Interpolator mTransitionInterpolator;
 	public float[][] mInverseBindPoseMatrix;
 	public float[] uBoneMatrix;
 
@@ -72,6 +77,18 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				if (mChildren.get(i) instanceof SkeletalAnimationChildObject3D)
 					((SkeletalAnimationChildObject3D) mChildren.get(i)).setAnimationSequence(sequence);
 		}
+	}
+	
+	public void transitionToAnimationSequence(SkeletalAnimationSequence sequence, int duration)
+	{
+		transitionToAnimationSequence(sequence, duration, new LinearInterpolator());
+	}
+
+	public void transitionToAnimationSequence(SkeletalAnimationSequence sequence, int duration, Interpolator interpolator)
+	{
+		mNextSequence = sequence;
+		mTransitionDuration = duration;
+		mTransitionInterpolator = interpolator;
 	}
 
 	public SkeletalAnimationSequence getAnimationSequence()
@@ -127,12 +144,6 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			}
 		}
 
-if(mBreakNow)
-{
-	RajLog.i("interp: " + mInterpolation + ", frame: " + mCurrentFrameIndex);
-	RajLog.i("sss");
-}
-	
 		mGeometry.changeBufferData(mBoneMatricesBufferInfo, mBoneMatrices, 0);
 
 		if (mInterpolation >= 1) {
@@ -144,11 +155,6 @@ if(mBreakNow)
 		}
 
 		mStartTime = mCurrentTime;
-	}
-	private boolean mBreakNow = false;
-	public void breakNow()
-	{
-		mBreakNow = true;
 	}
 
 	public void play() {
