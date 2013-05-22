@@ -36,6 +36,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	private float mTransitionDuration;
 	private float mTransitionStartTime;
 	private Interpolator mTransitionInterpolator;
+	private int mCurrentTransitionFrameIndex;
 	public float[][] mInverseBindPoseMatrix;
 	public float[] uBoneMatrix;
 	
@@ -131,6 +132,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		mTransitionDuration = duration;
 		mTransitionInterpolator = interpolator;
 		mTransitionStartTime = SystemClock.uptimeMillis();
+		mCurrentTransitionFrameIndex = 0;
 	}
 
 	/**
@@ -174,8 +176,8 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			
 			if(isTransitioning)
 			{
-				SkeletalAnimationFrame currentTransFrame = mNextSequence.getFrame(mCurrentFrameIndex % mNextSequence.getNumFrames());
-				SkeletalAnimationFrame nextTransFrame = mNextSequence.getFrame((mCurrentFrameIndex + 1) % mNextSequence.getNumFrames());
+				SkeletalAnimationFrame currentTransFrame = mNextSequence.getFrame(mCurrentTransitionFrameIndex % mNextSequence.getNumFrames());
+				SkeletalAnimationFrame nextTransFrame = mNextSequence.getFrame((mCurrentTransitionFrameIndex + 1) % mNextSequence.getNumFrames());
 				
 				fromJoint = currentTransFrame.getSkeleton().getJoint(i);
 				toJoint = nextTransFrame.getSkeleton().getJoint(i);
@@ -212,7 +214,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		if(isTransitioning && transitionInterpolation >= .99f)
 		{
 			isTransitioning = false;
-			mCurrentFrameIndex = mCurrentFrameIndex % mNextSequence.getNumFrames();
+			mCurrentFrameIndex = mCurrentTransitionFrameIndex;
 			mSequence = mNextSequence;
 			mNextSequence = null;
 		}
@@ -225,6 +227,13 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 
 			if (mCurrentFrameIndex >= mSequence.getNumFrames())
 				mCurrentFrameIndex = 0;
+			
+			if(isTransitioning)
+			{
+				mCurrentTransitionFrameIndex++;
+				if(mCurrentTransitionFrameIndex >= mNextSequence.getNumFrames())
+					mCurrentTransitionFrameIndex = 0;
+			}
 		}
 
 		mStartTime = currentTime;
