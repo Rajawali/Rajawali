@@ -1,6 +1,6 @@
 package rajawali.lights;
 
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 
 public class DirectionalLight extends ALight {
 	protected float[] mDirection = new float[3];
@@ -20,7 +20,7 @@ public class DirectionalLight extends ALight {
 		mDirection[2] = z;
 	}
 
-	public void setDirection(Number3D dir) {
+	public void setDirection(Vector3 dir) {
 		setDirection(dir.x, dir.y, dir.z);
 	}
 
@@ -30,7 +30,7 @@ public class DirectionalLight extends ALight {
 
 	public void setLookAt(float x, float y, float z) {
 		super.setLookAt(x, y, z);
-		Number3D dir = new Number3D(x, y, z);
+		Vector3 dir = new Vector3(x, y, z);
 		dir.subtract(mPosition);
 		dir.x = -dir.x;
 		dir.normalize();

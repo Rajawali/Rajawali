@@ -13,11 +13,13 @@ import java.util.StringTokenizer;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.AMaterial;
-import rajawali.materials.BumpmapMaterial;
+import rajawali.materials.NormalMapMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
-import rajawali.materials.TextureManager;
-import rajawali.materials.TextureManager.TextureType;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.NormalMapTexture;
+import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import rajawali.wallpaper.Wallpaper;
@@ -280,7 +282,11 @@ public class ObjParser extends AMeshParser {
 			}
 			
 			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
-			matLib.setMaterial(oid.targetObj, oid.materialName);
+			try {
+				matLib.setMaterial(oid.targetObj, oid.materialName);
+			} catch(TextureException tme) {
+				throw new ParsingException(tme);
+			}
 			mRootObject.addChild(oid.targetObj);
 		}
 		
@@ -408,7 +414,7 @@ public class ObjParser extends AMeshParser {
 			}
 		}
 		
-		public void setMaterial(BaseObject3D object, String materialName) {
+		public void setMaterial(BaseObject3D object, String materialName) throws TextureException {
 			MaterialDef matDef = null;
 			
 			for(int i=0; i<mMaterials.size(); ++i) {
@@ -428,7 +434,7 @@ public class ObjParser extends AMeshParser {
 			if(hasSpecular && !hasBump)
 				mat = new PhongMaterial();
 			else if(hasBump)
-				mat = new BumpmapMaterial();
+				mat = new NormalMapMaterial();
 			else
 				mat = new DiffuseMaterial();
 
@@ -444,31 +450,19 @@ public class ObjParser extends AMeshParser {
 			if(hasTexture) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.diffuseTexture), "drawable", mResourcePackage);
-					object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
+					mat.addTexture(new Texture(identifier));
 				} else {
-					try {
-						String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
-						object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeFile(filePath), TextureType.BUMP));
-					} catch (Exception e) {
-						RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + matDef.diffuseTexture);
-						e.printStackTrace();
-						return;
-					}
+					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
+					mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), BitmapFactory.decodeFile(filePath)));
 				}
 			}
 			if(hasBump) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.bumpTexture), "drawable", mResourcePackage);
-					object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier), TextureType.BUMP));
+					mat.addTexture(new NormalMapTexture(identifier));
 				} else {
-					try {
-						String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
-						object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeFile(filePath), TextureType.BUMP));
-					} catch (Exception e) {
-						RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + matDef.bumpTexture);
-						e.printStackTrace();
-						return;
-					}
+					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
+					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture), BitmapFactory.decodeFile(filePath)));
 				}
 			}
 		}

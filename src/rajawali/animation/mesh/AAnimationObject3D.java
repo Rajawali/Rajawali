@@ -107,6 +107,7 @@ public abstract class AAnimationObject3D extends BaseObject3D {
 			// Do not disrupt frame position if it is already playing the animation
 			mCurrentFrameIndex = start;
 		}
+		
 		mStartFrameIndex = start;
 		mEndFrameIndex = end;
 		mStartTime = SystemClock.uptimeMillis();

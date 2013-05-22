@@ -3,6 +3,7 @@ package rajawali.primitives;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.materials.AParticleMaterial;
+import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
@@ -51,7 +52,7 @@ public class Particle extends BaseObject3D {
 		mParticleShader = material;
 	}
 	
-	public void setMaterial(AParticleMaterial material, boolean copyTextures) {
+	public void setMaterial(AParticleMaterial material, boolean copyTextures) throws TextureException {
 		super.setMaterial(material, copyTextures);
 		mParticleShader = material;
 	}

@@ -1,7 +1,7 @@
 package rajawali.materials;
 
 import rajawali.lights.ALight;
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -65,7 +65,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 		mSpecularColor = color;
 	}
 
-	public void setSpecularColor(Number3D color) {
+	public void setSpecularColor(Vector3 color) {
 		mSpecularColor[0] = color.x;
 		mSpecularColor[1] = color.y;
 		mSpecularColor[2] = color.z;

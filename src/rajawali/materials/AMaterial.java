@@ -10,8 +10,11 @@ import java.util.Stack;
 
 import rajawali.Camera;
 import rajawali.lights.ALight;
-import rajawali.materials.TextureManager.TextureType;
-import rajawali.math.Number3D;
+import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.ATexture.TextureType;
+import rajawali.materials.textures.TextureManager;
+import rajawali.math.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.annotation.SuppressLint;
@@ -58,7 +61,7 @@ public abstract class AMaterial {
 	protected float[] mModelViewMatrix;
 	protected float[] mViewMatrix;
 	protected float[] mCameraPosArray;
-	protected ArrayList<TextureInfo> mTextureInfoList;
+	protected ArrayList<ATexture> mTextureList;
 	
 	/**
 	 * The maximum number of available textures for this device.
@@ -71,7 +74,7 @@ public abstract class AMaterial {
 	protected boolean mAlphaMaskingEnabled;
 	
 	public AMaterial() {
-		mTextureInfoList = new ArrayList<TextureInfo>();
+		mTextureList = new ArrayList<ATexture>();
 		mCameraPosArray = new float[3];
 		mLights = new Stack<ALight>();
 		mMaxTextures = queryMaxTextures();
@@ -118,12 +121,14 @@ public abstract class AMaterial {
 	public void reload() {
 		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 		
-		mNumTextures = mTextureInfoList.size();
-
+		mNumTextures = mTextureList.size();
+		
+		// TODO: manage
+		/*
 		for(int i=0; i<mNumTextures; i++) {
-			if(mTextureInfoList.get(i).getTexture() != null)
-				addTexture(mTextureInfoList.get(i), true, true);
-		}
+			if(mTextureList.get(i).getBitmaps() != null)
+				addTexture(mTextureList.get(i), true, true);
+		}*/
 	}
 
 	public void setShaders() {
@@ -172,7 +177,9 @@ public abstract class AMaterial {
 		
 		mProgramCreated = true;
 
-		checkTextureHandles();
+		int count = mTextureList.size();
+		for(int i=0; i<count; i++)
+			setTextureParameters(mTextureList.get(i));
 	}
 
 	protected int loadShader(int shaderType, String source) {
@@ -244,7 +251,7 @@ public abstract class AMaterial {
 		mViewMatrix = null;
 		mCameraPosArray = null;
 		if(mLights != null) mLights.clear();
-		if(mTextureInfoList != null) mTextureInfoList.clear();
+		if(mTextureList != null) mTextureList.clear();
 		unload();
 	}
 
@@ -254,28 +261,27 @@ public abstract class AMaterial {
 			reload();
 		}
 		GLES20.glUseProgram(mProgram);
-		if(checkValidHandle(muAlphaMaskingThresholdHandle, "alpha masking threshold"))
+		if(mAlphaMaskingEnabled == true && checkValidHandle(muAlphaMaskingThresholdHandle, "alpha masking threshold"))
 			GLES20.glUniform1f(muAlphaMaskingThresholdHandle, mAlphaMaskingThreshold);
 	}
 
 	public void bindTextures() {
-		int num = mTextureInfoList.size();
+		int num = mTextureList.size();
 
 		for (int i = 0; i < num; i++) {
-			TextureInfo ti = mTextureInfoList.get(i);
-			int type = ti.isCubeMap() ? GLES20.GL_TEXTURE_CUBE_MAP : GLES20.GL_TEXTURE_2D;
+			ATexture texture = mTextureList.get(i);
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
-			GLES20.glBindTexture(type, ti.getTextureId());
-			GLES20.glUniform1i(ti.getUniformHandle(), i);
+			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+			GLES20.glUniform1i(texture.getUniformHandle(), i);
 		}
 	}
 
 	public void unbindTextures() {
-		int num = mTextureInfoList.size();
+		int num = mTextureList.size();
 
 		for (int i = 0; i < num; i++) {
-			TextureInfo ti = mTextureInfoList.get(i);
-			int type = ti.isCubeMap() ? GLES20.GL_TEXTURE_CUBE_MAP
+			ATexture textureConfig = mTextureList.get(i);
+			int type = textureConfig.getTextureType() == TextureType.CUBE_MAP ? GLES20.GL_TEXTURE_CUBE_MAP
 					: GLES20.GL_TEXTURE_2D;
 			GLES20.glBindTexture(type, 0);
 		}
@@ -283,42 +289,32 @@ public abstract class AMaterial {
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
 
-	public ArrayList<TextureInfo> getTextureInfoList() {
-		return mTextureInfoList;
+	public ArrayList<ATexture> getTextureList() {
+		return mTextureList;
 	}
 	
-	public void setTextureInfoList(ArrayList<TextureInfo> textureInfoList) {
-		mTextureInfoList = textureInfoList;
+	public void setTextureInfoList(ArrayList<ATexture> textureList) {
+		mTextureList = textureList;
 	}
 
-	public void addTexture(TextureInfo textureInfo) {
-		addTexture(textureInfo, false);
-	}
-	
-	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture) {
-		addTexture(textureInfo, isExistingTexture, false);
-	}
-	
-	public void removeTexture(TextureInfo textureInfo) {
-		mTextureInfoList.remove(textureInfo);
-	}
-	
-	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture, boolean reload) {
-		// -- check if this texture is already in the list
-		if(mTextureInfoList.indexOf(textureInfo) > -1 && !reload) return;		
-
-		if(mTextureInfoList.size() > mMaxTextures) {
-			RajLog.e("[" +getClass().getCanonicalName()+ "] Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
+	public void addTexture(ATexture texture) throws TextureException {
+		if(mTextureList.indexOf(texture) > -1) return;
+		if(mTextureList.size() + 1 > mMaxTextures) {
+			throw new TextureException("Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
 		}
+		mTextureList.add(texture);
+		mNumTextures = mTextureList.size();
+		TextureManager.getInstance().addTexture(texture);
+		texture.registerMaterial(this);
 		
-		String textureName = "uTexture";
-
-		switch (textureInfo.getTextureType()) {
+		String textureName = "uTexture";		
+		
+		switch (texture.getTextureType()) {
 		case DIFFUSE:
 		case VIDEO_TEXTURE:
 			textureName = "uDiffuseTexture";
 			break;
-		case BUMP:
+		case NORMAL:
 			textureName = "uNormalTexture";
 			mUseNormalMap = true;
 			break;
@@ -348,49 +344,43 @@ public abstract class AMaterial {
 		}
 
 		// -- check if there are already diffuse texture in the list
-		int num = mTextureInfoList.size();
+		int num = mTextureList.size();
 		int numDiffuse = 0;
 		for(int i=0; i<num; ++i) {
-			TextureInfo ti = mTextureInfoList.get(i);
-			if(ti.getTextureType() == TextureType.DIFFUSE)
+			ATexture tc = mTextureList.get(i);
+			if(tc.getTextureType() == TextureType.DIFFUSE)
 				numDiffuse++;
 		}
 		
 		// -- if there are already diffuse textures in the list then append a
 		//    number (ie the second texture in the list will be called 
 		//    "uDiffuseTexture1", the third "uDiffuseTexture2", etc.
-		if(numDiffuse > 0 && textureInfo.getTextureType() == TextureType.DIFFUSE)
+		if(numDiffuse > 1 && texture.getTextureType() == TextureType.DIFFUSE)
 			textureName += numDiffuse;
+		
+		texture.setTextureName(textureName);
+		
+		if(texture.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
 
-		if(isExistingTexture)
-			textureName = textureInfo.getTextureName();
-		
-		if(mProgramCreated) {
-			int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
-			if (textureHandle == -1) {
-				RajLog.d("Could not get attrib location for "
-						+ textureName + ", " + textureInfo.getTextureType());
-			}
-			textureInfo.setUniformHandle(textureHandle);
-		}
-		
-		if(!isExistingTexture)
-			textureInfo.setTextureName(textureName);
-		
-		if(textureInfo.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
-		if(!isExistingTexture) {
-			mTextureInfoList.add(textureInfo);
-			mNumTextures++;
-		}
+		if(mProgramCreated)
+			setTextureParameters(texture);
 	}
 	
-	protected void checkTextureHandles() {
-		int num = mTextureInfoList.size();
-		for(int i=0; i<num; ++i) {
-			TextureInfo ti = mTextureInfoList.get(i);
-			if(ti.getUniformHandle() == -1) {
-				addTexture(ti, true, true);
+	public void removeTexture(ATexture texture) {
+		mTextureList.remove(texture);
+		texture.unregisterMaterial(this);
+	}
+	
+	private void setTextureParameters(ATexture texture) {
+		if(texture.getUniformHandle() > -1) return;
+		
+		if(mProgramCreated) {
+			int textureHandle = GLES20.glGetUniformLocation(mProgram, texture.getTextureName());
+			if (textureHandle == -1) {
+				RajLog.d("Could not get attrib location for "
+						+ texture.getTextureName() + ", " + texture.getTextureType());
 			}
+			texture.setUniformHandle(textureHandle);
 		}
 	}
 	
@@ -520,7 +510,7 @@ public abstract class AMaterial {
 	}
 	
 	public void setCamera(Camera camera) {
-		Number3D camPos = camera.getPosition();
+		Vector3 camPos = camera.getPosition();
 		mCameraPosArray[0] = camPos.x;
 		mCameraPosArray[1] = camPos.y;
 		mCameraPosArray[2] = camPos.z;
@@ -548,11 +538,11 @@ public abstract class AMaterial {
 		return mModelViewMatrix;
 	}
 
-	public void copyTexturesTo(AMaterial shader) {
-		int num = mTextureInfoList.size();
+	public void copyTexturesTo(AMaterial material) throws TextureException {
+		int num = mTextureList.size();
 
 		for (int i = 0; i < num; ++i)
-			shader.addTexture(mTextureInfoList.get(i));
+			material.addTexture(mTextureList.get(i));
 	}
 
 	/**

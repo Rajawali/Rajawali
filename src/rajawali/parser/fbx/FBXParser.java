@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
@@ -20,8 +21,10 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Number3D;
-import rajawali.math.Vector2D;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.Texture;
+import rajawali.math.Vector3;
+import rajawali.math.Vector2;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.fbx.FBXValues.Connections.Connect;
 import rajawali.parser.fbx.FBXValues.FBXColor4;
@@ -30,7 +33,6 @@ import rajawali.parser.fbx.FBXValues.FBXIntBuffer;
 import rajawali.parser.fbx.FBXValues.FBXMatrix;
 import rajawali.parser.fbx.FBXValues.Objects.Material;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
-import rajawali.parser.fbx.FBXValues.Objects.Texture;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap;
@@ -71,20 +73,14 @@ public class FBXParser extends AMeshParser {
 	
 	public FBXParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
-		init(renderer);
+		mRenderer = renderer;
+		mObjStack = new Stack<Object>();
+		mFbx = new FBXValues();
+		mObjStack.add(mFbx);
 	}
 	
 	public FBXParser(RajawaliRenderer renderer, int resourceId) {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
-		init(renderer);
-	}
-	
-	public FBXParser(RajawaliRenderer renderer, File file) {
-		super(renderer, file);
-		init(renderer);
-	}
-	
-	private final void init(RajawaliRenderer renderer) {
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
 		mFbx = new FBXValues();
@@ -164,8 +160,12 @@ public class FBXParser extends AMeshParser {
 		
 		Stack<Model> models = mFbx.objects.getModelsByType(FBXValues.MODELTYPE_MESH);
 		
-		for(int i=0; i<models.size(); ++i) {
-			buildMesh(models.get(i), sceneLights);
+		try {
+			for(int i=0; i<models.size(); ++i) {
+				buildMesh(models.get(i), sceneLights);
+			}
+		} catch(TextureException tme) {
+			throw new ParsingException(tme);
 		}
 		
 		// -- get cameras
@@ -196,7 +196,7 @@ public class FBXParser extends AMeshParser {
 		return this;
 	}
 	
-	private void buildMesh(Model model, Stack<ALight> lights) {
+	private void buildMesh(Model model, Stack<ALight> lights) throws TextureException, ParsingException {
 		BaseObject3D o = new BaseObject3D(model.name);
 		boolean hasUVs = model.layerElementUV.uVIndex != null;
 		
@@ -372,14 +372,14 @@ public class FBXParser extends AMeshParser {
 	    return ret;
 	}
 	
-	private void setMeshTextures(BaseObject3D o, String name) {
-		Stack<Texture> textures = mFbx.objects.textures;
+	private void setMeshTextures(BaseObject3D o, String name) throws TextureException, ParsingException {
+		Stack<FBXValues.Objects.Texture> textures = mFbx.objects.textures;
 		Stack<Connect> connections = mFbx.connections.connections;
 		int numTex = textures.size();
 		int numCon = connections.size();
 		
 		for(int i=0; i<numTex; ++i) {
-			Texture tex = textures.get(i);
+			FBXValues.Objects.Texture tex = textures.get(i);
 			for(int j=0; j<numCon; ++j) {
 				Connect conn = connections.get(j);
 
@@ -387,25 +387,20 @@ public class FBXParser extends AMeshParser {
 				{
 					// -- one texture for now
 					String textureName = tex.fileName;
-					try {
-						Bitmap texture = null;
-						if(mFile == null) {
-							int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(), "drawable", mResources.getResourcePackageName(mResourceId));
-							texture = BitmapFactory.decodeResource(mResources, identifier);
-						} else {
-							try {
-								String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(textureName);
-								texture = BitmapFactory.decodeFile(filePath);
-							} catch (Exception e) {
-								RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
-								e.printStackTrace();
-								return;
-							}
+
+					Bitmap bitmap = null;
+					if(mFile == null) {
+						int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(Locale.getDefault()), "drawable", mResources.getResourcePackageName(mResourceId));
+						bitmap = BitmapFactory.decodeResource(mResources, identifier);
+					} else {
+						try {
+							String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(textureName);
+							bitmap = BitmapFactory.decodeFile(filePath);
+						} catch (Exception e) {
+							throw new ParsingException("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
 						}
-						o.addTexture(mTextureManager.addTexture(texture));
-					} catch(Exception e) {
-						RajLog.e("Could not load texture [" + textureName + "]: " + e.getMessage() );	
 					}
+					o.getMaterial().addTexture(new Texture(textureName, bitmap));
 					return;
 				}
 			}
@@ -589,8 +584,8 @@ public class FBXParser extends AMeshParser {
 					field.set(obj, Long.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));		
 				else if(clazz.equals(Float.class))
 					field.set(obj, Float.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));		
-				else if(clazz.equals(Number3D.class)) {
-					field.set(obj, new Number3D(val.split(",")));
+				else if(clazz.equals(Vector3.class)) {
+					field.set(obj, new Vector3(val.split(",")));
 				}
 				else if(clazz.equals(FBXFloatBuffer.class))
 				{
@@ -644,9 +639,9 @@ public class FBXParser extends AMeshParser {
 				{
 					field.set(obj, new FBXColor4(val));
 				}
-				else if(clazz.equals(Vector2D.class))
+				else if(clazz.equals(Vector2.class))
 				{
-					field.set(obj, new Vector2D(val.replaceAll("\\s", REPLACE_EMPTY).split(",")));
+					field.set(obj, new Vector2(val.replaceAll("\\s", REPLACE_EMPTY).split(",")));
 				}
 				
 				if(processNextLine && line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY).length() > 0)

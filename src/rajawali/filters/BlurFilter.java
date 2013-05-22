@@ -10,8 +10,8 @@
  */
 package rajawali.filters;
 
-import android.opengl.GLES20;
 import rajawali.materials.AMaterial;
+import android.opengl.GLES20;
 
 public class BlurFilter extends AMaterial implements IPostProcessingFilter {
 	public enum Orientation {

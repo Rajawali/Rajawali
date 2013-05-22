@@ -46,6 +46,7 @@ public class RajawaliActivity extends Activity {
         		throw new Error("OpenGL ES 2.0 is not supported by this device");
         }
         mSurfaceView.setEGLContextClientVersion(2);
+        
         mLayout = new FrameLayout(this);
         mLayout.addView(mSurfaceView);
         
@@ -162,12 +163,14 @@ public class RajawaliActivity extends Activity {
     	super.onResume();
     	mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     	mSurfaceView.onResume();
+    	mRajRenderer.onVisibilityChanged(true);
     }
     
     @Override
     protected void onPause() {
     	super.onPause();
     	mSurfaceView.onPause();
+    	mRajRenderer.onVisibilityChanged(false);
     }
 
     @Override
