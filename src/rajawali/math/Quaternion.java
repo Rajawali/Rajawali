@@ -12,7 +12,7 @@ public final class Quaternion {
 	public final static float F_EPSILON = .001f;
 	public float w, x, y, z;
 	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
-
+	
 	public Quaternion() {
 		setIdentity();
 		mTmpVec1 = new Vector3();
@@ -341,18 +341,21 @@ public final class Quaternion {
 	}
 
 	public static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
-		Quaternion qr = null;
-        // Create a local quaternion to store the interpolated quaternion
+		Quaternion q = new Quaternion();
+		q.slerpSelf(q1, q2, t);
+		return q;
+	}
+	
+	public void slerpSelf(Quaternion q1, Quaternion q2, float t) {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
-            qr = new Quaternion(q1);
-            return qr;
+            setAllFrom(q1);
+            return;
         }
 
         float result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z)
                 + (q1.w * q2.w);
 
         if (result < 0.0f) {
-            // Negate the second quaternion and the result of the dot product
             q2.x = -q2.x;
             q2.y = -q2.y;
             q2.z = -q2.z;
@@ -360,34 +363,21 @@ public final class Quaternion {
             result = -result;
         }
 
-        // Set the first and second scale for the interpolation
         float scale0 = 1 - t;
         float scale1 = t;
 
-        // Check if the angle between the 2 quaternions was big enough to
-        // warrant such calculations
-        if ((1 - result) > 0.1f) {// Get the angle between the 2 quaternions,
-            // and then store the sin() of that angle
+        if ((1 - result) > 0.1f) {
             float theta = (float)Math.acos(result);
             float invSinTheta = 1f / (float)Math.sin(theta);
 
-            // Calculate the scale for q1 and q2, according to the angle and
-            // it's sine value
             scale0 = (float)Math.sin((1 - t) * theta) * invSinTheta;
             scale1 = (float)Math.sin((t * theta)) * invSinTheta;
         }
 
-        // Calculate the x, y, z and w values for the quaternion by using a
-        // special
-        // form of linear interpolation for quaternions.
-        qr = new Quaternion();
-        qr.x = (scale0 * q1.x) + (scale1 * q2.x);
-        qr.y = (scale0 * q1.y) + (scale1 * q2.y);
-        qr.z = (scale0 * q1.z) + (scale1 * q2.z);
-        qr.w = (scale0 * q1.w) + (scale1 * q2.w);
-
-        // Return the interpolated quaternion
-        return qr;
+        x = (scale0 * q1.x) + (scale1 * q2.x);
+        y = (scale0 * q1.y) + (scale1 * q2.y);
+        z = (scale0 * q1.z) + (scale1 * q2.z);
+        w = (scale0 * q1.w) + (scale1 * q2.w);
     }
 
 	public float normalize() {

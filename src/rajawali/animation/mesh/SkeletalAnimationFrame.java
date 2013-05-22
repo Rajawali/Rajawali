@@ -159,6 +159,19 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 		public int getIndex() {
 			return mIndex;
 		}
+		
+		public void copyAllFrom(SkeletonJoint otherJoint)
+		{
+			this.mFlags = otherJoint.getFlags();
+			this.mIndex = otherJoint.getIndex();
+			if(otherJoint.getMatrix() != null)
+				this.mMatrix = otherJoint.getMatrix().clone();
+			this.mName = otherJoint.getName();
+			this.mOrientation = otherJoint.getOrientation().clone();
+			this.mParentIndex = otherJoint.getParentIndex();
+			this.mPosition = otherJoint.getPosition().clone();
+			this.mStartIndex = otherJoint.getStartIndex();
+		}
 	}
 
 	public static class Skeleton {
