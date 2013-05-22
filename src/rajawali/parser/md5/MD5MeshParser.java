@@ -3,7 +3,6 @@ package rajawali.parser.md5;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
@@ -14,6 +13,7 @@ import rajawali.animation.mesh.SkeletalAnimationChildObject3D.BoneVertex;
 import rajawali.animation.mesh.SkeletalAnimationChildObject3D.BoneWeight;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.animation.mesh.SkeletalAnimationObject3D;
+import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
@@ -119,16 +119,11 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			buildMeshes();
 			calculateNormals();
 			createObjects();
-		} catch (TextureException tme) {
+		} catch (Exception tme) {
 			try {
 				buffer.close();
 			} catch (Exception ex) {}
 			throw new ParsingException(tme);
-		} catch (IOException e) {
-			try {
-				buffer.close();
-			} catch (Exception ex) {}
-			throw new ParsingException(e);
 		} finally {
 			mMeshes = null;
 			mJoints = null;
@@ -400,7 +395,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 		}
 	}
 
-	private void createObjects() throws TextureException, ParsingException {
+	private void createObjects() throws TextureException, ParsingException, SkeletalAnimationException {
 		SkeletalAnimationObject3D root = new SkeletalAnimationObject3D();
 		root.uBoneMatrix = mBindPoseMatrix;
 		root.mInverseBindPoseMatrix = mInverseBindPoseMatrix;

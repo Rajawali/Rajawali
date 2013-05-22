@@ -27,7 +27,6 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 public class SkeletalAnimationObject3D extends AAnimationObject3D {
-
 	private SkeletonJoint[] mJoints;
 	private SkeletonJoint mTmpJoint1;
 	private SkeletonJoint mTmpJoint2;
@@ -146,9 +145,6 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	}
 
 	public void setShaderParams(Camera camera) {
-		//TODO setting light params for container objects
-		//super.setShaderParams(camera);
-
 		if (!mIsPlaying)
 			return;
 		mBoneMatrices.clear();

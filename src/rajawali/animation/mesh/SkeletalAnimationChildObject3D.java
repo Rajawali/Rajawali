@@ -8,6 +8,7 @@ import rajawali.BaseObject3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D.BufferType;
+import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
 import rajawali.materials.AAdvancedMaterial;
 import rajawali.math.Vector2;
 import rajawali.math.Vector3;
@@ -19,7 +20,7 @@ import android.opengl.GLES20;
  * per rendering cycle
  */
 public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
-
+	private static final int MAX_WEIGHTS_PER_VERTEX = 8;
 	private static final int FLOAT_SIZE_BYTES = 4;
 	public int mNumJoints;
 	public SkeletalAnimationObject3D mSkeleton;
@@ -228,9 +229,11 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		super.destroy();
 	}
 
-	public void setMaxBoneWeightsPerVertex(int maxBoneWeightsPerVertex)
+	public void setMaxBoneWeightsPerVertex(int maxBoneWeightsPerVertex) throws SkeletalAnimationException
 	{
 		mMaxBoneWeightsPerVertex = maxBoneWeightsPerVertex;
+		if(mMaxBoneWeightsPerVertex > MAX_WEIGHTS_PER_VERTEX)
+			throw new SkeletalAnimationObject3D.SkeletalAnimationException("A maximum of " + MAX_WEIGHTS_PER_VERTEX + " weights per vertex is allowed. Your model uses more then " + MAX_WEIGHTS_PER_VERTEX + ".");
 	}
 
 	public int getMaxBoneWeightsPerVertex()
