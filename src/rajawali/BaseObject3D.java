@@ -345,7 +345,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}
 		// Draw children without frustum test
 		for (int i = 0, j = mChildren.size(); i < j; i++)
-			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
+			mChildren.get(i).render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, pickerInfo);
 
 		if (mRenderChildrenAsBatch) {
 			mMaterial.unbindTextures();
