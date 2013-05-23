@@ -33,6 +33,7 @@ import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.util.Log;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -213,6 +214,8 @@ public class RajawaliScene extends AFrameTask {
 	* @return boolean True if the addition was successfully queued.
 	*/
 	public boolean addCamera(Camera camera) {
+		camera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		camera.updateFrustum();
 		return queueAddTask(camera);
 	}
 	
@@ -252,6 +255,8 @@ public class RajawaliScene extends AFrameTask {
 	* @param boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceCamera(Camera camera, int location) {
+		camera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		camera.updateFrustum();
 		return queueReplaceTask(location, camera);
 	}
 	
@@ -266,6 +271,11 @@ public class RajawaliScene extends AFrameTask {
 	* @param boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceCamera(Camera oldCamera, Camera newCamera) {
+		Log.i("RAJAWALI", "OLD: " + oldCamera);
+		Log.i("RAJAWALI", "NEW: " + newCamera);
+		Log.i("RAJAWALI", "RENDER: " + mRenderer);
+		newCamera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		newCamera.updateFrustum();
 		return queueReplaceTask(oldCamera, newCamera);
 	}
 
@@ -304,7 +314,7 @@ public class RajawaliScene extends AFrameTask {
 	* @param boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceAndSwitchCamera(Camera oldCamera, Camera newCamera) {
-		boolean success = queueReplaceTask(oldCamera, newCamera);
+		boolean success = replaceCamera(oldCamera, newCamera);
 		switchCamera(newCamera);
 		return success;
 	}
@@ -599,7 +609,7 @@ public class RajawaliScene extends AFrameTask {
 
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
-		mCamera.updateFrustum(mPMatrix, mVMatrix); //update frustum plane
+		mCamera.updateFrustum(); //mPMatrix, mVMatrix); //update frustum plane
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -813,6 +823,8 @@ public class RajawaliScene extends AFrameTask {
 					break;
 				case REPLACE:
 					handleReplaceTask(taskObject);
+					break;
+				default:
 					break;
 				}
 				//Retrieve the next task

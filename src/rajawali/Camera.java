@@ -106,10 +106,11 @@ public class Camera extends ATransformable3D {
 		}
 	}
 	
-	public void updateFrustum(float[] pMatrix,float[] vMatrix) {
+	//public void updateFrustum(float[] pMatrix,float[] vMatrix) {
+	public void updateFrustum() {	
 		synchronized (mFrustumLock) {
 			calculateModelMatrix();
-			Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
+			Matrix.multiplyMM(mCombinedMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
 			Matrix.invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
 			mFrustum.update(mTmpMatrix);
 		}
