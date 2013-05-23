@@ -11,6 +11,7 @@ import rajawali.math.Vector3;
 import rajawali.primitives.Cube;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 public class BoundingBox implements IBoundingVolume {
 	protected Geometry3D mGeometry;
@@ -65,7 +66,7 @@ public class BoundingBox implements IBoundingVolume {
 		}
 	}
 	
-	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
+	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisualBox == null) {
 			mVisualBox = new Cube(1);
 			mVisualBox.setMaterial(new SimpleMaterial());
@@ -87,7 +88,7 @@ public class BoundingBox implements IBoundingVolume {
 				mTransformedMin.z + (mTransformedMax.z - mTransformedMin.z) * .5f
 				);
 		
-		mVisualBox.render(camera, projMatrix, vMatrix, mTmpMatrix, null);
+		mVisualBox.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);
 	}
 	
 	public BoundingBox(Geometry3D geometry) {

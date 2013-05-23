@@ -339,9 +339,9 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		if (mShowBoundingVolume) {
 			if (mGeometry.hasBoundingBox())
-				mGeometry.getBoundingBox().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+				mGeometry.getBoundingBox().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 			if (mGeometry.hasBoundingSphere())
-				mGeometry.getBoundingSphere().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+				mGeometry.getBoundingSphere().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		}
 		// Draw children without frustum test
 		for (int i = 0, j = mChildren.size(); i < j; i++)
@@ -476,7 +476,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param transparent
 	 */
 	public void setTransparent(boolean value) {
-		this.mTransparent = value;
+		mTransparent = value;
 		mEnableBlending = value;
 		setBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		mEnableDepthMask = !value;

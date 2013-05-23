@@ -647,7 +647,7 @@ public class RajawaliScene extends AFrameTask {
 		}
 
 		if (mDisplaySceneGraph) {
-			mSceneGraph.displayGraph(mCamera, mPMatrix, mVMatrix);
+			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
         }
 		
 		if (pickerInfo != null) {

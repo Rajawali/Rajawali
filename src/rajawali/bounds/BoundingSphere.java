@@ -47,7 +47,7 @@ public class BoundingSphere implements IBoundingVolume {
 		return mBoundingColor;
 	}
 	
-	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
+	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisualSphere == null) {
 			mVisualSphere = new Sphere(1, 8, 8);
 			mVisualSphere.setMaterial(new SimpleMaterial());
@@ -60,7 +60,7 @@ public class BoundingSphere implements IBoundingVolume {
 		Matrix.setIdentityM(mTmpMatrix, 0);
 		mVisualSphere.setPosition(mPosition);
 		mVisualSphere.setScale(mRadius * mScale);
-		mVisualSphere.render(camera, projMatrix, vMatrix, mTmpMatrix, null);
+		mVisualSphere.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);
 	}
 	
 	public void transform(float[] matrix) {
