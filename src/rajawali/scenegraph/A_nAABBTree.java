@@ -777,12 +777,12 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#displayGraph(boolean)
 	 */
-	public void displayGraph(Camera camera, float[] projMatrix, float[] vMatrix) {
+	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix) {
 		Matrix.setIdentityM(mMMatrix, 0);
-		drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		if (mSplit) {
 			for (int i = 0; i < CHILD_COUNT; ++i) {
-				mChildren[i].displayGraph(camera, projMatrix, vMatrix);
+				mChildren[i].displayGraph(camera, vpMatrix, projMatrix, vMatrix);
 			}
 		}
 	}

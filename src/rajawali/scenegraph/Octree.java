@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import rajawali.Camera;
 import rajawali.math.Vector3;
 import rajawali.util.RajLog;
 
