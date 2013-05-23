@@ -27,7 +27,7 @@ public class BlockTriangleGeometry extends ABlockParser {
 	public void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 		// Lookup name, not sure why this is useful.
 		final int lookupNameLength = dis.readUnsignedShort();
-		lookupName = dis.readString(lookupNameLength);
+		lookupName = lookupNameLength == 0 ? "" : dis.readString(lookupNameLength);
 		RajLog.d("  Lookup Name: " + lookupName);
 
 		// Count of sub geometries
@@ -111,7 +111,7 @@ public class BlockTriangleGeometry extends ABlockParser {
 			}
 			
 			baseObjects[parsedSubs] = new BaseObject3D();
-			baseObjects[parsedSubs].getGeometry().setData(vertices, normals, uvs, null, indices);
+			baseObjects[parsedSubs].setData(vertices, normals, uvs, null, indices);
 
 			parsedSubs++;
 		}

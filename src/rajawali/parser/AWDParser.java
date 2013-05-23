@@ -143,7 +143,7 @@ public class AWDParser extends AParser {
 
 					// Skip unknown blocks
 					if (blockClass == null) {
-						RajLog.d(" Skipping unknown block.");
+						RajLog.d(" Skipping unknown block " + blockHeader.namespace + " " + blockHeader.type);
 						dis.skip(blockHeader.dataLength);
 						continue;
 					}
@@ -166,7 +166,7 @@ public class AWDParser extends AParser {
 			} catch (IOException e) {
 				// End of blocks reached
 				RajLog.d("End of blocks reached.");
-				RajLog.d(e.getMessage());
+				e.printStackTrace();
 			}
 
 		} catch (Exception e) {
@@ -253,9 +253,11 @@ public class AWDParser extends AParser {
 	 * the passed list before conversion to {@link BaseObject3D} or {@link RajawaliScene} occurs.
 	 */
 	public void onBlockParsingFinished(List<IBlockParser> blockParsers) {
+		BaseObject3D temp;
 		for (int i = 0, j = blockParsers.size(); i < j; i++) {
-			if (blockParsers.get(i).getBaseObject3D() != null)
-				baseObjects.add(blockParsers.get(i).getBaseObject3D());
+			temp = blockParsers.get(i).getBaseObject3D();
+			if (temp != null)
+				baseObjects.add(temp);
 		}
 	}
 

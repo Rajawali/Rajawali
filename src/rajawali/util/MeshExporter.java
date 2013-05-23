@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.zip.GZIPOutputStream;
@@ -27,6 +29,7 @@ public class MeshExporter {
 	private File mExportDir = null;
 
 	public enum ExportType {
+		AWD,
 		SERIALIZED,
 		OBJ
 	}
@@ -49,6 +52,9 @@ public class MeshExporter {
 		mFileName = fileName;
 		mCompressed = compressed;
 		switch (type) {
+		case AWD:
+			exportToAwd();
+			break;
 		case SERIALIZED:
 			exportToSerialized();
 			break;
@@ -59,13 +65,113 @@ public class MeshExporter {
 	}
 
 	private File getExportFile() {
-		File path;
+		File path = mExportDir;
 		if (mExportDir == null)
 			path = Environment.getExternalStorageDirectory();
-		else
-			path = mExportDir;
-		return new File(path, mFileName);
 
+		return new File(path, mFileName);
+	}
+
+	private void exportToAwd() {
+		final File f = getExportFile();
+
+		RajLog.d("Exporting as AWD2 file");
+		RajLog.d("Writing to " + f.getAbsolutePath());
+
+		try {
+			// Create a buffered LittleEndianOutputStream for writing
+			final FileOutputStream fos = new FileOutputStream(f);
+			final LittleEndianOutputStream los = new LittleEndianOutputStream(fos);
+
+			// Write the magic string "AWD"
+			los.writeByte(65);
+			los.writeByte(87);
+			los.writeByte(68);
+
+			// Write the document header data
+			los.write(2);
+			los.write(0);
+			los.writeShort(0);
+			los.write(0);
+
+			// Write the file size, this should really print the total size post header but it would be difficult to
+			// determine the total size before writing.
+			los.writeInt(0);
+
+			// Start the Triangle block
+			los.writeInt(0);// ID
+			los.write(0);// Namespace
+			los.write(1);// Type
+			los.write(0);// Flags
+			los.writeInt(0); // Length
+
+			// Write the name
+			los.writeShort(mObject.getName() == null ? 0 : mObject.getName().length());
+			if (mObject.getName() != null)
+				los.write(mObject.getName().getBytes());
+
+			// Write the sub geometry count
+			los.writeShort(1);
+
+			// Write the properties
+			los.writeInt(0);
+			
+			final Geometry3D geom = mObject.getGeometry();
+			
+			// Write the sub mesh length
+			los.writeInt(awdGetGeomLength(geom));
+			
+			// Write the properties
+			los.writeInt(0);
+
+			// Write the geometry
+			writeAwdAttributeList(los, 1, 0, geom.getVertices());
+			writeAwdAttributeList(los, 2, 0, geom.getIndices());
+			writeAwdAttributeList(los, 3, 0, geom.getTextureCoords());
+			writeAwdAttributeList(los, 4, 0, geom.getNormals());
+
+			// Close (fos has to be closed separate of the los or writing does not close properly)
+			fos.close();
+			los.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private int awdGetGeomLength(Geometry3D geom) {
+		return 24 + (geom.getNumIndices() * 2) + (geom.getNumVertices() * 4) + (geom.getNormals().limit() * 4)
+				+ (geom.getTextureCoords().limit() * 4);
+	}
+
+	private void writeAwdAttributeList(LittleEndianOutputStream los, int type, int typeF, Buffer data)
+			throws Exception {
+		// Type
+		los.writeByte(type);
+		los.writeByte(typeF);
+
+		if (data instanceof IntBuffer) {
+			// Length of mesh data
+			los.writeInt(data.limit() * 2);
+			
+			final IntBuffer buf = (IntBuffer) data;
+			for (int i = 0, j = data.limit(); i < j; i++)
+				los.writeShort(buf.get());
+		} else if (data instanceof ShortBuffer) {
+			// Length of mesh data
+			los.writeInt(data.limit() * 2);
+			
+			final ShortBuffer buf = (ShortBuffer) data;
+			for (int i = 0, j = data.limit(); i < j; i++)
+				los.writeShort(buf.get());
+		} else if (data instanceof FloatBuffer) {
+			// Length of mesh data
+			los.writeInt(data.limit() * 4);
+			
+			final FloatBuffer buf = (FloatBuffer) data;
+			for (int i = 0, j = data.limit(); i < j; i++)
+				los.writeFloat(buf.get());
+		}
 	}
 
 	private void exportToObj() {
@@ -193,20 +299,23 @@ public class MeshExporter {
 		}
 
 	}
-	
-	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName){
+
+	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName) {
 		serializeObj(context, textureManager, resourceId, outputName, false, null);
 	}
 
-	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress){
+	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName,
+			Boolean compress) {
 		serializeObj(context, textureManager, resourceId, outputName, compress, null);
 	}
 
-	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, File exportDir){
+	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName,
+			File exportDir) {
 		serializeObj(context, textureManager, resourceId, outputName, false, exportDir);
 	}
 
-	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName, Boolean compress, File exportDir){
+	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName,
+			Boolean compress, File exportDir) {
 		final ObjParser objParser = new ObjParser(context.getResources(), textureManager, resourceId);
 		try {
 			objParser.parse();
@@ -218,5 +327,5 @@ public class MeshExporter {
 			RajLog.e("Failed to serialize obj: " + e.getMessage());
 			e.printStackTrace();
 		}
-	}	
+	}
 }
