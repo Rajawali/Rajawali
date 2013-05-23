@@ -13,7 +13,7 @@
  ******************************************************************************/
 package rajawali.util;
 
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 import rajawali.math.Plane;
 
 /** Class offering various static methods for intersection testing between different geometric objects.
@@ -25,9 +25,9 @@ import rajawali.math.Plane;
  * @author andrewjo@gmail.com
  */
 public final class Intersector {
-	private final static Number3D v0 = new Number3D();
-	private final static Number3D v1 = new Number3D();
-	private final static Number3D v2 = new Number3D();
+	private final static Vector3 v0 = new Vector3();
+	private final static Vector3 v1 = new Vector3();
+	private final static Vector3 v2 = new Vector3();
 	
 	/**
 	 * Intersects a ray defined by a start and end point and a {@link Plane}.
@@ -37,14 +37,14 @@ public final class Intersector {
 	 * @param hitPoint The intersection point (optional)
 	 * @return True if there is an intersection, false otherwise.
 	 */
-	public static boolean intersectRayPlane(Number3D rayStart, Number3D rayEnd, Plane plane, Number3D hitPoint) {
-		Number3D rayDir = Number3D.subtract(rayEnd, rayStart);
+	public static boolean intersectRayPlane(Vector3 rayStart, Vector3 rayEnd, Plane plane, Vector3 hitPoint) {
+		Vector3 rayDir = Vector3.subtract(rayEnd, rayStart);
 		float denorm = rayDir.dot(plane.getNormal());
 		if (denorm != 0) {
 			float t = -(rayStart.dot(plane.getNormal()) + plane.getD()) / denorm;
 			if (t < 0) return false;
 			
-			if (hitPoint != null) hitPoint.setAllFrom(Number3D.add(rayStart, Number3D.multiply(rayDir, t)));
+			if (hitPoint != null) hitPoint.setAllFrom(Vector3.add(rayStart, Vector3.multiply(rayDir, t)));
 			return true;
 		} else if (plane.getPointSide(rayStart) == Plane.PlaneSide.OnPlane) {
 			if (hitPoint != null) hitPoint.setAllFrom(rayStart);
@@ -54,8 +54,8 @@ public final class Intersector {
 		}
 	}
 	
-	private static final Plane p = new Plane(new Number3D(), 0);
-	private static final Number3D i = new Number3D();
+	private static final Plane p = new Plane(new Vector3(), 0);
+	private static final Vector3 i = new Vector3();
 	
 	/**
 	 * Intersects a ray defined by a start and end point and a triangle.
@@ -67,15 +67,15 @@ public final class Intersector {
 	 * @param hitPoint The intersection point (optional)
 	 * @return True if there is an intersection, false otherwise.
 	 */
-	public static boolean intersectRayTriangle(Number3D rayStart, Number3D rayEnd, Number3D t1, Number3D t2, Number3D t3, Number3D hitPoint) {
-		Number3D rayDir = Number3D.subtract(rayEnd, rayStart);
+	public static boolean intersectRayTriangle(Vector3 rayStart, Vector3 rayEnd, Vector3 t1, Vector3 t2, Vector3 t3, Vector3 hitPoint) {
+		Vector3 rayDir = Vector3.subtract(rayEnd, rayStart);
 		rayDir.normalize();
 		p.set(t1, t2, t3);
 		if (!intersectRayPlane(rayStart, rayEnd, p, i)) return false;
 		
-		v0.setAllFrom(Number3D.subtract(t3, t1));
-		v1.setAllFrom(Number3D.subtract(t2, t1));
-		v2.setAllFrom(Number3D.subtract(i, t1));
+		v0.setAllFrom(Vector3.subtract(t3, t1));
+		v1.setAllFrom(Vector3.subtract(t2, t1));
+		v2.setAllFrom(Vector3.subtract(i, t1));
 		
 		float dot00 = v0.dot(v0);
 		float dot01 = v0.dot(v1);
@@ -105,22 +105,22 @@ public final class Intersector {
 	 * @param hitPoint The intersection point (optional)
 	 * @return True if there is an intersection, false otherwise.
 	 */
-	public static boolean intersectRaySphere(Number3D rayStart, Number3D rayEnd, Number3D sphereCenter, float sphereRadius, Number3D hitPoint) {
-		rayStart = new Number3D(rayStart);
-		rayEnd = new Number3D(rayEnd);
-		Number3D dir = Number3D.subtract(rayEnd, rayStart);
+	public static boolean intersectRaySphere(Vector3 rayStart, Vector3 rayEnd, Vector3 sphereCenter, float sphereRadius, Vector3 hitPoint) {
+		rayStart = new Vector3(rayStart);
+		rayEnd = new Vector3(rayEnd);
+		Vector3 dir = Vector3.subtract(rayEnd, rayStart);
 		dir.normalize();
 		
-		sphereCenter = new Number3D(sphereCenter);
+		sphereCenter = new Vector3(sphereCenter);
 		float radius2 = sphereRadius * sphereRadius;
 		
 		/*
 		 * Refer to http://paulbourke.net/geometry/circlesphere/ for mathematics
 		 * behind ray-sphere intersection.
 		 */
-		float a = Number3D.dot(dir, dir);
-		float b = 2.0f * Number3D.dot(dir, Number3D.subtract(rayStart, sphereCenter));
-		float c = Number3D.dot(sphereCenter, sphereCenter) + Number3D.dot(rayStart, rayStart) - 2.0f * Number3D.dot(sphereCenter, rayStart) - radius2;
+		float a = Vector3.dot(dir, dir);
+		float b = 2.0f * Vector3.dot(dir, Vector3.subtract(rayStart, sphereCenter));
+		float c = Vector3.dot(sphereCenter, sphereCenter) + Vector3.dot(rayStart, rayStart) - 2.0f * Vector3.dot(sphereCenter, rayStart) - radius2;
 		
 		// Test for intersection.
 		float result = b * b - 4.0f * a * c;
@@ -153,10 +153,10 @@ public final class Intersector {
 		
 		// If t0 is less than zero, intersection point is at t1.
 		if (t0 < 0) {
-			hitPoint = rayStart.add(Number3D.multiply(dir, t1));
+			hitPoint = rayStart.add(Vector3.multiply(dir, t1));
 			return true;
 		} else {
-			hitPoint = rayStart.add(Number3D.multiply(dir, t0));
+			hitPoint = rayStart.add(Vector3.multiply(dir, t0));
 			return true;
 		}
 	}

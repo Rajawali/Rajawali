@@ -18,10 +18,12 @@ import rajawali.animation.Animation3D;
 import rajawali.effects.APass;
 import rajawali.effects.EffectComposer;
 import rajawali.materials.AMaterial;
-import rajawali.materials.TextureManager;
-import rajawali.math.Number3D;
+import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.TextureManager;
+import rajawali.math.Vector3;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.FPSUpdateListener;
+import rajawali.util.ObjectColorPicker;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
@@ -63,6 +65,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected boolean mEnableDepthBuffer = true; //Do we use the depth buffer?
 	protected static boolean mFogEnabled; //Is camera fog enabled?
 	protected static int mMaxLights = 1; //How many lights max?
+	protected int mLastReportedGLError = 0; // Keep track of the last reported OpenGL error
 
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
@@ -107,24 +110,21 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected EffectComposer mEffectComposer;
 	
 	public RajawaliRenderer(Context context) {
-		RajLog.i("IMPORTANT: Rajawali's coordinate system has changed. It now reflects");
-		RajLog.i("the OpenGL standard. Please invert the camera's z coordinate or");
-		RajLog.i("call mCamera.setLookAt(0, 0, 0).");
+		RajLog.i("Rajawali | Anchor Steam | Dev Branch");
+		RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
 		
 		AMaterial.setLoaderContext(context);
-		
+
 		mContext = context;
 		mFrameRate = getRefreshRate();
 		mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
 		mSceneQueue = new LinkedList<AFrameTask>();
 		mSceneCachingEnabled = true;
 		mSceneInitialized = false;
-		
+
 		RajawaliScene defaultScene = new RajawaliScene(this);
 		mScenes.add(defaultScene);
 		mCurrentScene = defaultScene;
-		
-		mEffectComposer = new EffectComposer(this);
 	}
 	
 	/**
@@ -421,6 +421,19 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			if(mFPSUpdateListener != null)
 				mFPSUpdateListener.onFPSUpdate(mLastMeasuredFPS); //Update the FPS listener
 		}
+		
+		int error = glUnused.glGetError();
+		
+		if(error > 0)
+		{
+			if(error != mLastReportedGLError)
+			{
+				RajLog.e("OpenGL Error: " + GLU.gluErrorString(error));
+				mLastReportedGLError = error;
+			}
+		} else {
+			mLastReportedGLError = 0;
+		}
 	}
 
 	/**
@@ -430,8 +443,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
 		mLastRender = SystemClock.elapsedRealtime();
 		
-		mTextureManager.validateTextures();
-
 		if (!mCurrentScene.hasPickerInfo()) {
 			int color = mCurrentScene.getBackgroundColor();
 			GLES20.glClearColor(Color.red(color)/255f, Color.green(color)/255f, Color.blue(color)/255f, Color.alpha(color)/255f);
@@ -469,7 +480,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		GLES20.glCullFace(GLES20.GL_BACK);
 
 		if (!mSceneInitialized) {
-			mTextureManager = new TextureManager(mContext);
+			mEffectComposer = new EffectComposer(this);
+			
+			mTextureManager = TextureManager.getInstance();
+			mTextureManager.setContext(this.getContext());
+			mTextureManager.registerRenderer(this);
+			
 			initScene();
 		}
 
@@ -540,8 +556,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void onSurfaceDestroyed() {
 		stopRendering();
+		mTextureManager.unregisterRenderer(this);
 		if (mTextureManager != null)
-			mTextureManager.reset();
+			mTextureManager.taskReset(this);
 		synchronized (mScenes) {
 			for (int i = 0, j = mScenes.size(); i < j; ++i)
 				mScenes.get(i).destroyScene();
@@ -560,7 +577,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 
-	public Number3D unProject(float x, float y, float z) {
+	public Vector3 unProject(float x, float y, float z) {
 		x = mViewportWidth - x;
 		y = mViewportHeight - y;
 
@@ -582,7 +599,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			return null;
 
 		out[3] = 1/out[3];
-		return new Number3D(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
+		return new Vector3(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
 	}
 
 	public float getFrameRate() {
@@ -653,35 +670,38 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			//Fetch the first task
 			AFrameTask taskObject = mSceneQueue.poll();
 			while (taskObject != null) {
-				if (taskObject.getFrameTaskType() != AFrameTask.TYPE.SCENE) {
-					//Retrieve the next task
-					taskObject = mSceneQueue.poll();
-					continue;
-				} else {
-					AFrameTask.TASK task = taskObject.getTask();
-					switch (task) {
-					case NONE:
-						//DO NOTHING
-						return;
-					case ADD:
-						handleAddTask(taskObject);
-						break;
-					case ADD_ALL:
-						handleAddAllTask(taskObject);
-						break;
-					case REMOVE:
-						handleRemoveTask(taskObject);
-						break;
-					case REMOVE_ALL:
-						handleRemoveAllTask(taskObject);
-						break;
-					case REPLACE:
-						handleReplaceTask(taskObject);
-						break;
-					}
-					//Retrieve the next task
-					taskObject = mSceneQueue.poll();
+				AFrameTask.TASK task = taskObject.getTask();
+				switch (task) {
+				case NONE:
+					//DO NOTHING
+					return;
+				case ADD:
+					handleAddTask(taskObject);
+					break;
+				case ADD_ALL:
+					handleAddAllTask(taskObject);
+					break;
+				case REMOVE:
+					handleRemoveTask(taskObject);
+					break;
+				case REMOVE_ALL:
+					handleRemoveAllTask(taskObject);
+					break;
+				case REPLACE:
+					handleReplaceTask(taskObject);
+					break;
+				case RELOAD:
+					handleReloadTask(taskObject);
+					break;
+				case RESET:
+					handleResetTask(taskObject);
+					break;
+				case INITIALIZE:
+					handleInitializeTask(taskObject);
+					break;
 				}
+				//Retrieve the next task
+				taskObject = mSceneQueue.poll();
 			}
 		}
 	}	
@@ -697,6 +717,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		case SCENE:
 			internalReplaceScene(task, (RajawaliScene) task.getNewObject(), task.getIndex());
 			break;
+		case TEXTURE:
+			internalReplaceTexture((ATexture)task, task.getIndex());
 		default:
 			break;
 		}
@@ -712,6 +734,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		switch (type) {
 		case SCENE:
 			internalAddScene((RajawaliScene) task, task.getIndex());
+			break;
+		case TEXTURE:
+			internalAddTexture((ATexture) task, task.getIndex());
 			break;
 		default:
 			break;
@@ -729,6 +754,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		case SCENE:
 			internalRemoveScene((RajawaliScene) task, task.getIndex());
 			break;
+		case TEXTURE:
+			internalRemoveTexture((ATexture) task, task.getIndex()); 
 		default:
 			break;
 		}
@@ -790,6 +817,51 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
+	 * Internal method for handling reload tasks.
+	 * 
+	 * @param task {@link AFrameTask} object to process.
+	 */
+	private void handleReloadTask(AFrameTask task) {
+		AFrameTask.TYPE type = task.getFrameTaskType();
+		switch (type) {
+		case TEXTURE_MANAGER:
+			internalReloadTextureManager(); 
+		default:
+			break;
+		}
+	}
+	
+	/**
+	 * Internal method for handling reset tasks.
+	 * 
+	 * @param task {@link AFrameTask} object to process.
+	 */
+	private void handleResetTask(AFrameTask task) {
+		AFrameTask.TYPE type = task.getFrameTaskType();
+		switch (type) {
+		case TEXTURE_MANAGER:
+			internalResetTextureManager(); 
+		default:
+			break;
+		}
+	}
+	
+	/**
+	 * Internal method for handling reset tasks.
+	 * 
+	 * @param task {@link AFrameTask} object to process.
+	 */
+	private void handleInitializeTask(AFrameTask task) {
+		AFrameTask.TYPE type = task.getFrameTaskType();
+		switch (type) {
+		case COLOR_PICKER:
+			((ObjectColorPicker)task).initialize(); 
+		default:
+			break;
+		}
+	}
+
+	/**
 	 * Internal method for replacing a {@link RajawaliScene} object. If index is
 	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleAddTask(AFrameTask)}
@@ -804,6 +876,17 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		} else {
 			mScenes.set(mScenes.indexOf(scene), replace);
 		}
+	}
+	
+	/**
+	 * Internal method for replacing a {@link ATexture} object. Should only be
+	 * called through {@link #handleAddTask(AFrameTask)}
+	 * 
+	 * @param texture {@link ATexture} The texture to be replaced.
+	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 */
+	private void internalReplaceTexture(ATexture textureConfig, int index) {
+		mTextureManager.taskReplace(textureConfig);
 	}
 	
 	/**
@@ -822,6 +905,20 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		} else {
 			mScenes.add(index, scene);
 		}
+	}
+	
+	/**
+	 * Internal method for adding {@link ATexture} objects.
+	 * Should only be called through {@link #handleAddTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param texture {@link ATexture} to add.
+	 * @param int index to add the animation at. 
+	 */
+	private void internalAddTexture(ATexture textureConfig, int index) {
+		mTextureManager.taskAdd(textureConfig);
 	}
 	
 	/**
@@ -847,6 +944,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 	
+	private void internalRemoveTexture(ATexture texture, int index)
+	{
+		mTextureManager.taskRemove(texture);
+	}
+	
 	/**
 	 * Internal method for removing all {@link RajawaliScene} objects.
 	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
@@ -857,13 +959,29 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
+	 * Internal method for reloading the {@link TextureManager#reload()} texture manager.
+	 * Should only be called through {@link #handleReloadTask(AFrameTask)}
+	 */
+	private void internalReloadTextureManager() {
+		mTextureManager.taskReload();
+	}
+	
+	/**
+	 * Internal method for resetting the {@link TextureManager#reset()} texture manager.
+	 * Should only be called through {@link #handleReloadTask(AFrameTask)}
+	 */
+	private void internalResetTextureManager() {
+		mTextureManager.taskReset();
+	}
+
+	/**
 	 * Queue an addition task. The added object will be placed
 	 * at the end of the renderer's list.
 	 * 
 	 * @param task {@link AFrameTask} to be added.
 	 * @return boolean True if the task was successfully queued.
 	 */
-	private boolean queueAddTask(AFrameTask task) {
+	public boolean queueAddTask(AFrameTask task) {
 		task.setTask(AFrameTask.TASK.ADD);
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		return addTaskToQueue(task);
@@ -878,8 +996,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @param index Integer index to place the object at.
 	 * @return boolean True if the task was successfully queued.
 	 */
-	@SuppressWarnings("unused")
-	private boolean queueAddTask(AFrameTask task, int index) {
+	public boolean queueAddTask(AFrameTask task, int index) {
 		task.setTask(AFrameTask.TASK.ADD);
 		task.setIndex(index);
 		return addTaskToQueue(task);
@@ -893,8 +1010,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @param index Integer index to remove the object at.
 	 * @return boolean True if the task was successfully queued.
 	 */
-	@SuppressWarnings("unused")
-	private boolean queueRemoveTask(AFrameTask.TYPE type, int index) {
+	public boolean queueRemoveTask(AFrameTask.TYPE type, int index) {
 		EmptyTask task = new EmptyTask(type);
 		task.setTask(AFrameTask.TASK.REMOVE);
 		task.setIndex(index);
@@ -907,7 +1023,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @param task {@link AFrameTask} to be removed.
 	 * @return boolean True if the task was successfully queued.
 	 */
-	private boolean queueRemoveTask(AFrameTask task) {
+	public boolean queueRemoveTask(AFrameTask task) {
 		task.setTask(AFrameTask.TASK.REMOVE);
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		return addTaskToQueue(task);
@@ -922,7 +1038,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @param replacement {@link AFrameTask} the object replacing the old.
 	 * @return boolean True if the task was successfully queued.
 	 */
-	private boolean queueReplaceTask(int index, AFrameTask replacement) {
+	public boolean queueReplaceTask(int index, AFrameTask replacement) {
 		EmptyTask task = new EmptyTask(replacement.getFrameTaskType());
 		task.setTask(AFrameTask.TASK.REPLACE);
 		task.setIndex(index);
@@ -937,7 +1053,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @param replacement {@link AFrameTask} the object replacing the old.
 	 * @return boolean True if the task was successfully queued.
 	 */
-	private boolean queueReplaceTask(AFrameTask task, AFrameTask replacement) {
+	public boolean queueReplaceTask(AFrameTask task, AFrameTask replacement) {
 		task.setTask(AFrameTask.TASK.REPLACE);
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		task.setNewObject(replacement);
@@ -950,7 +1066,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @param collection {@link Collection} containing all the objects to add.
 	 * @return boolean True if the task was successfully queued. 
 	 */
-	private boolean queueAddAllTask(Collection<AFrameTask> collection) {
+	public boolean queueAddAllTask(Collection<AFrameTask> collection) {
 		GroupTask task = new GroupTask(collection);
 		task.setTask(AFrameTask.TASK.ADD_ALL);
 		task.setIndex(AFrameTask.UNUSED_INDEX);
@@ -963,13 +1079,50 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @param type {@link AFrameTask.TYPE} Which object list to clear (Cameras, BaseObject3D, etc)
 	 * @return boolean True if the task was successfully queued.
 	 */
-	private boolean queueClearTask(AFrameTask.TYPE type) {
+	public boolean queueClearTask(AFrameTask.TYPE type) {
 		GroupTask task = new GroupTask(type);
 		task.setTask(AFrameTask.TASK.REMOVE_ALL);
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		return addTaskToQueue(task);
 	}
 
+	/**
+	 * Queue a reload task. The added object will be reloaded.
+	 * 
+	 * @param task {@link AFrameTask} to be reloaded.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueReloadTask(AFrameTask task) {
+		task.setTask(AFrameTask.TASK.RELOAD);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+
+	/**
+	 * Queue a reset task. The added object will be reset.
+	 * 
+	 * @param task {@link AFrameTask} to be reset.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueResetTask(AFrameTask task) {
+		task.setTask(AFrameTask.TASK.RELOAD);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+	
+	/**
+	 * Queue an initialization task. The added object will be initialized.
+	 * 
+	 * @param task {@link AFrameTask} to be added.
+	 * @return boolean True if the task was successfully queued.
+	 */
+	public boolean queueInitializeTask(AFrameTask task) {
+		task.setTask(AFrameTask.TASK.INITIALIZE);
+		task.setIndex(AFrameTask.UNUSED_INDEX);
+		return addTaskToQueue(task);
+	}
+
+	
 	public void accept(INodeVisitor visitor) { //TODO: Handle
 		visitor.apply(this);
 		//for (int i = 0; i < mChildren.size(); i++)

@@ -20,7 +20,7 @@ void main() {
    float dist = 0.0;
    gl_Position = uMVPMatrix * aPosition;
    V = uMMatrix * aPosition;
-   vec3 eyeDir = V.xyz - uCameraPosition * -1.0;
+   vec3 eyeDir = V.xyz - uCameraPosition;
    N = normalize(uNMatrix * aNormal);
    vReflectDir = reflect(eyeDir, N);
    vTextureCoord = aTextureCoord;

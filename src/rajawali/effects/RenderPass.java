@@ -1,10 +1,10 @@
 package rajawali.effects;
 
-import android.graphics.Color;
-import android.opengl.GLES20;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
+import android.graphics.Color;
+import android.opengl.GLES20;
 
 /**
  * A render pass used for primarily rendering a scene to a framebuffer target.

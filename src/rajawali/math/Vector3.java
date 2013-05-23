@@ -7,7 +7,7 @@ import rajawali.util.RajLog;
  * @author dennis.ippel
  *
  */
-public class Number3D {
+public class Vector3 {
 	public float x;
 	public float y;
 	public float z;
@@ -29,50 +29,50 @@ public class Number3D {
     public static final int M32 = 11;// 14;
     public static final int M33 = 15;// 15;
 
-	private static Number3D _temp = new Number3D();
+	private static Vector3 _temp = new Vector3();
 
 	public enum Axis {
 		X, Y, Z
 	}
 
-	public Number3D() {
+	public Vector3() {
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
 	}
 	
-	public Number3D(float from) {
+	public Vector3(float from) {
 		this.x = from;
 		this.y = from;
 		this.z = from;
 	}
 
-	public Number3D(Number3D from) {
+	public Vector3(Vector3 from) {
 		this.x = from.x;
 		this.y = from.y;
 		this.z = from.z;
 	}
 	
-	public Number3D(String[] values) {
+	public Vector3(String[] values) {
 		if(values.length != 3) RajLog.e("Number3D should be initialized with 3 values");
 		this.x = Float.parseFloat(values[0]);
 		this.y = Float.parseFloat(values[1]);
 		this.z = Float.parseFloat(values[2]);
 	}
 
-	public Number3D(float x, float y, float z) {
+	public Vector3(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public Number3D(double x, double y, double z) {
+	public Vector3(double x, double y, double z) {
 		this.x = (float) x;
 		this.y = (float) y;
 		this.z = (float) z;
 	}
 
-	public boolean equals(Number3D obj) {
+	public boolean equals(Vector3 obj) {
 		return obj.x == this.x && obj.y == this.y && obj.z == this.z;
 	}
 
@@ -99,7 +99,7 @@ public class Number3D {
           
 	}
 
-	public void setAllFrom(Number3D other) {
+	public void setAllFrom(Vector3 other) {
 		this.x = other.x;
 		this.y = other.y;
 		this.z = other.z;
@@ -118,8 +118,8 @@ public class Number3D {
 		return (float)mod;
 	}
 
-	public Number3D inverse() {
-		return new Number3D(-x, -y, -z);
+	public Vector3 inverse() {
+		return new Vector3(-x, -y, -z);
 	}
 	
 	public void absoluteValue() {
@@ -128,35 +128,35 @@ public class Number3D {
 		z = Math.abs(z);
 	}
 	
-	public Number3D add(Number3D n) {
+	public Vector3 add(Vector3 n) {
 		this.x += n.x;
 		this.y += n.y;
 		this.z += n.z;
 		return this;
 	}
 
-	public Number3D add(float x, float y, float z) {
+	public Vector3 add(float x, float y, float z) {
 		this.x += x;
 		this.y += y;
 		this.z += z;
 		return this;
 	}
 
-	public Number3D subtract(Number3D n) {
+	public Vector3 subtract(Vector3 n) {
 		this.x -= n.x;
 		this.y -= n.y;
 		this.z -= n.z;
 		return this;
 	}
 
-	public Number3D multiply(float f) {
+	public Vector3 multiply(float f) {
 		this.x *= f;
 		this.y *= f;
 		this.z *= f;
 		return this;
 	}
 
-	public void multiply(Number3D n) {
+	public void multiply(Vector3 n) {
 		this.x *= n.x;
 		this.y *= n.y;
 		this.z *= n.z;
@@ -169,7 +169,7 @@ public class Number3D {
 		this.z = vx * matrix[2] + vy * matrix[6] + vz * matrix[10] + matrix[14];
 	}
 
-	public float distanceTo(Number3D other) {
+	public float distanceTo(Vector3 other) {
 		return (float)Math.sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z));
 	}
 
@@ -177,8 +177,8 @@ public class Number3D {
 		return (float)Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 	}
 
-	public Number3D clone() {
-		return new Number3D(x, y, z);
+	public Vector3 clone() {
+		return new Vector3(x, y, z);
 	}
 
 	public void rotateX(float angle) {
@@ -224,27 +224,27 @@ public class Number3D {
 
 	//
 
-	public static Number3D add(Number3D a, Number3D b) {
-		return new Number3D(a.x + b.x, a.y + b.y, a.z + b.z);
+	public static Vector3 add(Vector3 a, Vector3 b) {
+		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
 
-	public static Number3D subtract(Number3D a, Number3D b) {
-		return new Number3D(a.x - b.x, a.y - b.y, a.z - b.z);
+	public static Vector3 subtract(Vector3 a, Vector3 b) {
+		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
 
-	public static Number3D multiply(Number3D a, Number3D b) {
-		return new Number3D(a.x * b.x, a.y * b.y, a.z * b.z);
+	public static Vector3 multiply(Vector3 a, Vector3 b) {
+		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
 	}
 
-	public static Number3D multiply(Number3D a, float b) {
-		return new Number3D(a.x * b, a.y * b, a.z * b);
+	public static Vector3 multiply(Vector3 a, float b) {
+		return new Vector3(a.x * b, a.y * b, a.z * b);
 	}
 
-	public static Number3D cross(Number3D v, Number3D w) {
-		return new Number3D(w.y * v.z - w.z * v.y, w.z * v.x - w.x * v.z, w.x * v.y - w.y * v.x);
+	public static Vector3 cross(Vector3 v, Vector3 w) {
+		return new Vector3(w.y * v.z - w.z * v.y, w.z * v.x - w.x * v.z, w.x * v.y - w.y * v.x);
 	}
 	
-	public Number3D cross(Number3D w) {
+	public Vector3 cross(Vector3 w) {
 		_temp.setAllFrom(this);
 		x = w.y * _temp.z - w.z * _temp.y;
 		y = w.z * _temp.x - w.x * _temp.z;
@@ -252,16 +252,16 @@ public class Number3D {
 		return this;
 	}
 
-	public static float dot(Number3D v, Number3D w) {
+	public static float dot(Vector3 v, Vector3 w) {
 		return v.x * w.x + v.y * w.y + v.z * w.z;
 	}
 	
-	public float dot(Number3D w) {
+	public float dot(Vector3 w) {
 		return x * w.x + y * w.y + z * w.z;
 	}
 
-	public static Number3D getAxisVector(Axis axis) {
-		Number3D axisVector = new Number3D();
+	public static Vector3 getAxisVector(Axis axis) {
+		Vector3 axisVector = new Vector3();
 
 		switch (axis) {
 		case X:
@@ -285,32 +285,32 @@ public class Number3D {
 	 * @param direction
 	 * @return
 	 */
-	public Quaternion getRotationTo(Number3D direction) {
+	public Quaternion getRotationTo(Vector3 direction) {
 		// Based on Stan Melax's article in Game Programming Gems
 		Quaternion q = new Quaternion();
 		// Copy, since cannot modify local
-		Number3D v0 = this;
-		Number3D v1 = direction;
+		Vector3 v0 = this;
+		Vector3 v1 = direction;
 		v0.normalize();
 		v1.normalize();
 
-		float d = Number3D.dot(v0, v1);
+		float d = Vector3.dot(v0, v1);
 		// If dot == 1, vectors are the same
 		if (d >= 1.0f) {
 			q.setIdentity();
 		}
 		if (d < 0.000001f - 1.0f) {
 			// Generate an axis
-			Number3D axis = Number3D.cross(Number3D.getAxisVector(Axis.X), this);
+			Vector3 axis = Vector3.cross(Vector3.getAxisVector(Axis.X), this);
 			if (axis.length() == 0) // pick another if colinear
-				axis = Number3D.cross(Number3D.getAxisVector(Axis.Y), this);
+				axis = Vector3.cross(Vector3.getAxisVector(Axis.Y), this);
 			axis.normalize();
 			q.fromAngleAxis(MathUtil.radiansToDegrees(MathUtil.PI), axis);
 		} else {
 			double s = Math.sqrt((1 + d) * 2);
 			double invs = 1f / s;
 
-			Number3D c = Number3D.cross(v0, v1);
+			Vector3 c = Vector3.cross(v0, v1);
 
 			q.x = (float)(c.x * invs);
 			q.y = (float)(c.y * invs);
@@ -321,13 +321,13 @@ public class Number3D {
 		return q;
 	}
 	
-	public static Number3D getUpVector() {
-		return new Number3D(0, 1, 0);
+	public static Vector3 getUpVector() {
+		return new Vector3(0, 1, 0);
 	}
 	
-	public static Number3D lerp(Number3D from, Number3D to, float amount)
+	public static Vector3 lerp(Vector3 from, Vector3 to, float amount)
 	{
-		Number3D out = new Number3D();
+		Vector3 out = new Vector3();
 		out.x = from.x + (to.x - from.x) * amount;
 		out.y = from.y + (to.y - from.y) * amount;
 		out.z = from.z + (to.z - from.z) * amount;
@@ -343,7 +343,7 @@ public class Number3D {
 	 * @param to
 	 * @param amount
 	 */
-	public void lerpSelf(Number3D from, Number3D to, float amount)
+	public void lerpSelf(Vector3 from, Vector3 to, float amount)
 	{
 	  this.x = from.x + (to.x - from.x) * amount;
 	  this.y = from.y + (to.y - from.y) * amount;

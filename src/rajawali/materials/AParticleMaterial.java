@@ -1,6 +1,6 @@
 package rajawali.materials;
 
-import rajawali.math.Number3D;
+import rajawali.math.Vector3;
 
 public abstract class AParticleMaterial extends AMaterial {
 
@@ -25,6 +25,6 @@ public abstract class AParticleMaterial extends AMaterial {
 	public void setPointSize(float pointSize) {
 	}
 
-	public void setCameraPosition(Number3D cameraPos) {
+	public void setCameraPosition(Vector3 cameraPos) {
 	}
 }

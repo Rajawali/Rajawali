@@ -1,8 +1,8 @@
 package rajawali;
 
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,9 +12,10 @@ import rajawali.bounds.IBoundingVolume;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.TextureInfo;
-import rajawali.materials.TextureManager.TextureType;
-import rajawali.math.Number3D;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.TextureAtlas;
+import rajawali.materials.textures.TexturePacker.Tile;
+import rajawali.math.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
@@ -298,6 +299,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 					mMaterial.setCamera(camera);
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
+				
 				if (mMaterial.getUseColor())
 					mMaterial.setColors(mGeometry.getColorBufferInfo().bufferHandle);
 			}
@@ -383,27 +385,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected void setShaderParams(Camera camera) {
 		mMaterial.setLightParams();
 	};
-
-	/**
-	 * Adds a texture to this object
-	 * 
-	 * @parameter textureInfo
-	 */
-	public void addTexture(TextureInfo textureInfo) {
-		if (mMaterial == null) {
-			RajLog.e("[" + getClass().getName() + "] Material is null. Please add a material before adding a texture.");
-			throw new RuntimeException("Material is null. Please add a material first.");
-		}
-
-		if (mLights.size() > 0 && textureInfo.getTextureType() != TextureType.SPHERE_MAP) {
-			mMaterial.setUseColor(false);
-		}
-		mMaterial.addTexture(textureInfo);
-	}
-
-	public void removeTexture(TextureInfo textureInfo) {
-		mMaterial.removeTexture(textureInfo);
-	}
 
 	protected void checkGlError(String op) {
 		int error;
@@ -583,6 +564,45 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mChildren.remove(child);
 	}
 
+	/**
+	 * Retrieve the number of triangles of the object, recursive method
+	 * 
+	 * @return int the total triangle count for the object.
+	 */
+	public int getNumTriangles() {
+		int triangleCount = 0;
+		
+		for (int i = 0, j = getNumChildren(); i < j; i++) {
+			BaseObject3D child = getChildAt(i);
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				if (child.getNumChildren() > 0) {
+					triangleCount += child.getNumTriangles();
+				} else {
+					triangleCount += child.getGeometry().getVertices().limit() / 9;
+				}
+		}
+		return triangleCount;
+	}
+	/**
+	 * Retrieve the number of objects in the object, recursive method
+	 * 
+	 * @return int the total object count for the object.
+	 */
+	public int getNumObjects() {
+		int objectCount = 0;
+		
+		for (int i = 0, j = getNumChildren(); i < j; i++) {
+			BaseObject3D child = getChildAt(i);
+			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
+				if (child.getNumChildren() > 0) {
+					objectCount += child.getNumObjects() + 1;
+				} else {
+					objectCount++;
+				}
+		}
+		return objectCount;
+	}
+
 	public int getNumChildren() {
 		return mChildren.size();
 	}
@@ -604,7 +624,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	public void setMaterial(AMaterial material) {
-		setMaterial(material, true);
+		try {
+			setMaterial(material, true);
+		} catch(TextureException e) {
+			throw new RuntimeException(e);
+		}
 		material.setLights(mLights);
 	}
 
@@ -612,11 +636,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mMaterial;
 	}
 
-	public void setMaterial(AMaterial material, boolean copyTextures) {
+	public void setMaterial(AMaterial material, boolean copyTextures) throws TextureException {
 		if (mMaterial != null && copyTextures)
 			mMaterial.copyTexturesTo(material);
 		else if (mMaterial != null && !copyTextures)
-			mMaterial.getTextureInfoList().clear();
+			mMaterial.getTextureList().clear();
 		mMaterial = null;
 		mMaterial = material;
 	}
@@ -636,7 +660,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	public void setForcedDepth(boolean forcedDepth) {
 		this.mForcedDepth = forcedDepth;
 	}
-
+/*
 	public ArrayList<TextureInfo> getTextureInfoList() {
 		ArrayList<TextureInfo> ti = mMaterial.getTextureInfoList();
 
@@ -644,7 +668,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			ti.addAll(mChildren.get(i).getTextureInfoList());
 		return ti;
 	}
-
+*/
 	public SerializedObject3D toSerializedObject3D() {
 		SerializedObject3D ser = new SerializedObject3D(
 				mGeometry.getVertices() != null ? mGeometry.getVertices().capacity() : 0,
@@ -686,8 +710,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected void cloneTo(BaseObject3D clone, boolean copyMaterial) {
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		if (copyMaterial)
-			clone.setMaterial(mMaterial, false);
+		try {
+			if (copyMaterial)
+				clone.setMaterial(mMaterial, false);
+		} catch(TextureException tme) {
+			tme.printStackTrace();
+		}
 		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
 				: GLES20.GL_UNSIGNED_INT;
 		clone.mTransparent = this.mTransparent;
@@ -726,7 +754,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}
 	}
 
-	public void setColor(Number3D color) {
+	public void setColor(Vector3 color) {
 		setColor(Color.rgb((int) (color.x * 255), (int) (color.y * 255), (int) (color.z * 255)));
 	}
 
@@ -824,6 +852,27 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mEnableDepthMask;
 	}
 
+	/**
+	 * Maps the (x,y) coordinates of <code>tileName</code> in <code>atlas</code>
+	 * to the TextureCoordinates of this BaseObject3D
+	 * 
+	 * @param tileName
+	 * @param atlas
+	 */
+	public void setAtlasTile(String tileName, TextureAtlas atlas) {
+		Tile tile = atlas.getTileNamed(tileName);
+		FloatBuffer fb = this.getGeometry().getTextureCoords();
+		for(int i = 0; i < fb.capacity(); i++){
+			float uvIn = fb.get(i);
+			float uvOut;
+			if(i%2 == 0)
+				uvOut = (uvIn * (tile.width/atlas.getWidth())) + tile.x/atlas.getWidth();
+			else
+				uvOut = (uvIn * (tile.height/atlas.getHeight())) + tile.y/atlas.getHeight();
+			fb.put(i, uvOut);
+		}
+	}
+	
 	public void destroy() {
 		if (mLights != null)
 			mLights.clear();
