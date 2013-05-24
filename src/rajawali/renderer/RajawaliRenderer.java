@@ -36,7 +36,6 @@ import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 

@@ -6,14 +6,13 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Vector3;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
+import rajawali.math.Vector3;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
 	
@@ -158,7 +157,6 @@ public class CameraFrustum implements IBoundingVolume {
 			Vector3 corner = mParent.mPlanePoints[2];
 			mRadiusTop = corner.x*ROOT2_2;
 			mMinorTop = corner.y*ROOT2_2;
-			Log.d("UPDATE", "Near corner: " + corner);
 			near = corner.z;
 			corner = mParent.mPlanePoints[6];
 			mRadiusBase = corner.x*ROOT2_2;

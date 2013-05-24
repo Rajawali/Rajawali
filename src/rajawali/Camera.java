@@ -3,13 +3,11 @@ package rajawali;
 import rajawali.bounds.CameraFrustum;
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.MathUtil;
-import rajawali.math.Matrix4;
 import rajawali.math.Quaternion;
 import rajawali.math.Vector3;
 import rajawali.math.Vector3.Axis;
 import rajawali.renderer.AFrameTask;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class Camera extends ATransformable3D {
 	
@@ -113,12 +111,6 @@ public class Camera extends ATransformable3D {
 	public void updateFrustum() {	
 		synchronized (mFrustumLock) {
 			calculateModelMatrix();
-			Matrix4 proj = new Matrix4();
-			proj.set(mProjMatrix);
-			Matrix4 view = new Matrix4();
-			view.set(mVMatrix);
-			Log.i("Camera", "Proj: " + proj);
-			Log.i("Camera", "View: " + view);
 			Matrix.multiplyMM(mCombinedMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
 			Matrix.invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
 			mFrustum.update(mTmpMatrix);
