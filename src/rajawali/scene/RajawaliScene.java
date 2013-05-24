@@ -25,15 +25,14 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.renderer.plugins.IRendererPlugin;
 import rajawali.scene.scenegraph.IGraphNode;
+import rajawali.scene.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scene.scenegraph.IGraphNodeMember;
 import rajawali.scene.scenegraph.Octree;
-import rajawali.scene.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -214,8 +213,6 @@ public class RajawaliScene extends AFrameTask {
 	* @return boolean True if the addition was successfully queued.
 	*/
 	public boolean addCamera(Camera camera) {
-		camera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		camera.updateFrustum();
 		return queueAddTask(camera);
 	}
 	
@@ -255,8 +252,6 @@ public class RajawaliScene extends AFrameTask {
 	* @param boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceCamera(Camera camera, int location) {
-		camera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		camera.updateFrustum();
 		return queueReplaceTask(location, camera);
 	}
 	
@@ -271,11 +266,6 @@ public class RajawaliScene extends AFrameTask {
 	* @param boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceCamera(Camera oldCamera, Camera newCamera) {
-		Log.i("RAJAWALI", "OLD: " + oldCamera);
-		Log.i("RAJAWALI", "NEW: " + newCamera);
-		Log.i("RAJAWALI", "RENDER: " + mRenderer);
-		newCamera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		newCamera.updateFrustum();
 		return queueReplaceTask(oldCamera, newCamera);
 	}
 
@@ -571,7 +561,6 @@ public class RajawaliScene extends AFrameTask {
 			if (mNextCamera != null) {
 				mCamera = mNextCamera;
 				mNextCamera = null;
-				mCamera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
 			}
 		}
 		
@@ -609,7 +598,7 @@ public class RajawaliScene extends AFrameTask {
 
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
-		mCamera.updateFrustum(); //mPMatrix, mVMatrix); //update frustum plane
+		mCamera.updateFrustum(); //update frustum planes
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -1105,6 +1094,8 @@ public class RajawaliScene extends AFrameTask {
 	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
 	 */
 	private void internalReplaceCamera(AFrameTask camera, Camera replace, int index) {
+		replace.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		replace.updateFrustum();
 		if (index != AFrameTask.UNUSED_INDEX) {
 			mCameras.set(index, replace);
 		} else {
@@ -1124,6 +1115,8 @@ public class RajawaliScene extends AFrameTask {
 	 * @param int index to add the camera at. 
 	 */
 	private void internalAddCamera(Camera camera, int index) {
+		camera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		camera.updateFrustum();
 		if (index == AFrameTask.UNUSED_INDEX) {
 			mCameras.add(camera);
 		} else {
@@ -1463,7 +1456,11 @@ public class RajawaliScene extends AFrameTask {
 	 * @param height in the new viewport height in pixes.
 	 */
 	public void updateProjectionMatrix(int width, int height) {
-		mCamera.setProjectionMatrix(width, height);
+		synchronized (mCameras) {
+			for (int i = 0, j = mCameras.size(); i < j; ++i) {
+				mCameras.get(i).setProjectionMatrix(width, height);
+			}
+		}
 	}
 	
 	public void setUsesCoverageAa(boolean value) {

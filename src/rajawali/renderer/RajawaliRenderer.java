@@ -36,6 +36,7 @@ import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
@@ -460,7 +461,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mViewportWidth = width;
 		mViewportHeight = height;
-		mCurrentScene.updateProjectionMatrix(width, height);
+		synchronized (mScenes) {
+			for (int i = 0, j = mScenes.size(); i < j; ++i) {
+				mScenes.get(i).updateProjectionMatrix(width, height);
+			}
+		}
 		GLES20.glViewport(0, 0, width, height);
 	}
 
