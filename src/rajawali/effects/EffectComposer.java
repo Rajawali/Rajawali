@@ -32,10 +32,11 @@ public class EffectComposer {
 	
 	protected Camera2D mCamera = new Camera2D();
 	protected Plane mPostProcessingQuad = new Plane(1, 1, 1, 1);
-	protected RajawaliScene mScene = new RajawaliScene(mRenderer, GRAPH_TYPE.NONE);
+	protected RajawaliScene mScene;
 	
 	public EffectComposer(RajawaliRenderer renderer, RenderTarget renderTarget) {
 		mRenderer = renderer;
+		mScene = new RajawaliScene(mRenderer, GRAPH_TYPE.NONE);
 		if (renderTarget == null) {
 			int width, height;
 			if (renderer.getSceneInitialized()) {
