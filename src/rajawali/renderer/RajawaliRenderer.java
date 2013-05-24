@@ -14,6 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import rajawali.BaseObject3D;
 import rajawali.Camera;
+import rajawali.Capabilities;
 import rajawali.animation.Animation3D;
 import rajawali.effects.APass;
 import rajawali.effects.EffectComposer;
@@ -474,6 +475,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		RajLog.setGL10(gl);
+		Capabilities.getInstance();
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 
 		GLES20.glFrontFace(GLES20.GL_CCW);
