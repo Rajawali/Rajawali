@@ -6,11 +6,16 @@ uniform mat4 uMMatrix;
 uniform mat4 uVMatrix;
 uniform vec4 uAmbientColor;
 uniform vec4 uAmbientIntensity;
+#ifdef USE_SINGLE_COLOR
+uniform vec4 uSingleColor;
+#endif
 
 attribute vec4 aPosition;
 attribute vec3 aNormal;
 attribute vec2 aTextureCoord;
+#ifdef USE_VERTEX_COLOR
 attribute vec4 aColor;
+#endif
 
 varying vec2 vTextureCoord;
 varying float vSpecularIntensity;
@@ -47,8 +52,13 @@ void main() {
 
 %LIGHT_CODE%
    vSpecularIntensity = clamp(vSpecularIntensity, 0.0, 1.0);
-#ifndef TEXTURED
+
+#ifdef USE_VERTEX_COLOR
    vColor = vec4(vLightColor, 1.0) * aColor;
 #endif
+#ifdef USE_SINGLE_COLOR
+	vColor = vec4(vLightColor, 1.0) * uSingleColor;
+#endif   
+
 M_FOG_VERTEX_DENSITY
 }

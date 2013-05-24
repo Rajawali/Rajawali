@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
+import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Capabilities;
 import rajawali.lights.ALight;
@@ -46,9 +47,11 @@ public abstract class AMaterial extends AFrameTask {
 	protected int muVMatrixHandle;
 	protected int muInterpolationHandle;
 	protected int muAlphaMaskingThresholdHandle;
+	protected int muSingleColorHandle;
 
 	protected Stack<ALight> mLights;
-	protected boolean mUseColor = false;
+	protected boolean mUseSingleColor = false;
+	protected boolean mUseVertexColors = false;
 	protected boolean mUseAlphaMap = false;
 	protected boolean mUseNormalMap = false;
 	protected boolean mUseSpecMap = false;
@@ -58,6 +61,7 @@ public abstract class AMaterial extends AFrameTask {
 	protected float[] mModelViewMatrix;
 	protected float[] mViewMatrix;
 	protected float[] mCameraPosArray;
+	protected float[] mSingleColor;
 	protected ArrayList<ATexture> mTextureList;
 	/**
 	 * This texture's unique owner identity String. This is usually the 
@@ -80,6 +84,7 @@ public abstract class AMaterial extends AFrameTask {
 		mCameraPosArray = new float[3];
 		mLights = new Stack<ALight>();
 		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
+		mSingleColor = new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f };
 	}
 	
 	public AMaterial(String vertexShader, String fragmentShader) {
@@ -123,8 +128,9 @@ public abstract class AMaterial extends AFrameTask {
 	protected void setShaders(String vertexShader, String fragmentShader) {
 		mVertexShader = mVertexAnimationEnabled ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mVertexShader = mSkeletalAnimationEnabled ? "#define SKELETAL_ANIM\n" + mVertexShader : mVertexShader;
-		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
-		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
+		mVertexShader = mUseSingleColor ? "#define USE_SINGLE_COLOR\n" + mVertexShader : mVertexShader;
+		mVertexShader = mUseVertexColors ? "#define USE_VERTEX_COLOR\n" + mVertexShader : mVertexShader;
+		mFragmentShader = !mUseSingleColor && !mUseVertexColors ? "#define TEXTURED\n" + fragmentShader : fragmentShader;
 		mFragmentShader = mAlphaMaskingEnabled ? "#define ALPHA_MASK\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseNormalMap ? "#define NORMAL_MAP\n" + mFragmentShader : mFragmentShader;
@@ -149,6 +155,7 @@ public abstract class AMaterial extends AFrameTask {
 		muMVPMatrixHandle = getUniformLocation("uMVPMatrix");
 		muMMatrixHandle = getUniformLocation("uMMatrix");
 		muVMatrixHandle = getUniformLocation("uVMatrix");
+		muSingleColorHandle = getUniformLocation("uSingleColor");
 		
 		if(mVertexAnimationEnabled == true) {
 			maNextFramePositionHandle = getAttribLocation("aNextFramePosition");
@@ -242,7 +249,7 @@ public abstract class AMaterial extends AFrameTask {
 			ATexture texture = mTextureList.get(i);
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
 			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
-			GLES20.glUniform1i(texture.getUniformHandle(), i);
+			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, texture.getTextureName()), i);
 		}
 	}
 
@@ -328,7 +335,11 @@ public abstract class AMaterial extends AFrameTask {
 		
 		texture.setTextureName(textureName);
 		
-		if(texture.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
+		if(texture.getTextureType() != TextureType.SPHERE_MAP)
+		{
+			mUseSingleColor = false;
+			mUseVertexColors = false;
+		}
 
 		if(mProgramCreated)
 			setTextureParameters(texture);
@@ -377,6 +388,12 @@ public abstract class AMaterial extends AFrameTask {
 		}
 	}
 
+	public void setColor(float[] color) {
+		mSingleColor = color;
+		if(mUseSingleColor == true && checkValidHandle(muSingleColorHandle, "single color"))
+			GLES20.glUniform4fv(muSingleColorHandle, 1, mSingleColor, 0);
+	}
+	
 	public void setColors(final int colorBufferHandle) {
 		if(checkValidHandle(colorBufferHandle, "color data"))
 		{
@@ -514,23 +531,48 @@ public abstract class AMaterial extends AFrameTask {
 	}
 
 	/**
-	 * Set the material to use a color value rather than a texture
+	 * The material should use a single color value rather than a texture or vertex colors.
+	 * The color value is set through {@link BaseObject3D#setColor(int)}.
 	 * 
 	 * @param value {@link boolean}
 	 */
-	public void setUseColor(boolean value) {
-		mUseColor = value;
+	public void setUseSingleColor(boolean value) {
+		mUseSingleColor = value;
+		if(mUseSingleColor == true)
+			// -- either one or the other
+			mUseVertexColors = false;
 	}
 	
 	/**
-	 *  Determine if color is used.
+	 *  Indicates whether a single color is used.
 	 *  
 	 * @return {@link boolean}
 	 */
-	public boolean getUseColor() {
-		return mUseColor;
+	public boolean getUseSingleColor() {
+		return mUseSingleColor;
 	}
 		
+	/**
+	 * The material should use vertex colors value than a texture or a single color.
+	 * 
+	 * @param value {@link boolean}
+	 */
+	public void setUseVertexColors(boolean value) {
+		mUseVertexColors = value;
+		if(mUseVertexColors == true)
+			// either one or the other
+			setUseSingleColor(false);
+	}
+	
+	/**
+	 *  Indicates whether a vertex colors are used.
+	 *  
+	 * @return {@link boolean}
+	 */
+	public boolean getUseVertexColors() {
+		return mUseVertexColors;
+	}
+
 	/**
 	 * Pass the context to be used for resource loading. This should only be called internally by the renderer.
 	 * 

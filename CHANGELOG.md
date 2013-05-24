@@ -99,4 +99,11 @@ mHalfSphere1.setMaterial(material1);
 ```
 
 # Vector3
- 
+
+The `Number3D` class has been refactored to `Vector3`. This name is much more appropriate.
+
+# Object color
+
+`AMaterial`'s method `setUseColor(boolean useColor)` has been removed. There are two new methods that replace it:
+- `setUseSingleColor(boolean value)`: When the object uses a single color for the whole mesh use this. This way no color buffer will be created which reduces the memory footprint and increases performance, especially in big scenes.
+- `setUseVertexColors(boolean value)`: Use this when your mesh has multiple colors. This isn't applicable to textures, just vertex colors.

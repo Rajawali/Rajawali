@@ -4,19 +4,17 @@ import java.util.Stack;
 
 import rajawali.BaseObject3D;
 import rajawali.math.Vector3;
-import android.graphics.Color;
 import android.opengl.GLES20;
 
 public class Line3D extends BaseObject3D {
 	private Stack<Vector3> mPoints;
 	private float mThickness;
-	private int mLineColor;
 	
 	public Line3D(Stack<Vector3> points, float thickness, int color) {
 		super();
 		mPoints = points;
 		mThickness = thickness;
-		mLineColor = color;
+		setColor(color);
 		init();
 	}	
 	
@@ -29,12 +27,7 @@ public class Line3D extends BaseObject3D {
 		float[] vertices = new float[numVertices * 3];
 		float[] textureCoords = new float[numVertices * 2];
 		float[] normals = new float[numVertices * 3];
-		float[] colors = new float[numVertices * 4];
 		int[] indices = new int[numVertices];
-		float r = Color.red(mLineColor) / 255f;
-		float g = Color.green(mLineColor) / 255f;
-		float b = Color.blue(mLineColor) / 255f;
-		float a = Color.alpha(mLineColor) / 255f;
 		
 		for(int i=0; i<numVertices; i++) {
 			Vector3 point = mPoints.get(i);
@@ -49,14 +42,10 @@ public class Line3D extends BaseObject3D {
 			textureCoords[index] = 0;
 			textureCoords[index+1] = 0;
 			index = i * 4;
-			colors[index] = r;
-			colors[index+1] = g;
-			colors[index+2] = b;
-			colors[index+3] = a;
 			indices[i] = (short)i;
 		}
 		
-		setData(vertices, normals, textureCoords, colors, indices);
+		setData(vertices, normals, textureCoords, null, indices);
 	}
 	
 	public void preRender() {

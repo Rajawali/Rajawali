@@ -423,7 +423,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			mat.setMaxWeights(mesh.maxBoneWeightsPerVertex);
 			o.setMaterial(mat);
 			if (!hasTexture) {
-				mat.setUseColor(!hasTexture);
+				mat.setUseSingleColor(!hasTexture);
 				o.setColor(0xff000000 + (int) (Math.random() * 0xffffff));
 			} else {
 				int identifier = mResources.getIdentifier(mesh.textureName, "drawable",

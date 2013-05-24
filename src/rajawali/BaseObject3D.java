@@ -43,6 +43,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected float[] mRotateMatrix = new float[16];
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
+	protected float[] mColor;
 
 	protected AMaterial mMaterial;
 	protected List<ALight> mLights;
@@ -84,6 +85,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mGeometry = new Geometry3D();
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
+		mColor = new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f };
 		
 		//Initialize the matrices to identity
 		Matrix.setIdentityM(mMMatrix, 0);
@@ -294,8 +296,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
 				
-				if (mMaterial.getUseColor())
+				if(mMaterial.getUseSingleColor())
+					mMaterial.setColor(mColor);
+				else if (mMaterial.getUseVertexColors())
 					mMaterial.setColors(mGeometry.getColorBufferInfo().bufferHandle);
+				
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -711,15 +716,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	public void setColor(int color) {
-		setColor(color, false);
-	}
-
-	public void setColor(int color, boolean createNewBuffer) {
-		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f,
-				Color.alpha(color) / 255f, createNewBuffer);
-		if (mMaterial != null) {
-			mMaterial.setUseColor(true);
-		}
+		mColor[0] = Color.red(color) / 255.f;
+		mColor[1] = Color.green(color) / 255.f;
+		mColor[2] = Color.blue(color) / 255.f;
+		mColor[3] = Color.alpha(color) / 255.f;
 	}
 
 	public void setColor(Vector3 color) {

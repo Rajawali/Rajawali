@@ -438,9 +438,9 @@ public class ObjParser extends AMeshParser {
 			else
 				mat = new DiffuseMaterial();
 
-			mat.setUseColor(!hasTexture);
-			object.setColor(matDef != null ? matDef.diffuseColor : (0xff000000 + ((int)(Math.random() * 0xffffff))));
+			mat.setUseSingleColor(!hasTexture);
 			object.setMaterial(mat);
+			object.setColor(matDef != null ? matDef.diffuseColor : (0xff000000 + ((int)(Math.random() * 0xffffff))));
 			if(hasSpecular && !hasBump) {
 				PhongMaterial phong = (PhongMaterial)mat;
 				phong.setSpecularColor(matDef.specularColor);

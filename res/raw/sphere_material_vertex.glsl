@@ -5,10 +5,17 @@ uniform mat4 uMMatrix;
 uniform mat3 uNMatrix;
 uniform vec3 uLightPos;
 uniform vec3 uCameraPosition;
+#ifdef USE_SINGLE_COLOR
+uniform vec4 uSingleColor;
+#endif
+
 attribute vec4 aPosition;
 attribute vec2 aTextureCoord;
 attribute vec3 aNormal;
+#ifdef USE_VERTEX_COLOR
 attribute vec4 aColor;
+#endif
+
 varying vec2 vTextureCoord;
 varying vec2 vReflectTextureCoord;
 varying vec3 vReflectDir;
@@ -32,9 +39,14 @@ void main() {
    vReflectTextureCoord.s = vReflectDir.x/m + 0.5;
    vReflectTextureCoord.t = vReflectDir.y/m + 0.5;
    vNormal = aNormal;
-#ifndef TEXTURED
+
+#ifdef USE_VERTEX_COLOR
    vColor = aColor;
 #endif
+#ifdef USE_SINGLE_COLOR
+	vColor = uSingleColor;
+#endif
+
 %LIGHT_CODE%
 M_FOG_VERTEX_DENSITY
 }
