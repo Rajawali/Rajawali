@@ -215,8 +215,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}
 	}
 
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
-		render(camera, projMatrix, vMatrix, null, pickerInfo);
+	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
+		render(camera, vpMatrix, projMatrix, vMatrix, null, pickerInfo);
 	}
 
 	/**
@@ -224,6 +224,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * 
 	 * @param camera
 	 *            The camera
+	 * @param vpMatrix
+	 * 			  The view-projection matrix
 	 * @param projMatrix
 	 *            The projection matrix
 	 * @param vMatrix
@@ -233,7 +235,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param pickerInfo
 	 *            The current color picker info. This is only used when an object is touched.
 	 */
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
+	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
 			ColorPickerInfo pickerInfo) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
@@ -242,8 +244,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		// -- move view matrix transformation first
 		calculateModelMatrix(parentMatrix);
-		Matrix.multiplyMM(mMVPMatrix, 0, vMatrix, 0, mMMatrix, 0);
-		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
+		//Create MVP Matrix from View-Projection Matrix
+		Matrix.multiplyMM(mMVPMatrix, 0, vpMatrix, 0, mMMatrix, 0);
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
@@ -256,25 +258,17 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		if (!mIsContainerOnly && mIsInFrustum) {
 			mProjMatrix = projMatrix;
-			if (!mDoubleSided) {
-				GLES20.glEnable(GLES20.GL_CULL_FACE);
-				if (mBackSided) {
-					GLES20.glCullFace(GLES20.GL_FRONT);
-				} else {
-					GLES20.glCullFace(GLES20.GL_BACK);
-					GLES20.glFrontFace(GLES20.GL_CCW);
-				}
+			if (mDoubleSided) {
+				GLES20.glDisable(GLES20.GL_CULL_FACE);
+			} else if (mBackSided) {
+				GLES20.glCullFace(GLES20.GL_FRONT);
 			}
 			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
 				GLES20.glEnable(GLES20.GL_BLEND);
 				GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
-			} else {
-				GLES20.glDisable(GLES20.GL_BLEND);
 			}
-			if (mEnableDepthTest)
-				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-			else
-				GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			if (!mEnableDepthTest) GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			
 			GLES20.glDepthMask(mEnableDepthMask);
 
 			if (pickerInfo != null && mIsPickingEnabled) {
@@ -306,14 +300,12 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-			if (pickerInfo == null)
-			{
+			if (pickerInfo == null) {
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
 
-				if(mIsVisible)
-				{
+				if(mIsVisible) {
 					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
 					GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,	0);
 					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -332,20 +324,31 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 				pickerMat.unbindTextures();
 			}
-			GLES20.glDisable(GLES20.GL_CULL_FACE);
-			GLES20.glDisable(GLES20.GL_BLEND);
-			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			
+			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
+				GLES20.glDisable(GLES20.GL_BLEND);
+			}
+			
+			if (mDoubleSided) {
+				GLES20.glEnable(GLES20.GL_CULL_FACE);
+			} else if (mBackSided) {
+				GLES20.glCullFace(GLES20.GL_BACK);
+			}
+			if (!mEnableDepthTest) {
+				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+				GLES20.glDepthFunc(GLES20.GL_LESS);
+			}
 		}
 
 		if (mShowBoundingVolume) {
 			if (mGeometry.hasBoundingBox())
-				mGeometry.getBoundingBox().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+				mGeometry.getBoundingBox().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 			if (mGeometry.hasBoundingSphere())
-				mGeometry.getBoundingSphere().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+				mGeometry.getBoundingSphere().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		}
 		// Draw children without frustum test
 		for (int i = 0, j = mChildren.size(); i < j; i++)
-			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
+			mChildren.get(i).render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, pickerInfo);
 
 		if (mRenderChildrenAsBatch) {
 			mMaterial.unbindTextures();
@@ -476,7 +479,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param transparent
 	 */
 	public void setTransparent(boolean value) {
-		this.mTransparent = value;
+		mTransparent = value;
 		mEnableBlending = value;
 		setBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		mEnableDepthMask = !value;
