@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Stack;
 
 import rajawali.Camera;
+import rajawali.Capabilities;
 import rajawali.lights.ALight;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Vector3;
+import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.annotation.SuppressLint;
@@ -22,12 +24,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.opengl.GLES20;
 
-public abstract class AMaterial {
-	public static final int NONE				= 0;
-	public static final int VERTEX_ANIMATION 	= 1 << 0;
-	public static final int SKELETAL_ANIMATION	= 1 << 1;
-	public static final int ALPHA_MASKING		= 1 << 2;
-	
+public abstract class AMaterial extends AFrameTask {
 	protected String mUntouchedVertexShader;
 	protected String mUntouchedFragmentShader;
 	protected String mVertexShader;
@@ -62,6 +59,11 @@ public abstract class AMaterial {
 	protected float[] mViewMatrix;
 	protected float[] mCameraPosArray;
 	protected ArrayList<ATexture> mTextureList;
+	/**
+	 * This texture's unique owner identity String. This is usually the 
+	 * fully qualified name of the {@link RajawaliRenderer} instance.  
+	 */
+	protected String mOwnerIdentity;
 	
 	/**
 	 * The maximum number of available textures for this device.
@@ -77,65 +79,48 @@ public abstract class AMaterial {
 		mTextureList = new ArrayList<ATexture>();
 		mCameraPosArray = new float[3];
 		mLights = new Stack<ALight>();
-		mMaxTextures = queryMaxTextures();
+		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
 	}
 	
-	public AMaterial(String vertexShader, String fragmentShader, boolean vertexAnimationEnabled) {
-		this(vertexShader, fragmentShader, vertexAnimationEnabled ? VERTEX_ANIMATION : NONE);
-	}
-	
-	public AMaterial(String vertexShader, String fragmentShader, int parameters) {
+	public AMaterial(String vertexShader, String fragmentShader) {
 		this();
 		mUntouchedVertexShader = vertexShader;
 		mUntouchedFragmentShader = fragmentShader;
-		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
-		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
-		mAlphaMaskingEnabled = (parameters & ALPHA_MASKING) != 0;
-	}
-	
-	public AMaterial(int parameters) {
-		this();
-		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
-		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
-		mAlphaMaskingEnabled = (parameters & ALPHA_MASKING) != 0;
 	}
 	
 	public AMaterial(int vertex_res, int fragment_res) {
-		this(vertex_res, fragment_res, false);
+		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res));
 	}
 	
-	public AMaterial(int vertex_res, int fragment_res, boolean vertexAnimationEnabled) {
-		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res), vertexAnimationEnabled);
-	}
-	
-	public AMaterial(int vertex_res, int fragment_res, int parameters) {
-		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res), parameters);
-	}
-	
-	protected int queryMaxTextures() {
-		int numTexUnits[] = new int[1];
-		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS, numTexUnits, 0);
-		return numTexUnits[0];
-	}
-	
-	public void reload() {
-		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
-		
-		mNumTextures = mTextureList.size();
-		
-		// TODO: manage
-		/*
-		for(int i=0; i<mNumTextures; i++) {
-			if(mTextureList.get(i).getBitmaps() != null)
-				addTexture(mTextureList.get(i), true, true);
-		}*/
+	void add()
+	{
+		setShaders();
 	}
 
-	public void setShaders() {
+	void remove()
+	{
+		mModelViewMatrix = null;
+		mViewMatrix = null;
+		mCameraPosArray = null;
+		if(mLights != null) mLights.clear();
+		if(mTextureList != null) mTextureList.clear();
+
+		GLES20.glDeleteShader(mVShaderHandle);
+		GLES20.glDeleteShader(mFShaderHandle);
+		GLES20.glDeleteProgram(mProgram);
+	}
+
+	void reload()
+	{
+		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+		mNumTextures = mTextureList.size();
+	}
+	
+	protected void setShaders() {
 		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 	}
 	
-	public void setShaders(String vertexShader, String fragmentShader) {
+	protected void setShaders(String vertexShader, String fragmentShader) {
 		mVertexShader = mVertexAnimationEnabled ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mVertexShader = mSkeletalAnimationEnabled ? "#define SKELETAL_ANIM\n" + mVertexShader : mVertexShader;
 		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
@@ -239,25 +224,10 @@ public abstract class AMaterial {
 	protected int getAttribLocation(String name) {
 		return GLES20.glGetAttribLocation(mProgram, name);
 	}
-	
-	public void unload() {
-		GLES20.glDeleteShader(mVShaderHandle);
-		GLES20.glDeleteShader(mFShaderHandle);
-		GLES20.glDeleteProgram(mProgram);
-	}
-	
-	public void destroy() {
-		mModelViewMatrix = null;
-		mViewMatrix = null;
-		mCameraPosArray = null;
-		if(mLights != null) mLights.clear();
-		if(mTextureList != null) mTextureList.clear();
-		unload();
-	}
 
 	public void useProgram() {
 		if(!mProgramCreated) {
-			mMaxTextures = queryMaxTextures();
+			mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
 			reload();
 		}
 		GLES20.glUseProgram(mProgram);
@@ -280,10 +250,8 @@ public abstract class AMaterial {
 		int num = mTextureList.size();
 
 		for (int i = 0; i < num; i++) {
-			ATexture textureConfig = mTextureList.get(i);
-			int type = textureConfig.getTextureType() == TextureType.CUBE_MAP ? GLES20.GL_TEXTURE_CUBE_MAP
-					: GLES20.GL_TEXTURE_2D;
-			GLES20.glBindTexture(type, 0);
+			ATexture texture = mTextureList.get(i);
+			GLES20.glBindTexture(texture.getGLTextureType(), 0);
 		}
 		
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -551,11 +519,6 @@ public abstract class AMaterial {
 	 * @param value {@link boolean}
 	 */
 	public void setUseColor(boolean value) {
-		if(value != mUseColor) {
-			mUseColor = value;
-			if(mLights.size() > 0 || !(this instanceof AAdvancedMaterial))
-				setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
-		}
 		mUseColor = value;
 	}
 	
@@ -629,5 +592,49 @@ public abstract class AMaterial {
 
 			return mRawMaterials.get(resID);
 		}
+	}
+	
+	public void setVertexAnimationEnabled(boolean enabled)
+	{
+		mVertexAnimationEnabled = enabled;
+	}
+	
+	public boolean getVertexAnimationEnabled()
+	{
+		return mVertexAnimationEnabled;
+	}
+	
+	public void setSkeletalAnimationEnabled(boolean enabled)
+	{
+		mSkeletalAnimationEnabled = enabled;
+	}
+	
+	public boolean getSkeletalAnimationEnabled()
+	{
+		return mSkeletalAnimationEnabled;
+	}
+	
+	public void setAlphaMaskingEnabled(boolean enabled)
+	{
+		mAlphaMaskingEnabled = enabled;
+	}
+	
+	public boolean getAlphaMaskingEnabled()
+	{
+		return mAlphaMaskingEnabled;
+	}
+	
+	public void setOwnerIdentity(String identity)
+	{
+		mOwnerIdentity = identity;
+	}
+	
+	public String getOwnerIdentity()
+	{
+		return mOwnerIdentity;
+	}
+	
+	public TYPE getFrameTaskType() {
+		return TYPE.MATERIAL;
 	}
 }

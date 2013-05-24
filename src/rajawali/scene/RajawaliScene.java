@@ -861,9 +861,6 @@ public class RajawaliScene extends AFrameTask {
 		case PLUGIN:
 			internalReplacePlugin(task, (IRendererPlugin) task.getNewObject(), task.getIndex());
 			break;
-		case TEXTURE:
-			//TODO: Handle texture replacement
-			break;
 		default:
 			break;
 		}
@@ -892,9 +889,6 @@ public class RajawaliScene extends AFrameTask {
 		case PLUGIN:
 			internalAddPlugin((IRendererPlugin) task, task.getIndex());
 			break;
-		case TEXTURE:
-			//TODO: Handle texture addition
-			break;
 		default:
 			break;
 		}
@@ -922,9 +916,6 @@ public class RajawaliScene extends AFrameTask {
 			break;
 		case PLUGIN:
 			internalRemovePlugin((IRendererPlugin) task, task.getIndex());
-			break;
-		case TEXTURE:
-			//TODO: Handle texture removal
 			break;
 		default:
 			break;
@@ -965,9 +956,6 @@ public class RajawaliScene extends AFrameTask {
 			for (i = 0; i < j; ++i) {
 				internalAddPlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
 			}
-			break;
-		case TEXTURE:
-			//TODO: Handle texture remove all
 			break;
 		default:
 			break;
@@ -1031,9 +1019,6 @@ public class RajawaliScene extends AFrameTask {
 					internalAddPlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
-			break;
-		case TEXTURE:
-			//TODO: Handle texture add all
 			break;
 		default:
 			break;

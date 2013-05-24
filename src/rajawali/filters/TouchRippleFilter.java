@@ -82,7 +82,7 @@ public class TouchRippleFilter extends AMaterial implements IPostProcessingFilte
 	}
 	
 	public TouchRippleFilter(int numRipples) {
-		super(mVShader, mFShader, false);
+		super(mVShader, mFShader);
 		mNumRipples = numRipples;
 		
 		mTouches = new float[mNumRipples][2];

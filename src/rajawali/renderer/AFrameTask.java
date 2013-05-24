@@ -39,7 +39,7 @@ public abstract class AFrameTask {
 	/**
 	 * The type of object this task is acting on.
 	 */
-	public enum TYPE {ANIMATION, CAMERA, LIGHT, OBJECT3D, PLUGIN, TEXTURE, SCENE, TEXTURE_MANAGER, COLOR_PICKER};
+	public enum TYPE {ANIMATION, CAMERA, LIGHT, OBJECT3D, PLUGIN, TEXTURE, SCENE, TEXTURE_MANAGER, COLOR_PICKER, MATERIAL, MATERIAL_MANAGER};
 	
 	private AFrameTask.TASK mFrameTask = AFrameTask.TASK.NONE; //The task to perform
 	private int mFrameTaskIndex = UNUSED_INDEX; //The index to replace, if relevant

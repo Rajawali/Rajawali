@@ -11,7 +11,6 @@ import rajawali.math.Vector3;
 import rajawali.primitives.Cube;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class BoundingBox implements IBoundingVolume {
 	protected Geometry3D mGeometry;

@@ -15,27 +15,11 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	protected float[] mSpecularIntensity;
 	
 	public GouraudMaterial() {
-		this(false);
-	}
-	
-	public GouraudMaterial(boolean isAnimated) {
-		super(R.raw.gouraud_material_vertex, R.raw.gouraud_material_fragment, isAnimated);
+		super(R.raw.gouraud_material_vertex, R.raw.gouraud_material_fragment);
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
 		mSpecularIntensity = new float[] { 1f, 1f, 1f, 1.0f };
 	}
-	
-	/**
-	 * Constructor to pass parameters directly
-	 * 
-	 * @param parameters Use bitwise parameters from `AMaterial`
-	 */
-	
-	public GouraudMaterial(int parameters) {
-		super(R.raw.gouraud_material_vertex, R.raw.gouraud_material_fragment, parameters);
-		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-		mSpecularIntensity = new float[] { 1f, 1f, 1f, 1.0f };
-	}
-	
+
 	public GouraudMaterial(float[] specularColor) {
 		this();
 		mSpecularColor = specularColor;

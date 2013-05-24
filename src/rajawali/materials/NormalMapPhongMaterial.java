@@ -7,11 +7,7 @@ import com.monyetmabuk.livewallpapers.photosdof.R;
 public class NormalMapPhongMaterial extends PhongMaterial {
 	
 	public NormalMapPhongMaterial() {
-		this(false);
-	}
-	
-	public NormalMapPhongMaterial(boolean isAnimated) {
-		super(R.raw.phong_material_vertex, R.raw.bumpmap_phong_material, isAnimated);
+		super(R.raw.phong_material_vertex, R.raw.bumpmap_phong_material);
 	}
 	
 	@Override

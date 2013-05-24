@@ -42,12 +42,10 @@ import com.monyetmabuk.livewallpapers.photosdof.R;
 public class VideoMaterial extends AMaterial {
 	
 	public VideoMaterial() {
-		super(R.raw.video_material_vertex, R.raw.video_material_fragment, false);
-		setShaders();
+		super(R.raw.video_material_vertex, R.raw.video_material_fragment);
 	}
 	
 	public VideoMaterial(String vertexShader, String fragmentShader) {
-		super(vertexShader, fragmentShader, false);
-		setShaders();
+		super(vertexShader, fragmentShader);
 	}
 }

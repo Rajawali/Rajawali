@@ -51,11 +51,6 @@ public class Particle extends BaseObject3D {
 		super.setMaterial(material);
 		mParticleShader = material;
 	}
-	
-	public void setMaterial(AParticleMaterial material, boolean copyTextures) throws TextureException {
-		super.setMaterial(material, copyTextures);
-		mParticleShader = material;
-	}
 
 	@Override
 	protected void setShaderParams(Camera camera) {

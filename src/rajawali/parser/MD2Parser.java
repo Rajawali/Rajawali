@@ -94,7 +94,8 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 			mObject.setFrames(mFrames);
 
 			IAnimationFrame firstFrame = mFrames.get(0);
-			DiffuseMaterial material = new DiffuseMaterial(true);
+			DiffuseMaterial material = new DiffuseMaterial();
+			material.setVertexAnimationEnabled(true);
 			mObject.getGeometry().copyFromGeometry3D(firstFrame.getGeometry());
 			mObject.setData(firstFrame.getGeometry().getVertexBufferInfo(), firstFrame.getGeometry()
 					.getNormalBufferInfo(), mTextureCoords, null, mIndices);

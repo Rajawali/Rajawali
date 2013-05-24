@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.ColorPickerMaterial;
+import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.FrameBufferTexture;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
@@ -41,6 +42,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		mRenderer.getTextureManager().taskAdd(mTexture);
 		genBuffers();
 		mPickerMaterial = new ColorPickerMaterial();
+		MaterialManager.getInstance().addMaterial(mPickerMaterial);
 		mIsInitialized = true;
 	}
 
@@ -48,7 +50,6 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		if (!mIsInitialized)
 			return;
 		genBuffers();
-		mPickerMaterial.reload();
 	}
 
 	public void genBuffers() {

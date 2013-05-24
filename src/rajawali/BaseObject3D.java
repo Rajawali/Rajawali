@@ -12,7 +12,7 @@ import rajawali.bounds.IBoundingVolume;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
 import rajawali.math.Vector3;
@@ -403,8 +403,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 */
 	public void reload() {
 		if (!mIsContainerOnly) {
-			if (mManageMaterial)
-				mMaterial.reload();
 			mGeometry.reload();
 		}
 
@@ -504,24 +502,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mChildren.get(i).setLights(mLights);
 		if (mMaterial != null)
 			mMaterial.setLights(mLights);
-	}
-
-	/**
-	 * @deprecated Use addLight() instead
-	 * @param light
-	 */
-	@Deprecated
-	public void setLight(ALight light) {
-		addLight(light);
-	}
-
-	/**
-	 * @deprecated use getLight(int index) instead
-	 * @return
-	 */
-	@Deprecated
-	public ALight getLight() {
-		return mLights.get(0);
 	}
 
 	public ALight getLight(int index) {
@@ -626,26 +606,16 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mGeometry;
 	}
 
-	public void setMaterial(AMaterial material) {
-		try {
-			setMaterial(material, true);
-		} catch(TextureException e) {
-			throw new RuntimeException(e);
-		}
-		material.setLights(mLights);
-	}
-
 	public AMaterial getMaterial() {
 		return mMaterial;
 	}
 
-	public void setMaterial(AMaterial material, boolean copyTextures) throws TextureException {
-		if (mMaterial != null && copyTextures)
-			mMaterial.copyTexturesTo(material);
-		else if (mMaterial != null && !copyTextures)
-			mMaterial.getTextureList().clear();
-		mMaterial = null;
+	public void setMaterial(AMaterial material) {
+		if(material == null) return;
+		MaterialManager.getInstance().addMaterial(material);
 		mMaterial = material;
+		if(mLights != null)
+			mMaterial.setLights(mLights);
 	}
 
 	public void setName(String name) {
@@ -713,12 +683,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected void cloneTo(BaseObject3D clone, boolean copyMaterial) {
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		try {
-			if (copyMaterial)
-				clone.setMaterial(mMaterial, false);
-		} catch(TextureException tme) {
-			tme.printStackTrace();
-		}
+		clone.setMaterial(mMaterial);
 		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
 				: GLES20.GL_UNSIGNED_INT;
 		clone.mTransparent = this.mTransparent;
@@ -816,16 +781,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		this.mIsPartOfBatch = isPartOfBatch;
 	}
 
-	public boolean getManageMaterial()
-	{
-		return mManageMaterial;
-	}
-	
-	public void setManageMaterial(boolean manageMaterial)
-	{
-		this.mManageMaterial = manageMaterial;
-	}
-
 	public void setBlendingEnabled(boolean value) {
 		mEnableBlending = value;
 	}
@@ -882,7 +837,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		if (mGeometry != null)
 			mGeometry.destroy();
 		if (mMaterial != null)
-			mMaterial.destroy();
+			MaterialManager.getInstance().removeMaterial(mMaterial);
 		mLights = null;
 		mMaterial = null;
 		mGeometry = null;
