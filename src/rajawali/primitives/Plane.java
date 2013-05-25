@@ -1,7 +1,6 @@
 package rajawali.primitives;
 
 import rajawali.BaseObject3D;
-import rajawali.math.Vector3.Axis;
 
 /**
  * A plane primitive. The constructor takes two boolean arguments that indicate whether certain buffers should be
@@ -27,28 +26,16 @@ public class Plane extends BaseObject3D {
 	protected int mSegmentsH;
 	private boolean mCreateTextureCoords;
 	private boolean mCreateVertexColorBuffer;
-	private Axis mUpAxis;
 
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * The plane will be facing the camera ({@link Axis.Z}) by default.
 	 */
 	public Plane() {
-		this(1f, 1f, 1, 1, Axis.Z, true, false);
-	}
-	
-	/**
-	 * Create a plane primitive. Calling this constructor will create a plane facing the specified axis.
-	 * @param upAxis
-	 */
-	public Plane(Axis upAxis)
-	{
-		this(1f, 1f, 1, 1, upAxis, true, false);
+		this(1f, 1f, 1, 1, true, false);
 	}
 
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * The plane will be facing the camera ({@link Axis.Z}) by default.
 	 * 
 	 * @param width
 	 *            The plane width
@@ -61,26 +48,7 @@ public class Plane extends BaseObject3D {
 	 */
 	public Plane(float width, float height, int segmentsW, int segmentsH)
 	{
-		this(width, height, segmentsW, segmentsH, Axis.Z, true, false);
-	}
-	
-	/**
-	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * 
-	 * @param width
-	 *            The plane width
-	 * @param height
-	 *            The plane height
-	 * @param segmentsW
-	 *            The number of vertical segments
-	 * @param segmentsH
-	 *            The number of horizontal segments
-	 * @param upAxis
-	 * 			  The up axis. Choose Axis.Y for a ground plane and Axis.Z for a camera facing plane.
-	 */
-	public Plane(float width, float height, int segmentsW, int segmentsH, Axis upAxis)
-	{
-		this(width, height, segmentsW, segmentsH, upAxis, true, false);
+		this(width, height, segmentsW, segmentsH, true, false);
 	}
 
 	/**
@@ -94,21 +62,18 @@ public class Plane extends BaseObject3D {
 	 *            The number of vertical segments
 	 * @param segmentsH
 	 *            The number of horizontal segments
-	 * @param upAxis
-	 * 			  The up axis. Choose Axis.Y for a ground plane and Axis.Z for a camera facing plane.
 	 * @param createTextureCoordinates
 	 *            A boolean that indicates whether the texture coordinates should be calculated or not.
 	 * @param createVertexColorBuffer
 	 *            A boolean that indicates whether a vertex color buffer should be created or not.
 	 */
-	public Plane(float width, float height, int segmentsW, int segmentsH, Axis upAxis, boolean createTextureCoordinates,
+	public Plane(float width, float height, int segmentsW, int segmentsH, boolean createTextureCoordinates,
 			boolean createVertexColorBuffer) {
 		super();
 		mWidth = width;
 		mHeight = height;
 		mSegmentsW = segmentsW;
 		mSegmentsH = segmentsH;
-		mUpAxis = upAxis;
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
 		init();
@@ -131,35 +96,18 @@ public class Plane extends BaseObject3D {
 
 		for (i = 0; i <= mSegmentsW; i++) {
 			for (j = 0; j <= mSegmentsH; j++) {
-				float v1 = ((float) i / (float) mSegmentsW - 0.5f) * mWidth;
-				float v2 = ((float) j / (float) mSegmentsH - 0.5f) * mHeight;
-				if(mUpAxis == Axis.X)
-				{
-					vertices[vertexCount] = 0;
-					vertices[vertexCount + 1] = v1;
-					vertices[vertexCount + 2] = v2;
-				}
-				else if(mUpAxis == Axis.Y)
-				{
-					vertices[vertexCount] = v2;
-					vertices[vertexCount + 1] = 0;
-					vertices[vertexCount + 2] = v1;
-				}
-				else if(mUpAxis == Axis.Z)
-				{
-					vertices[vertexCount] = v1;
-					vertices[vertexCount + 1] = v2;
-					vertices[vertexCount + 2] = 0;
-				}
+				vertices[vertexCount] = ((float) i / (float) mSegmentsW - 0.5f) * mWidth;
+				vertices[vertexCount + 1] = ((float) j / (float) mSegmentsH - 0.5f) * mHeight;
+				vertices[vertexCount + 2] = 0;
 
 				if (mCreateTextureCoords) {
 					textureCoords[texCoordCount++] = (float) i / (float) mSegmentsW;
 					textureCoords[texCoordCount++] = 1.0f - (float) j / (float) mSegmentsH;
 				}
 
-				normals[vertexCount] = mUpAxis == Axis.X ? 1 : 0;
-				normals[vertexCount + 1] = mUpAxis == Axis.Y ? 1 : 0;
-				normals[vertexCount + 2] = mUpAxis == Axis.Z ? 1 : 0;
+				normals[vertexCount] = 0;
+				normals[vertexCount + 1] = 0;
+				normals[vertexCount + 2] = 1;
 
 				vertexCount += 3;
 			}
