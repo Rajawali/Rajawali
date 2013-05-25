@@ -8,6 +8,7 @@ import rajawali.Camera2D;
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
 import rajawali.primitives.Plane;
+import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
@@ -31,7 +32,7 @@ public class EffectComposer {
 	protected ShaderPass mCopyPass;
 	
 	protected Camera2D mCamera = new Camera2D();
-	protected Plane mPostProcessingQuad = new Plane(1, 1, 1, 1);
+	protected ScreenQuad mPostProcessingQuad = new ScreenQuad();
 	protected RajawaliScene mScene = new RajawaliScene(mRenderer, GRAPH_TYPE.NONE);
 	
 	public EffectComposer(RajawaliRenderer renderer, RenderTarget renderTarget) {

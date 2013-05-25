@@ -473,9 +473,9 @@ public abstract class AMaterial extends AFrameTask {
 	public boolean checkValidHandle(int handle, String message){
 		if(handle >= 0)
 			return true;
-		if(message != null)
+		/*if(message != null)
 			RajLog.e("[" +getClass().getCanonicalName()+ "] Trying to set "+message+
-				" without a valid handle.");
+				" without a valid handle.");*/
 		return false;					
 	}
 	

@@ -6,7 +6,7 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.FrameBufferTexture;
 import rajawali.math.MathUtil;
-import rajawali.primitives.Plane;
+import rajawali.primitives.ScreenQuad;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
@@ -15,7 +15,7 @@ public final class PostProcessingRenderer {
 	private int mDepthBufferHandle;
 	private FrameBufferTexture mFrameBufferTexture;
 //	private TextureInfo mDepthBufferTexInfo;
-	private Plane mPostProcessingQuad;
+	private ScreenQuad mPostProcessingQuad;
 	private Camera2D mPostProcessingCam;
 	private int mTextureSize;
 	private RajawaliRenderer mRenderer;
@@ -79,7 +79,7 @@ public final class PostProcessingRenderer {
 		mFrameBufferTexture.setWidth(mTextureSize);
 		mFrameBufferTexture.setHeight(mTextureSize);
 
-		mPostProcessingQuad = new Plane(1, 1, mQuadSegments, mQuadSegments);
+		mPostProcessingQuad = new ScreenQuad();
 		mPostProcessingQuad.setMaterial((AMaterial)mFilter);
 		mPostProcessingQuad.setDoubleSided(true);
 		mPostProcessingQuad.setRotZ(-90);

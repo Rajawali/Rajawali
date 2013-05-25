@@ -466,7 +466,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mCurrentScene.updateProjectionMatrix(width, height);
 		GLES20.glViewport(0, 0, width, height);
 	}
-public static GL10 gl;
 
 	/* Called when the OpenGL context is created or re-created. Don't set up your scene here,
 	 * use initScene() for that.
@@ -477,7 +476,6 @@ public static GL10 gl;
 	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		RajLog.setGL10(gl);
-		RajawaliRenderer.gl = gl;
 		Capabilities.getInstance();
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 

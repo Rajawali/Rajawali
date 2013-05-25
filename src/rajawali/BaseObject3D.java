@@ -290,8 +290,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 					mMaterial.useProgram();
 					setShaderParams(camera);
 					mMaterial.bindTextures();
-					mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
-					mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
+					if(mGeometry.hasTextureCoordinates())
+						mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
+					if(mGeometry.hasNormals())
+						mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
 					mMaterial.setCamera(camera);
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
