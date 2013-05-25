@@ -511,6 +511,10 @@ public final class Quaternion {
 		return result;
 	}
 	
+	public boolean isIdentity() {
+		return ((w == 1) && (x == 0) && (y == 0) && (z == 0));
+	}
+	
 	public Quaternion setIdentity() {
 		w = 1;
 		x = 0;

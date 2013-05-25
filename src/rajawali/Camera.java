@@ -21,7 +21,6 @@ public class Camera extends ATransformable3D {
 	protected float[] mRotationMatrix = new float[16];
 	protected float[] mProjMatrix = new float[16];
 	protected float[] mMMatrix = new float[16];
-	protected float[] mRotateMatrix = new float[16];
 	protected float mNearPlane = 1.0f;
 	protected float mFarPlane = 120.0f;
 	protected float mFieldOfView = 45;
@@ -53,7 +52,7 @@ public class Camera extends ATransformable3D {
 		mLocalOrientation = Quaternion.getIdentity();
 		mUpAxis = new Vector3(0, 1, 0);
 		mIsCamera = true;
-		mFrustum = new CameraFrustum();
+		mFrustum = new CameraFrustum(this);
 		getViewMatrix();
 		getProjectionMatrix();
 	}
@@ -61,18 +60,17 @@ public class Camera extends ATransformable3D {
 	public void calculateModelMatrix() {
 		synchronized (mFrustumLock) {
 			Matrix.setIdentityM(mMMatrix, 0);
-			Matrix.setIdentityM(mRotateMatrix, 0);
 
 			setOrientation();
 			if (mLookAt == null) {
-				mOrientation.toRotationMatrix(mRotateMatrix);
+				mOrientation.toRotationMatrix(mRotationMatrix);
 			} else {
-				System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
+				System.arraycopy(mLookAtMatrix, 0, mRotationMatrix, 0, 16);
 			}
 
 			Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
 			Matrix.setIdentityM(mTmpMatrix, 0);
-			Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mRotateMatrix, 0);
+			Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mRotationMatrix, 0);
 			System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
 		}
 	}

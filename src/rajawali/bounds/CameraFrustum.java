@@ -8,11 +8,16 @@ import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
+import rajawali.math.Matrix4;
+import rajawali.math.Quaternion;
 import rajawali.math.Vector3;
+import rajawali.math.Vector3.Axis;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
+import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
 	
@@ -22,6 +27,7 @@ public class CameraFrustum implements IBoundingVolume {
 	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
 	public final Plane[] mPlanes = new Plane[6];     
 	
+	private Camera mCamera;
 	protected CameraVisibleFrustum mVisibleFrustum;
 	
 	protected static final double ROOT2_2 = Math.sqrt(2.0)/2.0;
@@ -41,7 +47,8 @@ public class CameraFrustum implements IBoundingVolume {
 		new Vector3( 1,  1,  1),
 		new Vector3(-1,  1,  1)};
 	
-	public CameraFrustum() {
+	public CameraFrustum(Camera cam) {
+		mCamera = cam;
 		for(int i = 0; i < 6; i++) {
 			mPlanes[i] = new Plane(new Vector3(), 0);
 		}
@@ -97,9 +104,18 @@ public class CameraFrustum implements IBoundingVolume {
 	}
 
 	public void calculateBounds(Geometry3D geometry) {
-		// TODO Auto-generated method stub
+		RajLog.i("[" + this.getClass().getName()
+				+ "] The method CameraFrustum#calculateBounds(Geometry3D) does nothing. You should remove your call to it.");
 	}
 
+	float[] mMMatrix = new float[16];
+	float[] mRotateMatrix = new float[16];
+	float[] mTempOffset = new float[]{0, 0, 0, 1};
+	float[] mResultVec = new float[4];
+	Vector3 mTempPosition = new Vector3();
+	Vector3 Y = Vector3.getAxisVector(Axis.Y);
+	Vector3 negZ = Vector3.getAxisVector(Axis.Z).inverse();
+	
 	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisibleFrustum == null) {
 			mVisibleFrustum = new CameraVisibleFrustum(this, 4, 1, 3, 5);
@@ -109,13 +125,43 @@ public class CameraFrustum implements IBoundingVolume {
 			mVisibleFrustum.setDrawingMode(GLES20.GL_LINE_LOOP);
 		}
 		mVisibleFrustum.update(true);
+		
+		Matrix.setIdentityM(mMMatrix, 0);
+		Matrix.setIdentityM(mRotateMatrix, 0);
+
+		mCamera.setOrientation();
+		mTempPosition.setAllFrom(mCamera.getPosition());
+		if (mCamera.getLookAt() == null) {
+			Log.i("KSDFKJH", "SDKJFHSKLJDHF");
+			Quaternion quat = mCamera.getOrientation();
+			if (quat.isIdentity()) {
+				quat = Y.getRotationTo(negZ);
+			} else {
+				quat.toRotationMatrix(mRotateMatrix);
+			}
+			Log.i("SJHD", "Rotate Matrix: " + Matrix4.MatrixToString(mRotateMatrix));
+		} else {
+			Vector3 temp = Vector3.subtract(mTempPosition, mCamera.getLookAt());
+			Quaternion quat = Y.getRotationTo(temp);
+			quat.toRotationMatrix(mRotateMatrix);
+		}
+		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
+		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
+		
+		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
+		mTempPosition.x -= mResultVec[0];
+		mTempPosition.y -= mResultVec[1];
+		mTempPosition.z -= mResultVec[2];
 		Matrix.setIdentityM(mTmpMatrix, 0);
-		mVisibleFrustum.render(camera, projMatrix, vMatrix, mTmpMatrix, null);
+		Matrix.translateM(mTmpMatrix, 0, mTempPosition.x, mTempPosition.y, mTempPosition.z);
+		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
+		
+		mVisibleFrustum.render(camera, projMatrix, vMatrix, mMMatrix, null);
 	}
 
 	public void transform(float[] matrix) {
-		// TODO Auto-generated method stub
-		
+		RajLog.i("[" + this.getClass().getName()
+				+ "] The method CameraFrustum#transform(float[]) does nothing. You should remove your call to it.");
 	}
 
 	public boolean intersectsWith(IBoundingVolume boundingVolume) {
@@ -128,13 +174,11 @@ public class CameraFrustum implements IBoundingVolume {
 	}
 
 	public void setBoundingColor(int color) {
-		// TODO Auto-generated method stub
-		
+		mBoundingColor.set(color);
 	}
 
 	public int getBoundingColor() {
-		// TODO Auto-generated method stub
-		return 0;
+		return mBoundingColor.get();
 	}
 
 	public VOLUME_SHAPE getVolumeShape() {
@@ -150,10 +194,16 @@ public class CameraFrustum implements IBoundingVolume {
 			mParent = parent;
 		}
 		
+		private double getHeight() {
+			return mHeight;
+		}
+		
+		private double getRadiusTop() {
+			return mRadiusTop;
+		}
+		
 		private void update(boolean update) {
 			double near, far;
-			for (int i = 0; i < 8; ++i) {
-			}
 			Vector3 corner = mParent.mPlanePoints[2];
 			mRadiusTop = corner.x*ROOT2_2;
 			mMinorTop = corner.y*ROOT2_2;

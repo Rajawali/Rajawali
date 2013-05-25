@@ -396,4 +396,12 @@ public final class Matrix4 {
       			m[ 3] + ", " + m[ 7] + ", " + m[11] + ", " + m[15];
     }
     
+    public static String MatrixToString(float[] m) {
+        
+        return	m[ 0] + ", " + m[ 4] + ", " + m[ 8] + ", " + m[12] + "\n" +
+        			m[ 1] + ", " + m[ 5] + ", " + m[ 9] + ", " + m[13] + "\n" +
+        			m[ 2] + ", " + m[ 6] + ", " + m[10] + ", " + m[14] + "\n" +
+        			m[ 3] + ", " + m[ 7] + ", " + m[11] + ", " + m[15];
+    }
+    
 }

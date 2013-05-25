@@ -85,6 +85,10 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	Vector3 mTmpRotY = new Vector3();
 	Vector3 mTmpRotZ = new Vector3();
 	float[] mLookAtMatrix = new float[16];
+	
+	public float[] getLookAtMatrix() {
+		return mLookAtMatrix;
+	}
 
 	public void setOrientation() {
 		if(!mRotationDirty && mLookAt == null) return;
