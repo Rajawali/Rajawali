@@ -402,7 +402,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			if (mNextScene != null) {
 				mCurrentScene = mNextScene;
 				mNextScene = null;
-				mCurrentScene.getCamera().setProjectionMatrix(mViewportWidth, mViewportHeight);
 			}
 		}
 		
