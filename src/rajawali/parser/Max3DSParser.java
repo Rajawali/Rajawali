@@ -251,7 +251,7 @@ public class Max3DSParser extends AMeshParser {
 			targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices);
 			// -- diffuse material with random color. for now.
 			DiffuseMaterial material = new DiffuseMaterial();
-			material.setUseColor(true);
+			material.setUseSingleColor(true);
 			targetObj.setMaterial(material);
 			targetObj.setColor(0xff000000 + (int) (Math.random() * 0xffffff));
 			mRootObject.addChild(targetObj);

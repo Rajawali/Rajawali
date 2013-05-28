@@ -110,7 +110,7 @@ public class BlurFilter extends AMaterial implements IPostProcessingFilter {
 	protected Orientation mOrientation;
 	
 	public BlurFilter(float screenWidth, float screenHeight, int blurAmount, float blurScale, float blurStrength, Orientation orientation) {
-		super(mVShader, mFShader, false);
+		super(mVShader, mFShader);
 		this.mScreenWidth = screenWidth;
 		this.mScreenHeight = screenHeight;
 		this.mBlurAmount = blurAmount;

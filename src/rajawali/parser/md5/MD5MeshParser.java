@@ -14,7 +14,6 @@ import rajawali.animation.mesh.SkeletalAnimationChildObject3D.BoneWeight;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.animation.mesh.SkeletalAnimationObject3D;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
-import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
@@ -418,12 +417,13 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 
 			boolean hasTexture = mesh.textureName != null && mesh.textureName.length() > 0;
 
-			DiffuseMaterial mat = new DiffuseMaterial(AMaterial.SKELETAL_ANIMATION);
+			DiffuseMaterial mat = new DiffuseMaterial();
+			mat.setSkeletalAnimationEnabled(true);
 			mat.setNumJoints(mNumJoints);
 			mat.setMaxWeights(mesh.maxBoneWeightsPerVertex);
 			o.setMaterial(mat);
 			if (!hasTexture) {
-				mat.setUseColor(!hasTexture);
+				mat.setUseSingleColor(!hasTexture);
 				o.setColor(0xff000000 + (int) (Math.random() * 0xffffff));
 			} else {
 				int identifier = mResources.getIdentifier(mesh.textureName, "drawable",

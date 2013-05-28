@@ -6,10 +6,10 @@ import com.monyetmabuk.livewallpapers.photosdof.R;
 public class MaskedMaterial extends AAdvancedMaterial {
 	
 	public MaskedMaterial() {
-		super(R.raw.masked_material_vertex, R.raw.masked_material_fragment, false);
+		super(R.raw.masked_material_vertex, R.raw.masked_material_fragment);
 	}
 	
 	public MaskedMaterial(String vertexShader, String fragmentShader) {
-		super(vertexShader, fragmentShader, false);
+		super(vertexShader, fragmentShader);
 	}
 }

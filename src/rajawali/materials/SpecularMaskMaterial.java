@@ -1,21 +1,15 @@
 package rajawali.materials;
 
-import com.monyetmabuk.livewallpapers.photosdof.R;
-
 import rajawali.lights.ALight;
-import rajawali.materials.PhongMaterial;
+
+import com.monyetmabuk.livewallpapers.photosdof.R;
 
 public class SpecularMaskMaterial extends PhongMaterial {
 	
 	public SpecularMaskMaterial() {
-		this(false);
+		super(R.raw.phong_material_vertex, R.raw.specular_mask_material_fragment);
 	}
 	
-	public SpecularMaskMaterial(boolean isAnimated) {
-		super(R.raw.phong_material_vertex, R.raw.specular_mask_material_fragment, isAnimated);
-	}
-	
-	@Override
 	public void setShaders(String vertexShader, String fragmentShader) {
 		StringBuffer fc = new StringBuffer();
 		StringBuffer vc = new StringBuffer();

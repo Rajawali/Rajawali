@@ -3,11 +3,16 @@ uniform mat4 uMVPMatrix;
 uniform mat3 uNMatrix;
 uniform mat4 uMMatrix;
 uniform mat4 uVMatrix;
+#ifdef USE_SINGLE_COLOR
+uniform vec4 uSingleColor;
+#endif
 
 attribute vec4 aPosition;
 attribute vec3 aNormal;
 attribute vec2 aTextureCoord;
+#ifdef USE_VERTEX_COLOR
 attribute vec4 aColor;
+#endif
 
 varying vec2 vTextureCoord;
 varying vec3 N;
@@ -48,8 +53,11 @@ M_SKELETAL_ANIM_VERTEX_MATRIX
    N = normalize(uNMatrix * normal);
 #endif
    V = uMMatrix * position;
-#ifndef TEXTURED
+#ifdef USE_VERTEX_COLOR
    vColor = aColor;
+#endif
+#ifdef USE_SINGLE_COLOR
+	vColor = uSingleColor;
 #endif
 
 %LIGHT_CODE%

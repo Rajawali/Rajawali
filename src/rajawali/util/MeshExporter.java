@@ -186,7 +186,7 @@ public class MeshExporter {
 
 			os.writeObject(ser);
 			os.close();
-			RajLog.i("Successfully serialized " + mFileName);
+			RajLog.i("Successfully serialized " + mFileName + " to " + f.getCanonicalPath());
 		} catch (Exception e) {
 			RajLog.e("Serializing " + mFileName + " was unsuccessfull.");
 			e.printStackTrace();

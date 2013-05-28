@@ -4,6 +4,10 @@ Rajawali "Anchor Steam" Development Branch
 "Anchor Steam", the next Rajawali version contains significant changes to the API.
 Here's what's new:
 
+# Thread Safety
+
+To eliminate a number of issues which stemmed from trying to change scene contents in the middle of a render cycle, a task queue system has been added to Rajawali. You no longer have direct access to lists such as `mChildren`. Helper methods such as `addChild()` exist and will automatically queue everything for you.
+
 # Number3D
 
 The `Number3D` class has been refactored into `Vector3` which is way more appropriate.
@@ -15,7 +19,21 @@ The `Vector2D` has been refactored into `Vector2` which falls in line with the n
 
 # Scenes
 
+A new class, `RajawaliScene` has been added which fully encompasses everything to render a scene. Essentially everything you would have previously done in `RajawaliRenderer#initScene()` now fits in a `RajawaliScene` and you can have multiple instances of `RajawaliScene` and feely switch between them, allowing you to do all sorts of cool things such as loading a new scene in the background, showing different areas, etc. For more info please see [Tutorial 31](https://github.com/MasDennis/Rajawali/wiki/Tutorial-31-Using-RajawaliScene)
+
 # Multiple Cameras
+
+You can now use multiple cameras in Rajawali and freely switch between them in a thread safe manner.
+
+```java
+public void nextCamera() {
+	if (getCurrentCamera().equals(mCamera1)) {
+		getCurrentScene().switchCamera(mCamera2);
+	} else {
+		getCurrentScene().switchCamera(mCamera1);
+	}
+}
+```
 
 # Texture Management
 
@@ -81,4 +99,11 @@ mHalfSphere1.setMaterial(material1);
 ```
 
 # Vector3
- 
+
+The `Number3D` class has been refactored to `Vector3`. This name is much more appropriate.
+
+# Object color
+
+`AMaterial`'s method `setUseColor(boolean useColor)` has been removed. There are two new methods that replace it:
+- `setUseSingleColor(boolean value)`: When the object uses a single color for the whole mesh use this. This way no color buffer will be created which reduces the memory footprint and increases performance, especially in big scenes.
+- `setUseVertexColors(boolean value)`: Use this when your mesh has multiple colors. This isn't applicable to textures, just vertex colors.

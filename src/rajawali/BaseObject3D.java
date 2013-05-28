@@ -12,7 +12,7 @@ import rajawali.bounds.IBoundingVolume;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
 import rajawali.math.Vector3;
@@ -43,6 +43,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected float[] mRotateMatrix = new float[16];
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
+	protected float[] mColor;
 
 	protected AMaterial mMaterial;
 	protected List<ALight> mLights;
@@ -84,6 +85,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mGeometry = new Geometry3D();
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
+		mColor = new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f };
 		
 		//Initialize the matrices to identity
 		Matrix.setIdentityM(mMMatrix, 0);
@@ -215,8 +217,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}
 	}
 
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
-		render(camera, projMatrix, vMatrix, null, pickerInfo);
+	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
+		render(camera, vpMatrix, projMatrix, vMatrix, null, pickerInfo);
 	}
 
 	/**
@@ -224,6 +226,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * 
 	 * @param camera
 	 *            The camera
+	 * @param vpMatrix
+	 * 			  The view-projection matrix
 	 * @param projMatrix
 	 *            The projection matrix
 	 * @param vMatrix
@@ -233,7 +237,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param pickerInfo
 	 *            The current color picker info. This is only used when an object is touched.
 	 */
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
+	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
 			ColorPickerInfo pickerInfo) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
@@ -242,8 +246,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		// -- move view matrix transformation first
 		calculateModelMatrix(parentMatrix);
-		Matrix.multiplyMM(mMVPMatrix, 0, vMatrix, 0, mMMatrix, 0);
-		Matrix.multiplyMM(mMVPMatrix, 0, projMatrix, 0, mMVPMatrix, 0);
+		//Create MVP Matrix from View-Projection Matrix
+		Matrix.multiplyMM(mMVPMatrix, 0, vpMatrix, 0, mMMatrix, 0);
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
@@ -256,25 +260,17 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		if (!mIsContainerOnly && mIsInFrustum) {
 			mProjMatrix = projMatrix;
-			if (!mDoubleSided) {
-				GLES20.glEnable(GLES20.GL_CULL_FACE);
-				if (mBackSided) {
-					GLES20.glCullFace(GLES20.GL_FRONT);
-				} else {
-					GLES20.glCullFace(GLES20.GL_BACK);
-					GLES20.glFrontFace(GLES20.GL_CCW);
-				}
+			if (mDoubleSided) {
+				GLES20.glDisable(GLES20.GL_CULL_FACE);
+			} else if (mBackSided) {
+				GLES20.glCullFace(GLES20.GL_FRONT);
 			}
 			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
 				GLES20.glEnable(GLES20.GL_BLEND);
 				GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
-			} else {
-				GLES20.glDisable(GLES20.GL_BLEND);
 			}
-			if (mEnableDepthTest)
-				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-			else
-				GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			if (!mEnableDepthTest) GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			
 			GLES20.glDepthMask(mEnableDepthMask);
 
 			if (pickerInfo != null && mIsPickingEnabled) {
@@ -294,26 +290,29 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 					mMaterial.useProgram();
 					setShaderParams(camera);
 					mMaterial.bindTextures();
-					mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
-					mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
+					if(mGeometry.hasTextureCoordinates())
+						mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
+					if(mGeometry.hasNormals())
+						mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
 					mMaterial.setCamera(camera);
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
 				
-				if (mMaterial.getUseColor())
+				if(mMaterial.getUseSingleColor())
+					mMaterial.setColor(mColor);
+				else if (mMaterial.getUseVertexColors())
 					mMaterial.setColors(mGeometry.getColorBufferInfo().bufferHandle);
+				
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-			if (pickerInfo == null)
-			{
+			if (pickerInfo == null) {
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
 				mMaterial.setViewMatrix(vMatrix);
 
-				if(mIsVisible)
-				{
+				if(mIsVisible) {
 					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
 					GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,	0);
 					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -327,25 +326,36 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				pickerMat.setModelMatrix(mMMatrix);
 				pickerMat.setViewMatrix(vMatrix);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
-				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,	0);
+				GLES20.glDrawElements(GLES20.GL_TRIANGLES, mGeometry.getNumIndices(), mElementsBufferType,	0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 				pickerMat.unbindTextures();
 			}
-			GLES20.glDisable(GLES20.GL_CULL_FACE);
-			GLES20.glDisable(GLES20.GL_BLEND);
-			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			
+			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
+				GLES20.glDisable(GLES20.GL_BLEND);
+			}
+			
+			if (mDoubleSided) {
+				GLES20.glEnable(GLES20.GL_CULL_FACE);
+			} else if (mBackSided) {
+				GLES20.glCullFace(GLES20.GL_BACK);
+			}
+			if (!mEnableDepthTest) {
+				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+				GLES20.glDepthFunc(GLES20.GL_LESS);
+			}
 		}
 
 		if (mShowBoundingVolume) {
 			if (mGeometry.hasBoundingBox())
-				mGeometry.getBoundingBox().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+				mGeometry.getBoundingBox().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 			if (mGeometry.hasBoundingSphere())
-				mGeometry.getBoundingSphere().drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+				mGeometry.getBoundingSphere().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		}
 		// Draw children without frustum test
 		for (int i = 0, j = mChildren.size(); i < j; i++)
-			mChildren.get(i).render(camera, projMatrix, vMatrix, mMMatrix, pickerInfo);
+			mChildren.get(i).render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, pickerInfo);
 
 		if (mRenderChildrenAsBatch) {
 			mMaterial.unbindTextures();
@@ -400,8 +410,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 */
 	public void reload() {
 		if (!mIsContainerOnly) {
-			if (mManageMaterial)
-				mMaterial.reload();
 			mGeometry.reload();
 		}
 
@@ -476,7 +484,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param transparent
 	 */
 	public void setTransparent(boolean value) {
-		this.mTransparent = value;
+		mTransparent = value;
 		mEnableBlending = value;
 		setBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		mEnableDepthMask = !value;
@@ -501,24 +509,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			mChildren.get(i).setLights(mLights);
 		if (mMaterial != null)
 			mMaterial.setLights(mLights);
-	}
-
-	/**
-	 * @deprecated Use addLight() instead
-	 * @param light
-	 */
-	@Deprecated
-	public void setLight(ALight light) {
-		addLight(light);
-	}
-
-	/**
-	 * @deprecated use getLight(int index) instead
-	 * @return
-	 */
-	@Deprecated
-	public ALight getLight() {
-		return mLights.get(0);
 	}
 
 	public ALight getLight(int index) {
@@ -623,26 +613,16 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mGeometry;
 	}
 
-	public void setMaterial(AMaterial material) {
-		try {
-			setMaterial(material, true);
-		} catch(TextureException e) {
-			throw new RuntimeException(e);
-		}
-		material.setLights(mLights);
-	}
-
 	public AMaterial getMaterial() {
 		return mMaterial;
 	}
 
-	public void setMaterial(AMaterial material, boolean copyTextures) throws TextureException {
-		if (mMaterial != null && copyTextures)
-			mMaterial.copyTexturesTo(material);
-		else if (mMaterial != null && !copyTextures)
-			mMaterial.getTextureList().clear();
-		mMaterial = null;
+	public void setMaterial(AMaterial material) {
+		if(material == null) return;
+		MaterialManager.getInstance().addMaterial(material);
 		mMaterial = material;
+		if(mLights != null)
+			mMaterial.setLights(mLights);
 	}
 
 	public void setName(String name) {
@@ -710,12 +690,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected void cloneTo(BaseObject3D clone, boolean copyMaterial) {
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		try {
-			if (copyMaterial)
-				clone.setMaterial(mMaterial, false);
-		} catch(TextureException tme) {
-			tme.printStackTrace();
-		}
+		clone.setMaterial(mMaterial);
 		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
 				: GLES20.GL_UNSIGNED_INT;
 		clone.mTransparent = this.mTransparent;
@@ -743,15 +718,10 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	public void setColor(int color) {
-		setColor(color, false);
-	}
-
-	public void setColor(int color, boolean createNewBuffer) {
-		mGeometry.setColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f,
-				Color.alpha(color) / 255f, createNewBuffer);
-		if (mMaterial != null) {
-			mMaterial.setUseColor(true);
-		}
+		mColor[0] = Color.red(color) / 255.f;
+		mColor[1] = Color.green(color) / 255.f;
+		mColor[2] = Color.blue(color) / 255.f;
+		mColor[3] = Color.alpha(color) / 255.f;
 	}
 
 	public void setColor(Vector3 color) {
@@ -813,16 +783,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		this.mIsPartOfBatch = isPartOfBatch;
 	}
 
-	public boolean getManageMaterial()
-	{
-		return mManageMaterial;
-	}
-	
-	public void setManageMaterial(boolean manageMaterial)
-	{
-		this.mManageMaterial = manageMaterial;
-	}
-
 	public void setBlendingEnabled(boolean value) {
 		mEnableBlending = value;
 	}
@@ -879,7 +839,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		if (mGeometry != null)
 			mGeometry.destroy();
 		if (mMaterial != null)
-			mMaterial.destroy();
+			MaterialManager.getInstance().removeMaterial(mMaterial);
 		mLights = null;
 		mMaterial = null;
 		mGeometry = null;

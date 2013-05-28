@@ -7,23 +7,12 @@ import com.monyetmabuk.livewallpapers.photosdof.R;
 public class DiffuseMaterial extends AAdvancedMaterial {
 	
 	public DiffuseMaterial() {
-		this(false);
+		this(R.raw.diffuse_material_vertex, R.raw.diffuse_material_fragment);
 	}
 	
-	public DiffuseMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		super(vertexShader, fragmentShader, isAnimated);
-	}
-	
-	public DiffuseMaterial(int vertex_resID, int fragment_resID, boolean isAnimated) {
-		super(vertex_resID, fragment_resID, isAnimated);
-	}
-	
-	public DiffuseMaterial(boolean isAnimated) {
-		this(R.raw.diffuse_material_vertex, R.raw.diffuse_material_fragment, isAnimated);
-	}
-	
-	public DiffuseMaterial(int parameters) {
-		super(R.raw.diffuse_material_vertex, R.raw.diffuse_material_fragment, parameters);
+	public DiffuseMaterial(int vertex_resID, int fragment_resID)
+	{
+		super(vertex_resID, fragment_resID);
 	}
 	
 	public DiffuseMaterial(String vertexShader, String fragmentShader) {

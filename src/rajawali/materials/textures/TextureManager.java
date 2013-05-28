@@ -4,10 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import rajawali.materials.AResourceManager;
 import rajawali.materials.textures.ATexture.TextureException;
-import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
-import android.content.Context;
 import android.opengl.GLES20;
 
 /**
@@ -22,29 +21,16 @@ import android.opengl.GLES20;
  * @author dennis.ippel
  * 
  */
-public final class TextureManager extends AFrameTask
+public final class TextureManager extends AResourceManager
 {
-
 	/**
 	 * Stores the singleton instance
 	 */
 	private static TextureManager instance = null;
 	/**
-	 * The application context
-	 */
-	private Context mContext;
-	/**
-	 * The current renderer
-	 */
-	private RajawaliRenderer mRenderer;
-	/**
 	 * A list of managed textures
 	 */
 	private List<ATexture> mTextureList;
-	/**
-	 * A list of {@link RajawaliRenderer} instances that use the TextureManager
-	 */
-	private List<RajawaliRenderer> mRenderers;
 
 	/**
 	 * The constructor can only be instantiated by the TextureManager class itself.
@@ -66,27 +52,6 @@ public final class TextureManager extends AFrameTask
 			instance = new TextureManager();
 		}
 		return instance;
-	}
-
-	/**
-	 * Registers a {@link RajawaliRenderer} instance that will start using the TextureManager.
-	 * 
-	 * @param renderer
-	 */
-	public void registerRenderer(RajawaliRenderer renderer)
-	{
-		mRenderers.add(renderer);
-		mRenderer = renderer;
-	}
-
-	/**
-	 * Unregisters a {@link RajawaliRenderer} instance that will stop using the TextureManager.
-	 * 
-	 * @param renderer
-	 */
-	public void unregisterRenderer(RajawaliRenderer renderer)
-	{
-		mRenderers.remove(renderer);
 	}
 
 	/**
@@ -317,35 +282,6 @@ public final class TextureManager extends AFrameTask
 		return mTextureList.size();
 	}
 
-	/**
-	 * Sets the application context
-	 * 
-	 * @param context
-	 */
-	public void setContext(Context context)
-	{
-		mContext = context;
-	}
-
-	/**
-	 * Returns the application context.
-	 * 
-	 * @return
-	 */
-	public Context getContext()
-	{
-		return mContext;
-	}
-
-	/**
-	 * Gets the current renderer.
-	 * 
-	 * @return
-	 */
-	public RajawaliRenderer getRenderer()
-	{
-		return mRenderer;
-	}
 
 	public TYPE getFrameTaskType() {
 		return TYPE.TEXTURE_MANAGER;

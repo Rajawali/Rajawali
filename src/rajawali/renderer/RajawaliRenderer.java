@@ -14,10 +14,12 @@ import javax.microedition.khronos.opengles.GL10;
 
 import rajawali.BaseObject3D;
 import rajawali.Camera;
+import rajawali.Capabilities;
 import rajawali.animation.Animation3D;
 import rajawali.effects.APass;
 import rajawali.effects.EffectComposer;
 import rajawali.materials.AMaterial;
+import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Vector3;
@@ -50,6 +52,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected GLSurfaceView mSurfaceView; //The rendering surface
 	
 	protected TextureManager mTextureManager; //Texture manager for ALL textures across ALL scenes.
+	protected MaterialManager mMaterialManager; //Material manager for ALL materials across ALL scenes.
 	
 	protected Timer mTimer; //Timer used to schedule drawing
 	protected float mFrameRate; //Target frame rate to render at
@@ -467,7 +470,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		GLES20.glViewport(0, 0, width, height);
 	}
 
-
 	/* Called when the OpenGL context is created or re-created. Don't set up your scene here,
 	 * use initScene() for that.
 	 * 
@@ -477,6 +479,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		RajLog.setGL10(gl);
+		Capabilities.getInstance();
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 
 		GLES20.glFrontFace(GLES20.GL_CCW);
@@ -488,18 +491,22 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			mTextureManager = TextureManager.getInstance();
 			mTextureManager.setContext(this.getContext());
 			mTextureManager.registerRenderer(this);
+			mMaterialManager = MaterialManager.getInstance();
+			mMaterialManager.setContext(this.getContext());
+			mMaterialManager.registerRenderer(this);
 			
 			initScene();
 		}
 
 		if (!mSceneCachingEnabled) {
 			mTextureManager.reset();
+//			mMaterialManager.reload();
 			clearScenes();
 		} else if(mSceneCachingEnabled && mSceneInitialized) {
 			mTextureManager.reload();
+	//		mMaterialManager.reload();
 			reloadScenes();
 		}
-
 		mSceneInitialized = true;
 		startRendering();
 	}
@@ -560,8 +567,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onSurfaceDestroyed() {
 		stopRendering();
 		mTextureManager.unregisterRenderer(this);
+		mMaterialManager.unregisterRenderer(this);
 		if (mTextureManager != null)
 			mTextureManager.taskReset(this);
+		if (mMaterialManager != null)
+			mMaterialManager.taskReset(this);
 		synchronized (mScenes) {
 			for (int i = 0, j = mScenes.size(); i < j; ++i)
 				mScenes.get(i).destroyScene();
@@ -741,6 +751,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		case TEXTURE:
 			internalAddTexture((ATexture) task, task.getIndex());
 			break;
+		case MATERIAL:
+			internalAddMaterial((AMaterial) task, task.getIndex());
 		default:
 			break;
 		}
@@ -759,6 +771,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			break;
 		case TEXTURE:
 			internalRemoveTexture((ATexture) task, task.getIndex()); 
+		case MATERIAL:
+			internalRemoveMaterial((AMaterial) task, task.getIndex());
 		default:
 			break;
 		}
@@ -829,6 +843,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		switch (type) {
 		case TEXTURE_MANAGER:
 			internalReloadTextureManager(); 
+		case MATERIAL_MANAGER:
+			internalReloadMaterialManager();
 		default:
 			break;
 		}
@@ -844,6 +860,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		switch (type) {
 		case TEXTURE_MANAGER:
 			internalResetTextureManager(); 
+		case MATERIAL_MANAGER:
+			internalResetMaterialManager();
 		default:
 			break;
 		}
@@ -925,6 +943,20 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
+	 * Internal method for adding {@link AMaterial} objects.
+	 * Should only be called through {@link #handleAddTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param material {@link AMaterial} to add.
+	 * @param int index to add the animation at. 
+	 */
+	private void internalAddMaterial(AMaterial material, int index) {
+		mMaterialManager.taskAdd(material);
+	}
+
+	/**
 	 * Internal method for removing {@link RajawaliScene} objects.
 	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
 	 * 
@@ -952,6 +984,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mTextureManager.taskRemove(texture);
 	}
 	
+	private void internalRemoveMaterial(AMaterial material, int index)
+	{
+		mMaterialManager.taskRemove(material);
+	}
+
 	/**
 	 * Internal method for removing all {@link RajawaliScene} objects.
 	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
@@ -970,11 +1007,27 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
+	 * Internal method for reloading the {@link MaterialManager#reload()} material manager.
+	 * Should only be called through {@link #handleReloadTask(AFrameTask)}
+	 */
+	private void internalReloadMaterialManager() {
+		mMaterialManager.taskReload();
+	}
+	
+	/**
 	 * Internal method for resetting the {@link TextureManager#reset()} texture manager.
 	 * Should only be called through {@link #handleReloadTask(AFrameTask)}
 	 */
 	private void internalResetTextureManager() {
 		mTextureManager.taskReset();
+	}
+
+	/**
+	 * Internal method for resetting the {@link MaterialManager#reset()} material manager.
+	 * Should only be called through {@link #handleReloadTask(AFrameTask)}
+	 */
+	private void internalResetMaterialManager() {
+		mMaterialManager.taskReset();
 	}
 
 	/**

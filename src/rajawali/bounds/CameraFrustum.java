@@ -8,7 +8,6 @@ import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
-import rajawali.math.Matrix4;
 import rajawali.math.Quaternion;
 import rajawali.math.Vector3;
 import rajawali.math.Vector3.Axis;
@@ -17,7 +16,6 @@ import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
 	
@@ -116,11 +114,11 @@ public class CameraFrustum implements IBoundingVolume {
 	Vector3 Y = Vector3.getAxisVector(Axis.Y);
 	Vector3 negZ = Vector3.getAxisVector(Axis.Z).inverse();
 	
-	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
+	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisibleFrustum == null) {
 			mVisibleFrustum = new CameraVisibleFrustum(this, 4, 1, 3, 5);
 			mVisibleFrustum.setMaterial(new SimpleMaterial());
-			mVisibleFrustum.getMaterial().setUseColor(true);
+			mVisibleFrustum.getMaterial().setUseSingleColor(true);
 			mVisibleFrustum.setColor(mBoundingColor.get());
 			mVisibleFrustum.setDrawingMode(GLES20.GL_LINE_LOOP);
 		}
@@ -154,7 +152,7 @@ public class CameraFrustum implements IBoundingVolume {
 		Matrix.translateM(mTmpMatrix, 0, mTempPosition.x, mTempPosition.y, mTempPosition.z);
 		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
 		
-		mVisibleFrustum.render(camera, projMatrix, vMatrix, mMMatrix, null);
+		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, null);
 	}
 
 	public void transform(float[] matrix) {

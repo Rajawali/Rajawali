@@ -12,7 +12,7 @@ public class BoundingCone implements IBoundingVolume {
 		
 	}
 
-	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
+	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		// TODO Auto-generated method stub
 		
 	}

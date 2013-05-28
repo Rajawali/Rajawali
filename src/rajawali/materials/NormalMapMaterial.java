@@ -10,12 +10,12 @@ public class NormalMapMaterial extends AAdvancedMaterial {
 		this(false);
 	}
 	
-	public NormalMapMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		super(vertexShader, fragmentShader, isAnimated);
+	public NormalMapMaterial(String vertexShader, String fragmentShader) {
+		super(vertexShader, fragmentShader);
 	}
 	
 	public NormalMapMaterial(boolean isAnimated) {
-		super(R.raw.diffuse_material_vertex, R.raw.bumpmap_material_fragment, isAnimated);
+		super(R.raw.diffuse_material_vertex, R.raw.bumpmap_material_fragment);
 	}
 	
 	public void setShaders(String vertexShader, String fragmentShader) {

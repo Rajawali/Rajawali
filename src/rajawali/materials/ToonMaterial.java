@@ -10,11 +10,7 @@ public class ToonMaterial extends DiffuseMaterial {
 	protected float[] mToonColor0, mToonColor1, mToonColor2, mToonColor3;
 	
 	public ToonMaterial() {
-		this(false);
-	}
-	
-	public ToonMaterial(boolean isAnimated) {
-		super(R.raw.diffuse_material_vertex, R.raw.toon_material_fragment, isAnimated);
+		super(R.raw.diffuse_material_vertex, R.raw.toon_material_fragment);
 		mToonColor0 = new float[] { 1, .5f, .5f, 1 };
 		mToonColor1 = new float[] { .6f, .3f, .3f, 1 };
 		mToonColor2 = new float[] { .4f, .2f, .2f, 1 };

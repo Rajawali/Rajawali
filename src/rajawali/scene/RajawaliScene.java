@@ -33,6 +33,7 @@ import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -50,8 +51,10 @@ public class RajawaliScene extends AFrameTask {
 	
 	protected RajawaliRenderer mRenderer;
 	
-	protected float[] mVMatrix = new float[16];
-	protected float[] mPMatrix = new float[16];
+	//All of these get passed to an object when it needs to draw itself
+	protected float[] mVMatrix = new float[16]; //The view matrix
+	protected float[] mPMatrix = new float[16]; //The projection matrix
+	protected float[] mVPMatrix = new float[16]; //The view-projection matrix
 	
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
@@ -115,6 +118,7 @@ public class RajawaliScene extends AFrameTask {
 		mCamera.setZ(mEyeZ);
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
 		mCameras.add(mCamera);
+		resetGLState();
 	}
 	
 	public RajawaliScene(RajawaliRenderer renderer, GRAPH_TYPE type) {
@@ -547,6 +551,17 @@ public class RajawaliScene extends AFrameTask {
 		return (mPickerInfo != null);
 	}
 	
+	/**
+	 * Applies the Rajawali default GL state to the driver. Developers who wish
+	 * to change this default behavior can override this method.
+	 */
+	protected void resetGLState() {
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glCullFace(GLES20.GL_BACK);
+		GLES20.glFrontFace(GLES20.GL_CCW);
+		GLES20.glDisable(GLES20.GL_BLEND);
+	}
+	
 	public void render(double deltaTime, RenderTarget renderTarget) {
 		performFrameTasks(); //Handle the task queue
 		synchronized (mNextSkyboxLock) {
@@ -599,13 +614,15 @@ public class RajawaliScene extends AFrameTask {
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
 		mCamera.updateFrustum(); //update frustum planes
+		//Pre-multiply View and Projection matricies once for speed
+		Matrix.multiplyMM(mVPMatrix, 0, mPMatrix, 0, mVMatrix, 0);
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
 
 			mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
-			mSkybox.render(mCamera, mPMatrix, mVMatrix, pickerInfo);
+			mSkybox.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
 
 			if (mEnableDepthBuffer) {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -625,11 +642,11 @@ public class RajawaliScene extends AFrameTask {
 
 		synchronized (mChildren) {
 			for (int i = 0, j = mChildren.size(); i < j; ++i) 
-				mChildren.get(i).render(mCamera, mPMatrix, mVMatrix, pickerInfo);
+				mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
 		}
 
 		if (mDisplaySceneGraph) {
-			mSceneGraph.displayGraph(mCamera, mPMatrix, mVMatrix);
+			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
         }
 		
 		if (pickerInfo != null) {
@@ -845,9 +862,6 @@ public class RajawaliScene extends AFrameTask {
 		case PLUGIN:
 			internalReplacePlugin(task, (IRendererPlugin) task.getNewObject(), task.getIndex());
 			break;
-		case TEXTURE:
-			//TODO: Handle texture replacement
-			break;
 		default:
 			break;
 		}
@@ -876,9 +890,6 @@ public class RajawaliScene extends AFrameTask {
 		case PLUGIN:
 			internalAddPlugin((IRendererPlugin) task, task.getIndex());
 			break;
-		case TEXTURE:
-			//TODO: Handle texture addition
-			break;
 		default:
 			break;
 		}
@@ -906,9 +917,6 @@ public class RajawaliScene extends AFrameTask {
 			break;
 		case PLUGIN:
 			internalRemovePlugin((IRendererPlugin) task, task.getIndex());
-			break;
-		case TEXTURE:
-			//TODO: Handle texture removal
 			break;
 		default:
 			break;
@@ -949,9 +957,6 @@ public class RajawaliScene extends AFrameTask {
 			for (i = 0; i < j; ++i) {
 				internalAddPlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
 			}
-			break;
-		case TEXTURE:
-			//TODO: Handle texture remove all
 			break;
 		default:
 			break;
@@ -1015,9 +1020,6 @@ public class RajawaliScene extends AFrameTask {
 					internalAddPlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
-			break;
-		case TEXTURE:
-			//TODO: Handle texture add all
 			break;
 		default:
 			break;

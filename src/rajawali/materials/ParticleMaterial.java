@@ -43,7 +43,7 @@ public class ParticleMaterial extends AParticleMaterial {
 	}
 
 	public ParticleMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		super(vertexShader, fragmentShader, NONE);
+		super(vertexShader, fragmentShader);
 		mDistanceAtt = new float[] {1, 1, 1};
 		mFriction = new float[3];
 		mCamPos = new float[3];

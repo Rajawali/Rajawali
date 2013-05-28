@@ -11,7 +11,7 @@ public interface IBoundingVolume {
 	public enum VOLUME_SHAPE {BOX, SPHERE, FRUSTUM, CONE};
 	
 	public void calculateBounds(Geometry3D geometry);
-	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix);
+	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix);
 	public void transform(float[] matrix);
 	public boolean intersectsWith(IBoundingVolume boundingVolume);
 	
