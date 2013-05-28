@@ -589,7 +589,6 @@ public class RajawaliScene extends AFrameTask {
 			try {
 				pickerInfo.getPicker().bindFrameBuffer();
 			} catch (ObjectColorPickerException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -646,6 +645,11 @@ public class RajawaliScene extends AFrameTask {
 		}
 
 		if (mDisplaySceneGraph) {
+			synchronized (mCameras) {
+				for (int i = 0, j = mCameras.size(); i < j; ++i) {
+					mCameras.get(i).updateFrustum();
+				}
+			}
 			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
         }
 		
@@ -1125,7 +1129,7 @@ public class RajawaliScene extends AFrameTask {
 			mCameras.add(index, camera);
 		}
 		if (mSceneGraph != null) {
-			//mSceneGraph.addObject(camera); //TODO: Uncomment
+			mSceneGraph.addObject(camera);
 		}
 	}
 	
@@ -1154,7 +1158,7 @@ public class RajawaliScene extends AFrameTask {
 			mCamera = mCameras.get(0);
 		}
 		if (mSceneGraph != null) {
-			//mSceneGraph.removeObject(camera); //TODO: Uncomment
+			mSceneGraph.removeObject(camera);
 		}
 	}
 	

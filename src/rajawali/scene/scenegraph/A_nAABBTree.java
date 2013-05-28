@@ -310,9 +310,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @param object IGraphNodeMember to be added.
 	 */
 	protected void addToOutside(IGraphNodeMember object) {
-		Log.v("Rajawali", "Adding object " + object + " to outside.");
 		if (mOutside.contains(object)) return;
-		Log.v("Rajawali", "Did not already contain object");
 		mOutside.add(object);
 		object.setGraphNode(this, false);
 		object.getTransformedBoundingVolume().setBoundingColor(IBoundingVolume.DEFAULT_COLOR);
@@ -804,7 +802,17 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix) {
 		Matrix.setIdentityM(mMMatrix, 0);
-		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
+		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix); //TODO: Is mMMatrix needed?
+		for (int i = 0, j = mMembers.size(); i < j; ++i) {
+			IBoundingVolume volume = mMembers.get(i).getTransformedBoundingVolume();
+			volume.drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix); //TODO: Is mMMatrix needed?
+		}
+		if (mParent == null) {
+			for (int i = 0, j = mOutside.size(); i < j; ++i) {
+				IBoundingVolume volume = mOutside.get(i).getTransformedBoundingVolume();
+				volume.drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix); //TODO: Is mMMatrix needed?
+			}
+		}
 		if (mSplit) {
 			for (int i = 0; i < CHILD_COUNT; ++i) {
 				mChildren[i].displayGraph(camera, vpMatrix, projMatrix, vMatrix);
