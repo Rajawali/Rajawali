@@ -187,8 +187,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				CameraFrustum frustum = (CameraFrustum) volume;
 				Vector3 far = frustum.getPlanePoint(6);
 				Vector3 near = frustum.getPlanePoint(2);
-				span_x = 2.0*far.x;
-				span_y = 2.0*far.y;
+				span_x = far.x;
+				span_y = far.y;
 				span_z = far.z - near.z;
 				break;
 			}
@@ -819,15 +819,15 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix) {
 		Matrix.setIdentityM(mMMatrix, 0);
-		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix); //TODO: Is mMMatrix needed?
+		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, null);
 		for (int i = 0, j = mMembers.size(); i < j; ++i) {
 			IBoundingVolume volume = mMembers.get(i).getTransformedBoundingVolume();
-			volume.drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix); //TODO: Is mMMatrix needed?
+			volume.drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, null);
 		}
 		if (mParent == null) {
 			for (int i = 0, j = mOutside.size(); i < j; ++i) {
 				IBoundingVolume volume = mOutside.get(i).getTransformedBoundingVolume();
-				volume.drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix); //TODO: Is mMMatrix needed?
+				volume.drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, null);
 			}
 		}
 		if (mSplit) {

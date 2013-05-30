@@ -137,9 +137,8 @@ public class CameraFrustum implements IBoundingVolume {
 			Quaternion quat = mCamera.getOrientation();
 			if (quat.isIdentity()) {
 				quat = Y.getRotationTo(negZ);
-			} else {
-				quat.toRotationMatrix(mRotateMatrix);
 			}
+			quat.toRotationMatrix(mRotateMatrix);
 		} else {
 			Vector3 temp = Vector3.subtract(mTempPosition, mCamera.getLookAt());
 			Quaternion quat = Y.getRotationTo(temp);

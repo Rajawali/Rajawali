@@ -10,7 +10,6 @@ import rajawali.materials.SimpleMaterial;
 import rajawali.math.Vector3;
 import rajawali.primitives.Cube;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 public class BoundingBox implements IBoundingVolume {
 	protected Geometry3D mGeometry;
@@ -73,20 +72,18 @@ public class BoundingBox implements IBoundingVolume {
 			mVisualBox.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualBox.setDoubleSided(true);
 		}
-		
 		mVisualBox.setScale(
 				Math.abs(mTransformedMax.x - mTransformedMin.x),
 				Math.abs(mTransformedMax.y - mTransformedMin.y),
 				Math.abs(mTransformedMax.z - mTransformedMin.z)
 				);
-		Matrix.setIdentityM(mTmpMatrix, 0);
 		mVisualBox.setPosition(
 				mTransformedMin.x + (mTransformedMax.x - mTransformedMin.x) * .5f, 
 				mTransformedMin.y + (mTransformedMax.y - mTransformedMin.y) * .5f, 
 				mTransformedMin.z + (mTransformedMax.z - mTransformedMin.z) * .5f
 				);
 		
-		mVisualBox.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);
+		mVisualBox.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
 	}
 	
 	public BoundingBox(Geometry3D geometry) {

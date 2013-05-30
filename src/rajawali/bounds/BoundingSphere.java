@@ -56,11 +56,9 @@ public class BoundingSphere implements IBoundingVolume {
 			mVisualSphere.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualSphere.setDoubleSided(true);
 		}
-
-		Matrix.setIdentityM(mTmpMatrix, 0);
 		mVisualSphere.setPosition(mPosition);
 		mVisualSphere.setScale(mRadius * mScale);
-		mVisualSphere.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);
+		mVisualSphere.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
 	}
 	
 	public void transform(float[] matrix) {
