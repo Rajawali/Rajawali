@@ -478,11 +478,12 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				test_against_min = object.getPosition();
 				test_against_max = test_against_min;
 			} else {
-				if (volume instanceof BoundingBox) {
+				switch (volume.getVolumeShape()) {
+				case BOX:
 					BoundingBox bb = (BoundingBox) volume;
 					test_against_min = bb.getTransformedMin();
 					test_against_max = bb.getTransformedMax();
-				} else if (volume instanceof BoundingSphere) {
+				case SPHERE:
 					BoundingSphere bs = (BoundingSphere) volume;
 					Vector3 bs_position = bs.getPosition();
 					float radius = bs.getScaledRadius();
@@ -490,7 +491,11 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					rad.setAll(radius, radius, radius);
 					test_against_min = Vector3.subtract(bs_position, rad);
 					test_against_max = Vector3.add(bs_position, rad);
-				} else {
+				case CONE:
+				case FRUSTUM:
+				default:
+					//This is more to notify developers of a spot they need to expand. It should never
+					//occur in production code.
 					RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type.");
 					throw new IllegalArgumentException("Received a bounding box of unknown type."); 
 				}
@@ -870,16 +875,25 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @see rajawali.scenegraph.IGraphNode#contains(rajawali.bounds.IBoundingVolume)
 	 */
 	public boolean contains(IBoundingVolume boundingVolume) {
-		if(!(boundingVolume instanceof BoundingBox)) return false;
-		BoundingBox boundingBox = (BoundingBox)boundingVolume;
-		Vector3 otherMin = boundingBox.getTransformedMin();
-		Vector3 otherMax = boundingBox.getTransformedMax();
-		Vector3 min = mTransformedMin;
-		Vector3 max = mTransformedMax;		
-
-		return (max.x >= otherMax.x) && (min.x <= otherMin.x) &&
-				(max.y >= otherMax.y) && (min.y <= otherMin.y) &&
-				(max.z >= otherMax.z) && (min.z <= otherMin.z);
+		switch (boundingVolume.getVolumeShape()) {
+		case BOX:
+			BoundingBox boundingBox = (BoundingBox)boundingVolume;
+			Vector3 otherMin = boundingBox.getTransformedMin();
+			Vector3 otherMax = boundingBox.getTransformedMax();
+			Vector3 min = mTransformedMin;
+			Vector3 max = mTransformedMax;		
+			return (max.x >= otherMax.x) && (min.x <= otherMin.x) &&
+					(max.y >= otherMax.y) && (min.y <= otherMin.y) &&
+					(max.z >= otherMax.z) && (min.z <= otherMin.z);
+		case SPHERE:
+			return false;
+		case CONE:
+			return false;
+		case FRUSTUM:
+			return false;
+		default:
+			return false;
+		}
 	}
 
 	/*
@@ -887,16 +901,25 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @see rajawali.scenegraph.IGraphNode#isContainedBy(rajawali.bounds.IBoundingVolume)
 	 */
 	public boolean isContainedBy(IBoundingVolume boundingVolume) {
-		if(!(boundingVolume instanceof BoundingBox)) return false;
-		BoundingBox boundingBox = (BoundingBox)boundingVolume;
-		Vector3 otherMin = boundingBox.getTransformedMin();
-		Vector3 otherMax = boundingBox.getTransformedMax();
-		Vector3 min = mTransformedMin;
-		Vector3 max = mTransformedMax;		
-
-		return (max.x <= otherMax.x) && (min.x >= otherMin.x) &&
-				(max.y <= otherMax.y) && (min.y >= otherMin.y) &&
-				(max.z <= otherMax.z) && (min.z >= otherMin.z);
+		switch (boundingVolume.getVolumeShape()) {
+		case BOX:
+			BoundingBox boundingBox = (BoundingBox)boundingVolume;
+			Vector3 otherMin = boundingBox.getTransformedMin();
+			Vector3 otherMax = boundingBox.getTransformedMax();
+			Vector3 min = mTransformedMin;
+			Vector3 max = mTransformedMax;		
+			return (max.x <= otherMax.x) && (min.x >= otherMin.x) &&
+					(max.y <= otherMax.y) && (min.y >= otherMin.y) &&
+					(max.z <= otherMax.z) && (min.z >= otherMin.z);
+		case SPHERE:
+			return false;
+		case CONE:
+			return false;
+		case FRUSTUM:
+			return false;
+		default:
+			return false;
+		}
 	}
 
 	@Override
