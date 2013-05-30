@@ -25,7 +25,7 @@ public class CameraFrustum implements IBoundingVolume {
 	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
 	public final Plane[] mPlanes = new Plane[6];     
 	
-	private Camera mCamera;
+	protected Camera mCamera;
 	protected CameraVisibleFrustum mVisibleFrustum;
 	
 	protected static final double ROOT2_2 = Math.sqrt(2.0)/2.0;
@@ -34,6 +34,10 @@ public class CameraFrustum implements IBoundingVolume {
 			new Vector3(), new Vector3(), new Vector3(), new Vector3(), 
 			new Vector3(), new Vector3(), new Vector3(), new Vector3() 
 	}; 
+	
+	public Vector3 getPlanePoint(int index) {
+		return mPlanePoints[index];
+	}
 	
 	protected static final Vector3[] mClipSpacePlanePoints = { 
 		new Vector3(-1, -1, -1), 

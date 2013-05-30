@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import android.opengl.Matrix;
-import android.util.Log;
-
 import rajawali.ATransformable3D;
 import rajawali.Camera;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
+import rajawali.bounds.CameraFrustum;
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.Vector3;
 import rajawali.util.RajLog;
+import android.opengl.Matrix;
+import android.util.Log;
 
 /**
  * Generic Axis Aligned Bounding Box based tree sorting hierarchy. Subclasses
@@ -156,8 +156,6 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		//RajLog.d("[" + this.getClass().getName() + "] Setting bounds based on member: " + member);
 		if (mMembers.size() != 0 && mParent != null) {return;}
 		IBoundingVolume volume = member.getTransformedBoundingVolume();
-		BoundingBox bcube = null;
-		BoundingSphere bsphere = null;
 		Vector3 position = member.getScenePosition();
 		double span_y = 0;
 		double span_x = 0;
@@ -167,18 +165,32 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			span_y = 5.0;
 			span_z = 5.0;
 		} else {
-			if (volume instanceof BoundingBox) {
-				bcube = (BoundingBox) volume;
+			switch (volume.getVolumeShape()) {
+			case BOX:
+				BoundingBox bcube = (BoundingBox) volume;
 				Vector3 min = bcube.getTransformedMin();
 				Vector3 max = bcube.getTransformedMax();
 				span_x = (max.x - min.x);
 				span_y = (max.y - min.y);
 				span_z = (max.z - min.z);
-			} else if (volume instanceof BoundingSphere) {
-				bsphere = (BoundingSphere) volume;
+				break;
+			case SPHERE:
+				BoundingSphere bsphere = (BoundingSphere) volume;
 				span_x = 2.0*bsphere.getScaledRadius();
 				span_y = span_x;
 				span_z = span_x;
+				break;
+			case CONE:
+				//TODO: Impliment
+				break;
+			case FRUSTUM:
+				CameraFrustum frustum = (CameraFrustum) volume;
+				Vector3 far = frustum.getPlanePoint(6);
+				Vector3 near = frustum.getPlanePoint(2);
+				span_x = 2.0*far.x;
+				span_y = 2.0*far.y;
+				span_z = far.z - near.z;
+				break;
 			}
 		}
 		mMin.x = (float) (position.x - span_x);
