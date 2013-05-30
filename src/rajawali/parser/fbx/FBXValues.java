@@ -365,6 +365,8 @@ public class FBXValues {
 				public Integer pixelAspectRatio;
 				public Float nearPlane;
 				public Float farPlane;
+				public Integer lightType;
+				public Float coneangle;
 			}
 			
 			protected class Layer {

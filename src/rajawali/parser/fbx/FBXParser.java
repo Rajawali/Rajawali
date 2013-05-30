@@ -15,8 +15,11 @@ import java.util.Locale;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
+import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
+import rajawali.lights.PointLight;
+import rajawali.lights.SpotLight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
@@ -127,13 +130,8 @@ public class FBXParser extends AMeshParser {
 		for(int i=0; i<numLights; ++i) {
 			Model l = lights.get(i);
 			// -- really need to add more light types
-			ALight light = new DirectionalLight();
-			light.setPosition(l.properties.lclTranslation);
-			light.setX(light.getX() * -1);
-			light.setRotation(l.properties.lclRotation);
-			light.setPower(l.properties.intensity / 100f);
-			light.setColor(l.properties.color);
-			sceneLights.add(light);
+
+			sceneLights.add(buildLight(l));
 		}
 		
 		if(numLights == 0)
@@ -181,19 +179,60 @@ public class FBXParser extends AMeshParser {
 			}
 		}
 
-		/*if(camera != null) { //TODO: FIX
-			Camera cam = mRenderer.getCamera();
+		if(camera != null) { //TODO: FIX
+			Camera cam = mRenderer.getCurrentCamera();
 			cam.setPosition(camera.position);
-			cam.setX(mRenderer.getCamera().getX() * -1);
-			Number3D lookAt = camera.lookAt;
-			lookAt.x = -lookAt.x;
+			cam.setX(mRenderer.getCurrentCamera().getX() * -1);
+			cam.setRotation(camera.properties.lclRotation);
+			Vector3 lookAt = camera.lookAt;
+//			lookAt.x = -lookAt.x;
 			cam.setLookAt(lookAt);
 			cam.setNearPlane(camera.properties.nearPlane);
 			cam.setFarPlane(camera.properties.farPlane);
 			cam.setFieldOfView(camera.properties.fieldOfView);
-		}*/
+		}
 		
 		return this;
+	}
+	
+	private ALight buildLight(Model l){
+		int m = l.properties.lightType != null ? l.properties.lightType:ALight.POINT_LIGHT;
+		switch (m){
+		
+		case ALight.POINT_LIGHT:		//Point
+			PointLight light = new PointLight();
+			light.setPosition(l.properties.lclTranslation);
+			light.setX(light.getX() * -1f);
+			light.setRotation(l.properties.lclRotation);
+			light.setPower(l.properties.intensity / 100f);
+			light.setColor(l.properties.color);
+			mRootObject.addLight(light);
+			return light;			
+			
+		case ALight.DIRECTIONAL_LIGHT:		//Area
+			DirectionalLight lD = new DirectionalLight(0,-1,0);  //TODO calculate direction based on position and rotation
+			lD.setPosition(l.properties.lclTranslation);
+			lD.setX(lD.getX() * -1f);
+			lD.setRotation(l.properties.lclRotation);
+			lD.setPower(l.properties.intensity / 100f);
+			lD.setColor(l.properties.color);
+			mRootObject.addLight(lD);
+			return lD;
+			
+		default:
+		case ALight.SPOT_LIGHT:		//Spot
+			SpotLight lS = new SpotLight();		//TODO calculate direction based on position and rotation
+			lS.setPosition(l.properties.lclTranslation);
+			lS.setX(lS.getX() * -1f);
+			lS.setRotation(l.properties.lclRotation);
+			lS.setPower(l.properties.intensity / 100f);
+			lS.setCutoffAngle(l.properties.coneangle);
+			lS.setColor(l.properties.color);
+			lS.setLookAt(0, 0, 0);
+			mRootObject.addLight(lS);			
+			return lS;
+		}
+	
 	}
 	
 	private void buildMesh(Model model, Stack<ALight> lights) throws TextureException, ParsingException {
