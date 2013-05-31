@@ -893,4 +893,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			return list;
 		}
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#renderToFrame(rajawali.Camera, float[], float[], float[], rajawali.util.ObjectColorPicker.ColorPickerInfo)
+	 */
+	public void renderToFrame(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix,
+			ColorPickerInfo pickerInfo) {
+		render(camera, vpMatrix, projMatrix, vMatrix, pickerInfo);
+	}
 }

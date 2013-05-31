@@ -10,6 +10,7 @@ import rajawali.math.Vector3;
 import rajawali.math.Vector3.Axis;
 import rajawali.renderer.AFrameTask;
 import rajawali.scene.scenegraph.IGraphNodeMember;
+import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import android.opengl.Matrix;
 
 public class Camera extends ATransformable3D {
@@ -268,5 +269,15 @@ public class Camera extends ATransformable3D {
 	 */
 	public List<IGraphNodeMember> getChildMembers() {
 		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#renderToFrame(rajawali.Camera, float[], float[], float[], rajawali.util.ObjectColorPicker.ColorPickerInfo)
+	 */
+	public void renderToFrame(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix,
+			ColorPickerInfo pickerInfo) {
+		//Do nothing
+		return;
 	}
 }

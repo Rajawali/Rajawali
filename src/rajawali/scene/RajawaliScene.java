@@ -640,8 +640,19 @@ public class RajawaliScene extends AFrameTask {
 		}
 
 		synchronized (mChildren) {
-			for (int i = 0, j = mChildren.size(); i < j; ++i) 
-				mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
+			if (mSceneGraph != null) {
+				//If we are using the scenegraph cull to the current camera
+				List<IGraphNodeMember> survivors = mSceneGraph.cullFromBoundingVolume(
+						mCamera.getTransformedBoundingVolume());
+				for (int i = 0, j = survivors.size(); i < j; ++i) {
+					//Render the survivors
+					survivors.get(i).renderToFrame(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
+				}
+			} else {
+				for (int i = 0, j = mChildren.size(); i < j; ++i) {
+					mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
+				}
+			}
 		}
 
 		if (mDisplaySceneGraph) {

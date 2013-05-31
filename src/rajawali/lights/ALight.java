@@ -3,9 +3,11 @@ package rajawali.lights;
 import java.util.List;
 
 import rajawali.ATransformable3D;
+import rajawali.Camera;
 import rajawali.math.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.scene.scenegraph.IGraphNodeMember;
+import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 public abstract class ALight extends ATransformable3D {
 	public static final int DIRECTIONAL_LIGHT = 0;
@@ -101,5 +103,15 @@ public abstract class ALight extends ATransformable3D {
 	 */
 	public List<IGraphNodeMember> getChildMembers() {
 		return null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#renderToFrame(rajawali.Camera, float[], float[], float[], rajawali.util.ObjectColorPicker.ColorPickerInfo)
+	 */
+	public void renderToFrame(Camera camera, float[] vpMatrix, float[] projMatrix, 
+			float[] vMatrix, ColorPickerInfo pickerInfo) {
+		//Do nothing
+		return;
 	}
 }

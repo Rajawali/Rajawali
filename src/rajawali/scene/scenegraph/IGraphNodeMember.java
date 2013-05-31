@@ -2,8 +2,10 @@ package rajawali.scene.scenegraph;
 
 import java.util.List;
 
+import rajawali.Camera;
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.Vector3;
+import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 /**
  * Generic interface which any member of IGraphNode must
@@ -34,6 +36,19 @@ public interface IGraphNodeMember {
 	 * @return True if the member is inside the graph.
 	 */
 	public boolean isInGraph();
+	
+	/**
+	 * Renders the object to the scene if it is renderable (Object3D)
+	 * 
+	 * @param camera The camera
+	 * @param vpMatrix The view-projection matrix
+	 * @param projMatrix The projection matrix
+	 * @param vMatrix The view matrix
+	 * @param parentMatrix This object's parent matrix
+	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
+	 */
+	public void renderToFrame(Camera camera, float[] vpMatrix, float[] projMatrix, 
+			float[] vMatrix, ColorPickerInfo pickerInfo);
 	
 	/**
 	 * Retrieve the bounding volume of this member.

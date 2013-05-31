@@ -1,6 +1,7 @@
 package rajawali.scene.scenegraph;
 
 import java.util.Collection;
+import java.util.List;
 
 import rajawali.Camera;
 import rajawali.bounds.IBoundingVolume;
@@ -104,8 +105,9 @@ public interface IGraphNode {
 	 * done is left to the implementation.
 	 * 
 	 * @param volume IBoundingVolume to test visibility against.
+	 * 
 	 */
-	public void cullFromBoundingVolume(IBoundingVolume volume);
+	public List<IGraphNodeMember> cullFromBoundingVolume(IBoundingVolume volume);
 	
 	/**
 	 * Call this in the renderer to cause the scene graph to be

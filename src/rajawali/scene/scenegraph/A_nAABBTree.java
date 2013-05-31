@@ -843,9 +843,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#cullFromBoundingVolume(rajawali.bounds.IBoundingVolume)
 	 */
-	public void cullFromBoundingVolume(IBoundingVolume volume) {
+	public List<IGraphNodeMember> cullFromBoundingVolume(IBoundingVolume volume) {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
 	/*
