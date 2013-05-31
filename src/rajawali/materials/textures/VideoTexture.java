@@ -1,6 +1,9 @@
 package rajawali.materials.textures;
 
+import java.io.IOException;
+
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
@@ -10,12 +13,22 @@ public class VideoTexture extends ATexture {
 
 	private final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 	private MediaPlayer mMediaPlayer;
+	private Camera mCamera;
 	private SurfaceTexture mSurfaceTexture;
+	SurfaceTexture.OnFrameAvailableListener mOnFrameAvailableListener;
 	
 	public VideoTexture(String textureName, MediaPlayer mediaPlayer)
 	{
 		super(TextureType.VIDEO_TEXTURE, textureName);
 		mMediaPlayer = mediaPlayer;
+		setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
+	}
+	
+	public VideoTexture(String textureName, Camera camera, SurfaceTexture.OnFrameAvailableListener onFrameAvailableListener)
+	{
+		super(TextureType.VIDEO_TEXTURE, textureName);
+		mCamera = camera;
+		mOnFrameAvailableListener = onFrameAvailableListener;
 		setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
 	}
 
@@ -34,7 +47,7 @@ public class VideoTexture extends ATexture {
 		int textureId = textures[0];
 		GLES20.glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
 		GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
-				GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+				GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 		GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
 				GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 		GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
@@ -43,7 +56,15 @@ public class VideoTexture extends ATexture {
 				GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 		setTextureId(textureId);
 		mSurfaceTexture = new SurfaceTexture(textureId);
-		mMediaPlayer.setSurface(new Surface(mSurfaceTexture));
+		if(mMediaPlayer != null)
+			mMediaPlayer.setSurface(new Surface(mSurfaceTexture));
+		else if(mCamera != null)
+			try {
+				mSurfaceTexture.setOnFrameAvailableListener(mOnFrameAvailableListener);
+				mCamera.setPreviewTexture(mSurfaceTexture);
+			} catch (IOException e) {
+				throw new TextureException(e);
+			}
 	}
 
 	void remove() throws TextureException {
@@ -57,6 +78,10 @@ public class VideoTexture extends ATexture {
 
 	void reset() throws TextureException {
 		mSurfaceTexture.release();
+	}
+	
+	public SurfaceTexture getSurfaceTexture() {
+		return mSurfaceTexture;
 	}
 	
 	public void update()
