@@ -608,31 +608,39 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	public synchronized void addObject(IGraphNodeMember object) {
 		RajLog.d("[" + this.getClass().getName() + "] Adding object: " + object + " to octree."); 
-		//TODO: Handle recursive add posibility
-
-		if (mParent == null) {
-			//We are the root node
-			if (getObjectCount() == 0) {
-				//Set bounds based the incoming objects bounding box
-				setBounds(object); 
-				addToMembers(object);
-			} else {
-				//Check if object is in bounds
-				if (contains(object.getTransformedBoundingVolume())) {
-					//The object is fully in bounds
-					internalAddObject(object);
+		List<IGraphNodeMember> members = null;
+		if (mRecursiveAdd && object.hasChildMembers()) {
+			members = object.getChildMembers();
+			members.add(0, object);
+		} else {
+			members = new ArrayList<IGraphNodeMember>();
+			members.add(object);
+		}
+		for (int i = 0, j = members.size(); i < j; ++i) {
+			if (mParent == null) {
+				//We are the root node
+				if (getObjectCount() == 0) {
+					//Set bounds based the incoming objects bounding box
+					setBounds(members.get(i)); 
+					addToMembers(members.get(i));
 				} else {
-					//The object is not in bounds or only partially in bounds
-					//Add it to the outside container
-					addToOutside(object);
-					if (mOutside.size() >= mGrowThreshold) {
-						grow();
+					//Check if object is in bounds
+					if (contains(object.getTransformedBoundingVolume())) {
+						//The object is fully in bounds
+						internalAddObject(members.get(i));
+					} else {
+						//The object is not in bounds or only partially in bounds
+						//Add it to the outside container
+						addToOutside(object);
+						if (mOutside.size() >= mGrowThreshold) {
+							grow();
+						}
 					}
 				}
+			} else {
+				//We are a branch or leaf node
+				internalAddObject(members.get(i));
 			}
-		} else {
-			//We are a branch or leaf node
-			internalAddObject(object);
 		}
 	}
 	
@@ -641,8 +649,17 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @see rajawali.scenegraph.IGraphNode#addObjects(java.util.Collection)
 	 */
 	public void addObjects(Collection<IGraphNodeMember> objects) {
-		// TODO Auto-generated method stub
-		
+		//TODO: This could potentially be made more efficient
+		if (mParent != null) {
+			//Pass the call up to the root if we are not the root node
+			mParent.addObjects(objects);
+		} else {
+			IGraphNodeMember[] object_array = new IGraphNodeMember[objects.size()];
+			object_array = objects.toArray(object_array);
+			for (int i = 0, j = object_array.length; i < j; ++i) {
+				addObject(object_array[i]);
+			}
+		}
 	}
 
 	/*
@@ -651,26 +668,35 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	public synchronized void removeObject(IGraphNodeMember object) {
 		RajLog.d("[" + this.getClass().getName() + "] Removing object: " + object + " from octree.");
-		//TODO: Handle recursive add posibility
-		//Retrieve the container object
-		IGraphNode container = object.getGraphNode();
-		if (container == null) {
-			mOutside.remove(object);
+		List<IGraphNodeMember> members = null;
+		if (mRecursiveRemove && object.hasChildMembers()) {
+			members = object.getChildMembers();
+			members.add(0, object);
 		} else {
-			if (container == this) {
-				//If this is the container, process the removal
-				//Remove the object from the members
-				removeFromMembers(object);
-				if (canMerge() && mParent != null) {
-					//If we can merge, do it (if we are the root node, we can't)
-					merge();
-				}
-			} else {
-				//Defer the removal to the container
-				container.removeObject(object);
-			}
+			members = new ArrayList<IGraphNodeMember>();
+			members.add(object);
 		}
-		if (mParent == null && mSplit) shrink(); //Try to shrink the tree
+		for (int i = 0, j = members.size(); i < j; ++i) {
+			//Retrieve the container object
+			IGraphNode container = members.get(i).getGraphNode();
+			if (container == null) {
+				mOutside.remove(members.get(i));
+			} else {
+				if (container == this) {
+					//If this is the container, process the removal
+					//Remove the object from the members
+					removeFromMembers(members.get(i));
+					if (canMerge() && mParent != null) {
+						//If we can merge, do it (if we are the root node, we can't)
+						merge();
+					}
+				} else {
+					//Defer the removal to the container
+					container.removeObject(members.get(i));
+				}
+			}
+			if (mParent == null && mSplit) shrink(); //Try to shrink the tree
+		}
 	}
 	
 	/*
@@ -678,8 +704,17 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @see rajawali.scenegraph.IGraphNode#removeObjects(java.util.Collection)
 	 */
 	public void removeObjects(Collection<IGraphNodeMember> objects) {
-		// TODO Auto-generated method stub
-		
+		//TODO: This could potentially be made more efficient
+		if (mParent != null) {
+			//Pass the call up to the root if we are not the root node
+			mParent.removeObjects(objects);
+		} else {
+			IGraphNodeMember[] object_array = new IGraphNodeMember[objects.size()];
+			object_array = objects.toArray(object_array);
+			for (int i = 0, j = object_array.length; i < j; ++i) {
+				removeObject(object_array[i]);
+			}
+		}
 	}
 
 	/*

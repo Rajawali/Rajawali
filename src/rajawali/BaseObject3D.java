@@ -3,6 +3,7 @@ package rajawali;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -17,6 +18,7 @@ import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
 import rajawali.math.Vector3;
 import rajawali.renderer.AFrameTask;
+import rajawali.scene.scenegraph.IGraphNodeMember;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
@@ -861,8 +863,34 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return volume;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.renderer.AFrameTask#getFrameTaskType()
+	 */
 	@Override
 	public TYPE getFrameTaskType() {
 		return AFrameTask.TYPE.OBJECT3D;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#hasChildMembers()
+	 */
+	public boolean hasChildMembers() {
+		return (getNumChildren() > 0) ? true : false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#getChildMembers()
+	 */
+	public List<IGraphNodeMember> getChildMembers() {
+		if (!hasChildMembers()) {
+			return null;
+		} else {
+			ArrayList<IGraphNodeMember> list = new ArrayList<IGraphNodeMember>();
+			list.addAll(mChildren);
+			return list;
+		}
 	}
 }

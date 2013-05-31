@@ -1,5 +1,7 @@
 package rajawali.scene.scenegraph;
 
+import java.util.List;
+
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.Vector3;
 
@@ -29,7 +31,7 @@ public interface IGraphNodeMember {
 	/**
 	 * Gets the objects state in the graph.
 	 * 
-	 * @return True if the object is inside the graph.
+	 * @return True if the member is inside the graph.
 	 */
 	public boolean isInGraph();
 	
@@ -46,4 +48,19 @@ public interface IGraphNodeMember {
 	 * @return Number3D containing the position.
 	 */
 	public Vector3 getScenePosition();
+	
+	/**
+	 * Check if the node member has child members.
+	 * 
+	 * @return True if the member has child members.
+	 */
+	public boolean hasChildMembers();
+	
+	/**
+	 * Fetches a {@link List} of all the child members of this member.
+	 * If the member has no children it will return null.
+	 * 
+	 * @return {@link List} containing the children, or null if no children exist.
+	 */
+	public List<IGraphNodeMember> getChildMembers();
 }

@@ -1,8 +1,11 @@
 package rajawali.lights;
 
+import java.util.List;
+
 import rajawali.ATransformable3D;
 import rajawali.math.Vector3;
 import rajawali.renderer.AFrameTask;
+import rajawali.scene.scenegraph.IGraphNodeMember;
 
 public abstract class ALight extends ATransformable3D {
 	public static final int DIRECTIONAL_LIGHT = 0;
@@ -75,8 +78,28 @@ public abstract class ALight extends ATransformable3D {
 		return mPositionArray;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.renderer.AFrameTask#getFrameTaskType()
+	 */
 	@Override
 	public AFrameTask.TYPE getFrameTaskType() {
 		return AFrameTask.TYPE.LIGHT;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#hasChildMembers()
+	 */
+	public boolean hasChildMembers() {
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#getChildMembers()
+	 */
+	public List<IGraphNodeMember> getChildMembers() {
+		return null;
 	}
 }

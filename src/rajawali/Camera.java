@@ -1,5 +1,7 @@
 package rajawali;
 
+import java.util.List;
+
 import rajawali.bounds.CameraFrustum;
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.MathUtil;
@@ -7,6 +9,7 @@ import rajawali.math.Quaternion;
 import rajawali.math.Vector3;
 import rajawali.math.Vector3.Axis;
 import rajawali.renderer.AFrameTask;
+import rajawali.scene.scenegraph.IGraphNodeMember;
 import android.opengl.Matrix;
 
 public class Camera extends ATransformable3D {
@@ -242,8 +245,28 @@ public class Camera extends ATransformable3D {
 		}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.renderer.AFrameTask#getFrameTaskType()
+	 */
 	@Override
 	public TYPE getFrameTaskType() {
 		return AFrameTask.TYPE.CAMERA;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#hasChildMembers()
+	 */
+	public boolean hasChildMembers() {
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.scene.scenegraph.IGraphNodeMember#getChildMembers()
+	 */
+	public List<IGraphNodeMember> getChildMembers() {
+		return null;
 	}
 }
