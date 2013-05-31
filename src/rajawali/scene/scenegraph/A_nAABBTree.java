@@ -22,7 +22,7 @@ import android.util.Log;
  * a few modifications to the behavior. 
  * 
  * Implementations of this could be Ternary trees (3), Octree (8), Icoseptree (27), etc.
- * The tree will try to nest objects as deeply as possible while trying to maintain an minimal
+ * The tree will try to nest objects as deeply as possible while trying to maintain a minimal
  * tree structure based on the thresholds set. It is up to the user to determine what thresholds
  * make sense and are optimal for your specific needs as there are tradeoffs associated with
  * them all. The default implementation attempts to strike a reasonable balance.
@@ -322,6 +322,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @param object IGraphNodeMember to be added.
 	 */
 	protected void addToOutside(IGraphNodeMember object) {
+		RajLog.d("[" + this.getClass().getName() + "] Adding object: " + object + " to outside list in: " + this);
 		if (mOutside.contains(object)) return;
 		mOutside.add(object);
 		object.setGraphNode(this, false);
@@ -493,10 +494,17 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					test_against_max = Vector3.add(bs_position, rad);
 				case CONE:
 				case FRUSTUM:
+					CameraFrustum frustum = (CameraFrustum) volume;
+					Vector3 far = frustum.getPlanePoint(6);
+					Vector3 near = frustum.getPlanePoint(2);
+					test_against_min = new Vector3(far.x, far.y, far.z);
+					test_against_max = new Vector3(far.x, far.y, near.z);
+					break;
 				default:
 					//This is more to notify developers of a spot they need to expand. It should never
 					//occur in production code.
-					RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type.");
+					RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type: " 
+							+ VOLUME_SHAPE.toString(volume.getVolumeShape()));
 					throw new IllegalArgumentException("Received a bounding box of unknown type."); 
 				}
 			}
@@ -843,9 +851,59 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#cullFromBoundingVolume(rajawali.bounds.IBoundingVolume)
 	 */
-	public List<IGraphNodeMember> cullFromBoundingVolume(IBoundingVolume volume) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<IGraphNodeMember> cullFromBoundingVolume(IBoundingVolume volume, IGraphNode container) {
+		ArrayList<IGraphNodeMember> survivors = new ArrayList<IGraphNodeMember>();
+		ArrayList<A_nAABBTree> survivorNodes = new ArrayList<A_nAABBTree>();
+		int start = 0;
+		if (container == null) {
+			//Should only be called on the root node
+			if (volume.intersectsWith(this)) {
+				//If the volume doesnt intersect with the root node there is nothing to do
+				survivorNodes.add(this);
+			}
+		} else {
+			survivorNodes.add((A_nAABBTree) container);
+		}
+		A_nAABBTree local_container = (A_nAABBTree) container;
+		start = local_container.getObjectCount();
+		if (local_container.mSplit) {
+			recursiveIntersectChildNodes(volume, local_container, survivorNodes);
+		}
+		for (int i = 0, j = survivorNodes.size(); i < j; ++i) {
+			List<IGraphNodeMember> list = survivorNodes.get(i).mMembers;
+			for (int n = 0, k = list.size(); n < k; ++n) {
+				if (list.get(n).getTransformedBoundingVolume().intersectsWith(volume)) {
+					survivors.add(list.get(n));
+				}
+			}
+			list = survivorNodes.get(i).mOutside;
+			if (list != null) {
+				for (int n = 0, k = list.size(); n < k; ++n) {
+					if (list.get(n).getTransformedBoundingVolume().intersectsWith(volume)) {
+						survivors.add(list.get(n));
+					}
+				}
+			}
+		}
+		int end = survivors.size();
+		//Log.v("Culling", "Survivors: " + end + "/" + start);
+		return survivors;
+	}
+	
+	/**
+	 * Recursively checks child nodes and adds any survivors to the list.
+	 * 
+	 * @param volume {@link IBoundingVolume} to check for intersection with.
+	 * @param container {@link A_nAABBTree} who's children should be checked.
+	 * @param survivors {@link List} of {@link A_nAABBTree} objects which have survived the intersection test.
+	 */
+	private void recursiveIntersectChildNodes(IBoundingVolume volume, A_nAABBTree container, List<A_nAABBTree> survivors) {
+		for (int i = 0, j = container.CHILD_COUNT; i < j; ++i) {
+			if (container.mChildren[i].intersectsWith(volume)) {
+				survivors.add(container.mChildren[i]);
+				recursiveIntersectChildNodes(volume, container, survivors);
+			}
+		}
 	}
 
 	/*

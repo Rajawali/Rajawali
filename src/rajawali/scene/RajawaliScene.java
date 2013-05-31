@@ -643,7 +643,7 @@ public class RajawaliScene extends AFrameTask {
 			if (mSceneGraph != null) {
 				//If we are using the scenegraph cull to the current camera
 				List<IGraphNodeMember> survivors = mSceneGraph.cullFromBoundingVolume(
-						mCamera.getTransformedBoundingVolume());
+						mCamera.getTransformedBoundingVolume(), mCamera.getGraphNode());
 				for (int i = 0, j = survivors.size(); i < j; ++i) {
 					//Render the survivors
 					survivors.get(i).renderToFrame(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);

@@ -8,7 +8,23 @@ public interface IBoundingVolume {
 	
 	public static final int DEFAULT_COLOR = 0xFFFFFFFF;
 	
-	public enum VOLUME_SHAPE {BOX, SPHERE, FRUSTUM, CONE};
+	public enum VOLUME_SHAPE {
+		BOX, SPHERE, FRUSTUM, CONE;
+		public static String toString(VOLUME_SHAPE shape) {
+			switch (shape) {
+			case BOX:
+				return "BOX";
+			case SPHERE:
+				return "SPHERE";
+			case FRUSTUM:
+				return "FRUSTUM";
+			case CONE:
+				return "CONE";
+			default:
+				return "UNKNOWN";
+			}
+		}
+	};
 	
 	public void calculateBounds(Geometry3D geometry);
 	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix);

@@ -104,10 +104,11 @@ public interface IGraphNode {
 	 * contained (even partially) by the provided volume. How this is 
 	 * done is left to the implementation.
 	 * 
-	 * @param volume IBoundingVolume to test visibility against.
+	 * @param volume {@link IBoundingVolume} to test visibility against.
+	 * @param container {@link IGraphNode} containing the bounding volume. Can be null.
 	 * 
 	 */
-	public List<IGraphNodeMember> cullFromBoundingVolume(IBoundingVolume volume);
+	public List<IGraphNodeMember> cullFromBoundingVolume(IBoundingVolume volume, IGraphNode container);
 	
 	/**
 	 * Call this in the renderer to cause the scene graph to be
