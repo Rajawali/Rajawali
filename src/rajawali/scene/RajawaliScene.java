@@ -34,6 +34,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -642,6 +643,7 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mChildren) {
 			if (mSceneGraph != null) {
 				//If we are using the scenegraph cull to the current camera
+				Log.i("Scene", "Camera bounding volume: " + mCamera.getGraphNode());
 				List<IGraphNodeMember> survivors = mSceneGraph.cullFromBoundingVolume(
 						mCamera.getTransformedBoundingVolume(), mCamera.getGraphNode());
 				for (int i = 0, j = survivors.size(); i < j; ++i) {
@@ -1113,12 +1115,17 @@ public class RajawaliScene extends AFrameTask {
 	private void internalReplaceCamera(AFrameTask camera, Camera replace, int index) {
 		replace.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
 		replace.updateFrustum();
+		Camera old = null;
 		if (index != AFrameTask.UNUSED_INDEX) {
-			mCameras.set(index, replace);
+			old = mCameras.set(index, replace);
 		} else {
-			mCameras.set(mCameras.indexOf(camera), replace);
+			old = mCameras.set(mCameras.indexOf(camera), replace);
 		}
-		//TODO: Handle camera replacement in scenegraph
+		if (mSceneGraph != null) {
+			//If a scene graph is being used, remove the old camera and add the new.
+			mSceneGraph.removeObject(old);
+			mSceneGraph.addObject(replace);
+		}
 	}
 	
 	/**
@@ -1180,7 +1187,11 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	private void internalClearCameras() {
 		if (mSceneGraph != null) {
-			//mSceneGraph.removeAll(mCameras); //TODO: Uncomment
+			ArrayList<IGraphNodeMember> collection = new ArrayList<IGraphNodeMember>();
+			for (int i = 0, j = mCameras.size(); i < j; ++i) {
+				collection.add(mCameras.get(i));
+			}
+			mSceneGraph.removeObjects(collection);
 		}
 		mCameras.clear();
 		mCameras.add(mCamera);
@@ -1217,12 +1228,16 @@ public class RajawaliScene extends AFrameTask {
 	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
 	 */
 	private void internalReplaceChild(AFrameTask child, BaseObject3D replace, int index) {
+		BaseObject3D old = null;
 		if (index != AFrameTask.UNUSED_INDEX) {
-			mChildren.set(index, replace);
+			old = mChildren.set(index, replace);
 		} else {
-			mChildren.set(mChildren.indexOf(child), replace);
+			old = mChildren.set(mChildren.indexOf(child), replace);
 		}
-		//TODO: Handle child replacement in scene graph
+		if (mSceneGraph != null) {
+			mSceneGraph.removeObject(old);
+			mSceneGraph.addObject(replace);
+		}
 	}
 	
 	/**

@@ -855,16 +855,20 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		ArrayList<IGraphNodeMember> survivors = new ArrayList<IGraphNodeMember>();
 		ArrayList<A_nAABBTree> survivorNodes = new ArrayList<A_nAABBTree>();
 		int start = 0;
+		A_nAABBTree local_container = null;
 		if (container == null) {
+			Log.i("Culling", "Culling with null container");
 			//Should only be called on the root node
 			if (volume.intersectsWith(this)) {
 				//If the volume doesnt intersect with the root node there is nothing to do
 				survivorNodes.add(this);
+				local_container = this;
 			}
 		} else {
+			Log.i("Culling", "Culling with specific container");
 			survivorNodes.add((A_nAABBTree) container);
+			local_container = (A_nAABBTree) container;
 		}
-		A_nAABBTree local_container = (A_nAABBTree) container;
 		start = local_container.getObjectCount();
 		if (local_container.mSplit) {
 			recursiveIntersectChildNodes(volume, local_container, survivorNodes);
