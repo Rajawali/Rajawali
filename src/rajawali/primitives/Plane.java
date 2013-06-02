@@ -25,6 +25,7 @@ public class Plane extends BaseObject3D {
 	protected float mHeight;
 	protected int mSegmentsW;
 	protected int mSegmentsH;
+	protected int mNumTextureTiles;
 	private boolean mCreateTextureCoords;
 	private boolean mCreateVertexColorBuffer;
 	private Axis mUpAxis;
@@ -34,7 +35,7 @@ public class Plane extends BaseObject3D {
 	 * The plane will be facing the camera ({@link Axis.Z}) by default.
 	 */
 	public Plane() {
-		this(1f, 1f, 1, 1, Axis.Z, true, false);
+		this(1f, 1f, 1, 1, Axis.Z, true, false, 1);
 	}
 	
 	/**
@@ -43,9 +44,9 @@ public class Plane extends BaseObject3D {
 	 */
 	public Plane(Axis upAxis)
 	{
-		this(1f, 1f, 1, 1, upAxis, true, false);
+		this(1f, 1f, 1, 1, upAxis, true, false, 1);
 	}
-
+	
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 * The plane will be facing the camera ({@link Axis.Z}) by default.
@@ -61,9 +62,29 @@ public class Plane extends BaseObject3D {
 	 */
 	public Plane(float width, float height, int segmentsW, int segmentsH)
 	{
-		this(width, height, segmentsW, segmentsH, Axis.Z, true, false);
+		this(width, height, segmentsW, segmentsH, Axis.Z, true, false, 1);
 	}
 	
+	/**
+	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
+	 * The plane will be facing the camera ({@link Axis.Z}) by default.
+	 * 
+	 * @param width
+	 *            The plane width
+	 * @param height
+	 *            The plane height
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 * @param numTextureTiles
+	 * 			  The number of texture tiles. If more than 1 the texture will be repeat by n times.
+	 */
+	public Plane(float width, float height, int segmentsW, int segmentsH, int numTextureTiles)
+	{
+		this(width, height, segmentsW, segmentsH, Axis.Z, true, false, numTextureTiles);
+	}
+
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 * 
@@ -80,7 +101,7 @@ public class Plane extends BaseObject3D {
 	 */
 	public Plane(float width, float height, int segmentsW, int segmentsH, Axis upAxis)
 	{
-		this(width, height, segmentsW, segmentsH, upAxis, true, false);
+		this(width, height, segmentsW, segmentsH, upAxis, true, false, 1);
 	}
 
 	/**
@@ -103,6 +124,32 @@ public class Plane extends BaseObject3D {
 	 */
 	public Plane(float width, float height, int segmentsW, int segmentsH, Axis upAxis, boolean createTextureCoordinates,
 			boolean createVertexColorBuffer) {
+		this(width, height, segmentsW, segmentsH, upAxis, createTextureCoordinates, createVertexColorBuffer, 1);
+	}
+
+	
+	/**
+	 * Creates a plane primitive.
+	 * 
+	 * @param width
+	 *            The plane width
+	 * @param height
+	 *            The plane height
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 * @param upAxis
+	 * 			  The up axis. Choose Axis.Y for a ground plane and Axis.Z for a camera facing plane.
+	 * @param createTextureCoordinates
+	 *            A boolean that indicates whether the texture coordinates should be calculated or not.
+	 * @param createVertexColorBuffer
+	 *            A boolean that indicates whether a vertex color buffer should be created or not.
+	 * @param numTextureTiles
+	 * 			  The number of texture tiles. If more than 1 the texture will be repeat by n times.
+	 */
+	public Plane(float width, float height, int segmentsW, int segmentsH, Axis upAxis, boolean createTextureCoordinates,
+			boolean createVertexColorBuffer, int numTextureTiles) {
 		super();
 		mWidth = width;
 		mHeight = height;
@@ -111,6 +158,7 @@ public class Plane extends BaseObject3D {
 		mUpAxis = upAxis;
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
+		mNumTextureTiles = numTextureTiles;
 		init();
 	}
 
@@ -153,8 +201,8 @@ public class Plane extends BaseObject3D {
 				}
 
 				if (mCreateTextureCoords) {
-					textureCoords[texCoordCount++] = (float) i / (float) mSegmentsW;
-					textureCoords[texCoordCount++] = 1.0f - (float) j / (float) mSegmentsH;
+					textureCoords[texCoordCount++] = ((float) i / (float) mSegmentsW) * mNumTextureTiles;
+					textureCoords[texCoordCount++] = (1.0f - (float) j / (float) mSegmentsH) * mNumTextureTiles;
 				}
 
 				normals[vertexCount] = mUpAxis == Axis.X ? 1 : 0;
