@@ -14,7 +14,7 @@ void main() {
 
 #ifdef TEXTURED
 	vec4 color = texture2D(uDiffuseTexture, vTextureCoord);
-	#ifdef USE_VERTEX_COLOR || USE_SINGLE_COLOR
+	#ifdef USE_COLOR
 	color *= (1.0 - uColorBlendFactor); 
 	color += vColor * uColorBlendFactor;
 	#endif

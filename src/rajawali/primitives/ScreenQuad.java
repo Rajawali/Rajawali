@@ -86,7 +86,7 @@ public class ScreenQuad extends BaseObject3D {
 			ColorPickerInfo pickerInfo) {
 		float[] pMatrix = mCamera.getProjectionMatrix();
 		float[] viewMatrix = mCamera.getViewMatrix();
-		Matrix.multiplyMM(mVPMatrix, 0, pMatrix, 0, vMatrix, 0);
+		Matrix.multiplyMM(mVPMatrix, 0, pMatrix, 0, viewMatrix, 0);
 		super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, null);
 	}
 }

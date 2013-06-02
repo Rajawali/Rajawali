@@ -32,7 +32,7 @@ void main() {
 
 #ifdef TEXTURED
    vec4 diffuse = texture2D(uDiffuseTexture, vTextureCoord);
-   #ifdef USE_VERTEX_COLOR || USE_SINGLE_COLOR
+   #ifdef USE_COLOR
       diffuse *= (1.0 - uColorBlendFactor); 
       diffuse += vColor * uColorBlendFactor;
    #endif

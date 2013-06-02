@@ -22,7 +22,7 @@ void main() {
    vec3 L = vec3(0.0);
 %LIGHT_CODE%
    vec4 diffuse = texture2D(uDiffuseTexture, vTextureCoord);
-   #ifdef USE_VERTEX_COLOR || USE_SINGLE_COLOR
+   #ifdef USE_COLOR
       diffuse *= (1.0 - uColorBlendFactor); 
       diffuse += vColor * uColorBlendFactor;
    #endif

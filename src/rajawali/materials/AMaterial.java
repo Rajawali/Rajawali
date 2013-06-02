@@ -133,8 +133,7 @@ public abstract class AMaterial extends AFrameTask {
 		mVertexShader = mUseSingleColor ? "#define USE_SINGLE_COLOR\n" + mVertexShader : mVertexShader;
 		mVertexShader = mUseVertexColors ? "#define USE_VERTEX_COLOR\n" + mVertexShader : mVertexShader;
 		mFragmentShader = mTextureList.size() > 0 ? "#define TEXTURED\n" + fragmentShader : fragmentShader;
-		mFragmentShader = mUseSingleColor ? "#define USE_SINGLE_COLOR\n" + mFragmentShader : mFragmentShader;
-		mFragmentShader = mUseVertexColors ? "#define USE_VERTEX_COLOR\n" + mFragmentShader : mFragmentShader;
+		mFragmentShader = mUseSingleColor || mUseVertexColors ? "#define USE_COLOR\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mAlphaMaskingEnabled ? "#define ALPHA_MASK\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseNormalMap ? "#define NORMAL_MAP\n" + mFragmentShader : mFragmentShader;
