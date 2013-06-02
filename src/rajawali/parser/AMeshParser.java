@@ -48,7 +48,7 @@ public abstract class AMeshParser extends AParser implements IMeshParser {
 		public String ambientTexture;
 		public String diffuseTexture;
 		public String specularColorTexture;
-		public String specularHightlightTexture;
+		public String specularHighlightTexture;
 		public String alphaTexture;
 		public String bumpTexture;
 	}
