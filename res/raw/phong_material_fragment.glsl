@@ -17,6 +17,7 @@ uniform sampler2D uDiffuseTexture;
 uniform sampler2D uNormalTexture;
 uniform sampler2D uSpecularTexture;
 uniform sampler2D uAlphaTexture;
+uniform float uColorBlendFactor;
 
 #ifdef ALPHA_MASK
 	uniform float uAlphaMaskingThreshold;
@@ -41,6 +42,11 @@ void main() {
 
 #ifdef TEXTURED
    vec4 diffuse = texture2D(uDiffuseTexture, vTextureCoord);
+   #ifdef USE_COLOR
+      diffuse *= (1.0 - uColorBlendFactor); 
+      diffuse += vColor * uColorBlendFactor;
+   #endif
+   
    diffuse.rgb *= Kd.rgb;
 #else
    vec4 diffuse = vColor;

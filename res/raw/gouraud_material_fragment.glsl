@@ -13,6 +13,7 @@ uniform vec4 uAmbientColor;
 uniform vec4 uAmbientIntensity; 
 uniform vec4 uSpecularColor;
 uniform vec4 uSpecularIntensity;
+uniform float uColorBlendFactor;
 
 #ifdef ALPHA_MASK
 	uniform float uAlphaMaskingThreshold;
@@ -24,7 +25,13 @@ uniform vec4 uSpecularIntensity;
 void main() {
 #ifdef TEXTURED
    vec4 diffuse = texture2D(uDiffuseTexture, vTextureCoord);
+   #ifdef USE_COLOR
+   diffuse *= (1.0 - uColorBlendFactor); 
+   diffuse += vColor * uColorBlendFactor;
+   #endif  
+   
    diffuse.rgb *= vLightColor * vDiffuseIntensity;
+   
 #else
    vec4 diffuse = vColor;
    diffuse.rgb *= vDiffuseIntensity;

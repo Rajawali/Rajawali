@@ -1,7 +1,10 @@
 package rajawali.primitives;
 
+import android.opengl.Matrix;
 import rajawali.BaseObject3D;
+import rajawali.Camera;
 import rajawali.Camera2D;
+import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 /**
  * A screen quad is a plane that covers the whole screen. When used in conjunction with
@@ -35,7 +38,8 @@ import rajawali.Camera2D;
  *
  */
 public class ScreenQuad extends BaseObject3D {
-
+	private Camera2D mCamera;
+	private float[] mVPMatrix;
 	/**
 	 * Creates a new ScreenQuad.
 	 */
@@ -46,11 +50,15 @@ public class ScreenQuad extends BaseObject3D {
 	}
 
 	private void init() {
+		mCamera = new Camera2D();
+		mCamera.setProjectionMatrix(0, 0);
+		mVPMatrix = new float[16];
+		
 		float[] vertices = new float[] {
-				.5f, .5f, 0,
 				-.5f, .5f, 0,
-				-.5f, -.5f, 0,
-				.5f, -.5f, 0
+				.5f, .5f, 0,
+				.5f, -.5f, 0,
+				-.5f, -.5f, 0
 		};
 		float[] textureCoords = new float[] {
 				0, 0, 1, 0, 1, 1, 0, 1
@@ -61,7 +69,7 @@ public class ScreenQuad extends BaseObject3D {
 				0, 0, 1,
 				0, 0, 1
 		};
-		int[] indices = new int[] { 0, 1, 2, 0, 2, 3 };
+		int[] indices = new int[] { 0, 2, 1, 0, 3, 2 };
 		
 		setData(vertices, normals, textureCoords, null, indices);
 		
@@ -69,5 +77,16 @@ public class ScreenQuad extends BaseObject3D {
 		normals = null;
 		textureCoords = null;
 		indices = null;
+		
+		mEnableDepthTest = false;
+		mEnableDepthMask = false;
+	}
+	
+	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
+			ColorPickerInfo pickerInfo) {
+		float[] pMatrix = mCamera.getProjectionMatrix();
+		float[] viewMatrix = mCamera.getViewMatrix();
+		Matrix.multiplyMM(mVPMatrix, 0, pMatrix, 0, viewMatrix, 0);
+		super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, null);
 	}
 }

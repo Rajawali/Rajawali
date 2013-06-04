@@ -15,6 +15,7 @@ uniform vec4 uAmbientIntensity;
 uniform sampler2D uDiffuseTexture;
 uniform sampler2D uNormalTexture;
 uniform float uShininess;
+uniform float uColorBlendFactor;
 
 void main() {
    vec4 Kd = vec4(0.0);
@@ -30,7 +31,13 @@ void main() {
 %LIGHT_CODE%
 
 #ifdef TEXTURED
-   vec4 diffuse  = Kd * texture2D(uDiffuseTexture, vTextureCoord);
+   vec4 diffuse = texture2D(uDiffuseTexture, vTextureCoord);
+   #ifdef USE_COLOR
+      diffuse *= (1.0 - uColorBlendFactor); 
+      diffuse += vColor * uColorBlendFactor;
+   #endif
+
+   diffuse *= Kd;
 #else
    vec4 diffuse  = Kd * vColor;
 #endif

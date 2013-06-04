@@ -60,7 +60,9 @@ M_SKELETAL_ANIM_VERTEX_MATRIX
 
 %LIGHT_CODE%
 
-//vColor = aColor;
+#ifdef USE_VERTEX_COLOR
+	vColor = aColor;
+#endif
 
 #ifdef USE_SINGLE_COLOR
 	vColor = uSingleColor;

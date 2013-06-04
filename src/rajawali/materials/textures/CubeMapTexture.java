@@ -146,7 +146,5 @@ public class CubeMapTexture extends AMultiTexture {
 
 	@Override
 	void replace() throws TextureException {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -48,6 +48,7 @@ public abstract class AMaterial extends AFrameTask {
 	protected int muInterpolationHandle;
 	protected int muAlphaMaskingThresholdHandle;
 	protected int muSingleColorHandle;
+	protected int muColorBlendFactorHandle;
 
 	protected Stack<ALight> mLights;
 	protected boolean mUseSingleColor = false;
@@ -62,6 +63,7 @@ public abstract class AMaterial extends AFrameTask {
 	protected float[] mViewMatrix;
 	protected float[] mCameraPosArray;
 	protected float[] mSingleColor;
+	protected float mColorBlendFactor = .5f;
 	protected ArrayList<ATexture> mTextureList;
 	/**
 	 * This texture's unique owner identity String. This is usually the 
@@ -130,7 +132,8 @@ public abstract class AMaterial extends AFrameTask {
 		mVertexShader = mSkeletalAnimationEnabled ? "#define SKELETAL_ANIM\n" + mVertexShader : mVertexShader;
 		mVertexShader = mUseSingleColor ? "#define USE_SINGLE_COLOR\n" + mVertexShader : mVertexShader;
 		mVertexShader = mUseVertexColors ? "#define USE_VERTEX_COLOR\n" + mVertexShader : mVertexShader;
-		mFragmentShader = !mUseSingleColor && !mUseVertexColors ? "#define TEXTURED\n" + fragmentShader : fragmentShader;
+		mFragmentShader = mTextureList.size() > 0 ? "#define TEXTURED\n" + fragmentShader : fragmentShader;
+		mFragmentShader = mUseSingleColor || mUseVertexColors ? "#define USE_COLOR\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mAlphaMaskingEnabled ? "#define ALPHA_MASK\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseNormalMap ? "#define NORMAL_MAP\n" + mFragmentShader : mFragmentShader;
@@ -156,6 +159,7 @@ public abstract class AMaterial extends AFrameTask {
 		muMMatrixHandle = getUniformLocation("uMMatrix");
 		muVMatrixHandle = getUniformLocation("uVMatrix");
 		muSingleColorHandle = getUniformLocation("uSingleColor");
+		muColorBlendFactorHandle = getUniformLocation("uColorBlendFactor");
 		
 		if(mVertexAnimationEnabled == true) {
 			maNextFramePositionHandle = getAttribLocation("aNextFramePosition");
@@ -240,6 +244,8 @@ public abstract class AMaterial extends AFrameTask {
 		GLES20.glUseProgram(mProgram);
 		if(mAlphaMaskingEnabled == true && checkValidHandle(muAlphaMaskingThresholdHandle, "alpha masking threshold"))
 			GLES20.glUniform1f(muAlphaMaskingThresholdHandle, mAlphaMaskingThreshold);
+		if(checkValidHandle(muColorBlendFactorHandle, "Color Blend Factor"))
+			GLES20.glUniform1f(muColorBlendFactorHandle, mColorBlendFactor);
 	}
 
 	public void bindTextures() {
@@ -664,6 +670,24 @@ public abstract class AMaterial extends AFrameTask {
 	public boolean getAlphaMaskingEnabled()
 	{
 		return mAlphaMaskingEnabled;
+	}
+	
+	/**
+	 * The color blend factor determines the influence of the vertex color or
+	 * single color when mixed with a texture. A value of 0 means no influence. Only the 
+	 * color from the texture will be shown.
+	 * A value of 1.0 means only the color will be shown.
+	 * 
+	 * @param colorBlendFactor
+	 */
+	public void setColorBlendFactor(float colorBlendFactor)
+	{
+		mColorBlendFactor = Math.min(1.0f, Math.max(0, colorBlendFactor));
+	}
+	
+	public float getColorBlendFactor()
+	{
+		return mColorBlendFactor;
 	}
 	
 	public void setOwnerIdentity(String identity)
