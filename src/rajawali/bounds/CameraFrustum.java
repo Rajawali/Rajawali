@@ -6,6 +6,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
+import rajawali.math.Matrix4;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.Quaternion;
@@ -16,6 +17,7 @@ import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
 	
@@ -28,7 +30,7 @@ public class CameraFrustum implements IBoundingVolume {
 	protected Camera mCamera;
 	protected CameraVisibleFrustum mVisibleFrustum;
 	
-	protected static final double ROOT2_2 = Math.sqrt(2.0)/2.0;
+	protected static final double ROOT2_4 = Math.sqrt(2.0)/4.0;
 
 	protected final Vector3[] mPlanePoints = { 
 			new Vector3(), new Vector3(), new Vector3(), new Vector3(), 
@@ -116,7 +118,7 @@ public class CameraFrustum implements IBoundingVolume {
 	float[] mResultVec = new float[4];
 	Vector3 mTempPosition = new Vector3();
 	Vector3 Y = Vector3.getAxisVector(Axis.Y);
-	Vector3 negZ = Vector3.getAxisVector(Axis.Z);
+	Vector3 Z = Vector3.getAxisVector(Axis.Z);
 	
 	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisibleFrustum == null) {
@@ -126,6 +128,7 @@ public class CameraFrustum implements IBoundingVolume {
 			mVisibleFrustum.setColor(mBoundingColor.get());
 			mVisibleFrustum.setDrawingMode(GLES20.GL_LINE_LOOP);
 		}
+		mVisibleFrustum.setColor(0xFF00FF00);
 		mVisibleFrustum.update(true);
 		
 		Matrix.setIdentityM(mMMatrix, 0);
@@ -136,23 +139,34 @@ public class CameraFrustum implements IBoundingVolume {
 		if (mCamera.getLookAt() == null) {
 			Quaternion quat = mCamera.getOrientation();
 			if (quat.isIdentity()) {
-				quat = Y.getRotationTo(negZ);
+				quat = Y.getRotationTo(Z);
 			}
 			quat.toRotationMatrix(mRotateMatrix);
 		} else {
 			Vector3 temp = Vector3.subtract(mTempPosition, mCamera.getLookAt());
 			Quaternion quat = Y.getRotationTo(temp);
 			quat.toRotationMatrix(mRotateMatrix);
+			//System.arraycopy(mCamera.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
 		}
 		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
+		Log.i("Frustum", "---------");
+		Log.i("Frustum", "Frustum Height: " + mVisibleFrustum.getHeight());
 		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
 		
+		Log.i("Frustum", "Rotation Matrix: " + Matrix4.MatrixToString(mRotateMatrix));
+		Log.i("Frustum", "Offset Vector: \n" + mTempOffset[0] + ", " + mTempOffset[1] + ", " + mTempOffset[2] + ", " + mTempOffset[3]);
+		
 		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
+		
+		Log.i("Frustum", "Result Vector: \n" + mResultVec[0] + ", " + mResultVec[1] + ", " + mResultVec[2] + ", " + mResultVec[3]);
+		Log.i("Frustum", "Temp Position: " + mTempPosition);
+		Log.i("Frustum", "Look At: " + mCamera.getLookAt());
+		
 		mTempPosition.x -= mResultVec[0];
 		mTempPosition.y -= mResultVec[1];
 		mTempPosition.z -= mResultVec[2];
 		Matrix.setIdentityM(mTmpMatrix, 0);
-		Matrix.translateM(mTmpMatrix, 0, mTempPosition.x, mTempPosition.y, mTempPosition.z);
+		Matrix.translateM(mTmpMatrix, 0, mTempPosition.x, mTempPosition.y, mTempPosition.z); //TODO: Why neg y?
 		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
 		
 		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, null);
@@ -203,14 +217,16 @@ public class CameraFrustum implements IBoundingVolume {
 		
 		private void update(boolean update) {
 			double near, far;
-			Vector3 corner = mParent.mPlanePoints[2];
-			mRadiusTop = corner.x*ROOT2_2;
-			mMinorTop = corner.y*ROOT2_2;
-			near = corner.z;
-			corner = mParent.mPlanePoints[6];
-			mRadiusBase = corner.x*ROOT2_2;
-			mMinorBase = corner.y*ROOT2_2;
-			far = corner.z;
+			Vector3 pos_corner = mParent.mPlanePoints[2];
+			Vector3 neg_corner = mParent.mPlanePoints[0];
+			mRadiusTop = (pos_corner.x - neg_corner.x)*ROOT2_4;
+			mMinorTop = (pos_corner.y - neg_corner.y)*ROOT2_4;
+			near = mParent.mCamera.getNearPlane();
+			pos_corner = mParent.mPlanePoints[6];
+			neg_corner = mParent.mPlanePoints[4];
+			mRadiusBase = (pos_corner.x - neg_corner.x)*ROOT2_4;
+			mMinorBase = (pos_corner.y - neg_corner.y)*ROOT2_4;
+			far = mParent.mCamera.getFarPlane();
 			double major_squared = Math.pow(mRadiusBase, 2.0);
 			double minor_squared = Math.pow(mMinorBase, 2.0);
 			mEccentricity = Math.sqrt((major_squared-minor_squared)/major_squared);
