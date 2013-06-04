@@ -267,7 +267,7 @@ public class NPrism extends BaseObject3D {
 		}
 
 		if (update) {
-			updateBufferData(vertices, normals, texture, colors, indices);			
+			updateBufferData(vertices, null, null, null, null);			
 		} else {
 			setData(vertices, normals, texture, colors, indices);
 		}
@@ -275,7 +275,25 @@ public class NPrism extends BaseObject3D {
 	
 	protected void updateBufferData(float[] vertices, float[] normals, float[] texture, 
 			float[] colors, int[] indices) {
-		mGeometry.setVertices(vertices, true);
-		mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), mGeometry.getVertices(), 0);
+		if (vertices != null) {
+			mGeometry.setVertices(vertices, true);
+			mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), mGeometry.getVertices(), 0);
+		}
+		if (normals != null) {
+			mGeometry.setNormals(normals);
+			mGeometry.changeBufferData(mGeometry.getNormalBufferInfo(), mGeometry.getNormals(), 0);
+		}
+		if (texture != null) {
+			mGeometry.setTextureCoords(texture);
+			mGeometry.changeBufferData(mGeometry.getTexCoordBufferInfo(), mGeometry.getTextureCoords(), 0);
+		}
+		if (colors != null) {
+			mGeometry.setColors(colors);
+			mGeometry.changeBufferData(mGeometry.getColorBufferInfo(), mGeometry.getColors(), 0);
+		}
+		if (indices != null) {
+			mGeometry.setIndices(indices);
+			mGeometry.changeBufferData(mGeometry.getIndexBufferInfo(), mGeometry.getIndices(), 0);
+		}
 	}
 }

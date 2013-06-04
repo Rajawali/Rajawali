@@ -106,7 +106,7 @@ public class CameraFrustum implements IBoundingVolume {
 	}
 
 	public void calculateBounds(Geometry3D geometry) {
-		RajLog.i("[" + this.getClass().getName()
+		RajLog.w("[" + this.getClass().getName()
 				+ "] The method CameraFrustum#calculateBounds(Geometry3D) does nothing. You should remove your call to it.");
 	}
 
@@ -116,7 +116,7 @@ public class CameraFrustum implements IBoundingVolume {
 	float[] mResultVec = new float[4];
 	Vector3 mTempPosition = new Vector3();
 	Vector3 Y = Vector3.getAxisVector(Axis.Y);
-	Vector3 negZ = Vector3.getAxisVector(Axis.Z).inverse();
+	Vector3 negZ = Vector3.getAxisVector(Axis.Z);
 	
 	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisibleFrustum == null) {

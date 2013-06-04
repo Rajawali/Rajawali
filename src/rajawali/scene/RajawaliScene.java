@@ -578,6 +578,14 @@ public class RajawaliScene extends AFrameTask {
 				mNextCamera = null;
 			}
 		}
+		// Update all registered animations
+		synchronized (mAnimations) {
+			for (int i = 0, j = mAnimations.size(); i < j; ++i) {
+				Animation3D anim = mAnimations.get(i);
+				if (anim.isPlaying())
+					anim.update(deltaTime);
+			}
+		}
 		
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 
@@ -629,20 +637,10 @@ public class RajawaliScene extends AFrameTask {
 			}
 		}
 
-		
-		// Update all registered animations
-		synchronized (mAnimations) {
-			for (int i = 0, j = mAnimations.size(); i < j; ++i) {
-				Animation3D anim = mAnimations.get(i);
-				if (anim.isPlaying())
-					anim.update(deltaTime);
-			}
-		}
-
 		synchronized (mChildren) {
 			if (mSceneGraph != null) {
 				//If we are using the scenegraph cull to the current camera
-				Log.i("Scene", "Camera bounding volume: " + mCamera.getGraphNode());
+				Log.i("Scene", "Camera node: " + mCamera.getGraphNode());
 				List<IGraphNodeMember> survivors = mSceneGraph.cullFromBoundingVolume(
 						mCamera.getTransformedBoundingVolume(), mCamera.getGraphNode());
 				for (int i = 0, j = survivors.size(); i < j; ++i) {
