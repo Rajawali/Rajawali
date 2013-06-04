@@ -492,6 +492,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			mMaterialManager.setContext(this.getContext());
 			mMaterialManager.registerRenderer(this);
 			
+			getCurrentScene().resetGLState();
+			
 			initScene();
 		}
 
