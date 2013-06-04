@@ -531,8 +531,7 @@ public final class Quaternion {
 		return "Quaternion.w " + w + " .x: " + x + " .y: " + y + " .z: " + z;
 	}
 	
-	public static Quaternion getRotationTo(final Vector3 src, final Vector3 dest)
-    {
+	public static Quaternion getRotationTo(final Vector3 src, final Vector3 dest) {
         Quaternion q = new Quaternion();
         Vector3 v1 = new Vector3(src);
         Vector3 v2 = new Vector3(dest);
@@ -541,57 +540,44 @@ public final class Quaternion {
 
         float d = Vector3.dot(v1, v2);
 
-        if (d >= 1.0f)
-        {
+        if (d >= 1.0f) {
             return new Quaternion().setIdentity();
         }
 
-        if (d < (1e-6f - 1.0f))
-        {
-            //                   // Generate an axis
-            //                   Number3D axis = Number3D::UNIT_X.crossProduct(*this);
-            //                   if (axis.isZeroLength()) // pick another if colinear
-            //                       axis = Number3D::UNIT_Y.crossProduct(*this);
-            //                   axis.normalise();
-            //                   q.FromAngleAxis(Radian(Math::PI), axis);
+        if (d < (1e-6f - 1.0f)) {
+            //Generate an axis
+            /*Number3D axis = Number3D::UNIT_X.crossProduct(*this);
+            if (axis.isZeroLength()) // pick another if colinear
+            	axis = Number3D::UNIT_Y.crossProduct(*this);
+            axis.normalise();
+            q.FromAngleAxis(Radian(Math::PI), axis);*/
 
             // Generate an axis
             Vector3 axis = Vector3.cross(Vector3.getAxisVector(Axis.X), v1);
-
-            if (axis.length() == 0.0f)
-            {
+            if (axis.length() == 0.0f) {
                 axis = Vector3.cross(Vector3.getAxisVector(Axis.Y), v1);
             }
-
             axis.normalize();
-
             q.fromAngleAxis(180, axis);
-        }
-        else
-        {
-            //               Real s = Math::Sqrt( (1+d)*2 );
-            //               Real invs = 1 / s;
-
-            //               Number3D c = v0.crossProduct(v1);
-
-            //               q.x = c.x * invs;
-            //               q.y = c.y * invs;
-            //               q.z = c.z * invs;
-            //               q.w = s * 0.5;
-            //               q.normalise();
+        } else {
+            /*Real s = Math::Sqrt( (1+d)*2 );
+            Real invs = 1 / s;
+            Number3D c = v0.crossProduct(v1);
+            q.x = c.x * invs;
+            q.y = c.y * invs;
+            q.z = c.z * invs;
+            q.w = s * 0.5;
+            q.normalise();*/
 
             float s = (float)Math.sqrt((1f + d) * 2f);
             float invs = 1 / s;
-
             Vector3 c = Vector3.cross(v1, v2);
-
             q.x = (float) (c.x * invs);
             q.y = (float) (c.y * invs);
             q.z = (float) (c.z * invs);
             q.w = (float) (s * 0.5f);
             q.normalize();
         } 
-
         return q;
     }
 }
