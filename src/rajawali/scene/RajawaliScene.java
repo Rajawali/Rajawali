@@ -24,6 +24,7 @@ import rajawali.renderer.GroupTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.renderer.plugins.IRendererPlugin;
+import rajawali.renderer.plugins.Plugin;
 import rajawali.scenegraph.IGraphNode;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scenegraph.IGraphNodeMember;
@@ -373,6 +374,47 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	public boolean clearChildren() {
 		return queueClearTask(AFrameTask.TYPE.OBJECT3D);
+	}
+	
+	/**
+	 * Requests the addition of a plugin to the scene. The plugin
+	 * will be added to the end of the list. 
+	 * 
+	 * @param plugin {@link Plugin} child to be added.
+	 * @return True if the plugin was successfully queued for addition.
+	 */
+	public boolean addPlugin(Plugin plugins) {
+		return queueAddTask(plugins);
+	}
+	
+	/**
+	 * Requests the addition of a {@link Collection} of plugins to the scene.
+	 * 
+	 * @param plugins {@link Collection} of {@link BaseObject3D} children to add.
+	 * @return boolean True if the addition was successfully queued.
+	 */
+	public boolean addPlugins(Collection<BaseObject3D> plugins) {
+		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(plugins);
+		return queueAddAllTask(tasks);
+	}
+	
+	/**
+	 * Requests the removal of a plugin from the scene.
+	 * 
+	 * @param plugin {@link Plugin} child to be removed.
+	 * @return boolean True if the plugin was successfully queued for removal.
+	 */
+	public boolean removePlugin(Plugin plugin) {
+		return queueRemoveTask(plugin);
+	}
+	
+	/**
+	 * Requests the removal of all plugins from the scene.
+	 * 
+	 * @return boolean True if the clear was successfully queued.
+	 */
+	public boolean clearPlugins() {
+		return queueClearTask(AFrameTask.TYPE.PLUGIN);
 	}
 	
 	/**
