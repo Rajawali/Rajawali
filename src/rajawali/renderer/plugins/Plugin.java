@@ -12,6 +12,11 @@ import android.opengl.GLES20;
 
 /**
  * Most plugins should generally inherit from this Plugin abstract class.
+ * 
+ * Note that if you do not inherit from this abstract class, you will still need to 
+ * inherit from {@link AFrameTask} or you will not be able to properly interface with 
+ * the task queue. 
+ * 
  * @author Andrew Jo
  */
 public abstract class Plugin extends AFrameTask implements IRendererPlugin {

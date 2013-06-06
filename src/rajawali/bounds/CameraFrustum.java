@@ -6,6 +6,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
+import rajawali.math.Matrix4;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.Quaternion;
@@ -14,8 +15,10 @@ import rajawali.math.Vector3.Axis;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
+import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
 	
@@ -136,7 +139,7 @@ public class CameraFrustum implements IBoundingVolume {
 		mTempPosition.setAllFrom(mCamera.getPosition());
 		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
 		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
-		//mVisibleFrustum.setOrientation();
+		
 		if (mCamera.getLookAt() == null) {
 			Quaternion quat = mCamera.getOrientation();
 			if (quat.isIdentity()) {
@@ -149,6 +152,7 @@ public class CameraFrustum implements IBoundingVolume {
 			mVisibleFrustum.setOrientation();
 			System.arraycopy(mVisibleFrustum.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
 		}
+		
 		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
 		mTempPosition.x -= mResultVec[0];
 		mTempPosition.y -= mResultVec[1];
@@ -218,6 +222,55 @@ public class CameraFrustum implements IBoundingVolume {
 			mEccentricity = Math.sqrt((major_squared-minor_squared)/major_squared);
 			mHeight = Math.abs(far - near);
 			init(update);
+		}
+		
+		@Override
+		public void calculateModelMatrix(final float[] parentMatrix) {
+			Matrix.setIdentityM(mMMatrix, 0);
+			Matrix.setIdentityM(mScalematrix, 0);
+			Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
+
+			Matrix.setIdentityM(mRotateMatrix, 0);
+
+			setOrientation();
+			if (mLookAt == null) {
+				mOrientation.toRotationMatrix(mRotateMatrix);
+			} else {
+				System.arraycopy(getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
+			}
+			Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
+			Matrix.setIdentityM(mTmpMatrix, 0);
+			Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
+			Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
+			if (parentMatrix != null) {
+				Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
+				System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
+			}
+		}
+		
+		@Override
+		public void setOrientation() {
+			if(!mRotationDirty && mLookAt == null) return;
+
+			/*mOrientation.setIdentity();
+			if(mLookAt != null) {		
+				Matrix.setIdentityM(mLocalTempMatrix, 0);
+				Matrix.setIdentityM(mTmpMatrix, 0);
+				Matrix.setLookAtM(mTmpMatrix, 0, mPosition.x, mPosition.y,
+						mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, mParent.mCamera.getUpAxis().x, mParent.mCamera.getUpAxis().y,
+						mParent.mCamera.getUpAxis().z);
+				Matrix.rotateM(mLocalTempMatrix, 0, 90, 1, 0, 0);
+				setLookAtMatrix(mLocalTempMatrix);
+			} else {
+				mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.y, mAxisY));
+				mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.z, mAxisZ));
+				mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.x, mAxisX));
+				if(mIsCamera)
+					mOrientation.inverseSelf();
+			}*/
+			super.setOrientation();
+			Matrix.rotateM(getLookAtMatrix(), 0, 90, 1, 0, 0);
+			//setLookAtMatrix(mLocalTempMatrix);
 		}
 	}
 }

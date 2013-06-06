@@ -53,7 +53,7 @@ public class Camera extends ATransformable3D {
 	public Camera() {
 		super();
 		mLocalOrientation = Quaternion.getIdentity();
-		mUpAxis = new Vector3(0, 1, 0);
+		mUpAxis = Vector3.getUpVector();
 		mIsCamera = true;
 		mFrustum = new CameraFrustum(this);
 		getViewMatrix();
@@ -143,6 +143,12 @@ public class Camera extends ATransformable3D {
     			mUpAxis.setAll(0, 1, 0);
     		else
     			mUpAxis.setAll(0, 0, 1);
+    	}
+    }
+    
+    public Vector3 getUpAxis() {
+    	synchronized (mFrustumLock) {
+    		return mUpAxis;
     	}
     }
     
