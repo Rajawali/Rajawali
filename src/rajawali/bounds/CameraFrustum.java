@@ -6,7 +6,6 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Matrix4;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.Quaternion;
@@ -17,7 +16,6 @@ import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
 	
@@ -136,40 +134,28 @@ public class CameraFrustum implements IBoundingVolume {
 
 		mCamera.setOrientation();
 		mTempPosition.setAllFrom(mCamera.getPosition());
+		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
+		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
+		//mVisibleFrustum.setOrientation();
 		if (mCamera.getLookAt() == null) {
 			Quaternion quat = mCamera.getOrientation();
 			if (quat.isIdentity()) {
 				quat = Y.getRotationTo(Z);
 			}
+			mVisibleFrustum.setOrientation(quat);
 			quat.toRotationMatrix(mRotateMatrix);
 		} else {
-			Vector3 temp = Vector3.subtract(mTempPosition, mCamera.getLookAt());
-			Quaternion quat = Y.getRotationTo(temp);
-			quat.toRotationMatrix(mRotateMatrix);
-			//System.arraycopy(mCamera.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
+			mVisibleFrustum.setLookAt(mCamera.getLookAt());
+			mVisibleFrustum.setOrientation();
+			System.arraycopy(mVisibleFrustum.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
 		}
-		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
-		Log.i("Frustum", "---------");
-		Log.i("Frustum", "Frustum Height: " + mVisibleFrustum.getHeight());
-		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
-		
-		Log.i("Frustum", "Rotation Matrix: " + Matrix4.MatrixToString(mRotateMatrix));
-		Log.i("Frustum", "Offset Vector: \n" + mTempOffset[0] + ", " + mTempOffset[1] + ", " + mTempOffset[2] + ", " + mTempOffset[3]);
-		
 		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
-		
-		Log.i("Frustum", "Result Vector: \n" + mResultVec[0] + ", " + mResultVec[1] + ", " + mResultVec[2] + ", " + mResultVec[3]);
-		Log.i("Frustum", "Temp Position: " + mTempPosition);
-		Log.i("Frustum", "Look At: " + mCamera.getLookAt());
-		
 		mTempPosition.x -= mResultVec[0];
 		mTempPosition.y -= mResultVec[1];
 		mTempPosition.z -= mResultVec[2];
-		Matrix.setIdentityM(mTmpMatrix, 0);
-		Matrix.translateM(mTmpMatrix, 0, mTempPosition.x, mTempPosition.y, mTempPosition.z); //TODO: Why neg y?
-		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
+		mVisibleFrustum.setPosition(mTempPosition);
 		
-		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, null);
+		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
 	}
 
 	public void transform(float[] matrix) {
