@@ -160,7 +160,7 @@ public class CameraFrustum implements IBoundingVolume {
 		mTempPosition.z -= mResultVec[2];
 		mVisibleFrustum.setPosition(mTempPosition);
 		
-		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mRotateMatrix, null);
+		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
 	}
 
 	public void transform(float[] matrix) {
