@@ -151,6 +151,7 @@ public class CameraFrustum implements IBoundingVolume {
 			mVisibleFrustum.setLookAt(mCamera.getLookAt());
 			mVisibleFrustum.setOrientation();
 			System.arraycopy(mVisibleFrustum.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
+			Matrix.rotateM(mRotateMatrix, 0, 270, 1, 0, 0);
 		}
 		
 		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
@@ -159,7 +160,7 @@ public class CameraFrustum implements IBoundingVolume {
 		mTempPosition.z -= mResultVec[2];
 		mVisibleFrustum.setPosition(mTempPosition);
 		
-		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
+		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mRotateMatrix, null);
 	}
 
 	public void transform(float[] matrix) {
@@ -224,13 +225,14 @@ public class CameraFrustum implements IBoundingVolume {
 			init(update);
 		}
 		
-		@Override
+		/*@Override
 		public void calculateModelMatrix(final float[] parentMatrix) {
 			Matrix.setIdentityM(mMMatrix, 0);
-			Matrix.setIdentityM(mScalematrix, 0);
-			Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
+			//Matrix.setIdentityM(mScalematrix, 0);
+			//Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
 
 			Matrix.setIdentityM(mRotateMatrix, 0);
+			Matrix.setIdentityM(mTmpMatrix, 0);
 
 			setOrientation();
 			if (mLookAt == null) {
@@ -238,39 +240,20 @@ public class CameraFrustum implements IBoundingVolume {
 			} else {
 				System.arraycopy(getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
 			}
-			Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
-			Matrix.setIdentityM(mTmpMatrix, 0);
-			Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
+			Matrix.translateM(mTmpMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
+			//Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
 			Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
 			if (parentMatrix != null) {
 				Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
 				System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
 			}
-		}
+		}*/
 		
-		@Override
+		/*@Override
 		public void setOrientation() {
 			if(!mRotationDirty && mLookAt == null) return;
-
-			/*mOrientation.setIdentity();
-			if(mLookAt != null) {		
-				Matrix.setIdentityM(mLocalTempMatrix, 0);
-				Matrix.setIdentityM(mTmpMatrix, 0);
-				Matrix.setLookAtM(mTmpMatrix, 0, mPosition.x, mPosition.y,
-						mPosition.z, mLookAt.x, mLookAt.y, mLookAt.z, mParent.mCamera.getUpAxis().x, mParent.mCamera.getUpAxis().y,
-						mParent.mCamera.getUpAxis().z);
-				Matrix.rotateM(mLocalTempMatrix, 0, 90, 1, 0, 0);
-				setLookAtMatrix(mLocalTempMatrix);
-			} else {
-				mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.y, mAxisY));
-				mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.z, mAxisZ));
-				mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.x, mAxisX));
-				if(mIsCamera)
-					mOrientation.inverseSelf();
-			}*/
 			super.setOrientation();
 			Matrix.rotateM(getLookAtMatrix(), 0, 90, 1, 0, 0);
-			//setLookAtMatrix(mLocalTempMatrix);
-		}
+		}*/
 	}
 }
