@@ -23,6 +23,7 @@ import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Vector3;
+import rajawali.renderer.plugins.Plugin;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.FPSUpdateListener;
 import rajawali.util.ObjectColorPicker;
@@ -392,6 +393,27 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	public boolean removeChild(BaseObject3D child) {
 		return mCurrentScene.removeChild(child);
+	}
+	
+	/**
+	 * Adds a {@link Plugin} plugin to the current scene.
+	 * 
+	 * @param plugin {@link Plugin} object to be added.
+	 * @return boolean True if the addition was successfully queued.
+	 */
+	public boolean addPlugin(Plugin plugin) {
+		return mCurrentScene.addPlugin(plugin);
+	}
+	
+	/**
+	 * Removes a {@link Plugin} child from the current scene.
+	 * If the plugin is not a member of the scene, nothing will happen.
+	 * 
+	 * @param plugin {@link Plugin} object to be removed.
+	 * @return boolean True if the removal was successfully queued.
+	 */
+	public boolean removePlugin(Plugin plugin) {
+		return mCurrentScene.removePlugin(plugin);
 	}
 	
 	/*
