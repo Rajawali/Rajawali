@@ -446,10 +446,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
 		mLastRender = SystemClock.elapsedRealtime();
 		
-		if (!mCurrentScene.hasPickerInfo()) {
-			int color = mCurrentScene.getBackgroundColor();
-			GLES20.glClearColor(Color.red(color)/255f, Color.green(color)/255f, Color.blue(color)/255f, Color.alpha(color)/255f);
-		}
 		mCurrentScene.render(deltaTime, null);
 	}
 

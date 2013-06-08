@@ -62,6 +62,7 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 * [Introducing Plugin Architecture for Rajawali](http://www.andrewjo.com/blog/mobile-development/introducing-plugin-architecture-for-rajawali)
 * [Object Occlusion Testing in Rajawali](http://www.andrewjo.com/blog/mobile-development/object-occlusion-testing-in-rajawali)
 * [Ниже пример как сделать простую 3D модель и запустить сцену на Android](http://konsultantspb.ru/3d-engine-rajawali/)
+* [Android in razvoj 3D igre](http://www.monitor.si/clanek/android-in-razvoj-3d-igre/142302/)
 
 ## Learn Rajawali at a Training Center
 * [Android Game Development in India](http://virtualinfocom.com/android_game/android_game_development_institute.html)

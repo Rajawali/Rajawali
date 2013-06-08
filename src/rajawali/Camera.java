@@ -2,9 +2,9 @@ package rajawali;
 
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.MathUtil;
+import rajawali.math.Quaternion;
 import rajawali.math.Vector3;
 import rajawali.math.Vector3.Axis;
-import rajawali.math.Quaternion;
 import rajawali.renderer.AFrameTask;
 import android.opengl.Matrix;
 
@@ -68,7 +68,8 @@ public class Camera extends ATransformable3D {
 					setOrientation();
 					mRotationDirty = false;
 				}
-				mOrientation.toRotationMatrix(mRotationMatrix);
+				if(mUseRotationMatrix == false)
+					mOrientation.toRotationMatrix(mRotationMatrix);
 				Matrix.setIdentityM(mTmpMatrix, 0);
 				Matrix.setIdentityM(mVMatrix, 0);
 				Matrix.translateM(mTmpMatrix, 0, -mPosition.x, -mPosition.y, -mPosition.z);
@@ -101,6 +102,13 @@ public class Camera extends ATransformable3D {
 			mRotationMatrix = m;
 		}
 	}
+	
+	public float[] getRotationMatrix()
+	{
+		synchronized (mFrustumLock) {
+			return mRotationMatrix;
+		}
+	}
 
 	public void setProjectionMatrix(int width, int height) {
 		synchronized (mFrustumLock) {
@@ -114,6 +122,14 @@ public class Camera extends ATransformable3D {
 			Matrix.frustumM(mProjMatrix, 0, -frustumW, frustumW, -frustumH,
 					frustumH, getNearPlane(), getFarPlane());
 		}
+	}
+	
+	public void setProjectionMatrix(float fieldOfView, int width, int height)
+	{
+		synchronized (mFrustumLock) {
+			mFieldOfView = fieldOfView;
+			setProjectionMatrix(width, height);
+		}		
 	}
 
     public void setUpAxis(float x, float y, float z) {

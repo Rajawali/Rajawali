@@ -165,6 +165,11 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 	
+	public void setRotation(float[] rotationMatrix)
+	{
+		mOrientation.fromRotationMatrix(rotationMatrix);
+	}
+	
 	public void setRotX(float rotX) {
 		mRotation.x = rotX;
 		mRotationDirty = true;
