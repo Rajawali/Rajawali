@@ -22,6 +22,11 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 
 [Download the free app](https://market.android.com/details?id=com.monyetmabuk.rajawali.tutorials)
 
+## Rajawali + Augmented Reality
+
+(RajawaliVuforia)[https://github.com/MasDennis/RajawaliVuforia]
+(http://www.youtube.com/watch?v=rjLa4K9Ffuo)[http://www.youtube.com/watch?v=rjLa4K9Ffuo]
+
 ## Tutorials
 
 1. [Basic Setup & a Sphere](https://github.com/MasDennis/Rajawali/wiki/Tutorial-01----Basic-Setup-&-a-Sphere)  
