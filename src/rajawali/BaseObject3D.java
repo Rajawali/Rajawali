@@ -43,6 +43,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected float[] mRotateMatrix = new float[16];
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
+	protected float[] mParentMatrix;
 	protected float[] mColor;
 
 	protected AMaterial mMaterial;
@@ -244,6 +245,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 		preRender();
 
+		mParentMatrix = parentMatrix;
 		// -- move view matrix transformation first
 		calculateModelMatrix(parentMatrix);
 		//Create MVP Matrix from View-Projection Matrix
@@ -810,6 +812,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public boolean isDepthMaskEnabled() {
 		return mEnableDepthMask;
+	}
+	
+	public Vector3 getWorldPosition() {
+		if(mParentMatrix == null) return mPosition;
+		Vector3 worldPos = mPosition.clone();
+		worldPos.multiply(mParentMatrix);
+		return worldPos;
 	}
 
 	/**
