@@ -25,6 +25,7 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 ## Rajawali + Augmented Reality
 
 [RajawaliVuforia GitHub](https://github.com/MasDennis/RajawaliVuforia)
+
 [YouTube Video of RajawaliVuforia in action](http://www.youtube.com/watch?v=rjLa4K9Ffuo)
 
 ## Tutorials
