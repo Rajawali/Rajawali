@@ -106,10 +106,10 @@ public class MaterialManager extends AResourceManager {
 	
 	public void taskReset(RajawaliRenderer renderer)
 	{
-		if (renderer != mRenderer)
-			return;
-
-		taskReset();
+		if (mRenderers.size() == 0)
+		{
+			taskReset();
+		}
 	}
 	
 	public int getNumMaterials()

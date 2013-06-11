@@ -112,9 +112,11 @@ public abstract class AMaterial extends AFrameTask {
 		if(mLights != null) mLights.clear();
 		if(mTextureList != null) mTextureList.clear();
 
-		GLES20.glDeleteShader(mVShaderHandle);
-		GLES20.glDeleteShader(mFShaderHandle);
-		GLES20.glDeleteProgram(mProgram);
+		if(RajawaliRenderer.hasGLContext()) {
+			GLES20.glDeleteShader(mVShaderHandle);
+			GLES20.glDeleteShader(mFShaderHandle);
+			GLES20.glDeleteProgram(mProgram);
+		}
 	}
 
 	void reload()

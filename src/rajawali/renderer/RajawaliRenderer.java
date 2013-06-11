@@ -9,7 +9,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
 import rajawali.BaseObject3D;
@@ -32,7 +34,6 @@ import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
@@ -438,7 +439,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			double elapsedS = (now - mStartTime) / 1.0e9;
 			double msPerFrame = (1000 * elapsedS / mFrameCount);
 			mLastMeasuredFPS = 1000 / msPerFrame;
-			//RajLog.d("ms / frame: " + msPerFrame + " - fps: " + mLastMeasuredFPS);
 
 			mFrameCount = 0;
 			mStartTime = now;
@@ -453,7 +453,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		{
 			if(error != mLastReportedGLError)
 			{
-				RajLog.e("OpenGL Error: " + GLU.gluErrorString(error));
+				RajLog.e("OpenGL Error: " + GLU.gluErrorString(error) + " " + this.hashCode());
 				mLastReportedGLError = error;
 			}
 		} else {
@@ -517,11 +517,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 		if (!mSceneCachingEnabled) {
 			mTextureManager.reset();
-//			mMaterialManager.reload();
+			mMaterialManager.reset();
 			clearScenes();
 		} else if(mSceneCachingEnabled && mSceneInitialized) {
-			mTextureManager.reload();
-	//		mMaterialManager.reload();
+			mTextureManager.taskReload();
+			mMaterialManager.taskReload();
 			reloadScenes();
 		}
 		mSceneInitialized = true;
@@ -547,11 +547,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public void startRendering() {
+		if(!mSceneInitialized) return;
 		mLastRender = SystemClock.elapsedRealtime();
 		
-		if (mTimer != null) {
-			mTimer.cancel();
-			mTimer.purge();
+		if (mTimer != null) {return;
+//			mTimer.cancel();
+	//		mTimer.purge();
 		}
 
 		mTimer = new Timer();
@@ -582,17 +583,17 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public void onSurfaceDestroyed() {
-		stopRendering();
-		mTextureManager.unregisterRenderer(this);
-		mMaterialManager.unregisterRenderer(this);
-		if (mTextureManager != null)
-			mTextureManager.taskReset(this);
-		if (mMaterialManager != null)
-			mMaterialManager.taskReset(this);
 		synchronized (mScenes) {
+			mTextureManager.unregisterRenderer(this);
+			mMaterialManager.unregisterRenderer(this);
+			if (mTextureManager != null)
+				mTextureManager.taskReset(this);
+			if (mMaterialManager != null)
+				mMaterialManager.taskReset(this);
 			for (int i = 0, j = mScenes.size(); i < j; ++i)
 				mScenes.get(i).destroyScene();
 		}
+		stopRendering();
 	}
 
 	public void setSharedPreferences(SharedPreferences preferences) {
@@ -1262,6 +1263,18 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			RajLog.e(sb.toString());
 		}
 		return error;
+	}
+	
+	/**
+	 * Indicates whether the OpenGL context is still alive or not.
+	 * 
+	 * @return
+	 */
+	public static boolean hasGLContext()
+	{
+		EGL10 egl = (EGL10)EGLContext.getEGL();
+		EGLContext eglContext = egl.eglGetCurrentContext();
+		return eglContext != EGL10.EGL_NO_CONTEXT;
 	}
 
 	public void setUsesCoverageAa(boolean usesCoverageAa) {
