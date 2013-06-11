@@ -82,6 +82,14 @@ public class FBXParser extends AMeshParser {
 		mObjStack.add(mFbx);
 	}
 	
+	public FBXParser(RajawaliRenderer renderer, File file) {
+		super(renderer, file);
+		mRenderer = renderer;
+		mObjStack = new Stack<Object>();
+		mFbx = new FBXValues();
+		mObjStack.add(mFbx);
+	}
+	
 	public FBXParser(RajawaliRenderer renderer, int resourceId) {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 		mRenderer = renderer;
