@@ -3,6 +3,7 @@ package rajawali.animation;
 import java.util.Stack;
 
 import rajawali.math.Vector3;
+import rajawali.util.RajLog;
 
 public class BezierPath3D implements ISpline {
 
@@ -28,7 +29,6 @@ public class BezierPath3D implements ISpline {
 	}
 
 	public Vector3 calculatePoint(float t) {
-
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;
@@ -44,6 +44,9 @@ public class BezierPath3D implements ISpline {
 
 	protected Vector3 p(float t) {
 		int currentIndex = (int) Math.floor((t == 1 ? t - .000001f : t) * mNumPoints);
+		
+		currentIndex = Math.max(currentIndex, 2);
+		currentIndex = Math.min(currentIndex, mPoints.size() - 2);
 
 		CubicBezier3D currentPoint = mPoints.get(currentIndex);
 
