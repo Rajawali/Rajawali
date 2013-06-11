@@ -14,9 +14,11 @@ public class RajLog {
 	private static GL10 gl;
 
 	public static final void d(String msg) {
-		if (_logDebug) {
+		if (msg == null)
+			return;
+		
+		if (_logDebug)
 			Log.d(TAG, msg);
-		}
 	}
 	
 	public static final void d(float[] values) {

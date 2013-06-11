@@ -2,7 +2,6 @@ package rajawali.parser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -39,9 +38,13 @@ public class StlParser extends AMeshParser {
 	public StlParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
+	
+	public StlParser() {
+		super(null, "");
+	}
 
-	public StlParser(Resources resources, TextureManager textureManager, int resourceId) {
-		super(resources, textureManager, resourceId);
+	public StlParser(Resources resources, int resourceId) {
+		super(resources, null, resourceId);
 	}
 	
 	public StlParser(RajawaliRenderer renderer, File file) {
@@ -109,30 +112,6 @@ public class StlParser extends AMeshParser {
 		}
 
 		return this;
-	}
-
-	private BufferedReader getBufferedReader() throws FileNotFoundException {
-		BufferedReader buffer = null;
-
-		if (mFile == null) {
-			buffer = new BufferedReader(new InputStreamReader(mResources.openRawResource(mResourceId)));
-		} else {
-			buffer = new BufferedReader(new FileReader(mFile));
-		}
-
-		return buffer;
-	}
-
-	private LittleEndianDataInputStream getLittleEndianInputStream() throws FileNotFoundException {
-		LittleEndianDataInputStream dis = null;
-
-		if (mFile == null) {
-			dis = new LittleEndianDataInputStream(mResources.openRawResource(mResourceId));
-		} else {
-			dis = new LittleEndianDataInputStream(new FileInputStream(mFile));
-		}
-
-		return dis;
 	}
 
 	/**
