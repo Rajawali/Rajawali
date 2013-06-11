@@ -44,7 +44,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 					fc.append("else {\n");
 						fc.append("spot_factor").append(i).append(" = 0.0;\n");
 					fc.append("}\n");
-					fc.append("L = vec3(L.y, L.x, L.z);\n");
+					fc.append("L = vec3(L.x, L.y, L.z) * spot_factor").append(i).append(";\n");
 					fc.append("}\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
@@ -55,10 +55,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 			fc.append("power = uLightPower").append(i).append(" * NdotL * vAttenuation").append(i).append(";\n");
 			fc.append("intensity += power;\n"); 
 			
-			if(light.getLightType() == ALight.SPOT_LIGHT)
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * spot_factor").append(i).append(";\n");
-			else
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * power;\n");
+			fc.append("Kd.rgb += uLightColor").append(i).append(" * power;\n");
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", fc.toString()));
