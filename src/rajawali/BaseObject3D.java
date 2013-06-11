@@ -50,6 +50,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected List<ALight> mLights;
 
 	protected Geometry3D mGeometry;
+	protected BaseObject3D mParent;
 	protected List<BaseObject3D> mChildren;
 	protected String mName;
 
@@ -547,6 +548,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	public void addChild(BaseObject3D child) {
+		if(child.getParent() != null)
+			child.getParent().removeChild(child);
 		mChildren.add(child);
 		if (mRenderChildrenAsBatch)
 			child.setPartOfBatch(true);
@@ -554,6 +557,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public boolean removeChild(BaseObject3D child) {
 		return mChildren.remove(child);
+	}
+	
+	public BaseObject3D getParent()
+	{
+		return mParent;
 	}
 
 	/**
