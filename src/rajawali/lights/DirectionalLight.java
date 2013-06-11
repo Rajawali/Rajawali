@@ -1,12 +1,17 @@
 package rajawali.lights;
 
 import rajawali.math.Vector3;
+import rajawali.math.Vector3.Axis;
 
 public class DirectionalLight extends ALight {
 	protected float[] mDirection = new float[3];
+	protected float[] mRotationMatrix = new float[16];
+	protected Vector3 mDirectionVec = new Vector3();
+	final protected Vector3 mForwardAxis = Vector3.getAxisVector(Axis.Z);
 
 	public DirectionalLight() {
-		this(0, -1.0f, 1.0f);
+		super(DIRECTIONAL_LIGHT);
+		setRotY(180);
 	}
 
 	public DirectionalLight(float xDir, float yDir, float zDir) {
@@ -15,9 +20,7 @@ public class DirectionalLight extends ALight {
 	}
 
 	public void setDirection(float x, float y, float z) {
-		mDirection[0] = x;
-		mDirection[1] = y;
-		mDirection[2] = z;
+		setLookAt(x, y, z);
 	}
 
 	public void setDirection(Vector3 dir) {
@@ -25,15 +28,18 @@ public class DirectionalLight extends ALight {
 	}
 
 	public float[] getDirection() {
+		setOrientation();
+		mDirectionVec.setAllFrom(mForwardAxis);
+		
+		if (mLookAt == null) {
+			mOrientation.toRotationMatrix(mRotationMatrix);
+		} else {
+			System.arraycopy(mLookAtMatrix, 0, mRotationMatrix, 0, 16);
+		}
+		mDirectionVec.multiply(mRotationMatrix);
+		mDirection[0] = mDirectionVec.x;
+		mDirection[1] = mDirectionVec.y;
+		mDirection[2] = mDirectionVec.z;
 		return mDirection;
-	}
-
-	public void setLookAt(float x, float y, float z) {
-		super.setLookAt(x, y, z);
-		Vector3 dir = new Vector3(x, y, z);
-		dir.subtract(mPosition);
-		dir.x = -dir.x;
-		dir.normalize();
-		setDirection(dir);
 	}
 }

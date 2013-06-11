@@ -21,6 +21,10 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	protected Vector3 mTmpAxis, mTmpVec;
 	protected boolean mIsCamera, mQuatWasSet;
 	protected AngleAxis mAngleAxis; 
+	protected Vector3 mTmpRotX = new Vector3();
+	protected Vector3 mTmpRotY = new Vector3();
+	protected Vector3 mTmpRotZ = new Vector3();
+	protected float[] mLookAtMatrix = new float[16];
 	
 	protected IGraphNode mGraphNode;
 	protected boolean mInsideGraph = false; //Default to being outside the graph
@@ -81,10 +85,6 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		return mPosition.z;
 	}
 	
-	Vector3 mTmpRotX = new Vector3();
-	Vector3 mTmpRotY = new Vector3();
-	Vector3 mTmpRotZ = new Vector3();
-	float[] mLookAtMatrix = new float[16];
 
 	public void setOrientation() {
 		if(!mRotationDirty && mLookAt == null) return;
