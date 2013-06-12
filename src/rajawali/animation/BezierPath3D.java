@@ -3,7 +3,6 @@ package rajawali.animation;
 import java.util.Stack;
 
 import rajawali.math.Vector3;
-import rajawali.util.RajLog;
 
 public class BezierPath3D implements ISpline {
 
