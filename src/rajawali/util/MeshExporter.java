@@ -1,10 +1,12 @@
 package rajawali.util;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Writer;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -115,12 +117,12 @@ public class MeshExporter {
 
 			// Write the properties
 			los.writeInt(0);
-			
+
 			final Geometry3D geom = mObject.getGeometry();
-			
+
 			// Write the sub mesh length
 			los.writeInt(awdGetGeomLength(geom));
-			
+
 			// Write the properties
 			los.writeInt(0);
 
@@ -153,21 +155,21 @@ public class MeshExporter {
 		if (data instanceof IntBuffer) {
 			// Length of mesh data
 			los.writeInt(data.limit() * 2);
-			
+
 			final IntBuffer buf = (IntBuffer) data;
 			for (int i = 0, j = data.limit(); i < j; i++)
 				los.writeShort(buf.get());
 		} else if (data instanceof ShortBuffer) {
 			// Length of mesh data
 			los.writeInt(data.limit() * 2);
-			
+
 			final ShortBuffer buf = (ShortBuffer) data;
 			for (int i = 0, j = data.limit(); i < j; i++)
 				los.writeShort(buf.get());
 		} else if (data instanceof FloatBuffer) {
 			// Length of mesh data
 			los.writeInt(data.limit() * 4);
-			
+
 			final FloatBuffer buf = (FloatBuffer) data;
 			for (int i = 0, j = data.limit(); i < j; i++)
 				los.writeFloat(buf.get());
@@ -177,7 +179,15 @@ public class MeshExporter {
 	private void exportToObj() {
 		RajLog.d("Exporting " + mObject.getName() + " as .obj file");
 		Geometry3D g = mObject.getGeometry();
-		StringBuffer sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer(9000);
+		File f = getExportFile();
+		BufferedWriter bw = null;
+
+		try {
+			bw = new BufferedWriter(new FileWriter(getExportFile()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		sb.append("# Exported by Rajawali 3D Engine for Android\n");
 		sb.append("o ");
@@ -192,6 +202,7 @@ public class MeshExporter {
 			sb.append(" ");
 			sb.append(g.getVertices().get(i + 2));
 			sb.append("\n");
+			bufferStringWriting(sb, bw);
 		}
 
 		sb.append("\n");
@@ -202,6 +213,7 @@ public class MeshExporter {
 			sb.append(" ");
 			sb.append(g.getTextureCoords().get(i + 1));
 			sb.append("\n");
+			bufferStringWriting(sb, bw);
 		}
 
 		sb.append("\n");
@@ -214,6 +226,7 @@ public class MeshExporter {
 			sb.append(" ");
 			sb.append(g.getNormals().get(i + 2));
 			sb.append("\n");
+			bufferStringWriting(sb, bw);
 		}
 
 		sb.append("\n");
@@ -231,15 +244,14 @@ public class MeshExporter {
 			sb.append("/");
 			sb.append(index);
 			sb.append(" ");
+			bufferStringWriting(sb, bw);
 		}
 
 		try {
-
-			File f = getExportFile();
-			FileWriter writer = new FileWriter(f);
-			writer.append(sb.toString());
-			writer.flush();
-			writer.close();
+			// Write any remaining data to the file
+			bw.append(sb.toString());
+			bw.flush();
+			bw.close();
 
 			RajLog.d(".obj export successful: " + f.getCanonicalPath());
 		} catch (IOException e) {
@@ -298,6 +310,24 @@ public class MeshExporter {
 			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * Helper method for writing chunks of data to the given writer. If data is written the passed StringBuffer will be
+	 * emptied.
+	 * 
+	 * @param stringBuilder
+	 * @param writer
+	 */
+	private void bufferStringWriting(StringBuffer stringBuilder, Writer writer) {
+		if (stringBuilder.length() >= 8192) {
+			try {
+				writer.write(stringBuilder.toString());
+				stringBuilder.delete(0, stringBuilder.length());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void serializeObj(Context context, TextureManager textureManager, int resourceId, String outputName) {
