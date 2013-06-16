@@ -32,7 +32,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 				fc.append("L = normalize(uLightPosition").append(i).append(" - V.xyz);\n");
 			} else if(light.getLightType() == ALight.SPOT_LIGHT) {
 				vc.append("dist = distance(V.xyz, uLightPosition").append(i).append(");\n");
-				vc.append("vAttenuation").append(i).append(" = (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
+				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 				fc.append("L = normalize(uLightPosition").append(i).append(" - V.xyz);\n");
 				fc.append("vec3 spotDir").append(i).append(" = normalize(-uLightDirection").append(i).append(");\n");
 				fc.append("float spot_factor").append(i).append(" = dot( L, spotDir").append(i).append(" );\n");
