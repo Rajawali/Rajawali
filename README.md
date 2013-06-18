@@ -22,6 +22,12 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 
 [Download the free app](https://market.android.com/details?id=com.monyetmabuk.rajawali.tutorials)
 
+## Rajawali + Augmented Reality
+
+[RajawaliVuforia GitHub](https://github.com/MasDennis/RajawaliVuforia)
+
+[YouTube Video of RajawaliVuforia in action](http://www.youtube.com/watch?v=rjLa4K9Ffuo)
+
 ## Tutorials
 
 1. [Basic Setup & a Sphere](https://github.com/MasDennis/Rajawali/wiki/Tutorial-01----Basic-Setup-&-a-Sphere)  
@@ -62,6 +68,7 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 * [Introducing Plugin Architecture for Rajawali](http://www.andrewjo.com/blog/mobile-development/introducing-plugin-architecture-for-rajawali)
 * [Object Occlusion Testing in Rajawali](http://www.andrewjo.com/blog/mobile-development/object-occlusion-testing-in-rajawali)
 * [Ниже пример как сделать простую 3D модель и запустить сцену на Android](http://konsultantspb.ru/3d-engine-rajawali/)
+* [Android in razvoj 3D igre](http://www.monitor.si/clanek/android-in-razvoj-3d-igre/142302/)
 
 ## Learn Rajawali at a Training Center
 * [Android Game Development in India](http://virtualinfocom.com/android_game/android_game_development_institute.html)

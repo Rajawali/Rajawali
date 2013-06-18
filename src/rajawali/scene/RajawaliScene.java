@@ -72,6 +72,7 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mReloadPickerInfo;
 	protected boolean mUsesCoverageAa;
 	protected boolean mEnableDepthBuffer = true;
+	protected boolean mAlwaysClearColorBuffer = true;
 
 	private List<BaseObject3D> mChildren;
 	private List<Animation3D> mAnimations;
@@ -629,7 +630,7 @@ public class RajawaliScene extends AFrameTask {
 			}
 		}
 		
-		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
+		int clearMask = mAlwaysClearColorBuffer? GLES20.GL_COLOR_BUFFER_BIT : 0;
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
 
@@ -1518,6 +1519,22 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	public int getBackgroundColor() {
 		return Color.argb((int) (mAlpha*255f), (int) (mRed*255f), (int) (mGreen*255f), (int) (mBlue*255f));
+	}
+	
+	/**
+	 * Indicate that the color buffer should be cleared on every frame. This is set to true by default.
+	 * Reasons for settings this to false might be integration with augmented reality frameworks or
+	 * other OpenGL based renderers.
+	 * @param value
+	 */
+	public void alwaysClearColorBuffer(boolean value)
+	{
+		mAlwaysClearColorBuffer = value;
+	}
+	
+	public boolean alwaysClearColorBuffer()
+	{
+		return mAlwaysClearColorBuffer;
 	}
 	
 	/**

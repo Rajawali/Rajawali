@@ -115,7 +115,7 @@ public class Cube extends BaseObject3D {
 					0, 1, 1, 1, 1, 0, 0, 0, // left
 			};
 		}
-		else if (mCreateTextureCoords && mIsSkybox)
+		else if (mIsSkybox && mHasCubemapTexture)
 		{
 			skyboxTextureCoords = new float[] {
 					-t, t, t, t, t, t, t, -t, t, -t, -t, t, // front

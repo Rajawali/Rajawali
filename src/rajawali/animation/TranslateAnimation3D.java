@@ -1,7 +1,10 @@
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
+import rajawali.math.MathUtil;
+import rajawali.math.Quaternion;
 import rajawali.math.Vector3;
+import rajawali.math.Vector3.Axis;
 
 public class TranslateAnimation3D extends Animation3D {
 
@@ -10,6 +13,10 @@ public class TranslateAnimation3D extends Animation3D {
 	protected Vector3 mDiffPosition;
 	protected Vector3 mMultipliedPosition = new Vector3();
 	protected Vector3 mAddedPosition = new Vector3();
+	protected Vector3 mForwardVec = Vector3.getAxisVector(Axis.Z);
+	protected Vector3 mTmpVec = new Vector3();
+	protected Quaternion mTmpOrientation = new Quaternion();
+	
 	protected boolean mOrientToPath = false;
 	protected ISpline mSplinePath;
 	protected float mLookatDelta;
@@ -53,8 +60,15 @@ public class TranslateAnimation3D extends Animation3D {
 			mTransformable3D.getPosition().setAllFrom(pathPoint);
 
 			if (mOrientToPath)
-				mTransformable3D.setLookAt(mSplinePath
-						.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1)))));
+			{
+				//mTransformable3D.setLookAt(mSplinePath
+					//	.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1)))));
+				mTmpVec.setAllFrom(Vector3.subtract(mSplinePath.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1)))), pathPoint));
+				mTmpVec.normalize();
+				float angle = MathUtil.radiansToDegrees((float)Math.acos(Vector3.dot(mForwardVec, mTmpVec)));
+				mTmpOrientation.fromAngleAxis(angle, Vector3.cross(mForwardVec, mTmpVec));
+				mTransformable3D.setOrientation(mTmpOrientation);
+			}
 		}
 	}
 
