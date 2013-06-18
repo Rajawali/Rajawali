@@ -157,9 +157,9 @@ public class CameraFrustum implements IBoundingVolume {
 		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
 		Matrix.setIdentityM(mRotateMatrix, 0);
 		Matrix.rotateM(mRotateMatrix, 0, 90, 1, 0, 0);
-		/*mTempPosition.x -= mResultVec[0];
+		mTempPosition.x -= mResultVec[0];
 		mTempPosition.y -= mResultVec[1];
-		mTempPosition.z -= mResultVec[2];*/
+		mTempPosition.z -= mResultVec[2];
 		mVisibleFrustum.setPosition(mTempPosition);
 		
 		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mRotateMatrix, null);
