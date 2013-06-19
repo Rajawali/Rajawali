@@ -1,8 +1,8 @@
-package rajawali.animation;
+package rajawali.curves;
 
 import rajawali.math.Vector3;
 
-public interface ISpline {
+public interface ICurve3D {
 
 	public Vector3 calculatePoint(float t);
 

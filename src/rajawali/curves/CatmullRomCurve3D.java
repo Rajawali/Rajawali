@@ -1,4 +1,4 @@
-package rajawali.animation;
+package rajawali.curves;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +12,7 @@ import rajawali.math.Vector3;
  * @author dennis.ippel
  * 
  */
-public class CatmullRomPath3D implements ISpline {
+public class CatmullRomCurve3D implements ICurve3D {
 
 	protected static final int EPSILON = 36;
 	protected static final float DELTA = .00001f;
@@ -23,7 +23,7 @@ public class CatmullRomPath3D implements ISpline {
 	protected Vector3 mCurrentPoint;
 	protected boolean mCalculateTangents;
 
-	public CatmullRomPath3D() {
+	public CatmullRomCurve3D() {
 		mPoints = Collections.synchronizedList(new CopyOnWriteArrayList<Vector3>());
 		mCurrentTangent = new Vector3();
 		mCurrentPoint = new Vector3();
