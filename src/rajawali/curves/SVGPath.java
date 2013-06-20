@@ -13,11 +13,47 @@ import android.content.Context;
 
 /**
  * Parses a path from an SVG string. Please bear in mind that this is not a full XML parser.
+ * This is also an incomplete implementation. If you encounter anything that's missing please
+ * post an issue on Github and we'll add whatever you're after.
+ * 
  * What you can use is either a path {@link String}:
  * 
- * <code>
+ * <pre><code>
+ * String path = "M22.395-127.223c-4.492,11.344-4.688,33.75,0,44.883" +
+ * 	"c-11.328-4.492-33.656-4.579-44.789,0.109c4.491-11.354,4.688-33.75,0-44.892" +
+ * 	"C-11.066-122.63,11.262-122.536,22.395-127.223z";
  * 
- * </code>
+ * SVGPath svgPath = new SVGPath();
+ * List<CompoundCurve3D> paths = svgPath.parseString(path);
+ * </code></pre>
+ * 
+ * Or you could use a string resource from the "raw" folder:
+ * 
+ * <pre><code>
+ * SVGPath svgPath = new SVGPath();
+ * List<CompoundCurve3D> paths = svgPath.parseResourceString(mContext, R.raw.lavatories_svg_path);
+ * </code></pre>
+ *
+ * To draw a path:
+ * 
+ * <pre><code>
+ * for(int i=0; i<paths.size(); i++)
+ * {
+ * 	ICurve3D subPath = paths.get(i);
+ * 	Stack<Vector3> points = new Stack<Vector3>();
+ * 	int subdiv = 1000;
+ * 	for(int j=0; j<=subdiv; j++)
+ * 	{
+ * 		points.add(subPath.calculatePoint((float)j / (float)subdiv));
+ * 	}
+ * 	pathPoints.add(points);
+ * 	Line3D line = new Line3D(points, 1);
+ * 	SimpleMaterial material = new SimpleMaterial();
+ * 	material.setUseSingleColor(true);
+ * 	line.setMaterial(material);
+ *	getCurrentScene().addChild(line);
+ * }
+ * </code></pre>
  * 
  * @author dennis.ippel
  *
@@ -42,6 +78,12 @@ public class SVGPath {
 		VERTICAL
 	}
 
+	/**
+	 * Parses an SVG Path string
+	 * 
+	 * @param pathString
+	 * @return
+	 */
 	public List<CompoundCurve3D> parseString(String pathString)
 	{
 		mPreviousPoint = new Vector3();
@@ -50,7 +92,14 @@ public class SVGPath {
 		return pathStringToLine(pathString);
 	}
 
-	public List<CompoundCurve3D> resourcePathStringToLine(Context context, int resourceId)
+	/**
+	 * Parses an SVG resource path string. The string needs to sit in a text file in "res/raw".
+	 * 
+	 * @param context
+	 * @param resourceId
+	 * @return
+	 */
+	public List<CompoundCurve3D> parseResourceString(Context context, int resourceId)
 	{
 		InputStream rawResource = context.getResources().openRawResource(resourceId);
 		String l;
@@ -63,7 +112,7 @@ public class SVGPath {
 			rawResource.close();
 			r.close();
 		} catch (IOException e) {}
-		return pathStringToLine(s.toString());
+		return parseString(s.toString());
 	}
 
 	private List<CompoundCurve3D> pathStringToLine(String path)
@@ -127,7 +176,6 @@ public class SVGPath {
 	{
 		String[] vals = values.split(",");
 		Vector3 c, p, cp1, cp2;
-		float distX, distY;
 
 		if (vals.length == 0)
 			throw new RuntimeException("Empty values found.");
@@ -147,11 +195,7 @@ public class SVGPath {
 				c.x = mPreviousPoint.x;
 				p = c;
 			}
-			distY = mPreviousPoint.y - p.y;
-			distY /= 3f;
-			cp1 = new Vector3(mPreviousPoint.x, mPreviousPoint.y - distY, 0);
-			cp2 = new Vector3(p.x, p.y + distY, 0);
-			bezierPath.addCurve(new CubicBezierCurve3D(mPreviousPoint.clone(), cp1, cp2, p));
+			bezierPath.addCurve(new LinearBezierCurve3D(mPreviousPoint.clone(), p));
 			break;
 		case HORIZONTAL:
 			c = new Vector3(Float.parseFloat(vals[0]), 0, 0);
@@ -162,11 +206,7 @@ public class SVGPath {
 				c.y = mPreviousPoint.y;
 				p = c;
 			}
-			distX = mPreviousPoint.x - p.x;
-			distX /= 3f;
-			cp1 = new Vector3(mPreviousPoint.x - distX, mPreviousPoint.y, 0);
-			cp2 = new Vector3(p.x + distX, p.y, 0);
-			bezierPath.addCurve(new CubicBezierCurve3D(mPreviousPoint.clone(), cp1, cp2, p));
+			bezierPath.addCurve(new LinearBezierCurve3D(mPreviousPoint.clone(), p));
 			break;
 		case CURVE_TO:
 			c = new Vector3(Float.parseFloat(vals[4]), -Float.parseFloat(vals[5]), 0);
@@ -183,8 +223,7 @@ public class SVGPath {
 		case SMOOTH_CURVE_TO:
 			c = new Vector3(Float.parseFloat(vals[2]), -Float.parseFloat(vals[3]), 0);
 			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
-			cp1 = new Vector3(2 * mPreviousPoint.x - mPreviousControlPoint.x, 2 * mPreviousPoint.y
-					- mPreviousControlPoint.y, 0);
+			cp1 = reflect(mPreviousControlPoint, mPreviousPoint);
 			cp2 = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
 			if (mCurrentCommandIsRelative)
 				cp2.add(mPreviousPoint);
@@ -193,11 +232,7 @@ public class SVGPath {
 		case LINE_TO:
 			c = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
 			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
-			distX = (mPreviousPoint.x - p.x) / 3;
-			distY = (mPreviousPoint.y - p.y) / 3;
-			cp1 = new Vector3(mPreviousPoint.x - distX, mPreviousPoint.y - distY, 0);
-			cp2 = new Vector3(p.x + distX, p.y + distY, 0);
-			bezierPath.addCurve(new CubicBezierCurve3D(mPreviousPoint.clone(), cp1, cp2, p));
+			bezierPath.addCurve(new LinearBezierCurve3D(mPreviousPoint.clone(), p));
 			break;
 		default:
 			return;
@@ -207,6 +242,14 @@ public class SVGPath {
 		mPreviousPoint.setAllFrom(p);
 	}
 
+	private Vector3 reflect(Vector3 point, Vector3 mirror)
+	{
+		float x = mirror.x + (mirror.x - point.x);
+		float y = mirror.y + (mirror.y - point.y);
+
+		return new Vector3(x, y, 0);
+	}
+	
 	private void inspectCommand(char command)
 	{
 		switch (command)
