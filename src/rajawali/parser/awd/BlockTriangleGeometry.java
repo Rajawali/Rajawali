@@ -5,22 +5,29 @@ import rajawali.parser.AWDParser.BlockHeader;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
 
+/**
+ * The TriangleGeometry block describes a single mesh of an AWD file. Multiple TriangleGeometry blocks may exists in a
+ * single AWD file as part of a single model, multiple models, or scene.
+ * 
+ * @author Ian Thomas (toxicbakery@gmail.com)
+ * 
+ */
 public class BlockTriangleGeometry extends ABlockParser {
 
 	protected BaseObject3D[] baseObjects;
 	protected String lookupName;
 	protected int subGeometryCount;
-	
+
 	@Override
 	public BaseObject3D getBaseObject3D() {
 		if (baseObjects.length == 1)
 			return baseObjects[0];
-		
+
 		final BaseObject3D container = new BaseObject3D();
 		container.isContainer(true);
-		for (int i=0;i<baseObjects.length;i++)
+		for (int i = 0; i < baseObjects.length; i++)
 			container.addChild(baseObjects[i]);
-		
+
 		return container;
 	}
 
@@ -95,7 +102,7 @@ public class BlockTriangleGeometry extends ABlockParser {
 					// Unknown mesh data, skipping
 					dis.skip(subLength);
 				}
-				
+
 				// Verify the arrays
 				if (vertices == null)
 					vertices = new float[0];
@@ -105,11 +112,11 @@ public class BlockTriangleGeometry extends ABlockParser {
 					uvs = new float[0];
 				if (indices == null)
 					indices = new int[0];
-				
+
 				// Increment the bytes read by the size of the header and the sub block length
 				bytesRead += 6 + subLength;
 			}
-			
+
 			baseObjects[parsedSubs] = new BaseObject3D();
 			baseObjects[parsedSubs].setData(vertices, normals, uvs, null, indices);
 
