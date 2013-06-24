@@ -107,3 +107,19 @@ The `Number3D` class has been refactored to `Vector3`. This name is much more ap
 `AMaterial`'s method `setUseColor(boolean useColor)` has been removed. There are two new methods that replace it:
 - `setUseSingleColor(boolean value)`: When the object uses a single color for the whole mesh use this. This way no color buffer will be created which reduces the memory footprint and increases performance, especially in big scenes.
 - `setUseVertexColors(boolean value)`: Use this when your mesh has multiple colors. This isn't applicable to textures, just vertex colors.
+
+# Paths/Curves
+
+"Paths" now have the more appropriate name "Curves". The reason for this is that curves aren't necessarily paths.
+The have also been moved from `rajawali.animation` to `rajawali.curves`.
+These existing classes have been renamed:
+- `CatmullRomPath3D`: `CatmullRomCurve3D`
+- `ISpline3D`: `ICurve3D`
+- `BezierPath3D`: `CubicBezier3D`
+
+Some new classes have been added:
+- `CompoundCurve3D`: This is a container for an n number of curves of any type.
+- `LinearBezierCurve3D`: A linear bezier curve. Basically just a straight line. This is useful for compound curves.
+- `QuadraticBezierCurve3D: A quadratic bezier curve. This type of Bezier curve take only one control point instead of two.
+- `SVGPath`: takes an SVG-style path string and creates a `CompoundCurve3D`. Still a work in progress.
+

@@ -18,13 +18,23 @@ import android.util.SparseArray;
 /**
  * AWD File parser written using the AWD File Format specification. All future additions to the format should adhere to
  * all specification requirements for maximum forward and backward compatibility.
- * 
- * https://code.google.com/p/awd/source/browse/doc/spec/AWD_format_specification.odt
- * 
+ * <p>
  * Currently compression is not supported, files will need to be formatted with compression off. This is an option in
  * MAX and should be an option using other exporters.
+ * <p>
  * 
- * @author TencenT
+ * <b>Example AWD parsing</b>
+ * 
+ * <code><pre>
+ * final AWDParser parser = new AWDParser(this, new File(Environment.getExternalStorageDirectory(), "cube.awd"));
+ * parser.parse();
+ * final BaseObject3D obj = parser.getParsedObject(false);
+ * </pre></code>
+ * 
+ * @author Ian Thomas (toxicbakery@gmail.com)
+ * 
+ * @see <a
+ *      href="https://code.google.com/p/awd/source/browse/doc/spec/AWD_format_specification.odt">https://code.google.com/p/awd/source/browse/doc/spec/AWD_format_specification.odt</a>
  * 
  */
 public class AWDParser extends AParser {
@@ -37,7 +47,7 @@ public class AWDParser extends AParser {
 
 	protected final List<BaseObject3D> baseObjects = new ArrayList<BaseObject3D>();
 	protected final SparseArray<BlockHeader> blockDataList = new SparseArray<BlockHeader>();
-	
+
 	private final List<IBlockParser> blockParsers = new ArrayList<IBlockParser>();
 	private final SparseArray<Class<? extends ABlockParser>> blockParserClassesMap = new SparseArray<Class<? extends ABlockParser>>();
 
@@ -125,7 +135,7 @@ public class AWDParser extends AParser {
 					blockHeader.type = dis.read();
 					blockHeader.flags = dis.read();
 					blockHeader.dataLength = dis.readInt();
-					
+
 					if ((blockHeader.flags & 0x1) == 0x1)
 						throw new ParsingException("High precision models are not supported.");
 
@@ -137,9 +147,9 @@ public class AWDParser extends AParser {
 					RajLog.d(blockHeader.toString());
 
 					// Look for the Block Parser class.
-					@SuppressWarnings("unchecked")
-					final Class<ABlockParser> blockClass = (Class<ABlockParser>) blockParserClassesMap.get(getClassID(
-							blockHeader.namespace, blockHeader.type));
+					final Class<? extends ABlockParser> blockClass = (Class<? extends ABlockParser>) blockParserClassesMap
+							.get(getClassID(
+									blockHeader.namespace, blockHeader.type));
 
 					// Skip unknown blocks
 					if (blockClass == null) {

@@ -1,6 +1,7 @@
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
+import rajawali.curves.ICurve3D;
 import rajawali.math.MathUtil;
 import rajawali.math.Quaternion;
 import rajawali.math.Vector3;
@@ -18,7 +19,7 @@ public class TranslateAnimation3D extends Animation3D {
 	protected Quaternion mTmpOrientation = new Quaternion();
 	
 	protected boolean mOrientToPath = false;
-	protected ISpline mSplinePath;
+	protected ICurve3D mSplinePath;
 	protected float mLookatDelta;
 
 	public TranslateAnimation3D(Vector3 toPosition) {
@@ -32,7 +33,7 @@ public class TranslateAnimation3D extends Animation3D {
 		mToPosition = toPosition;
 	}
 
-	public TranslateAnimation3D(ISpline splinePath) {
+	public TranslateAnimation3D(ICurve3D splinePath) {
 		super();
 		mSplinePath = splinePath;
 	}

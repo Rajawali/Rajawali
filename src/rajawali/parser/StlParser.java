@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
@@ -18,16 +17,18 @@ import android.content.res.Resources.NotFoundException;
 
 /**
  * STL Parser written using the ASCII format as describe on Wikipedia.
+ * <p>
  * 
- * http://en.wikipedia.org/wiki/STL_(file_format)
+ * @author Ian Thomas (toxicbakery@gmail.com)
  * 
- * TODO More testing, Nexus 7 specifically has some issues with certain models. Nexus 4 works fine with same 'problem'
- * models. 
- * TODO Add a feature for ASCII to Binary conversion.
- * 
- * @author Ian Thomas - toxicbakery@gmail.com
+ * @see <a href="http://en.wikipedia.org/wiki/STL_(file_format)">http://en.wikipedia.org/wiki/STL_(file_format)</a>
  */
 public class StlParser extends AMeshParser {
+
+	// FIXME More testing, Nexus 7 specifically has some issues with certain models. Nexus 4 works fine with same
+	// 'problem' models.
+
+	// TODO Add a feature for ASCII to Binary conversion.
 
 	public enum StlType {
 		UNKNOWN,
@@ -38,7 +39,7 @@ public class StlParser extends AMeshParser {
 	public StlParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
-	
+
 	public StlParser() {
 		super(null, "");
 	}
@@ -46,7 +47,7 @@ public class StlParser extends AMeshParser {
 	public StlParser(Resources resources, int resourceId) {
 		super(resources, null, resourceId);
 	}
-	
+
 	public StlParser(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
@@ -129,7 +130,7 @@ public class StlParser extends AMeshParser {
 		final List<Float> vertices = new ArrayList<Float>();
 		final List<Float> normals = new ArrayList<Float>();
 		final float[] tempNorms = new float[3];
-		
+
 		int nextOffset, prevOffset, i, insert;
 		String line;
 
@@ -138,7 +139,7 @@ public class StlParser extends AMeshParser {
 
 		// Read the facet
 		while ((line = buffer.readLine()) != null) {
-			
+
 			// Only read lines containing facet normal and vertex. No reason to read others
 
 			if (line.contains("facet normal ")) {
@@ -184,7 +185,7 @@ public class StlParser extends AMeshParser {
 			verticesArr[i] = vertices.get(i);
 			normalsArr[i] = normals.get(i);
 		}
-		
+
 		// Cleanup
 		vertices.clear();
 		normals.clear();
