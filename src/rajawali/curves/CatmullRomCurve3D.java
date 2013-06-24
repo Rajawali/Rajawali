@@ -22,6 +22,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 	protected Vector3 mCurrentTangent;
 	protected Vector3 mCurrentPoint;
 	protected boolean mCalculateTangents;
+	protected float[] mSegmentLengths;
 
 	public CatmullRomCurve3D() {
 		mPoints = Collections.synchronizedList(new CopyOnWriteArrayList<Vector3>());
@@ -37,6 +38,11 @@ public class CatmullRomCurve3D implements ICurve3D {
 	public int getNumPoints()
 	{
 		return mNumPoints;
+	}
+	
+	public List<Vector3> getPoints()
+	{
+		return mPoints;
 	}
 
 	public Vector3 getPoint(int index) {
@@ -115,5 +121,92 @@ public class CatmullRomCurve3D implements ICurve3D {
 
 	protected float pow2(float value) {
 		return value * value;
+	}
+
+	/**
+	 * Returns an approximation of the length of the curve. The more segments the more precise the result.
+	 * 
+	 * @param segments
+	 * @return
+	 */
+	public float getLength(int segments)
+	{
+		float totalLength = 0;
+		
+		mSegmentLengths = new float[segments + 1];
+		mSegmentLengths[0] = 0;
+		Vector3 prevPoint = calculatePoint(0);
+		
+
+		for (int i = 1; i <= segments; i++)
+		{
+			float t = (float)i / (float)segments;
+			Vector3 point = calculatePoint(t);
+			float dist = prevPoint.distanceTo(point);
+			totalLength += dist;
+			mSegmentLengths[i] = dist;
+			prevPoint.setAllFrom(point);
+		}
+		
+		return totalLength;
+	}
+	
+	/**
+	 * Creates a curve with uniformly distributed points. Please note that this might alter the shape of the curve slightly.
+	 * The higher the resolution, the more closely it will resemble to original curve. You'd typically want to use this 
+	 * for smooth animations with constant speeds.
+	 * 
+	 * <pre><code>
+	 * myCurve.reparametrizeForUniformDistribution(myCurve.getPoints().size() * 4);
+	 * </code></pre> 
+	 * 
+	 * @param resolution
+	 */
+	public void reparametrizeForUniformDistribution(int resolution)
+	{
+		float curveLength = getLength(resolution * 100);
+		// -- get the length between each new point
+		float segmentDistance = curveLength / resolution;
+		float numSegments = mSegmentLengths.length;
+		
+		List<Vector3> newPoints = Collections.synchronizedList(new CopyOnWriteArrayList<Vector3>());
+		// -- add first control point
+		newPoints.add(mPoints.get(0));
+		// -- add first point
+		newPoints.add(calculatePoint(0));
+		
+		float currentLength = 0;
+		
+		for(int i=1; i<numSegments; i++)
+		{
+			currentLength += mSegmentLengths[i];
+			if(currentLength >= segmentDistance)
+			{
+				newPoints.add(calculatePoint((float)i / (float)(numSegments - 1)));
+				currentLength = 0;
+			}
+		}
+		
+		// -- add last point
+		newPoints.add(calculatePoint(1));
+		// -- add last control point
+		newPoints.add(mPoints.get(mPoints.size() - 1));
+
+		// -- scale control point 1
+		Vector3 controlPoint = Vector3.subtract(mPoints.get(1), mPoints.get(0));
+		float oldDistance = mPoints.get(1).distanceTo(mPoints.get(2));
+		float newDistance = newPoints.get(1).distanceTo(newPoints.get(2));
+		controlPoint.multiply(newDistance / oldDistance);
+		newPoints.set(0, Vector3.subtract(mPoints.get(1), controlPoint));
+		
+		// -- scale control point 2
+		controlPoint = Vector3.subtract(mPoints.get(mPoints.size() - 2), mPoints.get(mPoints.size() - 1));
+		oldDistance = mPoints.get(mPoints.size() - 2).distanceTo(mPoints.get(mPoints.size() - 3));
+		newDistance = newPoints.get(newPoints.size() - 2).distanceTo(newPoints.get(newPoints.size() - 3));
+		controlPoint.multiply(newDistance / oldDistance);
+		newPoints.set(newPoints.size() - 1, Vector3.subtract(mPoints.get(mPoints.size() - 2), controlPoint));		
+		
+		mPoints = newPoints;
+		mNumPoints = mPoints.size();
 	}
 }
