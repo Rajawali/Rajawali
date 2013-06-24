@@ -34,7 +34,7 @@ public class DirectionalLight extends ALight {
 		if (mLookAt == null) {
 			mOrientation.toRotationMatrix(mRotationMatrix);
 		} else {
-			System.arraycopy(mLookAtMatrix, 0, mRotationMatrix, 0, 16);
+			System.arraycopy(getLookAtMatrix(), 0, mRotationMatrix, 0, 16);
 		}
 		mDirectionVec.multiply(mRotationMatrix);
 		mDirection[0] = mDirectionVec.x;
