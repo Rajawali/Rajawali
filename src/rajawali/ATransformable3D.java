@@ -121,6 +121,8 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 			mLookAtMatrix[8] = mTmpRotZ.x;
 			mLookAtMatrix[9] = mTmpRotZ.y;
 			mLookAtMatrix[10] = mTmpRotZ.z;
+			
+			mOrientation.fromRotationMatrix(mLookAtMatrix);
 		} else {
 			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.y : mRotation.y, mAxisY));
 			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.z : mRotation.z, mAxisZ));
