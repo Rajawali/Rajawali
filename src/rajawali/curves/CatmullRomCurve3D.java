@@ -23,6 +23,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 	protected Vector3 mCurrentPoint;
 	protected boolean mCalculateTangents;
 	protected float[] mSegmentLengths;
+	protected boolean mIsClosed;
 
 	public CatmullRomCurve3D() {
 		mPoints = Collections.synchronizedList(new CopyOnWriteArrayList<Vector3>());
@@ -39,7 +40,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 	{
 		return mNumPoints;
 	}
-	
+
 	public List<Vector3> getPoints()
 	{
 		return mPoints;
@@ -49,7 +50,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 		return mPoints.get(index);
 	}
 
-	public Vector3 calculatePoint(float t) {
+	public Vector3 calculatePoint(final float t) {
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;
@@ -100,17 +101,25 @@ public class CatmullRomCurve3D implements ICurve3D {
 	}
 
 	protected Vector3 p(float t) {
-		int currentIndex = 2 + (int) Math.floor((t == 1 ? t - DELTA : t) * (mNumPoints - 3));
-		float tdivnum = (t * (mNumPoints - 3)) - (currentIndex - 2);
+		if(t < 0) t = 1 + t;
+		int end = mIsClosed ? 0 : 3;
+		int start = mIsClosed ? 0 : 2;
+		int currentIndex = start + (int)Math.floor((t == 1 ? t - DELTA : t) * (mNumPoints - end));
+		float tdivnum = (t * (mNumPoints - end)) - (currentIndex - start);
 		mCurrentPoint.setAll(0, 0, 0);
 
-		// Limit the bounds for AccelerateDecelerateInterpolator
-		currentIndex = Math.max(currentIndex, 2);
-		currentIndex = Math.min(currentIndex, mPoints.size() - 2);
-
+		if(!mIsClosed)
+		{
+			// Limit the bounds for AccelerateDecelerateInterpolator
+			currentIndex = Math.max(currentIndex, 2);
+			currentIndex = Math.min(currentIndex, mPoints.size() - 2);
+		}
+		
 		for (int j = -2; j <= 1; j++) {
 			float b = b(j, tdivnum);
-			Vector3 p = mPoints.get(currentIndex + j);
+			int index = mIsClosed ? (currentIndex + j + 1) % (mNumPoints) : currentIndex + j;
+			if(index < 0) index = mNumPoints - index - 2;
+			Vector3 p = mPoints.get(index);
 
 			mCurrentPoint.x += b * p.x;
 			mCurrentPoint.y += b * p.y;
@@ -124,6 +133,21 @@ public class CatmullRomCurve3D implements ICurve3D {
 	}
 
 	/**
+	 * Makes this a closed curve. The first and last control points will become actual points in the curve.
+	 * 
+	 * @param closed
+	 */
+	public void isClosedCurve(boolean closed)
+	{
+		mIsClosed = closed;
+	}
+	
+	public boolean isClosedCurve()
+	{
+		return mIsClosed;
+	}
+
+	/**
 	 * Returns an approximation of the length of the curve. The more segments the more precise the result.
 	 * 
 	 * @param segments
@@ -132,33 +156,34 @@ public class CatmullRomCurve3D implements ICurve3D {
 	public float getLength(int segments)
 	{
 		float totalLength = 0;
-		
+
 		mSegmentLengths = new float[segments + 1];
 		mSegmentLengths[0] = 0;
 		Vector3 prevPoint = calculatePoint(0);
-		
 
 		for (int i = 1; i <= segments; i++)
 		{
-			float t = (float)i / (float)segments;
+			float t = (float) i / (float) segments;
 			Vector3 point = calculatePoint(t);
 			float dist = prevPoint.distanceTo(point);
 			totalLength += dist;
 			mSegmentLengths[i] = dist;
 			prevPoint.setAllFrom(point);
 		}
-		
+
 		return totalLength;
 	}
-	
+
 	/**
-	 * Creates a curve with uniformly distributed points. Please note that this might alter the shape of the curve slightly.
-	 * The higher the resolution, the more closely it will resemble to original curve. You'd typically want to use this 
-	 * for smooth animations with constant speeds.
+	 * Creates a curve with uniformly distributed points. Please note that this might alter the shape of the curve
+	 * slightly. The higher the resolution, the more closely it will resemble to original curve. You'd typically want to
+	 * use this for smooth animations with constant speeds.
 	 * 
-	 * <pre><code>
+	 * <pre>
+	 * <code>
 	 * myCurve.reparametrizeForUniformDistribution(myCurve.getPoints().size() * 4);
-	 * </code></pre> 
+	 * </code>
+	 * </pre>
 	 * 
 	 * @param resolution
 	 */
@@ -168,25 +193,25 @@ public class CatmullRomCurve3D implements ICurve3D {
 		// -- get the length between each new point
 		float segmentDistance = curveLength / resolution;
 		float numSegments = mSegmentLengths.length;
-		
+
 		List<Vector3> newPoints = Collections.synchronizedList(new CopyOnWriteArrayList<Vector3>());
 		// -- add first control point
 		newPoints.add(mPoints.get(0));
 		// -- add first point
 		newPoints.add(calculatePoint(0));
-		
+
 		float currentLength = 0;
-		
-		for(int i=1; i<numSegments; i++)
+
+		for (int i = 1; i < numSegments; i++)
 		{
 			currentLength += mSegmentLengths[i];
-			if(currentLength >= segmentDistance)
+			if (currentLength >= segmentDistance)
 			{
-				newPoints.add(calculatePoint((float)i / (float)(numSegments - 1)));
+				newPoints.add(calculatePoint((float) i / (float) (numSegments - 1)));
 				currentLength = 0;
 			}
 		}
-		
+
 		// -- add last point
 		newPoints.add(calculatePoint(1));
 		// -- add last control point
@@ -198,14 +223,14 @@ public class CatmullRomCurve3D implements ICurve3D {
 		float newDistance = newPoints.get(1).distanceTo(newPoints.get(2));
 		controlPoint.multiply(newDistance / oldDistance);
 		newPoints.set(0, Vector3.subtract(mPoints.get(1), controlPoint));
-		
+
 		// -- scale control point 2
 		controlPoint = Vector3.subtract(mPoints.get(mPoints.size() - 2), mPoints.get(mPoints.size() - 1));
 		oldDistance = mPoints.get(mPoints.size() - 2).distanceTo(mPoints.get(mPoints.size() - 3));
 		newDistance = newPoints.get(newPoints.size() - 2).distanceTo(newPoints.get(newPoints.size() - 3));
 		controlPoint.multiply(newDistance / oldDistance);
-		newPoints.set(newPoints.size() - 1, Vector3.subtract(mPoints.get(mPoints.size() - 2), controlPoint));		
-		
+		newPoints.set(newPoints.size() - 1, Vector3.subtract(mPoints.get(mPoints.size() - 2), controlPoint));
+
 		mPoints = newPoints;
 		mNumPoints = mPoints.size();
 	}
