@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.util.Log;
 
 /**
  * Is a Factory Class to generate Terrain
@@ -334,13 +333,6 @@ public class TerrainGenerator {
 			}
 
 		}
-
-		Log.i("Index", "vertices " + vertices.length + ":" + ii +
-				"normals " + nors.length + ":" + nn +
-				"colors " + colors.length + ":" + cc +
-				"texs " + textureCoords.length + ":" + tt +
-				"index " + indices.length + ":" + xx
-				);
 
 		sq.setData(vertices, nors, textureCoords, colors, indices);
 		nors = null;
