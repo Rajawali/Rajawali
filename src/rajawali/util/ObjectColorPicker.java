@@ -102,6 +102,12 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		}
 	}
 
+	public void unregisterObject(BaseObject3D object) {
+		if (mObjectLookup.contains(object)) {
+			mObjectLookup.remove(object);
+		}
+	}
+
 	public void getObjectAt(float x, float y) {
 		mRenderer.getCurrentScene().requestColorPickingTexture(new ColorPickerInfo(x, y, this));
 	}
@@ -163,26 +169,27 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 			return mColorPickerBuffer;
 		}
 	}
-	
+
 	public static class ObjectColorPickerException extends Exception {
+
 		private static final long serialVersionUID = 3732833696361901287L;
-		
+
 		public ObjectColorPickerException() {
 			super();
 		}
-		
+
 		public ObjectColorPickerException(final String msg) {
 			super(msg);
 		}
-		
+
 		public ObjectColorPickerException(final Throwable throwable) {
 			super(throwable);
 		}
-		
+
 		public ObjectColorPickerException(final String msg, final Throwable throwable) {
 			super(msg, throwable);
 		}
-		
+
 	}
 
 	@Override
