@@ -103,7 +103,7 @@ public class Cube extends BaseObject3D {
 		float[] textureCoords = null;
 		float[] skyboxTextureCoords = null;
 
-		if (mCreateTextureCoords && !mIsSkybox)
+		if (mCreateTextureCoords && !mIsSkybox && !mHasCubemapTexture)
 		{
 			textureCoords = new float[]
 			{
@@ -115,17 +115,6 @@ public class Cube extends BaseObject3D {
 					0, 1, 1, 1, 1, 0, 0, 0, // left
 			};
 		}
-		else if (mCreateTextureCoords && mIsSkybox)
-		{
-			skyboxTextureCoords = new float[] {
-					-t, t, t, t, t, t, t, -t, t, -t, -t, t, // front
-					t, t, -t, t, -t, -t, t, -t, t, t, t, t, // up
-					-t, -t, -t, t, -t, -t, t, t, -t, -t, t, -t, // back
-					-t, t, -t, -t, t, t, -t, -t, t, -t, -t, -t, // down
-					-t, t, t, -t, t, -t, t, t, -t, t, t, t, // right
-					-t, -t, t, t, -t, t, t, -t, -t, -t, -t, -t, // left
-			};
-		}
 		else if (mIsSkybox && !mHasCubemapTexture)
 		{
 			skyboxTextureCoords = new float[] {
@@ -135,6 +124,17 @@ public class Cube extends BaseObject3D {
 					.5f, .3333f, .75f, .3333f, .75f, .6666f, .5f, .6666f, // right
 					.25f, .3333f, .25f, 0, .5f, 0, .5f, .3333f, // up
 					.25f, .6666f, .5f, .6666f, .5f, 1, .25f, 1 // down
+			};
+		}
+		else if (mHasCubemapTexture)
+		{
+			skyboxTextureCoords = new float[] {
+					t, t, t, 	-t, t, t, 	-t, -t, t, 	t, -t, t, // front
+					-t, t, -t, 	-t, -t, -t, 	-t, -t, t, -t, t, t, // left
+					t, -t, -t, -t, -t, -t, -t, t, -t, t, t, -t, // back
+					t, t, -t, t, t, t, t, -t, t, t, -t, -t, // right
+					t, t, t, t, t, -t, -t, t, -t, -t, t, t, // up
+					t, -t, t, -t, -t, t, -t, -t, -t, t, -t, -t, // down
 			};
 		}
 

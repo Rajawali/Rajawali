@@ -189,9 +189,9 @@ public class Plane extends BaseObject3D {
 				}
 				else if(mUpAxis == Axis.Y)
 				{
-					vertices[vertexCount] = v2;
+					vertices[vertexCount] = v1;
 					vertices[vertexCount + 1] = 0;
-					vertices[vertexCount + 2] = v1;
+					vertices[vertexCount + 2] = v2;
 				}
 				else if(mUpAxis == Axis.Z)
 				{
@@ -202,7 +202,8 @@ public class Plane extends BaseObject3D {
 
 				if (mCreateTextureCoords) {
 					textureCoords[texCoordCount++] = ((float) i / (float) mSegmentsW) * mNumTextureTiles;
-					textureCoords[texCoordCount++] = (1.0f - (float) j / (float) mSegmentsH) * mNumTextureTiles;
+					float v = (float) j / (float) mSegmentsH;
+					textureCoords[texCoordCount++] = (mUpAxis == Axis.Y ? v : (1.0f - v)) * mNumTextureTiles;
 				}
 
 				normals[vertexCount] = mUpAxis == Axis.X ? 1 : 0;

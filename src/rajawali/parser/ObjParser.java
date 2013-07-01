@@ -84,6 +84,10 @@ public class ObjParser extends AMeshParser {
     	super(renderer, fileOnSDCard);
     }
     
+    public ObjParser(RajawaliRenderer renderer, int resourceId) {
+    	this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
+    }
+    
 	public ObjParser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
@@ -203,12 +207,25 @@ public class ObjParser extends AMeshParser {
                     normals.add(Float.parseFloat(parts.nextToken()));
 				} else if(type.equals(OBJECT) || type.equals(GROUP)) {
 					String objName = parts.hasMoreTokens() ? parts.nextToken() : "Object" + (int)(Math.random() * 10000);
-					Log.d(Wallpaper.TAG, "Parsing object: " + objName);
-					if(currObjIndexData.targetObj.getName() != null)
-						currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
-					else
-						currObjIndexData.targetObj.setName(objName);
-					objIndices.add(currObjIndexData);
+					
+					if(type.equals(OBJECT))
+					{
+						RajLog.i("Parsing object: " + objName);
+						if(currObjIndexData.targetObj.getName() != null)
+							currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
+						else
+							currObjIndexData.targetObj.setName(objName);
+						objIndices.add(currObjIndexData);
+					} else if(type.equals(GROUP)) {
+						RajLog.i("Parsing group: " + objName);
+						BaseObject3D group = mRootObject.getChildByName(objName);
+						if(group == null)
+						{
+							group = new BaseObject3D(objName);
+							mRootObject.addChild(group);
+						}
+						group.addChild(currObjIndexData.targetObj);
+					}
 				} else if(type.equals(MATERIAL_LIB)) {
 					if(!parts.hasMoreTokens()) continue;
 					String materialLibPath = parts.nextToken().replace(".", "_");
@@ -289,10 +306,11 @@ public class ObjParser extends AMeshParser {
 			} catch(TextureException tme) {
 				throw new ParsingException(tme);
 			}
-			mRootObject.addChild(oid.targetObj);
+			if(oid.targetObj.getParent() == null)
+				mRootObject.addChild(oid.targetObj);
 		}
 		
-		if(mRootObject.getNumChildren() == 1)
+		if(mRootObject.getNumChildren() == 1 && !mRootObject.getChildAt(0).isContainer())
 			mRootObject = mRootObject.getChildAt(0);
 		
 		return this;

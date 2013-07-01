@@ -245,8 +245,9 @@ public final class TextureManager extends AResourceManager
 					count -= 1;
 				}
 			}
-
-			GLES20.glDeleteTextures(count, textures, 0);
+			
+			if(RajawaliRenderer.hasGLContext())
+				GLES20.glDeleteTextures(count, textures, 0);
 
 			if (mRenderers.size() > 0)
 			{
@@ -267,10 +268,10 @@ public final class TextureManager extends AResourceManager
 	 */
 	public void taskReset(RajawaliRenderer renderer)
 	{
-		if (renderer != mRenderer)
-			return;
-
-		taskReset();
+		if (mRenderers.size() == 0)
+		{
+			taskReset();
+		}
 	}
 
 	/**

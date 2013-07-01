@@ -12,6 +12,8 @@ public final class Quaternion {
 	public final static float F_EPSILON = .001f;
 	public float w, x, y, z;
 	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
+	private final Vector3 UP_VECTOR = Vector3.getUpVector();
+	private final Vector3 RIGHT_VECTOR = Vector3.getRightVector();
 	
 	public Quaternion() {
 		setIdentity();
@@ -531,53 +533,51 @@ public final class Quaternion {
 		return "Quaternion.w " + w + " .x: " + x + " .y: " + y + " .z: " + z;
 	}
 	
-	public static Quaternion getRotationTo(final Vector3 src, final Vector3 dest) {
-        Quaternion q = new Quaternion();
-        Vector3 v1 = new Vector3(src);
-        Vector3 v2 = new Vector3(dest);
-        v1.normalize();
-        v2.normalize();
-
-        float d = Vector3.dot(v1, v2);
-
-        if (d >= 1.0f) {
-            return new Quaternion().setIdentity();
+	public static Quaternion fromRotationBetween(final Vector3 src, final Vector3 dest)
+	{
+		Quaternion q = new Quaternion();
+		q.setFromRotationBetween(src, dest);
+		return q;
+	}
+	
+	public void setFromRotationBetween(final Vector3 src, final Vector3 dest)
+    {
+        float d = Vector3.dot(src, dest);
+        if (d >= 1.0f)
+        {
+        	setIdentity();
+            return;
         }
 
-        if (d < (1e-6f - 1.0f)) {
-            //Generate an axis
-            /*Number3D axis = Number3D::UNIT_X.crossProduct(*this);
-            if (axis.isZeroLength()) // pick another if colinear
-            	axis = Number3D::UNIT_Y.crossProduct(*this);
-            axis.normalise();
-            q.FromAngleAxis(Radian(Math::PI), axis);*/
+        if (d < (1e-6f - 1.0f))
+        {
+        	// axis
+        	mTmpVec1.setAllFrom(RIGHT_VECTOR);
+        	mTmpVec1.cross(src);
 
-            // Generate an axis
-            Vector3 axis = Vector3.cross(Vector3.getAxisVector(Axis.X), v1);
-            if (axis.length() == 0.0f) {
-                axis = Vector3.cross(Vector3.getAxisVector(Axis.Y), v1);
+            if (mTmpVec1.length() == 0.0f)
+            {
+            	mTmpVec1.setAllFrom(UP_VECTOR);
+            	mTmpVec1.cross(src);
             }
-            axis.normalize();
-            q.fromAngleAxis(180, axis);
-        } else {
-            /*Real s = Math::Sqrt( (1+d)*2 );
-            Real invs = 1 / s;
-            Number3D c = v0.crossProduct(v1);
-            q.x = c.x * invs;
-            q.y = c.y * invs;
-            q.z = c.z * invs;
-            q.w = s * 0.5;
-            q.normalise();*/
 
+            mTmpVec1.normalize();
+
+            fromAngleAxis(180, mTmpVec1);
+        }
+        else 
+        {
             float s = (float)Math.sqrt((1f + d) * 2f);
             float invs = 1 / s;
-            Vector3 c = Vector3.cross(v1, v2);
-            q.x = (float) (c.x * invs);
-            q.y = (float) (c.y * invs);
-            q.z = (float) (c.z * invs);
-            q.w = (float) (s * 0.5f);
-            q.normalize();
+
+            mTmpVec1.setAllFrom(src);
+            mTmpVec1.cross(dest);
+            
+            x = (float) (mTmpVec1.x * invs);
+            y = (float) (mTmpVec1.y * invs);
+            z = (float) (mTmpVec1.z * invs);
+            w = (float) (s * 0.5f);
+            normalize();
         } 
-        return q;
     }
 }

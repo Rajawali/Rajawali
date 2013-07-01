@@ -86,7 +86,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 				fc.append("L = normalize(uLightPosition").append(i).append(" + vEyeVec);\n");
 			} else if(light.getLightType() == ALight.SPOT_LIGHT) {
 				vc.append("dist = distance(-vEyeVec, uLightPosition").append(i).append(");\n");
-				vc.append("vAttenuation").append(i).append(" = (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
+				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 				fc.append("L = normalize(uLightPosition").append(i).append(" + vEyeVec);\n");
 				fc.append("vec3 spotDir").append(i).append(" = normalize(-uLightDirection").append(i).append(");\n");
 				fc.append("float spot_factor").append(i).append(" = dot( L, spotDir").append(i).append(" );\n");
@@ -98,7 +98,7 @@ public class PhongMaterial extends AAdvancedMaterial {
 					fc.append("else {\n");
 						fc.append("spot_factor").append(i).append(" = 0.0;\n");
 					fc.append("}\n");
-					fc.append("L = vec3(L.y, -L.x, L.z);\n");
+					fc.append("L = vec3(L.x, L.y, L.z) * spot_factor").append(i).append(";\n");
 					fc.append("}\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
@@ -108,14 +108,8 @@ public class PhongMaterial extends AAdvancedMaterial {
 			fc.append("NdotL = max(dot(N, L), 0.1);\n");
 			fc.append("power = uLightPower").append(i).append(" * NdotL * vAttenuation").append(i).append(";\n");
 			fc.append("intensity += power;\n"); 
-			if(light.getLightType() == ALight.SPOT_LIGHT){
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * spot_factor").append(i).append(" * power;\n");
-				fc.append("Ks += pow(NdotL, uShininess) * spot_factor").append(i).append(" * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
-			}
-			else{
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * power;\n"); 
-				fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
-			}
+			fc.append("Kd.rgb += uLightColor").append(i).append(" * power;\n"); 
+			fc.append("Ks += pow(NdotL, uShininess) * vAttenuation").append(i).append(" * uLightPower").append(i).append(";\n");
 		}
 		super.setShaders(
 				vertexShader.replace("%LIGHT_CODE%", vc.toString()), 
