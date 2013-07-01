@@ -1,5 +1,7 @@
 package rajawali.terrain;
 
+import rajawali.BaseObject3D;
+import rajawali.lights.ALight;
 import rajawali.math.Vector3;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -289,66 +291,175 @@ public class TerrainGenerator {
 			}
 		}
 
-		for (int i = 0; i < divisions; i += 2) {
-			for (int j = 0; j < divisions; j += 2) {
-				// O--O--O--O--O
-				// |A/|\D| /|\ |
-				// |/B|C\|/ | \|
-				// O--O--O--O--O
-				// |\F|G/|\ | /|
-				// |E\|/H| \|/ |
-				// O--O--O--O--O
-				// A
-				indices[xx++] = (i) + (j) * cols;
-				indices[xx++] = (i + 1) + (j) * cols;
-				indices[xx++] = (i) + (j + 1) * cols;
-				// B
-				indices[xx++] = (i + 1) + (j) * cols;
-				indices[xx++] = (i + 1) + (j + 1) * cols;
-				indices[xx++] = (i) + (j + 1) * cols;
-				// C
-				indices[xx++] = (i + 1) + (j) * cols;
-				indices[xx++] = (i + 2) + (j + 1) * cols;
-				indices[xx++] = (i + 1) + (j + 1) * cols;
-				// D
-				indices[xx++] = (i + 1) + (j) * cols;
-				indices[xx++] = (i + 2) + (j) * cols;
-				indices[xx++] = (i + 2) + (j + 1) * cols;
-				// E
-				indices[xx++] = (i) + (j + 1) * cols;
-				indices[xx++] = (i + 1) + (j + 2) * cols;
-				indices[xx++] = (i) + (j + 2) * cols;
-				// F
-				indices[xx++] = (i) + (j + 1) * cols;
-				indices[xx++] = (i + 1) + (j + 1) * cols;
-				indices[xx++] = (i + 1) + (j + 2) * cols;
-				// G
-				indices[xx++] = (i + 1) + (j + 1) * cols;
-				indices[xx++] = (i + 2) + (j + 1) * cols;
-				indices[xx++] = (i + 1) + (j + 2) * cols;
-				// H
-				indices[xx++] = (i + 2) + (j + 1) * cols;
-				indices[xx++] = (i + 2) + (j + 2) * cols;
-				indices[xx++] = (i + 1) + (j + 2) * cols;
-
+		if (prs.splitQuadrantsCount<=0) {
+				
+			for (int i = 0; i < divisions; i += 2) {
+				for (int j = 0; j < divisions; j += 2) {
+					// O--O--O--O--O 4
+					// |A/|\D| /|\ |
+					// |/B|C\|/ | \|
+					// O--O--O--O--O
+					// |\F|G/|\ | /|
+					// |E\|/H| \|/ |
+					// O--O--O--O--O
+					// A
+					indices[xx++] = (i) + (j) * cols;
+					indices[xx++] = (i + 1) + (j) * cols;
+					indices[xx++] = (i) + (j + 1) * cols;
+					// B
+					indices[xx++] = (i + 1) + (j) * cols;
+					indices[xx++] = (i + 1) + (j + 1) * cols;
+					indices[xx++] = (i) + (j + 1) * cols;
+					// C
+					indices[xx++] = (i + 1) + (j) * cols;
+					indices[xx++] = (i + 2) + (j + 1) * cols;
+					indices[xx++] = (i + 1) + (j + 1) * cols;
+					// D
+					indices[xx++] = (i + 1) + (j) * cols;
+					indices[xx++] = (i + 2) + (j) * cols;
+					indices[xx++] = (i + 2) + (j + 1) * cols;
+					// E
+					indices[xx++] = (i) + (j + 1) * cols;
+					indices[xx++] = (i + 1) + (j + 2) * cols;
+					indices[xx++] = (i) + (j + 2) * cols;
+					// F
+					indices[xx++] = (i) + (j + 1) * cols;
+					indices[xx++] = (i + 1) + (j + 1) * cols;
+					indices[xx++] = (i + 1) + (j + 2) * cols;
+					// G
+					indices[xx++] = (i + 1) + (j + 1) * cols;
+					indices[xx++] = (i + 2) + (j + 1) * cols;
+					indices[xx++] = (i + 1) + (j + 2) * cols;
+					// H
+					indices[xx++] = (i + 2) + (j + 1) * cols;
+					indices[xx++] = (i + 2) + (j + 2) * cols;
+					indices[xx++] = (i + 1) + (j + 2) * cols;
+	
+				}
+	
 			}
+	
 
+			sq.setData(vertices, nors, textureCoords, colors, indices);
+			
 		}
-
-		Log.i("Index", "vertices " + vertices.length + ":" + ii +
-				"normals " + nors.length + ":" + nn +
-				"colors " + colors.length + ":" + cc +
-				"texs " + textureCoords.length + ":" + tt +
-				"index " + indices.length + ":" + xx
-				);
-
-		sq.setData(vertices, nors, textureCoords, colors, indices);
+		else {
+			
+			int divXQ=prs.divisions / prs.splitQuadrantsCount;
+			int pindices[]=new int[divXQ*divXQ*2*3];
+			float pvertices[]=new float[(divXQ+1)*(divXQ+1)*3];
+			float pnors[]=new float[(divXQ+1)*(divXQ+1)*3];
+			float ptextureCoords[]=new float[(divXQ+1)*(divXQ+1)*2];
+			float pcolors[]=new float[(divXQ+1)*(divXQ+1)*4];
+			int pcols=divXQ+1;
+			int pidx;
+			int nnQQ=prs.splitQuadrantsCount;
+			cols=prs.divisions+1;
+			for (int qi=0;qi<nnQQ;qi++) {
+				for (int qj=0;qj<nnQQ;qj++) {
+					xx=0;cc=0;tt=0;nn=0;ii=0;
+						for (int j = 0; j <= divXQ; j++) {
+					for (int i = 0; i <= divXQ; i++) {
+					
+							pidx=((qi*divXQ)+i+(qj*divXQ+j)*cols);
+							pvertices[ii++]=vertices[pidx*3];
+							pvertices[ii++]=vertices[pidx*3+1];
+							pvertices[ii++]=vertices[pidx*3+2];
+							
+							pnors[nn++]=nors[pidx*3];
+							pnors[nn++]=nors[pidx*3+1];
+							pnors[nn++]=nors[pidx*3+2];
+							
+							ptextureCoords[tt++]=textureCoords[pidx*2];
+							ptextureCoords[tt++]=textureCoords[pidx*2+1];
+							
+							pcolors[cc++]=colors[pidx*4];
+							pcolors[cc++]=colors[pidx*4+1];
+							pcolors[cc++]=colors[pidx*4+2];
+							pcolors[cc++]=colors[pidx*4+3];
+							
+						}
+					}
+					//For All quadrant...
+					for (int i = 0; i < divXQ; i += 2) {
+						for (int j = 0; j < divXQ; j += 2) {
+														
+							pindices[xx++] = (i) + (j) * pcols;
+							pindices[xx++] = (i + 1) + (j) * pcols;
+							pindices[xx++] = (i) + (j + 1) * pcols;
+							// B
+							pindices[xx++] = (i + 1) + (j) * pcols;
+							pindices[xx++] = (i + 1) + (j + 1) * pcols;
+							pindices[xx++] = (i) + (j + 1) * pcols;
+							// C
+							pindices[xx++] = (i + 1) + (j) * pcols;
+							pindices[xx++] = (i + 2) + (j + 1) * pcols;
+							pindices[xx++] = (i + 1) + (j + 1) * pcols;
+							// D
+							pindices[xx++] = (i + 1) + (j) * pcols;
+							pindices[xx++] = (i + 2) + (j) * pcols;
+							pindices[xx++] = (i + 2) + (j + 1) * pcols;
+							// E
+							pindices[xx++] = (i) + (j + 1) * pcols;
+							pindices[xx++] = (i + 1) + (j + 2) * pcols;
+							pindices[xx++] = (i) + (j + 2) * pcols;
+							// F
+							pindices[xx++] = (i) + (j + 1) * pcols;
+							pindices[xx++] = (i + 1) + (j + 1) * pcols;
+							pindices[xx++] = (i + 1) + (j + 2) * pcols;
+							// G
+							pindices[xx++] = (i + 1) + (j + 1) * pcols;
+							pindices[xx++] = (i + 2) + (j + 1) * pcols;
+							pindices[xx++] = (i + 1) + (j + 2) * pcols;
+							// H
+							pindices[xx++] = (i + 2) + (j + 1) * pcols;
+							pindices[xx++] = (i + 2) + (j + 2) * pcols;
+							pindices[xx++] = (i + 1) + (j + 2) * pcols;
+							
+						} //j
+					} //i
+					
+					// generate a part
+					BaseObject3D parts=new BaseObject3D();
+				
+					
+					parts.setData(pvertices, pnors, ptextureCoords, pcolors, pindices);
+					parts.setMaterial(prs.material);
+					//parts.setDoubleSided(true);
+					if (prs.lights!=null) {
+						for (ALight lg : prs.lights) {
+							parts.addLight(lg);
+						}		
+					}
+					parts.setFrustumTest(true);
+					//parts.setShowBoundingVolume(true);
+					if (sq.getNumChildren()==0) {
+						parts.getGeometry().getBoundingBox().setBoundingColor(Color.RED);
+					} else {
+						parts.getGeometry().getBoundingBox();
+					}
+					sq.addChild(parts);
+				}  //qj
+			} //qi
+			
+			pvertices = pnors = ptextureCoords = pcolors = null;
+			pindices = null;
+			
+		}
+		
 		nors = null;
 		colors = null;
 		indices = null;
 		textureCoords = null;
 		vertices = null;
-
+ 
+		
+		sq.setMaterial(prs.material);
+		if (prs.lights!=null) {
+			for (ALight lg : prs.lights) {
+				sq.addLight(lg);
+			}		
+		}
 		return sq;
 	}
 

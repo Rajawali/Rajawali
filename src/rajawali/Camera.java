@@ -83,7 +83,7 @@ public class Camera extends ATransformable3D {
 		synchronized (mFrustumLock) {
 			Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
 			Matrix.invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
-			mFrustum.update(mCombinedMatrix);
+			mFrustum.update(mTmpMatrix);
 		}
 	}
 

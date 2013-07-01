@@ -1,7 +1,12 @@
 package rajawali.terrain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import rajawali.lights.ALight;
+import rajawali.materials.AMaterial;
 import rajawali.materials.SimpleMaterial;
 import rajawali.math.Plane;
 import rajawali.math.Vector3;
@@ -44,8 +49,19 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @param hMapBitmap
 	 */
-	public static Parameters createParameters(Bitmap hMapBitmap) {
-		return new Parameters(hMapBitmap);
+	public static Parameters createParameters(Bitmap hMapBitmap,AMaterial mat,List<ALight> lights) {
+		return new Parameters(hMapBitmap,mat,lights);
+	}
+	
+	/**
+	 * Create Parameters object for calling TerrainGenerator Note: Bitmap can be recycled after calling TerrainGenerator
+	 * 
+	 * @param hMapBitmap
+	 */
+	public static Parameters createParameters(Bitmap hMapBitmap,AMaterial mat,ALight light) {
+		List<ALight> lights=new ArrayList<ALight>();
+		lights.add(light);
+		return new Parameters(hMapBitmap,mat,lights);
 	}
 
 	/**
@@ -67,7 +83,10 @@ public class SquareTerrain extends Terrain {
 		protected int basecolor = Color.BLUE;
 		protected int middlecolor = Color.GREEN;
 		protected int upcolor = Color.WHITE;
-
+		protected int splitQuadrantsCount=0;
+		protected AMaterial material;
+		protected List<ALight> lights;
+		
 		// bmp, 256, new Vector3(1f,54f,1f), 0f, 100f, 8f, basecolor, middlecolor, upcolor
 		/**
 		 * Create SquareTerrain Parameters object for calling TerrainGenerator Note: Bitmap can be recycled after
@@ -75,10 +94,35 @@ public class SquareTerrain extends Terrain {
 		 * 
 		 * @param hMapBitmap
 		 */
-		protected Parameters(Bitmap hMapBitmap) {
+		protected Parameters(Bitmap hMapBitmap,AMaterial mat,List<ALight> lights) {
 			heightMapBitmap = hMapBitmap;
+			material=mat;
+			this.lights=lights;
 		}
 
+		
+ 
+		/**
+		 * Specify number of subdivisions of a Terrain map (use for fast rendering)
+		 * @param n
+		 */
+		public void setSplitQuadrantsCount(int n){
+			if (n==1) {
+				
+			}
+			else {
+			if (n>0 && ((n % 2)!=0)) {
+				throw new RuntimeException("SplitQuadrantsCount must be even");
+			}
+			
+			if (n>0 && (divisions % n) !=0) {
+				throw new RuntimeException("SplitQuadrantsCount must be divider of divisions");
+			}
+			}
+			splitQuadrantsCount=n;
+		}
+		
+		
 		/**
 		 * Square grid dimension
 		 * 
@@ -89,6 +133,8 @@ public class SquareTerrain extends Terrain {
 			if (!((value != 0) && ((value & (value - 1)) == 0))) {
 				throw new RuntimeException("Divisions must be value^2");
 			}
+			
+					
 			this.divisions = value;
 		}
 

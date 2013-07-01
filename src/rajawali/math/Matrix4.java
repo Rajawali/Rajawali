@@ -4,6 +4,18 @@ public final class Matrix4 {
 	private float[] m; 
 	private float[] mTmp;
 	
+	private final static float[] sIdentity=new float[4*4];
+	
+	static {
+		sIdentity[0] = 1;	sIdentity[1] = 0;	sIdentity[2] = 0;	sIdentity[3] = 0;
+		sIdentity[4] = 0;	sIdentity[5] = 1;	sIdentity[6] = 0;	sIdentity[7] = 0;
+		sIdentity[8] = 0;	sIdentity[9] = 0;	sIdentity[10] = 1;	sIdentity[11] = 0;
+		sIdentity[12] = 0;	sIdentity[13] = 0;	sIdentity[14] = 0;	sIdentity[15] = 1;
+	}
+	
+	public static float[] getIdentity(){ return sIdentity;}
+	
+	
 	public Matrix4() {
 		m = new float[16];
 		mTmp = new float[16];
