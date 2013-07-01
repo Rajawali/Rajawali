@@ -62,20 +62,21 @@ public class Frustum {
 	}
 
 	public boolean boundsInFrustum (BoundingBox bounds) {
-		Vector3[] corners = mTmp;
-		bounds.copyPoints(mTmp);//copy transformed points and test
-		int isout;
-		for (int i = 0; i < 6; i++) {
-			isout= 0;
-			for (int j = 0; j < 8; j++)
-				if (planes[i].getPointSide(corners[j]) == PlaneSide.Back){ isout++; }
+		
 
-			if (isout == 8) { 
-				return false;
+			Vector3[] corners = mTmp;
+			bounds.copyPoints(mTmp);//copy transformed points and test
+			int isout;
+			for (int i = 0; i < 6; i++) {
+				isout= 0;
+				for (int j = 0; j < 8; j++)
+					if (planes[i].getPointSide(corners[j]) == PlaneSide.Back){ isout++; }
+	
+				if (isout == 8) { 
+					return false;
+				}
 			}
-		}
-
-		return true;
+			return true;
 	}
 
 	public boolean pointInFrustum (Vector3 point) {
@@ -91,12 +92,15 @@ public class Frustum {
 	 * Should be called internally whenever a change to
 	 * the frustum occurs.
 	 */
+	
+	private Vector3 min = new Vector3();
+	private Vector3 max = new Vector3();
+	
 	protected void setBounds() {
 		if (mBoundingBox == null) {
 			mBoundingBox = new BoundingBox();
 		}
-		Vector3 min = new Vector3();
-		Vector3 max = new Vector3();
+
 		min.setAllFrom(planePoints[0]);
 		min.x = planePoints[5].x;
 		min.y = planePoints[5].y;
