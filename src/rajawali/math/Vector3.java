@@ -227,6 +227,17 @@ public class Vector3 {
 	public static Vector3 add(Vector3 a, Vector3 b) {
 		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
+	
+	public static Vector3 add(Vector3 a, Vector3 b,Vector3 result) {
+
+		
+		result.x=a.x + b.x;
+		result.y= a.y + b.y;
+		result.z=a.z + b.z;
+		
+		return result;
+	}
+
 
 	public static Vector3 subtract(Vector3 a, Vector3 b) {
 		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
@@ -238,6 +249,15 @@ public class Vector3 {
 
 	public static Vector3 multiply(Vector3 a, float b) {
 		return new Vector3(a.x * b, a.y * b, a.z * b);
+	}
+	
+	public static Vector3 multiply(Vector3 a, float b,Vector3 result) {
+			
+		result.x=a.x * b;
+		result.y=a.y * b;
+		result.z=a.z * b;
+		
+		return result;
 	}
 
 	public static Vector3 cross(Vector3 v, Vector3 w) {
@@ -321,16 +341,30 @@ public class Vector3 {
 		return q;
 	}
 	
+	private static final Vector3 sUpVector=new Vector3(0,1,0);
+	private static final Vector3 sRightVector=new Vector3(1,0,0);
+	private static final Vector3 sForwardVector=new Vector3(0,0,1);
+
+	
 	public static Vector3 getUpVector() {
-		return new Vector3(0, 1, 0);
+		sUpVector.x=0f;
+		sUpVector.y=1f;
+		sUpVector.z=0f;
+		return sUpVector;//new Vector3(0, 1, 0);
 	}
 	
 	public static Vector3 getRightVector() {
-		return new Vector3(1, 0, 0);
+		sRightVector.x=1f;
+		sRightVector.y=0f;
+		sRightVector.z=0f;
+		return sRightVector;//new Vector3(1, 0, 0);
 	}
 	
 	public static Vector3 getForwardVector() {
-		return new Vector3(0, 0, 1);
+		sForwardVector.x=0f;
+		sForwardVector.y=0f;
+		sForwardVector.z=1f;
+		return sForwardVector;//new Vector3(0, 0, 1);
 	}
 	
 	public static Vector3 lerp(Vector3 from, Vector3 to, float amount)
