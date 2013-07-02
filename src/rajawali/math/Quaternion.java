@@ -348,6 +348,11 @@ public final class Quaternion {
 		return q;
 	}
 	
+	public static Quaternion slerp(Quaternion q1, Quaternion q2, float t,Quaternion result) {
+		result.slerpSelf(q1, q2, t);
+		return result;
+	}
+	
 	public void slerpSelf(Quaternion q1, Quaternion q2, float t) {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             setAllFrom(q1);

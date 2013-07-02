@@ -46,6 +46,10 @@ public class TranslateAnimation3D extends Animation3D {
 			mFromPosition = new Vector3(transformable3D.getPosition());
 	}
 
+	private Vector3 mTempPoint1=new Vector3();
+	private Vector3 mTempPoint2=new Vector3();
+	private Vector3 mTempPoint3=new Vector3();
+	
 	@Override
 	protected void applyTransformation() {
 		if (mSplinePath == null) {
@@ -57,16 +61,16 @@ public class TranslateAnimation3D extends Animation3D {
 			mAddedPosition.add(mMultipliedPosition);
 			mTransformable3D.setPosition(mAddedPosition);
 		} else {
-			Vector3 pathPoint = mSplinePath.calculatePoint((float) mInterpolatedTime);
+			Vector3 pathPoint = mSplinePath.calculatePoint((float) mInterpolatedTime,mTempPoint1);
 			mTransformable3D.setPosition(pathPoint);
 
 			if (mOrientToPath)
 			{
 				// -- calculate tangent
 				Vector3 point1 = mSplinePath
-							.calculatePoint((float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))));
+							.calculatePoint((float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))),mTempPoint2);
 				Vector3 point2 = mSplinePath
-						.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))));
+						.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))),mTempPoint3);
 				
 				// -- calculate direction vector
 				mTmpVec.setAllFrom(point2);
@@ -75,7 +79,7 @@ public class TranslateAnimation3D extends Animation3D {
 					
 				mTmpOrientation.setFromRotationBetween(mObjectRay, mTmpVec);
 				mTmpOrientation.normalize();
-				mTmpOrientation2.setAllFrom(mTransformable3D.getOrientation());
+				mTransformable3D.getOrientation(mTmpOrientation2);
 				mTmpOrientation2.normalize();
 				mTmpOrientation2.multiply(mTmpOrientation);
 				mTmpOrientation2.normalize();

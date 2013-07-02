@@ -24,7 +24,10 @@ public class CatmullRomCurve3D implements ICurve3D {
 	protected boolean mCalculateTangents;
 	protected float[] mSegmentLengths;
 	protected boolean mIsClosed;
-
+	private Vector3 mTempNext=new Vector3();
+	private Vector3 mTempPrevLen=new Vector3();
+	private Vector3 mTempPointLen=new Vector3();
+	
 	public CatmullRomCurve3D() {
 		mPoints = Collections.synchronizedList(new CopyOnWriteArrayList<Vector3>());
 		mCurrentTangent = new Vector3();
@@ -50,18 +53,19 @@ public class CatmullRomCurve3D implements ICurve3D {
 		return mPoints.get(index);
 	}
 
-	public Vector3 calculatePoint(final float t) {
+	
+	public Vector3 calculatePoint(final float t,Vector3 result) {
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;
-			mCurrentTangent = p(prevt);
-			Vector3 nextp = p(nextt);
+			mCurrentTangent = p(prevt,mCurrentTangent);
+			Vector3 nextp = p(nextt,mTempNext);
 			mCurrentTangent.subtract(nextp);
 			mCurrentTangent.multiply(.5f);
 			mCurrentTangent.normalize();
 		}
 
-		return p(t);
+		return p(t,result);
 	}
 
 	public Vector3 getCurrentTangent() {
@@ -100,7 +104,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 		return 0;
 	}
 
-	protected Vector3 p(float t) {
+	protected Vector3 p(float t,Vector3 result) {
 		if(t < 0) t = 1 + t;
 		int end = mIsClosed ? 0 : 3;
 		int start = mIsClosed ? 0 : 2;
@@ -125,7 +129,8 @@ public class CatmullRomCurve3D implements ICurve3D {
 			mCurrentPoint.y += b * p.y;
 			mCurrentPoint.z += b * p.z;
 		}
-		return mCurrentPoint.clone();
+		result.setAllFrom(mCurrentPoint);
+		return  result;
 	}
 
 	protected float pow2(float value) {
@@ -147,6 +152,8 @@ public class CatmullRomCurve3D implements ICurve3D {
 		return mIsClosed;
 	}
 
+	
+
 	/**
 	 * Returns an approximation of the length of the curve. The more segments the more precise the result.
 	 * 
@@ -159,12 +166,12 @@ public class CatmullRomCurve3D implements ICurve3D {
 
 		mSegmentLengths = new float[segments + 1];
 		mSegmentLengths[0] = 0;
-		Vector3 prevPoint = calculatePoint(0);
+		Vector3 prevPoint = calculatePoint(0,mTempPrevLen);
 
 		for (int i = 1; i <= segments; i++)
 		{
 			float t = (float) i / (float) segments;
-			Vector3 point = calculatePoint(t);
+			Vector3 point = calculatePoint(t,mTempPointLen);
 			float dist = prevPoint.distanceTo(point);
 			totalLength += dist;
 			mSegmentLengths[i] = dist;
@@ -198,7 +205,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 		// -- add first control point
 		newPoints.add(mPoints.get(0));
 		// -- add first point
-		newPoints.add(calculatePoint(0));
+		newPoints.add(calculatePoint(0,new Vector3()));
 
 		float currentLength = 0;
 
@@ -207,13 +214,13 @@ public class CatmullRomCurve3D implements ICurve3D {
 			currentLength += mSegmentLengths[i];
 			if (currentLength >= segmentDistance)
 			{
-				newPoints.add(calculatePoint((float) i / (float) (numSegments - 1)));
+				newPoints.add(calculatePoint((float) i / (float) (numSegments - 1),new Vector3()));
 				currentLength = 0;
 			}
 		}
 
 		// -- add last point
-		newPoints.add(calculatePoint(1));
+		newPoints.add(calculatePoint(1,new Vector3()));
 		// -- add last control point
 		newPoints.add(mPoints.get(mPoints.size() - 1));
 

@@ -33,11 +33,13 @@ public class ChaseCamera extends Camera {
 		mRotMatrix = new float[16];
 	}
 	
+	private Quaternion mTmpQuatChase=new Quaternion();
+	
 	public float[] getViewMatrix() {
 		mPosition.setAllFrom(mObjectToChase.getPosition());
-		mTmpVec.setAllFrom(mCameraOffset.clone());
+		mTmpVec.setAllFrom(mCameraOffset);
 		
-		mTmpOr.setAllFrom(Quaternion.slerp(mPreviousOrientation, mObjectToChase.getOrientation(), mSlerpFactor));
+		Quaternion.slerp(mPreviousOrientation, mObjectToChase.getOrientation(mTmpQuatChase), mSlerpFactor,mTmpOr);
 		mTmpOr.toRotationMatrix(mRotMatrix);
 		mTmpVec.multiply(mRotMatrix);
 		
