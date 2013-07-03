@@ -2,7 +2,6 @@ package rajawali.animation;
 
 import rajawali.ATransformable3D;
 import rajawali.curves.ICurve3D;
-import rajawali.math.MathUtil;
 import rajawali.math.Quaternion;
 import rajawali.math.Vector3;
 import rajawali.math.Vector3.Axis;
@@ -16,7 +15,9 @@ public class TranslateAnimation3D extends Animation3D {
 	protected Vector3 mAddedPosition = new Vector3();
 	protected Vector3 mForwardVec = Vector3.getAxisVector(Axis.Z);
 	protected Vector3 mTmpVec = new Vector3();
+	protected Vector3 mObjectRay = Vector3.getAxisVector(Axis.Z);
 	protected Quaternion mTmpOrientation = new Quaternion();
+	protected Quaternion mTmpOrientation2 = new Quaternion();
 	
 	protected boolean mOrientToPath = false;
 	protected ICurve3D mSplinePath;
@@ -58,17 +59,30 @@ public class TranslateAnimation3D extends Animation3D {
 		} else {
 			Vector3 pathPoint = mSplinePath.calculatePoint((float) mInterpolatedTime);
 			mTransformable3D.setPosition(pathPoint);
-			mTransformable3D.getPosition().setAllFrom(pathPoint);
 
 			if (mOrientToPath)
 			{
-				//mTransformable3D.setLookAt(mSplinePath
-					//	.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1)))));
-				mTmpVec.setAllFrom(Vector3.subtract(mSplinePath.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1)))), pathPoint));
+				// -- calculate tangent
+				Vector3 point1 = mSplinePath
+							.calculatePoint((float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))));
+				Vector3 point2 = mSplinePath
+						.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))));
+				
+				// -- calculate direction vector
+				mTmpVec.setAllFrom(point2);
+				mTmpVec.subtract(point1);
 				mTmpVec.normalize();
-				float angle = MathUtil.radiansToDegrees((float)Math.acos(Vector3.dot(mForwardVec, mTmpVec)));
-				mTmpOrientation.fromAngleAxis(angle, Vector3.cross(mForwardVec, mTmpVec));
-				mTransformable3D.setOrientation(mTmpOrientation);
+					
+				mTmpOrientation.setFromRotationBetween(mObjectRay, mTmpVec);
+				mTmpOrientation.normalize();
+				mTmpOrientation2.setAllFrom(mTransformable3D.getOrientation());
+				mTmpOrientation2.normalize();
+				mTmpOrientation2.multiply(mTmpOrientation);
+				mTmpOrientation2.normalize();
+				mTransformable3D.setOrientation(mTmpOrientation2);
+				mTmpOrientation2.normalize();				
+				
+				mObjectRay.setAllFrom(mTmpVec);
 			}
 		}
 	}

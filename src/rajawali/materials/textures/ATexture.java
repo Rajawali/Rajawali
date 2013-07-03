@@ -130,7 +130,7 @@ public abstract class ATexture extends AFrameTask {
 		this();
 		mTextureType = textureType;
 		mTextureName = textureName;
-		mMipmap = false;
+		mMipmap = true;
 		mShouldRecycle = false;
 		mWrapType = WrapType.REPEAT;
 		mFilterType = FilterType.LINEAR;

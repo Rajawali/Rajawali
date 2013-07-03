@@ -325,6 +325,14 @@ public class Vector3 {
 		return new Vector3(0, 1, 0);
 	}
 	
+	public static Vector3 getRightVector() {
+		return new Vector3(1, 0, 0);
+	}
+	
+	public static Vector3 getForwardVector() {
+		return new Vector3(0, 0, 1);
+	}
+	
 	public static Vector3 lerp(Vector3 from, Vector3 to, float amount)
 	{
 		Vector3 out = new Vector3();
