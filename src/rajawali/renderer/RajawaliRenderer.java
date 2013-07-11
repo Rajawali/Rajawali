@@ -790,9 +790,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalRemoveScene((RajawaliScene) task, task.getIndex());
 			break;
 		case TEXTURE:
-			internalRemoveTexture((ATexture) task, task.getIndex()); 
+			internalRemoveTexture((ATexture) task, task.getIndex());
+			break;
 		case MATERIAL:
 			internalRemoveMaterial((AMaterial) task, task.getIndex());
+			break;
 		default:
 			break;
 		}
