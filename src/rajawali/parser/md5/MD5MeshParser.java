@@ -21,6 +21,7 @@ import rajawali.materials.textures.TextureManager;
 import rajawali.math.Vector3;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.IAnimatedMeshParser;
+import rajawali.parser.ParsingException;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.content.res.Resources;

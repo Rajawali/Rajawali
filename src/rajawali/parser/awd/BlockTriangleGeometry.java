@@ -1,6 +1,7 @@
 package rajawali.parser.awd;
 
 import rajawali.BaseObject3D;
+import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
@@ -12,43 +13,45 @@ import rajawali.util.RajLog;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockTriangleGeometry extends ABlockParser {
+public class BlockTriangleGeometry extends AExportableBlockParser {
 
-	protected BaseObject3D[] baseObjects;
-	protected String lookupName;
-	protected int subGeometryCount;
+	protected BaseObject3D[] mBaseObjects;
+	protected String mLookupName;
+	protected int mSubGeometryCount;
 
 	@Override
 	public BaseObject3D getBaseObject3D() {
-		if (baseObjects.length == 1)
-			return baseObjects[0];
+		if (mBaseObjects.length == 1)
+			return mBaseObjects[0];
 
 		final BaseObject3D container = new BaseObject3D();
 		container.isContainer(true);
-		for (int i = 0; i < baseObjects.length; i++)
-			container.addChild(baseObjects[i]);
+		for (int i = 0; i < mBaseObjects.length; i++)
+			container.addChild(mBaseObjects[i]);
 
 		return container;
 	}
 
 	public void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
+		final AWDLittleEndianDataInputStream awdDis = (AWDLittleEndianDataInputStream) dis;
+		
 		// Lookup name, not sure why this is useful.
-		final int lookupNameLength = dis.readUnsignedShort();
-		lookupName = lookupNameLength == 0 ? "" : dis.readString(lookupNameLength);
-		RajLog.d("  Lookup Name: " + lookupName);
+		final int lookupNameLength = awdDis.readUnsignedShort();
+		mLookupName = lookupNameLength == 0 ? "" : awdDis.readString(lookupNameLength);
+		RajLog.d("  Lookup Name: " + mLookupName);
 
 		// Count of sub geometries
-		subGeometryCount = dis.readUnsignedShort();
-		baseObjects = new BaseObject3D[subGeometryCount];
-		RajLog.d("  Sub Geometry Count: " + subGeometryCount);
+		mSubGeometryCount = awdDis.readUnsignedShort();
+		mBaseObjects = new BaseObject3D[mSubGeometryCount];
+		RajLog.d("  Sub Geometry Count: " + mSubGeometryCount);
 
 		// Read properties
-		readProperties(dis);
+		readProperties(awdDis);
 
 		// Read each sub mesh data
 		int parsedSubs = 0;
-		while (parsedSubs < subGeometryCount) {
-			long subMeshLength = dis.readUnsignedInt();
+		while (parsedSubs < mSubGeometryCount) {
+			long subMeshLength = awdDis.readUnsignedInt();
 
 			// Geometry
 			float[] vertices = null;
@@ -57,50 +60,50 @@ public class BlockTriangleGeometry extends ABlockParser {
 			float[] normals = null;
 
 			// Read properties
-			readProperties(dis);
+			readProperties(awdDis);
 
 			long bytesRead = 0;
 
 			// Read each data type from the mesh
 			while (bytesRead < subMeshLength) {
 				int idx = 0;
-				int type = dis.readUnsignedByte();
-				int typeF = dis.readUnsignedByte();
-				long subLength = dis.readUnsignedInt();
+				int type = awdDis.readUnsignedByte();
+				int typeF = awdDis.readUnsignedByte();
+				long subLength = awdDis.readUnsignedInt();
 				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength);
 
 				// Process the mesh data by type
 				switch ((int) type) {
-				case 1: // Vertices
+				case 1: // Vertex positions
 					vertices = new float[(int) (subLength / 4)];
 					while (idx < vertices.length) {
 						// X, Y, Z
-						vertices[idx++] = dis.readFloat();
-						vertices[idx++] = dis.readFloat();
-						vertices[idx++] = dis.readFloat();
+						vertices[idx++] = awdDis.readFloat();
+						vertices[idx++] = awdDis.readFloat();
+						vertices[idx++] = awdDis.readFloat();
 					}
 					break;
-				case 2: // Indices
+				case 2: // Face indices
 					indices = new int[(int) (subLength / 2)];
 					while (idx < indices.length)
-						indices[idx++] = dis.readUnsignedShort();
+						indices[idx++] = awdDis.readUnsignedShort();
 					break;
-				case 3: // Texture Coords
+				case 3: // UV coordinates
 					uvs = new float[(int) (subLength / 4)];
 					while (idx < uvs.length)
-						uvs[idx++] = dis.readFloat();
+						uvs[idx++] = awdDis.readFloat();
 					break;
-				case 4: // Normals
+				case 4: // Vertex normals
 					normals = new float[(int) (subLength / 4)];
 					while (idx < normals.length)
-						normals[idx++] = dis.readFloat();
+						normals[idx++] = awdDis.readFloat();
 					break;
-				case 5: // Not Used?
-				case 6: // Weight Indices
-				case 7: // Weights
+				case 5: // Vertex tangents
+				case 6: // Joint index
+				case 7: // Joint weight
 				default:
 					// Unknown mesh data, skipping
-					dis.skip(subLength);
+					awdDis.skip(subLength);
 				}
 
 				// Verify the arrays
@@ -117,8 +120,8 @@ public class BlockTriangleGeometry extends ABlockParser {
 				bytesRead += 6 + subLength;
 			}
 
-			baseObjects[parsedSubs] = new BaseObject3D();
-			baseObjects[parsedSubs].setData(vertices, normals, uvs, null, indices);
+			mBaseObjects[parsedSubs] = new BaseObject3D();
+			mBaseObjects[parsedSubs].setData(vertices, normals, uvs, null, indices);
 
 			parsedSubs++;
 		}
