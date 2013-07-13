@@ -34,10 +34,9 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 
 	public void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 		final AWDLittleEndianDataInputStream awdDis = (AWDLittleEndianDataInputStream) dis;
-		
+
 		// Lookup name, not sure why this is useful.
-		final int lookupNameLength = awdDis.readUnsignedShort();
-		mLookupName = lookupNameLength == 0 ? "" : awdDis.readString(lookupNameLength);
+		mLookupName = awdDis.readVarString();
 		RajLog.d("  Lookup Name: " + mLookupName);
 
 		// Count of sub geometries
@@ -46,7 +45,7 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 		RajLog.d("  Sub Geometry Count: " + mSubGeometryCount);
 
 		// Read properties
-		readProperties(awdDis);
+		awdDis.readProperties();
 
 		// Read each sub mesh data
 		int parsedSubs = 0;
@@ -60,7 +59,7 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 			float[] normals = null;
 
 			// Read properties
-			readProperties(awdDis);
+			awdDis.readProperties();
 
 			long bytesRead = 0;
 

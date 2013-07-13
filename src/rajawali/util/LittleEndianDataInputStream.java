@@ -85,11 +85,11 @@ public class LittleEndianDataInputStream extends InputStream implements DataInpu
 	 public final long readUnsignedInt() throws IOException
 	 {
 		 d.readFully(w, 0, 4);
-		 return
+		 return ((long)
 		 (w[3])      << 24 |
 		 (w[2]&0xff) << 16 |
 		 (w[1]&0xff) <<  8 |
-		 (w[0]&0xff);
+		 (w[0]&0xff)) & 0X00000000FFFFFFFFL;
 	 }
  
 	 /**

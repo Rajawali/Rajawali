@@ -52,7 +52,7 @@ public class AWDParser extends AMeshParser {
 	protected static final int FLAG_HEADER_GEOMETRY_STORAGE_PRECISION = 0x04;
 	protected static final int FLAG_HEADER_PROPERTIES_STORAGE_PRECISION = 0x08;
 	protected static final int FLAG_HEADER_COMPRESSION = 0x08;
-	
+
 	protected static final byte NS_AWD = 0;
 
 	enum Compression {
@@ -174,6 +174,8 @@ public class AWDParser extends AMeshParser {
 				do {
 					// Read header data
 					final BlockHeader blockHeader = new BlockHeader();
+					blockHeader.awdVersion = awdHeaderVersion;
+					blockHeader.awdRevision = awdHeaderRevision;
 					blockHeader.id = dis.readInt();
 					blockHeader.namespace = dis.read();
 					blockHeader.type = dis.read();
@@ -371,6 +373,9 @@ public class AWDParser extends AMeshParser {
 
 	public static final class BlockHeader {
 
+		public int awdVersion;
+		public int awdRevision;
+
 		public int id;
 		public int namespace;
 		public int type;
@@ -398,8 +403,26 @@ public class AWDParser extends AMeshParser {
 			super(in);
 		}
 
-		public void setHighDefinition(boolean flag) {
-			mHighDefinition = flag;
+		public void readMatrix4x4(float[] matrix) throws ParsingException, IOException {
+			if (matrix == null || matrix.length != 16)
+				throw new ParsingException("Matrix array must be of size 16");
+
+			matrix[0] = (float) readPrecisionNumber();
+			matrix[1] = (float) readPrecisionNumber();
+			matrix[2] = (float) readPrecisionNumber();
+			matrix[3] = 0f;
+			matrix[4] = (float) readPrecisionNumber();
+			matrix[5] = (float) readPrecisionNumber();
+			matrix[6] = (float) readPrecisionNumber();
+			matrix[7] = 0f;
+			matrix[8] = (float) readPrecisionNumber();
+			matrix[9] = (float) readPrecisionNumber();
+			matrix[10] = (float) readPrecisionNumber();
+			matrix[11] = 0f;
+			matrix[12] = (float) readPrecisionNumber();
+			matrix[13] = (float) readPrecisionNumber();
+			matrix[14] = (float) readPrecisionNumber();
+			matrix[15] = 1f;
 		}
 
 		/**
@@ -410,6 +433,62 @@ public class AWDParser extends AMeshParser {
 		 */
 		public double readPrecisionNumber() throws IOException {
 			return mHighDefinition ? readDouble() : readFloat();
+		}
+
+		/**
+		 * Read block properties. More details as soon as I figure out the purpose of these properties.
+		 * 
+		 * @param dis
+		 * @throws IOException
+		 */
+		public void readProperties() throws IOException {
+			readProperties(null);
+		}
+
+		public void readProperties(SparseArray<Long> expected) throws IOException {
+			// Determine the length of the properties
+			final long propsLength = readUnsignedInt();
+
+			if (expected == null) {
+				RajLog.d("Skipping unknown property values.");
+
+				// skip properties until an implementation can be determined
+				skip(propsLength);
+			} else {
+				// FIXME read the properties into the passed sparse array
+				skip(propsLength);
+			}
+		}
+
+		/**
+		 * More shit that needs to be implemented : sigh :
+		 * @throws IOException 
+		 */
+		public void readUserAttributes() throws IOException {
+			// Down the rabbit hole we go
+			
+			final long attrLength = readUnsignedInt();
+			skip(attrLength);
+		}
+
+		/**
+		 * Read a variable length String from the file.
+		 * 
+		 * @return
+		 * @throws IOException
+		 */
+		public String readVarString() throws IOException {
+			final int varStringLength = readUnsignedShort();
+			return varStringLength == 0 ? "" : readString(varStringLength);
+		}
+
+		/**
+		 * Determine if the reader will read floats or doubles from the file.
+		 * 
+		 * @param flag
+		 */
+		public void setHighDefinition(boolean flag) {
+			mHighDefinition = flag;
 		}
 
 	}
