@@ -5,11 +5,39 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.textures.TextureManager;
-import rajawali.parser.awd.*;
+import rajawali.parser.awd.ABlockParser;
+import rajawali.parser.awd.AExportableBlockParser;
+import rajawali.parser.awd.BlockAnimationSet;
+import rajawali.parser.awd.BlockAnimator;
+import rajawali.parser.awd.BlockCamera;
+import rajawali.parser.awd.BlockCommand;
+import rajawali.parser.awd.BlockContainer;
+import rajawali.parser.awd.BlockCubeTexture;
+import rajawali.parser.awd.BlockLight;
+import rajawali.parser.awd.BlockLightPicker;
+import rajawali.parser.awd.BlockMeshInstance;
+import rajawali.parser.awd.BlockMeshPose;
+import rajawali.parser.awd.BlockMeshPoseAnimation;
+import rajawali.parser.awd.BlockMetaData;
+import rajawali.parser.awd.BlockNamespace;
+import rajawali.parser.awd.BlockPrimitiveGeometry;
+import rajawali.parser.awd.BlockScene;
+import rajawali.parser.awd.BlockShadowMethod;
+import rajawali.parser.awd.BlockSharedMethod;
+import rajawali.parser.awd.BlockSkeleton;
+import rajawali.parser.awd.BlockSkeletonAnimation;
+import rajawali.parser.awd.BlockSkeletonPose;
+import rajawali.parser.awd.BlockSkybox;
+import rajawali.parser.awd.BlockStandardMaterial;
+import rajawali.parser.awd.BlockTexture;
+import rajawali.parser.awd.BlockTextureProjector;
+import rajawali.parser.awd.BlockTriangleGeometry;
+import rajawali.parser.awd.BlockUVAnimation;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.LittleEndianDataInputStream;
@@ -211,9 +239,6 @@ public class AWDParser extends AMeshParser {
 					// Add the parser to the list of block parsers
 					blockParsers.add(parser);
 
-					// Assign the parser for future reference
-					blockHeader.blockParser = parser;
-
 					RajLog.d(" Parsing block with: " + parser.getClass().getSimpleName());
 
 					// Begin parsing
@@ -284,7 +309,7 @@ public class AWDParser extends AMeshParser {
 	}
 
 	/**
-	 * Get the compression level set in the AWD header
+	 * Get the compression level set in the AWD header.
 	 * 
 	 * @return
 	 */
@@ -294,24 +319,6 @@ public class AWDParser extends AMeshParser {
 		} catch (Exception e) {
 			throw new RuntimeException("Unknown compression setting detected!");
 		}
-	}
-
-	/**
-	 * Get the AWD file revision specified in the header of the document.
-	 * 
-	 * @return
-	 */
-	public int getRevision() {
-		return awdHeaderRevision;
-	}
-
-	/**
-	 * Get the AWD file version specified in the header of the document.
-	 * 
-	 * @return
-	 */
-	public int getVersion() {
-		return awdHeaderVersion;
 	}
 
 	/**
@@ -371,6 +378,13 @@ public class AWDParser extends AMeshParser {
 		void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception;
 	}
 
+	/**
+	 * Block headers are consistent across all blocks and hold useful information that various blocks need for parsing
+	 * purposes.
+	 * 
+	 * @author Ian Thomas (toxicbakery@gmail.com)
+	 * 
+	 */
 	public static final class BlockHeader {
 
 		public int awdVersion;
@@ -381,7 +395,6 @@ public class AWDParser extends AMeshParser {
 		public int type;
 		public int flags;
 		public int dataLength;
-		public IBlockParser blockParser;
 
 		@Override
 		public String toString() {
@@ -395,7 +408,35 @@ public class AWDParser extends AMeshParser {
 		}
 	}
 
+	/**
+	 * Helper class adding specific features resused across AWD blocks such as VarString, UserAttributes, and
+	 * Properties. Additionally, the inputstream automatically handles the reading of
+	 * 
+	 * @author Ian Thomas (toxicbakery@gmail.com)
+	 * 
+	 */
 	public class AWDLittleEndianDataInputStream extends LittleEndianDataInputStream {
+
+		public static final int TYPE_INT8 = 1;
+		public static final int TYPE_INT16 = 2;
+		public static final int TYPE_INT32 = 3;
+		public static final int TYPE_UINT8 = 4;
+		public static final int TYPE_UINT16 = 5;
+		public static final int TYPE_UINT32 = 6;
+		public static final int TYPE_FLOAT32 = 7;
+		public static final int TYPE_FLOAT64 = 8;
+		public static final int TYPE_BOOL = 21;
+		public static final int TYPE_COLOR = 22;
+		public static final int TYPE_BADDR = 23;
+		public static final int TYPE_AWDSTRING = 31;
+		public static final int TYPE_AWDBYTEARRAY = 32;
+		public static final int TYPE_VECTOR2x1 = 41;
+		public static final int TYPE_VECTOR3x1 = 42;
+		public static final int TYPE_VECTOR4x1 = 43;
+		public static final int TYPE_MTX3x2 = 44;
+		public static final int TYPE_MTX3x3 = 45;
+		public static final int TYPE_MTX4x3 = 46;
+		public static final int TYPE_MTX4x4 = 47;
 
 		protected boolean mHighDefinition;
 
@@ -403,7 +444,33 @@ public class AWDParser extends AMeshParser {
 			super(in);
 		}
 
-		public void readMatrix4x4(float[] matrix) throws ParsingException, IOException {
+		/**
+		 * Read in a 2D matrix. Passed array must be of size 6.
+		 * 
+		 * @param matrix
+		 * @throws IOException
+		 * @throws ParsingException
+		 */
+		public void readMatrix2D(float[] matrix) throws IOException, ParsingException {
+			if (matrix == null || matrix.length != 6)
+				throw new ParsingException("Matrix array must be of size 6");
+
+			matrix[0] = readFloat();
+			matrix[1] = readFloat();
+			matrix[2] = readFloat();
+			matrix[3] = readFloat();
+			matrix[4] = readFloat();
+			matrix[5] = readFloat();
+		}
+
+		/**
+		 * Read in 3D matrix. Passed array must be of size 16 Positions 3, 7, 11, and 15 are constants and not read.
+		 * 
+		 * @param matrix
+		 * @throws ParsingException
+		 * @throws IOException
+		 */
+		public void readMatrix3D(float[] matrix) throws ParsingException, IOException {
 			if (matrix == null || matrix.length != 16)
 				throw new ParsingException("Matrix array must be of size 16");
 
@@ -436,7 +503,7 @@ public class AWDParser extends AMeshParser {
 		}
 
 		/**
-		 * Read block properties. More details as soon as I figure out the purpose of these properties.
+		 * Skip reading of block properties. Same as calling skip(properties.length).
 		 * 
 		 * @param dis
 		 * @throws IOException
@@ -445,30 +512,192 @@ public class AWDParser extends AMeshParser {
 			readProperties(null);
 		}
 
-		public void readProperties(SparseArray<Long> expected) throws IOException {
+		/**
+		 * Read the user properties and place the values into the passed {@link SparseArray}. If the passed array is
+		 * null, the properties will be skipped.
+		 * 
+		 * @param expected
+		 * @throws IOException
+		 */
+		public void readProperties(SparseArray<Short> expected) throws IOException {
+			final HashMap<Short, Object> props = new HashMap<Short, Object>();
+
 			// Determine the length of the properties
 			final long propsLength = readUnsignedInt();
+			final long endPosition = position + propsLength;
 
 			if (expected == null) {
-				RajLog.d("Skipping unknown property values.");
+				RajLog.d("Skipping property values.");
 
 				// skip properties until an implementation can be determined
 				skip(propsLength);
-			} else {
-				// FIXME read the properties into the passed sparse array
-				skip(propsLength);
 			}
+
+			int propKey;
+			short propType;
+			long propLength;
+			Object propValue;
+
+			// Read the properties, skip the remaining values if an error is encountered
+			while (position < endPosition) {
+				propKey = readUnsignedShort();
+				propLength = readUnsignedInt();
+				propValue = null;
+
+				if (position + propLength > endPosition) {
+					RajLog.e("Unexpected properties length. Properties attemped to read past total properties length.");
+					if (endPosition > position)
+						skip(endPosition - position);
+
+					return;
+				}
+
+				if (expected.indexOfKey(propKey) < 0) {
+					propType = expected.get(propKey);
+					switch (propType) {
+					case TYPE_BOOL:
+						propValue = readBoolean();
+						break;
+					case TYPE_INT16:
+						propValue = readShort();
+						break;
+					case TYPE_INT32:
+						propValue = readInt();
+						break;
+					case TYPE_UINT8:
+						propValue = readUnsignedByte();
+						break;
+					case TYPE_UINT16:
+						propValue = readUnsignedShort();
+						break;
+					case TYPE_UINT32:
+					case TYPE_COLOR:
+					case TYPE_BADDR:
+						propValue = readUnsignedInt();
+						break;
+					case TYPE_FLOAT32:
+						propValue = readFloat();
+						break;
+					case TYPE_FLOAT64:
+						propValue = readDouble();
+						break;
+					case TYPE_AWDSTRING:
+						final byte[] stringBytes = new byte[(int) propLength];
+						readFully(stringBytes);
+						propValue = new String(stringBytes);
+						break;
+					case TYPE_VECTOR2x1:
+					case TYPE_VECTOR3x1:
+					case TYPE_VECTOR4x1:
+					case TYPE_MTX3x2:
+					case TYPE_MTX3x3:
+					case TYPE_MTX4x3:
+					case TYPE_MTX4x4:
+						// It seems that property matrix are always stored in high precision
+						final double[] matrix = new double[(int) propLength / 8];
+						for (int i = 0; i < matrix.length; i++)
+							matrix[i] = readDouble();
+						
+						propValue = matrix;
+						break;
+					default:
+						skip(propLength);
+						break;
+					}
+					
+					if (propValue != null)
+						props.put(propType, propValue);
+					
+				} else {
+					skip(propLength);
+				}
+
+			}
+
 		}
 
 		/**
-		 * More shit that needs to be implemented : sigh :
-		 * @throws IOException 
+		 * Read user attributes into a list of objects.
+		 * 
+		 * @throws IOException
 		 */
-		public void readUserAttributes() throws IOException {
-			// Down the rabbit hole we go
-			
-			final long attrLength = readUnsignedInt();
-			skip(attrLength);
+		public HashMap<String, Object> readUserAttributes(HashMap<String, Object> attributes) throws IOException {
+			final long attributesLength = readUnsignedInt();
+			final long endPosition = position + attributesLength;
+
+			// If the passed attributes map is null, skip the attributes entirely.
+			if (attributes == null) {
+				skip(attributesLength);
+				return attributes;
+			}
+
+			@SuppressWarnings("unused")
+			short attrNameSpace; // namespace is not used yet
+			String attrKey;
+			short attrType;
+			long attrLength;
+			Object attrValue;
+
+			// Read the attributes, skip the remaining values if an error is encountered.
+			while (position < endPosition) {
+				attrNameSpace = (short) readUnsignedByte();
+				attrKey = readVarString();
+				attrType = (short) readUnsignedByte();
+				attrLength = readUnsignedInt();
+				attrValue = null;
+
+				if (position + attrLength > endPosition) {
+					RajLog.e("Unexpected attribute length. Attributes attempted to read past total attributes length.");
+					if (endPosition > position)
+						skip(endPosition - position);
+
+					return attributes;
+				}
+
+				switch (attrType) {
+				case TYPE_AWDSTRING:
+					final byte[] stringBytes = new byte[(int) attrLength];
+					readFully(stringBytes);
+					attrValue = new String(stringBytes);
+					break;
+				case TYPE_INT8:
+					attrValue = readByte();
+					break;
+				case TYPE_INT16:
+					attrValue = readShort();
+					break;
+				case TYPE_INT32:
+					attrValue = readInt();
+					break;
+				case TYPE_BOOL:
+					attrValue = readBoolean();
+					break;
+				case TYPE_UINT8:
+					attrValue = readUnsignedByte();
+					break;
+				case TYPE_UINT16:
+					attrValue = readUnsignedShort();
+					break;
+				case TYPE_UINT32:
+				case TYPE_BADDR:
+					attrValue = readUnsignedInt();
+					break;
+				case TYPE_FLOAT32:
+					attrValue = readFloat();
+					break;
+				case TYPE_FLOAT64:
+					attrValue = readDouble();
+					break;
+				default:
+					RajLog.e("Skipping unknown attribute (" + attrType + ")");
+					skip(attrLength);
+					break;
+				}
+
+				attributes.put(attrKey, attrValue);
+			}
+
+			return attributes;
 		}
 
 		/**
