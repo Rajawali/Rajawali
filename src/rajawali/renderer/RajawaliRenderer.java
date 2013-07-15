@@ -427,6 +427,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			//Check if we need to switch the scene, and if so, do it.
 			if (mNextScene != null) {
 				mCurrentScene = mNextScene;
+				mCurrentScene.resetGLState(); //Ensure that the GL state is what this scene expects
 				mNextScene = null;
 			}
 		}
@@ -500,8 +501,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		Capabilities.getInstance();
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 
-		GLES20.glFrontFace(GLES20.GL_CCW);
-		GLES20.glCullFace(GLES20.GL_BACK);
+		//GLES20.glFrontFace(GLES20.GL_CCW);
+		//GLES20.glCullFace(GLES20.GL_BACK);
 
 		if (!mSceneInitialized) {
 			mEffectComposer = new EffectComposer(this);
@@ -582,6 +583,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		if (!visible) {
 			stopRendering();
 		} else
+			getCurrentScene().resetGLState();
 			startRendering();
 	}
 
@@ -791,9 +793,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalRemoveScene((RajawaliScene) task, task.getIndex());
 			break;
 		case TEXTURE:
-			internalRemoveTexture((ATexture) task, task.getIndex()); 
+			internalRemoveTexture((ATexture) task, task.getIndex());
+			break;
 		case MATERIAL:
 			internalRemoveMaterial((AMaterial) task, task.getIndex());
+			break;
 		default:
 			break;
 		}
