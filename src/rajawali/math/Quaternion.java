@@ -577,4 +577,54 @@ public final class Quaternion {
             normalize();
         } 
     }
+    
+    
+	public static Quaternion lookAt(Vector3 lookAt, Vector3 upDirection, boolean isCamera) 
+	{
+		Vector3 forward = lookAt.clone(); Vector3 up = upDirection.clone();
+		Vector3[] vecs = new Vector3[2];
+		vecs[0]=forward; vecs[1]=up;
+
+		orthoNormalize(vecs);
+
+		Vector3 right = forward.clone().cross(up);
+
+		Quaternion camera = new Quaternion(), ret = new Quaternion();
+		camera.fromAxes(right, up, forward);
+
+		if (isCamera)
+		{
+			return camera;
+		}
+		else
+		{
+			ret.setIdentity();
+			ret.multiply(camera);
+			ret.inverseSelf();
+			return ret;
+		}
+	}
+	
+	public static void orthoNormalize( Vector3[] vecs )
+	{
+		for( int i = 0; i < vecs.length; ++ i )
+		{
+			Vector3 accum = new Vector3(0.0, 0.0, 0.0);
+
+			for( int j = 0; j < i; ++ j )
+				accum.add( project( vecs[i], vecs[j] ) );
+
+			vecs[i].subtract(accum).normalize();
+		}
+	}
+	
+	public static Vector3 project(Vector3 u, Vector3 v)
+	{
+		float d = u.dot(v);
+		float d_div = d / magSqr(u);
+		return v.clone().multiply(d_div);
+	}
+
+	public static float magSqr(Vector3 v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
+
 }
