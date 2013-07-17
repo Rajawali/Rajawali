@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -56,7 +59,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected TextureManager mTextureManager; //Texture manager for ALL textures across ALL scenes.
 	protected MaterialManager mMaterialManager; //Material manager for ALL materials across ALL scenes.
 	
-	protected Timer mTimer; //Timer used to schedule drawing
+	protected ScheduledExecutorService mTimer; //Timer used to schedule drawing
 	protected float mFrameRate; //Target frame rate to render at
 	protected int mFrameCount; //Used for determining FPS
 	private long mStartTime = System.nanoTime(); //Used for determining FPS
@@ -551,13 +554,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		if(!mSceneInitialized) return;
 		mLastRender = SystemClock.elapsedRealtime();
 		
-		if (mTimer != null) {return;
-//			mTimer.cancel();
-	//		mTimer.purge();
-		}
+		if (mTimer != null) {return;}
 
-		mTimer = new Timer();
-		mTimer.schedule(new RequestRenderTask(), 0, (long) (1000 / mFrameRate));
+		mTimer = Executors.newScheduledThreadPool(1);
+		mTimer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / mFrameRate), TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -568,8 +568,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	protected boolean stopRendering() {
 		if (mTimer != null) {
-			mTimer.cancel();
-			mTimer.purge();
+			mTimer.shutdownNow();
 			mTimer = null;
 			return true;
 		}
@@ -602,7 +601,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		this.preferences = preferences;
 	}
 
-	private class RequestRenderTask extends TimerTask {
+	private class RequestRenderTask implements Runnable {
 		public void run() {
 			if (mSurfaceView != null) {
 				mSurfaceView.requestRender();
