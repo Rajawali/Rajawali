@@ -61,16 +61,16 @@ public class TranslateAnimation3D extends Animation3D {
 			mAddedPosition.add(mMultipliedPosition);
 			mTransformable3D.setPosition(mAddedPosition);
 		} else {
-			Vector3 pathPoint = mSplinePath.calculatePoint((float) mInterpolatedTime,mTempPoint1);
+			Vector3 pathPoint = mSplinePath.calculatePoint(mTempPoint1,(float) mInterpolatedTime);
 			mTransformable3D.setPosition(pathPoint);
 
 			if (mOrientToPath)
 			{
 				// -- calculate tangent
 				Vector3 point1 = mSplinePath
-							.calculatePoint((float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))),mTempPoint2);
+							.calculatePoint(mTempPoint2,(float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))));
 				Vector3 point2 = mSplinePath
-						.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))),mTempPoint3);
+						.calculatePoint(mTempPoint3,(float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))));
 				
 				// -- calculate direction vector
 				mTmpVec.setAllFrom(point2);

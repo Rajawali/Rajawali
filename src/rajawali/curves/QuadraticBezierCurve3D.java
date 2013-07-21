@@ -47,7 +47,7 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 		mPoint2 = point2;
 	}
 
-	public Vector3 calculatePoint(float t,Vector3 result) {
+	public Vector3 calculatePoint(Vector3 result,float t) {
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;

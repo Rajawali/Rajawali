@@ -32,7 +32,7 @@ public class LinearBezierCurve3D implements ICurve3D {
 		mPoint2 = point2;
 	}
 
-	public Vector3 calculatePoint(float t,Vector3 result) {
+	public Vector3 calculatePoint(Vector3 result,float t) {
 		mTmpPoint1.setAllFrom(mPoint2);
 		mTmpPoint1.multiply(t);
 		mTmpPoint2.setAllFrom(mPoint1);
