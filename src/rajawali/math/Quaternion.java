@@ -351,6 +351,7 @@ public final class Quaternion {
 	public void slerpSelf(Quaternion q1, Quaternion q2, float t) {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             setAllFrom(q1);
+            normalize();
             return;
         }
 
@@ -380,6 +381,7 @@ public final class Quaternion {
         y = (scale0 * q1.y) + (scale1 * q2.y);
         z = (scale0 * q1.z) + (scale1 * q2.z);
         w = (scale0 * q1.w) + (scale1 * q2.w);
+        normalize();
     }
 
 	public float normalize() {
