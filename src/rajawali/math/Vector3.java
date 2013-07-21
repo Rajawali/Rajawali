@@ -12,6 +12,10 @@ public class Vector3 {
 	public float y;
 	public float z;
 	
+	public static final Vector3 UP_VECTOR = new Vector3(0,1,0);
+	public static final Vector3 RIGHT_VECTOR = new Vector3(1,0,0);
+	public static final Vector3 FORWARD_VECTOR = new Vector3(0,0,1);
+	
 	public static final int M00 = 0;// 0;
     public static final int M01 = 4;// 1;
     public static final int M02 = 8;// 2;
@@ -339,32 +343,6 @@ public class Vector3 {
 			q.normalize();
 		}
 		return q;
-	}
-	
-	private static final Vector3 sUpVector=new Vector3(0,1,0);
-	private static final Vector3 sRightVector=new Vector3(1,0,0);
-	private static final Vector3 sForwardVector=new Vector3(0,0,1);
-
-	
-	public static Vector3 getUpVector() {
-		sUpVector.x=0f;
-		sUpVector.y=1f;
-		sUpVector.z=0f;
-		return sUpVector;//new Vector3(0, 1, 0);
-	}
-	
-	public static Vector3 getRightVector() {
-		sRightVector.x=1f;
-		sRightVector.y=0f;
-		sRightVector.z=0f;
-		return sRightVector;//new Vector3(1, 0, 0);
-	}
-	
-	public static Vector3 getForwardVector() {
-		sForwardVector.x=0f;
-		sForwardVector.y=0f;
-		sForwardVector.z=1f;
-		return sForwardVector;//new Vector3(0, 0, 1);
 	}
 	
 	public static Vector3 lerp(Vector3 from, Vector3 to, float amount)

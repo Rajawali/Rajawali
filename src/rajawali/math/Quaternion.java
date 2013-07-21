@@ -12,8 +12,6 @@ public final class Quaternion {
 	public final static float F_EPSILON = .001f;
 	public float w, x, y, z;
 	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
-	private final Vector3 UP_VECTOR = Vector3.getUpVector();
-	private final Vector3 RIGHT_VECTOR = Vector3.getRightVector();
 	
 	public Quaternion() {
 		setIdentity();
@@ -348,11 +346,6 @@ public final class Quaternion {
 		return q;
 	}
 	
-	public static Quaternion slerp(Quaternion q1, Quaternion q2, float t,Quaternion result) {
-		result.slerpSelf(q1, q2, t);
-		return result;
-	}
-	
 	public void slerpSelf(Quaternion q1, Quaternion q2, float t) {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             setAllFrom(q1);
@@ -554,12 +547,12 @@ public final class Quaternion {
         if (d < (1e-6f - 1.0f))
         {
         	// axis
-        	mTmpVec1.setAllFrom(RIGHT_VECTOR);
+        	mTmpVec1.setAllFrom(Vector3.RIGHT_VECTOR);
         	mTmpVec1.cross(src);
 
             if (mTmpVec1.length() == 0.0f)
             {
-            	mTmpVec1.setAllFrom(UP_VECTOR);
+            	mTmpVec1.setAllFrom(Vector3.UP_VECTOR);
             	mTmpVec1.cross(src);
             }
 
