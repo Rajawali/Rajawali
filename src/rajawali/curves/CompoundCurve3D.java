@@ -20,7 +20,7 @@ public class CompoundCurve3D implements ICurve3D {
 		mNumCurves++;
 	}
 
-	public Vector3 calculatePoint(Vector3 point,float t) {
+	public Vector3 calculatePoint(Vector3 point, float t) {
 		int currentIndex = (int) Math.floor((t == 1 ? t - .000001f : t) * mNumCurves);
 		mCurrentCurve = mCurves.get(currentIndex); 
 		float tdivnum = (t * mNumCurves) - currentIndex;

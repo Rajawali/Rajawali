@@ -282,7 +282,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 
 					Vector3 rotPos = joint.getOrientation().multiply(weight.position);
 
-					Vector3 pos = Vector3.add(joint.getPosition(), rotPos);
+					Vector3 pos = Vector3.addAndCreate(joint.getPosition(), rotPos);
 					pos.multiply(weight.weightValue);
 					position.add(pos);
 
@@ -328,7 +328,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				Vector3 v1 = new Vector3(mesh.vertices[index13], mesh.vertices[index13 + 1], mesh.vertices[index13 + 2]);
 				Vector3 v2 = new Vector3(mesh.vertices[index23], mesh.vertices[index23 + 1], mesh.vertices[index23 + 2]);
 
-				Vector3 normal = Vector3.cross(Vector3.subtract(v2, v0), Vector3.subtract(v1, v0));
+				Vector3 normal = Vector3.crossAndCreate(Vector3.subtractAndCreate(v2, v0), Vector3.subtractAndCreate(v1, v0));
 
 				mesh.boneVertices[index0].normal.add(normal);
 				mesh.boneVertices[index1].normal.add(normal);
@@ -358,7 +358,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				for (int k = 0; k < vert.numWeights; ++k) {
 					BoneWeight weight = mesh.boneWeights[vert.weightIndex + k];
 					SkeletonJoint joint = mJoints[weight.jointIndex];
-					vert.normal.add(Vector3.multiply(joint.getOrientation().multiply(normal), weight.weightValue));
+					vert.normal.add(Vector3.scaleAndCreate(joint.getOrientation().multiply(normal), weight.weightValue));
 				}
 			}
 		}

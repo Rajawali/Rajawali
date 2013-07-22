@@ -54,18 +54,18 @@ public class CatmullRomCurve3D implements ICurve3D {
 	}
 
 	
-	public Vector3 calculatePoint(Vector3 result,final float t) {
+	public Vector3 calculatePoint(Vector3 result, final float t) {
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;
-			mCurrentTangent = p(prevt,mCurrentTangent);
-			Vector3 nextp = p(nextt,mTempNext);
+			mCurrentTangent = p(mCurrentTangent,prevt);
+			Vector3 nextp = p(mTempNext,nextt);
 			mCurrentTangent.subtract(nextp);
 			mCurrentTangent.multiply(.5f);
 			mCurrentTangent.normalize();
 		}
 
-		return p(t,result);
+		return p(result,t);
 	}
 
 	public Vector3 getCurrentTangent() {
@@ -104,7 +104,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 		return 0;
 	}
 
-	protected Vector3 p(float t,Vector3 result) {
+	private Vector3 p(Vector3 result, float t) {
 		if(t < 0) t = 1 + t;
 		int end = mIsClosed ? 0 : 3;
 		int start = mIsClosed ? 0 : 2;
@@ -225,18 +225,18 @@ public class CatmullRomCurve3D implements ICurve3D {
 		newPoints.add(mPoints.get(mPoints.size() - 1));
 
 		// -- scale control point 1
-		Vector3 controlPoint = Vector3.subtract(mPoints.get(1), mPoints.get(0));
+		Vector3 controlPoint = Vector3.subtractAndCreate(mPoints.get(1), mPoints.get(0));
 		float oldDistance = mPoints.get(1).distanceTo(mPoints.get(2));
 		float newDistance = newPoints.get(1).distanceTo(newPoints.get(2));
 		controlPoint.multiply(newDistance / oldDistance);
-		newPoints.set(0, Vector3.subtract(mPoints.get(1), controlPoint));
+		newPoints.set(0, Vector3.subtractAndCreate(mPoints.get(1), controlPoint));
 
 		// -- scale control point 2
-		controlPoint = Vector3.subtract(mPoints.get(mPoints.size() - 2), mPoints.get(mPoints.size() - 1));
+		controlPoint = Vector3.subtractAndCreate(mPoints.get(mPoints.size() - 2), mPoints.get(mPoints.size() - 1));
 		oldDistance = mPoints.get(mPoints.size() - 2).distanceTo(mPoints.get(mPoints.size() - 3));
 		newDistance = newPoints.get(newPoints.size() - 2).distanceTo(newPoints.get(newPoints.size() - 3));
 		controlPoint.multiply(newDistance / oldDistance);
-		newPoints.set(newPoints.size() - 1, Vector3.subtract(mPoints.get(mPoints.size() - 2), controlPoint));
+		newPoints.set(newPoints.size() - 1, Vector3.subtractAndCreate(mPoints.get(mPoints.size() - 2), controlPoint));
 
 		mPoints = newPoints;
 		mNumPoints = mPoints.size();

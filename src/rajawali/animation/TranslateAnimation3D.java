@@ -54,7 +54,7 @@ public class TranslateAnimation3D extends Animation3D {
 	protected void applyTransformation() {
 		if (mSplinePath == null) {
 			if (mDiffPosition == null)
-				mDiffPosition = Vector3.subtract(mToPosition, mFromPosition);
+				mDiffPosition = Vector3.subtractAndCreate(mToPosition, mFromPosition);
 			mMultipliedPosition.setAllFrom(mDiffPosition);
 			mMultipliedPosition.multiply((float) mInterpolatedTime);
 			mAddedPosition.setAllFrom(mFromPosition);
