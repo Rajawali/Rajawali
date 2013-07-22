@@ -41,39 +41,37 @@ public class CubicBezierCurve3D implements ICurve3D {
 		mPoint2 = point2;
 	}
 
-	public Vector3 calculatePoint(Vector3 result, float t) {
+	public void calculatePoint(Vector3 result, float t) {
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;
-			mCurrentTangent = p(mCurrentTangent,prevt);
-			Vector3 nextp = p(mTempPointNext,nextt);
-			mCurrentTangent.subtract(nextp);
+			p(mCurrentTangent, prevt);
+			p(mTempPointNext, nextt);
+			mCurrentTangent.subtract(mTempPointNext);
 			mCurrentTangent.multiply(.5f);
 			mCurrentTangent.normalize();
 		}
 
-		return p(result,t);
+		p(result,t);
 	}
 
-	private Vector3 p(Vector3 result, float t) {
+	private void p(Vector3 result, float t) {
 		float u = 1 - t;
 		float tt = t * t;
 		float uu = u * u;
 		float ttt = tt * t;
 		float uuu = uu * u;
 
-		Vector3 p = result.scaleAndSet(mPoint1, uuu);
+		result.scaleAndSet(mPoint1, uuu);
 
 		mTempPoint.scaleAndSet(mControlPoint1, 3 * uu * t);
-		p.add(mTempPoint);
+		result.add(mTempPoint);
 		
 		mTempPoint.scaleAndSet(mControlPoint2, 3 * u * tt);
-		p.add(mTempPoint);
+		result.add(mTempPoint);
 		
 		mTempPoint.scaleAndSet(mPoint2, ttt);
-		p.add(mTempPoint);
-
-		return p;
+		result.add(mTempPoint);
 	}
 
 	public Vector3 getCurrentTangent() {
