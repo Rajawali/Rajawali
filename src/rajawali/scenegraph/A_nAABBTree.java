@@ -129,7 +129,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void calculateChildSideLengths() {
 		//Determine the distance on each axis
-		Vector3 temp = Vector3.subtract(mTransformedMax, mTransformedMin);
+		Vector3 temp = Vector3.subtractAndCreate(mTransformedMax, mTransformedMin);
 		temp.multiply(0.5f); //Divide it in half
 		float overlap = 1.0f + mOverlap/100.0f;
 		temp.multiply(overlap);
@@ -469,8 +469,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					float radius = bs.getScaledRadius();
 					Vector3 rad = new Vector3();
 					rad.setAll(radius, radius, radius);
-					test_against_min = Vector3.subtract(bs_position, rad);
-					test_against_max = Vector3.add(bs_position, rad);
+					test_against_min = Vector3.subtractAndCreate(bs_position, rad);
+					test_against_max = Vector3.addAndCreate(bs_position, rad);
 				} else {
 					RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type.");
 					throw new IllegalArgumentException("Received a bounding box of unknown type."); 

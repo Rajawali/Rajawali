@@ -38,13 +38,13 @@ public final class Intersector {
 	 * @return True if there is an intersection, false otherwise.
 	 */
 	public static boolean intersectRayPlane(Vector3 rayStart, Vector3 rayEnd, Plane plane, Vector3 hitPoint) {
-		Vector3 rayDir = Vector3.subtract(rayEnd, rayStart);
+		Vector3 rayDir = Vector3.subtractAndCreate(rayEnd, rayStart);
 		float denorm = rayDir.dot(plane.getNormal());
 		if (denorm != 0) {
 			float t = -(rayStart.dot(plane.getNormal()) + plane.getD()) / denorm;
 			if (t < 0) return false;
 			
-			if (hitPoint != null) hitPoint.setAllFrom(Vector3.add(rayStart, Vector3.multiply(rayDir, t)));
+			if (hitPoint != null) hitPoint.addAndSet(rayStart, Vector3.scaleAndCreate(rayDir, t));
 			return true;
 		} else if (plane.getPointSide(rayStart) == Plane.PlaneSide.OnPlane) {
 			if (hitPoint != null) hitPoint.setAllFrom(rayStart);
@@ -68,14 +68,14 @@ public final class Intersector {
 	 * @return True if there is an intersection, false otherwise.
 	 */
 	public static boolean intersectRayTriangle(Vector3 rayStart, Vector3 rayEnd, Vector3 t1, Vector3 t2, Vector3 t3, Vector3 hitPoint) {
-		Vector3 rayDir = Vector3.subtract(rayEnd, rayStart);
+		Vector3 rayDir = Vector3.subtractAndCreate(rayEnd, rayStart);
 		rayDir.normalize();
 		p.set(t1, t2, t3);
 		if (!intersectRayPlane(rayStart, rayEnd, p, i)) return false;
 		
-		v0.setAllFrom(Vector3.subtract(t3, t1));
-		v1.setAllFrom(Vector3.subtract(t2, t1));
-		v2.setAllFrom(Vector3.subtract(i, t1));
+		v0.subtractAndSet(t3, t1);
+		v1.subtractAndSet(t2, t1);
+		v2.subtractAndSet(i, t1);
 		
 		float dot00 = v0.dot(v0);
 		float dot01 = v0.dot(v1);
@@ -108,7 +108,7 @@ public final class Intersector {
 	public static boolean intersectRaySphere(Vector3 rayStart, Vector3 rayEnd, Vector3 sphereCenter, float sphereRadius, Vector3 hitPoint) {
 		rayStart = new Vector3(rayStart);
 		rayEnd = new Vector3(rayEnd);
-		Vector3 dir = Vector3.subtract(rayEnd, rayStart);
+		Vector3 dir = Vector3.subtractAndCreate(rayEnd, rayStart);
 		dir.normalize();
 		
 		sphereCenter = new Vector3(sphereCenter);
@@ -119,7 +119,7 @@ public final class Intersector {
 		 * behind ray-sphere intersection.
 		 */
 		float a = Vector3.dot(dir, dir);
-		float b = 2.0f * Vector3.dot(dir, Vector3.subtract(rayStart, sphereCenter));
+		float b = 2.0f * Vector3.dot(dir, Vector3.subtractAndCreate(rayStart, sphereCenter));
 		float c = Vector3.dot(sphereCenter, sphereCenter) + Vector3.dot(rayStart, rayStart) - 2.0f * Vector3.dot(sphereCenter, rayStart) - radius2;
 		
 		// Test for intersection.
@@ -153,10 +153,10 @@ public final class Intersector {
 		
 		// If t0 is less than zero, intersection point is at t1.
 		if (t0 < 0) {
-			hitPoint = rayStart.add(Vector3.multiply(dir, t1));
+			hitPoint = rayStart.add(Vector3.scaleAndCreate(dir, t1));
 			return true;
 		} else {
-			hitPoint = rayStart.add(Vector3.multiply(dir, t0));
+			hitPoint = rayStart.add(Vector3.scaleAndCreate(dir, t0));
 			return true;
 		}
 	}

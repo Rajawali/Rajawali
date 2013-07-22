@@ -230,7 +230,7 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 	            SkeletonJoint parentJoint = skeleton.getJoint(joint.getParentIndex());
 	            Vector3 rotPos = parentJoint.getOrientation().multiply(joint.getPosition()).clone();
 	 
-	            joint.getPosition().setAllFrom(Vector3.add(parentJoint.getPosition(), rotPos));
+	            joint.getPosition().setAllFrom(Vector3.addAndCreate(parentJoint.getPosition(), rotPos));
 	            joint.getOrientation().multiply(parentJoint.getOrientation());
 	            joint.getOrientation().normalize();
 	        }

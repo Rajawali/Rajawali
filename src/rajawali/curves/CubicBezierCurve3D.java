@@ -13,7 +13,9 @@ public class CubicBezierCurve3D implements ICurve3D {
 	
 	private boolean mCalculateTangents;
 	private Vector3 mCurrentTangent;
-
+	private Vector3 mTempPointNext=new Vector3();
+	private Vector3 mTempPoint=new Vector3();
+	
 	public CubicBezierCurve3D() {
 		mCurrentTangent = new Vector3();
 	}
@@ -39,32 +41,37 @@ public class CubicBezierCurve3D implements ICurve3D {
 		mPoint2 = point2;
 	}
 
-	public Vector3 calculatePoint(float t) {
+	public Vector3 calculatePoint(Vector3 result, float t) {
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;
-			mCurrentTangent = p(prevt);
-			Vector3 nextp = p(nextt);
+			mCurrentTangent = p(mCurrentTangent,prevt);
+			Vector3 nextp = p(mTempPointNext,nextt);
 			mCurrentTangent.subtract(nextp);
 			mCurrentTangent.multiply(.5f);
 			mCurrentTangent.normalize();
 		}
 
-		return p(t);
+		return p(result,t);
 	}
 
-	private Vector3 p(float t) {
+	private Vector3 p(Vector3 result, float t) {
 		float u = 1 - t;
 		float tt = t * t;
 		float uu = u * u;
 		float ttt = tt * t;
 		float uuu = uu * u;
 
-		Vector3 p = Vector3.multiply(mPoint1, uuu);
+		Vector3 p = result.scaleAndSet(mPoint1, uuu);
 
-		p.add(Vector3.multiply(mControlPoint1, 3 * uu * t));
-		p.add(Vector3.multiply(mControlPoint2, 3 * u * tt));
-		p.add(Vector3.multiply(mPoint2, ttt));
+		mTempPoint.scaleAndSet(mControlPoint1, 3 * uu * t);
+		p.add(mTempPoint);
+		
+		mTempPoint.scaleAndSet(mControlPoint2, 3 * u * tt);
+		p.add(mTempPoint);
+		
+		mTempPoint.scaleAndSet(mPoint2, ttt);
+		p.add(mTempPoint);
 
 		return p;
 	}

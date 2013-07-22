@@ -12,6 +12,10 @@ public class Vector3 {
 	public float y;
 	public float z;
 	
+	public static final Vector3 UP_VECTOR = new Vector3(0,1,0);
+	public static final Vector3 RIGHT_VECTOR = new Vector3(1,0,0);
+	public static final Vector3 FORWARD_VECTOR = new Vector3(0,0,1);
+	
 	public static final int M00 = 0;// 0;
     public static final int M01 = 4;// 1;
     public static final int M02 = 8;// 2;
@@ -76,16 +80,18 @@ public class Vector3 {
 		return obj.x == this.x && obj.y == this.y && obj.z == this.z;
 	}
 
-	public void setAll(float x, float y, float z) {
+	public Vector3 setAll(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		return this;
 	}
 
-	public void setAll(double x, double y, double z) {
+	public Vector3 setAll(double x, double y, double z) {
 		this.x = (float) x;
 		this.y = (float) y;
 		this.z = (float) z;
+		return this;
 	}
 	
 	public void project(float[] mat){
@@ -222,25 +228,51 @@ public class Vector3 {
 		return sb.toString();
 	}
 
-	//
-
-	public static Vector3 add(Vector3 a, Vector3 b) {
+	public static Vector3 addAndCreate(Vector3 a, Vector3 b) {
 		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
+	
+	public Vector3 addAndSet(Vector3 a, Vector3 b) {
+		this.x = a.x + b.x;
+		this.y = a.y + b.y;
+		this.z = a.z + b.z;
+		return this;
+	}
 
-	public static Vector3 subtract(Vector3 a, Vector3 b) {
+	public static Vector3 subtractAndCreate(Vector3 a, Vector3 b) {
 		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
+	
+	public Vector3 subtractAndSet(Vector3 a, Vector3 b) {
+		this.x = a.x - b.x;
+		this.y = a.y - b.y;
+		this.z = a.z - b.z;
+		return this;
+	}
 
-	public static Vector3 multiply(Vector3 a, Vector3 b) {
+	public static Vector3 multiplyAndCreate(Vector3 a, Vector3 b) {
 		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
 	}
-
-	public static Vector3 multiply(Vector3 a, float b) {
-		return new Vector3(a.x * b, a.y * b, a.z * b);
+	
+	public Vector3 multiplyAndSet(Vector3 a, Vector3 b) {
+		this.x = a.x * b.x;
+		this.y = a.y * b.y;
+		this.z = a.z * b.z;
+		return this;
 	}
 
-	public static Vector3 cross(Vector3 v, Vector3 w) {
+	public static Vector3 scaleAndCreate(Vector3 a, float b) {
+		return new Vector3(a.x * b, a.y * b, a.z * b);
+	}
+	
+	public Vector3 scaleAndSet(Vector3 a, float b) {
+		this.x=a.x * b;
+		this.y=a.y * b;
+		this.z=a.z * b;
+		return this;
+	}
+
+	public static Vector3 crossAndCreate(Vector3 v, Vector3 w) {
 		return new Vector3(w.y * v.z - w.z * v.y, w.z * v.x - w.x * v.z, w.x * v.y - w.y * v.x);
 	}
 	
@@ -301,16 +333,16 @@ public class Vector3 {
 		}
 		if (d < 0.000001f - 1.0f) {
 			// Generate an axis
-			Vector3 axis = Vector3.cross(Vector3.getAxisVector(Axis.X), this);
+			Vector3 axis = Vector3.crossAndCreate(Vector3.getAxisVector(Axis.X), this);
 			if (axis.length() == 0) // pick another if colinear
-				axis = Vector3.cross(Vector3.getAxisVector(Axis.Y), this);
+				axis = Vector3.crossAndCreate(Vector3.getAxisVector(Axis.Y), this);
 			axis.normalize();
 			q.fromAngleAxis(MathUtil.radiansToDegrees(MathUtil.PI), axis);
 		} else {
 			double s = Math.sqrt((1 + d) * 2);
 			double invs = 1f / s;
 
-			Vector3 c = Vector3.cross(v0, v1);
+			Vector3 c = Vector3.crossAndCreate(v0, v1);
 
 			q.x = (float)(c.x * invs);
 			q.y = (float)(c.y * invs);
@@ -319,18 +351,6 @@ public class Vector3 {
 			q.normalize();
 		}
 		return q;
-	}
-	
-	public static Vector3 getUpVector() {
-		return new Vector3(0, 1, 0);
-	}
-	
-	public static Vector3 getRightVector() {
-		return new Vector3(1, 0, 0);
-	}
-	
-	public static Vector3 getForwardVector() {
-		return new Vector3(0, 0, 1);
 	}
 	
 	public static Vector3 lerp(Vector3 from, Vector3 to, float amount)

@@ -361,10 +361,10 @@ public class Max3DSParser extends AMeshParser {
 		Vector3 v2 = vertices.get(vertexIDs[2]);
 		Vector3 v3 = vertices.get(vertexIDs[1]);
 
-		Vector3 vector1 = Vector3.subtract(v2, v1);
-		Vector3 vector2 = Vector3.subtract(v3, v1);
+		Vector3 vector1 = Vector3.subtractAndCreate(v2, v1);
+		Vector3 vector2 = Vector3.subtractAndCreate(v3, v1);
 
-		Vector3 normal = Vector3.cross(vector1, vector2);
+		Vector3 normal = Vector3.crossAndCreate(vector1, vector2);
 		normal.normalize();
 		return normal;
 	}
