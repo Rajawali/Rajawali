@@ -184,12 +184,12 @@ public class SVGPath {
 		{
 		case MOVE_TO:
 			c = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
-			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
+			p = mCurrentCommandIsRelative ? c.addAndSet(mPreviousPoint, c) : c;
 			break;
 		case VERTICAL:
 			c = new Vector3(0, -Float.parseFloat(vals[0]), 0);
 			if (mCurrentCommandIsRelative)
-				p = Vector3.add(mPreviousPoint, c);
+				p = c.addAndSet(mPreviousPoint, c);
 			else
 			{
 				c.x = mPreviousPoint.x;
@@ -200,7 +200,7 @@ public class SVGPath {
 		case HORIZONTAL:
 			c = new Vector3(Float.parseFloat(vals[0]), 0, 0);
 			if (mCurrentCommandIsRelative)
-				p = Vector3.add(mPreviousPoint, c);
+				p = c.addAndSet(mPreviousPoint, c);
 			else
 			{
 				c.y = mPreviousPoint.y;
@@ -210,7 +210,7 @@ public class SVGPath {
 			break;
 		case CURVE_TO:
 			c = new Vector3(Float.parseFloat(vals[4]), -Float.parseFloat(vals[5]), 0);
-			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
+			p = mCurrentCommandIsRelative ? c.addAndSet(mPreviousPoint, c) : c;
 			cp1 = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
 			if (mCurrentCommandIsRelative)
 				cp1.add(mPreviousPoint);
@@ -222,7 +222,7 @@ public class SVGPath {
 			break;
 		case SMOOTH_CURVE_TO:
 			c = new Vector3(Float.parseFloat(vals[2]), -Float.parseFloat(vals[3]), 0);
-			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
+			p = mCurrentCommandIsRelative ? c.addAndSet(mPreviousPoint, c) : c;
 			cp1 = reflect(mPreviousControlPoint, mPreviousPoint);
 			cp2 = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
 			if (mCurrentCommandIsRelative)
@@ -231,7 +231,7 @@ public class SVGPath {
 			break;
 		case LINE_TO:
 			c = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
-			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
+			p = mCurrentCommandIsRelative ? c.addAndSet(mPreviousPoint, c) : c;
 			bezierPath.addCurve(new LinearBezierCurve3D(mPreviousPoint.clone(), p));
 			break;
 		default:

@@ -12,8 +12,6 @@ public final class Quaternion {
 	public final static float F_EPSILON = .001f;
 	public float w, x, y, z;
 	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
-	private final Vector3 UP_VECTOR = Vector3.getUpVector();
-	private final Vector3 RIGHT_VECTOR = Vector3.getRightVector();
 	
 	public Quaternion() {
 		setIdentity();
@@ -251,8 +249,8 @@ public final class Quaternion {
 
 	public Vector3 multiply(final Vector3 vector) {
 		mTmpVec3.setAll(x, y, z);
-		mTmpVec1 = Vector3.cross(mTmpVec3, vector);
-		mTmpVec2 = Vector3.cross(mTmpVec3, mTmpVec1);
+		mTmpVec1 = Vector3.crossAndCreate(mTmpVec3, vector);
+		mTmpVec2 = Vector3.crossAndCreate(mTmpVec3, mTmpVec1);
 		mTmpVec1.multiply(2.0f * w);
 		mTmpVec2.multiply(2.0f);
 
@@ -551,12 +549,12 @@ public final class Quaternion {
         if (d < (1e-6f - 1.0f))
         {
         	// axis
-        	mTmpVec1.setAllFrom(RIGHT_VECTOR);
+        	mTmpVec1.setAllFrom(Vector3.RIGHT_VECTOR);
         	mTmpVec1.cross(src);
 
             if (mTmpVec1.length() == 0.0f)
             {
-            	mTmpVec1.setAllFrom(UP_VECTOR);
+            	mTmpVec1.setAllFrom(Vector3.UP_VECTOR);
             	mTmpVec1.cross(src);
             }
 

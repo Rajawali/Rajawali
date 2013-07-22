@@ -70,7 +70,7 @@ public class RotateAnimation3D extends Animation3D {
 	@Override
 	public void eventStart() {
 		if (mCopyCurrentOrientation)
-			mQuatFrom.setAllFrom(mTransformable3D.getOrientation());
+			 mTransformable3D.getOrientation(mQuatFrom);
 		super.eventStart();
 	}
 
@@ -78,7 +78,7 @@ public class RotateAnimation3D extends Animation3D {
 	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
 		if (mCopyCurrentOrientation)
-			mQuatFrom.setAllFrom(transformable3D.getOrientation());
+			transformable3D.getOrientation(mQuatFrom);
 	}
 
 	@Override

@@ -148,9 +148,10 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 	
-	public Quaternion getOrientation() {
+	public Quaternion getOrientation(Quaternion qt) {
 		setOrientation(); // Force mOrientation to be recalculated
-		return new Quaternion(mOrientation);
+		qt.setAllFrom(mOrientation); 
+		return  qt;//new Quaternion(mOrientation);
 	}
 	
 	public void setOrientation(Quaternion quat) {

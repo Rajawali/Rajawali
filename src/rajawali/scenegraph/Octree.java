@@ -115,7 +115,7 @@ public class Octree extends A_nAABBTree {
 		switch (mChildRegion) {
 		case 0: //+X/+Y/+Z
 			mMax.setAllFrom(mParent.getMax());
-			mMin.setAllFrom(Vector3.subtract(mMax, side_lengths));
+			mMin.subtractAndSet(mMax, side_lengths);
 			break;
 		case 1: //-X/+Y/+Z 
 			mMax.x = min.x + side_lengths.x;
@@ -159,7 +159,7 @@ public class Octree extends A_nAABBTree {
 			break;
 		case 6: //-X/-Y/-Z
 			mMin.setAllFrom(min);
-			mMax.setAllFrom(Vector3.add(mMin, side_lengths));
+			mMax.addAndSet(mMin, side_lengths);
 			break;
 		case 7: //+X/-Y/-Z
 			mMax.x = max.x;

@@ -43,7 +43,7 @@ public class ScaleAnimation3D extends Animation3D {
 	@Override
 	protected void applyTransformation() {
 		if (mDiffScale == null)
-			mDiffScale = Vector3.subtract(mToScale, mFromScale);
+			mDiffScale = Vector3.subtractAndCreate(mToScale, mFromScale);
 
 		mMultipliedScale.setAllFrom(mDiffScale);
 		mMultipliedScale.multiply((float) mInterpolatedTime);

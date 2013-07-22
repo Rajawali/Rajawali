@@ -56,10 +56,10 @@ public class VertexAnimationFrame implements IAnimationFrame {
 			v2.setAll(vertices[vid2], vertices[vid2+1], vertices[vid2+2]);
 			v3.setAll(vertices[vid3], vertices[vid3+1], vertices[vid3+2]);
 			
-			Vector3 vector1 = Vector3.subtract(v2, v1);
-            Vector3 vector2 = Vector3.subtract(v3, v1);
+			Vector3 vector1 = Vector3.subtractAndCreate(v2, v1);
+            Vector3 vector2 = Vector3.subtractAndCreate(v3, v1);
             
-            normal = Vector3.cross(vector1, vector2);
+            normal = Vector3.crossAndCreate(vector1, vector2);
             normal.normalize();
             
             faceNormals[i] = normal.x;

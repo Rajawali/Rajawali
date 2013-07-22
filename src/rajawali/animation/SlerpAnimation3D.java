@@ -57,7 +57,7 @@ public class SlerpAnimation3D extends Animation3D {
 		vec.normalize();
 		float angle = MathUtil.radiansToDegrees((float)Math.acos(Vector3.dot(mForwardVec, vec)));
 		Quaternion q = new Quaternion();
-		q.fromAngleAxis(angle, Vector3.cross(mForwardVec, vec));
+		q.fromAngleAxis(angle, Vector3.crossAndCreate(mForwardVec, vec));
 		return q;
 	}
 }
