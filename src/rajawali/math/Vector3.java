@@ -8,34 +8,40 @@ import rajawali.util.RajLog;
  *
  */
 public class Vector3 {
+	//The vector components
 	public float x;
 	public float y;
 	public float z;
 	
+	//Unit vectors oriented to each axis
 	public static final Vector3 X = new Vector3(0,1,0);
 	public static final Vector3 Y = new Vector3(1,0,0);
 	public static final Vector3 Z = new Vector3(0,0,1);
 	
-	public static final int M00 = 0;// 0;
-    public static final int M01 = 4;// 1;
-    public static final int M02 = 8;// 2;
-    public static final int M03 = 12;// 3;
-    public static final int M10 = 1;// 4;
-    public static final int M11 = 5;// 5;
-    public static final int M12 = 9;// 6;
-    public static final int M13 = 13;// 7;
-    public static final int M20 = 2;// 8;
-    public static final int M21 = 6;// 9;
-    public static final int M22 = 10;// 10;
-    public static final int M23 = 14;// 11;
-    public static final int M30 = 3;// 12;
-    public static final int M31 = 7;// 13;
-    public static final int M32 = 11;// 14;
-    public static final int M33 = 15;// 15;
+	//Rotation matrix indices
+	public static final int M00 = 0;  // 0;
+    public static final int M01 = 4;  // 1;
+    public static final int M02 = 8;  // 2;
+    public static final int M03 = 12; // 3;
+    public static final int M10 = 1;  // 4;
+    public static final int M11 = 5;  // 5;
+    public static final int M12 = 9;  // 6;
+    public static final int M13 = 13; // 7;
+    public static final int M20 = 2;  // 8;
+    public static final int M21 = 6;  // 9;
+    public static final int M22 = 10; // 10;
+    public static final int M23 = 14; // 11;
+    public static final int M30 = 3;  // 12;
+    public static final int M31 = 7;  // 13;
+    public static final int M32 = 11; // 14;
+    public static final int M33 = 15; // 15;
 
 	private static final Vector3 sTemp = new Vector3(); //Scratch vector
 	private static final Object sTemp_Lock = new Object(); //Scratch vector thread lock
 
+	/**
+	 * Enumeration for the 3 component axes.
+	 */
 	public enum Axis {
 		X, Y, Z
 	}
@@ -44,46 +50,104 @@ public class Vector3 {
 	 * Constructs a new {@link Vector3} at (0, 0, 0).
 	 */
 	public Vector3() {
+		//They are technically zero, but we wont rely on the uninitialized state here.
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
 	}
 	
+	/**
+	 * Constructs a new {@link Vector3} at {from, from, from}.
+	 * 
+	 * @param from float which all components will be initialized to.
+	 */
 	public Vector3(float from) {
 		this.x = from;
 		this.y = from;
 		this.z = from;
 	}
 
+	/**
+	 * Constructs a new {@link Vector3} with components matching the input {@link Vector3}.
+	 * 
+	 * @param from {@link Vector3} to initialize the components with.
+	 */
 	public Vector3(Vector3 from) {
 		this.x = from.x;
 		this.y = from.y;
 		this.z = from.z;
 	}
 	
-	public Vector3(String[] values) {
-		if(values.length != 3) RajLog.e("Number3D should be initialized with 3 values");
-		this.x = Float.parseFloat(values[0]);
-		this.y = Float.parseFloat(values[1]);
-		this.z = Float.parseFloat(values[2]);
+	/**
+	 * Constructs a new {@link Vector3} with components initialized from the input {@link String} array. 
+	 * 
+	 * @param values A {@link String} array of values to be parsed for each component. 
+	 * @throws {@link IllegalArgumentException} if there are fewer than 3 values in the array.
+	 * @throws {@link NumberFormatException} if there is a problem parsing the {@link String} values into floats.
+	 */
+	public Vector3(String[] values) throws IllegalArgumentException, NumberFormatException {
+		this(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]));
+	}
+	
+	/**
+	 * Constructs a new {@link Vector3} with components initialized from the input float array. 
+	 * 
+	 * @param values A float array of values to be parsed for each component. 
+	 * @throws {@link IllegalArgumentException} if there are fewer than 3 values in the array.
+	 */
+	public Vector3(float[] values) throws IllegalArgumentException {
+		if (values.length < 3) throw new IllegalArgumentException("Vector3 must be initialized with an array length of at least 3.");
+		this.x = values[0];
+		this.y = values[1];
+		this.z = values[2];
 	}
 
+	/**
+	 * Constructs a new {@link Vector3} object with components initialized to the specified values.
+	 * 
+	 * @param x float The x component.
+	 * @param y float The y component.
+	 * @param z float The z component.
+	 */
 	public Vector3(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
+	/**
+	 * Constructs a new {@link Vector3} object with the components initialized to the specified values.
+	 * Note that this method will truncate the values to single precision.
+	 * 
+	 * @param x double The x component.
+	 * @param y double The y component.
+	 * @param z double The z component.
+	 */
 	public Vector3(double x, double y, double z) {
 		this.x = (float) x;
 		this.y = (float) y;
 		this.z = (float) z;
 	}
 
+	/**
+	 * Does a component by component comparison of this {@link Vector3} and the specified {@link Vector3} 
+	 * and returns the result.
+	 * 
+	 * @param obj {@link Vector3} to compare with this one.
+	 * @return boolean True if this {@link Vector3}'s components match with the components of the input.
+	 */
 	public boolean equals(Vector3 obj) {
 		return obj.x == this.x && obj.y == this.y && obj.z == this.z;
 	}
 
+	/**
+	 * Sets all components of this {@link Vector3} to the specified values.
+	 *  
+	 * @param x float The x component.
+	 * @param y float The y component.
+	 * @param z float The z component.
+	 * @return A reference to this {@link Vector3} to facilitate chaining. 
+	 */
 	public Vector3 setAll(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
@@ -91,11 +155,17 @@ public class Vector3 {
 		return this;
 	}
 
+	/**
+	 * Sets all components of this {@link Vector3} to the specified values.
+	 * Note that this method will truncate the values to single precision.
+	 *  
+	 * @param x double The x component.
+	 * @param y double The y component.
+	 * @param z double The z component.
+	 * @return A reference to this {@link Vector3} to facilitate chaining. 
+	 */
 	public Vector3 setAll(double x, double y, double z) {
-		this.x = (float) x;
-		this.y = (float) y;
-		this.z = (float) z;
-		return this;
+		return setAll((float) x, (float) y, (float) z);
 	}
 	
 	public void project(float[] mat){
