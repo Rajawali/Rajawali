@@ -45,7 +45,7 @@ public class SlerpAnimation3D extends Animation3D {
 	@Override
 	protected void applyTransformation() {
 		mTmpQuat.slerpSelf(mFrom, mTo, (float)mInterpolatedTime);
-		mTmpVec.setAllFrom(mForwardVec);
+		mTmpVec.setAll(mForwardVec);
 		mTmpQuat.toRotationMatrix(mRotationMatrix);
 		mTmpVec.multiply(mRotationMatrix);
 		mTmpVec.multiply(mDistance);

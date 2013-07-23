@@ -26,7 +26,7 @@ public class AngleAxis {
 	}
 
 	public void setAxis(Vector3 axis) {
-		mAxis.setAllFrom(axis);
+		mAxis.setAll(axis);
 	}
 	
 	public String toString() {

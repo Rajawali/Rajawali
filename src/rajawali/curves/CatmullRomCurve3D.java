@@ -129,7 +129,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 			mCurrentPoint.y += b * p.y;
 			mCurrentPoint.z += b * p.z;
 		}
-		result.setAllFrom(mCurrentPoint);
+		result.setAll(mCurrentPoint);
 	}
 
 	protected float pow2(float value) {
@@ -174,7 +174,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 			float dist = mTempPrevLen.distanceTo(mTempPointLen);
 			totalLength += dist;
 			mSegmentLengths[i] = dist;
-			mTempPrevLen.setAllFrom(mTempPointLen);
+			mTempPrevLen.setAll(mTempPointLen);
 		}
 
 		return totalLength;

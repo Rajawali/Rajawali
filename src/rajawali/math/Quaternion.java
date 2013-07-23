@@ -549,12 +549,12 @@ public final class Quaternion {
         if (d < (1e-6f - 1.0f))
         {
         	// axis
-        	mTmpVec1.setAllFrom(Vector3.Y);
+        	mTmpVec1.setAll(Vector3.Y);
         	mTmpVec1.cross(src);
 
             if (mTmpVec1.length() == 0.0f)
             {
-            	mTmpVec1.setAllFrom(Vector3.X);
+            	mTmpVec1.setAll(Vector3.X);
             	mTmpVec1.cross(src);
             }
 
@@ -567,7 +567,7 @@ public final class Quaternion {
             float s = (float)Math.sqrt((1f + d) * 2f);
             float invs = 1 / s;
 
-            mTmpVec1.setAllFrom(src);
+            mTmpVec1.setAll(src);
             mTmpVec1.cross(dest);
             
             x = (float) (mTmpVec1.x * invs);

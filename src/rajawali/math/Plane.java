@@ -18,7 +18,7 @@ public class Plane {
 	
 	public Plane(Vector3 normal, float d) {
 		this();
-		mNormal.setAllFrom(normal);
+		mNormal.setAll(normal);
 		mNormal.normalize();
 		this.d = d;
 	} 
@@ -29,8 +29,8 @@ public class Plane {
 	}
 
 	public void set(Vector3 point1, Vector3 point2, Vector3 point3) {
-		mTmp1.setAllFrom(point1);
-		mTmp2.setAllFrom(point2);
+		mTmp1.setAll(point1);
+		mTmp2.setAll(point2);
 		mTmp1.x -= mTmp2.x; mTmp1.y -= mTmp2.y; mTmp1.z -= mTmp2.z;
 		mTmp2.x -= point3.x; mTmp2.y -= point3.y; mTmp2.z -= point3.z;
 
@@ -71,7 +71,7 @@ public class Plane {
 	}
 
 	public void setAllFrom(Plane plane) {
-		this.mNormal.setAllFrom(plane.mNormal);
+		this.mNormal.setAll(plane.mNormal);
 		this.d = plane.d;
 	}
 }

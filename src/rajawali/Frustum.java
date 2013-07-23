@@ -40,7 +40,7 @@ public class Frustum {
 	public void update(float[] inverseProjectionView) {             
 
 		for(int i = 0; i < 8; i++) {
-			planePoints[i].setAllFrom(mClipSpacePlanePoints[i]);
+			planePoints[i].setAll(mClipSpacePlanePoints[i]);
 			planePoints[i].project(inverseProjectionView);   
 		}
 
@@ -97,10 +97,10 @@ public class Frustum {
 		}
 		Vector3 min = new Vector3();
 		Vector3 max = new Vector3();
-		min.setAllFrom(planePoints[0]);
+		min.setAll(planePoints[0]);
 		min.x = planePoints[5].x;
 		min.y = planePoints[5].y;
-		max.setAllFrom(planePoints[7]);
+		max.setAll(planePoints[7]);
 		//Log.i("Rajawali", "Min/Max: " + min + "/" + max);
 		Matrix.setIdentityM(mTmpMatrix, 0);
 		mBoundingBox.setMin(min);

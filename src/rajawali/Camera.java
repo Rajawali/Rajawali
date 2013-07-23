@@ -140,7 +140,7 @@ public class Camera extends ATransformable3D {
     
     public void setUpAxis(Vector3 upAxis) {
     	synchronized (mFrustumLock) {
-    		mUpAxis.setAllFrom(upAxis);
+    		mUpAxis.setAll(upAxis);
     	}
     }
     

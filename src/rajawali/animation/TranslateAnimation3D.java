@@ -55,9 +55,9 @@ public class TranslateAnimation3D extends Animation3D {
 		if (mSplinePath == null) {
 			if (mDiffPosition == null)
 				mDiffPosition = Vector3.subtractAndCreate(mToPosition, mFromPosition);
-			mMultipliedPosition.setAllFrom(mDiffPosition);
+			mMultipliedPosition.setAll(mDiffPosition);
 			mMultipliedPosition.multiply((float) mInterpolatedTime);
-			mAddedPosition.setAllFrom(mFromPosition);
+			mAddedPosition.setAll(mFromPosition);
 			mAddedPosition.add(mMultipliedPosition);
 			mTransformable3D.setPosition(mAddedPosition);
 		} else {
@@ -71,7 +71,7 @@ public class TranslateAnimation3D extends Animation3D {
 				mSplinePath.calculatePoint(mTempPoint3,(float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))));
 				
 				// -- calculate direction vector
-				mTmpVec.setAllFrom(mTempPoint3);
+				mTmpVec.setAll(mTempPoint3);
 				mTmpVec.subtract(mTempPoint2);
 				mTmpVec.normalize();
 					
@@ -84,7 +84,7 @@ public class TranslateAnimation3D extends Animation3D {
 				mTransformable3D.setOrientation(mTmpOrientation2);
 				mTmpOrientation2.normalize();				
 				
-				mObjectRay.setAllFrom(mTmpVec);
+				mObjectRay.setAll(mTmpVec);
 			}
 		}
 	}

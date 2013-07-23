@@ -62,11 +62,11 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	}
 
 	private void p(Vector3 result, float t) {
-		mTmpPoint1.setAllFrom(mPoint1);
+		mTmpPoint1.setAll(mPoint1);
 		mTmpPoint1.multiply((1.0f - t) * (1.0f - t));
-		mTmpPoint2.setAllFrom(mControlPoint);
+		mTmpPoint2.setAll(mControlPoint);
 		mTmpPoint2.multiply(2 * (1.0f - t) * t);
-		mTmpPoint3.setAllFrom(mPoint2);
+		mTmpPoint3.setAll(mPoint2);
 		mTmpPoint3.multiply(t * t);
 		mTmpPoint2.add(mTmpPoint3);
 		result.addAndSet(mTmpPoint1, mTmpPoint2);

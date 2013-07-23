@@ -58,7 +58,7 @@ public class LensFlare {
 	 * @param position
 	 */
 	public void setPosition(Vector3 position) {
-		mPosition.setAllFrom(position);
+		mPosition.setAll(position);
 	}
 	
 	public void setPositionScreen(float x, float y, float z) {
@@ -66,7 +66,7 @@ public class LensFlare {
 	}
 	
 	public void setPositionScreen(Vector3 position) {
-		mPositionScreen.setAllFrom(position);
+		mPositionScreen.setAll(position);
 	}
 	
 	/**
@@ -184,7 +184,7 @@ public class LensFlare {
 		}
 		
 		public void setScreenPosition(Vector3 screenPosition) {
-			mScreenPosition.setAllFrom(screenPosition);
+			mScreenPosition.setAll(screenPosition);
 		}
 		
 		public void setSize(int size) {

@@ -120,7 +120,7 @@ public class BoundingSphere implements IBoundingVolume {
 		if(!(boundingVolume instanceof BoundingSphere)) return false;
 		BoundingSphere boundingSphere = (BoundingSphere)boundingVolume;
 		
-		mTmpPos.setAllFrom(mPosition);
+		mTmpPos.setAll(mPosition);
 		mTmpPos.subtract(boundingSphere.getPosition());
 		
 		mDist = mTmpPos.x * mTmpPos.x + mTmpPos.y * mTmpPos.y + mTmpPos.z * mTmpPos.z;

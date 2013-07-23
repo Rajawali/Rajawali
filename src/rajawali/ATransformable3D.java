@@ -45,7 +45,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	}
 	
 	public void setPosition(Vector3 position) {
-		mPosition.setAllFrom(position);
+		mPosition.setAll(position);
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
@@ -91,14 +91,14 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 
 		mOrientation.setIdentity();
 		if(mLookAt != null) {			
-			mTmpRotZ.setAllFrom(mLookAt);
+			mTmpRotZ.setAll(mLookAt);
 			mTmpRotZ.subtract(mPosition);
 			mTmpRotZ.normalize();
 			
 			if(mTmpRotZ.length() == 0)
 				mTmpRotZ.z = 1;
 			
-			mTmpRotX.setAllFrom(mAxisY);
+			mTmpRotX.setAll(mAxisY);
 			mTmpRotX.cross(mTmpRotZ);
 			mTmpRotX.normalize();
 			
@@ -108,7 +108,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 				mTmpRotX.normalize();
 			}
 			
-			mTmpRotY.setAllFrom(mTmpRotZ);
+			mTmpRotY.setAll(mTmpRotZ);
 			mTmpRotY.cross(mTmpRotX);
 			
 			Matrix.setIdentityM(mLookAtMatrix, 0);
@@ -205,7 +205,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	}
 
 	public void setRotation(Vector3 rotation) {
-		mRotation.setAllFrom(rotation);
+		mRotation.setAll(rotation);
 		mRotationDirty = true;
 	}
 

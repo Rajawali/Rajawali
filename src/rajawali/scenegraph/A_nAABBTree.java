@@ -134,7 +134,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		float overlap = 1.0f + mOverlap/100.0f;
 		temp.multiply(overlap);
 		temp.absoluteValue();
-		mChildLengths.setAllFrom(temp);
+		mChildLengths.setAll(temp);
 	}
 
 	/**
@@ -180,8 +180,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		mMax.x = (float) (position.x + span_x);
 		mMax.y = (float) (position.y + span_y);
 		mMax.z = (float) (position.z + span_z);
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 	}
@@ -195,10 +195,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void setBounds(int child) {
 		A_nAABBTree new_bounds = mChildren[child];
-		mMin.setAllFrom(new_bounds.mMin);
-		mMax.setAllFrom(new_bounds.mMax);
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mMin.setAll(new_bounds.mMin);
+		mMax.setAll(new_bounds.mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 	}
@@ -213,8 +213,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * side this node should be. 
 	 */
 	protected void setChildRegion(int region, Vector3 side_lengths) {
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 		if (mSplit) {
@@ -485,10 +485,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				if(test_against_max.z > max.z) max.z = test_against_max.z;
 			}
 		}
-		mMin.setAllFrom(min);
-		mMax.setAllFrom(max);
-		mTransformedMin.setAllFrom(min);
-		mTransformedMax.setAllFrom(max);
+		mMin.setAll(min);
+		mMax.setAll(max);
+		mTransformedMin.setAll(min);
+		mTransformedMax.setAll(max);
 		calculatePoints();
 		calculateChildSideLengths();
 		if (mSplit) {
