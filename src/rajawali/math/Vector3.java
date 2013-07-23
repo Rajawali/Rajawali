@@ -12,9 +12,9 @@ public class Vector3 {
 	public float y;
 	public float z;
 	
-	public static final Vector3 UP_VECTOR = new Vector3(0,1,0);
-	public static final Vector3 RIGHT_VECTOR = new Vector3(1,0,0);
-	public static final Vector3 FORWARD_VECTOR = new Vector3(0,0,1);
+	public static final Vector3 X = new Vector3(0,1,0);
+	public static final Vector3 Y = new Vector3(1,0,0);
+	public static final Vector3 Z = new Vector3(0,0,1);
 	
 	public static final int M00 = 0;// 0;
     public static final int M01 = 4;// 1;
@@ -33,12 +33,16 @@ public class Vector3 {
     public static final int M32 = 11;// 14;
     public static final int M33 = 15;// 15;
 
-	private static Vector3 _temp = new Vector3();
+	private static final Vector3 sTemp = new Vector3(); //Scratch vector
+	private static final Object sTemp_Lock = new Object(); //Scratch vector thread lock
 
 	public enum Axis {
 		X, Y, Z
 	}
 
+	/**
+	 * Constructs a new {@link Vector3} at (0, 0, 0).
+	 */
 	public Vector3() {
 		this.x = 0;
 		this.y = 0;
@@ -190,31 +194,32 @@ public class Vector3 {
 	public void rotateX(float angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
+		synchronized (sTemp_Lock) {
+			sTemp.setAll(this.x, this.y, this.z);
 
-		_temp.setAll(this.x, this.y, this.z);
-
-		this.y = (float)((_temp.y * cosRY) - (_temp.z * sinRY));
-		this.z = (float)((_temp.y * sinRY) + (_temp.z * cosRY));
+			this.y = (float)((sTemp.y * cosRY) - (sTemp.z * sinRY));
+			this.z = (float)((sTemp.y * sinRY) + (sTemp.z * cosRY));
+		}
 	}
 
 	public void rotateY(float angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
 
-		_temp.setAll(this.x, this.y, this.z);
+		sTemp.setAll(this.x, this.y, this.z);
 
-		this.x = (float)((_temp.x * cosRY) + (_temp.z * sinRY));
-		this.z = (float)((_temp.x * -sinRY) + (_temp.z * cosRY));
+		this.x = (float)((sTemp.x * cosRY) + (sTemp.z * sinRY));
+		this.z = (float)((sTemp.x * -sinRY) + (sTemp.z * cosRY));
 	}
 
 	public void rotateZ(float angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
 
-		_temp.setAll(this.x, this.y, this.z);
+		sTemp.setAll(this.x, this.y, this.z);
 
-		this.x = (float)((_temp.x * cosRY) - (_temp.y * sinRY));
-		this.y = (float)((_temp.x * sinRY) + (_temp.y * cosRY));
+		this.x = (float)((sTemp.x * cosRY) - (sTemp.y * sinRY));
+		this.y = (float)((sTemp.x * sinRY) + (sTemp.y * cosRY));
 	}
 
 	@Override
@@ -277,10 +282,10 @@ public class Vector3 {
 	}
 	
 	public Vector3 cross(Vector3 w) {
-		_temp.setAllFrom(this);
-		x = w.y * _temp.z - w.z * _temp.y;
-		y = w.z * _temp.x - w.x * _temp.z;
-		z = w.x * _temp.y - w.y * _temp.x;
+		sTemp.setAllFrom(this);
+		x = w.y * sTemp.z - w.z * sTemp.y;
+		y = w.z * sTemp.x - w.x * sTemp.z;
+		z = w.x * sTemp.y - w.y * sTemp.x;
 		return this;
 	}
 

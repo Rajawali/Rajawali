@@ -549,12 +549,12 @@ public final class Quaternion {
         if (d < (1e-6f - 1.0f))
         {
         	// axis
-        	mTmpVec1.setAllFrom(Vector3.RIGHT_VECTOR);
+        	mTmpVec1.setAllFrom(Vector3.Y);
         	mTmpVec1.cross(src);
 
             if (mTmpVec1.length() == 0.0f)
             {
-            	mTmpVec1.setAllFrom(Vector3.UP_VECTOR);
+            	mTmpVec1.setAllFrom(Vector3.X);
             	mTmpVec1.cross(src);
             }
 
