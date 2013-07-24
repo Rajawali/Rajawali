@@ -996,7 +996,7 @@ public class Vector3 {
 		case Z:
 			return Z;
 		default:
-			return null;
+			throw new IllegalArgumentException("The specified Axis is not a valid choice.");
 		}
 	}
 	

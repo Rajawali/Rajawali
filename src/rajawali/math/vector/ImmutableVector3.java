@@ -13,7 +13,7 @@ public class ImmutableVector3 extends Vector3 {
 	//--------------------------------------------------
 
 	/**
-	 * Constructs a new {@link Vector3} at (0, 0, 0).
+	 * Constructs a new {@link ImmutableVector3} at (0, 0, 0).
 	 */
 	public ImmutableVector3() {
 		//They are technically zero, but we wont rely on the uninitialized state here.
@@ -23,7 +23,7 @@ public class ImmutableVector3 extends Vector3 {
 	}
 
 	/**
-	 * Constructs a new {@link Vector3} at {from, from, from}.
+	 * Constructs a new {@link ImmutableVector3} at {from, from, from}.
 	 * 
 	 * @param from float which all components will be initialized to.
 	 */
@@ -34,7 +34,7 @@ public class ImmutableVector3 extends Vector3 {
 	}
 
 	/**
-	 * Constructs a new {@link Vector3} with components matching the input {@link Vector3}.
+	 * Constructs a new {@link ImmutableVector3} with components matching the input {@link ImmutableVector3}.
 	 * 
 	 * @param from {@link Vector3} to initialize the components with.
 	 */
@@ -45,7 +45,7 @@ public class ImmutableVector3 extends Vector3 {
 	}
 
 	/**
-	 * Constructs a new {@link Vector3} with components initialized from the input {@link String} array. 
+	 * Constructs a new {@link ImmutableVector3} with components initialized from the input {@link String} array. 
 	 * 
 	 * @param values A {@link String} array of values to be parsed for each component. 
 	 * @throws {@link IllegalArgumentException} if there are fewer than 3 values in the array.
@@ -56,7 +56,7 @@ public class ImmutableVector3 extends Vector3 {
 	}
 
 	/**
-	 * Constructs a new {@link Vector3} with components initialized from the input float array. 
+	 * Constructs a new {@link ImmutableVector3} with components initialized from the input float array. 
 	 * 
 	 * @param values A float array of values to be parsed for each component. 
 	 * @throws {@link IllegalArgumentException} if there are fewer than 3 values in the array.
@@ -69,7 +69,7 @@ public class ImmutableVector3 extends Vector3 {
 	}
 
 	/**
-	 * Constructs a new {@link Vector3} object with components initialized to the specified values.
+	 * Constructs a new {@link ImmutableVector3} object with components initialized to the specified values.
 	 * 
 	 * @param x float The x component.
 	 * @param y float The y component.
@@ -82,7 +82,7 @@ public class ImmutableVector3 extends Vector3 {
 	}
 
 	/**
-	 * Constructs a new {@link Vector3} object with the components initialized to the specified values.
+	 * Constructs a new {@link ImmutableVector3} object with the components initialized to the specified values.
 	 * Note that this method will truncate the values to single precision.
 	 * 
 	 * @param x double The x component.
