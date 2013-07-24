@@ -1,5 +1,7 @@
 package rajawali.math;
 
+import rajawali.math.vector.Vector3;
+
 public class Plane {
 	private static Vector3 mTmp1;
 	private static Vector3 mTmp2;

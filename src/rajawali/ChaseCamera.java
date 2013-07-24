@@ -1,7 +1,7 @@
 package rajawali;
 
-import rajawali.math.Vector3;
 import rajawali.math.Quaternion;
+import rajawali.math.vector.Vector3;
 
 public class ChaseCamera extends Camera {
 	protected Vector3 mCameraOffset;

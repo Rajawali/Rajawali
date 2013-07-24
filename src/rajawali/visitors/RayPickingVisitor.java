@@ -3,8 +3,8 @@ package rajawali.visitors;
 import rajawali.BaseObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.util.Intersector;
 
 public class RayPickingVisitor implements INodeVisitor {

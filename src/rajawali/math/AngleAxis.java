@@ -1,5 +1,7 @@
 package rajawali.math;
 
+import rajawali.math.vector.Vector3;
+
 public class AngleAxis {
 	protected double mAngle;
 	protected Vector3 mAxis;

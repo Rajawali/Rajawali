@@ -2,8 +2,8 @@ package rajawali.animation;
 
 import rajawali.math.MathUtil;
 import rajawali.math.Quaternion;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 /**
  * Performs spherical linear interpolation (SLERP) animation between two {@link Vector3}s.

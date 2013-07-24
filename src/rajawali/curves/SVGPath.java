@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 import android.content.Context;
 

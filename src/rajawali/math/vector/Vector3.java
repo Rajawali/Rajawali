@@ -1,4 +1,8 @@
-package rajawali.math;
+package rajawali.math.vector;
+
+import rajawali.math.MathUtil;
+import rajawali.math.Matrix4;
+import rajawali.math.Quaternion;
 
 /**
  * 
@@ -17,27 +21,9 @@ public class Vector3 {
 	public float z;
 	
 	//Unit vectors oriented to each axis
-	public static final Vector3 X = new Vector3(0,1,0);
-	public static final Vector3 Y = new Vector3(1,0,0);
-	public static final Vector3 Z = new Vector3(0,0,1);
-	
-	//Rotation matrix indices
-	public static final int M00 = 0;  // 0;
-    public static final int M01 = 4;  // 1;
-    public static final int M02 = 8;  // 2;
-    public static final int M03 = 12; // 3;
-    public static final int M10 = 1;  // 4;
-    public static final int M11 = 5;  // 5;
-    public static final int M12 = 9;  // 6;
-    public static final int M13 = 13; // 7;
-    public static final int M20 = 2;  // 8;
-    public static final int M21 = 6;  // 9;
-    public static final int M22 = 10; // 10;
-    public static final int M23 = 14; // 11;
-    public static final int M30 = 3;  // 12;
-    public static final int M31 = 7;  // 13;
-    public static final int M32 = 11; // 14;
-    public static final int M33 = 15; // 15;
+	public static final ImmutableVector3 X = new ImmutableVector3(1,0,0);
+	public static final ImmutableVector3 Y = new ImmutableVector3(0,1,0);
+	public static final ImmutableVector3 Z = new ImmutableVector3(0,0,1);
 
 	private static final Vector3 sTemp = new Vector3(); //Scratch vector
 	private static final Object sTemp_Lock = new Object(); //Scratch vector thread lock
@@ -249,6 +235,17 @@ public class Vector3 {
 		z = a.z + b.z;
 		return this;
 	}
+	
+	/**
+	 * Adds two input {@link Vector3} objects and creates a new one to hold the result.
+	 * 
+	 * @param a {@link Vector3} The first vector.
+	 * @param b {@link Vector3} The second vector.
+	 * @return {@link Vector3} The resulting {@link Vector3}.
+	 */
+	public static Vector3 addAndCreate(Vector3 a, Vector3 b) {
+		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+	}
 
 	/**
 	 * Subtracts the provided {@link Vector3} from this one.
@@ -317,6 +314,17 @@ public class Vector3 {
 	}
 	
 	/**
+	 * Subtracts two input {@link Vector3} objects and creates a new one to hold the result.
+	 * 
+	 * @param a {@link Vector3} The first vector.
+	 * @param b {@link Vector3} The second vector
+	 * @return {@link Vector3} The resulting {@link Vector3}.
+	 */
+	public static Vector3 subtractAndCreate(Vector3 a, Vector3 b) {
+		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+	}
+	
+	/**
 	 * Scales each component of this {@link Vector3} by the specified value.
 	 * 
 	 * @param value float The value to scale each component by.
@@ -362,9 +370,9 @@ public class Vector3 {
 	 */
 	public Vector3 multiply(final float[] matrix) {
 		float vx = x, vy = y, vz = z;
-		x = vx * matrix[0] + vy * matrix[4] + vz * matrix[8] + matrix[12];
-		y = vx * matrix[1] + vy * matrix[5] + vz * matrix[9] + matrix[13];
-		z = vx * matrix[2] + vy * matrix[6] + vz * matrix[10] + matrix[14];
+		x = vx * matrix[Matrix4.M00] + vy * matrix[Matrix4.M01] + vz * matrix[Matrix4.M02] + matrix[Matrix4.M03];
+		y = vx * matrix[Matrix4.M10] + vy * matrix[Matrix4.M11] + vz * matrix[Matrix4.M12] + matrix[Matrix4.M13];
+		z = vx * matrix[Matrix4.M20] + vy * matrix[Matrix4.M21] + vz * matrix[Matrix4.M22] + matrix[Matrix4.M23];
 		return this;
 	}
 	
@@ -390,6 +398,17 @@ public class Vector3 {
 		y = a.y * b.y;
 		z = a.z * b.z;
 		return this;
+	}
+	
+	/**
+	 * Multiplies two input {@link Vector3} objects and creates a new one to hold the result.
+	 * 
+	 * @param a {@link Vector3} The first vector.
+	 * @param b {@link Vector3} The second vector
+	 * @return {@link Vector3} The resulting {@link Vector3}.
+	 */
+	public static Vector3 multiplyAndCreate(Vector3 a, Vector3 b) {
+		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
 	}
 	
 	/**
@@ -456,6 +475,17 @@ public class Vector3 {
 		y = a.y * b;
 		z = a.z * b;
 		return this;
+	}
+	
+	/**
+	 * Scales an input {@link Vector3} by a value and creates a new one to hold the result.
+	 * 
+	 * @param a {@link Vector3} The {@link Vector3} to scale.
+	 * @param b {@link Vector3} The scaling factor.
+	 * @return {@link Vector3} The resulting {@link Vector3}.
+	 */
+	public static Vector3 scaleAndCreate(Vector3 a, float b) {
+		return new Vector3(a.x * b, a.y * b, a.z * b);
 	}
 	
 	/**
@@ -538,66 +568,7 @@ public class Vector3 {
 		z = -z;
 		return this;
 	}
-	
-	/**
-	 * Inverts the direction of the specified {@link Vector3} and applies the result to this one.
-	 * 
-	 * @return {@link Vector3} The resulting {@link Vector3}.
-	 */
-	public Vector3 invertAndSet() {
-		return new Vector3(-x, -y, -z);
-	}
 
-	
-	
-	//--------------------------------------------------
-	// Apply and Create methods
-	//--------------------------------------------------
-	
-	/**
-	 * Adds two input {@link Vector3} objects and creates a new one to hold the result.
-	 * 
-	 * @param a {@link Vector3} The first vector.
-	 * @param b {@link Vector3} The second vector.
-	 * @return {@link Vector3} The resulting {@link Vector3}.
-	 */
-	public static Vector3 addAndCreate(Vector3 a, Vector3 b) {
-		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
-	}
-	
-	/**
-	 * Subtracts two input {@link Vector3} objects and creates a new one to hold the result.
-	 * 
-	 * @param a {@link Vector3} The first vector.
-	 * @param b {@link Vector3} The second vector
-	 * @return {@link Vector3} The resulting {@link Vector3}.
-	 */
-	public static Vector3 subtractAndCreate(Vector3 a, Vector3 b) {
-		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
-	}
-	
-	/**
-	 * Multiplies two input {@link Vector3} objects and creates a new one to hold the result.
-	 * 
-	 * @param a {@link Vector3} The first vector.
-	 * @param b {@link Vector3} The second vector
-	 * @return {@link Vector3} The resulting {@link Vector3}.
-	 */
-	public static Vector3 multiplyAndCreate(Vector3 a, Vector3 b) {
-		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
-	}
-	
-	/**
-	 * Scales an input {@link Vector3} by a value and creates a new one to hold the result.
-	 * 
-	 * @param a {@link Vector3} The {@link Vector3} to scale.
-	 * @param b {@link Vector3} The scaling factor.
-	 * @return {@link Vector3} The resulting {@link Vector3}.
-	 */
-	public static Vector3 scaleAndCreate(Vector3 a, float b) {
-		return new Vector3(a.x * b, a.y * b, a.z * b);
-	}
-	
 	/**
 	 * Inverts the direction of this {@link Vector3} and creates a new one set with the result.
 	 * 
@@ -610,7 +581,7 @@ public class Vector3 {
 	
 	
 	//--------------------------------------------------
-	// Utility methods
+	// Vector operation methods
 	//--------------------------------------------------
 	
 	/**
@@ -748,64 +719,132 @@ public class Vector3 {
 		return (a * a + b * b + c * c);
 	}
 	
-	public void absoluteValue() {
+	/**
+	 * Sets this {@link Vector3} to the absolute value of itself.
+	 * 
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 absoluteValue() {
 		x = Math.abs(x);
 		y = Math.abs(y);
 		z = Math.abs(z);
+		return this;
 	}
 	
-	public void project(float[] mat) {
-        float l_w = x * mat[M30] + y * mat[M31] + z * mat[M32] + mat[M33];
+	/**
+	 * Multiplies this {@link Vector3} by the provided 4x4 matrix and divides by w.
+	 * Typically this is used for project/un-project of a {@link Vector3}.
+	 * 
+	 * @param matrix float[16] array representation of a 4x4 matrix to project with.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 project(final float[] matrix) {
+        float l_w = x * matrix[Matrix4.M30] + y * matrix[Matrix4.M31] + z * matrix[Matrix4.M32] + matrix[Matrix4.M33];
         
-        setAll(
-      		  (x * mat[M00] + y * mat[M01] + z * mat[M02] + mat[M03]) / l_w, 
-      		  (x * mat[M10] + y * mat[M11] + z * mat[M12] + mat[M13]) / l_w, 
-      		  (x * mat[M20] + y * mat[M21] + z * mat[M22] + mat[M23]) / l_w);
+        return setAll(
+      		  (x * matrix[Matrix4.M00] + y * matrix[Matrix4.M01] + z * matrix[Matrix4.M02] + matrix[Matrix4.M03]) / l_w, 
+      		  (x * matrix[Matrix4.M10] + y * matrix[Matrix4.M11] + z * matrix[Matrix4.M12] + matrix[Matrix4.M13]) / l_w, 
+      		  (x * matrix[Matrix4.M20] + y * matrix[Matrix4.M21] + z * matrix[Matrix4.M22] + matrix[Matrix4.M23]) / l_w);
 	}
 	
-	public static float dot(Vector3 v, Vector3 w) {
-		return v.x * w.x + v.y * w.y + v.z * w.z;
+	/**
+	 * Multiplies this {@link Vector3} by the provided {@link Matrix4} and divides by w.
+	 * Typically this is used for project/un-project of a {@link Vector3}.
+	 * 
+	 * @param matrix {@link Matrix4} 4x4 matrix to project with.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 project(final Matrix4 matrix) {
+		final float[] l_mat = new float[16];
+		matrix.toFloatArray(l_mat);
+		return project(l_mat);
 	}
 	
-	public float dot(Vector3 w) {
-		return x * w.x + y * w.y + z * w.z;
+	/**
+	 * Computes the vector dot product between the two specified {@link Vector3} objects.
+	 * 
+	 * @param v1 The first {@link Vector3}.
+	 * @param v2 The second {@link Vector3}.
+	 * @return float The dot product.
+	 */
+	public static float dot(Vector3 v1, Vector3 v2) {
+		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+	}
+	
+	/**
+	 * Computes the vector dot product between this {@link Vector3} and the specified {@link Vector3}.
+	 * 
+	 * @param v {@link Vector3} to compute the dot product with.
+	 * @return float The dot product.
+	 */
+	public float dot(final Vector3 v) {
+		return x * v.x + y * v.y + z * v.z;
+	}
+	
+	/**
+	 * Computes the vector dot product between this {@link Vector3} and the specified vector.
+	 * 
+	 * @param x float The x component of the specified vector.
+	 * @param y float The y component of the specified vector.
+	 * @param z float The z component of the specified vector.
+	 * @return float The dot product.
+	 */
+	public float dot(float x, float y, float z) {
+		return (this.x * x + this.y * y + this.z *z);
 	}
 
-	public static Vector3 crossAndCreate(Vector3 v, Vector3 w) {
-		return new Vector3(w.y * v.z - w.z * v.y, w.z * v.x - w.x * v.z, w.x * v.y - w.y * v.x);
-	}
-	
-	public Vector3 cross(Vector3 w) {
+	/**
+	 * Computes the cross product between this {@link Vector3} and the specified {@link Vector3},
+	 * setting this to the result.
+	 * 
+	 * @param v {@link Vector3} the other {@link Vector3} to cross with.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 cross(Vector3 v) {
 		synchronized (sTemp_Lock) {
 			sTemp.setAll(this);
-			x = w.y * sTemp.z - w.z * sTemp.y;
-			y = w.z * sTemp.x - w.x * sTemp.z;
-			z = w.x * sTemp.y - w.y * sTemp.x;
+			x = v.y * sTemp.z - v.z * sTemp.y;
+			y = v.z * sTemp.x - v.x * sTemp.z;
+			z = v.x * sTemp.y - v.y * sTemp.x;
 		}
 		return this;
 	}
-
-	public static Vector3 getAxisVector(Axis axis) {
-		Vector3 axisVector = new Vector3();
-
-		switch (axis) {
-		case X:
-			axisVector.setAll(1, 0, 0);
-			break;
-		case Y:
-			axisVector.setAll(0, 1, 0);
-			break;
-		case Z:
-			axisVector.setAll(0, 0, 1);
-			break;
-		}
-
-		return axisVector;
-	}
-
 	
 	/**
-	 * http://ogre.sourcearchive.com/documentation/1.4.5/classOgre_1_1Vector3_eeef4472ad0c4d5f34a038a9f2faa819.html#eeef4472ad0c4d5f34a038a9f2faa819
+	 * Computes the cross product between this {@link Vector3} and the specified vector,
+	 * setting this to the result.
+	 * 
+	 * @param x float The x component of the other vector.
+	 * @param y float The y component of the other vector.
+	 * @param z float The z component of the other vector.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 cross(float x, float y, float z) {
+		synchronized (sTemp_Lock) {
+			sTemp.setAll(this);
+			this.x = y * sTemp.z - z * sTemp.y;
+			this.y = z * sTemp.x - x * sTemp.z;
+			this.z = x * sTemp.y - y * sTemp.x;
+		}
+		return this;
+	}
+	
+	/**
+	 * Computes the cross product between two {@link Vector3} objects and and sets 
+	 * a new {@link Vector3} to the result.
+	 * 
+	 * @param v1 {@link Vector3} The first {@link Vector3} to cross.
+	 * @param v2 {@link Vector3} The second {@link Vector3} to cross.
+	 * @return {@link Vector3} The computed cross product.
+	 */
+	public static Vector3 crossAndCreate(Vector3 v1, Vector3 v2) {
+		return new Vector3(v2.y * v1.z - v2.z * v1.y, v2.z * v1.x - v2.x * v1.z, v2.x * v1.y - v2.y * v1.x);
+	}
+
+	/**
+	 * Adapted from OGRE 3D engine.
+	 * 
+	 * @see http://ogre.sourcearchive.com/documentation/1.4.5/classOgre_1_1Vector3_eeef4472ad0c4d5f34a038a9f2faa819.html#eeef4472ad0c4d5f34a038a9f2faa819
 	 * 
 	 * @param direction
 	 * @return
@@ -846,7 +885,47 @@ public class Vector3 {
 		return q;
 	}
 	
-	public static Vector3 lerp(Vector3 from, Vector3 to, float amount)
+	/**
+	 * Performs a linear interpolation between this {@link Vector3} and to by the specified amount.
+	 * The result will be stored in the current object which means that the current
+	 * x, y, z values will be overridden.
+	 * 
+	 * @param to {@link Vector3} Ending point.
+	 * @param amount float [0-1] interpolation value.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 lerp(Vector3 to, float amount) {
+		return multiply(1.0f - amount).add(to.x * amount, to.y * amount, to.z * amount);
+	}
+	
+	/**
+	 * Performs a linear interpolation between from and to by the specified amount.
+	 * The result will be stored in the current object which means that the current
+	 * x, y, z values will be overridden.
+	 * 
+	 * @param from {@link Vector3} Starting point.
+	 * @param to {@link Vector3} Ending point.
+	 * @param amount float [0-1] interpolation value.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 lerpAndSet(Vector3 from, Vector3 to, float amount)
+	{
+	  x = from.x + (to.x - from.x) * amount;
+	  y = from.y + (to.y - from.y) * amount;
+	  z = from.z + (to.z - from.z) * amount;
+	  return this;
+	}
+	
+	/**
+	 * Performs a linear interpolation between from and to by the specified amount.
+	 * The result will be stored in a new {@link Vector3} object.
+	 * 
+	 * @param from {@link Vector3} Starting point.
+	 * @param to {@link Vector3} Ending point.
+	 * @param amount float [0-1] interpolation value.
+	 * @return {@link Vector3} The interpolated value.
+	 */
+	public static Vector3 lerpAndCreate(Vector3 from, Vector3 to, float amount)
 	{
 		Vector3 out = new Vector3();
 		out.x = from.x + (to.x - from.x) * amount;
@@ -855,25 +934,71 @@ public class Vector3 {
 		return out;
 	}
 	
-	/**
-	 * Performs a linear interpolation between from and to by the specified amount.
-	 * The result will be stored in the current object which means that the current
-	 * x, y, z values will be overridden.
-	 * 
-	 * @param from
-	 * @param to
-	 * @param amount
-	 */
-	public void lerpSelf(Vector3 from, Vector3 to, float amount)
-	{
-	  this.x = from.x + (to.x - from.x) * amount;
-	  this.y = from.y + (to.y - from.y) * amount;
-	  this.z = from.z + (to.z - from.z) * amount;
-	}
+	
 	
 	//--------------------------------------------------
 	// Utility methods
 	//--------------------------------------------------
+	
+	/**
+	 * Checks if this {@link Vector3} is of unit length with a default
+	 * margin of error of 1e-8.
+	 * 
+	 * @return boolean True if this {@link Vector3} is of unit length.
+	 */
+	public boolean isUnit() {
+		return isUnit(1e-8f);
+	}
+	
+	/**
+	 * Checks if this {@link Vector3} is of unit length with a specified
+	 * margin of error.
+	 * 
+	 * @param margin float The desired margin of error for the test.
+	 * @return boolean True if this {@link Vector3} is of unit length.
+	 */
+	public boolean isUnit(final float margin) {
+		return Math.abs(length2() - 1f) < margin * margin;
+	}
+	
+	/**
+	 * Checks if this {@link Vector3} is a zero vector.
+	 * 
+	 * @return boolean True if all 3 components are equal to zero.
+	 */
+	public boolean isZero() {
+		return (x == 0 && y == 0 && z == 0);
+	}
+	
+	/**
+	 * Checks if the length of this {@link Vector3} is smaller than the specified margin.
+	 * 
+	 * @param margin float The desired margin of error for the test.
+	 * @return boolean True if this {@link Vector3}'s length is smaller than the margin specified.
+	 */
+	public boolean isZero(final float margin) {
+		return (length2() < margin * margin);
+	}
+	
+	/**
+	 * Determines and returns the {@link Vector3} pointing along the
+	 * specified axis. 
+	 * 
+	 * @param axis {@link Axis} the axis to find.
+	 * @return {@link Vector3} the {@link Vector3} representing the requested axis.
+	 */
+	public static Vector3 getAxisVector(Axis axis) {
+		switch (axis) {
+		case X:
+			return X;
+		case Y:
+			return Y;
+		case Z:
+			return Z;
+		default:
+			return null;
+		}
+	}
 	
 	/**
 	 * Does a component by component comparison of this {@link Vector3} and the specified {@link Vector3} 

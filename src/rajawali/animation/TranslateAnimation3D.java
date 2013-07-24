@@ -3,8 +3,8 @@ package rajawali.animation;
 import rajawali.ATransformable3D;
 import rajawali.curves.ICurve3D;
 import rajawali.math.Quaternion;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 public class TranslateAnimation3D extends Animation3D {
 

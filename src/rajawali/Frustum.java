@@ -1,9 +1,9 @@
 package rajawali;
 
 import rajawali.bounds.BoundingBox;
-import rajawali.math.Vector3;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
+import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
 import android.opengl.Matrix;
 

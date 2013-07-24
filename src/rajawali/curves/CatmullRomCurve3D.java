@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 /**
  * Derived from http://www.cse.unsw.edu.au/~lambert/splines/source.html

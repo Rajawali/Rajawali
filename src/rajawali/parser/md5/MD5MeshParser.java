@@ -18,7 +18,7 @@ import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.IAnimatedMeshParser;
 import rajawali.renderer.RajawaliRenderer;

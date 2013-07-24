@@ -2,8 +2,8 @@ package rajawali.parser.fbx;
 
 import java.util.Stack;
 
-import rajawali.math.Vector3;
-import rajawali.math.Vector2;
+import rajawali.math.vector.Vector2;
+import rajawali.math.vector.Vector3;
 import android.graphics.Color;
 
 public class FBXValues {

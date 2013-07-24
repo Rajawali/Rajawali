@@ -1,6 +1,6 @@
 package rajawali.curves;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class QuadraticBezierCurve3D implements ICurve3D {
 

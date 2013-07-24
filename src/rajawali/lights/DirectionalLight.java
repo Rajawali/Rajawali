@@ -1,7 +1,7 @@
 package rajawali.lights;
 
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 public class DirectionalLight extends ALight {
 	protected float[] mDirection = new float[3];

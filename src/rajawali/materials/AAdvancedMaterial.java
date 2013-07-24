@@ -7,7 +7,7 @@ import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;

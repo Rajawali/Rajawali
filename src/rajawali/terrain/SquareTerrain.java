@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import rajawali.materials.SimpleMaterial;
 import rajawali.math.Plane;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
 
 /**

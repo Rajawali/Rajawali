@@ -12,7 +12,7 @@ import rajawali.Camera;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.bounds.IBoundingVolume;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 
 /**

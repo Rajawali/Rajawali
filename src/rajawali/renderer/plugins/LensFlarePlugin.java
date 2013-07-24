@@ -9,8 +9,8 @@ import rajawali.Camera;
 import rajawali.extras.LensFlare;
 import rajawali.extras.LensFlare.FlareInfo;
 import rajawali.materials.textures.ASingleTexture;
-import rajawali.math.Vector3;
-import rajawali.math.Vector2;
+import rajawali.math.vector.Vector2;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import android.opengl.GLES20;
 

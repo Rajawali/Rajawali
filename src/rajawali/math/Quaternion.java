@@ -1,6 +1,7 @@
 package rajawali.math;
 
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 /**
  * Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html
@@ -549,12 +550,12 @@ public final class Quaternion {
         if (d < (1e-6f - 1.0f))
         {
         	// axis
-        	mTmpVec1.setAll(Vector3.Y);
+        	mTmpVec1.setAll(Vector3.X);
         	mTmpVec1.cross(src);
 
             if (mTmpVec1.length() == 0.0f)
             {
-            	mTmpVec1.setAll(Vector3.X);
+            	mTmpVec1.setAll(Vector3.Y);
             	mTmpVec1.cross(src);
             }
 

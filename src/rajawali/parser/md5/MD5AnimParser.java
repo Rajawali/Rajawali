@@ -12,7 +12,7 @@ import rajawali.animation.mesh.SkeletalAnimationFrame;
 import rajawali.animation.mesh.SkeletalAnimationFrame.Skeleton;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.animation.mesh.SkeletalAnimationSequence;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.parser.AParser;
 import rajawali.parser.IAnimationSequenceParser;
 import rajawali.renderer.RajawaliRenderer;

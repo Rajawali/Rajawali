@@ -1,7 +1,7 @@
 package rajawali.animation;
 
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 /**
  * Animation that orbits {@link ATransformable3D} object around a point. 

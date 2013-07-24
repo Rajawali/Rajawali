@@ -1,7 +1,7 @@
 package rajawali.animation;
 
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 public class RotateAroundAnimation3D extends Animation3D {
 	protected final float PI_DIV_180 = 3.14159265f / 180;

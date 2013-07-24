@@ -1,7 +1,7 @@
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class ScaleAnimation3D extends Animation3D {
 

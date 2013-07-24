@@ -1,7 +1,7 @@
 package rajawali.primitives;
 
 import rajawali.BaseObject3D;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3.Axis;
 
 /**
  * A plane primitive. The constructor takes two boolean arguments that indicate whether certain buffers should be

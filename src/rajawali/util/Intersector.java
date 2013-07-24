@@ -13,8 +13,8 @@
  ******************************************************************************/
 package rajawali.util;
 
-import rajawali.math.Vector3;
 import rajawali.math.Plane;
+import rajawali.math.vector.Vector3;
 
 /** Class offering various static methods for intersection testing between different geometric objects.
  * 
