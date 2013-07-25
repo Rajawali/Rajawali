@@ -613,7 +613,7 @@ public class Vector3 {
 	 * @return float The Euclidean length.
 	 */
 	public float length() {
-		return (float)Math.sqrt(x * x + y * y + z * z);
+		return (float)Math.sqrt(length2());
 	}
 	
 	/**
