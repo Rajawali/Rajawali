@@ -546,15 +546,29 @@ public class Vector3 {
 	 */
 	public float normalize() {
 		double mod = Math.sqrt(x * x + y * y + z * z);
-
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
 			x *= mod;
 			y *= mod;
 			z *= mod;
 		}
-		
 		return (float)mod;
+	}
+	
+	/**
+	 * Applies Gram-Schmitt Ortho-normalization to the given set of input {@link Vector3} objects.
+	 * 
+	 * @param vecs Array of {@link Vector3} objects to be ortho-normalized.
+	 */
+	public static void orthoNormalize(Vector3[] vecs) {
+		for (int i = 0; i < vecs.length; ++ i) {
+			Vector3 accum = new Vector3(0.0, 0.0, 0.0);
+	
+			for(int j = 0; j < i; ++ j)
+				accum.add(Vector3.projectAndCreate(vecs[i], vecs[j]));
+	
+			vecs[i].subtract(accum).normalize();
+		}
 	}
 	
 	/**
@@ -732,6 +746,19 @@ public class Vector3 {
 	}
 	
 	/**
+	 * Projects the specified {@link Vector3} onto this one and sets this {@link Vector3}
+	 * to the result.
+	 * 
+	 * @param v {@link Vector3} to be projected.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 project(Vector3 v) {
+		float d = dot(v);
+		float d_div = d / length2();
+		return multiply(d_div);
+	}
+	
+	/**
 	 * Multiplies this {@link Vector3} by the provided 4x4 matrix and divides by w.
 	 * Typically this is used for project/un-project of a {@link Vector3}.
 	 * 
@@ -758,6 +785,20 @@ public class Vector3 {
 		final float[] l_mat = new float[16];
 		matrix.toFloatArray(l_mat);
 		return project(l_mat);
+	}
+	
+	/**
+	 * Projects {@link Vector3} v1 onto {@link Vector3} v2 and creates a new 
+	 * {@link Vector3} for the result.
+	 * 
+	 * @param v1 {@link Vector3} to be projected.
+	 * @param v2 {@link Vector3} the {@link Vector3} to be projected on.
+	 * @return {@link Vector3} The result of the projection.
+	 */
+	public static Vector3 projectAndCreate(Vector3 v1, Vector3 v2) {
+		float d = v1.dot(v2);
+		float d_div = d / v2.length2();
+		return v2.clone().multiply(d_div);
 	}
 	
 	/**
