@@ -872,6 +872,18 @@ public class Vector3 {
 	
 	/**
 	 * Computes the cross product between two {@link Vector3} objects and and sets 
+	 * a this to the result.
+	 * 
+	 * @param v1 {@link Vector3} The first {@link Vector3} to cross.
+	 * @param v2 {@link Vector3} The second {@link Vector3} to cross.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 crossAndSet(Vector3 v1, Vector3 v2) {
+		return setAll(v2.y * v1.z - v2.z * v1.y, v2.z * v1.x - v2.x * v1.z, v2.x * v1.y - v2.y * v1.x);
+	}
+	
+	/**
+	 * Computes the cross product between two {@link Vector3} objects and and sets 
 	 * a new {@link Vector3} to the result.
 	 * 
 	 * @param v1 {@link Vector3} The first {@link Vector3} to cross.

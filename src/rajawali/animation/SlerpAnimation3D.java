@@ -27,6 +27,7 @@ public class SlerpAnimation3D extends Animation3D {
 	private Quaternion mTo;
 	private final Vector3 mForwardVec = Vector3.getAxisVector(Axis.Z);
 	private Vector3 mTmpVec;
+	private Vector3 mTmpQuatVector;
 	private Quaternion mTmpQuat;
 	private float[] mRotationMatrix;
 	private float mDistance;
@@ -37,6 +38,7 @@ public class SlerpAnimation3D extends Animation3D {
 		mFrom = quaternionFromVector(from.clone());
 		mTo = quaternionFromVector(to.clone());
 		mTmpVec = new Vector3();
+		mTmpQuatVector = new Vector3();
 		mTmpQuat = new Quaternion();
 		mDistance = from.length();
 		mRotationMatrix = new float[16];
@@ -57,7 +59,7 @@ public class SlerpAnimation3D extends Animation3D {
 		vec.normalize();
 		float angle = MathUtil.radiansToDegrees((float)Math.acos(Vector3.dot(mForwardVec, vec)));
 		Quaternion q = new Quaternion();
-		q.fromAngleAxis(angle, Vector3.crossAndCreate(mForwardVec, vec));
+		q.fromAngleAxis(angle, mTmpQuatVector.crossAndSet(mForwardVec, vec));
 		return q;
 	}
 }
