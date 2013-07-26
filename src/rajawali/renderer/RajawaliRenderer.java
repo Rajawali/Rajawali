@@ -584,12 +584,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void onSurfaceDestroyed() {
 		synchronized (mScenes) {
-			mTextureManager.unregisterRenderer(this);
-			mMaterialManager.unregisterRenderer(this);
 			if (mTextureManager != null)
+			{
+				mTextureManager.unregisterRenderer(this);
 				mTextureManager.taskReset(this);
+			}
 			if (mMaterialManager != null)
+			{
 				mMaterialManager.taskReset(this);
+				mMaterialManager.unregisterRenderer(this);
+			}
 			for (int i = 0, j = mScenes.size(); i < j; ++i)
 				mScenes.get(i).destroyScene();
 		}
