@@ -602,6 +602,7 @@ public class RajawaliScene extends AFrameTask {
 		GLES20.glCullFace(GLES20.GL_BACK);
 		GLES20.glFrontFace(GLES20.GL_CCW);
 		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 	}
 	
 	public void render(double deltaTime, RenderTarget renderTarget) {

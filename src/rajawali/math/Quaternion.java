@@ -12,8 +12,6 @@ public final class Quaternion {
 	public final static float F_EPSILON = .001f;
 	public float w, x, y, z;
 	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
-	private final Vector3 UP_VECTOR = Vector3.getUpVector();
-	private final Vector3 RIGHT_VECTOR = Vector3.getRightVector();
 	
 	public Quaternion() {
 		setIdentity();
@@ -251,8 +249,8 @@ public final class Quaternion {
 
 	public Vector3 multiply(final Vector3 vector) {
 		mTmpVec3.setAll(x, y, z);
-		mTmpVec1 = Vector3.cross(mTmpVec3, vector);
-		mTmpVec2 = Vector3.cross(mTmpVec3, mTmpVec1);
+		mTmpVec1 = Vector3.crossAndCreate(mTmpVec3, vector);
+		mTmpVec2 = Vector3.crossAndCreate(mTmpVec3, mTmpVec1);
 		mTmpVec1.multiply(2.0f * w);
 		mTmpVec2.multiply(2.0f);
 
@@ -351,6 +349,7 @@ public final class Quaternion {
 	public void slerpSelf(Quaternion q1, Quaternion q2, float t) {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             setAllFrom(q1);
+            normalize();
             return;
         }
 
@@ -380,6 +379,7 @@ public final class Quaternion {
         y = (scale0 * q1.y) + (scale1 * q2.y);
         z = (scale0 * q1.z) + (scale1 * q2.z);
         w = (scale0 * q1.w) + (scale1 * q2.w);
+        normalize();
     }
 
 	public float normalize() {
@@ -549,12 +549,12 @@ public final class Quaternion {
         if (d < (1e-6f - 1.0f))
         {
         	// axis
-        	mTmpVec1.setAllFrom(RIGHT_VECTOR);
+        	mTmpVec1.setAllFrom(Vector3.RIGHT_VECTOR);
         	mTmpVec1.cross(src);
 
             if (mTmpVec1.length() == 0.0f)
             {
-            	mTmpVec1.setAllFrom(UP_VECTOR);
+            	mTmpVec1.setAllFrom(Vector3.UP_VECTOR);
             	mTmpVec1.cross(src);
             }
 
@@ -577,4 +577,54 @@ public final class Quaternion {
             normalize();
         } 
     }
+    
+    
+	public static Quaternion lookAt(Vector3 lookAt, Vector3 upDirection, boolean isCamera) 
+	{
+		Vector3 forward = lookAt.clone(); Vector3 up = upDirection.clone();
+		Vector3[] vecs = new Vector3[2];
+		vecs[0]=forward; vecs[1]=up;
+
+		orthoNormalize(vecs);
+
+		Vector3 right = forward.clone().cross(up);
+
+		Quaternion camera = new Quaternion(), ret = new Quaternion();
+		camera.fromAxes(right, up, forward);
+
+		if (isCamera)
+		{
+			return camera;
+		}
+		else
+		{
+			ret.setIdentity();
+			ret.multiply(camera);
+			ret.inverseSelf();
+			return ret;
+		}
+	}
+	
+	public static void orthoNormalize( Vector3[] vecs )
+	{
+		for( int i = 0; i < vecs.length; ++ i )
+		{
+			Vector3 accum = new Vector3(0.0, 0.0, 0.0);
+
+			for( int j = 0; j < i; ++ j )
+				accum.add( project( vecs[i], vecs[j] ) );
+
+			vecs[i].subtract(accum).normalize();
+		}
+	}
+	
+	public static Vector3 project(Vector3 u, Vector3 v)
+	{
+		float d = u.dot(v);
+		float d_div = d / magSqr(u);
+		return v.clone().multiply(d_div);
+	}
+
+	public static float magSqr(Vector3 v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
+
 }

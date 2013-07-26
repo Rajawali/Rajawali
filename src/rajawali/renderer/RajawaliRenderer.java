@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -56,7 +59,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected TextureManager mTextureManager; //Texture manager for ALL textures across ALL scenes.
 	protected MaterialManager mMaterialManager; //Material manager for ALL materials across ALL scenes.
 	
-	protected Timer mTimer; //Timer used to schedule drawing
+	protected ScheduledExecutorService mTimer; //Timer used to schedule drawing
 	protected float mFrameRate; //Target frame rate to render at
 	protected int mFrameCount; //Used for determining FPS
 	private long mStartTime = System.nanoTime(); //Used for determining FPS
@@ -427,6 +430,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			//Check if we need to switch the scene, and if so, do it.
 			if (mNextScene != null) {
 				mCurrentScene = mNextScene;
+				mCurrentScene.resetGLState(); //Ensure that the GL state is what this scene expects
 				mNextScene = null;
 				mCurrentScene.getCamera().setProjectionMatrix(mViewportWidth, mViewportHeight);
 			}
@@ -497,8 +501,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		Capabilities.getInstance();
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 
-		GLES20.glFrontFace(GLES20.GL_CCW);
-		GLES20.glCullFace(GLES20.GL_BACK);
+		//GLES20.glFrontFace(GLES20.GL_CCW);
+		//GLES20.glCullFace(GLES20.GL_BACK);
 
 		if (!mSceneInitialized) {
 			mEffectComposer = new EffectComposer(this);
@@ -550,13 +554,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		if(!mSceneInitialized) return;
 		mLastRender = SystemClock.elapsedRealtime();
 		
-		if (mTimer != null) {return;
-//			mTimer.cancel();
-	//		mTimer.purge();
-		}
+		if (mTimer != null) {return;}
 
-		mTimer = new Timer();
-		mTimer.schedule(new RequestRenderTask(), 0, (long) (1000 / mFrameRate));
+		mTimer = Executors.newScheduledThreadPool(1);
+		mTimer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / mFrameRate), TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -567,8 +568,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	protected boolean stopRendering() {
 		if (mTimer != null) {
-			mTimer.cancel();
-			mTimer.purge();
+			mTimer.shutdownNow();
 			mTimer = null;
 			return true;
 		}
@@ -579,6 +579,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		if (!visible) {
 			stopRendering();
 		} else
+			getCurrentScene().resetGLState();
 			startRendering();
 	}
 
@@ -604,7 +605,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		this.preferences = preferences;
 	}
 
-	private class RequestRenderTask extends TimerTask {
+	private class RequestRenderTask implements Runnable {
 		public void run() {
 			if (mSurfaceView != null) {
 				mSurfaceView.requestRender();
@@ -792,9 +793,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalRemoveScene((RajawaliScene) task, task.getIndex());
 			break;
 		case TEXTURE:
-			internalRemoveTexture((ATexture) task, task.getIndex()); 
+			internalRemoveTexture((ATexture) task, task.getIndex());
+			break;
 		case MATERIAL:
 			internalRemoveMaterial((AMaterial) task, task.getIndex());
+			break;
 		default:
 			break;
 		}

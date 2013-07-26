@@ -86,7 +86,7 @@ public class RayPickingVisitor implements INodeVisitor {
 		if ((fDst1 * fDst2) >= 0.0f) return false;
 		if (floatEqual(fDst1, fDst2)) return false; 
 		mHitPoint.setAllFrom(P1);
-		mHitPoint.add(Vector3.subtract(P2, P1));
+		mHitPoint.add(Vector3.subtractAndCreate(P2, P1));
 		mHitPoint.multiply(-fDst1/(fDst2-fDst1));
 		return true;
 	}

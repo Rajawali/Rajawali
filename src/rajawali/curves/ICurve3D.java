@@ -4,7 +4,7 @@ import rajawali.math.Vector3;
 
 public interface ICurve3D {
 
-	public Vector3 calculatePoint(float t);
+	public void calculatePoint(Vector3 result, float t);
 
 	public Vector3 getCurrentTangent();
 
