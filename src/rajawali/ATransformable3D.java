@@ -86,7 +86,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	public void setOrientation() {
 		if(!mRotationDirty && mLookAt == null) return;
 
-		mOrientation.setIdentity();
+		mOrientation.identity();
 		if(mLookAt != null) {			
 			mTmpRotZ.setAll(mLookAt)
 				.subtract(mPosition)
@@ -119,9 +119,9 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 			
 			mOrientation.fromRotationMatrix(mLookAtMatrix);
 		} else {
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.y, Vector3.Y));
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.z, Vector3.Z));
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.x, Vector3.X));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(Vector3.Y, mRotation.y));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(Vector3.Z, mRotation.z));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(Vector3.X, mRotation.x));
 			if(mIsCamera)
 				mOrientation.inverseSelf();
 		}
@@ -134,10 +134,10 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	
  	public void rotateAround(Vector3 axis, float angle, boolean append) {
  		if(append) {
- 			mTmpOrientation.fromAngleAxis(angle, axis);
+ 			mTmpOrientation.fromAngleAxis(axis, angle);
  			mOrientation.multiply(mTmpOrientation);
  		} else {
- 			mOrientation.fromAngleAxis(angle, axis);
+ 			mOrientation.fromAngleAxis(axis, angle);
  		}
 		mRotationDirty = false;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
@@ -145,12 +145,12 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	
 	public Quaternion getOrientation(Quaternion qt) {
 		setOrientation(); // Force mOrientation to be recalculated
-		qt.setAllFrom(mOrientation); 
+		qt.setAll(mOrientation); 
 		return  qt;
 	}
 	
 	public void setOrientation(Quaternion quat) {
-		mOrientation.setAllFrom(quat);
+		mOrientation.setAll(quat);
 		mRotationDirty = false;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}

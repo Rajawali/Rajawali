@@ -185,7 +185,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				mTmpJoint2.getOrientation().slerpSelf(joint.getOrientation(), mTmpJoint1.getOrientation(), transitionInterpolation);
 				
 				joint.getPosition().setAll(mTmpJoint2.getPosition());
-				joint.getOrientation().setAllFrom(mTmpJoint2.getOrientation());
+				joint.getOrientation().setAll(mTmpJoint2.getOrientation());
 			}
 
 			Matrix.setIdentityM(mBoneTranslation, 0);

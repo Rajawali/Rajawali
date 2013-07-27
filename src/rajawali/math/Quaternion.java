@@ -4,64 +4,117 @@ import rajawali.math.vector.Vector3;
 import rajawali.math.vector.Vector3.Axis;
 
 /**
+ * Encapsulates a quaternion.
+ *
  * Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html
  * 
- * @author dennis.ippel
+ * Rewritten July 27, 2013 by Jared Woolston with heavy influence from libGDX
+ * @see https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java
  * 
+ * @author dennis.ippel
+ * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public final class Quaternion {
-	public final static float F_EPSILON = .001f;
-	public float w, x, y, z;
-	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
+	//Tolerances
+	public static final float F_EPSILON = .001f;
+	public static final float NORMALIZATION_TOLERANCE = 0.00001f;
 	
+	//The Quaternion components
+	public float w, x, y, z;
+	
+	//Scratch members
+	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
+	private static final Quaternion sTmp1 = new Quaternion(0, 0, 0, 0);
+	private static final Quaternion sTmp2 = new Quaternion(0, 0, 0, 0);
+	
+	//--------------------------------------------------
+	// Constructors
+	//--------------------------------------------------
+	
+	/**
+	 * Default constructor. Creates an identity {@link Quaternion}.
+	 */
 	public Quaternion() {
-		setIdentity();
+		identity();
 		mTmpVec1 = new Vector3();
 		mTmpVec2 = new Vector3();
 		mTmpVec3 = new Vector3();
 	}
 
+	/**
+	 * Creates a {@link Quaternion} with the specified components.
+	 * 
+	 * @param w float The w component.
+	 * @param x float The x component.
+	 * @param y float The y component.
+	 * @param z float The z component.
+	 */
 	public Quaternion(float w, float x, float y, float z) {
-		this();
+		setAll(w, x, y, z);
+	}
+
+	/**
+	 * Creates a {@link Quaternion} with components initialized by the provided
+	 * {@link Quaternion}.
+	 * 
+	 * @param quat {@link Quaternion} to take values from.
+	 */
+	public Quaternion(Quaternion quat) {
+		setAll(quat);
+	}
+	
+	/**
+	 * Creates a {@link Quaternion} from the given axis vector and the rotation
+	 * angle around the axis.
+	 * 
+	 * @param axis {@link Vector3} The axis of rotation.
+	 * @param angle float The angle of rotation in degrees.
+	 */
+	public Quaternion(Vector3 axis, float angle) {
+		fromAngleAxis(axis, angle);
+	}
+	
+	
+	
+	//--------------------------------------------------
+	// Modification methods
+	//--------------------------------------------------
+	
+	/**
+	 * Sets the components of this {@link Quaternion}.
+	 * 
+	 * @param w float The w component.
+	 * @param x float The x component.
+	 * @param y float The y component.
+	 * @param z float The z component.
+	 * @return A reference to this {@link Quaternion} to facilitate chaining. 
+	 */
+	public Quaternion setAll(float w, float x, float y, float z) {
 		this.w = w;
 		this.x = x;
 		this.y = y;
 		this.z = z;
-	}
-
-	public Quaternion(Quaternion other) {
-		this();
-		this.w = other.w;
-		this.x = other.x;
-		this.y = other.y;
-		this.z = other.z;
-	}
-	
-	public void setAllFrom(Quaternion other) {
-		this.w = other.w;
-		this.x = other.x;
-		this.y = other.y;
-		this.z = other.z;
-	}
-	
-	public Quaternion clone() {
-		return new Quaternion(w, x, y, z);
-	}
-	
-	public void setAll(float w, float x, float y, float z) {
-		this.w = w;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
-	public Quaternion fromAngleAxis(final float angle, final Axis axis) {
-		fromAngleAxis(angle, Vector3.getAxisVector(axis));
 		return this;
 	}
 	
-	public Quaternion fromAngleAxis(final float angle, final Vector3 axisVector) {
-		axisVector.normalize();
+	/**
+	 * Sets the components of this {@link Quaternion} from those
+	 * of the provided {@link Quaternion}.
+	 * 
+	 * @param quat {@link Quaternion} to take values from.
+	 * @return A reference to this {@link Quaternion} to facilitate chaining.
+	 */
+	public Quaternion setAll(Quaternion quat) {
+		return setAll(quat.w, quat.x, quat.y, quat.z);
+	}
+	
+	public Quaternion fromAngleAxis(final Axis axis, final float angle) {
+		fromAngleAxis(Vector3.getAxisVector(axis), angle);
+		return this;
+	}
+	
+	public Quaternion fromAngleAxis(final Vector3 axisVector, final float angle) {
+		if (!axisVector.isUnit()) axisVector.normalize();
 		float radian = MathUtil.degreesToRadians(angle);
 		float halfAngle = radian * .5f;
 		float halfAngleSin = (float)Math.sin(halfAngle);
@@ -261,16 +314,117 @@ public final class Quaternion {
 		return mTmpVec1;
 	}
 
+	
+	
+	//--------------------------------------------------
+	// Quaternion operation methods
+	//--------------------------------------------------
+	
+	/**
+	 * Calculates the Euclidean length of this {@link Quaternion}.
+	 * 
+	 * @return float The Euclidean length.
+	 */
+	public float length() {
+		return (float) Math.sqrt(length2());
+	}
+	
+	/**
+	 * Calculates the square of the Euclidean length of this {@link Quaternion}.
+	 * 
+	 * @return float The square of the Euclidean length.
+	 */
+	public float length2() {
+		return w * w + x * x + y * y + z * z;
+	}
+	
+	/**
+	 * Normalizes this {@link Quaternion} to unit length.
+	 * 
+	 * @return float The scaling factor used to normalize this {@link Quaternion}.
+	 */
+	public float normalize() {
+		float len = length2();
+		if (len != 0 && (Math.abs(len - 1.0f) > NORMALIZATION_TOLERANCE)) {
+			float factor = 1.0f / (float) Math.sqrt(len);
+			multiply(factor);
+		}
+		return len;
+	}
+	
+	/**
+	 * Conjugate this {@link Quaternion}.
+	 * 
+	 * @return A reference to this {@link Quaternion} to facilitate chaining.
+	 */
+	public Quaternion conjugate() {
+		x = -x;
+		y = -y;
+		z = -z;
+		return this;
+	}
+	
+	/**
+	 * Sets this {@link Quaternion} from the given Euler angles.
+	 * 
+	 * @param yaw float The yaw angle in degrees.
+	 * @param pitch float The pitch angle in degrees.
+	 * @param roll float The roll angle in degrees.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Quaternion setEulerAngles(float yaw, float pitch, float roll) {
+		yaw = (float) Math.toRadians(yaw);
+		pitch = (float) Math.toRadians(pitch);
+		roll = (float) Math.toRadians(roll);
+		float num9 = roll * 0.5f;
+		float num6 = (float) Math.sin(num9);
+		float num5 = (float) Math.cos(num9);
+		float num8 = pitch * 0.5f;
+		float num4 = (float) Math.sin(num8);
+		float num3 = (float) Math.cos(num8);
+		float num7 = yaw * 0.5f;
+		float num2 = (float) Math.sin(num7);
+		float num = (float) Math.cos(num7);
+		float f1 = num * num4;
+		float f2 = num2 * num3;
+		float f3 = num * num3;
+		float f4 = num2 * num4;
+		
+		x = (f1 * num5) + (f2 * num6);
+		y = (f2 * num5) - (f1 * num6);
+		z = (f3 * num6) - (f4 * num5);
+		w = (f3 * num5) + (f4 * num6);
+		return this;
+	}
+	
 	public float dot(Quaternion other) {
 		return w * other.w + x * other.x + y * other.y + z * other.z;
 	}
+	
+	/**
+	 * Sets this {@link Quaternion} to an identity.
+	 * 
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Quaternion identity() {
+		w = 1;
+		x = 0;
+		y = 0;
+		z = 0;
+		return this;
+	}
 
-	public float norm() {
-		return w * w + x * x + y * y + z * z;
+	/**
+	 * Retrieves a new {@link Quaternion} initialized to identity.
+	 * 
+	 * @return A new identity {@link Quaternion}.
+	 */
+	public static Quaternion getIdentity() {
+		return new Quaternion(1, 0, 0, 0);
 	}
 
 	public Quaternion inverse() {
-		float norm = norm();
+		float norm = length2();
 		if (norm > 0) {
 			float invNorm = 1.0f / norm;
 			return new Quaternion(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
@@ -280,7 +434,7 @@ public final class Quaternion {
 	}
 	
 	public void inverseSelf() {
-		float norm = norm();
+		float norm = length2();
 		if (norm > 0) {
 			float invNorm = 1.0f / norm;
 			setAll(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
@@ -349,7 +503,7 @@ public final class Quaternion {
 	
 	public void slerpSelf(Quaternion q1, Quaternion q2, float t) {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
-            setAllFrom(q1);
+            setAll(q1);
             normalize();
             return;
         }
@@ -382,13 +536,6 @@ public final class Quaternion {
         w = (scale0 * q1.w) + (scale1 * q2.w);
         normalize();
     }
-
-	public float normalize() {
-		float len = norm();
-		float factor = 1.0f / (float)Math.sqrt(len);
-		multiply(factor);
-		return len;
-	}
 
 	public float getRoll(boolean reprojectAxis) {
 		if (reprojectAxis) {
@@ -514,22 +661,6 @@ public final class Quaternion {
 		return result;
 	}
 	
-	public Quaternion setIdentity() {
-		w = 1;
-		x = 0;
-		y = 0;
-		z = 0;
-		return this;
-	}
-
-	public static Quaternion getIdentity() {
-		return new Quaternion(1, 0, 0, 0);
-	}
-
-	public String toString() {
-		return "Quaternion.w " + w + " .x: " + x + " .y: " + y + " .z: " + z;
-	}
-	
 	public static Quaternion fromRotationBetween(final Vector3 src, final Vector3 dest)
 	{
 		Quaternion q = new Quaternion();
@@ -543,7 +674,7 @@ public final class Quaternion {
 
         if (d >= 1.0f)
         {
-        	setIdentity();
+        	identity();
             return;
         }
 
@@ -561,7 +692,7 @@ public final class Quaternion {
 
             mTmpVec1.normalize();
 
-            fromAngleAxis(180, mTmpVec1);
+            fromAngleAxis(mTmpVec1, 180);
         }
         else
         {
@@ -579,9 +710,7 @@ public final class Quaternion {
         } 
     }
     
-    
-	public static Quaternion lookAt(Vector3 lookAt, Vector3 upDirection, boolean isCamera) 
-	{
+    public static Quaternion lookAt(Vector3 lookAt, Vector3 upDirection, boolean isCamera) {
 		Vector3 forward = lookAt.clone(); Vector3 up = upDirection.clone();
 		Vector3[] vecs = new Vector3[2];
 		vecs[0]=forward; vecs[1]=up;
@@ -599,10 +728,43 @@ public final class Quaternion {
 		}
 		else
 		{
-			ret.setIdentity();
+			ret.identity();
 			ret.multiply(camera);
 			ret.inverseSelf();
 			return ret;
 		}
+	}
+    
+    
+    
+    //--------------------------------------------------
+  	// Utility methods
+  	//--------------------------------------------------
+	
+	/**
+	 * Clones this {@link Quaternion}.
+	 * 
+	 * @return {@link Quaternion} A copy of this {@link Quaternion}.
+	 */
+	public Quaternion clone() {
+		return new Quaternion(w, x, y, z);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Quaternion <w, x, y, z>: <")
+			.append(w)
+			.append(", ")
+			.append(x)
+			.append(", ")
+			.append(y)
+			.append(", ")
+			.append(z)
+			.append(">");
+		return sb.toString();
 	}
 }

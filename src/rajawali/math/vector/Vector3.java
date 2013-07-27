@@ -5,7 +5,6 @@ import rajawali.math.Matrix4;
 import rajawali.math.Quaternion;
 
 /**
- * 
  * Encapsulates a 3D point/vector.
  *
  * This class borrows heavily from the implementation.
@@ -600,15 +599,6 @@ public class Vector3 {
 	//--------------------------------------------------
 	
 	/**
-	 * Clones this vector.
-	 * 
-	 * @return {@link Vector3} A copy of this {@link Vector3}.
-	 */
-	public Vector3 clone() {
-		return new Vector3(x, y, z);
-	}
-	
-	/**
 	 * Computes the Euclidean length of this {@link Vector3};
 	 * 
 	 * @return float The Euclidean length.
@@ -915,7 +905,7 @@ public class Vector3 {
 		float d = Vector3.dot(v0, v1);
 		// If dot == 1, vectors are the same
 		if (d >= 1.0f) {
-			q.setIdentity();
+			q.identity();
 		}
 		if (d < 0.000001f - 1.0f) {
 			// Generate an axis
@@ -923,7 +913,7 @@ public class Vector3 {
 			if (axis.length() == 0) // pick another if colinear
 				axis = Vector3.crossAndCreate(Vector3.getAxisVector(Axis.Y), this);
 			axis.normalize();
-			q.fromAngleAxis(MathUtil.radiansToDegrees(MathUtil.PI), axis);
+			q.fromAngleAxis(axis, MathUtil.radiansToDegrees(MathUtil.PI));
 		} else {
 			double s = Math.sqrt((1 + d) * 2);
 			double invs = 1f / s;
@@ -993,6 +983,15 @@ public class Vector3 {
 	//--------------------------------------------------
 	// Utility methods
 	//--------------------------------------------------
+	
+	/**
+	 * Clones this {@link Vector3}.
+	 * 
+	 * @return {@link Vector3} A copy of this {@link Vector3}.
+	 */
+	public Vector3 clone() {
+		return new Vector3(x, y, z);
+	}
 	
 	/**
 	 * Checks if this {@link Vector3} is of unit length with a default
@@ -1074,11 +1073,13 @@ public class Vector3 {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(x);
-		sb.append(", ");
-		sb.append(y);
-		sb.append(", ");
-		sb.append(z);
+		sb.append("Vector3 <x, y, z>: <")
+			.append(x)
+			.append(", ")
+			.append(y)
+			.append(", ")
+			.append(z)
+			.append(">");
 		return sb.toString();
 	}
 }

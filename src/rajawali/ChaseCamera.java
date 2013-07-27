@@ -44,7 +44,7 @@ public class ChaseCamera extends Camera {
 		mPosition.add(mTmpVec);
 		setLookAt(mObjectToChase.getPosition());
 		
-		mPreviousOrientation.setAllFrom(mTmpOrientation);
+		mPreviousOrientation.setAll(mTmpOrientation);
 		
 		return super.getViewMatrix();
 	}
