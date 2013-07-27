@@ -1,5 +1,7 @@
 package rajawali.math;
 
+import rajawali.math.vector.Vector3;
+
 public class AngleAxis {
 	protected double mAngle;
 	protected Vector3 mAxis;
@@ -26,7 +28,7 @@ public class AngleAxis {
 	}
 
 	public void setAxis(Vector3 axis) {
-		mAxis.setAllFrom(axis);
+		mAxis.setAll(axis);
 	}
 	
 	public String toString() {

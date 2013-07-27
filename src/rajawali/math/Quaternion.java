@@ -1,6 +1,7 @@
 package rajawali.math;
 
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 /**
  * Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html
@@ -549,12 +550,12 @@ public final class Quaternion {
         if (d < (1e-6f - 1.0f))
         {
         	// axis
-        	mTmpVec1.setAllFrom(Vector3.RIGHT_VECTOR);
+        	mTmpVec1.setAll(Vector3.X);
         	mTmpVec1.cross(src);
 
             if (mTmpVec1.length() == 0.0f)
             {
-            	mTmpVec1.setAllFrom(Vector3.UP_VECTOR);
+            	mTmpVec1.setAll(Vector3.Y);
             	mTmpVec1.cross(src);
             }
 
@@ -567,7 +568,7 @@ public final class Quaternion {
             float s = (float)Math.sqrt((1f + d) * 2f);
             float invs = 1 / s;
 
-            mTmpVec1.setAllFrom(src);
+            mTmpVec1.setAll(src);
             mTmpVec1.cross(dest);
             
             x = (float) (mTmpVec1.x * invs);
@@ -585,7 +586,7 @@ public final class Quaternion {
 		Vector3[] vecs = new Vector3[2];
 		vecs[0]=forward; vecs[1]=up;
 
-		orthoNormalize(vecs);
+		Vector3.orthoNormalize(vecs);
 
 		Vector3 right = forward.clone().cross(up);
 
@@ -604,27 +605,4 @@ public final class Quaternion {
 			return ret;
 		}
 	}
-	
-	public static void orthoNormalize( Vector3[] vecs )
-	{
-		for( int i = 0; i < vecs.length; ++ i )
-		{
-			Vector3 accum = new Vector3(0.0, 0.0, 0.0);
-
-			for( int j = 0; j < i; ++ j )
-				accum.add( project( vecs[i], vecs[j] ) );
-
-			vecs[i].subtract(accum).normalize();
-		}
-	}
-	
-	public static Vector3 project(Vector3 u, Vector3 v)
-	{
-		float d = u.dot(v);
-		float d_div = d / magSqr(u);
-		return v.clone().multiply(d_div);
-	}
-
-	public static float magSqr(Vector3 v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
-
 }

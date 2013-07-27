@@ -1,6 +1,27 @@
 package rajawali.math;
 
+import rajawali.math.vector.Vector3;
+
 public final class Matrix4 {
+	
+	//Matrix indices
+	public static final int M00 = 0;  // 0;
+	public static final int M01 = 4;  // 1;
+	public static final int M02 = 8;  // 2;
+	public static final int M03 = 12; // 3;
+	public static final int M10 = 1;  // 4;
+	public static final int M11 = 5;  // 5;
+	public static final int M12 = 9;  // 6;
+	public static final int M13 = 13; // 7;
+	public static final int M20 = 2;  // 8;
+	public static final int M21 = 6;  // 9;
+	public static final int M22 = 10; // 10;
+	public static final int M23 = 14; // 11;
+	public static final int M30 = 3;  // 12;
+	public static final int M31 = 7;  // 13;
+	public static final int M32 = 11; // 14;
+	public static final int M33 = 15; // 15;
+	    
 	private float[] m; 
 	private float[] mTmp;
 	

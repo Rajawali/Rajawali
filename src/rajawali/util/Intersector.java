@@ -13,8 +13,8 @@
  ******************************************************************************/
 package rajawali.util;
 
-import rajawali.math.Vector3;
 import rajawali.math.Plane;
+import rajawali.math.vector.Vector3;
 
 /** Class offering various static methods for intersection testing between different geometric objects.
  * 
@@ -47,7 +47,7 @@ public final class Intersector {
 			if (hitPoint != null) hitPoint.addAndSet(rayStart, Vector3.scaleAndCreate(rayDir, t));
 			return true;
 		} else if (plane.getPointSide(rayStart) == Plane.PlaneSide.OnPlane) {
-			if (hitPoint != null) hitPoint.setAllFrom(rayStart);
+			if (hitPoint != null) hitPoint.setAll(rayStart);
 			return true;
 		} else {
 			return false;
@@ -90,7 +90,7 @@ public final class Intersector {
 		float v = (dot00 * dot12 - dot01 * dot02) / denom;
 		
 		if (u >= 0 && v >= 0 && u + v <= 1) {
-			if (hitPoint != null) hitPoint.setAllFrom(i);
+			if (hitPoint != null) hitPoint.setAll(i);
 			return true;
 		} else
 			return false;

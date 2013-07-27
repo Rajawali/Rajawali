@@ -1,6 +1,6 @@
 package rajawali.util;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.visitors.RayPickingVisitor;
 

@@ -1,8 +1,8 @@
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.math.Quaternion;
 
 public class RotateAnimation3D extends Animation3D {

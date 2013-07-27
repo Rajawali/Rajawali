@@ -2,8 +2,9 @@ package rajawali;
 
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.AngleAxis;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.Matrix4;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.math.Quaternion;
 import rajawali.renderer.AFrameTask;
 import rajawali.scenegraph.IGraphNode;
@@ -15,7 +16,6 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	protected Quaternion mOrientation;
 	protected Quaternion mTmpOrientation;
 	protected Vector3 mRotationAxis;
-	protected Vector3 mAxisX, mAxisY, mAxisZ;
 	protected boolean mRotationDirty;
 	protected Vector3 mLookAt;
 	protected Vector3 mTmpAxis, mTmpVec;
@@ -35,9 +35,6 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		mScale = new Vector3(1, 1, 1);
 		mOrientation = new Quaternion();
 		mTmpOrientation = new Quaternion();
-		mAxisX = Vector3.getAxisVector(Axis.X);
-		mAxisY = Vector3.getAxisVector(Axis.Y);
-		mAxisZ = Vector3.getAxisVector(Axis.Z);
 		mTmpAxis = new Vector3();
 		mTmpVec = new Vector3();
 		mAngleAxis = new AngleAxis();
@@ -45,7 +42,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	}
 	
 	public void setPosition(Vector3 position) {
-		mPosition.setAllFrom(position);
+		mPosition.setAll(position);
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
@@ -91,42 +88,40 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 
 		mOrientation.setIdentity();
 		if(mLookAt != null) {			
-			mTmpRotZ.setAllFrom(mLookAt);
-			mTmpRotZ.subtract(mPosition);
-			mTmpRotZ.normalize();
+			mTmpRotZ.setAll(mLookAt)
+				.subtract(mPosition)
+				.normalize();
 			
-			if(mTmpRotZ.length() == 0)
-				mTmpRotZ.z = 1;
+			if(mTmpRotZ.isZero()) mTmpRotZ.z = 1;
 			
-			mTmpRotX.setAllFrom(mAxisY);
-			mTmpRotX.cross(mTmpRotZ);
-			mTmpRotX.normalize();
+			mTmpRotX.setAll(Vector3.Y)
+				.cross(mTmpRotZ)
+				.normalize();
 			
-			if(mTmpRotX.length() == 0) {
+			if(mTmpRotX.isZero()) {
 				mTmpRotZ.x += .0001f;
-				mTmpRotX.cross(mTmpRotZ);
-				mTmpRotX.normalize();
+				mTmpRotX.cross(mTmpRotZ).normalize();
 			}
 			
-			mTmpRotY.setAllFrom(mTmpRotZ);
+			mTmpRotY.setAll(mTmpRotZ);
 			mTmpRotY.cross(mTmpRotX);
 			
 			Matrix.setIdentityM(mLookAtMatrix, 0);
-			mLookAtMatrix[0] = mTmpRotX.x;
-			mLookAtMatrix[1] = mTmpRotX.y;
-			mLookAtMatrix[2] = mTmpRotX.z;
-			mLookAtMatrix[4] = mTmpRotY.x;
-			mLookAtMatrix[5] = mTmpRotY.y;
-			mLookAtMatrix[6] = mTmpRotY.z;
-			mLookAtMatrix[8] = mTmpRotZ.x;
-			mLookAtMatrix[9] = mTmpRotZ.y;
-			mLookAtMatrix[10] = mTmpRotZ.z;
+			mLookAtMatrix[Matrix4.M00] = mTmpRotX.x;
+			mLookAtMatrix[Matrix4.M10] = mTmpRotX.y;
+			mLookAtMatrix[Matrix4.M20] = mTmpRotX.z;
+			mLookAtMatrix[Matrix4.M01] = mTmpRotY.x;
+			mLookAtMatrix[Matrix4.M11] = mTmpRotY.y;
+			mLookAtMatrix[Matrix4.M21] = mTmpRotY.z;
+			mLookAtMatrix[Matrix4.M02] = mTmpRotZ.x;
+			mLookAtMatrix[Matrix4.M12] = mTmpRotZ.y;
+			mLookAtMatrix[Matrix4.M22] = mTmpRotZ.z;
 			
 			mOrientation.fromRotationMatrix(mLookAtMatrix);
 		} else {
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.y : mRotation.y, mAxisY));
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.z : mRotation.z, mAxisZ));
-			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mIsCamera ? mRotation.x : mRotation.x, mAxisX));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.y, Vector3.Y));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.z, Vector3.Z));
+			mOrientation.multiply(mTmpOrientation.fromAngleAxis(mRotation.x, Vector3.X));
 			if(mIsCamera)
 				mOrientation.inverseSelf();
 		}
@@ -151,7 +146,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	public Quaternion getOrientation(Quaternion qt) {
 		setOrientation(); // Force mOrientation to be recalculated
 		qt.setAllFrom(mOrientation); 
-		return  qt;//new Quaternion(mOrientation);
+		return  qt;
 	}
 	
 	public void setOrientation(Quaternion quat) {
@@ -205,7 +200,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	}
 
 	public void setRotation(Vector3 rotation) {
-		mRotation.setAllFrom(rotation);
+		mRotation.setAll(rotation);
 		mRotationDirty = true;
 	}
 
@@ -264,7 +259,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	}
 	
 	public void setLookAt(float x, float y, float z) {
-		if(mLookAt == null) mLookAt = new Vector3();
+		if (mLookAt == null) mLookAt = new Vector3();
 		mLookAt.x = x;
 		mLookAt.y = y;
 		mLookAt.z = z;
@@ -272,7 +267,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	}
 	
 	public void setLookAt(Vector3 lookAt) {
-		if(lookAt == null) {
+		if (lookAt == null) {
 			mLookAt = null;
 			return;
 		}

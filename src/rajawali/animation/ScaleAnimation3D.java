@@ -1,7 +1,7 @@
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class ScaleAnimation3D extends Animation3D {
 
@@ -11,15 +11,15 @@ public class ScaleAnimation3D extends Animation3D {
 	protected Vector3 mMultipliedScale = new Vector3();
 	protected Vector3 mAddedScale = new Vector3();
 
-
+	
 	public ScaleAnimation3D(float toScale) {
 		super();
-		mToScale 	= new Vector3(toScale);
+		mToScale = new Vector3(toScale);
 	}
 	public ScaleAnimation3D(float fromScale, float toScale) {
 		super();
-		mToScale 	= new Vector3(toScale);
-		mFromScale 	= new Vector3(fromScale);
+		mToScale = new Vector3(toScale);
+		mFromScale = new Vector3(fromScale);
 	}
 	
 	public ScaleAnimation3D(Vector3 toScale) {
@@ -45,10 +45,8 @@ public class ScaleAnimation3D extends Animation3D {
 		if (mDiffScale == null)
 			mDiffScale = Vector3.subtractAndCreate(mToScale, mFromScale);
 
-		mMultipliedScale.setAllFrom(mDiffScale);
-		mMultipliedScale.multiply((float) mInterpolatedTime);
-		mAddedScale.setAllFrom(mFromScale);
-		mAddedScale.add(mMultipliedScale);
+		mMultipliedScale.scaleAndSet(mDiffScale, (float) mInterpolatedTime);
+		mAddedScale.addAndSet(mFromScale, mMultipliedScale);
 		mTransformable3D.setScale(mAddedScale);
 	}
 

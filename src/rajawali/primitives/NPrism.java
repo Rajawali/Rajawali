@@ -1,7 +1,7 @@
 package rajawali.primitives;
 
 import rajawali.BaseObject3D;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 /**
  * Basic primitive allowing for the creation of an n-sided regular

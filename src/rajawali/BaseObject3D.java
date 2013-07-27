@@ -15,7 +15,7 @@ import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;

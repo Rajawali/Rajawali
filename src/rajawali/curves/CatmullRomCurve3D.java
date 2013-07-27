@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 /**
  * Derived from http://www.cse.unsw.edu.au/~lambert/splines/source.html
@@ -129,7 +129,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 			mCurrentPoint.y += b * p.y;
 			mCurrentPoint.z += b * p.z;
 		}
-		result.setAllFrom(mCurrentPoint);
+		result.setAll(mCurrentPoint);
 	}
 
 	protected float pow2(float value) {
@@ -174,7 +174,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 			float dist = mTempPrevLen.distanceTo(mTempPointLen);
 			totalLength += dist;
 			mSegmentLengths[i] = dist;
-			mTempPrevLen.setAllFrom(mTempPointLen);
+			mTempPrevLen.setAll(mTempPointLen);
 		}
 
 		return totalLength;

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import rajawali.BaseObject3D;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 

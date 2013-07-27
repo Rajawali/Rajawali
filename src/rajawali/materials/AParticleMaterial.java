@@ -1,6 +1,6 @@
 package rajawali.materials;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public abstract class AParticleMaterial extends AMaterial {
 

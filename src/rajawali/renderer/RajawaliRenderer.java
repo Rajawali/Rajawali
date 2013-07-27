@@ -25,7 +25,7 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.plugins.Plugin;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.FPSUpdateListener;

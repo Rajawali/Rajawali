@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 import android.content.Context;
 
@@ -217,7 +217,7 @@ public class SVGPath {
 			cp2 = new Vector3(Float.parseFloat(vals[2]), -Float.parseFloat(vals[3]), 0);
 			if (mCurrentCommandIsRelative)
 				cp2.add(mPreviousPoint);
-			mPreviousControlPoint.setAllFrom(cp2);
+			mPreviousControlPoint.setAll(cp2);
 			bezierPath.addCurve(new CubicBezierCurve3D(mPreviousPoint.clone(), cp1, cp2, p));
 			break;
 		case SMOOTH_CURVE_TO:
@@ -238,8 +238,8 @@ public class SVGPath {
 			return;
 		}
 		if (bezierPath.getNumCurves() == 0)
-			mStartPoint.setAllFrom(p);
-		mPreviousPoint.setAllFrom(p);
+			mStartPoint.setAll(p);
+		mPreviousPoint.setAll(p);
 	}
 
 	private Vector3 reflect(Vector3 point, Vector3 mirror)

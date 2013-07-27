@@ -12,7 +12,7 @@ import java.util.Arrays;
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Color;
