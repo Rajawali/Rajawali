@@ -21,9 +21,10 @@ public class Vector3 {
 	public float z;
 	
 	//Unit vectors oriented to each axis
-	public static final ImmutableVector3 X = new ImmutableVector3(1,0,0);
-	public static final ImmutableVector3 Y = new ImmutableVector3(0,1,0);
-	public static final ImmutableVector3 Z = new ImmutableVector3(0,0,1);
+	//DO NOT EVER MODIFY THE VALUES OF THESE MEMBERS
+	public static final Vector3 X = new Vector3(1,0,0);
+	public static final Vector3 Y = new Vector3(0,1,0);
+	public static final Vector3 Z = new Vector3(0,0,1);
 
 	private static final Vector3 sTemp = new Vector3(); //Scratch vector
 	private static final Object sTemp_Lock = new Object(); //Scratch vector thread lock
@@ -1036,6 +1037,8 @@ public class Vector3 {
 	/**
 	 * Determines and returns the {@link Vector3} pointing along the
 	 * specified axis. 
+	 * DO NOT MODIFY THE VALUES OF THE RETURNED VECTORS. DOING SO WILL HAVE
+	 * DRAMATICALLY UNDESIRED CONSEQUENCES.
 	 * 
 	 * @param axis {@link Axis} the axis to find.
 	 * @return {@link Vector3} the {@link Vector3} representing the requested axis.
