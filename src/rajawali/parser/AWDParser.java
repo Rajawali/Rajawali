@@ -75,11 +75,13 @@ import android.util.SparseArray;
  */
 public class AWDParser extends AMeshParser {
 
-	protected static final int FLAG_HEADER_STREAMING = 0x01;
-	protected static final int FLAG_HEADER_MATRIX_STORAGE_PRECISION = 0x02;
-	protected static final int FLAG_HEADER_GEOMETRY_STORAGE_PRECISION = 0x04;
-	protected static final int FLAG_HEADER_PROPERTIES_STORAGE_PRECISION = 0x08;
-	protected static final int FLAG_HEADER_COMPRESSION = 0x08;
+	protected static final int FLAG_HEADER_STREAMING = 1;
+	protected static final int FLAG_HEADER_MATRIX_STORAGE_PRECISION = 2;
+	protected static final int FLAG_HEADER_GEOMETRY_STORAGE_PRECISION = 4;
+	protected static final int FLAG_HEADER_PROPERTIES_STORAGE_PRECISION = 8;
+	protected static final int FLAG_HEADER_COMPRESSION = 8;
+
+	protected static final int FLAG_BLOCK_HEADER_PRECISION = 4;
 
 	protected static final byte NS_AWD = 0;
 
@@ -97,9 +99,12 @@ public class AWDParser extends AMeshParser {
 
 	protected int awdHeaderVersion;
 	protected int awdHeaderRevision;
-	protected boolean awdHeaderFlagStreaming;
+	protected int awdHeaderFlags;
 	protected int awdHeaderCompression;
 	protected int awdHeaderBodyLength;
+	protected boolean awdHeaderAccuracyMatrix;
+	protected boolean awdHeaderAccuracyGeo;
+	protected boolean awdHeaderAccuracyProps;
 	protected boolean mAlwaysUseContainer;
 
 	public AWDParser(RajawaliRenderer renderer, File file) {
@@ -174,25 +179,32 @@ public class AWDParser extends AMeshParser {
 				throw new ParsingException();
 
 			// Read remaining header data
-			awdHeaderVersion = dis.read();
-			awdHeaderRevision = dis.read();
-			awdHeaderFlagStreaming = (dis.readShort() & 0x1) == 0x1;
+			awdHeaderVersion = dis.readUnsignedByte();
+			awdHeaderRevision = dis.readUnsignedByte();
+			awdHeaderFlags = dis.readUnsignedShort();
+
+			if (awdHeaderVersion == 2 && awdHeaderRevision == 1) {
+				awdHeaderAccuracyMatrix = (awdHeaderFlags & BlockHeader.FLAG_ACCURACY_MATRIX) == BlockHeader.FLAG_ACCURACY_MATRIX;
+				awdHeaderAccuracyGeo = (awdHeaderFlags & BlockHeader.FLAG_ACCURACY_GEO) == BlockHeader.FLAG_ACCURACY_GEO;
+				awdHeaderAccuracyProps = (awdHeaderFlags & BlockHeader.FLAG_ACCURACY_PROPS) == BlockHeader.FLAG_ACCURACY_PROPS;
+			}
+
 			awdHeaderCompression = dis.read();
-			// INFO Body length is for integrity checking, ignored when streaming
+			// Body length is for integrity checking, ignored when streaming; not a guaranteed value
 			awdHeaderBodyLength = dis.readInt();
 
 			// Debug Headers
 			RajLog.d("AWD Header Data");
 			RajLog.d(" Version: " + awdHeaderVersion + "." + awdHeaderRevision);
-			RajLog.d(" Is Streaming: " + awdHeaderFlagStreaming);
+			RajLog.d(" Flags: " + awdHeaderFlags);
 			RajLog.d(" Compression: " + getCompression());
 			RajLog.d(" Body Length: " + awdHeaderBodyLength);
 
 			// Check streaming
-			if (awdHeaderFlagStreaming)
+			if ((awdHeaderFlags & FLAG_HEADER_STREAMING) == FLAG_HEADER_STREAMING)
 				throw new ParsingException("Streaming not supported.");
 
-			// Only compression setting of NONE is currently supported.
+			// Compression is not supported as this is unnecessary overhead given the limited resources on mobile
 			if (getCompression() != Compression.NONE)
 				throw new ParsingException("Compression is not currently supported. Document compressed as: "
 						+ getCompression());
@@ -202,6 +214,7 @@ public class AWDParser extends AMeshParser {
 				do {
 					// Read header data
 					final BlockHeader blockHeader = new BlockHeader();
+					blockHeader.parsers = blockParsers;
 					blockHeader.awdVersion = awdHeaderVersion;
 					blockHeader.awdRevision = awdHeaderRevision;
 					blockHeader.id = dis.readInt();
@@ -209,9 +222,9 @@ public class AWDParser extends AMeshParser {
 					blockHeader.type = dis.read();
 					blockHeader.flags = dis.read();
 					blockHeader.dataLength = dis.readInt();
-
-					if ((blockHeader.flags & 0x1) == 0x1)
-						throw new ParsingException("High precision models are not supported.");
+					blockHeader.globalPrecisionGeo = awdHeaderAccuracyGeo;
+					blockHeader.globalPrecisionMatrix = awdHeaderAccuracyMatrix;
+					blockHeader.globalPrecisionProps = awdHeaderAccuracyProps;
 
 					// Add the block to the list of blocks for reference
 					blockDataList.put(blockHeader.id, blockHeader);
@@ -262,16 +275,6 @@ public class AWDParser extends AMeshParser {
 		return this;
 	}
 
-	@Override
-	protected AWDLittleEndianDataInputStream getLittleEndianInputStream() throws FileNotFoundException {
-		return getLittleEndianInputStream(8192);
-	}
-
-	@Override
-	protected AWDLittleEndianDataInputStream getLittleEndianInputStream(int size) throws FileNotFoundException {
-		return new AWDLittleEndianDataInputStream(getBufferedInputStream(size));
-	}
-
 	/**
 	 * Get the parsed object or objects. This is returns each model independent of a scene regardless of if a scene
 	 * exists or not.
@@ -292,6 +295,16 @@ public class AWDParser extends AMeshParser {
 			mRootObject.addChild(baseObjects.get(i));
 
 		return mRootObject;
+	}
+
+	@Override
+	protected AWDLittleEndianDataInputStream getLittleEndianInputStream() throws FileNotFoundException {
+		return getLittleEndianInputStream(8192);
+	}
+
+	@Override
+	protected AWDLittleEndianDataInputStream getLittleEndianInputStream(int size) throws FileNotFoundException {
+		return new AWDLittleEndianDataInputStream(getBufferedInputStream(size), AWDParser.this);
 	}
 
 	/**
@@ -387,6 +400,12 @@ public class AWDParser extends AMeshParser {
 	 */
 	public static final class BlockHeader {
 
+		public static final int FLAG_ACCURACY_MATRIX = 2;
+		public static final int FLAG_ACCURACY_GEO = 4;
+		public static final int FLAG_ACCURACY_PROPS = 8;
+
+		public List<IBlockParser> parsers;
+
 		public int awdVersion;
 		public int awdRevision;
 
@@ -395,6 +414,10 @@ public class AWDParser extends AMeshParser {
 		public int type;
 		public int flags;
 		public int dataLength;
+
+		public boolean globalPrecisionGeo;
+		public boolean globalPrecisionMatrix;
+		public boolean globalPrecisionProps;
 
 		@Override
 		public String toString() {
@@ -415,33 +438,39 @@ public class AWDParser extends AMeshParser {
 	 * @author Ian Thomas (toxicbakery@gmail.com)
 	 * 
 	 */
-	public class AWDLittleEndianDataInputStream extends LittleEndianDataInputStream {
+	public static final class AWDLittleEndianDataInputStream extends LittleEndianDataInputStream {
 
-		public static final int TYPE_INT8 = 1;
-		public static final int TYPE_INT16 = 2;
-		public static final int TYPE_INT32 = 3;
-		public static final int TYPE_UINT8 = 4;
-		public static final int TYPE_UINT16 = 5;
-		public static final int TYPE_UINT32 = 6;
-		public static final int TYPE_FLOAT32 = 7;
-		public static final int TYPE_FLOAT64 = 8;
-		public static final int TYPE_BOOL = 21;
-		public static final int TYPE_COLOR = 22;
-		public static final int TYPE_BADDR = 23;
-		public static final int TYPE_AWDSTRING = 31;
-		public static final int TYPE_AWDBYTEARRAY = 32;
-		public static final int TYPE_VECTOR2x1 = 41;
-		public static final int TYPE_VECTOR3x1 = 42;
-		public static final int TYPE_VECTOR4x1 = 43;
-		public static final int TYPE_MTX3x2 = 44;
-		public static final int TYPE_MTX3x3 = 45;
-		public static final int TYPE_MTX4x3 = 46;
-		public static final int TYPE_MTX4x4 = 47;
+		public enum Precision {
+			GEO, MATRIX, PROPS
+		}
 
-		protected boolean mHighDefinition;
+		public static final short TYPE_INT8 = 1;
+		public static final short TYPE_INT16 = 2;
+		public static final short TYPE_INT32 = 3;
+		public static final short TYPE_UINT8 = 4;
+		public static final short TYPE_UINT16 = 5;
+		public static final short TYPE_UINT32 = 6;
+		public static final short TYPE_FLOAT32 = 7;
+		public static final short TYPE_FLOAT64 = 8;
+		public static final short TYPE_BOOL = 21;
+		public static final short TYPE_COLOR = 22;
+		public static final short TYPE_BADDR = 23;
+		public static final short TYPE_AWDSTRING = 31;
+		public static final short TYPE_AWDBYTEARRAY = 32;
+		public static final short TYPE_VECTOR2x1 = 41;
+		public static final short TYPE_VECTOR3x1 = 42;
+		public static final short TYPE_VECTOR4x1 = 43;
+		public static final short TYPE_MTX3x2 = 44;
+		public static final short TYPE_MTX3x3 = 45;
+		public static final short TYPE_MTX4x3 = 46;
+		public static final short TYPE_MTX4x4 = 47;
 
-		public AWDLittleEndianDataInputStream(InputStream in) {
+		final AWDParser parser;
+
+		public AWDLittleEndianDataInputStream(InputStream in, AWDParser parser) {
 			super(in);
+
+			this.parser = parser;
 		}
 
 		/**
@@ -470,25 +499,25 @@ public class AWDParser extends AMeshParser {
 		 * @throws ParsingException
 		 * @throws IOException
 		 */
-		public void readMatrix3D(float[] matrix) throws ParsingException, IOException {
+		public void readMatrix3D(Precision precisionType, float[] matrix) throws ParsingException, IOException {
 			if (matrix == null || matrix.length != 16)
 				throw new ParsingException("Matrix array must be of size 16");
 
-			matrix[0] = (float) readPrecisionNumber();
-			matrix[1] = (float) readPrecisionNumber();
-			matrix[2] = (float) readPrecisionNumber();
+			matrix[0] = (float) readPrecisionNumber(precisionType);
+			matrix[1] = (float) readPrecisionNumber(precisionType);
+			matrix[2] = (float) readPrecisionNumber(precisionType);
 			matrix[3] = 0f;
-			matrix[4] = (float) readPrecisionNumber();
-			matrix[5] = (float) readPrecisionNumber();
-			matrix[6] = (float) readPrecisionNumber();
+			matrix[4] = (float) readPrecisionNumber(precisionType);
+			matrix[5] = (float) readPrecisionNumber(precisionType);
+			matrix[6] = (float) readPrecisionNumber(precisionType);
 			matrix[7] = 0f;
-			matrix[8] = (float) readPrecisionNumber();
-			matrix[9] = (float) readPrecisionNumber();
-			matrix[10] = (float) readPrecisionNumber();
+			matrix[8] = (float) readPrecisionNumber(precisionType);
+			matrix[9] = (float) readPrecisionNumber(precisionType);
+			matrix[10] = (float) readPrecisionNumber(precisionType);
 			matrix[11] = 0f;
-			matrix[12] = (float) readPrecisionNumber();
-			matrix[13] = (float) readPrecisionNumber();
-			matrix[14] = (float) readPrecisionNumber();
+			matrix[12] = (float) readPrecisionNumber(precisionType);
+			matrix[13] = (float) readPrecisionNumber(precisionType);
+			matrix[14] = (float) readPrecisionNumber(precisionType);
 			matrix[15] = 1f;
 		}
 
@@ -497,9 +526,19 @@ public class AWDParser extends AMeshParser {
 		 * 
 		 * @return
 		 * @throws IOException
+		 * @throws ParsingException
 		 */
-		public double readPrecisionNumber() throws IOException {
-			return mHighDefinition ? readDouble() : readFloat();
+		public double readPrecisionNumber(Precision precisionType) throws IOException, ParsingException {
+			switch (precisionType) {
+			case GEO:
+				return parser.awdHeaderAccuracyGeo ? readDouble() : readFloat();
+			case MATRIX:
+				return parser.awdHeaderAccuracyMatrix ? readDouble() : readFloat();
+			case PROPS:
+				return parser.awdHeaderAccuracyProps ? readDouble() : readFloat();
+			default:
+				throw new ParsingException("Unknown precision type used: " + precisionType);
+			}
 		}
 
 		/**
@@ -519,12 +558,15 @@ public class AWDParser extends AMeshParser {
 		 * @param expected
 		 * @throws IOException
 		 */
-		public void readProperties(SparseArray<Short> expected) throws IOException {
+		public HashMap<Short, Object> readProperties(SparseArray<Short> expected) throws IOException {
 			final HashMap<Short, Object> props = new HashMap<Short, Object>();
 
 			// Determine the length of the properties
 			final long propsLength = readUnsignedInt();
 			final long endPosition = position + propsLength;
+
+			if (propsLength == 0)
+				return props;
 
 			if (expected == null) {
 				RajLog.d("Skipping property values.");
@@ -533,86 +575,31 @@ public class AWDParser extends AMeshParser {
 				skip(propsLength);
 			}
 
-			int propKey;
-			short propType;
+			short propKey;
 			long propLength;
-			Object propValue;
 
 			// Read the properties, skip the remaining values if an error is encountered
 			while (position < endPosition) {
-				propKey = readUnsignedShort();
+				propKey = (short) readUnsignedShort();
 				propLength = readUnsignedInt();
-				propValue = null;
 
 				if (position + propLength > endPosition) {
 					RajLog.e("Unexpected properties length. Properties attemped to read past total properties length.");
 					if (endPosition > position)
 						skip(endPosition - position);
 
-					return;
+					return props;
 				}
 
 				if (expected.indexOfKey(propKey) < 0) {
-					propType = expected.get(propKey);
-					switch (propType) {
-					case TYPE_BOOL:
-						propValue = readBoolean();
-						break;
-					case TYPE_INT16:
-						propValue = readShort();
-						break;
-					case TYPE_INT32:
-						propValue = readInt();
-						break;
-					case TYPE_UINT8:
-						propValue = readUnsignedByte();
-						break;
-					case TYPE_UINT16:
-						propValue = readUnsignedShort();
-						break;
-					case TYPE_UINT32:
-					case TYPE_COLOR:
-					case TYPE_BADDR:
-						propValue = readUnsignedInt();
-						break;
-					case TYPE_FLOAT32:
-						propValue = readFloat();
-						break;
-					case TYPE_FLOAT64:
-						propValue = readDouble();
-						break;
-					case TYPE_AWDSTRING:
-						final byte[] stringBytes = new byte[(int) propLength];
-						readFully(stringBytes);
-						propValue = new String(stringBytes);
-						break;
-					case TYPE_VECTOR2x1:
-					case TYPE_VECTOR3x1:
-					case TYPE_VECTOR4x1:
-					case TYPE_MTX3x2:
-					case TYPE_MTX3x3:
-					case TYPE_MTX4x3:
-					case TYPE_MTX4x4:
-						// It seems that property matrix are always stored in high precision
-						final double[] matrix = new double[(int) propLength / 8];
-						for (int i = 0; i < matrix.length; i++)
-							matrix[i] = readDouble();
-						
-						propValue = matrix;
-						break;
-					default:
-						skip(propLength);
-						break;
-					}
-					
-					if (propValue != null)
-						props.put(propType, propValue);
-					
+					props.put(propKey, parseAttrValue(expected.get(propKey), propLength));
 				} else {
 					skip(propLength);
 				}
 
 			}
+
+			return props;
 
 		}
 
@@ -625,6 +612,9 @@ public class AWDParser extends AMeshParser {
 			final long attributesLength = readUnsignedInt();
 			final long endPosition = position + attributesLength;
 
+			if (attributesLength == 0)
+				return attributes;
+
 			// If the passed attributes map is null, skip the attributes entirely.
 			if (attributes == null) {
 				skip(attributesLength);
@@ -636,7 +626,6 @@ public class AWDParser extends AMeshParser {
 			String attrKey;
 			short attrType;
 			long attrLength;
-			Object attrValue;
 
 			// Read the attributes, skip the remaining values if an error is encountered.
 			while (position < endPosition) {
@@ -644,7 +633,6 @@ public class AWDParser extends AMeshParser {
 				attrKey = readVarString();
 				attrType = (short) readUnsignedByte();
 				attrLength = readUnsignedInt();
-				attrValue = null;
 
 				if (position + attrLength > endPosition) {
 					RajLog.e("Unexpected attribute length. Attributes attempted to read past total attributes length.");
@@ -654,50 +642,55 @@ public class AWDParser extends AMeshParser {
 					return attributes;
 				}
 
-				switch (attrType) {
-				case TYPE_AWDSTRING:
-					final byte[] stringBytes = new byte[(int) attrLength];
-					readFully(stringBytes);
-					attrValue = new String(stringBytes);
-					break;
-				case TYPE_INT8:
-					attrValue = readByte();
-					break;
-				case TYPE_INT16:
-					attrValue = readShort();
-					break;
-				case TYPE_INT32:
-					attrValue = readInt();
-					break;
-				case TYPE_BOOL:
-					attrValue = readBoolean();
-					break;
-				case TYPE_UINT8:
-					attrValue = readUnsignedByte();
-					break;
-				case TYPE_UINT16:
-					attrValue = readUnsignedShort();
-					break;
-				case TYPE_UINT32:
-				case TYPE_BADDR:
-					attrValue = readUnsignedInt();
-					break;
-				case TYPE_FLOAT32:
-					attrValue = readFloat();
-					break;
-				case TYPE_FLOAT64:
-					attrValue = readDouble();
-					break;
-				default:
-					RajLog.e("Skipping unknown attribute (" + attrType + ")");
-					skip(attrLength);
-					break;
-				}
-
-				attributes.put(attrKey, attrValue);
+				attributes.put(attrKey, parseAttrValue(attrType, attrLength));
 			}
 
 			return attributes;
+		}
+
+		private Object parseAttrValue(short attrType, long attrLength) throws IOException {
+			Object attrValue = null;
+			switch (attrType) {
+			case TYPE_AWDSTRING:
+				final byte[] stringBytes = new byte[(int) attrLength];
+				readFully(stringBytes);
+				attrValue = new String(stringBytes);
+				break;
+			case TYPE_INT8:
+				attrValue = readByte();
+				break;
+			case TYPE_INT16:
+				attrValue = readShort();
+				break;
+			case TYPE_INT32:
+				attrValue = readInt();
+				break;
+			case TYPE_BOOL:
+				attrValue = readBoolean();
+				break;
+			case TYPE_UINT8:
+				attrValue = readUnsignedByte();
+				break;
+			case TYPE_UINT16:
+				attrValue = readUnsignedShort();
+				break;
+			case TYPE_UINT32:
+			case TYPE_BADDR:
+				attrValue = readUnsignedInt();
+				break;
+			case TYPE_FLOAT32:
+				attrValue = readFloat();
+				break;
+			case TYPE_FLOAT64:
+				attrValue = readDouble();
+				break;
+			default:
+				RajLog.e("Skipping unknown attribute (" + attrType + ")");
+				skip(attrLength);
+				break;
+			}
+
+			return attrValue;
 		}
 
 		/**
@@ -709,15 +702,6 @@ public class AWDParser extends AMeshParser {
 		public String readVarString() throws IOException {
 			final int varStringLength = readUnsignedShort();
 			return varStringLength == 0 ? "" : readString(varStringLength);
-		}
-
-		/**
-		 * Determine if the reader will read floats or doubles from the file.
-		 * 
-		 * @param flag
-		 */
-		public void setHighDefinition(boolean flag) {
-			mHighDefinition = flag;
 		}
 
 	}

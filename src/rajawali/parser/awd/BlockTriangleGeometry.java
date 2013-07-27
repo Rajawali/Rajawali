@@ -1,8 +1,12 @@
 package rajawali.parser.awd;
 
+import java.util.HashMap;
+
+import android.util.SparseArray;
 import rajawali.BaseObject3D;
 import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream.Precision;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
 
@@ -37,15 +41,27 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 
 		// Lookup name, not sure why this is useful.
 		mLookupName = awdDis.readVarString();
-		RajLog.d("  Lookup Name: " + mLookupName);
 
 		// Count of sub geometries
 		mSubGeometryCount = awdDis.readUnsignedShort();
+
+		// TODO This is probably wrong. Likely need to merge meshes or something similar.
+		// One object for each sub geometry
 		mBaseObjects = new BaseObject3D[mSubGeometryCount];
+
+		// Debug
+		RajLog.d("  Lookup Name: " + mLookupName);
 		RajLog.d("  Sub Geometry Count: " + mSubGeometryCount);
 
-		// Read properties
-		awdDis.readProperties();
+		// Read the properties
+		SparseArray<Short> properties = new SparseArray<Short>();
+		final boolean geoAccuracy = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_GEO) ==
+				BlockHeader.FLAG_ACCURACY_GEO;
+		final short geoNr = geoAccuracy ? AWDLittleEndianDataInputStream.TYPE_FLOAT64
+				: AWDLittleEndianDataInputStream.TYPE_FLOAT32;
+		properties.put(1, geoNr);
+		properties.put(2, geoNr);
+		final HashMap<Short, Object> props = awdDis.readProperties(properties);
 
 		// Read each sub mesh data
 		int parsedSubs = 0;
@@ -58,7 +74,7 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 			float[] uvs = null;
 			float[] normals = null;
 
-			// Read properties
+			// Skip reading of mesh properties for now (per AWD implementation)
 			awdDis.readProperties();
 
 			long bytesRead = 0;
@@ -77,9 +93,9 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 					vertices = new float[(int) (subLength / 4)];
 					while (idx < vertices.length) {
 						// X, Y, Z
-						vertices[idx++] = awdDis.readFloat();
-						vertices[idx++] = awdDis.readFloat();
-						vertices[idx++] = awdDis.readFloat();
+						vertices[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
+						vertices[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
+						vertices[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
 					}
 					break;
 				case 2: // Face indices
@@ -90,12 +106,12 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 				case 3: // UV coordinates
 					uvs = new float[(int) (subLength / 4)];
 					while (idx < uvs.length)
-						uvs[idx++] = awdDis.readFloat();
+						uvs[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
 					break;
 				case 4: // Vertex normals
 					normals = new float[(int) (subLength / 4)];
 					while (idx < normals.length)
-						normals[idx++] = awdDis.readFloat();
+						normals[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
 					break;
 				case 5: // Vertex tangents
 				case 6: // Joint index
@@ -105,19 +121,19 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 					awdDis.skip(subLength);
 				}
 
-				// Verify the arrays
-				if (vertices == null)
-					vertices = new float[0];
-				if (normals == null)
-					normals = new float[0];
-				if (uvs == null)
-					uvs = new float[0];
-				if (indices == null)
-					indices = new int[0];
-
 				// Increment the bytes read by the size of the header and the sub block length
 				bytesRead += 6 + subLength;
 			}
+
+			// Verify the arrays
+			if (vertices == null)
+				vertices = new float[0];
+			if (normals == null)
+				normals = new float[0];
+			if (uvs == null)
+				uvs = new float[0];
+			if (indices == null)
+				indices = new int[0];
 
 			mBaseObjects[parsedSubs] = new BaseObject3D();
 			mBaseObjects[parsedSubs].setData(vertices, normals, uvs, null, indices);
@@ -125,5 +141,4 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 			parsedSubs++;
 		}
 	}
-
 }

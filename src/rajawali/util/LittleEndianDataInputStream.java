@@ -28,6 +28,10 @@ public class LittleEndianDataInputStream extends InputStream implements DataInpu
 	public int available() throws IOException {
 		return d.available();
 	}
+	
+	public long getPosition() {
+		return position;
+	}
 
 	public final short readShort() throws IOException {
 		position += 2;
