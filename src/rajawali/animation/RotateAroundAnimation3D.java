@@ -1,11 +1,10 @@
 package rajawali.animation;
 
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.MathUtil;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 public class RotateAroundAnimation3D extends Animation3D {
-	protected final float PI_DIV_180 = 3.14159265f / 180;
-
 	protected Vector3 mCenter;
 	protected float mDistance;
 	protected Axis mAxis;
@@ -19,7 +18,7 @@ public class RotateAroundAnimation3D extends Animation3D {
 	
 	@Override
 	protected void applyTransformation() {
-		double radians = 360f * mInterpolatedTime * PI_DIV_180;
+		double radians = 360f * mInterpolatedTime * MathUtil.PRE_PI_DIV_180;
 		
 		double cosVal = Math.cos(radians) * mDistance;
 		double sinVal = Math.sin(radians) * mDistance;

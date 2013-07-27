@@ -1,7 +1,7 @@
 package rajawali.lights;
 
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 public class DirectionalLight extends ALight {
 	protected float[] mDirection = new float[3];
@@ -29,7 +29,7 @@ public class DirectionalLight extends ALight {
 
 	public float[] getDirection() {
 		setOrientation();
-		mDirectionVec.setAllFrom(mForwardAxis);
+		mDirectionVec.setAll(mForwardAxis);
 		
 		if (mLookAt == null) {
 			mOrientation.toRotationMatrix(mRotationMatrix);

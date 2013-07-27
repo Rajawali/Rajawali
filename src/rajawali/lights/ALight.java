@@ -1,7 +1,7 @@
 package rajawali.lights;
 
 import rajawali.ATransformable3D;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 
 public abstract class ALight extends ATransformable3D {

@@ -6,7 +6,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -120,7 +120,7 @@ public class BoundingSphere implements IBoundingVolume {
 		if(!(boundingVolume instanceof BoundingSphere)) return false;
 		BoundingSphere boundingSphere = (BoundingSphere)boundingVolume;
 		
-		mTmpPos.setAllFrom(mPosition);
+		mTmpPos.setAll(mPosition);
 		mTmpPos.subtract(boundingSphere.getPosition());
 		
 		mDist = mTmpPos.x * mTmpPos.x + mTmpPos.y * mTmpPos.y + mTmpPos.z * mTmpPos.z;

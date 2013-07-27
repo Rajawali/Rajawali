@@ -3,8 +3,8 @@ package rajawali.visitors;
 import rajawali.BaseObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.util.Intersector;
 
 public class RayPickingVisitor implements INodeVisitor {
@@ -65,7 +65,7 @@ public class RayPickingVisitor implements INodeVisitor {
 		if (raySta.x > boxMin.x && raySta.x < boxMax.x &&
 		    raySta.y > boxMin.y && raySta.y < boxMax.y &&
 		    raySta.z > boxMin.z && raySta.z < boxMax.z) 
-		    {mHitPoint.setAllFrom(raySta); 
+		    {mHitPoint.setAll(raySta); 
 		    return true;}
 		if ( (getIntersection(raySta.x-boxMin.x, rayEnd.x-boxMin.x, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.X))
 		  || (getIntersection(raySta.y-boxMin.y, rayEnd.y-boxMin.y, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Y)) 
@@ -85,7 +85,7 @@ public class RayPickingVisitor implements INodeVisitor {
 	private boolean getIntersection( float fDst1, float fDst2, Vector3 P1, Vector3 P2) {
 		if ((fDst1 * fDst2) >= 0.0f) return false;
 		if (floatEqual(fDst1, fDst2)) return false; 
-		mHitPoint.setAllFrom(P1);
+		mHitPoint.setAll(P1);
 		mHitPoint.add(Vector3.subtractAndCreate(P2, P1));
 		mHitPoint.multiply(-fDst1/(fDst2-fDst1));
 		return true;

@@ -1,7 +1,7 @@
 package rajawali;
 
-import rajawali.math.Vector3;
 import rajawali.math.Quaternion;
+import rajawali.math.vector.Vector3;
 
 public class ChaseCamera extends Camera {
 	protected Vector3 mCameraOffset;
@@ -34,8 +34,8 @@ public class ChaseCamera extends Camera {
 	private Quaternion mTmpQuatChase=new Quaternion();
 	
 	public float[] getViewMatrix() {
-		mPosition.setAllFrom(mObjectToChase.getPosition());
-		mTmpVec.setAllFrom(mCameraOffset);
+		mPosition.setAll(mObjectToChase.getPosition());
+		mTmpVec.setAll(mCameraOffset);
 		
 		mTmpOrientation.slerpSelf(mPreviousOrientation, mObjectToChase.getOrientation(mTmpQuatChase), mSlerpFactor);
 		mTmpOrientation.toRotationMatrix(mRotMatrix);
@@ -50,7 +50,7 @@ public class ChaseCamera extends Camera {
 	}
 
 	public void setCameraOffset(Vector3 offset) {
-		mCameraOffset.setAllFrom(offset);
+		mCameraOffset.setAll(offset);
 	}
 	
 	public Vector3 getCameraOffset() {
