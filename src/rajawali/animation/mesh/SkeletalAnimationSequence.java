@@ -113,7 +113,7 @@ public class SkeletalAnimationSequence implements IAnimationSequence {
 				newJoint.copyAllFrom(thisJoint);
 				
 				newJoint.getPosition().lerpAndSet(thisJoint.getPosition(), otherJoint.getPosition(), blendFactor);
-				newJoint.getOrientation().slerpSelf(thisJoint.getOrientation(), otherJoint.getOrientation(), blendFactor);
+				newJoint.getOrientation().slerp(thisJoint.getOrientation(), otherJoint.getOrientation(), blendFactor);
 				
 				newJoints[j] = newJoint;
 			}

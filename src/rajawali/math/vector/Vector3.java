@@ -25,8 +25,8 @@ public class Vector3 {
 	public static final Vector3 Y = new Vector3(0,1,0);
 	public static final Vector3 Z = new Vector3(0,0,1);
 
-	private static final Vector3 sTemp = new Vector3(); //Scratch vector
-	private static final Object sTemp_Lock = new Object(); //Scratch vector thread lock
+	//Scratch vector. We use lazy loading here.
+	private Vector3 mTemp = null;
 
 	/**
 	 * Enumeration for the 3 component axes.
@@ -497,11 +497,10 @@ public class Vector3 {
 	public Vector3 rotateX(float angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
-		synchronized (sTemp_Lock) {
-			sTemp.setAll(x, y, z);
-			y = (float)((sTemp.y * cosRY) - (sTemp.z * sinRY));
-			z = (float)((sTemp.y * sinRY) + (sTemp.z * cosRY));
-		}
+		if (mTemp == null) mTemp = new Vector3();
+		mTemp.setAll(x, y, z);
+		y = (float)((mTemp.y * cosRY) - (mTemp.z * sinRY));
+		z = (float)((mTemp.y * sinRY) + (mTemp.z * cosRY));
 		return this;
 	}
 	
@@ -514,11 +513,10 @@ public class Vector3 {
 	public Vector3 rotateY(float angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
-		synchronized (sTemp_Lock) {
-			sTemp.setAll(x, y, z);
-			x = (float)((sTemp.x * cosRY) + (sTemp.z * sinRY));
-			z = (float)((sTemp.x * -sinRY) + (sTemp.z * cosRY));
-		}
+		if (mTemp == null) mTemp = new Vector3();
+		mTemp.setAll(x, y, z);
+		x = (float)((mTemp.x * cosRY) + (mTemp.z * sinRY));
+		z = (float)((mTemp.x * -sinRY) + (mTemp.z * cosRY));
 		return this;
 	}
 
@@ -531,11 +529,10 @@ public class Vector3 {
 	public Vector3 rotateZ(float angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
-		synchronized (sTemp_Lock) {
-			sTemp.setAll(x, y, z);
-			x = (float)((sTemp.x * cosRY) - (sTemp.y * sinRY));
-			y = (float)((sTemp.x * sinRY) + (sTemp.y * cosRY));
-		}
+		if (mTemp == null) mTemp = new Vector3();
+		mTemp.setAll(x, y, z);
+		x = (float)((mTemp.x * cosRY) - (mTemp.y * sinRY));
+		y = (float)((mTemp.x * sinRY) + (mTemp.y * cosRY));
 		return this;
 	}
 	
@@ -599,12 +596,56 @@ public class Vector3 {
 	//--------------------------------------------------
 	
 	/**
+	 * Computes the Euclidean length of the arbitrary vector components passed in.
+	 * 
+	 * @param x float The x component.
+	 * @param y float The y component.
+	 * @param z float The z component.
+	 * @return float The Euclidean length.
+	 */
+	public static float length(float x, float y, float z) {
+		return (float) Math.sqrt(length2(x, y, z));
+	}
+	
+	/**
+	 * Computes the Euclidean length of the arbitrary vector components passed in.
+	 * 
+	 * @param v {@link Vector3} The {@link Vector3} to calculate the length of.
+	 * @return float The Euclidean length.
+	 */
+	public static float length(Vector3 v) {
+		return length(v.x, v.y, v.z);
+	}
+	
+	/**
+	 * Computes the squared Euclidean length of the arbitrary vector components passed in.
+	 * 
+	 * @param v {@link Vector3} The {@link Vector3} to calculate the length of.
+	 * @return float The squared Euclidean length.
+	 */
+	public static float length2(Vector3 v) {
+		return length2(v.x, v.y, v.z);
+	}
+	
+	/**
+	 * Computes the squared Euclidean length of the arbitrary vector components passed in.
+	 * 
+	 * @param x float The x component.
+	 * @param y float The y component.
+	 * @param z float The z component.
+	 * @return float The squared Euclidean length.
+	 */
+	public static float length2(float x, float y, float z) {
+		return (x * x + y * y + z * z);
+	}
+	
+	/**
 	 * Computes the Euclidean length of this {@link Vector3};
 	 * 
 	 * @return float The Euclidean length.
 	 */
 	public float length() {
-		return (float)Math.sqrt(length2());
+		return length(this);
 	}
 	
 	/**
@@ -793,6 +834,21 @@ public class Vector3 {
 	}
 	
 	/**
+	 * Transforms this {@link Vector3} using the given {@link Quaternion}.
+	 * 
+	 * @param v {@link Vector3} The {@link Vector3} to transform.
+	 * @return {@link Vector3} The transformed {@link Vector3}. This is the same as the parameter v.
+	 */
+	public Vector3 transform(Quaternion quat) {
+		Quaternion tmp = new Quaternion(quat);
+		Quaternion tmp2 = new Quaternion(0, x, y, z);
+		tmp.conjugate();
+		tmp.multiplyLeft(tmp2.multiplyLeft(quat));
+
+		return setAll(tmp.x, tmp.y, tmp.z);
+	}
+	
+	/**
 	 * Computes the vector dot product between the two specified {@link Vector3} objects.
 	 * 
 	 * @param v1 The first {@link Vector3}.
@@ -824,6 +880,22 @@ public class Vector3 {
 	public float dot(float x, float y, float z) {
 		return (this.x * x + this.y * y + this.z *z);
 	}
+	
+	/**
+	 * Computes the vector dot product between the components of the two supplied vectors.
+	 * 
+	 * @param x1 float The x component of the first vector.
+	 * @param y1 float The y component of the first vector.
+	 * @param z1 float The z component of the first vector.
+	 * @param x2 float The x component of the second vector.
+	 * @param y2 float The y component of the second vector.
+	 * @param z2 float The z component of the second vector.
+	 * @return float The dot product.
+	 */
+	public static float dot(final float x1, final float y1, final float z1,
+			final float x2, final float y2, final float z2) {
+		return (x1 * x2 + y1 * y2 + z1 * z2);
+	}
 
 	/**
 	 * Computes the cross product between this {@link Vector3} and the specified {@link Vector3},
@@ -833,12 +905,11 @@ public class Vector3 {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 cross(Vector3 v) {
-		synchronized (sTemp_Lock) {
-			sTemp.setAll(this);
-			x = v.y * sTemp.z - v.z * sTemp.y;
-			y = v.z * sTemp.x - v.x * sTemp.z;
-			z = v.x * sTemp.y - v.y * sTemp.x;
-		}
+		if (mTemp == null) mTemp = new Vector3();
+		mTemp.setAll(this);
+		x = v.y * mTemp.z - v.z * mTemp.y;
+		y = v.z * mTemp.x - v.x * mTemp.z;
+		z = v.x * mTemp.y - v.y * mTemp.x;
 		return this;
 	}
 	
@@ -852,12 +923,11 @@ public class Vector3 {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 cross(float x, float y, float z) {
-		synchronized (sTemp_Lock) {
-			sTemp.setAll(this);
-			this.x = y * sTemp.z - z * sTemp.y;
-			this.y = z * sTemp.x - x * sTemp.z;
-			this.z = x * sTemp.y - y * sTemp.x;
-		}
+		if (mTemp == null) mTemp = new Vector3();
+		mTemp.setAll(this);
+		this.x = y * mTemp.z - z * mTemp.y;
+		this.y = z * mTemp.x - x * mTemp.z;
+		this.z = x * mTemp.y - y * mTemp.x;
 		return this;
 	}
 	
@@ -886,12 +956,13 @@ public class Vector3 {
 	}
 
 	/**
-	 * Adapted from OGRE 3D engine.
+	 * Creates a {@link Quaternion} which represents the rotation from a this {@link Vector3}
+	 * to the provided {@link Vector3}. Adapted from OGRE 3D engine.
 	 * 
 	 * @see http://ogre.sourcearchive.com/documentation/1.4.5/classOgre_1_1Vector3_eeef4472ad0c4d5f34a038a9f2faa819.html#eeef4472ad0c4d5f34a038a9f2faa819
 	 * 
-	 * @param direction
-	 * @return
+	 * @param direction {@link Vector3} The direction to rotate to.
+	 * @return {@link Quaternion} The {@link Quaternion} representing the rotation.
 	 */
 	public Quaternion getRotationTo(Vector3 direction) {
 		// Based on Stan Melax's article in Game Programming Gems

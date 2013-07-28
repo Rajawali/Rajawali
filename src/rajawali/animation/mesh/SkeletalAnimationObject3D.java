@@ -168,7 +168,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			SkeletonJoint toJoint = nextFrame.getSkeleton().getJoint(i);
 			joint.setParentIndex(fromJoint.getParentIndex());
 			joint.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), (float)mInterpolation);
-			joint.getOrientation().slerpSelf(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
+			joint.getOrientation().slerp(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
 			
 			if(isTransitioning)
 			{
@@ -178,11 +178,11 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				fromJoint = currentTransFrame.getSkeleton().getJoint(i);
 				toJoint = nextTransFrame.getSkeleton().getJoint(i);
 				mTmpJoint1.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), (float)mInterpolation);
-				mTmpJoint1.getOrientation().slerpSelf(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
+				mTmpJoint1.getOrientation().slerp(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
 
 				// blend the two animations
 				mTmpJoint2.getPosition().lerpAndSet(joint.getPosition(), mTmpJoint1.getPosition(), transitionInterpolation);
-				mTmpJoint2.getOrientation().slerpSelf(joint.getOrientation(), mTmpJoint1.getOrientation(), transitionInterpolation);
+				mTmpJoint2.getOrientation().slerp(joint.getOrientation(), mTmpJoint1.getOrientation(), transitionInterpolation);
 				
 				joint.getPosition().setAll(mTmpJoint2.getPosition());
 				joint.getOrientation().setAll(mTmpJoint2.getOrientation());
