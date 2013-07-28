@@ -3,23 +3,16 @@
  */
 package rajawali.renderer.plugins;
 
-import java.nio.ByteBuffer;
 import java.util.Stack;
 
-import android.graphics.Bitmap.Config;
-import android.opengl.GLES20;
-
 import rajawali.Camera;
-import rajawali.materials.TextureInfo;
-import rajawali.materials.TextureManager.FilterType;
-import rajawali.materials.TextureManager.TextureType;
-import rajawali.materials.TextureManager.WrapType;
-import rajawali.math.Number3D;
-import rajawali.math.Vector2D;
-import rajawali.renderer.RajawaliRenderer;
-import rajawali.util.RajLog;
 import rajawali.extras.LensFlare;
 import rajawali.extras.LensFlare.FlareInfo;
+import rajawali.materials.textures.ASingleTexture;
+import rajawali.math.vector.Vector2;
+import rajawali.math.vector.Vector3;
+import rajawali.renderer.RajawaliRenderer;
+import android.opengl.GLES20;
 
 
 /**
@@ -200,8 +193,8 @@ public final class LensFlarePlugin extends Plugin {
 	private int muOcclusionMapTextureHandle;
 	private int muDebugModeHandle; // UNCOMMENT TO USE DEBUG MODE
 	
-	private TextureInfo mMapTexture;
-	private TextureInfo mOcclusionMapTexture;
+	private ASingleTexture mMapTexture;
+	private ASingleTexture mOcclusionMapTexture;
 	
 	public LensFlarePlugin(RajawaliRenderer renderer) {
 		super(renderer);
@@ -258,10 +251,14 @@ public final class LensFlarePlugin extends Plugin {
         // Set geometry data.
         setData(vertices, normals, textureCoords, colors, indices);
         
+        // TODO: deal with this
+        /*
         // Set up lookup textures.
+        mMapTexture = new TextureConfig(TextureType.LOOKUP);
+        mMapTexture.setBuffers(new ByteBuffer[0]);
         mMapTexture = mRenderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.RGB_565, false, false, WrapType.CLAMP, FilterType.NEAREST);
         mOcclusionMapTexture = mRenderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.ARGB_8888, false, false, WrapType.CLAMP, FilterType.NEAREST);
-        
+        */
         // Set up shader program.
         // Currently vertex texture shader causes problems on Adreno 320 GPUs.
         //if (mVertexTextureSupported) {
@@ -290,10 +287,10 @@ public final class LensFlarePlugin extends Plugin {
 		float viewportWidth = mRenderer.getViewportWidth(), viewportHeight = mRenderer.getViewportHeight();
 		float invAspect = viewportHeight / viewportWidth;
 		float size;
-		Vector2D scale = new Vector2D();
+		Vector2 scale = new Vector2();
 		float halfViewportWidth = viewportWidth / 2;
 		float halfViewportHeight = viewportHeight / 2;
-		Number3D screenPosition = new Number3D();
+		Vector3 screenPosition = new Vector3();
 		float screenPositionPixels_x, screenPositionPixels_y;
 		Camera camera = mRenderer.getCurrentScene().getCamera();
 		float[] viewMatrix = camera.getViewMatrix().clone(), projMatrix = camera.getProjectionMatrix().clone();
@@ -322,21 +319,21 @@ public final class LensFlarePlugin extends Plugin {
 		GLES20.glDepthMask(false);
 		
 		// Calculate camera direction vector.
-		Number3D cameraPosition = camera.getPosition().clone();
-		Number3D cameraLookAt = camera.getLookAt() != null ? camera.getLookAt().clone() : new Number3D(0, 0, 1);
-		Number3D cameraDirection = cameraLookAt.clone().subtract(cameraPosition);
+		Vector3 cameraPosition = camera.getPosition().clone();
+		Vector3 cameraLookAt = camera.getLookAt() != null ? camera.getLookAt().clone() : new Vector3(0, 0, 1);
+		Vector3 cameraDirection = cameraLookAt.clone().subtract(cameraPosition);
 		cameraDirection.normalize();
 		
 		synchronized (mLensFlares) {
 			for (i = 0; i < numLensFlares; i++) {
 				size = 16 / viewportHeight;
-				scale.x = size * invAspect;
-				scale.y = size;
+				scale.setX(size * invAspect);
+				scale.setY(size);
 				
 				LensFlare lensFlare = mLensFlares.get(i);
 				
 				// Calculate normalized device coordinates.
-				screenPosition.setAllFrom(lensFlare.getPosition().clone());
+				screenPosition.setAll(lensFlare.getPosition().clone());
 				screenPosition.multiply(viewMatrix);
 				screenPosition.project(projMatrix);
 				
@@ -345,7 +342,7 @@ public final class LensFlarePlugin extends Plugin {
 				screenPositionPixels_y = screenPosition.y * halfViewportHeight + halfViewportHeight;
 				
 				// Calculate the angle between the camera and the light vector.
-				Number3D lightToCamDirection = lensFlare.getPosition().clone().subtract(cameraPosition);
+				Vector3 lightToCamDirection = lensFlare.getPosition().clone().subtract(cameraPosition);
 				lightToCamDirection.normalize();
 				float angleLightCamera = lightToCamDirection.dot(cameraDirection);
 				
@@ -362,7 +359,7 @@ public final class LensFlarePlugin extends Plugin {
 					
 					// First render pass.
 					GLES20.glUniform1i(muRenderTypeHandle, 1);
-					GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.x, scale.y }, 0);
+					GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.getX(), scale.getY() }, 0);
 					GLES20.glUniform3fv(muScreenPositionHandle, 1, new float[] { screenPosition.x, screenPosition.y, screenPosition.z }, 0);
 					
 					GLES20.glDisable(GLES20.GL_BLEND);
@@ -426,16 +423,16 @@ public final class LensFlarePlugin extends Plugin {
 						FlareInfo sprite = lensFlare.getLensFlares().get(f);
 						// Don't bother rendering if the sprite's too transparent or too small.
 						if (sprite.getOpacity() > 0.001f && sprite.getScale() > 0.001f) {
-							screenPosition.setAllFrom(sprite.getScreenPosition());
+							screenPosition.setAll(sprite.getScreenPosition());
 							
 							// Calculate pixel size to normalized size
 							size = sprite.getSize() * sprite.getScale() / viewportHeight;
 							
-							scale.x = size * invAspect;
-							scale.y = size;
+							scale.setX(size * invAspect);
+							scale.setY(size);
 							
 							GLES20.glUniform3fv(muScreenPositionHandle, 1, new float[] { screenPosition.x, screenPosition.y, screenPosition.z }, 0);
-							GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.x, scale.y }, 0);
+							GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.getX(), scale.getY() }, 0);
 							GLES20.glUniform1f(muRotationHandle, sprite.getRotation());
 							
 							GLES20.glUniform1f(muOpacityHandle, sprite.getOpacity());

@@ -6,8 +6,14 @@ varying vec4 V;
 varying vec4 vColor;
  
 uniform sampler2D uDiffuseTexture;
+#ifdef ALPHA_MASK
+	uniform sampler2D uAlphaTexture;
+	uniform float uAlphaMaskingThreshold;
+#endif
 uniform vec4 uAmbientColor;
 uniform vec4 uAmbientIntensity;
+uniform float uColorBlendFactor
+;
 
 %FOG_FRAGMENT_VARS%
 %LIGHT_VARS%
@@ -20,9 +26,24 @@ void main() {
    vec3 Kd = vec3(0.0);
    vec3 L = vec3(0.0);
 #ifdef TEXTURED
-   gl_FragColor = texture2D(uDiffuseTexture, vTextureCoord);
+   	vec4 color = texture2D(uDiffuseTexture, vTextureCoord);
+   	#ifdef USE_COLOR
+	color *= (1.0 - uColorBlendFactor); 
+	color += vColor * uColorBlendFactor;
+	#endif
+	gl_FragColor = color;
 #else
    gl_FragColor = vColor;
+#endif
+
+#ifdef ALPHA_MAP
+	color.a = texture2D(uAlphaTexture, vTextureCoord).r;
+#endif
+
+#ifdef ALPHA_MASK
+	if(color.a < uAlphaMaskingThreshold){
+		discard;	
+	}
 #endif
 
 %LIGHT_CODE%

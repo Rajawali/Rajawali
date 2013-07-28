@@ -10,8 +10,8 @@
  */
 package rajawali.filters;
 
-import android.opengl.GLES20;
 import rajawali.materials.AMaterial;
+import android.opengl.GLES20;
 
 public class BlurFilter extends AMaterial implements IPostProcessingFilter {
 	public enum Orientation {
@@ -110,7 +110,7 @@ public class BlurFilter extends AMaterial implements IPostProcessingFilter {
 	protected Orientation mOrientation;
 	
 	public BlurFilter(float screenWidth, float screenHeight, int blurAmount, float blurScale, float blurStrength, Orientation orientation) {
-		super(mVShader, mFShader, false);
+		super(mVShader, mFShader);
 		this.mScreenWidth = screenWidth;
 		this.mScreenHeight = screenHeight;
 		this.mBlurAmount = blurAmount;

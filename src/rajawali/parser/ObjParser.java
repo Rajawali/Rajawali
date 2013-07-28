@@ -13,11 +13,15 @@ import java.util.StringTokenizer;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.AMaterial;
-import rajawali.materials.BumpmapMaterial;
 import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.NormalMapMaterial;
+import rajawali.materials.NormalMapPhongMaterial;
 import rajawali.materials.PhongMaterial;
-import rajawali.materials.TextureManager;
-import rajawali.materials.TextureManager.TextureType;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.NormalMapTexture;
+import rajawali.materials.textures.SpecularMapTexture;
+import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import rajawali.wallpaper.Wallpaper;
@@ -78,6 +82,10 @@ public class ObjParser extends AMeshParser {
 	
     public ObjParser(RajawaliRenderer renderer, String fileOnSDCard) {
     	super(renderer, fileOnSDCard);
+    }
+    
+    public ObjParser(RajawaliRenderer renderer, int resourceId) {
+    	this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
     }
     
 	public ObjParser(Resources resources, TextureManager textureManager, int resourceId) {
@@ -199,12 +207,25 @@ public class ObjParser extends AMeshParser {
                     normals.add(Float.parseFloat(parts.nextToken()));
 				} else if(type.equals(OBJECT) || type.equals(GROUP)) {
 					String objName = parts.hasMoreTokens() ? parts.nextToken() : "Object" + (int)(Math.random() * 10000);
-					Log.d(Wallpaper.TAG, "Parsing object: " + objName);
-					if(currObjIndexData.targetObj.getName() != null)
-						currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
-					else
-						currObjIndexData.targetObj.setName(objName);
-					objIndices.add(currObjIndexData);
+					
+					if(type.equals(OBJECT))
+					{
+						RajLog.i("Parsing object: " + objName);
+						if(currObjIndexData.targetObj.getName() != null)
+							currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
+						else
+							currObjIndexData.targetObj.setName(objName);
+						objIndices.add(currObjIndexData);
+					} else if(type.equals(GROUP)) {
+						RajLog.i("Parsing group: " + objName);
+						BaseObject3D group = mRootObject.getChildByName(objName);
+						if(group == null)
+						{
+							group = new BaseObject3D(objName);
+							mRootObject.addChild(group);
+						}
+						group.addChild(currObjIndexData.targetObj);
+					}
 				} else if(type.equals(MATERIAL_LIB)) {
 					if(!parts.hasMoreTokens()) continue;
 					String materialLibPath = parts.nextToken().replace(".", "_");
@@ -280,11 +301,16 @@ public class ObjParser extends AMeshParser {
 			}
 			
 			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
-			matLib.setMaterial(oid.targetObj, oid.materialName);
-			mRootObject.addChild(oid.targetObj);
+			try {
+				matLib.setMaterial(oid.targetObj, oid.materialName);
+			} catch(TextureException tme) {
+				throw new ParsingException(tme);
+			}
+			if(oid.targetObj.getParent() == null)
+				mRootObject.addChild(oid.targetObj);
 		}
 		
-		if(mRootObject.getNumChildren() == 1)
+		if(mRootObject.getNumChildren() == 1 && !mRootObject.getChildAt(0).isContainer())
 			mRootObject = mRootObject.getChildAt(0);
 		
 		return this;
@@ -394,7 +420,7 @@ public class ObjParser extends AMeshParser {
 					} else if(type.equals(SPECULAR_COLOR_TEXTURE)) {
 						matDef.specularColorTexture = parts.nextToken();
 					} else if(type.equals(SPECULAR_HIGHLIGHT_TEXTURE)) {
-						matDef.specularHightlightTexture = parts.nextToken();
+						matDef.specularHighlightTexture = parts.nextToken();
 					} else if(type.equals(ALPHA_TEXTURE_1) || type.equals(ALPHA_TEXTURE_2)) {
 						matDef.alphaTexture = parts.nextToken();
 					} else if(type.equals(BUMP_TEXTURE)) {
@@ -408,7 +434,7 @@ public class ObjParser extends AMeshParser {
 			}
 		}
 		
-		public void setMaterial(BaseObject3D object, String materialName) {
+		public void setMaterial(BaseObject3D object, String materialName) throws TextureException {
 			MaterialDef matDef = null;
 			
 			for(int i=0; i<mMaterials.size(); ++i) {
@@ -421,54 +447,54 @@ public class ObjParser extends AMeshParser {
 
 			boolean hasTexture = matDef != null && matDef.diffuseTexture != null;
 			boolean hasBump = matDef != null && matDef.bumpTexture != null;
+			boolean hasSpecularTexture = matDef != null && matDef.specularColorTexture != null;
 			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000 && matDef.specularCoefficient > 0;
 			
 			AMaterial mat = null;
 			
 			if(hasSpecular && !hasBump)
 				mat = new PhongMaterial();
-			else if(hasBump)
-				mat = new BumpmapMaterial();
+			else if(hasBump && !hasSpecularTexture)
+				mat = new NormalMapMaterial();
+			else if(hasBump && hasSpecularTexture)
+				mat = new NormalMapPhongMaterial();
 			else
 				mat = new DiffuseMaterial();
 
-			mat.setUseColor(!hasTexture);
-			object.setColor(matDef != null ? matDef.diffuseColor : (0xff000000 + ((int)(Math.random() * 0xffffff))));
+			mat.setUseSingleColor(!hasTexture);
 			object.setMaterial(mat);
-			if(hasSpecular && !hasBump) {
+			object.setColor(matDef != null ? matDef.diffuseColor : (0xff000000 + ((int)(Math.random() * 0xffffff))));
+			if(hasSpecular || hasSpecularTexture) {
 				PhongMaterial phong = (PhongMaterial)mat;
 				phong.setSpecularColor(matDef.specularColor);
 				phong.setShininess(matDef.specularCoefficient);
 			}
 			
-			if(hasTexture) {
+			if(hasTexture) {RajLog.i("hastex " + object.getName() + ", " + matDef.diffuseTexture);
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.diffuseTexture), "drawable", mResourcePackage);
-					object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier)));
+					mat.addTexture(new Texture(identifier));
 				} else {
-					try {
-						String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
-						object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeFile(filePath), TextureType.BUMP));
-					} catch (Exception e) {
-						RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + matDef.diffuseTexture);
-						e.printStackTrace();
-						return;
-					}
+					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
+					mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), BitmapFactory.decodeFile(filePath)));
 				}
 			}
 			if(hasBump) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.bumpTexture), "drawable", mResourcePackage);
-					object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeResource(mResources, identifier), TextureType.BUMP));
+					mat.addTexture(new NormalMapTexture(identifier));
 				} else {
-					try {
-						String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
-						object.addTexture(mTextureManager.addTexture(BitmapFactory.decodeFile(filePath), TextureType.BUMP));
-					} catch (Exception e) {
-						RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + matDef.bumpTexture);
-						e.printStackTrace();
-						return;
-					}
+					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
+					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture), BitmapFactory.decodeFile(filePath)));
+				}
+			}
+			if(hasSpecularTexture) {
+				if(mFile == null) {
+					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.specularColorTexture), "drawable", mResourcePackage);
+					mat.addTexture(new SpecularMapTexture(identifier));
+				} else {
+					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.specularColorTexture);
+					mat.addTexture(new SpecularMapTexture(getOnlyFileName(matDef.specularColorTexture), BitmapFactory.decodeFile(filePath)));
 				}
 			}
 		}

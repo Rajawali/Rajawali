@@ -9,7 +9,7 @@ public class OrthographicCamera extends Camera
 	
 	public OrthographicCamera()
 	{
-		setZ(-4.0f);
+		setZ(4.0f);
 	}
 	
 	public void setProjectionMatrix(int width, int height) 

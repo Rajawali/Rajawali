@@ -4,7 +4,7 @@ import java.nio.FloatBuffer;
 
 import com.monyetmabuk.livewallpapers.photosdof.R;
 
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 import android.opengl.GLES20;
 
 
@@ -43,7 +43,7 @@ public class ParticleMaterial extends AParticleMaterial {
 	}
 
 	public ParticleMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		super(vertexShader, fragmentShader, NONE);
+		super(vertexShader, fragmentShader);
 		mDistanceAtt = new float[] {1, 1, 1};
 		mFriction = new float[3];
 		mCamPos = new float[3];
@@ -84,7 +84,7 @@ public class ParticleMaterial extends AParticleMaterial {
 				0, 0);
     }
 	
-	public void setFriction(Number3D friction) {
+	public void setFriction(Vector3 friction) {
 		mFriction[0] = friction.x; mFriction[1] = friction.y; mFriction[2] = friction.z;
 	}
 	
@@ -127,7 +127,7 @@ public class ParticleMaterial extends AParticleMaterial {
 		mNumTileRows = numTileRows;
 	}
 	
-	public void setCameraPosition(Number3D cameraPos) {
+	public void setCameraPosition(Vector3 cameraPos) {
 		mCamPos[0] = cameraPos.x; mCamPos[1] = cameraPos.y; mCamPos[2] = cameraPos.z;
 	}
 }

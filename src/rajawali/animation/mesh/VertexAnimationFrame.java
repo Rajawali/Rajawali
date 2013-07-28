@@ -1,7 +1,7 @@
 package rajawali.animation.mesh;
 
 import rajawali.Geometry3D;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 
 public class VertexAnimationFrame implements IAnimationFrame {
 	protected Geometry3D mGeometry;
@@ -37,10 +37,10 @@ public class VertexAnimationFrame implements IAnimationFrame {
 		int numIndices = indices.length;
 		int numVertices = vertices.length;
 		int id1, id2, id3, vid1, vid2, vid3;
-		Number3D v1 = new Number3D();
-		Number3D v2 = new Number3D();
-		Number3D v3 = new Number3D();
-		Number3D normal = new Number3D();
+		Vector3 v1 = new Vector3();
+		Vector3 v2 = new Vector3();
+		Vector3 v3 = new Vector3();
+		Vector3 normal = new Vector3();
 		
 		// -- calculate face normals
 		for(int i=0; i<numIndices; i+=3) {
@@ -56,10 +56,10 @@ public class VertexAnimationFrame implements IAnimationFrame {
 			v2.setAll(vertices[vid2], vertices[vid2+1], vertices[vid2+2]);
 			v3.setAll(vertices[vid3], vertices[vid3+1], vertices[vid3+2]);
 			
-			Number3D vector1 = Number3D.subtract(v2, v1);
-            Number3D vector2 = Number3D.subtract(v3, v1);
+			Vector3 vector1 = Vector3.subtractAndCreate(v2, v1);
+            Vector3 vector2 = Vector3.subtractAndCreate(v3, v1);
             
-            normal = Number3D.cross(vector1, vector2);
+            normal = Vector3.crossAndCreate(vector1, vector2);
             normal.normalize();
             
             faceNormals[i] = normal.x;
@@ -69,7 +69,7 @@ public class VertexAnimationFrame implements IAnimationFrame {
 		}
 		// -- calculate vertex normals
 		
-		Number3D vertexNormal = new Number3D();
+		Vector3 vertexNormal = new Vector3();
 		
 		for(int i=0; i<numVertices; i+=3) {
 			int vIndex = i / 3;

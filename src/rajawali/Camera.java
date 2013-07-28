@@ -2,9 +2,9 @@ package rajawali;
 
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.MathUtil;
-import rajawali.math.Number3D;
-import rajawali.math.Number3D.Axis;
 import rajawali.math.Quaternion;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.renderer.AFrameTask;
 import android.opengl.Matrix;
 
@@ -24,7 +24,7 @@ public class Camera extends ATransformable3D {
 	protected float mFieldOfView = 45;
 	protected int mLastWidth;
 	protected int mLastHeight;
-	protected Number3D mUpAxis;
+	protected Vector3 mUpAxis;
 	protected boolean mUseRotationMatrix = false;
 	protected float[] mRotateMatrixTmp = new float[16];
 	protected float[] mTmpMatrix = new float[16];
@@ -32,9 +32,9 @@ public class Camera extends ATransformable3D {
 	public Frustum mFrustum;
 	
 	// Camera's localized vectors
-	protected Number3D mRightVector;
-	protected Number3D mUpVector;
-	protected Number3D mLookVector;
+	protected Vector3 mRightVector;
+	protected Vector3 mUpVector;
+	protected Vector3 mLookVector;
 	protected Quaternion mLocalOrientation;
 	/**
 	 * End guarded members
@@ -48,7 +48,7 @@ public class Camera extends ATransformable3D {
 	public Camera() {
 		super();
 		mLocalOrientation = Quaternion.getIdentity();
-		mUpAxis = new Number3D(0, 1, 0);
+		mUpAxis = new Vector3(0, 1, 0);
 		mIsCamera = true;
 		mFrustum = new Frustum();
 	}
@@ -68,7 +68,8 @@ public class Camera extends ATransformable3D {
 					setOrientation();
 					mRotationDirty = false;
 				}
-				mOrientation.toRotationMatrix(mRotationMatrix);
+				if(mUseRotationMatrix == false)
+					mOrientation.toRotationMatrix(mRotationMatrix);
 				Matrix.setIdentityM(mTmpMatrix, 0);
 				Matrix.setIdentityM(mVMatrix, 0);
 				Matrix.translateM(mTmpMatrix, 0, -mPosition.x, -mPosition.y, -mPosition.z);
@@ -82,7 +83,7 @@ public class Camera extends ATransformable3D {
 		synchronized (mFrustumLock) {
 			Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
 			Matrix.invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
-			mFrustum.update(mCombinedMatrix);
+			mFrustum.update(mTmpMatrix);
 		}
 	}
 
@@ -101,6 +102,13 @@ public class Camera extends ATransformable3D {
 			mRotationMatrix = m;
 		}
 	}
+	
+	public float[] getRotationMatrix()
+	{
+		synchronized (mFrustumLock) {
+			return mRotationMatrix;
+		}
+	}
 
 	public void setProjectionMatrix(int width, int height) {
 		synchronized (mFrustumLock) {
@@ -115,6 +123,14 @@ public class Camera extends ATransformable3D {
 					frustumH, getNearPlane(), getFarPlane());
 		}
 	}
+	
+	public void setProjectionMatrix(float fieldOfView, int width, int height)
+	{
+		synchronized (mFrustumLock) {
+			mFieldOfView = fieldOfView;
+			setProjectionMatrix(width, height);
+		}		
+	}
 
     public void setUpAxis(float x, float y, float z) {
     	synchronized (mFrustumLock) {
@@ -122,9 +138,9 @@ public class Camera extends ATransformable3D {
     	}
     }
     
-    public void setUpAxis(Number3D upAxis) {
+    public void setUpAxis(Vector3 upAxis) {
     	synchronized (mFrustumLock) {
-    		mUpAxis.setAllFrom(upAxis);
+    		mUpAxis.setAll(upAxis);
     	}
     }
     

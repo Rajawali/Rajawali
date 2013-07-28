@@ -1,51 +1,59 @@
 package rajawali;
 
-import rajawali.math.Number3D;
 import rajawali.math.Quaternion;
+import rajawali.math.vector.Vector3;
 
 public class ChaseCamera extends Camera {
-	protected Number3D mCameraOffset;
+	protected Vector3 mCameraOffset;
 	protected BaseObject3D mObjectToChase;
-	protected Number3D mUpVector;
 	protected float mSlerpFactor = .1f;
-	protected Quaternion mTmpOr;
+	protected float[] mRotMatrix;
+	protected Vector3 mTmpVec;
+	protected Quaternion mTmpOrientation;
+	protected Quaternion mPreviousOrientation;
 	
 	public ChaseCamera() {
-		this(new Number3D(0, 3, 16), .1f, null);
+		this(new Vector3(0, 3, 16), .1f, null);
 	}
 	
-	public ChaseCamera(Number3D cameraOffset, float slerpFactor) {
+	public ChaseCamera(Vector3 cameraOffset, float slerpFactor) {
 		this(cameraOffset, .1f, null);
 	}
 
-	public ChaseCamera(Number3D cameraOffset, float slerpFactor, BaseObject3D objectToChase) {
+	public ChaseCamera(Vector3 cameraOffset, float slerpFactor, BaseObject3D objectToChase) {
 		super();
-		mTmpOr = new Quaternion();
-		mUpVector = Number3D.getUpVector();
+		mTmpOrientation = new Quaternion();
+		mPreviousOrientation = new Quaternion();
+		mTmpVec = new Vector3();
 		mCameraOffset = cameraOffset;
 		mObjectToChase = objectToChase;
 		mSlerpFactor = slerpFactor;
+		mRotMatrix = new float[16];
 	}
 	
+	private Quaternion mTmpQuatChase=new Quaternion();
+	
 	public float[] getViewMatrix() {
-		mRotationDirty = false;
-		mPosition.setAllFrom(mCameraOffset);
-
-		mTmpOr.setAllFrom(mObjectToChase.getOrientation());
-		mPosition.setAllFrom(mTmpOr.multiply(mCameraOffset));
-		mPosition.add(mObjectToChase.getPosition());
-		mTmpOr.inverseSelf();
-		mOrientation.setAllFrom(Quaternion.slerp(mSlerpFactor, mOrientation, mTmpOr, true));
-		mOrientation.toRotationMatrix(mRotationMatrix);
+		mPosition.setAll(mObjectToChase.getPosition());
+		mTmpVec.setAll(mCameraOffset);
+		
+		mTmpOrientation.slerpSelf(mPreviousOrientation, mObjectToChase.getOrientation(mTmpQuatChase), mSlerpFactor);
+		mTmpOrientation.toRotationMatrix(mRotMatrix);
+		mTmpVec.multiply(mRotMatrix);
+		
+		mPosition.add(mTmpVec);
+		setLookAt(mObjectToChase.getPosition());
+		
+		mPreviousOrientation.setAllFrom(mTmpOrientation);
 		
 		return super.getViewMatrix();
 	}
 
-	public void setCameraOffset(Number3D offset) {
-		mCameraOffset.setAllFrom(offset);
+	public void setCameraOffset(Vector3 offset) {
+		mCameraOffset.setAll(offset);
 	}
 	
-	public Number3D getCameraOffset() {
+	public Vector3 getCameraOffset() {
 		return mCameraOffset;
 	}
 	

@@ -3,20 +3,20 @@ package rajawali.visitors;
 import rajawali.BaseObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
-import rajawali.math.Number3D;
-import rajawali.math.Number3D.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.util.Intersector;
 
 public class RayPickingVisitor implements INodeVisitor {
-	private Number3D mRayStart;
-	private Number3D mRayEnd;
-	private Number3D mHitPoint;
+	private Vector3 mRayStart;
+	private Vector3 mRayEnd;
+	private Vector3 mHitPoint;
 	private BaseObject3D mPickedObject;
 	
-	public RayPickingVisitor(Number3D rayStart, Number3D rayEnd) {
+	public RayPickingVisitor(Vector3 rayStart, Vector3 rayEnd) {
 		mRayStart = rayStart;
 		mRayEnd = rayEnd;
-		mHitPoint = new Number3D();
+		mHitPoint = new Vector3();
 	}
 	
 	public void apply(INode node) {
@@ -51,10 +51,10 @@ public class RayPickingVisitor implements INodeVisitor {
 	}
 	
 	private boolean intersectsWith(BoundingBox bbox) {
-		Number3D raySta = mRayStart;
-		Number3D rayEnd = mRayEnd;
-		Number3D boxMin = bbox.getTransformedMin();
-		Number3D boxMax = bbox.getTransformedMax();
+		Vector3 raySta = mRayStart;
+		Vector3 rayEnd = mRayEnd;
+		Vector3 boxMin = bbox.getTransformedMin();
+		Vector3 boxMax = bbox.getTransformedMax();
 
 		if (rayEnd.x < boxMin.x && raySta.x < boxMin.x) return false;
 		if (rayEnd.x > boxMax.x && raySta.x > boxMax.x) return false;
@@ -65,7 +65,7 @@ public class RayPickingVisitor implements INodeVisitor {
 		if (raySta.x > boxMin.x && raySta.x < boxMax.x &&
 		    raySta.y > boxMin.y && raySta.y < boxMax.y &&
 		    raySta.z > boxMin.z && raySta.z < boxMax.z) 
-		    {mHitPoint.setAllFrom(raySta); 
+		    {mHitPoint.setAll(raySta); 
 		    return true;}
 		if ( (getIntersection(raySta.x-boxMin.x, rayEnd.x-boxMin.x, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.X))
 		  || (getIntersection(raySta.y-boxMin.y, rayEnd.y-boxMin.y, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Y)) 
@@ -82,11 +82,11 @@ public class RayPickingVisitor implements INodeVisitor {
 		return Intersector.intersectRaySphere(mRayStart, mRayEnd, bsphere.getPosition(), bsphere.getRadius(), mHitPoint);
 	}
 	
-	private boolean getIntersection( float fDst1, float fDst2, Number3D P1, Number3D P2) {
+	private boolean getIntersection( float fDst1, float fDst2, Vector3 P1, Vector3 P2) {
 		if ((fDst1 * fDst2) >= 0.0f) return false;
 		if (floatEqual(fDst1, fDst2)) return false; 
-		mHitPoint.setAllFrom(P1);
-		mHitPoint.add(Number3D.subtract(P2, P1));
+		mHitPoint.setAll(P1);
+		mHitPoint.add(Vector3.subtractAndCreate(P2, P1));
 		mHitPoint.multiply(-fDst1/(fDst2-fDst1));
 		return true;
 	}
@@ -95,7 +95,7 @@ public class RayPickingVisitor implements INodeVisitor {
 		return (float)Math.abs(lhs - rhs) < .00001f;
 	}
 
-	private boolean isInBox(Number3D boxMin, Number3D boxMax, Axis axis) {
+	private boolean isInBox(Vector3 boxMin, Vector3 boxMax, Axis axis) {
 		if ( axis==Axis.X && mHitPoint.z > boxMin.z && mHitPoint.z < boxMax.z && mHitPoint.y > boxMin.y && mHitPoint.y < boxMax.y) return true;
 		if ( axis==Axis.Y && mHitPoint.z > boxMin.z && mHitPoint.z < boxMax.z && mHitPoint.x > boxMin.x && mHitPoint.x < boxMax.x) return true;
 		if ( axis==Axis.Z && mHitPoint.x > boxMin.x && mHitPoint.x < boxMax.x && mHitPoint.y > boxMin.y && mHitPoint.y < boxMax.y) return true;

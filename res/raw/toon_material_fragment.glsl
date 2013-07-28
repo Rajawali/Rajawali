@@ -3,7 +3,6 @@ precision mediump float;
 varying vec2 vTextureCoord;
 varying vec3 N;
 varying vec4 V;
-varying vec4 vColor;
     
 uniform sampler2D uDiffuseTexture;
 uniform vec4 uAmbientColor;
@@ -23,11 +22,7 @@ void main() {
 
 %LIGHT_CODE%
 
-#ifndef TEXTURED
-   vec4 color = vColor;
-#else
    vec4 color = vec4(1.0);
-#endif
    if(intensity > .95) color = uToonColor0;
    else if(intensity > .5) color = uToonColor1;
    else if(intensity > .25) color = uToonColor2;

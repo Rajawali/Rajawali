@@ -16,7 +16,7 @@ public abstract class AFrameTask {
 	
 	/**
 	 * Which task needs to be performed. Can be one of 
-	 * NONE, ADD, REMOVE, REMOVE_ALL or REPLACE.
+	 * NONE, ADD, REMOVE, REMOVE_ALL, REPLACE, RESET, RELOAD or INITIALIZE.
 	 * 
 	 * <p>NONE - Do nothing. <br>
 	 * ADD - Adds an object to the related list. If an 
@@ -28,14 +28,18 @@ public abstract class AFrameTask {
 	 * REMOVE_ALL - Removes all objects from the related list, or
 	 * if a collection is specified, all the matching objects.<br>
 	 * REPLACE - Replaces an object in the related list 
-	 * at the specified index.</p>
+	 * at the specified index.<br>
+	 * RESET - Resets objects to their initial state.<br>
+	 * RELOAD - Reloads objects.<br>
+	 * INITIALIZE - Initializes objects.<br>
+	 * </p>
 	 */
-	public enum TASK {NONE, ADD, ADD_ALL, REMOVE, REMOVE_ALL, REPLACE};
+	public enum TASK {NONE, ADD, ADD_ALL, REMOVE, REMOVE_ALL, REPLACE, RESET, RELOAD, INITIALIZE};
 	
 	/**
 	 * The type of object this task is acting on.
 	 */
-	public enum TYPE {ANIMATION, CAMERA, LIGHT, OBJECT3D, PLUGIN, TEXTURE, SCENE};
+	public enum TYPE {ANIMATION, CAMERA, LIGHT, OBJECT3D, PLUGIN, TEXTURE, SCENE, TEXTURE_MANAGER, COLOR_PICKER, MATERIAL, MATERIAL_MANAGER};
 	
 	private AFrameTask.TASK mFrameTask = AFrameTask.TASK.NONE; //The task to perform
 	private int mFrameTaskIndex = UNUSED_INDEX; //The index to replace, if relevant

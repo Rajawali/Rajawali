@@ -7,23 +7,12 @@ import com.monyetmabuk.livewallpapers.photosdof.R;
 public class DiffuseMaterial extends AAdvancedMaterial {
 	
 	public DiffuseMaterial() {
-		this(false);
+		this(R.raw.diffuse_material_vertex, R.raw.diffuse_material_fragment);
 	}
 	
-	public DiffuseMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		super(vertexShader, fragmentShader, isAnimated);
-	}
-	
-	public DiffuseMaterial(int vertex_resID, int fragment_resID, boolean isAnimated) {
-		super(vertex_resID, fragment_resID, isAnimated);
-	}
-	
-	public DiffuseMaterial(boolean isAnimated) {
-		this(R.raw.diffuse_material_vertex, R.raw.diffuse_material_fragment, isAnimated);
-	}
-	
-	public DiffuseMaterial(int parameters) {
-		super(R.raw.diffuse_material_vertex, R.raw.diffuse_material_fragment, parameters);
+	public DiffuseMaterial(int vertex_resID, int fragment_resID)
+	{
+		super(vertex_resID, fragment_resID);
 	}
 	
 	public DiffuseMaterial(String vertexShader, String fragmentShader) {
@@ -43,7 +32,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 				fc.append("L = normalize(uLightPosition").append(i).append(" - V.xyz);\n");
 			} else if(light.getLightType() == ALight.SPOT_LIGHT) {
 				vc.append("dist = distance(V.xyz, uLightPosition").append(i).append(");\n");
-				vc.append("vAttenuation").append(i).append(" = (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
+				vc.append("vAttenuation").append(i).append(" = 1.0 / (uLightAttenuation").append(i).append("[1] + uLightAttenuation").append(i).append("[2] * dist + uLightAttenuation").append(i).append("[3] * dist * dist);\n");
 				fc.append("L = normalize(uLightPosition").append(i).append(" - V.xyz);\n");
 				fc.append("vec3 spotDir").append(i).append(" = normalize(-uLightDirection").append(i).append(");\n");
 				fc.append("float spot_factor").append(i).append(" = dot( L, spotDir").append(i).append(" );\n");
@@ -55,7 +44,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 					fc.append("else {\n");
 						fc.append("spot_factor").append(i).append(" = 0.0;\n");
 					fc.append("}\n");
-					fc.append("L = vec3(L.y, L.x, L.z);\n");
+					fc.append("L = vec3(L.x, L.y, L.z) * spot_factor").append(i).append(";\n");
 					fc.append("}\n");
 			} else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("vAttenuation").append(i).append(" = 1.0;\n");
@@ -66,10 +55,7 @@ public class DiffuseMaterial extends AAdvancedMaterial {
 			fc.append("power = uLightPower").append(i).append(" * NdotL * vAttenuation").append(i).append(";\n");
 			fc.append("intensity += power;\n"); 
 			
-			if(light.getLightType() == ALight.SPOT_LIGHT)
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * spot_factor").append(i).append(";\n");
-			else
-				fc.append("Kd.rgb += uLightColor").append(i).append(" * power;\n");
+			fc.append("Kd.rgb += uLightColor").append(i).append(" * power;\n");
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader.replace("%LIGHT_CODE%", fc.toString()));

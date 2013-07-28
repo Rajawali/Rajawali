@@ -1,7 +1,7 @@
 package rajawali.primitives;
 
 import rajawali.BaseObject3D;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 
 /**
  * Basic primitive allowing for the creation of an n-sided regular
@@ -23,8 +23,8 @@ public class NPrism extends BaseObject3D {
 	protected double mHeight;
 	protected double mEccentricity;
 	
-	private static final Number3D UP = new Number3D(0, 1, 0);
-	private static final Number3D DOWN = new Number3D(0, -1, 0);
+	private static final Vector3 UP = new Vector3(0, 1, 0);
+	private static final Vector3 DOWN = new Vector3(0, -1, 0);
 
 	/**
 	 * Creates a terminated prism.
@@ -98,7 +98,7 @@ public class NPrism extends BaseObject3D {
 		double u = 0, v = 1;
 		double u_delta = 1.0/mSideCount;
 		double MAG = Math.sqrt(Math.pow((mRadiusTop - mRadiusBase), 2.0) + Math.pow(mHeight, 2.0));
-		Number3D temp_normal = new Number3D();
+		Vector3 temp_normal = new Vector3();
 		if (mSideCount % 2 == 0) angle = angle_delta/2.0;
 
 		//Populate the vertices

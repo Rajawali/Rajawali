@@ -1,6 +1,6 @@
 package rajawali.util;
 
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.visitors.RayPickingVisitor;
 
@@ -17,8 +17,8 @@ public class RayPicker implements IObjectPicker {
 	}
 	
 	public void getObjectAt(float x, float y) {
-		Number3D pointNear = mRenderer.unProject(x, y, 0);
-		Number3D pointFar = mRenderer.unProject(x, y, 1);
+		Vector3 pointNear = mRenderer.unProject(x, y, 0);
+		Vector3 pointFar = mRenderer.unProject(x, y, 1);
 		
 		RayPickingVisitor visitor = new RayPickingVisitor(pointNear, pointFar);
 		mRenderer.accept(visitor);

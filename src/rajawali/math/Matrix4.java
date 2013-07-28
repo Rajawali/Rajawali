@@ -1,6 +1,27 @@
 package rajawali.math;
 
+import rajawali.math.vector.Vector3;
+
 public final class Matrix4 {
+	
+	//Matrix indices
+	public static final int M00 = 0;  // 0;
+	public static final int M01 = 4;  // 1;
+	public static final int M02 = 8;  // 2;
+	public static final int M03 = 12; // 3;
+	public static final int M10 = 1;  // 4;
+	public static final int M11 = 5;  // 5;
+	public static final int M12 = 9;  // 6;
+	public static final int M13 = 13; // 7;
+	public static final int M20 = 2;  // 8;
+	public static final int M21 = 6;  // 9;
+	public static final int M22 = 10; // 10;
+	public static final int M23 = 14; // 11;
+	public static final int M30 = 3;  // 12;
+	public static final int M31 = 7;  // 13;
+	public static final int M32 = 11; // 14;
+	public static final int M33 = 15; // 15;
+	    
 	private float[] m; 
 	private float[] mTmp;
 	
@@ -154,7 +175,7 @@ public final class Matrix4 {
             d30, d31, d32, d33);
     }
 	
-	public void transform(final Number3D position, final Number3D scale, final Quaternion orientation)
+	public void transform(final Vector3 position, final Vector3 scale, final Quaternion orientation)
     {
         orientation.toRotationMatrix(mTmp);
 
@@ -164,10 +185,10 @@ public final class Matrix4 {
         m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
     }
 	
-	public void inverseTransform(final Number3D position, final Number3D scale, final Quaternion orientation)
+	public void inverseTransform(final Vector3 position, final Vector3 scale, final Quaternion orientation)
     {
-        Number3D invTranslate = position.inverse();
-        Number3D invScale = new Number3D(1 / scale.x, 1 / scale.y, 1 / scale.z);
+        Vector3 invTranslate = position.inverse();
+        Vector3 invScale = new Vector3(1 / scale.x, 1 / scale.y, 1 / scale.z);
         Quaternion invRot = orientation.inverse();
 
         invTranslate = invRot.multiply(invTranslate);
@@ -180,8 +201,8 @@ public final class Matrix4 {
         m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
     }
 	
-	public Number3D transform(final Number3D v) {
-		return new Number3D(
+	public Vector3 transform(final Vector3 v) {
+		return new Vector3(
 				v.x * m[0] + v.y * m[4] + v.z * m[8] + m[12],
 				v.x * m[1] + v.y * m[5] + v.z * m[9] + m[13],
 				v.x * m[2] + v.y * m[6] + v.z * m[10] + m[14]
@@ -218,8 +239,8 @@ public final class Matrix4 {
 		);
     }
 	
-	public Number3D multiply(final Number3D v) {
-		 Number3D r = new Number3D();
+	public Vector3 multiply(final Vector3 v) {
+		 Vector3 r = new Vector3();
 
          float inv = 1.0f / ( m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15] );
 
@@ -304,24 +325,24 @@ public final class Matrix4 {
 	public Matrix4 transpose()
     {
         return new Matrix4(m[0], m[4], m[8], m[12],
-                       m[1], m[5], m[8], m[13],
-                       m[2], m[6], m[9], m[14],
-                       m[3], m[7], m[10], m[15]);
+                       m[1], m[5], m[9], m[13],
+                       m[2], m[6], m[10], m[14],
+                       m[3], m[7], m[11], m[15]);
     }
 	
-	public void setTranslation(final Number3D v )
+	public void setTranslation(final Vector3 v )
     {
         m[3] = v.x;
         m[7] = v.y;
         m[11] = v.z;
     }
 
-    public Number3D getTranslation()
+    public Vector3 getTranslation()
     {
-    	return new Number3D(m[3], m[7], m[11]);
+    	return new Vector3(m[3], m[7], m[11]);
     }
     
-    public void makeTrans(final Number3D v )
+    public void makeTrans(final Vector3 v )
     {
         m[0] = 1.0f; m[1] = 0; m[2] = 0; m[3] = v.x;
         m[4] = 0; m[5] = 1.0f; m[6] = 0; m[7] = v.y;
@@ -337,7 +358,7 @@ public final class Matrix4 {
         m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1.0f;
     }
 
-    public static Matrix4 getTranslationMatrix(final Number3D v)
+    public static Matrix4 getTranslationMatrix(final Vector3 v)
     {
     	return new Matrix4(
 	        1.0f, 	0,		0,		v.x,
@@ -357,14 +378,14 @@ public final class Matrix4 {
 	    );
     }
 
-    public void setScale(final Number3D v)
+    public void setScale(final Vector3 v)
     {
         m[0] = v.x;
         m[5] = v.y;
         m[10] = v.z;
     }
 
-    public static Matrix4 getScaleMatrix(final Number3D v)
+    public static Matrix4 getScaleMatrix(final Vector3 v)
     {
         return new Matrix4(
 	        v.x,	0,		0,		0,

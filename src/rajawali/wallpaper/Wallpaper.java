@@ -316,11 +316,9 @@ public abstract class Wallpaper extends WallpaperService {
 		@Override
 		public void onCreate(SurfaceHolder holder) {
 			super.onCreate(holder);
-
 			mSurfaceView = new GLWallpaperSurfaceView(mContext);
 			mSurfaceView.setEGLContextClientVersion(2);
 			mSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0, mMultisampling));
-			// mSurfaceView.setEGLConfigChooser(new ConfigChooser(8, 8, 8, 8, 16, 0));
 			mSurfaceView.setRenderer(mRenderer);
 			mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
@@ -340,7 +338,6 @@ public abstract class Wallpaper extends WallpaperService {
 			setTouchEventsEnabled(false);
 			mRenderer.onSurfaceDestroyed();
 			mRenderer = null;
-			mSurfaceView.onDestroy();
 			super.onDestroy();
 		}
 
@@ -348,12 +345,12 @@ public abstract class Wallpaper extends WallpaperService {
 		public void onVisibilityChanged(boolean visible) {
 			super.onVisibilityChanged(visible);
 			if (mRenderer != null) {
+				mRenderer.onVisibilityChanged(visible);
 				if (visible) {
 					mSurfaceView.onResume();
 				} else {
 					mSurfaceView.onPause();
-				}
-				mRenderer.onVisibilityChanged(visible);
+				}				
 			}
 		}
 	}

@@ -12,7 +12,7 @@ import rajawali.Camera;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.bounds.IBoundingVolume;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 
 /**
@@ -47,7 +47,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 
 	protected A_nAABBTree mParent; //Parent partition;
 	protected A_nAABBTree[] mChildren; //Child partitions
-	protected Number3D mChildLengths; //Lengths of each side of the child nodes
+	protected Vector3 mChildLengths; //Lengths of each side of the child nodes
 
 	protected boolean mSplit = false; //Have we split to child partitions
 	protected List<IGraphNodeMember> mMembers; //A list of all the member objects
@@ -63,7 +63,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	protected boolean mRecursiveRemove = false; //Default to NOT recursive remove.
 
 	protected float[] mMMatrix = new float[16]; //A model matrix to use for drawing the bounds of this node.
-	protected Number3D mPosition; //This node's center point in 3D space.
+	protected Vector3 mPosition; //This node's center point in 3D space.
 
 	/**
 	 * The region (e.g. octant) this node occupies in its parent. If this node
@@ -129,12 +129,12 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void calculateChildSideLengths() {
 		//Determine the distance on each axis
-		Number3D temp = Number3D.subtract(mTransformedMax, mTransformedMin);
+		Vector3 temp = Vector3.subtractAndCreate(mTransformedMax, mTransformedMin);
 		temp.multiply(0.5f); //Divide it in half
 		float overlap = 1.0f + mOverlap/100.0f;
 		temp.multiply(overlap);
 		temp.absoluteValue();
-		mChildLengths.setAllFrom(temp);
+		mChildLengths.setAll(temp);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		IBoundingVolume volume = member.getTransformedBoundingVolume();
 		BoundingBox bcube = null;
 		BoundingSphere bsphere = null;
-		Number3D position = member.getScenePosition();
+		Vector3 position = member.getScenePosition();
 		double span_y = 0;
 		double span_x = 0;
 		double span_z = 0;
@@ -162,8 +162,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		} else {
 			if (volume instanceof BoundingBox) {
 				bcube = (BoundingBox) volume;
-				Number3D min = bcube.getTransformedMin();
-				Number3D max = bcube.getTransformedMax();
+				Vector3 min = bcube.getTransformedMin();
+				Vector3 max = bcube.getTransformedMax();
 				span_x = (max.x - min.x);
 				span_y = (max.y - min.y);
 				span_z = (max.z - min.z);
@@ -180,8 +180,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		mMax.x = (float) (position.x + span_x);
 		mMax.y = (float) (position.y + span_y);
 		mMax.z = (float) (position.z + span_z);
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 	}
@@ -195,10 +195,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void setBounds(int child) {
 		A_nAABBTree new_bounds = mChildren[child];
-		mMin.setAllFrom(new_bounds.mMin);
-		mMax.setAllFrom(new_bounds.mMax);
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mMin.setAll(new_bounds.mMin);
+		mMax.setAll(new_bounds.mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 	}
@@ -212,9 +212,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @param size Number3D containing the length for each
 	 * side this node should be. 
 	 */
-	protected void setChildRegion(int region, Number3D side_lengths) {
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+	protected void setChildRegion(int region, Vector3 side_lengths) {
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 		if (mSplit) {
@@ -445,15 +445,15 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void grow() {
 		RajLog.d("[" + this.getClass().getName() + "] Growing tree: " + this);
-		Number3D min = new Number3D(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-		Number3D max = new Number3D(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+		Vector3 min = new Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+		Vector3 max = new Vector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
 		//Get a full list of all the members, including members in the children
 		ArrayList<IGraphNodeMember> members = getAllMembersRecursively(true);
 		int members_count = members.size();
 		for (int i = 0; i < members_count; ++i) {
 			IBoundingVolume volume = members.get(i).getTransformedBoundingVolume();
-			Number3D test_against_min = null;
-			Number3D test_against_max = null;
+			Vector3 test_against_min = null;
+			Vector3 test_against_max = null;
 			if (volume == null) {
 				ATransformable3D object = (ATransformable3D) members.get(i);
 				test_against_min = object.getPosition();
@@ -465,12 +465,12 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					test_against_max = bb.getTransformedMax();
 				} else if (volume instanceof BoundingSphere) {
 					BoundingSphere bs = (BoundingSphere) volume;
-					Number3D bs_position = bs.getPosition();
+					Vector3 bs_position = bs.getPosition();
 					float radius = bs.getScaledRadius();
-					Number3D rad = new Number3D();
+					Vector3 rad = new Vector3();
 					rad.setAll(radius, radius, radius);
-					test_against_min = Number3D.subtract(bs_position, rad);
-					test_against_max = Number3D.add(bs_position, rad);
+					test_against_min = Vector3.subtractAndCreate(bs_position, rad);
+					test_against_max = Vector3.addAndCreate(bs_position, rad);
 				} else {
 					RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type.");
 					throw new IllegalArgumentException("Received a bounding box of unknown type."); 
@@ -485,10 +485,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				if(test_against_max.z > max.z) max.z = test_against_max.z;
 			}
 		}
-		mMin.setAllFrom(min);
-		mMax.setAllFrom(max);
-		mTransformedMin.setAllFrom(min);
-		mTransformedMax.setAllFrom(max);
+		mMin.setAll(min);
+		mMax.setAll(max);
+		mTransformedMin.setAll(min);
+		mTransformedMax.setAll(max);
 		calculatePoints();
 		calculateChildSideLengths();
 		if (mSplit) {
@@ -777,12 +777,12 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#displayGraph(boolean)
 	 */
-	public void displayGraph(Camera camera, float[] projMatrix, float[] vMatrix) {
+	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix) {
 		Matrix.setIdentityM(mMMatrix, 0);
-		drawBoundingVolume(camera, projMatrix, vMatrix, mMMatrix);
+		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		if (mSplit) {
 			for (int i = 0; i < CHILD_COUNT; ++i) {
-				mChildren[i].displayGraph(camera, projMatrix, vMatrix);
+				mChildren[i].displayGraph(camera, vpMatrix, projMatrix, vMatrix);
 			}
 		}
 	}
@@ -791,7 +791,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#getSceneMinBound()
 	 */
-	public Number3D getSceneMinBound() {
+	public Vector3 getSceneMinBound() {
 		return getTransformedMin();
 	}
 	
@@ -799,7 +799,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#getSceneMaxBound()
 	 */
-	public Number3D getSceneMaxBound() {
+	public Vector3 getSceneMaxBound() {
 		return getTransformedMax();
 	}
 
@@ -827,10 +827,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	public boolean contains(IBoundingVolume boundingVolume) {
 		if(!(boundingVolume instanceof BoundingBox)) return false;
 		BoundingBox boundingBox = (BoundingBox)boundingVolume;
-		Number3D otherMin = boundingBox.getTransformedMin();
-		Number3D otherMax = boundingBox.getTransformedMax();
-		Number3D min = mTransformedMin;
-		Number3D max = mTransformedMax;		
+		Vector3 otherMin = boundingBox.getTransformedMin();
+		Vector3 otherMax = boundingBox.getTransformedMax();
+		Vector3 min = mTransformedMin;
+		Vector3 max = mTransformedMax;		
 
 		return (max.x >= otherMax.x) && (min.x <= otherMin.x) &&
 				(max.y >= otherMax.y) && (min.y <= otherMin.y) &&
@@ -844,10 +844,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	public boolean isContainedBy(IBoundingVolume boundingVolume) {
 		if(!(boundingVolume instanceof BoundingBox)) return false;
 		BoundingBox boundingBox = (BoundingBox)boundingVolume;
-		Number3D otherMin = boundingBox.getTransformedMin();
-		Number3D otherMax = boundingBox.getTransformedMax();
-		Number3D min = mTransformedMin;
-		Number3D max = mTransformedMax;		
+		Vector3 otherMin = boundingBox.getTransformedMin();
+		Vector3 otherMax = boundingBox.getTransformedMax();
+		Vector3 min = mTransformedMin;
+		Vector3 max = mTransformedMax;		
 
 		return (max.x <= otherMax.x) && (min.x >= otherMin.x) &&
 				(max.y <= otherMax.y) && (min.y >= otherMin.y) &&

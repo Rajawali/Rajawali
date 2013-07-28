@@ -12,7 +12,7 @@ import java.util.Arrays;
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Color;
@@ -129,6 +129,15 @@ public class Geometry3D {
 	 * The bounding sphere for this geometry. This is used for collision detection.
 	 */
 	protected BoundingSphere mBoundingSphere;
+	/**
+	 * Indicates whether this geometry contains normals or not.
+	 */
+	protected boolean mHasNormals;
+	/**
+	 * Indicates whether this geometry contains texture coordinates or not.
+	 */
+	protected boolean mHasTextureCoordinates;
+	
 	public enum BufferType {
 		FLOAT_BUFFER,
 		INT_BUFFER,
@@ -238,16 +247,18 @@ public class Geometry3D {
 		if(mColors == null) this.mColorBufferInfo = geom.getColorBufferInfo();
 		this.mNormalBufferInfo = geom.getNormalBufferInfo();
 		this.mOriginalGeometry = geom;
+		this.mHasNormals = geom.hasNormals();
+		this.mHasTextureCoordinates = geom.hasTextureCoordinates();
 	}
 	
 	/**
 	 * Adds the geometry from the incoming geometry with the specified offset.
 	 * Note that the offset is only applied to the vertex positions.
 	 * 
-	 * @param offset {@link Number3D} containing the offset in each direction. Can be null.
+	 * @param offset {@link Vector3} containing the offset in each direction. Can be null.
 	 * @param geometry {@link Geometry3D} to be added.
 	 */
-	public void addFromGeometry3D(Number3D offset, Geometry3D geometry) {
+	public void addFromGeometry3D(Vector3 offset, Geometry3D geometry) {
 		float[] newVertices = null;
 		float[] newNormals = null;
 		float[] newColors = null;
@@ -419,15 +430,14 @@ public class Geometry3D {
 		mColorBufferInfo.usage = colorsUsage;
 		mIndexBufferInfo.usage = indicesUsage;
 		setVertices(vertices);
-		setNormals(normals);
+		if(normals != null)
+			setNormals(normals);
 		if(textureCoords == null || textureCoords.length == 0)
 			textureCoords = new float[(vertices.length / 3) * 2];
 		
 		setTextureCoords(textureCoords);
-		if(colors == null || colors.length == 0)
-			setColors(0xff000000 + (int)(Math.random() * 0xffffff));
-		else
-			setColors(colors);	
+		if(colors != null && colors.length > 0)
+			setColors(colors);
 		setIndices(indices);
 
 		createBuffers();
@@ -688,6 +698,7 @@ public class Geometry3D {
 	}
 	
 	public void setNormals(float[] normals) {
+		if(normals == null) return;
 		if(mNormals == null) {
 			mNormals = ByteBuffer.allocateDirect(normals.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -698,6 +709,8 @@ public class Geometry3D {
 			mNormals.put(normals);
 			mNormals.position(0);
 		}
+		
+		mHasNormals = true;
 	}
 	
 	public void setNormals(FloatBuffer normals) {
@@ -712,6 +725,10 @@ public class Geometry3D {
 		if(mOriginalGeometry != null)
 			return mOriginalGeometry.getNormals();
 		return mNormals;
+	}
+	
+	public boolean hasNormals() {
+		return mHasNormals;
 	}
 	
 	public void setIndices(int[] indices) {
@@ -733,6 +750,7 @@ public class Geometry3D {
 	}
 	
 	public void setTextureCoords(float[] textureCoords) {
+		if(textureCoords == null) return;
 		if(mTextureCoords == null) {
 			mTextureCoords = ByteBuffer
 					.allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
@@ -742,12 +760,17 @@ public class Geometry3D {
 		} else {
 			mTextureCoords.put(textureCoords);
 		}
+		mHasTextureCoordinates = true;
 	}
 	
 	public FloatBuffer getTextureCoords() {
 		if(mTextureCoords == null && mOriginalGeometry != null)
 			return mOriginalGeometry.getTextureCoords();
 		return mTextureCoords;
+	}
+	
+	public boolean hasTextureCoordinates() {
+		return mHasTextureCoordinates;
 	}
 	
 	public void setColors(int color) {

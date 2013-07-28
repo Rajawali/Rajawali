@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import rajawali.Camera;
 import rajawali.bounds.IBoundingVolume;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 import rajawali.scene.RajawaliScene;
 
 
@@ -115,21 +115,21 @@ public interface IGraphNode {
 	 * 
 	 * @param display boolean indicating if the graph is to be displayed.
 	 */
-	public void displayGraph(Camera camera, float[] projMatrix, float[] vMatrix);
+	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix);
 	
 	/**
 	 * Retrieve the minimum bounds of this scene.
 	 * 
-	 * @return {@link Number3D} The components represent the minimum value in each axis.
+	 * @return {@link Vector3} The components represent the minimum value in each axis.
 	 */
-	public Number3D getSceneMinBound();
+	public Vector3 getSceneMinBound();
 	
 	/**
 	 * Retrieve the maximum bounds of this scene.
 	 * 
-	 * @return {@link Number3D} The components represent the maximum value in each axis.
+	 * @return {@link Vector3} The components represent the maximum value in each axis.
 	 */
-	public Number3D getSceneMaxBound();
+	public Vector3 getSceneMaxBound();
 	
 	/**
 	 * Retrieve the number of objects this node is aware of. This count should

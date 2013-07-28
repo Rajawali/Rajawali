@@ -1,32 +1,34 @@
 package rajawali.math;
 
+import rajawali.math.vector.Vector3;
+
 public class AngleAxis {
-	protected float mAngle;
-	protected Number3D mAxis;
+	protected double mAngle;
+	protected Vector3 mAxis;
 
 	public AngleAxis() {
-		mAxis = new Number3D();
+		mAxis = new Vector3();
 	}
 
-	public AngleAxis(float angle, Number3D axis) {
+	public AngleAxis(double angle, Vector3 axis) {
 		mAngle = angle;
 		mAxis = axis;
 	}
 
-	public float getAngle() {
+	public double getAngle() {
 		return mAngle;
 	}
 
-	public void setAngle(float angle) {
+	public void setAngle(double angle) {
 		mAngle = angle;
 	}
 
-	public Number3D getAxis() {
+	public Vector3 getAxis() {
 		return mAxis;
 	}
 
-	public void setAxis(Number3D axis) {
-		mAxis.setAllFrom(axis);
+	public void setAxis(Vector3 axis) {
+		mAxis.setAll(axis);
 	}
 	
 	public String toString() {

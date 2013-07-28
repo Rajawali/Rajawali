@@ -6,7 +6,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -14,18 +14,18 @@ import android.opengl.Matrix;
 public class BoundingSphere implements IBoundingVolume {
 	protected Geometry3D mGeometry;
 	protected float mRadius;
-	protected Number3D mPosition;
+	protected Vector3 mPosition;
 	protected Sphere mVisualSphere;
 	protected float[] mTmpMatrix = new float[16];
-	protected Number3D mTmpPos;
+	protected Vector3 mTmpPos;
 	protected float mDist, mMinDist, mScale;
 	protected float[] mScaleValues;
 	protected int mBoundingColor = 0xffffff00;
 	
 	public BoundingSphere() {
 		super();
-		mPosition = new Number3D();
-		mTmpPos = new Number3D();
+		mPosition = new Vector3();
+		mTmpPos = new Vector3();
 		mScaleValues = new float[3];
 	}
 	
@@ -47,19 +47,20 @@ public class BoundingSphere implements IBoundingVolume {
 		return mBoundingColor;
 	}
 	
-	public void drawBoundingVolume(Camera camera, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
+	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisualSphere == null) {
 			mVisualSphere = new Sphere(1, 8, 8);
 			mVisualSphere.setMaterial(new SimpleMaterial());
-			mVisualSphere.getMaterial().setUseColor(true);
+			mVisualSphere.getMaterial().setUseSingleColor(true);
 			mVisualSphere.setColor(0xffffff00);
 			mVisualSphere.setDrawingMode(GLES20.GL_LINE_LOOP);
+			mVisualSphere.setDoubleSided(true);
 		}
 
 		Matrix.setIdentityM(mTmpMatrix, 0);
 		mVisualSphere.setPosition(mPosition);
 		mVisualSphere.setScale(mRadius * mScale);
-		mVisualSphere.render(camera, projMatrix, vMatrix, mTmpMatrix, null);
+		mVisualSphere.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);
 	}
 	
 	public void transform(float[] matrix) {
@@ -79,7 +80,7 @@ public class BoundingSphere implements IBoundingVolume {
 	
 	public void calculateBounds(Geometry3D geometry) {
 		float radius = 0, maxRadius = 0;
-		Number3D vertex = new Number3D();
+		Vector3 vertex = new Vector3();
 		FloatBuffer vertices = geometry.getVertices();
 		vertices.rewind();		
 		
@@ -102,7 +103,7 @@ public class BoundingSphere implements IBoundingVolume {
 		return (mRadius*mScale);
 	}
 	
-	public Number3D getPosition() {
+	public Vector3 getPosition() {
 		return mPosition;
 	}
 	
@@ -119,7 +120,7 @@ public class BoundingSphere implements IBoundingVolume {
 		if(!(boundingVolume instanceof BoundingSphere)) return false;
 		BoundingSphere boundingSphere = (BoundingSphere)boundingVolume;
 		
-		mTmpPos.setAllFrom(mPosition);
+		mTmpPos.setAll(mPosition);
 		mTmpPos.subtract(boundingSphere.getPosition());
 		
 		mDist = mTmpPos.x * mTmpPos.x + mTmpPos.y * mTmpPos.y + mTmpPos.z * mTmpPos.z;

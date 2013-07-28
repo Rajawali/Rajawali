@@ -2,7 +2,6 @@ package rajawali.parser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.materials.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
@@ -19,16 +17,18 @@ import android.content.res.Resources.NotFoundException;
 
 /**
  * STL Parser written using the ASCII format as describe on Wikipedia.
+ * <p>
  * 
- * http://en.wikipedia.org/wiki/STL_(file_format)
+ * @author Ian Thomas (toxicbakery@gmail.com)
  * 
- * TODO More testing, Nexus 7 specifically has some issues with certain models. Nexus 4 works fine with same 'problem'
- * models. 
- * TODO Add a feature for ASCII to Binary conversion.
- * 
- * @author Ian Thomas - toxicbakery@gmail.com
+ * @see <a href="http://en.wikipedia.org/wiki/STL_(file_format)">http://en.wikipedia.org/wiki/STL_(file_format)</a>
  */
 public class StlParser extends AMeshParser {
+
+	// FIXME More testing, Nexus 7 specifically has some issues with certain models. Nexus 4 works fine with same
+	// 'problem' models.
+
+	// TODO Add a feature for ASCII to Binary conversion.
 
 	public enum StlType {
 		UNKNOWN,
@@ -40,10 +40,14 @@ public class StlParser extends AMeshParser {
 		super(renderer, fileOnSDCard);
 	}
 
-	public StlParser(Resources resources, TextureManager textureManager, int resourceId) {
-		super(resources, textureManager, resourceId);
+	public StlParser() {
+		super(null, "");
 	}
-	
+
+	public StlParser(Resources resources, int resourceId) {
+		super(resources, null, resourceId);
+	}
+
 	public StlParser(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
@@ -111,30 +115,6 @@ public class StlParser extends AMeshParser {
 		return this;
 	}
 
-	private BufferedReader getBufferedReader() throws FileNotFoundException {
-		BufferedReader buffer = null;
-
-		if (mFile == null) {
-			buffer = new BufferedReader(new InputStreamReader(mResources.openRawResource(mResourceId)));
-		} else {
-			buffer = new BufferedReader(new FileReader(mFile));
-		}
-
-		return buffer;
-	}
-
-	private LittleEndianDataInputStream getLittleEndianInputStream() throws FileNotFoundException {
-		LittleEndianDataInputStream dis = null;
-
-		if (mFile == null) {
-			dis = new LittleEndianDataInputStream(mResources.openRawResource(mResourceId));
-		} else {
-			dis = new LittleEndianDataInputStream(new FileInputStream(mFile));
-		}
-
-		return dis;
-	}
-
 	/**
 	 * Read stream as ASCII. While this works well, ASCII is painfully slow on mobile devices due to tight memory
 	 * constraints and lower processing power compared to desktops. It is advisable to use the binary parser whenever
@@ -150,7 +130,7 @@ public class StlParser extends AMeshParser {
 		final List<Float> vertices = new ArrayList<Float>();
 		final List<Float> normals = new ArrayList<Float>();
 		final float[] tempNorms = new float[3];
-		
+
 		int nextOffset, prevOffset, i, insert;
 		String line;
 
@@ -159,7 +139,7 @@ public class StlParser extends AMeshParser {
 
 		// Read the facet
 		while ((line = buffer.readLine()) != null) {
-			
+
 			// Only read lines containing facet normal and vertex. No reason to read others
 
 			if (line.contains("facet normal ")) {
@@ -205,7 +185,7 @@ public class StlParser extends AMeshParser {
 			verticesArr[i] = vertices.get(i);
 			normalsArr[i] = normals.get(i);
 		}
-		
+
 		// Cleanup
 		vertices.clear();
 		normals.clear();

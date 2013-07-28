@@ -1,33 +1,33 @@
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 
 public class ScaleAnimation3D extends Animation3D {
 
-	protected Number3D mToScale;
-	protected Number3D mFromScale;
-	protected Number3D mDiffScale;
-	protected Number3D mMultipliedScale = new Number3D();
-	protected Number3D mAddedScale = new Number3D();
+	protected Vector3 mToScale;
+	protected Vector3 mFromScale;
+	protected Vector3 mDiffScale;
+	protected Vector3 mMultipliedScale = new Vector3();
+	protected Vector3 mAddedScale = new Vector3();
 
-
+	
 	public ScaleAnimation3D(float toScale) {
 		super();
-		mToScale 	= new Number3D(toScale);
+		mToScale = new Vector3(toScale);
 	}
 	public ScaleAnimation3D(float fromScale, float toScale) {
 		super();
-		mToScale 	= new Number3D(toScale);
-		mFromScale 	= new Number3D(fromScale);
+		mToScale = new Vector3(toScale);
+		mFromScale = new Vector3(fromScale);
 	}
 	
-	public ScaleAnimation3D(Number3D toScale) {
+	public ScaleAnimation3D(Vector3 toScale) {
 		super();
 		mToScale = toScale;
 	}
 
-	public ScaleAnimation3D(Number3D fromScale, Number3D toScale) {
+	public ScaleAnimation3D(Vector3 fromScale, Vector3 toScale) {
 		super();
 		mToScale = toScale;
 		mFromScale = fromScale;
@@ -37,18 +37,16 @@ public class ScaleAnimation3D extends Animation3D {
 	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
 		if (mFromScale == null)
-			mFromScale = new Number3D(transformable3D.getScale());
+			mFromScale = new Vector3(transformable3D.getScale());
 	}
 
 	@Override
 	protected void applyTransformation() {
 		if (mDiffScale == null)
-			mDiffScale = Number3D.subtract(mToScale, mFromScale);
+			mDiffScale = Vector3.subtractAndCreate(mToScale, mFromScale);
 
-		mMultipliedScale.setAllFrom(mDiffScale);
-		mMultipliedScale.multiply((float) mInterpolatedTime);
-		mAddedScale.setAllFrom(mFromScale);
-		mAddedScale.add(mMultipliedScale);
+		mMultipliedScale.scaleAndSet(mDiffScale, (float) mInterpolatedTime);
+		mAddedScale.addAndSet(mFromScale, mMultipliedScale);
 		mTransformable3D.setScale(mAddedScale);
 	}
 

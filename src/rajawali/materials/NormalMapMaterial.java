@@ -1,21 +1,21 @@
 package rajawali.materials;
 
-import com.monyetmabuk.livewallpapers.photosdof.R;
-
 import rajawali.lights.ALight;
 
-public class BumpmapMaterial extends AAdvancedMaterial {
+import com.monyetmabuk.livewallpapers.photosdof.R;
 
-	public BumpmapMaterial() {
+public class NormalMapMaterial extends AAdvancedMaterial {
+
+	public NormalMapMaterial() {
 		this(false);
 	}
 	
-	public BumpmapMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		super(vertexShader, fragmentShader, isAnimated);
+	public NormalMapMaterial(String vertexShader, String fragmentShader) {
+		super(vertexShader, fragmentShader);
 	}
 	
-	public BumpmapMaterial(boolean isAnimated) {
-		super(R.raw.diffuse_material_vertex, R.raw.bumpmap_material_fragment, isAnimated);
+	public NormalMapMaterial(boolean isAnimated) {
+		super(R.raw.diffuse_material_vertex, R.raw.bumpmap_material_fragment);
 	}
 	
 	public void setShaders(String vertexShader, String fragmentShader) {

@@ -8,6 +8,6 @@ import com.monyetmabuk.livewallpapers.photosdof.R;
  */
 public class PostProcessingCopyMaterial extends AMaterial {
 	public PostProcessingCopyMaterial() {
-		super(R.raw.copy_material_vertex, R.raw.copy_material_fragment, false);
+		super(R.raw.copy_material_vertex, R.raw.copy_material_fragment);
 	}
 }

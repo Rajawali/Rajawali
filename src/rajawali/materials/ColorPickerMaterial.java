@@ -13,12 +13,10 @@ public class ColorPickerMaterial extends AMaterial {
 	
 	public ColorPickerMaterial() {
 		super(R.raw.color_picker_material_vertex, R.raw.color_picker_material_fragment);	
-		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 	}
 	
 	public ColorPickerMaterial(String vertexShader, String fragmentShader) {
-		super(vertexShader, fragmentShader, false);
-		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+		super(vertexShader, fragmentShader);
 	}
 	
 	@Override

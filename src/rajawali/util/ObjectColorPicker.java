@@ -6,13 +6,14 @@ import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.ColorPickerMaterial;
-import rajawali.materials.TextureInfo;
-import rajawali.materials.TextureManager.TextureType;
+import rajawali.materials.MaterialManager;
+import rajawali.materials.textures.FrameBufferTexture;
+import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
-public class ObjectColorPicker implements IObjectPicker {
+public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
 	protected final int FLOAT_SIZE_BYTES = 4;
 
@@ -21,7 +22,7 @@ public class ObjectColorPicker implements IObjectPicker {
 	private RajawaliRenderer mRenderer;
 	private int mFrameBufferHandle = -1;
 	private int mDepthBufferHandle = -1;
-	private TextureInfo mTextureInfo;
+	private FrameBufferTexture mTexture;
 	private boolean mIsInitialized = false;
 	private ColorPickerMaterial mPickerMaterial;
 	private OnObjectPickedListener mObjectPickedListener;
@@ -29,14 +30,19 @@ public class ObjectColorPicker implements IObjectPicker {
 	public ObjectColorPicker(RajawaliRenderer renderer) {
 		mObjectLookup = new ArrayList<BaseObject3D>();
 		mRenderer = renderer;
+		mRenderer.queueInitializeTask(this);
 	}
 
 	public void initialize() {
 		int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		mTextureInfo = mRenderer.getTextureManager().addTexture(null, size, size,
-				TextureType.FRAME_BUFFER);
+		mTexture = new FrameBufferTexture("colorPickerTexture");
+		mTexture.setWidth(size);
+		mTexture.setHeight(size);
+		// -- safe to use taskAdd because initalize is called in a thread safe manner
+		mRenderer.getTextureManager().taskAdd(mTexture);
 		genBuffers();
 		mPickerMaterial = new ColorPickerMaterial();
+		MaterialManager.getInstance().addMaterial(mPickerMaterial);
 		mIsInitialized = true;
 	}
 
@@ -44,7 +50,6 @@ public class ObjectColorPicker implements IObjectPicker {
 		if (!mIsInitialized)
 			return;
 		genBuffers();
-		mPickerMaterial.reload();
 	}
 
 	public void genBuffers() {
@@ -58,7 +63,7 @@ public class ObjectColorPicker implements IObjectPicker {
 
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16,
-				mTextureInfo.getWidth(), mTextureInfo.getHeight());
+				mTexture.getWidth(), mTexture.getHeight());
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 
@@ -66,16 +71,19 @@ public class ObjectColorPicker implements IObjectPicker {
 		mObjectPickedListener = objectPickedListener;
 	}
 
-	public void bindFrameBuffer() {
+	public void bindFrameBuffer() throws ObjectColorPickerException {
 		if (!mIsInitialized)
-			initialize();
+		{
+			mRenderer.queueInitializeTask(this);
+			return;
+		}
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
-				GLES20.GL_TEXTURE_2D, mTextureInfo.getTextureId(), 0);
+				GLES20.GL_TEXTURE_2D, mTexture.getTextureId(), 0);
 		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
 		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-			RajLog.d("Could not bind FrameBuffer for color picking.");
+			RajLog.d("Could not bind FrameBuffer for color picking." + mTexture.getTextureId());
 		}
 		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
 				GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
@@ -91,6 +99,12 @@ public class ObjectColorPicker implements IObjectPicker {
 			mObjectLookup.add(object);
 			object.setPickingColor(mColorIndex);
 			mColorIndex++;
+		}
+	}
+
+	public void unregisterObject(BaseObject3D object) {
+		if (mObjectLookup.contains(object)) {
+			mObjectLookup.remove(object);
 		}
 	}
 
@@ -154,5 +168,32 @@ public class ObjectColorPicker implements IObjectPicker {
 		public ByteBuffer getColorPickerBuffer() {
 			return mColorPickerBuffer;
 		}
+	}
+
+	public static class ObjectColorPickerException extends Exception {
+
+		private static final long serialVersionUID = 3732833696361901287L;
+
+		public ObjectColorPickerException() {
+			super();
+		}
+
+		public ObjectColorPickerException(final String msg) {
+			super(msg);
+		}
+
+		public ObjectColorPickerException(final Throwable throwable) {
+			super(throwable);
+		}
+
+		public ObjectColorPickerException(final String msg, final Throwable throwable) {
+			super(msg, throwable);
+		}
+
+	}
+
+	@Override
+	public TYPE getFrameTaskType() {
+		return TYPE.COLOR_PICKER;
 	}
 }

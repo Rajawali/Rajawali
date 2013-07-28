@@ -8,10 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
+import rajawali.BaseObject3D;
 import rajawali.Camera;
+import rajawali.Capabilities;
 import rajawali.lights.ALight;
-import rajawali.materials.TextureManager.TextureType;
-import rajawali.math.Number3D;
+import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.ATexture.TextureType;
+import rajawali.materials.textures.TextureManager;
+import rajawali.math.vector.Vector3;
+import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.annotation.SuppressLint;
@@ -19,12 +25,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.opengl.GLES20;
 
-public abstract class AMaterial {
-	public static final int NONE				= 0;
-	public static final int VERTEX_ANIMATION 	= 1 << 0;
-	public static final int SKELETAL_ANIMATION	= 1 << 1;
-	public static final int ALPHA_MASKING		= 1 << 2;
-	
+public abstract class AMaterial extends AFrameTask {
 	protected String mUntouchedVertexShader;
 	protected String mUntouchedFragmentShader;
 	protected String mVertexShader;
@@ -46,9 +47,12 @@ public abstract class AMaterial {
 	protected int muVMatrixHandle;
 	protected int muInterpolationHandle;
 	protected int muAlphaMaskingThresholdHandle;
+	protected int muSingleColorHandle;
+	protected int muColorBlendFactorHandle;
 
 	protected Stack<ALight> mLights;
-	protected boolean mUseColor = false;
+	protected boolean mUseSingleColor = false;
+	protected boolean mUseVertexColors = false;
 	protected boolean mUseAlphaMap = false;
 	protected boolean mUseNormalMap = false;
 	protected boolean mUseSpecMap = false;
@@ -58,7 +62,14 @@ public abstract class AMaterial {
 	protected float[] mModelViewMatrix;
 	protected float[] mViewMatrix;
 	protected float[] mCameraPosArray;
-	protected ArrayList<TextureInfo> mTextureInfoList;
+	protected float[] mSingleColor;
+	protected float mColorBlendFactor = .5f;
+	protected ArrayList<ATexture> mTextureList;
+	/**
+	 * This texture's unique owner identity String. This is usually the 
+	 * fully qualified name of the {@link RajawaliRenderer} instance.  
+	 */
+	protected String mOwnerIdentity;
 	
 	/**
 	 * The maximum number of available textures for this device.
@@ -71,70 +82,60 @@ public abstract class AMaterial {
 	protected boolean mAlphaMaskingEnabled;
 	
 	public AMaterial() {
-		mTextureInfoList = new ArrayList<TextureInfo>();
+		mTextureList = new ArrayList<ATexture>();
 		mCameraPosArray = new float[3];
 		mLights = new Stack<ALight>();
-		mMaxTextures = queryMaxTextures();
+		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
+		mSingleColor = new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f };
 	}
 	
-	public AMaterial(String vertexShader, String fragmentShader, boolean vertexAnimationEnabled) {
-		this(vertexShader, fragmentShader, vertexAnimationEnabled ? VERTEX_ANIMATION : NONE);
-	}
-	
-	public AMaterial(String vertexShader, String fragmentShader, int parameters) {
+	public AMaterial(String vertexShader, String fragmentShader) {
 		this();
 		mUntouchedVertexShader = vertexShader;
 		mUntouchedFragmentShader = fragmentShader;
-		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
-		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
-		mAlphaMaskingEnabled = (parameters & ALPHA_MASKING) != 0;
-	}
-	
-	public AMaterial(int parameters) {
-		this();
-		mVertexAnimationEnabled = (parameters & VERTEX_ANIMATION) != 0;
-		mSkeletalAnimationEnabled = (parameters & SKELETAL_ANIMATION) != 0;
-		mAlphaMaskingEnabled = (parameters & ALPHA_MASKING) != 0;
 	}
 	
 	public AMaterial(int vertex_res, int fragment_res) {
-		this(vertex_res, fragment_res, false);
+		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res));
 	}
 	
-	public AMaterial(int vertex_res, int fragment_res, boolean vertexAnimationEnabled) {
-		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res), vertexAnimationEnabled);
+	void add()
+	{
+		setShaders();
 	}
-	
-	public AMaterial(int vertex_res, int fragment_res, int parameters) {
-		this(RawMaterialLoader.fetch(vertex_res), RawMaterialLoader.fetch(fragment_res), parameters);
-	}
-	
-	protected int queryMaxTextures() {
-		int numTexUnits[] = new int[1];
-		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS, numTexUnits, 0);
-		return numTexUnits[0];
-	}
-	
-	public void reload() {
-		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
-		
-		mNumTextures = mTextureInfoList.size();
 
-		for(int i=0; i<mNumTextures; i++) {
-			if(mTextureInfoList.get(i).getTexture() != null)
-				addTexture(mTextureInfoList.get(i), true, true);
+	void remove()
+	{
+		mModelViewMatrix = null;
+		mViewMatrix = null;
+		mCameraPosArray = null;
+		if(mLights != null) mLights.clear();
+		if(mTextureList != null) mTextureList.clear();
+
+		if(RajawaliRenderer.hasGLContext()) {
+			GLES20.glDeleteShader(mVShaderHandle);
+			GLES20.glDeleteShader(mFShaderHandle);
+			GLES20.glDeleteProgram(mProgram);
 		}
 	}
 
-	public void setShaders() {
+	void reload()
+	{
+		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
+		mNumTextures = mTextureList.size();
+	}
+	
+	protected void setShaders() {
 		setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 	}
 	
-	public void setShaders(String vertexShader, String fragmentShader) {
+	protected void setShaders(String vertexShader, String fragmentShader) {
 		mVertexShader = mVertexAnimationEnabled ? "#define VERTEX_ANIM\n" + vertexShader : vertexShader;
 		mVertexShader = mSkeletalAnimationEnabled ? "#define SKELETAL_ANIM\n" + mVertexShader : mVertexShader;
-		mVertexShader = mUseColor ? mVertexShader : "#define TEXTURED\n" + mVertexShader;
-		mFragmentShader = mUseColor ? fragmentShader : "#define TEXTURED\n" + fragmentShader;
+		mVertexShader = mUseSingleColor ? "#define USE_SINGLE_COLOR\n" + mVertexShader : mVertexShader;
+		mVertexShader = mUseVertexColors ? "#define USE_VERTEX_COLOR\n" + mVertexShader : mVertexShader;
+		mFragmentShader = mTextureList.size() > 0 ? "#define TEXTURED\n" + fragmentShader : fragmentShader;
+		mFragmentShader = mUseSingleColor || mUseVertexColors ? "#define USE_COLOR\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mAlphaMaskingEnabled ? "#define ALPHA_MASK\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseAlphaMap ? "#define ALPHA_MAP\n" + mFragmentShader : mFragmentShader;
 		mFragmentShader = mUseNormalMap ? "#define NORMAL_MAP\n" + mFragmentShader : mFragmentShader;
@@ -159,6 +160,8 @@ public abstract class AMaterial {
 		muMVPMatrixHandle = getUniformLocation("uMVPMatrix");
 		muMMatrixHandle = getUniformLocation("uMMatrix");
 		muVMatrixHandle = getUniformLocation("uVMatrix");
+		muSingleColorHandle = getUniformLocation("uSingleColor");
+		muColorBlendFactorHandle = getUniformLocation("uColorBlendFactor");
 		
 		if(mVertexAnimationEnabled == true) {
 			maNextFramePositionHandle = getAttribLocation("aNextFramePosition");
@@ -172,7 +175,9 @@ public abstract class AMaterial {
 		
 		mProgramCreated = true;
 
-		checkTextureHandles();
+		int count = mTextureList.size();
+		for(int i=0; i<count; i++)
+			setTextureParameters(mTextureList.get(i));
 	}
 
 	protected int loadShader(int shaderType, String source) {
@@ -232,93 +237,67 @@ public abstract class AMaterial {
 	protected int getAttribLocation(String name) {
 		return GLES20.glGetAttribLocation(mProgram, name);
 	}
-	
-	public void unload() {
-		GLES20.glDeleteShader(mVShaderHandle);
-		GLES20.glDeleteShader(mFShaderHandle);
-		GLES20.glDeleteProgram(mProgram);
-	}
-	
-	public void destroy() {
-		mModelViewMatrix = null;
-		mViewMatrix = null;
-		mCameraPosArray = null;
-		if(mLights != null) mLights.clear();
-		if(mTextureInfoList != null) mTextureInfoList.clear();
-		unload();
-	}
 
 	public void useProgram() {
 		if(!mProgramCreated) {
-			mMaxTextures = queryMaxTextures();
+			mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
 			reload();
 		}
 		GLES20.glUseProgram(mProgram);
-		if(checkValidHandle(muAlphaMaskingThresholdHandle, "alpha masking threshold"))
+		if(mAlphaMaskingEnabled == true && checkValidHandle(muAlphaMaskingThresholdHandle, "alpha masking threshold"))
 			GLES20.glUniform1f(muAlphaMaskingThresholdHandle, mAlphaMaskingThreshold);
+		if(checkValidHandle(muColorBlendFactorHandle, "Color Blend Factor"))
+			GLES20.glUniform1f(muColorBlendFactorHandle, mColorBlendFactor);
 	}
 
 	public void bindTextures() {
-		int num = mTextureInfoList.size();
+		int num = mTextureList.size();
 
 		for (int i = 0; i < num; i++) {
-			TextureInfo ti = mTextureInfoList.get(i);
-			int type = ti.isCubeMap() ? GLES20.GL_TEXTURE_CUBE_MAP : GLES20.GL_TEXTURE_2D;
+			ATexture texture = mTextureList.get(i);
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
-			GLES20.glBindTexture(type, ti.getTextureId());
-			GLES20.glUniform1i(ti.getUniformHandle(), i);
+			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, texture.getTextureName()), i);
 		}
 	}
 
 	public void unbindTextures() {
-		int num = mTextureInfoList.size();
+		int num = mTextureList.size();
 
 		for (int i = 0; i < num; i++) {
-			TextureInfo ti = mTextureInfoList.get(i);
-			int type = ti.isCubeMap() ? GLES20.GL_TEXTURE_CUBE_MAP
-					: GLES20.GL_TEXTURE_2D;
-			GLES20.glBindTexture(type, 0);
+			ATexture texture = mTextureList.get(i);
+			GLES20.glBindTexture(texture.getGLTextureType(), 0);
 		}
 		
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
 
-	public ArrayList<TextureInfo> getTextureInfoList() {
-		return mTextureInfoList;
+	public ArrayList<ATexture> getTextureList() {
+		return mTextureList;
 	}
 	
-	public void setTextureInfoList(ArrayList<TextureInfo> textureInfoList) {
-		mTextureInfoList = textureInfoList;
+	public void setTextureInfoList(ArrayList<ATexture> textureList) {
+		mTextureList = textureList;
 	}
 
-	public void addTexture(TextureInfo textureInfo) {
-		addTexture(textureInfo, false);
-	}
-	
-	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture) {
-		addTexture(textureInfo, isExistingTexture, false);
-	}
-	
-	public void removeTexture(TextureInfo textureInfo) {
-		mTextureInfoList.remove(textureInfo);
-	}
-	
-	public void addTexture(TextureInfo textureInfo, boolean isExistingTexture, boolean reload) {
-		// -- check if this texture is already in the list
-		if(mTextureInfoList.indexOf(textureInfo) > -1 && !reload) return;		
-
-		if(mTextureInfoList.size() > mMaxTextures) {
-			RajLog.e("[" +getClass().getCanonicalName()+ "] Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
+	public void addTexture(ATexture texture) throws TextureException {
+		if(mTextureList.indexOf(texture) > -1) return;
+		if(mTextureList.size() + 1 > mMaxTextures) {
+			throw new TextureException("Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
 		}
+		mTextureList.add(texture);
+		mNumTextures = mTextureList.size();
+		TextureManager.getInstance().addTexture(texture);
+		texture.registerMaterial(this);
 		
-		String textureName = "uTexture";
-
-		switch (textureInfo.getTextureType()) {
+		String textureName = "uTexture";		
+		
+		switch (texture.getTextureType()) {
 		case DIFFUSE:
 		case VIDEO_TEXTURE:
 			textureName = "uDiffuseTexture";
 			break;
-		case BUMP:
+		case NORMAL:
 			textureName = "uNormalTexture";
 			mUseNormalMap = true;
 			break;
@@ -348,49 +327,47 @@ public abstract class AMaterial {
 		}
 
 		// -- check if there are already diffuse texture in the list
-		int num = mTextureInfoList.size();
+		int num = mTextureList.size();
 		int numDiffuse = 0;
 		for(int i=0; i<num; ++i) {
-			TextureInfo ti = mTextureInfoList.get(i);
-			if(ti.getTextureType() == TextureType.DIFFUSE)
+			ATexture tc = mTextureList.get(i);
+			if(tc.getTextureType() == TextureType.DIFFUSE)
 				numDiffuse++;
 		}
 		
 		// -- if there are already diffuse textures in the list then append a
 		//    number (ie the second texture in the list will be called 
 		//    "uDiffuseTexture1", the third "uDiffuseTexture2", etc.
-		if(numDiffuse > 0 && textureInfo.getTextureType() == TextureType.DIFFUSE)
+		if(numDiffuse > 1 && texture.getTextureType() == TextureType.DIFFUSE)
 			textureName += numDiffuse;
+		
+		texture.setTextureName(textureName);
+		
+		if(texture.getTextureType() != TextureType.SPHERE_MAP)
+		{
+			mUseSingleColor = false;
+			mUseVertexColors = false;
+		}
 
-		if(isExistingTexture)
-			textureName = textureInfo.getTextureName();
-		
-		if(mProgramCreated) {
-			int textureHandle = GLES20.glGetUniformLocation(mProgram, textureName);
-			if (textureHandle == -1) {
-				RajLog.d("Could not get attrib location for "
-						+ textureName + ", " + textureInfo.getTextureType());
-			}
-			textureInfo.setUniformHandle(textureHandle);
-		}
-		
-		if(!isExistingTexture)
-			textureInfo.setTextureName(textureName);
-		
-		if(textureInfo.getTextureType() != TextureType.SPHERE_MAP) mUseColor = false;
-		if(!isExistingTexture) {
-			mTextureInfoList.add(textureInfo);
-			mNumTextures++;
-		}
+		if(mProgramCreated)
+			setTextureParameters(texture);
 	}
 	
-	protected void checkTextureHandles() {
-		int num = mTextureInfoList.size();
-		for(int i=0; i<num; ++i) {
-			TextureInfo ti = mTextureInfoList.get(i);
-			if(ti.getUniformHandle() == -1) {
-				addTexture(ti, true, true);
+	public void removeTexture(ATexture texture) {
+		mTextureList.remove(texture);
+		texture.unregisterMaterial(this);
+	}
+	
+	private void setTextureParameters(ATexture texture) {
+		if(texture.getUniformHandle() > -1) return;
+		
+		if(mProgramCreated) {
+			int textureHandle = GLES20.glGetUniformLocation(mProgram, texture.getTextureName());
+			if (textureHandle == -1) {
+				RajLog.d("Could not get attrib location for "
+						+ texture.getTextureName() + ", " + texture.getTextureType());
 			}
+			texture.setUniformHandle(textureHandle);
 		}
 	}
 	
@@ -419,6 +396,12 @@ public abstract class AMaterial {
 		}
 	}
 
+	public void setColor(float[] color) {
+		mSingleColor = color;
+		if(mUseSingleColor == true && checkValidHandle(muSingleColorHandle, "single color"))
+			GLES20.glUniform4fv(muSingleColorHandle, 1, mSingleColor, 0);
+	}
+	
 	public void setColors(final int colorBufferHandle) {
 		if(checkValidHandle(colorBufferHandle, "color data"))
 		{
@@ -498,9 +481,9 @@ public abstract class AMaterial {
 	public boolean checkValidHandle(int handle, String message){
 		if(handle >= 0)
 			return true;
-		if(message != null)
+		/*if(message != null)
 			RajLog.e("[" +getClass().getCanonicalName()+ "] Trying to set "+message+
-				" without a valid handle.");
+				" without a valid handle.");*/
 		return false;					
 	}
 	
@@ -520,7 +503,7 @@ public abstract class AMaterial {
 	}
 	
 	public void setCamera(Camera camera) {
-		Number3D camPos = camera.getPosition();
+		Vector3 camPos = camera.getPosition();
 		mCameraPosArray[0] = camPos.x;
 		mCameraPosArray[1] = camPos.y;
 		mCameraPosArray[2] = camPos.z;
@@ -548,36 +531,56 @@ public abstract class AMaterial {
 		return mModelViewMatrix;
 	}
 
-	public void copyTexturesTo(AMaterial shader) {
-		int num = mTextureInfoList.size();
+	public void copyTexturesTo(AMaterial material) throws TextureException {
+		int num = mTextureList.size();
 
 		for (int i = 0; i < num; ++i)
-			shader.addTexture(mTextureInfoList.get(i));
+			material.addTexture(mTextureList.get(i));
 	}
 
 	/**
-	 * Set the material to use a color value rather than a texture
+	 * The material should use a single color value rather than a texture or vertex colors.
+	 * The color value is set through {@link BaseObject3D#setColor(int)}.
 	 * 
 	 * @param value {@link boolean}
 	 */
-	public void setUseColor(boolean value) {
-		if(value != mUseColor) {
-			mUseColor = value;
-			if(mLights.size() > 0 || !(this instanceof AAdvancedMaterial))
-				setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
-		}
-		mUseColor = value;
+	public void setUseSingleColor(boolean value) {
+		mUseSingleColor = value;
+		if(mUseSingleColor == true)
+			// -- either one or the other
+			mUseVertexColors = false;
 	}
 	
 	/**
-	 *  Determine if color is used.
+	 *  Indicates whether a single color is used.
 	 *  
 	 * @return {@link boolean}
 	 */
-	public boolean getUseColor() {
-		return mUseColor;
+	public boolean getUseSingleColor() {
+		return mUseSingleColor;
 	}
 		
+	/**
+	 * The material should use vertex colors value than a texture or a single color.
+	 * 
+	 * @param value {@link boolean}
+	 */
+	public void setUseVertexColors(boolean value) {
+		mUseVertexColors = value;
+		if(mUseVertexColors == true)
+			// either one or the other
+			setUseSingleColor(false);
+	}
+	
+	/**
+	 *  Indicates whether a vertex colors are used.
+	 *  
+	 * @return {@link boolean}
+	 */
+	public boolean getUseVertexColors() {
+		return mUseVertexColors;
+	}
+
 	/**
 	 * Pass the context to be used for resource loading. This should only be called internally by the renderer.
 	 * 
@@ -639,5 +642,67 @@ public abstract class AMaterial {
 
 			return mRawMaterials.get(resID);
 		}
+	}
+	
+	public void setVertexAnimationEnabled(boolean enabled)
+	{
+		mVertexAnimationEnabled = enabled;
+	}
+	
+	public boolean getVertexAnimationEnabled()
+	{
+		return mVertexAnimationEnabled;
+	}
+	
+	public void setSkeletalAnimationEnabled(boolean enabled)
+	{
+		mSkeletalAnimationEnabled = enabled;
+	}
+	
+	public boolean getSkeletalAnimationEnabled()
+	{
+		return mSkeletalAnimationEnabled;
+	}
+	
+	public void setAlphaMaskingEnabled(boolean enabled)
+	{
+		mAlphaMaskingEnabled = enabled;
+	}
+	
+	public boolean getAlphaMaskingEnabled()
+	{
+		return mAlphaMaskingEnabled;
+	}
+	
+	/**
+	 * The color blend factor determines the influence of the vertex color or
+	 * single color when mixed with a texture. A value of 0 means no influence. Only the 
+	 * color from the texture will be shown.
+	 * A value of 1.0 means only the color will be shown.
+	 * 
+	 * @param colorBlendFactor
+	 */
+	public void setColorBlendFactor(float colorBlendFactor)
+	{
+		mColorBlendFactor = Math.min(1.0f, Math.max(0, colorBlendFactor));
+	}
+	
+	public float getColorBlendFactor()
+	{
+		return mColorBlendFactor;
+	}
+	
+	public void setOwnerIdentity(String identity)
+	{
+		mOwnerIdentity = identity;
+	}
+	
+	public String getOwnerIdentity()
+	{
+		return mOwnerIdentity;
+	}
+	
+	public TYPE getFrameTaskType() {
+		return TYPE.MATERIAL;
 	}
 }

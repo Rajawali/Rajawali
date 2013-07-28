@@ -1,31 +1,40 @@
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
-import rajawali.math.Number3D;
+import rajawali.curves.ICurve3D;
+import rajawali.math.Quaternion;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 public class TranslateAnimation3D extends Animation3D {
 
-	protected Number3D mToPosition;
-	protected Number3D mFromPosition;
-	protected Number3D mDiffPosition;
-	protected Number3D mMultipliedPosition = new Number3D();
-	protected Number3D mAddedPosition = new Number3D();
+	protected Vector3 mToPosition;
+	protected Vector3 mFromPosition;
+	protected Vector3 mDiffPosition;
+	protected Vector3 mMultipliedPosition = new Vector3();
+	protected Vector3 mAddedPosition = new Vector3();
+	protected Vector3 mForwardVec = Vector3.getAxisVector(Axis.Z);
+	protected Vector3 mTmpVec = new Vector3();
+	protected Vector3 mObjectRay = Vector3.getAxisVector(Axis.Z);
+	protected Quaternion mTmpOrientation = new Quaternion();
+	protected Quaternion mTmpOrientation2 = new Quaternion();
+	
 	protected boolean mOrientToPath = false;
-	protected ISpline mSplinePath;
+	protected ICurve3D mSplinePath;
 	protected float mLookatDelta;
 
-	public TranslateAnimation3D(Number3D toPosition) {
+	public TranslateAnimation3D(Vector3 toPosition) {
 		super();
 		mToPosition = toPosition;
 	}
 
-	public TranslateAnimation3D(Number3D fromPosition, Number3D toPosition) {
+	public TranslateAnimation3D(Vector3 fromPosition, Vector3 toPosition) {
 		super();
 		mFromPosition = fromPosition;
 		mToPosition = toPosition;
 	}
 
-	public TranslateAnimation3D(ISpline splinePath) {
+	public TranslateAnimation3D(ICurve3D splinePath) {
 		super();
 		mSplinePath = splinePath;
 	}
@@ -34,27 +43,46 @@ public class TranslateAnimation3D extends Animation3D {
 	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
 		if (mFromPosition == null)
-			mFromPosition = new Number3D(transformable3D.getPosition());
+			mFromPosition = new Vector3(transformable3D.getPosition());
 	}
 
+	private Vector3 mTempPoint1 = new Vector3();
+	private Vector3 mTempPoint2 = new Vector3();
+	private Vector3 mTempPoint3 = new Vector3();
+	
 	@Override
 	protected void applyTransformation() {
 		if (mSplinePath == null) {
 			if (mDiffPosition == null)
-				mDiffPosition = Number3D.subtract(mToPosition, mFromPosition);
-			mMultipliedPosition.setAllFrom(mDiffPosition);
-			mMultipliedPosition.multiply((float) mInterpolatedTime);
-			mAddedPosition.setAllFrom(mFromPosition);
-			mAddedPosition.add(mMultipliedPosition);
+				mDiffPosition = Vector3.subtractAndCreate(mToPosition, mFromPosition);
+			mMultipliedPosition.scaleAndSet(mDiffPosition, (float) mInterpolatedTime);
+			mAddedPosition.addAndSet(mFromPosition, mMultipliedPosition);
 			mTransformable3D.setPosition(mAddedPosition);
 		} else {
-			Number3D pathPoint = mSplinePath.calculatePoint((float) mInterpolatedTime);
-			mTransformable3D.setPosition(pathPoint);
-			mTransformable3D.getPosition().setAllFrom(pathPoint);
+			mSplinePath.calculatePoint(mTempPoint1, (float) mInterpolatedTime);
+			mTransformable3D.setPosition(mTempPoint1);
 
 			if (mOrientToPath)
-				mTransformable3D.setLookAt(mSplinePath
-						.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1)))));
+			{
+				// -- calculate tangent
+				mSplinePath.calculatePoint(mTempPoint2, (float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))));
+				mSplinePath.calculatePoint(mTempPoint3, (float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))));
+				
+				// -- calculate direction vector
+				mTmpVec.subtractAndSet(mTempPoint3, mTempPoint2);
+				mTmpVec.normalize();
+					
+				mTmpOrientation.setFromRotationBetween(mObjectRay, mTmpVec);
+				mTmpOrientation.normalize();
+				mTransformable3D.getOrientation(mTmpOrientation2);
+				mTmpOrientation2.normalize();
+				mTmpOrientation2.multiply(mTmpOrientation);
+				mTmpOrientation2.normalize();
+				mTransformable3D.setOrientation(mTmpOrientation2);
+				mTmpOrientation2.normalize();				
+				
+				mObjectRay.setAll(mTmpVec);
+			}
 		}
 	}
 

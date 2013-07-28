@@ -1,7 +1,7 @@
 package rajawali.lights;
 
 import rajawali.ATransformable3D;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 
 public abstract class ALight extends ATransformable3D {
@@ -34,7 +34,7 @@ public abstract class ALight extends ATransformable3D {
 		mColor[2] = (color & 0xFF) / 255f;
 	}
 
-	public void setColor(Number3D color) {
+	public void setColor(Vector3 color) {
 		mColor[0] = color.x;
 		mColor[1] = color.y;
 		mColor[2] = color.z;

@@ -2,15 +2,17 @@
 
 Rajawali is a 3D engine for Android based on OpenGL ES 2.0. It can be used for normal apps as well as live wallpapers.
 
-[Announcing Rajawali: An OpenGL ES 2.0 Based 3D Framework For Android](http://www.rozengain.com/blog/2011/08/23/announcing-rajawali-an-opengl-es-2-0-based-3d-framework-for-android/)
+[Join the Rajawali Community](https://plus.google.com/u/0/communities/116529974266844528013) on [![Rajawali Community on Google Plus](http://sinceresocial.com/wp-content/uploads/2012/05/google+-20px.png)](https://plus.google.com/u/0/communities/116529974266844528013) to stay up-to-date on the latest news. 
 
 _NOTE: Rajawali recently removed official support for versions of Android below 4.0/API 14. If you need support for these devices you will need to use the [`v0.9`](https://github.com/MasDennis/Rajawali/tree/v0.9) tag. This decision was made in order to allow us to freely improve the library in the face of the growing uptake of 4.0+ devices. Major bugs identified in this tag will be addressed, but no further improvements/enhancements should be expected._
 
 _NOTE: Rajawali's release process is changing and the master branch should be considered unstable. Use the [`v0.9`](https://github.com/MasDennis/Rajawali/tree/v0.9) tag if you need a stable version. We are working to improve documentation on this subject._
 
+The [RajawaliExamples](https://github.com/MasDennis/RajawaliExamples) project is an ever growing toolkit for developing 3D content. [Check it out!](https://github.com/MasDennis/RajawaliExamples)
+
 ## Made With Rajawali
 
-Numerous apps and live wallpapers have been made with Rajawali. [Check them out!](https://github.com/MasDennis/Rajawali/wiki/Made-With-Rajawali)
+Numerous apps and live wallpapers have been made with Rajawali. [Check them out!](https://plus.google.com/u/0/communities/116529974266844528013/stream/526227da-cf2d-46f9-8ad6-beaca7b8ddd5)
 
 ## Using Rajawali
 
@@ -21,6 +23,12 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 ## Rajawali Examples On The Market
 
 [Download the free app](https://market.android.com/details?id=com.monyetmabuk.rajawali.tutorials)
+
+## Rajawali + Augmented Reality
+
+[RajawaliVuforia GitHub](https://github.com/MasDennis/RajawaliVuforia)
+
+[YouTube Video of RajawaliVuforia in action](http://www.youtube.com/watch?v=rjLa4K9Ffuo)
 
 ## Tutorials
 
@@ -62,6 +70,7 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 * [Introducing Plugin Architecture for Rajawali](http://www.andrewjo.com/blog/mobile-development/introducing-plugin-architecture-for-rajawali)
 * [Object Occlusion Testing in Rajawali](http://www.andrewjo.com/blog/mobile-development/object-occlusion-testing-in-rajawali)
 * [Ниже пример как сделать простую 3D модель и запустить сцену на Android](http://konsultantspb.ru/3d-engine-rajawali/)
+* [Android in razvoj 3D igre](http://www.monitor.si/clanek/android-in-razvoj-3d-igre/142302/)
 
 ## Learn Rajawali at a Training Center
 * [Android Game Development in India](http://virtualinfocom.com/android_game/android_game_development_institute.html)

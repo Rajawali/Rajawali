@@ -2,18 +2,67 @@ package rajawali.primitives;
 
 import rajawali.BaseObject3D;
 
+/**
+ * A sphere primitive. The constructor takes two boolean arguments that indicate whether certain buffers should be
+ * created or not. Not creating these buffers can reduce memory footprint.
+ * <p>
+ * When creating solid color sphere both <code>createTextureCoordinates</code> and <code>createVertexColorBuffer</code>
+ * can be set to <code>false</code>.
+ * <p>
+ * When creating a textured sphere <code>createTextureCoordinates</code> should be set to <code>true</code> and
+ * <code>createVertexColorBuffer</code> should be set to <code>false</code>.
+ * <p>
+ * When creating a sphere without a texture but with different colors per texture <code>createTextureCoordinates</code>
+ * should be set to <code>false</code> and <code>createVertexColorBuffer</code> should be set to <code>true</code>.
+ * 
+ * @author dennis.ippel
+ * 
+ */
 public class Sphere extends BaseObject3D {
 
 	private final float PI = (float) Math.PI;
 	private float mRadius;
 	private int mSegmentsW;
 	private int mSegmentsH;
+	private boolean mCreateTextureCoords;
+	private boolean mCreateVertexColorBuffer;
 
+	/**
+	 * Creates a sphere primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
+	 * 
+	 * @param radius
+	 *            The radius of the sphere
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 */
 	public Sphere(float radius, int segmentsW, int segmentsH) {
+		this(radius, segmentsW, segmentsH, true, false);
+	}
+
+	/**
+	 * Creates a sphere primitive.
+	 * 
+	 * @param radius
+	 *            The radius of the sphere
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 * @param createTextureCoordinates
+	 *            A boolean that indicates whether the texture coordinates should be calculated or not.
+	 * @param createVertexColorBuffer
+	 *            A boolean that indicates whether a vertex color buffer should be created or not.
+	 */
+	public Sphere(float radius, int segmentsW, int segmentsH, boolean createTextureCoordinates,
+			boolean createVertexColorBuffer) {
 		super();
 		mRadius = radius;
 		mSegmentsW = segmentsW;
 		mSegmentsH = segmentsH;
+		mCreateTextureCoords = createTextureCoordinates;
+		mCreateVertexColorBuffer = createVertexColorBuffer;
 		init();
 	}
 
@@ -23,7 +72,6 @@ public class Sphere extends BaseObject3D {
 
 		float[] vertices = new float[numVertices * 3];
 		float[] normals = new float[numVertices * 3];
-		float[] colors = new float[numVertices * 4];
 		int[] indices = new int[numIndices];
 
 		int i, j;
@@ -73,26 +121,40 @@ public class Sphere extends BaseObject3D {
 			}
 		}
 
-		int numUvs = (mSegmentsH + 1) * (mSegmentsW + 1) * 2;
-		float[] textureCoords = new float[numUvs];
+		float[] textureCoords = null;
+		if (mCreateTextureCoords) {
+			int numUvs = (mSegmentsH + 1) * (mSegmentsW + 1) * 2;
+			textureCoords = new float[numUvs];
 
-		numUvs = 0;
-		for (j = 0; j <= mSegmentsH; ++j) {
-			for (i = 0; i <= mSegmentsW; ++i) {
-				textureCoords[numUvs++] = -(float) i / mSegmentsW;
-				textureCoords[numUvs++] = (float) j / mSegmentsH;
+			numUvs = 0;
+			for (j = 0; j <= mSegmentsH; ++j) {
+				for (i = 0; i <= mSegmentsW; ++i) {
+					textureCoords[numUvs++] = -(float) i / mSegmentsW;
+					textureCoords[numUvs++] = (float) j / mSegmentsH;
+				}
 			}
 		}
 
-		int numColors = numVertices * 4;
-		for (j = 0; j < numColors; j += 4)
+		float[] colors = null;
+
+		if (mCreateVertexColorBuffer)
 		{
-			colors[j] = 1.0f;
-			colors[j + 1] = 0;
-			colors[j + 2] = 0;
-			colors[j + 3] = 1.0f;
+			int numColors = numVertices * 4;
+			colors = new float[numColors];
+			for (j = 0; j < numColors; j += 4)
+			{
+				colors[j] = 1.0f;
+				colors[j + 1] = 0;
+				colors[j + 2] = 0;
+				colors[j + 3] = 1.0f;
+			}
 		}
 
 		setData(vertices, normals, textureCoords, colors, indices);
+
+		vertices = null;
+		normals = null;
+		textureCoords = null;
+		indices = null;
 	}
 }

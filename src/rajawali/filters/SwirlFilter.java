@@ -72,7 +72,7 @@ public class SwirlFilter extends AMaterial implements IPostProcessingFilter {
 	protected float[] mCenter;
 			
 	public SwirlFilter(float screenWidth, float screenHeight, float radius, float angle) {
-		super(mVShader, mFShader, false);
+		super(mVShader, mFShader);
 		mCenter = new float[] { screenWidth * .5f, screenHeight * .5f };
 		mScreenWidth = screenWidth;
 		mScreenHeight = screenHeight;

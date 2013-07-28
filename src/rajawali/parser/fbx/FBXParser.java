@@ -11,17 +11,23 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
+import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
+import rajawali.lights.PointLight;
+import rajawali.lights.SpotLight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Number3D;
-import rajawali.math.Vector2D;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.Texture;
+import rajawali.math.vector.Vector2;
+import rajawali.math.vector.Vector3;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.fbx.FBXValues.Connections.Connect;
 import rajawali.parser.fbx.FBXValues.FBXColor4;
@@ -30,7 +36,6 @@ import rajawali.parser.fbx.FBXValues.FBXIntBuffer;
 import rajawali.parser.fbx.FBXValues.FBXMatrix;
 import rajawali.parser.fbx.FBXValues.Objects.Material;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
-import rajawali.parser.fbx.FBXValues.Objects.Texture;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap;
@@ -71,20 +76,22 @@ public class FBXParser extends AMeshParser {
 	
 	public FBXParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
-		init(renderer);
-	}
-	
-	public FBXParser(RajawaliRenderer renderer, int resourceId) {
-		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
-		init(renderer);
+		mRenderer = renderer;
+		mObjStack = new Stack<Object>();
+		mFbx = new FBXValues();
+		mObjStack.add(mFbx);
 	}
 	
 	public FBXParser(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
-		init(renderer);
+		mRenderer = renderer;
+		mObjStack = new Stack<Object>();
+		mFbx = new FBXValues();
+		mObjStack.add(mFbx);
 	}
 	
-	private final void init(RajawaliRenderer renderer) {
+	public FBXParser(RajawaliRenderer renderer, int resourceId) {
+		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
 		mFbx = new FBXValues();
@@ -131,13 +138,8 @@ public class FBXParser extends AMeshParser {
 		for(int i=0; i<numLights; ++i) {
 			Model l = lights.get(i);
 			// -- really need to add more light types
-			ALight light = new DirectionalLight();
-			light.setPosition(l.properties.lclTranslation);
-			light.setX(light.getX() * -1);
-			light.setRotation(l.properties.lclRotation);
-			light.setPower(l.properties.intensity / 100f);
-			light.setColor(l.properties.color);
-			sceneLights.add(light);
+
+			sceneLights.add(buildLight(l));
 		}
 		
 		if(numLights == 0)
@@ -164,8 +166,12 @@ public class FBXParser extends AMeshParser {
 		
 		Stack<Model> models = mFbx.objects.getModelsByType(FBXValues.MODELTYPE_MESH);
 		
-		for(int i=0; i<models.size(); ++i) {
-			buildMesh(models.get(i), sceneLights);
+		try {
+			for(int i=0; i<models.size(); ++i) {
+				buildMesh(models.get(i), sceneLights);
+			}
+		} catch(TextureException tme) {
+			throw new ParsingException(tme);
 		}
 		
 		// -- get cameras
@@ -181,22 +187,63 @@ public class FBXParser extends AMeshParser {
 			}
 		}
 
-		/*if(camera != null) { //TODO: FIX
-			Camera cam = mRenderer.getCamera();
+		if(camera != null) { //TODO: FIX
+			Camera cam = mRenderer.getCurrentCamera();
 			cam.setPosition(camera.position);
-			cam.setX(mRenderer.getCamera().getX() * -1);
-			Number3D lookAt = camera.lookAt;
-			lookAt.x = -lookAt.x;
+			cam.setX(mRenderer.getCurrentCamera().getX() * -1);
+			cam.setRotation(camera.properties.lclRotation);
+			Vector3 lookAt = camera.lookAt;
+//			lookAt.x = -lookAt.x;
 			cam.setLookAt(lookAt);
 			cam.setNearPlane(camera.properties.nearPlane);
 			cam.setFarPlane(camera.properties.farPlane);
 			cam.setFieldOfView(camera.properties.fieldOfView);
-		}*/
+		}
 		
 		return this;
 	}
 	
-	private void buildMesh(Model model, Stack<ALight> lights) {
+	private ALight buildLight(Model l){
+		int m = l.properties.lightType != null ? l.properties.lightType:ALight.POINT_LIGHT;
+		switch (m){
+		
+		case ALight.POINT_LIGHT:		//Point
+			PointLight light = new PointLight();
+			light.setPosition(l.properties.lclTranslation);
+			light.setX(light.getX() * -1f);
+			light.setRotation(l.properties.lclRotation);
+			light.setPower(l.properties.intensity / 100f);
+			light.setColor(l.properties.color);
+			mRootObject.addLight(light);
+			return light;			
+			
+		case ALight.DIRECTIONAL_LIGHT:		//Area
+			DirectionalLight lD = new DirectionalLight(0,-1,0);  //TODO calculate direction based on position and rotation
+			lD.setPosition(l.properties.lclTranslation);
+			lD.setX(lD.getX() * -1f);
+			lD.setRotation(l.properties.lclRotation);
+			lD.setPower(l.properties.intensity / 100f);
+			lD.setColor(l.properties.color);
+			mRootObject.addLight(lD);
+			return lD;
+			
+		default:
+		case ALight.SPOT_LIGHT:		//Spot
+			SpotLight lS = new SpotLight();		//TODO calculate direction based on position and rotation
+			lS.setPosition(l.properties.lclTranslation);
+			lS.setX(lS.getX() * -1f);
+			lS.setRotation(l.properties.lclRotation);
+			lS.setPower(l.properties.intensity / 100f);
+			lS.setCutoffAngle(l.properties.coneangle);
+			lS.setColor(l.properties.color);
+			lS.setLookAt(0, 0, 0);
+			mRootObject.addLight(lS);			
+			return lS;
+		}
+	
+	}
+	
+	private void buildMesh(Model model, Stack<ALight> lights) throws TextureException, ParsingException {
 		BaseObject3D o = new BaseObject3D(model.name);
 		boolean hasUVs = model.layerElementUV.uVIndex != null;
 		
@@ -337,7 +384,7 @@ public class FBXParser extends AMeshParser {
 		indices = null;
 		
 		o.setMaterial(getMaterialForMesh(o, model.name));
-		o.getMaterial().setUseColor(true);
+		o.getMaterial().setUseSingleColor(true);
 		o.setLights(lights);
 		setMeshTextures(o, model.name);
 		
@@ -372,14 +419,14 @@ public class FBXParser extends AMeshParser {
 	    return ret;
 	}
 	
-	private void setMeshTextures(BaseObject3D o, String name) {
-		Stack<Texture> textures = mFbx.objects.textures;
+	private void setMeshTextures(BaseObject3D o, String name) throws TextureException, ParsingException {
+		Stack<FBXValues.Objects.Texture> textures = mFbx.objects.textures;
 		Stack<Connect> connections = mFbx.connections.connections;
 		int numTex = textures.size();
 		int numCon = connections.size();
 		
 		for(int i=0; i<numTex; ++i) {
-			Texture tex = textures.get(i);
+			FBXValues.Objects.Texture tex = textures.get(i);
 			for(int j=0; j<numCon; ++j) {
 				Connect conn = connections.get(j);
 
@@ -387,25 +434,20 @@ public class FBXParser extends AMeshParser {
 				{
 					// -- one texture for now
 					String textureName = tex.fileName;
-					try {
-						Bitmap texture = null;
-						if(mFile == null) {
-							int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(), "drawable", mResources.getResourcePackageName(mResourceId));
-							texture = BitmapFactory.decodeResource(mResources, identifier);
-						} else {
-							try {
-								String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(textureName);
-								texture = BitmapFactory.decodeFile(filePath);
-							} catch (Exception e) {
-								RajLog.e("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
-								e.printStackTrace();
-								return;
-							}
+
+					Bitmap bitmap = null;
+					if(mFile == null) {
+						int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(Locale.getDefault()), "drawable", mResources.getResourcePackageName(mResourceId));
+						bitmap = BitmapFactory.decodeResource(mResources, identifier);
+					} else {
+						try {
+							String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(textureName);
+							bitmap = BitmapFactory.decodeFile(filePath);
+						} catch (Exception e) {
+							throw new ParsingException("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
 						}
-						o.addTexture(mTextureManager.addTexture(texture));
-					} catch(Exception e) {
-						RajLog.e("Could not load texture [" + textureName + "]: " + e.getMessage() );	
 					}
+					o.getMaterial().addTexture(new Texture(textureName, bitmap));
 					return;
 				}
 			}
@@ -589,8 +631,8 @@ public class FBXParser extends AMeshParser {
 					field.set(obj, Long.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));		
 				else if(clazz.equals(Float.class))
 					field.set(obj, Float.valueOf(val.replaceAll(REGEX_NO_SPACE_NO_QUOTE, REPLACE_EMPTY)));		
-				else if(clazz.equals(Number3D.class)) {
-					field.set(obj, new Number3D(val.split(",")));
+				else if(clazz.equals(Vector3.class)) {
+					field.set(obj, new Vector3(val.split(",")));
 				}
 				else if(clazz.equals(FBXFloatBuffer.class))
 				{
@@ -644,9 +686,9 @@ public class FBXParser extends AMeshParser {
 				{
 					field.set(obj, new FBXColor4(val));
 				}
-				else if(clazz.equals(Vector2D.class))
+				else if(clazz.equals(Vector2.class))
 				{
-					field.set(obj, new Vector2D(val.replaceAll("\\s", REPLACE_EMPTY).split(",")));
+					field.set(obj, new Vector2(val.replaceAll("\\s", REPLACE_EMPTY).split(",")));
 				}
 				
 				if(processNextLine && line.replaceAll(REGEX_CLEAN, REPLACE_EMPTY).length() > 0)

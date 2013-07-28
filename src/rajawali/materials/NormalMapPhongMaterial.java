@@ -4,14 +4,10 @@ import rajawali.lights.ALight;
 
 import com.monyetmabuk.livewallpapers.photosdof.R;
 
-public class BumpmapPhongMaterial extends PhongMaterial {
+public class NormalMapPhongMaterial extends PhongMaterial {
 	
-	public BumpmapPhongMaterial() {
-		this(false);
-	}
-	
-	public BumpmapPhongMaterial(boolean isAnimated) {
-		super(R.raw.phong_material_vertex, R.raw.bumpmap_phong_material, isAnimated);
+	public NormalMapPhongMaterial() {
+		super(R.raw.phong_material_vertex, R.raw.bumpmap_phong_material);
 	}
 	
 	@Override

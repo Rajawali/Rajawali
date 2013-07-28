@@ -1,47 +1,46 @@
 package rajawali;
 
 import rajawali.bounds.BoundingBox;
-import rajawali.math.Number3D;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
+import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class Frustum {
-	private Number3D[] mTmp = new Number3D[8];
+	private Vector3[] mTmp = new Vector3[8];
 	protected Sphere mVisualSphere;
 	protected BoundingBox mBoundingBox;
 	protected float[] mTmpMatrix = new float[16];
-	protected static final Number3D[] mClipSpacePlanePoints = { 
-		new Number3D(-1, -1, -1), 
-		new Number3D( 1, -1, -1), 
-		new Number3D( 1,  1, -1), 
-		new Number3D(-1,  1, -1), 
-		new Number3D(-1, -1,  1), 
-		new Number3D( 1, -1,  1), 
-		new Number3D( 1,  1,  1),
-		new Number3D(-1,  1,  1)}; 
+	protected static final Vector3[] mClipSpacePlanePoints = { 
+		new Vector3(-1, -1, -1), 
+		new Vector3( 1, -1, -1), 
+		new Vector3( 1,  1, -1), 
+		new Vector3(-1,  1, -1), 
+		new Vector3(-1, -1,  1), 
+		new Vector3( 1, -1,  1), 
+		new Vector3( 1,  1,  1),
+		new Vector3(-1,  1,  1)}; 
 
 	public final Plane[] planes = new Plane[6];     
 
-	protected final Number3D[] planePoints = { new Number3D(), new Number3D(), new Number3D(), new Number3D(), 
-			new Number3D(), new Number3D(), new Number3D(), new Number3D() 
+	protected final Vector3[] planePoints = { new Vector3(), new Vector3(), new Vector3(), new Vector3(), 
+			new Vector3(), new Vector3(), new Vector3(), new Vector3() 
 	};      
 
 	public Frustum() {
 		for(int i = 0; i < 6; i++) {
-			planes[i] = new Plane(new Number3D(), 0);
+			planes[i] = new Plane(new Vector3(), 0);
 		}
 		for(int i=0;i<8;i++){
-			mTmp[i]=new Number3D();
+			mTmp[i]=new Vector3();
 		}
 	}
 
 	public void update(float[] inverseProjectionView) {             
 
 		for(int i = 0; i < 8; i++) {
-			planePoints[i].setAllFrom(mClipSpacePlanePoints[i]);
+			planePoints[i].setAll(mClipSpacePlanePoints[i]);
 			planePoints[i].project(inverseProjectionView);   
 		}
 
@@ -55,7 +54,7 @@ public class Frustum {
 	}       
 
 
-	public boolean sphereInFrustum (Number3D center, float radius) {
+	public boolean sphereInFrustum (Vector3 center, float radius) {
 		for (int i = 0; i < planes.length; i++)
 			if (planes[i].distance(center) < -radius) return false;
 
@@ -63,7 +62,7 @@ public class Frustum {
 	}
 
 	public boolean boundsInFrustum (BoundingBox bounds) {
-		Number3D[] corners = mTmp;
+		Vector3[] corners = mTmp;
 		bounds.copyPoints(mTmp);//copy transformed points and test
 		int isout;
 		for (int i = 0; i < 6; i++) {
@@ -79,7 +78,7 @@ public class Frustum {
 		return true;
 	}
 
-	public boolean pointInFrustum (Number3D point) {
+	public boolean pointInFrustum (Vector3 point) {
 		for (int i = 0; i < planes.length; i++) {
 			PlaneSide result = planes[i].getPointSide(point);
 			if (result == PlaneSide.Back) {return false;}
@@ -96,12 +95,12 @@ public class Frustum {
 		if (mBoundingBox == null) {
 			mBoundingBox = new BoundingBox();
 		}
-		Number3D min = new Number3D();
-		Number3D max = new Number3D();
-		min.setAllFrom(planePoints[0]);
+		Vector3 min = new Vector3();
+		Vector3 max = new Vector3();
+		min.setAll(planePoints[0]);
 		min.x = planePoints[5].x;
 		min.y = planePoints[5].y;
-		max.setAllFrom(planePoints[7]);
+		max.setAll(planePoints[7]);
 		//Log.i("Rajawali", "Min/Max: " + min + "/" + max);
 		Matrix.setIdentityM(mTmpMatrix, 0);
 		mBoundingBox.setMin(min);

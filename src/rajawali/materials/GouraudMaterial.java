@@ -15,27 +15,11 @@ public class GouraudMaterial extends AAdvancedMaterial {
 	protected float[] mSpecularIntensity;
 	
 	public GouraudMaterial() {
-		this(false);
-	}
-	
-	public GouraudMaterial(boolean isAnimated) {
-		super(R.raw.gouraud_material_vertex, R.raw.gouraud_material_fragment, isAnimated);
+		super(R.raw.gouraud_material_vertex, R.raw.gouraud_material_fragment);
 		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
 		mSpecularIntensity = new float[] { 1f, 1f, 1f, 1.0f };
 	}
-	
-	/**
-	 * Constructor to pass parameters directly
-	 * 
-	 * @param parameters Use bitwise parameters from `AMaterial`
-	 */
-	
-	public GouraudMaterial(int parameters) {
-		super(R.raw.gouraud_material_vertex, R.raw.gouraud_material_fragment, parameters);
-		mSpecularColor = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-		mSpecularIntensity = new float[] { 1f, 1f, 1f, 1.0f };
-	}
-	
+
 	public GouraudMaterial(float[] specularColor) {
 		this();
 		mSpecularColor = specularColor;
@@ -100,7 +84,7 @@ public class GouraudMaterial extends AAdvancedMaterial {
 					vc.append("else {\n");
 						vc.append("spot_factor").append(i).append(" = 0.0;\n");
 					vc.append("}\n");
-					vc.append("L = vec3(L.y, L.x, L.z);\n");
+					vc.append("L = vec3(L.x, L.y, L.z) * spot_factor").append(i).append(";\n");
 					vc.append("}\n");
 			}  else if(light.getLightType() == ALight.DIRECTIONAL_LIGHT) {
 				vc.append("L = normalize(-uLightDirection").append(i).append(");");
@@ -108,14 +92,8 @@ public class GouraudMaterial extends AAdvancedMaterial {
 			vc.append("NdotL = max(dot(N, L), 0.1);\n");
 			vc.append("power = NdotL * attenuation * uLightPower").append(i).append(";\n");
 			vc.append("vDiffuseIntensity += power;\n");
-			if(light.getLightType() == ALight.SPOT_LIGHT){
-				vc.append("vLightColor += uLightColor").append(i).append(" * spot_factor").append(i).append(";\n");
-				vc.append("vSpecularIntensity += pow(NdotL, 6.0) * spot_factor").append(i).append(";\n");
-			}
-			else{
-				vc.append("vLightColor += power * uLightColor").append(i).append(";\n");
-				vc.append("vSpecularIntensity += pow(NdotL, 6.0) * attenuation * uLightPower").append(i).append(";\n");
-			}
+			vc.append("vLightColor += power * uLightColor").append(i).append(";\n");
+			vc.append("vSpecularIntensity += pow(NdotL, 6.0) * attenuation * uLightPower").append(i).append(";\n");
 		}
 		
 		super.setShaders(vertexShader.replace("%LIGHT_CODE%", vc.toString()), fragmentShader);

@@ -1,7 +1,7 @@
 package rajawali.scenegraph;
 
 import rajawali.bounds.IBoundingVolume;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 
 /**
  * Generic interface which any member of IGraphNode must
@@ -45,5 +45,5 @@ public interface IGraphNodeMember {
 	 * 
 	 * @return Number3D containing the position.
 	 */
-	public Number3D getScenePosition();
+	public Vector3 getScenePosition();
 }

@@ -33,10 +33,17 @@ public class RajawaliActivity extends Activity {
 	protected boolean mUsesCoverageAa;
 	private RajawaliRenderer mRajRenderer;
 	protected boolean checkOpenGLVersion = true;
+	protected boolean mDeferGLSurfaceViewCreation = false;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(!mDeferGLSurfaceViewCreation)
+        	createSurfaceView();
+    }
+    
+    protected void createSurfaceView()
+    {
         mSurfaceView = new GLSurfaceView(this);
         
         ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -46,6 +53,7 @@ public class RajawaliActivity extends Activity {
         		throw new Error("OpenGL ES 2.0 is not supported by this device");
         }
         mSurfaceView.setEGLContextClientVersion(2);
+        
         mLayout = new FrameLayout(this);
         mLayout.addView(mSurfaceView);
         
@@ -160,14 +168,18 @@ public class RajawaliActivity extends Activity {
     @Override
     protected void onResume() {
     	super.onResume();
+    	if(mRajRenderer == null) return;
     	mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     	mSurfaceView.onResume();
+    	mRajRenderer.onVisibilityChanged(true);
     }
     
     @Override
     protected void onPause() {
     	super.onPause();
+    	if(mRajRenderer == null) return;
     	mSurfaceView.onPause();
+    	mRajRenderer.onVisibilityChanged(false);
     }
 
     @Override
@@ -193,5 +205,18 @@ public class RajawaliActivity extends Activity {
             }
             ((ViewGroup) view).removeAllViews();
         }
+    }
+    
+    /**
+     * Setting this to true will allow you to create surface view manually.
+     * This could be needed when working with other libraries that need
+     * to share a OpenGL context.
+     * This is set to false by default which will cause the GLSurfaceView to
+     * be created in onCreate()
+     * @param defer
+     */
+    protected void deferGLSurfaceViewCreation(boolean defer)
+    {
+    	mDeferGLSurfaceViewCreation = defer;
     }
 }

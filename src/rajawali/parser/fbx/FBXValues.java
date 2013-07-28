@@ -2,8 +2,8 @@ package rajawali.parser.fbx;
 
 import java.util.Stack;
 
-import rajawali.math.Number3D;
-import rajawali.math.Vector2D;
+import rajawali.math.vector.Vector2;
+import rajawali.math.vector.Vector3;
 import android.graphics.Color;
 
 public class FBXValues {
@@ -194,8 +194,8 @@ public class FBXValues {
 			public String media;
 			public String fileName;
 			public String relativeFilename;
-			public Vector2D modelUVTranslation;
-			public Vector2D modelUVScaling;
+			public Vector2 modelUVTranslation;
+			public Vector2 modelUVScaling;
 			public String texture_Alpha_Source;
 			public Properties properties = new Properties();
 			
@@ -205,9 +205,9 @@ public class FBXValues {
 			}
 			
 			protected class Properties {
-				public Number3D translation;
-				public Number3D rotation;
-				public Number3D scaling;
+				public Vector3 translation;
+				public Vector3 rotation;
+				public Vector3 scaling;
 				public Float textureAlpha;
 				public Integer textureTypeUse;
 				public Integer currentTextureBlendMode;
@@ -217,8 +217,8 @@ public class FBXValues {
 				public Boolean uVSwap;
 				public Integer wrapModeU;
 				public Integer wrapModeV;
-				public Number3D textureRotationPivot;
-				public Number3D textureScalingPivot;
+				public Vector3 textureRotationPivot;
+				public Vector3 textureScalingPivot;
 			}
 		}
 		
@@ -297,24 +297,24 @@ public class FBXValues {
 			protected class Properties {
 				public String shadingModel;
 				public Boolean multiLayer;
-				public Number3D emissiveColor;
+				public Vector3 emissiveColor;
 				public Float emissiveFactor;
-				public Number3D ambientColor;
+				public Vector3 ambientColor;
 				public Float ambientFactor;
-				public Number3D diffuseColor;
+				public Vector3 diffuseColor;
 				public Float diffuseFactor;
-				public Number3D bump;
-				public Number3D transparentColor;
+				public Vector3 bump;
+				public Vector3 transparentColor;
 				public Float transparencyFactor;
-				public Number3D specularColor;
+				public Vector3 specularColor;
 				public Float specularFactor;
 				public Float shininessExponent;
-				public Number3D reflectionColor;
+				public Vector3 reflectionColor;
 				public Float reflectionFactor;
-				public Number3D emissive;
-				public Number3D ambient;
-				public Number3D diffuse;
-				public Number3D specular;
+				public Vector3 emissive;
+				public Vector3 ambient;
+				public Vector3 diffuse;
+				public Vector3 specular;
 				public Float shininess;
 				public Float opacity;
 				public Float reflectivity;
@@ -329,9 +329,9 @@ public class FBXValues {
 			public String culling;
 			public String typeFlags;
 			public Properties properties = new Properties();
-			public Number3D position;
-			public Number3D up;
-			public Number3D lookAt;
+			public Vector3 position;
+			public Vector3 up;
+			public Vector3 lookAt;
 			public FBXFloatBuffer vertices;
 			public FBXIntBuffer polygonVertexIndex;
 			public LayerElementNormal layerElementNormal = new LayerElementNormal();
@@ -349,14 +349,14 @@ public class FBXValues {
 			protected class Properties {
 				public Boolean quaternionInterpolate;
 				public Integer visibility;
-				public Number3D lclTranslation;
-				public Number3D lclRotation;
-				public Number3D lclScaling;
-				public Number3D rotationOffset;
-				public Number3D rotationPivot;
-				public Number3D scalingOffset;
-				public Number3D scalingPivot;
-				public Number3D color;
+				public Vector3 lclTranslation;
+				public Vector3 lclRotation;
+				public Vector3 lclScaling;
+				public Vector3 rotationOffset;
+				public Vector3 rotationPivot;
+				public Vector3 scalingOffset;
+				public Vector3 scalingPivot;
+				public Vector3 color;
 				public Float intensity;
 				public Float fieldOfView;
 				public Float focalLength;
@@ -365,6 +365,8 @@ public class FBXValues {
 				public Integer pixelAspectRatio;
 				public Float nearPlane;
 				public Float farPlane;
+				public Integer lightType;
+				public Float coneangle;
 			}
 			
 			protected class Layer {

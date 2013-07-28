@@ -7,7 +7,7 @@ import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
-import rajawali.math.Number3D;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -118,28 +118,11 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	public AAdvancedMaterial(int vertex_resID, int fragment_resID) {
-		this(RawMaterialLoader.fetch(vertex_resID), RawMaterialLoader.fetch(fragment_resID), AMaterial.NONE);
-	}
-	
-	public AAdvancedMaterial(int vertex_resID, int fragment_resID, boolean isAnimated) {
-		this(RawMaterialLoader.fetch(vertex_resID), RawMaterialLoader.fetch(fragment_resID), isAnimated);
+		this(RawMaterialLoader.fetch(vertex_resID), RawMaterialLoader.fetch(fragment_resID));
 	}
 	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader) {
-		this(vertexShader, fragmentShader, AMaterial.NONE);
-	}
-	
-	public AAdvancedMaterial(String vertexShader, String fragmentShader, boolean isAnimated) {
-		this(vertexShader, fragmentShader,
-				isAnimated ? AMaterial.VERTEX_ANIMATION : AMaterial.NONE);
-	}
-	
-	public AAdvancedMaterial(int vertex_resID, int fragment_resID, int parameters) {
-		this(RawMaterialLoader.fetch(vertex_resID), RawMaterialLoader.fetch(fragment_resID), parameters);
-	}
-	
-	public AAdvancedMaterial(String vertexShader, String fragmentShader, int parameters) {
-		super(vertexShader, fragmentShader, parameters);
+		super(vertexShader, fragmentShader);
 		mNormalMatrix = new float[9];
 		mTmp = new float[9];
 		mTmp2 = new float[9];
@@ -154,7 +137,6 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	public void setLights(List<ALight> lights) {
 		if(lights.size() != mLights.size() && lights.size() != 0) {
 			super.setLights(lights);
-			setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 		} else if(lights.size() != 0) {
 			boolean same = true;
 			for(int i=0; i<lights.size(); ++i)
@@ -163,7 +145,6 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			if(!same)
 			{
 				super.setLights(lights);
-				setShaders(mUntouchedVertexShader, mUntouchedFragmentShader);
 			}
 		} else {
 			super.setLights(lights);
@@ -195,7 +176,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mAmbientColor = color;
 	}
 	
-	public void setAmbientColor(Number3D color) {
+	public void setAmbientColor(Vector3 color) {
 		setAmbientColor(color.x, color.y, color.z, 1);
 	}
 	
@@ -382,7 +363,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			mvBoneIndex1Handle = getAttribLocation("vBoneIndex1");
 			mvBoneWeight1Handle = getAttribLocation("vBoneWeight1");
 			
-			if(mMaxWeights>4){//TODO check if maxWeights > 8 -> throw exception
+			if(mMaxWeights>4){
 				mvBoneIndex2Handle = getAttribLocation("vBoneIndex2");
 				mvBoneWeight2Handle = getAttribLocation("vBoneWeight2");
 			}
@@ -414,8 +395,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	    GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalMatrix, 0);
 	}
 	
-	public void destroy() {
-		super.destroy();
+	public void remove() {
+		super.remove();
 		muLightColorHandles = null;
 		muLightPowerHandles = null;
 		muLightPositionHandles = null;

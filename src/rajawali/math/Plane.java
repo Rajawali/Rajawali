@@ -1,9 +1,11 @@
 package rajawali.math;
 
+import rajawali.math.vector.Vector3;
+
 public class Plane {
-	private static Number3D mTmp1;
-	private static Number3D mTmp2;
-	public final Number3D mNormal;
+	private static Vector3 mTmp1;
+	private static Vector3 mTmp2;
+	public final Vector3 mNormal;
 	public float d = 0;
 
 	public enum PlaneSide {
@@ -11,26 +13,26 @@ public class Plane {
 	}
 
 	public Plane() {
-		mTmp1 = new Number3D();
-		mTmp2 = new Number3D();
-		mNormal = new Number3D();
+		mTmp1 = new Vector3();
+		mTmp2 = new Vector3();
+		mNormal = new Vector3();
 	}
 	
-	public Plane(Number3D normal, float d) {
+	public Plane(Vector3 normal, float d) {
 		this();
-		mNormal.setAllFrom(normal);
+		mNormal.setAll(normal);
 		mNormal.normalize();
 		this.d = d;
 	} 
 
-	public Plane(Number3D point1, Number3D point2, Number3D point3) {
+	public Plane(Vector3 point1, Vector3 point2, Vector3 point3) {
 		this();
 		set(point1, point2, point3);
 	}
 
-	public void set(Number3D point1, Number3D point2, Number3D point3) {
-		mTmp1.setAllFrom(point1);
-		mTmp2.setAllFrom(point2);
+	public void set(Vector3 point1, Vector3 point2, Vector3 point3) {
+		mTmp1.setAll(point1);
+		mTmp2.setAll(point2);
 		mTmp1.x -= mTmp2.x; mTmp1.y -= mTmp2.y; mTmp1.z -= mTmp2.z;
 		mTmp2.x -= point3.x; mTmp2.y -= point3.y; mTmp2.z -= point3.z;
 
@@ -38,7 +40,7 @@ public class Plane {
 
 		mNormal.normalize();
 
-		d = -Number3D.dot(point1, mNormal); 
+		d = -Vector3.dot(point1, mNormal); 
 	}
 
 	public void setAll(float nx, float ny, float nz, float d) {
@@ -46,23 +48,23 @@ public class Plane {
 		this.d = d;
 	}
 
-	public float distance(Number3D point) {
-		return Number3D.dot(mNormal, point) + d;
+	public float distance(Vector3 point) {
+		return Vector3.dot(mNormal, point) + d;
 	}
 
-	public PlaneSide getPointSide(Number3D point) {
-		float dist =Number3D.dot(mNormal, point) + d;
+	public PlaneSide getPointSide(Vector3 point) {
+		float dist =Vector3.dot(mNormal, point) + d;
 		if (dist == 0) {return PlaneSide.OnPlane;}
 		else if (dist < 0){ return PlaneSide.Back;}
 		else {return PlaneSide.Front;}
 	}
 
-	public boolean isFrontFacing(Number3D direction) {
-		float dot = Number3D.dot(mNormal, direction); 
+	public boolean isFrontFacing(Vector3 direction) {
+		float dot = Vector3.dot(mNormal, direction); 
 		return dot <= 0;
 	}
 
-	public Number3D getNormal() {
+	public Vector3 getNormal() {
 		return mNormal;
 	}
 
@@ -71,7 +73,7 @@ public class Plane {
 	}
 
 	public void setAllFrom(Plane plane) {
-		this.mNormal.setAllFrom(plane.mNormal);
+		this.mNormal.setAll(plane.mNormal);
 		this.d = plane.d;
 	}
 }

@@ -2,6 +2,8 @@ package rajawali.util;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import rajawali.Capabilities;
+
 import android.util.Log;
 
 public class RajLog {
@@ -12,9 +14,11 @@ public class RajLog {
 	private static GL10 gl;
 
 	public static final void d(String msg) {
-		if (_logDebug) {
+		if (msg == null)
+			return;
+		
+		if (_logDebug)
 			Log.d(TAG, msg);
-		}
 	}
 	
 	public static final void d(float[] values) {
@@ -126,6 +130,7 @@ public class RajLog {
 			sb.append("OpenGL info             : Cannot find OpenGL information. Please call this function from initScene().\n");
 		}
 		sb.append("-=-=-=- /OpenGL Information -=-=-=-\n");
+		sb.append(Capabilities.getInstance().toString());
 		
 		RajLog.i(sb.toString());		
 	}

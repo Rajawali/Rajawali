@@ -3,7 +3,7 @@ package rajawali.parser;
 import java.io.File;
 
 import rajawali.BaseObject3D;
-import rajawali.materials.TextureManager;
+import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import android.content.res.Resources;
 
@@ -48,7 +48,7 @@ public abstract class AMeshParser extends AParser implements IMeshParser {
 		public String ambientTexture;
 		public String diffuseTexture;
 		public String specularColorTexture;
-		public String specularHightlightTexture;
+		public String specularHighlightTexture;
 		public String alphaTexture;
 		public String bumpTexture;
 	}

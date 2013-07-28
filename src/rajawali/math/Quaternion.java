@@ -1,6 +1,7 @@
 package rajawali.math;
 
-import rajawali.math.Number3D.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 /**
  * Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html
@@ -11,13 +12,13 @@ import rajawali.math.Number3D.Axis;
 public final class Quaternion {
 	public final static float F_EPSILON = .001f;
 	public float w, x, y, z;
-	private Number3D mTmpVec1, mTmpVec2, mTmpVec3;
-
+	private Vector3 mTmpVec1, mTmpVec2, mTmpVec3;
+	
 	public Quaternion() {
 		setIdentity();
-		mTmpVec1 = new Number3D();
-		mTmpVec2 = new Number3D();
-		mTmpVec3 = new Number3D();
+		mTmpVec1 = new Vector3();
+		mTmpVec2 = new Vector3();
+		mTmpVec3 = new Vector3();
 	}
 
 	public Quaternion(float w, float x, float y, float z) {
@@ -55,11 +56,11 @@ public final class Quaternion {
 	}
 
 	public Quaternion fromAngleAxis(final float angle, final Axis axis) {
-		fromAngleAxis(angle, Number3D.getAxisVector(axis));
+		fromAngleAxis(angle, Vector3.getAxisVector(axis));
 		return this;
 	}
 	
-	public Quaternion fromAngleAxis(final float angle, final Number3D axisVector) {
+	public Quaternion fromAngleAxis(final float angle, final Vector3 axisVector) {
 		axisVector.normalize();
 		float radian = MathUtil.degreesToRadians(angle);
 		float halfAngle = radian * .5f;
@@ -92,7 +93,7 @@ public final class Quaternion {
 		return this;
 	}
 	
-	public void fromAxes(final Number3D xAxis, final Number3D yAxis, final Number3D zAxis)
+	public void fromAxes(final Vector3 xAxis, final Vector3 yAxis, final Vector3 zAxis)
     {
         float[] kRot = new float[16];
 
@@ -173,7 +174,7 @@ public final class Quaternion {
 		}
 	}
 
-	public Number3D getXAxis() {
+	public Vector3 getXAxis() {
 		float fTy = 2.0f * y;
 		float fTz = 2.0f * z;
 		float fTwy = fTy * w;
@@ -183,10 +184,10 @@ public final class Quaternion {
 		float fTyy = fTy * y;
 		float fTzz = fTz * z;
 
-		return new Number3D(1 - (fTyy + fTzz), fTxy + fTwz, fTxz - fTwy);
+		return new Vector3(1 - (fTyy + fTzz), fTxy + fTwz, fTxz - fTwy);
 	}
 
-	public Number3D getYAxis() {
+	public Vector3 getYAxis() {
 		float fTx = 2.0f * x;
 		float fTy = 2.0f * y;
 		float fTz = 2.0f * z;
@@ -197,10 +198,10 @@ public final class Quaternion {
 		float fTyz = fTz * y;
 		float fTzz = fTz * z;
 
-		return new Number3D(fTxy - fTwz, 1 - (fTxx + fTzz), fTyz + fTwx);
+		return new Vector3(fTxy - fTwz, 1 - (fTxx + fTzz), fTyz + fTwx);
 	}
 
-	public Number3D getZAxis() {
+	public Vector3 getZAxis() {
 		float fTx = 2.0f * x;
 		float fTy = 2.0f * y;
 		float fTz = 2.0f * z;
@@ -211,7 +212,7 @@ public final class Quaternion {
 		float fTyy = fTy * y;
 		float fTyz = fTz * y;
 
-		return new Number3D(fTxz + fTwy, fTyz - fTwx, 1 - (fTxx + fTyy));
+		return new Vector3(fTxz + fTwy, fTyz - fTwx, 1 - (fTxx + fTyy));
 	}
 
 	public void add(Quaternion other) {
@@ -247,10 +248,10 @@ public final class Quaternion {
 		z = tW * other.z + tZ * other.w + tX * other.y - tY * other.x;
 	}
 
-	public Number3D multiply(final Number3D vector) {
+	public Vector3 multiply(final Vector3 vector) {
 		mTmpVec3.setAll(x, y, z);
-		mTmpVec1 = Number3D.cross(mTmpVec3, vector);
-		mTmpVec2 = Number3D.cross(mTmpVec3, mTmpVec1);
+		mTmpVec1 = Vector3.crossAndCreate(mTmpVec3, vector);
+		mTmpVec2 = Vector3.crossAndCreate(mTmpVec3, mTmpVec1);
 		mTmpVec1.multiply(2.0f * w);
 		mTmpVec2.multiply(2.0f);
 
@@ -340,71 +341,47 @@ public final class Quaternion {
 		return (Math.abs(angle) <= tolerance) || MathUtil.realEqual(angle, MathUtil.PI, tolerance);
 	}
 
-	public static Quaternion slerp(float fT, final Quaternion rkP, final Quaternion rkQ, boolean shortestPath) {
-		float fCos = rkP.dot(rkQ);
-		Quaternion rkT = new Quaternion();
-
-		if (fCos < 0.0f && shortestPath) {
-			fCos = -fCos;
-			rkT = rkQ.inverse();
-		} else {
-			rkT = rkQ;
-		}
-
-		if (Math.abs(fCos) < 1 - F_EPSILON) {
-			// Standard case (slerp)
-			float fSin = (float)Math.sqrt(1 - fCos * fCos);
-			float fAngle = (float) Math.atan2(fSin, fCos);
-			float fInvSin = 1.0f / fSin;
-			float fCoeff0 = (float)Math.sin((1.0f - fT) * fAngle) * fInvSin;
-			float fCoeff1 = (float)Math.sin(fT * fAngle) * fInvSin;
-			Quaternion result = new Quaternion(rkP);
-			Quaternion tmp = new Quaternion(rkT);
-			result.multiply(fCoeff0);
-			tmp.multiply(fCoeff1);
-			result.add(tmp);
-			return result;
-		} else {
-			// There are two situations:
-			// 1. "rkP" and "rkQ" are very close (fCos ~= +1), so we can do a
-			// linear
-			// interpolation safely.
-			// 2. "rkP" and "rkQ" are almost inverse of each other (fCos ~= -1),
-			// there
-			// are an infinite number of possibilities interpolation. but we
-			// haven't
-			// have method to fix this case, so just use linear interpolation
-			// here.
-			Quaternion result = new Quaternion(rkP);
-			Quaternion tmp = new Quaternion(rkT);
-			result.multiply(1.0f - fT);
-			tmp.multiply(fT);
-			result.add(tmp);
-			// taking the complement requires renormalisation
-			result.normalize();
-			return result;
-		}
+	public static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+		Quaternion q = new Quaternion();
+		q.slerpSelf(q1, q2, t);
+		return q;
 	}
+	
+	public void slerpSelf(Quaternion q1, Quaternion q2, float t) {
+        if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
+            setAllFrom(q1);
+            normalize();
+            return;
+        }
 
-	public Quaternion slerpExtraSpins(float fT, final Quaternion rkP, final Quaternion rkQ, int iExtraSpins) {
-		float fCos = rkP.dot(rkQ);
-		float fAngle = (float) Math.acos(fCos);
+        float result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z)
+                + (q1.w * q2.w);
 
-		if (Math.abs(fAngle) < F_EPSILON)
-			return rkP;
+        if (result < 0.0f) {
+            q2.x = -q2.x;
+            q2.y = -q2.y;
+            q2.z = -q2.z;
+            q2.w = -q2.w;
+            result = -result;
+        }
 
-		float fSin = (float)Math.sin(fAngle);
-		float fPhase = MathUtil.PI * iExtraSpins * fT;
-		float fInvSin = 1.0f / fSin;
-		float fCoeff0 = (float)Math.sin((1.0f - fT) * fAngle - fPhase) * fInvSin;
-		float fCoeff1 = (float)Math.sin(fT * fAngle + fPhase) * fInvSin;
-		Quaternion result = new Quaternion(rkP);
-		Quaternion tmp = new Quaternion(rkQ);
-		result.multiply(fCoeff0);
-		tmp.multiply(fCoeff1);
-		result.add(tmp);
-		return result;
-	}
+        float scale0 = 1 - t;
+        float scale1 = t;
+
+        if ((1 - result) > 0.1f) {
+            float theta = (float)Math.acos(result);
+            float invSinTheta = 1f / (float)Math.sin(theta);
+
+            scale0 = (float)Math.sin((1 - t) * theta) * invSinTheta;
+            scale1 = (float)Math.sin((t * theta)) * invSinTheta;
+        }
+
+        x = (scale0 * q1.x) + (scale1 * q2.x);
+        y = (scale0 * q1.y) + (scale1 * q2.y);
+        z = (scale0 * q1.z) + (scale1 * q2.z);
+        w = (scale0 * q1.w) + (scale1 * q2.w);
+        normalize();
+    }
 
 	public float normalize() {
 		float len = norm();
@@ -519,7 +496,7 @@ public final class Quaternion {
 	    }
 	}
 	
-	public Quaternion nlerp(float fT, final Quaternion rkP, final Quaternion rkQ, boolean shortestPath) {
+	public static Quaternion nlerp(float fT, final Quaternion rkP, final Quaternion rkQ, boolean shortestPath) {
 		Quaternion result = new Quaternion(rkP);
 		Quaternion tmp = new Quaternion(rkQ);
 		float fCos = result.dot(tmp);
@@ -536,7 +513,7 @@ public final class Quaternion {
 		result.normalize();
 		return result;
 	}
-
+	
 	public Quaternion setIdentity() {
 		w = 1;
 		x = 0;
@@ -553,67 +530,79 @@ public final class Quaternion {
 		return "Quaternion.w " + w + " .x: " + x + " .y: " + y + " .z: " + z;
 	}
 	
-	public static Quaternion getRotationTo(final Number3D src, final Number3D dest)
+	public static Quaternion fromRotationBetween(final Vector3 src, final Vector3 dest)
+	{
+		Quaternion q = new Quaternion();
+		q.setFromRotationBetween(src, dest);
+		return q;
+	}
+	
+	public void setFromRotationBetween(final Vector3 src, final Vector3 dest)
     {
-        Quaternion q = new Quaternion();
-        Number3D v1 = new Number3D(src);
-        Number3D v2 = new Number3D(dest);
-        v1.normalize();
-        v2.normalize();
-
-        float d = Number3D.dot(v1, v2);
+        float d = Vector3.dot(src, dest);
 
         if (d >= 1.0f)
         {
-            return new Quaternion().setIdentity();
+        	setIdentity();
+            return;
         }
 
         if (d < (1e-6f - 1.0f))
         {
-            //                   // Generate an axis
-            //                   Number3D axis = Number3D::UNIT_X.crossProduct(*this);
-            //                   if (axis.isZeroLength()) // pick another if colinear
-            //                       axis = Number3D::UNIT_Y.crossProduct(*this);
-            //                   axis.normalise();
-            //                   q.FromAngleAxis(Radian(Math::PI), axis);
+        	// axis
+        	mTmpVec1.setAll(Vector3.X);
+        	mTmpVec1.cross(src);
 
-            // Generate an axis
-            Number3D axis = Number3D.cross(Number3D.getAxisVector(Axis.X), v1);
-
-            if (axis.length() == 0.0f)
+            if (mTmpVec1.length() == 0.0f)
             {
-                axis = Number3D.cross(Number3D.getAxisVector(Axis.Y), v1);
+            	mTmpVec1.setAll(Vector3.Y);
+            	mTmpVec1.cross(src);
             }
 
-            axis.normalize();
+            mTmpVec1.normalize();
 
-            q.fromAngleAxis(180, axis);
+            fromAngleAxis(180, mTmpVec1);
         }
         else
         {
-            //               Real s = Math::Sqrt( (1+d)*2 );
-            //               Real invs = 1 / s;
-
-            //               Number3D c = v0.crossProduct(v1);
-
-            //               q.x = c.x * invs;
-            //               q.y = c.y * invs;
-            //               q.z = c.z * invs;
-            //               q.w = s * 0.5;
-            //               q.normalise();
-
             float s = (float)Math.sqrt((1f + d) * 2f);
             float invs = 1 / s;
 
-            Number3D c = Number3D.cross(v1, v2);
-
-            q.x = (float) (c.x * invs);
-            q.y = (float) (c.y * invs);
-            q.z = (float) (c.z * invs);
-            q.w = (float) (s * 0.5f);
-            q.normalize();
+            mTmpVec1.setAll(src);
+            mTmpVec1.cross(dest);
+            
+            x = (float) (mTmpVec1.x * invs);
+            y = (float) (mTmpVec1.y * invs);
+            z = (float) (mTmpVec1.z * invs);
+            w = (float) (s * 0.5f);
+            normalize();
         } 
-
-        return q;
     }
+    
+    
+	public static Quaternion lookAt(Vector3 lookAt, Vector3 upDirection, boolean isCamera) 
+	{
+		Vector3 forward = lookAt.clone(); Vector3 up = upDirection.clone();
+		Vector3[] vecs = new Vector3[2];
+		vecs[0]=forward; vecs[1]=up;
+
+		Vector3.orthoNormalize(vecs);
+
+		Vector3 right = forward.clone().cross(up);
+
+		Quaternion camera = new Quaternion(), ret = new Quaternion();
+		camera.fromAxes(right, up, forward);
+
+		if (isCamera)
+		{
+			return camera;
+		}
+		else
+		{
+			ret.setIdentity();
+			ret.multiply(camera);
+			ret.inverseSelf();
+			return ret;
+		}
+	}
 }

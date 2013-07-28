@@ -1,9 +1,9 @@
 package rajawali.renderer;
 
+import rajawali.materials.textures.ATexture.FilterType;
+import rajawali.materials.textures.ATexture.WrapType;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
-import rajawali.materials.TextureManager.FilterType;
-import rajawali.materials.TextureManager.WrapType;
 
 /**
  * Defines configurations for a given render target.
