@@ -93,9 +93,9 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 					vertices = new float[(int) (subLength / 4)];
 					while (idx < vertices.length) {
 						// X, Y, Z
-						vertices[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
-						vertices[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
-						vertices[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
+						vertices[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						vertices[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						vertices[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					}
 					break;
 				case 2: // Face indices
@@ -106,12 +106,12 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 				case 3: // UV coordinates
 					uvs = new float[(int) (subLength / 4)];
 					while (idx < uvs.length)
-						uvs[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
+						uvs[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
 				case 4: // Vertex normals
 					normals = new float[(int) (subLength / 4)];
 					while (idx < normals.length)
-						normals[idx++] = (float) awdDis.readPrecisionNumber(Precision.GEO);
+						normals[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
 				case 5: // Vertex tangents
 				case 6: // Joint index

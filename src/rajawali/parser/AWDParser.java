@@ -184,9 +184,9 @@ public class AWDParser extends AMeshParser {
 			awdHeaderFlags = dis.readUnsignedShort();
 
 			if (awdHeaderVersion == 2 && awdHeaderRevision == 1) {
-				awdHeaderAccuracyMatrix = (awdHeaderFlags & BlockHeader.FLAG_ACCURACY_MATRIX) == BlockHeader.FLAG_ACCURACY_MATRIX;
-				awdHeaderAccuracyGeo = (awdHeaderFlags & BlockHeader.FLAG_ACCURACY_GEO) == BlockHeader.FLAG_ACCURACY_GEO;
-				awdHeaderAccuracyProps = (awdHeaderFlags & BlockHeader.FLAG_ACCURACY_PROPS) == BlockHeader.FLAG_ACCURACY_PROPS;
+				awdHeaderAccuracyMatrix = (awdHeaderFlags & 0x02) == 0x02;
+				awdHeaderAccuracyGeo = (awdHeaderFlags & 0x04) == 0x04;
+				awdHeaderAccuracyProps = (awdHeaderFlags & 0x08) == 0x08;
 			}
 
 			awdHeaderCompression = dis.read();
@@ -222,9 +222,9 @@ public class AWDParser extends AMeshParser {
 					blockHeader.type = dis.read();
 					blockHeader.flags = dis.read();
 					blockHeader.dataLength = dis.readInt();
-					blockHeader.globalPrecisionGeo = awdHeaderAccuracyGeo;
-					blockHeader.globalPrecisionMatrix = awdHeaderAccuracyMatrix;
-					blockHeader.globalPrecisionProps = awdHeaderAccuracyProps;
+					blockHeader.globalPrecisionGeo = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_GEO) == BlockHeader.FLAG_ACCURACY_GEO;
+					blockHeader.globalPrecisionMatrix = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_MATRIX) == BlockHeader.FLAG_ACCURACY_MATRIX;
+					blockHeader.globalPrecisionProps = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_PROPS) == BlockHeader.FLAG_ACCURACY_PROPS;
 
 					// Add the block to the list of blocks for reference
 					blockDataList.put(blockHeader.id, blockHeader);
@@ -255,7 +255,13 @@ public class AWDParser extends AMeshParser {
 					RajLog.d(" Parsing block with: " + parser.getClass().getSimpleName());
 
 					// Begin parsing
+					final int blockEnd = (int) dis.getPosition() + blockHeader.dataLength;
 					parser.parseBlock(dis, blockHeader);
+
+					if (blockEnd != dis.getPosition())
+						throw new ParsingException("Block did not end in the correct location. Expected : " + blockEnd
+								+ " Ended : " + dis.getPosition());
+
 				} while (true);
 			} catch (IOException e) {
 				// End of blocks reached
@@ -400,9 +406,9 @@ public class AWDParser extends AMeshParser {
 	 */
 	public static final class BlockHeader {
 
-		public static final int FLAG_ACCURACY_MATRIX = 2;
-		public static final int FLAG_ACCURACY_GEO = 4;
-		public static final int FLAG_ACCURACY_PROPS = 8;
+		public static final int FLAG_ACCURACY_MATRIX = 0x01;
+		public static final int FLAG_ACCURACY_GEO = 0x02;
+		public static final int FLAG_ACCURACY_PROPS = 0x04;
 
 		public List<IBlockParser> parsers;
 
@@ -425,7 +431,9 @@ public class AWDParser extends AMeshParser {
 			sb.append(" Block ID: ").append(id).append("\n");
 			sb.append(" Block Namespace: ").append(namespace).append("\n");
 			sb.append(" Block Type: ").append(type).append("\n");
-			sb.append(" Block Highprecision: ").append((flags & 0x0001) == 1).append("\n");
+			sb.append(" Block Precision Geo: ").append(globalPrecisionGeo).append("\n");
+			sb.append(" Block Precision Matrix: ").append(globalPrecisionMatrix).append("\n");
+			sb.append(" Block Precision Props: ").append(globalPrecisionProps).append("\n");
 			sb.append(" Block Length: ").append(dataLength).append("\n");
 			return sb.toString();
 		}
@@ -499,25 +507,25 @@ public class AWDParser extends AMeshParser {
 		 * @throws ParsingException
 		 * @throws IOException
 		 */
-		public void readMatrix3D(Precision precisionType, float[] matrix) throws ParsingException, IOException {
+		public void readMatrix3D(float[] matrix, boolean usePrecision) throws ParsingException, IOException {
 			if (matrix == null || matrix.length != 16)
 				throw new ParsingException("Matrix array must be of size 16");
 
-			matrix[0] = (float) readPrecisionNumber(precisionType);
-			matrix[1] = (float) readPrecisionNumber(precisionType);
-			matrix[2] = (float) readPrecisionNumber(precisionType);
+			matrix[0] = (float) readPrecisionNumber(usePrecision);
+			matrix[1] = (float) readPrecisionNumber(usePrecision);
+			matrix[2] = (float) readPrecisionNumber(usePrecision);
 			matrix[3] = 0f;
-			matrix[4] = (float) readPrecisionNumber(precisionType);
-			matrix[5] = (float) readPrecisionNumber(precisionType);
-			matrix[6] = (float) readPrecisionNumber(precisionType);
+			matrix[4] = (float) readPrecisionNumber(usePrecision);
+			matrix[5] = (float) readPrecisionNumber(usePrecision);
+			matrix[6] = (float) readPrecisionNumber(usePrecision);
 			matrix[7] = 0f;
-			matrix[8] = (float) readPrecisionNumber(precisionType);
-			matrix[9] = (float) readPrecisionNumber(precisionType);
-			matrix[10] = (float) readPrecisionNumber(precisionType);
+			matrix[8] = (float) readPrecisionNumber(usePrecision);
+			matrix[9] = (float) readPrecisionNumber(usePrecision);
+			matrix[10] = (float) readPrecisionNumber(usePrecision);
 			matrix[11] = 0f;
-			matrix[12] = (float) readPrecisionNumber(precisionType);
-			matrix[13] = (float) readPrecisionNumber(precisionType);
-			matrix[14] = (float) readPrecisionNumber(precisionType);
+			matrix[12] = (float) readPrecisionNumber(usePrecision);
+			matrix[13] = (float) readPrecisionNumber(usePrecision);
+			matrix[14] = (float) readPrecisionNumber(usePrecision);
 			matrix[15] = 1f;
 		}
 
@@ -528,17 +536,8 @@ public class AWDParser extends AMeshParser {
 		 * @throws IOException
 		 * @throws ParsingException
 		 */
-		public double readPrecisionNumber(Precision precisionType) throws IOException, ParsingException {
-			switch (precisionType) {
-			case GEO:
-				return parser.awdHeaderAccuracyGeo ? readDouble() : readFloat();
-			case MATRIX:
-				return parser.awdHeaderAccuracyMatrix ? readDouble() : readFloat();
-			case PROPS:
-				return parser.awdHeaderAccuracyProps ? readDouble() : readFloat();
-			default:
-				throw new ParsingException("Unknown precision type used: " + precisionType);
-			}
+		public double readPrecisionNumber(boolean usePrecision) throws IOException, ParsingException {
+			return usePrecision ? readDouble() : readFloat();
 		}
 
 		/**

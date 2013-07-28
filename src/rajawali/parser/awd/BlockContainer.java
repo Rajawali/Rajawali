@@ -22,7 +22,7 @@ public class BlockContainer extends AExportableBlockParser {
 		mBaseObject = new BaseObject3D();
 
 		mSceneGraphBlock = new SceneGraphBlock();
-		mSceneGraphBlock.readGraphData(awdDis);
+		mSceneGraphBlock.readGraphData(blockHeader, awdDis);
 
 		// TODO need to 'getAssetByID' which appears to be the implemented method for referencing other parsed objects
 
