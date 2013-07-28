@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import rajawali.Camera;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 
 
@@ -113,8 +113,8 @@ public class Octree extends A_nAABBTree {
 		Vector3 max = mParent.getMax();
 		switch (mChildRegion) {
 		case 0: //+X/+Y/+Z
-			mMax.setAllFrom(mParent.getMax());
-			mMin.setAllFrom(Vector3.subtract(mMax, side_lengths));
+			mMax.setAll(mParent.getMax());
+			mMin.subtractAndSet(mMax, side_lengths);
 			break;
 		case 1: //-X/+Y/+Z 
 			mMax.x = min.x + side_lengths.x;
@@ -157,8 +157,8 @@ public class Octree extends A_nAABBTree {
 			mMin.z = min.z;
 			break;
 		case 6: //-X/-Y/-Z
-			mMin.setAllFrom(min);
-			mMax.setAllFrom(Vector3.add(mMin, side_lengths));
+			mMin.setAll(min);
+			mMax.addAndSet(mMin, side_lengths);
 			break;
 		case 7: //+X/-Y/-Z
 			mMax.x = max.x;

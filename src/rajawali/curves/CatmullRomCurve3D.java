@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 /**
  * Derived from http://www.cse.unsw.edu.au/~lambert/splines/source.html
@@ -24,7 +24,10 @@ public class CatmullRomCurve3D implements ICurve3D {
 	protected boolean mCalculateTangents;
 	protected float[] mSegmentLengths;
 	protected boolean mIsClosed;
-
+	private Vector3 mTempNext=new Vector3();
+	private Vector3 mTempPrevLen=new Vector3();
+	private Vector3 mTempPointLen=new Vector3();
+	
 	public CatmullRomCurve3D() {
 		mPoints = Collections.synchronizedList(new CopyOnWriteArrayList<Vector3>());
 		mCurrentTangent = new Vector3();
@@ -50,18 +53,19 @@ public class CatmullRomCurve3D implements ICurve3D {
 		return mPoints.get(index);
 	}
 
-	public Vector3 calculatePoint(final float t) {
+	
+	public void calculatePoint(Vector3 result, final float t) {
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;
-			mCurrentTangent = p(prevt);
-			Vector3 nextp = p(nextt);
-			mCurrentTangent.subtract(nextp);
+			p(mCurrentTangent, prevt);
+			p(mTempNext, nextt);
+			mCurrentTangent.subtract(mTempNext);
 			mCurrentTangent.multiply(.5f);
 			mCurrentTangent.normalize();
 		}
 
-		return p(t);
+		p(result,t);
 	}
 
 	public Vector3 getCurrentTangent() {
@@ -100,7 +104,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 		return 0;
 	}
 
-	protected Vector3 p(float t) {
+	private void p(Vector3 result, float t) {
 		if(t < 0) t = 1 + t;
 		int end = mIsClosed ? 0 : 3;
 		int start = mIsClosed ? 0 : 2;
@@ -125,7 +129,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 			mCurrentPoint.y += b * p.y;
 			mCurrentPoint.z += b * p.z;
 		}
-		return mCurrentPoint.clone();
+		result.setAll(mCurrentPoint);
 	}
 
 	protected float pow2(float value) {
@@ -147,6 +151,8 @@ public class CatmullRomCurve3D implements ICurve3D {
 		return mIsClosed;
 	}
 
+	
+
 	/**
 	 * Returns an approximation of the length of the curve. The more segments the more precise the result.
 	 * 
@@ -159,16 +165,16 @@ public class CatmullRomCurve3D implements ICurve3D {
 
 		mSegmentLengths = new float[segments + 1];
 		mSegmentLengths[0] = 0;
-		Vector3 prevPoint = calculatePoint(0);
+		calculatePoint(mTempPrevLen, 0);
 
 		for (int i = 1; i <= segments; i++)
 		{
 			float t = (float) i / (float) segments;
-			Vector3 point = calculatePoint(t);
-			float dist = prevPoint.distanceTo(point);
+			calculatePoint(mTempPointLen, t);
+			float dist = mTempPrevLen.distanceTo(mTempPointLen);
 			totalLength += dist;
 			mSegmentLengths[i] = dist;
-			prevPoint.setAllFrom(point);
+			mTempPrevLen.setAll(mTempPointLen);
 		}
 
 		return totalLength;
@@ -198,7 +204,9 @@ public class CatmullRomCurve3D implements ICurve3D {
 		// -- add first control point
 		newPoints.add(mPoints.get(0));
 		// -- add first point
-		newPoints.add(calculatePoint(0));
+		Vector3 point = new Vector3();
+		calculatePoint(point, 0);
+		newPoints.add(point);
 
 		float currentLength = 0;
 
@@ -207,29 +215,33 @@ public class CatmullRomCurve3D implements ICurve3D {
 			currentLength += mSegmentLengths[i];
 			if (currentLength >= segmentDistance)
 			{
-				newPoints.add(calculatePoint((float) i / (float) (numSegments - 1)));
+				point = new Vector3();
+				calculatePoint(point, (float) i / (float) (numSegments - 1));
+				newPoints.add(point);
 				currentLength = 0;
 			}
 		}
 
 		// -- add last point
-		newPoints.add(calculatePoint(1));
+		point = new Vector3();
+		calculatePoint(point, 1);
+		newPoints.add(point);
 		// -- add last control point
 		newPoints.add(mPoints.get(mPoints.size() - 1));
 
 		// -- scale control point 1
-		Vector3 controlPoint = Vector3.subtract(mPoints.get(1), mPoints.get(0));
+		Vector3 controlPoint = Vector3.subtractAndCreate(mPoints.get(1), mPoints.get(0));
 		float oldDistance = mPoints.get(1).distanceTo(mPoints.get(2));
 		float newDistance = newPoints.get(1).distanceTo(newPoints.get(2));
 		controlPoint.multiply(newDistance / oldDistance);
-		newPoints.set(0, Vector3.subtract(mPoints.get(1), controlPoint));
+		newPoints.set(0, Vector3.subtractAndCreate(mPoints.get(1), controlPoint));
 
 		// -- scale control point 2
-		controlPoint = Vector3.subtract(mPoints.get(mPoints.size() - 2), mPoints.get(mPoints.size() - 1));
+		controlPoint = Vector3.subtractAndCreate(mPoints.get(mPoints.size() - 2), mPoints.get(mPoints.size() - 1));
 		oldDistance = mPoints.get(mPoints.size() - 2).distanceTo(mPoints.get(mPoints.size() - 3));
 		newDistance = newPoints.get(newPoints.size() - 2).distanceTo(newPoints.get(newPoints.size() - 3));
 		controlPoint.multiply(newDistance / oldDistance);
-		newPoints.set(newPoints.size() - 1, Vector3.subtract(mPoints.get(mPoints.size() - 2), controlPoint));
+		newPoints.set(newPoints.size() - 1, Vector3.subtractAndCreate(mPoints.get(mPoints.size() - 2), controlPoint));
 
 		mPoints = newPoints;
 		mNumPoints = mPoints.size();

@@ -5,9 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -24,7 +25,7 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.plugins.Plugin;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.FPSUpdateListener;
@@ -56,7 +57,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected TextureManager mTextureManager; //Texture manager for ALL textures across ALL scenes.
 	protected MaterialManager mMaterialManager; //Material manager for ALL materials across ALL scenes.
 	
-	protected Timer mTimer; //Timer used to schedule drawing
+	protected ScheduledExecutorService mTimer; //Timer used to schedule drawing
 	protected float mFrameRate; //Target frame rate to render at
 	protected int mFrameCount; //Used for determining FPS
 	private long mStartTime = System.nanoTime(); //Used for determining FPS
@@ -71,6 +72,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected static boolean mFogEnabled; //Is camera fog enabled?
 	protected static int mMaxLights = 1; //How many lights max?
 	protected int mLastReportedGLError = 0; // Keep track of the last reported OpenGL error
+	
+	//In case we cannot parse the version number, assume OpenGL ES 2.0
+	protected int mGLES_Major_Version = 2; //The GL ES major version of the surface
+	protected int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
 
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
@@ -499,6 +504,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		RajLog.setGL10(gl);
 		Capabilities.getInstance();
+		
+		String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
+		if (versionString.length >= 3) {
+			String[] versionParts = versionString[2].split(".");
+			if (versionParts.length == 2) {
+				mGLES_Major_Version = Integer.parseInt(versionParts[0]);
+				mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
+			}
+		}
+		
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 
 		//GLES20.glFrontFace(GLES20.GL_CCW);
@@ -554,13 +569,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		if(!mSceneInitialized) return;
 		mLastRender = SystemClock.elapsedRealtime();
 		
-		if (mTimer != null) {return;
-//			mTimer.cancel();
-	//		mTimer.purge();
-		}
+		if (mTimer != null) {return;}
 
-		mTimer = new Timer();
-		mTimer.schedule(new RequestRenderTask(), 0, (long) (1000 / mFrameRate));
+		mTimer = Executors.newScheduledThreadPool(1);
+		mTimer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / mFrameRate), TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -571,8 +583,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	protected boolean stopRendering() {
 		if (mTimer != null) {
-			mTimer.cancel();
-			mTimer.purge();
+			mTimer.shutdownNow();
 			mTimer = null;
 			return true;
 		}
@@ -605,7 +616,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		this.preferences = preferences;
 	}
 
-	private class RequestRenderTask extends TimerTask {
+	private class RequestRenderTask implements Runnable {
 		public void run() {
 			if (mSurfaceView != null) {
 				mSurfaceView.requestRender();
@@ -1282,6 +1293,24 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		EGL10 egl = (EGL10)EGLContext.getEGL();
 		EGLContext eglContext = egl.eglGetCurrentContext();
 		return eglContext != EGL10.EGL_NO_CONTEXT;
+	}
+	
+	/**
+	 * Fetches the Open GL ES major version of the EGL surface.
+	 * 
+	 * @return int containing the major version number.
+	 */
+	public int getGLMajorVersion() {
+		return mGLES_Major_Version;
+	}
+	
+	/**
+	 * Fetches the Open GL ES minor version of the EGL surface.
+	 * 
+	 * @return int containing the minor version number.
+	 */
+	public int getGLMinorVersion() {
+		return mGLES_Minor_Version;
 	}
 
 	public void setUsesCoverageAa(boolean usesCoverageAa) {

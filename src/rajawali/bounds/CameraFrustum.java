@@ -10,8 +10,8 @@ import rajawali.math.Matrix4;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.Quaternion;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
@@ -64,7 +64,7 @@ public class CameraFrustum implements IBoundingVolume {
 
 	public void update(float[] inverseProjectionView) {             
 		for(int i = 0; i < 8; i++) {
-			mPlanePoints[i].setAllFrom(mClipSpacePlanePoints[i]);
+			mPlanePoints[i].setAll(mClipSpacePlanePoints[i]);
 			mPlanePoints[i].project(inverseProjectionView);   
 		}
 
@@ -136,12 +136,12 @@ public class CameraFrustum implements IBoundingVolume {
 		Matrix.setIdentityM(mRotateMatrix, 0);
 
 		mCamera.setOrientation();
-		mTempPosition.setAllFrom(mCamera.getPosition());
+		mTempPosition.setAll(mCamera.getPosition());
 		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
 		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
 		
 		if (mCamera.getLookAt() == null) {
-			Quaternion quat = mCamera.getOrientation();
+			Quaternion quat = mCamera.getOrientation(new Quaternion());
 			if (quat.isIdentity()) {
 				quat = Y.getRotationTo(Z);
 			}

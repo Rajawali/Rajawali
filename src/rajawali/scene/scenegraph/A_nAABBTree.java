@@ -10,7 +10,7 @@ import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.bounds.CameraFrustum;
 import rajawali.bounds.IBoundingVolume;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -136,12 +136,12 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void calculateChildSideLengths() {
 		//Determine the distance on each axis
-		Vector3 temp = Vector3.subtract(mTransformedMax, mTransformedMin);
+		Vector3 temp = Vector3.subtractAndCreate(mTransformedMax, mTransformedMin);
 		temp.multiply(0.5f); //Divide it in half
 		float overlap = 1.0f + mOverlap/100.0f;
 		temp.multiply(overlap);
 		temp.absoluteValue();
-		mChildLengths.setAllFrom(temp);
+		mChildLengths.setAll(temp);
 	}
 
 	/**
@@ -199,8 +199,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		mMax.x = (float) (position.x + span_x);
 		mMax.y = (float) (position.y + span_y);
 		mMax.z = (float) (position.z + span_z);
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 	}
@@ -214,10 +214,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void setBounds(int child) {
 		A_nAABBTree new_bounds = mChildren[child];
-		mMin.setAllFrom(new_bounds.mMin);
-		mMax.setAllFrom(new_bounds.mMax);
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mMin.setAll(new_bounds.mMin);
+		mMax.setAll(new_bounds.mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 	}
@@ -232,8 +232,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * side this node should be. 
 	 */
 	protected void setChildRegion(int region, Vector3 side_lengths) {
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 		if (mSplit) {
@@ -490,8 +490,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					float radius = bs.getScaledRadius();
 					Vector3 rad = new Vector3();
 					rad.setAll(radius, radius, radius);
-					test_against_min = Vector3.subtract(bs_position, rad);
-					test_against_max = Vector3.add(bs_position, rad);
+					test_against_min = Vector3.subtractAndCreate(bs_position, rad);
+					test_against_max = Vector3.addAndCreate(bs_position, rad);
 				case CONE:
 				case FRUSTUM:
 					CameraFrustum frustum = (CameraFrustum) volume;
@@ -505,6 +505,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					//occur in production code.
 					RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type: " 
 							+ VOLUME_SHAPE.toString(volume.getVolumeShape()));
+
 					throw new IllegalArgumentException("Received a bounding box of unknown type."); 
 				}
 			}
@@ -517,10 +518,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				if(test_against_max.z > max.z) max.z = test_against_max.z;
 			}
 		}
-		mMin.setAllFrom(min);
-		mMax.setAllFrom(max);
-		mTransformedMin.setAllFrom(min);
-		mTransformedMax.setAllFrom(max);
+		mMin.setAll(min);
+		mMax.setAll(max);
+		mTransformedMin.setAll(min);
+		mTransformedMax.setAll(max);
 		calculatePoints();
 		calculateChildSideLengths();
 		if (mSplit) {

@@ -1,6 +1,6 @@
 package rajawali.curves;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class QuadraticBezierCurve3D implements ICurve3D {
 
@@ -13,7 +13,8 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	private Vector3 mTmpPoint1;
 	private Vector3 mTmpPoint2;
 	private Vector3 mTmpPoint3;
-
+	private Vector3 mTempPointNext=new Vector3();
+	
 	private boolean mCalculateTangents;
 	private Vector3 mCurrentTangent;
 
@@ -46,29 +47,29 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 		mPoint2 = point2;
 	}
 
-	public Vector3 calculatePoint(float t) {
+	public void calculatePoint(Vector3 result, float t) {
 		if (mCalculateTangents) {
 			float prevt = t == 0 ? t + DELTA : t - DELTA;
 			float nextt = t == 1 ? t - DELTA : t + DELTA;
-			mCurrentTangent = p(prevt);
-			Vector3 nextp = p(nextt);
-			mCurrentTangent.subtract(nextp);
+			p(mCurrentTangent, prevt);
+			p(mTempPointNext, nextt);
+			mCurrentTangent.subtract(mTempPointNext);
 			mCurrentTangent.multiply(.5f);
 			mCurrentTangent.normalize();
 		}
 
-		return p(t);
+		p(result, t);
 	}
 
-	private Vector3 p(float t) {
-		mTmpPoint1.setAllFrom(mPoint1);
+	private void p(Vector3 result, float t) {
+		mTmpPoint1.setAll(mPoint1);
 		mTmpPoint1.multiply((1.0f - t) * (1.0f - t));
-		mTmpPoint2.setAllFrom(mControlPoint);
+		mTmpPoint2.setAll(mControlPoint);
 		mTmpPoint2.multiply(2 * (1.0f - t) * t);
-		mTmpPoint3.setAllFrom(mPoint2);
+		mTmpPoint3.setAll(mPoint2);
 		mTmpPoint3.multiply(t * t);
 		mTmpPoint2.add(mTmpPoint3);
-		return Vector3.add(mTmpPoint1, mTmpPoint2);
+		result.addAndSet(mTmpPoint1, mTmpPoint2);
 	}
 
 	public Vector3 getCurrentTangent() {

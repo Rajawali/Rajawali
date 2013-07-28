@@ -3,7 +3,7 @@ package rajawali.primitives;
 import java.util.Stack;
 
 import rajawali.BaseObject3D;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import android.graphics.Color;
 import android.opengl.GLES20;
 

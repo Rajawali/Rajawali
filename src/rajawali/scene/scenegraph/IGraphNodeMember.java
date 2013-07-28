@@ -4,7 +4,7 @@ import java.util.List;
 
 import rajawali.Camera;
 import rajawali.bounds.IBoundingVolume;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 /**

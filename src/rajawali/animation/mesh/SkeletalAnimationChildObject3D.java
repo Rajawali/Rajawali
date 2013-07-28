@@ -10,8 +10,8 @@ import rajawali.Camera;
 import rajawali.Geometry3D.BufferType;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
 import rajawali.materials.AAdvancedMaterial;
-import rajawali.math.Vector2;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector2;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 

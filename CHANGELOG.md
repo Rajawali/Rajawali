@@ -11,11 +11,21 @@ To eliminate a number of issues which stemmed from trying to change scene conten
 # Number3D
 
 The `Number3D` class has been refactored into `Vector3` which is way more appropriate.
-This will most likely affect a lot of your code.
+This will most likely affect a lot of your code. Furthermore, the class has been entirely 
+refactored to be more consistent and reduce the amount of garbage it generates. The public
+API has been modified considerably but should be much more robust, clean and useful. 
+It has also been moved to the `rajawali.math.vector` package.
+
+# ImmutableVector3
+
+A new class, `ImmutableVector3` has been added to the library. It extends `Vector3` and forces the components
+to be final. Internally it is used for storing vectors pointing along each coordinate axis.
+It can be `rajawali.math.vector` package.
 
 # Vector2D
 
 The `Vector2D` has been refactored into `Vector2` which falls in line with the new `Vector3` class.
+It has also been moved to the `rajawali.math.vector` package.
 
 # Scenes
 

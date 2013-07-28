@@ -6,8 +6,8 @@ import rajawali.bounds.CameraFrustum;
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.MathUtil;
 import rajawali.math.Quaternion;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.renderer.AFrameTask;
 import rajawali.scene.scenegraph.IGraphNodeMember;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
@@ -53,7 +53,7 @@ public class Camera extends ATransformable3D {
 	public Camera() {
 		super();
 		mLocalOrientation = Quaternion.getIdentity();
-		mUpAxis = Vector3.getUpVector();
+		mUpAxis = Vector3.Y;
 		mIsCamera = true;
 		mFrustum = new CameraFrustum(this);
 		getViewMatrix();
@@ -147,7 +147,7 @@ public class Camera extends ATransformable3D {
     
     public void setUpAxis(Vector3 upAxis) {
     	synchronized (mFrustumLock) {
-    		mUpAxis.setAllFrom(upAxis);
+    		mUpAxis.setAll(upAxis);
     	}
     }
     

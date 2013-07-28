@@ -7,7 +7,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
 import android.opengl.GLES20;
 
@@ -161,7 +161,7 @@ public class BoundingBox implements IBoundingVolume {
 		for(mI=0; mI<8; ++mI) {
 			Vector3 o = mPoints[mI];
 			Vector3 d = mTmp[mI];
-			d.setAllFrom(o);
+			d.setAll(o);
 			d.multiply(matrix);
 			
 			if(d.x < mTransformedMin.x) mTransformedMin.x = d.x;
@@ -178,7 +178,7 @@ public class BoundingBox implements IBoundingVolume {
 	}
 	
 	public void setMin(Vector3 min) {
-		mMin.setAllFrom(min);
+		mMin.setAll(min);
 	}
 	
 	public Vector3 getMax() {
@@ -186,7 +186,7 @@ public class BoundingBox implements IBoundingVolume {
 	}
 	
 	public void setMax(Vector3 max) {
-		mMax.setAllFrom(max);
+		mMax.setAll(max);
 	}
 
 	public Vector3 getTransformedMin() {

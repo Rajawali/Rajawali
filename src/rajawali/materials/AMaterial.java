@@ -16,7 +16,7 @@ import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.TextureManager;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;

@@ -2,7 +2,7 @@ package rajawali.curves;
 
 import java.util.Stack;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class CompoundCurve3D implements ICurve3D {
 	protected static final float DELTA = .00001f;
@@ -20,11 +20,11 @@ public class CompoundCurve3D implements ICurve3D {
 		mNumCurves++;
 	}
 
-	public Vector3 calculatePoint(float t) {
+	public void calculatePoint(Vector3 point, float t) {
 		int currentIndex = (int) Math.floor((t == 1 ? t - .000001f : t) * mNumCurves);
 		mCurrentCurve = mCurves.get(currentIndex); 
 		float tdivnum = (t * mNumCurves) - currentIndex;
-		return mCurrentCurve.calculatePoint(tdivnum);
+		mCurrentCurve.calculatePoint(point, tdivnum);
 	}
 
 	public int getNumCurves()

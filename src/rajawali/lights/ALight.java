@@ -4,7 +4,7 @@ import java.util.List;
 
 import rajawali.ATransformable3D;
 import rajawali.Camera;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.scene.scenegraph.IGraphNodeMember;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;

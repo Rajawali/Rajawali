@@ -1,6 +1,6 @@
 package rajawali.curves;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class LinearBezierCurve3D implements ICurve3D {
 	private Vector3 mPoint1;
@@ -32,12 +32,12 @@ public class LinearBezierCurve3D implements ICurve3D {
 		mPoint2 = point2;
 	}
 
-	public Vector3 calculatePoint(float t) {
-		mTmpPoint1.setAllFrom(mPoint2);
+	public void calculatePoint(Vector3 result, float t) {
+		mTmpPoint1.setAll(mPoint2);
 		mTmpPoint1.multiply(t);
-		mTmpPoint2.setAllFrom(mPoint1);
+		mTmpPoint2.setAll(mPoint1);
 		mTmpPoint2.multiply(1.0f - t);
-		return Vector3.add(mTmpPoint1, mTmpPoint2);		
+		result.addAndSet(mTmpPoint1, mTmpPoint2);		
 	}
 
 	public Vector3 getCurrentTangent() {

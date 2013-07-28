@@ -12,7 +12,7 @@ import rajawali.animation.mesh.SkeletalAnimationFrame;
 import rajawali.animation.mesh.SkeletalAnimationFrame.Skeleton;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.animation.mesh.SkeletalAnimationSequence;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.parser.AParser;
 import rajawali.parser.IAnimationSequenceParser;
 import rajawali.renderer.RajawaliRenderer;
@@ -230,7 +230,7 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 	            SkeletonJoint parentJoint = skeleton.getJoint(joint.getParentIndex());
 	            Vector3 rotPos = parentJoint.getOrientation().multiply(joint.getPosition()).clone();
 	 
-	            joint.getPosition().setAllFrom(Vector3.add(parentJoint.getPosition(), rotPos));
+	            joint.getPosition().setAll(Vector3.addAndCreate(parentJoint.getPosition(), rotPos));
 	            joint.getOrientation().multiply(parentJoint.getOrientation());
 	            joint.getOrientation().normalize();
 	        }

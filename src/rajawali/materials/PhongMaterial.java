@@ -1,7 +1,7 @@
 package rajawali.materials;
 
 import rajawali.lights.ALight;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
