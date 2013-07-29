@@ -228,8 +228,8 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 			if (joint.getParentIndex() >= 0 ) // Has a parent joint
 	        {
 	            SkeletonJoint parentJoint = skeleton.getJoint(joint.getParentIndex());
-	            Vector3 rotPos = parentJoint.getOrientation().multiply(joint.getPosition()).clone();
-	 
+	            Vector3 rotPos = parentJoint.getOrientation().multiply(joint.getPosition());
+	            //We don't clone here because nothing will be able to use the quaternion scratch before we do
 	            joint.getPosition().setAll(Vector3.addAndCreate(parentJoint.getPosition(), rotPos));
 	            joint.getOrientation().multiply(parentJoint.getOrientation());
 	            joint.getOrientation().normalize();
