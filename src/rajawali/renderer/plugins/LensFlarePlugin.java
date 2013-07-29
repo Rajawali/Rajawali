@@ -9,8 +9,8 @@ import rajawali.Camera;
 import rajawali.extras.LensFlare;
 import rajawali.extras.LensFlare.FlareInfo;
 import rajawali.materials.textures.ASingleTexture;
-import rajawali.math.Vector3;
-import rajawali.math.Vector2;
+import rajawali.math.vector.Vector2;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import android.opengl.GLES20;
 
@@ -333,7 +333,7 @@ public final class LensFlarePlugin extends Plugin {
 				LensFlare lensFlare = mLensFlares.get(i);
 				
 				// Calculate normalized device coordinates.
-				screenPosition.setAllFrom(lensFlare.getPosition().clone());
+				screenPosition.setAll(lensFlare.getPosition().clone());
 				screenPosition.multiply(viewMatrix);
 				screenPosition.project(projMatrix);
 				
@@ -423,7 +423,7 @@ public final class LensFlarePlugin extends Plugin {
 						FlareInfo sprite = lensFlare.getLensFlares().get(f);
 						// Don't bother rendering if the sprite's too transparent or too small.
 						if (sprite.getOpacity() > 0.001f && sprite.getScale() > 0.001f) {
-							screenPosition.setAllFrom(sprite.getScreenPosition());
+							screenPosition.setAll(sprite.getScreenPosition());
 							
 							// Calculate pixel size to normalized size
 							size = sprite.getSize() * sprite.getScale() / viewportHeight;

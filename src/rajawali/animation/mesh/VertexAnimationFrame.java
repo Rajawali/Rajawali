@@ -1,7 +1,7 @@
 package rajawali.animation.mesh;
 
 import rajawali.Geometry3D;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class VertexAnimationFrame implements IAnimationFrame {
 	protected Geometry3D mGeometry;

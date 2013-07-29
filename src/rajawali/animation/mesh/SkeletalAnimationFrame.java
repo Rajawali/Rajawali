@@ -3,7 +3,7 @@ package rajawali.animation.mesh;
 import rajawali.Geometry3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.math.Quaternion;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class SkeletalAnimationFrame implements IAnimationFrame {
 	private String mName;

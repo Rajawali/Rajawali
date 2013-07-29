@@ -15,7 +15,7 @@ import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
@@ -848,6 +848,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				uvOut = (uvIn * (tile.height/atlas.getHeight())) + tile.y/atlas.getHeight();
 			fb.put(i, uvOut);
 		}
+		mGeometry.changeBufferData(mGeometry.mTexCoordBufferInfo, fb, 0);
+
 	}
 	
 	public void destroy() {

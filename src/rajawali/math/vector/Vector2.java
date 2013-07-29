@@ -1,4 +1,4 @@
-package rajawali.math;
+package rajawali.math.vector;
 
 public class Vector2 {
 	private float mX;

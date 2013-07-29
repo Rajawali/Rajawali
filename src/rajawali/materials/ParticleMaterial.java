@@ -4,7 +4,7 @@ import java.nio.FloatBuffer;
 
 import com.monyetmabuk.livewallpapers.photosdof.R;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import android.opengl.GLES20;
 
 

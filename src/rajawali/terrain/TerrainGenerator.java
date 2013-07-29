@@ -1,6 +1,6 @@
 package rajawali.terrain;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;

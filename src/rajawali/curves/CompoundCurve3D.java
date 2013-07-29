@@ -2,7 +2,7 @@ package rajawali.curves;
 
 import java.util.Stack;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class CompoundCurve3D implements ICurve3D {
 	protected static final float DELTA = .00001f;
