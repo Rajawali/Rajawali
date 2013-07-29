@@ -1,6 +1,6 @@
 ![Rajawali](http://www.rozengain.com/files/rajawali-logo.jpg)
 
-Rajawali is a 3D engine for Android based on OpenGL ES 2.0. It can be used for normal apps as well as live wallpapers.
+Rajawali is a 3D engine for Android based on OpenGL ES 2.0/3.0. It can be used for normal apps as well as live wallpapers.
 
 [Join the Rajawali Community](https://plus.google.com/u/0/communities/116529974266844528013) on [![Rajawali Community on Google Plus](http://sinceresocial.com/wp-content/uploads/2012/05/google+-20px.png)](https://plus.google.com/u/0/communities/116529974266844528013) to stay up-to-date on the latest news. 
 
