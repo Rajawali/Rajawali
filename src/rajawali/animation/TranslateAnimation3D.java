@@ -72,7 +72,7 @@ public class TranslateAnimation3D extends Animation3D {
 				mTmpVec.subtractAndSet(mTempPoint3, mTempPoint2);
 				mTmpVec.normalize();
 					
-				mTmpOrientation.setFromRotationBetween(mObjectRay, mTmpVec);
+				mTmpOrientation.fromRotationBetween(mObjectRay, mTmpVec);
 				mTmpOrientation.normalize();
 				mTransformable3D.getOrientation(mTmpOrientation2);
 				mTmpOrientation2.normalize();

@@ -6,30 +6,54 @@ Here's what's new:
 
 # Thread Safety
 
-To eliminate a number of issues which stemmed from trying to change scene contents in the middle of a render cycle, a task queue system has been added to Rajawali. You no longer have direct access to lists such as `mChildren`. Helper methods such as `addChild()` exist and will automatically queue everything for you.
+To eliminate a number of issues which stemmed from trying to change scene contents in the middle of a render cycle,
+a task queue system has been added to Rajawali. You no longer have direct access to lists such as `mChildren`. Helper
+methods such as `addChild()` exist and will automatically queue everything for you.
 
 # Number3D
 
 The `Number3D` class has been refactored into `Vector3` which is way more appropriate.
-This will most likely affect a lot of your code. Furthermore, the class has been entirely 
+This will most likely affect a lot of your code. Furthermore, the class has been entirely
 refactored to be more consistent and reduce the amount of garbage it generates. The public
-API has been modified considerably but should be much more robust, clean and useful. 
+API has been modified considerably but should be much more robust, clean and useful.
 It has also been moved to the `rajawali.math.vector` package.
-
-# ImmutableVector3
-
-A new class, `ImmutableVector3` has been added to the library. It extends `Vector3` and forces the components
-to be final. Internally it is used for storing vectors pointing along each coordinate axis.
-It can be `rajawali.math.vector` package.
+ - Operations which set their result on the calling object are named/documented accordingly.
+ - Operations which create new objects are named/documented accordingly.
 
 # Vector2D
 
 The `Vector2D` has been refactored into `Vector2` which falls in line with the new `Vector3` class.
 It has also been moved to the `rajawali.math.vector` package.
 
+# Quaternion
+
+The `Quaternion` class has been overhauled and refactored similarly to the `Vector3` class. This may affect a lot of your code,
+depending on your use of quaternions. It has been made more consistent and efficient, reducing garbage. Other noteworthy changes include:
+ - The method `Quaternion#fromRotationMatrix(float[])` has become `Quaternion#fromMatrix(Matrix4)`.
+ - The method `Quaternion#unitInverse()` has been removed as it was the same as `Quaternion#conjugate()`
+ - Operations which set their result on the calling object are named/documented accordingly.
+ - Operations which create new objects are named/documented accordingly.
+
+# AngleAxis
+
+The `AngleAxis` class has been removed. It was essentially an incomplete `Quaternion` class and was not being
+used anywhere in the library or in the examples project.
+
+# GL State
+
+To help increase ultimate frame rate, a default GL state has been implemented and set once at GL surface creation. `BaseObject3D`
+instances which are transparent, double-sided or otherwise differ in their culling automatically change the state for their render
+and return the state when they are done. This means the GL state is not managed as efficiently as it could be, however it is a dramatic
+improvement over the previous method of explicitly declaring the state on each render for each object and has in some testing shown a
+6 FPS improvement for ~12%.
+
 # Scenes
 
-A new class, `RajawaliScene` has been added which fully encompasses everything to render a scene. Essentially everything you would have previously done in `RajawaliRenderer#initScene()` now fits in a `RajawaliScene` and you can have multiple instances of `RajawaliScene` and feely switch between them, allowing you to do all sorts of cool things such as loading a new scene in the background, showing different areas, etc. For more info please see [Tutorial 31](https://github.com/MasDennis/Rajawali/wiki/Tutorial-31-Using-RajawaliScene)
+A new class, `RajawaliScene` has been added which fully encompasses everything to render a scene. Essentially everything you
+would have previously done in `RajawaliRenderer#initScene()` now fits in a `RajawaliScene` and you can have multiple instances
+of `RajawaliScene` and feely switch between them, allowing you to do all sorts of cool things such as loading a new scene in the
+background, showing different areas, etc.
+For more info please see [Tutorial 31](https://github.com/MasDennis/Rajawali/wiki/Tutorial-31-Using-RajawaliScene).
 
 # Multiple Cameras
 
