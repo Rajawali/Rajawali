@@ -140,7 +140,7 @@ public class CameraFrustum implements IBoundingVolume {
 		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
 		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
 		
-		if (mCamera.getLookAt() == null) {
+		/*if (mCamera.getLookAt() == null) {
 			Quaternion quat = mCamera.getOrientation(new Quaternion());
 			if (quat.isIdentity()) {
 				quat = Y.getRotationTo(Z);
@@ -152,14 +152,15 @@ public class CameraFrustum implements IBoundingVolume {
 			mVisibleFrustum.setOrientation();
 			System.arraycopy(mVisibleFrustum.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
 			//Matrix.rotateM(mVisibleFrustum.getLookAtMatrix(), 0, -90, 1, 0, 0);
-		}
+		}*/
 		
-		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
+		/*Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
 		Matrix.setIdentityM(mRotateMatrix, 0);
 		Matrix.rotateM(mRotateMatrix, 0, 90, 1, 0, 0);
 		mTempPosition.x -= mResultVec[0];
 		mTempPosition.y -= mResultVec[1];
-		mTempPosition.z -= mResultVec[2];
+		mTempPosition.z -= mResultVec[2];*/
+		mTempPosition.y -= mTempOffset[1];
 		mVisibleFrustum.setPosition(mTempPosition);
 		
 		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mRotateMatrix, null);
@@ -226,36 +227,5 @@ public class CameraFrustum implements IBoundingVolume {
 			mHeight = Math.abs(far - near);
 			init(update);
 		}
-		
-		/*@Override
-		public void calculateModelMatrix(final float[] parentMatrix) {
-			Matrix.setIdentityM(mMMatrix, 0);
-			//Matrix.setIdentityM(mScalematrix, 0);
-			//Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
-
-			Matrix.setIdentityM(mRotateMatrix, 0);
-			Matrix.setIdentityM(mTmpMatrix, 0);
-
-			setOrientation();
-			if (mLookAt == null) {
-				mOrientation.toRotationMatrix(mRotateMatrix);
-			} else {
-				System.arraycopy(getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
-			}
-			Matrix.translateM(mTmpMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
-			//Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
-			Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
-			if (parentMatrix != null) {
-				Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
-				System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
-			}
-		}*/
-		
-		/*@Override
-		public void setOrientation() {
-			if(!mRotationDirty && mLookAt == null) return;
-			super.setOrientation();
-			Matrix.rotateM(getLookAtMatrix(), 0, 90, 1, 0, 0);
-		}*/
 	}
 }
