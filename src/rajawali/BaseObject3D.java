@@ -848,6 +848,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 				uvOut = (uvIn * (tile.height/atlas.getHeight())) + tile.y/atlas.getHeight();
 			fb.put(i, uvOut);
 		}
+		mGeometry.changeBufferData(mGeometry.mTexCoordBufferInfo, fb, 0);
+
 	}
 	
 	public void destroy() {
