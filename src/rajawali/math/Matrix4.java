@@ -189,9 +189,9 @@ public final class Matrix4 {
     {
         Vector3 invTranslate = position.inverse();
         Vector3 invScale = new Vector3(1 / scale.x, 1 / scale.y, 1 / scale.z);
-        Quaternion invRot = orientation.inverse();
+        Quaternion invRot = orientation.invertAndCreate();
 
-        invTranslate = invRot.multiply(invTranslate);
+        invTranslate.setAll(invRot.multiply(invTranslate));
         invTranslate.multiply(invScale);
         invRot.toRotationMatrix(mTmp);
 
