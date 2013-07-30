@@ -6,12 +6,10 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Matrix4;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;
-import rajawali.math.vector.Vector3.Axis;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
@@ -154,6 +152,8 @@ public class CameraFrustum implements IBoundingVolume {
 			RajLog.d("Using mLookAt orientation.");
 			mVisibleFrustum.setLookAt(mCamera.getLookAt());
 			mCamera.getOrientation(mOrientation);
+			System.arraycopy(mCamera.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
+			
 			RajLog.v("Camera LookAt Orientation: " + mOrientation);
 			//mOrientation.inverse().multiplyLeft(s90_DEGREE);
 			mVisibleFrustum.setOrientation(mOrientation);
