@@ -17,7 +17,6 @@ import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class CameraFrustum implements IBoundingVolume {
 	
@@ -29,6 +28,8 @@ public class CameraFrustum implements IBoundingVolume {
 	
 	protected Camera mCamera;
 	protected CameraVisibleFrustum mVisibleFrustum;
+	protected final Quaternion mOrientation = new Quaternion();
+	private static final Quaternion s90_DEGREE = new Quaternion(Vector3.X, -90.0f);
 	
 	protected static final double ROOT2_4 = Math.sqrt(2.0)/4.0;
 
@@ -117,8 +118,6 @@ public class CameraFrustum implements IBoundingVolume {
 	float[] mTempOffset = new float[]{0, 0, 0, 1};
 	float[] mResultVec = new float[4];
 	Vector3 mTempPosition = new Vector3();
-	Vector3 Y = Vector3.getAxisVector(Axis.Y);
-	Vector3 Z = Vector3.getAxisVector(Axis.Z);
 	
 	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisibleFrustum == null) {
@@ -136,34 +135,29 @@ public class CameraFrustum implements IBoundingVolume {
 
 		mTempPosition.setAll(mCamera.getPosition());
 		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
+		mTempOffset[0] = 0; mTempOffset[2] = 0; mTempOffset[3] = 0;
 		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
 		
 		if (mCamera.getLookAt() == null) {
 			RajLog.d("Using quaternion orientation.");
-			Quaternion quat = mCamera.getOrientation(new Quaternion());
-			RajLog.d("Camera Orientation: " + quat);
-			mVisibleFrustum.setOrientation(quat);
-			quat.toRotationMatrix(mRotateMatrix);
+			mCamera.getOrientation(mOrientation);
+			mOrientation.inverse().multiplyLeft(s90_DEGREE);
+			mVisibleFrustum.setOrientation(mOrientation);
+			mOrientation.toRotationMatrix(mRotateMatrix);
 		} else {
 			RajLog.d("Using mLookAt orientation.");
 			mVisibleFrustum.setLookAt(mCamera.getLookAt());
 			mVisibleFrustum.setOrientation();
 			System.arraycopy(mVisibleFrustum.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
-			//Matrix.rotateM(mVisibleFrustum.getLookAtMatrix(), 0, -90, 1, 0, 0);
 		}
 		
 		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
-		//Matrix.setIdentityM(mRotateMatrix, 0);
-		//Matrix.rotateM(mRotateMatrix, 0, 90, 1, 0, 0);
 		mTempPosition.x -= mResultVec[0];
 		mTempPosition.y -= mResultVec[1];
 		mTempPosition.z -= mResultVec[2];
-		mTempPosition.y -= mTempOffset[1];
 		mVisibleFrustum.setPosition(mTempPosition);
 		
-		RajLog.v("Rotation Matrix: \n" + Matrix4.MatrixToString(mRotateMatrix));
-		
-		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mRotateMatrix, null);
+		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
 	}
 
 	public void transform(float[] matrix) {

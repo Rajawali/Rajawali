@@ -93,7 +93,7 @@ public class Camera extends ATransformable3D {
 			mFrustum.update(mTmpMatrix);
 		}
 	}
-
+	
 	protected void rotateM(float[] m, int mOffset, float a, float x, float y,
 			float z) {
 		synchronized (mFrustumLock) {
