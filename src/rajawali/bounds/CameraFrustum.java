@@ -144,18 +144,21 @@ public class CameraFrustum implements IBoundingVolume {
 			mOrientation.inverse().multiplyLeft(s90_DEGREE);
 			mVisibleFrustum.setOrientation(mOrientation);
 			mOrientation.toRotationMatrix(mRotateMatrix);
+			
+			Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
+			mTempPosition.x -= mResultVec[0];
+			mTempPosition.y -= mResultVec[1];
+			mTempPosition.z -= mResultVec[2];
+			mVisibleFrustum.setPosition(mTempPosition);
 		} else {
 			RajLog.d("Using mLookAt orientation.");
 			mVisibleFrustum.setLookAt(mCamera.getLookAt());
-			mVisibleFrustum.setOrientation();
-			System.arraycopy(mVisibleFrustum.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
+			mCamera.getOrientation(mOrientation);
+			RajLog.v("Camera LookAt Orientation: " + mOrientation);
+			//mOrientation.inverse().multiplyLeft(s90_DEGREE);
+			mVisibleFrustum.setOrientation(mOrientation);
+			mOrientation.toRotationMatrix(mRotateMatrix);
 		}
-		
-		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
-		mTempPosition.x -= mResultVec[0];
-		mTempPosition.y -= mResultVec[1];
-		mTempPosition.z -= mResultVec[2];
-		mVisibleFrustum.setPosition(mTempPosition);
 		
 		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
 	}

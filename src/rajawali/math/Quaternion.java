@@ -2,7 +2,6 @@ package rajawali.math;
 
 import rajawali.math.vector.Vector3;
 import rajawali.math.vector.Vector3.Axis;
-import rajawali.util.RajLog;
 
 /**
  * Encapsulates a quaternion.
@@ -349,7 +348,7 @@ public final class Quaternion {
 			y = apkQuat[1];
 			z = apkQuat[2];
 		}
-		return this;
+		return this; 
 	}
 	
 	/**
