@@ -141,6 +141,7 @@ public class CameraFrustum implements IBoundingVolume {
 		if (mCamera.getLookAt() == null) {
 			RajLog.d("Using quaternion orientation.");
 			Quaternion quat = mCamera.getOrientation(new Quaternion());
+			RajLog.d("Camera Orientation: " + quat);
 			mVisibleFrustum.setOrientation(quat);
 			quat.toRotationMatrix(mRotateMatrix);
 		} else {
@@ -151,16 +152,16 @@ public class CameraFrustum implements IBoundingVolume {
 			//Matrix.rotateM(mVisibleFrustum.getLookAtMatrix(), 0, -90, 1, 0, 0);
 		}
 		
-		/*Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
-		Matrix.setIdentityM(mRotateMatrix, 0);
-		Matrix.rotateM(mRotateMatrix, 0, 90, 1, 0, 0);
+		Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
+		//Matrix.setIdentityM(mRotateMatrix, 0);
+		//Matrix.rotateM(mRotateMatrix, 0, 90, 1, 0, 0);
 		mTempPosition.x -= mResultVec[0];
 		mTempPosition.y -= mResultVec[1];
-		mTempPosition.z -= mResultVec[2];*/
-		//mTempPosition.y -= mTempOffset[1];
+		mTempPosition.z -= mResultVec[2];
+		mTempPosition.y -= mTempOffset[1];
 		mVisibleFrustum.setPosition(mTempPosition);
 		
-		RajLog.v("Rotation Matrix: " + Matrix4.MatrixToString(mRotateMatrix));
+		RajLog.v("Rotation Matrix: \n" + Matrix4.MatrixToString(mRotateMatrix));
 		
 		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mRotateMatrix, null);
 	}

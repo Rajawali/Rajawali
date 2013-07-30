@@ -968,6 +968,7 @@ public final class Quaternion {
 	
 	/**
 	 * Creates a {@link Matrix4} representing this {@link Quaternion}.
+	 * The {@link Quaternion} must be a normalized {@link Quaternion}.
 	 * 
 	 * @return {@link Matrix4} representing this {@link Quaternion}.
 	 */
@@ -979,6 +980,7 @@ public final class Quaternion {
 
 	/**
 	 * Sets the provided {@link Matrix4} to represent this {@link Quaternion}.
+	 * The {@link Quaternion} must be a normalized {@link Quaternion}.
 	 */
 	public void toRotationMatrix(Matrix4 matrix) {
 		float[] m = new float[16];
@@ -988,6 +990,7 @@ public final class Quaternion {
 	
 	/**
 	 * Sets the provided float[] to be a 4x4 rotation matrix representing this {@link Quaternion}.
+	 * The {@link Quaternion} must be a normalized {@link Quaternion}.
 	 * 
 	 * @param matrix float[] representing a 4x4 rotation matrix in column major order.
 	 */
