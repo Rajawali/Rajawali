@@ -15,7 +15,6 @@ import rajawali.math.vector.Vector3.Axis;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
-import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -135,24 +134,22 @@ public class CameraFrustum implements IBoundingVolume {
 		Matrix.setIdentityM(mMMatrix, 0);
 		Matrix.setIdentityM(mRotateMatrix, 0);
 
-		mCamera.setOrientation();
 		mTempPosition.setAll(mCamera.getPosition());
 		double offset = mVisibleFrustum.getRadiusTop() / Math.tan(mCamera.getFieldOfView()*Math.PI/360.0);
 		mTempOffset[1] = (float) (offset + mVisibleFrustum.getHeight()/2.0);
 		
-		/*if (mCamera.getLookAt() == null) {
+		if (mCamera.getLookAt() == null) {
+			RajLog.d("Using quaternion orientation.");
 			Quaternion quat = mCamera.getOrientation(new Quaternion());
-			if (quat.isIdentity()) {
-				quat = Y.getRotationTo(Z);
-			}
 			mVisibleFrustum.setOrientation(quat);
 			quat.toRotationMatrix(mRotateMatrix);
 		} else {
+			RajLog.d("Using mLookAt orientation.");
 			mVisibleFrustum.setLookAt(mCamera.getLookAt());
 			mVisibleFrustum.setOrientation();
 			System.arraycopy(mVisibleFrustum.getLookAtMatrix(), 0, mRotateMatrix, 0, 16);
 			//Matrix.rotateM(mVisibleFrustum.getLookAtMatrix(), 0, -90, 1, 0, 0);
-		}*/
+		}
 		
 		/*Matrix.multiplyMV(mResultVec, 0, mRotateMatrix, 0, mTempOffset, 0);
 		Matrix.setIdentityM(mRotateMatrix, 0);
@@ -160,8 +157,10 @@ public class CameraFrustum implements IBoundingVolume {
 		mTempPosition.x -= mResultVec[0];
 		mTempPosition.y -= mResultVec[1];
 		mTempPosition.z -= mResultVec[2];*/
-		mTempPosition.y -= mTempOffset[1];
+		//mTempPosition.y -= mTempOffset[1];
 		mVisibleFrustum.setPosition(mTempPosition);
+		
+		RajLog.v("Rotation Matrix: " + Matrix4.MatrixToString(mRotateMatrix));
 		
 		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, mRotateMatrix, null);
 	}
