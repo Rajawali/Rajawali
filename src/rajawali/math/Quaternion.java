@@ -648,6 +648,11 @@ public final class Quaternion {
 		return w * w + x * x + y * y + z * z;
 	}
 	
+	/**
+	 * Calculates the dot product between this and another {@link Quaternion}.
+	 * 
+	 * @return float The dot product.
+	 */
 	public float dot(Quaternion other) {
 		return w * other.w + x * other.x + y * other.y + z * other.z;
 	}
@@ -655,7 +660,7 @@ public final class Quaternion {
 	/**
 	 * Sets this {@link Quaternion} to an identity.
 	 * 
-	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion identity() {
 		w = 1;

@@ -25,6 +25,10 @@ It has also been moved to the `rajawali.math.vector` package.
 The `Vector2D` has been refactored into `Vector2` which falls in line with the new `Vector3` class.
 It has also been moved to the `rajawali.math.vector` package.
 
+# Vector3
+
+The `Number3D` class has been refactored to `Vector3`. This name is much more appropriate.
+
 # Quaternion
 
 The `Quaternion` class has been overhauled and refactored similarly to the `Vector3` class. This may affect a lot of your code,
@@ -132,10 +136,6 @@ material1.addTexture(new NormalMapTexture(R.drawable.sphere_normal));
 mHalfSphere1.setMaterial(material1);
 ```
 
-# Vector3
-
-The `Number3D` class has been refactored to `Vector3`. This name is much more appropriate.
-
 # Object color
 
 `AMaterial`'s method `setUseColor(boolean useColor)` has been removed. There are two new methods that replace it:
@@ -154,6 +154,6 @@ These existing classes have been renamed:
 Some new classes have been added:
 - `CompoundCurve3D`: This is a container for an n number of curves of any type.
 - `LinearBezierCurve3D`: A linear bezier curve. Basically just a straight line. This is useful for compound curves.
-- `QuadraticBezierCurve3D: A quadratic bezier curve. This type of Bezier curve take only one control point instead of two.
+- `QuadraticBezierCurve3D`: A quadratic bezier curve. This type of Bezier curve take only one control point instead of two.
 - `SVGPath`: takes an SVG-style path string and creates a `CompoundCurve3D`. Still a work in progress.
 
