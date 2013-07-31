@@ -1,7 +1,7 @@
 package rajawali.animation.mesh;
 
 import rajawali.Geometry3D;
-import rajawali.bounds.BoundingBox;
+import rajawali.bounds.volumes.BoundingBox;
 import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;
 

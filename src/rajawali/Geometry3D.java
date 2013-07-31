@@ -10,8 +10,8 @@ import java.nio.ShortBuffer;
 import java.util.Arrays;
 
 import rajawali.animation.mesh.VertexAnimationObject3D;
-import rajawali.bounds.BoundingBox;
-import rajawali.bounds.BoundingSphere;
+import rajawali.bounds.volumes.BoundingBox;
+import rajawali.bounds.volumes.BoundingSphere;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;

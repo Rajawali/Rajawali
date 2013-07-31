@@ -1,6 +1,6 @@
 package rajawali;
 
-import rajawali.bounds.IBoundingVolume;
+import rajawali.bounds.volumes.IBoundingVolume;
 import rajawali.math.Matrix4;
 import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;

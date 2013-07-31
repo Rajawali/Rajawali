@@ -2,8 +2,8 @@ package rajawali;
 
 import java.util.List;
 
-import rajawali.bounds.CameraFrustum;
-import rajawali.bounds.IBoundingVolume;
+import rajawali.bounds.volumes.CameraFrustum;
+import rajawali.bounds.volumes.IBoundingVolume;
 import rajawali.math.MathUtil;
 import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;

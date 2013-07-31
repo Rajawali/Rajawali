@@ -1,4 +1,4 @@
-package rajawali.bounds;
+package rajawali.bounds.volumes;
 
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;

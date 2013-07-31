@@ -1,4 +1,4 @@
-package rajawali.bounds;
+package rajawali.bounds.volumes;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -118,7 +118,7 @@ public class CameraFrustum implements IBoundingVolume {
 	Vector3 mTempPosition = new Vector3();
 	
 	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
-		if(mVisibleFrustum == null) {
+		/*if(mVisibleFrustum == null) {
 			mVisibleFrustum = new CameraVisibleFrustum(this, 4, 1, 3, 5);
 			mVisibleFrustum.setMaterial(new SimpleMaterial());
 			mVisibleFrustum.getMaterial().setUseSingleColor(true);
@@ -158,9 +158,9 @@ public class CameraFrustum implements IBoundingVolume {
 			//mOrientation.inverse().multiplyLeft(s90_DEGREE);
 			mVisibleFrustum.setOrientation(mOrientation);
 			mOrientation.toRotationMatrix(mRotateMatrix);
-		}
-		
-		mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
+		}*/
+		//TODO: Uncomment this when everything works.
+		//mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
 	}
 
 	public void transform(float[] matrix) {

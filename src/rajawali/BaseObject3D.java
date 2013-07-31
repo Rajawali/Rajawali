@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.bounds.BoundingBox;
-import rajawali.bounds.IBoundingVolume;
+import rajawali.bounds.volumes.BoundingBox;
+import rajawali.bounds.volumes.IBoundingVolume;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;

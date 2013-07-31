@@ -1,8 +1,8 @@
 package rajawali.visitors;
 
 import rajawali.BaseObject3D;
-import rajawali.bounds.BoundingBox;
-import rajawali.bounds.BoundingSphere;
+import rajawali.bounds.volumes.BoundingBox;
+import rajawali.bounds.volumes.BoundingSphere;
 import rajawali.math.vector.Vector3;
 import rajawali.math.vector.Vector3.Axis;
 import rajawali.util.Intersector;

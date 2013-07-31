@@ -1,6 +1,6 @@
 package rajawali;
 
-import rajawali.bounds.BoundingBox;
+import rajawali.bounds.volumes.BoundingBox;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.vector.Vector3;

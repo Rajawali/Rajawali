@@ -6,10 +6,10 @@ import java.util.List;
 
 import rajawali.ATransformable3D;
 import rajawali.Camera;
-import rajawali.bounds.BoundingBox;
-import rajawali.bounds.BoundingSphere;
-import rajawali.bounds.CameraFrustum;
-import rajawali.bounds.IBoundingVolume;
+import rajawali.bounds.volumes.BoundingBox;
+import rajawali.bounds.volumes.BoundingSphere;
+import rajawali.bounds.volumes.CameraFrustum;
+import rajawali.bounds.volumes.IBoundingVolume;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 import android.opengl.Matrix;
@@ -841,7 +841,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#cullFromBoundingVolume(rajawali.bounds.IBoundingVolume)
 	 */
-	public List<IGraphNodeMember> cullFromBoundingVolume(IBoundingVolume volume, IGraphNode container) {
+	public List<IGraphNodeMember> cullFromBoundingVolume(final IBoundingVolume volume, IGraphNode container) {
+		Log.d("Culling", "Culling Volume: " + volume);
 		ArrayList<IGraphNodeMember> survivors = new ArrayList<IGraphNodeMember>();
 		ArrayList<A_nAABBTree> survivorNodes = new ArrayList<A_nAABBTree>();
 		int start = 0;
@@ -859,20 +860,26 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			survivorNodes.add((A_nAABBTree) container);
 			local_container = (A_nAABBTree) container;
 		}
+		Log.i("Culling", "Survivor Nodes: " + survivorNodes);
+		Log.i("Culling", "Local Container: " + local_container);
 		start = local_container.getObjectCount();
 		if (local_container.mSplit) {
 			recursiveIntersectChildNodes(volume, local_container, survivorNodes);
 		}
 		for (int i = 0, j = survivorNodes.size(); i < j; ++i) {
+			Log.v("Culling", "Culling for Node: " + survivorNodes.get(i));
 			List<IGraphNodeMember> list = survivorNodes.get(i).mMembers;
+			Log.v("Culling", "Node members: " + list);
 			for (int n = 0, k = list.size(); n < k; ++n) {
 				if (list.get(n).getTransformedBoundingVolume().intersectsWith(volume)) {
 					survivors.add(list.get(n));
 				}
 			}
 			list = survivorNodes.get(i).mOutside;
+			Log.v("Culling", "Node outside: " + list);
 			if (list != null) {
 				for (int n = 0, k = list.size(); n < k; ++n) {
+					Log.v("Culling", "Volume: " + list.get(n).getTransformedBoundingVolume());
 					if (list.get(n).getTransformedBoundingVolume().intersectsWith(volume)) {
 						survivors.add(list.get(n));
 					}
@@ -880,7 +887,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			}
 		}
 		int end = survivors.size();
-		//Log.v("Culling", "Survivors: " + end + "/" + start);
+		Log.v("Culling", "Survivors: " + end + "/" + start);
 		return survivors;
 	}
 	
@@ -892,6 +899,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @param survivors {@link List} of {@link A_nAABBTree} objects which have survived the intersection test.
 	 */
 	private void recursiveIntersectChildNodes(IBoundingVolume volume, A_nAABBTree container, List<A_nAABBTree> survivors) {
+		Log.i("Culling", "Recursively checking child nodes.");
 		for (int i = 0, j = container.CHILD_COUNT; i < j; ++i) {
 			if (container.mChildren[i].intersectsWith(volume)) {
 				survivors.add(container.mChildren[i]);

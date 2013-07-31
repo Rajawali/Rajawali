@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import rajawali.Camera;
-import rajawali.bounds.IBoundingVolume;
+import rajawali.bounds.volumes.IBoundingVolume;
 import rajawali.math.vector.Vector3;
 import rajawali.scene.RajawaliScene;
 

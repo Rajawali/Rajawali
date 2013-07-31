@@ -1,4 +1,4 @@
-package rajawali.bounds;
+package rajawali.bounds.volumes;
 
 import rajawali.BaseObject3D;
 import rajawali.Camera;
