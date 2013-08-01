@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
-import rajawali.materials.SimpleMaterial;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.Quaternion;
@@ -13,8 +12,6 @@ import rajawali.math.vector.Vector3;
 import rajawali.primitives.NPrism;
 import rajawali.primitives.Sphere;
 import rajawali.util.RajLog;
-import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 public class CameraFrustum implements IBoundingVolume {
 	
@@ -168,11 +165,6 @@ public class CameraFrustum implements IBoundingVolume {
 				+ "] The method CameraFrustum#transform(float[]) does nothing. You should remove your call to it.");
 	}
 
-	public boolean intersectsWith(IBoundingVolume boundingVolume) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	public BaseObject3D getVisual() {
 		return mVisibleFrustum;
 	}
@@ -183,10 +175,6 @@ public class CameraFrustum implements IBoundingVolume {
 
 	public int getBoundingColor() {
 		return mBoundingColor.get();
-	}
-
-	public VOLUME_SHAPE getVolumeShape() {
-		return VOLUME_SHAPE.FRUSTUM;
 	}
 	
 	protected static class CameraVisibleFrustum extends NPrism {

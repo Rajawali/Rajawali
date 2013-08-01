@@ -6,7 +6,9 @@ import java.util.List;
 
 import rajawali.ATransformable3D;
 import rajawali.Camera;
+import rajawali.bounds.BoundingVolumeTester;
 import rajawali.bounds.volumes.BoundingBox;
+import rajawali.bounds.volumes.BoundingCone;
 import rajawali.bounds.volumes.BoundingSphere;
 import rajawali.bounds.volumes.CameraFrustum;
 import rajawali.bounds.volumes.IBoundingVolume;
@@ -165,32 +167,36 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			span_y = 5.0;
 			span_z = 5.0;
 		} else {
-			switch (volume.getVolumeShape()) {
-			case BOX:
+			//The order here is chosen to such that events which are more likely are
+			//higher in the chain to avoid unnecessary checks.
+			if (volume instanceof BoundingBox) {
 				BoundingBox bcube = (BoundingBox) volume;
 				Vector3 min = bcube.getTransformedMin();
 				Vector3 max = bcube.getTransformedMax();
 				span_x = (max.x - min.x);
 				span_y = (max.y - min.y);
 				span_z = (max.z - min.z);
-				break;
-			case SPHERE:
+			} else if (volume instanceof BoundingSphere) {
 				BoundingSphere bsphere = (BoundingSphere) volume;
 				span_x = 2.0*bsphere.getScaledRadius();
 				span_y = span_x;
 				span_z = span_x;
-				break;
-			case CONE:
-				//TODO: Impliment
-				break;
-			case FRUSTUM:
+			} else if (volume instanceof CameraFrustum) {
 				CameraFrustum frustum = (CameraFrustum) volume;
 				Vector3 far = frustum.getPlanePoint(6);
 				Vector3 near = frustum.getPlanePoint(2);
 				span_x = far.x;
 				span_y = far.y;
 				span_z = far.z - near.z;
-				break;
+			} else if (volume instanceof BoundingCone) {
+				//TODO: Implement
+			} else {
+				//This is more to notify developers of a spot they need to expand. It should never
+				//occur in production code.
+				RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type: " 
+						+ volume.getClass().getCanonicalName());
+
+				throw new IllegalArgumentException("Received a bounding box of unknown type."); 
 			}
 		}
 		mMin.x = (float) (position.x - span_x);
@@ -479,12 +485,13 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				test_against_min = object.getPosition();
 				test_against_max = test_against_min;
 			} else {
-				switch (volume.getVolumeShape()) {
-				case BOX:
+				//The order here is chosen to such that events which are more likely are
+				//higher in the chain to avoid unnecessary checks.
+				if (volume instanceof BoundingBox) {
 					BoundingBox bb = (BoundingBox) volume;
 					test_against_min = bb.getTransformedMin();
 					test_against_max = bb.getTransformedMax();
-				case SPHERE:
+				} else if (volume instanceof BoundingSphere) {
 					BoundingSphere bs = (BoundingSphere) volume;
 					Vector3 bs_position = bs.getPosition();
 					float radius = bs.getScaledRadius();
@@ -492,20 +499,19 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					rad.setAll(radius, radius, radius);
 					test_against_min = Vector3.subtractAndCreate(bs_position, rad);
 					test_against_max = Vector3.addAndCreate(bs_position, rad);
-				case CONE:
-				case FRUSTUM:
+				} else if (volume instanceof CameraFrustum) {
 					CameraFrustum frustum = (CameraFrustum) volume;
 					Vector3 far = frustum.getPlanePoint(6);
 					Vector3 near = frustum.getPlanePoint(2);
 					test_against_min = new Vector3(far.x, far.y, far.z);
 					test_against_max = new Vector3(far.x, far.y, near.z);
-					break;
-				default:
+				} else if (volume instanceof BoundingCone) {
+					//TODO: Implement
+				} else {
 					//This is more to notify developers of a spot they need to expand. It should never
 					//occur in production code.
 					RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type: " 
-							+ VOLUME_SHAPE.toString(volume.getVolumeShape()));
-
+							+ volume.getClass().getCanonicalName());
 					throw new IllegalArgumentException("Received a bounding box of unknown type."); 
 				}
 			}
@@ -850,7 +856,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		if (container == null) {
 			Log.i("Culling", "Culling with null container");
 			//Should only be called on the root node
-			if (volume.intersectsWith(this)) {
+			
+			//The below if statement is choosing to pass this node in first since
+			//we know it is of type BoundingBox...this is potentially marginally faster.
+			if (BoundingVolumeTester.testIntersection(this, volume)) {
 				//If the volume doesnt intersect with the root node there is nothing to do
 				survivorNodes.add(this);
 				local_container = this;
@@ -871,7 +880,11 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			List<IGraphNodeMember> list = survivorNodes.get(i).mMembers;
 			Log.v("Culling", "Node members: " + list);
 			for (int n = 0, k = list.size(); n < k; ++n) {
-				if (list.get(n).getTransformedBoundingVolume().intersectsWith(volume)) {
+				IBoundingVolume current_volume = list.get(n).getTransformedBoundingVolume();
+				//The below if statement is choosing to pass the current volume in first since
+				//we know odds are high it is of type BoundingBox...this is potentially marginally
+				//faster.
+				if (BoundingVolumeTester.testIntersection(current_volume, volume)) {
 					survivors.add(list.get(n));
 				}
 			}
@@ -879,8 +892,12 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			Log.v("Culling", "Node outside: " + list);
 			if (list != null) {
 				for (int n = 0, k = list.size(); n < k; ++n) {
-					Log.v("Culling", "Volume: " + list.get(n).getTransformedBoundingVolume());
-					if (list.get(n).getTransformedBoundingVolume().intersectsWith(volume)) {
+					IBoundingVolume current_volume = list.get(n).getTransformedBoundingVolume();
+					Log.v("Culling", "Volume: " + current_volume);
+					//The below if statement is choosing to pass the current volume in first since
+					//we know odds are high it is of type BoundingBox...this is potentially marginally
+					//faster.
+					if (BoundingVolumeTester.testIntersection(current_volume, volume)) {
 						survivors.add(list.get(n));
 					}
 				}
@@ -901,7 +918,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	private void recursiveIntersectChildNodes(IBoundingVolume volume, A_nAABBTree container, List<A_nAABBTree> survivors) {
 		Log.i("Culling", "Recursively checking child nodes.");
 		for (int i = 0, j = container.CHILD_COUNT; i < j; ++i) {
-			if (container.mChildren[i].intersectsWith(volume)) {
+			//The below if statement is choosing to pass the container in first since
+			//we know the container is of type BoundingBox...this is potentially marginally
+			//faster.
+			if (BoundingVolumeTester.testIntersection(container.mChildren[i], volume)) {
 				survivors.add(container.mChildren[i]);
 				recursiveIntersectChildNodes(volume, container, survivors);
 			}
@@ -970,8 +990,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @see rajawali.scenegraph.IGraphNode#contains(rajawali.bounds.IBoundingVolume)
 	 */
 	public boolean contains(IBoundingVolume boundingVolume) {
-		switch (boundingVolume.getVolumeShape()) {
-		case BOX:
+		//The order here is chosen to such that events which are more likely are
+		//higher in the chain to avoid unnecessary checks.
+		if (boundingVolume instanceof BoundingBox) {
 			BoundingBox boundingBox = (BoundingBox)boundingVolume;
 			Vector3 otherMin = boundingBox.getTransformedMin();
 			Vector3 otherMax = boundingBox.getTransformedMax();
@@ -980,14 +1001,21 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			return (max.x >= otherMax.x) && (min.x <= otherMin.x) &&
 					(max.y >= otherMax.y) && (min.y <= otherMin.y) &&
 					(max.z >= otherMax.z) && (min.z <= otherMin.z);
-		case SPHERE:
+		} else if (boundingVolume instanceof BoundingSphere) {
+			//TODO: Implement
 			return false;
-		case CONE:
+		} else if (boundingVolume instanceof CameraFrustum) {
+			//TODO: Implement
 			return false;
-		case FRUSTUM:
+		} else if (boundingVolume instanceof BoundingCone) {
+			//TODO: Implement
 			return false;
-		default:
-			return false;
+		} else {
+			//This is more to notify developers of a spot they need to expand. It should never
+			//occur in production code.
+			RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type: " 
+					+ boundingVolume.getClass().getCanonicalName());
+			throw new IllegalArgumentException("Received a bounding box of unknown type."); 
 		}
 	}
 
@@ -996,8 +1024,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @see rajawali.scenegraph.IGraphNode#isContainedBy(rajawali.bounds.IBoundingVolume)
 	 */
 	public boolean isContainedBy(IBoundingVolume boundingVolume) {
-		switch (boundingVolume.getVolumeShape()) {
-		case BOX:
+		//The order here is chosen to such that events which are more likely are
+		//higher in the chain to avoid unnecessary checks.
+		if (boundingVolume instanceof BoundingBox) {
 			BoundingBox boundingBox = (BoundingBox)boundingVolume;
 			Vector3 otherMin = boundingBox.getTransformedMin();
 			Vector3 otherMax = boundingBox.getTransformedMax();
@@ -1006,14 +1035,21 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 			return (max.x <= otherMax.x) && (min.x >= otherMin.x) &&
 					(max.y <= otherMax.y) && (min.y >= otherMin.y) &&
 					(max.z <= otherMax.z) && (min.z >= otherMin.z);
-		case SPHERE:
+		} else if (boundingVolume instanceof BoundingSphere) {
+			//TODO: Implement
 			return false;
-		case CONE:
+		} else if (boundingVolume instanceof CameraFrustum) {
+			//TODO: Implement
 			return false;
-		case FRUSTUM:
+		} else if (boundingVolume instanceof BoundingCone) {
+			//TODO: Implement
 			return false;
-		default:
-			return false;
+		} else {
+			//This is more to notify developers of a spot they need to expand. It should never
+			//occur in production code.
+			RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type: " 
+					+ boundingVolume.getClass().getCanonicalName());
+			throw new IllegalArgumentException("Received a bounding box of unknown type."); 
 		}
 	}
 

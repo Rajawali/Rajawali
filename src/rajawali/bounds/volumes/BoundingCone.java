@@ -22,11 +22,6 @@ public class BoundingCone implements IBoundingVolume {
 		
 	}
 
-	public boolean intersectsWith(IBoundingVolume boundingVolume) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	public BaseObject3D getVisual() {
 		// TODO Auto-generated method stub
 		return null;
@@ -41,9 +36,4 @@ public class BoundingCone implements IBoundingVolume {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	public VOLUME_SHAPE getVolumeShape() {
-		return VOLUME_SHAPE.CONE;
-	}
-
 }

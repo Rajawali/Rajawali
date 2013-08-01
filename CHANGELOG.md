@@ -73,6 +73,16 @@ public void nextCamera() {
 }
 ```
 
+# Scene Graph
+
+# BoundingVolumeTester and IBoundingVolume
+
+The method `IBoundingVolume#intersectsWith(IBoundingVolume)` has been removed and replaced with a more robust intersection
+helper class, `BoundingVolumeTester`. In addition to other useful methods, you can use the method
+`BoundingVolumeTester#testIntersection(IBoundingVolume, IBoundingVolume)` which will return a boolean indicating if there is
+intersection between the two bounding volumes. Note that these volumes may be of any type implemented by the library, or you the
+developer provided you properly extend the `BoundingVolumeTester` class.
+
 # Texture Management
 
 Texture management has been simplified. Here's a basic `DiffuseMaterial` example:

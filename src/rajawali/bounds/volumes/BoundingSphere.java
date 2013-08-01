@@ -10,7 +10,6 @@ import rajawali.materials.SimpleMaterial;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 public class BoundingSphere implements IBoundingVolume {
 	protected Geometry3D mGeometry;
@@ -112,22 +111,5 @@ public class BoundingSphere implements IBoundingVolume {
 	@Override
 	public String toString() {
 		return "BoundingSphere radius: " + Float.toString(getScaledRadius());
-	}
-	
-	public boolean intersectsWith(IBoundingVolume boundingVolume) {
-		if(!(boundingVolume instanceof BoundingSphere)) return false;
-		BoundingSphere boundingSphere = (BoundingSphere)boundingVolume;
-		
-		mTmpPos.setAll(mPosition);
-		mTmpPos.subtract(boundingSphere.getPosition());
-		
-		mDist = mTmpPos.x * mTmpPos.x + mTmpPos.y * mTmpPos.y + mTmpPos.z * mTmpPos.z;
-		mMinDist = mRadius * mScale + boundingSphere.getRadius() * boundingSphere.getScale();
-		
-		return mDist < mMinDist * mMinDist;
-	}
-
-	public VOLUME_SHAPE getVolumeShape() {
-		return VOLUME_SHAPE.SPHERE;
 	}
 }
