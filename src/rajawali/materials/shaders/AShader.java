@@ -1,9 +1,12 @@
 package rajawali.materials.shaders;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+
 
 public abstract class AShader extends AShaderBase {
 	public static enum ShaderType {
@@ -11,6 +14,7 @@ public abstract class AShader extends AShaderBase {
 	}
 
 	protected final GLPosition GL_POSITION = new GLPosition();
+	protected final GLFragColor GL_FRAG_COLOR = new GLFragColor();
 	
 	private String mShaderString;
 	
@@ -18,8 +22,10 @@ public abstract class AShader extends AShaderBase {
 	private Hashtable<String, ShaderVar> mUniforms;
 	private Hashtable<String, ShaderVar> mAttributes;
 	private Hashtable<String, ShaderVar> mVaryings;
+	private Hashtable<String, ShaderVar> mGlobals;
 	private Hashtable<String, Precision> mPrecisionSpecifier;
 	private Hashtable<String, Constant> mConstants;
+	protected List<IShaderFragment> mShaderFragments;
 	
 	public AShader(ShaderType shaderType) {
 		mShaderType = shaderType;
@@ -30,11 +36,13 @@ public abstract class AShader extends AShaderBase {
 		mUniforms = new Hashtable<String, ShaderVar>();
 		mAttributes = new Hashtable<String, ShaderVar>();
 		mVaryings = new Hashtable<String, ShaderVar>();
+		mGlobals = new Hashtable<String, ShaderVar>();
 		mPrecisionSpecifier = new Hashtable<String, Precision>();
 		mConstants = new Hashtable<String, AShaderBase.Constant>();
+		mShaderFragments = new ArrayList<IShaderFragment>();
 	}
 
-	protected void main() {
+	public void main() {
 	}
 
 	protected void addPrecisionSpecifier(DataType dataType, Precision precision) {
@@ -44,6 +52,11 @@ public abstract class AShader extends AShaderBase {
 	protected void addDefine(String name, String value) {
 	}
 
+	protected ShaderVar addUniform(DefaultVar var, DataType dataType)
+	{
+		return addUniform(var.getVarString(), dataType);
+	}
+	
 	protected ShaderVar addUniform(String name, DataType dataType)
 	{
 		ShaderVar v = getInstanceForDataType(name, dataType);
@@ -51,18 +64,62 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
+	public Hashtable<String, ShaderVar> getUniforms()
+	{
+		return mUniforms;
+	}
+	
+	protected ShaderVar addAttribute(DefaultVar var, DataType dataType)
+	{
+		return addAttribute(var.getVarString(), dataType);
+	}
+	
 	protected ShaderVar addAttribute(String name, DataType dataType) {
 		ShaderVar v = getInstanceForDataType(name, dataType);
 		mAttributes.put(v.getName(), v);
 		return v;
 	}
+	
+	public Hashtable<String, ShaderVar> getAttributes()
+	{
+		return mAttributes;
+	}
 
+	protected ShaderVar addVarying(DefaultVar var, DataType dataType) {
+		return addVarying(var.getVarString(), dataType);
+	}
+	
 	protected ShaderVar addVarying(String name, DataType dataType) {
 		ShaderVar v = getInstanceForDataType(name, dataType);
 		mVaryings.put(v.getName(), v);
 		return v;
 	}
+	
+	public Hashtable<String, ShaderVar> getVaryings()
+	{
+		return mVaryings;
+	}
 
+	protected ShaderVar addGlobal(DefaultVar var, DataType dataType) {
+		return addGlobal(var.getVarString(), dataType);
+	}
+	
+	protected ShaderVar addGlobal(String name, DataType dataType) {
+		ShaderVar v = getInstanceForDataType(name, dataType);
+		mGlobals.put(v.getName(), v);
+		return v;
+	}
+	
+	public Hashtable<String, ShaderVar> getGlobals()
+	{
+		return mGlobals;
+	}
+	
+	public ShaderVar getGlobal(DefaultVar var)
+	{
+		return getInstanceForDataType(var.getVarString(), var.getDataType());
+	}
+	
 	protected Constant addConst(String name, int value) {
 		return addConst(name, Integer.toString(value));
 	}
@@ -80,9 +137,19 @@ public abstract class AShader extends AShaderBase {
 		mConstants.put(name, c);
 		return c;
 	}
+	
+	public void addShaderFragment(IShaderFragment fragment)
+	{
+		mShaderFragments.add(fragment);
+	}
 
 	public ShaderType getShaderType() {
 		return mShaderType;
+	}
+	
+	public void setStringBuilder(StringBuilder stringBuilder)
+	{
+		mShaderSB = stringBuilder;
 	}
 
 	public String getShaderString() {
@@ -113,7 +180,15 @@ public abstract class AShader extends AShaderBase {
 		// -- Uniforms
 		//
 
-		Set<Entry<String, ShaderVar>> set = mUniforms.entrySet();
+		Hashtable<String, ShaderVar> uniforms = new Hashtable<String, ShaderVar>(mUniforms);
+		
+		for(int i=0; i<mShaderFragments.size(); i++)
+		{
+			IShaderFragment fragment = mShaderFragments.get(i);
+			uniforms.putAll(fragment.getUniforms());
+		}
+		
+		Set<Entry<String, ShaderVar>> set = uniforms.entrySet();
 		Iterator<Entry<String, ShaderVar>> iter = set.iterator();
 		while (iter.hasNext()) {
 			Entry<String, ShaderVar> e = iter.next();
@@ -125,8 +200,16 @@ public abstract class AShader extends AShaderBase {
 		//
 		// -- Attributes
 		//
+		
+		Hashtable<String, ShaderVar> attributes = new Hashtable<String, ShaderVar>(mAttributes);
+		
+		for(int i=0; i<mShaderFragments.size(); i++)
+		{
+			IShaderFragment fragment = mShaderFragments.get(i);
+			attributes.putAll(fragment.getAttributes());
+		}
 
-		set = mAttributes.entrySet();
+		set = attributes.entrySet();
 		iter = set.iterator();
 
 		while (iter.hasNext()) {
@@ -140,7 +223,15 @@ public abstract class AShader extends AShaderBase {
 		// -- Varying
 		//
 
-		set = mVaryings.entrySet();
+		Hashtable<String, ShaderVar> varyings = new Hashtable<String, ShaderVar>(mVaryings);
+		
+		for(int i=0; i<mShaderFragments.size(); i++)
+		{
+			IShaderFragment fragment = mShaderFragments.get(i);
+			varyings.putAll(fragment.getVaryings());
+		}
+		
+		set = varyings.entrySet();
 		iter = set.iterator();
 
 		while (iter.hasNext()) {
@@ -150,6 +241,28 @@ public abstract class AShader extends AShaderBase {
 					.append(" ").append(var.mName).append(";\n");
 		}
 
+		//
+		// -- Global
+		//
+
+		Hashtable<String, ShaderVar> globals = new Hashtable<String, ShaderVar>(mGlobals);
+		
+		for(int i=0; i<mShaderFragments.size(); i++)
+		{
+			IShaderFragment fragment = mShaderFragments.get(i);
+			globals.putAll(fragment.getGlobals());
+		}
+		
+		set = globals.entrySet();
+		iter = set.iterator();
+
+		while (iter.hasNext()) {
+			Entry<String, ShaderVar> e = iter.next();
+			ShaderVar var = e.getValue();
+			s.append(var.mDataType.getTypeString())
+					.append(" ").append(var.mName).append(";\n");
+		}
+		
 		//
 		// -- Call main
 		//
@@ -169,7 +282,7 @@ public abstract class AShader extends AShaderBase {
 	
 	public String normalize(ShaderVar value)
 	{
-		return normalize(value.getName());
+		return normalize(value.getValue());
 	}
 	/*
 	public RVec4 texture2D(String sampler2D, String coord)

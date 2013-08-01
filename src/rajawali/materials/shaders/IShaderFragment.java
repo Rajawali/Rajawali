@@ -1,0 +1,17 @@
+package rajawali.materials.shaders;
+
+import java.util.Hashtable;
+
+import rajawali.materials.shaders.AShaderBase.ShaderVar;
+
+
+
+public interface IShaderFragment {
+	String getKey();
+	Hashtable<String, ShaderVar> getUniforms();
+	Hashtable<String, ShaderVar> getAttributes();
+	Hashtable<String, ShaderVar> getVaryings();
+	Hashtable<String, ShaderVar> getGlobals();
+	void setStringBuilder(StringBuilder stringBuilder);
+	void main();
+}

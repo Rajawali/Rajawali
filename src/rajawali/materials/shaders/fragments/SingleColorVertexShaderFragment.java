@@ -1,16 +1,15 @@
 package rajawali.materials.shaders.fragments;
 
 import rajawali.materials.shaders.AShader;
+import rajawali.materials.shaders.IShaderFragment;
 
 
 public class SingleColorVertexShaderFragment extends AShader implements IShaderFragment {
 	private RVec4 muSingleColor;
-	private RVec4 mvColor;
 	
-	public SingleColorVertexShaderFragment(RVec4 varyingColor)
+	public SingleColorVertexShaderFragment()
 	{
 		super(ShaderType.VERTEX_SHADER_FRAGMENT);
-		mvColor = varyingColor;
 	}
 	
 	@Override
@@ -22,7 +21,13 @@ public class SingleColorVertexShaderFragment extends AShader implements IShaderF
 	}
 	
 	@Override
-	protected void main() {
-		mvColor.assign(muSingleColor);
+	public void main() {
+		RVec4 color = (RVec4)getGlobal(DefaultVar.G_COLOR);
+		color.assign(muSingleColor);
+	}
+	
+	public String getKey()
+	{
+		return getClass().getName();
 	}
 }
