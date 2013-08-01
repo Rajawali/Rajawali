@@ -35,7 +35,7 @@ import android.util.Log;
  * partitions will fit in one or the other and be able to be nested deeper rather than staying in
  * the parent partition. Note however that in cases where the object is small enough to still be
  * fully contained by both (or more) children, it is added to the parent. This is where a more
- * complex tree would excel, but only in the case over very large object counts.
+ * complex tree would excel, but only in the case very large (O(10^4)) object counts.
  * 
  * By default, this tree will NOT recursively add the children of added objects and NOT
  * recursively remove the children of removed objects.
