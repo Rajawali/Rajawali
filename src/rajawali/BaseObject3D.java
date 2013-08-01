@@ -255,13 +255,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		Matrix.multiplyMM(mMVPMatrix, 0, vpMatrix, 0, mMMatrix, 0);
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
-		if (mFrustumTest && mGeometry.hasBoundingBox()) {
+		/*if (mFrustumTest && mGeometry.hasBoundingBox()) {
 			BoundingBox bbox = mGeometry.getBoundingBox();
 			bbox.transform(mMMatrix);
 			if (!camera.mFrustum.boundsInFrustum(bbox)) {
 				mIsInFrustum = false;
 			}
-		}
+		}*/
 
 		if (!mIsContainerOnly && mIsInFrustum) {
 			mProjMatrix = projMatrix;

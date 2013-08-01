@@ -73,6 +73,11 @@ public void nextCamera() {
 }
 ```
 
+# Frustum
+`Frustum` has become `CameraFrustum` and has been moved to the `rajawali.bounds.volumes` package. This was done to better incorporate
+with the scene graph framework and because it is effectively a bounding volume. Why not leave the name `Frustum`? Leaving the door open
+for the future should a `Frustum` bounding volume be added.
+
 # Scene Graph
 
 # BoundingVolumeTester and IBoundingVolume

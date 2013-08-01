@@ -9,6 +9,7 @@ import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
+import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 public class BoundingBox implements IBoundingVolume {

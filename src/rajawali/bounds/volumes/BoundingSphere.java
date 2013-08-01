@@ -51,7 +51,7 @@ public class BoundingSphere implements IBoundingVolume {
 			mVisualSphere = new Sphere(1, 8, 8);
 			mVisualSphere.setMaterial(new SimpleMaterial());
 			mVisualSphere.getMaterial().setUseSingleColor(true);
-			mVisualSphere.setColor(0xffffff00);
+			mVisualSphere.setColor(mBoundingColor.get());
 			mVisualSphere.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualSphere.setDoubleSided(true);
 		}

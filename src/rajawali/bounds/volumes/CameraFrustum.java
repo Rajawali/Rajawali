@@ -15,7 +15,6 @@ import rajawali.util.RajLog;
 
 public class CameraFrustum implements IBoundingVolume {
 	
-	private Vector3[] mTmp = new Vector3[8];
 	protected Sphere mVisualSphere;
 	protected float[] mTmpMatrix = new float[16];
 	protected AtomicInteger mBoundingColor = new AtomicInteger(IBoundingVolume.DEFAULT_COLOR);
@@ -52,9 +51,6 @@ public class CameraFrustum implements IBoundingVolume {
 		for(int i = 0; i < 6; i++) {
 			mPlanes[i] = new Plane(new Vector3(), 0);
 		}
-		for(int i=0;i<8;i++){
-			mTmp[i]=new Vector3();
-		}
 	}
 
 	public void update(float[] inverseProjectionView) {             
@@ -69,31 +65,7 @@ public class CameraFrustum implements IBoundingVolume {
 		mPlanes[3].set(mPlanePoints[5], mPlanePoints[1], mPlanePoints[6]);
 		mPlanes[4].set(mPlanePoints[2], mPlanePoints[3], mPlanePoints[6]);
 		mPlanes[5].set(mPlanePoints[4], mPlanePoints[0], mPlanePoints[1]);
-	}       
-
-	public boolean sphereInFrustum (Vector3 center, float radius) {
-		for (int i = 0; i < mPlanes.length; i++)
-			if (mPlanes[i].distance(center) < -radius) return false;
-
-		return true;
-	}
-
-	public boolean boundsInFrustum (BoundingBox bounds) {
-		Vector3[] corners = mTmp;
-		bounds.copyPoints(mTmp);//copy transformed points and test
-		int isout;
-		for (int i = 0; i < 6; i++) {
-			isout= 0;
-			for (int j = 0; j < 8; j++)
-				if (mPlanes[i].getPointSide(corners[j]) == PlaneSide.Back){ isout++; }
-
-			if (isout == 8) { 
-				return false;
-			}
-		}
-
-		return true;
-	}
+	}    
 
 	public boolean pointInFrustum (Vector3 point) {
 		for (int i = 0; i < mPlanes.length; i++) {
