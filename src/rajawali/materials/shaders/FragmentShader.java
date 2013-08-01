@@ -37,6 +37,17 @@ public class FragmentShader extends AShader {
 	
 	@Override
 	public void main() {
+		for(int i=0; i<mShaderFragments.size(); i++)
+		{
+			IShaderFragment fragment = mShaderFragments.get(i);
+			fragment.setStringBuilder(mShaderSB);
+			fragment.main();
+		}
+		
 		GL_FRAG_COLOR.assign(mgColor);
+	}
+	
+	@Override
+	public void setLocations(int programHandle) {
 	}
 }

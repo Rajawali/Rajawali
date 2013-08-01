@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import android.opengl.GLES20;
+
 
 public abstract class AShader extends AShaderBase {
 	public static enum ShaderType {
@@ -95,6 +97,11 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
+	public ShaderVar getVarying(DefaultVar var)
+	{
+		return getInstanceForDataType(var.getVarString(), var.getDataType());
+	}
+	
 	public Hashtable<String, ShaderVar> getVaryings()
 	{
 		return mVaryings;
@@ -138,6 +145,24 @@ public abstract class AShader extends AShaderBase {
 		return c;
 	}
 	
+	public abstract void setLocations(int programHandle);
+
+	protected int getUniformLocation(int programHandle, DefaultVar var) {
+		return getUniformLocation(programHandle, var.getVarString());
+	}
+	
+	protected int getUniformLocation(int programHandle, String name) {
+		return GLES20.glGetUniformLocation(programHandle, name);
+	}
+
+	protected int getAttribLocation(int programHandle, DefaultVar var) {
+		return getAttribLocation(programHandle, var.getVarString());
+	}
+	
+	protected int getAttribLocation(int programHandle, String name) {
+		return GLES20.glGetAttribLocation(programHandle, name);
+	}
+	
 	public void addShaderFragment(IShaderFragment fragment)
 	{
 		mShaderFragments.add(fragment);
@@ -153,11 +178,10 @@ public abstract class AShader extends AShaderBase {
 	}
 
 	public String getShaderString() {
-		buildShader();
 		return mShaderString;
 	}
 
-	private void buildShader() {
+	public void buildShader() {
 		mShaderSB = new StringBuilder();
 		StringBuilder s = mShaderSB;
 

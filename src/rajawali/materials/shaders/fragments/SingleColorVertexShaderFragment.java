@@ -5,7 +5,10 @@ import rajawali.materials.shaders.IShaderFragment;
 
 
 public class SingleColorVertexShaderFragment extends AShader implements IShaderFragment {
+	private final static String U_SINGLE_COLOR = "uSingleColor";
+	
 	private RVec4 muSingleColor;
+	private int muSingleColorHandle;
 	
 	public SingleColorVertexShaderFragment()
 	{
@@ -17,7 +20,7 @@ public class SingleColorVertexShaderFragment extends AShader implements IShaderF
 	{
 		super.initialize();
 		
-		muSingleColor = (RVec4)addUniform("uSingleColor", DataType.VEC4);
+		muSingleColor = (RVec4)addUniform(U_SINGLE_COLOR, DataType.VEC4);
 	}
 	
 	@Override
@@ -29,5 +32,10 @@ public class SingleColorVertexShaderFragment extends AShader implements IShaderF
 	public String getKey()
 	{
 		return getClass().getName();
+	}
+	
+	@Override
+	public void setLocations(int programHandle) {
+		muSingleColorHandle = getUniformLocation(programHandle, U_SINGLE_COLOR);
 	}
 }
