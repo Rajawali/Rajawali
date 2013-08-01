@@ -916,14 +916,14 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @param survivors {@link List} of {@link A_nAABBTree} objects which have survived the intersection test.
 	 */
 	private void recursiveIntersectChildNodes(IBoundingVolume volume, A_nAABBTree container, List<A_nAABBTree> survivors) {
-		Log.i("Culling", "Recursively checking child nodes.");
+		Log.i("Culling", "Recursively checking child nodes of: " + container);
 		for (int i = 0, j = container.CHILD_COUNT; i < j; ++i) {
 			//The below if statement is choosing to pass the container in first since
 			//we know the container is of type BoundingBox...this is potentially marginally
 			//faster.
 			if (BoundingVolumeTester.testIntersection(container.mChildren[i], volume)) {
 				survivors.add(container.mChildren[i]);
-				recursiveIntersectChildNodes(volume, container, survivors);
+				recursiveIntersectChildNodes(volume, container.mChildren[i], survivors);
 			}
 		}
 	}

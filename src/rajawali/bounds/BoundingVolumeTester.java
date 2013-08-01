@@ -30,6 +30,9 @@ public class BoundingVolumeTester {
 		} else if (v1 instanceof BoundingCone) {
 			return testConeIntersection((BoundingCone) v1, v2);
 		} else {
+			if (v1 == null || v2 == null) {
+				throw new IllegalArgumentException("Received a null bounding volume: v1=" + v1 + " v2=" + v2);
+			}
 			//This is more to notify developers of a spot they need to expand. It should never
 			//occur in production code.
 			RajLog.e("[" + BoundingVolumeTester.class + "] Received a bounding box of unknown type: " 
