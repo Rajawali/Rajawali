@@ -43,7 +43,7 @@ public class BoundingVolumeTester {
 	 * @param v2 {@link IBoundingVolume} The second volume.
 	 * @return boolean True if the two volumes intersect.
 	 */
-	public static final boolean testIntersection(IBoundingVolume v1, IBoundingVolume v2) {
+	public static boolean testIntersection(IBoundingVolume v1, IBoundingVolume v2) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
 		if (v1 instanceof BoundingBox) {
@@ -66,7 +66,7 @@ public class BoundingVolumeTester {
 		}
 	}
 
-	public static final boolean testBoxIntersection(BoundingBox box, IBoundingVolume volume) {
+	public static boolean testBoxIntersection(BoundingBox box, IBoundingVolume volume) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
 		if (volume instanceof BoundingBox) {
@@ -86,7 +86,7 @@ public class BoundingVolumeTester {
 		}
 	}
 
-	public static final boolean testSphereIntersection(BoundingSphere sphere, IBoundingVolume volume) {
+	public static boolean testSphereIntersection(BoundingSphere sphere, IBoundingVolume volume) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
 		if (volume instanceof BoundingBox) {
@@ -106,7 +106,7 @@ public class BoundingVolumeTester {
 		}
 	}
 
-	public static final boolean testFrustumIntersection(CameraFrustum frustum, IBoundingVolume volume) {
+	public static boolean testFrustumIntersection(CameraFrustum frustum, IBoundingVolume volume) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
 		if (volume instanceof BoundingBox) {
@@ -126,7 +126,7 @@ public class BoundingVolumeTester {
 		}
 	}
 	
-	public static final boolean testConeIntersection(BoundingCone cone, IBoundingVolume volume) {
+	public static boolean testConeIntersection(BoundingCone cone, IBoundingVolume volume) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
 		if (volume instanceof BoundingBox) {
@@ -150,7 +150,7 @@ public class BoundingVolumeTester {
 	// Homogeneous Methods
 	//--------------------------------------------------
 
-	public static final boolean testBoxToBoxIntersection(BoundingBox b1, BoundingBox b2) {
+	public static boolean testBoxToBoxIntersection(BoundingBox b1, BoundingBox b2) {
 		Vector3 b1_min = b1.getTransformedMin();
 		Vector3 b1_max = b1.getTransformedMax();		
 		Vector3 b2_min = b2.getTransformedMin();
@@ -161,7 +161,7 @@ public class BoundingVolumeTester {
 				(b1_min.z < b2_max.z) && (b1_max.z > b2_min.z);
 	}
 
-	public static final boolean testSphereToSphereIntersection(BoundingSphere s1, BoundingSphere s2) {
+	public static boolean testSphereToSphereIntersection(BoundingSphere s1, BoundingSphere s2) {
 		sTempVec1.setAll(s1.getPosition());
 		sTempVec1.subtract(s2.getPosition());
 		sTempDouble1 = sTempVec1.length2();
@@ -170,12 +170,12 @@ public class BoundingVolumeTester {
 		return sTempDouble1 < sTempDouble2 * sTempDouble2;
 	}
 
-	public static final boolean testFrustumToFrustumIntersection(CameraFrustum f1, CameraFrustum f2) {
+	public static boolean testFrustumToFrustumIntersection(CameraFrustum f1, CameraFrustum f2) {
 		//TODO: Implement
 		return false;
 	}
 
-	public static final boolean testConeToConeIntersection(BoundingCone c1, BoundingCone c2) {
+	public static boolean testConeToConeIntersection(BoundingCone c1, BoundingCone c2) {
 		//TODO: Implement
 		return false;
 	}
@@ -184,12 +184,12 @@ public class BoundingVolumeTester {
 	// Heterogeneous Methods
 	//--------------------------------------------------
 
-	public static final boolean testBoxToSphereIntersection(BoundingBox b, BoundingSphere s) {
+	public static boolean testBoxToSphereIntersection(BoundingBox b, BoundingSphere s) {
 		//TODO: Implement
 		return false;
 	}
 
-	public static final boolean testBoxToFrustumIntersection(BoundingBox b, CameraFrustum f) {
+	public static boolean testBoxToFrustumIntersection(BoundingBox b, CameraFrustum f) {
 		if (!sBoxArrayInitialized) {
 			for(int i=0;i<8;i++){
 				sTempBoxArray[i] = new Vector3();
@@ -210,48 +210,48 @@ public class BoundingVolumeTester {
 		return true;
 	}
 
-	public static final boolean testBoxToConeIntersection(BoundingBox b, BoundingCone c) {
+	public static boolean testBoxToConeIntersection(BoundingBox b, BoundingCone c) {
 		//TODO: Implement
 		return false;
 	}
 
-	public static final boolean testFrustumToBoxIntersection(CameraFrustum f, BoundingBox b) {
+	public static boolean testFrustumToBoxIntersection(CameraFrustum f, BoundingBox b) {
 		return testBoxToFrustumIntersection(b, f);
 	}
 
-	public static final boolean testFrustumToSphereIntersection(CameraFrustum f, BoundingSphere s) {
+	public static boolean testFrustumToSphereIntersection(CameraFrustum f, BoundingSphere s) {
 		for (int i = 0; i < f.mPlanes.length; i++)
 			if (f.mPlanes[i].distance(s.getPosition()) < -s.getScaledRadius()) return false;
 		return true;
 	}
 
-	public static final boolean testFrustumToConeIntersection(CameraFrustum f, BoundingCone c) {
+	public static boolean testFrustumToConeIntersection(CameraFrustum f, BoundingCone c) {
 		//TODO: Implement
 		return false;
 	}
 
-	public static final boolean testSphereToBoxIntersection(BoundingSphere s, BoundingBox b) {
+	public static boolean testSphereToBoxIntersection(BoundingSphere s, BoundingBox b) {
 		return testBoxToSphereIntersection(b, s);
 	}
 
-	public static final boolean testSphereToFrustumIntersection(BoundingSphere s, CameraFrustum f) {
+	public static boolean testSphereToFrustumIntersection(BoundingSphere s, CameraFrustum f) {
 		return testFrustumToSphereIntersection(f, s);
 	}
 
-	public static final boolean testSphereToConeIntersection(BoundingSphere s, BoundingCone c) {
+	public static boolean testSphereToConeIntersection(BoundingSphere s, BoundingCone c) {
 		//TODO: Implement
 		return false;
 	}
 
-	public static final boolean testConeToBoxIntersection(BoundingCone c, BoundingBox b) {
+	public static boolean testConeToBoxIntersection(BoundingCone c, BoundingBox b) {
 		return testBoxToConeIntersection(b, c);
 	}
 
-	public static final boolean testConeToSphereIntersection(BoundingCone c, BoundingSphere s) {
+	public static boolean testConeToSphereIntersection(BoundingCone c, BoundingSphere s) {
 		return testSphereToConeIntersection(s, c);
 	}
 
-	public static final boolean testConeToFrustumIntersection(BoundingCone c, CameraFrustum f) {
+	public static boolean testConeToFrustumIntersection(BoundingCone c, CameraFrustum f) {
 		return testFrustumToConeIntersection(f, c);
 	}
 }
