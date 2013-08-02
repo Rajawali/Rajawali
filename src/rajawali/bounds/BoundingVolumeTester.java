@@ -9,15 +9,40 @@ import rajawali.math.Plane.PlaneSide;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 
-
+/**
+ * General purpose helper class for testing various degrees of intersection of various {@link IBoundingVolume}
+ * objects against another. Usually, the particular shape of the bounding volumes are unknown so this class
+ * contains methods which take {@link IBoundingVolume} instances and processes them accordingly. Unfortunately,
+ * due to the lack of multiple inheritance in Java, I was not able to devise a good way to do this in a proper
+ * object-orient sense and had to do a lot of instanceof checks. I am open to having this revised/critiqued by
+ * anyone who feels they have a better solution. 
+ * 
+ * There are several approximately duplicate methods, however, they are configured to favor those checks
+ * which are expected more often (in general favoring {@link BoundingBox} as the most frequent) and seek
+ * to reduce function calls and if-else statements accordingly. Should you know the particular shape
+ * of one or both of the {@link IBoundingVolume} objects, you can use the helper methods directly. 
+ * 
+ * @author Jared Woolston (jwoolston@tenkiv.com)
+ *
+ */
 public class BoundingVolumeTester {
 
-	private static final Vector3 sTempVec1 = new Vector3();
-	private static final Vector3[] sTempBoxArray = new Vector3[8];
-	private static double sTempDouble1 = 0;
-	private static double sTempDouble2 = 0;
-	private static boolean sBoxArrayInitialized = false;
+	private static final Vector3 sTempVec1 = new Vector3(); //Scratch Vector3
+	private static final Vector3[] sTempBoxArray = new Vector3[8]; //Scratch vectors used for box testing
+	private static double sTempDouble1 = 0; //Scratch double
+	private static double sTempDouble2 = 0; //Scratch double
+	private static boolean sBoxArrayInitialized = false; //Flag for lazy loading of scratch vectors
 
+	/**
+	 * Tests if the two {@link IBoundingVolume} instances intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal. This method will determine the exact shape of the volumes and execute the appropriate
+	 * test.
+	 *  
+	 * @param v1 {@link IBoundingVolume} The first volume.
+	 * @param v2 {@link IBoundingVolume} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static final boolean testIntersection(IBoundingVolume v1, IBoundingVolume v2) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
