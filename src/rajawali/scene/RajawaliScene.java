@@ -35,7 +35,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -684,8 +683,6 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mChildren) {
 			if (mSceneGraph != null) {
 				//If we are using the scenegraph cull to the current camera
-				Log.i("Scene", "Camera node: " + mCamera.getGraphNode());
-				Log.i("Scene", "Camera: " + mCamera);
 				List<IGraphNodeMember> survivors = mSceneGraph.cullFromBoundingVolume(
 						mCamera.getTransformedBoundingVolume(), mCamera.getGraphNode());
 				for (int i = 0, j = survivors.size(); i < j; ++i) {

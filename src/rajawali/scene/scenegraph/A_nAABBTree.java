@@ -848,13 +848,13 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @see rajawali.scenegraph.IGraphNode#cullFromBoundingVolume(rajawali.bounds.IBoundingVolume)
 	 */
 	public List<IGraphNodeMember> cullFromBoundingVolume(final IBoundingVolume volume, IGraphNode container) {
-		Log.d("Culling", "Culling Volume: " + volume);
+		//Log.d("Culling", "Culling Volume: " + volume);
 		ArrayList<IGraphNodeMember> survivors = new ArrayList<IGraphNodeMember>();
 		ArrayList<A_nAABBTree> survivorNodes = new ArrayList<A_nAABBTree>();
 		int start = 0;
 		A_nAABBTree local_container = null;
 		if (container == null) {
-			Log.i("Culling", "Culling with null container");
+			//Log.i("Culling", "Culling with null container");
 			//Should only be called on the root node
 			
 			//The below if statement is choosing to pass this node in first since
@@ -865,20 +865,18 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				local_container = this;
 			}
 		} else {
-			Log.i("Culling", "Culling with specific container");
+			//Log.i("Culling", "Culling with specific container");
 			survivorNodes.add((A_nAABBTree) container);
 			local_container = (A_nAABBTree) container;
 		}
-		Log.i("Culling", "Survivor Nodes: " + survivorNodes);
-		Log.i("Culling", "Local Container: " + local_container);
+		//Log.i("Culling", "Survivor Nodes: " + survivorNodes);
+		//Log.i("Culling", "Local Container: " + local_container);
 		start = local_container.getObjectCount();
-		if (local_container.mSplit) {
-			recursiveIntersectChildNodes(volume, local_container, survivorNodes);
-		}
+		intersectChildNodes(volume, local_container, survivorNodes);
 		for (int i = 0, j = survivorNodes.size(); i < j; ++i) {
-			Log.v("Culling", "Culling for Node: " + survivorNodes.get(i));
+			//Log.v("Culling", "Culling for Node: " + survivorNodes.get(i));
 			List<IGraphNodeMember> list = survivorNodes.get(i).mMembers;
-			Log.v("Culling", "Node members: " + list);
+			//Log.v("Culling", "Node members: " + list);
 			for (int n = 0, k = list.size(); n < k; ++n) {
 				IBoundingVolume current_volume = list.get(n).getTransformedBoundingVolume();
 				//The below if statement is choosing to pass the current volume in first since
@@ -889,11 +887,11 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				}
 			}
 			list = survivorNodes.get(i).mOutside;
-			Log.v("Culling", "Node outside: " + list);
+			//Log.v("Culling", "Node outside: " + list);
 			if (list != null) {
 				for (int n = 0, k = list.size(); n < k; ++n) {
 					IBoundingVolume current_volume = list.get(n).getTransformedBoundingVolume();
-					Log.v("Culling", "Volume: " + current_volume);
+					//Log.v("Culling", "Volume: " + current_volume);
 					//The below if statement is choosing to pass the current volume in first since
 					//we know odds are high it is of type BoundingBox...this is potentially marginally
 					//faster.
@@ -915,15 +913,18 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * @param container {@link A_nAABBTree} who's children should be checked.
 	 * @param survivors {@link List} of {@link A_nAABBTree} objects which have survived the intersection test.
 	 */
-	private void recursiveIntersectChildNodes(IBoundingVolume volume, A_nAABBTree container, List<A_nAABBTree> survivors) {
-		Log.i("Culling", "Recursively checking child nodes of: " + container);
-		for (int i = 0, j = container.CHILD_COUNT; i < j; ++i) {
-			//The below if statement is choosing to pass the container in first since
-			//we know the container is of type BoundingBox...this is potentially marginally
-			//faster.
-			if (BoundingVolumeTester.testIntersection(container.mChildren[i], volume)) {
-				survivors.add(container.mChildren[i]);
-				recursiveIntersectChildNodes(volume, container.mChildren[i], survivors);
+	private void intersectChildNodes(IBoundingVolume volume, A_nAABBTree container, List<A_nAABBTree> survivors) {
+		//Log.i("Culling", "Recursively checking child nodes of: " + container);
+		if (container.mSplit) {
+			for (int i = 0, j = container.CHILD_COUNT; i < j; ++i) {
+				//The below if statement is choosing to pass the container in first since
+				//we know the container is of type BoundingBox...this is potentially marginally
+				//faster.
+				//Log.i("Culling", "Child[" + i + "]: " + mChildren[i]);
+				if (BoundingVolumeTester.testIntersection(container.mChildren[i], volume)) {
+					survivors.add(container.mChildren[i]);
+					intersectChildNodes(volume, container.mChildren[i], survivors);
+				}
 			}
 		}
 	}
