@@ -225,6 +225,8 @@ public class AWDParser extends AMeshParser {
 					blockHeader.globalPrecisionGeo = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_GEO) == BlockHeader.FLAG_ACCURACY_GEO;
 					blockHeader.globalPrecisionMatrix = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_MATRIX) == BlockHeader.FLAG_ACCURACY_MATRIX;
 					blockHeader.globalPrecisionProps = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_PROPS) == BlockHeader.FLAG_ACCURACY_PROPS;
+					
+					final int blockEnd = (int) dis.getPosition() + blockHeader.dataLength;
 
 					// Add the block to the list of blocks for reference
 					blockDataList.put(blockHeader.id, blockHeader);
@@ -255,7 +257,6 @@ public class AWDParser extends AMeshParser {
 					RajLog.d(" Parsing block with: " + parser.getClass().getSimpleName());
 
 					// Begin parsing
-					final int blockEnd = (int) dis.getPosition() + blockHeader.dataLength;
 					parser.parseBlock(dis, blockHeader);
 
 					if (blockEnd != dis.getPosition())

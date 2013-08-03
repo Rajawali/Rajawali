@@ -61,12 +61,16 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 				: AWDLittleEndianDataInputStream.TYPE_FLOAT32;
 		properties.put(1, geoNr);
 		properties.put(2, geoNr);
-		final HashMap<Short, Object> props = awdDis.readProperties(properties);
+		//final HashMap<Short, Object> props = awdDis.readProperties(properties);
+		awdDis.readProperties();
+		
+		// Calculate the sizes
+		final int geoPrecisionSize = blockHeader.globalPrecisionGeo ? 8 : 4;
 
 		// Read each sub mesh data
 		int parsedSubs = 0;
 		while (parsedSubs < mSubGeometryCount) {
-			long subMeshLength = awdDis.readUnsignedInt();
+			long subMeshEnd = awdDis.getPosition() + awdDis.readUnsignedInt();
 
 			// Geometry
 			float[] vertices = null;
@@ -77,20 +81,19 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 			// Skip reading of mesh properties for now (per AWD implementation)
 			awdDis.readProperties();
 
-			long bytesRead = 0;
-
 			// Read each data type from the mesh
-			while (bytesRead < subMeshLength) {
+			while (awdDis.getPosition() < subMeshEnd) {
 				int idx = 0;
 				int type = awdDis.readUnsignedByte();
 				int typeF = awdDis.readUnsignedByte();
 				long subLength = awdDis.readUnsignedInt();
-				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength);
+				long subEnd = awdDis.getPosition() + subLength;
+				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + awdDis.getPosition() + " le:" + subEnd);
 
 				// Process the mesh data by type
 				switch ((int) type) {
 				case 1: // Vertex positions
-					vertices = new float[(int) (subLength / 4)];
+					vertices = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < vertices.length) {
 						// X, Y, Z
 						vertices[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
@@ -104,12 +107,12 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 						indices[idx++] = awdDis.readUnsignedShort();
 					break;
 				case 3: // UV coordinates
-					uvs = new float[(int) (subLength / 4)];
+					uvs = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < uvs.length)
 						uvs[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
 				case 4: // Vertex normals
-					normals = new float[(int) (subLength / 4)];
+					normals = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < normals.length)
 						normals[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
@@ -120,9 +123,8 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 					// Unknown mesh data, skipping
 					awdDis.skip(subLength);
 				}
-
-				// Increment the bytes read by the size of the header and the sub block length
-				bytesRead += 6 + subLength;
+				
+				System.out.println("mesh end : " + awdDis.getPosition());
 			}
 
 			// Verify the arrays

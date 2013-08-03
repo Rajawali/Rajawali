@@ -64,7 +64,7 @@ public class LittleEndianDataInputStream extends InputStream implements DataInpu
 	 * like DataInputStream.readChar except little endian.
 	 */
 	public final char readChar() throws IOException {
-		position += 1;
+		position += 2;
 		d.readFully(w, 0, 2);
 		return (char) ((w[1] & 0xff) << 8 | (w[0] & 0xff));
 	}
@@ -132,6 +132,11 @@ public class LittleEndianDataInputStream extends InputStream implements DataInpu
 	public final void readFully(byte b[], int off, int len) throws IOException {
 		position += len;
 		d.readFully(b, off, len);
+	}
+	
+	public final long skip(int n) throws IOException {
+		position += n;
+		return d.skip(n);
 	}
 
 	public final int skipBytes(int n) throws IOException {
