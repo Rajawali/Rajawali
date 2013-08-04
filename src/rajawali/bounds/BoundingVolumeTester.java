@@ -66,6 +66,16 @@ public class BoundingVolumeTester {
 		}
 	}
 
+	/**
+	 * Tests if a {@link IBoundingVolume} intersects with a {@link BoundingBox}. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal. This method will determine the exact shape of the other volume and execute the 
+	 * appropriate test.
+	 * 
+	 * @param box {@link BoundingBox} The box shaped volume.
+	 * @param volume {@link IBoundingVolume} The unknown volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testBoxIntersection(BoundingBox box, IBoundingVolume volume) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
@@ -86,6 +96,16 @@ public class BoundingVolumeTester {
 		}
 	}
 
+	/**
+	 * Tests if a {@link IBoundingVolume} intersects with a {@link BoundingSphere}. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal. This method will determine the exact shape of the other volume and execute the 
+	 * appropriate test.
+	 * 
+	 * @param box {@link BoundingSphere} The box shaped volume.
+	 * @param volume {@link IBoundingVolume} The unknown volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testSphereIntersection(BoundingSphere sphere, IBoundingVolume volume) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
@@ -106,6 +126,16 @@ public class BoundingVolumeTester {
 		}
 	}
 
+	/**
+	 * Tests if a {@link IBoundingVolume} intersects with a {@link CameraFrustum}. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal. This method will determine the exact shape of the other volume and execute the 
+	 * appropriate test.
+	 * 
+	 * @param box {@link CameraFrustum} The box shaped volume.
+	 * @param volume {@link IBoundingVolume} The unknown volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testFrustumIntersection(CameraFrustum frustum, IBoundingVolume volume) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
@@ -126,6 +156,16 @@ public class BoundingVolumeTester {
 		}
 	}
 	
+	/**
+	 * Tests if a {@link IBoundingVolume} intersects with a {@link BoundingCone}. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal. This method will determine the exact shape of the other volume and execute the 
+	 * appropriate test.
+	 * 
+	 * @param box {@link BoundingCone} The box shaped volume.
+	 * @param volume {@link IBoundingVolume} The unknown volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testConeIntersection(BoundingCone cone, IBoundingVolume volume) {
 		//The order here is chosen to such that events which are more likely are
 		//higher in the chain to avoid unnecessary checks.
@@ -150,6 +190,15 @@ public class BoundingVolumeTester {
 	// Homogeneous Methods
 	//--------------------------------------------------
 
+	/**
+	 * Tests if two {@link BoundingBox} objects intersects with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingBox} The first box volume.
+	 * @param volume {@link BoundingBox} The second box volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testBoxToBoxIntersection(BoundingBox b1, BoundingBox b2) {
 		Vector3 b1_min = b1.getTransformedMin();
 		Vector3 b1_max = b1.getTransformedMax();		
@@ -161,6 +210,15 @@ public class BoundingVolumeTester {
 				(b1_min.z < b2_max.z) && (b1_max.z > b2_min.z);
 	}
 
+	/**
+	 * Tests if two {@link BoundingSphere} objects intersects with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingSphere} The first sphere volume.
+	 * @param volume {@link BoundingSphere} The second sphere volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testSphereToSphereIntersection(BoundingSphere s1, BoundingSphere s2) {
 		sTempVec1.setAll(s1.getPosition());
 		sTempVec1.subtract(s2.getPosition());
@@ -170,11 +228,29 @@ public class BoundingVolumeTester {
 		return sTempDouble1 < sTempDouble2 * sTempDouble2;
 	}
 
+	/**
+	 * Tests if two {@link CameraFrustum} objects intersects with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link CameraFrustum} The first camera frustum volume.
+	 * @param volume {@link CameraFrustum} The second camera frustum volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testFrustumToFrustumIntersection(CameraFrustum f1, CameraFrustum f2) {
 		//TODO: Implement
 		return false;
 	}
 
+	/**
+	 * Tests if two {@link BoundingCone} objects intersects with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingCone} The first cone volume.
+	 * @param volume {@link BoundingCone} The second cone volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testConeToConeIntersection(BoundingCone c1, BoundingCone c2) {
 		//TODO: Implement
 		return false;
@@ -184,11 +260,29 @@ public class BoundingVolumeTester {
 	// Heterogeneous Methods
 	//--------------------------------------------------
 
+	/**
+	 * Tests if a {@link BoundingBox} and {@link BoundingSphere} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingBox} The first volume.
+	 * @param volume {@link BoundingSphere} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testBoxToSphereIntersection(BoundingBox b, BoundingSphere s) {
 		//TODO: Implement
 		return false;
 	}
 
+	/**
+	 * Tests if a {@link BoundingBox} and {@link CameraFrustum} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingBox} The first volume.
+	 * @param volume {@link CameraFrustum} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testBoxToFrustumIntersection(BoundingBox b, CameraFrustum f) {
 		if (!sBoxArrayInitialized) {
 			for(int i=0;i<8;i++){
@@ -210,47 +304,137 @@ public class BoundingVolumeTester {
 		return true;
 	}
 
+	/**
+	 * Tests if a {@link BoundingBox} and {@link BoundingCone} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingBox} The first volume.
+	 * @param volume {@link BoundingCone} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testBoxToConeIntersection(BoundingBox b, BoundingCone c) {
 		//TODO: Implement
 		return false;
 	}
 
+	/**
+	 * Tests if a {@link CameraFrustum} and {@link BoundingBox} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link CameraFrustum} The first volume.
+	 * @param volume {@link BoundingBox} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testFrustumToBoxIntersection(CameraFrustum f, BoundingBox b) {
 		return testBoxToFrustumIntersection(b, f);
 	}
 
+	/**
+	 * Tests if a {@link CameraFrustum} and {@link BoundingSphere} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link CameraFrustum} The first volume.
+	 * @param volume {@link BoundingSphere} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testFrustumToSphereIntersection(CameraFrustum f, BoundingSphere s) {
 		for (int i = 0; i < f.mPlanes.length; i++)
 			if (f.mPlanes[i].distance(s.getPosition()) < -s.getScaledRadius()) return false;
 		return true;
 	}
 
+	/**
+	 * Tests if a {@link CameraFrustum} and {@link BoundingCone} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link CameraFrustum} The first volume.
+	 * @param volume {@link BoundingCone} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testFrustumToConeIntersection(CameraFrustum f, BoundingCone c) {
 		//TODO: Implement
 		return false;
 	}
 
+	/**
+	 * Tests if a {@link BoundingSphere} and {@link BoundingBox} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingSphere} The first volume.
+	 * @param volume {@link BoundingBox} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testSphereToBoxIntersection(BoundingSphere s, BoundingBox b) {
 		return testBoxToSphereIntersection(b, s);
 	}
 
+	/**
+	 * Tests if a {@link BoundingSphere} and {@link CameraFrustum} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingSphere} The first volume.
+	 * @param volume {@link CameraFrustum} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testSphereToFrustumIntersection(BoundingSphere s, CameraFrustum f) {
 		return testFrustumToSphereIntersection(f, s);
 	}
 
+	/**
+	 * Tests if a {@link BoundingSphere} and {@link BoundingCone} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingSphere} The first volume.
+	 * @param volume {@link BoundingCone} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testSphereToConeIntersection(BoundingSphere s, BoundingCone c) {
 		//TODO: Implement
 		return false;
 	}
 
+	/**
+	 * Tests if a {@link BoundingCone} and {@link BoundingBox} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingCone} The first volume.
+	 * @param volume {@link BoundingBox} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testConeToBoxIntersection(BoundingCone c, BoundingBox b) {
 		return testBoxToConeIntersection(b, c);
 	}
 
+	/**
+	 * Tests if a {@link BoundingCone} and {@link BoundingSphere} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingCone} The first volume.
+	 * @param volume {@link BoundingSphere} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testConeToSphereIntersection(BoundingCone c, BoundingSphere s) {
 		return testSphereToConeIntersection(s, c);
 	}
 
+	/**
+	 * Tests if a {@link BoundingCone} and {@link CameraFrustum} intersect with each other. This
+	 * requires that somewhere along outer bounds they pass through each other, or be exactly
+	 * equal.
+	 * 
+	 * @param box {@link BoundingCone} The first volume.
+	 * @param volume {@link CameraFrustum} The second volume.
+	 * @return boolean True if the two volumes intersect.
+	 */
 	public static boolean testConeToFrustumIntersection(BoundingCone c, CameraFrustum f) {
 		return testFrustumToConeIntersection(f, c);
 	}
