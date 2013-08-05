@@ -281,7 +281,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 					SkeletonJoint joint = mJoints[weight.jointIndex];
 
 					Vector3 rotPos = joint.getOrientation().multiply(weight.position);
-
+					//We don't clone here because nothing will be able to use the quaternion scratch before we do
 					Vector3 pos = Vector3.addAndCreate(joint.getPosition(), rotPos);
 					pos.multiply(weight.weightValue);
 					position.add(pos);
@@ -358,6 +358,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				for (int k = 0; k < vert.numWeights; ++k) {
 					BoneWeight weight = mesh.boneWeights[vert.weightIndex + k];
 					SkeletonJoint joint = mJoints[weight.jointIndex];
+					//We don't clone here because nothing will be able to use the quaternion scratch before we do
 					vert.normal.add(Vector3.scaleAndCreate(joint.getOrientation().multiply(normal), weight.weightValue));
 				}
 			}
