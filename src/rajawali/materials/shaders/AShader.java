@@ -11,6 +11,8 @@ import android.opengl.GLES20;
 
 
 public abstract class AShader extends AShaderBase {
+	public static String SHADER_ID;
+	
 	public static enum ShaderType {
 		VERTEX, FRAGMENT, VERTEX_SHADER_FRAGMENT, FRAGMENT_SHADER_FRAGMENT
 	}
@@ -145,7 +147,11 @@ public abstract class AShader extends AShaderBase {
 		return c;
 	}
 	
-	public abstract void setLocations(int programHandle);
+	public void setLocations(int programHandle)
+	{
+		for(int i=0; i<mShaderFragments.size(); i++)
+			mShaderFragments.get(i).setLocations(programHandle);
+	}
 
 	protected int getUniformLocation(int programHandle, DefaultVar var) {
 		return getUniformLocation(programHandle, var.getVarString());
@@ -166,6 +172,14 @@ public abstract class AShader extends AShaderBase {
 	public void addShaderFragment(IShaderFragment fragment)
 	{
 		mShaderFragments.add(fragment);
+	}
+	
+	public IShaderFragment getShaderFragment(String shaderId) {
+		for(IShaderFragment frag : mShaderFragments)
+			if(frag.getShaderId().equals(shaderId))
+				return frag;
+		
+		return null;
 	}
 
 	public ShaderType getShaderType() {
@@ -297,6 +311,15 @@ public abstract class AShader extends AShaderBase {
 		
 		mShaderString = s.toString();
 		s = null;
+	}
+	
+	/**
+	 * applyParams() should be called on every frame. The shader parameters
+	 * are set here.
+	 */
+	public void applyParams() {
+		for(int i=0; i<mShaderFragments.size(); i++)
+			mShaderFragments.get(i).applyParams();
 	}
 	
 	public String normalize(String value)

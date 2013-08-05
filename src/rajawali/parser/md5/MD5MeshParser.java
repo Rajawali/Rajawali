@@ -416,7 +416,8 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			o.setSkeleton(mRootObject);
 
 			boolean hasTexture = mesh.textureName != null && mesh.textureName.length() > 0;
-
+// TODO
+			/*
 			DiffuseMaterial mat = new DiffuseMaterial();
 			mat.setSkeletalAnimationEnabled(true);
 			mat.setNumJoints(mNumJoints);
@@ -433,7 +434,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				}
 				mat.addTexture(new Texture(identifier));
 			}
-
+*/
 			mRootObject.addChild(o);
 			
 			mesh.destroy();

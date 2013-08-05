@@ -3,6 +3,7 @@ package rajawali.renderer;
 import rajawali.Camera2D;
 import rajawali.filters.IPostProcessingFilter;
 import rajawali.materials.AMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.FrameBufferTexture;
 import rajawali.math.MathUtil;
@@ -80,7 +81,7 @@ public final class PostProcessingRenderer {
 		mFrameBufferTexture.setHeight(mTextureSize);
 
 		mPostProcessingQuad = new ScreenQuad();
-		mPostProcessingQuad.setMaterial((AMaterial)mFilter);
+		mPostProcessingQuad.setMaterial((Material)mFilter);
 		mPostProcessingQuad.setDoubleSided(true);
 		mPostProcessingQuad.setRotZ(-90);
 		mPostProcessingQuad.setRotY(180);

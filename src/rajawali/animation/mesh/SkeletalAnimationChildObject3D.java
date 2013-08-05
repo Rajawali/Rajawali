@@ -65,6 +65,8 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 
 	public void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
+		// TODO
+		/*
 		AAdvancedMaterial material = (AAdvancedMaterial) mMaterial;
 		material.setBone1Indexes(mboneIndexes1BufferInfo.bufferHandle);
 		material.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
@@ -73,6 +75,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 			material.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
 		}
 		material.setBoneMatrix(mSkeleton.uBoneMatrix);
+		*/
 	}
 
 	public void setSkeleton(BaseObject3D skeleton) {

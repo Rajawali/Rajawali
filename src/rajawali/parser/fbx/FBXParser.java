@@ -20,10 +20,7 @@ import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
-import rajawali.materials.AMaterial;
-import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.PhongMaterial;
-import rajawali.materials.SimpleMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.math.vector.Vector2;
@@ -34,7 +31,7 @@ import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
 import rajawali.parser.fbx.FBXValues.FBXIntBuffer;
 import rajawali.parser.fbx.FBXValues.FBXMatrix;
-import rajawali.parser.fbx.FBXValues.Objects.Material;
+import rajawali.parser.fbx.FBXValues.Objects.FBXMaterial;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -384,7 +381,7 @@ public class FBXParser extends AMeshParser {
 		indices = null;
 		
 		o.setMaterial(getMaterialForMesh(o, model.name));
-		o.getMaterial().setUseSingleColor(true);
+		o.getMaterial().useSingleColor(true);
 		o.setLights(lights);
 		setMeshTextures(o, model.name);
 		
@@ -454,9 +451,9 @@ public class FBXParser extends AMeshParser {
 		}
 	}
 	
-	private AMaterial getMaterialForMesh(BaseObject3D o, String name) {
-		AMaterial mat = new SimpleMaterial();
-		Material material = null;
+	private Material getMaterialForMesh(BaseObject3D o, String name) {
+		Material mat = new Material();
+		FBXMaterial material = null;
 		Stack<Connect> conns = mFbx.connections.connections;
 		int num = conns.size();
 		String materialName = null;
@@ -469,7 +466,7 @@ public class FBXParser extends AMeshParser {
 		}
 		
 		if(materialName != null) {
-			Stack<Material> materials = mFbx.objects.materials;
+			Stack<FBXMaterial> materials = mFbx.objects.materials;
 			num = materials.size();
 			for(int i=0; i<num; ++i) {
 				if(materials.get(i).name.equals(materialName)) {
@@ -478,7 +475,8 @@ public class FBXParser extends AMeshParser {
 				}
 			}
 		}
-		
+		// TODO
+		/*
 		if(material != null) {
 			if(material.shadingModel.equals("lambert") || material.shadingModel.equals("phong")) {
 				PhongMaterial phong = new PhongMaterial();
@@ -498,7 +496,7 @@ public class FBXParser extends AMeshParser {
 				mat = diffuse;
 			}
 		}
-		
+		*/
 		return mat;
 	}
 	

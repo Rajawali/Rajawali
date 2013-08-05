@@ -10,8 +10,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.IBoundingVolume;
 import rajawali.lights.ALight;
-import rajawali.materials.AMaterial;
 import rajawali.materials.ColorPickerMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
@@ -46,7 +46,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected float[] mParentMatrix;
 	protected float[] mColor;
 
-	protected AMaterial mMaterial;
+	protected Material mMaterial;
 	protected List<ALight> mLights;
 
 	protected Geometry3D mGeometry;
@@ -295,16 +295,21 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 					mMaterial.bindTextures();
 					if(mGeometry.hasTextureCoordinates())
 						mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
+
 					if(mGeometry.hasNormals())
 						mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
+					
 					mMaterial.setCamera(camera);
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
-				
-				if(mMaterial.getUseSingleColor())
-					mMaterial.setColor(mColor);
+				/*
+				if(mMaterial.usingSingleColor())
+					mMaterial.setColor(mColor);*/
+				// TODO
+				/*
 				else if (mMaterial.getUseVertexColors())
 					mMaterial.setColors(mGeometry.getColorBufferInfo().bufferHandle);
+					*/
 				
 			}
 
@@ -396,7 +401,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param camera
 	 */
 	protected void setShaderParams(Camera camera) {
-		mMaterial.setLightParams();
+		// TODO mMaterial.setLightParams();
 	};
 
 	protected void checkGlError(String op) {
@@ -623,11 +628,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mGeometry;
 	}
 
-	public AMaterial getMaterial() {
+	public Material getMaterial() {
 		return mMaterial;
 	}
 
-	public void setMaterial(AMaterial material) {
+	public void setMaterial(Material material) {
 		if(material == null) return;
 		MaterialManager.getInstance().addMaterial(material);
 		mMaterial = material;

@@ -41,8 +41,11 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		// -- safe to use taskAdd because initalize is called in a thread safe manner
 		mRenderer.getTextureManager().taskAdd(mTexture);
 		genBuffers();
+		// TODO
+		/*
 		mPickerMaterial = new ColorPickerMaterial();
 		MaterialManager.getInstance().addMaterial(mPickerMaterial);
+		*/
 		mIsInitialized = true;
 	}
 

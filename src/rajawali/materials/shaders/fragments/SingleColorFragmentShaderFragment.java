@@ -5,6 +5,8 @@ import rajawali.materials.shaders.IShaderFragment;
 
 
 public class SingleColorFragmentShaderFragment extends AShader implements IShaderFragment {
+	public final static String SHADER_ID = "SINGLE_COLOR_FRAGMENT";
+	
 	public SingleColorFragmentShaderFragment() {
 		super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
 	}
@@ -22,13 +24,19 @@ public class SingleColorFragmentShaderFragment extends AShader implements IShade
 		color.assign(vColor);
 	}
 	
-	public String getKey()
+	public String getShaderId()
 	{
-		return getClass().getName();
+		return SHADER_ID;
 	}
 	
 	@Override
 	public void setLocations(int programHandle) {
 
+	}
+
+	@Override
+	public void applyParams() {
+		// TODO Auto-generated method stub
+		
 	}
 }

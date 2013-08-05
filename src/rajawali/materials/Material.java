@@ -5,12 +5,16 @@ import java.util.List;
 import java.util.Stack;
 
 import rajawali.Camera;
+import rajawali.Capabilities;
 import rajawali.lights.ALight;
+import rajawali.materials.methods.IDiffuseMethod;
 import rajawali.materials.shaders.FragmentShader;
 import rajawali.materials.shaders.VertexShader;
 import rajawali.materials.shaders.fragments.SingleColorFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.SingleColorVertexShaderFragment;
 import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -20,12 +24,14 @@ public class Material extends AFrameTask {
 
 	private VertexShader mVertexShader;
 	private FragmentShader mFragmentShader;
+	
+	private IDiffuseMethod mDiffuseMethod;
 
 	private boolean mUseSingleColor;
 	private boolean mUseVertexColors;
 	private boolean mIsDirty = true;
 
-	private int mProgramHandle;
+	private int mProgramHandle = -1;
 	private int mVShaderHandle;
 	private int mFShaderHandle;
 
@@ -33,13 +39,18 @@ public class Material extends AFrameTask {
 	private float[] mViewMatrix;
 
 	protected Stack<ALight> mLights;
+	
+	private int mColor = 0xffffff;
 
 	/**
 	 * This texture's unique owner identity String. This is usually the fully qualified name of the
 	 * {@link RajawaliRenderer} instance.
 	 */
 	protected String mOwnerIdentity;
-
+	/**
+	 * The maximum number of available textures for this device.
+	 */
+	private int mMaxTextures;
 	protected ArrayList<ATexture> mTextureList;
 
 	public Material()
@@ -69,6 +80,20 @@ public class Material extends AFrameTask {
 			mIsDirty = true;
 			mUseVertexColors = value;
 		}
+	}
+	
+	public void setColor(int color) {
+		mColor = color;
+		if(mVertexShader != null)
+		{
+			SingleColorVertexShaderFragment f = (SingleColorVertexShaderFragment)mVertexShader.getShaderFragment(SingleColorVertexShaderFragment.SHADER_ID);
+			if(f == null) return;
+			f.setColor(color);
+		}
+	}
+	
+	public int getColor() {
+		return mColor;
 	}
 
 	public boolean usingVertexColors()
@@ -108,13 +133,17 @@ public class Material extends AFrameTask {
 	{
 		if (!mIsDirty)
 			return;
+		
+		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
 
 		mVertexShader = new VertexShader();
 		mFragmentShader = new FragmentShader();
 
 		if (mUseSingleColor)
 		{
-			mVertexShader.addShaderFragment(new SingleColorVertexShaderFragment());
+			SingleColorVertexShaderFragment svs = new SingleColorVertexShaderFragment();
+			svs.setColor(mColor);
+			mVertexShader.addShaderFragment(svs);
 			mFragmentShader.addShaderFragment(new SingleColorFragmentShaderFragment());
 		}
 
@@ -125,8 +154,14 @@ public class Material extends AFrameTask {
 		if (mProgramHandle == 0)
 			return;
 
-		RajLog.i(mVertexShader.getShaderString());
-		RajLog.d(mFragmentShader.getShaderString());
+		for(int i=0; i<mTextureList.size(); i++)
+			setTextureParameters(mTextureList.get(i));
+		
+		mVertexShader.setLocations(mProgramHandle);
+		mFragmentShader.setLocations(mProgramHandle);
+		
+		//RajLog.i(mVertexShader.getShaderString());
+		//RajLog.d(mFragmentShader.getShaderString());
 
 		mIsDirty = false;
 	}
@@ -185,7 +220,73 @@ public class Material extends AFrameTask {
 			createShaders();
 		}
 
+		mVertexShader.applyParams();
+		mFragmentShader.applyParams();
+		
 		GLES20.glUseProgram(mProgramHandle);
+	}
+	
+	private void setTextureParameters(ATexture texture) {
+		if(texture.getUniformHandle() > -1) return;
+		
+		int textureHandle = GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName());
+		if (textureHandle == -1) {
+			RajLog.d("Could not get attrib location for "
+					+ texture.getTextureName() + ", " + texture.getTextureType());
+		}
+		texture.setUniformHandle(textureHandle);
+	}
+	
+	public void bindTextures() {
+		int num = mTextureList.size();
+
+		for (int i = 0; i < num; i++) {
+			ATexture texture = mTextureList.get(i);
+			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
+			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName()), i);
+		}
+	}
+
+	public void unbindTextures() {
+		int num = mTextureList.size();
+
+		for (int i = 0; i < num; i++) {
+			ATexture texture = mTextureList.get(i);
+			GLES20.glBindTexture(texture.getGLTextureType(), 0);
+		}
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+	}
+	
+	public void addTexture(ATexture texture) throws TextureException {
+		if(mTextureList.indexOf(texture) > -1) return;
+		if(mTextureList.size() + 1 > mMaxTextures) {
+			throw new TextureException("Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
+		}
+		mTextureList.add(texture);
+
+		TextureManager.getInstance().addTexture(texture);
+		texture.registerMaterial(this);
+		
+		if(mProgramHandle > -1)
+			setTextureParameters(texture);
+	}
+	
+	public void removeTexture(ATexture texture) {
+		mTextureList.remove(texture);
+		texture.unregisterMaterial(this);
+	}
+	
+	public ArrayList<ATexture> getTextureList() {
+		return mTextureList;
+	}
+	
+	public void copyTexturesTo(AMaterial material) throws TextureException {
+		int num = mTextureList.size();
+
+		for (int i = 0; i < num; ++i)
+			material.addTexture(mTextureList.get(i));
 	}
 
 	public void setVertices(final int vertexBufferHandle) {
@@ -198,6 +299,10 @@ public class Material extends AFrameTask {
 
 	public void setTextureCoords(final int textureCoordBufferHandle, boolean hasCubemapTexture) {
 		mVertexShader.setTextureCoords(textureCoordBufferHandle, hasCubemapTexture);
+	}
+	
+	public void setNormals(final int normalBufferHandle) {
+		mVertexShader.setNormals(normalBufferHandle);
 	}
 
 	public float[] getModelViewMatrix() {
@@ -224,6 +329,18 @@ public class Material extends AFrameTask {
 
 	public void setCamera(Camera camera) {
 		// TODO
+	}
+	
+	public void setDiffuseMethod(IDiffuseMethod diffuseMethod)
+	{
+		if(mDiffuseMethod == diffuseMethod) return;
+		mDiffuseMethod = diffuseMethod;
+		mIsDirty = true;
+	}
+	
+	public IDiffuseMethod getDiffuseMethod()
+	{
+		return mDiffuseMethod;
 	}
 
 	public void setOwnerIdentity(String identity)

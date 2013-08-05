@@ -8,7 +8,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import rajawali.BaseObject3D;
-import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.Material;
+import rajawali.materials.methods.DiffuseMethod;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
@@ -250,8 +251,9 @@ public class Max3DSParser extends AMeshParser {
 			BaseObject3D targetObj = new BaseObject3D(mObjNames.get(j));
 			targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices);
 			// -- diffuse material with random color. for now.
-			DiffuseMaterial material = new DiffuseMaterial();
-			material.setUseSingleColor(true);
+			Material material = new Material();
+			material.setDiffuseMethod(new DiffuseMethod.Lambert());
+			material.useSingleColor(true);
 			targetObj.setMaterial(material);
 			targetObj.setColor(0xff000000 + (int) (Math.random() * 0xffffff));
 			mRootObject.addChild(targetObj);

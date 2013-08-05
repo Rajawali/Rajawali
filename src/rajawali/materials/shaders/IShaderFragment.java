@@ -7,11 +7,13 @@ import rajawali.materials.shaders.AShaderBase.ShaderVar;
 
 
 public interface IShaderFragment {
-	String getKey();
+	String getShaderId();
 	Hashtable<String, ShaderVar> getUniforms();
 	Hashtable<String, ShaderVar> getAttributes();
 	Hashtable<String, ShaderVar> getVaryings();
 	Hashtable<String, ShaderVar> getGlobals();
 	void setStringBuilder(StringBuilder stringBuilder);
 	void main();
+	void applyParams();
+	void setLocations(int programHandle);
 }

@@ -28,6 +28,7 @@ public class VertexShader extends AShader {
 	private int maTextureCoordHande;
 	private int maNormalHandle;
 	private int maPositionHandle;
+	private int mVertexBufferHandle;
 	
 	public VertexShader()
 	{
@@ -86,9 +87,17 @@ public class VertexShader extends AShader {
 		mvColor.assign(mgColor);
 		mvNormal.assign(normalize(muNormalMatrix.multiply(mgNormal)));
 	}
+	
+	@Override
+	public void applyParams()
+	{
+		super.applyParams();
+	}
 
 	@Override
 	public void setLocations(int programHandle) {
+		super.setLocations(programHandle);
+		
 		muMVPMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MVP_MATRIX);
 		muNormalMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_NORMAL_MATRIX);
 		muModelMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MODEL_MATRIX);

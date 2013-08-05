@@ -10,8 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.animation.Animation3D;
-import rajawali.materials.SimpleMaterial;
-import rajawali.materials.SkyboxMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
@@ -486,7 +485,7 @@ public class RajawaliScene extends AFrameTask {
 			mNextSkybox = new Cube(700, true, false);
 			mNextSkybox.setDoubleSided(true);
 			mSkyboxTexture = new Texture(resourceId);
-			SimpleMaterial material = new SimpleMaterial();
+			Material material = new Material();
 			material.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(material);
 		}
@@ -513,10 +512,13 @@ public class RajawaliScene extends AFrameTask {
 			Resources res = mRenderer.getContext().getResources();
 			int[] resourceIds = new int[] { front, right, back, left, up, down };
 			
+			// TODO
+			/*
 			mSkyboxTexture = new CubeMapTexture(res.getResourceEntryName(front), resourceIds);
 			SkyboxMaterial mat = new SkyboxMaterial();
 			mat.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(mat);
+			*/
 		}
 	}
 	

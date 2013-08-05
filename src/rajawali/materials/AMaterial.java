@@ -288,7 +288,7 @@ public abstract class AMaterial extends AFrameTask {
 		mTextureList.add(texture);
 		mNumTextures = mTextureList.size();
 		TextureManager.getInstance().addTexture(texture);
-		texture.registerMaterial(this);
+		//texture.registerMaterial(this);
 		
 		String textureName = "uTexture";		
 		
@@ -355,7 +355,7 @@ public abstract class AMaterial extends AFrameTask {
 	
 	public void removeTexture(ATexture texture) {
 		mTextureList.remove(texture);
-		texture.unregisterMaterial(this);
+		//texture.unregisterMaterial(this);
 	}
 	
 	private void setTextureParameters(ATexture texture) {

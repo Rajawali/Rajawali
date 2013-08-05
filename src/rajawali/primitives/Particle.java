@@ -47,7 +47,8 @@ public class Particle extends BaseObject3D {
 	}
 	
 	public void setMaterial(AParticleMaterial material) {
-		super.setMaterial(material);
+		// TODO
+		//super.setMaterial(material);
 		mParticleShader = material;
 	}
 

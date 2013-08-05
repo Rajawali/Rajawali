@@ -22,6 +22,7 @@ import rajawali.animation.Animation3D;
 import rajawali.effects.APass;
 import rajawali.effects.EffectComposer;
 import rajawali.materials.AMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
@@ -787,7 +788,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalAddTexture((ATexture) task, task.getIndex());
 			break;
 		case MATERIAL:
-			internalAddMaterial((AMaterial) task, task.getIndex());
+			internalAddMaterial((Material) task, task.getIndex());
 		default:
 			break;
 		}
@@ -808,7 +809,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalRemoveTexture((ATexture) task, task.getIndex());
 			break;
 		case MATERIAL:
-			internalRemoveMaterial((AMaterial) task, task.getIndex());
+			internalRemoveMaterial((Material) task, task.getIndex());
 			break;
 		default:
 			break;
@@ -989,7 +990,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * @param material {@link AMaterial} to add.
 	 * @param int index to add the animation at. 
 	 */
-	private void internalAddMaterial(AMaterial material, int index) {
+	private void internalAddMaterial(Material material, int index) {
 		mMaterialManager.taskAdd(material);
 	}
 
@@ -1021,7 +1022,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mTextureManager.taskRemove(texture);
 	}
 	
-	private void internalRemoveMaterial(AMaterial material, int index)
+	private void internalRemoveMaterial(Material material, int index)
 	{
 		mMaterialManager.taskRemove(material);
 	}

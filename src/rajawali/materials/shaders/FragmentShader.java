@@ -48,6 +48,13 @@ public class FragmentShader extends AShader {
 	}
 	
 	@Override
+	public void applyParams()
+	{
+		super.applyParams();
+	}
+	
+	@Override
 	public void setLocations(int programHandle) {
+		super.setLocations(programHandle);
 	}
 }

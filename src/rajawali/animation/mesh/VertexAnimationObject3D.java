@@ -74,10 +74,12 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		}
 
 		// Set shader parameters
+		// TODO
+		/*
 		mMaterial.setInterpolation(mInterpolation);
 		mMaterial.setNextFrameVertices(nextGeometry.getVertexBufferInfo().bufferHandle);
 		mMaterial.setNextFrameNormals(nextGeometry.getNormalBufferInfo().bufferHandle);
-
+*/
 		mStartTime = now;
 	}
 

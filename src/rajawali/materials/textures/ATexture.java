@@ -4,8 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.materials.AMaterial;
+import rajawali.materials.Material;
 import rajawali.renderer.AFrameTask;
+import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
@@ -105,7 +106,7 @@ public abstract class ATexture extends AFrameTask {
 	/**
 	 * A list of materials that use this texture. 
 	 */
-	protected List<AMaterial> mMaterialsUsingTexture;
+	protected List<Material> mMaterialsUsingTexture;
 	/**
 	 * The optional compressed texture
 	 */
@@ -143,7 +144,7 @@ public abstract class ATexture extends AFrameTask {
 	}
 	
 	protected ATexture() {
-		mMaterialsUsingTexture = Collections.synchronizedList(new CopyOnWriteArrayList<AMaterial>());
+		mMaterialsUsingTexture = Collections.synchronizedList(new CopyOnWriteArrayList<Material>());
 	}
 
 	/**
@@ -395,17 +396,17 @@ public abstract class ATexture extends AFrameTask {
 		return mOwnerIdentity;
 	}
 	
-	public boolean registerMaterial(AMaterial material) {
+	public boolean registerMaterial(Material material) {
 		if(isMaterialRegistered(material)) return false;
 		mMaterialsUsingTexture.add(material);
 		return true;
 	}
 	
-	public boolean unregisterMaterial(AMaterial material) {
+	public boolean unregisterMaterial(Material material) {
 		return mMaterialsUsingTexture.remove(material);
 	}
 	
-	private boolean isMaterialRegistered(AMaterial material) {
+	private boolean isMaterialRegistered(Material material) {
 		int count = mMaterialsUsingTexture.size();
 		for(int i=0; i<count; i++)
 		{

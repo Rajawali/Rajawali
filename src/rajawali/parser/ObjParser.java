@@ -449,7 +449,8 @@ public class ObjParser extends AMeshParser {
 			boolean hasBump = matDef != null && matDef.bumpTexture != null;
 			boolean hasSpecularTexture = matDef != null && matDef.specularColorTexture != null;
 			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000 && matDef.specularCoefficient > 0;
-			
+			// TODO
+			/*
 			AMaterial mat = null;
 			
 			if(hasSpecular && !hasBump)
@@ -496,7 +497,7 @@ public class ObjParser extends AMeshParser {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.specularColorTexture);
 					mat.addTexture(new SpecularMapTexture(getOnlyFileName(matDef.specularColorTexture), BitmapFactory.decodeFile(filePath)));
 				}
-			}
+			}*/
 		}
 		
 		private int getColorFromParts(StringTokenizer parts) {

@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
-import rajawali.materials.SimpleMaterial;
+import rajawali.materials.Material;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
 import android.opengl.GLES20;
@@ -68,8 +68,8 @@ public class BoundingBox implements IBoundingVolume {
 	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
 		if(mVisualBox == null) {
 			mVisualBox = new Cube(1);
-			mVisualBox.setMaterial(new SimpleMaterial());
-			mVisualBox.getMaterial().setUseSingleColor(true);
+			mVisualBox.setMaterial(new Material());
+			mVisualBox.getMaterial().useSingleColor(true);
 			mVisualBox.setColor(mBoundingColor.get());
 			mVisualBox.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualBox.setDoubleSided(true);
