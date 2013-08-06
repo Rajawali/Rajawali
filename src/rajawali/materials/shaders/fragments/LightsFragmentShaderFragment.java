@@ -1,14 +1,21 @@
 package rajawali.materials.shaders.fragments;
 
+import java.util.List;
+
+import rajawali.lights.ALight;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 
 
-public class SingleColorFragmentShaderFragment extends AShader implements IShaderFragment {
-	public final static String SHADER_ID = "SINGLE_COLOR_FRAGMENT";
+public class LightsFragmentShaderFragment extends AShader implements IShaderFragment {
+	public final static String SHADER_ID = "LIGHTS_FRAGMENT";
 	
-	public SingleColorFragmentShaderFragment() {
+	private List<ALight> mLights;
+	
+	public LightsFragmentShaderFragment(List<ALight> lights) {
 		super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
+		mLights = lights;
+		initialize();
 	}
 
 	@Override

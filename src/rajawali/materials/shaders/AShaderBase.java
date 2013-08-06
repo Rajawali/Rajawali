@@ -23,7 +23,7 @@ public abstract class AShaderBase {
 	}
 	
 	public static enum DefaultVar {
-		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), U_VIEW_MATRIX("uViewMatrix", DataType.MAT4),
+		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), U_VIEW_MATRIX("uViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4),
 		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3),
 		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_NORMAL("vNormal", DataType.VEC4), V_COLOR("vColor", DataType.VEC4),
 		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4);
@@ -71,6 +71,8 @@ public abstract class AShaderBase {
 	{
 		switch(dataType)
 		{
+		case INT:
+			return new RInt(name);
 		case FLOAT:
 			return new RFloat(name);
 		case VEC2:
@@ -371,6 +373,34 @@ public abstract class AShaderBase {
 		public RFloat(float value)
 		{
 			super(DataType.FLOAT, Float.toString(value));
+		}
+	}
+
+	protected class RInt extends ShaderVar
+	{
+		public RInt()
+		{
+			super(DataType.INT);
+		}
+		
+		public RInt(String name)
+		{
+			super(name, DataType.INT);
+		}
+		
+		public RInt(String name, ShaderVar value)
+		{
+			super(name, DataType.INT, value);
+		}
+		
+		public RInt(ShaderVar value)
+		{
+			super(DataType.INT, value);
+		}
+		
+		public RInt(float value)
+		{
+			super(DataType.INT, Float.toString(value));
 		}
 	}
 

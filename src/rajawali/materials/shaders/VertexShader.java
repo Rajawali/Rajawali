@@ -1,5 +1,10 @@
 package rajawali.materials.shaders;
 
+import java.util.List;
+
+import rajawali.lights.ALight;
+import rajawali.materials.shaders.fragments.LightsVertexShaderFragment;
+import android.graphics.Color;
 import android.opengl.GLES20;
 
 public class VertexShader extends AShader {
@@ -8,6 +13,7 @@ public class VertexShader extends AShader {
 	private RMat3 muNormalMatrix;
 	private RMat4 muModelMatrix;
 	private RMat4 muViewMatrix;
+	private RFloat muColor;
 
 	private RVec2 maTextureCoord;
 	private RVec3 maNormal;
@@ -25,14 +31,21 @@ public class VertexShader extends AShader {
 	private int muNormalMatrixHandle;
 	private int muModelMatrixHandle;
 	private int muViewMatrixHandle;
+	private int muColorHandle;
+	
 	private int maTextureCoordHande;
 	private int maNormalHandle;
 	private int maPositionHandle;
 	private int mVertexBufferHandle;
 	
+	private float[] mColor;
+	private List<ALight> mLights;
+	
 	public VertexShader()
 	{
 		super(ShaderType.VERTEX);
+		mColor = new float[] { 1, 0, 0, 1 };
+		initialize();
 	}
 
 	@Override
@@ -48,6 +61,7 @@ public class VertexShader extends AShader {
 		muNormalMatrix = (RMat3) addUniform(DefaultVar.U_NORMAL_MATRIX, DataType.MAT3);
 		muModelMatrix = (RMat4) addUniform(DefaultVar.U_MODEL_MATRIX, DataType.MAT4);
 		muViewMatrix = (RMat4) addUniform(DefaultVar.U_VIEW_MATRIX, DataType.MAT4);
+		muColor = (RFloat) addUniform(DefaultVar.U_COLOR, DataType.VEC4);
 
 		// -- attributes
 
@@ -72,7 +86,8 @@ public class VertexShader extends AShader {
 	public void main() {
 		mgPosition.assign(maPosition);
 		mgNormal.assign(maNormal);
-
+		mgColor.assign(muColor);
+		
 		// -- do fragment stuff
 
 		for (int i = 0; i < mShaderFragments.size(); i++)
@@ -92,6 +107,8 @@ public class VertexShader extends AShader {
 	public void applyParams()
 	{
 		super.applyParams();
+		
+		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
 	}
 
 	@Override
@@ -102,6 +119,7 @@ public class VertexShader extends AShader {
 		muNormalMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_NORMAL_MATRIX);
 		muModelMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MODEL_MATRIX);
 		muViewMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_VIEW_MATRIX);
+		muColorHandle = getUniformLocation(programHandle, DefaultVar.U_COLOR);
 
 		maTextureCoordHande = getAttribLocation(programHandle, DefaultVar.A_TEXTURE_COORD);
 		maNormalHandle = getAttribLocation(programHandle, DefaultVar.A_NORMAL);
@@ -137,5 +155,25 @@ public class VertexShader extends AShader {
 
 	public void setViewMatrix(float[] viewMatrix) {
 		GLES20.glUniformMatrix4fv(muViewMatrixHandle, 1, false, viewMatrix, 0);
+	}
+	
+	public void setColor(int color) {
+		mColor[0] = (float)Color.red(color) / 255.f;
+		mColor[1] = (float)Color.green(color) / 255.f;
+		mColor[2] = (float)Color.blue(color) / 255.f;
+		mColor[3] = (float)Color.alpha(color) / 255.f;
+	}
+	
+	public int getColor() {
+		return Color.argb((int)(mColor[3] * 255), (int)(mColor[0] * 255), (int)(mColor[1] * 255), (int)(mColor[2] * 255));
+	}
+	
+	public void setLights(List<ALight> lights)
+	{
+		mLights = lights;
+		IShaderFragment frag = getShaderFragment(LightsVertexShaderFragment.SHADER_ID);
+		if(frag != null)
+			mShaderFragments.remove(frag);
+		addShaderFragment(new LightsVertexShaderFragment(mLights));
 	}
 }

@@ -10,8 +10,6 @@ import rajawali.lights.ALight;
 import rajawali.materials.methods.IDiffuseMethod;
 import rajawali.materials.shaders.FragmentShader;
 import rajawali.materials.shaders.VertexShader;
-import rajawali.materials.shaders.fragments.SingleColorFragmentShaderFragment;
-import rajawali.materials.shaders.fragments.SingleColorVertexShaderFragment;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.TextureManager;
@@ -27,8 +25,8 @@ public class Material extends AFrameTask {
 	
 	private IDiffuseMethod mDiffuseMethod;
 
-	private boolean mUseSingleColor;
 	private boolean mUseVertexColors;
+	private boolean mLightingEnabled;
 	private boolean mIsDirty = true;
 
 	private int mProgramHandle = -1;
@@ -38,9 +36,7 @@ public class Material extends AFrameTask {
 	private float[] mModelMatrix;
 	private float[] mViewMatrix;
 
-	protected Stack<ALight> mLights;
-	
-	private int mColor = 0xffffff;
+	protected List<ALight> mLights;
 
 	/**
 	 * This texture's unique owner identity String. This is usually the fully qualified name of the
@@ -56,21 +52,6 @@ public class Material extends AFrameTask {
 	public Material()
 	{
 		mTextureList = new ArrayList<ATexture>();
-		mLights = new Stack<ALight>();
-	}
-
-	public void useSingleColor(boolean value)
-	{
-		if (value != mUseSingleColor)
-		{
-			mIsDirty = true;
-			mUseSingleColor = value;
-		}
-	}
-
-	public boolean usingSingleColor()
-	{
-		return mUseSingleColor;
 	}
 
 	public void useVertexColors(boolean value)
@@ -83,17 +64,11 @@ public class Material extends AFrameTask {
 	}
 	
 	public void setColor(int color) {
-		mColor = color;
-		if(mVertexShader != null)
-		{
-			SingleColorVertexShaderFragment f = (SingleColorVertexShaderFragment)mVertexShader.getShaderFragment(SingleColorVertexShaderFragment.SHADER_ID);
-			if(f == null) return;
-			f.setColor(color);
-		}
+		mVertexShader.setColor(color);
 	}
 	
 	public int getColor() {
-		return mColor;
+		return mVertexShader.getColor();
 	}
 
 	public boolean usingVertexColors()
@@ -139,14 +114,12 @@ public class Material extends AFrameTask {
 		mVertexShader = new VertexShader();
 		mFragmentShader = new FragmentShader();
 
-		if (mUseSingleColor)
+		if(mLightingEnabled && mLights != null && mLights.size() > 0)
 		{
-			SingleColorVertexShaderFragment svs = new SingleColorVertexShaderFragment();
-			svs.setColor(mColor);
-			mVertexShader.addShaderFragment(svs);
-			mFragmentShader.addShaderFragment(new SingleColorFragmentShaderFragment());
+			mVertexShader.setLights(mLights);
+			mFragmentShader.setLights(mLights);
 		}
-
+		
 		mVertexShader.buildShader();
 		mFragmentShader.buildShader();
 
@@ -323,8 +296,36 @@ public class Material extends AFrameTask {
 		mVertexShader.setViewMatrix(viewMatrix);
 	}
 
+	public void enableLighting(boolean value) {
+		mLightingEnabled = value;
+	}
+	
+	public boolean lightingEnabled()
+	{
+		return mLightingEnabled;
+	}
+	
 	public void setLights(List<ALight> lights) {
-		// TODO
+		boolean hasChanged = false;
+		if(mLights != null)
+		{
+			for(ALight light : lights)
+			{
+				if (!mLights.contains(light))
+				{
+					hasChanged = true;
+					break;
+				}
+			}
+		} else {
+			hasChanged = true;
+		}
+		
+		if(hasChanged)
+		{
+			mLights = lights;
+			mIsDirty = true;
+		}
 	}
 
 	public void setCamera(Camera camera) {

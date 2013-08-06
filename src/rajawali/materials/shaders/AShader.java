@@ -31,9 +31,10 @@ public abstract class AShader extends AShaderBase {
 	private Hashtable<String, Constant> mConstants;
 	protected List<IShaderFragment> mShaderFragments;
 	
+	public AShader() {}
+	
 	public AShader(ShaderType shaderType) {
 		mShaderType = shaderType;
-		initialize();
 	}
 
 	protected void initialize() {

@@ -1,5 +1,10 @@
 package rajawali.materials.shaders;
 
+import java.util.List;
+
+import rajawali.lights.ALight;
+import rajawali.materials.shaders.fragments.LightsFragmentShaderFragment;
+
 
 public class FragmentShader extends AShader {
 	private RVec2 mvTextureCoord;
@@ -8,9 +13,12 @@ public class FragmentShader extends AShader {
 	
 	private RVec4 mgColor;
 	
+	private List<ALight> mLights;
+	
 	public FragmentShader()
 	{
 		super(ShaderType.FRAGMENT);
+		initialize();
 	}
 	
 	@Override
@@ -21,7 +29,7 @@ public class FragmentShader extends AShader {
 		addPrecisionSpecifier(DataType.FLOAT, Precision.MEDIUMP);
 		
 		// -- uniforms
-
+		
 		
 		
 		// -- varyings
@@ -37,6 +45,8 @@ public class FragmentShader extends AShader {
 	
 	@Override
 	public void main() {
+		mgColor.assign(mvColor);
+		
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
@@ -56,5 +66,14 @@ public class FragmentShader extends AShader {
 	@Override
 	public void setLocations(int programHandle) {
 		super.setLocations(programHandle);
+	}
+	
+	public void setLights(List<ALight> lights)
+	{
+		mLights = lights;
+		IShaderFragment frag = getShaderFragment(LightsFragmentShaderFragment.SHADER_ID);
+		if(frag != null)
+			mShaderFragments.remove(frag);
+		addShaderFragment(new LightsFragmentShaderFragment(mLights));
 	}
 }
