@@ -89,7 +89,7 @@ public class LittleEndianDataInputStream extends InputStream implements DataInpu
 		 (w[3])      << 24 |
 		 (w[2]&0xff) << 16 |
 		 (w[1]&0xff) <<  8 |
-		 (w[0]&0xff);
+		 (w[0]&0xff) & 0xFFFFFFFFL;
 	 }
  
 	 /**
