@@ -6,7 +6,7 @@ public class Plane {
 	private static Vector3 mTmp1;
 	private static Vector3 mTmp2;
 	public final Vector3 mNormal;
-	public float d = 0;
+	public double d = 0;
 
 	public enum PlaneSide {
 		Back, OnPlane,  Front
@@ -18,7 +18,7 @@ public class Plane {
 		mNormal = new Vector3();
 	}
 	
-	public Plane(Vector3 normal, float d) {
+	public Plane(Vector3 normal, double d) {
 		this();
 		mNormal.setAll(normal);
 		mNormal.normalize();
@@ -43,24 +43,24 @@ public class Plane {
 		d = -Vector3.dot(point1, mNormal); 
 	}
 
-	public void setAll(float nx, float ny, float nz, float d) {
+	public void setAll(double nx, double ny, double nz, double d) {
 		mNormal.setAll(nx, ny, nz);
 		this.d = d;
 	}
 
-	public float distance(Vector3 point) {
+	public double distance(Vector3 point) {
 		return Vector3.dot(mNormal, point) + d;
 	}
 
 	public PlaneSide getPointSide(Vector3 point) {
-		float dist =Vector3.dot(mNormal, point) + d;
+		double dist =Vector3.dot(mNormal, point) + d;
 		if (dist == 0) {return PlaneSide.OnPlane;}
 		else if (dist < 0){ return PlaneSide.Back;}
 		else {return PlaneSide.Front;}
 	}
 
 	public boolean isFrontFacing(Vector3 direction) {
-		float dot = Vector3.dot(mNormal, direction); 
+		double dot = Vector3.dot(mNormal, direction); 
 		return dot <= 0;
 	}
 
@@ -68,7 +68,7 @@ public class Plane {
 		return mNormal;
 	}
 
-	public float getD() {
+	public double getD() {
 		return d;
 	}
 

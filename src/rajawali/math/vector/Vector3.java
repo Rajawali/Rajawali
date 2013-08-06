@@ -15,9 +15,9 @@ import rajawali.math.Quaternion;
  */
 public class Vector3 {
 	//The vector components
-	public float x;
-	public float y;
-	public float z;
+	public double x;
+	public double y;
+	public double z;
 	
 	//Unit vectors oriented to each axis
 	//DO NOT EVER MODIFY THE VALUES OF THESE MEMBERS
@@ -52,9 +52,9 @@ public class Vector3 {
 	/**
 	 * Constructs a new {@link Vector3} at {from, from, from}.
 	 * 
-	 * @param from float which all components will be initialized to.
+	 * @param from double which all components will be initialized to.
 	 */
-	public Vector3(float from) {
+	public Vector3(double from) {
 		x = from;
 		y = from;
 		z = from;
@@ -76,19 +76,19 @@ public class Vector3 {
 	 * 
 	 * @param values A {@link String} array of values to be parsed for each component. 
 	 * @throws {@link IllegalArgumentException} if there are fewer than 3 values in the array.
-	 * @throws {@link NumberFormatException} if there is a problem parsing the {@link String} values into floats.
+	 * @throws {@link NumberFormatException} if there is a problem parsing the {@link String} values into doubles.
 	 */
 	public Vector3(final String[] values) throws IllegalArgumentException, NumberFormatException {
 		this(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]));
 	}
 	
 	/**
-	 * Constructs a new {@link Vector3} with components initialized from the input float array. 
+	 * Constructs a new {@link Vector3} with components initialized from the input double array. 
 	 * 
-	 * @param values A float array of values to be parsed for each component. 
+	 * @param values A double array of values to be parsed for each component. 
 	 * @throws {@link IllegalArgumentException} if there are fewer than 3 values in the array.
 	 */
-	public Vector3(final float[] values) throws IllegalArgumentException {
+	public Vector3(final double[] values) throws IllegalArgumentException {
 		if (values.length < 3) throw new IllegalArgumentException("Vector3 must be initialized with an array length of at least 3.");
 		x = values[0];
 		y = values[1];
@@ -98,28 +98,14 @@ public class Vector3 {
 	/**
 	 * Constructs a new {@link Vector3} object with components initialized to the specified values.
 	 * 
-	 * @param x float The x component.
-	 * @param y float The y component.
-	 * @param z float The z component.
-	 */
-	public Vector3(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
-	/**
-	 * Constructs a new {@link Vector3} object with the components initialized to the specified values.
-	 * Note that this method will truncate the values to single precision.
-	 * 
 	 * @param x double The x component.
 	 * @param y double The y component.
 	 * @param z double The z component.
 	 */
 	public Vector3(double x, double y, double z) {
-		this.x = (float) x;
-		this.y = (float) y;
-		this.z = (float) z;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	
@@ -131,29 +117,16 @@ public class Vector3 {
 	/**
 	 * Sets all components of this {@link Vector3} to the specified values.
 	 *  
-	 * @param x float The x component.
-	 * @param y float The y component.
-	 * @param z float The z component.
-	 * @return A reference to this {@link Vector3} to facilitate chaining. 
-	 */
-	public Vector3 setAll(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		return this;
-	}
-
-	/**
-	 * Sets all components of this {@link Vector3} to the specified values.
-	 * Note that this method will truncate the values to single precision.
-	 *  
 	 * @param x double The x component.
 	 * @param y double The y component.
 	 * @param z double The z component.
 	 * @return A reference to this {@link Vector3} to facilitate chaining. 
 	 */
 	public Vector3 setAll(double x, double y, double z) {
-		return setAll((float) x, (float) y, (float) z);
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		return this;
 	}
 	
 	/**
@@ -191,7 +164,7 @@ public class Vector3 {
 	 * @param z The value to add to the z component.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 add(float x, float y, float z) {
+	public Vector3 add(double x, double y, double z) {
 		this.x += x;
 		this.y += y;
 		this.z += z;
@@ -201,25 +174,14 @@ public class Vector3 {
 	/**
 	 * Adds the given value to each component of this {@link Vector3}.
 	 * 
-	 * @param value float value to add.
-	 * @return A reference to this {@link Vector3} to facilitate chaining.
-	 */
-	public Vector3 add(float value) {
-		x += value;
-		y += value;
-		z += value;
-		return this;
-	}
-	
-	/**
-	 * Adds the given value to each component of this {@link Vector3}.
-	 * Note that this method will truncate the values to single precision.
-	 * 
 	 * @param value double value to add.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 add(double value) {
-		return add(value);
+		x += value;
+		y += value;
+		z += value;
+		return this;
 	}
 	
 	/**
@@ -268,7 +230,7 @@ public class Vector3 {
 	 * @param z The value to subtract to the z component.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 subtract(float x, float y, float z) {
+	public Vector3 subtract(double x, double y, double z) {
 		this.x -= x;
 		this.y -= y;
 		this.z -= z;
@@ -278,25 +240,14 @@ public class Vector3 {
 	/**
 	 * Subtracts the given value from each component of this {@link Vector3}.
 	 * 
-	 * @param value float value to subtract.
-	 * @return A reference to this {@link Vector3} to facilitate chaining.
-	 */
-	public Vector3 subtract(float value) {
-		x -= value;
-		y -= value;
-		z -= value;
-		return this;
-	}
-	
-	/**
-	 * Subtracts the given value from each component of this {@link Vector3}.
-	 * Note that this method will truncate the values to single precision.
-	 * 
 	 * @param value double value to subtract.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 subtract(double value) {
-		return subtract((float) value);
+		x -= value;
+		y -= value;
+		z -= value;
+		return this;
 	}
 
 	/**
@@ -327,25 +278,14 @@ public class Vector3 {
 	/**
 	 * Scales each component of this {@link Vector3} by the specified value.
 	 * 
-	 * @param value float The value to scale each component by.
-	 * @return A reference to this {@link Vector3} to facilitate chaining.
-	 */
-	public Vector3 multiply(float value) {
-		x *= value;
-		y *= value;
-		z *= value;
-		return this;
-	}
-
-	/**
-	 * Scales each component of this {@link Vector3} by the specified value.
-	 * Note that this method will truncate the values to single precision.
-	 * 
 	 * @param value double The value to scale each component by.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 multiply(double value) {
-		return multiply((float) value);
+		x *= value;
+		y *= value;
+		z *= value;
+		return this;
 	}
 	
 	/**
@@ -365,11 +305,11 @@ public class Vector3 {
 	/**
 	 * Multiplies this {@link Vector3} and the provided 4x4 matrix.
 	 * 
-	 * @param matrix float[16] representation of a 4x4 matrix. 
+	 * @param matrix double[16] representation of a 4x4 matrix. 
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 multiply(final float[] matrix) {
-		float vx = x, vy = y, vz = z;
+	public Vector3 multiply(final double[] matrix) {
+		double vx = x, vy = y, vz = z;
 		x = vx * matrix[Matrix4.M00] + vy * matrix[Matrix4.M01] + vz * matrix[Matrix4.M02] + matrix[Matrix4.M03];
 		y = vx * matrix[Matrix4.M10] + vy * matrix[Matrix4.M11] + vz * matrix[Matrix4.M12] + matrix[Matrix4.M13];
 		z = vx * matrix[Matrix4.M20] + vy * matrix[Matrix4.M21] + vz * matrix[Matrix4.M22] + matrix[Matrix4.M23];
@@ -414,25 +354,14 @@ public class Vector3 {
 	/**
 	 * Divide each component of this {@link Vector3} by the specified value.
 	 * 
-	 * @param value float The value to divide each component by.
-	 * @return A reference to this {@link Vector3} to facilitate chaining.
-	 */
-	public Vector3 divide(float value) {
-		x /= value;
-		y /= value;
-		z /= value;
-		return this;
-	}
-
-	/**
-	 * Divides each component of this {@link Vector3} by the specified value.
-	 * Note that this method will truncate the values to single precision.
-	 * 
 	 * @param value double The value to divide each component by.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 divide(double value) {
-		return divide((float) value);
+		x /= value;
+		y /= value;
+		z /= value;
+		return this;
 	}
 	
 	/**
@@ -470,7 +399,7 @@ public class Vector3 {
 	 * @param b {@link Vector3} The scaling factor.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 scaleAndSet(Vector3 a, float b) {
+	public Vector3 scaleAndSet(Vector3 a, double b) {
 		x = a.x * b;
 		y = a.y * b;
 		z = a.z * b;
@@ -484,64 +413,64 @@ public class Vector3 {
 	 * @param b {@link Vector3} The scaling factor.
 	 * @return {@link Vector3} The resulting {@link Vector3}.
 	 */
-	public static Vector3 scaleAndCreate(Vector3 a, float b) {
+	public static Vector3 scaleAndCreate(Vector3 a, double b) {
 		return new Vector3(a.x * b, a.y * b, a.z * b);
 	}
 	
 	/**
 	 * Rotates this {@link Vector3} about the X axis by the angle specified.
 	 * 
-	 * @param angle float The angle to rotate by in radians.
+	 * @param angle double The angle to rotate by in radians.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 rotateX(float angle) {
+	public Vector3 rotateX(double angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
 		if (mTemp == null) mTemp = new Vector3();
 		mTemp.setAll(x, y, z);
-		y = (float)((mTemp.y * cosRY) - (mTemp.z * sinRY));
-		z = (float)((mTemp.y * sinRY) + (mTemp.z * cosRY));
+		y = mTemp.y * cosRY - mTemp.z * sinRY;
+		z = mTemp.y * sinRY + mTemp.z * cosRY;
 		return this;
 	}
 	
 	/**
 	 * Rotates this {@link Vector3} about the Y axis by the angle specified.
 	 * 
-	 * @param angle float The angle to rotate by in radians.
+	 * @param angle double The angle to rotate by in radians.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 rotateY(float angle) {
+	public Vector3 rotateY(double angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
 		if (mTemp == null) mTemp = new Vector3();
 		mTemp.setAll(x, y, z);
-		x = (float)((mTemp.x * cosRY) + (mTemp.z * sinRY));
-		z = (float)((mTemp.x * -sinRY) + (mTemp.z * cosRY));
+		x = mTemp.x * cosRY + mTemp.z * sinRY;
+		z = mTemp.x * -sinRY + mTemp.z * cosRY;
 		return this;
 	}
 
 	/**
 	 * Rotates this {@link Vector3} about the Z axis by the angle specified.
 	 * 
-	 * @param angle float The angle to rotate by in radians.
+	 * @param angle double The angle to rotate by in radians.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 rotateZ(float angle) {
+	public Vector3 rotateZ(double angle) {
 		double cosRY = Math.cos(angle);
 		double sinRY = Math.sin(angle);
 		if (mTemp == null) mTemp = new Vector3();
 		mTemp.setAll(x, y, z);
-		x = (float)((mTemp.x * cosRY) - (mTemp.y * sinRY));
-		y = (float)((mTemp.x * sinRY) + (mTemp.y * cosRY));
+		x = mTemp.x * cosRY - mTemp.y * sinRY;
+		y = mTemp.x * sinRY + mTemp.y * cosRY;
 		return this;
 	}
 	
 	/**
 	 * Normalize this {@link Vector3} to unit length.
 	 * 
-	 * @return float The initial magnitude.
+	 * @return double The initial magnitude.
 	 */
-	public float normalize() {
+	public double normalize() {
 		double mod = Math.sqrt(x * x + y * y + z * z);
 		if (mod != 0 && mod != 1) {
 			mod = 1 / mod;
@@ -549,7 +478,7 @@ public class Vector3 {
 			y *= mod;
 			z *= mod;
 		}
-		return (float)mod;
+		return mod;
 	}
 	
 	/**
@@ -598,22 +527,22 @@ public class Vector3 {
 	/**
 	 * Computes the Euclidean length of the arbitrary vector components passed in.
 	 * 
-	 * @param x float The x component.
-	 * @param y float The y component.
-	 * @param z float The z component.
-	 * @return float The Euclidean length.
+	 * @param x double The x component.
+	 * @param y double The y component.
+	 * @param z double The z component.
+	 * @return double The Euclidean length.
 	 */
-	public static float length(float x, float y, float z) {
-		return (float) Math.sqrt(length2(x, y, z));
+	public static double length(double x, double y, double z) {
+		return Math.sqrt(length2(x, y, z));
 	}
 	
 	/**
 	 * Computes the Euclidean length of the arbitrary vector components passed in.
 	 * 
 	 * @param v {@link Vector3} The {@link Vector3} to calculate the length of.
-	 * @return float The Euclidean length.
+	 * @return double The Euclidean length.
 	 */
-	public static float length(Vector3 v) {
+	public static double length(Vector3 v) {
 		return length(v.x, v.y, v.z);
 	}
 	
@@ -621,39 +550,39 @@ public class Vector3 {
 	 * Computes the squared Euclidean length of the arbitrary vector components passed in.
 	 * 
 	 * @param v {@link Vector3} The {@link Vector3} to calculate the length of.
-	 * @return float The squared Euclidean length.
+	 * @return double The squared Euclidean length.
 	 */
-	public static float length2(Vector3 v) {
+	public static double length2(Vector3 v) {
 		return length2(v.x, v.y, v.z);
 	}
 	
 	/**
 	 * Computes the squared Euclidean length of the arbitrary vector components passed in.
 	 * 
-	 * @param x float The x component.
-	 * @param y float The y component.
-	 * @param z float The z component.
-	 * @return float The squared Euclidean length.
+	 * @param x double The x component.
+	 * @param y double The y component.
+	 * @param z double The z component.
+	 * @return double The squared Euclidean length.
 	 */
-	public static float length2(float x, float y, float z) {
+	public static double length2(double x, double y, double z) {
 		return (x * x + y * y + z * z);
 	}
 	
 	/**
 	 * Computes the Euclidean length of this {@link Vector3};
 	 * 
-	 * @return float The Euclidean length.
+	 * @return double The Euclidean length.
 	 */
-	public float length() {
+	public double length() {
 		return length(this);
 	}
 	
 	/**
 	 * Computes the squared Euclidean length of this {@link Vector3};
 	 * 
-	 * @return float The squared Euclidean length.
+	 * @return double The squared Euclidean length.
 	 */
-	public float length2() {
+	public double length2() {
 		return (x * x + y * y + z * z);
 	}
 
@@ -661,28 +590,28 @@ public class Vector3 {
 	 * Computes the Euclidean length of this {@link Vector3} to the specified {@link Vector3}.
 	 * 
 	 * @param other {@link Vector3} The {@link Vector3} to compute the distance to.
-	 * @return float The Euclidean distance.
+	 * @return double The Euclidean distance.
 	 */
-	public float distanceTo(Vector3 other) {
-		final float a = x - other.x;
-		final float b = y - other.y;
-		final float c = z - other.z;
-		return (float) Math.sqrt(a * a + b * b + c * c);
+	public double distanceTo(Vector3 other) {
+		final double a = x - other.x;
+		final double b = y - other.y;
+		final double c = z - other.z;
+		return Math.sqrt(a * a + b * b + c * c);
 	}
 	
 	/**
 	 * Computes the Euclidean length of this {@link Vector3} to the specified point.
 	 * 
-	 * @param float x The point x coordinate.
-	 * @param float y The point y coordinate.
-	 * @param float z The point z coordinate.
-	 * @return float The Euclidean distance.
+	 * @param double x The point x coordinate.
+	 * @param double y The point y coordinate.
+	 * @param double z The point z coordinate.
+	 * @return double The Euclidean distance.
 	 */
-	public float distanceTo(float x, float y, float z) {
-		final float a = this.x - x;
-		final float b = this.y - y;
-		final float c = this.z - z;
-		return (float) Math.sqrt(a * a + b * b + c * c);
+	public double distanceTo(double x, double y, double z) {
+		final double a = this.x - x;
+		final double b = this.y - y;
+		final double c = this.z - z;
+		return Math.sqrt(a * a + b * b + c * c);
 	}
 	
 	/**
@@ -690,52 +619,52 @@ public class Vector3 {
 	 * 
 	 * @param v1 {@link Vector3} The first vector.
 	 * @param v2 {@link Vector3} The second vector.
-	 * @return float The Euclidean distance.
+	 * @return double The Euclidean distance.
 	 */
-	public static float distanceTo(Vector3 v1, Vector3 v2) {
-		final float a = v1.x - v2.x;
-		final float b = v1.y - v2.y;
-		final float c = v1.z - v2.z;
-		return (float) Math.sqrt(a * a + b * b + c * c);
+	public static double distanceTo(Vector3 v1, Vector3 v2) {
+		final double a = v1.x - v2.x;
+		final double b = v1.y - v2.y;
+		final double c = v1.z - v2.z;
+		return Math.sqrt(a * a + b * b + c * c);
 	}
 	
 	/**
 	 * Computes the Euclidean length between two points.
 	 * 
-	 * @return float The Euclidean distance.
+	 * @return double The Euclidean distance.
 	 */
-	public static float distanceTo(float x1, float y1, float z1, float x2, float y2, float z2) {
-		final float a = x1 - x2;
-		final float b = y1 - y2;
-		final float c = z1 - z2;
-		return (float) Math.sqrt(a * a + b * b + c * c);
+	public static double distanceTo(double x1, double y1, double z1, double x2, double y2, double z2) {
+		final double a = x1 - x2;
+		final double b = y1 - y2;
+		final double c = z1 - z2;
+		return Math.sqrt(a * a + b * b + c * c);
 	}
 	
 	/**
 	 * Computes the squared Euclidean length of this {@link Vector3} to the specified {@link Vector3}.
 	 * 
 	 * @param other {@link Vector3} The {@link Vector3} to compute the distance to.
-	 * @return float The squared Euclidean distance.
+	 * @return double The squared Euclidean distance.
 	 */
-	public float distanceTo2(Vector3 other) {
-		final float a = x - other.x;
-		final float b = y - other.y;
-		final float c = z - other.z;
+	public double distanceTo2(Vector3 other) {
+		final double a = x - other.x;
+		final double b = y - other.y;
+		final double c = z - other.z;
 		return (a * a + b * b + c * c);
 	}
 	
 	/**
 	 * Computes the squared Euclidean length of this {@link Vector3} to the specified point.
 	 * 
-	 * @param float x The point x coordinate.
-	 * @param float y The point y coordinate.
-	 * @param float z The point z coordinate.
-	 * @return float The squared Euclidean distance.
+	 * @param double x The point x coordinate.
+	 * @param double y The point y coordinate.
+	 * @param double z The point z coordinate.
+	 * @return double The squared Euclidean distance.
 	 */
-	public float distanceTo2(float x, float y, float z) {
-		final float a = this.x - x;
-		final float b = this.y - y;
-		final float c = this.z - z;
+	public double distanceTo2(double x, double y, double z) {
+		final double a = this.x - x;
+		final double b = this.y - y;
+		final double c = this.z - z;
 		return (a * a + b * b + c * c);
 	}
 	
@@ -744,24 +673,24 @@ public class Vector3 {
 	 * 
 	 * @param v1 {@link Vector3} The first vector.
 	 * @param v2 {@link Vector3} The second vector.
-	 * @return float The squared Euclidean distance.
+	 * @return double The squared Euclidean distance.
 	 */
-	public static float distanceTo2(Vector3 v1, Vector3 v2) {
-		final float a = v1.x - v2.x;
-		final float b = v1.y - v2.y;
-		final float c = v1.z - v2.z;
+	public static double distanceTo2(Vector3 v1, Vector3 v2) {
+		final double a = v1.x - v2.x;
+		final double b = v1.y - v2.y;
+		final double c = v1.z - v2.z;
 		return (a * a + b * b + c * c);
 	}
 	
 	/**
 	 * Computes the squared Euclidean length between two points.
 	 * 
-	 * @return float The squared Euclidean distance.
+	 * @return double The squared Euclidean distance.
 	 */
-	public static float distanceTo2(float x1, float y1, float z1, float x2, float y2, float z2) {
-		final float a = x1 - x2;
-		final float b = y1 - y2;
-		final float c = z1 - z2;
+	public static double distanceTo2(double x1, double y1, double z1, double x2, double y2, double z2) {
+		final double a = x1 - x2;
+		final double b = y1 - y2;
+		final double c = z1 - z2;
 		return (a * a + b * b + c * c);
 	}
 	
@@ -785,8 +714,8 @@ public class Vector3 {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 project(Vector3 v) {
-		float d = dot(v);
-		float d_div = d / length2();
+		double d = dot(v);
+		double d_div = d / length2();
 		return multiply(d_div);
 	}
 	
@@ -794,11 +723,11 @@ public class Vector3 {
 	 * Multiplies this {@link Vector3} by the provided 4x4 matrix and divides by w.
 	 * Typically this is used for project/un-project of a {@link Vector3}.
 	 * 
-	 * @param matrix float[16] array representation of a 4x4 matrix to project with.
+	 * @param matrix double[16] array representation of a 4x4 matrix to project with.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 project(final float[] matrix) {
-        float l_w = x * matrix[Matrix4.M30] + y * matrix[Matrix4.M31] + z * matrix[Matrix4.M32] + matrix[Matrix4.M33];
+	public Vector3 project(final double[] matrix) {
+        double l_w = x * matrix[Matrix4.M30] + y * matrix[Matrix4.M31] + z * matrix[Matrix4.M32] + matrix[Matrix4.M33];
         
         return setAll(
       		  (x * matrix[Matrix4.M00] + y * matrix[Matrix4.M01] + z * matrix[Matrix4.M02] + matrix[Matrix4.M03]) / l_w, 
@@ -814,8 +743,8 @@ public class Vector3 {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 project(final Matrix4 matrix) {
-		final float[] l_mat = new float[16];
-		matrix.toFloatArray(l_mat);
+		final double[] l_mat = new double[16];
+		matrix.toArray(l_mat);
 		return project(l_mat);
 	}
 	
@@ -828,8 +757,8 @@ public class Vector3 {
 	 * @return {@link Vector3} The result of the projection.
 	 */
 	public static Vector3 projectAndCreate(Vector3 v1, Vector3 v2) {
-		float d = v1.dot(v2);
-		float d_div = d / v2.length2();
+		double d = v1.dot(v2);
+		double d_div = d / v2.length2();
 		return v2.clone().multiply(d_div);
 	}
 	
@@ -853,9 +782,9 @@ public class Vector3 {
 	 * 
 	 * @param v1 The first {@link Vector3}.
 	 * @param v2 The second {@link Vector3}.
-	 * @return float The dot product.
+	 * @return double The dot product.
 	 */
-	public static float dot(Vector3 v1, Vector3 v2) {
+	public static double dot(Vector3 v1, Vector3 v2) {
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 	}
 	
@@ -863,37 +792,37 @@ public class Vector3 {
 	 * Computes the vector dot product between this {@link Vector3} and the specified {@link Vector3}.
 	 * 
 	 * @param v {@link Vector3} to compute the dot product with.
-	 * @return float The dot product.
+	 * @return double The dot product.
 	 */
-	public float dot(final Vector3 v) {
+	public double dot(final Vector3 v) {
 		return x * v.x + y * v.y + z * v.z;
 	}
 	
 	/**
 	 * Computes the vector dot product between this {@link Vector3} and the specified vector.
 	 * 
-	 * @param x float The x component of the specified vector.
-	 * @param y float The y component of the specified vector.
-	 * @param z float The z component of the specified vector.
-	 * @return float The dot product.
+	 * @param x double The x component of the specified vector.
+	 * @param y double The y component of the specified vector.
+	 * @param z double The z component of the specified vector.
+	 * @return double The dot product.
 	 */
-	public float dot(float x, float y, float z) {
+	public double dot(double x, double y, double z) {
 		return (this.x * x + this.y * y + this.z *z);
 	}
 	
 	/**
 	 * Computes the vector dot product between the components of the two supplied vectors.
 	 * 
-	 * @param x1 float The x component of the first vector.
-	 * @param y1 float The y component of the first vector.
-	 * @param z1 float The z component of the first vector.
-	 * @param x2 float The x component of the second vector.
-	 * @param y2 float The y component of the second vector.
-	 * @param z2 float The z component of the second vector.
-	 * @return float The dot product.
+	 * @param x1 double The x component of the first vector.
+	 * @param y1 double The y component of the first vector.
+	 * @param z1 double The z component of the first vector.
+	 * @param x2 double The x component of the second vector.
+	 * @param y2 double The y component of the second vector.
+	 * @param z2 double The z component of the second vector.
+	 * @return double The dot product.
 	 */
-	public static float dot(final float x1, final float y1, final float z1,
-			final float x2, final float y2, final float z2) {
+	public static double dot(final double x1, final double y1, final double z1,
+			final double x2, final double y2, final double z2) {
 		return (x1 * x2 + y1 * y2 + z1 * z2);
 	}
 
@@ -917,12 +846,12 @@ public class Vector3 {
 	 * Computes the cross product between this {@link Vector3} and the specified vector,
 	 * setting this to the result.
 	 * 
-	 * @param x float The x component of the other vector.
-	 * @param y float The y component of the other vector.
-	 * @param z float The z component of the other vector.
+	 * @param x double The x component of the other vector.
+	 * @param y double The y component of the other vector.
+	 * @param z double The z component of the other vector.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 cross(float x, float y, float z) {
+	public Vector3 cross(double x, double y, double z) {
 		if (mTemp == null) mTemp = new Vector3();
 		mTemp.setAll(this);
 		this.x = y * mTemp.z - z * mTemp.y;
@@ -973,7 +902,7 @@ public class Vector3 {
 		v0.normalize();
 		v1.normalize();
 
-		float d = Vector3.dot(v0, v1);
+		double d = Vector3.dot(v0, v1);
 		// If dot == 1, vectors are the same
 		if (d >= 1.0f) {
 			q.identity();
@@ -991,10 +920,10 @@ public class Vector3 {
 
 			Vector3 c = Vector3.crossAndCreate(v0, v1);
 
-			q.x = (float)(c.x * invs);
-			q.y = (float)(c.y * invs);
-			q.z = (float)(c.z * invs);
-			q.w = (float)(s * 0.5);
+			q.x = c.x * invs;
+			q.y = c.y * invs;
+			q.z = c.z * invs;
+			q.w = s * 0.5;
 			q.normalize();
 		}
 		return q;
@@ -1006,10 +935,10 @@ public class Vector3 {
 	 * x, y, z values will be overridden.
 	 * 
 	 * @param to {@link Vector3} Ending point.
-	 * @param amount float [0-1] interpolation value.
+	 * @param amount double [0-1] interpolation value.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 lerp(Vector3 to, float amount) {
+	public Vector3 lerp(Vector3 to, double amount) {
 		return multiply(1.0f - amount).add(to.x * amount, to.y * amount, to.z * amount);
 	}
 	
@@ -1020,10 +949,10 @@ public class Vector3 {
 	 * 
 	 * @param from {@link Vector3} Starting point.
 	 * @param to {@link Vector3} Ending point.
-	 * @param amount float [0-1] interpolation value.
+	 * @param amount double [0-1] interpolation value.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Vector3 lerpAndSet(Vector3 from, Vector3 to, float amount)
+	public Vector3 lerpAndSet(Vector3 from, Vector3 to, double amount)
 	{
 	  x = from.x + (to.x - from.x) * amount;
 	  y = from.y + (to.y - from.y) * amount;
@@ -1037,10 +966,10 @@ public class Vector3 {
 	 * 
 	 * @param from {@link Vector3} Starting point.
 	 * @param to {@link Vector3} Ending point.
-	 * @param amount float [0-1] interpolation value.
+	 * @param amount double [0-1] interpolation value.
 	 * @return {@link Vector3} The interpolated value.
 	 */
-	public static Vector3 lerpAndCreate(Vector3 from, Vector3 to, float amount)
+	public static Vector3 lerpAndCreate(Vector3 from, Vector3 to, double amount)
 	{
 		Vector3 out = new Vector3();
 		out.x = from.x + (to.x - from.x) * amount;
@@ -1078,10 +1007,10 @@ public class Vector3 {
 	 * Checks if this {@link Vector3} is of unit length with a specified
 	 * margin of error.
 	 * 
-	 * @param margin float The desired margin of error for the test.
+	 * @param margin double The desired margin of error for the test.
 	 * @return boolean True if this {@link Vector3} is of unit length.
 	 */
-	public boolean isUnit(final float margin) {
+	public boolean isUnit(final double margin) {
 		return Math.abs(length2() - 1f) < margin * margin;
 	}
 	
@@ -1097,10 +1026,10 @@ public class Vector3 {
 	/**
 	 * Checks if the length of this {@link Vector3} is smaller than the specified margin.
 	 * 
-	 * @param margin float The desired margin of error for the test.
+	 * @param margin double The desired margin of error for the test.
 	 * @return boolean True if this {@link Vector3}'s length is smaller than the margin specified.
 	 */
-	public boolean isZero(final float margin) {
+	public boolean isZero(final double margin) {
 		return (length2() < margin * margin);
 	}
 	
