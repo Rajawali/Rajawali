@@ -22,7 +22,13 @@ public abstract class AShaderBase {
 		}
 	}
 	
-	public static enum DefaultVar {
+	public static interface IGlobalShaderVar
+	{
+		String getVarString();
+		DataType getDataType();
+	}
+	
+	public static enum DefaultVar implements IGlobalShaderVar {
 		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), U_VIEW_MATRIX("uViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4),
 		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3),
 		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_NORMAL("vNormal", DataType.VEC4), V_COLOR("vColor", DataType.VEC4),

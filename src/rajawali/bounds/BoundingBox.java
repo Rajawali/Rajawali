@@ -69,7 +69,7 @@ public class BoundingBox implements IBoundingVolume {
 		if(mVisualBox == null) {
 			mVisualBox = new Cube(1);
 			mVisualBox.setMaterial(new Material());
-			mVisualBox.getMaterial().useSingleColor(true);
+			// TODO mVisualBox.getMaterial().useSingleColor(true);
 			mVisualBox.setColor(mBoundingColor.get());
 			mVisualBox.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualBox.setDoubleSided(true);

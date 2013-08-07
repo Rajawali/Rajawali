@@ -381,7 +381,7 @@ public class FBXParser extends AMeshParser {
 		indices = null;
 		
 		o.setMaterial(getMaterialForMesh(o, model.name));
-		o.getMaterial().useSingleColor(true);
+		// TODO o.getMaterial().useSingleColor(true);
 		o.setLights(lights);
 		setMeshTextures(o, model.name);
 		

@@ -5,13 +5,12 @@ import java.util.List;
 import rajawali.lights.ALight;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
-import rajawali.materials.shaders.AShaderBase.DataType;
-
 
 public class LightsVertexShaderFragment extends AShader implements IShaderFragment {
-	public final static String SHADER_ID = "LIGHTS_VERTEX";	
-	
-	public static enum LightsShaderVar {
+
+	public final static String SHADER_ID = "LIGHTS_VERTEX";
+
+	public static enum LightsShaderVar implements IGlobalShaderVar {
 		U_LIGHT_COLOR("uLightColor", DataType.VEC3),
 		U_LIGHT_POWER("uLightPower", DataType.FLOAT),
 		U_LIGHT_POSITION("uLightPosition", DataType.VEC3),
@@ -21,111 +20,162 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		U_SPOT_CUTOFF_ANGLE("uSpotCutoffAngle", DataType.FLOAT),
 		U_SPOT_FALLOFF("uSpotFalloff", DataType.FLOAT),
 		V_LIGHT_ATTENUATION("uLightAttenuation", DataType.FLOAT);
-		
+
 		private String mVarString;
 		private DataType mDataType;
-		
+
 		LightsShaderVar(String varString, DataType dataType) {
 			mVarString = varString;
 			mDataType = dataType;
 		}
-		
+
 		public String getVarString() {
 			return mVarString;
 		}
-		
+
 		public DataType getDataType() {
 			return mDataType;
 		}
 	}
-	
-	private RVec3[] muLightColor;
-	private RFloat[] muLightPower;
-	private RVec3[] muLightPosition;
-	private RVec3[] muLightDirection;
+
+	private RVec3[] muLightColor, muLightPosition, muLightDirection;
 	private RVec4[] muLightAttenuation;
-	private RFloat[] muSpotExponent;
-	private RFloat[] muSpotCutoffAngle;
-	private RFloat[] muSpotFalloff;
-	
+	private RFloat[] muLightPower, muSpotExponent, muSpotCutoffAngle, muSpotFalloff;
+
 	private RFloat[] mvAttenuation;
-	
-	private int[] muLightColorHandles;
-	private int[] muLightPowerHandles;
-	private int[] muLightPositionHandles;
-	private int[] muLightDirectionHandles; 
-	private int[] muLightAttenuationHandles;
-	private int[] muSpotCutoffAngleHandles;
-	private int[] muSpotFalloffHandles;
-	
+
+	private int[] muLightColorHandles, muLightPowerHandles, muLightPositionHandles,
+			muLightDirectionHandles, muLightAttenuationHandles, muSpotExponentHandles,
+			muSpotCutoffAngleHandles, muSpotFalloffHandles;
+
 	private int mDirLightCount, mSpotLightCount, mPointLightCount;
-	
+
 	private List<ALight> mLights;
-	
+
 	public LightsVertexShaderFragment(List<ALight> lights)
 	{
 		super(ShaderType.VERTEX_SHADER_FRAGMENT);
 		mLights = lights;
 		initialize();
 	}
-	
+
 	@Override
 	protected void initialize()
 	{
 		super.initialize();
-		
+
 		int lightCount = mLights.size();
-		
-		for(int i=0; i<lightCount; i++)
+
+		for (int i = 0; i < lightCount; i++)
 		{
-			if(mLights.get(i).getLightType() == ALight.DIRECTIONAL_LIGHT) mDirLightCount++;
-			else if(mLights.get(i).getLightType() == ALight.SPOT_LIGHT) mSpotLightCount++;
-			else if(mLights.get(i).getLightType() == ALight.POINT_LIGHT) mPointLightCount++;
+			if (mLights.get(i).getLightType() == ALight.DIRECTIONAL_LIGHT)
+				mDirLightCount++;
+			else if (mLights.get(i).getLightType() == ALight.SPOT_LIGHT)
+				mSpotLightCount++;
+			else if (mLights.get(i).getLightType() == ALight.POINT_LIGHT)
+				mPointLightCount++;
 		}
-		
+
 		muLightColor = new RVec3[lightCount];
-		muLightPower = new RFloat[lightCount];
-		muLightType = new RInt[lightCount];
-		muLightPosition = new RVec3[lightCount];
-		if(mHasDirectionalLight || mHasSpotLight)
-		{
-			muLightDirection = new RVec3[lightCount];
-		}
-		if(mHasSpotLight || mHasPointLight)
-		{
-			muLightAttenuation = new RVec4[lightCount];
-		}
-		if(mHasSpotLight)
-		{
-			muSpotExponent = new RFloat[lightCount];
-			muSpotCutoffAngle = new RFloat[lightCount];
-			muSpotFalloff = new RFloat[lightCount];
-		}
+		muLightColorHandles = new int[muLightColor.length];
 		
-		for(int i=0; i<mLights.size(); i++)
+		muLightPower = new RFloat[lightCount];
+		muLightPowerHandles = new int[muLightPower.length];
+		
+		muLightPosition = new RVec3[lightCount];
+		muLightPositionHandles = new int[muLightPosition.length];
+		
+		muLightDirection = new RVec3[mDirLightCount + mSpotLightCount];
+		muLightDirectionHandles = new int[muLightDirection.length];
+		
+		muLightAttenuation = new RVec4[mSpotLightCount + mPointLightCount];
+		muLightAttenuationHandles = new int[muLightAttenuation.length];
+		
+		mvAttenuation = new RFloat[muLightAttenuation.length];
+		
+		muSpotExponent = new RFloat[mSpotLightCount];
+		muSpotExponentHandles = new int[muSpotExponent.length];
+		muSpotCutoffAngle = new RFloat[mSpotLightCount];
+		muSpotCutoffAngleHandles = new int[muSpotCutoffAngle.length];
+		muSpotFalloff = new RFloat[mSpotLightCount];
+		muSpotFalloffHandles = new int[muSpotFalloff.length];
+
+		int lightDirCount = 0, lightAttCount = 0;
+		int spotCount = 0;
+
+		for (int i = 0; i < mLights.size(); i++)
 		{
 			ALight light = mLights.get(i);
-			
-			muLightColor = (RVec3) addUniform(name, dataType)
+			int t = light.getLightType();
+
+			muLightColor[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_COLOR, i, DataType.VEC3);
+			muLightPower[i] = (RFloat) addUniform(LightsShaderVar.U_LIGHT_POWER, i, DataType.FLOAT);
+			muLightPosition[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_POSITION, i, DataType.VEC3);
+
+			if(t == ALight.DIRECTIONAL_LIGHT || t == ALight.SPOT_LIGHT)
+			{
+				muLightDirection[lightDirCount] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_DIRECTION, lightDirCount, DataType.VEC3);
+				lightDirCount++;
+			}
+			if(t == ALight.SPOT_LIGHT || t == ALight.POINT_LIGHT)
+			{
+				muLightAttenuation[lightAttCount] = (RVec4) addUniform(LightsShaderVar.U_LIGHT_ATTENUATION, lightAttCount, DataType.VEC4);
+				mvAttenuation[lightAttCount] = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, lightAttCount, DataType.FLOAT);
+				lightAttCount++;
+			}
+			if(t == ALight.SPOT_LIGHT)
+			{
+				muSpotExponent[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_EXPONENT, DataType.FLOAT);
+				muSpotCutoffAngle[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_CUTOFF_ANGLE, DataType.FLOAT);
+				muSpotFalloff[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_FALLOFF, DataType.FLOAT);
+				spotCount++;
+			}
 		}
 	}
-	
+
 	@Override
 	public void main() {
-		RVec4 color = (RVec4)getGlobal(DefaultVar.G_COLOR);
-		color.assign(muSingleColor);
 	}
-	
+
 	public String getShaderId()
 	{
 		return SHADER_ID;
 	}
-	
+
 	@Override
 	public void setLocations(int programHandle) {
+		int lightDirCount = 0, lightAttCount = 0;
+		int spotCount = 0;
+		
+		for (int i = 0; i < mLights.size(); i++)
+		{
+			ALight light = mLights.get(i);
+			int t = light.getLightType();
+			
+			muLightColorHandles[i] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_COLOR, i);
+			muLightPowerHandles[i] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_POWER, i);
+			muLightPositionHandles[i] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_POSITION, i);
+			
+			if(t == ALight.DIRECTIONAL_LIGHT || t == ALight.SPOT_LIGHT)
+			{
+				muLightDirectionHandles[lightDirCount] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_DIRECTION, lightDirCount);
+				lightDirCount++;
+			}
+			if(t == ALight.SPOT_LIGHT || t == ALight.POINT_LIGHT)
+			{
+				muLightAttenuationHandles[lightAttCount] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_ATTENUATION, lightAttCount);
+				lightAttCount++;
+			}
+			if(t == ALight.SPOT_LIGHT)
+			{
+				muSpotExponentHandles[spotCount] = getUniformLocation(programHandle, LightsShaderVar.U_SPOT_EXPONENT, spotCount);
+				muSpotCutoffAngleHandles[spotCount] = getUniformLocation(programHandle, LightsShaderVar.U_SPOT_CUTOFF_ANGLE, spotCount);
+				muSpotFalloffHandles[spotCount] = getUniformLocation(programHandle, LightsShaderVar.U_SPOT_FALLOFF, spotCount);
+				spotCount++;
+			}
+		}
 	}
-	
+
 	@Override
-	public void applyParams() {
-	}
+	public void applyParams() {}
 }

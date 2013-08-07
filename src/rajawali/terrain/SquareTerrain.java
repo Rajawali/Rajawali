@@ -252,7 +252,7 @@ public class SquareTerrain extends Terrain {
 
 		if (debug) {
 			Material mat = new Material();
-			mat.useSingleColor(true);
+			// TODO mat.useSingleColor(true);
 			mV0 = new Sphere(0.2f, 8, 8);
 			mV1 = new Sphere(0.2f, 8, 8);
 			mV2 = new Sphere(0.2f, 8, 8);

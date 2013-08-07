@@ -57,9 +57,14 @@ public abstract class AShader extends AShaderBase {
 	protected void addDefine(String name, String value) {
 	}
 
-	protected ShaderVar addUniform(DefaultVar var, DataType dataType)
+	protected ShaderVar addUniform(IGlobalShaderVar var, DataType dataType)
 	{
 		return addUniform(var.getVarString(), dataType);
+	}
+	
+	protected ShaderVar addUniform(IGlobalShaderVar var, int index, DataType dataType)
+	{
+		return addUniform(var.getVarString() + Integer.toString(index), dataType);
 	}
 	
 	protected ShaderVar addUniform(String name, DataType dataType)
@@ -74,7 +79,7 @@ public abstract class AShader extends AShaderBase {
 		return mUniforms;
 	}
 	
-	protected ShaderVar addAttribute(DefaultVar var, DataType dataType)
+	protected ShaderVar addAttribute(IGlobalShaderVar var, DataType dataType)
 	{
 		return addAttribute(var.getVarString(), dataType);
 	}
@@ -90,8 +95,13 @@ public abstract class AShader extends AShaderBase {
 		return mAttributes;
 	}
 
-	protected ShaderVar addVarying(DefaultVar var, DataType dataType) {
+	protected ShaderVar addVarying(IGlobalShaderVar var, DataType dataType) {
 		return addVarying(var.getVarString(), dataType);
+	}
+	
+	protected ShaderVar addVarying(IGlobalShaderVar var, int index, DataType dataType)
+	{
+		return addVarying(var.getVarString() + Integer.toString(index), dataType);
 	}
 	
 	protected ShaderVar addVarying(String name, DataType dataType) {
@@ -100,7 +110,7 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
-	public ShaderVar getVarying(DefaultVar var)
+	public ShaderVar getVarying(IGlobalShaderVar var)
 	{
 		return getInstanceForDataType(var.getVarString(), var.getDataType());
 	}
@@ -110,7 +120,7 @@ public abstract class AShader extends AShaderBase {
 		return mVaryings;
 	}
 
-	protected ShaderVar addGlobal(DefaultVar var, DataType dataType) {
+	protected ShaderVar addGlobal(IGlobalShaderVar var, DataType dataType) {
 		return addGlobal(var.getVarString(), dataType);
 	}
 	
@@ -125,7 +135,7 @@ public abstract class AShader extends AShaderBase {
 		return mGlobals;
 	}
 	
-	public ShaderVar getGlobal(DefaultVar var)
+	public ShaderVar getGlobal(IGlobalShaderVar var)
 	{
 		return getInstanceForDataType(var.getVarString(), var.getDataType());
 	}
@@ -154,16 +164,24 @@ public abstract class AShader extends AShaderBase {
 			mShaderFragments.get(i).setLocations(programHandle);
 	}
 
-	protected int getUniformLocation(int programHandle, DefaultVar var) {
+	protected int getUniformLocation(int programHandle, IGlobalShaderVar var) {
 		return getUniformLocation(programHandle, var.getVarString());
+	}
+	
+	protected int getUniformLocation(int programHandle, IGlobalShaderVar var, int index) {
+		return getUniformLocation(programHandle, var.getVarString() + Integer.toString(index));
 	}
 	
 	protected int getUniformLocation(int programHandle, String name) {
 		return GLES20.glGetUniformLocation(programHandle, name);
 	}
 
-	protected int getAttribLocation(int programHandle, DefaultVar var) {
+	protected int getAttribLocation(int programHandle, IGlobalShaderVar var) {
 		return getAttribLocation(programHandle, var.getVarString());
+	}
+	
+	protected int getAttribLocation(int programHandle, IGlobalShaderVar var, int index) {
+		return getAttribLocation(programHandle, var.getVarString() + Integer.toString(index));
 	}
 	
 	protected int getAttribLocation(int programHandle, String name) {
