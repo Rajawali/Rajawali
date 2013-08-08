@@ -969,7 +969,7 @@ public final class Quaternion {
 	public void toRotationMatrix(Matrix4 matrix) {
 		double[] m = new double[16];
 		toRotationMatrix(m);
-		matrix.set(m);
+		matrix.setAll(m);
 	}
 	
 	/**

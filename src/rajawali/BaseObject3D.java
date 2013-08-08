@@ -1,5 +1,6 @@
 package rajawali;
 
+import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -15,16 +16,16 @@ import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
+import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
+import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.GLU;
-import android.opengl.Matrix;
 
 /**
  * This is the main object that all other 3D objects inherit from.
@@ -34,16 +35,16 @@ import android.opengl.Matrix;
  */
 public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D>, INode {
 
-	protected float[] mMVPMatrix = new float[16];
-	protected float[] mMMatrix = new float[16];
-	protected float[] mProjMatrix;
+	protected double[] mMVPMatrix = new double[16];
+	protected double[] mMMatrix = new double[16];
+	protected double[] mProjMatrix;
 
-	protected float[] mScalematrix = new float[16];
-	protected float[] mTranslateMatrix = new float[16];
-	protected float[] mRotateMatrix = new float[16];
-	protected float[] mRotateMatrixTmp = new float[16];
-	protected float[] mTmpMatrix = new float[16];
-	protected float[] mParentMatrix;
+	protected double[] mScalematrix = new double[16];
+	protected double[] mTranslateMatrix = new double[16];
+	protected double[] mRotateMatrix = new double[16];
+	protected double[] mRotateMatrixTmp = new double[16];
+	protected double[] mTmpMatrix = new double[16];
+	protected double[] mParentMatrix;
 	protected float[] mColor;
 
 	protected AMaterial mMaterial;
@@ -87,7 +88,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mGeometry = new Geometry3D();
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
-		mColor = new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f };
+		mColor = new float[] {(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
 		
 		//Initialize the matrices to identity
 		Matrix.setIdentityM(mMMatrix, 0);
@@ -195,7 +196,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mGeometry.validateBuffers();
 	}
 	
-	public void calculateModelMatrix(final float[] parentMatrix) {
+	public void calculateModelMatrix(final double[] parentMatrix) {
 		Matrix.setIdentityM(mMMatrix, 0);
 		Matrix.setIdentityM(mScalematrix, 0);
 		Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
@@ -219,7 +220,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}
 	}
 
-	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
+	public void render(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix, ColorPickerInfo pickerInfo) {
 		render(camera, vpMatrix, projMatrix, vMatrix, null, pickerInfo);
 	}
 
@@ -239,7 +240,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param pickerInfo
 	 *            The current color picker info. This is only used when an object is touched.
 	 */
-	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
+	public void render(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix, final double[] parentMatrix,
 			ColorPickerInfo pickerInfo) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
@@ -366,7 +367,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	/**
-	 * Optimized version of Matrix.rotateM(). Apparently the native version does a lot of float[] allocations.
+	 * Optimized version of Matrix.rotateM(). Apparently the native version does a lot of double[] allocations.
 	 * 
 	 * @see http://groups.google.com/group/android-developers/browse_thread/thread/b30dd2a437cfb076?pli=1
 	 * 
@@ -383,7 +384,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param z
 	 *            z axis
 	 */
-	protected void rotateM(float[] m, int mOffset, float a, float x, float y, float z) {
+	protected void rotateM(double[] m, int mOffset, double a, double x, double y, double z) {
 		Matrix.setIdentityM(mRotateMatrixTmp, 0);
 		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
 		System.arraycopy(m, 0, mTmpMatrix, 0, 16);
@@ -442,17 +443,17 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param viewportHeight
 	 * @param eyeZ
 	 */
-	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ) {
-		float[] r1 = new float[16];
+	public void setScreenCoordinates(double x, double y, int viewportWidth, int viewportHeight, double eyeZ) {
+		double[] r1 = new double[16];
 		int[] viewport = new int[] { 0, 0, viewportWidth, viewportHeight };
-		float[] modelMatrix = new float[16];
+		double[] modelMatrix = new double[16];
 		Matrix.setIdentityM(modelMatrix, 0);
 
 		GLU.gluUnProject(x, viewportHeight - y, 0.0f, modelMatrix, 0, mProjMatrix, 0, viewport, 0, r1, 0);
 		setPosition(r1[0] * eyeZ, r1[1] * -eyeZ, 0);
 	}
 
-	public float[] getModelMatrix() {
+	public double[] getModelMatrix() {
 		return mMMatrix;
 	}
 
@@ -757,7 +758,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		this.mShowBoundingVolume = showBoundingVolume;
 	}
 
-	public float[] getRotationMatrix() {
+	public double[] getRotationMatrix() {
 		return mRotateMatrix;
 	}
 
@@ -840,13 +841,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		Tile tile = atlas.getTileNamed(tileName);
 		FloatBuffer fb = this.getGeometry().getTextureCoords();
 		for(int i = 0; i < fb.capacity(); i++){
-			float uvIn = fb.get(i);
-			float uvOut;
+			double uvIn = fb.get(i);
+			double uvOut;
 			if(i%2 == 0)
 				uvOut = (uvIn * (tile.width/atlas.getWidth())) + tile.x/atlas.getWidth();
 			else
 				uvOut = (uvIn * (tile.height/atlas.getHeight())) + tile.y/atlas.getHeight();
-			fb.put(i, uvOut);
+			fb.put(i, (float) uvOut);
 		}
 		mGeometry.changeBufferData(mGeometry.mTexCoordBufferInfo, fb, 0);
 

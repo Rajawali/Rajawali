@@ -1,5 +1,6 @@
 package rajawali.animation;
 
+import rajawali.math.MathUtil;
 import rajawali.math.vector.Vector3;
 import rajawali.math.vector.Vector3.Axis;
 
@@ -9,9 +10,6 @@ import rajawali.math.vector.Vector3.Axis;
  * @updated androidder
  */
 public class EllipticalOrbitAnimation3D extends Animation3D {
-
-	// Pre-calculated for performance optimization
-	protected final double PI_DIV_180 = 0.01745329251994329576923690768489;
 
 	/**
 	 * Defines the direction of the orbit around the parent body.
@@ -166,7 +164,7 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		// Wikipedia.
 		
 		// Angle in radians (interpolated time from 0 to 1 results in radian angle 0 to 2PI)
-		double angle = (mDirection == OrbitDirection.CLOCKWISE ? -1 : 1) * mAngle * mInterpolatedTime * PI_DIV_180;
+		double angle = (mDirection == OrbitDirection.CLOCKWISE ? -1 : 1) * mAngle * mInterpolatedTime * MathUtil.PRE_PI_DIV_180;
 		
 		// Calculate the distances of periapsis and apoapsis to the focal point.
 		double periapsisRadius = mPeriapsis.distanceTo(mFocalPoint);
@@ -242,6 +240,6 @@ public class EllipticalOrbitAnimation3D extends Animation3D {
 		double x = center_x + (Math.cos(angle) * semimajorAxis_x) + (Math.sin(angle) * semiminorAxis.x);
 		double y = center_y + (Math.cos(angle) * semimajorAxis_y) + (Math.sin(angle) * semiminorAxis.y);
 		double z = center_z + (Math.cos(angle) * semimajorAxis_z) + (Math.sin(angle) * semiminorAxis.z);
-		mTransformable3D.setPosition((float) x, (float) y, (float) z);
+		mTransformable3D.setPosition(x, y, z);
 	}
 }

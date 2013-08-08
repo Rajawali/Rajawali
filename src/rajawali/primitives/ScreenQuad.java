@@ -1,9 +1,9 @@
 package rajawali.primitives;
 
-import android.opengl.Matrix;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Camera2D;
+import rajawali.math.Matrix;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 /**
@@ -39,7 +39,7 @@ import rajawali.util.ObjectColorPicker.ColorPickerInfo;
  */
 public class ScreenQuad extends BaseObject3D {
 	private Camera2D mCamera;
-	private float[] mVPMatrix;
+	private double[] mVPMatrix;
 	/**
 	 * Creates a new ScreenQuad.
 	 */
@@ -52,7 +52,7 @@ public class ScreenQuad extends BaseObject3D {
 	private void init() {
 		mCamera = new Camera2D();
 		mCamera.setProjectionMatrix(0, 0);
-		mVPMatrix = new float[16];
+		mVPMatrix = new double[16];
 		
 		float[] vertices = new float[] {
 				-.5f, .5f, 0,
@@ -82,10 +82,10 @@ public class ScreenQuad extends BaseObject3D {
 		mEnableDepthMask = false;
 	}
 	
-	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
+	public void render(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix, final double[] parentMatrix,
 			ColorPickerInfo pickerInfo) {
-		float[] pMatrix = mCamera.getProjectionMatrix();
-		float[] viewMatrix = mCamera.getViewMatrix();
+		double[] pMatrix = mCamera.getProjectionMatrix();
+		double[] viewMatrix = mCamera.getViewMatrix();
 		Matrix.multiplyMM(mVPMatrix, 0, pMatrix, 0, viewMatrix, 0);
 		super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, null);
 	}

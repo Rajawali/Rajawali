@@ -22,18 +22,19 @@ public final class Matrix4 {
 	public static final int M32 = 11; // 14;
 	public static final int M33 = 15; // 15;
 	    
-	private double[] m; 
-	private double[] mTmp;
+	private double[] m; //The matrix values
+	private double[] mTmp; 
 	
 	public Matrix4() {
 		m = new double[16];
 		mTmp = new double[16];
+		identity();
 	}
 	
 	public Matrix4(Matrix4 other) {
 		this();
 		other.toArray(mTmp);
-		set(mTmp);
+		setAll(mTmp);
 	}
 	
 	public Matrix4(double m00, double m01, double m02, double m03,
@@ -57,21 +58,23 @@ public final class Matrix4 {
 		m[12] = m30;	m[13] = m31;	m[14] = m32;	m[15] = m33;
 	}
 	
-	public void set(double[] other) {
+	public void setAll(double[] other) {
 		System.arraycopy(other, 0, m, 0, 16);
 	}
 	
-	public void identity() {
-		m[0] = 1;	m[1] = 0;	m[2] = 0;	m[3] = 0;
-		m[4] = 0;	m[5] = 1;	m[6] = 0;	m[7] = 0;
-		m[8] = 0;	m[9] = 0;	m[10] = 1;	m[11] = 0;
-		m[12] = 0;	m[13] = 0;	m[14] = 0;	m[15] = 1;
+	public Matrix4 identity() {
+		m[M00] = 1;	m[M10] = 0;	m[M20] = 0;	m[M30] = 0;
+		m[M01] = 0;	m[M11] = 1;	m[M21] = 0;	m[M31] = 0;
+		m[M02] = 0;	m[M12] = 0;	m[M22] = 1;	m[M32] = 0;
+		m[M03] = 0;	m[M13] = 0;	m[M23] = 0;	m[M33] = 1;
+		return this;
 	}
 	
-	public void zero() {
+	public Matrix4 zero() {
 		for(int i=0; i<16; ++i) {
 			m[i] = 0;
 		}
+		return this;
 	}
 	
 	public double determinant() {

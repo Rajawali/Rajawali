@@ -115,7 +115,7 @@ public interface IGraphNode {
 	 * 
 	 * @param display boolean indicating if the graph is to be displayed.
 	 */
-	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix);
+	public void displayGraph(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix);
 	
 	/**
 	 * Retrieve the minimum bounds of this scene.

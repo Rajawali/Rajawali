@@ -2,11 +2,11 @@ package rajawali.math;
 
 public class MathUtil {
 	public static final int PRECISION = 0x020000;	
-	public static final double PI = 3.14159265f;
-	public static final double TWO_PI = PI * 2f;
-	public static final double HALF_PI = PI * .5f;
-	public static final double PRE_PI_DIV_180 = PI / 180f;
-	public static final double PRE_180_DIV_PI = 180f / PI;
+	public static final double PI = Math.PI;
+	public static final double TWO_PI = PI * 2;
+	public static final double HALF_PI = PI * .5;
+	public static final double PRE_PI_DIV_180 = PI / 180;
+	public static final double PRE_180_DIV_PI = 180 / PI;
 	
 	private static final double RAD_SLICE = TWO_PI / PRECISION;
 	private static final double PRECISION_DIV_2PI = PRECISION / TWO_PI;

@@ -10,6 +10,25 @@ To eliminate a number of issues which stemmed from trying to change scene conten
 a task queue system has been added to Rajawali. You no longer have direct access to lists such as `mChildren`. Helper
 methods such as `addChild()` exist and will automatically queue everything for you.
 
+# Conversion to double precision
+
+Rajawali has been converted to double precision internally. Some of the public API has changed as a result of this switch,
+however it is not significant and likely effects only advanced users. Most notably the method signature of the `render()` methods.
+This was done to eliminate some bugs being caused by floating point round off errors since current and emerging devices have little
+to no performance loss. There will be a slight increase in memory consumption but it should be negligible compared to texture consumption.
+For more information see issue #988.
+
+Since the `android.opengl.Matrix` class only supports float arrays, the class has been copied as `rajawali.math.Matrix` and converted
+to use doubles. To avoid needless casting, you should utilize this class instead. The only change to the class is to utilize double precision
+floating point numbers instead of single precision, however a few native methods had to be implemented in Java. Similarly, `android.opengl.GLU`
+only supports float math, so the class has been copied as `rajawali.util.GLU` and convert to use doubles.
+
+Position and orientation information are now handled as double precision, however the object geometry and any colors are not. This
+is done primarily to reduce the overhead of casting a lot of data from double to float on each frame, but there is also no need for it,
+and it doesn't come free. Promoting these to double will happen automatically anytime they are used in math with a double and because they
+are provided to the library in float form, we do not loose any precision this way. The one exception to this is if you are dynamically
+modifying the geometry data at run time which is an advanced process with a lot of other implications anyway.
+
 # Number3D
 
 The `Number3D` class has been refactored into `Vector3` which is way more appropriate.

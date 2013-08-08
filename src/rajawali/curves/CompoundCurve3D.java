@@ -5,7 +5,7 @@ import java.util.Stack;
 import rajawali.math.vector.Vector3;
 
 public class CompoundCurve3D implements ICurve3D {
-	protected static final float DELTA = .00001f;
+	protected static final double DELTA = .000001;
 	
 	protected Stack<ICurve3D> mCurves;
 	protected int mNumCurves;
@@ -20,10 +20,10 @@ public class CompoundCurve3D implements ICurve3D {
 		mNumCurves++;
 	}
 
-	public void calculatePoint(Vector3 point, float t) {
-		int currentIndex = (int) Math.floor((t == 1 ? t - .000001f : t) * mNumCurves);
+	public void calculatePoint(Vector3 point, double t) {
+		int currentIndex = (int) Math.floor((t == 1 ? t - DELTA : t) * mNumCurves);
 		mCurrentCurve = mCurves.get(currentIndex); 
-		float tdivnum = (t * mNumCurves) - currentIndex;
+		double tdivnum = (t * mNumCurves) - currentIndex;
 		mCurrentCurve.calculatePoint(point, tdivnum);
 	}
 

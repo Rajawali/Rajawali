@@ -18,6 +18,7 @@ import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
+import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.parser.AMeshParser;
 import rajawali.parser.IAnimatedMeshParser;
@@ -25,7 +26,6 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.content.res.Resources;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 
@@ -52,8 +52,8 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	private SkeletonMeshData[] mMeshes;
 	private SkeletonJoint[] mJoints;
 
-	public float[] mBindPoseMatrix;
-	public float[][] mInverseBindPoseMatrix;
+	public double[] mBindPoseMatrix;
+	public double[][] mInverseBindPoseMatrix;
 
 	public MD5MeshParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
@@ -291,13 +291,13 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				}
 
 				int vertIndex = j * 3;
-				mesh.vertices[vertIndex] = position.x;
-				mesh.vertices[vertIndex + 1] = position.y;
-				mesh.vertices[vertIndex + 2] = position.z;
+				mesh.vertices[vertIndex] = (float) position.x;
+				mesh.vertices[vertIndex + 1] = (float) position.y;
+				mesh.vertices[vertIndex + 2] = (float) position.z;
 
 				int uvIndex = j * 2;
-				mesh.textureCoordinates[uvIndex] = vert.textureCoordinate.getX();
-				mesh.textureCoordinates[uvIndex + 1] = vert.textureCoordinate.getY();
+				mesh.textureCoordinates[uvIndex] = (float) vert.textureCoordinate.getX();
+				mesh.textureCoordinates[uvIndex + 1] = (float) vert.textureCoordinate.getY();
 			}
 		}
 	}
@@ -347,9 +347,9 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 				normal.normalize();
 
 				int normIndex = j * 3;
-				mesh.normals[normIndex] = normal.x;
-				mesh.normals[normIndex + 1] = normal.y;
-				mesh.normals[normIndex + 2] = normal.z;
+				mesh.normals[normIndex] = (float) normal.x;
+				mesh.normals[normIndex + 1] = (float) normal.y;
+				mesh.normals[normIndex + 2] = (float) normal.z;
 
 				vert.normal.setAll(0, 0, 0);
 
@@ -366,16 +366,16 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	}
 
 	private void buildBindPose() {
-		mBindPoseMatrix = new float[mNumJoints * 16];
-		mInverseBindPoseMatrix = new float[mNumJoints][];
+		mBindPoseMatrix = new double[mNumJoints * 16];
+		mInverseBindPoseMatrix = new double[mNumJoints][];
 
 		for (int i = 0; i < mNumJoints; ++i) {
 			SkeletonJoint joint = mJoints[i];
 
-			float[] boneTranslation = new float[16];
-			float[] boneRotation = new float[16];
-			float[] boneMatrix = new float[16];
-			float[] inverseBoneMatrix = new float[16];
+			double[] boneTranslation = new double[16];
+			double[] boneRotation = new double[16];
+			double[] boneMatrix = new double[16];
+			double[] inverseBoneMatrix = new double[16];
 
 			Matrix.setIdentityM(boneTranslation, 0);
 			Matrix.setIdentityM(boneRotation, 0);
@@ -389,7 +389,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			Matrix.invertM(inverseBoneMatrix, 0, boneMatrix, 0);
 
 			for (int j = 0; j < 16; j++) {
-				mBindPoseMatrix[i + j] = boneMatrix[j];
+				mBindPoseMatrix[i + j] = (float) boneMatrix[j];
 			}
 			mInverseBindPoseMatrix[i] = inverseBoneMatrix;
 		}

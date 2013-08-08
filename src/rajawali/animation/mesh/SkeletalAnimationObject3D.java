@@ -2,18 +2,18 @@ package rajawali.animation.mesh;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import java.nio.DoubleBuffer;
 
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.Geometry3D.BufferType;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
+import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -32,24 +32,24 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	private SkeletonJoint mTmpJoint2;
 	private SkeletalAnimationSequence mSequence;
 	private SkeletalAnimationSequence mNextSequence;
-	private float mTransitionDuration;
-	private float mTransitionStartTime;
+	private double mTransitionDuration;
+	private double mTransitionStartTime;
 	private Interpolator mTransitionInterpolator;
 	private int mCurrentTransitionFrameIndex;
-	public float[][] mInverseBindPoseMatrix;
-	public float[] uBoneMatrix;
+	public double[][] mInverseBindPoseMatrix;
+	public double[] uBoneMatrix;
 	
-	private float[] mBoneTranslation = new float[16];
-	private float[] mBoneRotation = new float[16];
-	private float[] mBoneMatrix = new float[16];
-	private float[] mResultMatrix = new float[16];
+	private double[] mBoneTranslation = new double[16];
+	private double[] mBoneRotation = new double[16];
+	private double[] mBoneMatrix = new double[16];
+	private double[] mResultMatrix = new double[16];
 
 	public BufferInfo mBoneMatricesBufferInfo = new BufferInfo();
 
 	/**
-	 * FloatBuffer containing joint transformation matrices
+	 * DoubleBuffer containing joint transformation matrices
 	 */
-	protected FloatBuffer mBoneMatrices;
+	protected DoubleBuffer mBoneMatrices;
 
 	public SkeletalAnimationObject3D() {
 		mTmpJoint1 = new SkeletonJoint();
@@ -64,7 +64,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			}
 			mBoneMatrices = ByteBuffer
 					.allocateDirect(joints.length * Geometry3D.FLOAT_SIZE_BYTES * 16)
-					.order(ByteOrder.nativeOrder()).asFloatBuffer();
+					.order(ByteOrder.nativeOrder()).asDoubleBuffer();
 
 			mBoneMatrices.put(uBoneMatrix);
 			mBoneMatrices.position(0);
@@ -155,19 +155,19 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		SkeletalAnimationFrame currentFrame = (SkeletalAnimationFrame) mSequence.getFrame(mCurrentFrameIndex);
 		SkeletalAnimationFrame nextFrame = (SkeletalAnimationFrame) mSequence.getFrame((mCurrentFrameIndex + 1) % mSequence.getNumFrames());
 
-		mInterpolation += (float) mFps * (currentTime - mStartTime) / 1000.f;
+		mInterpolation += mFps * (currentTime - mStartTime) / 1000.0;
 		
 		boolean isTransitioning = mNextSequence != null;
-		float transitionInterpolation = 0;
+		double transitionInterpolation = 0;
 		if(isTransitioning)
-			transitionInterpolation = mTransitionInterpolator.getInterpolation((currentTime - mTransitionStartTime) / mTransitionDuration);
+			transitionInterpolation = mTransitionInterpolator.getInterpolation((float) ((currentTime - mTransitionStartTime) / mTransitionDuration));
 		
 		for (int i = 0; i < mJoints.length; ++i) {
 			SkeletonJoint joint = getJoint(i);
 			SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
 			SkeletonJoint toJoint = nextFrame.getSkeleton().getJoint(i);
 			joint.setParentIndex(fromJoint.getParentIndex());
-			joint.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), (float)mInterpolation);
+			joint.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
 			joint.getOrientation().slerp(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
 			
 			if(isTransitioning)
@@ -177,7 +177,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				
 				fromJoint = currentTransFrame.getSkeleton().getJoint(i);
 				toJoint = nextTransFrame.getSkeleton().getJoint(i);
-				mTmpJoint1.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), (float)mInterpolation);
+				mTmpJoint1.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
 				mTmpJoint1.getOrientation().slerp(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
 
 				// blend the two animations
@@ -248,7 +248,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	}
 
 	@Override
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix, float[] parentMatrix,
+	public void render(Camera camera, double[] projMatrix, double[] vMatrix, double[] parentMatrix,
 			ColorPickerInfo pickerInfo) {
 		setShaderParams(camera);
 		super.render(camera, projMatrix, vMatrix, parentMatrix, pickerInfo);
