@@ -169,7 +169,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 
 		for (int i = 1; i <= segments; i++)
 		{
-			double t = ((double) i) / segments;
+			double t = (double) i / (double) segments;
 			calculatePoint(mTempPointLen, t);
 			double dist = mTempPrevLen.distanceTo(mTempPointLen);
 			totalLength += dist;
@@ -216,7 +216,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 			if (currentLength >= segmentDistance)
 			{
 				point = new Vector3();
-				calculatePoint(point, i / (numSegments - 1.0));
+				calculatePoint(point, (double) i / (double) (numSegments - 1));
 				newPoints.add(point);
 				currentLength = 0;
 			}
