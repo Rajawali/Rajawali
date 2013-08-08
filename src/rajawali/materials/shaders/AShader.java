@@ -350,6 +350,12 @@ public abstract class AShader extends AShaderBase {
 	{
 		return normalize(value.getValue());
 	}
+	
+	public String distance(ShaderVar value1, ShaderVar value2)
+	{
+		return "distance(" + value1.getName() + ", " + value2.getName() + ")";
+	}
+	
 	/*
 	public RVec4 texture2D(String sampler2D, String coord)
 	{

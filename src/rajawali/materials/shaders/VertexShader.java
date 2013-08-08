@@ -13,7 +13,7 @@ public class VertexShader extends AShader {
 	private RMat3 muNormalMatrix;
 	private RMat4 muModelMatrix;
 	private RMat4 muViewMatrix;
-	private RFloat muColor;
+	private RVec4 muColor;
 
 	private RVec2 maTextureCoord;
 	private RVec3 maNormal;
@@ -61,7 +61,7 @@ public class VertexShader extends AShader {
 		muNormalMatrix = (RMat3) addUniform(DefaultVar.U_NORMAL_MATRIX, DataType.MAT3);
 		muModelMatrix = (RMat4) addUniform(DefaultVar.U_MODEL_MATRIX, DataType.MAT4);
 		muViewMatrix = (RMat4) addUniform(DefaultVar.U_VIEW_MATRIX, DataType.MAT4);
-		muColor = (RFloat) addUniform(DefaultVar.U_COLOR, DataType.VEC4);
+		muColor = (RVec4) addUniform(DefaultVar.U_COLOR, DataType.VEC4);
 
 		// -- attributes
 

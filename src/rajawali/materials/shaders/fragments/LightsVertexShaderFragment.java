@@ -19,7 +19,10 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		U_SPOT_EXPONENT("uSpotExponent", DataType.FLOAT),
 		U_SPOT_CUTOFF_ANGLE("uSpotCutoffAngle", DataType.FLOAT),
 		U_SPOT_FALLOFF("uSpotFalloff", DataType.FLOAT),
-		V_LIGHT_ATTENUATION("uLightAttenuation", DataType.FLOAT);
+		V_LIGHT_ATTENUATION("vLightAttenuation", DataType.FLOAT),
+		V_NORMAL("vNormal", DataType.VEC3),
+		V_EYE("vEye", DataType.VEC4),
+		G_LIGHT_DISTANCE("gLightDistance", DataType.FLOAT);
 
 		private String mVarString;
 		private DataType mDataType;
@@ -43,7 +46,10 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 	private RFloat[] muLightPower, muSpotExponent, muSpotCutoffAngle, muSpotFalloff;
 
 	private RFloat[] mvAttenuation;
+	private RVec4 mvEye;
 
+	private RFloat mgLightDistance;
+	
 	private int[] muLightColorHandles, muLightPowerHandles, muLightPositionHandles,
 			muLightDirectionHandles, muLightAttenuationHandles, muSpotExponentHandles,
 			muSpotCutoffAngleHandles, muSpotFalloffHandles;
@@ -99,6 +105,9 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		muSpotCutoffAngleHandles = new int[muSpotCutoffAngle.length];
 		muSpotFalloff = new RFloat[mSpotLightCount];
 		muSpotFalloffHandles = new int[muSpotFalloff.length];
+		
+		mgLightDistance = (RFloat) addGlobal(LightsShaderVar.G_LIGHT_DISTANCE, DataType.FLOAT);
+		mvEye = (RVec4) addVarying(LightsShaderVar.V_EYE, DataType.VEC4);
 
 		int lightDirCount = 0, lightAttCount = 0;
 		int spotCount = 0;
@@ -125,9 +134,9 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 			}
 			if(t == ALight.SPOT_LIGHT)
 			{
-				muSpotExponent[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_EXPONENT, DataType.FLOAT);
-				muSpotCutoffAngle[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_CUTOFF_ANGLE, DataType.FLOAT);
-				muSpotFalloff[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_FALLOFF, DataType.FLOAT);
+				muSpotExponent[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_EXPONENT, spotCount, DataType.FLOAT);
+				muSpotCutoffAngle[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_CUTOFF_ANGLE, spotCount, DataType.FLOAT);
+				muSpotFalloff[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_FALLOFF, spotCount, DataType.FLOAT);
 				spotCount++;
 			}
 		}
@@ -135,6 +144,33 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 
 	@Override
 	public void main() {
+		int lightDirCount = 0, lightAttCount = 0;
+		int spotCount = 0;
+
+		for (int i = 0; i < mLights.size(); i++)
+		{
+			ALight light = mLights.get(i);
+			int t = light.getLightType();
+
+			if(t == ALight.SPOT_LIGHT || t == ALight.POINT_LIGHT)
+			{
+				mgLightDistance.assign(distance(mvEye.xyz(), muLightPosition[i]));
+				mvAttenuation[lightAttCount].assign(
+						new RFloat(1.0)
+							.divide(
+									muLightAttenuation[lightAttCount].index(1)
+									.add(muLightAttenuation[lightAttCount].index(2))
+									.multiply(mgLightDistance)
+									.add(muLightAttenuation[lightAttCount].index(3))
+									.multiply(mgLightDistance)
+									.multiply(mgLightDistance)
+							
+									));// = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, lightAttCount, DataType.FLOAT);
+				lightAttCount++;
+				
+				//vAttenuation = 1.0 / (uLightAttenuation[1] +this.mName + " + " + value.getName() uLightAttenuation[2] * dist + uLightAttenuation[3] * dist * dist
+			}
+		}
 	}
 
 	public String getShaderId()

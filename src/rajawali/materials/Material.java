@@ -2,7 +2,6 @@ package rajawali.materials;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import rajawali.Camera;
 import rajawali.Capabilities;
@@ -35,6 +34,7 @@ public class Material extends AFrameTask {
 
 	private float[] mModelMatrix;
 	private float[] mViewMatrix;
+	private int mColor;
 
 	protected List<ALight> mLights;
 
@@ -64,11 +64,11 @@ public class Material extends AFrameTask {
 	}
 	
 	public void setColor(int color) {
-		mVertexShader.setColor(color);
+		mColor = color;
 	}
 	
 	public int getColor() {
-		return mVertexShader.getColor();
+		return mColor;
 	}
 
 	public boolean usingVertexColors()
@@ -123,18 +123,22 @@ public class Material extends AFrameTask {
 		mVertexShader.buildShader();
 		mFragmentShader.buildShader();
 
+		RajLog.i(mVertexShader.getShaderString());
+		//RajLog.d(mFragmentShader.getShaderString());
+		
 		mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
 		if (mProgramHandle == 0)
+		{
+			mIsDirty = false;
 			return;
+		}
 
 		for(int i=0; i<mTextureList.size(); i++)
 			setTextureParameters(mTextureList.get(i));
 		
 		mVertexShader.setLocations(mProgramHandle);
 		mFragmentShader.setLocations(mProgramHandle);
-		
-		//RajLog.i(mVertexShader.getShaderString());
-		//RajLog.d(mFragmentShader.getShaderString());
+
 
 		mIsDirty = false;
 	}
@@ -193,6 +197,7 @@ public class Material extends AFrameTask {
 			createShaders();
 		}
 
+		mVertexShader.setColor(mColor);
 		mVertexShader.applyParams();
 		mFragmentShader.applyParams();
 		
