@@ -907,7 +907,7 @@ public class Vector3 {
 		if (d >= 1.0f) {
 			q.identity();
 		}
-		if (d < 0.000001f - 1.0f) {
+		if (d < 0.000001 - 1.0) {
 			// Generate an axis
 			Vector3 axis = Vector3.crossAndCreate(Vector3.getAxisVector(Axis.X), this);
 			if (axis.length() == 0) // pick another if colinear
@@ -916,7 +916,7 @@ public class Vector3 {
 			q.fromAngleAxis(axis, MathUtil.radiansToDegrees(MathUtil.PI));
 		} else {
 			double s = Math.sqrt((1 + d) * 2);
-			double invs = 1f / s;
+			double invs = 1 / s;
 
 			Vector3 c = Vector3.crossAndCreate(v0, v1);
 
@@ -939,7 +939,7 @@ public class Vector3 {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 lerp(Vector3 to, double amount) {
-		return multiply(1.0f - amount).add(to.x * amount, to.y * amount, to.z * amount);
+		return multiply(1.0 - amount).add(to.x * amount, to.y * amount, to.z * amount);
 	}
 	
 	/**
@@ -1000,7 +1000,7 @@ public class Vector3 {
 	 * @return boolean True if this {@link Vector3} is of unit length.
 	 */
 	public boolean isUnit() {
-		return isUnit(1e-8f);
+		return isUnit(1e-8);
 	}
 	
 	/**
@@ -1011,7 +1011,7 @@ public class Vector3 {
 	 * @return boolean True if this {@link Vector3} is of unit length.
 	 */
 	public boolean isUnit(final double margin) {
-		return Math.abs(length2() - 1f) < margin * margin;
+		return Math.abs(length2() - 1) < margin * margin;
 	}
 	
 	/**

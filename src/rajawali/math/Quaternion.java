@@ -16,8 +16,8 @@ import rajawali.math.vector.Vector3.Axis;
  */
 public final class Quaternion {
 	//Tolerances
-	public static final double F_EPSILON = .001f;
-	public static final double NORMALIZATION_TOLERANCE = 0.00001f;
+	public static final double F_EPSILON = .001;
+	public static final double NORMALIZATION_TOLERANCE = 0.00001;
 	
 	//The Quaternion components
 	public double w, x, y, z;
@@ -264,13 +264,13 @@ public final class Quaternion {
 		yaw = Math.toRadians(yaw);
 		pitch = Math.toRadians(pitch);
 		roll = Math.toRadians(roll);
-		double num9 = roll * 0.5f;
+		double num9 = roll * 0.5;
 		double num6 = Math.sin(num9);
 		double num5 = Math.cos(num9);
-		double num8 = pitch * 0.5f;
+		double num8 = pitch * 0.5;
 		double num4 = Math.sin(num8);
 		double num3 = Math.cos(num8);
-		double num7 = yaw * 0.5f;
+		double num7 = yaw * 0.5;
 		double num2 = Math.sin(num7);
 		double num = Math.cos(num7);
 		double f1 = num * num4;
@@ -301,9 +301,9 @@ public final class Quaternion {
 
 		if (fTrace > 0.0) {
 			// |w| > 1/2, may as well choose w > 1/2
-			fRoot = Math.sqrt(fTrace + 1.0f); // 2w
-			w = 0.5f * fRoot;
-			fRoot = 0.5f / fRoot; // 1/(4w)
+			fRoot = Math.sqrt(fTrace + 1.0); // 2w
+			w = 0.5 * fRoot;
+			fRoot = 0.5 / fRoot; // 1/(4w)
 			x = (rotMatrix[9] - rotMatrix[6]) * fRoot;
 			y = (rotMatrix[2] - rotMatrix[8]) * fRoot;
 			z = (rotMatrix[4] - rotMatrix[1]) * fRoot;
@@ -320,8 +320,8 @@ public final class Quaternion {
 
 			fRoot = Math.sqrt(rotMatrix[(i * 4) + i] - rotMatrix[(j * 4) + j] - rotMatrix[(k * 4) + k] + 1.0f);
 			double apkQuat[] = new double[] { x, y, z };
-			apkQuat[i] = 0.5f * fRoot;
-			fRoot = 0.5f / fRoot;
+			apkQuat[i] = 0.5 * fRoot;
+			fRoot = 0.5 / fRoot;
 			w = (rotMatrix[(k * 4) + j] - rotMatrix[(j * 4) + k]) * fRoot;
 			apkQuat[j] = (rotMatrix[(j * 4) + i] + rotMatrix[(i * 4) + j]) * fRoot;
 			apkQuat[k] = (rotMatrix[(k * 4) + i] + rotMatrix[(i * 4) + k]) * fRoot;
@@ -457,8 +457,8 @@ public final class Quaternion {
 		mTmpVec3.setAll(x, y, z);
 		mTmpVec1 = Vector3.crossAndCreate(mTmpVec3, vector);
 		mTmpVec2 = Vector3.crossAndCreate(mTmpVec3, mTmpVec1);
-		mTmpVec1.multiply(2.0f * w);
-		mTmpVec2.multiply(2.0f);
+		mTmpVec1.multiply(2.0 * w);
+		mTmpVec2.multiply(2.0);
 
 		mTmpVec1.add(mTmpVec2);
 		mTmpVec1.add(vector);
@@ -487,8 +487,8 @@ public final class Quaternion {
 	 */
 	public double normalize() {
 		double len = length2();
-		if (len != 0 && (Math.abs(len - 1.0f) > NORMALIZATION_TOLERANCE)) {
-			double factor = 1.0f / Math.sqrt(len);
+		if (len != 0 && (Math.abs(len - 1.0) > NORMALIZATION_TOLERANCE)) {
+			double factor = 1.0 / Math.sqrt(len);
 			multiply(factor);
 		}
 		return len;
@@ -514,7 +514,7 @@ public final class Quaternion {
 	public Quaternion inverse() {
 		double norm = length2();
 		if (norm > 0) {
-			double invNorm = 1.0f / norm;
+			double invNorm = 1.0 / norm;
 			setAll(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
 		}
 		return this;
@@ -528,7 +528,7 @@ public final class Quaternion {
 	public Quaternion invertAndCreate() {
 		double norm = length2();
 		if (norm > 0) {
-			double invNorm = 1.0f / norm;
+			double invNorm = 1.0 / norm;
 			return new Quaternion(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
 		} else {
 			return null;
@@ -542,9 +542,9 @@ public final class Quaternion {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Quaternion computeW() {
-	    double t = 1.0f - ( x * x ) - ( y * y ) - ( z * z );
-	    if ( t < 0.0f ) {
-	        w = 0.0f;
+	    double t = 1.0 - ( x * x ) - ( y * y ) - ( z * z );
+	    if ( t < 0.0 ) {
+	        w = 0.0;
 	    } else {
 	        w = -Math.sqrt(t);
 	    }
@@ -562,8 +562,8 @@ public final class Quaternion {
 	 * @return {@link Vector3} The x axis of this {@link Quaternion}.
 	 */
 	public Vector3 getXAxis() {
-		double fTy = 2.0f * y;
-		double fTz = 2.0f * z;
+		double fTy = 2.0 * y;
+		double fTz = 2.0 * z;
 		double fTwy = fTy * w;
 		double fTwz = fTz * w;
 		double fTxy = fTy * x;
@@ -580,9 +580,9 @@ public final class Quaternion {
 	 * @return {@link Vector3} The y axis of this {@link Quaternion}.
 	 */
 	public Vector3 getYAxis() {
-		double fTx = 2.0f * x;
-		double fTy = 2.0f * y;
-		double fTz = 2.0f * z;
+		double fTx = 2.0 * x;
+		double fTy = 2.0 * y;
+		double fTz = 2.0 * z;
 		double fTwx = fTx * w;
 		double fTwz = fTz * w;
 		double fTxx = fTx * x;
@@ -599,9 +599,9 @@ public final class Quaternion {
 	 * @return {@link Vector3} The z axis of this {@link Quaternion}.
 	 */
 	public Vector3 getZAxis() {
-		double fTx = 2.0f * x;
-		double fTy = 2.0f * y;
-		double fTz = 2.0f * z;
+		double fTx = 2.0 * x;
+		double fTy = 2.0 * y;
+		double fTz = 2.0 * z;
 		double fTwx = fTx * w;
 		double fTwy = fTy * w;
 		double fTxx = fTx * x;
@@ -766,7 +766,7 @@ public final class Quaternion {
 		//Check if the angle between the 2 quaternions was big enough to warrant calculations
 		if ((1 - absDot) > 0.1) {
 			final double angle = Math.acos(absDot);
-			final double invSinTheta = 1f / Math.sin(angle);
+			final double invSinTheta = 1 / Math.sin(angle);
 			//Calculate the scale for q1 and q2 according to the angle and its sine value
 			scale0 = Math.sin((1 - t) * angle) * invSinTheta;
 			scale1 = Math.sin((t * angle) * invSinTheta);
@@ -812,9 +812,9 @@ public final class Quaternion {
         double scale0 = 1 - t;
         double scale1 = t;
 
-        if ((1 - result) > 0.1f) {
+        if ((1 - result) > 0.1) {
             double theta = Math.acos(result);
-            double invSinTheta = 1f / Math.sin(theta);
+            double invSinTheta = 1 / Math.sin(theta);
 
             scale0 = Math.sin((1 - t) * theta) * invSinTheta;
             scale1 = Math.sin((t * theta)) * invSinTheta;
@@ -893,9 +893,9 @@ public final class Quaternion {
 	 */
 	public double getRoll(boolean reprojectAxis) {
 		if (reprojectAxis) {
-			// double fTx = 2.0f * x;
-			double fTy = 2.0f * y;
-			double fTz = 2.0f * z;
+			// double fTx = 2.0 * x;
+			double fTy = 2.0 * y;
+			double fTz = 2.0 * z;
 			double fTwz = fTz * w;
 			double fTxy = fTy * x;
 			double fTyy = fTy * y;
@@ -915,9 +915,9 @@ public final class Quaternion {
 	 */
 	public double getPitch(boolean reprojectAxis) {
 		if (reprojectAxis) {
-			double fTx = 2.0f * x;
-			// double fTy = 2.0f * y;
-			double fTz = 2.0f * z;
+			double fTx = 2.0 * x;
+			// double fTy = 2.0 * y;
+			double fTz = 2.0 * z;
 			double fTwx = fTx * w;
 			double fTxx = fTx * x;
 			double fTyz = fTz * y;
@@ -937,9 +937,9 @@ public final class Quaternion {
 	 */
 	public double getYaw(boolean reprojectAxis) {
 		if (reprojectAxis) {
-			double fTx = 2.0f * x;
-			double fTy = 2.0f * y;
-			double fTz = 2.0f * z;
+			double fTx = 2.0 * x;
+			double fTy = 2.0 * y;
+			double fTz = 2.0 * z;
 			double fTwy = fTy * w;
 			double fTxx = fTx * x;
 			double fTxz = fTz * x;
@@ -988,19 +988,19 @@ public final class Quaternion {
 		double wy = w * y;
 		double wz = w * z;
 
-		matrix[Matrix4.M00] = 1.0f - 2.0f * (y2 + z2);
-		matrix[Matrix4.M10] = 2.0f * (xy - wz);
-		matrix[Matrix4.M20] = 2.0f * (xz + wy);
+		matrix[Matrix4.M00] = 1.0 - 2.0 * (y2 + z2);
+		matrix[Matrix4.M10] = 2.0 * (xy - wz);
+		matrix[Matrix4.M20] = 2.0 * (xz + wy);
 		matrix[Matrix4.M30] = 0;
 
-		matrix[Matrix4.M01] = 2.0f * (xy + wz);
-		matrix[Matrix4.M11] = 1.0f - 2.0f * (x2 + z2);
-		matrix[Matrix4.M21] = 2.0f * (yz - wx);
+		matrix[Matrix4.M01] = 2.0 * (xy + wz);
+		matrix[Matrix4.M11] = 1.0 - 2.0 * (x2 + z2);
+		matrix[Matrix4.M21] = 2.0 * (yz - wx);
 		matrix[Matrix4.M31] = 0;
 
-		matrix[Matrix4.M02] = 2.0f * (xz - wy);
-		matrix[Matrix4.M12] = 2.0f * (yz + wx);
-		matrix[Matrix4.M22] = 1.0f - 2.0f * (x2 + y2);
+		matrix[Matrix4.M02] = 2.0 * (xz - wy);
+		matrix[Matrix4.M12] = 2.0 * (yz + wx);
+		matrix[Matrix4.M22] = 1.0 - 2.0 * (x2 + y2);
 		matrix[Matrix4.M32] = 0;
 
 		matrix[Matrix4.M03] = 0;

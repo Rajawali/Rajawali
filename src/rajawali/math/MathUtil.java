@@ -51,28 +51,19 @@ public class MathUtil {
 	}
 
 	public static boolean realEqual(double a, double b, double tolerance) {
-		if (Math.abs(b - a) <= tolerance)
-			return true;
-		else
-			return false;
+		return Math.abs(b - a) <= tolerance;
 	}
 	
 	public static double clamp(double value, double min, double max) {
-		if (value < min) return min;
-		if (value > max) return max;
-		return value;
+		return value < min ? min : value > max ? max : value;
 	}
 	
 	public static int clamp(int value, int min, int max) {
-		if (value < min) return min;
-		if (value > max) return max;
-		return value;
+		return value < min ? min : value > max ? max : value;
 	}
 	
 	public static short clamp(short value, short min, short max) {
-		if (value < min) return min;
-		if (value > max) return max;
-		return value;
+		return value < min ? min : value > max ? max : value;
 	}
 	
 	public static int getClosestPowerOfTwo(int x)
