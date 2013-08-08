@@ -13,8 +13,8 @@ methods such as `addChild()` exist and will automatically queue everything for y
 # Conversion to double precision
 
 Rajawali has been converted to double precision internally. Some of the public API has changed as a result of this switch,
-however it is not significant and likely effects only advanced users. Most notably the method signature of the `render()` methods.
-This was done to eliminate some bugs being caused by floating point round off errors since current and emerging devices have little
+however it is not significant and likely affects only advanced users. Most notably the method signature of the `render()` methods.
+This was done to eliminate some bugs being caused by floating point roundoff errors since current and emerging devices have little
 to no performance loss. There will be a slight increase in memory consumption but it should be negligible compared to texture consumption.
 For more information see issue #988.
 
