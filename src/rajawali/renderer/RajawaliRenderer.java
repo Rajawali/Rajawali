@@ -74,8 +74,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected int mLastReportedGLError = 0; // Keep track of the last reported OpenGL error
 	
 	//In case we cannot parse the version number, assume OpenGL ES 2.0
-	protected int mGLES_Major_Version = 2; //The GL ES major version of the surface
-	protected int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
+	protected static int mGLES_Major_Version = 2; //The GL ES major version of the surface
+	protected static int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
 
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
@@ -1297,7 +1297,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 * @return int containing the major version number.
 	 */
-	public int getGLMajorVersion() {
+	public static int getGLMajorVersion() {
 		return mGLES_Major_Version;
 	}
 	
@@ -1306,7 +1306,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 * @return int containing the minor version number.
 	 */
-	public int getGLMinorVersion() {
+	public static int getGLMinorVersion() {
 		return mGLES_Minor_Version;
 	}
 
