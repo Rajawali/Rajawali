@@ -93,13 +93,13 @@ public class CatmullRomCurve3D implements ICurve3D {
 	protected double b(int i, double t) {
 		switch (i) {
 		case -2:
-			return ((-t + 2) * t - 1) * t / 2f;
+			return ((-t + 2) * t - 1) * t / 2.0;
 		case -1:
-			return (((3 * t - 5) * t) * t + 2) / 2f;
+			return (((3 * t - 5) * t) * t + 2) / 2.0;
 		case 0:
-			return ((-3 * t + 4) * t + 1) * t / 2f;
+			return ((-3 * t + 4) * t + 1) * t / 2.0;
 		case 1:
-			return ((t - 1) * t * t) / 2f;
+			return ((t - 1) * t * t) / 2.0;
 		}
 		return 0;
 	}
@@ -108,11 +108,11 @@ public class CatmullRomCurve3D implements ICurve3D {
 		if(t < 0) t = 1 + t;
 		int end = mIsClosed ? 0 : 3;
 		int start = mIsClosed ? 0 : 2;
-		int currentIndex = start + (int)Math.floor((t == 1 ? t - DELTA : t) * (mNumPoints - end));
+		int currentIndex = start + (int) Math.floor((t == 1 ? t - DELTA : t) * (mNumPoints - end));
 		double tdivnum = (t * (mNumPoints - end)) - (currentIndex - start);
 		mCurrentPoint.setAll(0, 0, 0);
 
-		if(!mIsClosed)
+		if (!mIsClosed)
 		{
 			// Limit the bounds for AccelerateDecelerateInterpolator
 			currentIndex = Math.max(currentIndex, 2);
@@ -122,7 +122,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 		for (int j = -2; j <= 1; j++) {
 			double b = b(j, tdivnum);
 			int index = mIsClosed ? (currentIndex + j + 1) % (mNumPoints) : currentIndex + j;
-			if(index < 0) index = mNumPoints - index - 2;
+			if (index < 0) index = mNumPoints - index - 2;
 			Vector3 p = mPoints.get(index);
 
 			mCurrentPoint.x += b * p.x;
@@ -169,7 +169,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 
 		for (int i = 1; i <= segments; i++)
 		{
-			double t = i / segments;
+			double t = ((double) i) / segments;
 			calculatePoint(mTempPointLen, t);
 			double dist = mTempPrevLen.distanceTo(mTempPointLen);
 			totalLength += dist;
@@ -216,7 +216,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 			if (currentLength >= segmentDistance)
 			{
 				point = new Vector3();
-				calculatePoint(point, i / (numSegments - 1));
+				calculatePoint(point, i / (numSegments - 1.0));
 				newPoints.add(point);
 				currentLength = 0;
 			}
