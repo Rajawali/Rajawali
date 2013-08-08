@@ -1,7 +1,18 @@
 package rajawali.math;
 
 import rajawali.math.vector.Vector3;
+import rajawali.util.ArrayUtils;
 
+/**
+ * Encapsulates a column major 4x4 Matrix.
+ * 
+ * Rewritten August 8, 2013 by Jared Woolston with heavy influence from libGDX
+ * @see https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java
+ * 
+ * @author dennis.ippel
+ * @author Jared Woolston (jwoolston@tenkiv.com)
+ *
+ */
 public final class Matrix4 {
 	
 	//Matrix indices
@@ -22,32 +33,128 @@ public final class Matrix4 {
 	public static final int M32 = 11; // 14;
 	public static final int M33 = 15; // 15;
 	    
-	private double[] m; //The matrix values
-	private double[] mTmp; 
+	private double[] m = new double[16]; //The matrix values
+	private double[] mTmp = new double[16]; //A scratch matrix 
 	
+	//--------------------------------------------------
+	// Constructors
+	//--------------------------------------------------
+	
+	/**
+	 * Constructs a default identity {@link Matrix4}.
+	 */
 	public Matrix4() {
-		m = new double[16];
-		mTmp = new double[16];
 		identity();
 	}
 	
-	public Matrix4(Matrix4 other) {
-		this();
-		other.toArray(mTmp);
-		setAll(mTmp);
+	/**
+	 * Constructs a new {@link Matrix4} based on the given matrix.
+	 * 
+	 * @param matrix {@link Matrix4} The matrix to clone.
+	 */
+	public Matrix4(Matrix4 matrix) {
+		setAll(matrix);
+	}
+	
+	/**
+	 * Constructs a new {@link Matrix4} based on the provided double array. The array length
+	 * must be greater than or equal to 16 and the array will be copied from the 0 index.
+	 * 
+	 * @param matrix double array containing the values for the matrix in column major order.
+	 * The array is not modified or referenced after this constructor completes.
+	 */
+	public Matrix4(double[] matrix) {
+		setAll(matrix);
+	}
+	
+	/**
+	 * Constructs a new {@link Matrix4} based on the provided float array. The array length
+	 * must be greater than or equal to 16 and the array will be copied from the 0 index.
+	 * 
+	 * @param matrix float array containing the values for the matrix in column major order.
+	 * The array is not modified or referenced after this constructor completes.
+	 */
+	public Matrix4(float[] matrix) {
+		this(ArrayUtils.convertFloatsToDoubles(matrix));
+	}
+	
+	/**
+	 * Constructs a {@link Matrix4} based on the rotation represented by the provided {@link Quaternion}.
+	 * 
+	 * @param quat {@link Quaternion} The {@link Quaternion} to be copied.
+	 */
+	public Matrix4(Quaternion quat) {
+		setAll(quat);
 	}
 	
 	public Matrix4(double m00, double m01, double m02, double m03,
             double m10, double m11, double m12, double m13,
             double m20, double m21, double m22, double m23,
             double m30, double m31, double m32, double m33) {
-		this();
 		setAll(m00, m01, m02, m03,
 	            m10, m11, m12, m13,
 	            m20, m21, m22, m23,
 	            m30, m31, m32, m33);
 	}
 	
+	
+	
+	//--------------------------------------------------
+	// Modification methods
+	//--------------------------------------------------
+	
+	/**
+	 * Sets the elements of this {@link Matrix4} based on the elements of the provided {@link Matrix4}.
+	 * 
+	 * @param matrix {@link Matrix4} to copy.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setAll(Matrix4 matrix) {
+		matrix.toArray(m);
+		return this;
+	}
+
+	/**
+	 * Sets the elements of this {@link Matrix4} based on the provided double array.
+	 * The array length must be greater than or equal to 16 and the array will be copied 
+	 * from the 0 index.
+	 * 
+	 * @param matrix double array containing the values for the matrix in column major order.
+	 * The array is not modified or referenced after this constructor completes.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setAll(double[] matrix) {
+		System.arraycopy(matrix, 0, m, 0, 16);
+		return this;
+	}
+	
+	/**
+	 * Sets the elements of this {@link Matrix4} based on the rotation represented by
+	 * the provided {@link Quaternion}. 
+	 * 
+	 * @param quat {@link Quaternion} The {@link Quaternion} to represent.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setAll(Quaternion quat) {
+		quat.toRotationMatrix(m);
+		return this;
+	}
+	
+	/**
+	 * Sets the elements of this {@link Matrix4} based on the rotation represented by
+	 * the provided quaternion elements. This method will produce an intermediate {@link Quaternion}. 
+	 * 
+	 * @param w double The w component of the quaternion.
+	 * @param x double The x component of the quaternion.
+	 * @param y double The y component of the quaternion.
+	 * @param z double The z component of the quaternion.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setAll(double w, double x, double y, double z) {
+		Quaternion quat = new Quaternion(w, x, y, z);
+		return setAll(quat);
+	}
+
 	public void setAll(double m00, double m01, double m02, double m03,
             double m10, double m11, double m12, double m13,
             double m20, double m21, double m22, double m23,
@@ -56,10 +163,6 @@ public final class Matrix4 {
 		m[4] = m10;		m[5] = m11;		m[6] = m12;		m[7] = m13;
 		m[8] = m20;		m[9] = m21;		m[10] = m22;	m[11] = m23;
 		m[12] = m30;	m[13] = m31;	m[14] = m32;	m[15] = m33;
-	}
-	
-	public void setAll(double[] other) {
-		System.arraycopy(other, 0, m, 0, 16);
 	}
 	
 	public Matrix4 identity() {
@@ -212,10 +315,6 @@ public final class Matrix4 {
 				);
 	}
 	
-	public void toArray(double[] doubleArray) {
-		System.arraycopy(m, 0, doubleArray, 0, 16);
-	}
-	
 	public Matrix4 multiply(final Matrix4 m2)
     {
 		m2.toArray(mTmp);
@@ -313,18 +412,6 @@ public final class Matrix4 {
         );
     }
 	
-	public boolean equals(final Matrix4 m2)
-    {
-		m2.toArray(mTmp);
-        if( 
-            m[0] != mTmp[0] || m[1] != mTmp[1] || m[2] != mTmp[2] || m[3] != mTmp[3] ||
-            m[4] != mTmp[4] || m[5] != mTmp[5] || m[6] != mTmp[6] || m[7] != mTmp[7] ||
-            m[8] != mTmp[8] || m[9] != mTmp[9] || m[10] != mTmp[10] || m[11] != mTmp[11] ||
-            m[12] != mTmp[12] || m[13] != mTmp[13] || m[14] != mTmp[14] || m[15] != mTmp[15] )
-            return false;
-        return true;
-    }
-	
 	public Matrix4 transpose()
     {
         return new Matrix4(m[0], m[4], m[8], m[12],
@@ -408,4 +495,37 @@ public final class Matrix4 {
         );
     }
     
+    
+    
+    //--------------------------------------------------
+    // Utility methods
+    //--------------------------------------------------
+    
+    /**
+	 * Copies the backing array of this {@link Matrix4} into the provided double array.
+	 * 
+	 * @param doubleArray double array to store the copy in. Must be at least 16 elements long. 
+	 * Entries will be placed starting at the 0 index.
+	 */
+	public void toArray(double[] doubleArray) {
+		System.arraycopy(m, 0, doubleArray, 0, 16);
+	}
+	
+	/**
+	 * Determines if this {@link Matrix4} is equivalent to the provided {@link Matrix4}. For this 
+	 * to be true each element must match exactly between the two.
+	 * 
+	 * @param m2 {@link Matrix4} the other matrix.
+	 * @return boolean True if they are an exact match.
+	 */
+	public boolean equals(final Matrix4 m2) {
+		m2.toArray(mTmp);
+        if ( 
+            m[0] != mTmp[0] || m[1] != mTmp[1] || m[2] != mTmp[2] || m[3] != mTmp[3] ||
+            m[4] != mTmp[4] || m[5] != mTmp[5] || m[6] != mTmp[6] || m[7] != mTmp[7] ||
+            m[8] != mTmp[8] || m[9] != mTmp[9] || m[10] != mTmp[10] || m[11] != mTmp[11] ||
+            m[12] != mTmp[12] || m[13] != mTmp[13] || m[14] != mTmp[14] || m[15] != mTmp[15] )
+            return false;
+        return true;
+    }
 }
