@@ -17,6 +17,8 @@ import android.opengl.GLES20;
 public abstract class AAdvancedMaterial extends AMaterial {
 	protected static final int MAX_LIGHTS = RajawaliRenderer.getMaxLights(); 
 	
+	protected float[] mTempBoneArray = null; //We use lazy loading here because we dont know its size in advance.
+	
 	public static final String M_FOG_VERTEX_VARS =
 			"\n#ifdef FOG_ENABLED\n" +
 			"	uniform float uFogNear;\n" +
@@ -272,8 +274,11 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	
 	public void setBoneMatrix(double[] boneMatrix) {
 		if(checkValidHandle(muBoneMatrixHandle, null))
+			if (mTempBoneArray == null) {
+				mTempBoneArray = new float[boneMatrix.length];
+			}
 			GLES20.glUniformMatrix4fv(muBoneMatrixHandle, mNumJoints, false, 
-					ArrayUtils.convertDoublesToFloats(boneMatrix, mTemp16Floats), 0);
+					ArrayUtils.convertDoublesToFloats(boneMatrix, mTempBoneArray), 0);
 	}
 	
 	@Override

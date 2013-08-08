@@ -389,7 +389,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 			Matrix.invertM(inverseBoneMatrix, 0, boneMatrix, 0);
 
 			for (int j = 0; j < 16; j++) {
-				mBindPoseMatrix[i + j] = (float) boneMatrix[j];
+				mBindPoseMatrix[i + j] = boneMatrix[j];
 			}
 			mInverseBindPoseMatrix[i] = inverseBoneMatrix;
 		}

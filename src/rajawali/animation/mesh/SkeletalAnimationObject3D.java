@@ -45,6 +45,8 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	private double[] mResultMatrix = new double[16];
 
 	public BufferInfo mBoneMatricesBufferInfo = new BufferInfo();
+	
+	private static final int DOUBLE_SIZE_BYTES = 8;
 
 	/**
 	 * DoubleBuffer containing joint transformation matrices
@@ -63,7 +65,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				mBoneMatrices.clear();
 			}
 			mBoneMatrices = ByteBuffer
-					.allocateDirect(joints.length * Geometry3D.FLOAT_SIZE_BYTES * 16)
+					.allocateDirect(joints.length * DOUBLE_SIZE_BYTES * 16)
 					.order(ByteOrder.nativeOrder()).asDoubleBuffer();
 
 			mBoneMatrices.put(uBoneMatrix);
