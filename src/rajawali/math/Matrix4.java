@@ -22,24 +22,25 @@ public final class Matrix4 {
 	public static final int M32 = 11; // 14;
 	public static final int M33 = 15; // 15;
 	    
-	private float[] m; 
-	private float[] mTmp;
+	private double[] m; //The matrix values
+	private double[] mTmp; 
 	
 	public Matrix4() {
-		m = new float[16];
-		mTmp = new float[16];
+		m = new double[16];
+		mTmp = new double[16];
+		identity();
 	}
 	
 	public Matrix4(Matrix4 other) {
 		this();
-		other.toFloatArray(mTmp);
-		set(mTmp);
+		other.toArray(mTmp);
+		setAll(mTmp);
 	}
 	
-	public Matrix4(float m00, float m01, float m02, float m03,
-            float m10, float m11, float m12, float m13,
-            float m20, float m21, float m22, float m23,
-            float m30, float m31, float m32, float m33) {
+	public Matrix4(double m00, double m01, double m02, double m03,
+            double m10, double m11, double m12, double m13,
+            double m20, double m21, double m22, double m23,
+            double m30, double m31, double m32, double m33) {
 		this();
 		setAll(m00, m01, m02, m03,
 	            m10, m11, m12, m13,
@@ -47,35 +48,37 @@ public final class Matrix4 {
 	            m30, m31, m32, m33);
 	}
 	
-	public void setAll(float m00, float m01, float m02, float m03,
-            float m10, float m11, float m12, float m13,
-            float m20, float m21, float m22, float m23,
-            float m30, float m31, float m32, float m33) {
+	public void setAll(double m00, double m01, double m02, double m03,
+            double m10, double m11, double m12, double m13,
+            double m20, double m21, double m22, double m23,
+            double m30, double m31, double m32, double m33) {
 		m[0] = m00;		m[1] = m01;		m[2] = m02;		m[3] = m03;
 		m[4] = m10;		m[5] = m11;		m[6] = m12;		m[7] = m13;
 		m[8] = m20;		m[9] = m21;		m[10] = m22;	m[11] = m23;
 		m[12] = m30;	m[13] = m31;	m[14] = m32;	m[15] = m33;
 	}
 	
-	public void set(float[] other) {
+	public void setAll(double[] other) {
 		System.arraycopy(other, 0, m, 0, 16);
 	}
 	
-	public void identity() {
-		m[0] = 1;	m[1] = 0;	m[2] = 0;	m[3] = 0;
-		m[4] = 0;	m[5] = 1;	m[6] = 0;	m[7] = 0;
-		m[8] = 0;	m[9] = 0;	m[10] = 1;	m[11] = 0;
-		m[12] = 0;	m[13] = 0;	m[14] = 0;	m[15] = 1;
+	public Matrix4 identity() {
+		m[M00] = 1;	m[M10] = 0;	m[M20] = 0;	m[M30] = 0;
+		m[M01] = 0;	m[M11] = 1;	m[M21] = 0;	m[M31] = 0;
+		m[M02] = 0;	m[M12] = 0;	m[M22] = 1;	m[M32] = 0;
+		m[M03] = 0;	m[M13] = 0;	m[M23] = 0;	m[M33] = 1;
+		return this;
 	}
 	
-	public void zero() {
+	public Matrix4 zero() {
 		for(int i=0; i<16; ++i) {
 			m[i] = 0;
 		}
+		return this;
 	}
 	
-	public float determinant() {
-		float n11 = m[0], n12 = m[1], n13 = m[2], n14 = m[3],
+	public double determinant() {
+		double n11 = m[0], n12 = m[1], n13 = m[2], n14 = m[3],
 		n21 = m[4], n22 = m[5], n23 = m[6], n24 = m[7],
 		n31 = m[8], n32 = m[9], n33 = m[10], n34 = m[11],
 		n41 = m[12], n42 = m[13], n43 = m[14], n44 = m[15];
@@ -115,34 +118,34 @@ public final class Matrix4 {
 	
 	public Matrix4 inverse()
     {
-        float m00 = m[0], 	m01 = m[1], 	m02 = m[2], 	m03 = m[3];
-        float m10 = m[4], 	m11 = m[5], 	m12 = m[6], 	m13 = m[7];
-        float m20 = m[8], 	m21 = m[9], 	m22 = m[10], 	m23 = m[11];
-        float m30 = m[12], 	m31 = m[13], 	m32 = m[14], 	m33 = m[15];
+        double m00 = m[0], 	m01 = m[1], 	m02 = m[2], 	m03 = m[3];
+        double m10 = m[4], 	m11 = m[5], 	m12 = m[6], 	m13 = m[7];
+        double m20 = m[8], 	m21 = m[9], 	m22 = m[10], 	m23 = m[11];
+        double m30 = m[12], 	m31 = m[13], 	m32 = m[14], 	m33 = m[15];
 
-        float v0 = m20 * m31 - m21 * m30;
-        float v1 = m20 * m32 - m22 * m30;
-        float v2 = m20 * m33 - m23 * m30;
-        float v3 = m21 * m32 - m22 * m31;
-        float v4 = m21 * m33 - m23 * m31;
-        float v5 = m22 * m33 - m23 * m32;
+        double v0 = m20 * m31 - m21 * m30;
+        double v1 = m20 * m32 - m22 * m30;
+        double v2 = m20 * m33 - m23 * m30;
+        double v3 = m21 * m32 - m22 * m31;
+        double v4 = m21 * m33 - m23 * m31;
+        double v5 = m22 * m33 - m23 * m32;
 
-        float t00 = + (v5 * m11 - v4 * m12 + v3 * m13);
-        float t10 = - (v5 * m10 - v2 * m12 + v1 * m13);
-        float t20 = + (v4 * m10 - v2 * m11 + v0 * m13);
-        float t30 = - (v3 * m10 - v1 * m11 + v0 * m12);
+        double t00 = + (v5 * m11 - v4 * m12 + v3 * m13);
+        double t10 = - (v5 * m10 - v2 * m12 + v1 * m13);
+        double t20 = + (v4 * m10 - v2 * m11 + v0 * m13);
+        double t30 = - (v3 * m10 - v1 * m11 + v0 * m12);
 
-        float invDet = 1 / (t00 * m00 + t10 * m01 + t20 * m02 + t30 * m03);
+        double invDet = 1 / (t00 * m00 + t10 * m01 + t20 * m02 + t30 * m03);
 
-        float d00 = t00 * invDet;
-        float d10 = t10 * invDet;
-        float d20 = t20 * invDet;
-        float d30 = t30 * invDet;
+        double d00 = t00 * invDet;
+        double d10 = t10 * invDet;
+        double d20 = t20 * invDet;
+        double d30 = t30 * invDet;
 
-        float d01 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-        float d11 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-        float d21 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-        float d31 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+        double d01 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
+        double d11 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
+        double d21 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
+        double d31 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
 
         v0 = m10 * m31 - m11 * m30;
         v1 = m10 * m32 - m12 * m30;
@@ -151,10 +154,10 @@ public final class Matrix4 {
         v4 = m11 * m33 - m13 * m31;
         v5 = m12 * m33 - m13 * m32;
 
-        float d02 = + (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-        float d12 = - (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-        float d22 = + (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-        float d32 = - (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+        double d02 = + (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
+        double d12 = - (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
+        double d22 = + (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
+        double d32 = - (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
 
         v0 = m21 * m10 - m20 * m11;
         v1 = m22 * m10 - m20 * m12;
@@ -163,10 +166,10 @@ public final class Matrix4 {
         v4 = m23 * m11 - m21 * m13;
         v5 = m23 * m12 - m22 * m13;
 
-        float d03 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
-        float d13 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
-        float d23 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
-        float d33 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
+        double d03 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet;
+        double d13 = + (v5 * m00 - v2 * m02 + v1 * m03) * invDet;
+        double d23 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet;
+        double d33 = + (v3 * m00 - v1 * m01 + v0 * m02) * invDet;
 
         return new Matrix4(
             d00, d01, d02, d03,
@@ -209,13 +212,13 @@ public final class Matrix4 {
 				);
 	}
 	
-	public void toFloatArray(float[] floatArray) {
-		System.arraycopy(m, 0, floatArray, 0, 16);
+	public void toArray(double[] doubleArray) {
+		System.arraycopy(m, 0, doubleArray, 0, 16);
 	}
 	
 	public Matrix4 multiply(final Matrix4 m2)
     {
-		m2.toFloatArray(mTmp);
+		m2.toArray(mTmp);
 		return new Matrix4(
 				m[0] * mTmp[0] + m[1] * mTmp[4] + m[2] * mTmp[8] + m[3] * mTmp[12],
 				m[0] * mTmp[1] + m[1] * mTmp[5] + m[2] * mTmp[9] + m[3] * mTmp[13],
@@ -242,7 +245,7 @@ public final class Matrix4 {
 	public Vector3 multiply(final Vector3 v) {
 		 Vector3 r = new Vector3();
 
-         float inv = 1.0f / ( m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15] );
+         double inv = 1.0f / ( m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15] );
 
          r.x = ( m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3] ) * inv;
          r.y = ( m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7] ) * inv;
@@ -251,7 +254,7 @@ public final class Matrix4 {
          return r;
 	}
 	
-	public Matrix4 multiply(final float value) {
+	public Matrix4 multiply(final double value) {
 		return new Matrix4(
 	            value*m[0], value*m[1], value*m[2], value*m[3],
 	            value*m[4], value*m[5], value*m[6], value*m[7],
@@ -260,7 +263,7 @@ public final class Matrix4 {
 	}
 	
 	public Matrix4 add(Matrix4 m2) {
-		m2.toFloatArray(mTmp);
+		m2.toArray(mTmp);
         return new Matrix4(
 	        m[0] + mTmp[0],
 	        m[1] + mTmp[1],
@@ -286,7 +289,7 @@ public final class Matrix4 {
 	
 	public Matrix4 subtract(final Matrix4 m2)
     {
-        m2.toFloatArray(mTmp);
+        m2.toArray(mTmp);
         return new Matrix4(
         		m[0] - mTmp[0],
         		m[1] - mTmp[1],
@@ -312,7 +315,7 @@ public final class Matrix4 {
 	
 	public boolean equals(final Matrix4 m2)
     {
-		m2.toFloatArray(mTmp);
+		m2.toArray(mTmp);
         if( 
             m[0] != mTmp[0] || m[1] != mTmp[1] || m[2] != mTmp[2] || m[3] != mTmp[3] ||
             m[4] != mTmp[4] || m[5] != mTmp[5] || m[6] != mTmp[6] || m[7] != mTmp[7] ||
@@ -350,7 +353,7 @@ public final class Matrix4 {
         m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1.0f;
     }
 
-    public void makeTrans(float tx, float ty, float tz)
+    public void makeTrans(double tx, double ty, double tz)
     {
         m[0] = 1.0f; m[1] = 0; m[2] = 0; m[3] = tx;
         m[4] = 0; m[5] = 1.0f; m[6] = 0; m[7] = ty;
@@ -368,7 +371,7 @@ public final class Matrix4 {
         );
     }
 
-    public static Matrix4 getTrans(float x, float y, float z)
+    public static Matrix4 getTrans(double x, double y, double z)
     {
     	return new Matrix4(
 	        1.0f, 	0,		0,		x,
@@ -395,7 +398,7 @@ public final class Matrix4 {
 	    );
     }
 
-    public static Matrix4 getScaleMatrix(float x, float y, float z)
+    public static Matrix4 getScaleMatrix(double x, double y, double z)
     {
         return new Matrix4(
 	        x, 		0,		0,		0,

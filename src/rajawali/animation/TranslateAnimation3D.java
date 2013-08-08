@@ -21,7 +21,7 @@ public class TranslateAnimation3D extends Animation3D {
 	
 	protected boolean mOrientToPath = false;
 	protected ICurve3D mSplinePath;
-	protected float mLookatDelta;
+	protected double mLookatDelta;
 
 	public TranslateAnimation3D(Vector3 toPosition) {
 		super();
@@ -55,18 +55,17 @@ public class TranslateAnimation3D extends Animation3D {
 		if (mSplinePath == null) {
 			if (mDiffPosition == null)
 				mDiffPosition = Vector3.subtractAndCreate(mToPosition, mFromPosition);
-			mMultipliedPosition.scaleAndSet(mDiffPosition, (float) mInterpolatedTime);
+			mMultipliedPosition.scaleAndSet(mDiffPosition, mInterpolatedTime);
 			mAddedPosition.addAndSet(mFromPosition, mMultipliedPosition);
 			mTransformable3D.setPosition(mAddedPosition);
 		} else {
-			mSplinePath.calculatePoint(mTempPoint1, (float) mInterpolatedTime);
+			mSplinePath.calculatePoint(mTempPoint1, mInterpolatedTime);
 			mTransformable3D.setPosition(mTempPoint1);
 
-			if (mOrientToPath)
-			{
+			if (mOrientToPath) {
 				// -- calculate tangent
-				mSplinePath.calculatePoint(mTempPoint2, (float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))));
-				mSplinePath.calculatePoint(mTempPoint3, (float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))));
+				mSplinePath.calculatePoint(mTempPoint2, mInterpolatedTime + -mLookatDelta * (mIsReversing ? -1 : 1));
+				mSplinePath.calculatePoint(mTempPoint3, mInterpolatedTime + mLookatDelta * (mIsReversing ? -1 : 1));
 				
 				// -- calculate direction vector
 				mTmpVec.subtractAndSet(mTempPoint3, mTempPoint2);

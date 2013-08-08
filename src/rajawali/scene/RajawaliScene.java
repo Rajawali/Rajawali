@@ -16,6 +16,7 @@ import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
+import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
@@ -34,7 +35,6 @@ import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -48,14 +48,14 @@ import android.opengl.Matrix;
 public class RajawaliScene extends AFrameTask {
 	
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
-	protected float mEyeZ = 4.0f;
+	protected double mEyeZ = 4.0;
 	
 	protected RajawaliRenderer mRenderer;
 	
 	//All of these get passed to an object when it needs to draw itself
-	protected float[] mVMatrix = new float[16]; //The view matrix
-	protected float[] mPMatrix = new float[16]; //The projection matrix
-	protected float[] mVPMatrix = new float[16]; //The view-projection matrix
+	protected double[] mVMatrix = new double[16]; //The view matrix
+	protected double[] mPMatrix = new double[16]; //The projection matrix
+	protected double[] mVPMatrix = new double[16]; //The view-projection matrix
 	
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;

@@ -62,9 +62,9 @@ public class VertexAnimationFrame implements IAnimationFrame {
             normal = Vector3.crossAndCreate(vector1, vector2);
             normal.normalize();
             
-            faceNormals[i] = normal.x;
-            faceNormals[i+1] = normal.y;
-            faceNormals[i+2] = normal.z;
+            faceNormals[i] = (float) normal.x;
+            faceNormals[i+1] = (float) normal.y;
+            faceNormals[i+2] = (float) normal.z;
 
 		}
 		// -- calculate vertex normals
@@ -87,9 +87,9 @@ public class VertexAnimationFrame implements IAnimationFrame {
 				}
 			}
 			vertexNormal.normalize();
-			vertNormals[i] = -vertexNormal.x;
-			vertNormals[i+1] = vertexNormal.y;
-			vertNormals[i+2] = -vertexNormal.z;
+			vertNormals[i] = (float) -vertexNormal.x;
+			vertNormals[i+1] = (float) vertexNormal.y;
+			vertNormals[i+2] = (float) -vertexNormal.z;
 		}
 		//mGeometry.setNormals(vertNormals);
 		faceNormals = null;

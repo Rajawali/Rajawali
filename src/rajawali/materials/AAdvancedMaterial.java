@@ -7,13 +7,17 @@ import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
+import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.ArrayUtils;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
 public abstract class AAdvancedMaterial extends AMaterial {
 	protected static final int MAX_LIGHTS = RajawaliRenderer.getMaxLights(); 
+	
+	protected float[] mTempBoneArray = null; //We use lazy loading here because we dont know its size in advance.
 	
 	public static final String M_FOG_VERTEX_VARS =
 			"\n#ifdef FOG_ENABLED\n" +
@@ -92,9 +96,11 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected int[] muLightAttenuationHandles;
 	protected int[] muSpotCutoffAngleHandles;
 	protected int[] muSpotFalloffHandles;
-		
-	protected float[] mNormalMatrix;
-	protected float[] mTmp, mTmp2;
+	
+	//This is used only for binding to a GLSL program and doesn't need to be double precision.
+	protected float[] mNormalMatrix; 
+	
+	protected double[] mTmp, mTmp2;
 	protected float[] mAmbientColor, mAmbientIntensity;
 	protected float[] mFogColor;
 	protected float mFogNear, mFogFar;
@@ -110,9 +116,6 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	private int mNumJoints;
 	private int mMaxWeights;
 	
-	protected android.graphics.Matrix mTmpNormalMatrix = new android.graphics.Matrix();
-	protected android.graphics.Matrix mTmpMvMatrix = new android.graphics.Matrix();
-
 	public AAdvancedMaterial() {
 		super();
 	}
@@ -124,13 +127,13 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	public AAdvancedMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader);
 		mNormalMatrix = new float[9];
-		mTmp = new float[9];
-		mTmp2 = new float[9];
-		mAmbientColor = new float[] {.2f, .2f, .2f, 1};
-		mAmbientIntensity = new float[] { .3f, .3f, .3f, 1 };		
+		mTmp = new double[16];
+		mTmp2 = new double[16];
+		mAmbientColor = new float[] {.2f, .2f, .2f, 1f};
+		mAmbientIntensity = new float[] {.3f, .3f, .3f, 1f};		
 
 		if(RajawaliRenderer.isFogEnabled())
-			mFogColor = new float[] { .8f, .8f, .8f };
+			mFogColor = new float[] {.8f, .8f, .8f};
 	}
 	
 	@Override
@@ -157,12 +160,14 @@ public abstract class AAdvancedMaterial extends AMaterial {
 			ALight light = mLights.get(i);
 			GLES20.glUniform3fv(muLightColorHandles[i], 1, light.getColor(), 0);
 			GLES20.glUniform1f(muLightPowerHandles[i], light.getPower());
-			GLES20.glUniform3fv(muLightPositionHandles[i], 1, light.getPositionArray(), 0);
+			GLES20.glUniform3fv(muLightPositionHandles[i], 1, ArrayUtils.convertDoublesToFloats(light.getPositionArray(), mTemp3Floats), 0);
 			if(light.getLightType() == ALight.DIRECTIONAL_LIGHT)
-				GLES20.glUniform3fv(muLightDirectionHandles[i], 1, ((DirectionalLight)light).getDirection(), 0);
+				GLES20.glUniform3fv(muLightDirectionHandles[i], 1, 
+						ArrayUtils.convertDoublesToFloats(((DirectionalLight)light).getDirection(), mTemp3Floats), 0);
 			else if(light.getLightType() == ALight.SPOT_LIGHT)
 			{
-				GLES20.glUniform3fv(muLightDirectionHandles[i], 1, ((SpotLight)light).getDirection(), 0);
+				GLES20.glUniform3fv(muLightDirectionHandles[i], 1, 
+						ArrayUtils.convertDoublesToFloats(((SpotLight)light).getDirection(), mTemp3Floats), 0);
 				GLES20.glUniform4fv(muLightAttenuationHandles[i], 1, ((SpotLight)light).getAttenuation(), 0);
 				GLES20.glUniform1f(muSpotCutoffAngleHandles[i], ((SpotLight)light).getCutoffAngle());
 				GLES20.glUniform1f(muSpotFalloffHandles[i], ((SpotLight)light).getFalloff());
@@ -177,7 +182,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	public void setAmbientColor(Vector3 color) {
-		setAmbientColor(color.x, color.y, color.z, 1);
+		setAmbientColor((float) color.x, (float) color.y, (float) color.z, 1f);
 	}
 	
 	public void setAmbientColor(float r, float g, float b, float a) {
@@ -267,9 +272,13 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		}
 	}
 	
-	public void setBoneMatrix(float[] boneMatrix) {
+	public void setBoneMatrix(double[] boneMatrix) {
 		if(checkValidHandle(muBoneMatrixHandle, null))
-			GLES20.glUniformMatrix4fv(muBoneMatrixHandle, mNumJoints, false, boneMatrix, 0);
+			if (mTempBoneArray == null) {
+				mTempBoneArray = new float[boneMatrix.length];
+			}
+			GLES20.glUniformMatrix4fv(muBoneMatrixHandle, mNumJoints, false, 
+					ArrayUtils.convertDoublesToFloats(boneMatrix, mTempBoneArray), 0);
 	}
 	
 	@Override
@@ -373,26 +382,19 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	@Override
-	public void setModelMatrix(float[] modelMatrix) {
+	public void setModelMatrix(double[] modelMatrix) {
 		super.setModelMatrix(modelMatrix);
+	
+		System.arraycopy(modelMatrix, 0, mTmp2, 0, 16);
+		Matrix.invertM(mTmp, 0, mTmp2, 0);
+		Matrix.transposeM(mTmp2, 0, mTmp, 0);
+		System.arraycopy(mTmp2, 0, mTmp, 0, 16);
 		
-		mTmp2[0] = modelMatrix[0]; mTmp2[1] = modelMatrix[1]; mTmp2[2] = modelMatrix[2]; 
-		mTmp2[3] = modelMatrix[4]; mTmp2[4] = modelMatrix[5]; mTmp2[5] = modelMatrix[6];
-		mTmp2[6] = modelMatrix[8]; mTmp2[7] = modelMatrix[9]; mTmp2[8] = modelMatrix[10];
-		
-		mTmpMvMatrix.setValues(mTmp2);
-		
-		mTmpNormalMatrix.reset();
-		mTmpMvMatrix.invert(mTmpNormalMatrix);
-
-		mTmpNormalMatrix.getValues(mTmp);
-		mTmp2[0] = mTmp[0]; mTmp2[1] = mTmp[3]; mTmp2[2] = mTmp[6]; 
-		mTmp2[3] = mTmp[1]; mTmp2[4] = mTmp[4]; mTmp2[5] = mTmp[7];
-		mTmp2[6] = mTmp[2]; mTmp2[7] = mTmp[5]; mTmp2[8] = mTmp[8];
-		mTmpNormalMatrix.setValues(mTmp2);
-		mTmpNormalMatrix.getValues(mNormalMatrix);
-
-	    GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalMatrix, 0);
+		mNormalMatrix[0] = (float) mTmp2[0]; mNormalMatrix[1] = (float) mTmp2[1]; mNormalMatrix[2] = (float) mTmp2[2];
+		mNormalMatrix[3] = (float) mTmp2[4]; mNormalMatrix[4] = (float) mTmp2[5]; mNormalMatrix[5] = (float) mTmp2[6];
+		mNormalMatrix[6] = (float) mTmp2[8]; mNormalMatrix[7] = (float) mTmp2[9]; mNormalMatrix[8] = (float) mTmp2[10];
+	    
+		GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalMatrix, 0);
 	}
 	
 	public void remove() {
@@ -410,8 +412,6 @@ public abstract class AAdvancedMaterial extends AMaterial {
 		mAmbientColor = null;
 		mAmbientIntensity = null;
 		mFogColor = null;
-		mTmpNormalMatrix = null;
-		mTmpMvMatrix = null;
 	}
 	
 	private final String replaceShaderVars(String shader) {

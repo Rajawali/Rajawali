@@ -7,10 +7,10 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
+import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 public class BoundingBox implements IBoundingVolume {
 	protected Geometry3D mGeometry;
@@ -21,7 +21,7 @@ public class BoundingBox implements IBoundingVolume {
 	protected Vector3[] mTmp;
 	protected int mI;
 	protected Cube mVisualBox;
-	protected float[] mTmpMatrix = new float[16];
+	protected double[] mTmpMatrix = new double[16];
 	protected AtomicInteger mBoundingColor = new AtomicInteger(0xffffff00);
 	
 	public void copyPoints(Vector3[] pts){
@@ -65,7 +65,7 @@ public class BoundingBox implements IBoundingVolume {
 		}
 	}
 	
-	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
+	public void drawBoundingVolume(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix, double[] mMatrix) {
 		if(mVisualBox == null) {
 			mVisualBox = new Cube(1);
 			mVisualBox.setMaterial(new SimpleMaterial());
@@ -158,9 +158,9 @@ public class BoundingBox implements IBoundingVolume {
 		mPoints[7].setAll(mMax.x, mMax.y, mMin.z);
 	}
 	
-	public void transform(final float[] matrix) {
-		mTransformedMin.setAll(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-		mTransformedMax.setAll(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+	public void transform(final double[] matrix) {
+		mTransformedMin.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+		mTransformedMax.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 		
 		for(mI=0; mI<8; ++mI) {
 			Vector3 o = mPoints[mI];

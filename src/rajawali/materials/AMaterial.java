@@ -19,6 +19,7 @@ import rajawali.materials.textures.TextureManager;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.ArrayUtils;
 import rajawali.util.RajLog;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -26,6 +27,11 @@ import android.content.res.Resources;
 import android.opengl.GLES20;
 
 public abstract class AMaterial extends AFrameTask {
+	
+	protected final float[] mTemp3Floats = new float[3];
+	protected final float[] mTemp4Floats = new float[4];
+	protected final float[] mTemp16Floats = new float[16];
+	
 	protected String mUntouchedVertexShader;
 	protected String mUntouchedFragmentShader;
 	protected String mVertexShader;
@@ -59,9 +65,9 @@ public abstract class AMaterial extends AFrameTask {
 
 	protected int mNumTextures = 0;
 	protected float mAlphaMaskingThreshold = .5f;
-	protected float[] mModelViewMatrix;
-	protected float[] mViewMatrix;
-	protected float[] mCameraPosArray;
+	protected double[] mModelViewMatrix;
+	protected double[] mViewMatrix;
+	protected double[] mCameraPosArray;
 	protected float[] mSingleColor;
 	protected float mColorBlendFactor = .5f;
 	protected ArrayList<ATexture> mTextureList;
@@ -83,10 +89,10 @@ public abstract class AMaterial extends AFrameTask {
 	
 	public AMaterial() {
 		mTextureList = new ArrayList<ATexture>();
-		mCameraPosArray = new float[3];
+		mCameraPosArray = new double[3];
 		mLights = new Stack<ALight>();
 		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
-		mSingleColor = new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f };
+		mSingleColor = new float[] {(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
 	}
 	
 	public AMaterial(String vertexShader, String fragmentShader) {
@@ -422,27 +428,30 @@ public abstract class AMaterial extends AFrameTask {
 		}
 	}
 
-	public void setMVPMatrix(float[] mvpMatrix) {
+	public void setMVPMatrix(double[] mvpMatrix) {
 		if(checkValidHandle(muMVPMatrixHandle, "mvp matrix"))
-			GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mvpMatrix, 0);
+			GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, 
+					ArrayUtils.convertDoublesToFloats(mvpMatrix, mTemp16Floats), 0);
 
 	}
 
-	public void setModelMatrix(float[] modelMatrix) {
+	public void setModelMatrix(double[] modelMatrix) {
 		mModelViewMatrix = modelMatrix;
 		if(checkValidHandle(muMMatrixHandle, null))
-			GLES20.glUniformMatrix4fv(muMMatrixHandle, 1, false, modelMatrix, 0);
+			GLES20.glUniformMatrix4fv(muMMatrixHandle, 1, false, 
+					ArrayUtils.convertDoublesToFloats(modelMatrix, mTemp16Floats), 0);
 	}
 
-	public void setViewMatrix(float[] viewMatrix) {
+	public void setViewMatrix(double[] viewMatrix) {
 		mViewMatrix = viewMatrix;
 		if(checkValidHandle(muVMatrixHandle, null))
-			GLES20.glUniformMatrix4fv(muVMatrixHandle, 1, false, viewMatrix, 0);
+			GLES20.glUniformMatrix4fv(muVMatrixHandle, 1, false, 
+					ArrayUtils.convertDoublesToFloats(viewMatrix, mTemp16Floats), 0);
 	}
 	
-	public void setInterpolation(float interpolation) {
+	public void setInterpolation(double interpolation) {
 		if(checkValidHandle(muInterpolationHandle, "interpolation"))
-			GLES20.glUniform1f(muInterpolationHandle, interpolation);
+			GLES20.glUniform1f(muInterpolationHandle, (float) interpolation);
 	}
 	
 	public void setNextFrameVertices(final int vertexBufferHandle) {
@@ -508,7 +517,8 @@ public abstract class AMaterial extends AFrameTask {
 		mCameraPosArray[1] = camPos.y;
 		mCameraPosArray[2] = camPos.z;
 		if (muCameraPositionHandle > -1)
-			GLES20.glUniform3fv(muCameraPositionHandle, 1, mCameraPosArray, 0);
+			GLES20.glUniform3fv(muCameraPositionHandle, 1, 
+					ArrayUtils.convertDoublesToFloats(mCameraPosArray, mTemp3Floats), 0);
 	}
 
 	public String toString() {
@@ -524,10 +534,10 @@ public abstract class AMaterial extends AFrameTask {
 	/**
 	 * Get the model-space to view-space matrix
 	 * 
-	 * @return {@link float[]}
+	 * @return {@link double[]}
 	 */
 
-	public float[] getModelViewMatrix() {
+	public double[] getModelViewMatrix() {
 		return mModelViewMatrix;
 	}
 
@@ -684,10 +694,10 @@ public abstract class AMaterial extends AFrameTask {
 	 */
 	public void setColorBlendFactor(float colorBlendFactor)
 	{
-		mColorBlendFactor = Math.min(1.0f, Math.max(0, colorBlendFactor));
+		mColorBlendFactor = (float) Math.min(1.0, Math.max(0, colorBlendFactor));
 	}
 	
-	public float getColorBlendFactor()
+	public double getColorBlendFactor()
 	{
 		return mColorBlendFactor;
 	}

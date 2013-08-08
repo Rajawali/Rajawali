@@ -12,11 +12,11 @@ public class ScaleAnimation3D extends Animation3D {
 	protected Vector3 mAddedScale = new Vector3();
 
 	
-	public ScaleAnimation3D(float toScale) {
+	public ScaleAnimation3D(double toScale) {
 		super();
 		mToScale = new Vector3(toScale);
 	}
-	public ScaleAnimation3D(float fromScale, float toScale) {
+	public ScaleAnimation3D(double fromScale, double toScale) {
 		super();
 		mToScale = new Vector3(toScale);
 		mFromScale = new Vector3(fromScale);
@@ -45,7 +45,7 @@ public class ScaleAnimation3D extends Animation3D {
 		if (mDiffScale == null)
 			mDiffScale = Vector3.subtractAndCreate(mToScale, mFromScale);
 
-		mMultipliedScale.scaleAndSet(mDiffScale, (float) mInterpolatedTime);
+		mMultipliedScale.scaleAndSet(mDiffScale, mInterpolatedTime);
 		mAddedScale.addAndSet(mFromScale, mMultipliedScale);
 		mTransformable3D.setScale(mAddedScale);
 	}

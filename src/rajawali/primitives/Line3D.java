@@ -96,9 +96,9 @@ public class Line3D extends BaseObject3D {
 		for(int i=0; i<numVertices; i++) {
 			Vector3 point = mPoints.get(i);
 			int index = i * 3;
-			vertices[index] = point.x;
-			vertices[index+1] = point.y;
-			vertices[index+2] = point.z;
+			vertices[index] = (float) point.x;
+			vertices[index+1] = (float) point.y;
+			vertices[index+2] = (float) point.z;
 			index = i * 2;
 			index = i * 4;
 			indices[i] = (short)i;

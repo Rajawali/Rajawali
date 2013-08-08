@@ -29,11 +29,10 @@ public class SlerpAnimation3D extends Animation3D {
 	private Vector3 mTmpVec;
 	private Vector3 mTmpQuatVector;
 	private Quaternion mTmpQuat;
-	private float[] mRotationMatrix;
-	private float mDistance;
+	private double[] mRotationMatrix;
+	private double mDistance;
 	
-	public SlerpAnimation3D(Vector3 from, Vector3 to)
-	{
+	public SlerpAnimation3D(Vector3 from, Vector3 to) {
 		super();
 		mFrom = quaternionFromVector(from.clone());
 		mTo = quaternionFromVector(to.clone());
@@ -41,12 +40,12 @@ public class SlerpAnimation3D extends Animation3D {
 		mTmpQuatVector = new Vector3();
 		mTmpQuat = new Quaternion();
 		mDistance = from.length();
-		mRotationMatrix = new float[16];
+		mRotationMatrix = new double[16];
 	}
 	
 	@Override
 	protected void applyTransformation() {
-		mTmpQuat.slerp(mFrom, mTo, (float)mInterpolatedTime);
+		mTmpQuat.slerp(mFrom, mTo, mInterpolatedTime);
 		mTmpVec.setAll(mForwardVec);
 		mTmpQuat.toRotationMatrix(mRotationMatrix);
 		mTmpVec.multiply(mRotationMatrix);
@@ -54,10 +53,9 @@ public class SlerpAnimation3D extends Animation3D {
 		mTransformable3D.setPosition(mTmpVec);
 	}
 	
-	private Quaternion quaternionFromVector(Vector3 vec)
-	{
+	private Quaternion quaternionFromVector(Vector3 vec) {
 		vec.normalize();
-		float angle = MathUtil.radiansToDegrees((float)Math.acos(Vector3.dot(mForwardVec, vec)));
+		double angle = MathUtil.radiansToDegrees(Math.acos(Vector3.dot(mForwardVec, vec)));
 		Quaternion q = new Quaternion();
 		q.fromAngleAxis(mTmpQuatVector.crossAndSet(mForwardVec, vec), angle);
 		return q;
