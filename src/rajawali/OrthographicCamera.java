@@ -13,7 +13,7 @@ public class OrthographicCamera extends Camera
 	
 	public void setProjectionMatrix(int width, int height) 
 	{
-		double aspect = width / height;
+		double aspect = ((double) width) / ((double) height);
 		Matrix.orthoM(mProjMatrix, 0, -aspect, aspect, -1, 1, getNearPlane(), getFarPlane());
 		mProjMatrix[15] = mZoom;
 	}
