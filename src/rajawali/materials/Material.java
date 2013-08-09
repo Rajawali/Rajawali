@@ -124,7 +124,7 @@ public class Material extends AFrameTask {
 		mFragmentShader.buildShader();
 
 		RajLog.i(mVertexShader.getShaderString());
-		//RajLog.d(mFragmentShader.getShaderString());
+		RajLog.d(mFragmentShader.getShaderString());
 		
 		mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
 		if (mProgramHandle == 0)

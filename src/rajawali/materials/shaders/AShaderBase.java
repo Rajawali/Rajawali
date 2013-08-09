@@ -559,6 +559,13 @@ public abstract class AShaderBase {
 			v.setName(v.getValue());
 			return v;
 		}
+		public ShaderVar multiply(float value)
+		{
+			ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
+			v.setValue(this.mName + " * " + Float.toString(value));
+			v.setName(v.getValue());
+			return v;
+		}		
 		
 		public ShaderVar divide(ShaderVar value)
 		{
@@ -582,6 +589,11 @@ public abstract class AShaderBase {
 		public void assign(String value)
 		{
 			writeAssign(value);
+		}
+		
+		public void assign(float value)
+		{
+			assign(Float.toString(value));
 		}
 		
 		protected void writeAssign(String value)

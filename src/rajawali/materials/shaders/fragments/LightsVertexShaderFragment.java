@@ -20,9 +20,9 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		U_SPOT_CUTOFF_ANGLE("uSpotCutoffAngle", DataType.FLOAT),
 		U_SPOT_FALLOFF("uSpotFalloff", DataType.FLOAT),
 		V_LIGHT_ATTENUATION("vLightAttenuation", DataType.FLOAT),
-		V_NORMAL("vNormal", DataType.VEC3),
 		V_EYE("vEye", DataType.VEC4),
-		G_LIGHT_DISTANCE("gLightDistance", DataType.FLOAT);
+		G_LIGHT_DISTANCE("gLightDistance", DataType.FLOAT),
+		G_LIGHT_DIRECTION("gLightDirection", DataType.VEC3);
 
 		private String mVarString;
 		private DataType mDataType;
@@ -154,21 +154,32 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 
 			if(t == ALight.SPOT_LIGHT || t == ALight.POINT_LIGHT)
 			{
+				//
+				// -- gLightDistance = distance(vEye.xyz, uLightPosition);
+				//
 				mgLightDistance.assign(distance(mvEye.xyz(), muLightPosition[i]));
+				//
+				// -- vAttenuation  = 1.0 / (uLightAttenuation[1] + uLightAttenuation[2] * gLightDistance + uLightAttenuation[3] * gLightDistance * gLightDistance)
+				//
 				mvAttenuation[lightAttCount].assign(
 						new RFloat(1.0)
 							.divide(
-									muLightAttenuation[lightAttCount].index(1)
-									.add(muLightAttenuation[lightAttCount].index(2))
-									.multiply(mgLightDistance)
-									.add(muLightAttenuation[lightAttCount].index(3))
-									.multiply(mgLightDistance)
-									.multiply(mgLightDistance)
-							
-									));// = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, lightAttCount, DataType.FLOAT);
-				lightAttCount++;
+									enclose(
+										muLightAttenuation[lightAttCount].index(1)
+										.add(muLightAttenuation[lightAttCount].index(2))
+										.multiply(mgLightDistance)
+										.add(muLightAttenuation[lightAttCount].index(3))
+										.multiply(mgLightDistance)
+										.multiply(mgLightDistance)
+										)
+									));
 				
-				//vAttenuation = 1.0 / (uLightAttenuation[1] +this.mName + " + " + value.getName() uLightAttenuation[2] * dist + uLightAttenuation[3] * dist * dist
+				lightAttCount++;
+			} else if(t == ALight.DIRECTIONAL_LIGHT) {
+				//
+				// -- vAttenuation = 1.0
+				//
+				mvAttenuation[lightDirCount++].assign(1.0f);
 			}
 		}
 	}
