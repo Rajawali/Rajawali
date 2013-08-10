@@ -18,8 +18,8 @@ import rajawali.math.vector.Vector3;
 public class ChaseCamera extends Camera {
 	protected Vector3 mCameraOffset;
 	protected BaseObject3D mObjectToChase;
-	protected float mSlerpFactor = .1f;
-	protected float[] mRotMatrix;
+	protected double mSlerpFactor = .1f;
+	protected double[] mRotMatrix;
 	protected Vector3 mTmpVec;
 	protected Quaternion mTmpOrientation;
 	protected Quaternion mPreviousOrientation;
@@ -28,11 +28,11 @@ public class ChaseCamera extends Camera {
 		this(new Vector3(0, 3, 16), .1f, null);
 	}
 	
-	public ChaseCamera(Vector3 cameraOffset, float slerpFactor) {
+	public ChaseCamera(Vector3 cameraOffset, double slerpFactor) {
 		this(cameraOffset, .1f, null);
 	}
 
-	public ChaseCamera(Vector3 cameraOffset, float slerpFactor, BaseObject3D objectToChase) {
+	public ChaseCamera(Vector3 cameraOffset, double slerpFactor, BaseObject3D objectToChase) {
 		super();
 		mTmpOrientation = new Quaternion();
 		mPreviousOrientation = new Quaternion();
@@ -40,12 +40,12 @@ public class ChaseCamera extends Camera {
 		mCameraOffset = cameraOffset;
 		mObjectToChase = objectToChase;
 		mSlerpFactor = slerpFactor;
-		mRotMatrix = new float[16];
+		mRotMatrix = new double[16];
 	}
 	
 	private Quaternion mTmpQuatChase=new Quaternion();
 	
-	public float[] getViewMatrix() {
+	public double[] getViewMatrix() {
 		mPosition.setAll(mObjectToChase.getPosition());
 		mTmpVec.setAll(mCameraOffset);
 		
@@ -69,11 +69,11 @@ public class ChaseCamera extends Camera {
 		return mCameraOffset;
 	}
 	
-	public void setSlerpFactor(float factor) {
+	public void setSlerpFactor(double factor) {
 		mSlerpFactor = factor;
 	}
 	
-	public float getSlerpFactor() {
+	public double getSlerpFactor() {
 		return mSlerpFactor;
 	}
 

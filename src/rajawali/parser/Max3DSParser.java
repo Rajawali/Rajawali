@@ -205,58 +205,58 @@ public class Max3DSParser extends AMeshParser {
 
 				coord = vertices.get(v1);
 
-				aVertices[ic++] = coord.x;
-				aVertices[ic++] = coord.y;
-				aVertices[ic++] = coord.z;
+				aVertices[ic++] = (float) coord.x;
+				aVertices[ic++] = (float) coord.y;
+				aVertices[ic++] = (float) coord.z;
 
 				aIndices[ivi] = ivi++;
 
 				coord = vertices.get(v2);
-				aVertices[ic++] = coord.x;
-				aVertices[ic++] = coord.y;
-				aVertices[ic++] = coord.z;
+				aVertices[ic++] = (float) coord.x;
+				aVertices[ic++] = (float) coord.y;
+				aVertices[ic++] = (float) coord.z;
 
 				aIndices[ivi] = ivi++;
 
 				coord = vertices.get(v3);
-				aVertices[ic++] = coord.x;
-				aVertices[ic++] = coord.y;
-				aVertices[ic++] = coord.z;
+				aVertices[ic++] = (float) coord.x;
+				aVertices[ic++] = (float) coord.y;
+				aVertices[ic++] = (float) coord.z;
 
 				aIndices[ivi] = ivi++;
 
 				if (texCoords != null && texCoords.size() > 0) {
 					texcoord = texCoords.get(v1);
 
-					aTexCoords[itc++] = texcoord.x;
-					aTexCoords[itc++] = texcoord.y;
+					aTexCoords[itc++] = (float) texcoord.x;
+					aTexCoords[itc++] = (float) texcoord.y;
 
 					texcoord = texCoords.get(v2);
 
-					aTexCoords[itc++] = texcoord.x;
-					aTexCoords[itc++] = texcoord.y;
+					aTexCoords[itc++] = (float) texcoord.x;
+					aTexCoords[itc++] = (float) texcoord.y;
 
 					texcoord = texCoords.get(v3);
 
-					aTexCoords[itc++] = texcoord.x;
-					aTexCoords[itc++] = texcoord.y;
+					aTexCoords[itc++] = (float) texcoord.x;
+					aTexCoords[itc++] = (float) texcoord.y;
 				}
 
 				normal = vertNormals.get(v1);
-				aNormals[itn++] = normal.x;
-				aNormals[itn++] = normal.y;
-				aNormals[itn++] = normal.z;
+				aNormals[itn++] = (float) normal.x;
+				aNormals[itn++] = (float) normal.y;
+				aNormals[itn++] = (float) normal.z;
 				normal = vertNormals.get(v2);
 
-				aNormals[itn++] = normal.x;
-				aNormals[itn++] = normal.y;
-				aNormals[itn++] = normal.z;
+				aNormals[itn++] = (float) normal.x;
+				aNormals[itn++] = (float) normal.y;
+				aNormals[itn++] = (float) normal.z;
 
 				normal = vertNormals.get(v3);
 
-				aNormals[itn++] = normal.x;
-				aNormals[itn++] = normal.y;
-				aNormals[itn++] = normal.z;
+				aNormals[itn++] = (float) normal.x;
+				aNormals[itn++] = (float) normal.y;
+				aNormals[itn++] = (float) normal.z;
 			}
 
 			BaseObject3D targetObj = new BaseObject3D(mObjNames.get(j));

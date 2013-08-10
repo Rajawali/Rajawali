@@ -19,6 +19,7 @@ import java.nio.FloatBuffer;
 import rajawali.BaseObject3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
+import rajawali.Geometry3D;
 import rajawali.Geometry3D.BufferType;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
 import rajawali.materials.AAdvancedMaterial;
@@ -33,7 +34,6 @@ import android.opengl.GLES20;
  */
 public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private static final int MAX_WEIGHTS_PER_VERTEX = 8;
-	private static final int FLOAT_SIZE_BYTES = 4;
 	public int mNumJoints;
 	public SkeletalAnimationObject3D mSkeleton;
 	private SkeletalAnimationSequence mSequence;
@@ -120,7 +120,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private FloatBuffer alocateBuffer(FloatBuffer buffer, float[] data) {
 		if (buffer == null) {
 			buffer = ByteBuffer
-					.allocateDirect(data.length * FLOAT_SIZE_BYTES * 4)
+					.allocateDirect(data.length * Geometry3D.FLOAT_SIZE_BYTES * 4)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
 			buffer.put(data);

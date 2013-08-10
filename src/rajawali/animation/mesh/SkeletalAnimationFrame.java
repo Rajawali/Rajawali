@@ -72,12 +72,12 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 		private int mFlags;
 		private Vector3 mPosition;
 		private Quaternion mOrientation;
-		private float[] mMatrix;
+		private double[] mMatrix;
 		
 		public SkeletonJoint() {
 			mPosition = new Vector3();
 			mOrientation = new Quaternion();
-			mMatrix = new float[16];
+			mMatrix = new double[16];
 		}
 		
 		public SkeletonJoint(SkeletonJoint other) {
@@ -101,7 +101,7 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 			return mParentIndex;
 		}
 		
-		public void setPosition(float x, float y, float z) {
+		public void setPosition(double x, double y, double z) {
 			mPosition.setAll(x, y, z);
 		}
 		
@@ -115,12 +115,12 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 			return mPosition;
 		}
 		
-		public void setOrientation(float x, float y, float z) {
+		public void setOrientation(double x, double y, double z) {
 			mOrientation.setAll(1, x, y, z);
 			mOrientation.computeW();
 		}
 		
-		public void setOrientation(float w, float x, float y, float z) {
+		public void setOrientation(double w, double x, double y, double z) {
 			mOrientation.setAll(w, x, y, z);
 		}
 		
@@ -156,11 +156,11 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 			this.mFlags = flags;
 		}
 		
-		public float[] getMatrix() {
+		public double[] getMatrix() {
 			return mMatrix;
 		}
 		
-		public void setMatrix(float[] values) {
+		public void setMatrix(double[] values) {
 			System.arraycopy(values, 0, mMatrix, 0, 16);
 		}
 		

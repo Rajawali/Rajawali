@@ -13,38 +13,38 @@
 package rajawali.math.vector;
 
 public class Vector2 {
-	private float mX;
-	private float mY;
+	private double mX;
+	private double mY;
 	
 	public Vector2() {
 		
 	}
 	
-	public Vector2(float x, float y) {
+	public Vector2(double x, double y) {
 		mX = x;
 		mY = y;
 	}
 	
-	public void setX(float x)
+	public void setX(double x)
 	{
 		mX = x;
 	}
 	
-	public float getX() {
+	public double getX() {
 		return mX;
 	}
 	
-	public void setY(float y)
+	public void setY(double y)
 	{
 		mY = y;
 	}
 	
-	public float getY()
+	public double getY()
 	{
 		return mY;
 	}
 	
-	public void setAll(float x, float y)
+	public void setAll(double x, double y)
 	{
 		mX = x;
 		mY = y;

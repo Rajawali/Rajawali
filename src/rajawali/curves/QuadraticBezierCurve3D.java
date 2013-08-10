@@ -16,7 +16,7 @@ import rajawali.math.vector.Vector3;
 
 public class QuadraticBezierCurve3D implements ICurve3D {
 
-	private static final float DELTA = .00001f;
+	private static final double DELTA = .00001;
 
 	private Vector3 mPoint1;
 	private Vector3 mControlPoint;
@@ -59,10 +59,10 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 		mPoint2 = point2;
 	}
 
-	public void calculatePoint(Vector3 result, float t) {
+	public void calculatePoint(Vector3 result, double t) {
 		if (mCalculateTangents) {
-			float prevt = t == 0 ? t + DELTA : t - DELTA;
-			float nextt = t == 1 ? t - DELTA : t + DELTA;
+			double prevt = t == 0 ? t + DELTA : t - DELTA;
+			double nextt = t == 1 ? t - DELTA : t + DELTA;
 			p(mCurrentTangent, prevt);
 			p(mTempPointNext, nextt);
 			mCurrentTangent.subtract(mTempPointNext);
@@ -73,7 +73,7 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 		p(result, t);
 	}
 
-	private void p(Vector3 result, float t) {
+	private void p(Vector3 result, double t) {
 		mTmpPoint1.setAll(mPoint1);
 		mTmpPoint1.multiply((1.0f - t) * (1.0f - t));
 		mTmpPoint2.setAll(mControlPoint);

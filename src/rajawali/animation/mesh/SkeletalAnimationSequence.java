@@ -20,7 +20,7 @@ import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationExcept
 
 public class SkeletalAnimationSequence implements IAnimationSequence {
 	private SkeletalAnimationFrame[] mFrames;
-	private float[] mFrameData;
+	private double[] mFrameData;
 	private String mName;
 	private int mNumFrames;
 	private int mFrameRate;
@@ -45,12 +45,12 @@ public class SkeletalAnimationSequence implements IAnimationSequence {
 		return mFrames[index];
 	}
 	
-	public void setFrameData(float[] frameData)
+	public void setFrameData(double[] frameData)
 	{
 		mFrameData = frameData;
 	}
 	
-	public float[] getFrameData()
+	public double[] getFrameData()
 	{
 		return mFrameData;
 	}
@@ -93,7 +93,7 @@ public class SkeletalAnimationSequence implements IAnimationSequence {
 	 * @param blendFactor
 	 * @throws SkeletalAnimationException
 	 */
-	public void blendWith(SkeletalAnimationSequence otherSequence, float blendFactor) throws SkeletalAnimationException
+	public void blendWith(SkeletalAnimationSequence otherSequence, double blendFactor) throws SkeletalAnimationException
 	{
 		int numFrames = Math.max(mNumFrames, otherSequence.getNumFrames());
 		List<SkeletalAnimationFrame> newFrames = new ArrayList<SkeletalAnimationFrame>();

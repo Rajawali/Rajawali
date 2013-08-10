@@ -18,10 +18,10 @@ import rajawali.math.vector.Vector3.Axis;
 
 public class RotateAroundAnimation3D extends Animation3D {
 	protected Vector3 mCenter;
-	protected float mDistance;
+	protected double mDistance;
 	protected Axis mAxis;
 	
-	public RotateAroundAnimation3D(Vector3 center, Axis axis, float distance) {
+	public RotateAroundAnimation3D(Vector3 center, Axis axis, double distance) {
 		super();
 		mCenter = center;
 		mDistance = distance;
@@ -36,14 +36,14 @@ public class RotateAroundAnimation3D extends Animation3D {
 		double sinVal = Math.sin(radians) * mDistance;
 		
 		if(mAxis == Axis.Z) {
-			mTransformable3D.setX(mCenter.x + (float)cosVal);
-			mTransformable3D.setY(mCenter.y + (float)sinVal);
+			mTransformable3D.setX(mCenter.x + cosVal);
+			mTransformable3D.setY(mCenter.y + sinVal);
 		} else if(mAxis == Axis.Y) {
-			mTransformable3D.setX(mCenter.x + (float)cosVal);
-			mTransformable3D.setZ(mCenter.z + (float)sinVal);
+			mTransformable3D.setX(mCenter.x + cosVal);
+			mTransformable3D.setZ(mCenter.z + sinVal);
 		} else if(mAxis == Axis.X) {
-			mTransformable3D.setY(mCenter.x + (float)cosVal);
-			mTransformable3D.setZ(mCenter.z + (float)sinVal);
+			mTransformable3D.setY(mCenter.x + cosVal);
+			mTransformable3D.setZ(mCenter.z + sinVal);
 		}
 	}
 }

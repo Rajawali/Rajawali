@@ -65,9 +65,9 @@ public class PhongMaterial extends AAdvancedMaterial {
 	}
 
 	public void setSpecularColor(Vector3 color) {
-		mSpecularColor[0] = color.x;
-		mSpecularColor[1] = color.y;
-		mSpecularColor[2] = color.z;
+		mSpecularColor[0] = (float) color.x;
+		mSpecularColor[1] = (float) color.y;
+		mSpecularColor[2] = (float) color.z;
 		mSpecularColor[3] = 1;
 	}
 

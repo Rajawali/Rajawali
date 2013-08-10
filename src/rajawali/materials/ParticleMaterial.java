@@ -97,7 +97,7 @@ public class ParticleMaterial extends AParticleMaterial {
     }
 	
 	public void setFriction(Vector3 friction) {
-		mFriction[0] = friction.x; mFriction[1] = friction.y; mFriction[2] = friction.z;
+		mFriction[0] = (float) friction.x; mFriction[1] = (float) friction.y; mFriction[2] = (float) friction.z;
 	}
 	
 	public void setTime(float time) {
@@ -140,6 +140,6 @@ public class ParticleMaterial extends AParticleMaterial {
 	}
 	
 	public void setCameraPosition(Vector3 cameraPos) {
-		mCamPos[0] = cameraPos.x; mCamPos[1] = cameraPos.y; mCamPos[2] = cameraPos.z;
+		mCamPos[0] = (float) cameraPos.x; mCamPos[1] = (float) cameraPos.y; mCamPos[2] = (float) cameraPos.z;
 	}
 }

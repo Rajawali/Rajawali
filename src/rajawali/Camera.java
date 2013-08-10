@@ -14,11 +14,12 @@ package rajawali;
 
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.MathUtil;
+import rajawali.math.Matrix;
 import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;
 import rajawali.math.vector.Vector3.Axis;
 import rajawali.renderer.AFrameTask;
-import android.opengl.Matrix;
+import android.util.Log;
 
 public class Camera extends ATransformable3D {
 	
@@ -27,20 +28,20 @@ public class Camera extends ATransformable3D {
 	/**
 	 * The following members are all guarded by {@link #mFrustumLock}
 	 */
-	protected float[] mVMatrix = new float[16];
-	protected float[] mInvVMatrix = new float[16];
-	protected float[] mRotationMatrix = new float[16];
-	protected float[] mProjMatrix = new float[16];
-	protected float mNearPlane = 1.0f;
-	protected float mFarPlane = 120.0f;
-	protected float mFieldOfView = 45;
+	protected double[] mVMatrix = new double[16];
+	protected double[] mInvVMatrix = new double[16];
+	protected double[] mRotationMatrix = new double[16];
+	protected double[] mProjMatrix = new double[16];
+	protected double mNearPlane = 1.0f;
+	protected double mFarPlane = 120.0f;
+	protected double mFieldOfView = 45;
 	protected int mLastWidth;
 	protected int mLastHeight;
 	protected Vector3 mUpAxis;
 	protected boolean mUseRotationMatrix = false;
-	protected float[] mRotateMatrixTmp = new float[16];
-	protected float[] mTmpMatrix = new float[16];
-	protected float[] mCombinedMatrix=new float[16];
+	protected double[] mRotateMatrixTmp = new double[16];
+	protected double[] mTmpMatrix = new double[16];
+	protected double[] mCombinedMatrix = new double[16];
 	public Frustum mFrustum;
 	
 	// Camera's localized vectors
@@ -53,8 +54,8 @@ public class Camera extends ATransformable3D {
 	 */
 		
 	protected int mFogColor = 0xdddddd;
-	protected float mFogNear = 5;
-	protected float mFogFar = 25;
+	protected float mFogNear = 5f;
+	protected float mFogFar = 25f;
 	protected boolean mFogEnabled = false;
 	
 	public Camera() {
@@ -65,7 +66,7 @@ public class Camera extends ATransformable3D {
 		mFrustum = new Frustum();
 	}
 
-	public float[] getViewMatrix() {
+	public double[] getViewMatrix() {
 		synchronized (mFrustumLock) {
 			if (mLookAt != null) {
 				Matrix.setLookAtM(mVMatrix, 0, mPosition.x, mPosition.y,
@@ -91,7 +92,7 @@ public class Camera extends ATransformable3D {
 		}
 	}
 	
-	public void updateFrustum(float[] pMatrix,float[] vMatrix) {
+	public void updateFrustum(double[] pMatrix, double[] vMatrix) {
 		synchronized (mFrustumLock) {
 			Matrix.multiplyMM(mCombinedMatrix, 0, pMatrix, 0, vMatrix, 0);
 			Matrix.invertM(mTmpMatrix, 0, mCombinedMatrix, 0);
@@ -99,8 +100,8 @@ public class Camera extends ATransformable3D {
 		}
 	}
 
-	protected void rotateM(float[] m, int mOffset, float a, float x, float y,
-			float z) {
+	protected void rotateM(double[] m, int mOffset, double a, double x, double y,
+			double z) {
 		synchronized (mFrustumLock) {
 			Matrix.setIdentityM(mRotateMatrixTmp, 0);
 			Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
@@ -109,13 +110,13 @@ public class Camera extends ATransformable3D {
 		}
 	}
 
-	public void setRotationMatrix(float[] m) {
+	public void setRotationMatrix(double[] m) {
 		synchronized (mFrustumLock) {
 			mRotationMatrix = m;
 		}
 	}
 	
-	public float[] getRotationMatrix()
+	public double[] getRotationMatrix()
 	{
 		synchronized (mFrustumLock) {
 			return mRotationMatrix;
@@ -126,17 +127,17 @@ public class Camera extends ATransformable3D {
 		synchronized (mFrustumLock) {
 			mLastWidth = width;
 			mLastHeight = height;
-			float ratio = (float) width / height;
-			float frustumH = MathUtil.tan(getFieldOfView() / 360.0f * MathUtil.PI)
+			double ratio = ((double) width) / ((double) height);
+			double frustumH = MathUtil.tan(getFieldOfView() / 360.0 * MathUtil.PI)
 					* getNearPlane();
-			float frustumW = frustumH * ratio;
+			double frustumW = frustumH * ratio;
 
 			Matrix.frustumM(mProjMatrix, 0, -frustumW, frustumW, -frustumH,
 					frustumH, getNearPlane(), getFarPlane());
 		}
 	}
 	
-	public void setProjectionMatrix(float fieldOfView, int width, int height)
+	public void setProjectionMatrix(double fieldOfView, int width, int height)
 	{
 		synchronized (mFrustumLock) {
 			mFieldOfView = fieldOfView;
@@ -144,7 +145,7 @@ public class Camera extends ATransformable3D {
 		}		
 	}
 
-    public void setUpAxis(float x, float y, float z) {
+    public void setUpAxis(double x, double y, double z) {
     	synchronized (mFrustumLock) {
     		mUpAxis.setAll(x, y, z);
     	}
@@ -167,45 +168,45 @@ public class Camera extends ATransformable3D {
     	}
     }
     
-	public float[] getProjectionMatrix() {
+	public double[] getProjectionMatrix() {
 		synchronized (mFrustumLock) {
 			return mProjMatrix;
 		}
 	}
 
-	public float getNearPlane() {
+	public double getNearPlane() {
 		synchronized (mFrustumLock) {
 			return mNearPlane;
 		}
 	}
 
-	public void setNearPlane(float nearPlane) {
+	public void setNearPlane(double nearPlane) {
 		synchronized (mFrustumLock) {
 			mNearPlane = nearPlane;
 			setProjectionMatrix(mLastWidth, mLastHeight);
 		}
 	}
 
-	public float getFarPlane() {
+	public double getFarPlane() {
 		synchronized (mFrustumLock) {
 			return mFarPlane;
 		}
 	}
 
-	public void setFarPlane(float farPlane) {
+	public void setFarPlane(double farPlane) {
 		synchronized (mFrustumLock) {
 			mFarPlane = farPlane;
 			setProjectionMatrix(mLastWidth, mLastHeight);
 		}
 	}
 
-	public float getFieldOfView() {
+	public double getFieldOfView() {
 		synchronized (mFrustumLock) {
 			return mFieldOfView;
 		}
 	}
 
-	public void setFieldOfView(float fieldOfView) {
+	public void setFieldOfView(double fieldOfView) {
 		synchronized (mFrustumLock) {
 			mFieldOfView = fieldOfView;
 			setProjectionMatrix(mLastWidth, mLastHeight);

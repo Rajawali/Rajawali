@@ -27,8 +27,6 @@ import android.opengl.GLES20;
 
 public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
-	protected final int FLOAT_SIZE_BYTES = 4;
-
 	private ArrayList<BaseObject3D> mObjectLookup;
 	private int mColorIndex = 0;
 	private RajawaliRenderer mRenderer;

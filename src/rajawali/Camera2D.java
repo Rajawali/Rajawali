@@ -12,10 +12,10 @@
  */
 package rajawali;
 
-import android.opengl.Matrix;
+import rajawali.math.Matrix;
 
 public class Camera2D extends Camera {
-	private float mWidth, mHeight;
+	private double mWidth, mHeight;
 	public Camera2D() {
 		super();
 		mWidth = 1.0f;
@@ -28,19 +28,19 @@ public class Camera2D extends Camera {
 		Matrix.orthoM(mProjMatrix, 0, (-mWidth/2.0f)+mPosition.x, (mWidth/2.0f)+mPosition.x, (-mHeight/2.0f)+mPosition.y, (mHeight/2.0f)+mPosition.y, mNearPlane, mFarPlane);
 	}
 	
-	public void setWidth(float width) {
+	public void setWidth(double width) {
 		this.mWidth = width;
 	}
 	
-	public float getWidth() {
+	public double getWidth() {
 		return mWidth;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(double height) {
 		this.mHeight = height;
 	}
 
-	public float getHeight() {
+	public double getHeight() {
 		return mHeight;
 	}
 }

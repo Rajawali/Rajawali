@@ -12,12 +12,10 @@
  */
 package rajawali;
 
-import android.opengl.Matrix;
+import rajawali.math.Matrix;
 
-
-public class OrthographicCamera extends Camera 
-{
-	private float mZoom = 1;
+public class OrthographicCamera extends Camera {
+	private double mZoom = 1;
 	
 	public OrthographicCamera()
 	{
@@ -26,18 +24,18 @@ public class OrthographicCamera extends Camera
 	
 	public void setProjectionMatrix(int width, int height) 
 	{
-		float aspect = (float)width / (float)height;
+		double aspect = (double) width / (double) height;
 		Matrix.orthoM(mProjMatrix, 0, -aspect, aspect, -1, 1, getNearPlane(), getFarPlane());
 		mProjMatrix[15] = mZoom;
 	}
 	
-	public void setZoom(float zoom)
+	public void setZoom(double zoom)
 	{
 		mZoom = zoom;
 		mProjMatrix[15] = zoom;
 	}
 	
-	public float getZoom()
+	public double getZoom()
 	{
 		return mZoom;
 	}
