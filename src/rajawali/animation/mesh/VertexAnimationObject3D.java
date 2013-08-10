@@ -49,7 +49,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 
 		// Calculate interpolation and frame delta (if playing)
 		if (isPlaying()) {
-			mInterpolation += (float) (now - mStartTime) * mFps / 1000;
+			mInterpolation += (now - mStartTime) * mFps / 1000.0;
 			mCurrentFrameIndex += (int) mInterpolation; // advance frame if interpolation >= 1
 			if (mCurrentFrameIndex > mEndFrameIndex) {
 				if (mLoop) {

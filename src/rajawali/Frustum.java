@@ -13,17 +13,17 @@
 package rajawali;
 
 import rajawali.bounds.BoundingBox;
+import rajawali.math.Matrix;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
-import android.opengl.Matrix;
 
 public class Frustum {
 	private Vector3[] mTmp = new Vector3[8];
 	protected Sphere mVisualSphere;
 	protected BoundingBox mBoundingBox;
-	protected float[] mTmpMatrix = new float[16];
+	protected double[] mTmpMatrix = new double[16];
 	protected static final Vector3[] mClipSpacePlanePoints = { 
 		new Vector3(-1, -1, -1), 
 		new Vector3( 1, -1, -1), 
@@ -49,7 +49,7 @@ public class Frustum {
 		}
 	}
 
-	public void update(float[] inverseProjectionView) {             
+	public void update(double[] inverseProjectionView) {             
 
 		for(int i = 0; i < 8; i++) {
 			planePoints[i].setAll(mClipSpacePlanePoints[i]);
@@ -66,7 +66,7 @@ public class Frustum {
 	}       
 
 
-	public boolean sphereInFrustum (Vector3 center, float radius) {
+	public boolean sphereInFrustum (Vector3 center, double radius) {
 		for (int i = 0; i < planes.length; i++)
 			if (planes[i].distance(center) < -radius) return false;
 

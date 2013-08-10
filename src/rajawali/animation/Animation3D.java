@@ -323,8 +323,8 @@ public abstract class Animation3D extends AFrameTask {
 		mElapsedTime += deltaTime;
 
 		// Calculate the interpolated time
-		final float interpolatedTime = mInterpolator
-				.getInterpolation((float) ((mElapsedTime) / mDuration));
+		final double interpolatedTime = mInterpolator
+				.getInterpolation((float) (mElapsedTime / mDuration));
 		mInterpolatedTime = interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime;
 
 		// Adjust for reverse play back.

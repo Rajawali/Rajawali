@@ -94,7 +94,7 @@ public class RayPickingVisitor implements INodeVisitor {
 		return Intersector.intersectRaySphere(mRayStart, mRayEnd, bsphere.getPosition(), bsphere.getRadius(), mHitPoint);
 	}
 	
-	private boolean getIntersection( float fDst1, float fDst2, Vector3 P1, Vector3 P2) {
+	private boolean getIntersection( double fDst1, double fDst2, Vector3 P1, Vector3 P2) {
 		if ((fDst1 * fDst2) >= 0.0f) return false;
 		if (floatEqual(fDst1, fDst2)) return false; 
 		mHitPoint.setAll(P1);
@@ -103,8 +103,8 @@ public class RayPickingVisitor implements INodeVisitor {
 		return true;
 	}
 	
-	private boolean floatEqual(float lhs, float rhs) {
-		return (float)Math.abs(lhs - rhs) < .00001f;
+	private boolean floatEqual(double lhs, double rhs) {
+		return Math.abs(lhs - rhs) < .00001f;
 	}
 
 	private boolean isInBox(Vector3 boxMin, Vector3 boxMax, Axis axis) {

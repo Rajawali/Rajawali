@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import android.opengl.Matrix;
 import android.util.Log;
 
 import rajawali.ATransformable3D;
@@ -24,6 +23,7 @@ import rajawali.Camera;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.bounds.IBoundingVolume;
+import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 
@@ -74,7 +74,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	protected boolean mRecursiveAdd = false; //Default to NOT recursive add
 	protected boolean mRecursiveRemove = false; //Default to NOT recursive remove.
 
-	protected float[] mMMatrix = new float[16]; //A model matrix to use for drawing the bounds of this node.
+	protected double[] mMMatrix = new double[16]; //A model matrix to use for drawing the bounds of this node.
 	protected Vector3 mPosition; //This node's center point in 3D space.
 
 	/**
@@ -478,7 +478,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				} else if (volume instanceof BoundingSphere) {
 					BoundingSphere bs = (BoundingSphere) volume;
 					Vector3 bs_position = bs.getPosition();
-					float radius = bs.getScaledRadius();
+					double radius = bs.getScaledRadius();
 					Vector3 rad = new Vector3();
 					rad.setAll(radius, radius, radius);
 					test_against_min = Vector3.subtractAndCreate(bs_position, rad);
@@ -789,7 +789,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#displayGraph(boolean)
 	 */
-	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix) {
+	public void displayGraph(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix) {
 		Matrix.setIdentityM(mMMatrix, 0);
 		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		if (mSplit) {

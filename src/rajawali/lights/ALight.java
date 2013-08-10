@@ -21,9 +21,9 @@ public abstract class ALight extends ATransformable3D {
 	public static final int POINT_LIGHT = 1;
 	public static final int SPOT_LIGHT = 2;
 
-	protected float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
-	protected float[] mPositionArray = new float[3];
-	protected float[] mDirectionArray = new float[3];
+	protected final float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
+	protected final double[] mPositionArray = new double[3];
+	protected final double[] mDirectionArray = new double[3];
 	protected float mPower = .5f;
 	private int mLightType;
 
@@ -47,9 +47,7 @@ public abstract class ALight extends ATransformable3D {
 	}
 
 	public void setColor(Vector3 color) {
-		mColor[0] = color.x;
-		mColor[1] = color.y;
-		mColor[2] = color.z;
+		setColor((float) color.x, (float) color.y, (float) color.z);
 	}
 
 	public float[] getColor() {
@@ -80,7 +78,7 @@ public abstract class ALight extends ATransformable3D {
 		this.mLightType = lightType;
 	}
 
-	public float[] getPositionArray() {
+	public double[] getPositionArray() {
 		mPositionArray[0] = mPosition.x;
 		mPositionArray[1] = mPosition.y;
 		mPositionArray[2] = mPosition.z;

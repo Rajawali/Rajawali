@@ -51,8 +51,7 @@ public class RotateAnimation3D extends Animation3D {
 		mAngleAxisRotation = true;
 		mQuat = new Quaternion();
 		mQuatFrom = new Quaternion();
-		// TODO: Switch Quaternions to take in doubles instead of floats.
-		mQuatFrom.fromAngleAxis(axis, (float) rotateFrom);
+		mQuatFrom.fromAngleAxis(axis, rotateFrom);
 		mRotationAxis = axis;
 		mRotateFrom = rotateFrom;
 		mDegreesToRotate = degreesToRotate;
@@ -70,9 +69,9 @@ public class RotateAnimation3D extends Animation3D {
 		mRotateY = yRotate;
 		mRotateZ = zRotate;
 
-		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.Y), (float) yRotate));
-		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.Z), (float) zRotate));
-		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.X), (float) xRotate));
+		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.Y), yRotate));
+		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.Z), zRotate));
+		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.X), xRotate));
 	}
 
 	public RotateAnimation3D(Vector3 rotate) {
@@ -98,11 +97,11 @@ public class RotateAnimation3D extends Animation3D {
 		if (mAngleAxisRotation) {
 			// Rotation around an axis by amount of degrees.
 			mRotationAngle = mRotateFrom + (mInterpolatedTime * mDegreesToRotate);
-			mQuat.fromAngleAxis(mRotationAxis, (float) mRotationAngle);
+			mQuat.fromAngleAxis(mRotationAxis, mRotationAngle);
 			mQuat.multiply(mQuatFrom);
 			mTransformable3D.setOrientation(mQuat);
 		} else {
-			mTransformable3D.setOrientation(Quaternion.slerpAndCreate(mQuatFrom, mQuat, (float)mInterpolatedTime));
+			mTransformable3D.setOrientation(Quaternion.slerpAndCreate(mQuatFrom, mQuat, mInterpolatedTime));
 		}
 	}
 }
