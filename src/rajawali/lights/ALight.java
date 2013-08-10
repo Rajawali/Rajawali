@@ -9,9 +9,9 @@ public abstract class ALight extends ATransformable3D {
 	public static final int POINT_LIGHT = 1;
 	public static final int SPOT_LIGHT = 2;
 
-	protected float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
-	protected double[] mPositionArray = new double[3];
-	protected double[] mDirectionArray = new double[3];
+	protected final float[] mColor = new float[] { 1.0f, 1.0f, 1.0f };
+	protected final double[] mPositionArray = new double[3];
+	protected final double[] mDirectionArray = new double[3];
 	protected float mPower = .5f;
 	private int mLightType;
 
