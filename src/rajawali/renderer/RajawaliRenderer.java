@@ -41,7 +41,7 @@ import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.plugins.Plugin;
 import rajawali.scene.RajawaliScene;
-import rajawali.util.FPSUpdateListener;
+import rajawali.util.OnFPSUpdateListener;
 import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
 import rajawali.util.RajLog;
@@ -74,7 +74,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected int mFrameCount; //Used for determining FPS
 	private long mStartTime = System.nanoTime(); //Used for determining FPS
 	protected double mLastMeasuredFPS; //Last measured FPS value
-	protected FPSUpdateListener mFPSUpdateListener; //Listener to notify of new FPS values.
+	protected OnFPSUpdateListener mFPSUpdateListener; //Listener to notify of new FPS values.
 	private long mLastRender; //Time of last rendering. Used for animation delta time
 	
 	protected double[] mVMatrix = new double[16]; //The OpenGL view matrix
@@ -1277,7 +1277,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajawaliRenderer.mMaxLights = maxLights;
 	}
 
-	public void setFPSUpdateListener(FPSUpdateListener listener) {
+	public void setFPSUpdateListener(OnFPSUpdateListener listener) {
 		mFPSUpdateListener = listener;
 	}
 
