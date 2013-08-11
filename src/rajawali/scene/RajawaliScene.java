@@ -69,6 +69,7 @@ public class RajawaliScene extends AFrameTask {
 	protected Matrix4 mVMatrix = new Matrix4();
 	protected Matrix4 mPMatrix = new Matrix4();
 	protected Matrix4 mVPMatrix = new Matrix4();
+	protected Matrix4 mInvVPMatrix = new Matrix4();
 	
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
@@ -671,6 +672,7 @@ public class RajawaliScene extends AFrameTask {
 		mPMatrix = mCamera.getProjectionMatrix();
 		//Pre-multiply View and Projection matricies once for speed
 		mVPMatrix = mPMatrix.clone().multiply(mVMatrix);
+		mInvVPMatrix.setAll(mVPMatrix).inverse();
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -685,7 +687,7 @@ public class RajawaliScene extends AFrameTask {
 			}
 		}
 
-		mCamera.updateFrustum(mPMatrix, mVMatrix); //update frustum plane
+		mCamera.updateFrustum(mInvVPMatrix); //update frustum plane
 		
 		// Update all registered animations
 		synchronized (mAnimations) {

@@ -16,6 +16,7 @@ import java.util.Collection;
 
 import rajawali.Camera;
 import rajawali.bounds.IBoundingVolume;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.scene.RajawaliScene;
 
@@ -127,7 +128,7 @@ public interface IGraphNode {
 	 * 
 	 * @param display boolean indicating if the graph is to be displayed.
 	 */
-	public void displayGraph(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix);
+	public void displayGraph(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix);
 	
 	/**
 	 * Retrieve the minimum bounds of this scene.

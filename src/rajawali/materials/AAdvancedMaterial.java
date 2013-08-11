@@ -19,7 +19,7 @@ import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
-import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.ArrayUtils;
@@ -30,7 +30,7 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected static final int MAX_LIGHTS = RajawaliRenderer.getMaxLights(); 
 	
 	protected float[] mTempBoneArray = null; //We use lazy loading here because we dont know its size in advance.
-	
+
 	public static final String M_FOG_VERTEX_VARS =
 			"\n#ifdef FOG_ENABLED\n" +
 			"	uniform float uFogNear;\n" +
@@ -110,7 +110,8 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	protected int[] muSpotFalloffHandles;
 	
 	//This is used only for binding to a GLSL program and doesn't need to be double precision.
-	protected float[] mNormalMatrix; 
+	protected final float[] mNormalFloats = new float[9];
+	protected Matrix4 mNormalMatrix = new Matrix4();
 	
 	protected double[] mTmp, mTmp2;
 	protected float[] mAmbientColor, mAmbientIntensity;
@@ -138,7 +139,6 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	
 	public AAdvancedMaterial(String vertexShader, String fragmentShader) {
 		super(vertexShader, fragmentShader);
-		mNormalMatrix = new float[9];
 		mTmp = new double[16];
 		mTmp2 = new double[16];
 		mAmbientColor = new float[] {.2f, .2f, .2f, 1f};
@@ -394,19 +394,16 @@ public abstract class AAdvancedMaterial extends AMaterial {
 	}
 	
 	@Override
-	public void setModelMatrix(double[] modelMatrix) {
+	public void setModelMatrix(Matrix4 modelMatrix) {
 		super.setModelMatrix(modelMatrix);
-	
-		System.arraycopy(modelMatrix, 0, mTmp2, 0, 16);
-		Matrix.invertM(mTmp, 0, mTmp2, 0);
-		Matrix.transposeM(mTmp2, 0, mTmp, 0);
-		System.arraycopy(mTmp2, 0, mTmp, 0, 16);
+		mNormalMatrix.setAll(modelMatrix).setToNormalMatrix();
+		float[] matrix = mNormalMatrix.getFloatValues();
 		
-		mNormalMatrix[0] = (float) mTmp2[0]; mNormalMatrix[1] = (float) mTmp2[1]; mNormalMatrix[2] = (float) mTmp2[2];
-		mNormalMatrix[3] = (float) mTmp2[4]; mNormalMatrix[4] = (float) mTmp2[5]; mNormalMatrix[5] = (float) mTmp2[6];
-		mNormalMatrix[6] = (float) mTmp2[8]; mNormalMatrix[7] = (float) mTmp2[9]; mNormalMatrix[8] = (float) mTmp2[10];
+		mNormalFloats[0] = matrix[0]; mNormalFloats[1] = matrix[1]; mNormalFloats[2] = matrix[2];
+		mNormalFloats[3] = matrix[4]; mNormalFloats[4] = matrix[5]; mNormalFloats[5] = matrix[6];
+		mNormalFloats[6] = matrix[8]; mNormalFloats[7] = matrix[9]; mNormalFloats[8] = matrix[10];
 	    
-		GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalMatrix, 0);
+		GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, mNormalFloats, 0);
 	}
 	
 	public void remove() {

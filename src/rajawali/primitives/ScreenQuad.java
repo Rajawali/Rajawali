@@ -15,7 +15,7 @@ package rajawali.primitives;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Camera2D;
-import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 /**
@@ -40,9 +40,9 @@ import rajawali.util.ObjectColorPicker.ColorPickerInfo;
  * public void onSurfaceChanged(GL10 gl, int width, int height) {
  * 	super.onSurfaceChanged(gl, width, height);
  * 	if(width < height)
- * 		screenQuad.setScale((float)height / (float)width, 1, 0);
+ * 		screenQuad.setScale(height / width, 1, 0);
  * 	else
- * 		screenQuad.setScale(1, (float)width / (float)height, 0);
+ * 		screenQuad.setScale(1, width / height, 0);
  * }
  * </code></pre>
  * 
@@ -51,7 +51,7 @@ import rajawali.util.ObjectColorPicker.ColorPickerInfo;
  */
 public class ScreenQuad extends BaseObject3D {
 	private Camera2D mCamera;
-	private double[] mVPMatrix;
+	private Matrix4 mVPMatrix;
 	/**
 	 * Creates a new ScreenQuad.
 	 */
@@ -64,7 +64,7 @@ public class ScreenQuad extends BaseObject3D {
 	private void init() {
 		mCamera = new Camera2D();
 		mCamera.setProjectionMatrix(0, 0);
-		mVPMatrix = new double[16];
+		mVPMatrix = new Matrix4();
 		
 		float[] vertices = new float[] {
 				-.5f, .5f, 0,
@@ -94,11 +94,11 @@ public class ScreenQuad extends BaseObject3D {
 		mEnableDepthMask = false;
 	}
 	
-	public void render(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix, final double[] parentMatrix,
-			ColorPickerInfo pickerInfo) {
-		double[] pMatrix = mCamera.getProjectionMatrix();
-		double[] viewMatrix = mCamera.getViewMatrix();
-		Matrix.multiplyMM(mVPMatrix, 0, pMatrix, 0, viewMatrix, 0);
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+			final Matrix4 vMatrix, final Matrix4 parentMatrix, ColorPickerInfo pickerInfo) {
+		final Matrix4 pMatrix = mCamera.getProjectionMatrix();
+		final Matrix4 viewMatrix = mCamera.getViewMatrix();
+		mVPMatrix.setAll(pMatrix).multiply(viewMatrix);
 		super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, null);
 	}
 }

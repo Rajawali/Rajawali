@@ -168,6 +168,17 @@ public class Vector3 {
 	}
 	
 	/**
+	 * Sets all components of this {@link Vector3} to the values provided representing
+	 * the input {@link Axis}.
+	 * 
+	 * @param axis {@link Axis} The cardinal axis to set the values to.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 setAll(Axis axis) {
+		return setAll(getAxisVector(axis));
+	}
+	
+	/**
 	 * Adds the provided {@link Vector3} to this one.
 	 * 
 	 * @param v {@link Vector3} to be added to this one.
@@ -338,6 +349,16 @@ public class Vector3 {
 		y = vx * matrix[Matrix4.M10] + vy * matrix[Matrix4.M11] + vz * matrix[Matrix4.M12] + matrix[Matrix4.M13];
 		z = vx * matrix[Matrix4.M20] + vy * matrix[Matrix4.M21] + vz * matrix[Matrix4.M22] + matrix[Matrix4.M23];
 		return this;
+	}
+	
+	/**
+	 * Multiplies this {@link Vector3} and the provided 4x4 matrix.
+	 * 
+	 * @param matrix {@link Matrix4} to multiply this {@link Vector3} by. 
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 multiply(final Matrix4 matrix) {
+		return multiply(matrix.getDoubleValues());
 	}
 	
 	/**

@@ -916,6 +916,20 @@ public final class Matrix4 {
     	return new Vector3(x, y, z);
     }
     
+    /**
+     * Sets the components of the provided {@link Vector3} representing the scaling component
+     * of this {@link Matrix4}.
+     * 
+     * @param vec {@link Vector3} to store the result in.
+     * @return {@link Vector3} representing the scaling.
+     */
+    public Vector3 getScaling(final Vector3 vec) {
+    	final double x = Math.sqrt(m[M00]*m[M00] + m[M01]*m[M01] + m[M02]*m[M02]);
+    	final double y = Math.sqrt(m[M10]*m[M10] + m[M11]*m[M11] + m[M12]*m[M12]);
+    	final double z = Math.sqrt(m[M20]*m[M20] + m[M21]*m[M21] + m[M22]*m[M22]);
+    	return vec.setAll(x, y, z);
+    }
+    
     //--------------------------------------------------
   	// Creation methods
   	//--------------------------------------------------

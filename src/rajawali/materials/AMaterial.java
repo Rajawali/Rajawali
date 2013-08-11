@@ -28,6 +28,7 @@ import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.TextureManager;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
@@ -42,7 +43,6 @@ public abstract class AMaterial extends AFrameTask {
 	
 	protected final float[] mTemp3Floats = new float[3];
 	protected final float[] mTemp4Floats = new float[4];
-	protected final float[] mTemp16Floats = new float[16];
 	
 	protected String mUntouchedVertexShader;
 	protected String mUntouchedFragmentShader;
@@ -77,8 +77,8 @@ public abstract class AMaterial extends AFrameTask {
 
 	protected int mNumTextures = 0;
 	protected float mAlphaMaskingThreshold = .5f;
-	protected double[] mModelViewMatrix;
-	protected double[] mViewMatrix;
+	protected Matrix4 mModelViewMatrix;
+	protected Matrix4 mViewMatrix;
 	protected double[] mCameraPosArray;
 	protected float[] mSingleColor;
 	protected float mColorBlendFactor = .5f;
@@ -440,25 +440,22 @@ public abstract class AMaterial extends AFrameTask {
 		}
 	}
 
-	public void setMVPMatrix(double[] mvpMatrix) {
+	public void setMVPMatrix(Matrix4 mvpMatrix) {
 		if(checkValidHandle(muMVPMatrixHandle, "mvp matrix"))
-			GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, 
-					ArrayUtils.convertDoublesToFloats(mvpMatrix, mTemp16Floats), 0);
+			GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mvpMatrix.getFloatValues(), 0);
 
 	}
 
-	public void setModelMatrix(double[] modelMatrix) {
+	public void setModelMatrix(Matrix4 modelMatrix) {
 		mModelViewMatrix = modelMatrix;
 		if(checkValidHandle(muMMatrixHandle, null))
-			GLES20.glUniformMatrix4fv(muMMatrixHandle, 1, false, 
-					ArrayUtils.convertDoublesToFloats(modelMatrix, mTemp16Floats), 0);
+			GLES20.glUniformMatrix4fv(muMMatrixHandle, 1, false, mModelViewMatrix.getFloatValues(), 0);
 	}
 
-	public void setViewMatrix(double[] viewMatrix) {
+	public void setViewMatrix(Matrix4 viewMatrix) {
 		mViewMatrix = viewMatrix;
 		if(checkValidHandle(muVMatrixHandle, null))
-			GLES20.glUniformMatrix4fv(muVMatrixHandle, 1, false, 
-					ArrayUtils.convertDoublesToFloats(viewMatrix, mTemp16Floats), 0);
+			GLES20.glUniformMatrix4fv(muVMatrixHandle, 1, false, mViewMatrix.getFloatValues(), 0);
 	}
 	
 	public void setInterpolation(double interpolation) {
@@ -549,7 +546,7 @@ public abstract class AMaterial extends AFrameTask {
 	 * @return {@link double[]}
 	 */
 
-	public double[] getModelViewMatrix() {
+	public Matrix4 getModelViewMatrix() {
 		return mModelViewMatrix;
 	}
 

@@ -24,6 +24,7 @@ import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.bounds.IBoundingVolume;
 import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 
@@ -74,8 +75,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	protected boolean mRecursiveAdd = false; //Default to NOT recursive add
 	protected boolean mRecursiveRemove = false; //Default to NOT recursive remove.
 
-	protected double[] mMMatrix = new double[16]; //A model matrix to use for drawing the bounds of this node.
-	protected Vector3 mPosition; //This node's center point in 3D space.
+	//Expected to never leave its default identity state.
+	protected final Matrix4 mMMatrix = new Matrix4(); //A model matrix to use for drawing the bounds of this node.
+	protected final Vector3 mPosition = new Vector3(); //This node's center point in 3D space.
 
 	/**
 	 * The region (e.g. octant) this node occupies in its parent. If this node
@@ -789,8 +791,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#displayGraph(boolean)
 	 */
-	public void displayGraph(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix) {
-		Matrix.setIdentityM(mMMatrix, 0);
+	public void displayGraph(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix) {
 		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		if (mSplit) {
 			for (int i = 0; i < CHILD_COUNT; ++i) {

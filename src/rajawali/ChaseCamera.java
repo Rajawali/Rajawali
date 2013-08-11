@@ -12,24 +12,25 @@
  */
 package rajawali;
 
+import rajawali.math.Matrix4;
 import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;
 
 public class ChaseCamera extends Camera {
 	protected Vector3 mCameraOffset;
 	protected BaseObject3D mObjectToChase;
-	protected double mSlerpFactor = .1f;
-	protected double[] mRotMatrix;
+	protected double mSlerpFactor = 0.1;
+	protected Matrix4 mRotationMatrix;
 	protected Vector3 mTmpVec;
 	protected Quaternion mTmpOrientation;
 	protected Quaternion mPreviousOrientation;
 	
 	public ChaseCamera() {
-		this(new Vector3(0, 3, 16), .1f, null);
+		this(new Vector3(0, 3, 16), 0.1, null);
 	}
 	
 	public ChaseCamera(Vector3 cameraOffset, double slerpFactor) {
-		this(cameraOffset, .1f, null);
+		this(cameraOffset, 0.1, null);
 	}
 
 	public ChaseCamera(Vector3 cameraOffset, double slerpFactor, BaseObject3D objectToChase) {
@@ -40,18 +41,18 @@ public class ChaseCamera extends Camera {
 		mCameraOffset = cameraOffset;
 		mObjectToChase = objectToChase;
 		mSlerpFactor = slerpFactor;
-		mRotMatrix = new double[16];
+		mRotationMatrix = new Matrix4();
 	}
 	
 	private Quaternion mTmpQuatChase=new Quaternion();
 	
-	public double[] getViewMatrix() {
+	public Matrix4 getViewMatrix() {
 		mPosition.setAll(mObjectToChase.getPosition());
 		mTmpVec.setAll(mCameraOffset);
 		
 		mTmpOrientation.slerp(mPreviousOrientation, mObjectToChase.getOrientation(mTmpQuatChase), mSlerpFactor);
-		mTmpOrientation.toRotationMatrix(mRotMatrix);
-		mTmpVec.multiply(mRotMatrix);
+		mTmpOrientation.toRotationMatrix(mRotationMatrix);
+		mTmpVec.multiply(mRotationMatrix);
 		
 		mPosition.add(mTmpVec);
 		setLookAt(mObjectToChase.getPosition());
