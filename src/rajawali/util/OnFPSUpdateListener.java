@@ -12,6 +12,6 @@
  */
 package rajawali.util;
 
-public interface FPSUpdateListener {
+public interface OnFPSUpdateListener {
 	void onFPSUpdate(double fps);
 }

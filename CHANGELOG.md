@@ -77,6 +77,10 @@ which should not produce extra garbage and will dramatically simplify code which
 
 `BaseObject3D` has been renamed to `Object3D`.
 
+# FPSUpdateListener
+
+`FPSUpdateListener` has been renamed to `OnFPSUpdateLister`.
+
 # GL State
 
 To help increase ultimate frame rate, a default GL state has been implemented and set once at GL surface creation. `BaseObject3D`
