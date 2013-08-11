@@ -13,6 +13,7 @@
 package rajawali.math;
 
 import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.util.ArrayUtils;
 
 /**
@@ -48,6 +49,11 @@ public final class Matrix4 {
 	private double[] m = new double[16]; //The matrix values
 	private double[] mTmp = new double[16]; //A scratch matrix 
 	private float[] mFloat = new float[16]; //A float copy of the values, used for sending to GL.
+	private final Quaternion mQuat = new Quaternion(); //A scratch quaternion.
+	private final Vector3 mVec1 = new Vector3(); //A scratch Vector3
+	private final Vector3 mVec2 = new Vector3(); //A scratch Vector3
+	private final Vector3 mVec3 = new Vector3(); //A scratch Vector3
+	private final Matrix4 mMatrix = new Matrix4(); //A scratch Matrix4
 	
 	//--------------------------------------------------
 	// Constructors
@@ -98,16 +104,6 @@ public final class Matrix4 {
 	 */
 	public Matrix4(final Quaternion quat) {
 		setAll(quat);
-	}
-	
-	public Matrix4(double m00, double m01, double m02, double m03,
-            double m10, double m11, double m12, double m13,
-            double m20, double m21, double m22, double m23,
-            double m30, double m31, double m32, double m33) {
-		setAll(m00, m01, m02, m03,
-	            m10, m11, m12, m13,
-	            m20, m21, m22, m23,
-	            m30, m31, m32, m33);
 	}
 	
 	
@@ -164,33 +160,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 setAll(double w, double x, double y, double z) {
-		final double xx = x * x;
-		final double xy = x * y;
-		final double xz = x * z;
-		final double xw = x * w;
-		final double yy = y * y;
-		final double yz = y * z;
-		final double yw = y * w;
-		final double zz = z * z;
-		final double zw = z * w;
-		//Set matrix from quaternion
-		m[M00] = 1 - 2 * (yy + zz);
-		m[M01] = 2 * (xy - zw);
-		m[M02] = 2 * (xz + yw);
-		m[M03] = 0;
-		m[M10] = 2 * (xy + zw);
-		m[M11] = 1 - 2 * (xx + zz);
-		m[M12] = 2 * (yz - xw);
-		m[M12] = 0;
-		m[M20] = 2 * (xz - yw);
-		m[M21] = 2 * (yz + xw);
-		m[M22] = 1 - 2 * (xx + yy);
-		m[M23] = 0;
-		m[M30] = 0;
-		m[M31] = 0;
-		m[M32] = 0;
-		m[M33] = 1;
-		return this;
+		return setAll(mQuat.setAll(w, x, y, z));
 	}
 	
 	/**
@@ -211,16 +181,6 @@ public final class Matrix4 {
 		m[M03] = pos.x; m[M13] = pos.y; m[M23] = pos.z;
 		m[M30] = 0; m[M31] = 0; m[M32] = 0; m[M33] = 1;
 		return this;
-	}
-
-	public void setAll(double m00, double m01, double m02, double m03,
-            double m10, double m11, double m12, double m13,
-            double m20, double m21, double m22, double m23,
-            double m30, double m31, double m32, double m33) {
-		m[0] = m00;		m[1] = m01;		m[2] = m02;		m[3] = m03;
-		m[4] = m10;		m[5] = m11;		m[6] = m12;		m[7] = m13;
-		m[8] = m20;		m[9] = m21;		m[10] = m22;	m[11] = m23;
-		m[12] = m30;	m[13] = m31;	m[14] = m32;	m[15] = m33;
 	}
 	
 	/**
@@ -311,6 +271,36 @@ public final class Matrix4 {
     }
 	
 	/**
+	 * Adds the given {@link Matrix4} to this one.
+	 * 
+	 * @param matrix {@link Matrix4} The matrix to add.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 add(Matrix4 matrix) {
+		matrix.toArray(mTmp);
+	    m[0] += mTmp[0]; m[1] += mTmp[1]; m[2] += mTmp[2]; m[3] += mTmp[3];
+	    m[4] += mTmp[4]; m[5] += mTmp[5]; m[6] += mTmp[6]; m[7] += mTmp[7];
+	    m[8] += mTmp[8]; m[9] += mTmp[9]; m[10] += mTmp[10]; m[11] += mTmp[11];
+	    m[12] += mTmp[12]; m[13] += mTmp[13]; m[14] += mTmp[14]; m[15] += mTmp[15];
+	    return this;
+	}
+	
+	/**
+	 * Subtracts the given {@link Matrix4} to this one.
+	 * 
+	 * @param matrix {@link Matrix4} The matrix to subtract.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 subtract(final Matrix4 matrix) {
+		matrix.toArray(mTmp);
+	    m[0] -= mTmp[0]; m[1] -= mTmp[1]; m[2] -= mTmp[2]; m[3] -= mTmp[3];
+	    m[4] -= mTmp[4]; m[5] -= mTmp[5]; m[6] -= mTmp[6]; m[7] -= mTmp[7];
+	    m[8] -= mTmp[8]; m[9] -= mTmp[9]; m[10] -= mTmp[10]; m[11] -= mTmp[11];
+	    m[12] -= mTmp[12]; m[13] -= mTmp[13]; m[14] -= mTmp[14]; m[15] -= mTmp[15];
+	    return this;
+    }
+	
+	/**
 	 * Multiplies this {@link Matrix4} with the given one, storing the result in this {@link Matrix}.
 	 * <pre>
 	 * A.multiply(B) results in A = AB.
@@ -325,24 +315,34 @@ public final class Matrix4 {
 		return this;
     }
 	
-	public Vector3 multiply(final Vector3 v) {
+	/**
+	 * Multiplies this {@link Matrix4} with a given {@link Vector3}, storing the result in a
+	 * new {@link Vector3}.
+	 * 
+	 * @param vec {@link Vector3} The vector to multiply by.
+	 * @return {@link Vector3} The resulting vector.
+	 */
+	public Vector3 multiply(final Vector3 vec) {
 		 Vector3 r = new Vector3();
+		 //TODO: FINISH
+         double inv = 1.0f / ( m[12] * vec.x + m[13] * vec.y + m[14] * vec.z + m[15] );
 
-         double inv = 1.0f / ( m[12] * v.x + m[13] * v.y + m[14] * v.z + m[15] );
-
-         r.x = ( m[0] * v.x + m[1] * v.y + m[2] * v.z + m[3] ) * inv;
-         r.y = ( m[4] * v.x + m[5] * v.y + m[6] * v.z + m[7] ) * inv;
-         r.z = ( m[8] * v.x + m[8] * v.y + m[10] * v.z + m[11] ) * inv;
+         r.x = ( m[0] * vec.x + m[1] * vec.y + m[2] * vec.z + m[3] ) * inv;
+         r.y = ( m[4] * vec.x + m[5] * vec.y + m[6] * vec.z + m[7] ) * inv;
+         r.z = ( m[8] * vec.x + m[8] * vec.y + m[10] * vec.z + m[11] ) * inv;
 
          return r;
 	}
 	
+	/**
+	 * Multiplies each element of this {@link Matrix4} by the provided factor.
+	 * 
+	 * @param value double The multiplication factor.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
 	public Matrix4 multiply(final double value) {
-		return new Matrix4(
-	            value*m[0], value*m[1], value*m[2], value*m[3],
-	            value*m[4], value*m[5], value*m[6], value*m[7],
-	            value*m[8], value*m[9], value*m[10], value*m[11],
-	            value*m[12], value*m[13], value*m[14], value*m[15]);
+		for (int i = 0; i < m.length; ++i) m[i] *= value;
+		return this;
 	}
 	
 	/**
@@ -415,6 +415,70 @@ public final class Matrix4 {
 	}
 	
 	/**
+	 * Post multiplies this {@link Matrix4} with the rotation specified by the provided {@link Quaternion}.
+	 * 
+	 * @param quat {@link Quaternion} describing the rotation to apply.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 rotate(final Quaternion quat) {
+		quat.toRotationMatrix(mMatrix);
+		return multiply(mMatrix);
+	}
+	
+	/**
+	 * Post multiplies this {@link Matrix4} with the rotation specified by the provided
+	 * axis and angle.
+	 * 
+	 * @param axis {@link Vector3} The axis of rotation.
+	 * @param angle double The angle of rotation in degrees.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 rotate(final Vector3 axis, double angle) {
+		if (angle == 0) return this;
+		return rotate(mQuat.fromAngleAxis(axis, angle));
+	}
+	
+	/**
+	 * Post multiplies this {@link Matrix4} with the rotation specified by the provided
+	 * cardinal axis and angle.
+	 * 
+	 * @param axis {@link Axis} The cardinal axis of rotation.
+	 * @param angle double The angle of rotation in degrees.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 rotate(final Axis axis, double angle) {
+		if (angle == 0) return this;
+		return rotate(mQuat.fromAngleAxis(axis, angle));
+	}
+	
+	/**
+	 * Post multiplies this {@link Matrix4} with the rotation specified by the provided
+	 * axis and angle.
+	 * 
+	 * @param x double The x component of the axis of rotation.
+	 * @param y double The y component of the axis of rotation.
+	 * @param z double The z component of the axis of rotation.
+	 * @param angle double The angle of rotation in degrees.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 rotate(double x, double y, double z, double angle) {
+		if (angle == 0) return this;
+		return rotate(mQuat.fromAngleAxis(x, y, z, angle));
+	}
+	
+	/**
+	 * Post multiplies this {@link Matrix4} with the rotation between the two provided
+	 * {@link Vector3}s. 
+	 * 
+	 * @param v1 {@link Vector3} The base vector.
+	 * @param v2 {@link Vector3} The target vector.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 rotate(final Vector3 v1, final Vector3 v2) {
+		return rotate(mQuat.fromRotationBetween(v1, v2));
+	}
+	
+	/**
 	 * Sets the translation of this {@link Matrix4} based on the provided {@link Vector3}.
 	 * 
 	 * @param vec {@link Vector3} describing the translation components.
@@ -439,6 +503,96 @@ public final class Matrix4 {
 		m[M03] = x;
 		m[M13] = y;
 		m[M23] = z;
+		return this;
+	}
+	
+	/**
+	 * Linearly interpolates between this {@link Matrix4} and the given {@link Matrix4} by 
+	 * the given factor.
+	 * 
+	 * @param matrix {@link Matrix4} The other matrix.
+	 * @param t double The interpolation ratio. The result is weighted to this value on the {@link matrix}.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 lerp(Matrix4 matrix, double t) {
+		matrix.toArray(mTmp);
+		for (int i = 0; i < 16; ++i) m[i] = m[i] * (1.0 - t) + t * mTmp[i];
+		return this;
+	}
+	
+	
+	
+	//--------------------------------------------------
+    // Set to methods
+    //--------------------------------------------------
+	
+	/**
+	 * Sets this {@link Matrix4} to a Normal matrix. 
+	 * 
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToNormalMatrix() {
+		m[M03] = 0; m[M13] = 0; m[M23] = 0;
+		return inverse().transpose();
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to a perspective projection matrix.
+	 * 
+	 * @param near double The near plane.
+	 * @param far double The far plane.
+	 * @param fov double The field of view in degrees.
+	 * @param aspect double The aspect ratio. Defined as width/height.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToPerspective(double near, double far, double fov, double aspect) {
+		identity();
+		Matrix.perspectiveM(m, 0, fov, aspect, near, far);
+		return this;
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to an orthographic projection matrix with the origin at (x,y)
+	 * extended to the specified width and height. The near plane is at 0 and the far plane is at 1.
+	 * 
+	 * @param x double The x coordinate of the origin.
+	 * @param y double The y coordinate of the origin.
+	 * @param width double The width.
+	 * @param height double The height.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToOrthographic2D(double x, double y, double width, double height) {
+		return setToOrthographic(x, x + width, y, y + height, 0, 1);
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to an orthographic projection matrix with the origin at (x,y)
+	 * extended to the specified width and height.
+	 * 
+	 * @param x double The x coordinate of the origin.
+	 * @param y double The y coordinate of the origin.
+	 * @param width double The width.
+	 * @param height double The height.
+	 * @param near double The near plane.
+	 * @param far double The far plane.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToOrthographic2D(double x, double y, double width, double height, double near, double far) {
+		return setToOrthographic(x, x + width, y, y + height, near, far);
+	}
+	
+	/**
+	 * 
+	 * @param left double The left plane.
+	 * @param right double The right plane.
+	 * @param bottom double The bottom plane.
+	 * @param top double The top plane.
+	 * @param near double The near plane.
+	 * @param far double The far plane.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToOrthographic(double left, double right, double bottom, double top, double near, double far) {
+		Matrix.orthoM(m, 0, left, right, bottom, top, near, far);
 		return this;
 	}
 	
@@ -542,6 +696,133 @@ public final class Matrix4 {
 		return this;
 	}
 	
+	/**
+	 * Sets this {@link Matrix4} to the specified rotation around the specified axis.
+	 * 
+	 * @param axis {@link Vector3} The axis of rotation.
+	 * @param angle double The rotation angle in degrees.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToRotation(final Vector3 axis, double angle) {
+		if (angle == 0) return identity();
+		return setAll(mQuat.fromAngleAxis(axis, angle));
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to the specified rotation around the specified cardinal axis.
+	 * 
+	 * @param axis {@link Axis} The axis of rotation.
+	 * @param angle double The rotation angle in degrees.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToRotation(final Axis axis, double angle) {
+		if (angle == 0) return identity();
+		return setAll(mQuat.fromAngleAxis(axis, angle));
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to thespecified rotation around the specified axis.
+	 * 
+	 * @param x double The x component of the axis of rotation.
+	 * @param y double The y component of the axis of rotation.
+	 * @param z double The z component of the axis of rotation.
+	 * @param angle double The rotation angle.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToRotation(double x, double y, double z, double angle) {
+		if (angle == 0) return identity();
+		return setAll(mQuat.fromAngleAxis(x, y, z, angle));
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to the rotation between two {@link Vector3} objects.
+	 * 
+	 * @param v1 {@link Vector3} The base vector. Should be normalized.
+	 * @param v2 {@link Vector3} The target vector. Should be normalized.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToRotation(final Vector3 v1, final Vector3 v2) {
+		return setAll(mQuat.fromRotationBetween(v1, v2));
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to the rotation between two vectors. The
+	 * incoming vectors should be normalized.
+	 * 
+	 * @param x1 double The x component of the base vector.
+	 * @param y1 double The y component of the base vector.
+	 * @param z1 double The z component of the base vector.
+	 * @param x2 double The x component of the target vector.
+	 * @param y2 double The y component of the target vector.
+	 * @param z2 double The z component of the target vector.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToRotation(double x1, double y1, double z1, double x2, double y2, double z2) {
+		return setAll(mQuat.fromRotationBetween(x1, y1, z1, x2, y2, z2));
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to the rotation specified by the provided Euler angles.
+	 * 
+	 * @param yaw double The yaw angle in degrees.
+	 * @param pitch double The pitch angle in degrees.
+	 * @param roll double The roll angle in degrees.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToRotation(double yaw, double pitch, double roll) {
+		return setAll(mQuat.fromEuler(yaw, pitch, roll));
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to a look at matrix with a direction and up {@link Vector3}.
+	 * You can multiply this with a translation {@link Matrix4} to get a camera Model-View matrix.
+	 * 
+	 * @param direction {@link Vector3} The look direction.
+	 * @param up {@link Vector3} The up axis.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToLookAt(final Vector3 direction, final Vector3 up) {
+		mVec3.setAll(direction).normalize();
+		mVec1.setAll(direction).normalize();
+		mVec1.cross(up).normalize();
+		mVec2.setAll(mVec1).cross(mVec3).normalize();
+		identity();
+		m[M00] = mVec1.x; m[M01] = mVec1.y; m[M02] = mVec1.z;
+		m[M10] = mVec2.x; m[M11] = mVec2.y; m[M12] = mVec2.z;
+		m[M20] = mVec3.x; m[M21] = mVec3.y; m[M22] = mVec3.z;
+		return this;
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to a look at matrix with the given position, target and up {@link Vector3}s.
+	 * 
+	 * @param position {@link Vector3} The eye position.
+	 * @param target {@link Vector3} The target position.
+	 * @param up {@link Vector3} The up axis.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToLookAt(final Vector3 position, final Vector3 target, final Vector3 up) {
+		Matrix.setLookAtM(m, 0, position.x, position.y, position.z, 
+				target.x, target.y, target.z, up.x, up.y, up.z);
+		return this;
+	}
+	
+	/**
+	 * Sets this {@link Matrix4} to a world matrix with the specified cardinal axis and the origin at the
+	 * provided position. 
+	 * 
+	 * @param position {@link Vector3} The position to use as the origin of the world coordinates.
+	 * @param forward {@link Vector3} The direction of the forward (z) vector.
+	 * @param up {@link Vector3} The direction of the up (y) vector.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setToWorld(final Vector3 position, final Vector3 forward, final Vector3 up) {
+		mVec1.setAll(forward).normalize();
+		mVec2.setAll(mVec1).cross(up).normalize();
+		mVec3.setAll(mVec2).cross(mVec1).normalize();
+		return setAll(mVec2, mVec3, mVec1, position);
+	}
+	
 	public void transform(final Vector3 position, final Vector3 scale, final Quaternion orientation)
     {
         orientation.toRotationMatrix(mTmp);
@@ -576,56 +857,7 @@ public final class Matrix4 {
 				);
 	}
 	
-	public Matrix4 add(Matrix4 m2) {
-		m2.toArray(mTmp);
-        return new Matrix4(
-	        m[0] + mTmp[0],
-	        m[1] + mTmp[1],
-	        m[2] + mTmp[2],
-	        m[3] + mTmp[3],
 	
-	        m[4] + mTmp[4],
-	        m[5] + mTmp[5],
-	        m[6] + mTmp[6],
-	        m[7] + mTmp[7],
-	
-	        m[8] + mTmp[8],
-	        m[9] + mTmp[9],
-	        m[10] + mTmp[10],
-	        m[11] + mTmp[11],
-	
-	        m[12] + mTmp[12],
-	        m[13] + mTmp[13],
-	        m[14] + mTmp[14],
-	        m[15] + mTmp[15]
-	       );
-	}
-	
-	public Matrix4 subtract(final Matrix4 m2)
-    {
-        m2.toArray(mTmp);
-        return new Matrix4(
-        		m[0] - mTmp[0],
-        		m[1] - mTmp[1],
-        		m[2] - mTmp[2],
-        		m[3] - mTmp[3],
-
-        		m[4] - mTmp[4],
-        		m[5] - mTmp[5],
-        		m[6] - mTmp[6],
-        		m[7] - mTmp[7],
-
-        		m[8] - mTmp[8],
-        		m[9] - mTmp[9],
-        		m[10] - mTmp[10],
-        		m[11] - mTmp[11],
-
-        		m[12] - mTmp[12],
-        		m[13] - mTmp[13],
-        		m[14] - mTmp[14],
-        		m[15] - mTmp[15]
-        );
-    }
 	
 
     //--------------------------------------------------
@@ -705,7 +937,7 @@ public final class Matrix4 {
 	 * @param z double The z component of the scaling.
 	 * @return A new {@link Matrix4} representing the scaling only.
 	 */
-    public static Matrix4 getScaleMatrix(double x, double y, double z) {
+    public static Matrix4 createScaleMatrix(double x, double y, double z) {
         Matrix4 ret = new Matrix4();
         ret.setToScale(x, y, z);
         return ret;
