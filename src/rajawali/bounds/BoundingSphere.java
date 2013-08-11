@@ -14,7 +14,7 @@ package rajawali.bounds;
 
 import java.nio.FloatBuffer;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
@@ -46,7 +46,7 @@ public class BoundingSphere implements IBoundingVolume {
 		calculateBounds(mGeometry);
 	}
 	
-	public BaseObject3D getVisual() {
+	public Object3D getVisual() {
 		return mVisualSphere;
 	}
 	

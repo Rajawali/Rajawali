@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.NormalMapMaterial;
@@ -124,7 +124,7 @@ public class ObjParser extends AMeshParser {
 			}
 		}
 		String line;
-		ObjIndexData currObjIndexData = new ObjIndexData(new BaseObject3D());
+		ObjIndexData currObjIndexData = new ObjIndexData(new Object3D());
 		ArrayList<ObjIndexData> objIndices = new ArrayList<ObjIndexData>();
 				
 		ArrayList<Float> vertices = new ArrayList<Float>();
@@ -224,16 +224,16 @@ public class ObjParser extends AMeshParser {
 					{
 						RajLog.i("Parsing object: " + objName);
 						if(currObjIndexData.targetObj.getName() != null)
-							currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
+							currObjIndexData = new ObjIndexData(new Object3D(objName));
 						else
 							currObjIndexData.targetObj.setName(objName);
 						objIndices.add(currObjIndexData);
 					} else if(type.equals(GROUP)) {
 						RajLog.i("Parsing group: " + objName);
-						BaseObject3D group = mRootObject.getChildByName(objName);
+						Object3D group = mRootObject.getChildByName(objName);
 						if(group == null)
 						{
-							group = new BaseObject3D(objName);
+							group = new Object3D(objName);
 							mRootObject.addChild(group);
 						}
 						group.addChild(currObjIndexData.targetObj);
@@ -329,7 +329,7 @@ public class ObjParser extends AMeshParser {
 	}
 	
 	protected class ObjIndexData {
-		public BaseObject3D targetObj;
+		public Object3D targetObj;
 		
 		public ArrayList<Integer> vertexIndices;
 		public ArrayList<Integer> texCoordIndices;
@@ -338,7 +338,7 @@ public class ObjParser extends AMeshParser {
 		
 		public String materialName;
 		
-		public ObjIndexData(BaseObject3D targetObj) {
+		public ObjIndexData(Object3D targetObj) {
 			this.targetObj = targetObj;
 			vertexIndices = new ArrayList<Integer>();
 			texCoordIndices = new ArrayList<Integer>();
@@ -446,7 +446,7 @@ public class ObjParser extends AMeshParser {
 			}
 		}
 		
-		public void setMaterial(BaseObject3D object, String materialName) throws TextureException {
+		public void setMaterial(Object3D object, String materialName) throws TextureException {
 			MaterialDef matDef = null;
 			
 			for(int i=0; i<mMaterials.size(); ++i) {

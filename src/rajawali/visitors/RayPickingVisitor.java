@@ -12,7 +12,7 @@
  */
 package rajawali.visitors;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.math.vector.Vector3;
@@ -23,7 +23,7 @@ public class RayPickingVisitor implements INodeVisitor {
 	private Vector3 mRayStart;
 	private Vector3 mRayEnd;
 	private Vector3 mHitPoint;
-	private BaseObject3D mPickedObject;
+	private Object3D mPickedObject;
 	
 	public RayPickingVisitor(Vector3 rayStart, Vector3 rayEnd) {
 		mRayStart = rayStart;
@@ -32,8 +32,8 @@ public class RayPickingVisitor implements INodeVisitor {
 	}
 	
 	public void apply(INode node) {
-		if(node instanceof BaseObject3D) {
-			BaseObject3D o = (BaseObject3D)node;
+		if(node instanceof Object3D) {
+			Object3D o = (Object3D)node;
 			if(!o.isVisible() || !o.isInFrustum()) return;
 			//RajLog.d("VISITING " + o.getName());
 			
@@ -114,7 +114,7 @@ public class RayPickingVisitor implements INodeVisitor {
 		return false;
 	}
 	
-	public BaseObject3D getPickedObject() {
+	public Object3D getPickedObject() {
 		return mPickedObject;
 	}
 }

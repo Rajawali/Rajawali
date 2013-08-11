@@ -14,7 +14,7 @@ package rajawali.parser;
 
 import java.io.File;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import android.content.res.Resources;
@@ -22,23 +22,23 @@ import android.content.res.Resources;
 public abstract class AMeshParser extends AParser implements IMeshParser {
 	protected TextureManager mTextureManager;
 	
-	protected BaseObject3D mRootObject;
+	protected Object3D mRootObject;
 
 	public AMeshParser(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
-		mRootObject = new BaseObject3D();
+		mRootObject = new Object3D();
 	}
 	
 	public AMeshParser(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, resourceId);
 		mTextureManager = textureManager;
-		mRootObject = new BaseObject3D();
+		mRootObject = new Object3D();
 	}
 	
 	
 	public AMeshParser(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
-		mRootObject = new BaseObject3D();
+		mRootObject = new Object3D();
 	}
 	
 	public AMeshParser parse() throws ParsingException {
@@ -46,7 +46,7 @@ public abstract class AMeshParser extends AParser implements IMeshParser {
 		return this;
 	}
 
-	public BaseObject3D getParsedObject() {
+	public Object3D getParsedObject() {
 		return mRootObject;
 	}
 	

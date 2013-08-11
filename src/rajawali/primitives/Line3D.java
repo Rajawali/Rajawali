@@ -14,7 +14,7 @@ package rajawali.primitives;
 
 import java.util.Stack;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.math.vector.Vector3;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -45,7 +45,7 @@ import android.opengl.GLES20;
  * @author dennis.ippel
  *
  */
-public class Line3D extends BaseObject3D {
+public class Line3D extends Object3D {
 	private Stack<Vector3> mPoints;
 	private float mThickness;
 	private int[] mColors;

@@ -14,7 +14,7 @@ package rajawali.parser.awd;
 
 import java.io.IOException;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.parser.AWDParser;
 import rajawali.parser.AWDParser.IBlockParser;
 import rajawali.util.LittleEndianDataInputStream;
@@ -28,7 +28,7 @@ import rajawali.util.LittleEndianDataInputStream;
  */
 public abstract class ABlockParser implements IBlockParser {
 
-	public BaseObject3D getBaseObject3D() {
+	public Object3D getBaseObject3D() {
 		return null;
 	}
 

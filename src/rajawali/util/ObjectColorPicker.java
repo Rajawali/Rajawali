@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.FrameBufferTexture;
@@ -27,7 +27,7 @@ import android.opengl.GLES20;
 
 public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
-	private ArrayList<BaseObject3D> mObjectLookup;
+	private ArrayList<Object3D> mObjectLookup;
 	private int mColorIndex = 0;
 	private RajawaliRenderer mRenderer;
 	private int mFrameBufferHandle = -1;
@@ -38,7 +38,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 	private OnObjectPickedListener mObjectPickedListener;
 
 	public ObjectColorPicker(RajawaliRenderer renderer) {
-		mObjectLookup = new ArrayList<BaseObject3D>();
+		mObjectLookup = new ArrayList<Object3D>();
 		mRenderer = renderer;
 		mRenderer.queueInitializeTask(this);
 	}
@@ -104,7 +104,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 
-	public void registerObject(BaseObject3D object) {
+	public void registerObject(Object3D object) {
 		if (!mObjectLookup.contains(object)) {
 			mObjectLookup.add(object);
 			object.setPickingColor(mColorIndex);
@@ -112,7 +112,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		}
 	}
 
-	public void unregisterObject(BaseObject3D object) {
+	public void unregisterObject(Object3D object) {
 		if (mObjectLookup.contains(object)) {
 			mObjectLookup.remove(object);
 		}

@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.animation.Animation3D;
 import rajawali.materials.SimpleMaterial;
@@ -87,7 +87,7 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
 
-	private List<BaseObject3D> mChildren;
+	private List<Object3D> mChildren;
 	private List<Animation3D> mAnimations;
 	private List<IRendererPlugin> mPlugins;
 	
@@ -125,7 +125,7 @@ public class RajawaliScene extends AFrameTask {
 		mRenderer = renderer;
 		mAlpha = 0;
 		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation3D>());
-		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
+		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
 		mFrameTaskQueue = new LinkedList<AFrameTask>();
@@ -329,24 +329,24 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Replaces a {@link BaseObject3D} at the specified index with a new one.
+	 * Replaces a {@link Object3D} at the specified index with a new one.
 	 * 
-	 * @param child {@link BaseObject3D} the new child.
+	 * @param child {@link Object3D} the new child.
 	 * @param location The index of the child to replace.
 	 * @return boolean True if the replacement was successfully queued.
 	 */
-	public boolean replaceChild(BaseObject3D child, int location) {
+	public boolean replaceChild(Object3D child, int location) {
 		return queueReplaceTask(location, child);
 	}
 	
 	/**
-	 * Replaces a specified {@link BaseObject3D} with a new one.
+	 * Replaces a specified {@link Object3D} with a new one.
 	 * 
-	 * @param oldChild {@link BaseObject3D} the old child.
-	 * @param newChild {@link BaseObject3D} the new child.
+	 * @param oldChild {@link Object3D} the old child.
+	 * @param newChild {@link Object3D} the new child.
 	 * @return boolean True if the replacement was successfully queued.
 	 */
-	public boolean replaceChild(BaseObject3D oldChild, BaseObject3D newChild) {
+	public boolean replaceChild(Object3D oldChild, Object3D newChild) {
 		return queueReplaceTask(oldChild, newChild);
 	}
 	
@@ -354,20 +354,20 @@ public class RajawaliScene extends AFrameTask {
 	 * Requests the addition of a child to the scene. The child
 	 * will be added to the end of the list. 
 	 * 
-	 * @param child {@link BaseObject3D} child to be added.
+	 * @param child {@link Object3D} child to be added.
 	 * @return True if the child was successfully queued for addition.
 	 */
-	public boolean addChild(BaseObject3D child) {
+	public boolean addChild(Object3D child) {
 		return queueAddTask(child);
 	}
 	
 	/**
 	 * Requests the addition of a {@link Collection} of children to the scene.
 	 * 
-	 * @param children {@link Collection} of {@link BaseObject3D} children to add.
+	 * @param children {@link Collection} of {@link Object3D} children to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addChildren(Collection<BaseObject3D> children) {
+	public boolean addChildren(Collection<Object3D> children) {
 		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(children);
 		return queueAddAllTask(tasks);
 	}
@@ -375,10 +375,10 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	 * Requests the removal of a child from the scene.
 	 * 
-	 * @param child {@link BaseObject3D} child to be removed.
+	 * @param child {@link Object3D} child to be removed.
 	 * @return boolean True if the child was successfully queued for removal.
 	 */
-	public boolean removeChild(BaseObject3D child) {
+	public boolean removeChild(Object3D child) {
 		return queueRemoveTask(child);
 	}
 	
@@ -405,10 +405,10 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	 * Requests the addition of a {@link Collection} of plugins to the scene.
 	 * 
-	 * @param plugins {@link Collection} of {@link BaseObject3D} children to add.
+	 * @param plugins {@link Collection} of {@link Object3D} children to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addPlugins(Collection<BaseObject3D> plugins) {
+	public boolean addPlugins(Collection<Object3D> plugins) {
 		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(plugins);
 		return queueAddAllTask(tasks);
 	}
@@ -913,7 +913,7 @@ public class RajawaliScene extends AFrameTask {
 			//TODO: Handle light replacement
 			break;
 		case OBJECT3D:
-			internalReplaceChild(task, (BaseObject3D) task.getNewObject(), task.getIndex());
+			internalReplaceChild(task, (Object3D) task.getNewObject(), task.getIndex());
 			break;
 		case PLUGIN:
 			internalReplacePlugin(task, (IRendererPlugin) task.getNewObject(), task.getIndex());
@@ -941,7 +941,7 @@ public class RajawaliScene extends AFrameTask {
 			//TODO: Handle light addition
 			break;
 		case OBJECT3D:
-			internalAddChild((BaseObject3D) task, task.getIndex());
+			internalAddChild((Object3D) task, task.getIndex());
 			break;
 		case PLUGIN:
 			internalAddPlugin((IRendererPlugin) task, task.getIndex());
@@ -969,7 +969,7 @@ public class RajawaliScene extends AFrameTask {
 			//TODO: Handle light removal
 			break;
 		case OBJECT3D:
-			internalRemoveChild((BaseObject3D) task, task.getIndex());
+			internalRemoveChild((Object3D) task, task.getIndex());
 			break;
 		case PLUGIN:
 			internalRemovePlugin((IRendererPlugin) task, task.getIndex());
@@ -1006,7 +1006,7 @@ public class RajawaliScene extends AFrameTask {
 			break;
 		case OBJECT3D:
 			for (i = 0; i < j; ++i) {
-				internalAddChild((BaseObject3D) tasks[i], AFrameTask.UNUSED_INDEX);
+				internalAddChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
 			}
 			break;
 		case PLUGIN:
@@ -1064,7 +1064,7 @@ public class RajawaliScene extends AFrameTask {
 				internalClearChildren();
 			} else {
 				for (i = 0; i < j; ++i) {
-					internalAddChild((BaseObject3D) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalAddChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
@@ -1245,15 +1245,15 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for replacing a {@link BaseObject3D} child. If index is
+	 * Internal method for replacing a {@link Object3D} child. If index is
 	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
 	 * 
-	 * @param child {@link BaseObject3D} The new child for the specified index.
-	 * @param replace {@link BaseObject3D} The child replacing the old child.
+	 * @param child {@link Object3D} The new child for the specified index.
+	 * @param replace {@link Object3D} The child replacing the old child.
 	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
 	 */
-	private void internalReplaceChild(AFrameTask child, BaseObject3D replace, int index) {
+	private void internalReplaceChild(AFrameTask child, Object3D replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
 			mChildren.set(index, replace);
 		} else {
@@ -1263,16 +1263,16 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for adding {@link BaseObject3D} children.
+	 * Internal method for adding {@link Object3D} children.
 	 * Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * This takes an index for the addition, but it is pretty
 	 * meaningless.
 	 * 
-	 * @param child {@link BaseObject3D} to add.
+	 * @param child {@link Object3D} to add.
 	 * @param int index to add the child at. 
 	 */
-	private void internalAddChild(BaseObject3D child, int index) {
+	private void internalAddChild(Object3D child, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
 			mChildren.add(child);
 		} else {
@@ -1284,15 +1284,15 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for removing {@link BaseObject3D} children.
+	 * Internal method for removing {@link Object3D} children.
 	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
 	 * 
 	 * This takes an index for the removal. 
 	 * 
-	 * @param child {@link BaseObject3D} to remove. If index is used, this is ignored.
+	 * @param child {@link Object3D} to remove. If index is used, this is ignored.
 	 * @param index integer index to remove the child at. 
 	 */
-	private void internalRemoveChild(BaseObject3D child, int index) {
+	private void internalRemoveChild(Object3D child, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
 			mChildren.remove(child);
 		} else {
@@ -1304,7 +1304,7 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for removing all {@link BaseObject3D} children.
+	 * Internal method for removing all {@link Object3D} children.
 	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
 	 */
 	private void internalClearChildren() {
@@ -1319,19 +1319,19 @@ public class RajawaliScene extends AFrameTask {
 	 * 
 	 * @return ArrayList containing the children.
 	 */
-	public ArrayList<BaseObject3D> getChildrenCopy() {
-		ArrayList<BaseObject3D> list = new ArrayList<BaseObject3D>();
+	public ArrayList<Object3D> getChildrenCopy() {
+		ArrayList<Object3D> list = new ArrayList<Object3D>();
 		list.addAll(mChildren);
 		return list;
 	}
 
 	/**
-	 * Tests if the specified {@link BaseObject3D} is a child of the renderer.
+	 * Tests if the specified {@link Object3D} is a child of the renderer.
 	 * 
-	 * @param child {@link BaseObject3D} to check for.
+	 * @param child {@link Object3D} to check for.
 	 * @return boolean indicating child's presence as a child of the renderer.
 	 */
-	protected boolean hasChild(BaseObject3D child) {
+	protected boolean hasChild(Object3D child) {
 		//Thread safety deferred to the List.
 		return mChildren.contains(child);
 	}
@@ -1550,10 +1550,10 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	public int getNumTriangles() {
 		int triangleCount = 0;
-		ArrayList<BaseObject3D> children = getChildrenCopy();
+		ArrayList<Object3D> children = getChildrenCopy();
 		
 		for (int i = 0, j = children.size(); i < j; i++) {
-			BaseObject3D child = children.get(i);
+			Object3D child = children.get(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
 				if (child.getNumChildren() > 0) {
 					triangleCount += child.getNumTriangles();
@@ -1572,10 +1572,10 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	public int getNumObjects() {
 		int objectCount = 0;
-		ArrayList<BaseObject3D> children = getChildrenCopy();
+		ArrayList<Object3D> children = getChildrenCopy();
 		
 		for (int i = 0, j = children.size(); i < j; i++) {
-			BaseObject3D child = children.get(i);
+			Object3D child = children.get(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
 				if (child.getNumChildren() > 0) {
 					objectCount += child.getNumObjects() + 1;

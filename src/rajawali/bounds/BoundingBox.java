@@ -15,7 +15,7 @@ package rajawali.bounds;
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
@@ -107,7 +107,7 @@ public class BoundingBox implements IBoundingVolume {
 		mVisualBox.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);
 	}
 	
-	public BaseObject3D getVisual() {
+	public Object3D getVisual() {
 		return mVisualBox;
 	}
 	

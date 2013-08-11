@@ -11,8 +11,8 @@
  * specific language governing permissions and limitations under the License.
  */
 package rajawali.util;
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 
 public interface OnObjectPickedListener {
-	public void onObjectPicked(BaseObject3D object);
+	public void onObjectPicked(Object3D object);
 }

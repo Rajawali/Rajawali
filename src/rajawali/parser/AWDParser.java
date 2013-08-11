@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.parser.awd.ABlockParser;
 import rajawali.parser.awd.BlockTriangleGeometry;
 import rajawali.renderer.RajawaliRenderer;
@@ -57,7 +57,7 @@ public class AWDParser extends AParser {
 		LZMA
 	}
 
-	protected final List<BaseObject3D> baseObjects = new ArrayList<BaseObject3D>();
+	protected final List<Object3D> baseObjects = new ArrayList<Object3D>();
 	protected final SparseArray<BlockHeader> blockDataList = new SparseArray<BlockHeader>();
 
 	private final List<IBlockParser> blockParsers = new ArrayList<IBlockParser>();
@@ -212,12 +212,12 @@ public class AWDParser extends AParser {
 	 *            exists, the models will be returned as children of a container.
 	 * @return
 	 */
-	public BaseObject3D getParsedObject(boolean alwaysUseContainer) {
+	public Object3D getParsedObject(boolean alwaysUseContainer) {
 		// If only one object
 		if (!alwaysUseContainer && baseObjects.size() == 1)
 			return baseObjects.get(0);
 
-		final BaseObject3D container = new BaseObject3D();
+		final Object3D container = new Object3D();
 		container.isContainer(true);
 		for (int i = 0, j = baseObjects.size(); i < j; i++)
 			container.addChild(baseObjects.get(i));
@@ -272,10 +272,10 @@ public class AWDParser extends AParser {
 
 	/**
 	 * This is called when all blocks have finished parsing. This is the time to modify any block data as needed from
-	 * the passed list before conversion to {@link BaseObject3D} or {@link RajawaliScene} occurs.
+	 * the passed list before conversion to {@link Object3D} or {@link RajawaliScene} occurs.
 	 */
 	public void onBlockParsingFinished(List<IBlockParser> blockParsers) {
-		BaseObject3D temp;
+		Object3D temp;
 		for (int i = 0, j = blockParsers.size(); i < j; i++) {
 			temp = blockParsers.get(i).getBaseObject3D();
 			if (temp != null)
@@ -308,7 +308,7 @@ public class AWDParser extends AParser {
 	 */
 	public interface IBlockParser {
 
-		BaseObject3D getBaseObject3D();
+		Object3D getBaseObject3D();
 
 		void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception;
 	}

@@ -12,7 +12,7 @@
  */
 package rajawali.bounds;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.math.Matrix4;
@@ -27,7 +27,7 @@ public interface IBoundingVolume {
 	public void transform(Matrix4 matrix);
 	public boolean intersectsWith(IBoundingVolume boundingVolume);
 	
-	public BaseObject3D getVisual();
+	public Object3D getVisual();
 	public void setBoundingColor(int color);
 	public int getBoundingColor();
 }

@@ -14,12 +14,12 @@ package rajawali.util.exporter;
 
 import java.io.File;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.util.MeshExporter;
 
 public abstract class AExporter {
 
-	protected BaseObject3D mObject;
+	protected Object3D mObject;
 	protected boolean mCompressed;
 	protected File exportFile;
 	protected MeshExporter mMeshExporter;
@@ -68,7 +68,7 @@ public abstract class AExporter {
 	 * 
 	 * @param obj
 	 */
-	public void setExportModel(BaseObject3D obj) {
+	public void setExportModel(Object3D obj) {
 		mObject = obj;
 	}
 }

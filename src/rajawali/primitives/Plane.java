@@ -12,7 +12,7 @@
  */
 package rajawali.primitives;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.math.vector.Vector3.Axis;
 
 /**
@@ -31,7 +31,7 @@ import rajawali.math.vector.Vector3.Axis;
  * @author dennis.ippel
  * 
  */
-public class Plane extends BaseObject3D {
+public class Plane extends Object3D {
 
 	protected float mWidth;
 	protected float mHeight;
