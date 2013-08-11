@@ -318,10 +318,25 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 multiply(final Matrix4 matrix) {
-		matrix.toArray(mTmp);
-		Matrix.multiplyMM(mTmp, 0, m, 0, matrix.getDoubleValues(), 0);
+		System.arraycopy(m, 0, mTmp, 0, 16);
+		Matrix.multiplyMM(m, 0, mTmp, 0, matrix.getDoubleValues(), 0);
 		return this;
     }
+	
+	/**
+	 * Left multiplies this {@link Matrix4} with the given one, storing the result in this {@link Matrix}.
+	 * <pre>
+	 * A.leftMultiply(B) results in A = BA.
+	 * </pre>
+	 * 
+	 * @param matrix {@link Matrix4} The LHS {@link Matrix4}.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 leftMultiply(final Matrix4 matrix) {
+		System.arraycopy(m, 0, mTmp, 0, 16);
+		Matrix.multiplyMM(m, 0, matrix.getDoubleValues(), 0, mTmp, 0);
+		return this;
+	}
 	
 	/**
 	 * Multiplies each element of this {@link Matrix4} by the provided factor.
@@ -363,16 +378,23 @@ public final class Matrix4 {
 	}
 	
 	/**
+	 * Subtracts a translation to this {@link Matrix4} based on the provided {@link Vector3}.
+	 * 
+	 * @param vec {@link Vector3} describing the translation components.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 negTranslate(final Vector3 vec) {
+		return translate(-vec.x, - vec.y, -vec.z);
+	}
+	
+	/**
 	 * Scales this {@link Matrix4} based on the provided components.
 	 * 
 	 * @param vec {@link Vector3} describing the scaling on each axis.
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 scale(final Vector3 vec) {
-		m[M00] *= vec.x;
-		m[M11] *= vec.y;
-		m[M22] *= vec.z;
-		return this;
+		return scale(vec.x, vec.y, vec.z);
 	}
 	
 	/**
@@ -384,9 +406,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 scale(double x, double y, double z) {
-		m[M00] *= x;
-		m[M11] *= y;
-		m[M22] *= z;
+		Matrix.scaleM(m, 0, x, y, z);
 		return this;
 	}
 	
@@ -397,10 +417,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 scale(double s) {
-		m[M00] *= s;
-		m[M11] *= s;
-		m[M22] *= s;
-		return this;
+		return scale(s, s, s);
 	}
 	
 	/**
