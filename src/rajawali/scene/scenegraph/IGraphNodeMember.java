@@ -4,6 +4,7 @@ import java.util.List;
 
 import rajawali.Camera;
 import rajawali.bounds.volumes.IBoundingVolume;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
@@ -47,8 +48,8 @@ public interface IGraphNodeMember {
 	 * @param parentMatrix This object's parent matrix
 	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
 	 */
-	public void renderToFrame(Camera camera, float[] vpMatrix, float[] projMatrix, 
-			float[] vMatrix, ColorPickerInfo pickerInfo);
+	public void renderToFrame(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+			final Matrix4 vMatrix, ColorPickerInfo pickerInfo);
 	
 	/**
 	 * Retrieve the bounding volume of this member.

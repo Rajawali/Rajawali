@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.scene.scenegraph;
 
 import java.util.ArrayList;
@@ -12,9 +24,9 @@ import rajawali.bounds.volumes.BoundingCone;
 import rajawali.bounds.volumes.BoundingSphere;
 import rajawali.bounds.volumes.CameraFrustum;
 import rajawali.bounds.volumes.IBoundingVolume;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
-import android.opengl.Matrix;
 import android.util.Log;
 
 /**
@@ -65,8 +77,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	protected boolean mRecursiveAdd = false; //Default to NOT recursive add
 	protected boolean mRecursiveRemove = false; //Default to NOT recursive remove.
 
-	protected float[] mMMatrix = new float[16]; //A model matrix to use for drawing the bounds of this node.
-	protected Vector3 mPosition; //This node's center point in 3D space.
+	//Expected to never leave its default identity state.
+	protected final Matrix4 mMMatrix = new Matrix4(); //A model matrix to use for drawing the bounds of this node.
+	protected final Vector3 mPosition = new Vector3(); //This node's center point in 3D space.
 
 	/**
 	 * The region (e.g. octant) this node occupies in its parent. If this node
@@ -494,7 +507,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				} else if (volume instanceof BoundingSphere) {
 					BoundingSphere bs = (BoundingSphere) volume;
 					Vector3 bs_position = bs.getPosition();
-					float radius = bs.getScaledRadius();
+					double radius = bs.getScaledRadius();
 					Vector3 rad = new Vector3();
 					rad.setAll(radius, radius, radius);
 					test_against_min = Vector3.subtractAndCreate(bs_position, rad);
@@ -933,8 +946,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#displayGraph(boolean)
 	 */
-	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix) {
-		Matrix.setIdentityM(mMMatrix, 0);
+	public void displayGraph(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+			final Matrix4 vMatrix) {
+		mMMatrix.identity();
 		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, null);
 		for (int i = 0, j = mMembers.size(); i < j; ++i) {
 			IBoundingVolume volume = mMembers.get(i).getTransformedBoundingVolume();

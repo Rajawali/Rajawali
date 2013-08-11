@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation.mesh;
 
 import rajawali.Geometry3D;
@@ -60,12 +72,12 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 		private int mFlags;
 		private Vector3 mPosition;
 		private Quaternion mOrientation;
-		private float[] mMatrix;
+		private double[] mMatrix;
 		
 		public SkeletonJoint() {
 			mPosition = new Vector3();
 			mOrientation = new Quaternion();
-			mMatrix = new float[16];
+			mMatrix = new double[16];
 		}
 		
 		public SkeletonJoint(SkeletonJoint other) {
@@ -89,7 +101,7 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 			return mParentIndex;
 		}
 		
-		public void setPosition(float x, float y, float z) {
+		public void setPosition(double x, double y, double z) {
 			mPosition.setAll(x, y, z);
 		}
 		
@@ -103,12 +115,12 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 			return mPosition;
 		}
 		
-		public void setOrientation(float x, float y, float z) {
+		public void setOrientation(double x, double y, double z) {
 			mOrientation.setAll(1, x, y, z);
 			mOrientation.computeW();
 		}
 		
-		public void setOrientation(float w, float x, float y, float z) {
+		public void setOrientation(double w, double x, double y, double z) {
 			mOrientation.setAll(w, x, y, z);
 		}
 		
@@ -144,11 +156,11 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 			this.mFlags = flags;
 		}
 		
-		public float[] getMatrix() {
+		public double[] getMatrix() {
 			return mMatrix;
 		}
 		
-		public void setMatrix(float[] values) {
+		public void setMatrix(double[] values) {
 			System.arraycopy(values, 0, mMatrix, 0, 16);
 		}
 		

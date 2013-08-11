@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.scene;
 
 import java.util.ArrayList;
@@ -16,6 +28,7 @@ import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
@@ -34,7 +47,6 @@ import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -48,14 +60,14 @@ import android.opengl.Matrix;
 public class RajawaliScene extends AFrameTask {
 	
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
-	protected float mEyeZ = 4.0f;
+	protected double mEyeZ = 4.0;
 	
 	protected RajawaliRenderer mRenderer;
 	
 	//All of these get passed to an object when it needs to draw itself
-	protected float[] mVMatrix = new float[16]; //The view matrix
-	protected float[] mPMatrix = new float[16]; //The projection matrix
-	protected float[] mVPMatrix = new float[16]; //The view-projection matrix
+	protected Matrix4 mVMatrix = new Matrix4();
+	protected Matrix4 mPMatrix = new Matrix4();
+	protected Matrix4 mVPMatrix = new Matrix4();
 	
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
@@ -663,9 +675,9 @@ public class RajawaliScene extends AFrameTask {
 
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
-		mCamera.updateFrustum(); //update frustum planes
 		//Pre-multiply View and Projection matricies once for speed
-		Matrix.multiplyMM(mVPMatrix, 0, mPMatrix, 0, mVMatrix, 0);
+		mVPMatrix.setAll(mPMatrix).multiply(mVMatrix);
+		mCamera.updateFrustum(); //update frustum plane
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -677,6 +689,16 @@ public class RajawaliScene extends AFrameTask {
 			if (mEnableDepthBuffer) {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 				GLES20.glDepthMask(true);
+			}
+		}
+
+		
+		// Update all registered animations
+		synchronized (mAnimations) {
+			for (int i = 0, j = mAnimations.size(); i < j; ++i) {
+				Animation3D anim = mAnimations.get(i);
+				if (anim.isPlaying())
+					anim.update(deltaTime);
 			}
 		}
 

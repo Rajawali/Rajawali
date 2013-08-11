@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali;
 
 import java.nio.FloatBuffer;
@@ -8,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.bounds.volumes.BoundingBox;
 import rajawali.bounds.volumes.IBoundingVolume;
 import rajawali.lights.ALight;
 import rajawali.materials.AMaterial;
@@ -16,17 +27,18 @@ import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
+import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.scene.scenegraph.IGraphNodeMember;
+import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.GLU;
-import android.opengl.Matrix;
 
 /**
  * This is the main object that all other 3D objects inherit from.
@@ -36,16 +48,12 @@ import android.opengl.Matrix;
  */
 public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D>, INode {
 
-	protected float[] mMVPMatrix = new float[16];
-	protected float[] mMMatrix = new float[16];
-	protected float[] mProjMatrix;
+	protected final Matrix4 mMVPMatrix = new Matrix4();
+	protected final Matrix4 mMMatrix = new Matrix4();
+	protected Matrix4 mPMatrix;
+	protected Matrix4 mParentMatrix;
+	protected final Matrix4 mRotationMatrix = new Matrix4();
 
-	protected float[] mScalematrix = new float[16];
-	protected float[] mTranslateMatrix = new float[16];
-	protected float[] mRotateMatrix = new float[16];
-	protected float[] mRotateMatrixTmp = new float[16];
-	protected float[] mTmpMatrix = new float[16];
-	protected float[] mParentMatrix;
 	protected float[] mColor;
 
 	protected AMaterial mMaterial;
@@ -89,15 +97,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
 		mGeometry = new Geometry3D();
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
-		mColor = new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f };
-		
-		//Initialize the matrices to identity
-		Matrix.setIdentityM(mMMatrix, 0);
-		Matrix.setIdentityM(mScalematrix, 0);
-		Matrix.setIdentityM(mRotateMatrix, 0);
-		Matrix.setIdentityM(mRotateMatrixTmp, 0);
-		Matrix.setIdentityM(mTranslateMatrix, 0);
-		Matrix.setIdentityM(mTmpMatrix, 0);
+		mColor = new float[] {(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
 	}
 
 	public BaseObject3D(String name) {
@@ -197,52 +197,43 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mGeometry.validateBuffers();
 	}
 	
-	public void calculateModelMatrix(final float[] parentMatrix) {
-		Matrix.setIdentityM(mMMatrix, 0);
-		Matrix.setIdentityM(mScalematrix, 0);
-		Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
-
-		Matrix.setIdentityM(mRotateMatrix, 0);
-
+	public void calculateModelMatrix(final Matrix4 parentMatrix) {
 		setOrientation();
 		if (mLookAt == null) {
-			mOrientation.toRotationMatrix(mRotateMatrix);
+			mOrientation.toRotationMatrix(mRotationMatrix);
 		} else {
-			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
+			mRotationMatrix.setAll(mLookAtMatrix);
 		}
-
-		Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
-		Matrix.setIdentityM(mTmpMatrix, 0);
-		Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
-		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
-		if (parentMatrix != null) {
-			Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
-			System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
-		}
+		mMMatrix.identity().translate(mPosition).scale(mScale).multiply(mRotationMatrix);
+		if (parentMatrix != null) mMMatrix.leftMultiply(mParentMatrix);
 	}
 
-	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, ColorPickerInfo pickerInfo) {
+	/**
+	 * Renders the object with no parent matrix.
+	 * 
+	 * @param camera The camera
+	 * @param vpMatrix {@link Matrix4} The view-projection matrix
+	 * @param projMatrix {@link Matrix4} The projection matrix
+	 * @param vMatrix {@link Matrix4} The view matrix
+	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
+	 */
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+			final Matrix4 vMatrix, ColorPickerInfo pickerInfo) {
 		render(camera, vpMatrix, projMatrix, vMatrix, null, pickerInfo);
 	}
 
 	/**
 	 * Renders the object
 	 * 
-	 * @param camera
-	 *            The camera
-	 * @param vpMatrix
-	 * 			  The view-projection matrix
-	 * @param projMatrix
-	 *            The projection matrix
-	 * @param vMatrix
-	 *            The view matrix
-	 * @param parentMatrix
-	 *            This object's parent matrix
-	 * @param pickerInfo
-	 *            The current color picker info. This is only used when an object is touched.
+	 * @param camera The camera
+	 * @param vpMatrix {@link Matrix4} The view-projection matrix
+	 * @param projMatrix {@link Matrix4} The projection matrix
+	 * @param vMatrix {@link Matrix4} The view matrix
+	 * @param parentMatrix {@link Matrix4} This object's parent matrix
+	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
 	 */
-	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
-			ColorPickerInfo pickerInfo) {
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix, 
+			final Matrix4 parentMatrix, ColorPickerInfo pickerInfo) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
 
@@ -252,7 +243,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		// -- move view matrix transformation first
 		calculateModelMatrix(parentMatrix);
 		//Create MVP Matrix from View-Projection Matrix
-		Matrix.multiplyMM(mMVPMatrix, 0, vpMatrix, 0, mMMatrix, 0);
+		mMVPMatrix.setAll(vpMatrix).multiply(mMMatrix);
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		/*if (mFrustumTest && mGeometry.hasBoundingBox()) {
@@ -264,7 +255,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}*/
 
 		if (!mIsContainerOnly && mIsInFrustum) {
-			mProjMatrix = projMatrix;
+			mPMatrix = projMatrix;
 			if (mDoubleSided) {
 				GLES20.glDisable(GLES20.GL_CULL_FACE);
 			} else if (mBackSided) {
@@ -368,31 +359,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	/**
-	 * Optimized version of Matrix.rotateM(). Apparently the native version does a lot of float[] allocations.
-	 * 
-	 * @see http://groups.google.com/group/android-developers/browse_thread/thread/b30dd2a437cfb076?pli=1
-	 * 
-	 * @param m
-	 *            The matrix
-	 * @param mOffset
-	 *            Matrix offset
-	 * @param a
-	 *            The angle
-	 * @param x
-	 *            x axis
-	 * @param y
-	 *            y axis
-	 * @param z
-	 *            z axis
-	 */
-	protected void rotateM(float[] m, int mOffset, float a, float x, float y, float z) {
-		Matrix.setIdentityM(mRotateMatrixTmp, 0);
-		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
-		System.arraycopy(m, 0, mTmpMatrix, 0, 16);
-		Matrix.multiplyMM(m, mOffset, mTmpMatrix, mOffset, mRotateMatrixTmp, 0);
-	}
-
-	/**
 	 * This is where the parameters for the shaders are set. It is called every frame.
 	 * 
 	 * @param camera
@@ -444,17 +410,17 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * @param viewportHeight
 	 * @param eyeZ
 	 */
-	public void setScreenCoordinates(float x, float y, int viewportWidth, int viewportHeight, float eyeZ) {
-		float[] r1 = new float[16];
+	public void setScreenCoordinates(double x, double y, int viewportWidth, int viewportHeight, double eyeZ) {
+		double[] r1 = new double[16];
 		int[] viewport = new int[] { 0, 0, viewportWidth, viewportHeight };
-		float[] modelMatrix = new float[16];
+		double[] modelMatrix = new double[16];
 		Matrix.setIdentityM(modelMatrix, 0);
 
-		GLU.gluUnProject(x, viewportHeight - y, 0.0f, modelMatrix, 0, mProjMatrix, 0, viewport, 0, r1, 0);
+		GLU.gluUnProject(x, viewportHeight - y, 0.0, modelMatrix, 0, mPMatrix.getDoubleValues(), 0, viewport, 0, r1, 0);
 		setPosition(r1[0] * eyeZ, r1[1] * -eyeZ, 0);
 	}
 
-	public float[] getModelMatrix() {
+	public Matrix4 getModelMatrix() {
 		return mMMatrix;
 	}
 
@@ -759,10 +725,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		this.mShowBoundingVolume = showBoundingVolume;
 	}
 
-	public float[] getRotationMatrix() {
-		return mRotateMatrix;
-	}
-
 	public void setFrustumTest(boolean value) {
 		mFrustumTest = value;
 	}
@@ -842,13 +804,13 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		Tile tile = atlas.getTileNamed(tileName);
 		FloatBuffer fb = this.getGeometry().getTextureCoords();
 		for(int i = 0; i < fb.capacity(); i++){
-			float uvIn = fb.get(i);
-			float uvOut;
+			double uvIn = fb.get(i);
+			double uvOut;
 			if(i%2 == 0)
 				uvOut = (uvIn * (tile.width/atlas.getWidth())) + tile.x/atlas.getWidth();
 			else
 				uvOut = (uvIn * (tile.height/atlas.getHeight())) + tile.y/atlas.getHeight();
-			fb.put(i, uvOut);
+			fb.put(i, (float) uvOut);
 		}
 		mGeometry.changeBufferData(mGeometry.mTexCoordBufferInfo, fb, 0);
 
@@ -917,8 +879,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * (non-Javadoc)
 	 * @see rajawali.scene.scenegraph.IGraphNodeMember#renderToFrame(rajawali.Camera, float[], float[], float[], rajawali.util.ObjectColorPicker.ColorPickerInfo)
 	 */
-	public void renderToFrame(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix,
-			ColorPickerInfo pickerInfo) {
+	public void renderToFrame(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+			final Matrix4 vMatrix, ColorPickerInfo pickerInfo) {
 		render(camera, vpMatrix, projMatrix, vMatrix, pickerInfo);
 	}
 }

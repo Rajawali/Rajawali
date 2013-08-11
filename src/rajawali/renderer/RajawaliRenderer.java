@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.renderer;
 
 import java.util.ArrayList;
@@ -25,10 +37,12 @@ import rajawali.materials.AMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
+import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.plugins.Plugin;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.FPSUpdateListener;
+import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
@@ -37,8 +51,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
-import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
@@ -58,15 +70,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected MaterialManager mMaterialManager; //Material manager for ALL materials across ALL scenes.
 	
 	protected ScheduledExecutorService mTimer; //Timer used to schedule drawing
-	protected float mFrameRate; //Target frame rate to render at
+	protected double mFrameRate; //Target frame rate to render at
 	protected int mFrameCount; //Used for determining FPS
 	private long mStartTime = System.nanoTime(); //Used for determining FPS
 	protected double mLastMeasuredFPS; //Last measured FPS value
 	protected FPSUpdateListener mFPSUpdateListener; //Listener to notify of new FPS values.
 	private long mLastRender; //Time of last rendering. Used for animation delta time
 	
-	protected float[] mVMatrix = new float[16]; //The OpenGL view matrix
-	protected float[] mPMatrix = new float[16]; //The OpenGL projection matrix
+	protected double[] mVMatrix = new double[16]; //The OpenGL view matrix
+	protected double[] mPMatrix = new double[16]; //The OpenGL projection matrix
 	
 	protected boolean mEnableDepthBuffer = true; //Do we use the depth buffer?
 	protected static boolean mFogEnabled; //Is camera fog enabled?
@@ -74,8 +86,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected int mLastReportedGLError = 0; // Keep track of the last reported OpenGL error
 	
 	//In case we cannot parse the version number, assume OpenGL ES 2.0
-	protected int mGLES_Major_Version = 2; //The GL ES major version of the surface
-	protected int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
+	protected static int mGLES_Major_Version = 2; //The GL ES major version of the surface
+	protected static int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
 
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
@@ -507,8 +519,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		
 		String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
 		if (versionString.length >= 3) {
-			String[] versionParts = versionString[2].split(".");
-			if (versionParts.length == 2) {
+			String[] versionParts = versionString[2].split("\\.");
+			if (versionParts.length >= 2) {
 				mGLES_Major_Version = Integer.parseInt(versionParts[0]);
 				mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
 			}
@@ -624,19 +636,19 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 
-	public Vector3 unProject(float x, float y, float z) {
+	public Vector3 unProject(double x, double y, double z) {
 		x = mViewportWidth - x;
 		y = mViewportHeight - y;
 
-		float[] m = new float[16], mvpmatrix = new float[16],
-				in = new float[4],
-				out = new float[4];
+		double[] m = new double[16], mvpmatrix = new double[16],
+				in = new double[4],
+				out = new double[4];
 
 		Matrix.multiplyMM(mvpmatrix, 0, mPMatrix, 0, mVMatrix, 0);
 		Matrix.invertM(m, 0, mvpmatrix, 0);
 
-		in[0] = (x / (float)mViewportWidth) * 2 - 1;
-		in[1] = (y / (float)mViewportHeight) * 2 - 1;
+		in[0] = (x / mViewportWidth) * 2 - 1;
+		in[1] = (y / mViewportHeight) * 2 - 1;
 		in[2] = 2 * z - 1;
 		in[3] = 1;
 
@@ -649,15 +661,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return new Vector3(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
 	}
 
-	public float getFrameRate() {
+	public double getFrameRate() {
 		return mFrameRate;
 	}
 
 	public void setFrameRate(int frameRate) {
-		setFrameRate((float)frameRate);
+		setFrameRate((double) frameRate);
 	}
 
-	public void setFrameRate(float frameRate) {
+	public void setFrameRate(double frameRate) {
 		this.mFrameRate = frameRate;
 		if (stopRendering()) {
 			// Restart timer with new frequency
@@ -665,7 +677,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 
-	public float getRefreshRate() {
+	public double getRefreshRate() {
 		return ((WindowManager) mContext
 				.getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay()
@@ -1300,7 +1312,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 * @return int containing the major version number.
 	 */
-	public int getGLMajorVersion() {
+	public static int getGLMajorVersion() {
 		return mGLES_Major_Version;
 	}
 	
@@ -1309,7 +1321,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 * @return int containing the minor version number.
 	 */
-	public int getGLMinorVersion() {
+	public static int getGLMinorVersion() {
 		return mGLES_Minor_Version;
 	}
 

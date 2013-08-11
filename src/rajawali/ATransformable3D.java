@@ -1,13 +1,25 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali;
 
 import rajawali.bounds.volumes.IBoundingVolume;
+import rajawali.math.Matrix;
 import rajawali.math.Matrix4;
 import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.scene.scenegraph.IGraphNode;
 import rajawali.scene.scenegraph.IGraphNodeMember;
-import android.opengl.Matrix;
 
 public abstract class ATransformable3D extends AFrameTask implements IGraphNodeMember {
 	protected Vector3 mPosition, mRotation, mScale;
@@ -21,7 +33,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	protected Vector3 mTmpRotX = new Vector3();
 	protected Vector3 mTmpRotY = new Vector3();
 	protected Vector3 mTmpRotZ = new Vector3();
-	protected float[] mLookAtMatrix = new float[16];
+	protected double[] mLookAtMatrix = new double[16];
 	
 	protected IGraphNode mGraphNode;
 	protected boolean mInsideGraph = false; //Default to being outside the graph
@@ -42,7 +54,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public void setPosition(float x, float y, float z) {
+	public void setPosition(double x, double y, double z) {
 		mPosition.setAll(x, y, z);
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
@@ -51,34 +63,34 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		return mPosition;
 	}
 	
-	public void setX(float x) {
+	public void setX(double x) {
 		mPosition.x = x;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public float getX() {
+	public double getX() {
 		return mPosition.x;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		mPosition.y = y;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public float getY() {
+	public double getY() {
 		return mPosition.y;
 	}
 
-	public void setZ(float z) {
+	public void setZ(double z) {
 		mPosition.z = z;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public float getZ() {
+	public double getZ() {
 		return mPosition.z;
 	}
 	
-	public float[] getLookAtMatrix() {
+	public double[] getLookAtMatrix() {
 		return mLookAtMatrix;
 	}
 	
@@ -132,11 +144,11 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		//if (mGraphNode != null) mGraphNode.updateObject(this); //TODO: This may cause problems
 	}
 
-	public void rotateAround(Vector3 axis, float angle) {
+	public void rotateAround(Vector3 axis, double angle) {
 		rotateAround(axis, angle, true);
 	}
 	
- 	public void rotateAround(Vector3 axis, float angle, boolean append) {
+ 	public void rotateAround(Vector3 axis, double angle, boolean append) {
  		if(append) {
  			mTmpOrientation.fromAngleAxis(axis, angle);
  			mOrientation.multiply(mTmpOrientation);
@@ -159,7 +171,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 	
-	public void setRotation(float rotX, float rotY, float rotZ) {
+	public void setRotation(double rotX, double rotY, double rotZ) {
 		mRotation.x = rotX;
 		mRotation.y = rotY;
 		mRotation.z = rotZ;
@@ -167,37 +179,37 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 	
-	public void setRotation(float[] rotationMatrix)
+	public void setRotation(double[] rotationMatrix)
 	{
 		//TODO: This will be fixed by issue #968
 		mOrientation.fromRotationMatrix(rotationMatrix);
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 	
-	public void setRotX(float rotX) {
+	public void setRotX(double rotX) {
 		mRotation.x = rotX;
 		mRotationDirty = true;
 	}
 
-	public float getRotX() {
+	public double getRotX() {
 		return mRotation.x;
 	}
 
-	public void setRotY(float rotY) {
+	public void setRotY(double rotY) {
 		mRotation.y = rotY;
 		mRotationDirty = true;
 	}
 
-	public float getRotY() {
+	public double getRotY() {
 		return mRotation.y;
 	}
 
-	public void setRotZ(float rotZ) {
+	public void setRotZ(double rotZ) {
 		mRotation.z = rotZ;
 		mRotationDirty = true;
 	}
 
-	public float getRotZ() {
+	public double getRotZ() {
 		return mRotation.z;
 	}
 	
@@ -210,44 +222,44 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		mRotationDirty = true;
 	}
 
-	public void setScale(float scale) {
+	public void setScale(double scale) {
 		mScale.x = scale;
 		mScale.y = scale;
 		mScale.z = scale;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public void setScale(float scaleX, float scaleY, float scaleZ) {
+	public void setScale(double scaleX, double scaleY, double scaleZ) {
 		mScale.x = scaleX;
 		mScale.y = scaleY;
 		mScale.z = scaleZ;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public void setScaleX(float scaleX) {
+	public void setScaleX(double scaleX) {
 		mScale.x = scaleX;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public float getScaleX() {
+	public double getScaleX() {
 		return mScale.x;
 	}
 
-	public void setScaleY(float scaleY) {
+	public void setScaleY(double scaleY) {
 		mScale.y = scaleY;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public float getScaleY() {
+	public double getScaleY() {
 		return mScale.y;
 	}
 
-	public void setScaleZ(float scaleZ) {
+	public void setScaleZ(double scaleZ) {
 		mScale.z = scaleZ;
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
-	public float getScaleZ() {
+	public double getScaleZ() {
 		return mScale.z;
 	}
 	
@@ -264,7 +276,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		return mLookAt;
 	}
 	
-	public void setLookAt(float x, float y, float z) {
+	public void setLookAt(double x, double y, double z) {
 		if (mLookAt == null) mLookAt = new Vector3();
 		mLookAt.x = x;
 		mLookAt.y = y;

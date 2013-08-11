@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.math;
 
 import rajawali.math.vector.Vector3;
@@ -16,11 +28,11 @@ import rajawali.math.vector.Vector3.Axis;
  */
 public final class Quaternion {
 	//Tolerances
-	public static final float F_EPSILON = .001f;
-	public static final float NORMALIZATION_TOLERANCE = 0.00001f;
+	public static final double F_EPSILON = .001;
+	public static final double NORMALIZATION_TOLERANCE = 0.00001;
 	
 	//The Quaternion components
-	public float w, x, y, z;
+	public double w, x, y, z;
 	
 	//Scratch members
 	private Vector3 mTmpVec1 = new Vector3();
@@ -43,12 +55,12 @@ public final class Quaternion {
 	/**
 	 * Creates a {@link Quaternion} with the specified components.
 	 * 
-	 * @param w float The w component.
-	 * @param x float The x component.
-	 * @param y float The y component.
-	 * @param z float The z component.
+	 * @param w double The w component.
+	 * @param x double The x component.
+	 * @param y double The y component.
+	 * @param z double The z component.
 	 */
-	public Quaternion(float w, float x, float y, float z) {
+	public Quaternion(double w, double x, double y, double z) {
 		setAll(w, x, y, z);
 	}
 
@@ -67,9 +79,9 @@ public final class Quaternion {
 	 * angle around the axis.
 	 * 
 	 * @param axis {@link Vector3} The axis of rotation.
-	 * @param angle float The angle of rotation in degrees.
+	 * @param angle double The angle of rotation in degrees.
 	 */
-	public Quaternion(Vector3 axis, float angle) {
+	public Quaternion(Vector3 axis, double angle) {
 		fromAngleAxis(axis, angle);
 	}
 	
@@ -82,23 +94,6 @@ public final class Quaternion {
 	/**
 	 * Sets the components of this {@link Quaternion}.
 	 * 
-	 * @param w float The w component.
-	 * @param x float The x component.
-	 * @param y float The y component.
-	 * @param z float The z component.
-	 * @return A reference to this {@link Quaternion} to facilitate chaining. 
-	 */
-	public Quaternion setAll(float w, float x, float y, float z) {
-		this.w = w;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		return this;
-	}
-	
-	/**
-	 * Sets the components of this {@link Quaternion}.
-	 * 
 	 * @param w double The w component.
 	 * @param x double The x component.
 	 * @param y double The y component.
@@ -106,10 +101,10 @@ public final class Quaternion {
 	 * @return A reference to this {@link Quaternion} to facilitate chaining. 
 	 */
 	public Quaternion setAll(double w, double x, double y, double z) {
-		this.w = (float) w;
-		this.x = (float) x;
-		this.y = (float) y;
-		this.z = (float) z;
+		this.w = w;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		return this;
 	}
 	
@@ -128,10 +123,10 @@ public final class Quaternion {
 	 * Sets this {@link Quaternion}'s components from the given axis and angle around the axis.
 	 * 
 	 * @param axis {@link Axis} The cardinal axis to set rotation on.
-	 * @param angle float The rotation angle in degrees.
+	 * @param angle double The rotation angle in degrees.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public Quaternion fromAngleAxis(final Axis axis, final float angle) {
+	public Quaternion fromAngleAxis(final Axis axis, final double angle) {
 		fromAngleAxis(Vector3.getAxisVector(axis), angle);
 		return this;
 	}
@@ -140,31 +135,31 @@ public final class Quaternion {
 	 * Sets this {@link Quaternion}'s components from the given axis vector and angle around the axis.
 	 * 
 	 * @param axis {@link Vector3} The axis to set rotation on.
-	 * @param angle float The rotation angle in degrees.
+	 * @param angle double The rotation angle in degrees.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public Quaternion fromAngleAxis(final Vector3 axis, final float angle) {
+	public Quaternion fromAngleAxis(final Vector3 axis, final double angle) {
 		if (!axis.isUnit()) axis.normalize();
 		double radian = Math.toRadians(angle); //MathUtil.degreesToRadians(angle);
 		double halfAngle = radian * .5;
 		double halfAngleSin = Math.sin(halfAngle);
-		w = (float) Math.cos(halfAngle);
-		x = (float) (halfAngleSin * axis.x);
-		y = (float) (halfAngleSin * axis.y);
-		z = (float) (halfAngleSin * axis.z);
+		w = Math.cos(halfAngle);
+		x = halfAngleSin * axis.x;
+		y = halfAngleSin * axis.y;
+		z = halfAngleSin * axis.z;
 		return this;
 	}
 	
 	/**
 	 * Sets this {@link Quaternion}'s components from the given axis vector and angle around the axis.
 	 * 
-	 * @param x float The x component of the axis.
-	 * @param y float The y component of the axis.
-	 * @param z float The z component of the axis.
-	 * @param angle float The rotation angle in degrees.
+	 * @param x double The x component of the axis.
+	 * @param y double The y component of the axis.
+	 * @param z double The z component of the axis.
+	 * @param angle double The rotation angle in degrees.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public Quaternion fromAngleAxis(float x, float y, float z, float angle) {
+	public Quaternion fromAngleAxis(double x, double y, double z, double angle) {
 		double d = Vector3.length(x, y, z);
 		if (d == 0) {
 			return identity();
@@ -173,8 +168,7 @@ public final class Quaternion {
 		double l_ang = angle * Math.toRadians(angle);
 		double l_sin = Math.sin(l_ang * 0.5);
 		double l_cos = Math.cos(l_ang * 0.5); 
-		return this.setAll((float) l_cos, (float) (d * x * l_sin), 
-				(float) (d * y * l_sin), (float) (d * z * l_sin));
+		return this.setAll(l_cos, d * x * l_sin, d * y * l_sin, d * z * l_sin);
 	}
 	
 	/**
@@ -201,25 +195,25 @@ public final class Quaternion {
 	 * ftp://ftp.cis.upenn.edu/pub/graphics/shoemake/quatut.ps.Z.
 	 * </p>
 	 * 
-	 * @param xx float The x axis x coordinate.
-	 * @param xy float The x axis y coordinate.
-	 * @param xz float The x axis z coordinate.
-	 * @param yx float The y axis x coordinate.
-	 * @param yy float The y axis y coordinate.
-	 * @param yz float The y axis z coordinate.
-	 * @param zx float The z axis x coordinate.
-	 * @param zy float The z axis y coordinate.
-	 * @param zz float The z axis z coordniate.
+	 * @param xx double The x axis x coordinate.
+	 * @param xy double The x axis y coordinate.
+	 * @param xz double The x axis z coordinate.
+	 * @param yx double The y axis x coordinate.
+	 * @param yy double The y axis y coordinate.
+	 * @param yz double The y axis z coordinate.
+	 * @param zx double The z axis x coordinate.
+	 * @param zy double The z axis y coordinate.
+	 * @param zz double The z axis z coordniate.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public Quaternion fromAxes(float xx, float xy, float xz, float yx, float yy, float yz,
-			float zx, float zy, float zz) {
+	public Quaternion fromAxes(double xx, double xy, double xz, double yx, double yy, double yz,
+			double zx, double zy, double zz) {
 		// The trace is the sum of the diagonal elements; see
 		// http://mathworld.wolfram.com/MatrixTrace.html
-		final float m00 = xx, m01 = xy, m02 = xz;
-		final float m10 = yx, m11 = yy, m12 = yz;
-		final float m20 = zx, m21 = zy, m22 = zz;
-		final float t = m00 + m11 + m22;
+		final double m00 = xx, m01 = xy, m02 = xz;
+		final double m10 = yx, m11 = yy, m12 = yz;
+		final double m20 = zx, m21 = zy, m22 = zz;
+		final double t = m00 + m11 + m22;
 		
 		//Protect the division by s by ensuring that s >= 1
 		double x, y, z, w;
@@ -262,8 +256,8 @@ public final class Quaternion {
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion fromMatrix(Matrix4 matrix) {
-		float[] value = new float[16];
-		matrix.toFloatArray(value);
+		double[] value = new double[16];
+		matrix.toArray(value);
 		fromAxes(value[Matrix4.M00], value[Matrix4.M01], value[Matrix4.M02],
 				value[Matrix4.M10], value[Matrix4.M11], value[Matrix4.M12],
 				value[Matrix4.M20], value[Matrix4.M21], value[Matrix4.M22]);
@@ -273,28 +267,28 @@ public final class Quaternion {
 	/**
 	 * Sets this {@link Quaternion} from the given Euler angles.
 	 * 
-	 * @param yaw float The yaw angle in degrees.
-	 * @param pitch float The pitch angle in degrees.
-	 * @param roll float The roll angle in degrees.
+	 * @param yaw double The yaw angle in degrees.
+	 * @param pitch double The pitch angle in degrees.
+	 * @param roll double The roll angle in degrees.
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
-	public Quaternion fromEuler(float yaw, float pitch, float roll) {
-		yaw = (float) Math.toRadians(yaw);
-		pitch = (float) Math.toRadians(pitch);
-		roll = (float) Math.toRadians(roll);
-		float num9 = roll * 0.5f;
-		float num6 = (float) Math.sin(num9);
-		float num5 = (float) Math.cos(num9);
-		float num8 = pitch * 0.5f;
-		float num4 = (float) Math.sin(num8);
-		float num3 = (float) Math.cos(num8);
-		float num7 = yaw * 0.5f;
-		float num2 = (float) Math.sin(num7);
-		float num = (float) Math.cos(num7);
-		float f1 = num * num4;
-		float f2 = num2 * num3;
-		float f3 = num * num3;
-		float f4 = num2 * num4;
+	public Quaternion fromEuler(double yaw, double pitch, double roll) {
+		yaw = Math.toRadians(yaw);
+		pitch = Math.toRadians(pitch);
+		roll = Math.toRadians(roll);
+		double num9 = roll * 0.5;
+		double num6 = Math.sin(num9);
+		double num5 = Math.cos(num9);
+		double num8 = pitch * 0.5;
+		double num4 = Math.sin(num8);
+		double num3 = Math.cos(num8);
+		double num7 = yaw * 0.5;
+		double num2 = Math.sin(num7);
+		double num = Math.cos(num7);
+		double f1 = num * num4;
+		double f2 = num2 * num3;
+		double f3 = num * num3;
+		double f4 = num2 * num4;
 		
 		x = (f1 * num5) + (f2 * num6);
 		y = (f2 * num5) - (f1 * num6);
@@ -306,22 +300,22 @@ public final class Quaternion {
 	/**
 	 * Sets this {@link Quaternion}'s components from the given input matrix.
 	 * 
-	 * @param rotMatrix float[] The rotation matrix. 4x4 column major order.
+	 * @param rotMatrix double[] The rotation matrix. 4x4 column major order.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	@Deprecated
-	public Quaternion fromRotationMatrix(final float[] rotMatrix) {
+	public Quaternion fromRotationMatrix(final double[] rotMatrix) {
 		// Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
 		// article "Quaternion Calculus and Fast Animation".
 
-		float fTrace = rotMatrix[0] + rotMatrix[5] + rotMatrix[10];
-		float fRoot;
+		double fTrace = rotMatrix[0] + rotMatrix[5] + rotMatrix[10];
+		double fRoot;
 
 		if (fTrace > 0.0) {
 			// |w| > 1/2, may as well choose w > 1/2
-			fRoot = (float) Math.sqrt(fTrace + 1.0f); // 2w
-			w = 0.5f * fRoot;
-			fRoot = 0.5f / fRoot; // 1/(4w)
+			fRoot = Math.sqrt(fTrace + 1.0); // 2w
+			w = 0.5 * fRoot;
+			fRoot = 0.5 / fRoot; // 1/(4w)
 			x = (rotMatrix[9] - rotMatrix[6]) * fRoot;
 			y = (rotMatrix[2] - rotMatrix[8]) * fRoot;
 			z = (rotMatrix[4] - rotMatrix[1]) * fRoot;
@@ -336,10 +330,10 @@ public final class Quaternion {
 			int j = s_iNext[i];
 			int k = s_iNext[j];
 
-			fRoot = (float) Math.sqrt(rotMatrix[(i * 4) + i] - rotMatrix[(j * 4) + j] - rotMatrix[(k * 4) + k] + 1.0f);
-			float apkQuat[] = new float[] { x, y, z };
-			apkQuat[i] = 0.5f * fRoot;
-			fRoot = 0.5f / fRoot;
+			fRoot = Math.sqrt(rotMatrix[(i * 4) + i] - rotMatrix[(j * 4) + j] - rotMatrix[(k * 4) + k] + 1.0f);
+			double apkQuat[] = new double[] { x, y, z };
+			apkQuat[i] = 0.5 * fRoot;
+			fRoot = 0.5 / fRoot;
 			w = (rotMatrix[(k * 4) + j] - rotMatrix[(j * 4) + k]) * fRoot;
 			apkQuat[j] = (rotMatrix[(j * 4) + i] + rotMatrix[(i * 4) + j]) * fRoot;
 			apkQuat[k] = (rotMatrix[(k * 4) + i] + rotMatrix[(i * 4) + k]) * fRoot;
@@ -360,8 +354,8 @@ public final class Quaternion {
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion fromRotationBetween(final Vector3 v1, final Vector3 v2) {
-		final float dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
-		final float angle = (float) Math.toDegrees(Math.acos(dot));
+		final double dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
+		final double angle = Math.toDegrees(Math.acos(dot));
 		return fromAngleAxis(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, 
 				v1.x * v2.y - v1.y * v2.x, angle);
 	}
@@ -370,18 +364,18 @@ public final class Quaternion {
 	 * Sets this {@link Quaternion}'s components to the rotation between the given
 	 * two vectors. The incoming vectors should be normalized.
 	 * 
-	 * @param x1 float The base vector's x component.
-	 * @param y1 float The base vector's y component.
-	 * @param z1 float The base vector's z component.
-	 * @param x2 float The target vector's x component.
-	 * @param y2 float The target vector's y component.
-	 * @param z2 float The target vector's z component.
+	 * @param x1 double The base vector's x component.
+	 * @param y1 double The base vector's y component.
+	 * @param z1 double The base vector's z component.
+	 * @param x2 double The target vector's x component.
+	 * @param y2 double The target vector's y component.
+	 * @param z2 double The target vector's z component.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public Quaternion fromRotationBetween(final float x1, final float y1, final float z1, final float x2,
-			final float y2, final float z2) {
-		final float dot = MathUtil.clamp(Vector3.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
-		final float angle = (float) Math.toDegrees(Math.acos(dot));
+	public Quaternion fromRotationBetween(final double x1, final double y1, final double z1, final double x2,
+			final double y2, final double z2) {
+		final double dot = MathUtil.clamp(Vector3.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
+		final double angle = Math.toDegrees(Math.acos(dot));
 		return fromAngleAxis(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2, angle);
 	}
 	
@@ -431,10 +425,10 @@ public final class Quaternion {
 	 * Multiplies each component of this {@link Quaternion} by the input
 	 * value.
 	 * 
-	 * @param scalar float The value to multiply by.
+	 * @param scalar double The value to multiply by.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public Quaternion multiply(float scalar) {
+	public Quaternion multiply(double scalar) {
 		w *= scalar;
 		x *= scalar;
 		y *= scalar;
@@ -449,10 +443,10 @@ public final class Quaternion {
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion multiply(Quaternion quat) {
-		final float tW = w;
-		final float tX = x;
-		final float tY = y;
-		final float tZ = z;
+		final double tW = w;
+		final double tX = x;
+		final double tY = y;
+		final double tZ = z;
 
 		w = tW * quat.w - tX * quat.x - tY * quat.y - tZ * quat.z;
 		x = tW * quat.x + tX * quat.w + tY * quat.z - tZ * quat.y;
@@ -475,8 +469,8 @@ public final class Quaternion {
 		mTmpVec3.setAll(x, y, z);
 		mTmpVec1 = Vector3.crossAndCreate(mTmpVec3, vector);
 		mTmpVec2 = Vector3.crossAndCreate(mTmpVec3, mTmpVec1);
-		mTmpVec1.multiply(2.0f * w);
-		mTmpVec2.multiply(2.0f);
+		mTmpVec1.multiply(2.0 * w);
+		mTmpVec2.multiply(2.0);
 
 		mTmpVec1.add(mTmpVec2);
 		mTmpVec1.add(vector);
@@ -491,22 +485,22 @@ public final class Quaternion {
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion multiplyLeft(Quaternion quat) {
-		final float newX = quat.w * x + quat.x * w + quat.y * z - quat.z * y;
-		final float newY = quat.w * y + quat.y * w + quat.z * x - quat.x * z;
-		final float newZ = quat.w * z + quat.z * w + quat.x * y - quat.y * x;
-		final float newW = quat.w * w - quat.x * x + quat.y * y - quat.z * z;
+		final double newX = quat.w * x + quat.x * w + quat.y * z - quat.z * y;
+		final double newY = quat.w * y + quat.y * w + quat.z * x - quat.x * z;
+		final double newZ = quat.w * z + quat.z * w + quat.x * y - quat.y * x;
+		final double newW = quat.w * w - quat.x * x + quat.y * y - quat.z * z;
 		return setAll(newW, newX, newY, newZ);
 	}
 	
 	/**
 	 * Normalizes this {@link Quaternion} to unit length.
 	 * 
-	 * @return float The scaling factor used to normalize this {@link Quaternion}.
+	 * @return double The scaling factor used to normalize this {@link Quaternion}.
 	 */
-	public float normalize() {
-		float len = length2();
-		if (len != 0 && (Math.abs(len - 1.0f) > NORMALIZATION_TOLERANCE)) {
-			float factor = 1.0f / (float) Math.sqrt(len);
+	public double normalize() {
+		double len = length2();
+		if (len != 0 && (Math.abs(len - 1.0) > NORMALIZATION_TOLERANCE)) {
+			double factor = 1.0 / Math.sqrt(len);
 			multiply(factor);
 		}
 		return len;
@@ -530,9 +524,9 @@ public final class Quaternion {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Quaternion inverse() {
-		float norm = length2();
+		double norm = length2();
 		if (norm > 0) {
-			float invNorm = 1.0f / norm;
+			double invNorm = 1.0 / norm;
 			setAll(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
 		}
 		return this;
@@ -544,9 +538,9 @@ public final class Quaternion {
 	 * @return {@link Quaternion} The new inverted {@link Quaternion}.
 	 */
 	public Quaternion invertAndCreate() {
-		float norm = length2();
+		double norm = length2();
 		if (norm > 0) {
-			float invNorm = 1.0f / norm;
+			double invNorm = 1.0 / norm;
 			return new Quaternion(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
 		} else {
 			return null;
@@ -560,11 +554,11 @@ public final class Quaternion {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Quaternion computeW() {
-	    float t = 1.0f - ( x * x ) - ( y * y ) - ( z * z );
-	    if ( t < 0.0f ) {
-	        w = 0.0f;
+	    double t = 1.0 - ( x * x ) - ( y * y ) - ( z * z );
+	    if ( t < 0.0 ) {
+	        w = 0.0;
 	    } else {
-	        w = -(float)Math.sqrt(t);
+	        w = -Math.sqrt(t);
 	    }
 	    return this;
 	}
@@ -580,14 +574,14 @@ public final class Quaternion {
 	 * @return {@link Vector3} The x axis of this {@link Quaternion}.
 	 */
 	public Vector3 getXAxis() {
-		float fTy = 2.0f * y;
-		float fTz = 2.0f * z;
-		float fTwy = fTy * w;
-		float fTwz = fTz * w;
-		float fTxy = fTy * x;
-		float fTxz = fTz * x;
-		float fTyy = fTy * y;
-		float fTzz = fTz * z;
+		double fTy = 2.0 * y;
+		double fTz = 2.0 * z;
+		double fTwy = fTy * w;
+		double fTwz = fTz * w;
+		double fTxy = fTy * x;
+		double fTxz = fTz * x;
+		double fTyy = fTy * y;
+		double fTzz = fTz * z;
 
 		return new Vector3(1 - (fTyy + fTzz), fTxy + fTwz, fTxz - fTwy);
 	}
@@ -598,15 +592,15 @@ public final class Quaternion {
 	 * @return {@link Vector3} The y axis of this {@link Quaternion}.
 	 */
 	public Vector3 getYAxis() {
-		float fTx = 2.0f * x;
-		float fTy = 2.0f * y;
-		float fTz = 2.0f * z;
-		float fTwx = fTx * w;
-		float fTwz = fTz * w;
-		float fTxx = fTx * x;
-		float fTxy = fTy * x;
-		float fTyz = fTz * y;
-		float fTzz = fTz * z;
+		double fTx = 2.0 * x;
+		double fTy = 2.0 * y;
+		double fTz = 2.0 * z;
+		double fTwx = fTx * w;
+		double fTwz = fTz * w;
+		double fTxx = fTx * x;
+		double fTxy = fTy * x;
+		double fTyz = fTz * y;
+		double fTzz = fTz * z;
 
 		return new Vector3(fTxy - fTwz, 1 - (fTxx + fTzz), fTyz + fTwx);
 	}
@@ -617,15 +611,15 @@ public final class Quaternion {
 	 * @return {@link Vector3} The z axis of this {@link Quaternion}.
 	 */
 	public Vector3 getZAxis() {
-		float fTx = 2.0f * x;
-		float fTy = 2.0f * y;
-		float fTz = 2.0f * z;
-		float fTwx = fTx * w;
-		float fTwy = fTy * w;
-		float fTxx = fTx * x;
-		float fTxz = fTz * x;
-		float fTyy = fTy * y;
-		float fTyz = fTz * y;
+		double fTx = 2.0 * x;
+		double fTy = 2.0 * y;
+		double fTz = 2.0 * z;
+		double fTwx = fTx * w;
+		double fTwy = fTy * w;
+		double fTxx = fTx * x;
+		double fTxz = fTz * x;
+		double fTyy = fTy * y;
+		double fTyz = fTz * y;
 
 		return new Vector3(fTxz + fTwy, fTyz - fTwx, 1 - (fTxx + fTyy));
 	}
@@ -633,27 +627,27 @@ public final class Quaternion {
 	/**
 	 * Calculates the Euclidean length of this {@link Quaternion}.
 	 * 
-	 * @return float The Euclidean length.
+	 * @return double The Euclidean length.
 	 */
-	public float length() {
-		return (float) Math.sqrt(length2());
+	public double length() {
+		return Math.sqrt(length2());
 	}
 	
 	/**
 	 * Calculates the square of the Euclidean length of this {@link Quaternion}.
 	 * 
-	 * @return float The square of the Euclidean length.
+	 * @return double The square of the Euclidean length.
 	 */
-	public float length2() {
+	public double length2() {
 		return w * w + x * x + y * y + z * z;
 	}
 	
 	/**
 	 * Calculates the dot product between this and another {@link Quaternion}.
 	 * 
-	 * @return float The dot product.
+	 * @return double The dot product.
 	 */
-	public float dot(Quaternion other) {
+	public double dot(Quaternion other) {
 		return w * other.w + x * other.x + y * other.y + z * other.z;
 	}
 	
@@ -685,11 +679,11 @@ public final class Quaternion {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Quaternion exp() {
-		float angle = (float) Math.sqrt(x * x + y * y + z * z);
-		float sin = (float) Math.sin(angle);
-		w = (float) Math.cos(angle);
+		double angle = Math.sqrt(x * x + y * y + z * z);
+		double sin = Math.sin(angle);
+		w = Math.cos(angle);
 		if (Math.abs(sin) >= F_EPSILON) {
-			float coeff = sin / angle;
+			double coeff = sin / angle;
 			x = coeff * x;
 			y = coeff * y;
 			z = coeff * z;
@@ -703,12 +697,12 @@ public final class Quaternion {
 	 * @return {@link Quaternion} The new {@link Quaternion} set to e^this.
 	 */
 	public Quaternion expAndCreate() {
-		float angle = (float) Math.sqrt(x * x + y * y + z * z);
-		float sin = (float) Math.sin(angle);
+		double angle = Math.sqrt(x * x + y * y + z * z);
+		double sin = Math.sin(angle);
 		Quaternion result = new Quaternion();
-		result.w = (float) Math.cos(angle);
+		result.w = Math.cos(angle);
 		if (Math.abs(sin) >= F_EPSILON) {
-			float coeff = sin / angle;
+			double coeff = sin / angle;
 			result.x = coeff * x;
 			result.y = coeff * y;
 			result.z = coeff * z;
@@ -727,10 +721,10 @@ public final class Quaternion {
 	 */
 	public Quaternion log() {
 		if (Math.abs(w) < 1.0) {
-			float angle = (float) Math.acos(w);
-			float sin = (float) Math.sin(angle);
+			double angle = Math.acos(w);
+			double sin = Math.sin(angle);
 			if (Math.abs(sin) >= F_EPSILON) {
-				float fCoeff = angle / sin;
+				double fCoeff = angle / sin;
 				x = fCoeff * x;
 				y = fCoeff * y;
 				z = fCoeff * z;
@@ -749,10 +743,10 @@ public final class Quaternion {
 		Quaternion result = new Quaternion();
 		result.w = 0;
 		if (Math.abs(w) < 1.0) {
-			float angle = (float) Math.acos(w);
-			float sin = (float) Math.sin(angle);
+			double angle = Math.acos(w);
+			double sin = Math.sin(angle);
 			if (Math.abs(sin) >= F_EPSILON) {
-				float fCoeff = angle / sin;
+				double fCoeff = angle / sin;
 				result.x = fCoeff * x;
 				result.y = fCoeff * y;
 				result.z = fCoeff * z;
@@ -770,24 +764,24 @@ public final class Quaternion {
 	 * and sets this {@link Quaternion} to the result. 
 	 * 
 	 * @param end {@link Quaternion} The destination point.
-	 * @param t float The interpolation value. [0-1] Where 0 represents this and 1 represents end.
+	 * @param t double The interpolation value. [0-1] Where 0 represents this and 1 represents end.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public Quaternion slerp(Quaternion end, float t) {
-		final float dot = dot(end);
-		float absDot = dot < 0 ? -dot : dot;
+	public Quaternion slerp(Quaternion end, double t) {
+		final double dot = dot(end);
+		double absDot = dot < 0 ? -dot : dot;
 		
 		//Set the first and second scale for the interpolation
-		float scale0 = 1 - t;
-		float scale1 = t;
+		double scale0 = 1 - t;
+		double scale1 = t;
 		
 		//Check if the angle between the 2 quaternions was big enough to warrant calculations
 		if ((1 - absDot) > 0.1) {
 			final double angle = Math.acos(absDot);
-			final double invSinTheta = 1f / Math.sin(angle);
+			final double invSinTheta = 1 / Math.sin(angle);
 			//Calculate the scale for q1 and q2 according to the angle and its sine value
-			scale0 = (float) (Math.sin((1 - t) * angle) * invSinTheta);
-			scale1 = (float) (Math.sin((t * angle) * invSinTheta));
+			scale0 = Math.sin((1 - t) * angle) * invSinTheta;
+			scale1 = Math.sin((t * angle) * invSinTheta);
 		}
 		
 		if (dot < 0) scale1 = -scale1;
@@ -807,16 +801,16 @@ public final class Quaternion {
 	 * 
 	 * @param q1 {@link Quaternion} The starting point.
 	 * @param q2 {@link Quaternion} The destination point.
-	 * @param t float The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
+	 * @param t double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+	public Quaternion slerp(Quaternion q1, Quaternion q2, double t) {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             setAll(q1);
             return this;
         }
 
-        float result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z)
+        double result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z)
                 + (q1.w * q2.w);
 
         if (result < 0.0f) {
@@ -827,15 +821,15 @@ public final class Quaternion {
             result = -result;
         }
 
-        float scale0 = 1 - t;
-        float scale1 = t;
+        double scale0 = 1 - t;
+        double scale1 = t;
 
-        if ((1 - result) > 0.1f) {
-            float theta = (float) Math.acos(result);
-            float invSinTheta = 1f / (float) Math.sin(theta);
+        if ((1 - result) > 0.1) {
+            double theta = Math.acos(result);
+            double invSinTheta = 1 / Math.sin(theta);
 
-            scale0 = (float) Math.sin((1 - t) * theta) * invSinTheta;
-            scale1 = (float) Math.sin((t * theta)) * invSinTheta;
+            scale0 = Math.sin((1 - t) * theta) * invSinTheta;
+            scale1 = Math.sin((t * theta)) * invSinTheta;
         }
 
         x = (scale0 * q1.x) + (scale1 * q2.x);
@@ -851,10 +845,10 @@ public final class Quaternion {
 	 * 
 	 * @param q1 {@link Quaternion} The starting point.
 	 * @param q2 {@link Quaternion} The destination point.
-	 * @param t float The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
+	 * @param t double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
-	public static Quaternion slerpAndCreate(Quaternion q1, Quaternion q2, float t) {
+	public static Quaternion slerpAndCreate(Quaternion q1, Quaternion q2, double t) {
 		Quaternion q = new Quaternion();
 		q.slerp(q1, q2, t);
 		return q;
@@ -866,14 +860,14 @@ public final class Quaternion {
 	 * 
 	 * @param rkP {@link Quaternion} The starting point.
 	 * @param rkQ {@link Quaternion} The destination point.
-	 * @param t float The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
+	 * @param t double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
 	 * @param shortestPath boolean indicating if the shortest path should be used.
 	 * @return {@link Quaternion} The interpolated {@link Quaternion}.
 	 */
-	public static Quaternion lerp(final Quaternion rkP, final Quaternion rkQ, float t, boolean shortestPath) {
+	public static Quaternion lerp(final Quaternion rkP, final Quaternion rkQ, double t, boolean shortestPath) {
 		sTmp1.setAll(rkP);
 		sTmp2.setAll(rkQ);
-		float fCos = sTmp1.dot(sTmp2);
+		double fCos = sTmp1.dot(sTmp2);
 		if (fCos < 0.0f && shortestPath) {
 			sTmp2.inverse();
 			sTmp2.subtract(sTmp1);
@@ -893,11 +887,11 @@ public final class Quaternion {
 	 * 
 	 * @param rkP {@link Quaternion} The starting point.
 	 * @param rkQ {@link Quaternion} The destination point.
-	 * @param t float The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
+	 * @param t double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
 	 * @param shortestPath boolean indicating if the shortest path should be used.
 	 * @return {@link Quaternion} The normalized interpolated {@link Quaternion}.
 	 */
-	public static Quaternion nlerp(final Quaternion rkP, final Quaternion rkQ, float t, boolean shortestPath) {
+	public static Quaternion nlerp(final Quaternion rkP, final Quaternion rkQ, double t, boolean shortestPath) {
 		Quaternion result = lerp(rkP, rkQ, t, shortestPath);
 		result.normalize();
 		return result;
@@ -907,21 +901,21 @@ public final class Quaternion {
 	 * Gets the roll angle from this {@link Quaternion}. 
 	 * 
 	 * @param reprojectAxis boolean Whether or not to reproject the axes.
-	 * @return float The roll angle in radians.
+	 * @return double The roll angle in radians.
 	 */
-	public float getRoll(boolean reprojectAxis) {
+	public double getRoll(boolean reprojectAxis) {
 		if (reprojectAxis) {
-			// float fTx = 2.0f * x;
-			float fTy = 2.0f * y;
-			float fTz = 2.0f * z;
-			float fTwz = fTz * w;
-			float fTxy = fTy * x;
-			float fTyy = fTy * y;
-			float fTzz = fTz * z;
+			// double fTx = 2.0 * x;
+			double fTy = 2.0 * y;
+			double fTz = 2.0 * z;
+			double fTwz = fTz * w;
+			double fTxy = fTy * x;
+			double fTyy = fTy * y;
+			double fTzz = fTz * z;
 
-			return (float) Math.atan2(fTxy + fTwz, 1.0 - (fTyy + fTzz));
+			return Math.atan2(fTxy + fTwz, 1.0 - (fTyy + fTzz));
 		} else {
-			return (float) Math.atan2(2 * (x * y + w * z), w * w + x * x - y * y - z * z);
+			return Math.atan2(2 * (x * y + w * z), w * w + x * x - y * y - z * z);
 		}
 	}
 
@@ -929,21 +923,21 @@ public final class Quaternion {
 	 * Gets the pitch angle from this {@link Quaternion}. 
 	 * 
 	 * @param reprojectAxis boolean Whether or not to reproject the axes.
-	 * @return float The pitch angle in radians.
+	 * @return double The pitch angle in radians.
 	 */
-	public float getPitch(boolean reprojectAxis) {
+	public double getPitch(boolean reprojectAxis) {
 		if (reprojectAxis) {
-			float fTx = 2.0f * x;
-			// float fTy = 2.0f * y;
-			float fTz = 2.0f * z;
-			float fTwx = fTx * w;
-			float fTxx = fTx * x;
-			float fTyz = fTz * y;
-			float fTzz = fTz * z;
+			double fTx = 2.0 * x;
+			// double fTy = 2.0 * y;
+			double fTz = 2.0 * z;
+			double fTwx = fTx * w;
+			double fTxx = fTx * x;
+			double fTyz = fTz * y;
+			double fTzz = fTz * z;
 
-			return (float) Math.atan2(fTyz + fTwx, 1.0 - (fTxx + fTzz));
+			return Math.atan2(fTyz + fTwx, 1.0 - (fTxx + fTzz));
 		} else {
-			return (float) Math.atan2(2 * (y * z + w * x), w * w - x * x - y * y + z * z);
+			return Math.atan2(2 * (y * z + w * x), w * w - x * x - y * y + z * z);
 		}
 	}
 
@@ -951,22 +945,22 @@ public final class Quaternion {
 	 * Gets the yaw angle from this {@link Quaternion}. 
 	 * 
 	 * @param reprojectAxis boolean Whether or not to reproject the axes.
-	 * @return float The yaw angle in radians.
+	 * @return double The yaw angle in radians.
 	 */
-	public float getYaw(boolean reprojectAxis) {
+	public double getYaw(boolean reprojectAxis) {
 		if (reprojectAxis) {
-			float fTx = 2.0f * x;
-			float fTy = 2.0f * y;
-			float fTz = 2.0f * z;
-			float fTwy = fTy * w;
-			float fTxx = fTx * x;
-			float fTxz = fTz * x;
-			float fTyy = fTy * y;
+			double fTx = 2.0 * x;
+			double fTy = 2.0 * y;
+			double fTz = 2.0 * z;
+			double fTwy = fTy * w;
+			double fTxx = fTx * x;
+			double fTxz = fTz * x;
+			double fTyy = fTy * y;
 
-			return (float) Math.atan2(fTxz + fTwy, 1.0 - (fTxx + fTyy));
+			return Math.atan2(fTxz + fTwy, 1.0 - (fTxx + fTyy));
 
 		} else {
-			return (float) Math.asin(-2 * (x * z - w * y));
+			return Math.asin(-2 * (x * z - w * y));
 		}
 	}
 	
@@ -987,41 +981,43 @@ public final class Quaternion {
 	 * The {@link Quaternion} must be a normalized {@link Quaternion}.
 	 */
 	public void toRotationMatrix(Matrix4 matrix) {
-		float[] m = new float[16];
-		toRotationMatrix(m);
-		matrix.set(m);
+		toRotationMatrix(matrix.getDoubleValues());
 	}
 	
 	/**
+<<<<<<< HEAD
 	 * Sets the provided float[] to be a 4x4 rotation matrix representing this {@link Quaternion}.
 	 * The {@link Quaternion} must be a normalized {@link Quaternion}.
+=======
+	 * Sets the provided double[] to be a 4x4 rotation matrix representing this {@link Quaternion}.
+>>>>>>> 7048de4c245a99cc0779c79c3b04d0bb949a6075
 	 * 
-	 * @param matrix float[] representing a 4x4 rotation matrix in column major order.
+	 * @param matrix double[] representing a 4x4 rotation matrix in column major order.
 	 */
-	public void toRotationMatrix(float[] matrix) {
-		float x2 = x * x;
-		float y2 = y * y;
-		float z2 = z * z;
-		float xy = x * y;
-		float xz = x * z;
-		float yz = y * z;
-		float wx = w * x;
-		float wy = w * y;
-		float wz = w * z;
+	public void toRotationMatrix(double[] matrix) {
+		double x2 = x * x;
+		double y2 = y * y;
+		double z2 = z * z;
+		double xy = x * y;
+		double xz = x * z;
+		double yz = y * z;
+		double wx = w * x;
+		double wy = w * y;
+		double wz = w * z;
 
-		matrix[Matrix4.M00] = 1.0f - 2.0f * (y2 + z2);
-		matrix[Matrix4.M10] = 2.0f * (xy - wz);
-		matrix[Matrix4.M20] = 2.0f * (xz + wy);
+		matrix[Matrix4.M00] = 1.0 - 2.0 * (y2 + z2);
+		matrix[Matrix4.M10] = 2.0 * (xy - wz);
+		matrix[Matrix4.M20] = 2.0 * (xz + wy);
 		matrix[Matrix4.M30] = 0;
 
-		matrix[Matrix4.M01] = 2.0f * (xy + wz);
-		matrix[Matrix4.M11] = 1.0f - 2.0f * (x2 + z2);
-		matrix[Matrix4.M21] = 2.0f * (yz - wx);
+		matrix[Matrix4.M01] = 2.0 * (xy + wz);
+		matrix[Matrix4.M11] = 1.0 - 2.0 * (x2 + z2);
+		matrix[Matrix4.M21] = 2.0 * (yz - wx);
 		matrix[Matrix4.M31] = 0;
 
-		matrix[Matrix4.M02] = 2.0f * (xz - wy);
-		matrix[Matrix4.M12] = 2.0f * (yz + wx);
-		matrix[Matrix4.M22] = 1.0f - 2.0f * (x2 + y2);
+		matrix[Matrix4.M02] = 2.0 * (xz - wy);
+		matrix[Matrix4.M12] = 2.0 * (yz + wx);
+		matrix[Matrix4.M22] = 1.0 - 2.0 * (x2 + y2);
 		matrix[Matrix4.M32] = 0;
 
 		matrix[Matrix4.M03] = 0;
@@ -1113,12 +1109,12 @@ public final class Quaternion {
 	 * Compares this {@link Quaternion} to another with a tolerance.
 	 * 
 	 * @param other {@link Quaterion} The other {@link Quaternion}.
-	 * @param tolerance float The tolerance for equality.
+	 * @param tolerance double The tolerance for equality.
 	 * @return boolean True if the two {@link Quaternions} equate within the specified tolerance.
 	 */
-	public boolean equals(final Quaternion other, final float tolerance) {
-		float fCos = dot(other);
-		float angle = (float) Math.acos(fCos);
+	public boolean equals(final Quaternion other, final double tolerance) {
+		double fCos = dot(other);
+		double angle = Math.acos(fCos);
 
 		return (Math.abs(angle) <= tolerance) || MathUtil.realEqual(angle, MathUtil.PI, tolerance);
 	}

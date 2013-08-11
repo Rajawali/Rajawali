@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
+import rajawali.math.Matrix4;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.Quaternion;
@@ -53,7 +54,7 @@ public class CameraFrustum implements IBoundingVolume {
 		}
 	}
 
-	public void update(float[] inverseProjectionView) {             
+	public void update(Matrix4 inverseProjectionView) {             
 		for(int i = 0; i < 8; i++) {
 			mPlanePoints[i].setAll(mClipSpacePlanePoints[i]);
 			mPlanePoints[i].project(inverseProjectionView);   
@@ -86,7 +87,8 @@ public class CameraFrustum implements IBoundingVolume {
 	float[] mResultVec = new float[4];
 	Vector3 mTempPosition = new Vector3();
 	
-	public void drawBoundingVolume(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, float[] mMatrix) {
+	public void drawBoundingVolume(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+			final Matrix4 vMatrix, final Matrix4 mMatrix) {
 		/*if(mVisibleFrustum == null) {
 			mVisibleFrustum = new CameraVisibleFrustum(this, 4, 1, 3, 5);
 			mVisibleFrustum.setMaterial(new SimpleMaterial());
@@ -132,7 +134,7 @@ public class CameraFrustum implements IBoundingVolume {
 		//mVisibleFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null, null);
 	}
 
-	public void transform(float[] matrix) {
+	public void transform(Matrix4 matrix) {
 		RajLog.i("[" + this.getClass().getName()
 				+ "] The method CameraFrustum#transform(float[]) does nothing. You should remove your call to it.");
 	}

@@ -1,5 +1,14 @@
 /**
+ * Copyright 2013 Dennis Ippel
  * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package rajawali.renderer.plugins;
 
@@ -9,6 +18,7 @@ import rajawali.Camera;
 import rajawali.extras.LensFlare;
 import rajawali.extras.LensFlare.FlareInfo;
 import rajawali.materials.textures.ASingleTexture;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
@@ -284,16 +294,16 @@ public final class LensFlarePlugin extends Plugin {
 	public void render() {
 		int f, i, numLensFlares = mLensFlares.size();
 		// Calculate world space position to normalized screen space.
-		float viewportWidth = mRenderer.getViewportWidth(), viewportHeight = mRenderer.getViewportHeight();
-		float invAspect = viewportHeight / viewportWidth;
-		float size;
+		double viewportWidth = mRenderer.getViewportWidth(), viewportHeight = mRenderer.getViewportHeight();
+		double invAspect = viewportHeight / viewportWidth;
+		double size;
 		Vector2 scale = new Vector2();
-		float halfViewportWidth = viewportWidth / 2;
-		float halfViewportHeight = viewportHeight / 2;
+		double halfViewportWidth = viewportWidth / 2;
+		double halfViewportHeight = viewportHeight / 2;
 		Vector3 screenPosition = new Vector3();
-		float screenPositionPixels_x, screenPositionPixels_y;
+		double screenPositionPixels_x, screenPositionPixels_y;
 		Camera camera = mRenderer.getCurrentScene().getCamera();
-		float[] viewMatrix = camera.getViewMatrix().clone(), projMatrix = camera.getProjectionMatrix().clone();
+		Matrix4 viewMatrix = camera.getViewMatrix().clone(), projMatrix = camera.getProjectionMatrix().clone();
 		
 		useProgram(mProgram);
 		
@@ -344,7 +354,7 @@ public final class LensFlarePlugin extends Plugin {
 				// Calculate the angle between the camera and the light vector.
 				Vector3 lightToCamDirection = lensFlare.getPosition().clone().subtract(cameraPosition);
 				lightToCamDirection.normalize();
-				float angleLightCamera = lightToCamDirection.dot(cameraDirection);
+				double angleLightCamera = lightToCamDirection.dot(cameraDirection);
 				
 				// Camera needs to be facing towards the light and the light should come within the
 				// viewing frustum.
@@ -359,8 +369,8 @@ public final class LensFlarePlugin extends Plugin {
 					
 					// First render pass.
 					GLES20.glUniform1i(muRenderTypeHandle, 1);
-					GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.getX(), scale.getY() }, 0);
-					GLES20.glUniform3fv(muScreenPositionHandle, 1, new float[] { screenPosition.x, screenPosition.y, screenPosition.z }, 0);
+					GLES20.glUniform2fv(muScaleHandle, 1, new float[] { (float) scale.getX(), (float) scale.getY() }, 0);
+					GLES20.glUniform3fv(muScreenPositionHandle, 1, new float[] { (float) screenPosition.x, (float) screenPosition.y, (float) screenPosition.z }, 0);
 					
 					GLES20.glDisable(GLES20.GL_BLEND);
 					GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -422,7 +432,7 @@ public final class LensFlarePlugin extends Plugin {
 					for (f = 0; f < lensFlare.getLensFlares().size(); f++) {
 						FlareInfo sprite = lensFlare.getLensFlares().get(f);
 						// Don't bother rendering if the sprite's too transparent or too small.
-						if (sprite.getOpacity() > 0.001f && sprite.getScale() > 0.001f) {
+						if (sprite.getOpacity() > 0.001 && sprite.getScale() > 0.001) {
 							screenPosition.setAll(sprite.getScreenPosition());
 							
 							// Calculate pixel size to normalized size
@@ -431,12 +441,12 @@ public final class LensFlarePlugin extends Plugin {
 							scale.setX(size * invAspect);
 							scale.setY(size);
 							
-							GLES20.glUniform3fv(muScreenPositionHandle, 1, new float[] { screenPosition.x, screenPosition.y, screenPosition.z }, 0);
-							GLES20.glUniform2fv(muScaleHandle, 1, new float[] { scale.getX(), scale.getY() }, 0);
-							GLES20.glUniform1f(muRotationHandle, sprite.getRotation());
+							GLES20.glUniform3fv(muScreenPositionHandle, 1, new float[] { (float) screenPosition.x, (float) screenPosition.y, (float) screenPosition.z }, 0);
+							GLES20.glUniform2fv(muScaleHandle, 1, new float[] { (float) scale.getX(), (float) scale.getY() }, 0);
+							GLES20.glUniform1f(muRotationHandle, (float) sprite.getRotation());
 							
-							GLES20.glUniform1f(muOpacityHandle, sprite.getOpacity());
-							GLES20.glUniform3fv(muColorHandle, 1, new float[] { sprite.getColor().x, sprite.getColor().y, sprite.getColor().z }, 0);
+							GLES20.glUniform1f(muOpacityHandle, (float) sprite.getOpacity());
+							GLES20.glUniform3fv(muColorHandle, 1, new float[] { (float) sprite.getColor().x, (float) sprite.getColor().y, (float) sprite.getColor().z }, 0);
 							
 							GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 							GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, sprite.getTexture().getTextureId());

@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
@@ -21,7 +33,7 @@ public class TranslateAnimation3D extends Animation3D {
 	
 	protected boolean mOrientToPath = false;
 	protected ICurve3D mSplinePath;
-	protected float mLookatDelta;
+	protected double mLookatDelta;
 
 	public TranslateAnimation3D(Vector3 toPosition) {
 		super();
@@ -55,18 +67,17 @@ public class TranslateAnimation3D extends Animation3D {
 		if (mSplinePath == null) {
 			if (mDiffPosition == null)
 				mDiffPosition = Vector3.subtractAndCreate(mToPosition, mFromPosition);
-			mMultipliedPosition.scaleAndSet(mDiffPosition, (float) mInterpolatedTime);
+			mMultipliedPosition.scaleAndSet(mDiffPosition, mInterpolatedTime);
 			mAddedPosition.addAndSet(mFromPosition, mMultipliedPosition);
 			mTransformable3D.setPosition(mAddedPosition);
 		} else {
-			mSplinePath.calculatePoint(mTempPoint1, (float) mInterpolatedTime);
+			mSplinePath.calculatePoint(mTempPoint1, mInterpolatedTime);
 			mTransformable3D.setPosition(mTempPoint1);
 
-			if (mOrientToPath)
-			{
+			if (mOrientToPath) {
 				// -- calculate tangent
-				mSplinePath.calculatePoint(mTempPoint2, (float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))));
-				mSplinePath.calculatePoint(mTempPoint3, (float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))));
+				mSplinePath.calculatePoint(mTempPoint2, mInterpolatedTime + -mLookatDelta * (mIsReversing ? -1 : 1));
+				mSplinePath.calculatePoint(mTempPoint3, mInterpolatedTime + mLookatDelta * (mIsReversing ? -1 : 1));
 				
 				// -- calculate direction vector
 				mTmpVec.subtractAndSet(mTempPoint3, mTempPoint2);

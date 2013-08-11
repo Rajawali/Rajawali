@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.materials;
 
 import java.nio.FloatBuffer;
@@ -85,7 +97,7 @@ public class ParticleMaterial extends AParticleMaterial {
     }
 	
 	public void setFriction(Vector3 friction) {
-		mFriction[0] = friction.x; mFriction[1] = friction.y; mFriction[2] = friction.z;
+		mFriction[0] = (float) friction.x; mFriction[1] = (float) friction.y; mFriction[2] = (float) friction.z;
 	}
 	
 	public void setTime(float time) {
@@ -128,6 +140,6 @@ public class ParticleMaterial extends AParticleMaterial {
 	}
 	
 	public void setCameraPosition(Vector3 cameraPos) {
-		mCamPos[0] = cameraPos.x; mCamPos[1] = cameraPos.y; mCamPos[2] = cameraPos.z;
+		mCamPos[0] = (float) cameraPos.x; mCamPos[1] = (float) cameraPos.y; mCamPos[2] = (float) cameraPos.z;
 	}
 }
