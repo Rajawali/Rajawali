@@ -18,6 +18,7 @@ import rajawali.Camera;
 import rajawali.extras.LensFlare;
 import rajawali.extras.LensFlare.FlareInfo;
 import rajawali.materials.textures.ASingleTexture;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
@@ -302,7 +303,7 @@ public final class LensFlarePlugin extends Plugin {
 		Vector3 screenPosition = new Vector3();
 		double screenPositionPixels_x, screenPositionPixels_y;
 		Camera camera = mRenderer.getCurrentScene().getCamera();
-		double[] viewMatrix = camera.getViewMatrix().clone(), projMatrix = camera.getProjectionMatrix().clone();
+		Matrix4 viewMatrix = camera.getViewMatrix().clone(), projMatrix = camera.getProjectionMatrix().clone();
 		
 		useProgram(mProgram);
 		

@@ -13,7 +13,7 @@
 package rajawali;
 
 import rajawali.bounds.BoundingBox;
-import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.vector.Vector3;
@@ -23,7 +23,7 @@ public class Frustum {
 	private Vector3[] mTmp = new Vector3[8];
 	protected Sphere mVisualSphere;
 	protected BoundingBox mBoundingBox;
-	protected double[] mTmpMatrix = new double[16];
+	protected Matrix4 mTmpMatrix = new Matrix4();
 	protected static final Vector3[] mClipSpacePlanePoints = { 
 		new Vector3(-1, -1, -1), 
 		new Vector3( 1, -1, -1), 
@@ -49,7 +49,7 @@ public class Frustum {
 		}
 	}
 
-	public void update(double[] inverseProjectionView) {             
+	public void update(Matrix4 inverseProjectionView) {             
 
 		for(int i = 0; i < 8; i++) {
 			planePoints[i].setAll(mClipSpacePlanePoints[i]);
@@ -114,7 +114,7 @@ public class Frustum {
 		min.y = planePoints[5].y;
 		max.setAll(planePoints[7]);
 		//Log.i("Rajawali", "Min/Max: " + min + "/" + max);
-		Matrix.setIdentityM(mTmpMatrix, 0);
+		mTmpMatrix.identity();
 		mBoundingBox.setMin(min);
 		mBoundingBox.setMax(max);
 		mBoundingBox.calculatePoints();

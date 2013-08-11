@@ -18,7 +18,7 @@ import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.materials.SimpleMaterial;
-import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
 import android.opengl.GLES20;
@@ -26,16 +26,15 @@ import android.opengl.GLES20;
 public class BoundingSphere implements IBoundingVolume {
 	protected Geometry3D mGeometry;
 	protected double mRadius;
-	protected Vector3 mPosition;
+	protected final Vector3 mPosition;
 	protected Sphere mVisualSphere;
-	protected double[] mTmpMatrix = new double[16];
-	protected Vector3 mTmpPos;
+	protected final Matrix4 mTmpMatrix = new Matrix4(); //Assumed to never leave identity state
+	protected final Vector3 mTmpPos;
 	protected double mDist, mMinDist, mScale;
-	protected double[] mScaleValues;
+	protected final double[] mScaleValues;
 	protected int mBoundingColor = 0xffffff00;
 	
 	public BoundingSphere() {
-		super();
 		mPosition = new Vector3();
 		mTmpPos = new Vector3();
 		mScaleValues = new double[3];
@@ -59,7 +58,8 @@ public class BoundingSphere implements IBoundingVolume {
 		return mBoundingColor;
 	}
 	
-	public void drawBoundingVolume(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix, double[] mMatrix) {
+	public void drawBoundingVolume(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
+			final Matrix4 vMatrix, final Matrix4 mMatrix) {
 		if(mVisualSphere == null) {
 			mVisualSphere = new Sphere(1, 8, 8);
 			mVisualSphere.setMaterial(new SimpleMaterial());
@@ -69,25 +69,17 @@ public class BoundingSphere implements IBoundingVolume {
 			mVisualSphere.setDoubleSided(true);
 		}
 
-		Matrix.setIdentityM(mTmpMatrix, 0);
 		mVisualSphere.setPosition(mPosition);
 		mVisualSphere.setScale(mRadius * mScale);
 		mVisualSphere.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);
 	}
 	
-	public void transform(double[] matrix) {
+	public void transform(Matrix4 matrix) {
 		mPosition.setAll(0, 0, 0);
 		mPosition.multiply(matrix);
-		
-		mTmpPos.setAll(matrix[0], matrix[1], matrix[2]);
-		mScaleValues[0] = mTmpPos.length();
-		mTmpPos.setAll(matrix[4], matrix[5], matrix[6]);
-		mScaleValues[1] = mTmpPos.length();
-		mTmpPos.setAll(matrix[8], matrix[9], matrix[10]);
-		mScaleValues[2] = mTmpPos.length();
-		
-		mScale = mScaleValues[0] > mScaleValues[1] ? mScaleValues[0] : mScaleValues[1];
-		mScale = mScale > mScaleValues[2] ? mScale : mScaleValues[2];
+		matrix.getScaling(mTmpPos);
+		mScale = mTmpPos.x > mTmpPos.y ? mTmpPos.x : mTmpPos.y;
+		mScale = mScale > mTmpPos.z ? mScale : mTmpPos.z;
 	}
 	
 	public void calculateBounds(Geometry3D geometry) {

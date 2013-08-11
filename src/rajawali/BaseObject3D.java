@@ -12,7 +12,6 @@
  */
 package rajawali;
 
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -29,6 +28,7 @@ import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
 import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.GLU;
@@ -47,16 +47,12 @@ import android.opengl.GLES20;
  */
 public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D>, INode {
 
-	protected double[] mMVPMatrix = new double[16];
-	protected double[] mMMatrix = new double[16];
-	protected double[] mProjMatrix;
+	protected final Matrix4 mMVPMatrix = new Matrix4();
+	protected final Matrix4 mMMatrix = new Matrix4();
+	protected Matrix4 mPMatrix;
+	protected Matrix4 mParentMatrix;
+	protected final Matrix4 mRotationMatrix = new Matrix4();
 
-	protected double[] mScalematrix = new double[16];
-	protected double[] mTranslateMatrix = new double[16];
-	protected double[] mRotateMatrix = new double[16];
-	protected double[] mRotateMatrixTmp = new double[16];
-	protected double[] mTmpMatrix = new double[16];
-	protected double[] mParentMatrix;
 	protected float[] mColor;
 
 	protected AMaterial mMaterial;
@@ -101,14 +97,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mGeometry = new Geometry3D();
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
 		mColor = new float[] {(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
-		
-		//Initialize the matrices to identity
-		Matrix.setIdentityM(mMMatrix, 0);
-		Matrix.setIdentityM(mScalematrix, 0);
-		Matrix.setIdentityM(mRotateMatrix, 0);
-		Matrix.setIdentityM(mRotateMatrixTmp, 0);
-		Matrix.setIdentityM(mTranslateMatrix, 0);
-		Matrix.setIdentityM(mTmpMatrix, 0);
 	}
 
 	public BaseObject3D(String name) {
@@ -208,52 +196,43 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mGeometry.validateBuffers();
 	}
 	
-	public void calculateModelMatrix(final double[] parentMatrix) {
-		Matrix.setIdentityM(mMMatrix, 0);
-		Matrix.setIdentityM(mScalematrix, 0);
-		Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
-
-		Matrix.setIdentityM(mRotateMatrix, 0);
-
+	public void calculateModelMatrix(final Matrix4 parentMatrix) {
 		setOrientation();
 		if (mLookAt == null) {
-			mOrientation.toRotationMatrix(mRotateMatrix);
+			mOrientation.toRotationMatrix(mRotationMatrix);
 		} else {
-			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
+			mRotationMatrix.setAll(mLookAtMatrix);
 		}
-
-		Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
-		Matrix.setIdentityM(mTmpMatrix, 0);
-		Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
-		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
-		if (parentMatrix != null) {
-			Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
-			System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
-		}
+		mMMatrix.identity().translate(mPosition).scale(mScale).multiply(mRotationMatrix);
+		if (parentMatrix != null) mMMatrix.leftMultiply(mParentMatrix);
 	}
 
-	public void render(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix, ColorPickerInfo pickerInfo) {
+	/**
+	 * Renders the object with no parent matrix.
+	 * 
+	 * @param camera The camera
+	 * @param vpMatrix {@link Matrix4} The view-projection matrix
+	 * @param projMatrix {@link Matrix4} The projection matrix
+	 * @param vMatrix {@link Matrix4} The view matrix
+	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
+	 */
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+			final Matrix4 vMatrix, ColorPickerInfo pickerInfo) {
 		render(camera, vpMatrix, projMatrix, vMatrix, null, pickerInfo);
 	}
 
 	/**
 	 * Renders the object
 	 * 
-	 * @param camera
-	 *            The camera
-	 * @param vpMatrix
-	 * 			  The view-projection matrix
-	 * @param projMatrix
-	 *            The projection matrix
-	 * @param vMatrix
-	 *            The view matrix
-	 * @param parentMatrix
-	 *            This object's parent matrix
-	 * @param pickerInfo
-	 *            The current color picker info. This is only used when an object is touched.
+	 * @param camera The camera
+	 * @param vpMatrix {@link Matrix4} The view-projection matrix
+	 * @param projMatrix {@link Matrix4} The projection matrix
+	 * @param vMatrix {@link Matrix4} The view matrix
+	 * @param parentMatrix {@link Matrix4} This object's parent matrix
+	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
 	 */
-	public void render(Camera camera, double[] vpMatrix, double[] projMatrix, double[] vMatrix, final double[] parentMatrix,
-			ColorPickerInfo pickerInfo) {
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix, 
+			final Matrix4 parentMatrix, ColorPickerInfo pickerInfo) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
 
@@ -263,7 +242,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		// -- move view matrix transformation first
 		calculateModelMatrix(parentMatrix);
 		//Create MVP Matrix from View-Projection Matrix
-		Matrix.multiplyMM(mMVPMatrix, 0, vpMatrix, 0, mMMatrix, 0);
+		mMVPMatrix.setAll(vpMatrix).multiply(mMMatrix);
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
@@ -275,7 +254,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		}
 
 		if (!mIsContainerOnly && mIsInFrustum) {
-			mProjMatrix = projMatrix;
+			mPMatrix = projMatrix;
 			if (mDoubleSided) {
 				GLES20.glDisable(GLES20.GL_CULL_FACE);
 			} else if (mBackSided) {
@@ -379,31 +358,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 
 	/**
-	 * Optimized version of Matrix.rotateM(). Apparently the native version does a lot of double[] allocations.
-	 * 
-	 * @see http://groups.google.com/group/android-developers/browse_thread/thread/b30dd2a437cfb076?pli=1
-	 * 
-	 * @param m
-	 *            The matrix
-	 * @param mOffset
-	 *            Matrix offset
-	 * @param a
-	 *            The angle
-	 * @param x
-	 *            x axis
-	 * @param y
-	 *            y axis
-	 * @param z
-	 *            z axis
-	 */
-	protected void rotateM(double[] m, int mOffset, double a, double x, double y, double z) {
-		Matrix.setIdentityM(mRotateMatrixTmp, 0);
-		Matrix.setRotateM(mRotateMatrixTmp, 0, a, x, y, z);
-		System.arraycopy(m, 0, mTmpMatrix, 0, 16);
-		Matrix.multiplyMM(m, mOffset, mTmpMatrix, mOffset, mRotateMatrixTmp, 0);
-	}
-
-	/**
 	 * This is where the parameters for the shaders are set. It is called every frame.
 	 * 
 	 * @param camera
@@ -461,11 +415,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		double[] modelMatrix = new double[16];
 		Matrix.setIdentityM(modelMatrix, 0);
 
-		GLU.gluUnProject(x, viewportHeight - y, 0.0f, modelMatrix, 0, mProjMatrix, 0, viewport, 0, r1, 0);
+		GLU.gluUnProject(x, viewportHeight - y, 0.0, modelMatrix, 0, mPMatrix.getDoubleValues(), 0, viewport, 0, r1, 0);
 		setPosition(r1[0] * eyeZ, r1[1] * -eyeZ, 0);
 	}
 
-	public double[] getModelMatrix() {
+	public Matrix4 getModelMatrix() {
 		return mMMatrix;
 	}
 
@@ -768,10 +722,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public void setShowBoundingVolume(boolean showBoundingVolume) {
 		this.mShowBoundingVolume = showBoundingVolume;
-	}
-
-	public double[] getRotationMatrix() {
-		return mRotateMatrix;
 	}
 
 	public void setFrustumTest(boolean value) {
