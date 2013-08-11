@@ -12,13 +12,13 @@
  */
 package rajawali.primitives;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.materials.AParticleMaterial;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
-public class Particle extends BaseObject3D {
+public class Particle extends Object3D {
 	protected float mPointSize = 10.0f;
 	protected AParticleMaterial mParticleShader;
 	

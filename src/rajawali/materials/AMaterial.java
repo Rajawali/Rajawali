@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Capabilities;
 import rajawali.lights.ALight;
@@ -559,7 +559,7 @@ public abstract class AMaterial extends AFrameTask {
 
 	/**
 	 * The material should use a single color value rather than a texture or vertex colors.
-	 * The color value is set through {@link BaseObject3D#setColor(int)}.
+	 * The color value is set through {@link Object3D#setColor(int)}.
 	 * 
 	 * @param value {@link boolean}
 	 */

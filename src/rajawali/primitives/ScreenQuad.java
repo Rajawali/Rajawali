@@ -12,7 +12,7 @@
  */
 package rajawali.primitives;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Camera2D;
 import rajawali.math.Matrix4;
@@ -49,7 +49,7 @@ import rajawali.util.ObjectColorPicker.ColorPickerInfo;
  * @author dennis.ippel
  *
  */
-public class ScreenQuad extends BaseObject3D {
+public class ScreenQuad extends Object3D {
 	private Camera2D mCamera;
 	private Matrix4 mVPMatrix;
 	/**

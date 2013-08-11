@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D;
@@ -87,7 +87,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		material.setBoneMatrix(mSkeleton.uBoneMatrix);
 	}
 
-	public void setSkeleton(BaseObject3D skeleton) {
+	public void setSkeleton(Object3D skeleton) {
 		if (skeleton instanceof SkeletalAnimationObject3D) {
 			mSkeleton = (SkeletalAnimationObject3D) skeleton;
 			mNumJoints = mSkeleton.getJoints().length;

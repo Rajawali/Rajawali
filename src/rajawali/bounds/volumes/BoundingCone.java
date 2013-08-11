@@ -1,6 +1,6 @@
 package rajawali.bounds.volumes;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.math.Matrix4;
@@ -24,7 +24,7 @@ public class BoundingCone implements IBoundingVolume {
 		
 	}
 	
-	public BaseObject3D getVisual() {
+	public Object3D getVisual() {
 		// TODO Auto-generated method stub
 		return null;
 	}

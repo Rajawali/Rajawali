@@ -46,7 +46,7 @@ import android.opengl.GLES20;
  * @author dennis.ippel
  * 
  */
-public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D>, INode {
+public class Object3D extends ATransformable3D implements Comparable<Object3D>, INode {
 
 	protected final Matrix4 mMVPMatrix = new Matrix4();
 	protected final Matrix4 mMMatrix = new Matrix4();
@@ -60,8 +60,8 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected List<ALight> mLights;
 
 	protected Geometry3D mGeometry;
-	protected BaseObject3D mParent;
-	protected List<BaseObject3D> mChildren;
+	protected Object3D mParent;
+	protected List<Object3D> mChildren;
 	protected String mName;
 
 	protected boolean mDoubleSided = false;
@@ -92,15 +92,15 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	protected boolean mEnableDepthTest = true;
 	protected boolean mEnableDepthMask = true;
 
-	public BaseObject3D() {
+	public Object3D() {
 		super();
-		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
+		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mGeometry = new Geometry3D();
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
 		mColor = new float[] {(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
 	}
 
-	public BaseObject3D(String name) {
+	public Object3D(String name) {
 		this();
 		mName = name;
 	}
@@ -118,7 +118,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	 * 
 	 * @param ser
 	 */
-	public BaseObject3D(SerializedObject3D ser) {
+	public Object3D(SerializedObject3D ser) {
 		this();
 		setData(ser);
 	}
@@ -504,7 +504,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	/**
 	 * Compares one object's depth to another object's depth
 	 */
-	public int compareTo(BaseObject3D another) {
+	public int compareTo(Object3D another) {
 		if (mForcedDepth)
 			return -1;
 		if (mPosition.z < another.getZ())
@@ -515,7 +515,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			return 0;
 	}
 
-	public void addChild(BaseObject3D child) {
+	public void addChild(Object3D child) {
 		if(child.getParent() != null)
 			child.getParent().removeChild(child);
 		mChildren.add(child);
@@ -523,11 +523,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 			child.setPartOfBatch(true);
 	}
 
-	public boolean removeChild(BaseObject3D child) {
+	public boolean removeChild(Object3D child) {
 		return mChildren.remove(child);
 	}
 	
-	public BaseObject3D getParent()
+	public Object3D getParent()
 	{
 		return mParent;
 	}
@@ -541,7 +541,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		int triangleCount = 0;
 		
 		for (int i = 0, j = getNumChildren(); i < j; i++) {
-			BaseObject3D child = getChildAt(i);
+			Object3D child = getChildAt(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
 				if (child.getNumChildren() > 0) {
 					triangleCount += child.getNumTriangles();
@@ -560,7 +560,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		int objectCount = 0;
 		
 		for (int i = 0, j = getNumChildren(); i < j; i++) {
-			BaseObject3D child = getChildAt(i);
+			Object3D child = getChildAt(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
 				if (child.getNumChildren() > 0) {
 					objectCount += child.getNumObjects() + 1;
@@ -575,11 +575,11 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return mChildren.size();
 	}
 
-	public BaseObject3D getChildAt(int index) {
+	public Object3D getChildAt(int index) {
 		return mChildren.get(index);
 	}
 
-	public BaseObject3D getChildByName(String name) {
+	public Object3D getChildByName(String name) {
 		for (int i = 0, j = mChildren.size(); i < j; i++)
 			if (mChildren.get(i).getName().equals(name))
 				return mChildren.get(i);
@@ -665,7 +665,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		return ser;
 	}
 
-	protected void cloneTo(BaseObject3D clone, boolean copyMaterial) {
+	protected void cloneTo(Object3D clone, boolean copyMaterial) {
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
@@ -679,15 +679,15 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		clone.mEnableDepthMask = this.mEnableDepthMask;
 	}
 
-	public BaseObject3D clone(boolean copyMaterial) {
-		BaseObject3D clone = new BaseObject3D();
+	public Object3D clone(boolean copyMaterial) {
+		Object3D clone = new Object3D();
 		cloneTo(clone, copyMaterial);
 		clone.setRotation(getRotation());
 		clone.setScale(getScale());
 		return clone;
 	}
 
-	public BaseObject3D clone() {
+	public Object3D clone() {
 		return clone(true);
 	}
 

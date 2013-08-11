@@ -12,7 +12,7 @@
  */
 package rajawali.primitives;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 
 /**
  * A cube primitive. The constructor takes two boolean arguments that indicate whether certain buffers should be
@@ -30,7 +30,7 @@ import rajawali.BaseObject3D;
  * @author dennis.ippel
  * 
  */
-public class Cube extends BaseObject3D {
+public class Cube extends Object3D {
 
 	private float mSize;
 	private boolean mIsSkybox;

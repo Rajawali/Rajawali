@@ -12,7 +12,7 @@
  */
 package rajawali.terrain;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 
 /**
  * Base Terrain class for future use
@@ -20,6 +20,6 @@ import rajawali.BaseObject3D;
  * @author Ivan Battistella (info@fenicesoftware.com)
  * 
  */
-public class Terrain extends BaseObject3D {
+public class Terrain extends Object3D {
 
 }

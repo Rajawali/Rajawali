@@ -14,7 +14,7 @@ package rajawali.util;
 
 import java.io.File;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.util.exporter.AExporter;
 import android.os.Environment;
 
@@ -38,12 +38,12 @@ import android.os.Environment;
  */
 public class MeshExporter {
 
-	private BaseObject3D mObject;
+	private Object3D mObject;
 	private String mFileName;
 	private File mExportDir = null;
 	private boolean mAppendExtension;
 
-	public MeshExporter(BaseObject3D objectToExport) {
+	public MeshExporter(Object3D objectToExport) {
 		mObject = objectToExport;
 		mAppendExtension = true;
 	}

@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.math.vector.Vector3;
@@ -259,7 +259,7 @@ public class Max3DSParser extends AMeshParser {
 				aNormals[itn++] = (float) normal.z;
 			}
 
-			BaseObject3D targetObj = new BaseObject3D(mObjNames.get(j));
+			Object3D targetObj = new Object3D(mObjNames.get(j));
 			targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices);
 			// -- diffuse material with random color. for now.
 			DiffuseMaterial material = new DiffuseMaterial();

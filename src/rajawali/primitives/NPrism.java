@@ -12,7 +12,7 @@
  */
 package rajawali.primitives;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.math.vector.Vector3;
 
 /**
@@ -25,7 +25,7 @@ import rajawali.math.vector.Vector3;
  * 
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class NPrism extends BaseObject3D {
+public class NPrism extends Object3D {
 
 	protected int mSideCount;
 	protected double mRadiusBase;

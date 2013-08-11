@@ -73,6 +73,10 @@ signatures have changed, but only in their data types.
 While you can still use float or double arrays for matrices if you prefer, `Matrix4` has been implemented in an efficient manner
 which should not produce extra garbage and will dramatically simplify code which performs lots of matrix operations.
 
+# BaseObject3D
+
+`BaseObject3D` has been renamed to `Object3D`.
+
 # GL State
 
 To help increase ultimate frame rate, a default GL state has been implemented and set once at GL surface creation. `BaseObject3D`

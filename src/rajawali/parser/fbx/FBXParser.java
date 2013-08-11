@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
@@ -256,7 +256,7 @@ public class FBXParser extends AMeshParser {
 	}
 	
 	private void buildMesh(Model model, Stack<ALight> lights) throws TextureException, ParsingException {
-		BaseObject3D o = new BaseObject3D(model.name);
+		Object3D o = new Object3D(model.name);
 		boolean hasUVs = model.layerElementUV.uVIndex != null;
 		
 		int[] vidx 					= model.polygonVertexIndex.data;
@@ -431,7 +431,7 @@ public class FBXParser extends AMeshParser {
 	    return ret;
 	}
 	
-	private void setMeshTextures(BaseObject3D o, String name) throws TextureException, ParsingException {
+	private void setMeshTextures(Object3D o, String name) throws TextureException, ParsingException {
 		Stack<FBXValues.Objects.Texture> textures = mFbx.objects.textures;
 		Stack<Connect> connections = mFbx.connections.connections;
 		int numTex = textures.size();
@@ -466,7 +466,7 @@ public class FBXParser extends AMeshParser {
 		}
 	}
 	
-	private AMaterial getMaterialForMesh(BaseObject3D o, String name) {
+	private AMaterial getMaterialForMesh(Object3D o, String name) {
 		AMaterial mat = new SimpleMaterial();
 		Material material = null;
 		Stack<Connect> conns = mFbx.connections.connections;

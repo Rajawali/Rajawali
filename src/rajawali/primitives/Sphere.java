@@ -12,7 +12,7 @@
  */
 package rajawali.primitives;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 
 /**
  * A sphere primitive. The constructor takes two boolean arguments that indicate whether certain buffers should be
@@ -30,7 +30,7 @@ import rajawali.BaseObject3D;
  * @author dennis.ippel
  * 
  */
-public class Sphere extends BaseObject3D {
+public class Sphere extends Object3D {
 
 	private final float PI = (float) Math.PI;
 	private float mRadius;

@@ -16,11 +16,11 @@ import java.util.Stack;
 
 import android.os.SystemClock;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.SerializedObject3D;
 import rajawali.util.RajLog;
 
-public abstract class AAnimationObject3D extends BaseObject3D {
+public abstract class AAnimationObject3D extends Object3D {
 
 	protected Stack<IAnimationFrame> mFrames;
 	protected int mNumFrames;

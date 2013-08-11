@@ -2,7 +2,7 @@ package rajawali.bounds.volumes;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.math.Matrix4;
@@ -139,7 +139,7 @@ public class CameraFrustum implements IBoundingVolume {
 				+ "] The method CameraFrustum#transform(float[]) does nothing. You should remove your call to it.");
 	}
 
-	public BaseObject3D getVisual() {
+	public Object3D getVisual() {
 		return mVisibleFrustum;
 	}
 

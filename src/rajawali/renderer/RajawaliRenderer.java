@@ -27,7 +27,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Capabilities;
 import rajawali.animation.Animation3D;
@@ -393,23 +393,23 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
-	 * Adds a {@link BaseObject3D} child to the current scene.
+	 * Adds a {@link Object3D} child to the current scene.
 	 * 
-	 * @param child {@link BaseObject3D} object to be added.
+	 * @param child {@link Object3D} object to be added.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addChild(BaseObject3D child) {
+	public boolean addChild(Object3D child) {
 		return mCurrentScene.addChild(child);
 	}
 	
 	/**
-	 * Removes a {@link BaseObject3D} child from the current scene.
+	 * Removes a {@link Object3D} child from the current scene.
 	 * If the child is not a member of the scene, nothing will happen.
 	 * 
-	 * @param child {@link BaseObject3D} object to be removed.
+	 * @param child {@link Object3D} object to be removed.
 	 * @return boolean True if the removal was successfully queued.
 	 */
-	public boolean removeChild(BaseObject3D child) {
+	public boolean removeChild(Object3D child) {
 		return mCurrentScene.removeChild(child);
 	}
 	

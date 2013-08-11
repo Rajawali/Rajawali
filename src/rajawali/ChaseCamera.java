@@ -18,7 +18,7 @@ import rajawali.math.vector.Vector3;
 
 public class ChaseCamera extends Camera {
 	protected Vector3 mCameraOffset;
-	protected BaseObject3D mObjectToChase;
+	protected Object3D mObjectToChase;
 	protected double mSlerpFactor = 0.1;
 	protected Matrix4 mRotationMatrix;
 	protected Vector3 mTmpVec;
@@ -33,7 +33,7 @@ public class ChaseCamera extends Camera {
 		this(cameraOffset, 0.1, null);
 	}
 
-	public ChaseCamera(Vector3 cameraOffset, double slerpFactor, BaseObject3D objectToChase) {
+	public ChaseCamera(Vector3 cameraOffset, double slerpFactor, Object3D objectToChase) {
 		super();
 		mTmpOrientation = new Quaternion();
 		mPreviousOrientation = new Quaternion();
@@ -78,15 +78,15 @@ public class ChaseCamera extends Camera {
 		return mSlerpFactor;
 	}
 
-	public BaseObject3D getObjectToChase() {
+	public Object3D getObjectToChase() {
 		return mObjectToChase;
 	}
 
-	public void setObjectToChase(BaseObject3D objectToChase) {
+	public void setObjectToChase(Object3D objectToChase) {
 		this.mObjectToChase = objectToChase;
 	}
 	
-	public BaseObject3D getChasedObject() {
+	public Object3D getChasedObject() {
 		return mObjectToChase;
 	}	
 }
