@@ -66,7 +66,7 @@ public class ArrayUtils {
 	 * @param input double[] array to be converted.
 	 * @return float[] array with the result. Will be null if input was null.
 	 */
-	public static double[] convertDoublesToFloats(float[] input) {
+	public static double[] convertFloatsToDoubles(float[] input) {
 		if (input == null) return null;
 		double[] output = new double[input.length];
 		for (int i = 0; i < input.length; ++i) {

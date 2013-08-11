@@ -12,8 +12,6 @@
  */
 package rajawali;
 
-import rajawali.math.Matrix;
-
 public class Camera2D extends Camera {
 	private double mWidth, mHeight;
 	public Camera2D() {
@@ -25,7 +23,7 @@ public class Camera2D extends Camera {
 	}
 
 	public void setProjectionMatrix(int widthNotUsed, int heightNotUsed) {
-		Matrix.orthoM(mProjMatrix, 0, (-mWidth/2.0f)+mPosition.x, (mWidth/2.0f)+mPosition.x, (-mHeight/2.0f)+mPosition.y, (mHeight/2.0f)+mPosition.y, mNearPlane, mFarPlane);
+		mProjMatrix.setToOrthographic((-mWidth/2.0)+mPosition.x, (mWidth/2.0)+mPosition.x, (-mHeight/2.0)+mPosition.y, (mHeight/2.0)+mPosition.y, mNearPlane, mFarPlane);
 	}
 	
 	public void setWidth(double width) {

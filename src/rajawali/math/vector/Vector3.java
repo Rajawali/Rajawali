@@ -22,6 +22,9 @@ import rajawali.math.Quaternion;
  * This class borrows heavily from the implementation.
  * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Vector3.java">libGDX->Vector3</a>
  * 
+ * This class is not thread safe and must be confined to a single thread or protected by
+ * some external locking mechanism if necessary. All static methods are thread safe.
+ * 
  * @author dennis.ippel
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
@@ -33,8 +36,17 @@ public class Vector3 {
 	
 	//Unit vectors oriented to each axis
 	//DO NOT EVER MODIFY THE VALUES OF THESE MEMBERS
+	/**
+	 * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+	 */
 	public static final Vector3 X = new Vector3(1,0,0);
+	/**
+	 * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+	 */
 	public static final Vector3 Y = new Vector3(0,1,0);
+	/**
+	 * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+	 */
 	public static final Vector3 Z = new Vector3(0,0,1);
 
 	//Scratch vector. We use lazy loading here.
@@ -153,6 +165,17 @@ public class Vector3 {
 		y = other.y;
 		z = other.z;
 		return this;
+	}
+	
+	/**
+	 * Sets all components of this {@link Vector3} to the values provided representing
+	 * the input {@link Axis}.
+	 * 
+	 * @param axis {@link Axis} The cardinal axis to set the values to.
+	 * @return A reference to this {@link Vector3} to facilitate chaining.
+	 */
+	public Vector3 setAll(Axis axis) {
+		return setAll(getAxisVector(axis));
 	}
 	
 	/**
@@ -329,13 +352,13 @@ public class Vector3 {
 	}
 	
 	/**
-	 * Multiplies this {@link Vector3} and the provided {@link Matrix4}.
+	 * Multiplies this {@link Vector3} and the provided 4x4 matrix.
 	 * 
-	 * @param matrix {@link Matrix4} to multiply this {@link Vector3} by.
+	 * @param matrix {@link Matrix4} to multiply this {@link Vector3} by. 
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 multiply(final Matrix4 matrix) {
-		return setAll(matrix.multiply(this));
+		return multiply(matrix.getDoubleValues());
 	}
 	
 	/**
@@ -755,9 +778,7 @@ public class Vector3 {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Vector3 project(final Matrix4 matrix) {
-		final double[] l_mat = new double[16];
-		matrix.toArray(l_mat);
-		return project(l_mat);
+		return setAll(matrix.projectVector(this));
 	}
 	
 	/**

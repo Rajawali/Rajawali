@@ -62,6 +62,17 @@ depending on your use of quaternions. It has been made more consistent and effic
 The `AngleAxis` class has been removed. It was essentially an incomplete `Quaternion` class and was not being
 used anywhere in the library or in the examples project.
 
+# Matrix4
+
+Previously, the `Matrix4` class was incomplete and never used internal to the library. The class has been filled out
+and the library has been switched over to using it internally. This was done for clarity, concise code and as the ground
+work for being able to add more complex features to the library. An exception to this is skeletal animation, which still uses
+double arrays. This with absolute certainty will require you to change some of your code. At a bare minimum, common method
+signatures have changed, but only in their data types.
+
+While you can still use float or double arrays for matrices if you prefer, `Matrix4` has been implemented in an efficient manner
+which should not produce extra garbage and will dramatically simplify code which performs lots of matrix operations.
+
 # GL State
 
 To help increase ultimate frame rate, a default GL state has been implemented and set once at GL surface creation. `BaseObject3D`

@@ -979,9 +979,7 @@ public final class Quaternion {
 	 * Sets the provided {@link Matrix4} to represent this {@link Quaternion}.
 	 */
 	public void toRotationMatrix(Matrix4 matrix) {
-		double[] m = new double[16];
-		toRotationMatrix(m);
-		matrix.setAll(m);
+		toRotationMatrix(matrix.getDoubleValues());
 	}
 	
 	/**
