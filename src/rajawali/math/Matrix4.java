@@ -222,7 +222,7 @@ public final class Matrix4 {
 	 * @return double The determinant.
 	 */
 	public double determinant() {
-		return (
+		return 
 			m[M30] * m[M21] * m[M12] * m[M03]-
 			m[M20] * m[M31] * m[M12] * m[M03]-
 			m[M30] * m[M11] * m[M22] * m[M03]+
@@ -251,8 +251,7 @@ public final class Matrix4 {
 			m[M20] * m[M01] * m[M12] * m[M33]-
 			m[M00] * m[M21] * m[M12] * m[M33]-
 			m[M10] * m[M01] * m[M22] * m[M33]+
-			m[M00] * m[M11] * m[M22] * m[M33]
-		);
+			m[M00] * m[M11] * m[M22] * m[M33];
 	}
 	
 	/**
@@ -444,8 +443,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 rotate(final Vector3 axis, double angle) {
-		if (angle == 0) return this;
-		return rotate(mQuat.fromAngleAxis(axis, angle));
+		return angle == 0 ? this : rotate(mQuat.fromAngleAxis(axis, angle));
 	}
 	
 	/**
@@ -457,8 +455,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 rotate(final Axis axis, double angle) {
-		if (angle == 0) return this;
-		return rotate(mQuat.fromAngleAxis(axis, angle));
+		return angle == 0 ? this : rotate(mQuat.fromAngleAxis(axis, angle));
 	}
 	
 	/**
@@ -472,8 +469,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 rotate(double x, double y, double z, double angle) {
-		if (angle == 0) return this;
-		return rotate(mQuat.fromAngleAxis(x, y, z, angle));
+		return angle == 0 ? this :rotate(mQuat.fromAngleAxis(x, y, z, angle));
 	}
 	
 	/**
@@ -727,7 +723,7 @@ public final class Matrix4 {
 	 * @param scaling {@link Vector3} specifying the scaling components.
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
-	public Matrix4 setToTranslationAndScaling(Vector3 translation, Vector3 scaling) {
+	public Matrix4 setToTranslationAndScaling(final Vector3 translation, final Vector3 scaling) {
 		identity();
 		m[M03] = translation.x;
 		m[M13] = translation.y;
@@ -768,8 +764,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 setToRotation(final Vector3 axis, double angle) {
-		if (angle == 0) return identity();
-		return setAll(mQuat.fromAngleAxis(axis, angle));
+		return angle == 0 ? identity() : setAll(mQuat.fromAngleAxis(axis, angle));
 	}
 	
 	/**
@@ -780,12 +775,11 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 setToRotation(final Axis axis, double angle) {
-		if (angle == 0) return identity();
-		return setAll(mQuat.fromAngleAxis(axis, angle));
+		return angle == 0 ? identity() : setAll(mQuat.fromAngleAxis(axis, angle));
 	}
 	
 	/**
-	 * Sets this {@link Matrix4} to thespecified rotation around the specified axis.
+	 * Sets this {@link Matrix4} to the specified rotation around the specified axis.
 	 * 
 	 * @param x double The x component of the axis of rotation.
 	 * @param y double The y component of the axis of rotation.
@@ -794,8 +788,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 setToRotation(double x, double y, double z, double angle) {
-		if (angle == 0) return identity();
-		return setAll(mQuat.fromAngleAxis(x, y, z, angle));
+		return angle == 0 ? identity() : setAll(mQuat.fromAngleAxis(x, y, z, angle));
 	}
 	
 	/**
@@ -952,8 +945,7 @@ public final class Matrix4 {
      * @return {@link Matrix4} The new matrix.
      */
     public static Matrix4 createRotationMatrix(final Vector3 axis, double angle) {
-    	Matrix4 ret = new Matrix4();
-    	return ret.setToRotation(axis, angle);
+    	return new Matrix4().setToRotation(axis, angle);
     }
     
     /**
@@ -964,8 +956,7 @@ public final class Matrix4 {
      * @return {@link Matrix4} The new matrix.
      */
     public static Matrix4 createRotationMatrix(final Axis axis, double angle) {
-    	Matrix4 ret = new Matrix4();
-    	return ret.setToRotation(axis, angle);
+    	return new Matrix4().setToRotation(axis, angle);
     }
     
     /**
@@ -978,8 +969,7 @@ public final class Matrix4 {
      * @return {@link Matrix4} The new matrix.
      */
     public static Matrix4 createRotationMatrix(double x, double y, double z, double angle) {
-    	Matrix4 ret = new Matrix4();
-    	return ret.setToRotation(x, y, z, angle);
+    	return new Matrix4().setToRotation(x, y, z, angle);
     }
     
     /**
@@ -991,8 +981,7 @@ public final class Matrix4 {
      * @return {@link Matrix4} The new matrix.
      */
     public static Matrix4 createRotationMatrix(double yaw, double pitch, double roll) {
-    	Matrix4 ret = new Matrix4();
-    	return ret.setToRotation(yaw, pitch, roll);
+    	return new Matrix4().setToRotation(yaw, pitch, roll);
     }
     
     /**
@@ -1002,9 +991,7 @@ public final class Matrix4 {
 	 * @return A new {@link Matrix4} representing the translation only.
 	 */
 	public static Matrix4 createTranslationMatrix(final Vector3 vec) {
-    	Matrix4 ret = new Matrix4();
-    	ret.translate(vec);
-    	return ret;
+    	return new Matrix4().translate(vec);
     }
 
 	/**
@@ -1016,9 +1003,7 @@ public final class Matrix4 {
 	 * @return A new {@link Matrix4} representing the translation only.
 	 */
     public static Matrix4 createTranslationMatrix(double x, double y, double z) {
-    	Matrix4 ret = new Matrix4();
-    	ret.translate(x, y, z);
-    	return ret;
+    	return new Matrix4().translate(x, y, z);
     }
 
     /**
@@ -1028,9 +1013,7 @@ public final class Matrix4 {
 	 * @return A new {@link Matrix4} representing the scaling only.
 	 */
     public static Matrix4 createScaleMatrix(final Vector3 vec) {
-    	Matrix4 ret = new Matrix4();
-    	ret.setToScale(vec);
-    	return ret;
+    	return new Matrix4().setToScale(vec);
     }
 
     /**
@@ -1042,9 +1025,7 @@ public final class Matrix4 {
 	 * @return A new {@link Matrix4} representing the scaling only.
 	 */
     public static Matrix4 createScaleMatrix(double x, double y, double z) {
-        Matrix4 ret = new Matrix4();
-        ret.setToScale(x, y, z);
-        return ret;
+    	return new Matrix4().setToScale(x, y, z);
     }
     
     

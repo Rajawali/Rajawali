@@ -26,15 +26,15 @@ public class Camera extends ATransformable3D {
 	/**
 	 * The following members are all guarded by {@link #mFrustumLock}
 	 */
-	protected Matrix4 mVMatrix = new Matrix4();
-	protected Matrix4 mRotationMatrix = new Matrix4();
-	protected Matrix4 mProjMatrix = new Matrix4();
+	protected final Matrix4 mVMatrix = new Matrix4();
+	protected final Matrix4 mRotationMatrix = new Matrix4();
+	protected final Matrix4 mProjMatrix = new Matrix4();
 	protected double mNearPlane = 1.0;
 	protected double mFarPlane = 120.0;
 	protected double mFieldOfView = 45.0;
 	protected int mLastWidth;
 	protected int mLastHeight;
-	protected Vector3 mUpAxis;
+	protected final Vector3 mUpAxis;
 	protected boolean mUseRotationMatrix = false;
 	public Frustum mFrustum;
 	
@@ -90,7 +90,7 @@ public class Camera extends ATransformable3D {
 
 	public void setRotationMatrix(Matrix4 m) {
 		synchronized (mFrustumLock) {
-			mRotationMatrix = m;
+			mRotationMatrix.setAll(m);
 		}
 	}
 	

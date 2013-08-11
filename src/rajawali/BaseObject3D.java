@@ -47,13 +47,12 @@ import android.opengl.GLES20;
  */
 public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D>, INode {
 
-	protected Matrix4 mMVPMatrix = new Matrix4();
-	protected Matrix4 mMMatrix = new Matrix4();
+	protected final Matrix4 mMVPMatrix = new Matrix4();
+	protected final Matrix4 mMMatrix = new Matrix4();
 	protected Matrix4 mPMatrix;
 	protected Matrix4 mParentMatrix;
-	protected Matrix4 mRotationMatrix = new Matrix4();
+	protected final Matrix4 mRotationMatrix = new Matrix4();
 
-	//protected double[] mTmpMatrix = new double[16];
 	protected float[] mColor;
 
 	protected AMaterial mMaterial;
@@ -723,12 +722,6 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 
 	public void setShowBoundingVolume(boolean showBoundingVolume) {
 		this.mShowBoundingVolume = showBoundingVolume;
-	}
-
-	//TODO: REMOVE
-	@Deprecated
-	public Matrix4 getRotationMatrix() {
-		return mRotationMatrix;
 	}
 
 	public void setFrustumTest(boolean value) {
