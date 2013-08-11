@@ -15,18 +15,18 @@ package rajawali.parser.awd;
 import java.io.IOException;
 
 import rajawali.Object3D;
-import rajawali.parser.AWDParser;
-import rajawali.parser.AWDParser.IBlockParser;
+import rajawali.parser.LoaderAWD;
+import rajawali.parser.LoaderAWD.IBlockParser;
 import rajawali.util.LittleEndianDataInputStream;
 
 /**
- * Base class for parsing blocks. Blocks are instantiated by the {@link AWDParser} directly and are not intended for any
+ * Base class for parsing blocks. Blocks are instantiated by the {@link LoaderAWD} directly and are not intended for any
  * other use case.
  * 
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public abstract class ABlockParser implements IBlockParser {
+public abstract class ABlockLoader implements IBlockParser {
 
 	public Object3D getBaseObject3D() {
 		return null;

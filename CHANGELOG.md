@@ -81,6 +81,10 @@ which should not produce extra garbage and will dramatically simplify code which
 
 `FPSUpdateListener` has been renamed to `OnFPSUpdateLister`.
 
+# Parsers
+
+All parser classes which were previously called `xxParser` are now called `Loaderxx`. For example, `OBJParser` is now `LoaderOBJ`.
+
 # GL State
 
 To help increase ultimate frame rate, a default GL state has been implemented and set once at GL surface creation. `BaseObject3D`

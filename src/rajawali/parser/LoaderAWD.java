@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rajawali.Object3D;
-import rajawali.parser.awd.ABlockParser;
+import rajawali.parser.awd.ABlockLoader;
 import rajawali.parser.awd.BlockTriangleGeometry;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.scene.RajawaliScene;
@@ -49,7 +49,7 @@ import android.util.SparseArray;
  *      href="https://code.google.com/p/awd/source/browse/doc/spec/AWD_format_specification.odt">https://code.google.com/p/awd/source/browse/doc/spec/AWD_format_specification.odt</a>
  * 
  */
-public class AWDParser extends AParser {
+public class LoaderAWD extends ALoader {
 
 	enum Compression {
 		NONE,
@@ -61,7 +61,7 @@ public class AWDParser extends AParser {
 	protected final SparseArray<BlockHeader> blockDataList = new SparseArray<BlockHeader>();
 
 	private final List<IBlockParser> blockParsers = new ArrayList<IBlockParser>();
-	private final SparseArray<Class<? extends ABlockParser>> blockParserClassesMap = new SparseArray<Class<? extends ABlockParser>>();
+	private final SparseArray<Class<? extends ABlockLoader>> blockParserClassesMap = new SparseArray<Class<? extends ABlockLoader>>();
 
 	protected int awdHeaderVersion;
 	protected int awdHeaderRevision;
@@ -69,17 +69,17 @@ public class AWDParser extends AParser {
 	protected int awdHeaderCompression;
 	protected int awdHeaderBodyLength;
 
-	public AWDParser(RajawaliRenderer renderer, File file) {
+	public LoaderAWD(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 		init();
 	}
 
-	public AWDParser(RajawaliRenderer renderer, int resourceId) {
+	public LoaderAWD(RajawaliRenderer renderer, int resourceId) {
 		super(renderer, resourceId);
 		init();
 	}
 
-	public AWDParser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderAWD(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 		init();
 	}
@@ -89,7 +89,7 @@ public class AWDParser extends AParser {
 	}
 
 	@Override
-	public IParser parse() throws ParsingException {
+	public ILoader parse() throws ParsingException {
 		super.parse();
 
 		onRegisterBlockClasses(blockParserClassesMap);
@@ -159,7 +159,7 @@ public class AWDParser extends AParser {
 					RajLog.d(blockHeader.toString());
 
 					// Look for the Block Parser class.
-					final Class<? extends ABlockParser> blockClass = (Class<? extends ABlockParser>) blockParserClassesMap
+					final Class<? extends ABlockLoader> blockClass = (Class<? extends ABlockLoader>) blockParserClassesMap
 							.get(getClassID(
 									blockHeader.namespace, blockHeader.type));
 
@@ -171,7 +171,7 @@ public class AWDParser extends AParser {
 					}
 
 					// Instantiate the block parser
-					final ABlockParser parser = (ABlockParser) Class.forName(blockClass.getName()).getConstructor()
+					final ABlockLoader parser = (ABlockLoader) Class.forName(blockClass.getName()).getConstructor()
 							.newInstance();
 
 					// Add the parser to the list of block parsers
@@ -296,15 +296,15 @@ public class AWDParser extends AParser {
 	}
 
 	/**
-	 * If necessary, register additional {@link ABlockParser} classes here.
+	 * If necessary, register additional {@link ABlockLoader} classes here.
 	 * 
 	 * @param blockParserClassesMap
 	 */
-	protected void onRegisterBlockClasses(SparseArray<Class<? extends ABlockParser>> blockParserClassesMap) {}
+	protected void onRegisterBlockClasses(SparseArray<Class<? extends ABlockLoader>> blockParserClassesMap) {}
 
 	/**
-	 * Interface implemented by {@link ABlockParser}. This interface should not be implemented directly, instead extend
-	 * {@link ABlockParser}.
+	 * Interface implemented by {@link ABlockLoader}. This interface should not be implemented directly, instead extend
+	 * {@link ABlockLoader}.
 	 */
 	public interface IBlockParser {
 

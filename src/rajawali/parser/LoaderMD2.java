@@ -36,7 +36,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
+public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 
 	private MD2Header mHeader;
 	private String mCurrentTextureName;
@@ -47,19 +47,19 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 	private int[] mIndices;
 	private float[] mTextureCoords;
 
-	public MD2Parser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderMD2(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
 
-	public MD2Parser(RajawaliRenderer renderer, int resourceId) {
+	public LoaderMD2(RajawaliRenderer renderer, int resourceId) {
 		this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 	}
 
-	public MD2Parser(Resources resources, TextureManager textureManager, int resourceId) {
+	public LoaderMD2(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
 	
-	public MD2Parser(RajawaliRenderer renderer, File file) {
+	public LoaderMD2(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
 
@@ -67,7 +67,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 		return (AAnimationObject3D) mRootObject;
 	}
 
-	public MD2Parser parse() throws ParsingException {
+	public LoaderMD2 parse() throws ParsingException {
 		super.parse();
 		BufferedInputStream stream = null;
 		if (mFile == null) {
@@ -251,7 +251,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 
 		short newVertexIndex = (short) mHeader.numVerts;
 		int numIndices = indices.length;
-		Stack<VertexIndices> changedIndices = new Stack<MD2Parser.VertexIndices>();
+		Stack<VertexIndices> changedIndices = new Stack<LoaderMD2.VertexIndices>();
 
 		for (int i = 0; i < numIndices; i++) {
 			for (int j = i + 1; j < numIndices; j++)

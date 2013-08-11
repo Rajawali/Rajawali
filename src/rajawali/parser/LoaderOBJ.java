@@ -79,7 +79,7 @@ import android.util.Log;
  * @author dennis.ippel
  *
  */
-public class ObjParser extends AMeshParser {
+public class LoaderOBJ extends AMeshLoader {
     protected final String VERTEX = "v";
     protected final String FACE = "f";
     protected final String TEXCOORD = "vt";
@@ -92,24 +92,24 @@ public class ObjParser extends AMeshParser {
     protected final String DIFFUSE_COLOR = "Kd";
     protected final String DIFFUSE_TEX_MAP = "map_Kd";
 	
-    public ObjParser(RajawaliRenderer renderer, String fileOnSDCard) {
+    public LoaderOBJ(RajawaliRenderer renderer, String fileOnSDCard) {
     	super(renderer, fileOnSDCard);
     }
     
-    public ObjParser(RajawaliRenderer renderer, int resourceId) {
+    public LoaderOBJ(RajawaliRenderer renderer, int resourceId) {
     	this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
     }
     
-	public ObjParser(Resources resources, TextureManager textureManager, int resourceId) {
+	public LoaderOBJ(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
 	
-	public ObjParser(RajawaliRenderer renderer, File file) {
+	public LoaderOBJ(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
 	
 	@Override
-	public ObjParser parse() throws ParsingException {
+	public LoaderOBJ parse() throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
@@ -367,7 +367,7 @@ public class ObjParser extends AMeshParser {
 		private String mResourcePackage;
 		
 		public MaterialLib() {
-			mMaterials = new Stack<ObjParser.MaterialDef>();
+			mMaterials = new Stack<LoaderOBJ.MaterialDef>();
 		}
 		
 		public void parse(String materialLibPath, String resourceType, String resourcePackage) {

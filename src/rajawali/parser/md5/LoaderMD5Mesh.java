@@ -32,14 +32,14 @@ import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
-import rajawali.parser.AMeshParser;
-import rajawali.parser.IAnimatedMeshParser;
+import rajawali.parser.AMeshLoader;
+import rajawali.parser.IAnimatedMeshLoader;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.content.res.Resources;
 import android.opengl.GLES20;
 
-public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
+public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 
 	private static final String MD5_VERSION = "MD5Version";
 	private static final String COMMAND_LINE = "commandline";
@@ -67,15 +67,15 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	public double[] mBindPoseMatrix;
 	public double[][] mInverseBindPoseMatrix;
 
-	public MD5MeshParser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderMD5Mesh(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
 
-	public MD5MeshParser(RajawaliRenderer renderer, int resourceId) {
+	public LoaderMD5Mesh(RajawaliRenderer renderer, int resourceId) {
 		this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 	}
 
-	public MD5MeshParser(Resources resources, TextureManager textureManager, int resourceId) {
+	public LoaderMD5Mesh(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
 
@@ -84,7 +84,7 @@ public class MD5MeshParser extends AMeshParser implements IAnimatedMeshParser {
 	}
 
 	@Override
-	public MD5MeshParser parse() throws ParsingException {
+	public LoaderMD5Mesh parse() throws ParsingException {
 		super.parse();
 
 		BufferedReader buffer = null;

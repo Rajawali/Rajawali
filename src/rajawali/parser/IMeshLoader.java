@@ -14,6 +14,6 @@ package rajawali.parser;
 
 import rajawali.Object3D;
 
-public interface IMeshParser extends IParser {
+public interface IMeshLoader extends ILoader {
 	public Object3D getParsedObject();
 }
