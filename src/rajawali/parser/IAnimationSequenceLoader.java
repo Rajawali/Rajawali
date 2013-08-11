@@ -12,8 +12,8 @@
  */
 package rajawali.parser;
 
-import rajawali.animation.mesh.AAnimationObject3D;
+import rajawali.animation.mesh.IAnimationSequence;
 
-public interface IAnimatedMeshParser extends IParser {
-	public AAnimationObject3D getParsedAnimationObject();
+public interface IAnimationSequenceLoader extends ILoader {
+	public IAnimationSequence getParsedAnimationSequence();
 }

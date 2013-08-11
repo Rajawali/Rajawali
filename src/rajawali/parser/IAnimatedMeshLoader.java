@@ -12,9 +12,8 @@
  */
 package rajawali.parser;
 
-import rajawali.parser.AParser.ParsingException;
+import rajawali.animation.mesh.AAnimationObject3D;
 
-
-public interface IParser {
-	public IParser parse() throws ParsingException;
+public interface IAnimatedMeshLoader extends ILoader {
+	public AAnimationObject3D getParsedAnimationObject();
 }

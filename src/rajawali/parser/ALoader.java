@@ -29,36 +29,36 @@ import rajawali.util.RajLog;
 import android.content.res.Resources;
 import android.os.Environment;
 
-public abstract class AParser implements IParser {
+public abstract class ALoader implements ILoader {
 
 	protected Resources mResources;
 	protected int mResourceId;
 	protected String mFileOnSDCard;
 	protected File mFile;
 
-	public AParser(RajawaliRenderer renderer, String fileOnSDCard)
+	public ALoader(RajawaliRenderer renderer, String fileOnSDCard)
 	{
 		this(renderer.getContext().getResources(), 0);
 		mFileOnSDCard = fileOnSDCard;
 	}
 
-	public AParser(RajawaliRenderer renderer, int resourceId)
+	public ALoader(RajawaliRenderer renderer, int resourceId)
 	{
 		this(renderer.getContext().getResources(), resourceId);
 	}
 
-	public AParser(Resources resources, int resourceId)
+	public ALoader(Resources resources, int resourceId)
 	{
 		mResources = resources;
 		mResourceId = resourceId;
 	}
 
-	public AParser(RajawaliRenderer renderer, File file) {
+	public ALoader(RajawaliRenderer renderer, File file) {
 		this(renderer.getContext().getResources(), 0);
 		mFile = file;
 	}
 
-	public IParser parse() throws ParsingException {
+	public ILoader parse() throws ParsingException {
 		if (mFile == null && mFileOnSDCard != null)
 			mFile = new File(Environment.getExternalStorageDirectory(), mFileOnSDCard);
 

@@ -13,7 +13,7 @@
 package rajawali.parser.awd;
 
 import rajawali.Object3D;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
 
@@ -24,7 +24,7 @@ import rajawali.util.RajLog;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockTriangleGeometry extends ABlockParser {
+public class BlockTriangleGeometry extends ABlockLoader {
 
 	protected Object3D[] baseObjects;
 	protected String lookupName;

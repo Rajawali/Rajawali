@@ -33,7 +33,7 @@ import rajawali.util.RajLog;
  * @author lacasrac
  * 
  */
-public class Max3DSParser extends AMeshParser {
+public class Loader3DSMax extends AMeshLoader {
 
 	private final int IDENTIFIER_3DS = 0x4D4D;
 	private final int MESH_BLOCK = 0x3D3D;
@@ -60,16 +60,16 @@ public class Max3DSParser extends AMeshParser {
 	private boolean mEndReached = false;
 	private int mObjects = -1;
 
-	public Max3DSParser(RajawaliRenderer renderer, int resourceID) {
+	public Loader3DSMax(RajawaliRenderer renderer, int resourceID) {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceID);
 	}
 
-	public Max3DSParser(RajawaliRenderer renderer, File file) {
+	public Loader3DSMax(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
 
 	@Override
-	public AMeshParser parse() throws ParsingException {
+	public AMeshLoader parse() throws ParsingException {
 		RajLog.i("Start parsing 3DS");
 
 		final InputStream stream;

@@ -40,7 +40,7 @@ import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
-import rajawali.parser.AMeshParser;
+import rajawali.parser.AMeshLoader;
 import rajawali.parser.fbx.FBXValues.Connections.Connect;
 import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
@@ -53,7 +53,7 @@ import rajawali.util.RajLog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class FBXParser extends AMeshParser {
+public class LoaderFBX extends AMeshLoader {
 	private static final char COMMENT = ';';
 	private static final String OBJECT_TYPE = "ObjectType:";
 	private static final String MODEL = "Model:";
@@ -86,7 +86,7 @@ public class FBXParser extends AMeshParser {
 	private Stack<Object> mObjStack;
 	private RajawaliRenderer mRenderer;
 	
-	public FBXParser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderFBX(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
@@ -94,7 +94,7 @@ public class FBXParser extends AMeshParser {
 		mObjStack.add(mFbx);
 	}
 	
-	public FBXParser(RajawaliRenderer renderer, File file) {
+	public LoaderFBX(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
@@ -102,7 +102,7 @@ public class FBXParser extends AMeshParser {
 		mObjStack.add(mFbx);
 	}
 	
-	public FBXParser(RajawaliRenderer renderer, int resourceId) {
+	public LoaderFBX(RajawaliRenderer renderer, int resourceId) {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
@@ -111,7 +111,7 @@ public class FBXParser extends AMeshParser {
 	}
 	
 	@Override
-	public FBXParser parse() throws ParsingException {
+	public LoaderFBX parse() throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {

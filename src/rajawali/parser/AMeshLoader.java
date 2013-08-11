@@ -19,29 +19,29 @@ import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import android.content.res.Resources;
 
-public abstract class AMeshParser extends AParser implements IMeshParser {
+public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 	protected TextureManager mTextureManager;
 	
 	protected Object3D mRootObject;
 
-	public AMeshParser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public AMeshLoader(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 		mRootObject = new Object3D();
 	}
 	
-	public AMeshParser(Resources resources, TextureManager textureManager, int resourceId) {
+	public AMeshLoader(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, resourceId);
 		mTextureManager = textureManager;
 		mRootObject = new Object3D();
 	}
 	
 	
-	public AMeshParser(RajawaliRenderer renderer, File file) {
+	public AMeshLoader(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 		mRootObject = new Object3D();
 	}
 	
-	public AMeshParser parse() throws ParsingException {
+	public AMeshLoader parse() throws ParsingException {
 		super.parse();
 		return this;
 	}
