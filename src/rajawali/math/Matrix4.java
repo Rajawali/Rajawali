@@ -22,13 +22,16 @@ import rajawali.util.ArrayUtils;
  * Rewritten August 8, 2013 by Jared Woolston with heavy influence from libGDX
  * @see https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java
  * 
+ * This class is not thread safe and must be confined to a single thread or protected by
+ * some external locking mechanism if necessary. All static methods are thread safe.
+ * 
  * @author dennis.ippel
  * @author Jared Woolston (jwoolston@tenkiv.com)
  *
  */
 public final class Matrix4 {
 	
-	//Matrix indices as column major notation (Column x Row)
+	//Matrix indices as column major notation (Row x Column)
 	public static final int M00 = 0;  // 0;
 	public static final int M01 = 4;  // 1;
 	public static final int M02 = 8;  // 2;
@@ -47,13 +50,18 @@ public final class Matrix4 {
 	public static final int M33 = 15; // 15;
 	    
 	private double[] m = new double[16]; //The matrix values
+	
+	//The following scratch variables are intentionally left as members
+	//and not static to ensure that this class can be utilized by multiple threads
+	//in a safe manner without the overhead of synchronization. This is a tradeoff of
+	//speed for memory and it is considered a small enough memory increase to be acceptable.
 	private double[] mTmp = new double[16]; //A scratch matrix 
 	private float[] mFloat = new float[16]; //A float copy of the values, used for sending to GL.
 	private final Quaternion mQuat = new Quaternion(); //A scratch quaternion.
 	private final Vector3 mVec1 = new Vector3(); //A scratch Vector3
 	private final Vector3 mVec2 = new Vector3(); //A scratch Vector3
 	private final Vector3 mVec3 = new Vector3(); //A scratch Vector3
-	private final Matrix4 mMatrix = new Matrix4(); //A scratch Matrix4
+	private Matrix4 mMatrix; //A scratch Matrix4
 	
 	//--------------------------------------------------
 	// Constructors
@@ -182,7 +190,7 @@ public final class Matrix4 {
 		m[M30] = 0; m[M31] = 0; m[M32] = 0; m[M33] = 1;
 		return this;
 	}
-	
+		
 	/**
 	 * Sets this {@link Matrix4} to an identity matrix.
 	 * 
@@ -316,25 +324,6 @@ public final class Matrix4 {
     }
 	
 	/**
-	 * Multiplies this {@link Matrix4} with a given {@link Vector3}, storing the result in a
-	 * new {@link Vector3}.
-	 * 
-	 * @param vec {@link Vector3} The vector to multiply by.
-	 * @return {@link Vector3} The resulting vector.
-	 */
-	public Vector3 multiply(final Vector3 vec) {
-		 Vector3 r = new Vector3();
-		 //TODO: FINISH
-         double inv = 1.0f / ( m[12] * vec.x + m[13] * vec.y + m[14] * vec.z + m[15] );
-
-         r.x = ( m[0] * vec.x + m[1] * vec.y + m[2] * vec.z + m[3] ) * inv;
-         r.y = ( m[4] * vec.x + m[5] * vec.y + m[6] * vec.z + m[7] ) * inv;
-         r.z = ( m[8] * vec.x + m[8] * vec.y + m[10] * vec.z + m[11] ) * inv;
-
-         return r;
-	}
-	
-	/**
 	 * Multiplies each element of this {@link Matrix4} by the provided factor.
 	 * 
 	 * @param value double The multiplication factor.
@@ -421,7 +410,11 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 rotate(final Quaternion quat) {
-		quat.toRotationMatrix(mMatrix);
+		if (mMatrix == null) {
+			mMatrix = quat.toRotationMatrix();
+		} else {
+			quat.toRotationMatrix(mMatrix);
+		}
 		return multiply(mMatrix);
 	}
 	
@@ -489,6 +482,49 @@ public final class Matrix4 {
 		m[M13] = vec.y;
 		m[M23] = vec.z;
 		return this;
+	}
+	
+	/**
+	 * Rotates the given {@link Vector3} by the rotation specified by this {@link Matrix4}.
+	 * 
+	 * @param vec {@link Vector3} The vector to rotate.
+	 */
+	public void rotateVector(final Vector3 vec) {
+		double x = vec.x * m[M00] + vec.y * m[M01] + vec.z * m[M02];
+		double y = vec.x * m[M10] + vec.y * m[M11] + vec.z * m[M12];
+		double z = vec.x * m[M20] + vec.y * m[M21] + vec.z * m[M22];
+		vec.setAll(x, y, z);
+	}
+	
+	/**
+	 * Projects a give {@link Vector3} with this {@link Matrix4} storing 
+	 * the result in the given {@link Vector3}.
+	 * 
+	 * @param vec {@link Vector3} The vector to multiply by.
+	 * @return {@link Vector3} The resulting vector.
+	 */
+	public Vector3 projectVector(final Vector3 vec) {
+         double inv = 1.0 / (m[M03] * vec.x + m[M13] * vec.y + m[M23] * vec.z + m[M33]);
+         double x = (m[M00] * vec.x + m[M01] * vec.y + m[M02] * vec.z + m[M03]) * inv;
+         double y = (m[M10] * vec.x + m[M11] * vec.y + m[M12] * vec.z + m[M13]) * inv;
+         double z = (m[M20] * vec.x + m[M21] * vec.y + m[M22] * vec.z + m[M23]) * inv;
+         return vec.setAll(x, y, z);
+	}
+	
+	/**
+	 * Projects a give {@link Vector3} with this {@link Matrix4} storing 
+	 * the result in a new {@link Vector3}.
+	 * 
+	 * @param vec {@link Vector3} The vector to multiply by.
+	 * @return {@link Vector3} The resulting vector.
+	 */
+	public Vector3 projectAndCreateVector(final Vector3 vec) {
+		 Vector3 r = new Vector3();
+         double inv = 1.0 / (m[M03] * vec.x + m[M13] * vec.y + m[M23] * vec.z + m[M33]);
+         r.x = (m[M00] * vec.x + m[M01] * vec.y + m[M02] * vec.z + m[M03]) * inv;
+         r.y = (m[M10] * vec.x + m[M11] * vec.y + m[M12] * vec.z + m[M13]) * inv;
+         r.z = (m[M20] * vec.x + m[M21] * vec.y + m[M22] * vec.z + m[M23]) * inv;
+         return r;
 	}
 	
 	/**
@@ -823,43 +859,8 @@ public final class Matrix4 {
 		return setAll(mVec2, mVec3, mVec1, position);
 	}
 	
-	public void transform(final Vector3 position, final Vector3 scale, final Quaternion orientation)
-    {
-        orientation.toRotationMatrix(mTmp);
 
-        m[0] = scale.x * mTmp[0]; m[1] = scale.y * mTmp[1]; m[2] = scale.z * mTmp[2]; m[3] = position.x;
-        m[4] = scale.x * mTmp[4]; m[5] = scale.y * mTmp[5]; m[6] = scale.z * mTmp[6]; m[7] = position.y;
-        m[8] = scale.x * mTmp[8]; m[9] = scale.y * mTmp[9]; m[10] = scale.z * mTmp[10]; m[11] = position.z;
-        m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
-    }
 	
-	public void inverseTransform(final Vector3 position, final Vector3 scale, final Quaternion orientation)
-    {
-        Vector3 invTranslate = position.inverse();
-        Vector3 invScale = new Vector3(1 / scale.x, 1 / scale.y, 1 / scale.z);
-        Quaternion invRot = orientation.invertAndCreate();
-
-        invTranslate.setAll(invRot.multiply(invTranslate));
-        invTranslate.multiply(invScale);
-        invRot.toRotationMatrix(mTmp);
-
-        m[0] = invScale.x * mTmp[0]; m[1] = invScale.x * mTmp[1]; m[2] = invScale.x * mTmp[2]; m[3] = invTranslate.x;
-        m[4] = invScale.y * mTmp[4]; m[5] = invScale.y * mTmp[5]; m[6] = invScale.y * mTmp[6]; m[7] = invTranslate.y;
-        m[8] = invScale.z * mTmp[8]; m[9] = invScale.z * mTmp[9]; m[10] = invScale.z * mTmp[10]; m[11] = invTranslate.z;		
-        m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
-    }
-	
-	public Vector3 transform(final Vector3 v) {
-		return new Vector3(
-				v.x * m[0] + v.y * m[4] + v.z * m[8] + m[12],
-				v.x * m[1] + v.y * m[5] + v.z * m[9] + m[13],
-				v.x * m[2] + v.y * m[6] + v.z * m[10] + m[14]
-				);
-	}
-	
-	
-	
-
     //--------------------------------------------------
   	// Component fetch methods
   	//--------------------------------------------------
@@ -890,6 +891,67 @@ public final class Matrix4 {
     //--------------------------------------------------
   	// Creation methods
   	//--------------------------------------------------
+    
+    /**
+     * Creates a new {@link Matrix4} representing a rotation.
+     * 
+     * @param quat {@link Quaternion} representing the rotation.
+     * @return {@link Matrix4} The new matrix.
+     */
+    public static Matrix4 createRotationMatrix(final Quaternion quat) {
+    	return new Matrix4(quat);
+    }
+    
+    /**
+     * Creates a new {@link Matrix4} representing a rotation.
+     * 
+     * @param axis {@link Vector3} The axis of rotation.
+     * @param angle double The rotation angle in degrees.
+     * @return {@link Matrix4} The new matrix.
+     */
+    public static Matrix4 createRotationMatrix(final Vector3 axis, double angle) {
+    	Matrix4 ret = new Matrix4();
+    	return ret.setToRotation(axis, angle);
+    }
+    
+    /**
+     * Creates a new {@link Matrix4} representing a rotation.
+     * 
+     * @param axis {@link Axis} The axis of rotation.
+     * @param angle double The rotation angle in degrees.
+     * @return {@link Matrix4} The new matrix.
+     */
+    public static Matrix4 createRotationMatrix(final Axis axis, double angle) {
+    	Matrix4 ret = new Matrix4();
+    	return ret.setToRotation(axis, angle);
+    }
+    
+    /**
+     * Creates a new {@link Matrix4} representing a rotation.
+     * 
+     * @param x double The x component of the axis of rotation.
+     * @param y double The y component of the axis of rotation.
+     * @param z double The z component of the axis of rotation.
+     * @param angle double The rotation angle in degrees.
+     * @return {@link Matrix4} The new matrix.
+     */
+    public static Matrix4 createRotationMatrix(double x, double y, double z, double angle) {
+    	Matrix4 ret = new Matrix4();
+    	return ret.setToRotation(x, y, z, angle);
+    }
+    
+    /**
+     * Creates a new {@link Matrix4} representing a rotation by Euler angles.
+     * 
+     * @param yaw double The yaw Euler angle.
+     * @param pitch double The pitch Euler angle.
+     * @param roll double The roll Euler angle.
+     * @return {@link Matrix4} The new matrix.
+     */
+    public static Matrix4 createRotationMatrix(double yaw, double pitch, double roll) {
+    	Matrix4 ret = new Matrix4();
+    	return ret.setToRotation(yaw, pitch, roll);
+    }
     
     /**
 	 * Creates a new {@link Matrix4} representing a translation.
