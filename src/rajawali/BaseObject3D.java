@@ -29,6 +29,7 @@ import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.TextureAtlas;
 import rajawali.materials.textures.TexturePacker.Tile;
 import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.GLU;
@@ -47,15 +48,19 @@ import android.opengl.GLES20;
  */
 public class BaseObject3D extends ATransformable3D implements Comparable<BaseObject3D>, INode {
 
+	protected Matrix4 mMMVPMatrix = new Matrix4();
 	protected double[] mMVPMatrix = new double[16];
-	protected double[] mMMatrix = new double[16];
+	protected Matrix4 mModelMatrix = new Matrix4();
+	//protected double[] mMMatrix = new double[16];
 	protected double[] mProjMatrix;
 
 	protected double[] mScalematrix = new double[16];
 	protected double[] mTranslateMatrix = new double[16];
+	protected Matrix4 mRotationMatrix = new Matrix4();
 	protected double[] mRotateMatrix = new double[16];
 	protected double[] mRotateMatrixTmp = new double[16];
 	protected double[] mTmpMatrix = new double[16];
+	protected Matrix4 mParentMatrixx;
 	protected double[] mParentMatrix;
 	protected float[] mColor;
 
@@ -103,7 +108,7 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 		mColor = new float[] {(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
 		
 		//Initialize the matrices to identity
-		Matrix.setIdentityM(mMMatrix, 0);
+		//Matrix.setIdentityM(mMMatrix, 0);
 		Matrix.setIdentityM(mScalematrix, 0);
 		Matrix.setIdentityM(mRotateMatrix, 0);
 		Matrix.setIdentityM(mRotateMatrixTmp, 0);
@@ -209,26 +214,31 @@ public class BaseObject3D extends ATransformable3D implements Comparable<BaseObj
 	}
 	
 	public void calculateModelMatrix(final double[] parentMatrix) {
-		Matrix.setIdentityM(mMMatrix, 0);
-		Matrix.setIdentityM(mScalematrix, 0);
-		Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
+		//Matrix.setIdentityM(mMMatrix, 0);
+		//Matrix.setIdentityM(mScalematrix, 0);
+		//Matrix.scaleM(mScalematrix, 0, mScale.x, mScale.y, mScale.z);
 
 		Matrix.setIdentityM(mRotateMatrix, 0);
 
 		setOrientation();
 		if (mLookAt == null) {
-			mOrientation.toRotationMatrix(mRotateMatrix);
+			//mOrientation.toRotationMatrix(mRotateMatrix);
+			mOrientation.toRotationMatrix(mRotationMatrix);
 		} else {
-			System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
+			//System.arraycopy(mLookAtMatrix, 0, mRotateMatrix, 0, 16);
+			mRotationMatrix.setAll(mLookAtMatrix);
 		}
+		
+		mModelMatrix.identity().translate(mPosition).scale(mScale).multiply(mRotationMatrix);
 
-		Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
-		Matrix.setIdentityM(mTmpMatrix, 0);
-		Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
-		Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
+		//Matrix.translateM(mMMatrix, 0, mPosition.x, mPosition.y, mPosition.z);
+		//Matrix.setIdentityM(mTmpMatrix, 0);
+		//Matrix.multiplyMM(mTmpMatrix, 0, mMMatrix, 0, mScalematrix, 0);
+		//Matrix.multiplyMM(mMMatrix, 0, mTmpMatrix, 0, mRotateMatrix, 0);
 		if (parentMatrix != null) {
-			Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
-			System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
+			//Matrix.multiplyMM(mTmpMatrix, 0, parentMatrix, 0, mMMatrix, 0);
+			//System.arraycopy(mTmpMatrix, 0, mMMatrix, 0, 16);
+			mModelMatrix.leftMultiply(mParentMatrixx);
 		}
 	}
 

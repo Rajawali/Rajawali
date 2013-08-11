@@ -29,6 +29,7 @@ import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
 import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
@@ -65,9 +66,9 @@ public class RajawaliScene extends AFrameTask {
 	protected RajawaliRenderer mRenderer;
 	
 	//All of these get passed to an object when it needs to draw itself
-	protected double[] mVMatrix = new double[16]; //The view matrix
-	protected double[] mPMatrix = new double[16]; //The projection matrix
-	protected double[] mVPMatrix = new double[16]; //The view-projection matrix
+	protected Matrix4 mVMatrix = new Matrix4();
+	protected Matrix4 mPMatrix = new Matrix4();
+	protected Matrix4 mVPMatrix = new Matrix4();
 	
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
@@ -669,7 +670,7 @@ public class RajawaliScene extends AFrameTask {
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
 		//Pre-multiply View and Projection matricies once for speed
-		Matrix.multiplyMM(mVPMatrix, 0, mPMatrix, 0, mVMatrix, 0);
+		mVPMatrix = mPMatrix.clone().multiply(mVMatrix);
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);

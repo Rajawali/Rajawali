@@ -502,6 +502,17 @@ public final class Matrix4 {
 	}
 	
 	/**
+	 * Sets the homogenous scale of this {@link Matrix4}.
+	 * 
+	 * @param zoom double The zoom value. 1 = no zoom.
+	 * @return A reference to this {@link Matrix4} to facilitate chaining.
+	 */
+	public Matrix4 setCoordinateZoom(double zoom) {
+		m[M33] = zoom;
+		return this;
+	}
+	
+	/**
 	 * Rotates the given {@link Vector3} by the rotation specified by this {@link Matrix4}.
 	 * 
 	 * @param vec {@link Vector3} The vector to rotate.
@@ -1054,6 +1065,7 @@ public final class Matrix4 {
      * 
      * @return {@link Matrix4} The copy.
      */
+    @Override
     public Matrix4 clone() {
     	return new Matrix4(this);
     }
