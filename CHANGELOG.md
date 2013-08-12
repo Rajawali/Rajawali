@@ -4,13 +4,18 @@ Rajawali "Anchor Steam" Development Branch
 "Anchor Steam", the next Rajawali version contains significant changes to the API.
 Here's what's new:
 
-# Thread Safety
+### Garbage
+
+Across the library we have tried to reduce the ammount of garbage that is generated. Animations now generate little to
+no garbage, even when run for very long periods of time.
+
+### Thread Safety
 
 To eliminate a number of issues which stemmed from trying to change scene contents in the middle of a render cycle,
 a task queue system has been added to Rajawali. You no longer have direct access to lists such as `mChildren`. Helper
 methods such as `addChild()` exist and will automatically queue everything for you.
 
-# Conversion to double precision
+### Conversion to double precision
 
 Rajawali has been converted to double precision internally. Some of the public API has changed as a result of this switch,
 however it is not significant and likely affects only advanced users. Most notably the method signature of the `render()` methods.
@@ -29,7 +34,7 @@ and it doesn't come free. Promoting these to double will happen automatically an
 are provided to the library in float form, we do not loose any precision this way. The one exception to this is if you are dynamically
 modifying the geometry data at run time which is an advanced process with a lot of other implications anyway.
 
-# Number3D
+### Number3D
 
 The `Number3D` class has been refactored into `Vector3` which is way more appropriate.
 This will most likely affect a lot of your code. Furthermore, the class has been entirely
@@ -39,16 +44,16 @@ It has also been moved to the `rajawali.math.vector` package.
  - Operations which set their result on the calling object are named/documented accordingly.
  - Operations which create new objects are named/documented accordingly.
 
-# Vector2D
+### Vector2D
 
 The `Vector2D` has been refactored into `Vector2` which falls in line with the new `Vector3` class.
 It has also been moved to the `rajawali.math.vector` package.
 
-# Vector3
+### Vector3
 
 The `Number3D` class has been refactored to `Vector3`. This name is much more appropriate.
 
-# Quaternion
+### Quaternion
 
 The `Quaternion` class has been overhauled and refactored similarly to the `Vector3` class. This may affect a lot of your code,
 depending on your use of quaternions. It has been made more consistent and efficient, reducing garbage. Other noteworthy changes include:
@@ -57,12 +62,12 @@ depending on your use of quaternions. It has been made more consistent and effic
  - Operations which set their result on the calling object are named/documented accordingly.
  - Operations which create new objects are named/documented accordingly.
 
-# AngleAxis
+### AngleAxis
 
 The `AngleAxis` class has been removed. It was essentially an incomplete `Quaternion` class and was not being
 used anywhere in the library or in the examples project.
 
-# Matrix4
+### Matrix4
 
 Previously, the `Matrix4` class was incomplete and never used internal to the library. The class has been filled out
 and the library has been switched over to using it internally. This was done for clarity, concise code and as the ground
@@ -73,19 +78,19 @@ signatures have changed, but only in their data types.
 While you can still use float or double arrays for matrices if you prefer, `Matrix4` has been implemented in an efficient manner
 which should not produce extra garbage and will dramatically simplify code which performs lots of matrix operations.
 
-# BaseObject3D
+### BaseObject3D
 
 `BaseObject3D` has been renamed to `Object3D`.
 
-# FPSUpdateListener
+### FPSUpdateListener
 
 `FPSUpdateListener` has been renamed to `OnFPSUpdateLister`.
 
-# Parsers
+### Parsers
 
 All parser classes which were previously called `xxParser` are now called `Loaderxx`. For example, `OBJParser` is now `LoaderOBJ`.
 
-# GL State
+### GL State
 
 To help increase ultimate frame rate, a default GL state has been implemented and set once at GL surface creation. `BaseObject3D`
 instances which are transparent, double-sided or otherwise differ in their culling automatically change the state for their render
@@ -93,7 +98,7 @@ and return the state when they are done. This means the GL state is not managed 
 improvement over the previous method of explicitly declaring the state on each render for each object and has in some testing shown a
 6 FPS improvement for ~12%.
 
-# Scenes
+### Scenes
 
 A new class, `RajawaliScene` has been added which fully encompasses everything to render a scene. Essentially everything you
 would have previously done in `RajawaliRenderer#initScene()` now fits in a `RajawaliScene` and you can have multiple instances
@@ -101,7 +106,7 @@ of `RajawaliScene` and feely switch between them, allowing you to do all sorts o
 background, showing different areas, etc.
 For more info please see [Tutorial 31](https://github.com/MasDennis/Rajawali/wiki/Tutorial-31-Using-RajawaliScene).
 
-# Multiple Cameras
+### Multiple Cameras
 
 You can now use multiple cameras in Rajawali and freely switch between them in a thread safe manner.
 
@@ -115,7 +120,7 @@ public void nextCamera() {
 }
 ```
 
-# Texture Management
+### Texture Management
 
 Texture management has been simplified. Here's a basic `DiffuseMaterial` example:
 
@@ -178,13 +183,13 @@ material1.addTexture(new NormalMapTexture(R.drawable.sphere_normal));
 mHalfSphere1.setMaterial(material1);
 ```
 
-# Object color
+### Object color
 
 `AMaterial`'s method `setUseColor(boolean useColor)` has been removed. There are two new methods that replace it:
 - `setUseSingleColor(boolean value)`: When the object uses a single color for the whole mesh use this. This way no color buffer will be created which reduces the memory footprint and increases performance, especially in big scenes.
 - `setUseVertexColors(boolean value)`: Use this when your mesh has multiple colors. This isn't applicable to textures, just vertex colors.
 
-# Paths/Curves
+### Paths/Curves
 
 "Paths" now have the more appropriate name "Curves". The reason for this is that curves aren't necessarily paths.
 The have also been moved from `rajawali.animation` to `rajawali.curves`.
