@@ -432,6 +432,11 @@ public abstract class AShaderBase {
 			super(DataType.FLOAT, value);
 		}
 		
+		public RFloat(IGlobalShaderVar var, int index)
+		{
+			super(DataType.FLOAT, var.getVarString() + Integer.toString(index));
+		}
+		
 		public RFloat(double value)
 		{
 			this((float)value);
@@ -475,6 +480,8 @@ public abstract class AShaderBase {
 		protected String mName;
 		protected DataType mDataType;
 		protected String mValue;
+		protected boolean mIsGlobal;
+		protected boolean mInitialized;
 
 		public ShaderVar() {
 		}
@@ -598,10 +605,17 @@ public abstract class AShaderBase {
 		
 		protected void writeAssign(String value)
 		{
-			mShaderSB.append(mName);
-			mShaderSB.append(" = ");
-			mShaderSB.append(value);
-			mShaderSB.append(";\n");
+			if(!mIsGlobal && !mInitialized)
+			{
+				writeInitialize(value);
+			}
+			else 
+			{
+				mShaderSB.append(mName);
+				mShaderSB.append(" = ");
+				mShaderSB.append(value);
+				mShaderSB.append(";\n");
+			}
 		}
 		
 		protected void writeInitialize()
@@ -613,6 +627,7 @@ public abstract class AShaderBase {
 		{
 			mShaderSB.append(mDataType.getTypeString());
 			mShaderSB.append(" ");
+			mInitialized = true;
 			writeAssign(value);
 		}
 		
@@ -624,6 +639,16 @@ public abstract class AShaderBase {
 		protected String generateName()
 		{
 			return "v_" + mDataType.mTypeString + "_" + mVarCount++;
+		}
+		
+		protected void isGlobal(boolean value)
+		{
+			mIsGlobal = value;
+		}
+		
+		protected boolean isGlobal()
+		{
+			return mIsGlobal;
 		}
 	}
 

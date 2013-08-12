@@ -70,6 +70,7 @@ public abstract class AShader extends AShaderBase {
 	protected ShaderVar addUniform(String name, DataType dataType)
 	{
 		ShaderVar v = getInstanceForDataType(name, dataType);
+		v.isGlobal(true);
 		mUniforms.put(v.getName(), v);
 		return v;
 	}
@@ -86,6 +87,7 @@ public abstract class AShader extends AShaderBase {
 	
 	protected ShaderVar addAttribute(String name, DataType dataType) {
 		ShaderVar v = getInstanceForDataType(name, dataType);
+		v.isGlobal(true);
 		mAttributes.put(v.getName(), v);
 		return v;
 	}
@@ -106,6 +108,7 @@ public abstract class AShader extends AShaderBase {
 	
 	protected ShaderVar addVarying(String name, DataType dataType) {
 		ShaderVar v = getInstanceForDataType(name, dataType);
+		v.isGlobal(true);
 		mVaryings.put(v.getName(), v);
 		return v;
 	}
@@ -126,6 +129,7 @@ public abstract class AShader extends AShaderBase {
 	
 	protected ShaderVar addGlobal(String name, DataType dataType) {
 		ShaderVar v = getInstanceForDataType(name, dataType);
+		v.isGlobal(true);
 		mGlobals.put(v.getName(), v);
 		return v;
 	}
@@ -341,6 +345,61 @@ public abstract class AShader extends AShaderBase {
 			mShaderFragments.get(i).applyParams();
 	}
 	
+	public String subtract(float value1, ShaderVar value2)
+	{
+		return subtract(Float.toString(value1), value2.getName());
+	}
+	
+	public String subtract(float value1, String value2)
+	{
+		return subtract(Float.toString(value1), value2);
+	}
+	
+	public String subtract(String value1, String value2)
+	{
+		return value1 + " - " + value2;
+	}
+	
+	public String divide(float value1, ShaderVar var)
+	{
+		return divide(Float.toString(value1), var.getName());
+	}
+	
+	public String divide(float value1, String value2)
+	{
+		return divide(Float.toString(value1), value2);
+	}
+	
+	public String divide(String value1, String value2)
+	{
+		return value1 + " / " + value2;
+	}
+	
+	public String multiply(String value1, ShaderVar value2)
+	{
+		return multiply(value1, value2.getName());
+	}
+	
+	public String multiply(ShaderVar value1, String value2)
+	{
+		return multiply(value1.getName(), value2);
+	}
+	
+	public String multiply(String value1, String value2)
+	{
+		return value1 + " * " + value2;
+	}
+	
+	public String max(String value1, String value2)
+	{
+		return "max(" + value1 + ", " + value2 + ")";
+	}
+	
+	public String max(String value1, float value2)
+	{
+		return max(value1, Float.toString(value2));
+	}
+	
 	public String normalize(String value)
 	{
 		return "normalize(" + value + ")";
@@ -355,12 +414,96 @@ public abstract class AShader extends AShaderBase {
 	{
 		return "distance(" + value1.getName() + ", " + value2.getName() + ")";
 	}
-	/*
-	public String enclose(ShaderVar value)
+	
+	public String dot(ShaderVar value1, ShaderVar value2)
 	{
-		return "(" + value.getName() + ")";
+		return "dot(" + value1.getName() + ", " + value2.getName() + ")";
 	}
-	*/
+	
+	public String cos(String value)
+	{
+		return "cos(" + value + ")";
+	}
+	
+	public String cos(ShaderVar var)
+	{
+		return cos(var.getName());
+	}
+
+	public String sin(String value)
+	{
+		return "sin(" + value + ")";
+	}
+	
+	public String sin(ShaderVar var)
+	{
+		return sin(var.getName());
+	}
+	
+	public String tan(String value)
+	{
+		return "tan(" + value + ")";
+	}
+	
+	public String tan(ShaderVar var)
+	{
+		return tan(var.getName());
+	}
+	
+	public String pow(ShaderVar var, String value)
+	{
+		return pow(var.getName(), value);
+	}
+	
+	public String pow(String value1, String value2)
+	{
+		return "pow(" + value1 + ", " + value2 + ")";
+	}
+
+	public String radians(String value)
+	{
+		return "radians(" + value + ")";
+	}
+	
+	public String radians(ShaderVar var)
+	{
+		return radians(var.getName());
+	}
+
+	public void startif(ShaderVar var, String operator, float value)
+	{
+		startif(var, operator, Float.toString(value));
+	}
+	
+	public void startif(ShaderVar var, String operator, String value)
+	{
+		mShaderSB.append("if(");
+		mShaderSB.append(var.getName());
+		mShaderSB.append(operator);
+		mShaderSB.append(value);
+		mShaderSB.append(")\n{\n");
+	}
+	
+	public void ifelseif()
+	{
+		mShaderSB.append("} else if {\n");
+	}
+	
+	public void ifelse()
+	{
+		mShaderSB.append("} else {\n");
+	}
+
+	public void endif()
+	{
+		mShaderSB.append("}\n");
+	}
+	
+	public String castVec3(ShaderVar x, ShaderVar y, ShaderVar z)
+	{
+		return "vec3(" + x.getName() + ", " + y.getName() + ", " + z.getName() + ")";
+	}
+	
 	public ShaderVar enclose(ShaderVar value)
 	{
 		ShaderVar var = getReturnTypeForOperation(value.getDataType(), value.getDataType());
