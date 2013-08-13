@@ -14,12 +14,13 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 	private List<ALight> mLights;
 	
 	private RVec3[] muLightPosition, muLightDirection;
+	private RFloat[] mvAttenuation;
 	//private RVec3 mgLightDirection;
 	private RVec4 mvEye;
-	private RFloat[] muSpotCutoffAngle, muSpotFalloff;
+	private RFloat[] muLightPower, muSpotCutoffAngle, muSpotFalloff;
 	
 	private int[] muLightPositionHandles, muLightDirectionHandles, muSpotCutoffAngleHandles,
-		muSpotFalloffHandles;
+		muSpotFalloffHandles, muLightPowerHandles;
 	
 	public LightsFragmentShaderFragment(List<ALight> lights) {
 		super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
@@ -48,6 +49,9 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 		muLightPosition = new RVec3[lightCount];
 		muLightPositionHandles = new int[muLightPosition.length];
 		
+		muLightPower = new RFloat[lightCount];
+		muLightPowerHandles = new int[muLightPower.length];
+		
 		muLightDirection = new RVec3[dirLightCount + spotLightCount];
 		muLightDirectionHandles = new int[muLightDirection.length];
 		
@@ -56,7 +60,9 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 		
 		muSpotFalloff = new RFloat[spotLightCount];
 		muSpotFalloffHandles = new int[muSpotFalloff.length];
-		
+
+		mvAttenuation = new RFloat[lightCount];
+
 		//mgLightDirection = (RVec3) addGlobal(LightsShaderVar.G_LIGHT_DIRECTION, DataType.VEC3);
 		mvEye = (RVec4) addVarying(LightsShaderVar.V_EYE, DataType.VEC4);
 		
@@ -70,6 +76,7 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 			int t = light.getLightType();
 
 			muLightPosition[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_POSITION, i, DataType.VEC3);
+			muLightPower[i] = (RFloat) addUniform(LightsShaderVar.U_LIGHT_POWER, i, DataType.FLOAT);
 			
 			if(t == ALight.DIRECTIONAL_LIGHT || t == ALight.SPOT_LIGHT)
 			{
@@ -82,6 +89,7 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 				muSpotFalloff[spotLightCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_FALLOFF, spotLightCount, DataType.FLOAT);
 				spotLightCount++;
 			}
+			mvAttenuation[i] = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, i, DataType.FLOAT);
 		}
 	}
 	

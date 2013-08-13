@@ -97,7 +97,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		muLightAttenuation = new RVec4[mSpotLightCount + mPointLightCount];
 		muLightAttenuationHandles = new int[muLightAttenuation.length];
 		
-		mvAttenuation = new RFloat[muLightAttenuation.length];
+		mvAttenuation = new RFloat[lightCount];
 		
 		muSpotExponent = new RFloat[mSpotLightCount];
 		muSpotExponentHandles = new int[muSpotExponent.length];
@@ -120,6 +120,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 			muLightColor[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_COLOR, i, DataType.VEC3);
 			muLightPower[i] = (RFloat) addUniform(LightsShaderVar.U_LIGHT_POWER, i, DataType.FLOAT);
 			muLightPosition[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_POSITION, i, DataType.VEC3);
+			mvAttenuation[i] = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, i, DataType.FLOAT);
 
 			if(t == ALight.DIRECTIONAL_LIGHT || t == ALight.SPOT_LIGHT)
 			{
@@ -129,7 +130,6 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 			if(t == ALight.SPOT_LIGHT || t == ALight.POINT_LIGHT)
 			{
 				muLightAttenuation[lightAttCount] = (RVec4) addUniform(LightsShaderVar.U_LIGHT_ATTENUATION, lightAttCount, DataType.VEC4);
-				mvAttenuation[lightAttCount] = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, lightAttCount, DataType.FLOAT);
 				lightAttCount++;
 			}
 			if(t == ALight.SPOT_LIGHT)
@@ -144,8 +144,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 
 	@Override
 	public void main() {
-		int lightDirCount = 0, lightAttCount = 0;
-		int spotCount = 0;
+		int lightAttCount = 0;
 
 		for (int i = 0; i < mLights.size(); i++)
 		{
@@ -161,7 +160,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 				//
 				// -- vAttenuation  = 1.0 / (uLightAttenuation[1] + uLightAttenuation[2] * gLightDistance + uLightAttenuation[3] * gLightDistance * gLightDistance)
 				//
-				mvAttenuation[lightAttCount].assign(
+				mvAttenuation[i].assign(
 						new RFloat(1.0)
 							.divide(
 									enclose(
@@ -179,7 +178,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 				//
 				// -- vAttenuation = 1.0
 				//
-				mvAttenuation[lightDirCount++].assign(1.0f);
+				mvAttenuation[i].assign(1.0f);
 			}
 		}
 	}

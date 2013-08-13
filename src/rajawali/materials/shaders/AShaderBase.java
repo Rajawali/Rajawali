@@ -281,6 +281,11 @@ public abstract class AShaderBase {
 			v.setName(this.mName + ".z");
 			return v;
 		}
+		
+		public void assign(float value)
+		{
+			assign("vec3(" + Float.toString(value) + ")");
+		}
 	}
 	
 	protected class RVec4 extends RVec3
@@ -399,6 +404,7 @@ public abstract class AShaderBase {
 		public GLPosition()
 		{
 			super("gl_Position");
+			mInitialized = true;
 		}
 	}
 	
@@ -407,6 +413,7 @@ public abstract class AShaderBase {
 		public GLFragColor()
 		{
 			super("gl_FragColor");
+			mInitialized = true;
 		}
 	}
 	

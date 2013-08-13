@@ -120,6 +120,13 @@ public class Material extends AFrameTask {
 			mFragmentShader.setLights(mLights);
 		}
 		
+		if(mDiffuseMethod != null)
+		{
+			mDiffuseMethod.setLights(mLights);
+			mVertexShader.addShaderFragment(mDiffuseMethod.getVertexShaderFragment());
+			mFragmentShader.addShaderFragment(mDiffuseMethod.getFragmentShaderFragment());
+		}
+		
 		mVertexShader.buildShader();
 		mFragmentShader.buildShader();
 

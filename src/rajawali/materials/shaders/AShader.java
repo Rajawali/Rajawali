@@ -144,6 +144,11 @@ public abstract class AShader extends AShaderBase {
 		return getInstanceForDataType(var.getVarString(), var.getDataType());
 	}
 	
+	public ShaderVar getGlobal(IGlobalShaderVar var, int index)
+	{
+		return getInstanceForDataType(var.getVarString() + Integer.toString(index), var.getDataType());
+	}
+	
 	protected Constant addConst(String name, int value) {
 		return addConst(name, Integer.toString(value));
 	}
@@ -164,8 +169,9 @@ public abstract class AShader extends AShaderBase {
 	
 	public void setLocations(int programHandle)
 	{
-		for(int i=0; i<mShaderFragments.size(); i++)
-			mShaderFragments.get(i).setLocations(programHandle);
+		if(mShaderFragments != null)
+			for(int i=0; i<mShaderFragments.size(); i++)
+				mShaderFragments.get(i).setLocations(programHandle);
 	}
 
 	protected int getUniformLocation(int programHandle, IGlobalShaderVar var) {
@@ -246,7 +252,8 @@ public abstract class AShader extends AShaderBase {
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
-			uniforms.putAll(fragment.getUniforms());
+			if(fragment.getUniforms() != null)
+				uniforms.putAll(fragment.getUniforms());
 		}
 		
 		Set<Entry<String, ShaderVar>> set = uniforms.entrySet();
@@ -267,7 +274,8 @@ public abstract class AShader extends AShaderBase {
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
-			attributes.putAll(fragment.getAttributes());
+			if(fragment.getAttributes() != null)
+				attributes.putAll(fragment.getAttributes());
 		}
 
 		set = attributes.entrySet();
@@ -289,7 +297,8 @@ public abstract class AShader extends AShaderBase {
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
-			varyings.putAll(fragment.getVaryings());
+			if(fragment.getVaryings() != null)
+				varyings.putAll(fragment.getVaryings());
 		}
 		
 		set = varyings.entrySet();
@@ -311,7 +320,8 @@ public abstract class AShader extends AShaderBase {
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
-			globals.putAll(fragment.getGlobals());
+			if(fragment.getGlobals() != null)
+				globals.putAll(fragment.getGlobals());
 		}
 		
 		set = globals.entrySet();
@@ -340,9 +350,11 @@ public abstract class AShader extends AShaderBase {
 	 * applyParams() should be called on every frame. The shader parameters
 	 * are set here.
 	 */
-	public void applyParams() {
-		for(int i=0; i<mShaderFragments.size(); i++)
-			mShaderFragments.get(i).applyParams();
+	public void applyParams() 
+	{
+		if(mShaderFragments != null)
+			for(int i=0; i<mShaderFragments.size(); i++)
+				mShaderFragments.get(i).applyParams();
 	}
 	
 	public String subtract(float value1, ShaderVar value2)
