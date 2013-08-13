@@ -1,17 +1,29 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali;
 
 import rajawali.bounds.BoundingBox;
+import rajawali.math.Matrix4;
 import rajawali.math.Plane;
 import rajawali.math.Plane.PlaneSide;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
-import android.opengl.Matrix;
 
 public class Frustum {
 	private Vector3[] mTmp = new Vector3[8];
 	protected Sphere mVisualSphere;
 	protected BoundingBox mBoundingBox;
-	protected float[] mTmpMatrix = new float[16];
+	protected Matrix4 mTmpMatrix = new Matrix4();
 	protected static final Vector3[] mClipSpacePlanePoints = { 
 		new Vector3(-1, -1, -1), 
 		new Vector3( 1, -1, -1), 
@@ -37,7 +49,7 @@ public class Frustum {
 		}
 	}
 
-	public void update(float[] inverseProjectionView) {             
+	public void update(Matrix4 inverseProjectionView) {             
 
 		for(int i = 0; i < 8; i++) {
 			planePoints[i].setAll(mClipSpacePlanePoints[i]);
@@ -54,7 +66,7 @@ public class Frustum {
 	}       
 
 
-	public boolean sphereInFrustum (Vector3 center, float radius) {
+	public boolean sphereInFrustum (Vector3 center, double radius) {
 		for (int i = 0; i < planes.length; i++)
 			if (planes[i].distance(center) < -radius) return false;
 
@@ -102,7 +114,7 @@ public class Frustum {
 		min.y = planePoints[5].y;
 		max.setAll(planePoints[7]);
 		//Log.i("Rajawali", "Min/Max: " + min + "/" + max);
-		Matrix.setIdentityM(mTmpMatrix, 0);
+		mTmpMatrix.identity();
 		mBoundingBox.setMin(min);
 		mBoundingBox.setMax(max);
 		mBoundingBox.calculatePoints();

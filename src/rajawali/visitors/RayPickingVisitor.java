@@ -1,6 +1,18 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.visitors;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.math.vector.Vector3;
@@ -11,7 +23,7 @@ public class RayPickingVisitor implements INodeVisitor {
 	private Vector3 mRayStart;
 	private Vector3 mRayEnd;
 	private Vector3 mHitPoint;
-	private BaseObject3D mPickedObject;
+	private Object3D mPickedObject;
 	
 	public RayPickingVisitor(Vector3 rayStart, Vector3 rayEnd) {
 		mRayStart = rayStart;
@@ -20,8 +32,8 @@ public class RayPickingVisitor implements INodeVisitor {
 	}
 	
 	public void apply(INode node) {
-		if(node instanceof BaseObject3D) {
-			BaseObject3D o = (BaseObject3D)node;
+		if(node instanceof Object3D) {
+			Object3D o = (Object3D)node;
 			if(!o.isVisible() || !o.isInFrustum()) return;
 			//RajLog.d("VISITING " + o.getName());
 			
@@ -82,7 +94,7 @@ public class RayPickingVisitor implements INodeVisitor {
 		return Intersector.intersectRaySphere(mRayStart, mRayEnd, bsphere.getPosition(), bsphere.getRadius(), mHitPoint);
 	}
 	
-	private boolean getIntersection( float fDst1, float fDst2, Vector3 P1, Vector3 P2) {
+	private boolean getIntersection( double fDst1, double fDst2, Vector3 P1, Vector3 P2) {
 		if ((fDst1 * fDst2) >= 0.0f) return false;
 		if (floatEqual(fDst1, fDst2)) return false; 
 		mHitPoint.setAll(P1);
@@ -91,8 +103,8 @@ public class RayPickingVisitor implements INodeVisitor {
 		return true;
 	}
 	
-	private boolean floatEqual(float lhs, float rhs) {
-		return (float)Math.abs(lhs - rhs) < .00001f;
+	private boolean floatEqual(double lhs, double rhs) {
+		return Math.abs(lhs - rhs) < .00001f;
 	}
 
 	private boolean isInBox(Vector3 boxMin, Vector3 boxMax, Axis axis) {
@@ -102,7 +114,7 @@ public class RayPickingVisitor implements INodeVisitor {
 		return false;
 	}
 	
-	public BaseObject3D getPickedObject() {
+	public Object3D getPickedObject() {
 		return mPickedObject;
 	}
 }

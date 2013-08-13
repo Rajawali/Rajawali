@@ -1,12 +1,25 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation.mesh;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
+import rajawali.Geometry3D;
 import rajawali.Geometry3D.BufferType;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
 import rajawali.materials.AAdvancedMaterial;
@@ -21,7 +34,6 @@ import android.opengl.GLES20;
  */
 public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private static final int MAX_WEIGHTS_PER_VERTEX = 8;
-	private static final int FLOAT_SIZE_BYTES = 4;
 	public int mNumJoints;
 	public SkeletalAnimationObject3D mSkeleton;
 	private SkeletalAnimationSequence mSequence;
@@ -78,7 +90,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		*/
 	}
 
-	public void setSkeleton(BaseObject3D skeleton) {
+	public void setSkeleton(Object3D skeleton) {
 		if (skeleton instanceof SkeletalAnimationObject3D) {
 			mSkeleton = (SkeletalAnimationObject3D) skeleton;
 			mNumJoints = mSkeleton.getJoints().length;
@@ -111,7 +123,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private FloatBuffer alocateBuffer(FloatBuffer buffer, float[] data) {
 		if (buffer == null) {
 			buffer = ByteBuffer
-					.allocateDirect(data.length * FLOAT_SIZE_BYTES * 4)
+					.allocateDirect(data.length * Geometry3D.FLOAT_SIZE_BYTES * 4)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
 			buffer.put(data);

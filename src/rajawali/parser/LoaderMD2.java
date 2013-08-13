@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.parser;
 
 import java.io.BufferedInputStream;
@@ -24,7 +36,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
+public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 
 	private MD2Header mHeader;
 	private String mCurrentTextureName;
@@ -35,19 +47,19 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 	private int[] mIndices;
 	private float[] mTextureCoords;
 
-	public MD2Parser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderMD2(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
 
-	public MD2Parser(RajawaliRenderer renderer, int resourceId) {
+	public LoaderMD2(RajawaliRenderer renderer, int resourceId) {
 		this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 	}
 
-	public MD2Parser(Resources resources, TextureManager textureManager, int resourceId) {
+	public LoaderMD2(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
 	
-	public MD2Parser(RajawaliRenderer renderer, File file) {
+	public LoaderMD2(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
 
@@ -55,7 +67,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 		return (AAnimationObject3D) mRootObject;
 	}
 
-	public MD2Parser parse() throws ParsingException {
+	public LoaderMD2 parse() throws ParsingException {
 		super.parse();
 		BufferedInputStream stream = null;
 		if (mFile == null) {
@@ -243,7 +255,7 @@ public class MD2Parser extends AMeshParser implements IAnimatedMeshParser {
 
 		short newVertexIndex = (short) mHeader.numVerts;
 		int numIndices = indices.length;
-		Stack<VertexIndices> changedIndices = new Stack<MD2Parser.VertexIndices>();
+		Stack<VertexIndices> changedIndices = new Stack<LoaderMD2.VertexIndices>();
 
 		for (int i = 0; i < numIndices; i++) {
 			for (int j = i + 1; j < numIndices; j++)

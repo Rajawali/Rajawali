@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.parser;
 
 import java.io.File;
@@ -5,8 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.BaseObject3D;
-import rajawali.parser.awd.ABlockParser;
+import rajawali.Object3D;
+import rajawali.parser.awd.ABlockLoader;
 import rajawali.parser.awd.BlockTriangleGeometry;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.scene.RajawaliScene;
@@ -37,7 +49,7 @@ import android.util.SparseArray;
  *      href="https://code.google.com/p/awd/source/browse/doc/spec/AWD_format_specification.odt">https://code.google.com/p/awd/source/browse/doc/spec/AWD_format_specification.odt</a>
  * 
  */
-public class AWDParser extends AParser {
+public class LoaderAWD extends ALoader {
 
 	enum Compression {
 		NONE,
@@ -45,11 +57,11 @@ public class AWDParser extends AParser {
 		LZMA
 	}
 
-	protected final List<BaseObject3D> baseObjects = new ArrayList<BaseObject3D>();
+	protected final List<Object3D> baseObjects = new ArrayList<Object3D>();
 	protected final SparseArray<BlockHeader> blockDataList = new SparseArray<BlockHeader>();
 
 	private final List<IBlockParser> blockParsers = new ArrayList<IBlockParser>();
-	private final SparseArray<Class<? extends ABlockParser>> blockParserClassesMap = new SparseArray<Class<? extends ABlockParser>>();
+	private final SparseArray<Class<? extends ABlockLoader>> blockParserClassesMap = new SparseArray<Class<? extends ABlockLoader>>();
 
 	protected int awdHeaderVersion;
 	protected int awdHeaderRevision;
@@ -57,17 +69,17 @@ public class AWDParser extends AParser {
 	protected int awdHeaderCompression;
 	protected int awdHeaderBodyLength;
 
-	public AWDParser(RajawaliRenderer renderer, File file) {
+	public LoaderAWD(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 		init();
 	}
 
-	public AWDParser(RajawaliRenderer renderer, int resourceId) {
+	public LoaderAWD(RajawaliRenderer renderer, int resourceId) {
 		super(renderer, resourceId);
 		init();
 	}
 
-	public AWDParser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderAWD(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 		init();
 	}
@@ -77,7 +89,7 @@ public class AWDParser extends AParser {
 	}
 
 	@Override
-	public IParser parse() throws ParsingException {
+	public ILoader parse() throws ParsingException {
 		super.parse();
 
 		onRegisterBlockClasses(blockParserClassesMap);
@@ -147,7 +159,7 @@ public class AWDParser extends AParser {
 					RajLog.d(blockHeader.toString());
 
 					// Look for the Block Parser class.
-					final Class<? extends ABlockParser> blockClass = (Class<? extends ABlockParser>) blockParserClassesMap
+					final Class<? extends ABlockLoader> blockClass = (Class<? extends ABlockLoader>) blockParserClassesMap
 							.get(getClassID(
 									blockHeader.namespace, blockHeader.type));
 
@@ -159,7 +171,7 @@ public class AWDParser extends AParser {
 					}
 
 					// Instantiate the block parser
-					final ABlockParser parser = (ABlockParser) Class.forName(blockClass.getName()).getConstructor()
+					final ABlockLoader parser = (ABlockLoader) Class.forName(blockClass.getName()).getConstructor()
 							.newInstance();
 
 					// Add the parser to the list of block parsers
@@ -200,12 +212,12 @@ public class AWDParser extends AParser {
 	 *            exists, the models will be returned as children of a container.
 	 * @return
 	 */
-	public BaseObject3D getParsedObject(boolean alwaysUseContainer) {
+	public Object3D getParsedObject(boolean alwaysUseContainer) {
 		// If only one object
 		if (!alwaysUseContainer && baseObjects.size() == 1)
 			return baseObjects.get(0);
 
-		final BaseObject3D container = new BaseObject3D();
+		final Object3D container = new Object3D();
 		container.isContainer(true);
 		for (int i = 0, j = baseObjects.size(); i < j; i++)
 			container.addChild(baseObjects.get(i));
@@ -260,10 +272,10 @@ public class AWDParser extends AParser {
 
 	/**
 	 * This is called when all blocks have finished parsing. This is the time to modify any block data as needed from
-	 * the passed list before conversion to {@link BaseObject3D} or {@link RajawaliScene} occurs.
+	 * the passed list before conversion to {@link Object3D} or {@link RajawaliScene} occurs.
 	 */
 	public void onBlockParsingFinished(List<IBlockParser> blockParsers) {
-		BaseObject3D temp;
+		Object3D temp;
 		for (int i = 0, j = blockParsers.size(); i < j; i++) {
 			temp = blockParsers.get(i).getBaseObject3D();
 			if (temp != null)
@@ -284,19 +296,19 @@ public class AWDParser extends AParser {
 	}
 
 	/**
-	 * If necessary, register additional {@link ABlockParser} classes here.
+	 * If necessary, register additional {@link ABlockLoader} classes here.
 	 * 
 	 * @param blockParserClassesMap
 	 */
-	protected void onRegisterBlockClasses(SparseArray<Class<? extends ABlockParser>> blockParserClassesMap) {}
+	protected void onRegisterBlockClasses(SparseArray<Class<? extends ABlockLoader>> blockParserClassesMap) {}
 
 	/**
-	 * Interface implemented by {@link ABlockParser}. This interface should not be implemented directly, instead extend
-	 * {@link ABlockParser}.
+	 * Interface implemented by {@link ABlockLoader}. This interface should not be implemented directly, instead extend
+	 * {@link ABlockLoader}.
 	 */
 	public interface IBlockParser {
 
-		BaseObject3D getBaseObject3D();
+		Object3D getBaseObject3D();
 
 		void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception;
 	}

@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.parser;
 
 import java.io.BufferedReader;
@@ -23,7 +35,7 @@ import android.content.res.Resources.NotFoundException;
  * 
  * @see <a href="http://en.wikipedia.org/wiki/STL_(file_format)">http://en.wikipedia.org/wiki/STL_(file_format)</a>
  */
-public class StlParser extends AMeshParser {
+public class LoaderSTL extends AMeshLoader {
 
 	// FIXME More testing, Nexus 7 specifically has some issues with certain models. Nexus 4 works fine with same
 	// 'problem' models.
@@ -36,28 +48,28 @@ public class StlParser extends AMeshParser {
 		BINARY
 	}
 
-	public StlParser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderSTL(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
 
-	public StlParser() {
+	public LoaderSTL() {
 		super(null, "");
 	}
 
-	public StlParser(Resources resources, int resourceId) {
+	public LoaderSTL(Resources resources, int resourceId) {
 		super(resources, null, resourceId);
 	}
 
-	public StlParser(RajawaliRenderer renderer, File file) {
+	public LoaderSTL(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
 
 	@Override
-	public AMeshParser parse() throws ParsingException {
+	public AMeshLoader parse() throws ParsingException {
 		return parse(StlType.UNKNOWN);
 	}
 
-	public AMeshParser parse(StlType type) throws ParsingException {
+	public AMeshLoader parse(StlType type) throws ParsingException {
 		super.parse();
 		try {
 

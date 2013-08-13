@@ -1,10 +1,22 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.materials.ColorPickerMaterial;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.FrameBufferTexture;
@@ -15,9 +27,7 @@ import android.opengl.GLES20;
 
 public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
-	protected final int FLOAT_SIZE_BYTES = 4;
-
-	private ArrayList<BaseObject3D> mObjectLookup;
+	private ArrayList<Object3D> mObjectLookup;
 	private int mColorIndex = 0;
 	private RajawaliRenderer mRenderer;
 	private int mFrameBufferHandle = -1;
@@ -28,7 +38,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 	private OnObjectPickedListener mObjectPickedListener;
 
 	public ObjectColorPicker(RajawaliRenderer renderer) {
-		mObjectLookup = new ArrayList<BaseObject3D>();
+		mObjectLookup = new ArrayList<Object3D>();
 		mRenderer = renderer;
 		mRenderer.queueInitializeTask(this);
 	}
@@ -97,7 +107,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 
-	public void registerObject(BaseObject3D object) {
+	public void registerObject(Object3D object) {
 		if (!mObjectLookup.contains(object)) {
 			mObjectLookup.add(object);
 			object.setPickingColor(mColorIndex);
@@ -105,7 +115,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		}
 	}
 
-	public void unregisterObject(BaseObject3D object) {
+	public void unregisterObject(Object3D object) {
 		if (mObjectLookup.contains(object)) {
 			mObjectLookup.remove(object);
 		}

@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.parser.md5;
 
 import java.io.BufferedReader;
@@ -13,12 +25,12 @@ import rajawali.animation.mesh.SkeletalAnimationFrame.Skeleton;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.animation.mesh.SkeletalAnimationSequence;
 import rajawali.math.vector.Vector3;
-import rajawali.parser.AParser;
-import rajawali.parser.IAnimationSequenceParser;
+import rajawali.parser.ALoader;
+import rajawali.parser.IAnimationSequenceLoader;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 
-public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
+public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 	private static final String MD5_VERSION = "MD5Version";
 	private static final String COMMAND_LINE = "commandline";
 	
@@ -38,19 +50,19 @@ public class MD5AnimParser extends AParser implements IAnimationSequenceParser {
 	private int mNumJoints;
 	private int mNumAnimatedComponents;
 	
-	public MD5AnimParser(String animationName, RajawaliRenderer renderer, String fileOnSDCard)
+	public LoaderMD5Anim(String animationName, RajawaliRenderer renderer, String fileOnSDCard)
 	{
 		super(renderer, fileOnSDCard);
 		mAnimationName = animationName;
 	}
 	
-	public MD5AnimParser(String animationName, RajawaliRenderer renderer, int resourceId)
+	public LoaderMD5Anim(String animationName, RajawaliRenderer renderer, int resourceId)
 	{
 		super(renderer, resourceId);
 		mAnimationName = animationName;
 	}
 
-	public MD5AnimParser parse() throws ParsingException {
+	public LoaderMD5Anim parse() throws ParsingException {
 		super.parse();
 		
 		BufferedReader buffer = null;

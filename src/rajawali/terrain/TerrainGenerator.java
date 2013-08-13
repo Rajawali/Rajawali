@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.terrain;
 
 import rajawali.math.vector.Vector3;
@@ -34,8 +46,8 @@ public class TerrainGenerator {
 			throw new RuntimeException("Divisions must be x^2");
 		}
 
-		float[][] terrain = new float[divisions + 1][divisions + 1];
-		float[][] temperature = new float[divisions + 1][divisions + 1];
+		double[][] terrain = new double[divisions + 1][divisions + 1];
+		double[][] temperature = new double[divisions + 1][divisions + 1];
 		Vector3[][] normals = new Vector3[divisions + 1][divisions + 1];
 
 		boolean useColorBitmap = prs.colorMapBitmap != null;
@@ -65,18 +77,18 @@ public class TerrainGenerator {
 
 		int color;
 		int cols = divisions + 1;
-		float min, max;
-		terrain[0][0] = (float) Color.green(0) / 255f * prs.scale.y;
+		double min, max;
+		terrain[0][0] = Color.green(0) / 255f * prs.scale.y;
 		min = max = terrain[0][0];
-		float alt;
-		float temp;
+		double alt;
+		double temp;
 		float oneover255 = 1f / 255f;
 
 		for (int i = 0; i <= divisions; ++i) {
 			for (int j = 0; j <= divisions; ++j) {
 				color = pixels[i + j * cols];
-				alt = (float) Color.green(color) * oneover255 * prs.scale.y;
-				temp = (float) Color.red(color) * oneover255 * (prs.maxTemp - prs.minTemp) + prs.minTemp;
+				alt = Color.green(color) * oneover255 * prs.scale.y;
+				temp = Color.red(color) * oneover255 * (prs.maxTemp - prs.minTemp) + prs.minTemp;
 				if (i > 0 && j > 0) {
 					temp = ((temperature[i - 1][j] + temperature[i][j - 1]) * 0.5f + temp) * 0.5f;
 					alt = ((terrain[i - 1][j] + terrain[i][j - 1]) * 0.5f + alt) * 0.5f;
@@ -119,58 +131,58 @@ public class TerrainGenerator {
 				// \ | /
 				// \|/
 				// O z+1
-				v0.x = (float) (x - 1) * scale.x;
-				v0.z = (float) (z) * scale.z;
+				v0.x = (x - 1) * scale.x;
+				v0.z = z * scale.z;
 				v0.y = terrain[x - 1][z];
 
-				v1.x = (float) (x) * scale.x;
-				v1.z = (float) (z - 1) * scale.z;
+				v1.x = x * scale.x;
+				v1.z = (z - 1) * scale.z;
 				v1.y = terrain[x][z - 1];
 
-				v2.x = (float) (x) * scale.x;
-				v2.z = (float) (z) * scale.z;
+				v2.x = x * scale.x;
+				v2.z = z * scale.z;
 				v2.y = terrain[x][z];
 
 				na = v1.subtract(v0).cross(v2.subtract(v0));
 
-				v0.x = (float) (x) * scale.x;
-				v0.z = (float) (z) * scale.z;
+				v0.x = x * scale.x;
+				v0.z = z * scale.z;
 				v0.y = terrain[x][z];
 
-				v1.x = (float) (x) * scale.x;
-				v1.z = (float) (z - 1) * scale.z;
+				v1.x = x * scale.x;
+				v1.z = (z - 1) * scale.z;
 				v1.y = terrain[x][z - 1];
 
-				v2.x = (float) (x + 1) * scale.x;
-				v2.z = (float) (z) * scale.z;
+				v2.x = (x + 1) * scale.x;
+				v2.z = z * scale.z;
 				v2.y = terrain[x + 1][z];
 
 				nb = v1.subtract(v0).cross(v2.subtract(v0));
 
-				v0.x = (float) (x) * scale.x;
-				v0.z = (float) (z) * scale.z;
+				v0.x = x * scale.x;
+				v0.z = z * scale.z;
 				v0.y = terrain[x][z];
 
-				v1.x = (float) (x + 1) * scale.x;
-				v1.z = (float) (z) * scale.z;
+				v1.x = (x + 1) * scale.x;
+				v1.z = z * scale.z;
 				v1.y = terrain[x + 1][z];
 
-				v2.x = (float) (x) * scale.x;
-				v2.z = (float) (z + 1) * scale.z;
+				v2.x = x * scale.x;
+				v2.z = (z + 1) * scale.z;
 				v2.y = terrain[x][z + 1];
 
 				nc = v1.subtract(v0).cross(v2.subtract(v0));
 
-				v0.x = (float) (x) * scale.x;
-				v0.z = (float) (z) * scale.z;
+				v0.x = x * scale.x;
+				v0.z = z * scale.z;
 				v0.y = terrain[x][z];
 
-				v1.x = (float) (x) * scale.x;
-				v1.z = (float) (z + 1) * scale.z;
+				v1.x = x * scale.x;
+				v1.z = (z + 1) * scale.z;
 				v1.y = terrain[x][z + 1];
 
-				v2.x = (float) (x - 1) * scale.x;
-				v2.z = (float) (z) * scale.z;
+				v2.x = (x - 1) * scale.x;
+				v2.z = z * scale.z;
 				v2.y = terrain[x - 1][z];
 
 				nd = v1.subtract(v0).cross(v2.subtract(v0));
@@ -196,15 +208,15 @@ public class TerrainGenerator {
 		int tt = 0;
 		int xx = 0;
 		int cc = 0;
-		float maxtt = 1f / (float) (divisions + 1);
+		double maxtt = 1f / (divisions + 1);
 
-		float xmid = (divisions * scale.x) / 2f;
-		float zmid = (divisions * scale.z) / 2f;
-		float percalt = 0;
+		double xmid = (divisions * scale.x) / 2f;
+		double zmid = (divisions * scale.z) / 2f;
+		double percalt = 0;
 		float r, g, b, a;
 		a = 1f;
 
-		float a_basecolor = (float) Color.alpha(prs.basecolor) * oneover255;
+		float a_basecolor = (float) ((float) Color.alpha(prs.basecolor) * oneover255);
 		float a_middlecolor = (float) Color.alpha(prs.middlecolor) * oneover255;
 		float a_upcolor = (float) Color.alpha(prs.upcolor) * oneover255;
 
@@ -228,25 +240,25 @@ public class TerrainGenerator {
 		for (int i = 0; i <= divisions; ++i) {
 			for (int j = 0; j <= divisions; ++j) {
 
-				vertices[ii++] = (float) i * scale.x - xmid;
-				vertices[ii++] = terrain[i][j];
-				vertices[ii++] = (float) j * scale.z - zmid;
+				vertices[ii++] = (float) (i * scale.x - xmid);
+				vertices[ii++] = (float) terrain[i][j];
+				vertices[ii++] = (float) (j * scale.z - zmid);
 
 				percalt = sq.getPercAltitude(i, j);
 
-				if (percalt < 0.5f) {
-					temp = (percalt - 0.0f) * 2f;
-					r = r_basecolor + (r_middlecolor - r_basecolor) * temp;
-					g = g_basecolor + (g_middlecolor - g_basecolor) * temp;
-					b = b_basecolor + (b_middlecolor - b_basecolor) * temp;
-					a = a_basecolor + (a_middlecolor - a_basecolor) * temp;
+				if (percalt < 0.5) {
+					temp = (percalt - 0.0) * 2;
+					r = (float) (r_basecolor + (r_middlecolor - r_basecolor) * temp);
+					g = (float) (g_basecolor + (g_middlecolor - g_basecolor) * temp);
+					b = (float) (b_basecolor + (b_middlecolor - b_basecolor) * temp);
+					a = (float) (a_basecolor + (a_middlecolor - a_basecolor) * temp);
 				}
 				else {
-					temp = (percalt - 0.5f) * 2f;
-					r = r_middlecolor + (r_upcolor - r_middlecolor) * temp;
-					g = g_middlecolor + (g_upcolor - g_middlecolor) * temp;
-					b = b_middlecolor + (b_upcolor - b_middlecolor) * temp;
-					a = a_middlecolor + (a_upcolor - a_middlecolor) * temp;
+					temp = (percalt - 0.5) * 2;
+					r = (float) (r_middlecolor + (r_upcolor - r_middlecolor) * temp);
+					g = (float) (g_middlecolor + (g_upcolor - g_middlecolor) * temp);
+					b = (float) (b_middlecolor + (b_upcolor - b_middlecolor) * temp);
+					a = (float) (a_middlecolor + (a_upcolor - a_middlecolor) * temp);
 
 				}
 				if (useColorBitmap) {
@@ -278,12 +290,12 @@ public class TerrainGenerator {
 				colors[cc++] = a;
 
 				normals[i][j].normalize();
-				nors[nn++] = normals[i][j].x;
-				nors[nn++] = normals[i][j].y;
-				nors[nn++] = normals[i][j].z;
+				nors[nn++] = (float) normals[i][j].x;
+				nors[nn++] = (float) normals[i][j].y;
+				nors[nn++] = (float) normals[i][j].z;
 
-				textureCoords[tt++] = (float) i * maxtt * prs.textureMult;
-				textureCoords[tt++] = (float) j * maxtt * prs.textureMult;
+				textureCoords[tt++] = (float) (i * maxtt * prs.textureMult);
+				textureCoords[tt++] = (float) (j * maxtt * prs.textureMult);
 
 			}
 		}

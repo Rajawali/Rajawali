@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.parser;
 
 import java.io.BufferedReader;
@@ -11,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.materials.AMaterial;
 import rajawali.materials.DiffuseMaterial;
 import rajawali.materials.NormalMapMaterial;
@@ -67,7 +79,7 @@ import android.util.Log;
  * @author dennis.ippel
  *
  */
-public class ObjParser extends AMeshParser {
+public class LoaderOBJ extends AMeshLoader {
     protected final String VERTEX = "v";
     protected final String FACE = "f";
     protected final String TEXCOORD = "vt";
@@ -80,24 +92,24 @@ public class ObjParser extends AMeshParser {
     protected final String DIFFUSE_COLOR = "Kd";
     protected final String DIFFUSE_TEX_MAP = "map_Kd";
 	
-    public ObjParser(RajawaliRenderer renderer, String fileOnSDCard) {
+    public LoaderOBJ(RajawaliRenderer renderer, String fileOnSDCard) {
     	super(renderer, fileOnSDCard);
     }
     
-    public ObjParser(RajawaliRenderer renderer, int resourceId) {
+    public LoaderOBJ(RajawaliRenderer renderer, int resourceId) {
     	this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
     }
     
-	public ObjParser(Resources resources, TextureManager textureManager, int resourceId) {
+	public LoaderOBJ(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
 	
-	public ObjParser(RajawaliRenderer renderer, File file) {
+	public LoaderOBJ(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
 	
 	@Override
-	public ObjParser parse() throws ParsingException {
+	public LoaderOBJ parse() throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
@@ -112,7 +124,7 @@ public class ObjParser extends AMeshParser {
 			}
 		}
 		String line;
-		ObjIndexData currObjIndexData = new ObjIndexData(new BaseObject3D());
+		ObjIndexData currObjIndexData = new ObjIndexData(new Object3D());
 		ArrayList<ObjIndexData> objIndices = new ArrayList<ObjIndexData>();
 				
 		ArrayList<Float> vertices = new ArrayList<Float>();
@@ -212,16 +224,16 @@ public class ObjParser extends AMeshParser {
 					{
 						RajLog.i("Parsing object: " + objName);
 						if(currObjIndexData.targetObj.getName() != null)
-							currObjIndexData = new ObjIndexData(new BaseObject3D(objName));
+							currObjIndexData = new ObjIndexData(new Object3D(objName));
 						else
 							currObjIndexData.targetObj.setName(objName);
 						objIndices.add(currObjIndexData);
 					} else if(type.equals(GROUP)) {
 						RajLog.i("Parsing group: " + objName);
-						BaseObject3D group = mRootObject.getChildByName(objName);
+						Object3D group = mRootObject.getChildByName(objName);
 						if(group == null)
 						{
-							group = new BaseObject3D(objName);
+							group = new Object3D(objName);
 							mRootObject.addChild(group);
 						}
 						group.addChild(currObjIndexData.targetObj);
@@ -317,7 +329,7 @@ public class ObjParser extends AMeshParser {
 	}
 	
 	protected class ObjIndexData {
-		public BaseObject3D targetObj;
+		public Object3D targetObj;
 		
 		public ArrayList<Integer> vertexIndices;
 		public ArrayList<Integer> texCoordIndices;
@@ -326,7 +338,7 @@ public class ObjParser extends AMeshParser {
 		
 		public String materialName;
 		
-		public ObjIndexData(BaseObject3D targetObj) {
+		public ObjIndexData(Object3D targetObj) {
 			this.targetObj = targetObj;
 			vertexIndices = new ArrayList<Integer>();
 			texCoordIndices = new ArrayList<Integer>();
@@ -355,7 +367,7 @@ public class ObjParser extends AMeshParser {
 		private String mResourcePackage;
 		
 		public MaterialLib() {
-			mMaterials = new Stack<ObjParser.MaterialDef>();
+			mMaterials = new Stack<LoaderOBJ.MaterialDef>();
 		}
 		
 		public void parse(String materialLibPath, String resourceType, String resourcePackage) {
@@ -434,7 +446,7 @@ public class ObjParser extends AMeshParser {
 			}
 		}
 		
-		public void setMaterial(BaseObject3D object, String materialName) throws TextureException {
+		public void setMaterial(Object3D object, String materialName) throws TextureException {
 			MaterialDef matDef = null;
 			
 			for(int i=0; i<mMaterials.size(); ++i) {

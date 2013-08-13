@@ -1,7 +1,19 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.parser.awd;
 
-import rajawali.BaseObject3D;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.Object3D;
+import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
 
@@ -12,18 +24,18 @@ import rajawali.util.RajLog;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockTriangleGeometry extends ABlockParser {
+public class BlockTriangleGeometry extends ABlockLoader {
 
-	protected BaseObject3D[] baseObjects;
+	protected Object3D[] baseObjects;
 	protected String lookupName;
 	protected int subGeometryCount;
 
 	@Override
-	public BaseObject3D getBaseObject3D() {
+	public Object3D getBaseObject3D() {
 		if (baseObjects.length == 1)
 			return baseObjects[0];
 
-		final BaseObject3D container = new BaseObject3D();
+		final Object3D container = new Object3D();
 		container.isContainer(true);
 		for (int i = 0; i < baseObjects.length; i++)
 			container.addChild(baseObjects[i]);
@@ -39,7 +51,7 @@ public class BlockTriangleGeometry extends ABlockParser {
 
 		// Count of sub geometries
 		subGeometryCount = dis.readUnsignedShort();
-		baseObjects = new BaseObject3D[subGeometryCount];
+		baseObjects = new Object3D[subGeometryCount];
 		RajLog.d("  Sub Geometry Count: " + subGeometryCount);
 
 		// Read properties
@@ -117,7 +129,7 @@ public class BlockTriangleGeometry extends ABlockParser {
 				bytesRead += 6 + subLength;
 			}
 
-			baseObjects[parsedSubs] = new BaseObject3D();
+			baseObjects[parsedSubs] = new Object3D();
 			baseObjects[parsedSubs].setData(vertices, normals, uvs, null, indices);
 
 			parsedSubs++;

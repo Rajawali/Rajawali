@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation;
 
 import java.util.ArrayList;
@@ -145,14 +157,15 @@ public abstract class Animation3D extends AFrameTask {
 	/**
 	 * Register a listener for animations. Use {@link #unregisterListener(IAnimation3DListener)} to remove a listener.
 	 * 
-	 * @throws RuntimeException Thrown when called while animation {@link #isPlaying()} is true
+	 * @throws RuntimeException
+	 *             Thrown when called while animation {@link #isPlaying()} is true
 	 * @param animationListener
 	 * @return
 	 */
 	public boolean registerListener(IAnimation3DListener animationListener) {
 		if (isPlaying())
 			throw new RuntimeException("Listeners can only be added and removed when the animation is not playing.");
-		
+
 		if (!mAnimationListeners.contains(animationListener))
 			return mAnimationListeners.add(animationListener);
 		else
@@ -272,14 +285,15 @@ public abstract class Animation3D extends AFrameTask {
 	 * Unregister a given listener. Use {@link #registerListener(IAnimation3DListener)} to add a listener. Returns true
 	 * on success.
 	 * 
-	 * @throws RuntimeException Thrown when called while animation {@link #isPlaying()} is true 
+	 * @throws RuntimeException
+	 *             Thrown when called while animation {@link #isPlaying()} is true
 	 * @param animationListener
 	 * @return {@link Boolean}
 	 */
 	public boolean unregisterListener(IAnimation3DListener animationListener) {
 		if (isPlaying())
 			throw new RuntimeException("Listeners can only be added and removed when the animation is not playing.");
-			
+
 		return mAnimationListeners.remove(animationListener);
 	}
 
@@ -307,19 +321,19 @@ public abstract class Animation3D extends AFrameTask {
 
 		// Update the elapsed time
 		mElapsedTime += deltaTime;
-		
+
 		// Calculate the interpolated time
-		final float interpolatedTime = mInterpolator
-				.getInterpolation((float) ((mElapsedTime) / mDuration));
+		final double interpolatedTime = mInterpolator
+				.getInterpolation((float) (mElapsedTime / mDuration));
 		mInterpolatedTime = interpolatedTime > 1 ? 1 : interpolatedTime < 0 ? 0 : interpolatedTime;
 
 		// Adjust for reverse play back.
 		if (mIsReversing)
 			mInterpolatedTime = 1 - mInterpolatedTime;
-		
+
 		// Call the overridden implementation of the animation.
 		applyTransformation();
-		
+
 		// Notification event of animation frame completion.
 		eventUpdate(mInterpolatedTime);
 

@@ -1,6 +1,18 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.primitives;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.math.vector.Vector3;
 
 /**
@@ -9,11 +21,11 @@ import rajawali.math.vector.Vector3;
  * angle or aspect ratio. The cone is created about the positive
  * y axis with the vanishing point at (0, height, 0).
  * 
- * NOTE: This still needs a lot of work. Normals and texture coordinates are not correct.
+ * NOTE: This still needs a lot of work. Texture coordinates are not correct.
  * 
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class NPrism extends BaseObject3D {
+public class NPrism extends Object3D {
 
 	protected int mSideCount;
 	protected double mRadiusBase;
@@ -94,7 +106,7 @@ public class NPrism extends BaseObject3D {
 		
 		double angle_delta = 2*Math.PI/mSideCount;
 		double angle = 0;
-		double x = 1.0f, y = 1.0f, z = 1.0f;
+		double x = 1.0, y = 1.0, z = 1.0;
 		double u = 0, v = 1;
 		double u_delta = 1.0/mSideCount;
 		double MAG = Math.sqrt(Math.pow((mRadiusTop - mRadiusBase), 2.0) + Math.pow(mHeight, 2.0));
@@ -112,20 +124,20 @@ public class NPrism extends BaseObject3D {
 			//Handle the top
 			y = mHeight/2;
 			v = 0;
-			temp_normal.x = (float) (mMinorTop*MAG*Math.cos(angle + angle_delta/2));
-			temp_normal.y = (float) MAG;
-			temp_normal.z = (float) (mRadiusTop*MAG*Math.sin(angle + angle_delta/2));
+			temp_normal.x = mMinorTop*MAG*Math.cos(angle + angle_delta/2);
+			temp_normal.y = MAG;
+			temp_normal.z = mRadiusTop*MAG*Math.sin(angle + angle_delta/2);
 			temp_normal.normalize();
 			temp_normal.z = -temp_normal.z;
 
 			vertices[offset] = (float) x;
 			texture[2*vertex] = (float) u;
 			texture[2*vertex+1] = (float) v;
-			normals[offset++] = temp_normal.x;
+			normals[offset++] = (float) temp_normal.x;
 			vertices[offset] = (float) y;
-			normals[offset++] = temp_normal.y;
+			normals[offset++] = (float) temp_normal.y;
 			vertices[offset] = (float) z;
-			normals[offset++] = temp_normal.z;
+			normals[offset++] = (float) temp_normal.z;
 			indices[base_index+2] = vertex++;
 
 			y = -mHeight/2;
@@ -135,11 +147,11 @@ public class NPrism extends BaseObject3D {
 			vertices[offset] = (float) x;
 			texture[2*vertex] = (float) u;
 			texture[2*vertex+1] = (float) v;
-			normals[offset++] = temp_normal.x;
+			normals[offset++] = (float) temp_normal.x;
 			vertices[offset] = (float) y;
-			normals[offset++] = temp_normal.y;
+			normals[offset++] = (float) temp_normal.y;
 			vertices[offset] = (float) z;
-			normals[offset++] = temp_normal.z;
+			normals[offset++] = (float) temp_normal.z;
 			indices[base_index+1] = vertex++;
 
 			angle += angle_delta;
@@ -149,11 +161,11 @@ public class NPrism extends BaseObject3D {
 			vertices[offset] = (float) x;
 			texture[2*vertex] = (float) u;
 			texture[2*vertex+1] = (float) v;
-			normals[offset++] = temp_normal.x;
+			normals[offset++] = (float) temp_normal.x;
 			vertices[offset] = (float) y;
-			normals[offset++] = temp_normal.y;
+			normals[offset++] = (float) temp_normal.y;
 			vertices[offset] = (float) z;
-			normals[offset++] = temp_normal.z;
+			normals[offset++] = (float) temp_normal.z;
 			indices[base_index] = vertex++;
 			++triangle;
 			base_index = 3*triangle;
@@ -164,11 +176,11 @@ public class NPrism extends BaseObject3D {
 			vertices[offset] = (float) x;
 			texture[2*vertex] = (float) u;
 			texture[2*vertex+1] = (float) v;
-			normals[offset++] = temp_normal.x;
+			normals[offset++] = (float) temp_normal.x;
 			vertices[offset] = (float) y;
-			normals[offset++] = temp_normal.y;
+			normals[offset++] = (float) temp_normal.y;
 			vertices[offset] = (float) z;
-			normals[offset++] = temp_normal.z;
+			normals[offset++] = (float) temp_normal.z;
 			indices[base_index+2] = vertex - 3;
 			indices[base_index+1] = vertex - 1;
 			indices[base_index] = vertex++;
@@ -179,21 +191,21 @@ public class NPrism extends BaseObject3D {
 		//Add in the top center
 		offset = top_center_index;
 		vertices[offset] = 0.0f;
-		normals[offset++] = UP.x;
+		normals[offset++] = (float) UP.x;
 		vertices[offset] = (float) mHeight/2;
-		normals[offset++] = UP.y;
+		normals[offset++] = (float) UP.y;
 		vertices[offset] = 0.0f;
-		normals[offset++] = UP.z;
+		normals[offset++] = (float) UP.z;
 		texture[12*mSideCount] = 0.5f;
 		texture[12*mSideCount+1] = 0.5f;
 		//Add in the base center
 		offset = bottom_center_index;
 		vertices[offset] = 0.0f;
-		normals[offset++] = DOWN.x;
+		normals[offset++] = (float) DOWN.x;
 		vertices[offset] = (float) -mHeight/2;
-		normals[offset++] = DOWN.y;
+		normals[offset++] = (float) DOWN.y;
 		vertices[offset] = 0.0f;
-		normals[offset++] = DOWN.z;
+		normals[offset++] = (float) DOWN.z;
 		texture[12*mSideCount+2] = 0.5f;
 		texture[12*mSideCount+3] = 0.5f;
 
@@ -211,11 +223,11 @@ public class NPrism extends BaseObject3D {
 			vertices[offset] = (float) x;
 			texture[2*vertex] = (float) u;
 			texture[2*vertex+1] = (float) v;
-			normals[offset++] = UP.x;
+			normals[offset++] = (float) UP.x;
 			vertices[offset] = (float) y;
-			normals[offset++] = UP.y;
+			normals[offset++] = (float) UP.y;
 			vertices[offset] = (float) z;
-			normals[offset++] = UP.z;
+			normals[offset++] = (float) UP.z;
 
 			indices[base_index+2] = vertex_count - 2;
 			indices[base_index+1] = vertex;
@@ -240,11 +252,11 @@ public class NPrism extends BaseObject3D {
 			vertices[offset] = (float) x;
 			texture[2*vertex] = (float) u;
 			texture[2*vertex+1] = (float) v;
-			normals[offset++] = DOWN.x;
+			normals[offset++] = (float) DOWN.x;
 			vertices[offset] = (float) y;
-			normals[offset++] = DOWN.y;
+			normals[offset++] = (float) DOWN.y;
 			vertices[offset] = (float) z;
-			normals[offset++] = DOWN.z;
+			normals[offset++] = (float) DOWN.z;
 
 			indices[base_index+2] = ++vertex;
 			indices[base_index+1] = vertex_count - 1;
