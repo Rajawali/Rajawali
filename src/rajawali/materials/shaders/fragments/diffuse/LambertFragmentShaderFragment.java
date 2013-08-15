@@ -3,6 +3,7 @@ package rajawali.materials.shaders.fragments.diffuse;
 import java.util.List;
 
 import rajawali.lights.ALight;
+import rajawali.materials.methods.DiffuseMethod.DiffuseShaderVar;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
@@ -12,6 +13,7 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 	public final static String SHADER_ID = "LAMBERT_FRAGMENT";
 	
 	private List<ALight> mLights;
+	private RFloat[] mgNdotL;
 	
 	public LambertFragmentShaderFragment(List<ALight> lights) {
 		super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
@@ -23,6 +25,13 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 	protected void initialize()
 	{
 		super.initialize();
+		
+		mgNdotL = new RFloat[mLights.size()];
+		
+		for (int i = 0; i < mLights.size(); i++)
+		{
+			mgNdotL[i] = (RFloat) addGlobal(DiffuseShaderVar.L_NDOTL, i);
+		}
 	}
 	
 	public String getShaderId() {
@@ -31,10 +40,9 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 	
 	@Override
 	public void main() {
-		RFloat nDotL = new RFloat("NdotL");
 		RVec3 diffuse = new RVec3("diffuse");
 		diffuse.assign(0);
-		RVec3 normal = (RVec3)getGlobal(DefaultVar.V_NORMAL);
+		RVec3 normal = (RVec3)getGlobal(DefaultVar.G_NORMAL);
 		RFloat power = new RFloat("power");
 		power.assign(0.0f);
 		
@@ -48,6 +56,7 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 			//
 			// -- NdotL = max(dot(vNormal, lightDir), 0.1);
 			//
+			RFloat nDotL = mgNdotL[i];
 			nDotL.assign(max(dot(normal, lightDir), 0.1f));
 			//
 			// -- power = uLightPower * NdotL * vAttenuation;

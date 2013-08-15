@@ -7,6 +7,7 @@ import rajawali.Camera;
 import rajawali.Capabilities;
 import rajawali.lights.ALight;
 import rajawali.materials.methods.IDiffuseMethod;
+import rajawali.materials.methods.ISpecularMethod;
 import rajawali.materials.shaders.FragmentShader;
 import rajawali.materials.shaders.VertexShader;
 import rajawali.materials.textures.ATexture;
@@ -24,6 +25,7 @@ public class Material extends AFrameTask {
 	private FragmentShader mFragmentShader;
 	
 	private IDiffuseMethod mDiffuseMethod;
+	private ISpecularMethod mSpecularMethod;
 
 	private boolean mUseVertexColors;
 	private boolean mLightingEnabled;
@@ -128,6 +130,13 @@ public class Material extends AFrameTask {
 				mVertexShader.addShaderFragment(mDiffuseMethod.getVertexShaderFragment());
 				mFragmentShader.addShaderFragment(mDiffuseMethod.getFragmentShaderFragment());
 			}
+			
+			if(mSpecularMethod != null)
+			{
+				mSpecularMethod.setLights(mLights);
+				mVertexShader.addShaderFragment(mSpecularMethod.getVertexShaderFragment());
+				mFragmentShader.addShaderFragment(mSpecularMethod.getFragmentShaderFragment());
+			}
 		}		
 		
 		mVertexShader.buildShader();
@@ -148,7 +157,7 @@ public class Material extends AFrameTask {
 			setTextureParameters(mTextureList.get(i));
 		*/
 		mVertexShader.setLocations(mProgramHandle);
-		//mFragmentShader.setLocations(mProgramHandle);
+		mFragmentShader.setLocations(mProgramHandle);
 
 		mIsDirty = false;
 	}
@@ -210,6 +219,7 @@ public class Material extends AFrameTask {
 
 		mVertexShader.setColor(mColor);
 		mVertexShader.applyParams();
+		mFragmentShader.applyParams();
 	}
 	
 	private void setTextureParameters(ATexture texture) {
@@ -366,6 +376,18 @@ public class Material extends AFrameTask {
 		return mDiffuseMethod;
 	}
 
+	public void setSpecularMethod(ISpecularMethod specularMethod)
+	{
+		if(mSpecularMethod == specularMethod) return;
+		mSpecularMethod = specularMethod;
+		mIsDirty = true;
+	}
+	
+	public ISpecularMethod getSpecularMethod()
+	{
+		return mSpecularMethod;
+	}
+	
 	public void setOwnerIdentity(String identity)
 	{
 		mOwnerIdentity = identity;

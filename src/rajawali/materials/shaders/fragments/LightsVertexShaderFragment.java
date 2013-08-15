@@ -122,8 +122,8 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		muSpotFalloff = new RFloat[mSpotLightCount];
 		muSpotFalloffHandles = new int[muSpotFalloff.length];
 		
-		mgLightDistance = (RFloat) addGlobal(LightsShaderVar.G_LIGHT_DISTANCE, DataType.FLOAT);
-		mvEye = (RVec4) addVarying(LightsShaderVar.V_EYE, DataType.VEC4);
+		mgLightDistance = (RFloat) addGlobal(LightsShaderVar.G_LIGHT_DISTANCE);
+		mvEye = (RVec4) addVarying(LightsShaderVar.V_EYE);
 
 		int lightDirCount = 0, lightAttCount = 0;
 		int spotCount = 0;
@@ -133,33 +133,33 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 			ALight light = mLights.get(i);
 			int t = light.getLightType();
 
-			muLightColor[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_COLOR, i, DataType.VEC3);
-			muLightPower[i] = (RFloat) addUniform(LightsShaderVar.U_LIGHT_POWER, i, DataType.FLOAT);
-			muLightPosition[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_POSITION, i, DataType.VEC3);
-			mvAttenuation[i] = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, i, DataType.FLOAT);
+			muLightColor[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_COLOR, i);
+			muLightPower[i] = (RFloat) addUniform(LightsShaderVar.U_LIGHT_POWER, i);
+			muLightPosition[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_POSITION, i);
+			mvAttenuation[i] = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, i);
 
 			if(t == ALight.DIRECTIONAL_LIGHT || t == ALight.SPOT_LIGHT)
 			{
-				muLightDirection[lightDirCount] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_DIRECTION, lightDirCount, DataType.VEC3);
+				muLightDirection[lightDirCount] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_DIRECTION, lightDirCount);
 				lightDirCount++;
 			}
 			if(t == ALight.SPOT_LIGHT || t == ALight.POINT_LIGHT)
 			{
-				muLightAttenuation[lightAttCount] = (RVec4) addUniform(LightsShaderVar.U_LIGHT_ATTENUATION, lightAttCount, DataType.VEC4);
+				muLightAttenuation[lightAttCount] = (RVec4) addUniform(LightsShaderVar.U_LIGHT_ATTENUATION, lightAttCount);
 				lightAttCount++;
 			}
 			if(t == ALight.SPOT_LIGHT)
 			{
-				muSpotExponent[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_EXPONENT, spotCount, DataType.FLOAT);
-				muSpotCutoffAngle[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_CUTOFF_ANGLE, spotCount, DataType.FLOAT);
-				muSpotFalloff[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_FALLOFF, spotCount, DataType.FLOAT);
+				muSpotExponent[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_EXPONENT, spotCount);
+				muSpotCutoffAngle[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_CUTOFF_ANGLE, spotCount);
+				muSpotFalloff[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_FALLOFF, spotCount);
 				spotCount++;
 			}
 		}
 		
-		muAmbientColor = (RVec3) addUniform(LightsShaderVar.U_AMBIENT_COLOR, DataType.VEC3);
-		muAmbientIntensity = (RVec3) addUniform(LightsShaderVar.U_AMBIENT_INTENSITY, DataType.VEC3);
-		mvAmbientColor = (RVec3) addVarying(LightsShaderVar.V_AMBIENT_COLOR, DataType.VEC3);
+		muAmbientColor = (RVec3) addUniform(LightsShaderVar.U_AMBIENT_COLOR);
+		muAmbientIntensity = (RVec3) addUniform(LightsShaderVar.U_AMBIENT_INTENSITY);
+		mvAmbientColor = (RVec3) addVarying(LightsShaderVar.V_AMBIENT_COLOR);
 	}
 
 	@Override

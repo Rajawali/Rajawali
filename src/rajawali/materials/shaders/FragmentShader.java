@@ -3,6 +3,8 @@ package rajawali.materials.shaders;
 import java.util.List;
 
 import rajawali.lights.ALight;
+import rajawali.materials.shaders.AShaderBase.DefaultVar;
+import rajawali.materials.shaders.AShaderBase.RVec3;
 import rajawali.materials.shaders.fragments.LightsFragmentShaderFragment;
 
 
@@ -12,6 +14,7 @@ public class FragmentShader extends AShader {
 	private RVec4 mvColor;
 	
 	private RVec4 mgColor;
+	private RVec3 mgNormal;
 	
 	private List<ALight> mLights;
 	
@@ -34,18 +37,20 @@ public class FragmentShader extends AShader {
 		
 		// -- varyings
 		
-		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD, DataType.VEC2);
-		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL, DataType.VEC3);
-		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR, DataType.VEC4);
+		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD);
+		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL);
+		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR);
 		
 		// -- globals
 		
-		mgColor = (RVec4) addGlobal(DefaultVar.G_COLOR, DataType.VEC4);
+		mgColor = (RVec4) addGlobal(DefaultVar.G_COLOR);
+		mgNormal = (RVec3) addGlobal(DefaultVar.G_NORMAL);
 	}
 	
 	@Override
 	public void main() {
 		mgColor.assign(mvColor);
+		mgNormal.assign(normalize(mvNormal));
 		
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{

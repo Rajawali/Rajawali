@@ -59,14 +59,14 @@ public abstract class AShader extends AShaderBase {
 	protected void addDefine(String name, String value) {
 	}
 
-	protected ShaderVar addUniform(IGlobalShaderVar var, DataType dataType)
+	protected ShaderVar addUniform(IGlobalShaderVar var)
 	{
-		return addUniform(var.getVarString(), dataType);
+		return addUniform(var.getVarString(), var.getDataType());
 	}
 	
-	protected ShaderVar addUniform(IGlobalShaderVar var, int index, DataType dataType)
+	protected ShaderVar addUniform(IGlobalShaderVar var, int index)
 	{
-		return addUniform(var.getVarString() + Integer.toString(index), dataType);
+		return addUniform(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
 	
 	protected ShaderVar addUniform(String name, DataType dataType)
@@ -82,9 +82,9 @@ public abstract class AShader extends AShaderBase {
 		return mUniforms;
 	}
 	
-	protected ShaderVar addAttribute(IGlobalShaderVar var, DataType dataType)
+	protected ShaderVar addAttribute(IGlobalShaderVar var)
 	{
-		return addAttribute(var.getVarString(), dataType);
+		return addAttribute(var.getVarString(), var.getDataType());
 	}
 	
 	protected ShaderVar addAttribute(String name, DataType dataType) {
@@ -99,13 +99,13 @@ public abstract class AShader extends AShaderBase {
 		return mAttributes;
 	}
 
-	protected ShaderVar addVarying(IGlobalShaderVar var, DataType dataType) {
-		return addVarying(var.getVarString(), dataType);
+	protected ShaderVar addVarying(IGlobalShaderVar var) {
+		return addVarying(var.getVarString(), var.getDataType());
 	}
 	
-	protected ShaderVar addVarying(IGlobalShaderVar var, int index, DataType dataType)
+	protected ShaderVar addVarying(IGlobalShaderVar var, int index)
 	{
-		return addVarying(var.getVarString() + Integer.toString(index), dataType);
+		return addVarying(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
 	
 	protected ShaderVar addVarying(String name, DataType dataType) {
@@ -125,8 +125,12 @@ public abstract class AShader extends AShaderBase {
 		return mVaryings;
 	}
 
-	protected ShaderVar addGlobal(IGlobalShaderVar var, DataType dataType) {
-		return addGlobal(var.getVarString(), dataType);
+	protected ShaderVar addGlobal(IGlobalShaderVar var) {
+		return addGlobal(var.getVarString(), var.getDataType());
+	}
+	
+	protected ShaderVar addGlobal(IGlobalShaderVar var, int index) {
+		return addGlobal(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
 	
 	protected ShaderVar addGlobal(String name, DataType dataType) {
@@ -476,6 +480,11 @@ public abstract class AShader extends AShaderBase {
 	public String pow(ShaderVar var, String value)
 	{
 		return pow(var.getName(), value);
+	}
+	
+	public String pow(ShaderVar var1, ShaderVar var2)
+	{
+		return pow(var1.getName(), var2.getName());
 	}
 	
 	public String pow(String value1, String value2)

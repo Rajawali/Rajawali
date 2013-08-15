@@ -4,13 +4,34 @@ import java.util.List;
 
 import rajawali.lights.ALight;
 import rajawali.materials.shaders.IShaderFragment;
+import rajawali.materials.shaders.AShaderBase.DataType;
+import rajawali.materials.shaders.AShaderBase.IGlobalShaderVar;
 import rajawali.materials.shaders.fragments.diffuse.LambertFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.diffuse.LambertVertexShaderFragment;
 
 
-public class DiffuseMethod {
+public abstract class DiffuseMethod {
+	public static enum DiffuseShaderVar implements IGlobalShaderVar {
+		L_NDOTL("NdotL", DataType.FLOAT);
+		
+		private String mVarString;
+		private DataType mDataType;
+
+		DiffuseShaderVar(String varString, DataType dataType) {
+			mVarString = varString;
+			mDataType = dataType;
+		}
+
+		public String getVarString() {
+			return mVarString;
+		}
+
+		public DataType getDataType() {
+			return mDataType;
+		}
+	}
 	
-	public static class Lambert implements IDiffuseMethod
+	public static final class Lambert implements IDiffuseMethod
 	{
 		private float mIntensity;
 		private List<ALight> mLights;

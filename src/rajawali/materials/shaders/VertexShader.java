@@ -36,7 +36,6 @@ public class VertexShader extends AShader {
 	private int maTextureCoordHande;
 	private int maNormalHandle;
 	private int maPositionHandle;
-	private int mVertexBufferHandle;
 	
 	private float[] mColor;
 	private List<ALight> mLights;
@@ -57,29 +56,29 @@ public class VertexShader extends AShader {
 
 		// -- uniforms
 
-		muMVPMatrix = (RMat4) addUniform(DefaultVar.U_MVP_MATRIX, DataType.MAT4);
-		muNormalMatrix = (RMat3) addUniform(DefaultVar.U_NORMAL_MATRIX, DataType.MAT3);
-		muModelMatrix = (RMat4) addUniform(DefaultVar.U_MODEL_MATRIX, DataType.MAT4);
-		muViewMatrix = (RMat4) addUniform(DefaultVar.U_VIEW_MATRIX, DataType.MAT4);
-		muColor = (RVec4) addUniform(DefaultVar.U_COLOR, DataType.VEC4);
+		muMVPMatrix = (RMat4) addUniform(DefaultVar.U_MVP_MATRIX);
+		muNormalMatrix = (RMat3) addUniform(DefaultVar.U_NORMAL_MATRIX);
+		muModelMatrix = (RMat4) addUniform(DefaultVar.U_MODEL_MATRIX);
+		muViewMatrix = (RMat4) addUniform(DefaultVar.U_VIEW_MATRIX);
+		muColor = (RVec4) addUniform(DefaultVar.U_COLOR);
 
 		// -- attributes
 
-		maTextureCoord = (RVec2) addAttribute(DefaultVar.A_TEXTURE_COORD, DataType.VEC2);
-		maNormal = (RVec3) addAttribute(DefaultVar.A_NORMAL, DataType.VEC3);
-		maPosition = (RVec4) addAttribute(DefaultVar.A_POSITION, DataType.VEC4);
+		maTextureCoord = (RVec2) addAttribute(DefaultVar.A_TEXTURE_COORD);
+		maNormal = (RVec3) addAttribute(DefaultVar.A_NORMAL);
+		maPosition = (RVec4) addAttribute(DefaultVar.A_POSITION);
 
 		// -- varyings
 
-		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD, DataType.VEC2);
-		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL, DataType.VEC3);
-		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR, DataType.VEC4);
+		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD);
+		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL);
+		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR);
 
 		// -- globals
 
-		mgPosition = (RVec4) addGlobal(DefaultVar.G_POSITION, DataType.VEC4);
-		mgNormal = (RVec3) addGlobal(DefaultVar.G_NORMAL, DataType.VEC3);
-		mgColor = (RVec4) addGlobal(DefaultVar.G_COLOR, DataType.VEC4);
+		mgPosition = (RVec4) addGlobal(DefaultVar.G_POSITION);
+		mgNormal = (RVec3) addGlobal(DefaultVar.G_NORMAL);
+		mgColor = (RVec4) addGlobal(DefaultVar.G_COLOR);
 	}
 
 	@Override
