@@ -5,7 +5,6 @@ import java.util.List;
 import rajawali.lights.ALight;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.fragments.specular.PhongFragmentShaderFragment;
-import rajawali.materials.shaders.fragments.specular.PhongVertexShaderFragment;
 import android.graphics.Color;
 
 
@@ -15,7 +14,6 @@ public abstract class SpecularMethod {
 		private int mSpecularColor;
 		private float mShininess;
 		private List<ALight> mLights;
-		private PhongVertexShaderFragment mVertexShader;
 		private PhongFragmentShaderFragment mFragmentShader;
 		
 		public Phong()
@@ -36,9 +34,7 @@ public abstract class SpecularMethod {
 		
 		public IShaderFragment getVertexShaderFragment()
 		{
-			if(mVertexShader == null)
-				mVertexShader = new PhongVertexShaderFragment();
-			return mVertexShader;
+			return null;
 		}
 		
 		public IShaderFragment getFragmentShaderFragment()

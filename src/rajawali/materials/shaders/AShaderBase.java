@@ -91,6 +91,8 @@ public abstract class AShaderBase {
 			return new RMat3(name);
 		case MAT4:
 			return new RMat4(name);
+		case SAMPLER2D:
+			return new RSampler2D(name);
 		default:
 			return null;
 		}
@@ -384,6 +386,19 @@ public abstract class AShaderBase {
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
 			v.setName(this.mName + ".w");
 			return v;
+		}
+	}
+	
+	protected class RSampler2D extends RVec4
+	{
+		public RSampler2D()
+		{
+			super(DataType.SAMPLER2D);
+		}
+		
+		public RSampler2D(String name)
+		{
+			super(name, DataType.SAMPLER2D);
 		}
 	}
 	

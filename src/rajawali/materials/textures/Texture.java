@@ -26,9 +26,10 @@ public class Texture extends ASingleTexture {
 		super(TextureType.DIFFUSE, textureName);
 	}
 	
-	public Texture(int resourceId)
+	public Texture(String textureName, int resourceId)
 	{
-		super(TextureType.DIFFUSE, resourceId);
+		super(TextureType.DIFFUSE, textureName);
+		setResourceId(resourceId);
 	}
 	
 	public Texture(String textureName, Bitmap bitmap)

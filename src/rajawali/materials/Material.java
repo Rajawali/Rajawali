@@ -9,9 +9,13 @@ import rajawali.lights.ALight;
 import rajawali.materials.methods.IDiffuseMethod;
 import rajawali.materials.methods.ISpecularMethod;
 import rajawali.materials.shaders.FragmentShader;
+import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.VertexShader;
+import rajawali.materials.shaders.fragments.texture.DiffuseTextureFragmentShaderFragment;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.ATexture.TextureType;
+import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Matrix4;
 import rajawali.renderer.AFrameTask;
@@ -57,6 +61,7 @@ public class Material extends AFrameTask {
 	public Material()
 	{
 		mTextureList = new ArrayList<ATexture>();
+		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
 	}
 
 	public void useVertexColors(boolean value)
@@ -114,8 +119,6 @@ public class Material extends AFrameTask {
 		if (!mIsDirty)
 			return;
 		
-		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
-
 		mVertexShader = new VertexShader();
 		mFragmentShader = new FragmentShader();
 
@@ -124,18 +127,54 @@ public class Material extends AFrameTask {
 			mVertexShader.setLights(mLights);
 			mFragmentShader.setLights(mLights);
 
+			//
+			// -- Check textures
+			//
+			
+			List<Texture> diffuseTextures = new ArrayList<Texture>();
+			
+			for(int i=0; i<mTextureList.size(); i++)
+			{
+				ATexture texture = mTextureList.get(i);
+								
+				if(texture.getTextureType() == TextureType.DIFFUSE)
+					diffuseTextures.add((Texture)texture);
+			}
+			
+			if(diffuseTextures.size() > 0)
+			{
+				DiffuseTextureFragmentShaderFragment fragment = new DiffuseTextureFragmentShaderFragment(diffuseTextures);
+				mFragmentShader.addShaderFragment(fragment);
+			}
+			
+			//
+			// -- Diffuse method
+			//
+			
 			if(mDiffuseMethod != null)
 			{
 				mDiffuseMethod.setLights(mLights);
-				mVertexShader.addShaderFragment(mDiffuseMethod.getVertexShaderFragment());
-				mFragmentShader.addShaderFragment(mDiffuseMethod.getFragmentShaderFragment());
+				IShaderFragment fragment = mDiffuseMethod.getVertexShaderFragment();
+				if(fragment != null)
+					mVertexShader.addShaderFragment(fragment);
+				fragment = mDiffuseMethod.getFragmentShaderFragment();
+				mFragmentShader.addShaderFragment(fragment);
 			}
+			
+			//
+			// -- Specular method
+			//
 			
 			if(mSpecularMethod != null)
 			{
 				mSpecularMethod.setLights(mLights);
-				mVertexShader.addShaderFragment(mSpecularMethod.getVertexShaderFragment());
-				mFragmentShader.addShaderFragment(mSpecularMethod.getFragmentShaderFragment());
+				IShaderFragment fragment = mSpecularMethod.getVertexShaderFragment();
+				if(fragment != null)
+					mVertexShader.addShaderFragment(fragment);
+				
+				fragment = mSpecularMethod.getFragmentShaderFragment();
+				if(fragment != null)
+					mFragmentShader.addShaderFragment(fragment);
 			}
 		}		
 		
@@ -264,6 +303,8 @@ public class Material extends AFrameTask {
 
 		TextureManager.getInstance().addTexture(texture);
 		texture.registerMaterial(this);
+		
+		mIsDirty = true;
 		
 		if(mProgramHandle > -1)
 			setTextureParameters(texture);

@@ -498,7 +498,7 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true, false);
 			mNextSkybox.setDoubleSided(true);
-			mSkyboxTexture = new Texture(resourceId);
+			mSkyboxTexture = new Texture("skybox", resourceId);
 			Material material = new Material();
 			material.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(material);

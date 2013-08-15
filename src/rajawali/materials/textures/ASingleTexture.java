@@ -35,6 +35,7 @@ public abstract class ASingleTexture extends ATexture
 	protected Bitmap mBitmap;
 	protected ByteBuffer mByteBuffer;
 	protected int mResourceId;
+	protected float mInfluence = 1.0f;
 
 	protected ASingleTexture()
 	{
@@ -295,5 +296,15 @@ public abstract class ASingleTexture extends ATexture
 		super.setFilterType(filterType);
 		if(mCompressedTexture != null)
 			mCompressedTexture.setFilterType(filterType);
+	}
+	
+	public void setInfluence(float influence)
+	{
+		mInfluence = influence;
+	}
+	
+	public float getInfluence()
+	{
+		return mInfluence;
 	}
 }

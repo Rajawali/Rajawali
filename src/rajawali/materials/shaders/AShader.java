@@ -437,6 +437,16 @@ public abstract class AShader extends AShaderBase {
 		return normalize(value.getName());
 	}
 	
+	public String texture2D(String value1, String value2)
+	{
+		return "texture2D(" + value1 + ", " + value2 + ")";
+	}
+	
+	public String texture2D(ShaderVar value1, ShaderVar value2)
+	{
+		return texture2D(value1.getName(), value2.getName());
+	}
+
 	public String distance(ShaderVar value1, ShaderVar value2)
 	{
 		return "distance(" + value1.getName() + ", " + value2.getName() + ")";
