@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.parser.fbx;
 
 import java.io.BufferedReader;
@@ -14,18 +26,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
 
-import rajawali.BaseObject3D;
 import rajawali.Camera;
+import rajawali.Object3D;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
-import rajawali.materials.Material;
+import rajawali.materials.AMaterial;
+import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.PhongMaterial;
+import rajawali.materials.SimpleMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
-import rajawali.parser.AMeshParser;
+import rajawali.parser.AMeshLoader;
 import rajawali.parser.fbx.FBXValues.Connections.Connect;
 import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
@@ -37,8 +52,7 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
-public class FBXParser extends AMeshParser {
+public class LoaderFBX extends AMeshLoader {
 	private static final char COMMENT = ';';
 	private static final String OBJECT_TYPE = "ObjectType:";
 	private static final String MODEL = "Model:";
@@ -71,7 +85,7 @@ public class FBXParser extends AMeshParser {
 	private Stack<Object> mObjStack;
 	private RajawaliRenderer mRenderer;
 	
-	public FBXParser(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderFBX(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
@@ -79,7 +93,7 @@ public class FBXParser extends AMeshParser {
 		mObjStack.add(mFbx);
 	}
 	
-	public FBXParser(RajawaliRenderer renderer, File file) {
+	public LoaderFBX(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
@@ -87,7 +101,7 @@ public class FBXParser extends AMeshParser {
 		mObjStack.add(mFbx);
 	}
 	
-	public FBXParser(RajawaliRenderer renderer, int resourceId) {
+	public LoaderFBX(RajawaliRenderer renderer, int resourceId) {
 		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
@@ -96,7 +110,7 @@ public class FBXParser extends AMeshParser {
 	}
 	
 	@Override
-	public FBXParser parse() throws ParsingException {
+	public LoaderFBX parse() throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
@@ -241,7 +255,7 @@ public class FBXParser extends AMeshParser {
 	}
 	
 	private void buildMesh(Model model, Stack<ALight> lights) throws TextureException, ParsingException {
-		BaseObject3D o = new BaseObject3D(model.name);
+		Object3D o = new Object3D(model.name);
 		boolean hasUVs = model.layerElementUV.uVIndex != null;
 		
 		int[] vidx 					= model.polygonVertexIndex.data;
@@ -379,9 +393,8 @@ public class FBXParser extends AMeshParser {
 		}
 		indices.clear();
 		indices = null;
-		
-		o.setMaterial(getMaterialForMesh(o, model.name));
-		// TODO o.getMaterial().useSingleColor(true);
+		// TODO o.setMaterial(getMaterialForMesh(o, model.name));
+		// TODO o.getMaterial().setUseSingleColor(true);
 		o.setLights(lights);
 		setMeshTextures(o, model.name);
 		
@@ -416,7 +429,7 @@ public class FBXParser extends AMeshParser {
 	    return ret;
 	}
 	
-	private void setMeshTextures(BaseObject3D o, String name) throws TextureException, ParsingException {
+	private void setMeshTextures(Object3D o, String name) throws TextureException, ParsingException {
 		Stack<FBXValues.Objects.Texture> textures = mFbx.objects.textures;
 		Stack<Connect> connections = mFbx.connections.connections;
 		int numTex = textures.size();
@@ -451,8 +464,8 @@ public class FBXParser extends AMeshParser {
 		}
 	}
 	
-	private Material getMaterialForMesh(BaseObject3D o, String name) {
-		Material mat = new Material();
+	private AMaterial getMaterialForMesh(Object3D o, String name) {
+		AMaterial mat = new SimpleMaterial();
 		FBXMaterial material = null;
 		Stack<Connect> conns = mFbx.connections.connections;
 		int num = conns.size();
@@ -475,8 +488,7 @@ public class FBXParser extends AMeshParser {
 				}
 			}
 		}
-		// TODO
-		/*
+		
 		if(material != null) {
 			if(material.shadingModel.equals("lambert") || material.shadingModel.equals("phong")) {
 				PhongMaterial phong = new PhongMaterial();
@@ -496,7 +508,7 @@ public class FBXParser extends AMeshParser {
 				mat = diffuse;
 			}
 		}
-		*/
+		
 		return mat;
 	}
 	

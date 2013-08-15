@@ -272,19 +272,58 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
 			v.setName(this.mName + ".xyz");
+			v.mInitialized = true;
+			return v;
+		}
+		
+		public ShaderVar rgb()
+		{
+			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			v.setName(this.mName + ".rgb");
+			v.mInitialized = true;
+			return v;
+		}
+		
+		public ShaderVar r()
+		{
+			ShaderVar v = new RFloat();
+			v.setName(this.mName + ".r");
+			v.mInitialized = true;
+			return v;
+		}
+		
+		public ShaderVar g()
+		{
+			ShaderVar v = new RFloat();
+			v.setName(this.mName + ".g");
+			v.mInitialized = true;
+			return v;
+		}
+		
+		public ShaderVar b()
+		{
+			ShaderVar v = new RFloat();
+			v.setName(this.mName + ".b");
+			v.mInitialized = true;
 			return v;
 		}
 		
 		public ShaderVar z()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = new RFloat();
 			v.setName(this.mName + ".z");
+			v.mInitialized = true;
 			return v;
 		}
 		
 		public void assign(float value)
 		{
 			assign("vec3(" + Float.toString(value) + ")");
+		}
+		
+		public void assign(float value1, float value2, float value3)
+		{
+			assign("vec3(" +Float.toString(value1)+ ", " +Float.toString(value2)+ ", " +Float.toString(value3)+ ")");
 		}
 	}
 	
@@ -563,6 +602,7 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
 			v.setValue(this.mName + " - " + value.getName());
+			v.setName(v.getValue());
 			return v;
 		}
 		
@@ -603,6 +643,16 @@ public abstract class AShaderBase {
 		public void assign(String value)
 		{
 			writeAssign(value);
+		}
+		
+		public void assignAdd(ShaderVar value)
+		{
+			assignAdd(value.getName());
+		}
+		
+		public void assignAdd(String value)
+		{
+			mShaderSB.append(mName).append(" += ").append(value).append(";\n");
 		}
 		
 		public void assign(float value)

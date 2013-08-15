@@ -2,9 +2,15 @@ package rajawali.materials.shaders.fragments;
 
 import java.util.List;
 
+import android.opengl.GLES20;
+
 import rajawali.lights.ALight;
+import rajawali.lights.DirectionalLight;
+import rajawali.lights.PointLight;
+import rajawali.lights.SpotLight;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
+import rajawali.util.ArrayUtils;
 
 public class LightsVertexShaderFragment extends AShader implements IShaderFragment {
 
@@ -19,8 +25,11 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		U_SPOT_EXPONENT("uSpotExponent", DataType.FLOAT),
 		U_SPOT_CUTOFF_ANGLE("uSpotCutoffAngle", DataType.FLOAT),
 		U_SPOT_FALLOFF("uSpotFalloff", DataType.FLOAT),
+		U_AMBIENT_COLOR("uAmbientColor", DataType.VEC3),
+		U_AMBIENT_INTENSITY("uAmbientIntensity", DataType.VEC3),
 		V_LIGHT_ATTENUATION("vLightAttenuation", DataType.FLOAT),
 		V_EYE("vEye", DataType.VEC4),
+		V_AMBIENT_COLOR("vAmbientColor", DataType.VEC3),
 		G_LIGHT_DISTANCE("gLightDistance", DataType.FLOAT),
 		G_LIGHT_DIRECTION("gLightDirection", DataType.VEC3);
 
@@ -42,6 +51,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 	}
 
 	private RVec3[] muLightColor, muLightPosition, muLightDirection;
+	private RVec3 muAmbientColor, muAmbientIntensity, mvAmbientColor;
 	private RVec4[] muLightAttenuation;
 	private RFloat[] muLightPower, muSpotExponent, muSpotCutoffAngle, muSpotFalloff;
 
@@ -53,15 +63,21 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 	private int[] muLightColorHandles, muLightPowerHandles, muLightPositionHandles,
 			muLightDirectionHandles, muLightAttenuationHandles, muSpotExponentHandles,
 			muSpotCutoffAngleHandles, muSpotFalloffHandles;
+	protected int muAmbientColorHandle, muAmbientIntensityHandle;
 
 	private int mDirLightCount, mSpotLightCount, mPointLightCount;
 
 	private List<ALight> mLights;
+	protected final float[] mTemp3Floats = new float[3];
+	protected final float[] mTemp4Floats = new float[4];
+	protected float[] mAmbientColor, mAmbientIntensity;
 
 	public LightsVertexShaderFragment(List<ALight> lights)
 	{
 		super(ShaderType.VERTEX_SHADER_FRAGMENT);
 		mLights = lights;
+		mAmbientColor = new float[] {.2f, .2f, .2f};
+		mAmbientIntensity = new float[] {.3f, .3f, .3f};	
 		initialize();
 	}
 
@@ -140,17 +156,26 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 				spotCount++;
 			}
 		}
+		
+		muAmbientColor = (RVec3) addUniform(LightsShaderVar.U_AMBIENT_COLOR, DataType.VEC3);
+		muAmbientIntensity = (RVec3) addUniform(LightsShaderVar.U_AMBIENT_INTENSITY, DataType.VEC3);
+		mvAmbientColor = (RVec3) addVarying(LightsShaderVar.V_AMBIENT_COLOR, DataType.VEC3);
 	}
 
 	@Override
 	public void main() {
 		int lightAttCount = 0;
+		RMat4 modelMatrix = (RMat4) getGlobal(DefaultVar.U_MODEL_MATRIX);
+		RVec4 position = (RVec4) getGlobal(DefaultVar.G_POSITION);
+		
+		mvEye.assign(enclose(modelMatrix.multiply(position)).multiply(-1.0f));
+		mvAmbientColor.rgb().assign(muAmbientColor.rgb().multiply(muAmbientIntensity.rgb()));
 
 		for (int i = 0; i < mLights.size(); i++)
 		{
 			ALight light = mLights.get(i);
 			int t = light.getLightType();
-
+			
 			if(t == ALight.SPOT_LIGHT || t == ALight.POINT_LIGHT)
 			{
 				//
@@ -219,9 +244,51 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 				muSpotFalloffHandles[spotCount] = getUniformLocation(programHandle, LightsShaderVar.U_SPOT_FALLOFF, spotCount);
 				spotCount++;
 			}
+			
+			muAmbientColorHandle = getUniformLocation(programHandle, LightsShaderVar.U_AMBIENT_COLOR);
+			muAmbientIntensityHandle = getUniformLocation(programHandle, LightsShaderVar.U_AMBIENT_INTENSITY);
 		}
 	}
 
 	@Override
-	public void applyParams() {}
+	public void applyParams() {
+		super.applyParams();
+		
+		int lightCount = mLights.size();
+		int dirCount = 0, spotCount = 0, attCount = 0;
+		
+		for (int i = 0; i < lightCount; i++)
+		{
+			ALight light = mLights.get(i);
+			int t = light.getLightType();
+			
+			GLES20.glUniform3fv(muLightColorHandles[i], 1, light.getColor(), 0);
+			GLES20.glUniform1f(muLightPowerHandles[i], light.getPower());
+			GLES20.glUniform3fv(muLightPositionHandles[i], 1, ArrayUtils.convertDoublesToFloats(light.getPositionArray(), mTemp3Floats), 0);
+			
+			if(t == ALight.SPOT_LIGHT)
+			{
+				SpotLight l = (SpotLight)light;
+				GLES20.glUniform3fv(muLightDirectionHandles[spotCount], 1, ArrayUtils.convertDoublesToFloats(l.getDirection(), mTemp3Floats), 0);
+				GLES20.glUniform4fv(muLightAttenuationHandles[attCount], 1, l.getAttenuation(), 0);
+				//GLES20.glUniform1f(muSpotExponentHandles[spotCount], l.get)
+				GLES20.glUniform1f(muSpotCutoffAngleHandles[spotCount], l.getCutoffAngle());
+				GLES20.glUniform1f(muSpotFalloffHandles[spotCount], l.getFalloff());
+				spotCount++;
+				dirCount++;
+				attCount++;
+			} else if(t == ALight.POINT_LIGHT) {
+				PointLight l = (PointLight)light;
+				GLES20.glUniform4fv(muLightAttenuationHandles[attCount], 1, l.getAttenuation(), 0);
+				attCount++;
+			} else if(t == ALight.DIRECTIONAL_LIGHT) {
+				DirectionalLight l = (DirectionalLight)light;
+				GLES20.glUniform3fv(muLightDirectionHandles[dirCount], 1, ArrayUtils.convertDoublesToFloats(l.getDirection(), mTemp3Floats), 0);
+				dirCount++;
+			}
+		}
+		
+		GLES20.glUniform3fv(muAmbientColorHandle, 1, mAmbientColor, 0);
+		GLES20.glUniform3fv(muAmbientIntensityHandle, 1, mAmbientIntensity, 0);
+	}
 }

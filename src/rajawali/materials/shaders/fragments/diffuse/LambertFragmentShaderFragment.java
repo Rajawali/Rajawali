@@ -37,13 +37,13 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 		RVec3 normal = (RVec3)getGlobal(DefaultVar.V_NORMAL);
 		RFloat power = new RFloat("power");
 		power.assign(0.0f);
-		RFloat intensity = new RFloat("intensity");
-		intensity.assign(0.0f);
 		
 		for (int i = 0; i < mLights.size(); i++)
 		{
 			RFloat attenuation = (RFloat)getGlobal(LightsShaderVar.V_LIGHT_ATTENUATION, i);
 			RFloat lightPower = (RFloat)getGlobal(LightsShaderVar.U_LIGHT_POWER, i);
+			RVec3 lightColor = (RVec3)getGlobal(LightsShaderVar.U_LIGHT_COLOR, i);
+			
 			RVec3 lightDir = new RVec3("lightDir" + i);
 			//
 			// -- NdotL = max(dot(vNormal, lightDir), 0.1);
@@ -54,13 +54,12 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 			//
 			power.assign(lightPower.multiply(nDotL).multiply(attenuation));
 			//
-			// -- intensity += power;
-			//
-			intensity.assign(intensity.add(power));
-			//
 			// -- diffuse.rgb += uLightColor * power;
 			//
-			diffuse.assign(diffuse.add(lightPower).multiply(power));
+			diffuse.assignAdd(lightColor.multiply(power));
 		}
+		RVec4 color = (RVec4) getGlobal(DefaultVar.G_COLOR);
+		RVec3 ambientColor = (RVec3) getGlobal(LightsShaderVar.V_AMBIENT_COLOR);
+		color.rgb().assign(enclose(diffuse.multiply(color.rgb())).add(ambientColor));
 	}
 }

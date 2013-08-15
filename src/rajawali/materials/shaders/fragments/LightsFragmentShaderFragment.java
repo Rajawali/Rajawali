@@ -13,14 +13,10 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 	
 	private List<ALight> mLights;
 	
-	private RVec3[] muLightPosition, muLightDirection;
+	private RVec3[] muLightColor, muLightPosition, muLightDirection;
 	private RFloat[] mvAttenuation;
-	//private RVec3 mgLightDirection;
 	private RVec4 mvEye;
 	private RFloat[] muLightPower, muSpotCutoffAngle, muSpotFalloff;
-	
-	private int[] muLightPositionHandles, muLightDirectionHandles, muSpotCutoffAngleHandles,
-		muSpotFalloffHandles, muLightPowerHandles;
 	
 	public LightsFragmentShaderFragment(List<ALight> lights) {
 		super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
@@ -47,20 +43,11 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 		}
 		
 		muLightPosition = new RVec3[lightCount];
-		muLightPositionHandles = new int[muLightPosition.length];
-		
+		muLightColor = new RVec3[lightCount];
 		muLightPower = new RFloat[lightCount];
-		muLightPowerHandles = new int[muLightPower.length];
-		
 		muLightDirection = new RVec3[dirLightCount + spotLightCount];
-		muLightDirectionHandles = new int[muLightDirection.length];
-		
 		muSpotCutoffAngle = new RFloat[spotLightCount];
-		muSpotCutoffAngleHandles = new int[muSpotCutoffAngle.length];
-		
 		muSpotFalloff = new RFloat[spotLightCount];
-		muSpotFalloffHandles = new int[muSpotFalloff.length];
-
 		mvAttenuation = new RFloat[lightCount];
 
 		//mgLightDirection = (RVec3) addGlobal(LightsShaderVar.G_LIGHT_DIRECTION, DataType.VEC3);
@@ -77,6 +64,7 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 
 			muLightPosition[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_POSITION, i, DataType.VEC3);
 			muLightPower[i] = (RFloat) addUniform(LightsShaderVar.U_LIGHT_POWER, i, DataType.FLOAT);
+			muLightColor[i] = (RVec3) addUniform(LightsShaderVar.U_LIGHT_COLOR, i, DataType.VEC3);
 			
 			if(t == ALight.DIRECTIONAL_LIGHT || t == ALight.SPOT_LIGHT)
 			{
@@ -91,6 +79,8 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 			}
 			mvAttenuation[i] = (RFloat) addVarying(LightsShaderVar.V_LIGHT_ATTENUATION, i, DataType.FLOAT);
 		}
+		
+		addVarying(LightsShaderVar.V_AMBIENT_COLOR, DataType.VEC3);
 	}
 	
 	@Override
@@ -134,14 +124,20 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 							//
 							// -- spotFactor = (1.0 - (1.0 - spotFactor * 1.0 / (1.0 - cos(radians(uSpotCutoffAngle))));
 							//
-							spotFactor.assign(multiply(spotFactor, divide(1.0f, subtract(1.0f, cos(radians(muSpotCutoffAngle[spotCount]))))));
-							spotFactor.assign(subtract(1.0f, spotFactor));
-							spotFactor.assign(subtract(1.0f, spotFactor));
-
+							RFloat exponent = new RFloat("exponent");
+							exponent.assign(subtract(1.0f, cos(radians(muSpotCutoffAngle[spotCount]))));
+							exponent.assign(divide(1.0f, exponent));
+							
+							RFloat facInv = new RFloat("facInv");
+							facInv.assign(subtract(1, spotFactor));
+							
+							exponent.assign(facInv.multiply(exponent));
+							exponent.assign(subtract(1, exponent));
+							
 							//
 							// -- spotFactor = pow(spotFactor, uSpotFalloff * 1.0 / spotFactor");
 							//
-							spotFactor.assign(pow(spotFactor, multiply(muSpotFalloff[spotCount], divide(1.0f, spotFactor))));
+							spotFactor.assign(pow(exponent, multiply(muSpotFalloff[spotCount], divide(1.0f, exponent))));
 						}
 						ifelse();
 						{
@@ -156,7 +152,7 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 						//
 						lightDir.assign(multiply(castVec3(lightDir.x(), lightDir.y(), lightDir.z()), spotFactor));
 					}
-					endif();				
+					endif();
 
 					spotCount++;
 				}				
@@ -182,7 +178,5 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 
 	@Override
 	public void applyParams() {
-		// TODO Auto-generated method stub
-		
 	}
 }

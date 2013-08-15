@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import rajawali.util.RajLog;
+
 import android.opengl.GLES20;
 
 
@@ -167,7 +169,7 @@ public abstract class AShader extends AShaderBase {
 		return c;
 	}
 	
-	public void setLocations(int programHandle)
+	public void setLocations(final int programHandle)
 	{
 		if(mShaderFragments != null)
 			for(int i=0; i<mShaderFragments.size(); i++)
@@ -183,7 +185,9 @@ public abstract class AShader extends AShaderBase {
 	}
 	
 	protected int getUniformLocation(int programHandle, String name) {
-		return GLES20.glGetUniformLocation(programHandle, name);
+		int result = GLES20.glGetUniformLocation(programHandle, name);
+		RajLog.i("GLES20.glGetUniformLocation(" +programHandle +", " +name+ "): " + result);
+		return result;
 	}
 
 	protected int getAttribLocation(int programHandle, IGlobalShaderVar var) {
@@ -195,7 +199,9 @@ public abstract class AShader extends AShaderBase {
 	}
 	
 	protected int getAttribLocation(int programHandle, String name) {
-		return GLES20.glGetAttribLocation(programHandle, name);
+		int result = GLES20.glGetAttribLocation(programHandle, name);
+		RajLog.i("GLES20.glGetAttribLocation(" +programHandle +", " +name+ "): " + result);
+		return result;
 	}
 	
 	public void addShaderFragment(IShaderFragment fragment)
@@ -397,6 +403,11 @@ public abstract class AShader extends AShaderBase {
 		return multiply(value1.getName(), value2);
 	}
 	
+	public String multiply(ShaderVar value1, ShaderVar value2)
+	{
+		return multiply(value1.getName(), value2.getName());
+	}
+	
 	public String multiply(String value1, String value2)
 	{
 		return value1 + " * " + value2;
@@ -419,7 +430,7 @@ public abstract class AShader extends AShaderBase {
 	
 	public String normalize(ShaderVar value)
 	{
-		return normalize(value.getValue());
+		return normalize(value.getName());
 	}
 	
 	public String distance(ShaderVar value1, ShaderVar value2)
@@ -511,9 +522,18 @@ public abstract class AShader extends AShaderBase {
 		mShaderSB.append("}\n");
 	}
 	
-	public String castVec3(ShaderVar x, ShaderVar y, ShaderVar z)
+	public ShaderVar castVec3(ShaderVar x, ShaderVar y, ShaderVar z)
 	{
-		return "vec3(" + x.getName() + ", " + y.getName() + ", " + z.getName() + ")";
+		ShaderVar v = new ShaderVar("vec3(" + x.getName() + ", " + y.getName() + ", " + z.getName() + ")", DataType.VEC3);
+		v.mInitialized = true;
+		return v;
+	}
+	
+	public ShaderVar castVec3(ShaderVar var)
+	{
+		ShaderVar v = new ShaderVar("vec3(" + var.getName() + ")", DataType.VEC3);
+		v.mInitialized = true;
+		return v;
 	}
 	
 	public ShaderVar enclose(ShaderVar value)

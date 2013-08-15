@@ -12,6 +12,7 @@ import rajawali.materials.shaders.VertexShader;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.TextureManager;
+import rajawali.math.Matrix4;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -48,6 +49,8 @@ public class Material extends AFrameTask {
 	 */
 	private int mMaxTextures;
 	protected ArrayList<ATexture> mTextureList;
+	protected final float[] mNormalFloats = new float[9];
+	protected Matrix4 mNormalMatrix = new Matrix4();
 
 	public Material()
 	{
@@ -118,14 +121,14 @@ public class Material extends AFrameTask {
 		{
 			mVertexShader.setLights(mLights);
 			mFragmentShader.setLights(mLights);
-		}
-		
-		if(mDiffuseMethod != null)
-		{
-			mDiffuseMethod.setLights(mLights);
-			mVertexShader.addShaderFragment(mDiffuseMethod.getVertexShaderFragment());
-			mFragmentShader.addShaderFragment(mDiffuseMethod.getFragmentShaderFragment());
-		}
+
+			if(mDiffuseMethod != null)
+			{
+				mDiffuseMethod.setLights(mLights);
+				mVertexShader.addShaderFragment(mDiffuseMethod.getVertexShaderFragment());
+				mFragmentShader.addShaderFragment(mDiffuseMethod.getFragmentShaderFragment());
+			}
+		}		
 		
 		mVertexShader.buildShader();
 		mFragmentShader.buildShader();
@@ -140,12 +143,12 @@ public class Material extends AFrameTask {
 			return;
 		}
 
+		/*
 		for(int i=0; i<mTextureList.size(); i++)
 			setTextureParameters(mTextureList.get(i));
-		
+		*/
 		mVertexShader.setLocations(mProgramHandle);
-		mFragmentShader.setLocations(mProgramHandle);
-
+		//mFragmentShader.setLocations(mProgramHandle);
 
 		mIsDirty = false;
 	}
@@ -203,12 +206,10 @@ public class Material extends AFrameTask {
 		{
 			createShaders();
 		}
+		GLES20.glUseProgram(mProgramHandle);
 
 		mVertexShader.setColor(mColor);
 		mVertexShader.applyParams();
-		mFragmentShader.applyParams();
-		
-		GLES20.glUseProgram(mProgramHandle);
 	}
 	
 	private void setTextureParameters(ATexture texture) {
@@ -294,18 +295,27 @@ public class Material extends AFrameTask {
 		return mModelMatrix;
 	}
 
-	public void setMVPMatrix(float[] mvpMatrix) {
-		mVertexShader.setMVPMatrix(mvpMatrix);
+	public void setMVPMatrix(Matrix4 mvpMatrix) {
+		mVertexShader.setMVPMatrix(mvpMatrix.getFloatValues());
 	}
 
-	public void setModelMatrix(float[] modelMatrix) {
-		mModelMatrix = modelMatrix;
-		mVertexShader.setModelMatrix(modelMatrix);
+	public void setModelMatrix(Matrix4 modelMatrix) {
+		mModelMatrix = modelMatrix.getFloatValues();
+		mVertexShader.setModelMatrix(mModelMatrix);
+		
+		mNormalMatrix.setAll(modelMatrix).setToNormalMatrix();
+		float[] matrix = mNormalMatrix.getFloatValues();
+		
+		mNormalFloats[0] = matrix[0]; mNormalFloats[1] = matrix[1]; mNormalFloats[2] = matrix[2];
+		mNormalFloats[3] = matrix[4]; mNormalFloats[4] = matrix[5]; mNormalFloats[5] = matrix[6];
+		mNormalFloats[6] = matrix[8]; mNormalFloats[7] = matrix[9]; mNormalFloats[8] = matrix[10];
+
+		mVertexShader.setNormalMatrix(mNormalFloats);
 	}
 
-	public void setViewMatrix(float[] viewMatrix) {
-		mViewMatrix = viewMatrix;
-		mVertexShader.setViewMatrix(viewMatrix);
+	public void setViewMatrix(Matrix4 viewMatrix) {
+		mViewMatrix = viewMatrix.getFloatValues();
+		mVertexShader.setViewMatrix(mViewMatrix);
 	}
 
 	public void enableLighting(boolean value) {

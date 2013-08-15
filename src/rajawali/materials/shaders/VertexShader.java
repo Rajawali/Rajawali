@@ -112,8 +112,10 @@ public class VertexShader extends AShader {
 	}
 
 	@Override
-	public void setLocations(int programHandle) {
-		super.setLocations(programHandle);
+	public void setLocations(final int programHandle) {
+		maTextureCoordHande = getAttribLocation(programHandle, DefaultVar.A_TEXTURE_COORD);
+		maNormalHandle = getAttribLocation(programHandle, DefaultVar.A_NORMAL);
+		maPositionHandle = getAttribLocation(programHandle, DefaultVar.A_POSITION);
 		
 		muMVPMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MVP_MATRIX);
 		muNormalMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_NORMAL_MATRIX);
@@ -121,9 +123,7 @@ public class VertexShader extends AShader {
 		muViewMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_VIEW_MATRIX);
 		muColorHandle = getUniformLocation(programHandle, DefaultVar.U_COLOR);
 
-		maTextureCoordHande = getAttribLocation(programHandle, DefaultVar.A_TEXTURE_COORD);
-		maNormalHandle = getAttribLocation(programHandle, DefaultVar.A_NORMAL);
-		maPositionHandle = getAttribLocation(programHandle, DefaultVar.A_POSITION);
+		super.setLocations(programHandle);
 	}
 
 	public void setVertices(final int vertexBufferHandle) {
@@ -151,6 +151,10 @@ public class VertexShader extends AShader {
 
 	public void setModelMatrix(float[] modelMatrix) {
 		GLES20.glUniformMatrix4fv(muModelMatrixHandle, 1, false, modelMatrix, 0);
+	}
+	
+	public void setNormalMatrix(float[] normalMatrix) {
+		GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, normalMatrix, 0);
 	}
 
 	public void setViewMatrix(float[] viewMatrix) {
