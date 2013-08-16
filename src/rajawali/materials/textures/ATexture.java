@@ -132,6 +132,7 @@ public abstract class ATexture extends AFrameTask {
 	 * fully qualified name of the {@link RajawaliRenderer} instance.  
 	 */
 	protected String mOwnerIdentity;
+	protected float mInfluence = 1.0f;
 	
 	/**
 	 * Creates a new ATexture instance with the specified texture type
@@ -426,6 +427,16 @@ public abstract class ATexture extends AFrameTask {
 				return true;
 		}
 		return false;
+	}
+	
+	public void setInfluence(float influence)
+	{
+		mInfluence = influence;
+	}
+	
+	public float getInfluence()
+	{
+		return mInfluence;
 	}
 	
 	public void setCompressedTexture(ACompressedTexture compressedTexture)

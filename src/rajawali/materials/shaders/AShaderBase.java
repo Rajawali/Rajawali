@@ -31,6 +31,7 @@ public abstract class AShaderBase {
 	public static enum DefaultVar implements IGlobalShaderVar {
 		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), 
 		U_VIEW_MATRIX("uViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4), U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT),
+		U_INFLUENCE("uInfluence", DataType.FLOAT),
 		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3),
 		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_NORMAL("vNormal", DataType.VEC3), V_COLOR("vColor", DataType.VEC4),
 		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4);
@@ -669,6 +670,21 @@ public abstract class AShaderBase {
 		public void assignAdd(String value)
 		{
 			mShaderSB.append(mName).append(" += ").append(value).append(";\n");
+		}
+		
+		public void assignSubtract(ShaderVar value)
+		{
+			assignSubtract(value.getName());
+		}
+		
+		public void assignSubtract(float value)
+		{
+			assignSubtract(Float.toString(value));
+		}
+		
+		public void assignSubtract(String value)
+		{
+			mShaderSB.append(mName).append(" -= ").append(value).append(";\n");
 		}
 		
 		public void assignMultiply(ShaderVar value)

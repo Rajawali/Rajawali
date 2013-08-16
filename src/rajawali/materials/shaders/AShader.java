@@ -69,6 +69,11 @@ public abstract class AShader extends AShaderBase {
 		return addUniform(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
 	
+	protected ShaderVar addUniform(IGlobalShaderVar var, String suffix)
+	{
+		return addUniform(var.getVarString() + suffix, var.getDataType());
+	}
+	
 	protected ShaderVar addUniform(String name, DataType dataType)
 	{
 		ShaderVar v = getInstanceForDataType(name, dataType);
@@ -147,12 +152,16 @@ public abstract class AShader extends AShaderBase {
 	
 	public ShaderVar getGlobal(IGlobalShaderVar var)
 	{
-		return getInstanceForDataType(var.getVarString(), var.getDataType());
+		ShaderVar v = getInstanceForDataType(var.getVarString(), var.getDataType());
+		v.mInitialized = true;
+		return v;
 	}
 	
 	public ShaderVar getGlobal(IGlobalShaderVar var, int index)
 	{
-		return getInstanceForDataType(var.getVarString() + Integer.toString(index), var.getDataType());
+		ShaderVar v = getInstanceForDataType(var.getVarString() + Integer.toString(index), var.getDataType());
+		v.mInitialized = true;
+		return v;
 	}
 	
 	protected Constant addConst(String name, int value) {
@@ -186,6 +195,10 @@ public abstract class AShader extends AShaderBase {
 	
 	protected int getUniformLocation(int programHandle, IGlobalShaderVar var, int index) {
 		return getUniformLocation(programHandle, var.getVarString() + Integer.toString(index));
+	}
+	
+	protected int getUniformLocation(int programHandle, IGlobalShaderVar var, String suffix) {
+		return getUniformLocation(programHandle, var.getVarString() + suffix);
 	}
 	
 	protected int getUniformLocation(int programHandle, String name) {
@@ -548,11 +561,16 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
-	public ShaderVar castVec3(ShaderVar var)
+	public ShaderVar castVec3(String var)
 	{
-		ShaderVar v = new ShaderVar("vec3(" + var.getName() + ")", DataType.VEC3);
+		ShaderVar v = new ShaderVar("vec3(" + var + ")", DataType.VEC3);
 		v.mInitialized = true;
 		return v;
+	}
+	
+	public ShaderVar castVec3(ShaderVar var)
+	{
+		return castVec3(var.getVarName());
 	}
 	
 	public ShaderVar enclose(ShaderVar value)
