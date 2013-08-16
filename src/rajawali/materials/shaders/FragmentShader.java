@@ -3,18 +3,22 @@ package rajawali.materials.shaders;
 import java.util.List;
 
 import rajawali.lights.ALight;
-import rajawali.materials.shaders.AShaderBase.DefaultVar;
-import rajawali.materials.shaders.AShaderBase.RVec3;
 import rajawali.materials.shaders.fragments.LightsFragmentShaderFragment;
+import android.opengl.GLES20;
 
 
 public class FragmentShader extends AShader {
+	private RFloat muColorInfluence;
+	
 	private RVec2 mvTextureCoord;
 	private RVec3 mvNormal;
 	private RVec4 mvColor;
 	
 	private RVec4 mgColor;
 	private RVec3 mgNormal;
+	
+	private int muColorInfluenceHandle;
+	private float mColorInfluence;
 	
 	private List<ALight> mLights;
 	
@@ -33,7 +37,7 @@ public class FragmentShader extends AShader {
 		
 		// -- uniforms
 		
-		
+		muColorInfluence = (RFloat) addUniform(DefaultVar.U_COLOR_INFLUENCE);
 		
 		// -- varyings
 		
@@ -66,11 +70,15 @@ public class FragmentShader extends AShader {
 	public void applyParams()
 	{
 		super.applyParams();
+		
+		GLES20.glUniform1f(muColorInfluenceHandle, mColorInfluence);
 	}
 	
 	@Override
 	public void setLocations(int programHandle) {
 		super.setLocations(programHandle);
+		
+		muColorInfluenceHandle = getUniformLocation(programHandle, DefaultVar.U_COLOR_INFLUENCE);
 	}
 	
 	public void setLights(List<ALight> lights)
@@ -80,5 +88,13 @@ public class FragmentShader extends AShader {
 		if(frag != null)
 			mShaderFragments.remove(frag);
 		addShaderFragment(new LightsFragmentShaderFragment(mLights));
+	}
+	
+	public void setColorInfluence(float influence) {
+		mColorInfluence = influence;
+	}
+	
+	public float getColorInfluence() {
+		return mColorInfluence;
 	}
 }

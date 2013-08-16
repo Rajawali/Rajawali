@@ -42,6 +42,7 @@ public class Material extends AFrameTask {
 	private float[] mModelMatrix;
 	private float[] mViewMatrix;
 	private int mColor;
+	private float mColorInfluence = 0;
 
 	protected List<ALight> mLights;
 
@@ -79,6 +80,14 @@ public class Material extends AFrameTask {
 	
 	public int getColor() {
 		return mColor;
+	}
+	
+	public void setColorInfluence(float influence) {
+		mColorInfluence = influence;		
+	}
+	
+	public float getColorInfluence() {
+		return mColorInfluence;
 	}
 
 	public boolean usingVertexColors()
@@ -258,6 +267,8 @@ public class Material extends AFrameTask {
 
 		mVertexShader.setColor(mColor);
 		mVertexShader.applyParams();
+		
+		mFragmentShader.setColorInfluence(mColorInfluence);
 		mFragmentShader.applyParams();
 	}
 	

@@ -51,10 +51,16 @@ public class DiffuseTextureFragmentShaderFragment extends AShader implements ISh
 	public void main() {
 		RVec4 color = (RVec4)getGlobal(DefaultVar.G_COLOR);
 		RVec2 textureCoord = (RVec2)getGlobal(DefaultVar.V_TEXTURE_COORD);
+		RFloat colorInfluence = (RFloat)getGlobal(DefaultVar.U_COLOR_INFLUENCE);
+		RVec4 texColor = new RVec4("texColor");
+		
+		color.assign(colorInfluence.multiply(color));
 		
 		for(int i=0; i<mTextures.size(); i++)
 		{
-			color.assign(texture2D(muTextures[i], textureCoord));
+			texColor.assign(texture2D(muTextures[i], textureCoord));
+			texColor.assignMultiply(mTextures.get(i).getInfluence());
+			color.assignAdd(texColor);
 		}
 	}
 	
