@@ -133,6 +133,9 @@ public abstract class ATexture extends AFrameTask {
 	 */
 	protected String mOwnerIdentity;
 	protected float mInfluence = 1.0f;
+	protected float[] mRepeat = new float[] { 1, 1 };
+	protected boolean mEnableOffset;
+	protected float[] mOffset = new float[] { 0, 0 };
 	
 	/**
 	 * Creates a new ATexture instance with the specified texture type
@@ -437,6 +440,78 @@ public abstract class ATexture extends AFrameTask {
 	public float getInfluence()
 	{
 		return mInfluence;
+	}
+	
+	public void setRepeatU(float value)
+	{
+		mRepeat[0] = value;
+	}
+	
+	public float getRepeatU()
+	{
+		return mRepeat[0];
+	}
+	
+	public void setRepeatV(float value)
+	{
+		mRepeat[1] = value;
+	}
+	
+	public float getRepeatV()
+	{
+		return mRepeat[1];
+	}
+	
+	public void setRepeat(float u, float v)
+	{
+		mRepeat[0] = u;
+		mRepeat[1] = v;
+	}
+	
+	public float[] getRepeat()
+	{
+		return mRepeat;
+	}
+	
+	public void enableOffset(boolean value)
+	{
+		mEnableOffset = value;
+	}
+	
+	public boolean offsetEnabled()
+	{
+		return mEnableOffset;
+	}
+	
+	public void setOffsetU(float value)
+	{
+		mOffset[0] = value;
+	}
+	
+	public float getOffsetU()
+	{
+		return mOffset[0];
+	}
+	
+	public float[] getOffset()
+	{
+		return mOffset;
+	}
+	
+	public void setOffsetV(float value)
+	{
+		mOffset[1] = value;
+	}
+	
+	public float getOffsetV()
+	{
+		return mOffset[1];
+	}
+	
+	public void setOffset(float u, float v)
+	{
+		mOffset[0] = u;
+		mOffset[1] = v;
 	}
 	
 	public void setCompressedTexture(ACompressedTexture compressedTexture)

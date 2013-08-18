@@ -16,6 +16,7 @@ public class FragmentShader extends AShader {
 	
 	private RVec4 mgColor;
 	private RVec3 mgNormal;
+	private RVec2 mgTextureCoord;
 	
 	private int muColorInfluenceHandle;
 	private float mColorInfluence;
@@ -49,12 +50,14 @@ public class FragmentShader extends AShader {
 		
 		mgColor = (RVec4) addGlobal(DefaultVar.G_COLOR);
 		mgNormal = (RVec3) addGlobal(DefaultVar.G_NORMAL);
+		mgTextureCoord = (RVec2) addGlobal(DefaultVar.G_TEXTURE_COORD);
 	}
 	
 	@Override
 	public void main() {
 		mgColor.assign(mvColor);
 		mgNormal.assign(normalize(mvNormal));
+		mgTextureCoord.assign(mvTextureCoord);
 		
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{
