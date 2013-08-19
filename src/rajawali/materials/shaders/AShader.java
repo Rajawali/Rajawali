@@ -450,6 +450,26 @@ public abstract class AShader extends AShaderBase {
 		return normalize(value.getName());
 	}
 	
+	public String sqrt(String value)
+	{
+		return "sqrt(" + value + ")";
+	}
+	
+	public String sqrt(ShaderVar value)
+	{
+		return sqrt(value.getName());
+	}
+
+	public String inversesqrt(String value)
+	{
+		return "inversesqrt(" + value + ")";
+	}
+	
+	public String inversesqrt(ShaderVar value)
+	{
+		return inversesqrt(value.getName());
+	}
+
 	public String texture2D(String value1, String value2)
 	{
 		return "texture2D(" + value1 + ", " + value2 + ")";
@@ -458,6 +478,16 @@ public abstract class AShader extends AShaderBase {
 	public String texture2D(ShaderVar value1, ShaderVar value2)
 	{
 		return texture2D(value1.getName(), value2.getName());
+	}
+
+	public String textureCube(String value1, String value2)
+	{
+		return "textureCube(" + value1 + ", " + value2 + ")";
+	}
+	
+	public String textureCube(ShaderVar value1, ShaderVar value2)
+	{
+		return textureCube(value1.getName(), value2.getName());
 	}
 
 	public String distance(ShaderVar value1, ShaderVar value2)
@@ -524,6 +554,16 @@ public abstract class AShader extends AShaderBase {
 	{
 		return radians(var.getName());
 	}
+	
+	public String reflect(ShaderVar value1, ShaderVar value2)
+	{
+		return reflect(value1.getVarName(), value2.getVarName());
+	}
+	
+	public String reflect(String value1, String value2)
+	{
+		return "reflect(" + value1 + ", " + value2 + ")";
+	}
 
 	public void startif(ShaderVar var, String operator, float value)
 	{
@@ -554,6 +594,40 @@ public abstract class AShader extends AShaderBase {
 		mShaderSB.append("}\n");
 	}
 	
+	public ShaderVar castVec2(float x)
+	{
+		return castVec2(Float.toString(x));
+	}
+	
+	public ShaderVar castVec2(float x, float y)
+	{
+		return castVec2(Float.toString(x), Float.toString(y));
+	}
+		
+	public ShaderVar castVec2(String x, String y)
+	{
+		ShaderVar v = new ShaderVar("vec2(" + x + ", " + y + ")", DataType.VEC2);
+		v.mInitialized = true;
+		return v;
+	}
+	
+	public ShaderVar castVec2(ShaderVar x, ShaderVar y)
+	{
+		return castVec2(x.getVarName(), y.getVarName());
+	}
+	
+	public ShaderVar castVec2(String x)
+	{
+		ShaderVar v = new ShaderVar("vec2(" + x + ")", DataType.VEC2);
+		v.mInitialized = true;
+		return v;
+	}
+	
+	public ShaderVar castVec2(ShaderVar x)
+	{
+		return castVec2(x.getVarName());
+	}
+	
 	public ShaderVar castVec3(ShaderVar x, ShaderVar y, ShaderVar z)
 	{
 		ShaderVar v = new ShaderVar("vec3(" + x.getName() + ", " + y.getName() + ", " + z.getName() + ")", DataType.VEC3);
@@ -573,6 +647,30 @@ public abstract class AShader extends AShaderBase {
 		return castVec3(var.getVarName());
 	}
 	
+	public ShaderVar castVec4(ShaderVar var)
+	{
+		return castVec4(var.getVarName()); 		
+	}
+	
+	public ShaderVar castVec4(String var)
+	{
+		ShaderVar v = new ShaderVar("vec4(" + var + ")", DataType.VEC4);
+		v.mInitialized = true;
+		return v;
+	}
+	
+	public ShaderVar castVec4(ShaderVar var, float value)
+	{
+		return castVec4(var.getVarName(), value);
+	}
+	
+	public ShaderVar castVec4(String var, float value)
+	{
+		ShaderVar v = new ShaderVar("vec4(" + var + ", " + value + ")", DataType.VEC4);
+		v.mInitialized = true;
+		return v;
+	}
+
 	public ShaderVar enclose(ShaderVar value)
 	{
 		ShaderVar var = getReturnTypeForOperation(value.getDataType(), value.getDataType());
@@ -580,20 +678,4 @@ public abstract class AShader extends AShaderBase {
 		var.setName(var.getValue());
 		return var;
 	}
-	
-	/*
-	public RVec4 texture2D(String sampler2D, String coord)
-	{
-		return new RVec4(texture2D())
-	}
-	
-	private String internalTexture2D(String sampler2D, String coord)
-	{
-		return "texture2D("+sampler2D+", "+ coord +")";
-	}
-	
-	vec4 texture2D( sampler2D, vec2 [,float bias] )
-	vec4 texture2DProj( sampler2D, vec3 [,float bias] )
-	vec4 texture2DProj( sampler2D, vec4 [,float bias] )
-	*/
 }

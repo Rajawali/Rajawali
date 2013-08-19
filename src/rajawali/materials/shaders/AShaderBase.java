@@ -32,8 +32,9 @@ public abstract class AShaderBase {
 		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), 
 		U_VIEW_MATRIX("uViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4), U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT),
 		U_INFLUENCE("uInfluence", DataType.FLOAT), U_REPEAT("uRepeat", DataType.VEC2), U_OFFSET("uOffset", DataType.VEC2),
+		U_CAMERA_POSITION("uCamPosition", DataType.VEC3), 
 		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3),
-		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_NORMAL("vNormal", DataType.VEC3), V_COLOR("vColor", DataType.VEC4),
+		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_NORMAL("vNormal", DataType.VEC3), V_COLOR("vColor", DataType.VEC4), V_EYE_DIR("vEyeDir", DataType.VEC3),
 		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4), G_TEXTURE_COORD("gTextureCoord", DataType.VEC2);
 		
 		private String mVarString;
@@ -95,6 +96,8 @@ public abstract class AShaderBase {
 			return new RMat4(name);
 		case SAMPLER2D:
 			return new RSampler2D(name);
+		case SAMPLERCUBE:
+			return new RSamplerCube(name);
 		default:
 			return null;
 		}
@@ -182,6 +185,14 @@ public abstract class AShaderBase {
 		public RVec2(DataType dataType, ShaderVar value)
 		{
 			super(dataType, value);
+		}
+		
+		public ShaderVar xy()
+		{
+			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			v.setName(this.mName + ".xy");
+			v.mInitialized = true;
+			return v;
 		}
 		
 		public ShaderVar x()
@@ -398,9 +409,32 @@ public abstract class AShaderBase {
 			super(DataType.SAMPLER2D);
 		}
 		
+		public RSampler2D(DataType dataType)
+		{
+			super(dataType);
+		}
+		
 		public RSampler2D(String name)
 		{
 			super(name, DataType.SAMPLER2D);
+		}
+		
+		public RSampler2D(String name, DataType dataType)
+		{
+			super(name, dataType);
+		}
+	}
+
+	protected class RSamplerCube extends RSampler2D
+	{
+		public RSamplerCube()
+		{
+			super(DataType.SAMPLERCUBE);
+		}
+		
+		public RSamplerCube(String name)
+		{
+			super(name, DataType.SAMPLERCUBE);
 		}
 	}
 	
@@ -665,6 +699,11 @@ public abstract class AShaderBase {
 		public void assignAdd(ShaderVar value)
 		{
 			assignAdd(value.getName());
+		}
+		
+		public void assignAdd(float value)
+		{
+			assignAdd(Float.toString(value));
 		}
 		
 		public void assignAdd(String value)

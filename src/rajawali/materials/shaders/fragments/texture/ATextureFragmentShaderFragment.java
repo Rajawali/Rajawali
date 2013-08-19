@@ -5,6 +5,7 @@ import java.util.List;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.ATexture.WrapType;
 import android.opengl.GLES20;
 
@@ -13,6 +14,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	protected List<ATexture> mTextures;
 	
 	protected RSampler2D[] muTextures;
+	protected RSamplerCube[] muCubeTextures;
 	protected RFloat[] muInfluence;
 	protected RVec2[] muRepeat, muOffset;
 	protected int[] muTextureHandles, muInfluenceHandles, muRepeatHandles, muOffsetHandles;
@@ -30,8 +32,22 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		super.initialize();
 		
 		int numTextures = mTextures.size();
+
+		int textureCount = 0, cubeTextureCount = 0;
 		
-		muTextures = new RSampler2D[numTextures];
+		for(int i=0; i<mTextures.size(); i++)
+		{
+			ATexture texture = mTextures.get(i);
+			if(texture.getTextureType() == TextureType.CUBE_MAP)
+				cubeTextureCount++;
+			else
+				textureCount++;
+		}
+		
+		if(textureCount > 0)
+			muTextures = new RSampler2D[textureCount];
+		if(cubeTextureCount > 0)
+			muCubeTextures = new RSamplerCube[cubeTextureCount];
 		muInfluence = new RFloat[numTextures];
 		muRepeat = new RVec2[numTextures];
 		muOffset = new RVec2[numTextures];
@@ -40,11 +56,19 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		muRepeatHandles = new int[numTextures];
 		muOffsetHandles = new int[numTextures];
 		
+		textureCount = 0;
+		cubeTextureCount = 0;
+		
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
-			muTextures[i] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);
+			if(texture.getTextureType() == TextureType.CUBE_MAP)
+				muCubeTextures[textureCount++] = (RSamplerCube) addUniform(texture.getTextureName(), DataType.SAMPLERCUBE);
+			else
+				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);			
+			
 			muInfluence[i] = (RFloat) addUniform(DefaultVar.U_INFLUENCE, texture.getTextureName());
+			
 			if(texture.getWrapType() == WrapType.REPEAT)
 				muRepeat[i] = (RVec2) addUniform(DefaultVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
@@ -69,6 +93,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	@Override
 	public void applyParams() {
 		super.applyParams();
+		
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
@@ -78,5 +103,12 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 			if(texture.offsetEnabled())
 				GLES20.glUniform2fv(muOffsetHandles[i], 1, texture.getOffset(), 0);
 		}
+	}
+	
+	@Override
+	public void main() {
+		RVec4 color = (RVec4)getGlobal(DefaultVar.G_COLOR);
+		RFloat colorInfluence = (RFloat)getGlobal(DefaultVar.U_COLOR_INFLUENCE);		
+		color.assign(colorInfluence.multiply(color));
 	}
 }

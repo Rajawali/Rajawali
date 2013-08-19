@@ -45,6 +45,7 @@ public class FragmentShader extends AShader {
 		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD);
 		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL);
 		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR);
+		addVarying(DefaultVar.V_EYE_DIR);
 		
 		// -- globals
 		

@@ -26,9 +26,10 @@ public class SphereMapTexture extends ASingleTexture {
 		super(TextureType.SPHERE_MAP, textureName);
 	}
 
-	public SphereMapTexture(int resourceId)
+	public SphereMapTexture(String textureName, int resourceId)
 	{
-		super(TextureType.SPHERE_MAP, resourceId);
+		super(TextureType.SPHERE_MAP, textureName);
+		setResourceId(resourceId);
 	}
 
 	public SphereMapTexture(String textureName, Bitmap bitmap)

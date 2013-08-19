@@ -12,10 +12,10 @@ import rajawali.materials.shaders.FragmentShader;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.VertexShader;
 import rajawali.materials.shaders.fragments.texture.DiffuseTextureFragmentShaderFragment;
+import rajawali.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
-import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Matrix4;
 import rajawali.renderer.AFrameTask;
@@ -131,47 +131,63 @@ public class Material extends AFrameTask {
 		mVertexShader = new VertexShader();
 		mFragmentShader = new FragmentShader();
 
+		//
+		// -- Check textures
+		//
+		
+		List<ATexture> diffuseTextures = null;
+		List<ATexture> normalMapTextures = null;
+		List<ATexture> envMapTextures = null;
+		
+		for(int i=0; i<mTextureList.size(); i++)
+		{
+			ATexture texture = mTextureList.get(i);
+							
+			switch(texture.getTextureType())
+			{
+			case DIFFUSE:
+				if(diffuseTextures == null) diffuseTextures = new ArrayList<ATexture>();
+				diffuseTextures.add(texture);
+				break;
+			case NORMAL:
+				if(normalMapTextures == null) normalMapTextures = new ArrayList<ATexture>();
+				normalMapTextures.add(texture);
+				break;
+			case CUBE_MAP:
+			case SPHERE_MAP:
+				if(envMapTextures == null) envMapTextures = new ArrayList<ATexture>();
+				envMapTextures.add(texture);
+				break;
+			}
+		}			
+		
+		if(normalMapTextures != null && normalMapTextures.size() > 0)
+		{
+			NormalMapFragmentShaderFragment fragment = new NormalMapFragmentShaderFragment(normalMapTextures);
+			mFragmentShader.addShaderFragment(fragment);
+		}
+
+		if(diffuseTextures != null  && diffuseTextures.size() > 0)
+		{
+			DiffuseTextureFragmentShaderFragment fragment = new DiffuseTextureFragmentShaderFragment(diffuseTextures);
+			mFragmentShader.addShaderFragment(fragment);
+		}
+		
+		if(envMapTextures != null && envMapTextures.size() > 0)
+		{
+			EnvironmentMapFragmentShaderFragment fFragment = new EnvironmentMapFragmentShaderFragment(envMapTextures);
+			mFragmentShader.addShaderFragment(fFragment);
+		}
+		
+		//
+		// -- Lighting
+		//
+		
 		if(mLightingEnabled && mLights != null && mLights.size() > 0)
 		{
 			mVertexShader.setLights(mLights);
 			mFragmentShader.setLights(mLights);
 
-			//
-			// -- Check textures
-			//
-			
-			List<ATexture> diffuseTextures = null;
-			List<ATexture> normalMapTextures = null;
-			
-			for(int i=0; i<mTextureList.size(); i++)
-			{
-				ATexture texture = mTextureList.get(i);
-								
-				switch(texture.getTextureType())
-				{
-				case DIFFUSE:
-					if(diffuseTextures == null) diffuseTextures = new ArrayList<ATexture>();
-					diffuseTextures.add(texture);
-					break;
-				case NORMAL:
-					if(normalMapTextures == null) normalMapTextures = new ArrayList<ATexture>();
-					normalMapTextures.add(texture);
-					break;
-				}
-			}			
-			
-			if(normalMapTextures != null && normalMapTextures.size() > 0)
-			{
-				NormalMapFragmentShaderFragment fragment = new NormalMapFragmentShaderFragment(normalMapTextures);
-				mFragmentShader.addShaderFragment(fragment);
-			}
-
-			if(diffuseTextures != null  && diffuseTextures.size() > 0)
-			{
-				DiffuseTextureFragmentShaderFragment fragment = new DiffuseTextureFragmentShaderFragment(diffuseTextures);
-				mFragmentShader.addShaderFragment(fragment);
-			}
-			
 			//
 			// -- Diffuse method
 			//

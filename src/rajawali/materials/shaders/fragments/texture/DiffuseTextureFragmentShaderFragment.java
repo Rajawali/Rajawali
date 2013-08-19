@@ -4,7 +4,6 @@ import java.util.List;
 
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.WrapType;
-import rajawali.util.RajLog;
 
 
 public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShaderFragment {
@@ -21,12 +20,10 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 	
 	@Override
 	public void main() {
+		super.main();
 		RVec4 color = (RVec4)getGlobal(DefaultVar.G_COLOR);
 		RVec2 textureCoord = (RVec2)getGlobal(DefaultVar.G_TEXTURE_COORD);
-		RFloat colorInfluence = (RFloat)getGlobal(DefaultVar.U_COLOR_INFLUENCE);
 		RVec4 texColor = new RVec4("texColor");
-		
-		color.assign(colorInfluence.multiply(color));
 		
 		for(int i=0; i<mTextures.size(); i++)
 		{
@@ -37,7 +34,7 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 				textureCoord.assignMultiply(getGlobal(DefaultVar.U_REPEAT, i));
 			
 			texColor.assign(texture2D(muTextures[i], textureCoord));
-			texColor.assignMultiply(mTextures.get(i).getInfluence());
+			texColor.assignMultiply(muInfluence[i]);
 			color.assignAdd(texColor);
 		}
 	}
