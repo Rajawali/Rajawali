@@ -49,6 +49,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	protected final Matrix4 mMVPMatrix = new Matrix4();
 	protected final Matrix4 mMMatrix = new Matrix4();
+	protected final Matrix4 mMVMatrix = new Matrix4();
 	protected Matrix4 mPMatrix;
 	protected Matrix4 mParentMatrix;
 	protected final Matrix4 mRotationMatrix = new Matrix4();
@@ -241,6 +242,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mParentMatrix = parentMatrix;
 		// -- move view matrix transformation first
 		calculateModelMatrix(parentMatrix);
+		// -- calculate model view matrix;
+		mMVMatrix.setAll(vMatrix).multiply(mMMatrix);
 		//Create MVP Matrix from View-Projection Matrix
 		mMVPMatrix.setAll(vpMatrix).multiply(mMMatrix);
 
@@ -291,7 +294,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 					if(mGeometry.hasNormals())
 						mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
 					
-					mMaterial.setCamera(camera);
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
 				/*
@@ -310,7 +312,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			if (pickerInfo == null) {
 				mMaterial.setMVPMatrix(mMVPMatrix);
 				mMaterial.setModelMatrix(mMMatrix);
-				mMaterial.setViewMatrix(vMatrix);
+				mMaterial.setModelViewMatrix(mMVMatrix);
 
 				if(mIsVisible) {
 					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
