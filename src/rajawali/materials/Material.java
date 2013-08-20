@@ -3,7 +3,6 @@ package rajawali.materials;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.Camera;
 import rajawali.Capabilities;
 import rajawali.lights.ALight;
 import rajawali.materials.methods.IDiffuseMethod;
@@ -40,7 +39,7 @@ public class Material extends AFrameTask {
 	private int mFShaderHandle;
 
 	private float[] mModelMatrix;
-	private float[] mViewMatrix;
+	private float[] mModelViewMatrix;
 	private int mColor;
 	private float mColorInfluence = 0;
 
@@ -103,7 +102,7 @@ public class Material extends AFrameTask {
 	void remove()
 	{
 		mModelMatrix = null;
-		mViewMatrix = null;
+		mModelViewMatrix = null;
 
 		if (mLights != null)
 			mLights.clear();
@@ -123,6 +122,7 @@ public class Material extends AFrameTask {
 		createShaders();
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void createShaders()
 	{
 		if (!mIsDirty)
@@ -407,9 +407,9 @@ public class Material extends AFrameTask {
 		mVertexShader.setNormalMatrix(mNormalFloats);
 	}
 
-	public void setViewMatrix(Matrix4 viewMatrix) {
-		mViewMatrix = viewMatrix.getFloatValues();
-		mVertexShader.setViewMatrix(mViewMatrix);
+	public void setModelViewMatrix(Matrix4 modelViewMatrix) {
+		mModelViewMatrix = modelViewMatrix.getFloatValues();
+		mVertexShader.setModelViewMatrix(mModelViewMatrix);
 	}
 
 	public void enableLighting(boolean value) {
@@ -444,10 +444,6 @@ public class Material extends AFrameTask {
 		}
 	}
 
-	public void setCamera(Camera camera) {
-		// TODO
-	}
-	
 	public void setDiffuseMethod(IDiffuseMethod diffuseMethod)
 	{
 		if(mDiffuseMethod == diffuseMethod) return;

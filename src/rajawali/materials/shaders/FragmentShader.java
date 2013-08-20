@@ -8,6 +8,7 @@ import android.opengl.GLES20;
 
 
 public class FragmentShader extends AShader {
+	@SuppressWarnings("unused")
 	private RFloat muColorInfluence;
 	
 	private RVec2 mvTextureCoord;

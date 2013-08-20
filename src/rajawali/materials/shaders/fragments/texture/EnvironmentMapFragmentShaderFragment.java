@@ -30,7 +30,7 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 		RVec3 normal = (RVec3) getGlobal(DefaultVar.V_NORMAL);
 		
 		RVec3 reflected = new RVec3("reflected");
-		reflected.assign(reflect(normalize(eyeDir.xyz()), normalize(normal)));
+		reflected.assign(reflect(eyeDir.xyz(), normal));
 		
 		int cubeMapCount = 0, sphereMapCount = 0;
 		

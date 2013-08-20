@@ -2,7 +2,6 @@ package rajawali.materials.shaders;
 
 import java.util.List;
 
-import rajawali.Camera;
 import rajawali.lights.ALight;
 import rajawali.materials.shaders.fragments.LightsVertexShaderFragment;
 import android.graphics.Color;
@@ -12,10 +11,10 @@ public class VertexShader extends AShader {
 
 	private RMat4 muMVPMatrix;
 	private RMat3 muNormalMatrix;
+	@SuppressWarnings("unused")
 	private RMat4 muModelMatrix;
-	private RMat4 muViewMatrix;
+	private RMat4 muModelViewMatrix;
 	private RVec4 muColor;
-	private RVec3 muCameraPosition;
 
 	private RVec2 maTextureCoord;
 	private RVec3 maNormal;
@@ -33,18 +32,15 @@ public class VertexShader extends AShader {
 	private int muMVPMatrixHandle;
 	private int muNormalMatrixHandle;
 	private int muModelMatrixHandle;
-	private int muViewMatrixHandle;
+	private int muModelViewMatrixHandle;
 	private int muColorHandle;
-	private int muCameraPositionHandle;
 	
 	private int maTextureCoordHande;
 	private int maNormalHandle;
 	private int maPositionHandle;
 	
 	private float[] mColor;
-	private float[] mCameraPosition = new float[3];
 	private List<ALight> mLights;
-	private Camera mCamera;
 	
 	public VertexShader()
 	{
@@ -65,9 +61,8 @@ public class VertexShader extends AShader {
 		muMVPMatrix = (RMat4) addUniform(DefaultVar.U_MVP_MATRIX);
 		muNormalMatrix = (RMat3) addUniform(DefaultVar.U_NORMAL_MATRIX);
 		muModelMatrix = (RMat4) addUniform(DefaultVar.U_MODEL_MATRIX);
-		muViewMatrix = (RMat4) addUniform(DefaultVar.U_VIEW_MATRIX);
+		muModelViewMatrix = (RMat4) addUniform(DefaultVar.U_MODEL_VIEW_MATRIX);
 		muColor = (RVec4) addUniform(DefaultVar.U_COLOR);
-		muCameraPosition = (RVec3) addUniform(DefaultVar.U_CAMERA_POSITION);
 
 		// -- attributes
 
@@ -108,7 +103,7 @@ public class VertexShader extends AShader {
 		mvTextureCoord.assign(maTextureCoord);
 		mvColor.assign(mgColor);
 		mvNormal.assign(normalize(muNormalMatrix.multiply(mgNormal)));
-		mvEyeDir.assign(castVec3(muModelMatrix.multiply(mgPosition).subtract(castVec4(muCameraPosition, 1.f))));
+		mvEyeDir.assign(castVec3(muModelViewMatrix.multiply(mgPosition)));
 	}
 	
 	@Override
@@ -117,7 +112,6 @@ public class VertexShader extends AShader {
 		super.applyParams();
 		
 		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
-		GLES20.glUniform3fv(muCameraPositionHandle, 1, mCameraPosition, 0);
 	}
 
 	@Override
@@ -129,9 +123,8 @@ public class VertexShader extends AShader {
 		muMVPMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MVP_MATRIX);
 		muNormalMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_NORMAL_MATRIX);
 		muModelMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MODEL_MATRIX);
-		muViewMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_VIEW_MATRIX);
+		muModelViewMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MODEL_VIEW_MATRIX);
 		muColorHandle = getUniformLocation(programHandle, DefaultVar.U_COLOR);
-		muCameraPositionHandle = getUniformLocation(programHandle, DefaultVar.U_CAMERA_POSITION);
 
 		super.setLocations(programHandle);
 	}
@@ -167,8 +160,8 @@ public class VertexShader extends AShader {
 		GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, normalMatrix, 0);
 	}
 
-	public void setViewMatrix(float[] viewMatrix) {
-		GLES20.glUniformMatrix4fv(muViewMatrixHandle, 1, false, viewMatrix, 0);
+	public void setModelViewMatrix(float[] modelViewMatrix) {
+		GLES20.glUniformMatrix4fv(muModelViewMatrixHandle, 1, false, modelViewMatrix, 0);
 	}
 	
 	public void setColor(int color) {
@@ -189,13 +182,5 @@ public class VertexShader extends AShader {
 		if(frag != null)
 			mShaderFragments.remove(frag);
 		addShaderFragment(new LightsVertexShaderFragment(mLights));
-	}
-	
-	public void setCamera(Camera camera)
-	{
-		mCamera = camera;
-		mCameraPosition[0] = (float)camera.getX();
-		mCameraPosition[1] = (float)camera.getY();
-		mCameraPosition[2] = (float)camera.getZ();
 	}
 }
