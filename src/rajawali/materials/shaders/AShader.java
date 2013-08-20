@@ -647,6 +647,11 @@ public abstract class AShader extends AShaderBase {
 		return castVec3(var.getVarName());
 	}
 	
+	public ShaderVar castVec4(float value)
+	{
+		return castVec4(Float.toString(value));
+	}
+	
 	public ShaderVar castVec4(ShaderVar var)
 	{
 		return castVec4(var.getVarName()); 		

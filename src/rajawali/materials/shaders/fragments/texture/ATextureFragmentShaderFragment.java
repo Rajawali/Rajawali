@@ -31,6 +31,8 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	{
 		super.initialize();
 		
+		if(mTextures == null) return;
+		
 		int numTextures = mTextures.size();
 
 		int textureCount = 0, cubeTextureCount = 0;
@@ -78,6 +80,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 
 	@Override
 	public void setLocations(int programHandle) {
+		if(mTextures == null) return;
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
@@ -94,6 +97,8 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	public void applyParams() {
 		super.applyParams();
 		
+		if(mTextures == null) return;
+		
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
@@ -107,8 +112,5 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	
 	@Override
 	public void main() {
-		RVec4 color = (RVec4)getGlobal(DefaultVar.G_COLOR);
-		RFloat colorInfluence = (RFloat)getGlobal(DefaultVar.U_COLOR_INFLUENCE);		
-		color.assign(colorInfluence.multiply(color));
 	}
 }

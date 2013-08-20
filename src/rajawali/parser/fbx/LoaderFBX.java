@@ -33,8 +33,6 @@ import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
 import rajawali.materials.AMaterial;
-import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.PhongMaterial;
 import rajawali.materials.SimpleMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
@@ -491,6 +489,8 @@ public class LoaderFBX extends AMeshLoader {
 		
 		if(material != null) {
 			if(material.shadingModel.equals("lambert") || material.shadingModel.equals("phong")) {
+				// TODO
+				/*
 				PhongMaterial phong = new PhongMaterial();
 				o.setColor(material.properties.diffuseColor);
 				phong.setAmbientColor(material.properties.ambientColor);
@@ -499,13 +499,15 @@ public class LoaderFBX extends AMeshLoader {
 					phong.setSpecularColor(material.properties.specularColor);
 				if(material.properties.shininess != null)
 					phong.setShininess(material.properties.shininess);
-				mat = phong;
+				mat = phong;*/
 			} else {
+				/*
 				DiffuseMaterial diffuse = new DiffuseMaterial();
 				o.setColor(material.properties.diffuseColor);
 				diffuse.setAmbientColor(material.properties.ambientColor);
 				diffuse.setAmbientIntensity(material.properties.ambientFactor);
 				mat = diffuse;
+				*/
 			}
 		}
 		

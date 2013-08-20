@@ -3,6 +3,9 @@ package rajawali.materials.shaders;
 import java.util.List;
 
 import rajawali.lights.ALight;
+import rajawali.materials.shaders.AShaderBase.DefaultVar;
+import rajawali.materials.shaders.AShaderBase.RFloat;
+import rajawali.materials.shaders.AShaderBase.RVec4;
 import rajawali.materials.shaders.fragments.LightsFragmentShaderFragment;
 import android.opengl.GLES20;
 
@@ -57,9 +60,9 @@ public class FragmentShader extends AShader {
 	
 	@Override
 	public void main() {
-		mgColor.assign(mvColor);
 		mgNormal.assign(normalize(mvNormal));
-		mgTextureCoord.assign(mvTextureCoord);
+		mgTextureCoord.assign(mvTextureCoord);		
+		mgColor.assign(muColorInfluence.multiply(mvColor));
 		
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{

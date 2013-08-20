@@ -4,36 +4,17 @@ import java.util.List;
 
 import rajawali.lights.ALight;
 import rajawali.materials.methods.DiffuseMethod.DiffuseShaderVar;
-import rajawali.materials.shaders.AShader;
+import rajawali.materials.methods.SpecularMethod.SpecularShaderVar;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
+import rajawali.materials.shaders.fragments.texture.ATextureFragmentShaderFragment;
+import rajawali.materials.textures.ATexture;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
 
-public class PhongFragmentShaderFragment extends AShader implements IShaderFragment {
+public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment implements IShaderFragment {
 	public final static String SHADER_ID = "PHONG_FRAGMENT";
-	
-	public static enum PhongShaderVar implements IGlobalShaderVar {
-		U_SPECULAR_COLOR("uSpecularColor", DataType.VEC3),
-		U_SHININESS("uShininess", DataType.FLOAT);
-		
-		private String mVarString;
-		private DataType mDataType;
-
-		PhongShaderVar(String varString, DataType dataType) {
-			mVarString = varString;
-			mDataType = dataType;
-		}
-
-		public String getVarString() {
-			return mVarString;
-		}
-
-		public DataType getDataType() {
-			return mDataType;
-		}
-	}
 	
 	private RVec3 muSpecularColor;
 	private RFloat muShininess;
@@ -47,13 +28,18 @@ public class PhongFragmentShaderFragment extends AShader implements IShaderFragm
 	private List<ALight> mLights;
 	
 	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess) {
-		super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
+		this(lights, specularColor, shininess, null);
+	}
+	
+	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess, List<ATexture> textures) {
+		super(textures);
 		mSpecularColor = new float[] { 1, 1, 1 };
 		mSpecularColor[0] = (float)Color.red(specularColor) / 255.f;
 		mSpecularColor[1] = (float)Color.green(specularColor) / 255.f;
 		mSpecularColor[2] = (float)Color.blue(specularColor) / 255.f;
 		mShininess = shininess;
 		mLights = lights;
+		mTextures = textures;
 		initialize();
 	}
 	
@@ -75,10 +61,30 @@ public class PhongFragmentShaderFragment extends AShader implements IShaderFragm
 			spec.assign(spec.multiply(attenuation).multiply(lightPower));
 			specular.assignAdd(spec);
 		}
-		
+				
+		RVec2 textureCoord = (RVec2)getGlobal(DefaultVar.G_TEXTURE_COORD);
 		RVec4 color = (RVec4) getGlobal(DefaultVar.G_COLOR);
-		color.rgb().assignAdd(specular.multiply(muSpecularColor));
-		//color.rgb().assign(castVec3(specular));
+		
+		if(mTextures != null && mTextures.size() > 0)
+		{
+			RVec4 specMapColor = new RVec4("specMapColor");
+			specMapColor.assign(castVec4(0));
+
+			for(int i=0; i<mTextures.size(); i++)
+			{
+				ATexture texture = mTextures.get(i);
+
+				RVec4 specColor = new RVec4("specColor" + i);
+				specColor.assign(texture2D(muTextures[i], textureCoord));
+				specColor.assignMultiply(muInfluence[i]);
+				specMapColor.assignAdd(specColor);
+			}
+			color.rgb().assignAdd(specular.multiply(muSpecularColor).multiply(specMapColor.rgb()));
+		}		
+		else
+		{
+			color.rgb().assignAdd(specular.multiply(muSpecularColor));
+		}
 	}
 	
 	@Override
@@ -86,14 +92,15 @@ public class PhongFragmentShaderFragment extends AShader implements IShaderFragm
 	{
 		super.initialize();
 		
-		muSpecularColor = (RVec3) addUniform(PhongShaderVar.U_SPECULAR_COLOR);
-		muShininess = (RFloat) addUniform(PhongShaderVar.U_SHININESS);
+		muSpecularColor = (RVec3) addUniform(SpecularShaderVar.U_SPECULAR_COLOR);
+		muShininess = (RFloat) addUniform(SpecularShaderVar.U_SHININESS);
 	}
 	
 	@Override
 	public void setLocations(int programHandle) {
-		muSpecularColorHandle = getUniformLocation(programHandle, PhongShaderVar.U_SPECULAR_COLOR);
-		muShininessHandle = getUniformLocation(programHandle, PhongShaderVar.U_SHININESS);
+		super.setLocations(programHandle);
+		muSpecularColorHandle = getUniformLocation(programHandle, SpecularShaderVar.U_SPECULAR_COLOR);
+		muShininessHandle = getUniformLocation(programHandle, SpecularShaderVar.U_SHININESS);
 	}
 	
 	@Override

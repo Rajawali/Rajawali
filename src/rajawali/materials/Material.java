@@ -41,7 +41,7 @@ public class Material extends AFrameTask {
 	private float[] mModelMatrix;
 	private float[] mModelViewMatrix;
 	private int mColor;
-	private float mColorInfluence = 0;
+	private float mColorInfluence = 1;
 
 	protected List<ALight> mLights;
 
@@ -138,6 +138,7 @@ public class Material extends AFrameTask {
 		List<ATexture> diffuseTextures = null;
 		List<ATexture> normalMapTextures = null;
 		List<ATexture> envMapTextures = null;
+		List<ATexture> specMapTextures = null;
 		
 		for(int i=0; i<mTextureList.size(); i++)
 		{
@@ -157,6 +158,10 @@ public class Material extends AFrameTask {
 			case SPHERE_MAP:
 				if(envMapTextures == null) envMapTextures = new ArrayList<ATexture>();
 				envMapTextures.add(texture);
+				break;
+			case SPECULAR:
+				if(specMapTextures == null) specMapTextures = new ArrayList<ATexture>();
+				specMapTextures.add(texture);
 				break;
 			}
 		}			
@@ -209,6 +214,7 @@ public class Material extends AFrameTask {
 			if(mSpecularMethod != null)
 			{
 				mSpecularMethod.setLights(mLights);
+				mSpecularMethod.setTextures(specMapTextures);
 				IShaderFragment fragment = mSpecularMethod.getVertexShaderFragment();
 				if(fragment != null)
 					mVertexShader.addShaderFragment(fragment);
@@ -343,6 +349,7 @@ public class Material extends AFrameTask {
 			throw new TextureException("Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
 		}
 		mTextureList.add(texture);
+		mColorInfluence = 0;
 
 		TextureManager.getInstance().addTexture(texture);
 		texture.registerMaterial(this);
@@ -355,6 +362,7 @@ public class Material extends AFrameTask {
 	
 	public void removeTexture(ATexture texture) {
 		mTextureList.remove(texture);
+		if(mTextureList.size() == 0) mColorInfluence = 1;
 		texture.unregisterMaterial(this);
 	}
 	

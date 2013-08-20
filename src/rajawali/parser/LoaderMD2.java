@@ -26,8 +26,6 @@ import rajawali.animation.mesh.AAnimationObject3D;
 import rajawali.animation.mesh.IAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationObject3D;
-import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;

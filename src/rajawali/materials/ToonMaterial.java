@@ -17,7 +17,7 @@ import android.opengl.GLES20;
 
 import com.monyetmabuk.livewallpapers.photosdof.R;
 
-public class ToonMaterial extends DiffuseMaterial {	
+public class ToonMaterial extends AMaterial {	
 	protected int muToonColor0Handle, muToonColor1Handle, muToonColor2Handle, muToonColor3Handle;
 	protected float[] mToonColor0, mToonColor1, mToonColor2, mToonColor3;
 	

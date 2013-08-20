@@ -24,21 +24,12 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 
 import rajawali.Object3D;
-import rajawali.materials.AMaterial;
-import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.NormalMapMaterial;
-import rajawali.materials.NormalMapPhongMaterial;
-import rajawali.materials.PhongMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
-import rajawali.materials.textures.NormalMapTexture;
-import rajawali.materials.textures.SpecularMapTexture;
-import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import rajawali.wallpaper.Wallpaper;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
 
