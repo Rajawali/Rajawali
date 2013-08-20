@@ -38,6 +38,7 @@ import rajawali.parser.awd.BlockTexture;
 import rajawali.parser.awd.BlockTextureProjector;
 import rajawali.parser.awd.BlockTriangleGeometry;
 import rajawali.parser.awd.BlockUVAnimation;
+import rajawali.parser.awd.NotImplementedParsingException;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.LittleEndianDataInputStream;
@@ -101,7 +102,7 @@ public class AWDParser extends AMeshParser {
 	protected int awdHeaderRevision;
 	protected int awdHeaderFlags;
 	protected int awdHeaderCompression;
-	protected int awdHeaderBodyLength;
+	protected long awdHeaderBodyLength;
 	protected boolean awdHeaderAccuracyMatrix;
 	protected boolean awdHeaderAccuracyGeo;
 	protected boolean awdHeaderAccuracyProps;
@@ -176,7 +177,7 @@ public class AWDParser extends AMeshParser {
 			final byte[] buf = new byte[3];
 			dis.read(buf);
 			if (!new String(buf).equals("AWD"))
-				throw new ParsingException();
+				throw new ParsingException("Invalid header designation: " + new String(buf));
 
 			// Read remaining header data
 			awdHeaderVersion = dis.readUnsignedByte();
@@ -191,7 +192,7 @@ public class AWDParser extends AMeshParser {
 
 			awdHeaderCompression = dis.read();
 			// Body length is for integrity checking, ignored when streaming; not a guaranteed value
-			awdHeaderBodyLength = dis.readInt();
+			awdHeaderBodyLength = dis.readUnsignedInt();
 
 			// Debug Headers
 			RajLog.d("AWD Header Data");
@@ -212,6 +213,7 @@ public class AWDParser extends AMeshParser {
 			// Read file blocks
 			try {
 				do {
+					RajLog.d("READING BLOCK AT " + dis.getPosition());
 					// Read header data
 					final BlockHeader blockHeader = new BlockHeader();
 					blockHeader.parsers = blockParsers;
@@ -221,19 +223,19 @@ public class AWDParser extends AMeshParser {
 					blockHeader.namespace = dis.read();
 					blockHeader.type = dis.read();
 					blockHeader.flags = dis.read();
-					blockHeader.dataLength = dis.readInt();
+					blockHeader.dataLength = dis.readUnsignedInt();
 					blockHeader.globalPrecisionGeo = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_GEO) == BlockHeader.FLAG_ACCURACY_GEO;
 					blockHeader.globalPrecisionMatrix = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_MATRIX) == BlockHeader.FLAG_ACCURACY_MATRIX;
 					blockHeader.globalPrecisionProps = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_PROPS) == BlockHeader.FLAG_ACCURACY_PROPS;
-					
-					final int blockEnd = (int) dis.getPosition() + blockHeader.dataLength;
+
+					final long blockEnd = dis.getPosition() + blockHeader.dataLength;
 
 					// Add the block to the list of blocks for reference
 					blockDataList.put(blockHeader.id, blockHeader);
 
 					// Debug
-					RajLog.d("Reading Block");
 					RajLog.d(blockHeader.toString());
+					RajLog.d(" Block End: " + blockEnd);
 
 					// Look for the Block Parser class.
 					final Class<? extends ABlockParser> blockClass = (Class<? extends ABlockParser>) blockParserClassesMap
@@ -257,8 +259,13 @@ public class AWDParser extends AMeshParser {
 					RajLog.d(" Parsing block with: " + parser.getClass().getSimpleName());
 
 					// Begin parsing
-					parser.parseBlock(dis, blockHeader);
+					try {
+						parser.parseBlock(dis, blockHeader);
+					} catch (NotImplementedParsingException e) {
+						dis.skip(blockHeader.dataLength);
+					}
 
+					// Validate block end
 					if (blockEnd != dis.getPosition())
 						throw new ParsingException("Block did not end in the correct location. Expected : " + blockEnd
 								+ " Ended : " + dis.getPosition());
@@ -420,7 +427,7 @@ public class AWDParser extends AMeshParser {
 		public int namespace;
 		public int type;
 		public int flags;
-		public int dataLength;
+		public long dataLength;
 
 		public boolean globalPrecisionGeo;
 		public boolean globalPrecisionMatrix;
@@ -564,7 +571,6 @@ public class AWDParser extends AMeshParser {
 			// Determine the length of the properties
 			final long propsLength = readUnsignedInt();
 			final long endPosition = position + propsLength;
-
 			if (propsLength == 0)
 				return props;
 

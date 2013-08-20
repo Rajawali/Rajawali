@@ -110,12 +110,10 @@ public class LittleEndianDataInputStream extends InputStream implements DataInpu
 	}
 
 	public final float readFloat() throws IOException {
-		position += 4;
 		return Float.intBitsToFloat(readInt());
 	}
 
 	public final double readDouble() throws IOException {
-		position += 8;
 		return Double.longBitsToDouble(readLong());
 	}
 

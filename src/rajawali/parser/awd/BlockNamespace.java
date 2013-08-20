@@ -1,6 +1,5 @@
 package rajawali.parser.awd;
 
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
 import rajawali.util.LittleEndianDataInputStream;
 
@@ -15,7 +14,7 @@ public class BlockNamespace extends ABlockParser {
 	protected String mUri;
 
 	public void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
-		dis.skip(blockHeader.dataLength);
+		throw new NotImplementedParsingException();
 		/*final AWDLittleEndianDataInputStream awdDis = (AWDLittleEndianDataInputStream) dis;
 		final long startPosition = awdDis.getPosition();
 		

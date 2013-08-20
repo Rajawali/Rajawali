@@ -1,14 +1,13 @@
 package rajawali.parser.awd;
 
-import java.util.HashMap;
+import org.apache.http.ParseException;
 
-import android.util.SparseArray;
 import rajawali.BaseObject3D;
 import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream.Precision;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
+import android.util.SparseArray;
 
 /**
  * The TriangleGeometry block describes a single mesh of an AWD file. Multiple TriangleGeometry blocks may exists in a
@@ -45,7 +44,7 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 		// Count of sub geometries
 		mSubGeometryCount = awdDis.readUnsignedShort();
 
-		// TODO This is probably wrong. Likely need to merge meshes or something similar.
+		// TODO Meshes need to be joined in some fashion. This might work. Need to test it I suppose.
 		// One object for each sub geometry
 		mBaseObjects = new BaseObject3D[mSubGeometryCount];
 
@@ -53,23 +52,26 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 		RajLog.d("  Lookup Name: " + mLookupName);
 		RajLog.d("  Sub Geometry Count: " + mSubGeometryCount);
 
-		// Read the properties
-		SparseArray<Short> properties = new SparseArray<Short>();
+		// Determine the precision for the block
 		final boolean geoAccuracy = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_GEO) ==
 				BlockHeader.FLAG_ACCURACY_GEO;
 		final short geoNr = geoAccuracy ? AWDLittleEndianDataInputStream.TYPE_FLOAT64
 				: AWDLittleEndianDataInputStream.TYPE_FLOAT32;
+
+		// Read the properties
+		SparseArray<Short> properties = new SparseArray<Short>();
+		// Scale Texture U
 		properties.put(1, geoNr);
+		// Scale Texture V
 		properties.put(2, geoNr);
-		//final HashMap<Short, Object> props = awdDis.readProperties(properties);
-		awdDis.readProperties();
-		
+		// TODO Apply texture scales, need example of this working.
+		awdDis.readProperties(properties);
+
 		// Calculate the sizes
 		final int geoPrecisionSize = blockHeader.globalPrecisionGeo ? 8 : 4;
 
 		// Read each sub mesh data
-		int parsedSubs = 0;
-		while (parsedSubs < mSubGeometryCount) {
+		for (int parsedSub = 0; parsedSub < mSubGeometryCount; ++parsedSub) {
 			long subMeshEnd = awdDis.getPosition() + awdDis.readUnsignedInt();
 
 			// Geometry
@@ -88,7 +90,8 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 				int typeF = awdDis.readUnsignedByte();
 				long subLength = awdDis.readUnsignedInt();
 				long subEnd = awdDis.getPosition() + subLength;
-				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + awdDis.getPosition() + " le:" + subEnd);
+				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + awdDis.getPosition()
+						+ " le:" + subEnd);
 
 				// Process the mesh data by type
 				switch ((int) type) {
@@ -123,9 +126,13 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 					// Unknown mesh data, skipping
 					awdDis.skip(subLength);
 				}
-				
-				System.out.println("mesh end : " + awdDis.getPosition());
+
+				// Validate each mesh data ending. This is a sanity check against precision flags.
+				if (awdDis.getPosition() != subEnd)
+					throw new ParseException("Unexpected ending. Expected " + subEnd + ". Got " + awdDis.getPosition());
 			}
+
+			awdDis.readUserAttributes(null);
 
 			// Verify the arrays
 			if (vertices == null)
@@ -137,10 +144,11 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 			if (indices == null)
 				indices = new int[0];
 
-			mBaseObjects[parsedSubs] = new BaseObject3D();
-			mBaseObjects[parsedSubs].setData(vertices, normals, uvs, null, indices);
-
-			parsedSubs++;
+			// FIXME This should be combining sub geometry not creating objects
+			mBaseObjects[parsedSub] = new BaseObject3D();
+			mBaseObjects[parsedSub].setData(vertices, normals, uvs, null, indices);
 		}
+
+		awdDis.readUserAttributes(null);
 	}
 }
