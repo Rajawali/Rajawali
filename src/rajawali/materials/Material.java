@@ -14,7 +14,10 @@ import rajawali.materials.shaders.fragments.texture.AlphaMapFragmentShaderFragme
 import rajawali.materials.shaders.fragments.texture.DiffuseTextureFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
+import rajawali.materials.shaders.fragments.texture.SkyTextureFragmentShaderFragment;
 import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.CubeMapTexture;
+import rajawali.materials.textures.SphereMapTexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Matrix4;
@@ -129,9 +132,6 @@ public class Material extends AFrameTask {
 		if (!mIsDirty)
 			return;
 		
-		mVertexShader = new VertexShader();
-		mFragmentShader = new FragmentShader();
-
 		//
 		// -- Check textures
 		//
@@ -139,8 +139,11 @@ public class Material extends AFrameTask {
 		List<ATexture> diffuseTextures = null;
 		List<ATexture> normalMapTextures = null;
 		List<ATexture> envMapTextures = null;
+		List<ATexture> skyTextures = null;
 		List<ATexture> specMapTextures = null;
 		List<ATexture> alphaMapTextures = null;
+		
+		boolean hasCubeMaps = false;
 		
 		for(int i=0; i<mTextureList.size(); i++)
 		{
@@ -157,9 +160,34 @@ public class Material extends AFrameTask {
 				normalMapTextures.add(texture);
 				break;
 			case CUBE_MAP:
+				hasCubeMaps = true;
 			case SPHERE_MAP:
-				if(envMapTextures == null) envMapTextures = new ArrayList<ATexture>();
-				envMapTextures.add(texture);
+				boolean isSkyTexture = false;
+				boolean isEnvironmentTexture = false;
+				
+				if(texture.getClass() == SphereMapTexture.class)
+				{
+					isSkyTexture = ((SphereMapTexture)texture).isSkyTexture();
+					isEnvironmentTexture = ((SphereMapTexture)texture).isEnvironmentTexture();
+				}
+				else if(texture.getClass() == CubeMapTexture.class)
+				{
+					isSkyTexture = ((CubeMapTexture)texture).isSkyTexture();
+					isEnvironmentTexture = ((CubeMapTexture)texture).isEnvironmentTexture();
+				}
+				
+				if(isSkyTexture)
+				{
+					 if(skyTextures == null)
+						 skyTextures = new ArrayList<ATexture>();
+					 skyTextures.add(texture);
+				}
+				else if(isEnvironmentTexture)
+				{
+					if(envMapTextures == null)
+						envMapTextures = new ArrayList<ATexture>();
+					envMapTextures.add(texture);
+				}								
 				break;
 			case SPECULAR:
 				if(specMapTextures == null) specMapTextures = new ArrayList<ATexture>();
@@ -171,6 +199,9 @@ public class Material extends AFrameTask {
 				break;
 			}
 		}			
+		
+		mVertexShader = new VertexShader(hasCubeMaps);
+		mFragmentShader = new FragmentShader(hasCubeMaps);
 		
 		if(normalMapTextures != null && normalMapTextures.size() > 0)
 		{
@@ -186,8 +217,14 @@ public class Material extends AFrameTask {
 		
 		if(envMapTextures != null && envMapTextures.size() > 0)
 		{
-			EnvironmentMapFragmentShaderFragment fFragment = new EnvironmentMapFragmentShaderFragment(envMapTextures);
-			mFragmentShader.addShaderFragment(fFragment);
+			EnvironmentMapFragmentShaderFragment fragment = new EnvironmentMapFragmentShaderFragment(envMapTextures);
+			mFragmentShader.addShaderFragment(fragment);
+		}
+		
+		if(skyTextures != null && skyTextures.size() > 0)
+		{
+			SkyTextureFragmentShaderFragment fragment = new SkyTextureFragmentShaderFragment(skyTextures);
+			mFragmentShader.addShaderFragment(fragment);
 		}
 		
 		//
@@ -393,12 +430,8 @@ public class Material extends AFrameTask {
 		mVertexShader.setVertices(vertexBufferHandle);
 	}
 
-	public void setTextureCoords(int textureCoordBufferHandle) {
-		setTextureCoords(textureCoordBufferHandle, false);
-	}
-
-	public void setTextureCoords(final int textureCoordBufferHandle, boolean hasCubemapTexture) {
-		mVertexShader.setTextureCoords(textureCoordBufferHandle, hasCubemapTexture);
+	public void setTextureCoords(final int textureCoordBufferHandle) {
+		mVertexShader.setTextureCoords(textureCoordBufferHandle);
 	}
 	
 	public void setNormals(final int normalBufferHandle) {

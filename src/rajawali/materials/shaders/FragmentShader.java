@@ -4,17 +4,16 @@ import java.util.List;
 
 import rajawali.lights.ALight;
 import rajawali.materials.shaders.AShaderBase.DefaultVar;
-import rajawali.materials.shaders.AShaderBase.RFloat;
-import rajawali.materials.shaders.AShaderBase.RVec4;
+import rajawali.materials.shaders.AShaderBase.RVec3;
 import rajawali.materials.shaders.fragments.LightsFragmentShaderFragment;
 import android.opengl.GLES20;
 
 
 public class FragmentShader extends AShader {
-	@SuppressWarnings("unused")
 	private RFloat muColorInfluence;
 	
 	private RVec2 mvTextureCoord;
+	private RVec3 mvCubeTextureCoord;
 	private RVec3 mvNormal;
 	private RVec4 mvColor;
 	
@@ -26,10 +25,12 @@ public class FragmentShader extends AShader {
 	private float mColorInfluence;
 	
 	private List<ALight> mLights;
+	private boolean mHasCubeMaps;
 	
-	public FragmentShader()
+	public FragmentShader(boolean hasCubeMaps)
 	{
 		super(ShaderType.FRAGMENT);
+		mHasCubeMaps = hasCubeMaps;
 		initialize();
 	}
 	
@@ -47,6 +48,8 @@ public class FragmentShader extends AShader {
 		// -- varyings
 		
 		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD);
+		if(mHasCubeMaps)
+			mvCubeTextureCoord = (RVec3) addVarying(DefaultVar.V_CUBE_TEXTURE_COORD);
 		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL);
 		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR);
 		addVarying(DefaultVar.V_EYE_DIR);

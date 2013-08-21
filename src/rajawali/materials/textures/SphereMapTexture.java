@@ -15,7 +15,9 @@ package rajawali.materials.textures;
 import android.graphics.Bitmap;
 
 public class SphereMapTexture extends ASingleTexture {
-
+	private boolean mIsSkyTexture;
+	private boolean mIsEnvironmentTexture;
+	
 	public SphereMapTexture(SphereMapTexture other)
 	{
 		super(other);
@@ -45,5 +47,23 @@ public class SphereMapTexture extends ASingleTexture {
 	@Override
 	public SphereMapTexture clone() {
 		return new SphereMapTexture(this);
+	}
+	
+	public void isSkyTexture(boolean value) {
+		mIsSkyTexture = value;
+		mIsEnvironmentTexture = !value;
+	}
+	
+	public boolean isSkyTexture() {
+		return mIsSkyTexture;
+	}
+	
+	public void isEnvironmentTexture(boolean value) {
+		mIsEnvironmentTexture = value;
+		mIsSkyTexture = !mIsEnvironmentTexture;
+	}
+	
+	public boolean isEnvironmentTexture() {
+		return mIsEnvironmentTexture;
 	}
 }

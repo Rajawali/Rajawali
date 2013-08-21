@@ -289,7 +289,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 					setShaderParams(camera);
 					mMaterial.bindTextures();
 					if(mGeometry.hasTextureCoordinates())
-						mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle, mHasCubemapTexture);
+						mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle);
 
 					if(mGeometry.hasNormals())
 						mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);

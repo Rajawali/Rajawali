@@ -21,6 +21,7 @@ public class VertexShader extends AShader {
 	private RVec4 maPosition;
 
 	private RVec2 mvTextureCoord;
+	private RVec3 mvCubeTextureCoord;
 	private RVec3 mvNormal;
 	private RVec4 mvColor;
 	private RVec3 mvEyeDir;
@@ -35,16 +36,19 @@ public class VertexShader extends AShader {
 	private int muModelViewMatrixHandle;
 	private int muColorHandle;
 	
-	private int maTextureCoordHande;
+	private int maTextureCoordHandle;
+	private int maCubeTextureCoordHandle;
 	private int maNormalHandle;
 	private int maPositionHandle;
 	
 	private float[] mColor;
 	private List<ALight> mLights;
+	private boolean mHasCubeMaps;
 	
-	public VertexShader()
+	public VertexShader(boolean hasCubeMaps)
 	{
 		super(ShaderType.VERTEX);
+		mHasCubeMaps = hasCubeMaps;
 		mColor = new float[] { 1, 0, 0, 1 };
 		initialize();
 	}
@@ -73,6 +77,8 @@ public class VertexShader extends AShader {
 		// -- varyings
 
 		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD);
+		if(mHasCubeMaps)
+			mvCubeTextureCoord = (RVec3) addVarying(DefaultVar.V_CUBE_TEXTURE_COORD);
 		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL);
 		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR);
 		mvEyeDir = (RVec3) addVarying(DefaultVar.V_EYE_DIR);
@@ -101,6 +107,8 @@ public class VertexShader extends AShader {
 
 		GL_POSITION.assign(muMVPMatrix.multiply(mgPosition));
 		mvTextureCoord.assign(maTextureCoord);
+		if(mHasCubeMaps)
+			mvCubeTextureCoord.assign(castVec3(maPosition));
 		mvColor.assign(mgColor);
 		mvNormal.assign(normalize(muNormalMatrix.multiply(mgNormal)));
 		mvEyeDir.assign(castVec3(muModelViewMatrix.multiply(mgPosition)));
@@ -116,7 +124,7 @@ public class VertexShader extends AShader {
 
 	@Override
 	public void setLocations(final int programHandle) {
-		maTextureCoordHande = getAttribLocation(programHandle, DefaultVar.A_TEXTURE_COORD);
+		maTextureCoordHandle = getAttribLocation(programHandle, DefaultVar.A_TEXTURE_COORD);
 		maNormalHandle = getAttribLocation(programHandle, DefaultVar.A_NORMAL);
 		maPositionHandle = getAttribLocation(programHandle, DefaultVar.A_POSITION);
 		
@@ -135,11 +143,10 @@ public class VertexShader extends AShader {
 		GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT, false, 0, 0);
 	}
 
-	public void setTextureCoords(final int textureCoordBufferHandle,
-			boolean hasCubemapTexture) {
+	public void setTextureCoords(final int textureCoordBufferHandle) {
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, textureCoordBufferHandle);
-		GLES20.glEnableVertexAttribArray(maTextureCoordHande);
-		GLES20.glVertexAttribPointer(maTextureCoordHande, hasCubemapTexture ? 3 : 2, GLES20.GL_FLOAT, false, 0, 0);
+		GLES20.glEnableVertexAttribArray(maTextureCoordHandle);
+		GLES20.glVertexAttribPointer(maTextureCoordHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
 	}
 	
 	public void setNormals(final int normalBufferHandle) {

@@ -508,15 +508,15 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	 * Creates a skybox with the specified 6 textures. 
 	 * 
-	 * @param front int Resource id for the front face.
-	 * @param right int Resource id for the right face.
-	 * @param back int Resource id for the back face.
-	 * @param left int Resource id for the left face.
-	 * @param up int Resource id for the up face.
-	 * @param down int Resource id for the down face.
+	 * @param posx int Resource id for the front face.
+	 * @param negx int Resource id for the right face.
+	 * @param posy int Resource id for the back face.
+	 * @param negy int Resource id for the left face.
+	 * @param posz int Resource id for the up face.
+	 * @param negz int Resource id for the down face.
 	 * @throws TextureException 
 	 */
-	public void setSkybox(int front, int right, int back, int left, int up, int down) throws TextureException {
+	public void setSkybox(int posx, int negx, int posy, int negy, int posz, int negz) throws TextureException {
 		synchronized (mCameras) {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
 				mCameras.get(i).setFarPlane(1000);
@@ -524,15 +524,13 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true);
 			Resources res = mRenderer.getContext().getResources();
-			int[] resourceIds = new int[] { front, right, back, left, up, down };
+			int[] resourceIds = new int[] { posx, negx, posy, negy, posz, negz };
 			
-			// TODO
-			/*
-			mSkyboxTexture = new CubeMapTexture(res.getResourceEntryName(front), resourceIds);
-			SkyboxMaterial mat = new SkyboxMaterial();
+			mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
+			((CubeMapTexture)mSkyboxTexture).isSkyTexture(true);
+			Material mat = new Material();
 			mat.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(mat);
-			*/
 		}
 	}
 	
