@@ -10,6 +10,7 @@ import rajawali.materials.methods.ISpecularMethod;
 import rajawali.materials.shaders.FragmentShader;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.VertexShader;
+import rajawali.materials.shaders.fragments.texture.AlphaMapFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.DiffuseTextureFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
@@ -139,6 +140,7 @@ public class Material extends AFrameTask {
 		List<ATexture> normalMapTextures = null;
 		List<ATexture> envMapTextures = null;
 		List<ATexture> specMapTextures = null;
+		List<ATexture> alphaMapTextures = null;
 		
 		for(int i=0; i<mTextureList.size(); i++)
 		{
@@ -162,6 +164,10 @@ public class Material extends AFrameTask {
 			case SPECULAR:
 				if(specMapTextures == null) specMapTextures = new ArrayList<ATexture>();
 				specMapTextures.add(texture);
+				break;
+			case ALPHA:
+				if(alphaMapTextures == null) alphaMapTextures = new ArrayList<ATexture>();
+				alphaMapTextures.add(texture);
 				break;
 			}
 		}			
@@ -223,7 +229,13 @@ public class Material extends AFrameTask {
 				if(fragment != null)
 					mFragmentShader.addShaderFragment(fragment);
 			}
-		}		
+		}
+		
+		if(alphaMapTextures != null && alphaMapTextures.size() > 0)
+		{
+			AlphaMapFragmentShaderFragment fragment = new AlphaMapFragmentShaderFragment(alphaMapTextures);
+			mFragmentShader.addShaderFragment(fragment);
+		}
 		
 		mVertexShader.buildShader();
 		mFragmentShader.buildShader();

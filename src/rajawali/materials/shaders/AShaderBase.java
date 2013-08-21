@@ -399,6 +399,15 @@ public abstract class AShaderBase {
 			v.setName(this.mName + ".w");
 			return v;
 		}
+		
+		public ShaderVar a()
+		{
+			ShaderVar v = new RFloat();
+			v.setName(this.mName + ".a");
+			v.mInitialized = true;
+			return v;
+		}
+
 	}
 	
 	protected class RSampler2D extends RVec4

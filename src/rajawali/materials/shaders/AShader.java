@@ -564,6 +564,11 @@ public abstract class AShader extends AShaderBase {
 	{
 		return "reflect(" + value1 + ", " + value2 + ")";
 	}
+	
+	public void discard()
+	{
+		mShaderSB.append("discard;\n");
+	}
 
 	public void startif(ShaderVar var, String operator, float value)
 	{

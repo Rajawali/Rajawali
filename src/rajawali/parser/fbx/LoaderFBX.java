@@ -33,7 +33,6 @@ import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
 import rajawali.materials.AMaterial;
-import rajawali.materials.SimpleMaterial;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.math.vector.Vector2;
@@ -461,8 +460,10 @@ public class LoaderFBX extends AMeshLoader {
 			}
 		}
 	}
-	
+
 	private AMaterial getMaterialForMesh(Object3D o, String name) {
+		// TODO
+		/*
 		AMaterial mat = new SimpleMaterial();
 		FBXMaterial material = null;
 		Stack<Connect> conns = mFbx.connections.connections;
@@ -499,7 +500,7 @@ public class LoaderFBX extends AMeshLoader {
 					phong.setSpecularColor(material.properties.specularColor);
 				if(material.properties.shininess != null)
 					phong.setShininess(material.properties.shininess);
-				mat = phong;*/
+				mat = phong;
 			} else {
 				/*
 				DiffuseMaterial diffuse = new DiffuseMaterial();
@@ -507,11 +508,11 @@ public class LoaderFBX extends AMeshLoader {
 				diffuse.setAmbientColor(material.properties.ambientColor);
 				diffuse.setAmbientIntensity(material.properties.ambientFactor);
 				mat = diffuse;
-				*/
+				
 			}
-		}
+		}*/
 		
-		return mat;
+		return null;
 	}
 	
 	private void readLine(BufferedReader buffer, String line) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException {
