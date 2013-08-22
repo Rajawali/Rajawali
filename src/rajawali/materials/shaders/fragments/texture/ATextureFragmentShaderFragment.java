@@ -7,6 +7,7 @@ import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.ATexture.WrapType;
+import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 
@@ -15,6 +16,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	
 	protected RSampler2D[] muTextures;
 	protected RSamplerCube[] muCubeTextures;
+	protected RSamplerExternalOES[] muVideoTextures;
 	protected RFloat[] muInfluence;
 	protected RVec2[] muRepeat, muOffset;
 	protected int[] muTextureHandles, muInfluenceHandles, muRepeatHandles, muOffsetHandles;
@@ -35,13 +37,15 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		
 		int numTextures = mTextures.size();
 
-		int textureCount = 0, cubeTextureCount = 0;
+		int textureCount = 0, cubeTextureCount = 0, videoTextureCount = 0;
 		
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
 			if(texture.getTextureType() == TextureType.CUBE_MAP)
 				cubeTextureCount++;
+			else if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
+				videoTextureCount++;
 			else
 				textureCount++;
 		}
@@ -50,6 +54,8 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 			muTextures = new RSampler2D[textureCount];
 		if(cubeTextureCount > 0)
 			muCubeTextures = new RSamplerCube[cubeTextureCount];
+		if(videoTextureCount > 0)
+			muVideoTextures = new RSamplerExternalOES[videoTextureCount];
 		muInfluence = new RFloat[numTextures];
 		muRepeat = new RVec2[numTextures];
 		muOffset = new RVec2[numTextures];
@@ -57,15 +63,18 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		muInfluenceHandles = new int[numTextures];
 		muRepeatHandles = new int[numTextures];
 		muOffsetHandles = new int[numTextures];
-		
+
 		textureCount = 0;
 		cubeTextureCount = 0;
+		videoTextureCount = 0;
 		
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
 			if(texture.getTextureType() == TextureType.CUBE_MAP)
 				muCubeTextures[textureCount++] = (RSamplerCube) addUniform(texture.getTextureName(), DataType.SAMPLERCUBE);
+			else if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
+				muVideoTextures[videoTextureCount++] = (RSamplerExternalOES) addUniform(texture.getTextureName(), DataType.SAMPLER_EXTERNAL_EOS);
 			else
 				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);			
 			

@@ -8,8 +8,8 @@ public abstract class AShaderBase {
 				"ivec2"), IVEC3("ivec3"), IVEC4("ivec4"), BOOL("bool"), BVEC2(
 				"bvec2"), BVEC3("bvec3"), BVEC4("bvec4"), MAT2("mat2"), MAT3(
 				"mat3"), MAT4("mat4"), VOID("void"), SAMPLER1D("sampler1D"), SAMPLER2D(
-				"sampler2D"), SAMPLER3D("sampler3D"), SAMPLERCUBE("samplerCube"), CONSTANT(
-				"constant");
+				"sampler2D"), SAMPLER3D("sampler3D"), SAMPLERCUBE("samplerCube"), 
+				SAMPLER_EXTERNAL_EOS("samplerExternalOES"), CONSTANT("constant");
 
 		private String mTypeString;
 
@@ -97,6 +97,8 @@ public abstract class AShaderBase {
 			return new RSampler2D(name);
 		case SAMPLERCUBE:
 			return new RSamplerCube(name);
+		case SAMPLER_EXTERNAL_EOS:
+			return new RSamplerExternalOES(name);
 		default:
 			return null;
 		}
@@ -430,6 +432,19 @@ public abstract class AShaderBase {
 		public RSampler2D(String name, DataType dataType)
 		{
 			super(name, dataType);
+		}
+	}
+	
+	protected class RSamplerExternalOES extends RSampler2D
+	{
+		public RSamplerExternalOES()
+		{
+			super(DataType.SAMPLER_EXTERNAL_EOS);
+		}
+		
+		public RSamplerExternalOES(String name)
+		{
+			super(name, DataType.SAMPLER_EXTERNAL_EOS);
 		}
 	}
 

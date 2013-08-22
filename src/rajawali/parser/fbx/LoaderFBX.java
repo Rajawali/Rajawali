@@ -222,7 +222,8 @@ public class LoaderFBX extends AMeshLoader {
 			light.setRotation(l.properties.lclRotation);
 			light.setPower(l.properties.intensity / 100f);
 			light.setColor(l.properties.color);
-			mRootObject.addLight(light);
+			// TODO add to scene
+			//mRootObject.addLight(light);
 			return light;			
 			
 		case ALight.DIRECTIONAL_LIGHT:		//Area
@@ -232,7 +233,8 @@ public class LoaderFBX extends AMeshLoader {
 			lD.setRotation(l.properties.lclRotation);
 			lD.setPower(l.properties.intensity / 100f);
 			lD.setColor(l.properties.color);
-			mRootObject.addLight(lD);
+			// TODO add to scene
+			//mRootObject.addLight(lD);
 			return lD;
 			
 		default:
@@ -245,7 +247,8 @@ public class LoaderFBX extends AMeshLoader {
 			lS.setCutoffAngle(l.properties.coneangle);
 			lS.setColor(l.properties.color);
 			lS.setLookAt(0, 0, 0);
-			mRootObject.addLight(lS);			
+			// TODO add to scene
+			//mRootObject.addLight(lS);			
 			return lS;
 		}
 	
@@ -392,7 +395,8 @@ public class LoaderFBX extends AMeshLoader {
 		indices = null;
 		// TODO o.setMaterial(getMaterialForMesh(o, model.name));
 		// TODO o.getMaterial().setUseSingleColor(true);
-		o.setLights(lights);
+		// TODO add to scene
+		//o.setLights(lights);
 		setMeshTextures(o, model.name);
 		
 		o.setPosition(model.properties.lclTranslation);

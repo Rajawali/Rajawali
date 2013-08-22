@@ -7,9 +7,12 @@ import rajawali.Capabilities;
 import rajawali.lights.ALight;
 import rajawali.materials.methods.IDiffuseMethod;
 import rajawali.materials.methods.ISpecularMethod;
+import rajawali.materials.plugins.IMaterialPlugin;
 import rajawali.materials.shaders.FragmentShader;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.VertexShader;
+import rajawali.materials.shaders.fragments.LightsFragmentShaderFragment;
+import rajawali.materials.shaders.fragments.LightsVertexShaderFragment;
 import rajawali.materials.shaders.fragments.texture.AlphaMapFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.DiffuseTextureFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
@@ -24,9 +27,14 @@ import rajawali.math.Matrix4;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
+import android.graphics.Color;
 import android.opengl.GLES20;
 
 public class Material extends AFrameTask {
+	public static enum PluginInsertLocation
+	{
+		PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_BUILD
+	};
 
 	private VertexShader mVertexShader;
 	private FragmentShader mFragmentShader;
@@ -44,10 +52,11 @@ public class Material extends AFrameTask {
 
 	private float[] mModelMatrix;
 	private float[] mModelViewMatrix;
-	private int mColor;
+	private float[] mColor;
 	private float mColorInfluence = 1;
 
 	protected List<ALight> mLights;
+	protected List<IMaterialPlugin> mPlugins;
 
 	/**
 	 * This texture's unique owner identity String. This is usually the fully qualified name of the
@@ -66,6 +75,7 @@ public class Material extends AFrameTask {
 	{
 		mTextureList = new ArrayList<ATexture>();
 		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
+		mColor = new float[] { 1, 0, 0, 1 };
 	}
 
 	public void useVertexColors(boolean value)
@@ -78,11 +88,21 @@ public class Material extends AFrameTask {
 	}
 	
 	public void setColor(int color) {
-		mColor = color;
+		mColor[0] = (float)Color.red(color) / 255.f;
+		mColor[1] = (float)Color.green(color) / 255.f;
+		mColor[2] = (float)Color.blue(color) / 255.f;
+		mColor[3] = (float)Color.alpha(color) / 255.f;
+	}
+	
+	public void setColor(float[] color) {
+		mColor[0] = color[0];
+		mColor[1] = color[1];
+		mColor[2] = color[2];
+		mColor[3] = color[3];
 	}
 	
 	public int getColor() {
-		return mColor;
+		return Color.argb((int)(mColor[3] * 255), (int)(mColor[0] * 255), (int)(mColor[1] * 255), (int)(mColor[2] * 255));
 	}
 	
 	public void setColorInfluence(float influence) {
@@ -144,6 +164,7 @@ public class Material extends AFrameTask {
 		List<ATexture> alphaMapTextures = null;
 		
 		boolean hasCubeMaps = false;
+		boolean hasVideoTexture = false;
 		
 		for(int i=0; i<mTextureList.size(); i++)
 		{
@@ -151,6 +172,9 @@ public class Material extends AFrameTask {
 							
 			switch(texture.getTextureType())
 			{
+			case VIDEO_TEXTURE:
+				hasVideoTexture = true;
+				// no break statement, add the video texture to the diffuse textures
 			case DIFFUSE:
 				if(diffuseTextures == null) diffuseTextures = new ArrayList<ATexture>();
 				diffuseTextures.add(texture);
@@ -227,6 +251,11 @@ public class Material extends AFrameTask {
 			mFragmentShader.addShaderFragment(fragment);
 		}
 		
+		if(hasVideoTexture)
+			mFragmentShader.addPreprocessorDirective("#extension GL_OES_EGL_image_external : require");
+
+		checkForPlugins(PluginInsertLocation.PRE_LIGHTING);		
+		
 		//
 		// -- Lighting
 		//
@@ -235,7 +264,12 @@ public class Material extends AFrameTask {
 		{
 			mVertexShader.setLights(mLights);
 			mFragmentShader.setLights(mLights);
+			
+			mVertexShader.addShaderFragment(new LightsVertexShaderFragment(mLights));
+			mFragmentShader.addShaderFragment(new LightsFragmentShaderFragment(mLights));
 
+			checkForPlugins(PluginInsertLocation.PRE_DIFFUSE);
+			
 			//
 			// -- Diffuse method
 			//
@@ -249,6 +283,8 @@ public class Material extends AFrameTask {
 				fragment = mDiffuseMethod.getFragmentShaderFragment();
 				mFragmentShader.addShaderFragment(fragment);
 			}
+			
+			checkForPlugins(PluginInsertLocation.PRE_SPECULAR);
 			
 			//
 			// -- Specular method
@@ -268,11 +304,15 @@ public class Material extends AFrameTask {
 			}
 		}
 		
+		checkForPlugins(PluginInsertLocation.PRE_ALPHA);
+		
 		if(alphaMapTextures != null && alphaMapTextures.size() > 0)
 		{
 			AlphaMapFragmentShaderFragment fragment = new AlphaMapFragmentShaderFragment(alphaMapTextures);
 			mFragmentShader.addShaderFragment(fragment);
 		}
+		
+		checkForPlugins(PluginInsertLocation.PRE_BUILD);
 		
 		mVertexShader.buildShader();
 		mFragmentShader.buildShader();
@@ -295,6 +335,19 @@ public class Material extends AFrameTask {
 		mFragmentShader.setLocations(mProgramHandle);
 
 		mIsDirty = false;
+	}
+	
+	private void checkForPlugins(PluginInsertLocation location)
+	{
+		if(mPlugins == null) return;
+		for(IMaterialPlugin plugin : mPlugins)
+		{
+			if(plugin.getInsertLocation() == location)
+			{
+				mVertexShader.addShaderFragment(plugin.getVertexShaderFragment());
+				mFragmentShader.addShaderFragment(plugin.getFragmentShaderFragment());
+			}
+		}
 	}
 
 	protected int loadShader(int shaderType, String source) {
@@ -519,6 +572,38 @@ public class Material extends AFrameTask {
 	public ISpecularMethod getSpecularMethod()
 	{
 		return mSpecularMethod;
+	}
+	
+	public void addPlugin(IMaterialPlugin plugin)
+	{
+		if(mPlugins == null)
+			mPlugins = new ArrayList<IMaterialPlugin>();
+		
+		if(mPlugins.contains(plugin)) return;
+		mPlugins.add(plugin);
+		mIsDirty = true;
+	}
+	
+	public IMaterialPlugin getPlugin(Class<?> pluginClass)
+	{
+		if(mPlugins == null) return null;
+		
+		for(IMaterialPlugin plugin : mPlugins)
+		{
+			if(plugin.getClass() == pluginClass)
+				return plugin;
+		}
+		
+		return null;
+	}
+	
+	public void removePlugin(IMaterialPlugin plugin)
+	{
+		if(mPlugins != null && mPlugins.contains(plugin))
+		{
+			mPlugins.remove(plugin);
+			mIsDirty = true;
+		}
 	}
 	
 	public void setOwnerIdentity(String identity)

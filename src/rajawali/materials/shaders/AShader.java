@@ -25,6 +25,7 @@ public abstract class AShader extends AShaderBase {
 	private String mShaderString;
 	
 	private ShaderType mShaderType;
+	private List<String> mPreprocessorDirectives;
 	private Hashtable<String, ShaderVar> mUniforms;
 	private Hashtable<String, ShaderVar> mAttributes;
 	private Hashtable<String, ShaderVar> mVaryings;
@@ -52,6 +53,13 @@ public abstract class AShader extends AShaderBase {
 	public void main() {
 	}
 
+	public void addPreprocessorDirective(String directive)
+	{
+		if(mPreprocessorDirectives == null)
+			mPreprocessorDirectives = new ArrayList<String>();
+		mPreprocessorDirectives.add(directive);
+	}
+	
 	protected void addPrecisionSpecifier(DataType dataType, Precision precision) {
 		mPrecisionSpecifier.put(dataType.getTypeString(), precision);
 	}
@@ -223,6 +231,7 @@ public abstract class AShader extends AShaderBase {
 	
 	public void addShaderFragment(IShaderFragment fragment)
 	{
+		if(fragment == null) return;
 		mShaderFragments.add(fragment);
 	}
 	
@@ -251,6 +260,18 @@ public abstract class AShader extends AShaderBase {
 		mShaderSB = new StringBuilder();
 		StringBuilder s = mShaderSB;
 
+		//
+		// -- Preprocessor directives
+		//
+		RajLog.i("prep dir " + mPreprocessorDirectives);
+		if(mPreprocessorDirectives != null)
+		{
+			for(String directive : mPreprocessorDirectives)
+			{
+				s.append(directive).append("\n");
+			}
+		}
+		
 		//
 		// -- Precision statements
 		//
@@ -584,9 +605,19 @@ public abstract class AShader extends AShaderBase {
 		mShaderSB.append(")\n{\n");
 	}
 	
-	public void ifelseif()
+	public void ifelseif(ShaderVar var, String operator, float value)
 	{
-		mShaderSB.append("} else if {\n");
+		ifelseif(var, operator, Float.toString(value));
+	}
+	
+	public void ifelseif(ShaderVar var, String operator, String value)
+	{
+		mShaderSB.append("} else ");
+		mShaderSB.append("if(");
+		mShaderSB.append(var.getName());
+		mShaderSB.append(operator);
+		mShaderSB.append(value);
+		mShaderSB.append(")\n{\n");
 	}
 	
 	public void ifelse()

@@ -95,10 +95,6 @@ public class FragmentShader extends AShader {
 	public void setLights(List<ALight> lights)
 	{
 		mLights = lights;
-		IShaderFragment frag = getShaderFragment(LightsFragmentShaderFragment.SHADER_ID);
-		if(frag != null)
-			mShaderFragments.remove(frag);
-		addShaderFragment(new LightsFragmentShaderFragment(mLights));
 	}
 	
 	public void setColorInfluence(float influence) {

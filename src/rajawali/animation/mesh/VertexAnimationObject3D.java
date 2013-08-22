@@ -15,11 +15,15 @@ package rajawali.animation.mesh;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.SerializedObject3D;
+import rajawali.materials.Material;
+import rajawali.materials.plugins.IMaterialPlugin;
+import rajawali.materials.plugins.VertexAnimationMaterialPlugin;
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
-
+	private VertexAnimationMaterialPlugin mMaterialPlugin;
+	
 	public VertexAnimationObject3D() {
 		super();
 	}
@@ -86,12 +90,9 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		}
 
 		// Set shader parameters
-		// TODO
-		/*
-		mMaterial.setInterpolation(mInterpolation);
-		mMaterial.setNextFrameVertices(nextGeometry.getVertexBufferInfo().bufferHandle);
-		mMaterial.setNextFrameNormals(nextGeometry.getNormalBufferInfo().bufferHandle);
-*/
+		mMaterialPlugin.setInterpolation(mInterpolation);
+		mMaterialPlugin.setNextFrameVertices(nextGeometry.getVertexBufferInfo().bufferHandle);
+		mMaterialPlugin.setNextFrameNormals(nextGeometry.getNormalBufferInfo().bufferHandle);
 		mStartTime = now;
 	}
 
@@ -100,6 +101,23 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 			mFrames.get(i).getGeometry().reload();
 		}
 		super.reload();
+	}
+	
+	@Override
+	public void setMaterial(Material material) {
+		super.setMaterial(material);
+		
+		IMaterialPlugin plugin = material.getPlugin(VertexAnimationMaterialPlugin.class);
+		
+		if(plugin == null)
+		{
+			mMaterialPlugin = new VertexAnimationMaterialPlugin();
+			material.addPlugin(mMaterialPlugin);
+		}
+		else
+		{
+			mMaterialPlugin = (VertexAnimationMaterialPlugin)plugin;
+		}
 	}
 
 	public VertexAnimationObject3D clone(boolean copyMaterial) {

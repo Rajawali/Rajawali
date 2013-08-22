@@ -35,16 +35,16 @@ public class VertexShader extends AShader {
 	private int muModelMatrixHandle;
 	private int muModelViewMatrixHandle;
 	private int muColorHandle;
-	
+
 	private int maTextureCoordHandle;
 	private int maCubeTextureCoordHandle;
 	private int maNormalHandle;
 	private int maPositionHandle;
-	
+
 	private float[] mColor;
 	private List<ALight> mLights;
 	private boolean mHasCubeMaps;
-	
+
 	public VertexShader(boolean hasCubeMaps)
 	{
 		super(ShaderType.VERTEX);
@@ -77,7 +77,7 @@ public class VertexShader extends AShader {
 		// -- varyings
 
 		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD);
-		if(mHasCubeMaps)
+		if (mHasCubeMaps)
 			mvCubeTextureCoord = (RVec3) addVarying(DefaultVar.V_CUBE_TEXTURE_COORD);
 		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL);
 		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR);
@@ -95,7 +95,7 @@ public class VertexShader extends AShader {
 		mgPosition.assign(maPosition);
 		mgNormal.assign(maNormal);
 		mgColor.assign(muColor);
-		
+
 		// -- do fragment stuff
 
 		for (int i = 0; i < mShaderFragments.size(); i++)
@@ -107,18 +107,18 @@ public class VertexShader extends AShader {
 
 		GL_POSITION.assign(muMVPMatrix.multiply(mgPosition));
 		mvTextureCoord.assign(maTextureCoord);
-		if(mHasCubeMaps)
+		if (mHasCubeMaps)
 			mvCubeTextureCoord.assign(castVec3(maPosition));
 		mvColor.assign(mgColor);
 		mvNormal.assign(normalize(muNormalMatrix.multiply(mgNormal)));
 		mvEyeDir.assign(castVec3(muModelViewMatrix.multiply(mgPosition)));
 	}
-	
+
 	@Override
 	public void applyParams()
 	{
 		super.applyParams();
-		
+
 		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
 	}
 
@@ -127,7 +127,7 @@ public class VertexShader extends AShader {
 		maTextureCoordHandle = getAttribLocation(programHandle, DefaultVar.A_TEXTURE_COORD);
 		maNormalHandle = getAttribLocation(programHandle, DefaultVar.A_NORMAL);
 		maPositionHandle = getAttribLocation(programHandle, DefaultVar.A_POSITION);
-		
+
 		muMVPMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MVP_MATRIX);
 		muNormalMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_NORMAL_MATRIX);
 		muModelMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MODEL_MATRIX);
@@ -148,7 +148,7 @@ public class VertexShader extends AShader {
 		GLES20.glEnableVertexAttribArray(maTextureCoordHandle);
 		GLES20.glVertexAttribPointer(maTextureCoordHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
 	}
-	
+
 	public void setNormals(final int normalBufferHandle) {
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
 		GLES20.glEnableVertexAttribArray(maNormalHandle);
@@ -162,7 +162,7 @@ public class VertexShader extends AShader {
 	public void setModelMatrix(float[] modelMatrix) {
 		GLES20.glUniformMatrix4fv(muModelMatrixHandle, 1, false, modelMatrix, 0);
 	}
-	
+
 	public void setNormalMatrix(float[] normalMatrix) {
 		GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, normalMatrix, 0);
 	}
@@ -170,24 +170,28 @@ public class VertexShader extends AShader {
 	public void setModelViewMatrix(float[] modelViewMatrix) {
 		GLES20.glUniformMatrix4fv(muModelViewMatrixHandle, 1, false, modelViewMatrix, 0);
 	}
-	
+
 	public void setColor(int color) {
-		mColor[0] = (float)Color.red(color) / 255.f;
-		mColor[1] = (float)Color.green(color) / 255.f;
-		mColor[2] = (float)Color.blue(color) / 255.f;
-		mColor[3] = (float)Color.alpha(color) / 255.f;
+		mColor[0] = (float) Color.red(color) / 255.f;
+		mColor[1] = (float) Color.green(color) / 255.f;
+		mColor[2] = (float) Color.blue(color) / 255.f;
+		mColor[3] = (float) Color.alpha(color) / 255.f;
 	}
-	
+
+	public void setColor(float[] color) {
+		mColor[0] = color[0];
+		mColor[1] = color[1];
+		mColor[2] = color[2];
+		mColor[3] = color[3];
+	}
+
 	public int getColor() {
-		return Color.argb((int)(mColor[3] * 255), (int)(mColor[0] * 255), (int)(mColor[1] * 255), (int)(mColor[2] * 255));
+		return Color.argb((int) (mColor[3] * 255), (int) (mColor[0] * 255), (int) (mColor[1] * 255),
+				(int) (mColor[2] * 255));
 	}
-	
+
 	public void setLights(List<ALight> lights)
 	{
 		mLights = lights;
-		IShaderFragment frag = getShaderFragment(LightsVertexShaderFragment.SHADER_ID);
-		if(frag != null)
-			mShaderFragments.remove(frag);
-		addShaderFragment(new LightsVertexShaderFragment(mLights));
 	}
 }
