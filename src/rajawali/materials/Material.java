@@ -19,9 +19,9 @@ import rajawali.materials.shaders.fragments.texture.EnvironmentMapFragmentShader
 import rajawali.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
 import rajawali.materials.shaders.fragments.texture.SkyTextureFragmentShaderFragment;
 import rajawali.materials.textures.ATexture;
+import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.SphereMapTexture;
-import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Matrix4;
 import rajawali.renderer.AFrameTask;
@@ -472,7 +472,7 @@ public class Material extends AFrameTask {
 		return mTextureList;
 	}
 	
-	public void copyTexturesTo(AMaterial material) throws TextureException {
+	public void copyTexturesTo(Material material) throws TextureException {
 		int num = mTextureList.size();
 
 		for (int i = 0; i < num; ++i)

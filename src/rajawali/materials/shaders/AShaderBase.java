@@ -602,6 +602,8 @@ public abstract class AShaderBase {
 		protected String mValue;
 		protected boolean mIsGlobal;
 		protected boolean mInitialized;
+		protected boolean mIsArray;
+		protected int mArraySize;
 
 		public ShaderVar() {
 		}
@@ -815,6 +817,36 @@ public abstract class AShaderBase {
 		protected boolean isGlobal()
 		{
 			return mIsGlobal;
+		}
+		
+		public void isArray(int size) {
+			mIsArray = true;
+			mArraySize = size;
+		}
+		
+		public boolean isArray() {
+			return mIsArray;
+		}
+		
+		public int getArraySize() {
+			return mArraySize;
+		}
+		
+		public ShaderVar elementAt(int index)
+		{
+			return elementAt(Integer.toString(index));
+		}
+		
+		public ShaderVar elementAt(ShaderVar var)
+		{
+			return elementAt(var.getVarName());
+		}
+		
+		public ShaderVar elementAt(String index)
+		{
+			ShaderVar var = new ShaderVar(mDataType);
+			var.setName(mName + "[" + index + "]");
+			return var;
 		}
 	}
 

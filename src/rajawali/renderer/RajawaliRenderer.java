@@ -27,13 +27,12 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
-import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Capabilities;
+import rajawali.Object3D;
 import rajawali.animation.Animation3D;
 import rajawali.effects.APass;
 import rajawali.effects.EffectComposer;
-import rajawali.materials.AMaterial;
 import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
@@ -42,9 +41,9 @@ import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.plugins.Plugin;
 import rajawali.scene.RajawaliScene;
-import rajawali.util.OnFPSUpdateListener;
 import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
+import rajawali.util.OnFPSUpdateListener;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
@@ -136,8 +135,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajLog.i("Rajawali | Anchor Steam | Dev Branch");
 		RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
 		
-		AMaterial.setLoaderContext(context);
-
 		mContext = context;
 		mFrameRate = getRefreshRate();
 		mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());

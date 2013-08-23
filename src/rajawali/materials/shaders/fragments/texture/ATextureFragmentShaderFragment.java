@@ -7,7 +7,6 @@ import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.ATexture.WrapType;
-import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 

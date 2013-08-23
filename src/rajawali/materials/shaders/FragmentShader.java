@@ -3,9 +3,6 @@ package rajawali.materials.shaders;
 import java.util.List;
 
 import rajawali.lights.ALight;
-import rajawali.materials.shaders.AShaderBase.DefaultVar;
-import rajawali.materials.shaders.AShaderBase.RVec3;
-import rajawali.materials.shaders.fragments.LightsFragmentShaderFragment;
 import android.opengl.GLES20;
 
 
@@ -13,6 +10,7 @@ public class FragmentShader extends AShader {
 	private RFloat muColorInfluence;
 	
 	private RVec2 mvTextureCoord;
+	@SuppressWarnings("unused")
 	private RVec3 mvCubeTextureCoord;
 	private RVec3 mvNormal;
 	private RVec4 mvColor;
@@ -24,6 +22,7 @@ public class FragmentShader extends AShader {
 	private int muColorInfluenceHandle;
 	private float mColorInfluence;
 	
+	@SuppressWarnings("unused")
 	private List<ALight> mLights;
 	private boolean mHasCubeMaps;
 	

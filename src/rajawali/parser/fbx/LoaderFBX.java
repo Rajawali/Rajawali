@@ -32,7 +32,7 @@ import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
-import rajawali.materials.AMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.math.vector.Vector2;
@@ -43,7 +43,6 @@ import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
 import rajawali.parser.fbx.FBXValues.FBXIntBuffer;
 import rajawali.parser.fbx.FBXValues.FBXMatrix;
-import rajawali.parser.fbx.FBXValues.Objects.FBXMaterial;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -465,7 +464,7 @@ public class LoaderFBX extends AMeshLoader {
 		}
 	}
 
-	private AMaterial getMaterialForMesh(Object3D o, String name) {
+	private Material getMaterialForMesh(Object3D o, String name) {
 		// TODO
 		/*
 		AMaterial mat = new SimpleMaterial();

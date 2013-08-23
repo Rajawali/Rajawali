@@ -26,7 +26,10 @@ import rajawali.animation.mesh.SkeletalAnimationChildObject3D.BoneWeight;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.animation.mesh.SkeletalAnimationObject3D;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
+import rajawali.materials.Material;
+import rajawali.materials.plugins.SkeletalAnimationMaterialPlugin;
 import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
@@ -427,15 +430,12 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 			o.setSkeleton(mRootObject);
 
 			boolean hasTexture = mesh.textureName != null && mesh.textureName.length() > 0;
-// TODO
-			/*
-			DiffuseMaterial mat = new DiffuseMaterial();
-			mat.setSkeletalAnimationEnabled(true);
-			mat.setNumJoints(mNumJoints);
-			mat.setMaxWeights(mesh.maxBoneWeightsPerVertex);
+
+			Material mat = new Material();
+			mat.addPlugin(new SkeletalAnimationMaterialPlugin(mNumJoints, mesh.maxBoneWeightsPerVertex));
+			mat.enableLighting(true);
 			o.setMaterial(mat);
 			if (!hasTexture) {
-				mat.setUseSingleColor(!hasTexture);
 				o.setColor(0xff000000 + (int) (Math.random() * 0xffffff));
 			} else {
 				int identifier = mResources.getIdentifier(mesh.textureName, "drawable",
@@ -443,9 +443,8 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 				if (identifier == 0) {
 					throw new ParsingException("Couldn't find texture " + mesh.textureName);
 				}
-				mat.addTexture(new Texture(identifier));
+				mat.addTexture(new Texture("md5tex" + i, identifier));
 			}
-*/
 			mRootObject.addChild(o);
 			
 			mesh.destroy();

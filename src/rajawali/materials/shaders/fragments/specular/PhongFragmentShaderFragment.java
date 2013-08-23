@@ -72,8 +72,6 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 
 			for(int i=0; i<mTextures.size(); i++)
 			{
-				ATexture texture = mTextures.get(i);
-
 				RVec4 specColor = new RVec4("specColor" + i);
 				specColor.assign(texture2D(muTextures[i], textureCoord));
 				specColor.assignMultiply(muInfluence[i]);

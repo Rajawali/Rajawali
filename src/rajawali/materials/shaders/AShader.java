@@ -263,7 +263,6 @@ public abstract class AShader extends AShaderBase {
 		//
 		// -- Preprocessor directives
 		//
-		RajLog.i("prep dir " + mPreprocessorDirectives);
 		if(mPreprocessorDirectives != null)
 		{
 			for(String directive : mPreprocessorDirectives)
@@ -305,8 +304,11 @@ public abstract class AShader extends AShaderBase {
 		while (iter.hasNext()) {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
+			
+			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
+			
 			s.append("uniform ").append(var.mDataType.getTypeString())
-					.append(" ").append(var.mName).append(";\n");
+					.append(" ").append(var.mName).append(arrayStr).append(";\n");
 		}
 
 		//
@@ -351,8 +353,9 @@ public abstract class AShader extends AShaderBase {
 		while (iter.hasNext()) {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
+			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
 			s.append("varying ").append(var.mDataType.getTypeString())
-					.append(" ").append(var.mName).append(";\n");
+					.append(" ").append(var.mName).append(arrayStr).append(";\n");
 		}
 
 		//
@@ -374,8 +377,9 @@ public abstract class AShader extends AShaderBase {
 		while (iter.hasNext()) {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
+			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
 			s.append(var.mDataType.getTypeString())
-					.append(" ").append(var.mName).append(";\n");
+					.append(" ").append(var.mName).append(arrayStr).append(";\n");
 		}
 		
 		//
@@ -630,6 +634,23 @@ public abstract class AShader extends AShaderBase {
 		mShaderSB.append("}\n");
 	}
 	
+	public ShaderVar castInt(float value)
+	{
+		return castInt(Float.toString(value));
+	}
+	
+	public ShaderVar castInt(ShaderVar value)
+	{
+		return castInt(value.getVarName());
+	}
+	
+	public ShaderVar castInt(String value)
+	{
+		ShaderVar v = new ShaderVar("int(" + value + ")", DataType.INT);
+		v.mInitialized = true;
+		return v;
+	}
+	
 	public ShaderVar castVec2(float x)
 	{
 		return castVec2(Float.toString(x));
@@ -708,6 +729,18 @@ public abstract class AShader extends AShaderBase {
 	public ShaderVar castVec4(String var, float value)
 	{
 		ShaderVar v = new ShaderVar("vec4(" + var + ", " + value + ")", DataType.VEC4);
+		v.mInitialized = true;
+		return v;
+	}
+	
+	public ShaderVar castMat3(ShaderVar var)
+	{
+		return castMat3(var.getVarName());
+	}
+	
+	public ShaderVar castMat3(String var)
+	{
+		ShaderVar v = new ShaderVar("mat3(" + var + ")", DataType.MAT3);
 		v.mInitialized = true;
 		return v;
 	}

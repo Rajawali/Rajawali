@@ -30,6 +30,7 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 		super.initialize();
 		
 		int lightCount = mLights.size();
+		@SuppressWarnings("unused")
 		int dirLightCount = 0, spotLightCount = 0, pointLightCount = 0;
 
 		for (int i = 0; i < lightCount; i++)

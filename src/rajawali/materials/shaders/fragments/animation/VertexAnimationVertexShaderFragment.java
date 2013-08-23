@@ -30,7 +30,7 @@ public class VertexAnimationVertexShaderFragment extends AShader implements ISha
 
 		maNextFramePosition = (RVec4) addAttribute(VertexAnimationShaderVar.A_NEXT_FRAME_POSITION);
 		maNextFrameNormal = (RVec3) addAttribute(VertexAnimationShaderVar.A_NEXT_FRAME_NORMAL);
-		muInterpolation = (RFloat) addAttribute(VertexAnimationShaderVar.U_INTERPOLATION);
+		muInterpolation = (RFloat) addUniform(VertexAnimationShaderVar.U_INTERPOLATION);
 	}
 
 	public String getShaderId() {

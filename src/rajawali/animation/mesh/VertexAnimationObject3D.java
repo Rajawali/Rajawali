@@ -18,6 +18,7 @@ import rajawali.SerializedObject3D;
 import rajawali.materials.Material;
 import rajawali.materials.plugins.IMaterialPlugin;
 import rajawali.materials.plugins.VertexAnimationMaterialPlugin;
+import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
@@ -66,6 +67,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 				}
 			}
 			mInterpolation -= (int) mInterpolation; // clamp to [0, 1)
+			RajLog.i("interp: " + mInterpolation);
 		}
 
 		// Update geometry (if current frame is different from before)

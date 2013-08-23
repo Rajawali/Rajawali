@@ -3,7 +3,8 @@ package rajawali.materials.shaders;
 import java.util.List;
 
 import rajawali.lights.ALight;
-import rajawali.materials.shaders.fragments.LightsVertexShaderFragment;
+import rajawali.materials.plugins.SkeletalAnimationMaterialPlugin.SkeletalAnimationShaderVar;
+import rajawali.materials.shaders.fragments.animation.SkeletalAnimationVertexShaderFragment;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -37,11 +38,13 @@ public class VertexShader extends AShader {
 	private int muColorHandle;
 
 	private int maTextureCoordHandle;
+	@SuppressWarnings("unused")
 	private int maCubeTextureCoordHandle;
 	private int maNormalHandle;
 	private int maPositionHandle;
 
 	private float[] mColor;
+	@SuppressWarnings("unused")
 	private List<ALight> mLights;
 	private boolean mHasCubeMaps;
 
@@ -97,20 +100,33 @@ public class VertexShader extends AShader {
 		mgColor.assign(muColor);
 
 		// -- do fragment stuff
+		boolean hasSkeletalAnimation = false;
 
 		for (int i = 0; i < mShaderFragments.size(); i++)
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
 			fragment.setStringBuilder(mShaderSB);
 			fragment.main();
+			if(fragment.getShaderId().equals(SkeletalAnimationVertexShaderFragment.SHADER_ID))
+				hasSkeletalAnimation = true;
 		}
 
-		GL_POSITION.assign(muMVPMatrix.multiply(mgPosition));
+		if(hasSkeletalAnimation)
+		{
+			RMat4 transfMatrix = (RMat4) getGlobal(SkeletalAnimationShaderVar.G_BONE_TRANSF_MATRIX);
+			GL_POSITION.assign(muMVPMatrix.multiply(transfMatrix).multiply(mgPosition));
+			mvNormal.assign(normalize(muNormalMatrix.multiply(castMat3(transfMatrix)).multiply(mgNormal)));
+		}
+		else
+		{
+			GL_POSITION.assign(muMVPMatrix.multiply(mgPosition));
+			mvNormal.assign(normalize(muNormalMatrix.multiply(mgNormal)));
+		}
+		
 		mvTextureCoord.assign(maTextureCoord);
 		if (mHasCubeMaps)
 			mvCubeTextureCoord.assign(castVec3(maPosition));
 		mvColor.assign(mgColor);
-		mvNormal.assign(normalize(muNormalMatrix.multiply(mgNormal)));
 		mvEyeDir.assign(castVec3(muModelViewMatrix.multiply(mgPosition)));
 	}
 
