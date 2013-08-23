@@ -4,7 +4,6 @@ import rajawali.BaseObject3D;
 import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
 import rajawali.parser.ParsingException;
-import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
 
 /**
@@ -29,12 +28,11 @@ public class BlockPrimitiveGeometry extends AExportableBlockParser {
 	}
 
 	@SuppressWarnings("unused")
-	public void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
-		final AWDLittleEndianDataInputStream awdDis = (AWDLittleEndianDataInputStream) dis;
+	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 		// FIXME The primitive type requires more features than what the Rajawali primitives provide.
-		
+
 		// Lookup name, not sure why this is useful.
-		mLookupName = awdDis.readVarString();
+		mLookupName = dis.readVarString();
 		RajLog.d("  Lookup Name: " + mLookupName);
 
 		// Read the primitive type

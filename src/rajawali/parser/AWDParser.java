@@ -33,12 +33,12 @@ import rajawali.parser.awd.BlockSkeleton;
 import rajawali.parser.awd.BlockSkeletonAnimation;
 import rajawali.parser.awd.BlockSkeletonPose;
 import rajawali.parser.awd.BlockSkybox;
-import rajawali.parser.awd.BlockStandardMaterial;
-import rajawali.parser.awd.BlockTexture;
+import rajawali.parser.awd.BlockSimpleMaterial;
+import rajawali.parser.awd.BlockBitmapTexture;
 import rajawali.parser.awd.BlockTextureProjector;
 import rajawali.parser.awd.BlockTriangleGeometry;
 import rajawali.parser.awd.BlockUVAnimation;
-import rajawali.parser.awd.NotImplementedParsingException;
+import rajawali.parser.awd.exceptions.NotImplementedParsingException;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.scene.RajawaliScene;
 import rajawali.util.LittleEndianDataInputStream;
@@ -135,8 +135,8 @@ public class AWDParser extends AMeshParser {
 		blockParserClassesMap.put(getClassID(NS_AWD, 42), BlockCamera.class);
 		blockParserClassesMap.put(getClassID(NS_AWD, 43), BlockTextureProjector.class);
 		blockParserClassesMap.put(getClassID(NS_AWD, 51), BlockLightPicker.class);
-		blockParserClassesMap.put(getClassID(NS_AWD, 81), BlockStandardMaterial.class);
-		blockParserClassesMap.put(getClassID(NS_AWD, 82), BlockTexture.class);
+		blockParserClassesMap.put(getClassID(NS_AWD, 81), BlockSimpleMaterial.class);
+		blockParserClassesMap.put(getClassID(NS_AWD, 82), BlockBitmapTexture.class);
 		blockParserClassesMap.put(getClassID(NS_AWD, 83), BlockCubeTexture.class);
 		blockParserClassesMap.put(getClassID(NS_AWD, 91), BlockSharedMethod.class);
 		blockParserClassesMap.put(getClassID(NS_AWD, 92), BlockShadowMethod.class);
@@ -194,16 +194,25 @@ public class AWDParser extends AMeshParser {
 			// Body length is for integrity checking, ignored when streaming; not a guaranteed value
 			awdHeaderBodyLength = dis.readUnsignedInt();
 
+			// Calculate the end of the file
+			final long endOfFile = dis.getPosition() + awdHeaderBodyLength;
+
 			// Debug Headers
 			RajLog.d("AWD Header Data");
 			RajLog.d(" Version: " + awdHeaderVersion + "." + awdHeaderRevision);
 			RajLog.d(" Flags: " + awdHeaderFlags);
 			RajLog.d(" Compression: " + getCompression());
 			RajLog.d(" Body Length: " + awdHeaderBodyLength);
+			RajLog.d(" End Of File: " + endOfFile);
 
 			// Check streaming
 			if ((awdHeaderFlags & FLAG_HEADER_STREAMING) == FLAG_HEADER_STREAMING)
 				throw new ParsingException("Streaming not supported.");
+
+			// Check the length
+			if (awdHeaderBodyLength < 1)
+				throw new ParsingException(
+						"AWD Body length not provided which indicates model is streaming or corrupt.");
 
 			// Compression is not supported as this is unnecessary overhead given the limited resources on mobile
 			if (getCompression() != Compression.NONE)
@@ -213,7 +222,6 @@ public class AWDParser extends AMeshParser {
 			// Read file blocks
 			try {
 				do {
-					RajLog.d("READING BLOCK AT " + dis.getPosition());
 					// Read header data
 					final BlockHeader blockHeader = new BlockHeader();
 					blockHeader.parsers = blockParsers;
@@ -227,15 +235,18 @@ public class AWDParser extends AMeshParser {
 					blockHeader.globalPrecisionGeo = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_GEO) == BlockHeader.FLAG_ACCURACY_GEO;
 					blockHeader.globalPrecisionMatrix = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_MATRIX) == BlockHeader.FLAG_ACCURACY_MATRIX;
 					blockHeader.globalPrecisionProps = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_PROPS) == BlockHeader.FLAG_ACCURACY_PROPS;
+					blockHeader.blockEnd = dis.getPosition() + blockHeader.dataLength;
 
-					final long blockEnd = dis.getPosition() + blockHeader.dataLength;
+					// Flag the input stream with the correct property precision flag
+					dis.setPropertyPrecision(blockHeader.globalPrecisionProps);
 
-					// Add the block to the list of blocks for reference
-					blockDataList.put(blockHeader.id, blockHeader);
+					// Add the block to the list of blocks for reference. Id of 0 indicates no references will be made
+					// to the block.
+					if (blockHeader.id != 0)
+						blockDataList.put(blockHeader.id, blockHeader);
 
 					// Debug
 					RajLog.d(blockHeader.toString());
-					RajLog.d(" Block End: " + blockEnd);
 
 					// Look for the Block Parser class.
 					final Class<? extends ABlockParser> blockClass = (Class<? extends ABlockParser>) blockParserClassesMap
@@ -262,24 +273,26 @@ public class AWDParser extends AMeshParser {
 					try {
 						parser.parseBlock(dis, blockHeader);
 					} catch (NotImplementedParsingException e) {
-						dis.skip(blockHeader.dataLength);
+						RajLog.d(" Skipping block as not implemented.");
+						dis.skip(blockHeader.blockEnd - dis.getPosition());
 					}
 
 					// Validate block end
-					if (blockEnd != dis.getPosition())
-						throw new ParsingException("Block did not end in the correct location. Expected : " + blockEnd
+					if (blockHeader.blockEnd != dis.getPosition())
+						throw new ParsingException("Block did not end in the correct location. Expected : "
+								+ blockHeader.blockEnd
 								+ " Ended : " + dis.getPosition());
 
-				} while (true);
-			} catch (IOException e) {
+				} while (dis.getPosition() < endOfFile);
+
 				// End of blocks reached
 				RajLog.d("End of blocks reached.");
-				e.printStackTrace();
+			} catch (IOException e) {
+				throw new ParsingException("Buffer overrun; unexpected end of file.", e);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new ParsingException("Unexpected header. File is not in AWD format.");
+			throw new ParsingException("Unexpected error. File is not in a supported AWD format.", e);
 		}
 
 		onBlockParsingFinished(blockParsers);
@@ -312,13 +325,8 @@ public class AWDParser extends AMeshParser {
 	}
 
 	@Override
-	protected AWDLittleEndianDataInputStream getLittleEndianInputStream() throws FileNotFoundException {
-		return getLittleEndianInputStream(8192);
-	}
-
-	@Override
 	protected AWDLittleEndianDataInputStream getLittleEndianInputStream(int size) throws FileNotFoundException {
-		return new AWDLittleEndianDataInputStream(getBufferedInputStream(size), AWDParser.this);
+		return new AWDLittleEndianDataInputStream(getBufferedInputStream(size));
 	}
 
 	/**
@@ -402,7 +410,7 @@ public class AWDParser extends AMeshParser {
 	 */
 	public interface IBlockParser {
 
-		void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception;
+		void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception;
 	}
 
 	/**
@@ -428,6 +436,7 @@ public class AWDParser extends AMeshParser {
 		public int type;
 		public int flags;
 		public long dataLength;
+		public long blockEnd;
 
 		public boolean globalPrecisionGeo;
 		public boolean globalPrecisionMatrix;
@@ -443,13 +452,14 @@ public class AWDParser extends AMeshParser {
 			sb.append(" Block Precision Matrix: ").append(globalPrecisionMatrix).append("\n");
 			sb.append(" Block Precision Props: ").append(globalPrecisionProps).append("\n");
 			sb.append(" Block Length: ").append(dataLength).append("\n");
+			sb.append(" Block End: ").append(blockEnd).append("\n");
 			return sb.toString();
 		}
 	}
 
 	/**
 	 * Helper class adding specific features resused across AWD blocks such as VarString, UserAttributes, and
-	 * Properties. Additionally, the inputstream automatically handles the reading of
+	 * Properties.
 	 * 
 	 * @author Ian Thomas (toxicbakery@gmail.com)
 	 * 
@@ -460,9 +470,17 @@ public class AWDParser extends AMeshParser {
 			GEO, MATRIX, PROPS
 		}
 
+		/**
+		 * NR is a custom type that indicates reading to the super block specified precision.
+		 */
+		public static final short TYPE_NR = -1;
 		public static final short TYPE_INT8 = 1;
 		public static final short TYPE_INT16 = 2;
 		public static final short TYPE_INT32 = 3;
+		/**
+		 * NOTE: Even though this is just a byte, {@link LittleEndianDataInputStream} returns integer type to prevent
+		 * casting in math compared to returning short.
+		 */
 		public static final short TYPE_UINT8 = 4;
 		public static final short TYPE_UINT16 = 5;
 		public static final short TYPE_UINT32 = 6;
@@ -481,12 +499,14 @@ public class AWDParser extends AMeshParser {
 		public static final short TYPE_MTX4x3 = 46;
 		public static final short TYPE_MTX4x4 = 47;
 
-		final AWDParser parser;
+		private boolean mPropPrecision;
 
-		public AWDLittleEndianDataInputStream(InputStream in, AWDParser parser) {
+		public AWDLittleEndianDataInputStream(InputStream in) {
 			super(in);
+		}
 
-			this.parser = parser;
+		public void setPropertyPrecision(boolean flag) {
+			mPropPrecision = flag;
 		}
 
 		/**
@@ -565,22 +585,23 @@ public class AWDParser extends AMeshParser {
 		 * @param expected
 		 * @throws IOException
 		 */
-		public HashMap<Short, Object> readProperties(SparseArray<Short> expected) throws IOException {
-			final HashMap<Short, Object> props = new HashMap<Short, Object>();
-
+		public AwdProperties readProperties(SparseArray<Short> expected) throws IOException {
 			// Determine the length of the properties
 			final long propsLength = readUnsignedInt();
-			final long endPosition = position + propsLength;
-			if (propsLength == 0)
-				return props;
 
+			// Skip properties if null is passed
 			if (expected == null) {
-				RajLog.d("Skipping property values.");
-
-				// skip properties until an implementation can be determined
+				RajLog.d("  Skipping property values.");
 				skip(propsLength);
 			}
 
+			final AwdProperties props = new AwdProperties();
+
+			// No properties to read
+			if (propsLength == 0)
+				return props;
+
+			final long endPosition = position + propsLength;
 			short propKey;
 			long propLength;
 
@@ -690,6 +711,8 @@ public class AWDParser extends AMeshParser {
 			case TYPE_FLOAT64:
 				attrValue = readDouble();
 				break;
+			case TYPE_NR:
+				attrValue = mPropPrecision ? readDouble() : readFloat();
 			default:
 				RajLog.e("Skipping unknown attribute (" + attrType + ")");
 				skip(attrLength);
@@ -708,6 +731,16 @@ public class AWDParser extends AMeshParser {
 		public String readVarString() throws IOException {
 			final int varStringLength = readUnsignedShort();
 			return varStringLength == 0 ? "" : readString(varStringLength);
+		}
+
+	}
+
+	public static final class AwdProperties extends HashMap<Short, Object> {
+
+		private static final long serialVersionUID = 221100798331514427L;
+
+		public Object get(int key, Object fallback) {
+			return containsKey(key) ? get(key) : fallback;
 		}
 
 	}

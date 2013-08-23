@@ -1,4 +1,4 @@
-package rajawali.parser.awd;
+package rajawali.parser.awd.exceptions;
 
 import rajawali.parser.ParsingException;
 

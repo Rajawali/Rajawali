@@ -1,7 +1,8 @@
 package rajawali.parser.awd;
 
+import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
-import rajawali.util.LittleEndianDataInputStream;
+import rajawali.parser.awd.exceptions.NotImplementedParsingException;
 
 /**
  * 
@@ -10,7 +11,7 @@ import rajawali.util.LittleEndianDataInputStream;
  */
 public class BlockSkeletonAnimation extends ABlockParser {
 
-	public void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
+	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 		throw new NotImplementedParsingException();
 	}
 

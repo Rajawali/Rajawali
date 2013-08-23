@@ -5,7 +5,6 @@ import org.apache.http.ParseException;
 import rajawali.BaseObject3D;
 import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
-import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
 import android.util.SparseArray;
 
@@ -35,14 +34,13 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 		return container;
 	}
 
-	public void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
-		final AWDLittleEndianDataInputStream awdDis = (AWDLittleEndianDataInputStream) dis;
+	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 
-		// Lookup name, not sure why this is useful.
-		mLookupName = awdDis.readVarString();
+		// Lookup name
+		mLookupName = dis.readVarString();
 
 		// Count of sub geometries
-		mSubGeometryCount = awdDis.readUnsignedShort();
+		mSubGeometryCount = dis.readUnsignedShort();
 
 		// TODO Meshes need to be joined in some fashion. This might work. Need to test it I suppose.
 		// One object for each sub geometry
@@ -65,14 +63,14 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 		// Scale Texture V
 		properties.put(2, geoNr);
 		// TODO Apply texture scales, need example of this working.
-		awdDis.readProperties(properties);
+		dis.readProperties(properties);
 
 		// Calculate the sizes
 		final int geoPrecisionSize = blockHeader.globalPrecisionGeo ? 8 : 4;
 
 		// Read each sub mesh data
 		for (int parsedSub = 0; parsedSub < mSubGeometryCount; ++parsedSub) {
-			long subMeshEnd = awdDis.getPosition() + awdDis.readUnsignedInt();
+			long subMeshEnd = dis.getPosition() + dis.readUnsignedInt();
 
 			// Geometry
 			float[] vertices = null;
@@ -81,16 +79,16 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 			float[] normals = null;
 
 			// Skip reading of mesh properties for now (per AWD implementation)
-			awdDis.readProperties();
+			dis.readProperties();
 
 			// Read each data type from the mesh
-			while (awdDis.getPosition() < subMeshEnd) {
+			while (dis.getPosition() < subMeshEnd) {
 				int idx = 0;
-				int type = awdDis.readUnsignedByte();
-				int typeF = awdDis.readUnsignedByte();
-				long subLength = awdDis.readUnsignedInt();
-				long subEnd = awdDis.getPosition() + subLength;
-				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + awdDis.getPosition()
+				int type = dis.readUnsignedByte();
+				int typeF = dis.readUnsignedByte();
+				long subLength = dis.readUnsignedInt();
+				long subEnd = dis.getPosition() + subLength;
+				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + dis.getPosition()
 						+ " le:" + subEnd);
 
 				// Process the mesh data by type
@@ -99,40 +97,40 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 					vertices = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < vertices.length) {
 						// X, Y, Z
-						vertices[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
-						vertices[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
-						vertices[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					}
 					break;
 				case 2: // Face indices
 					indices = new int[(int) (subLength / 2)];
 					while (idx < indices.length)
-						indices[idx++] = awdDis.readUnsignedShort();
+						indices[idx++] = dis.readUnsignedShort();
 					break;
 				case 3: // UV coordinates
 					uvs = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < uvs.length)
-						uvs[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						uvs[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
 				case 4: // Vertex normals
 					normals = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < normals.length)
-						normals[idx++] = (float) awdDis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						normals[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
 				case 5: // Vertex tangents
 				case 6: // Joint index
 				case 7: // Joint weight
 				default:
 					// Unknown mesh data, skipping
-					awdDis.skip(subLength);
+					dis.skip(subLength);
 				}
 
 				// Validate each mesh data ending. This is a sanity check against precision flags.
-				if (awdDis.getPosition() != subEnd)
-					throw new ParseException("Unexpected ending. Expected " + subEnd + ". Got " + awdDis.getPosition());
+				if (dis.getPosition() != subEnd)
+					throw new ParseException("Unexpected ending. Expected " + subEnd + ". Got " + dis.getPosition());
 			}
 
-			awdDis.readUserAttributes(null);
+			dis.readUserAttributes(null);
 
 			// Verify the arrays
 			if (vertices == null)
@@ -149,6 +147,6 @@ public class BlockTriangleGeometry extends AExportableBlockParser {
 			mBaseObjects[parsedSub].setData(vertices, normals, uvs, null, indices);
 		}
 
-		awdDis.readUserAttributes(null);
+		dis.readUserAttributes(null);
 	}
 }
