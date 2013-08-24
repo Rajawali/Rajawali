@@ -224,7 +224,7 @@ public class AWDParser extends AMeshParser {
 				do {
 					// Read header data
 					final BlockHeader blockHeader = new BlockHeader();
-					blockHeader.parsers = blockParsers;
+					blockHeader.blockHeaders = blockDataList;
 					blockHeader.awdVersion = awdHeaderVersion;
 					blockHeader.awdRevision = awdHeaderRevision;
 					blockHeader.id = dis.readInt();
@@ -263,6 +263,9 @@ public class AWDParser extends AMeshParser {
 					// Instantiate the block parser
 					final ABlockParser parser = (ABlockParser) Class.forName(blockClass.getName()).getConstructor()
 							.newInstance();
+
+					if (blockHeader.id != 0)
+						blockHeader.parser = parser;
 
 					// Add the parser to the list of block parsers
 					blockParsers.add(parser);
@@ -426,7 +429,8 @@ public class AWDParser extends AMeshParser {
 		public static final int FLAG_ACCURACY_GEO = 0x02;
 		public static final int FLAG_ACCURACY_PROPS = 0x04;
 
-		public List<IBlockParser> parsers;
+		public SparseArray<BlockHeader> blockHeaders;
+		public ABlockParser parser;
 
 		public int awdVersion;
 		public int awdRevision;
@@ -455,6 +459,7 @@ public class AWDParser extends AMeshParser {
 			sb.append(" Block End: ").append(blockEnd).append("\n");
 			return sb.toString();
 		}
+
 	}
 
 	/**
@@ -601,29 +606,28 @@ public class AWDParser extends AMeshParser {
 			if (propsLength == 0)
 				return props;
 
-			final long endPosition = position + propsLength;
+			final long endPosition = mPosition + propsLength;
 			short propKey;
 			long propLength;
 
 			// Read the properties, skip the remaining values if an error is encountered
-			while (position < endPosition) {
+			while (mPosition < endPosition) {
 				propKey = (short) readUnsignedShort();
 				propLength = readUnsignedInt();
 
-				if (position + propLength > endPosition) {
+				if (mPosition + propLength > endPosition) {
 					RajLog.e("Unexpected properties length. Properties attemped to read past total properties length.");
-					if (endPosition > position)
-						skip(endPosition - position);
+					if (endPosition > mPosition)
+						skip(endPosition - mPosition);
 
 					return props;
 				}
 
-				if (expected.indexOfKey(propKey) < 0) {
+				if (expected.indexOfKey(propKey) > -1) {
 					props.put(propKey, parseAttrValue(expected.get(propKey), propLength));
 				} else {
 					skip(propLength);
 				}
-
 			}
 
 			return props;
@@ -637,7 +641,7 @@ public class AWDParser extends AMeshParser {
 		 */
 		public HashMap<String, Object> readUserAttributes(HashMap<String, Object> attributes) throws IOException {
 			final long attributesLength = readUnsignedInt();
-			final long endPosition = position + attributesLength;
+			final long endPosition = mPosition + attributesLength;
 
 			if (attributesLength == 0)
 				return attributes;
@@ -655,16 +659,16 @@ public class AWDParser extends AMeshParser {
 			long attrLength;
 
 			// Read the attributes, skip the remaining values if an error is encountered.
-			while (position < endPosition) {
+			while (mPosition < endPosition) {
 				attrNameSpace = (short) readUnsignedByte();
 				attrKey = readVarString();
 				attrType = (short) readUnsignedByte();
 				attrLength = readUnsignedInt();
 
-				if (position + attrLength > endPosition) {
+				if (mPosition + attrLength > endPosition) {
 					RajLog.e("Unexpected attribute length. Attributes attempted to read past total attributes length.");
-					if (endPosition > position)
-						skip(endPosition - position);
+					if (endPosition > mPosition)
+						skip(endPosition - mPosition);
 
 					return attributes;
 				}
@@ -679,9 +683,7 @@ public class AWDParser extends AMeshParser {
 			Object attrValue = null;
 			switch (attrType) {
 			case TYPE_AWDSTRING:
-				final byte[] stringBytes = new byte[(int) attrLength];
-				readFully(stringBytes);
-				attrValue = new String(stringBytes);
+				attrValue = readString((int) attrLength);
 				break;
 			case TYPE_INT8:
 				attrValue = readByte();
@@ -739,7 +741,7 @@ public class AWDParser extends AMeshParser {
 
 		private static final long serialVersionUID = 221100798331514427L;
 
-		public Object get(int key, Object fallback) {
+		public Object get(short key, Object fallback) {
 			return containsKey(key) ? get(key) : fallback;
 		}
 

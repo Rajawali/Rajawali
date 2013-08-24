@@ -2,7 +2,6 @@ package rajawali.parser.awd;
 
 import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
-import rajawali.parser.awd.exceptions.NotImplementedParsingException;
 
 /**
  * 
@@ -12,7 +11,10 @@ import rajawali.parser.awd.exceptions.NotImplementedParsingException;
 public class BlockMeshInstance extends ABlockParser {
 
 	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
-		throw new NotImplementedParsingException();
+
+		
+		
+		dis.skip(blockHeader.blockEnd - dis.getPosition());
 	}
 
 }
