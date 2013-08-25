@@ -151,7 +151,6 @@ public class AWDParser extends AMeshParser {
 		blockParserClassesMap.put(getClassID(NS_AWD, 253), BlockCommand.class);
 		blockParserClassesMap.put(getClassID(NS_AWD, 254), BlockNamespace.class);
 		blockParserClassesMap.put(getClassID(NS_AWD, 255), BlockMetaData.class);
-		mAlwaysUseContainer = true;
 	}
 
 	@Override

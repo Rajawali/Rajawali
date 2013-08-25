@@ -24,35 +24,31 @@ public abstract class ABlockParser implements IBlockParser {
 	protected static final int FLAG_BLOCK_PRECISION_PROPERTIES = 0x04;
 	protected static final int FLAG_BLOCK_PRECISION_COMPRESSION = 0x08;
 	protected static final int FLAG_BLOCK_PRECISION_COMPRESSION_LZMA = 0x16;
+	
+	private static final int BITMAP_SIZE = 8;
 
 	private static Bitmap defaultTextureBitmap;
 
+	static {
+		defaultTextureBitmap = Bitmap.createBitmap(BITMAP_SIZE, BITMAP_SIZE, Config.RGB_565);
+
+		// Draw a checker board pattern
+		for (int i = 0; i < BITMAP_SIZE; ++i) {
+			for (int j = 0; j < BITMAP_SIZE; ++j)
+				defaultTextureBitmap.setPixel(i, j, ((j & 1) ^ (i & 1)) == 1 ? 0xFFFFFF : 0);
+		}
+	}
+
 	protected static ATexture getDefaultCubeMapTexture() {
-		initDefaultTexture();
 		return new CubeMapTexture("DefaultCubeMapTexture", new Bitmap[] { defaultTextureBitmap, defaultTextureBitmap,
 				defaultTextureBitmap, defaultTextureBitmap, defaultTextureBitmap, defaultTextureBitmap });
 	}
-	
+
 	protected static AMaterial getDefaultMaterial() {
 		return new SimpleMaterial();
 	}
 
-	protected static ATexture getDefTexture() {
-		initDefaultTexture();
-		return new Texture("DefaultTexture", defaultTextureBitmap);
-	}
-
-	private static final void initDefaultTexture() {
-		if (defaultTextureBitmap == null) {
-			defaultTextureBitmap = Bitmap.createBitmap(8, 8, Config.ARGB_4444);
-
-			// Draw a checker board pattern
-			for (int i = 0; i < 8; i++) {
-				for (int j = 0; j < 8; j++) {
-					if (((j & 1) ^ (i & 1)) == 1)
-						defaultTextureBitmap.setPixel(i, j, 0xFFFFFFFF);
-				}
-			}
-		}
+	protected static ATexture getDefaultTexture() {
+		return new Texture("AWD_DefaultTexture", defaultTextureBitmap);
 	}
 }

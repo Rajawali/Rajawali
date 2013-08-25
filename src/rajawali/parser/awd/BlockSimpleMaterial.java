@@ -29,7 +29,7 @@ import android.util.SparseArray;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockSimpleMaterial extends ABlockParser {
+public class BlockSimpleMaterial extends ATextureBlockParser {
 
 	public static final byte MATERIAL_TYPE_COLOR = 0x1;
 	public static final byte MATERIAL_TYPE_TEXTURE = 0x2;
@@ -95,6 +95,11 @@ public class BlockSimpleMaterial extends ABlockParser {
 	protected byte mMaterialType;
 	protected byte mShadingMethodCount;
 	protected int mSpezialType;
+
+	@Override
+	public AMaterial getMaterial() {
+		return mMaterial;
+	}
 
 	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 

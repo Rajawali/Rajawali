@@ -7,6 +7,11 @@ import rajawali.parser.AWDParser.BlockHeader;
 import rajawali.parser.ParsingException;
 import rajawali.util.RajLog;
 
+/**
+ * 
+ * @author Ian Thomas (toxicbakery@gmail.com)
+ *
+ */
 public class SceneGraphBlock {
 
 	public int parentID;
