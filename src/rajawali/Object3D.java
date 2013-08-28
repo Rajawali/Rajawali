@@ -293,11 +293,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				}
 				
 				mMaterial.setColor(mColor);
-				/* TODO
-				if(mMaterial.getUseVertexColors())
-					mMaterial.setColors(mGeometry.getColorBufferInfo().bufferHandle);
-					*/
-				
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -363,8 +358,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param camera
 	 */
 	protected void setShaderParams(Camera camera) {
-		// TODO mMaterial.setLightParams();
-	};
+	}
 
 	protected void checkGlError(String op) {
 		int error;

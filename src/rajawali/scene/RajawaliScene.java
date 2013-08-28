@@ -19,15 +19,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.Object3D;
 import rajawali.Camera;
+import rajawali.Object3D;
 import rajawali.animation.Animation3D;
+import rajawali.lights.ALight;
 import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
-import rajawali.math.Matrix;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
@@ -44,7 +44,6 @@ import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -89,6 +88,7 @@ public class RajawaliScene extends AFrameTask {
 	private List<Object3D> mChildren;
 	private List<Animation3D> mAnimations;
 	private List<IRendererPlugin> mPlugins;
+	private List<ALight> mLights;
 	
 	/**
 	* The camera currently in use.
@@ -127,6 +127,7 @@ public class RajawaliScene extends AFrameTask {
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
+		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
 		mFrameTaskQueue = new LinkedList<AFrameTask>();
 		
 		mCamera = new Camera();
@@ -391,6 +392,27 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
+	 * Requests the addition of a light to the scene. The light
+	 * will be added to the end of the list. 
+	 * 
+	 * @param light {@link ALight} to be added.
+	 * @return True if the light was successfully queued for addition.
+	 */
+	public boolean addLight(ALight light) {
+		return queueAddTask(light);
+	}
+	
+	/**
+	 * Requests the removal of a light from the scene.
+	 * 
+	 * @param light {@link ALight} child to be removed.
+	 * @return boolean True if the child was successfully queued for removal.
+	 */
+	public boolean removeLight(ALight light) {
+		return queueRemoveTask(light);
+	}
+	
+	/**
 	 * Requests the addition of a plugin to the scene. The plugin
 	 * will be added to the end of the list. 
 	 * 
@@ -523,7 +545,6 @@ public class RajawaliScene extends AFrameTask {
 		}
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true);
-			Resources res = mRenderer.getContext().getResources();
 			int[] resourceIds = new int[] { posx, negx, posy, negy, posz, negz };
 			
 			mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
@@ -863,6 +884,7 @@ public class RajawaliScene extends AFrameTask {
 	 * Internal method for performing frame tasks. Should be called at the
 	 * start of onDrawFrame() prior to render().
 	 */
+	@SuppressWarnings("incomplete-switch")
 	private void performFrameTasks() {
 		synchronized (mFrameTaskQueue) {
 			//Fetch the first task
@@ -910,7 +932,7 @@ public class RajawaliScene extends AFrameTask {
 			internalReplaceCamera(task, (Camera) task.getNewObject(), task.getIndex());
 			break;
 		case LIGHT:
-			//TODO: Handle light replacement
+			internalReplaceLight(task, (ALight) task.getNewObject(), task.getIndex());
 			break;
 		case OBJECT3D:
 			internalReplaceChild(task, (Object3D) task.getNewObject(), task.getIndex());
@@ -938,7 +960,7 @@ public class RajawaliScene extends AFrameTask {
 			internalAddCamera((Camera) task, task.getIndex());
 			break;
 		case LIGHT:
-			//TODO: Handle light addition
+			internalAddLight((ALight) task, task.getIndex());
 			break;
 		case OBJECT3D:
 			internalAddChild((Object3D) task, task.getIndex());
@@ -966,7 +988,7 @@ public class RajawaliScene extends AFrameTask {
 			internalRemoveCamera((Camera) task, task.getIndex());
 			break;
 		case LIGHT:
-			//TODO: Handle light removal
+			internalRemoveLight((ALight) task, task.getIndex());
 			break;
 		case OBJECT3D:
 			internalRemoveChild((Object3D) task, task.getIndex());
@@ -1002,7 +1024,9 @@ public class RajawaliScene extends AFrameTask {
 			}
 			break;
 		case LIGHT:
-			//TODO: Handle light remove all
+			for (i = 0; i < j; ++i) {
+				internalAddLight((ALight) tasks[i], AFrameTask.UNUSED_INDEX);
+			}
 			break;
 		case OBJECT3D:
 			for (i = 0; i < j; ++i) {
@@ -1057,7 +1081,13 @@ public class RajawaliScene extends AFrameTask {
 			}
 			break;
 		case LIGHT:
-			//TODO: Handle light add all
+			if (clear) {
+				internalClearLights();
+			} else {
+				for (i = 0; i < j; ++i) {
+					internalRemoveLight((ALight) tasks[i], AFrameTask.UNUSED_INDEX);
+				}
+			}
 			break;
 		case OBJECT3D:
 			if (clear) {
@@ -1243,6 +1273,138 @@ public class RajawaliScene extends AFrameTask {
 		//Thread safety deferred to the List
 		return mCameras.size();
 	}
+	
+	/**
+	 * Internal method for replacing a {@link ALightD} light. If index is
+	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
+	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
+	 * 
+	 * @param light {@link ALight} The new light for the specified index.
+	 * @param replace {@link ALight} The light replacing the old light.
+	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 */
+	private void internalReplaceLight(AFrameTask child, ALight replace, int index) {
+		if (index != AFrameTask.UNUSED_INDEX) {
+			mLights.set(index, replace);
+		} else {
+			mLights.set(mChildren.indexOf(child), replace);
+		}
+		updateMaterialsWithLights();
+		//TODO: Handle light replacement in scene graph
+	}
+	
+	/**
+	 * Internal method for adding a {@link ALight}.
+	 * Should only be called through {@link #handleAddTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param light {@link ALight} to add.
+	 * @param int index to add the light at. 
+	 */
+	private void internalAddLight(ALight light, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mLights.add(light);
+		} else {
+			mLights.add(index, light);
+		}
+		if (mSceneGraph != null) {
+			//mSceneGraph.addObject(light); //TODO: Uncomment
+		}
+		updateMaterialsWithLights();
+	}
+	
+	/**
+	 * Internal method for removing a {@link ALight}.
+	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
+	 * 
+	 * This takes an index for the removal. 
+	 * 
+	 * NOTE: If there is only one light and it is removed, bad things
+	 * will happen.
+	 * 
+	 * @param light {@link ALight} to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the light at. 
+	 */
+	private void internalRemoveLight(ALight light, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mLights.remove(light);
+		} else {
+			mLights.remove(index);
+		}
+		if (mSceneGraph != null) {
+			//mSceneGraph.removeObject(light); //TODO: Uncomment
+		}
+		updateMaterialsWithLights();
+	}
+	
+	/**
+	 * Internal method for removing all {@link ALight} from the light list.
+	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
+	 * Note that this will re-add the current light.
+	 */
+	private void internalClearLights() {
+		if (mSceneGraph != null) {
+			//mSceneGraph.removeAll(mLights); //TODO: Uncomment
+		}
+		mLights.clear();
+	}
+	
+	/**
+	 * Creates a shallow copy of the internal lights list. 
+	 * 
+	 * @return ArrayList containing the lights.
+	 */
+	public ArrayList<ALight> getLightsCopy() {
+		ArrayList<ALight> list = new ArrayList<ALight>();
+		list.addAll(mLights);
+		return list;
+	}
+	
+	/**
+	 * Retrieve the number of lights.
+	 * 
+	 * @return The current number of lights.
+	 */
+	public int getNumLights() {
+		//Thread safety deferred to the List
+		return mLights.size();
+	}
+	
+	/**
+	 * Set the lights on all materials used in this scene. This method
+	 * should only be called when the lights collection is dirty. It will 
+	 * trigger compilation of all light-enabled shaders.
+	 */
+	private void updateMaterialsWithLights()
+	{
+		for(Object3D child : mChildren)
+		{
+			updateChildMaterialWithLights(child);
+		}
+	}
+	
+	/**
+	 * Update the lights on this child's material. This method should only
+	 * be called when the lights collection is dirty. It will
+	 * trigger compilation of all light-enabled shaders.
+	 * 
+	 * @param child
+	 */
+	private void updateChildMaterialWithLights(Object3D child)
+	{
+		Material material = child.getMaterial();
+		if(material != null && material.lightingEnabled())
+			material.setLights(mLights);
+		
+		int numChildren = child.getNumChildren();
+		for(int i=0; i<numChildren; i++)
+		{
+			Object3D grandChild = child.getChildAt(i);
+			updateChildMaterialWithLights(grandChild);
+		}
+	};
 	
 	/**
 	 * Internal method for replacing a {@link Object3D} child. If index is
