@@ -25,7 +25,7 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 	}
 
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 		

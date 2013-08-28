@@ -26,15 +26,13 @@ public class FragmentShader extends AShader {
 	private List<ALight> mLights;
 	private boolean mHasCubeMaps;
 	
-	public FragmentShader(boolean hasCubeMaps)
+	public FragmentShader()
 	{
 		super(ShaderType.FRAGMENT);
-		mHasCubeMaps = hasCubeMaps;
-		initialize();
 	}
 	
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 		
@@ -102,5 +100,10 @@ public class FragmentShader extends AShader {
 	
 	public float getColorInfluence() {
 		return mColorInfluence;
+	}
+
+	public void hasCubeMaps(boolean value)
+	{
+		mHasCubeMaps = value;
 	}
 }

@@ -109,7 +109,7 @@ public class ToonFragmentShaderFragment extends AShader implements IShaderFragme
 	}
 	
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();		
 		muToonColor0 = (RVec4) addUniform(ToonShaderVar.U_TOON_COLOR0);

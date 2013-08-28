@@ -40,7 +40,7 @@ public abstract class AShader extends AShaderBase {
 		mShaderType = shaderType;
 	}
 
-	protected void initialize() {
+	public void initialize() {
 		mUniforms = new Hashtable<String, ShaderVar>();
 		mAttributes = new Hashtable<String, ShaderVar>();
 		mVaryings = new Hashtable<String, ShaderVar>();

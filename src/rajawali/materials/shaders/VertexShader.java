@@ -20,6 +20,7 @@ public class VertexShader extends AShader {
 	private RVec2 maTextureCoord;
 	private RVec3 maNormal;
 	private RVec4 maPosition;
+	private RVec4 maVertexColor;
 
 	private RVec2 mvTextureCoord;
 	private RVec3 mvCubeTextureCoord;
@@ -42,22 +43,22 @@ public class VertexShader extends AShader {
 	private int maCubeTextureCoordHandle;
 	private int maNormalHandle;
 	private int maPositionHandle;
+	private int maVertexColorBufferHandle;
 
 	private float[] mColor;
 	@SuppressWarnings("unused")
 	private List<ALight> mLights;
 	private boolean mHasCubeMaps;
+	private boolean mUseVertexColors;
 
-	public VertexShader(boolean hasCubeMaps)
+	public VertexShader()
 	{
 		super(ShaderType.VERTEX);
-		mHasCubeMaps = hasCubeMaps;
 		mColor = new float[] { 1, 0, 0, 1 };
-		initialize();
 	}
 
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 
@@ -76,6 +77,8 @@ public class VertexShader extends AShader {
 		maTextureCoord = (RVec2) addAttribute(DefaultVar.A_TEXTURE_COORD);
 		maNormal = (RVec3) addAttribute(DefaultVar.A_NORMAL);
 		maPosition = (RVec4) addAttribute(DefaultVar.A_POSITION);
+		if (mUseVertexColors)
+			maVertexColor = (RVec4) addAttribute(DefaultVar.A_VERTEX_COLOR);
 
 		// -- varyings
 
@@ -97,7 +100,10 @@ public class VertexShader extends AShader {
 	public void main() {
 		mgPosition.assign(maPosition);
 		mgNormal.assign(maNormal);
-		mgColor.assign(muColor);
+		if(mUseVertexColors)
+			mgColor.assign(maVertexColor);
+		else
+			mgColor.assign(muColor);
 
 		// -- do fragment stuff
 		boolean hasSkeletalAnimation = false;
@@ -170,6 +176,13 @@ public class VertexShader extends AShader {
 		GLES20.glEnableVertexAttribArray(maNormalHandle);
 		GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT, false, 0, 0);
 	}
+	
+	public void setVertexColors(final int vertexColorBufferHandle) {
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexColorBufferHandle);
+		GLES20.glEnableVertexAttribArray(maVertexColorBufferHandle);
+		GLES20.glVertexAttribPointer(maVertexColorBufferHandle, 4, GLES20.GL_FLOAT,
+				false, 0, 0);
+	}
 
 	public void setMVPMatrix(float[] mvpMatrix) {
 		GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mvpMatrix, 0);
@@ -209,5 +222,15 @@ public class VertexShader extends AShader {
 	public void setLights(List<ALight> lights)
 	{
 		mLights = lights;
+	}
+	
+	public void hasCubeMaps(boolean value)
+	{
+		mHasCubeMaps = value;
+	}
+	
+	public void useVertexColors(boolean value)
+	{
+		mUseVertexColors = value;
 	}
 }

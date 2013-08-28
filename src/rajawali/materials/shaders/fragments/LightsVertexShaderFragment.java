@@ -82,7 +82,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 	}
 
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 

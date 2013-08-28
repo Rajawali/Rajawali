@@ -19,7 +19,7 @@ public class SkyTextureFragmentShaderFragment extends ATextureFragmentShaderFrag
 	}
 	
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 	}

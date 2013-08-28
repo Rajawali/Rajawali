@@ -24,7 +24,7 @@ public class VertexAnimationVertexShaderFragment extends AShader implements ISha
 	}
 
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 

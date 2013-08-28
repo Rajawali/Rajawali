@@ -37,7 +37,7 @@ public class SkeletalAnimationVertexShaderFragment extends AShader implements IS
 	}
 	
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 		

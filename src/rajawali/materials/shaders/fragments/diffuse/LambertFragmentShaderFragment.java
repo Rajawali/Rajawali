@@ -22,7 +22,7 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 	}
 	
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 		

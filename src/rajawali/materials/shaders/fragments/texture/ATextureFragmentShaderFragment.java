@@ -28,7 +28,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	}
 	
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 		

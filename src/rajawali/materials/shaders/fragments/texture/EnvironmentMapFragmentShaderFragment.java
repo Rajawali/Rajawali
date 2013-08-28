@@ -16,7 +16,7 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 	}
 	
 	@Override
-	protected void initialize()
+	public void initialize()
 	{
 		super.initialize();
 	}

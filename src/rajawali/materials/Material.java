@@ -224,8 +224,13 @@ public class Material extends AFrameTask {
 			}
 		}			
 		
-		mVertexShader = new VertexShader(hasCubeMaps);
-		mFragmentShader = new FragmentShader(hasCubeMaps);
+		mVertexShader = new VertexShader();
+		mVertexShader.hasCubeMaps(hasCubeMaps);
+		mVertexShader.useVertexColors(mUseVertexColors);
+		mVertexShader.initialize();
+		mFragmentShader = new FragmentShader();
+		mFragmentShader.hasCubeMaps(hasCubeMaps);
+		mFragmentShader.initialize();
 		
 		if(normalMapTextures != null && normalMapTextures.size() > 0)
 		{
@@ -489,6 +494,10 @@ public class Material extends AFrameTask {
 	
 	public void setNormals(final int normalBufferHandle) {
 		mVertexShader.setNormals(normalBufferHandle);
+	}
+	
+	public void setVertexColors(final int vertexColorBufferHandle) {
+		mVertexShader.setVertexColors(vertexColorBufferHandle);
 	}
 
 	public float[] getModelViewMatrix() {
