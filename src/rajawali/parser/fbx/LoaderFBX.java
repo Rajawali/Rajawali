@@ -33,6 +33,8 @@ import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
 import rajawali.materials.Material;
+import rajawali.materials.methods.DiffuseMethod;
+import rajawali.materials.methods.SpecularMethod;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.math.vector.Vector2;
@@ -43,11 +45,13 @@ import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
 import rajawali.parser.fbx.FBXValues.FBXIntBuffer;
 import rajawali.parser.fbx.FBXValues.FBXMatrix;
+import rajawali.parser.fbx.FBXValues.Objects.FBXMaterial;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 public class LoaderFBX extends AMeshLoader {
 	private static final char COMMENT = ';';
 	private static final String OBJECT_TYPE = "ObjectType:";
@@ -158,7 +162,7 @@ public class LoaderFBX extends AMeshLoader {
 		}
 		
 		// -- check fog
-		//TODO: FIX
+		//TODO: add fog support
 		/*if(mFbx.version5.fogOptions.fogEnable != null && mFbx.version5.fogOptions.fogEnable == 1) {
 			FogOptions fogOptions = mFbx.version5.fogOptions;
 			mRenderer.setFogEnabled(true);
@@ -392,10 +396,7 @@ public class LoaderFBX extends AMeshLoader {
 		}
 		indices.clear();
 		indices = null;
-		// TODO o.setMaterial(getMaterialForMesh(o, model.name));
-		// TODO o.getMaterial().setUseSingleColor(true);
-		// TODO add to scene
-		//o.setLights(lights);
+		o.setMaterial(getMaterialForMesh(o, model.name));
 		setMeshTextures(o, model.name);
 		
 		o.setPosition(model.properties.lclTranslation);
@@ -465,9 +466,7 @@ public class LoaderFBX extends AMeshLoader {
 	}
 
 	private Material getMaterialForMesh(Object3D o, String name) {
-		// TODO
-		/*
-		AMaterial mat = new SimpleMaterial();
+		Material mat = new Material();
 		FBXMaterial material = null;
 		Stack<Connect> conns = mFbx.connections.connections;
 		int num = conns.size();
@@ -492,30 +491,29 @@ public class LoaderFBX extends AMeshLoader {
 		}
 		
 		if(material != null) {
-			if(material.shadingModel.equals("lambert") || material.shadingModel.equals("phong")) {
-				// TODO
-				/*
-				PhongMaterial phong = new PhongMaterial();
-				o.setColor(material.properties.diffuseColor);
-				phong.setAmbientColor(material.properties.ambientColor);
-				phong.setAmbientIntensity(material.properties.ambientFactor);
+			mat.setDiffuseMethod(new DiffuseMethod.Lambert());
+			mat.enableLighting(true);
+			Vector3 color = material.properties.diffuseColor;
+			mat.setColor(Color.rgb((int)(color.x * 255.f), (int)(color.y * 255.f), (int)(color.z * 255.f)));
+			color = material.properties.ambientColor;
+			mat.setAmbientColor(Color.rgb((int)(color.x * 255.f), (int)(color.y * 255.f), (int)(color.z * 255.f)));
+			float intensity = material.properties.ambientFactor.floatValue();
+			mat.setAmbientIntensity(intensity, intensity, intensity);
+
+			if(material.shadingModel.equals("phong"))
+			{
+				SpecularMethod.Phong method = new SpecularMethod.Phong();
 				if(material.properties.specularColor != null)
-					phong.setSpecularColor(material.properties.specularColor);
+				{
+					color = material.properties.specularColor;
+					method.setSpecularColor(Color.rgb((int)(color.x * 255.f), (int)(color.y * 255.f), (int)(color.z * 255.f)));
+				}
 				if(material.properties.shininess != null)
-					phong.setShininess(material.properties.shininess);
-				mat = phong;
-			} else {
-				/*
-				DiffuseMaterial diffuse = new DiffuseMaterial();
-				o.setColor(material.properties.diffuseColor);
-				diffuse.setAmbientColor(material.properties.ambientColor);
-				diffuse.setAmbientIntensity(material.properties.ambientFactor);
-				mat = diffuse;
-				
+					method.setShininess(material.properties.shininess);
 			}
-		}*/
+		}
 		
-		return null;
+		return mat;
 	}
 	
 	private void readLine(BufferedReader buffer, String line) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException {

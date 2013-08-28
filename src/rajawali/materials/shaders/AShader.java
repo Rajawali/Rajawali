@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import rajawali.util.RajLog;
-
 import android.opengl.GLES20;
 
 
@@ -405,64 +404,53 @@ public abstract class AShader extends AShaderBase {
 				mShaderFragments.get(i).applyParams();
 	}
 	
-	public String subtract(float value1, ShaderVar value2)
+	public ShaderVar subtract(ShaderVar var1, ShaderVar var2)
 	{
-		return subtract(Float.toString(value1), value2.getName());
+		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		var.setName(var1.getName() + " - " + var2.getName());
+		var.mInitialized = true;
+		return var;
 	}
 	
-	public String subtract(float value1, String value2)
+	public ShaderVar subtract(float value1, ShaderVar var2)
 	{
-		return subtract(Float.toString(value1), value2);
+		return subtract(new RFloat(Float.toString(value1)), var2);
 	}
 	
-	public String subtract(String value1, String value2)
+	public ShaderVar divide(Float value1, ShaderVar var2)
 	{
-		return value1 + " - " + value2;
+		return divide(new RFloat(Float.toString(value1)), var2);
 	}
 	
-	public String divide(float value1, ShaderVar var)
+	public ShaderVar divide(ShaderVar var1, ShaderVar var2)
 	{
-		return divide(Float.toString(value1), var.getName());
+		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		var.setName(var1.getName() + " / " + var2.getName());
+		var.mInitialized = true;
+		return var;
 	}
 	
-	public String divide(float value1, String value2)
+	public ShaderVar multiply(ShaderVar var1, ShaderVar var2)
 	{
-		return divide(Float.toString(value1), value2);
+		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		var.setName(var1.getName() + " * " + var2.getName());
+		var.mInitialized = true;
+		return var;
 	}
 	
-	public String divide(String value1, String value2)
+	public ShaderVar max(ShaderVar var1, ShaderVar var2)
 	{
-		return value1 + " / " + value2;
+		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		var.setName("max(" + var1.getName() + ", " + var2.getName() + ")");
+		var.mInitialized = true;
+		return var;
 	}
 	
-	public String multiply(String value1, ShaderVar value2)
+	public ShaderVar max(ShaderVar var1, float value2)
 	{
-		return multiply(value1, value2.getName());
-	}
-	
-	public String multiply(ShaderVar value1, String value2)
-	{
-		return multiply(value1.getName(), value2);
-	}
-	
-	public String multiply(ShaderVar value1, ShaderVar value2)
-	{
-		return multiply(value1.getName(), value2.getName());
-	}
-	
-	public String multiply(String value1, String value2)
-	{
-		return value1 + " * " + value2;
-	}
-	
-	public String max(String value1, String value2)
-	{
-		return "max(" + value1 + ", " + value2 + ")";
-	}
-	
-	public String max(String value1, float value2)
-	{
-		return max(value1, Float.toString(value2));
+		ShaderVar s = new ShaderVar("max(" + var1.getName() + ", " + Float.toString(value2) + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 	
 	public String normalize(String value)
@@ -475,124 +463,120 @@ public abstract class AShader extends AShaderBase {
 		return normalize(value.getName());
 	}
 	
-	public String sqrt(String value)
+	public ShaderVar sqrt(ShaderVar var)
 	{
-		return "sqrt(" + value + ")";
-	}
-	
-	public String sqrt(ShaderVar value)
-	{
-		return sqrt(value.getName());
+		ShaderVar s = new ShaderVar("sqrt(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 
-	public String inversesqrt(String value)
+	public ShaderVar inversesqrt(ShaderVar var)
 	{
-		return "inversesqrt(" + value + ")";
-	}
-	
-	public String inversesqrt(ShaderVar value)
-	{
-		return inversesqrt(value.getName());
+		ShaderVar s = new ShaderVar("inversesqrt(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 
-	public String texture2D(String value1, String value2)
+	public ShaderVar texture1D(ShaderVar var1, ShaderVar var2)
 	{
-		return "texture2D(" + value1 + ", " + value2 + ")";
+		ShaderVar s = new ShaderVar("texture1D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		s.mInitialized = true;
+		return s;
 	}
 	
-	public String texture2D(ShaderVar value1, ShaderVar value2)
+	public ShaderVar texture2D(ShaderVar var1, ShaderVar var2)
 	{
-		return texture2D(value1.getName(), value2.getName());
+		ShaderVar s = new ShaderVar("texture2D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		s.mInitialized = true;
+		return s;
+	}
+	
+	public ShaderVar texture3D(ShaderVar var1, ShaderVar var2)
+	{
+		ShaderVar s = new ShaderVar("texture3D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		s.mInitialized = true;
+		return s;
 	}
 
-	public String textureCube(String value1, String value2)
+	public ShaderVar textureCube(ShaderVar var1, ShaderVar var2)
 	{
-		return "textureCube(" + value1 + ", " + value2 + ")";
-	}
-	
-	public String textureCube(ShaderVar value1, ShaderVar value2)
-	{
-		return textureCube(value1.getName(), value2.getName());
+		ShaderVar s = new ShaderVar("textureCube(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		s.mInitialized = true;
+		return s;
 	}
 
-	public String distance(ShaderVar value1, ShaderVar value2)
+	public ShaderVar distance(ShaderVar var1, ShaderVar var2)
 	{
-		return "distance(" + value1.getName() + ", " + value2.getName() + ")";
+		ShaderVar s = new ShaderVar("distance(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 	
-	public String dot(ShaderVar value1, ShaderVar value2)
+	public ShaderVar dot(ShaderVar var1, ShaderVar var2)
 	{
-		return "dot(" + value1.getName() + ", " + value2.getName() + ")";
+		ShaderVar s = new ShaderVar("dot(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 	
-	public String cos(String value)
+	public ShaderVar cos(ShaderVar var)
 	{
-		return "cos(" + value + ")";
+		ShaderVar s = new ShaderVar("cos(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 	
-	public String cos(ShaderVar var)
+	public ShaderVar sin(ShaderVar var)
 	{
-		return cos(var.getName());
+		ShaderVar s = new ShaderVar("sin(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
+	}
+	
+	public ShaderVar tan(ShaderVar var)
+	{
+		ShaderVar s = new ShaderVar("tan(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
+	}
+	
+	public ShaderVar pow(ShaderVar var1, ShaderVar var2)
+	{
+		ShaderVar s = new ShaderVar("pow(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 
-	public String sin(String value)
+	public ShaderVar length(ShaderVar var)
 	{
-		return "sin(" + value + ")";
+		ShaderVar s = new ShaderVar("length(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 	
-	public String sin(ShaderVar var)
+	public ShaderVar radians(ShaderVar var)
 	{
-		return sin(var.getName());
+		ShaderVar s = new ShaderVar("radians(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
 	}
 	
-	public String tan(String value)
+	public ShaderVar reflect(ShaderVar var1, ShaderVar var2)
 	{
-		return "tan(" + value + ")";
-	}
-	
-	public String tan(ShaderVar var)
-	{
-		return tan(var.getName());
-	}
-	
-	public String pow(ShaderVar var, String value)
-	{
-		return pow(var.getName(), value);
-	}
-	
-	public String pow(ShaderVar var1, ShaderVar var2)
-	{
-		return pow(var1.getName(), var2.getName());
-	}
-	
-	public String pow(String value1, String value2)
-	{
-		return "pow(" + value1 + ", " + value2 + ")";
-	}
-
-	public String radians(String value)
-	{
-		return "radians(" + value + ")";
-	}
-	
-	public String radians(ShaderVar var)
-	{
-		return radians(var.getName());
-	}
-	
-	public String reflect(ShaderVar value1, ShaderVar value2)
-	{
-		return reflect(value1.getVarName(), value2.getVarName());
-	}
-	
-	public String reflect(String value1, String value2)
-	{
-		return "reflect(" + value1 + ", " + value2 + ")";
+		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		var.setName("reflect(" + var1.getName() + ", " + var2.getName() + ")");
+		var.mInitialized = true;
+		return var;
 	}
 	
 	public void discard()
 	{
 		mShaderSB.append("discard;\n");
+	}
+	
+	public void startif(ShaderVar var1, String operator, ShaderVar var2)
+	{
+		startif(var1, operator, var2.getName());
 	}
 
 	public void startif(ShaderVar var, String operator, float value)
@@ -733,18 +717,30 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
-	public ShaderVar castMat3(ShaderVar var)
+	public ShaderVar castMat3(float value)
 	{
-		return castMat3(var.getVarName());
+		return castMat3(new RFloat(value));
 	}
 	
-	public ShaderVar castMat3(String var)
+	public ShaderVar castMat3(ShaderVar var)
 	{
-		ShaderVar v = new ShaderVar("mat3(" + var + ")", DataType.MAT3);
+		ShaderVar v = new ShaderVar("mat3(" + var.getName() + ")", DataType.MAT3);
 		v.mInitialized = true;
 		return v;
 	}
-
+	
+	public ShaderVar castMat4(float value)
+	{
+		return castMat4(new RFloat(Float.toString(value)));
+	}
+	
+	public ShaderVar castMat4(ShaderVar var)
+	{
+		ShaderVar v = new ShaderVar("mat4(" + var.getName() + ")", DataType.MAT3);
+		v.mInitialized = true;
+		return v;
+	}
+	
 	public ShaderVar enclose(ShaderVar value)
 	{
 		ShaderVar var = getReturnTypeForOperation(value.getDataType(), value.getDataType());

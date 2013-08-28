@@ -990,13 +990,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
-	 * Internal method for adding {@link AMaterial} objects.
+	 * Internal method for adding {@link Material} objects.
 	 * Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * This takes an index for the addition, but it is pretty
 	 * meaningless.
 	 * 
-	 * @param material {@link AMaterial} to add.
+	 * @param material {@link Material} to add.
 	 * @param int index to add the animation at. 
 	 */
 	private void internalAddMaterial(Material material, int index) {

@@ -564,7 +564,7 @@ public abstract class AShaderBase {
 		
 		public RFloat(float value)
 		{
-			super(Float.toString(value), DataType.FLOAT);
+			super(Float.toString(value), DataType.FLOAT, Float.toString(value), false);
 		}
 	}
 
@@ -701,6 +701,7 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
 			v.setValue(this.mName + " / " + value.getName());
+			v.setName(v.getValue());
 			return v;
 		}
 		
@@ -708,6 +709,7 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
 			v.setValue(this.mName + " % " + value.getName());
+			v.setName(v.getValue());
 			return v;
 		}
 		
@@ -846,6 +848,15 @@ public abstract class AShaderBase {
 		{
 			ShaderVar var = new ShaderVar(mDataType);
 			var.setName(mName + "[" + index + "]");
+			var.mInitialized = true;
+			return var;
+		}
+		
+		public ShaderVar negate()
+		{
+			ShaderVar var = new ShaderVar(mDataType);
+			var.setName("-" + mName);
+			var.mInitialized = true;
 			return var;
 		}
 	}

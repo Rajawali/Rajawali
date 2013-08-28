@@ -291,4 +291,19 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		GLES20.glUniform3fv(muAmbientColorHandle, 1, mAmbientColor, 0);
 		GLES20.glUniform3fv(muAmbientIntensityHandle, 1, mAmbientIntensity, 0);
 	}
+	
+	public void setAmbientColor(float[] ambientColor)
+	{
+		mAmbientColor[0] = ambientColor[0];
+		mAmbientColor[1] = ambientColor[1];
+		mAmbientColor[2] = ambientColor[2];
+		mAmbientColor[3] = ambientColor[3];
+	}
+	
+	public void setAmbientIntensity(float[] ambientIntensity)
+	{
+		mAmbientIntensity[0] = ambientIntensity[0];
+		mAmbientIntensity[1] = ambientIntensity[1];
+		mAmbientIntensity[2] = ambientIntensity[2];
+	}
 }

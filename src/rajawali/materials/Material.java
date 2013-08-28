@@ -38,6 +38,7 @@ public class Material extends AFrameTask {
 
 	private VertexShader mVertexShader;
 	private FragmentShader mFragmentShader;
+	private LightsVertexShaderFragment mLightsVertexShaderFragment;
 	
 	private IDiffuseMethod mDiffuseMethod;
 	private ISpecularMethod mSpecularMethod;
@@ -52,7 +53,7 @@ public class Material extends AFrameTask {
 
 	private float[] mModelMatrix;
 	private float[] mModelViewMatrix;
-	private float[] mColor;
+	private float[] mColor, mAmbientColor, mAmbientIntensity;
 	private float mColorInfluence = 1;
 
 	protected List<ALight> mLights;
@@ -76,6 +77,8 @@ public class Material extends AFrameTask {
 		mTextureList = new ArrayList<ATexture>();
 		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
 		mColor = new float[] { 1, 0, 0, 1 };
+		mAmbientColor = new float[] {.2f, .2f, .2f};
+		mAmbientIntensity = new float[] {.3f, .3f, .3f};	
 	}
 
 	public void useVertexColors(boolean value)
@@ -92,6 +95,8 @@ public class Material extends AFrameTask {
 		mColor[1] = (float)Color.green(color) / 255.f;
 		mColor[2] = (float)Color.blue(color) / 255.f;
 		mColor[3] = (float)Color.alpha(color) / 255.f;
+		if(mVertexShader != null)
+			mVertexShader.setColor(mColor);
 	}
 	
 	public void setColor(float[] color) {
@@ -99,6 +104,8 @@ public class Material extends AFrameTask {
 		mColor[1] = color[1];
 		mColor[2] = color[2];
 		mColor[3] = color[3];
+		if(mVertexShader != null)
+			mVertexShader.setColor(mColor);
 	}
 	
 	public int getColor() {
@@ -113,6 +120,40 @@ public class Material extends AFrameTask {
 		return mColorInfluence;
 	}
 
+	public void setAmbientColor(int color) {
+		mAmbientColor[0] = (float)Color.red(color) / 255.f;
+		mAmbientColor[1] = (float)Color.green(color) / 255.f;
+		mAmbientColor[2] = (float)Color.blue(color) / 255.f;
+		mAmbientColor[3] = (float)Color.alpha(color) / 255.f;
+		if(mLightsVertexShaderFragment != null)
+			mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
+	}
+	
+	public void setAmbientColor(float[] color) {
+		mAmbientColor[0] = color[0];
+		mAmbientColor[1] = color[1];
+		mAmbientColor[2] = color[2];
+		mAmbientColor[3] = color[3];
+		if(mLightsVertexShaderFragment != null)
+			mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
+	}
+	
+	public int getAmbientColor() {
+		return Color.argb((int)(mAmbientColor[3] * 255), (int)(mAmbientColor[0] * 255), (int)(mAmbientColor[1] * 255), (int)(mAmbientColor[2] * 255));
+	}
+	
+	public void setAmbientIntensity(double r, double g, double b) {
+		setAmbientIntensity(r, g, b);
+	}
+	
+	public void setAmbientIntensity(float r, float g, float b) {
+		mAmbientIntensity[0] = r;
+		mAmbientIntensity[1] = g;
+		mAmbientIntensity[2] = b;
+		if(mLightsVertexShaderFragment != null)
+			mLightsVertexShaderFragment.setAmbientIntensity(mAmbientIntensity);
+	}
+	
 	public boolean usingVertexColors()
 	{
 		return mUseVertexColors;
@@ -270,7 +311,10 @@ public class Material extends AFrameTask {
 			mVertexShader.setLights(mLights);
 			mFragmentShader.setLights(mLights);
 			
-			mVertexShader.addShaderFragment(new LightsVertexShaderFragment(mLights));
+			mLightsVertexShaderFragment = new LightsVertexShaderFragment(mLights);
+			mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
+			mLightsVertexShaderFragment.setAmbientIntensity(mAmbientIntensity);
+			mVertexShader.addShaderFragment(mLightsVertexShaderFragment);
 			mFragmentShader.addShaderFragment(new LightsFragmentShaderFragment(mLights));
 
 			checkForPlugins(PluginInsertLocation.PRE_DIFFUSE);
