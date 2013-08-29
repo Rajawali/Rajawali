@@ -19,9 +19,9 @@ public class NormalMapFragmentShaderFragment extends ATextureFragmentShaderFragm
 	
 	@Override
 	public void main() {
-		RVec2 textureCoord = (RVec2)getGlobal(DefaultVar.V_TEXTURE_COORD);
+		RVec2 textureCoord = (RVec2)getGlobal(DefaultShaderVar.V_TEXTURE_COORD);
 		RVec3 texNormal = new RVec3("texNormal");
-		RVec3 normal = (RVec3)getGlobal(DefaultVar.G_NORMAL);
+		RVec3 normal = (RVec3)getGlobal(DefaultShaderVar.G_NORMAL);
 		
 		for(int i=0; i<mTextures.size(); i++)
 		{

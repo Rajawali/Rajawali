@@ -28,9 +28,9 @@ public class SkyTextureFragmentShaderFragment extends ATextureFragmentShaderFrag
 	public void main() {
 		super.main();
 		
-		RVec4 color = (RVec4) getGlobal(DefaultVar.G_COLOR);
+		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		RVec4 skyColor = new RVec4("skyColor");
-		RVec3 texCoord = (RVec3) getGlobal(DefaultVar.V_CUBE_TEXTURE_COORD);
+		RVec3 texCoord = (RVec3) getGlobal(DefaultShaderVar.V_CUBE_TEXTURE_COORD);
 		
 		int cubeMapCount = 0;
 		

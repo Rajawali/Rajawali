@@ -68,9 +68,9 @@ public class ToonFragmentShaderFragment extends AShader implements IShaderFragme
 	
 	@Override
 	public void main() {
-		RVec4 color = (RVec4) getGlobal(DefaultVar.G_COLOR);
+		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		RFloat intensity = new RFloat("intensity");
-		RVec3 normal = (RVec3)getGlobal(DefaultVar.G_NORMAL);
+		RVec3 normal = (RVec3)getGlobal(DefaultShaderVar.G_NORMAL);
 		RFloat power = new RFloat("power");
 		power.assign(0.0f);
 		intensity.assign(0.0f);

@@ -12,6 +12,7 @@ public interface IShaderFragment {
 	Hashtable<String, ShaderVar> getAttributes();
 	Hashtable<String, ShaderVar> getVaryings();
 	Hashtable<String, ShaderVar> getGlobals();
+	Hashtable<String, ShaderVar> getConsts();
 	void setStringBuilder(StringBuilder stringBuilder);
 	void main();
 	void applyParams();

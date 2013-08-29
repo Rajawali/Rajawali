@@ -16,9 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.lights.ALight;
 import rajawali.renderer.RajawaliRenderer;
-import rajawali.scene.RajawaliScene;
 
 
 public class MaterialManager extends AResourceManager {

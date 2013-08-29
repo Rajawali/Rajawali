@@ -22,17 +22,17 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 	@Override
 	public void main() {
 		super.main();
-		RVec4 color = (RVec4)getGlobal(DefaultVar.G_COLOR);
-		RVec2 textureCoord = (RVec2)getGlobal(DefaultVar.G_TEXTURE_COORD);
+		RVec4 color = (RVec4)getGlobal(DefaultShaderVar.G_COLOR);
+		RVec2 textureCoord = (RVec2)getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
 		RVec4 texColor = new RVec4("texColor");
 		
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
 			if(texture.offsetEnabled())
-				textureCoord.assignAdd(getGlobal(DefaultVar.U_OFFSET, i));
+				textureCoord.assignAdd(getGlobal(DefaultShaderVar.U_OFFSET, i));
 			if(texture.getWrapType() == WrapType.REPEAT)
-				textureCoord.assignMultiply(getGlobal(DefaultVar.U_REPEAT, i));
+				textureCoord.assignMultiply(getGlobal(DefaultShaderVar.U_REPEAT, i));
 			
 			if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
 				texColor.assign(texture2D(muVideoTextures[i], textureCoord));

@@ -20,7 +20,7 @@ public class AlphaMapFragmentShaderFragment extends ATextureFragmentShaderFragme
 	@Override
 	public void main() {
 		super.main();
-		RVec2 textureCoord = (RVec2)getGlobal(DefaultVar.G_TEXTURE_COORD);
+		RVec2 textureCoord = (RVec2)getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
 		RVec4 alphaMaskColor = new RVec4("alphaMaskColor");
 		
 		for(int i=0; i<mTextures.size(); i++)

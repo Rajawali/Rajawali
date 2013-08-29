@@ -45,6 +45,7 @@ public class Material extends AFrameTask {
 
 	private boolean mUseVertexColors;
 	private boolean mLightingEnabled;
+	private boolean mTimeEnabled;
 	private boolean mIsDirty = true;
 
 	private int mProgramHandle = -1;
@@ -55,6 +56,7 @@ public class Material extends AFrameTask {
 	private float[] mModelViewMatrix;
 	private float[] mColor, mAmbientColor, mAmbientIntensity;
 	private float mColorInfluence = 1;
+	private float mTime;
 
 	protected List<ALight> mLights;
 	protected List<IMaterialPlugin> mPlugins;
@@ -266,10 +268,12 @@ public class Material extends AFrameTask {
 		}			
 		
 		mVertexShader = new VertexShader();
+		mVertexShader.enableTime(mTimeEnabled);
 		mVertexShader.hasCubeMaps(hasCubeMaps);
 		mVertexShader.useVertexColors(mUseVertexColors);
 		mVertexShader.initialize();
 		mFragmentShader = new FragmentShader();
+		mFragmentShader.enableTime(mTimeEnabled);
 		mFragmentShader.hasCubeMaps(hasCubeMaps);
 		mFragmentShader.initialize();
 		
@@ -455,6 +459,7 @@ public class Material extends AFrameTask {
 		GLES20.glUseProgram(mProgramHandle);
 
 		mVertexShader.setColor(mColor);
+		mVertexShader.setTime(mTime);
 		mVertexShader.applyParams();
 		
 		mFragmentShader.setColorInfluence(mColorInfluence);
@@ -578,6 +583,25 @@ public class Material extends AFrameTask {
 	public boolean lightingEnabled()
 	{
 		return mLightingEnabled;
+	}
+	
+	public void enableTime(boolean value) {
+		mTimeEnabled = value;
+	}
+	
+	public boolean timeEnabled()
+	{
+		return mTimeEnabled;
+	}
+	
+	public void setTime(float time)
+	{
+		mTime = time;
+	}
+	
+	public float getTime()
+	{
+		return mTime;
 	}
 	
 	public void setLights(List<ALight> lights) {

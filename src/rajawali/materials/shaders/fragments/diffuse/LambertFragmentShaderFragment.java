@@ -42,7 +42,7 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 	public void main() {
 		RVec3 diffuse = new RVec3("diffuse");
 		diffuse.assign(0);
-		RVec3 normal = (RVec3)getGlobal(DefaultVar.G_NORMAL);
+		RVec3 normal = (RVec3)getGlobal(DefaultShaderVar.G_NORMAL);
 		RFloat power = new RFloat("power");
 		power.assign(0.0f);
 		
@@ -67,7 +67,7 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 			//
 			diffuse.assignAdd(lightColor.multiply(power));
 		}
-		RVec4 color = (RVec4) getGlobal(DefaultVar.G_COLOR);
+		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		RVec3 ambientColor = (RVec3) getGlobal(LightsShaderVar.V_AMBIENT_COLOR);
 		color.rgb().assign(enclose(diffuse.multiply(color.rgb())).add(ambientColor));
 	}

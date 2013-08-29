@@ -77,12 +77,12 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 			else
 				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);			
 			
-			muInfluence[i] = (RFloat) addUniform(DefaultVar.U_INFLUENCE, texture.getTextureName());
+			muInfluence[i] = (RFloat) addUniform(DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
 			
 			if(texture.getWrapType() == WrapType.REPEAT)
-				muRepeat[i] = (RVec2) addUniform(DefaultVar.U_REPEAT, i);
+				muRepeat[i] = (RVec2) addUniform(DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
-				muOffset[i] = (RVec2) addUniform(DefaultVar.U_OFFSET, i);
+				muOffset[i] = (RVec2) addUniform(DefaultShaderVar.U_OFFSET, i);
 		}
 	}
 
@@ -93,11 +93,11 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		{
 			ATexture texture = mTextures.get(i);
 			muTextureHandles[i] = getUniformLocation(programHandle, texture.getTextureName());
-			muInfluenceHandles[i] = getUniformLocation(programHandle, DefaultVar.U_INFLUENCE, texture.getTextureName());
+			muInfluenceHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
 			if(texture.getWrapType() == WrapType.REPEAT)
-				muRepeatHandles[i] = getUniformLocation(programHandle, DefaultVar.U_REPEAT, i);
+				muRepeatHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
-				muOffsetHandles[i] = getUniformLocation(programHandle, DefaultVar.U_OFFSET, i);
+				muOffsetHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_OFFSET, i);
 		}
 	}
 

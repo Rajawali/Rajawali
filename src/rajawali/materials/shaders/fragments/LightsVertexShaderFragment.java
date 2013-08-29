@@ -165,8 +165,8 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 	@Override
 	public void main() {
 		int lightAttCount = 0;
-		RMat4 modelMatrix = (RMat4) getGlobal(DefaultVar.U_MODEL_MATRIX);
-		RVec4 position = (RVec4) getGlobal(DefaultVar.G_POSITION);
+		RMat4 modelMatrix = (RMat4) getGlobal(DefaultShaderVar.U_MODEL_MATRIX);
+		RVec4 position = (RVec4) getGlobal(DefaultShaderVar.G_POSITION);
 		
 		mvEye.assign(enclose(modelMatrix.multiply(position)).multiply(-1.0f));
 		mvAmbientColor.rgb().assign(muAmbientColor.rgb().multiply(muAmbientIntensity.rgb()));
@@ -297,7 +297,6 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		mAmbientColor[0] = ambientColor[0];
 		mAmbientColor[1] = ambientColor[1];
 		mAmbientColor[2] = ambientColor[2];
-		mAmbientColor[3] = ambientColor[3];
 	}
 	
 	public void setAmbientIntensity(float[] ambientIntensity)

@@ -79,6 +79,7 @@ public class RajawaliScene extends AFrameTask {
 	private final Object mNextSkyboxLock = new Object();
 	protected ATexture mSkyboxTexture;
 	
+	private boolean mLightsDirty;
 	protected ColorPickerInfo mPickerInfo;
 	protected boolean mReloadPickerInfo;
 	protected boolean mUsesCoverageAa;
@@ -686,6 +687,10 @@ public class RajawaliScene extends AFrameTask {
 		if (mUsesCoverageAa) {
 			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
+		if(mLightsDirty) {
+			updateMaterialsWithLights();
+			mLightsDirty = false;
+		}
 
 		GLES20.glClear(clearMask);
 
@@ -1289,7 +1294,7 @@ public class RajawaliScene extends AFrameTask {
 		} else {
 			mLights.set(mChildren.indexOf(child), replace);
 		}
-		updateMaterialsWithLights();
+		mLightsDirty = true;
 		//TODO: Handle light replacement in scene graph
 	}
 	
@@ -1312,7 +1317,7 @@ public class RajawaliScene extends AFrameTask {
 		if (mSceneGraph != null) {
 			//mSceneGraph.addObject(light); //TODO: Uncomment
 		}
-		updateMaterialsWithLights();
+		mLightsDirty = true;
 	}
 	
 	/**
@@ -1336,7 +1341,7 @@ public class RajawaliScene extends AFrameTask {
 		if (mSceneGraph != null) {
 			//mSceneGraph.removeObject(light); //TODO: Uncomment
 		}
-		updateMaterialsWithLights();
+		mLightsDirty = true;
 	}
 	
 	/**

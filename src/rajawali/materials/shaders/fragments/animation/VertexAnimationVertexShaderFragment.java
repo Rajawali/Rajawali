@@ -39,10 +39,10 @@ public class VertexAnimationVertexShaderFragment extends AShader implements ISha
 
 	@Override
 	public void main() {
-		RVec4 position = (RVec4)getGlobal(DefaultVar.G_POSITION);
-		RVec3 normal = (RVec3)getGlobal(DefaultVar.G_NORMAL);
-		RVec4 aPosition = (RVec4)getGlobal(DefaultVar.A_POSITION);
-		RVec3 aNormal = (RVec3)getGlobal(DefaultVar.A_NORMAL);
+		RVec4 position = (RVec4)getGlobal(DefaultShaderVar.G_POSITION);
+		RVec3 normal = (RVec3)getGlobal(DefaultShaderVar.G_NORMAL);
+		RVec4 aPosition = (RVec4)getGlobal(DefaultShaderVar.A_POSITION);
+		RVec3 aNormal = (RVec3)getGlobal(DefaultShaderVar.A_NORMAL);
 		
 		//
 		// -- position = aPosition + uInterpolation * (aNextFramePosition - aPosition);

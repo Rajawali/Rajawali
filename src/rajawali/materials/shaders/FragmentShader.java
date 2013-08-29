@@ -25,6 +25,7 @@ public class FragmentShader extends AShader {
 	@SuppressWarnings("unused")
 	private List<ALight> mLights;
 	private boolean mHasCubeMaps;
+	private boolean mTimeEnabled;
 	
 	public FragmentShader()
 	{
@@ -40,22 +41,24 @@ public class FragmentShader extends AShader {
 		
 		// -- uniforms
 		
-		muColorInfluence = (RFloat) addUniform(DefaultVar.U_COLOR_INFLUENCE);
+		muColorInfluence = (RFloat) addUniform(DefaultShaderVar.U_COLOR_INFLUENCE);
+		if(mTimeEnabled)
+			addUniform(DefaultShaderVar.U_TIME);
 		
 		// -- varyings
 		
-		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD);
+		mvTextureCoord = (RVec2) addVarying(DefaultShaderVar.V_TEXTURE_COORD);
 		if(mHasCubeMaps)
-			mvCubeTextureCoord = (RVec3) addVarying(DefaultVar.V_CUBE_TEXTURE_COORD);
-		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL);
-		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR);
-		addVarying(DefaultVar.V_EYE_DIR);
+			mvCubeTextureCoord = (RVec3) addVarying(DefaultShaderVar.V_CUBE_TEXTURE_COORD);
+		mvNormal = (RVec3) addVarying(DefaultShaderVar.V_NORMAL);
+		mvColor = (RVec4) addVarying(DefaultShaderVar.V_COLOR);
+		addVarying(DefaultShaderVar.V_EYE_DIR);
 		
 		// -- globals
 		
-		mgColor = (RVec4) addGlobal(DefaultVar.G_COLOR);
-		mgNormal = (RVec3) addGlobal(DefaultVar.G_NORMAL);
-		mgTextureCoord = (RVec2) addGlobal(DefaultVar.G_TEXTURE_COORD);
+		mgColor = (RVec4) addGlobal(DefaultShaderVar.G_COLOR);
+		mgNormal = (RVec3) addGlobal(DefaultShaderVar.G_NORMAL);
+		mgTextureCoord = (RVec2) addGlobal(DefaultShaderVar.G_TEXTURE_COORD);
 	}
 	
 	@Override
@@ -86,7 +89,7 @@ public class FragmentShader extends AShader {
 	public void setLocations(int programHandle) {
 		super.setLocations(programHandle);
 		
-		muColorInfluenceHandle = getUniformLocation(programHandle, DefaultVar.U_COLOR_INFLUENCE);
+		muColorInfluenceHandle = getUniformLocation(programHandle, DefaultShaderVar.U_COLOR_INFLUENCE);
 	}
 	
 	public void setLights(List<ALight> lights)
@@ -105,5 +108,10 @@ public class FragmentShader extends AShader {
 	public void hasCubeMaps(boolean value)
 	{
 		mHasCubeMaps = value;
+	}
+	
+	public void enableTime(boolean value)
+	{
+		mTimeEnabled = value;
 	}
 }

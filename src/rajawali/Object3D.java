@@ -273,6 +273,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				pickerMat.useProgram();
 				pickerMat.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			} else {
+				mMaterial.useProgram();
 				if (!mIsPartOfBatch) {
 					if (mMaterial == null) {
 						RajLog.e("[" + this.getClass().getName()
@@ -280,14 +281,15 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 						throw new RuntimeException(
 								"This object can't renderer because there's no material attached to it.");
 					}
-					mMaterial.useProgram();
+					
 					setShaderParams(camera);
 					mMaterial.bindTextures();
 					if(mGeometry.hasTextureCoordinates())
 						mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle);
-
 					if(mGeometry.hasNormals())
 						mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
+					if(mMaterial.usingVertexColors())
+						mMaterial.setVertexColors(mGeometry.getColorBufferInfo().bufferHandle);
 					
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}

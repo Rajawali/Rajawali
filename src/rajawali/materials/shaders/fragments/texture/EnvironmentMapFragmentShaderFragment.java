@@ -24,10 +24,10 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 	@Override
 	public void main() {
 		super.main();
-		RVec4 color = (RVec4) getGlobal(DefaultVar.G_COLOR);
+		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		RVec4 cmColor = new RVec4("cmColor");
-		RVec3 eyeDir = (RVec3) getGlobal(DefaultVar.V_EYE_DIR);
-		RVec3 normal = (RVec3) getGlobal(DefaultVar.V_NORMAL);
+		RVec3 eyeDir = (RVec3) getGlobal(DefaultShaderVar.V_EYE_DIR);
+		RVec3 normal = (RVec3) getGlobal(DefaultShaderVar.V_NORMAL);
 		
 		RVec3 reflected = new RVec3("reflected");
 		reflected.assign(reflect(eyeDir.xyz(), normal));

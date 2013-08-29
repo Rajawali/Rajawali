@@ -30,7 +30,7 @@ public abstract class AShader extends AShaderBase {
 	private Hashtable<String, ShaderVar> mVaryings;
 	private Hashtable<String, ShaderVar> mGlobals;
 	private Hashtable<String, Precision> mPrecisionSpecifier;
-	private Hashtable<String, Constant> mConstants;
+	private Hashtable<String, ShaderVar> mConstants;
 	protected List<IShaderFragment> mShaderFragments;
 	
 	public AShader() {}
@@ -45,7 +45,7 @@ public abstract class AShader extends AShaderBase {
 		mVaryings = new Hashtable<String, ShaderVar>();
 		mGlobals = new Hashtable<String, ShaderVar>();
 		mPrecisionSpecifier = new Hashtable<String, Precision>();
-		mConstants = new Hashtable<String, AShaderBase.Constant>();
+		mConstants = new Hashtable<String, ShaderVar>();
 		mShaderFragments = new ArrayList<IShaderFragment>();
 	}
 
@@ -171,22 +171,29 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
-	protected Constant addConst(String name, int value) {
-		return addConst(name, Integer.toString(value));
+	protected ShaderVar addConst(String name, int value) {
+		return addConst(name, new RInt(value));
 	}
 
-	protected Constant addConst(String name, float value) {
-		return addConst(name, Float.toString(value));
+	protected ShaderVar addConst(String name, float value) {
+		return addConst(name, new RFloat(value));
 	}
 
-	protected Constant addConst(String name, double value) {
-		return addConst(name, Double.toString(value));
+	protected ShaderVar addConst(String name, double value) {
+		return addConst(name, (float)value);
 	}
 
-	protected Constant addConst(String name, String value) {
-		Constant c = new Constant(name, value);
-		mConstants.put(name, c);
-		return c;
+	protected ShaderVar addConst(String name, ShaderVar var) {
+		ShaderVar v = getInstanceForDataType(name, var.getDataType());
+		v.setValue(var.getName());
+		v.isGlobal(true);
+		mConstants.put(v.getName(), v);
+		return v;
+	}
+	
+	public Hashtable<String, ShaderVar> getConsts()
+	{
+		return mConstants;
 	}
 	
 	public void setLocations(final int programHandle)
@@ -286,6 +293,32 @@ public abstract class AShader extends AShaderBase {
 		}
 
 		//
+		// -- Constants
+		//
+
+		Hashtable<String, ShaderVar> consts = new Hashtable<String, ShaderVar>(mConstants);
+		
+		for(int i=0; i<mShaderFragments.size(); i++)
+		{
+			IShaderFragment fragment = mShaderFragments.get(i);
+			if(fragment.getConsts() != null)
+				consts.putAll(fragment.getConsts());
+		}
+		
+		Set<Entry<String, ShaderVar>> set = consts.entrySet();
+		Iterator<Entry<String, ShaderVar>> iter = set.iterator();
+		while (iter.hasNext()) {
+			Entry<String, ShaderVar> e = iter.next();
+			ShaderVar var = e.getValue();
+			
+			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
+			
+			s.append("const ").append(var.mDataType.getTypeString())
+					.append(" ").append(var.mName).append(arrayStr)
+					.append(" = ").append(var.getValue()).append(";\n");
+		}
+		
+		//
 		// -- Uniforms
 		//
 
@@ -298,8 +331,8 @@ public abstract class AShader extends AShaderBase {
 				uniforms.putAll(fragment.getUniforms());
 		}
 		
-		Set<Entry<String, ShaderVar>> set = uniforms.entrySet();
-		Iterator<Entry<String, ShaderVar>> iter = set.iterator();
+		set = uniforms.entrySet();
+		iter = set.iterator();
 		while (iter.hasNext()) {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
@@ -667,6 +700,11 @@ public abstract class AShader extends AShaderBase {
 	public ShaderVar castVec2(ShaderVar x)
 	{
 		return castVec2(x.getVarName());
+	}
+	
+	public ShaderVar castVec3(float x, float y, float z)
+	{
+		return castVec3(new RFloat(x), new RFloat(y), new RFloat(z));
 	}
 	
 	public ShaderVar castVec3(ShaderVar x, ShaderVar y, ShaderVar z)

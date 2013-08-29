@@ -62,8 +62,8 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 			specular.assignAdd(spec);
 		}
 				
-		RVec2 textureCoord = (RVec2)getGlobal(DefaultVar.G_TEXTURE_COORD);
-		RVec4 color = (RVec4) getGlobal(DefaultVar.G_COLOR);
+		RVec2 textureCoord = (RVec2)getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
+		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		
 		if(mTextures != null && mTextures.size() > 0)
 		{

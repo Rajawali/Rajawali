@@ -37,6 +37,7 @@ public class VertexShader extends AShader {
 	private int muModelMatrixHandle;
 	private int muModelViewMatrixHandle;
 	private int muColorHandle;
+	private int muTimeHandle;
 
 	private int maTextureCoordHandle;
 	@SuppressWarnings("unused")
@@ -46,10 +47,12 @@ public class VertexShader extends AShader {
 	private int maVertexColorBufferHandle;
 
 	private float[] mColor;
+	private float mTime;
 	@SuppressWarnings("unused")
 	private List<ALight> mLights;
 	private boolean mHasCubeMaps;
 	private boolean mUseVertexColors;
+	private boolean mTimeEnabled;
 
 	public VertexShader()
 	{
@@ -66,34 +69,36 @@ public class VertexShader extends AShader {
 
 		// -- uniforms
 
-		muMVPMatrix = (RMat4) addUniform(DefaultVar.U_MVP_MATRIX);
-		muNormalMatrix = (RMat3) addUniform(DefaultVar.U_NORMAL_MATRIX);
-		muModelMatrix = (RMat4) addUniform(DefaultVar.U_MODEL_MATRIX);
-		muModelViewMatrix = (RMat4) addUniform(DefaultVar.U_MODEL_VIEW_MATRIX);
-		muColor = (RVec4) addUniform(DefaultVar.U_COLOR);
+		muMVPMatrix = (RMat4) addUniform(DefaultShaderVar.U_MVP_MATRIX);
+		muNormalMatrix = (RMat3) addUniform(DefaultShaderVar.U_NORMAL_MATRIX);
+		muModelMatrix = (RMat4) addUniform(DefaultShaderVar.U_MODEL_MATRIX);
+		muModelViewMatrix = (RMat4) addUniform(DefaultShaderVar.U_MODEL_VIEW_MATRIX);
+		muColor = (RVec4) addUniform(DefaultShaderVar.U_COLOR);
+		if(mTimeEnabled)
+			addUniform(DefaultShaderVar.U_TIME);
 
 		// -- attributes
 
-		maTextureCoord = (RVec2) addAttribute(DefaultVar.A_TEXTURE_COORD);
-		maNormal = (RVec3) addAttribute(DefaultVar.A_NORMAL);
-		maPosition = (RVec4) addAttribute(DefaultVar.A_POSITION);
+		maTextureCoord = (RVec2) addAttribute(DefaultShaderVar.A_TEXTURE_COORD);
+		maNormal = (RVec3) addAttribute(DefaultShaderVar.A_NORMAL);
+		maPosition = (RVec4) addAttribute(DefaultShaderVar.A_POSITION);
 		if (mUseVertexColors)
-			maVertexColor = (RVec4) addAttribute(DefaultVar.A_VERTEX_COLOR);
+			maVertexColor = (RVec4) addAttribute(DefaultShaderVar.A_VERTEX_COLOR);
 
 		// -- varyings
 
-		mvTextureCoord = (RVec2) addVarying(DefaultVar.V_TEXTURE_COORD);
+		mvTextureCoord = (RVec2) addVarying(DefaultShaderVar.V_TEXTURE_COORD);
 		if (mHasCubeMaps)
-			mvCubeTextureCoord = (RVec3) addVarying(DefaultVar.V_CUBE_TEXTURE_COORD);
-		mvNormal = (RVec3) addVarying(DefaultVar.V_NORMAL);
-		mvColor = (RVec4) addVarying(DefaultVar.V_COLOR);
-		mvEyeDir = (RVec3) addVarying(DefaultVar.V_EYE_DIR);
+			mvCubeTextureCoord = (RVec3) addVarying(DefaultShaderVar.V_CUBE_TEXTURE_COORD);
+		mvNormal = (RVec3) addVarying(DefaultShaderVar.V_NORMAL);
+		mvColor = (RVec4) addVarying(DefaultShaderVar.V_COLOR);
+		mvEyeDir = (RVec3) addVarying(DefaultShaderVar.V_EYE_DIR);
 
 		// -- globals
 
-		mgPosition = (RVec4) addGlobal(DefaultVar.G_POSITION);
-		mgNormal = (RVec3) addGlobal(DefaultVar.G_NORMAL);
-		mgColor = (RVec4) addGlobal(DefaultVar.G_COLOR);
+		mgPosition = (RVec4) addGlobal(DefaultShaderVar.G_POSITION);
+		mgNormal = (RVec3) addGlobal(DefaultShaderVar.G_NORMAL);
+		mgColor = (RVec4) addGlobal(DefaultShaderVar.G_COLOR);
 	}
 
 	@Override
@@ -142,19 +147,23 @@ public class VertexShader extends AShader {
 		super.applyParams();
 
 		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
+		GLES20.glUniform1f(muTimeHandle, mTime);
 	}
 
 	@Override
 	public void setLocations(final int programHandle) {
-		maTextureCoordHandle = getAttribLocation(programHandle, DefaultVar.A_TEXTURE_COORD);
-		maNormalHandle = getAttribLocation(programHandle, DefaultVar.A_NORMAL);
-		maPositionHandle = getAttribLocation(programHandle, DefaultVar.A_POSITION);
+		maTextureCoordHandle = getAttribLocation(programHandle, DefaultShaderVar.A_TEXTURE_COORD);
+		maNormalHandle = getAttribLocation(programHandle, DefaultShaderVar.A_NORMAL);
+		maPositionHandle = getAttribLocation(programHandle, DefaultShaderVar.A_POSITION);
+		if (mUseVertexColors)
+			maVertexColorBufferHandle = getAttribLocation(programHandle, DefaultShaderVar.A_VERTEX_COLOR);
 
-		muMVPMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MVP_MATRIX);
-		muNormalMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_NORMAL_MATRIX);
-		muModelMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MODEL_MATRIX);
-		muModelViewMatrixHandle = getUniformLocation(programHandle, DefaultVar.U_MODEL_VIEW_MATRIX);
-		muColorHandle = getUniformLocation(programHandle, DefaultVar.U_COLOR);
+		muMVPMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_MVP_MATRIX);
+		muNormalMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_NORMAL_MATRIX);
+		muModelMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_MODEL_MATRIX);
+		muModelViewMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_MODEL_VIEW_MATRIX);
+		muColorHandle = getUniformLocation(programHandle, DefaultShaderVar.U_COLOR);
+		muTimeHandle = getUniformLocation(programHandle, DefaultShaderVar.U_TIME);
 
 		super.setLocations(programHandle);
 	}
@@ -232,5 +241,15 @@ public class VertexShader extends AShader {
 	public void useVertexColors(boolean value)
 	{
 		mUseVertexColors = value;
+	}
+	
+	public void enableTime(boolean value)
+	{
+		mTimeEnabled = value;
+	}
+	
+	public void setTime(float time)
+	{
+		mTime = time;
 	}
 }
