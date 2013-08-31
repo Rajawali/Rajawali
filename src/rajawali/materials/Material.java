@@ -126,7 +126,6 @@ public class Material extends AFrameTask {
 		mAmbientColor[0] = (float)Color.red(color) / 255.f;
 		mAmbientColor[1] = (float)Color.green(color) / 255.f;
 		mAmbientColor[2] = (float)Color.blue(color) / 255.f;
-		mAmbientColor[3] = (float)Color.alpha(color) / 255.f;
 		if(mLightsVertexShaderFragment != null)
 			mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
 	}
@@ -135,13 +134,12 @@ public class Material extends AFrameTask {
 		mAmbientColor[0] = color[0];
 		mAmbientColor[1] = color[1];
 		mAmbientColor[2] = color[2];
-		mAmbientColor[3] = color[3];
 		if(mLightsVertexShaderFragment != null)
 			mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
 	}
 	
 	public int getAmbientColor() {
-		return Color.argb((int)(mAmbientColor[3] * 255), (int)(mAmbientColor[0] * 255), (int)(mAmbientColor[1] * 255), (int)(mAmbientColor[2] * 255));
+		return Color.argb(1, (int)(mAmbientColor[0] * 255), (int)(mAmbientColor[1] * 255), (int)(mAmbientColor[2] * 255));
 	}
 	
 	public void setAmbientIntensity(double r, double g, double b) {

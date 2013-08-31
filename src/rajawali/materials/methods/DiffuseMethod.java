@@ -94,6 +94,7 @@ public abstract class DiffuseMethod {
 		
 		public Toon(int toonColor0, int toonColor1, int toonColor2, int toonColor3)
 		{
+			this();
 			setToonColors(toonColor0, toonColor1, toonColor2, toonColor3);
 		}
 		

@@ -273,13 +273,13 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				pickerMat.useProgram();
 				pickerMat.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			} else {
-				mMaterial.useProgram();
 				if (!mIsPartOfBatch) {
+					mMaterial.useProgram();
 					if (mMaterial == null) {
 						RajLog.e("[" + this.getClass().getName()
-								+ "] This object can't renderer because there's no material attached to it.");
+								+ "] This object can't render because there's no material attached to it.");
 						throw new RuntimeException(
-								"This object can't renderer because there's no material attached to it.");
+								"This object can't render because there's no material attached to it.");
 					}
 					
 					setShaderParams(camera);
@@ -347,7 +347,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		}
 		// Draw children without frustum test
 		for (int i = 0, j = mChildren.size(); i < j; i++)
-			mChildren.get(i).render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, pickerInfo);
+		{
+			Object3D child = mChildren.get(i);
+			if(mRenderChildrenAsBatch || mIsPartOfBatch)
+				child.setPartOfBatch(true);
+			child.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, pickerInfo);
+		}
 
 		if (mRenderChildrenAsBatch) {
 			mMaterial.unbindTextures();

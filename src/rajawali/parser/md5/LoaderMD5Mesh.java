@@ -27,6 +27,7 @@ import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.animation.mesh.SkeletalAnimationObject3D;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
 import rajawali.materials.Material;
+import rajawali.materials.methods.DiffuseMethod;
 import rajawali.materials.plugins.SkeletalAnimationMaterialPlugin;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
@@ -434,6 +435,7 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 			Material mat = new Material();
 			mat.addPlugin(new SkeletalAnimationMaterialPlugin(mNumJoints, mesh.maxBoneWeightsPerVertex));
 			mat.enableLighting(true);
+			mat.setDiffuseMethod(new DiffuseMethod.Lambert());
 			o.setMaterial(mat);
 			if (!hasTexture) {
 				o.setColor(0xff000000 + (int) (Math.random() * 0xffffff));

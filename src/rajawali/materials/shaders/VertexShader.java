@@ -214,6 +214,7 @@ public class VertexShader extends AShader {
 		mColor[1] = (float) Color.green(color) / 255.f;
 		mColor[2] = (float) Color.blue(color) / 255.f;
 		mColor[3] = (float) Color.alpha(color) / 255.f;
+		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
 	}
 
 	public void setColor(float[] color) {
@@ -221,6 +222,7 @@ public class VertexShader extends AShader {
 		mColor[1] = color[1];
 		mColor[2] = color[2];
 		mColor[3] = color[3];
+		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
 	}
 
 	public int getColor() {
