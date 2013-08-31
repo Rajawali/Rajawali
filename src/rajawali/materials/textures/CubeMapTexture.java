@@ -30,6 +30,9 @@ public class CubeMapTexture extends AMultiTexture {
 			GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 	
+	private boolean mIsSkyTexture;
+	private boolean mIsEnvironmentTexture;
+	
 	public CubeMapTexture(CubeMapTexture other)
 	{
 		super(other);
@@ -158,5 +161,23 @@ public class CubeMapTexture extends AMultiTexture {
 
 	@Override
 	void replace() throws TextureException {
+	}
+	
+	public void isSkyTexture(boolean value) {
+		mIsSkyTexture = value;
+		mIsEnvironmentTexture = !value;
+	}
+	
+	public boolean isSkyTexture() {
+		return mIsSkyTexture;
+	}
+	
+	public void isEnvironmentTexture(boolean value) {
+		mIsEnvironmentTexture = value;
+		mIsSkyTexture = !mIsEnvironmentTexture;
+	}
+	
+	public boolean isEnvironmentTexture() {
+		return mIsEnvironmentTexture;
 	}
 }

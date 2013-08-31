@@ -14,10 +14,10 @@ package rajawali.bounds;
 
 import java.nio.FloatBuffer;
 
-import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
-import rajawali.materials.SimpleMaterial;
+import rajawali.Object3D;
+import rajawali.materials.Material;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
@@ -62,8 +62,8 @@ public class BoundingSphere implements IBoundingVolume {
 			final Matrix4 vMatrix, final Matrix4 mMatrix) {
 		if(mVisualSphere == null) {
 			mVisualSphere = new Sphere(1, 8, 8);
-			mVisualSphere.setMaterial(new SimpleMaterial());
-			mVisualSphere.getMaterial().setUseSingleColor(true);
+			Material material = new Material();
+			mVisualSphere.setMaterial(material);
 			mVisualSphere.setColor(0xffffff00);
 			mVisualSphere.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualSphere.setDoubleSided(true);

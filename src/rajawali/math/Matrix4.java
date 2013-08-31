@@ -383,7 +383,7 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 negTranslate(final Vector3 vec) {
-		return translate(-vec.x, - vec.y, -vec.z);
+		return translate(-vec.x, -vec.y, -vec.z);
 	}
 	
 	/**

@@ -26,7 +26,9 @@ import rajawali.animation.mesh.AAnimationObject3D;
 import rajawali.animation.mesh.IAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationFrame;
 import rajawali.animation.mesh.VertexAnimationObject3D;
-import rajawali.materials.DiffuseMaterial;
+import rajawali.materials.Material;
+import rajawali.materials.methods.DiffuseMethod;
+import rajawali.materials.plugins.VertexAnimationMaterialPlugin;
 import rajawali.materials.textures.Texture;
 import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
@@ -106,12 +108,16 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 			mObject.setFrames(mFrames);
 
 			IAnimationFrame firstFrame = mFrames.get(0);
-			DiffuseMaterial material = new DiffuseMaterial();
-			material.setVertexAnimationEnabled(true);
+
+			Material material = new Material();
+			material.enableLighting(true);
+			material.setDiffuseMethod(new DiffuseMethod.Lambert());
+			material.addPlugin(new VertexAnimationMaterialPlugin());
 			mObject.getGeometry().copyFromGeometry3D(firstFrame.getGeometry());
 			mObject.setData(firstFrame.getGeometry().getVertexBufferInfo(), firstFrame.getGeometry()
 					.getNormalBufferInfo(), mTextureCoords, null, mIndices);
 			mObject.setMaterial(material);
+			
 			mObject.setColor(0xffffffff);
 			if (mTexture != null)
 			{

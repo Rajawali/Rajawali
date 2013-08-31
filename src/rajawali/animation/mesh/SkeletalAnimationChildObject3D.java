@@ -16,13 +16,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import rajawali.Object3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
 import rajawali.Geometry3D;
 import rajawali.Geometry3D.BufferType;
+import rajawali.Object3D;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
-import rajawali.materials.AAdvancedMaterial;
+import rajawali.materials.plugins.SkeletalAnimationMaterialPlugin;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
@@ -69,6 +69,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private int mNumVertices;
 	private BoneVertex[] mVertices;
 	private BoneWeight[] mWeights;
+	private SkeletalAnimationMaterialPlugin mMaterialPlugin;
 
 	public SkeletalAnimationChildObject3D() {
 		super();
@@ -77,14 +78,16 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 
 	public void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
-		AAdvancedMaterial material = (AAdvancedMaterial) mMaterial;
-		material.setBone1Indexes(mboneIndexes1BufferInfo.bufferHandle);
-		material.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
+		
+		if(mMaterialPlugin == null)
+			mMaterialPlugin = (SkeletalAnimationMaterialPlugin) mMaterial.getPlugin(SkeletalAnimationMaterialPlugin.class);
+		mMaterialPlugin.setBone1Indices(mboneIndexes1BufferInfo.bufferHandle);
+		mMaterialPlugin.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
 		if (mMaxBoneWeightsPerVertex > 4) {
-			material.setBone2Indexes(mboneIndexes2BufferInfo.bufferHandle);
-			material.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
+			mMaterialPlugin.setBone2Indices(mboneIndexes2BufferInfo.bufferHandle);
+			mMaterialPlugin.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
 		}
-		material.setBoneMatrix(mSkeleton.uBoneMatrix);
+		mMaterialPlugin.setBoneMatrix(mSkeleton.uBoneMatrix);
 	}
 
 	public void setSkeleton(Object3D skeleton) {

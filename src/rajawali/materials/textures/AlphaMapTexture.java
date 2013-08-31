@@ -15,6 +15,8 @@ package rajawali.materials.textures;
 import android.graphics.Bitmap;
 
 public class AlphaMapTexture extends ASingleTexture {
+	private float mAlphaMaskingThreshold = .5f;
+	
 	public AlphaMapTexture(AlphaMapTexture other)
 	{
 		super(other);
@@ -25,9 +27,10 @@ public class AlphaMapTexture extends ASingleTexture {
 		super(TextureType.ALPHA, textureName);
 	}
 	
-	public AlphaMapTexture(int resourceId)
+	public AlphaMapTexture(String textureName, int resourceId)
 	{
-		super(TextureType.ALPHA, resourceId);
+		super(TextureType.ALPHA, textureName);
+		setResourceId(resourceId);
 	}
 	
 	public AlphaMapTexture(String textureName, Bitmap bitmap)
@@ -42,5 +45,15 @@ public class AlphaMapTexture extends ASingleTexture {
 	
 	public AlphaMapTexture clone() {
 		return new AlphaMapTexture(this);
+	}
+	
+	public void setAlphaMaskingThreshold(float threshold)
+	{
+		mAlphaMaskingThreshold = threshold;
+	}
+	
+	public float getAlphaMaskingThreshold()
+	{
+		return mAlphaMaskingThreshold;
 	}
 }
