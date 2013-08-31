@@ -27,6 +27,7 @@ import rajawali.math.Quaternion;
  * 
  * @author dennis.ippel
  * @author Jared Woolston (jwoolston@tenkiv.com)
+ * @author Dominic Cerisano (Gram-Schmidt orthonormalization)
  */
 public class Vector3 {
 	//The vector components
