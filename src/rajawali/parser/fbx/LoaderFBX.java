@@ -26,16 +26,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
 
-import rajawali.Object3D;
 import rajawali.Camera;
+import rajawali.Object3D;
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
-import rajawali.materials.AMaterial;
-import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.PhongMaterial;
-import rajawali.materials.SimpleMaterial;
+import rajawali.materials.Material;
+import rajawali.materials.methods.DiffuseMethod;
+import rajawali.materials.methods.SpecularMethod;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.Texture;
 import rajawali.math.vector.Vector2;
@@ -46,13 +45,13 @@ import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
 import rajawali.parser.fbx.FBXValues.FBXIntBuffer;
 import rajawali.parser.fbx.FBXValues.FBXMatrix;
-import rajawali.parser.fbx.FBXValues.Objects.Material;
+import rajawali.parser.fbx.FBXValues.Objects.FBXMaterial;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
+import android.graphics.Color;
 public class LoaderFBX extends AMeshLoader {
 	private static final char COMMENT = ';';
 	private static final String OBJECT_TYPE = "ObjectType:";
@@ -163,7 +162,7 @@ public class LoaderFBX extends AMeshLoader {
 		}
 		
 		// -- check fog
-		//TODO: FIX
+		//TODO: add fog support
 		/*if(mFbx.version5.fogOptions.fogEnable != null && mFbx.version5.fogOptions.fogEnable == 1) {
 			FogOptions fogOptions = mFbx.version5.fogOptions;
 			mRenderer.setFogEnabled(true);
@@ -226,7 +225,8 @@ public class LoaderFBX extends AMeshLoader {
 			light.setRotation(l.properties.lclRotation);
 			light.setPower(l.properties.intensity / 100f);
 			light.setColor(l.properties.color);
-			mRootObject.addLight(light);
+			// TODO add to scene
+			//mRootObject.addLight(light);
 			return light;			
 			
 		case ALight.DIRECTIONAL_LIGHT:		//Area
@@ -236,7 +236,8 @@ public class LoaderFBX extends AMeshLoader {
 			lD.setRotation(l.properties.lclRotation);
 			lD.setPower(l.properties.intensity / 100f);
 			lD.setColor(l.properties.color);
-			mRootObject.addLight(lD);
+			// TODO add to scene
+			//mRootObject.addLight(lD);
 			return lD;
 			
 		default:
@@ -249,7 +250,8 @@ public class LoaderFBX extends AMeshLoader {
 			lS.setCutoffAngle(l.properties.coneangle);
 			lS.setColor(l.properties.color);
 			lS.setLookAt(0, 0, 0);
-			mRootObject.addLight(lS);			
+			// TODO add to scene
+			//mRootObject.addLight(lS);			
 			return lS;
 		}
 	
@@ -394,10 +396,7 @@ public class LoaderFBX extends AMeshLoader {
 		}
 		indices.clear();
 		indices = null;
-		
 		o.setMaterial(getMaterialForMesh(o, model.name));
-		o.getMaterial().setUseSingleColor(true);
-		o.setLights(lights);
 		setMeshTextures(o, model.name);
 		
 		o.setPosition(model.properties.lclTranslation);
@@ -459,16 +458,16 @@ public class LoaderFBX extends AMeshLoader {
 							throw new ParsingException("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
 						}
 					}
-					o.getMaterial().addTexture(new Texture(textureName, bitmap));
+					o.getMaterial().addTexture(new Texture(textureName.replaceAll("[\\W]|_", ""), bitmap));
 					return;
 				}
 			}
 		}
 	}
-	
-	private AMaterial getMaterialForMesh(Object3D o, String name) {
-		AMaterial mat = new SimpleMaterial();
-		Material material = null;
+
+	private Material getMaterialForMesh(Object3D o, String name) {
+		Material mat = new Material();
+		FBXMaterial material = null;
 		Stack<Connect> conns = mFbx.connections.connections;
 		int num = conns.size();
 		String materialName = null;
@@ -481,7 +480,7 @@ public class LoaderFBX extends AMeshLoader {
 		}
 		
 		if(materialName != null) {
-			Stack<Material> materials = mFbx.objects.materials;
+			Stack<FBXMaterial> materials = mFbx.objects.materials;
 			num = materials.size();
 			for(int i=0; i<num; ++i) {
 				if(materials.get(i).name.equals(materialName)) {
@@ -492,22 +491,25 @@ public class LoaderFBX extends AMeshLoader {
 		}
 		
 		if(material != null) {
-			if(material.shadingModel.equals("lambert") || material.shadingModel.equals("phong")) {
-				PhongMaterial phong = new PhongMaterial();
-				o.setColor(material.properties.diffuseColor);
-				phong.setAmbientColor(material.properties.ambientColor);
-				phong.setAmbientIntensity(material.properties.ambientFactor);
+			mat.setDiffuseMethod(new DiffuseMethod.Lambert());
+			mat.enableLighting(true);
+			Vector3 color = material.properties.diffuseColor;
+			mat.setColor(Color.rgb((int)(color.x * 255.f), (int)(color.y * 255.f), (int)(color.z * 255.f)));
+			color = material.properties.ambientColor;
+			mat.setAmbientColor(Color.rgb((int)(color.x * 255.f), (int)(color.y * 255.f), (int)(color.z * 255.f)));
+			float intensity = material.properties.ambientFactor.floatValue();
+			mat.setAmbientIntensity(intensity, intensity, intensity);
+
+			if(material.shadingModel.equals("phong"))
+			{
+				SpecularMethod.Phong method = new SpecularMethod.Phong();
 				if(material.properties.specularColor != null)
-					phong.setSpecularColor(material.properties.specularColor);
+				{
+					color = material.properties.specularColor;
+					method.setSpecularColor(Color.rgb((int)(color.x * 255.f), (int)(color.y * 255.f), (int)(color.z * 255.f)));
+				}
 				if(material.properties.shininess != null)
-					phong.setShininess(material.properties.shininess);
-				mat = phong;
-			} else {
-				DiffuseMaterial diffuse = new DiffuseMaterial();
-				o.setColor(material.properties.diffuseColor);
-				diffuse.setAmbientColor(material.properties.ambientColor);
-				diffuse.setAmbientIntensity(material.properties.ambientFactor);
-				mat = diffuse;
+					method.setShininess(material.properties.shininess);
 			}
 		}
 		

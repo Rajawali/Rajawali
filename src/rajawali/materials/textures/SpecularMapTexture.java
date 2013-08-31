@@ -26,9 +26,10 @@ public class SpecularMapTexture extends ASingleTexture {
 		super(TextureType.SPECULAR, textureName);
 	}
 	
-	public SpecularMapTexture(int resourceId)
+	public SpecularMapTexture(String textureName, int resourceId)
 	{
-		super(TextureType.SPECULAR, resourceId);
+		super(TextureType.SPECULAR, textureName);
+		setResourceId(resourceId);
 	}
 	
 	public SpecularMapTexture(String textureName, Bitmap bitmap)

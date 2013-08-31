@@ -15,10 +15,10 @@ package rajawali.bounds;
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
-import rajawali.materials.SimpleMaterial;
+import rajawali.Object3D;
+import rajawali.materials.Material;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
@@ -86,8 +86,8 @@ public class BoundingBox implements IBoundingVolume {
 			final Matrix4 vMatrix, final Matrix4 mMatrix) {
 		if (mVisualBox == null) {
 			mVisualBox = new Cube(1);
-			mVisualBox.setMaterial(new SimpleMaterial());
-			mVisualBox.getMaterial().setUseSingleColor(true);
+			Material material = new Material();
+			mVisualBox.setMaterial(material);
 			mVisualBox.setColor(mBoundingColor.get());
 			mVisualBox.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualBox.setDoubleSided(true);

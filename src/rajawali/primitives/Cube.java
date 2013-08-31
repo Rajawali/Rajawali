@@ -96,16 +96,22 @@ public class Cube extends Object3D {
 	{
 		float halfSize = mSize * .5f;
 		float[] vertices = {
+				// -- back
 				halfSize, halfSize, halfSize, 			-halfSize, halfSize, halfSize,
 				-halfSize, -halfSize, halfSize,			halfSize, -halfSize, halfSize, // 0-1-halfSize-3 front
+				
 				halfSize, halfSize, halfSize, 			halfSize, -halfSize, halfSize, 
 				halfSize, -halfSize, -halfSize, 		halfSize, halfSize, -halfSize,// 0-3-4-5 right
+				// -- front
 				halfSize, -halfSize, -halfSize, 		-halfSize, -halfSize, -halfSize, 
 				-halfSize, halfSize, -halfSize,			halfSize, halfSize, -halfSize,// 4-7-6-5 back
+				
 				-halfSize, halfSize, halfSize, 			-halfSize, halfSize, -halfSize, 
 				-halfSize, -halfSize, -halfSize,		-halfSize,	-halfSize, halfSize,// 1-6-7-halfSize left
+				
 				halfSize, halfSize, halfSize, 			halfSize, halfSize, -halfSize, 
 				-halfSize, halfSize, -halfSize, 		-halfSize, halfSize, halfSize, // top
+				
 				halfSize, -halfSize, halfSize, 			-halfSize, -halfSize, halfSize, 
 				-halfSize, -halfSize, -halfSize,		halfSize, -halfSize, -halfSize,// bottom
 		};
@@ -130,23 +136,12 @@ public class Cube extends Object3D {
 		else if (mIsSkybox && !mHasCubemapTexture)
 		{
 			skyboxTextureCoords = new float[] {
-					.25f, .3333f, .5f, .3333f, .5f, .6666f, .25f, .6666f, // front
+					.25f, .3333f, .5f, .3333f, .5f, .6666f, .25f, .6666f, // back
 					.25f, .3333f, .25f, .6666f, 0, .6666f, 0, .3333f, // left
-					1, .6666f, .75f, .6666f, .75f, .3333f, 1, .3333f, // back
+					1, .6666f, .75f, .6666f, .75f, .3333f, 1, .3333f, // front
 					.5f, .3333f, .75f, .3333f, .75f, .6666f, .5f, .6666f, // right
 					.25f, .3333f, .25f, 0, .5f, 0, .5f, .3333f, // up
 					.25f, .6666f, .5f, .6666f, .5f, 1, .25f, 1 // down
-			};
-		}
-		else if (mHasCubemapTexture)
-		{
-			skyboxTextureCoords = new float[] {
-					t, t, t, 	-t, t, t, 	-t, -t, t, 	t, -t, t, // front
-					-t, t, -t, 	-t, -t, -t, 	-t, -t, t, -t, t, t, // left
-					t, -t, -t, -t, -t, -t, -t, t, -t, t, t, -t, // back
-					t, t, -t, t, t, t, t, -t, t, t, -t, -t, // right
-					t, t, t, t, t, -t, -t, t, -t, -t, t, t, // up
-					t, -t, t, -t, -t, t, -t, -t, -t, t, -t, -t, // down
 			};
 		}
 

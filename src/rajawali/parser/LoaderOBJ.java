@@ -24,11 +24,9 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 
 import rajawali.Object3D;
-import rajawali.materials.AMaterial;
-import rajawali.materials.DiffuseMaterial;
-import rajawali.materials.NormalMapMaterial;
-import rajawali.materials.NormalMapPhongMaterial;
-import rajawali.materials.PhongMaterial;
+import rajawali.materials.Material;
+import rajawali.materials.methods.DiffuseMethod;
+import rajawali.materials.methods.SpecularMethod;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.NormalMapTexture;
 import rajawali.materials.textures.SpecularMapTexture;
@@ -461,31 +459,21 @@ public class LoaderOBJ extends AMeshLoader {
 			boolean hasBump = matDef != null && matDef.bumpTexture != null;
 			boolean hasSpecularTexture = matDef != null && matDef.specularColorTexture != null;
 			boolean hasSpecular = matDef != null && matDef.specularColor > 0xff000000 && matDef.specularCoefficient > 0;
-			
-			AMaterial mat = null;
-			
-			if(hasSpecular && !hasBump)
-				mat = new PhongMaterial();
-			else if(hasBump && !hasSpecularTexture)
-				mat = new NormalMapMaterial();
-			else if(hasBump && hasSpecularTexture)
-				mat = new NormalMapPhongMaterial();
-			else
-				mat = new DiffuseMaterial();
 
-			mat.setUseSingleColor(!hasTexture);
-			object.setMaterial(mat);
-			object.setColor(matDef != null ? matDef.diffuseColor : (0xff000000 + ((int)(Math.random() * 0xffffff))));
+			Material mat = new Material();
+			mat.enableLighting(true);
+			mat.setDiffuseMethod(new DiffuseMethod.Lambert());
+			mat.setColor(matDef != null ? matDef.diffuseColor : (0xff000000 + ((int)(Math.random() * 0xffffff))));
 			if(hasSpecular || hasSpecularTexture) {
-				PhongMaterial phong = (PhongMaterial)mat;
-				phong.setSpecularColor(matDef.specularColor);
-				phong.setShininess(matDef.specularCoefficient);
+				SpecularMethod.Phong method = new SpecularMethod.Phong();
+				method.setSpecularColor(matDef.specularColor);
+				method.setShininess(matDef.specularCoefficient);
 			}
 			
-			if(hasTexture) {RajLog.i("hastex " + object.getName() + ", " + matDef.diffuseTexture);
+			if(hasTexture) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.diffuseTexture), "drawable", mResourcePackage);
-					mat.addTexture(new Texture(identifier));
+					mat.addTexture(new Texture(object.getName() + identifier, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
 					mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), BitmapFactory.decodeFile(filePath)));
@@ -494,7 +482,7 @@ public class LoaderOBJ extends AMeshLoader {
 			if(hasBump) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.bumpTexture), "drawable", mResourcePackage);
-					mat.addTexture(new NormalMapTexture(identifier));
+					mat.addTexture(new NormalMapTexture(object.getName() + identifier, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
 					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture), BitmapFactory.decodeFile(filePath)));
@@ -503,12 +491,13 @@ public class LoaderOBJ extends AMeshLoader {
 			if(hasSpecularTexture) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.specularColorTexture), "drawable", mResourcePackage);
-					mat.addTexture(new SpecularMapTexture(identifier));
+					mat.addTexture(new SpecularMapTexture(object.getName() + identifier, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.specularColorTexture);
 					mat.addTexture(new SpecularMapTexture(getOnlyFileName(matDef.specularColorTexture), BitmapFactory.decodeFile(filePath)));
 				}
 			}
+			object.setMaterial(mat);
 		}
 		
 		private int getColorFromParts(StringTokenizer parts) {
