@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.materials.shaders;
 
 import java.util.List;
@@ -214,7 +226,6 @@ public class VertexShader extends AShader {
 		mColor[1] = (float) Color.green(color) / 255.f;
 		mColor[2] = (float) Color.blue(color) / 255.f;
 		mColor[3] = (float) Color.alpha(color) / 255.f;
-		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
 	}
 
 	public void setColor(float[] color) {
@@ -222,7 +233,6 @@ public class VertexShader extends AShader {
 		mColor[1] = color[1];
 		mColor[2] = color[2];
 		mColor[3] = color[3];
-		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
 	}
 
 	public int getColor() {

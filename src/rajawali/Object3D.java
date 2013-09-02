@@ -293,7 +293,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 					
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
-				
+				mMaterial.applyParams();
 				mMaterial.setColor(mColor);
 			}
 
