@@ -9,7 +9,7 @@ import rajawali.parser.AWDParser.BlockHeader;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockContainer extends AExportableBlockParser {
+public class BlockContainer extends ABaseObjectBlockParser {
 
 	protected BaseObject3D mBaseObject;
 	protected SceneGraphBlock mSceneGraphBlock;

@@ -15,7 +15,7 @@ import android.util.SparseArray;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockTriangleGeometry extends AExportableBlockParser {
+public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
 	protected BaseObject3D[] mBaseObjects;
 	protected String mLookupName;

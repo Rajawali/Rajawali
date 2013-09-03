@@ -11,11 +11,16 @@ import rajawali.parser.ParsingException;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockMeshInstance extends ABlockParser {
+public class BlockMeshInstance extends AExportableBlockParser {
 
 	protected BaseObject3D mGeometry;
 	protected SceneGraphBlock mSceneGraphBlock;
 	protected long mGeometryID;
+
+	@Override
+	public BaseObject3D getBaseObject3D() {
+		return mGeometry;
+	}
 
 	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 
@@ -32,10 +37,10 @@ public class BlockMeshInstance extends ABlockParser {
 			mGeometry = new BaseObject3D();
 		} else {
 			if (geomHeader.parser == null
-					|| !(geomHeader.parser instanceof AExportableBlockParser))
+					|| !(geomHeader.parser instanceof ABaseObjectBlockParser))
 				throw new ParsingException("Invalid block reference.");
 
-			mGeometry = ((AExportableBlockParser) geomHeader.parser).getBaseObject3D();
+			mGeometry = ((ABaseObjectBlockParser) geomHeader.parser).getBaseObject3D().clone();
 		}
 
 		// Apply the materials
@@ -56,8 +61,15 @@ public class BlockMeshInstance extends ABlockParser {
 			}
 		}
 
-		final float[] mMMatrix = mGeometry.getModelMatrix();
-		System.arraycopy(mSceneGraphBlock.transformMatrix, 0, mMMatrix, 0, 16);
+		// Model matrix should not contain position as it is managed by the BaseObject3D
+		mGeometry.setX(mSceneGraphBlock.transformMatrix[12]);
+		mGeometry.setY(mSceneGraphBlock.transformMatrix[13]);
+		mGeometry.setZ(mSceneGraphBlock.transformMatrix[14]);
+		mSceneGraphBlock.transformMatrix[12] = 0;
+		mSceneGraphBlock.transformMatrix[13] = 0;
+		mSceneGraphBlock.transformMatrix[14] = 0;
+
+		System.arraycopy(mSceneGraphBlock.transformMatrix, 0, mGeometry.getModelMatrix(), 0, 16);
 
 		mGeometry.setMaterial(materials[0]);
 

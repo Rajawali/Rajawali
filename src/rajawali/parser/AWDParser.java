@@ -184,9 +184,9 @@ public class AWDParser extends AMeshParser {
 			awdHeaderFlags = dis.readUnsignedShort();
 
 			if (awdHeaderVersion == 2 && awdHeaderRevision == 1) {
-				awdHeaderAccuracyMatrix = (awdHeaderFlags & 0x02) == 0x02;
-				awdHeaderAccuracyGeo = (awdHeaderFlags & 0x04) == 0x04;
-				awdHeaderAccuracyProps = (awdHeaderFlags & 0x08) == 0x08;
+				awdHeaderAccuracyMatrix = (awdHeaderFlags & FLAG_HEADER_MATRIX_STORAGE_PRECISION) == FLAG_HEADER_MATRIX_STORAGE_PRECISION;
+				awdHeaderAccuracyGeo = (awdHeaderFlags & FLAG_HEADER_GEOMETRY_STORAGE_PRECISION) == FLAG_HEADER_GEOMETRY_STORAGE_PRECISION;
+				awdHeaderAccuracyProps = (awdHeaderFlags & FLAG_HEADER_PROPERTIES_STORAGE_PRECISION) == FLAG_HEADER_PROPERTIES_STORAGE_PRECISION;
 			}
 
 			awdHeaderCompression = dis.read();

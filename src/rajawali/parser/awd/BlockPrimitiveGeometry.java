@@ -11,7 +11,7 @@ import rajawali.util.RajLog;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockPrimitiveGeometry extends AExportableBlockParser {
+public class BlockPrimitiveGeometry extends ABaseObjectBlockParser {
 
 	enum PrimitiveType {
 		// These are in order of the specification [1-7] as of 07/09/2013 specification

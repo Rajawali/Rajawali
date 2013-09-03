@@ -14,8 +14,9 @@ import rajawali.util.RajLog;
  */
 public class SceneGraphBlock {
 
+	public final float[] transformMatrix = new float[16];
+	
 	public int parentID;
-	public float[] transformMatrix = new float[16];
 	public String lookupName;
 
 	public void readGraphData(BlockHeader blockHeader, AWDLittleEndianDataInputStream awddis) throws IOException, ParsingException {
