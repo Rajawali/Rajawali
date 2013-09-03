@@ -50,6 +50,7 @@ public abstract class SpecularMethod {
 	 */
 	public static enum SpecularShaderVar implements IGlobalShaderVar {
 		U_SPECULAR_COLOR("uSpecularColor", DataType.VEC3),
+		U_SPECULAR_INTENSITY("uSpecularIntensity", DataType.FLOAT),
 		U_SHININESS("uShininess", DataType.FLOAT);
 		
 		private String mVarString;
@@ -87,6 +88,7 @@ public abstract class SpecularMethod {
 	{
 		private int mSpecularColor;
 		private float mShininess;
+		private float mIntensity = 1;
 		private List<ALight> mLights;
 		private List<ATexture> mTextures;
 		private PhongFragmentShaderFragment mFragmentShader;
@@ -103,8 +105,14 @@ public abstract class SpecularMethod {
 		
 		public Phong(int specularColor, float shininess)
 		{
+			this(specularColor, shininess, 1);
+		}
+		
+		public Phong(int specularColor, float shininess, float intensity)
+		{
 			mSpecularColor = specularColor;
 			mShininess = shininess;
+			mIntensity = intensity;
 		}
 		
 		public IShaderFragment getVertexShaderFragment()
@@ -115,7 +123,7 @@ public abstract class SpecularMethod {
 		public IShaderFragment getFragmentShaderFragment()
 		{
 			if(mFragmentShader == null)
-				mFragmentShader = new PhongFragmentShaderFragment(mLights, mSpecularColor, mShininess, mTextures);
+				mFragmentShader = new PhongFragmentShaderFragment(mLights, mSpecularColor, mShininess, mIntensity, mTextures);
 			return mFragmentShader;
 		}
 		
@@ -136,6 +144,11 @@ public abstract class SpecularMethod {
 			return mSpecularColor;
 		}
 		
+		/**
+		 * A high value (200) for shininess gives a more polished shine and lower (10) gives a more diffuse reflection. 
+		 * 
+		 * @param shininess
+		 */
 		public void setShininess(float shininess)
 		{
 			mShininess = shininess;
@@ -146,6 +159,21 @@ public abstract class SpecularMethod {
 		public float getShininess()
 		{
 			return mShininess;
+		}
+		
+		/**
+		 * Sets the specular intensity. Use 1 for full intensity and 0 for no intensity.
+		 * 
+		 * @param intensity
+		 */
+		public void setIntensity(float intensity)
+		{
+			mIntensity = intensity;
+		}
+		
+		public float getIntensity()
+		{
+			return mIntensity;
 		}
 
 		public void setTextures(List<ATexture> textures) {

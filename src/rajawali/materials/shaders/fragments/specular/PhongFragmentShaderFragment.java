@@ -30,26 +30,30 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 	
 	private RVec3 muSpecularColor;
 	private RFloat muShininess;
+	private RFloat muSpecularIntensity;
 	
 	private float[] mSpecularColor;
 	private float mShininess;
+	private float mSpecularIntensity;
 	
 	private int muSpecularColorHandle;
 	private int muShininessHandle;
+	private int muSpecularIntensityHandle;
 	
 	private List<ALight> mLights;
 	
 	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess) {
-		this(lights, specularColor, shininess, null);
+		this(lights, specularColor, shininess, 1, null);
 	}
 	
-	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess, List<ATexture> textures) {
+	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess, float specularIntensity, List<ATexture> textures) {
 		super(textures);
 		mSpecularColor = new float[] { 1, 1, 1 };
 		mSpecularColor[0] = (float)Color.red(specularColor) / 255.f;
 		mSpecularColor[1] = (float)Color.green(specularColor) / 255.f;
 		mSpecularColor[2] = (float)Color.blue(specularColor) / 255.f;
 		mShininess = shininess;
+		mSpecularIntensity = specularIntensity;
 		mLights = lights;
 		mTextures = textures;
 		initialize();
@@ -74,6 +78,8 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 			specular.assignAdd(spec);
 		}
 				
+		specular.assignMultiply(muSpecularIntensity);
+		
 		RVec2 textureCoord = (RVec2)getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
 		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		
@@ -104,6 +110,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 		
 		muSpecularColor = (RVec3) addUniform(SpecularShaderVar.U_SPECULAR_COLOR);
 		muShininess = (RFloat) addUniform(SpecularShaderVar.U_SHININESS);
+		muSpecularIntensity = (RFloat) addUniform(SpecularShaderVar.U_SPECULAR_INTENSITY);
 	}
 	
 	@Override
@@ -111,6 +118,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 		super.setLocations(programHandle);
 		muSpecularColorHandle = getUniformLocation(programHandle, SpecularShaderVar.U_SPECULAR_COLOR);
 		muShininessHandle = getUniformLocation(programHandle, SpecularShaderVar.U_SHININESS);
+		muSpecularIntensityHandle = getUniformLocation(programHandle, SpecularShaderVar.U_SPECULAR_INTENSITY);
 	}
 	
 	@Override
@@ -118,6 +126,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 		super.applyParams();
 		GLES20.glUniform3fv(muSpecularColorHandle, 1, mSpecularColor, 0);
 		GLES20.glUniform1f(muShininessHandle, mShininess);
+		GLES20.glUniform1f(muSpecularIntensityHandle, mSpecularIntensity);
 	}
 	
 	public void setSpecularColor(int color)
@@ -125,6 +134,11 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 		mSpecularColor[0] = (float)Color.red(color) / 255.f;
 		mSpecularColor[1] = (float)Color.green(color) / 255.f;
 		mSpecularColor[2] = (float)Color.blue(color) / 255.f;
+	}
+	
+	public void setSpecularIntensity(float specularIntensity)
+	{
+		mSpecularIntensity = specularIntensity;
 	}
 	
 	public void setShininess(float shininess)
