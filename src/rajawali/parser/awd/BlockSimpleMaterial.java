@@ -1,5 +1,6 @@
 package rajawali.parser.awd;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import rajawali.materials.AMaterial;
@@ -141,13 +142,16 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 
 		switch (mMaterialType) {
 		case TYPE_COLOR:
+			mMaterial.setUseSingleColor(true);
+
 			// default to 0xcccccc per AWD implementation
-			final int color = (Integer) properties.get((short) 1, 0xcccccc);
+			final long color = (Long) properties.get((short) 1, 0xcccccc);
 			final float[] colorFloat = new float[4];
-			colorFloat[0] = (color >> 16) & 0xff;
-			colorFloat[1] = (color >> 8) & 0xff;
-			colorFloat[2] = color & 0xff;
-			colorFloat[3] = ((int) ((Double) properties.get(PROP_ALPHA, 1.0d) * 255)) & 0xff;
+			colorFloat[0] = ((color >> 16) & 0xff) / 255.0f;
+			colorFloat[1] = ((color >> 8) & 0xff) / 255.0f;
+			colorFloat[2] = (color & 0xff) / 255.0f;
+			colorFloat[3] = (((int) ((Double) properties.get(PROP_ALPHA, 1.0d) * 0xff)) & 0xff) / 255.0f;
+			System.out.println(Arrays.toString(colorFloat));
 
 			mMaterial.setColor(colorFloat);
 			break;
