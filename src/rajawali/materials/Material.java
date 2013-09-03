@@ -104,6 +104,10 @@ public class Material extends AFrameTask {
 	 * The specular method specifies the mirror-like reflection of light (or of other kinds of wave) 
 	 * from a surface, in which light from a single incoming direction (a ray) is reflected into a 
 	 * single outgoing direction.
+	 * This can be set using the setSpecularMethod() method:
+	 * <pre><code>
+	 * material.setSpecularMethod(new SpecularMethod.Phong()); 
+	 * </code></pre>
 	 */
 	private ISpecularMethod mSpecularMethod;
 	/**
@@ -1047,6 +1051,12 @@ public class Material extends AFrameTask {
 		return mTime;
 	}
 	
+	/**
+	 * The lights that affect the material. Lights shouldn't be managed by any other class
+	 * than {@link RajawaliScene}. To add lights to a scene call {@link RajawaliScene#addLight(ALight).
+	 * 
+	 * @param lights The lights collection
+	 */
 	public void setLights(List<ALight> lights) {
 		boolean hasChanged = false;
 		if(mLights != null)
@@ -1070,6 +1080,16 @@ public class Material extends AFrameTask {
 		}
 	}
 
+	/**
+	 * The diffuse method specifies the reflection of light from a surface such that an incident 
+	 * ray is reflected at many angles rather than at just one angle as in the case of specular reflection.
+	 * This can be set using the setDiffuseMethod() method:
+	 * <pre><code>
+	 * material.setDiffuseMethod(new DiffuseMethod.Lambert());
+	 * </code></pre>
+	 * 
+	 * @param diffuseMethod The diffuse method
+	 */
 	public void setDiffuseMethod(IDiffuseMethod diffuseMethod)
 	{
 		if(mDiffuseMethod == diffuseMethod) return;
@@ -1077,11 +1097,32 @@ public class Material extends AFrameTask {
 		mIsDirty = true;
 	}
 	
+	/**
+	 * The diffuse method specifies the reflection of light from a surface such that an incident 
+	 * ray is reflected at many angles rather than at just one angle as in the case of specular reflection.
+	 * This can be set using the setDiffuseMethod() method:
+	 * <pre><code>
+	 * material.setDiffuseMethod(new DiffuseMethod.Lambert());
+	 * </code></pre>
+	 * 
+	 * @return the currently used diffuse method
+	 */
 	public IDiffuseMethod getDiffuseMethod()
 	{
 		return mDiffuseMethod;
 	}
 
+	/**
+	 * The specular method specifies the mirror-like reflection of light (or of other kinds of wave) 
+	 * from a surface, in which light from a single incoming direction (a ray) is reflected into a 
+	 * single outgoing direction.
+	 * This can be set using the setSpecularMethod() method:
+	 * <pre><code>
+	 * material.setSpecularMethod(new SpecularMethod.Phong()); 
+	 * </code></pre>
+	 * 
+	 * @param specularMethod The specular method to use
+	 */
 	public void setSpecularMethod(ISpecularMethod specularMethod)
 	{
 		if(mSpecularMethod == specularMethod) return;
@@ -1089,11 +1130,29 @@ public class Material extends AFrameTask {
 		mIsDirty = true;
 	}
 	
+	/**
+	 * The specular method specifies the mirror-like reflection of light (or of other kinds of wave) 
+	 * from a surface, in which light from a single incoming direction (a ray) is reflected into a 
+	 * single outgoing direction.
+	 * This can be set using the setSpecularMethod() method:
+	 * <pre><code>
+	 * material.setSpecularMethod(new SpecularMethod.Phong()); 
+	 * </code></pre>
+	 *
+	 * @return The currently used specular method
+	 */
 	public ISpecularMethod getSpecularMethod()
 	{
 		return mSpecularMethod;
 	}
 	
+	/**
+	 * Add a material plugin. A material plugin is basically
+	 * a class that contains a vertex shader fragment and a fragment shader fragment. Material 
+	 * plugins can be used for custom shader effects.
+	 * 
+	 * @param plugin
+	 */
 	public void addPlugin(IMaterialPlugin plugin)
 	{
 		if(mPlugins == null)
@@ -1104,6 +1163,14 @@ public class Material extends AFrameTask {
 		mIsDirty = true;
 	}
 	
+	/**
+	 * Get a material plugin by using its class type. A material plugin is basically
+	 * a class that contains a vertex shader fragment and a fragment shader fragment. Material 
+	 * plugins can be used for custom shader effects.
+	 * 
+	 * @param pluginClass
+	 * @return
+	 */
 	public IMaterialPlugin getPlugin(Class<?> pluginClass)
 	{
 		if(mPlugins == null) return null;
@@ -1117,6 +1184,13 @@ public class Material extends AFrameTask {
 		return null;
 	}
 	
+	/**
+	 * Remove a material plugin. A material plugin is basically
+	 * a class that contains a vertex shader fragment and a fragment shader fragment. Material 
+	 * plugins can be used for custom shader effects.
+
+	 * @param plugin
+	 */
 	public void removePlugin(IMaterialPlugin plugin)
 	{
 		if(mPlugins != null && mPlugins.contains(plugin))
@@ -1126,16 +1200,27 @@ public class Material extends AFrameTask {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @param identity
+	 */
 	public void setOwnerIdentity(String identity)
 	{
 		mOwnerIdentity = identity;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @return
+	 */
 	public String getOwnerIdentity()
 	{
 		return mOwnerIdentity;
 	}
 
+	/* (non-Javadoc)
+	 * @see rajawali.renderer.AFrameTask#getFrameTaskType()
+	 */
 	@Override
 	public TYPE getFrameTaskType() {
 		return TYPE.MATERIAL;

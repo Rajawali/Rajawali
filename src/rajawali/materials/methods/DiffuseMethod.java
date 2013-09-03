@@ -17,6 +17,7 @@ import java.util.List;
 import android.graphics.Color;
 
 import rajawali.lights.ALight;
+import rajawali.materials.Material;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.AShaderBase.DataType;
 import rajawali.materials.shaders.AShaderBase.IGlobalShaderVar;
@@ -25,8 +26,31 @@ import rajawali.materials.shaders.fragments.diffuse.LambertVertexShaderFragment;
 import rajawali.materials.shaders.fragments.effects.ToonFragmentShaderFragment;
 
 
+/**
+ * Contains a collection of diffuse shading methods. These methods are used by materials
+ * that have lighting enabled. Diffuse shading determines the color of a material when a
+ * light shines on it. To use a diffuse method you need to create an instance of one of
+ * the classes and then assign it to a material using the {@link Material#setDiffuseMethod(IDiffuseMethod)}
+ * method:
+ * <pre><code>
+ * material.setDiffuseMethod(new DiffuseMethod.Lambert());
+ * </code></pre>
+ * 
+ * @author dennis.ippel
+ * @see http://en.wikipedia.org/wiki/Diffuse_reflection
+ *
+ */
 public abstract class DiffuseMethod {
+	/**
+	 * Defines shader variables that are specific to diffuse shading.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	public static enum DiffuseShaderVar implements IGlobalShaderVar {
+		/**
+		 * The dot product between the surface normal and the light direction. 
+		 */
 		L_NDOTL("NdotL", DataType.FLOAT);
 		
 		private String mVarString;
@@ -46,6 +70,25 @@ public abstract class DiffuseMethod {
 		}
 	}
 	
+	/**
+	 * Defines Lambertian reflectance. This technique causes polygons to reflect light equally
+	 * in all directions. The reflection is calculated by taking the dot product of the 
+	 * surface's normal vector and a normalized light direction vector. This number is then
+	 * multiplied by the color of the surface and the intensity of the light hitting the 
+	 * surface. 
+	 * 
+	 * To use the Lambertian diffuse method you need to create an instance of one of
+	 * the methods and then assign it to a material using the {@link Material#setDiffuseMethod(IDiffuseMethod)}
+	 * method:
+	 * <pre><code>
+	 * material.setDiffuseMethod(new DiffuseMethod.Lambert());
+	 * </code></pre>
+	 * 
+	 * @see http://en.wikipedia.org/wiki/Lambertian_reflectance
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	public static final class Lambert implements IDiffuseMethod
 	{
 		private float mIntensity;
@@ -87,6 +130,24 @@ public abstract class DiffuseMethod {
 		}
 	}
 	
+	/**
+	 * Toon shading or cel shading is a type of non-photorealistic rendering designed to
+	 * make a model appear to be hand-drawn. It is often used to mimic the style of a 
+	 * comic book or cartoon. Smooth lighting values are calculated for each pixel and then
+	 * mapped to a small number of discrete shades to create a characteristic flat look.
+	 * 
+	 * To use the Toon diffuse method you need to create an instance of one of
+	 * the methods and then assign it to a material using the {@link Material#setDiffuseMethod(IDiffuseMethod)}
+	 * method:
+	 * <pre><code>
+	 * material.setDiffuseMethod(new DiffuseMethod.Toon(int toonColor1, int toonColor2, int toonColor3, int toonColor4));
+	 * </code></pre>
+	 * 
+	 * @see http://en.wikipedia.org/wiki/Cel_shading
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	public static final class Toon implements IDiffuseMethod
 	{
 		private float[] mToonColor0;

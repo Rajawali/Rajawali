@@ -15,6 +15,7 @@ package rajawali.materials.methods;
 import java.util.List;
 
 import rajawali.lights.ALight;
+import rajawali.materials.Material;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.AShaderBase.DataType;
 import rajawali.materials.shaders.AShaderBase.IGlobalShaderVar;
@@ -23,7 +24,30 @@ import rajawali.materials.textures.ATexture;
 import android.graphics.Color;
 
 
+/**
+ * Contains a collection of diffuse shading methods. These methods are used by materials
+ * that have lighting enabled. A specular highlight is the bright spot of light that appears 
+ * on shiny objects when illuminated. The term specular means that light is perfectly reflected 
+ * in a mirror-like way from the light source to the viewer.
+ * 
+ * To use a specular method you need to create an instance of one of the classes and then 
+ * assign it to a material using the {@link Material#setSpecularMethod(ISpecularMethod)}
+ * method:
+ * <pre><code>
+ * material.setSpecularMethod(new SpecularMethod.Phong());
+ * </code></pre>
+ * 
+ * @author dennis.ippel
+ * @see http://en.wikipedia.org/wiki/Specular_highlight
+ *
+ */
 public abstract class SpecularMethod {
+	/**
+	 * Defines shader variables that are specific to specular shading.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	public static enum SpecularShaderVar implements IGlobalShaderVar {
 		U_SPECULAR_COLOR("uSpecularColor", DataType.VEC3),
 		U_SHININESS("uShininess", DataType.FLOAT);
@@ -45,6 +69,20 @@ public abstract class SpecularMethod {
 		}
 	}
 	
+	/**
+	 * Phong shading interpolates surface normals across rasterized polygons and computes pixel
+	 * colors based on the interpolated normals and a reflection model. 
+	 * 
+	 * To use the Phong specular method you need to create an instance of one of
+	 * the methods and then assign it to a material using the {@link Material#setSpecularMethod(ISpecularMethod)}
+	 * method:
+	 * <pre><code>
+	 * material.setSpecularMethod(new SpecularMethod.Phong());
+	 * </code></pre>
+	 * 
+	 * @author dennis.ippel
+	 * @see http://en.wikipedia.org/wiki/Phong_shading
+	 */
 	public static final class Phong implements ISpecularMethod
 	{
 		private int mSpecularColor;
