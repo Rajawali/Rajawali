@@ -97,13 +97,12 @@ public class MaterialManager extends AResourceManager {
 		{
 			Material material = mMaterialList.get(i);
 			
-			if(material.getOwnerIdentity().equals(mRenderer.getClass().toString()))
+			if(material.getOwnerIdentity() != null && material.getOwnerIdentity().equals(mRenderer.getClass().toString()))
 			{
 				material.remove();
 				mMaterialList.remove(i);
 				i -= 1;
-				count -= 1;
-							
+				count -= 1;							
 			}			
 		}
 		
