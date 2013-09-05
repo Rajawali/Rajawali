@@ -313,7 +313,6 @@ public abstract class Wallpaper extends WallpaperService {
 				}
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			}
-
 		}
 
 		@Override
