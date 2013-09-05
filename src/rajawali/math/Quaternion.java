@@ -25,6 +25,7 @@ import rajawali.math.vector.Vector3.Axis;
  * 
  * @author dennis.ippel
  * @author Jared Woolston (jwoolston@tenkiv.com)
+ * @author Dominic Cerisano (Quaternion camera lookAt)
  */
 public final class Quaternion {
 	//Tolerances

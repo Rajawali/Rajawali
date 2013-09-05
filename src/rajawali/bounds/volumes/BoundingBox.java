@@ -15,10 +15,10 @@ package rajawali.bounds.volumes;
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
-import rajawali.materials.SimpleMaterial;
+import rajawali.Object3D;
+import rajawali.materials.Material;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
@@ -86,8 +86,8 @@ public class BoundingBox implements IBoundingVolume {
 			final Matrix4 vMatrix, final Matrix4 mMatrix) {
 		if (mVisualBox == null) {
 			mVisualBox = new Cube(1);
-			mVisualBox.setMaterial(new SimpleMaterial());
-			mVisualBox.getMaterial().setUseSingleColor(true);
+			Material material = new Material();
+			mVisualBox.setMaterial(material);
 			mVisualBox.setColor(mBoundingColor.get());
 			mVisualBox.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualBox.setDoubleSided(true);
@@ -215,3 +215,37 @@ public class BoundingBox implements IBoundingVolume {
 		return "BoundingBox min: " + mTransformedMin + " max: " + mTransformedMax;
 	}
 }
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.bounds.IBoundingVolume#contains(rajawali.bounds.IBoundingVolume)
+	 */
+	/*public boolean contains(IBoundingVolume boundingVolume) {
+		if(!(boundingVolume instanceof BoundingBox)) return false;
+		BoundingBox boundingBox = (BoundingBox)boundingVolume;
+		Number3D otherMin = boundingBox.getTransformedMin();
+		Number3D otherMax = boundingBox.getTransformedMax();
+		Number3D min = mTransformedMin;
+		Number3D max = mTransformedMax;		
+		
+		return (max.x >= otherMax.x) && (min.x <= otherMin.x) &&
+				(max.y >= otherMax.y) && (min.y <= otherMin.y) &&
+				(max.z >= otherMax.z) && (min.z <= otherMin.z);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see rajawali.bounds.IBoundingVolume#isContainedBy(rajawali.bounds.IBoundingVolume)
+	 */
+	/*public boolean isContainedBy(IBoundingVolume boundingVolume) {
+		if(!(boundingVolume instanceof BoundingBox)) return false;
+		BoundingBox boundingBox = (BoundingBox)boundingVolume;
+		Number3D otherMin = boundingBox.getTransformedMin();
+		Number3D otherMax = boundingBox.getTransformedMax();
+		Number3D min = mTransformedMin;
+		Number3D max = mTransformedMax;		
+		
+		return (max.x <= otherMax.x) && (min.x >= otherMin.x) &&
+				(max.y <= otherMax.y) && (min.y >= otherMin.y) &&
+				(max.z <= otherMax.z) && (min.z >= otherMin.z);
+	}*/

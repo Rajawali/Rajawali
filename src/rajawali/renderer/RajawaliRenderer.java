@@ -27,13 +27,13 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
-import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Capabilities;
+import rajawali.Object3D;
 import rajawali.animation.Animation3D;
 import rajawali.effects.APass;
 import rajawali.effects.EffectComposer;
-import rajawali.materials.AMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
@@ -41,9 +41,9 @@ import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.plugins.Plugin;
 import rajawali.scene.RajawaliScene;
-import rajawali.util.OnFPSUpdateListener;
 import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
+import rajawali.util.OnFPSUpdateListener;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
@@ -135,8 +135,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajLog.i("Rajawali | Anchor Steam | Dev Branch");
 		RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
 		
-		AMaterial.setLoaderContext(context);
-
 		mContext = context;
 		mFrameRate = getRefreshRate();
 		mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
@@ -612,12 +610,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void onSurfaceDestroyed() {
 		synchronized (mScenes) {
-			mTextureManager.unregisterRenderer(this);
-			mMaterialManager.unregisterRenderer(this);
 			if (mTextureManager != null)
+			{
+				mTextureManager.unregisterRenderer(this);
 				mTextureManager.taskReset(this);
+			}
 			if (mMaterialManager != null)
+			{
 				mMaterialManager.taskReset(this);
+				mMaterialManager.unregisterRenderer(this);
+			}
 			for (int i = 0, j = mScenes.size(); i < j; ++i)
 				mScenes.get(i).destroyScene();
 		}
@@ -798,7 +800,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalAddTexture((ATexture) task, task.getIndex());
 			break;
 		case MATERIAL:
-			internalAddMaterial((AMaterial) task, task.getIndex());
+			internalAddMaterial((Material) task, task.getIndex());
 		default:
 			break;
 		}
@@ -819,7 +821,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalRemoveTexture((ATexture) task, task.getIndex());
 			break;
 		case MATERIAL:
-			internalRemoveMaterial((AMaterial) task, task.getIndex());
+			internalRemoveMaterial((Material) task, task.getIndex());
 			break;
 		default:
 			break;
@@ -991,16 +993,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
-	 * Internal method for adding {@link AMaterial} objects.
+	 * Internal method for adding {@link Material} objects.
 	 * Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * This takes an index for the addition, but it is pretty
 	 * meaningless.
 	 * 
-	 * @param material {@link AMaterial} to add.
+	 * @param material {@link Material} to add.
 	 * @param int index to add the animation at. 
 	 */
-	private void internalAddMaterial(AMaterial material, int index) {
+	private void internalAddMaterial(Material material, int index) {
 		mMaterialManager.taskAdd(material);
 	}
 
@@ -1032,7 +1034,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mTextureManager.taskRemove(texture);
 	}
 	
-	private void internalRemoveMaterial(AMaterial material, int index)
+	private void internalRemoveMaterial(Material material, int index)
 	{
 		mMaterialManager.taskRemove(material);
 	}

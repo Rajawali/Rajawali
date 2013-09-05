@@ -26,9 +26,10 @@ public class NormalMapTexture extends ASingleTexture {
 		super(TextureType.NORMAL, textureName);
 	}
 	
-	public NormalMapTexture(int resourceId)
+	public NormalMapTexture(String textureName, int resourceId)
 	{
-		super(TextureType.NORMAL, resourceId);
+		super(TextureType.NORMAL, textureName);
+		setResourceId(resourceId);
 	}
 	
 	public NormalMapTexture(String textureName, Bitmap bitmap)

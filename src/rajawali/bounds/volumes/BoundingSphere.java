@@ -15,10 +15,10 @@ package rajawali.bounds.volumes;
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Geometry3D;
-import rajawali.materials.SimpleMaterial;
+import rajawali.Object3D;
+import rajawali.materials.Material;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
@@ -63,8 +63,8 @@ public class BoundingSphere implements IBoundingVolume {
 			final Matrix4 vMatrix, final Matrix4 mMatrix) {
 		if(mVisualSphere == null) {
 			mVisualSphere = new Sphere(1, 8, 8);
-			mVisualSphere.setMaterial(new SimpleMaterial());
-			mVisualSphere.getMaterial().setUseSingleColor(true);
+			Material material = new Material();
+			mVisualSphere.setMaterial(material);
 			mVisualSphere.setColor(mBoundingColor.get());
 			mVisualSphere.setDrawingMode(GLES20.GL_LINE_LOOP);
 			mVisualSphere.setDoubleSided(true);
@@ -120,4 +120,27 @@ public class BoundingSphere implements IBoundingVolume {
 	public String toString() {
 		return "BoundingSphere radius: " + Double.toString(getScaledRadius());
 	}
+	
+	public boolean intersectsWith(IBoundingVolume boundingVolume) {
+		if(!(boundingVolume instanceof BoundingSphere)) return false;
+		BoundingSphere boundingSphere = (BoundingSphere)boundingVolume;
+		
+		mTmpPos.setAll(mPosition);
+		mTmpPos.subtract(boundingSphere.getPosition());
+		
+		mDist = mTmpPos.x * mTmpPos.x + mTmpPos.y * mTmpPos.y + mTmpPos.z * mTmpPos.z;
+		mMinDist = mRadius * mScale + boundingSphere.getRadius() * boundingSphere.getScale();
+		
+		return mDist < mMinDist * mMinDist;
+	}
+
+	/*public boolean contains(IBoundingVolume boundingVolume) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isContainedBy(IBoundingVolume boundingVolume) {
+		// TODO Auto-generated method stub
+		return false;
+	}*/
 }

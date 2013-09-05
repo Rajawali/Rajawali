@@ -21,11 +21,11 @@ import rajawali.renderer.RajawaliRenderer;
 
 public class MaterialManager extends AResourceManager {
 	private static MaterialManager instance = null;
-	private List<AMaterial> mMaterialList;
+	private List<Material> mMaterialList;
 	
 	private MaterialManager()
 	{
-		mMaterialList = Collections.synchronizedList(new CopyOnWriteArrayList<AMaterial>());
+		mMaterialList = Collections.synchronizedList(new CopyOnWriteArrayList<Material>());
 		mRenderers = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliRenderer>());
 	}
 	
@@ -38,10 +38,10 @@ public class MaterialManager extends AResourceManager {
 		return instance;
 	}
 	
-	public AMaterial addMaterial(AMaterial material)
+	public Material addMaterial(Material material)
 	{
 		if(material == null) return null;
-		for(AMaterial mat : mMaterialList)
+		for(Material mat : mMaterialList)
 		{
 			if(mat == material)
 				return material;
@@ -51,19 +51,19 @@ public class MaterialManager extends AResourceManager {
 		return material;
 	}
 	
-	public void taskAdd(AMaterial material)
+	public void taskAdd(Material material)
 	{
 		material.setOwnerIdentity(mRenderer.getClass().toString());
 		material.add();
 	}
 	
-	public void removeMaterial(AMaterial material)
+	public void removeMaterial(Material material)
 	{
 		if(material == null) return;
 		mRenderer.queueRemoveTask(material);
 	}
 	
-	public void taskRemove(AMaterial material)
+	public void taskRemove(Material material)
 	{
 		material.remove();
 		mMaterialList.remove(material);
@@ -79,7 +79,7 @@ public class MaterialManager extends AResourceManager {
 		int len = mMaterialList.size();
 		for (int i = 0; i < len; i++)
 		{
-			AMaterial material = mMaterialList.get(i);
+			Material material = mMaterialList.get(i);
 			material.reload();
 		}
 	}
@@ -95,15 +95,14 @@ public class MaterialManager extends AResourceManager {
 		
 		for(int i=0; i<count; i++)
 		{
-			AMaterial material = mMaterialList.get(i);
+			Material material = mMaterialList.get(i);
 			
-			if(material.getOwnerIdentity().equals(mRenderer.getClass().toString()))
+			if(material.getOwnerIdentity() != null && material.getOwnerIdentity().equals(mRenderer.getClass().toString()))
 			{
 				material.remove();
 				mMaterialList.remove(i);
 				i -= 1;
-				count -= 1;
-							
+				count -= 1;							
 			}			
 		}
 		

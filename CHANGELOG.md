@@ -134,74 +134,18 @@ helper class, `BoundingVolumeTester`. In addition to other useful methods, you c
 intersection between the two bounding volumes. Note that these volumes may be of any type implemented by the library, or you the
 developer provided you properly extend the `BoundingVolumeTester` class.
 
-### Texture Management
+### Texture Management & Materials
 
-Texture management has been simplified. Here's a basic `DiffuseMaterial` example:
+Materials & textures have become much more flexible. Please check this wiki pages for all the changes: https://github.com/MasDennis/Rajawali/wiki/Materials
 
-``` java
-DiffuseMaterial material = new DiffuseMaterial();
-// -- Add the texture to the material
-material.addTexture(new Texture(R.drawable.earthtruecolor_nasa_big));
-// -- No need to add the texture to the object. This method has been removed.
-myObject3D.setMaterial(material);
+
+### Lights
+
+Lights aren't added directly to objects anymore. In Anchor Steam they have to be added to the scene:
+
+```java
+getCurrentScene().addLight(myLight);
 ```
-
-Here's a `CubeMapMaterial` example:
-
-``` java
-int[] resourceIds = new int[] { R.drawable.posx, R.drawable.negx, R.drawable.posy, R.drawable.negy, R.drawable.posz, R.drawable.negz};
-
-CubeMapMaterial material = new CubeMapMaterial();
-// -- Errors are thrown so you'll get more information when things go wrong
-try {
-	material.addTexture(new CubeMapTexture("environmentMap", resourceIds));
-	myObject3D.setMaterial(material);
-} catch (TextureException e) {
-	e.printStackTrace();
-}
-```
-
-A `SphereMapMaterial` example:
-
-``` java
-Texture jetTexture = new Texture(R.drawable.jettexture);
-SphereMapTexture sphereMapTexture = new SphereMapTexture(R.drawable.manila_sphere_map);
-
-BaseObject3D jet1 = null;
-// -- sphere map with texture
-
-try {
-	SphereMapMaterial material1 = new SphereMapMaterial();
-	material1.setSphereMapStrength(.5f);
-	material1.addTexture(jetTexture);
-	material1.addTexture(sphereMapTexture);
-
-	ObjectInputStream ois;
-	ois = new ObjectInputStream(mContext.getResources().openRawResource(R.raw.jet));
-	jet1 = new BaseObject3D((SerializedObject3D)ois.readObject());
-	jet1.setMaterial(material1);
-	jet1.addLight(light);
-	jet1.setY(2.5f);
-	addChild(jet1);
-} catch(Exception e) {
-	e.printStackTrace();
-}
-```
-
-A `NormalMapMaterial` example:
-
-``` java
-NormalMapMaterial material1 = new NormalMapMaterial();
-material1.addTexture(new Texture(R.drawable.sphere_texture));
-material1.addTexture(new NormalMapTexture(R.drawable.sphere_normal));
-mHalfSphere1.setMaterial(material1);
-```
-
-### Object color
-
-`AMaterial`'s method `setUseColor(boolean useColor)` has been removed. There are two new methods that replace it:
-- `setUseSingleColor(boolean value)`: When the object uses a single color for the whole mesh use this. This way no color buffer will be created which reduces the memory footprint and increases performance, especially in big scenes.
-- `setUseVertexColors(boolean value)`: Use this when your mesh has multiple colors. This isn't applicable to textures, just vertex colors.
 
 ### Paths/Curves
 
