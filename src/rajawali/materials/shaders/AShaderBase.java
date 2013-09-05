@@ -14,7 +14,31 @@ package rajawali.materials.shaders;
 
 
 
+/**
+ * <p>
+ * This abstract class defines all the data types that are used in a shader. The data types
+ * reflect the data types that are used in GLSL. Because most of the data type names are
+ * reserved keywords in Java they are prefixed with 'R'.<br>
+ * For instance:
+ * </p> 
+ * <ul>
+ * 	<li>float: {@link RFloat}</li>
+ * 	<li>vec2: {@link RVec2}</li>
+ * 	<li>vec4: {@link RVec4}</li>
+ * 	<li>mat3: {@link RMat3}</li>
+ * 	<li>sampler2D: {@link RSampler2D}</li>
+ * </ul>
+ * 
+ * @author dennis.ippel
+ *
+ */
 public abstract class AShaderBase {
+	/**
+	 * This enum contains a mapping to GLSL data types names.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	public static enum DataType {
 		FLOAT("float"), VEC2("vec2"), VEC3("vec3"), VEC4("vec4"), INT("int"), IVEC2(
 				"ivec2"), IVEC3("ivec3"), IVEC4("ivec4"), BOOL("bool"), BVEC2(
@@ -34,12 +58,32 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Shader variables map to variable names that will be used in shaders. They are
+	 * defined in enums for consistency and reuse. 
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	public static interface IGlobalShaderVar
 	{
 		String getVarString();
 		DataType getDataType();
 	}
 	
+	/**
+	 * The default shader variables are used in the default vertex and fragment shader. They define
+	 * variables for matrices, position, texture attributes, etc. These shader variables can be used
+	 * by custom shaders as well. When one of these variables is required the {@link AShader#getGlobal(IGlobalShaderVar)}
+	 * method can be called. For instance:
+	 * <pre><code>
+	 * // (in a class that inherits from AShader):
+	 * RVec4 position = (RVec4) getGlobal(DefaultShaderVar.G_POSITION);
+	 * </code></pre>
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	public static enum DefaultShaderVar implements IGlobalShaderVar {
 		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), 
 		U_MODEL_VIEW_MATRIX("uModelViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4), U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT),
@@ -66,6 +110,14 @@ public abstract class AShaderBase {
 		}
 	}
 
+	/**
+	 * Precision qualifier. There are three precision qualifiers: highp​, mediump​, and lowp​. 
+	 * They have no semantic meaning or functional effect. They can apply to any floating-point 
+	 * type (vector or matrix), or any integer type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	public static enum Precision {
 		LOWP("lowp"), HIGHP("highp"), MEDIUMP("mediump");
 
@@ -83,11 +135,25 @@ public abstract class AShaderBase {
 	protected int mVarCount;
 	protected StringBuilder mShaderSB;
 	
+	/**
+	 * Returns an instance of a GLSL data type for the given {@link DataType}.
+	 * 
+	 * @param dataType
+	 * @return
+	 */
 	protected ShaderVar getInstanceForDataType(DataType dataType)
 	{
 		return getInstanceForDataType(null,  dataType);
 	}
 	
+	/**
+	 * Returns an instance of a GLSL data type for the given {@link DataType}.
+	 * A new {@link ShaderVar} with the specified name will be created.
+	 * 
+	 * @param name
+	 * @param dataType
+	 * @return
+	 */
 	protected ShaderVar getInstanceForDataType(String name, DataType dataType)
 	{
 		switch(dataType)
@@ -117,6 +183,14 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * This method determines what data type to return for operations
+	 * like multiplication, addition, subtraction, etc.
+	 * 
+	 * @param left
+	 * @param right
+	 * @return
+	 */
 	protected ShaderVar getReturnTypeForOperation(DataType left, DataType right)
 	{
 		ShaderVar out = null;
@@ -149,6 +223,12 @@ public abstract class AShaderBase {
 		return out;
 	}
 	
+	/**
+	 * Defines a 2 component vector of floats. This corresponds to the vec2 GLSL data type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RVec2 extends ShaderVar
 	{
 		public RVec2()
@@ -245,6 +325,12 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Defines a 3 component vector of floats. This corresponds to the vec3 GLSL data type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RVec3 extends RVec2
 	{
 		public RVec3()
@@ -356,6 +442,12 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Defines a 4 component vector of floats. This corresponds to the vec4 GLSL data type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RVec4 extends RVec3
 	{
 		public RVec4()
@@ -425,6 +517,13 @@ public abstract class AShaderBase {
 
 	}
 	
+	/**
+	 * Defines a type that represents a 2D texture bound to the OpenGL context.
+	 * This corresponds the the sampler2D GLSL data type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RSampler2D extends RVec4
 	{
 		public RSampler2D()
@@ -448,6 +547,13 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Defines a type that provides a mechanism for creating EGLImage texture targets
+	 * from EGLImages. This is used within Rajawali for video textures.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RSamplerExternalOES extends RSampler2D
 	{
 		public RSamplerExternalOES()
@@ -461,6 +567,13 @@ public abstract class AShaderBase {
 		}
 	}
 
+	/**
+	 * Defines a type that represents a cubic texture. A sampler cube consists of 
+	 * 6 textures. This corresponds to the samplerCube GLSL data type. 
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RSamplerCube extends RSampler2D
 	{
 		public RSamplerCube()
@@ -474,6 +587,12 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Defines a 3x3 matrix. This corresponds to the mat3 GLSL data type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RMat3 extends ShaderVar
 	{
 		public RMat3()
@@ -507,6 +626,12 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Defines a 4x4 matrix. This corresponds to the mat4 GLSL data type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RMat4 extends RMat3
 	{
 		public RMat4()
@@ -525,6 +650,13 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Defines the position of the current vertex. This is used in the vertex shader to
+	 * write the final vertex position to. This corresponds to the gl_Position GLSL variable.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected final class GLPosition extends RVec4
 	{
 		public GLPosition()
@@ -534,6 +666,13 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Defines the color of the current fragment. This is used in the fragment shader to
+	 * write the final fragment color to. This corresponds to the gl_FragColor GLSL variable.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected final class GLFragColor extends RVec4
 	{
 		public GLFragColor()
@@ -543,6 +682,12 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	/**
+	 * Defines a floating point data type. This corresponds to the float GLSL data type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RFloat extends ShaderVar
 	{
 		public RFloat()
@@ -581,6 +726,12 @@ public abstract class AShaderBase {
 		}
 	}
 
+	/**
+	 * Defines an integer data type. This corresponds to the int GLSL data type.
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class RInt extends ShaderVar
 	{
 		public RInt()
@@ -609,6 +760,15 @@ public abstract class AShaderBase {
 		}
 	}
 
+	/**
+	 * A ShaderVar is a wrapper class for a GLSL variable. It is used to write shaders
+	 * in the Java programming language. Shaders are text files that are compiled at runtime.
+	 * The {@link AShader} class uses ShaderVars to write a text file under the hood.
+	 * The reason for this is maintainability and shader code reuse. 
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
 	protected class ShaderVar {
 		protected String mName;
 		protected DataType mDataType;
@@ -679,6 +839,12 @@ public abstract class AShaderBase {
 			mValue = value;
 		}		
 
+		/**
+		 * Adds two shader variables. Equivalent to GLSL's '+' operator.
+		 * 
+		 * @param value
+		 * @return
+		 */
 		public ShaderVar add(ShaderVar value)
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
@@ -687,6 +853,12 @@ public abstract class AShaderBase {
 			return v;
 		}
 		
+		/**
+		 * Subtracts two shader variables. Equivalent to GLSL's '-' operator.
+		 * 
+		 * @param value
+		 * @return
+		 */
 		public ShaderVar subtract(ShaderVar value)
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
@@ -695,6 +867,12 @@ public abstract class AShaderBase {
 			return v;
 		}
 		
+		/**
+		 * Multiplies two shader variables. Equivalent to GLSL's '*' operator.
+		 * 
+		 * @param value
+		 * @return
+		 */
 		public ShaderVar multiply(ShaderVar value)
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
@@ -702,6 +880,13 @@ public abstract class AShaderBase {
 			v.setName(v.getValue());
 			return v;
 		}
+		
+		/**
+		 * Multiplies two shader variables. Equivalent to GLSL's '*' operator.
+		 * 
+		 * @param value
+		 * @return
+		 */
 		public ShaderVar multiply(float value)
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
@@ -710,6 +895,12 @@ public abstract class AShaderBase {
 			return v;
 		}		
 		
+		/**
+		 * Divides two shader variables. Equivalent to GLSL's '/' operator.
+		 * 
+		 * @param value
+		 * @return
+		 */
 		public ShaderVar divide(ShaderVar value)
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
@@ -718,6 +909,13 @@ public abstract class AShaderBase {
 			return v;
 		}
 		
+		/**
+		 * Divides the value of one shader variable by the value of another and 
+		 * returns the remainder. Equivalent to GLSL's '%' operator.
+		 * 
+		 * @param value
+		 * @return
+		 */
 		public ShaderVar modulus(ShaderVar value)
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
@@ -726,66 +924,126 @@ public abstract class AShaderBase {
 			return v;
 		}
 		
+		/**
+		 * Assigns a value to a shader variable. Equivalent to GLSL's '=' operator.
+		 * 
+		 * @param value
+		 */
 		public void assign(ShaderVar value)
 		{
 			assign(value.getValue() != null ? value.getValue() : value.getName());
 		}
 		
+		/**
+		 * Assigns a value to a shader variable. Equivalent to GLSL's '=' operator.
+		 * 
+		 * @param value
+		 */
 		public void assign(String value)
 		{
 			writeAssign(value);
 		}
 		
-		public void assignAdd(ShaderVar value)
-		{
-			assignAdd(value.getName());
-		}
-		
-		public void assignAdd(float value)
-		{
-			assignAdd(Float.toString(value));
-		}
-		
-		public void assignAdd(String value)
-		{
-			mShaderSB.append(mName).append(" += ").append(value).append(";\n");
-		}
-		
-		public void assignSubtract(ShaderVar value)
-		{
-			assignSubtract(value.getName());
-		}
-		
-		public void assignSubtract(float value)
-		{
-			assignSubtract(Float.toString(value));
-		}
-		
-		public void assignSubtract(String value)
-		{
-			mShaderSB.append(mName).append(" -= ").append(value).append(";\n");
-		}
-		
-		public void assignMultiply(ShaderVar value)
-		{
-			assignMultiply(value.getName());
-		}
-		
-		public void assignMultiply(float value)
-		{
-			assignMultiply(Float.toString(value));
-		}
-		
-		public void assignMultiply(String value)
-		{
-			mShaderSB.append(mName).append(" *= ").append(value).append(";\n");
-		}
-
+		/**
+		 * Assigns a value to a shader variable. Equivalent to GLSL's '=' operator.
+		 * 
+		 * @param value
+		 */
 		public void assign(float value)
 		{
 			assign(Float.toString(value));
 		}
 		
+		/**
+		 * Assigns and adds a value to a shader variable. Equivalent to GLSL's '+=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignAdd(ShaderVar value)
+		{
+			assignAdd(value.getName());
+		}
+		
+		/**
+		 * Assigns and adds a value to a shader variable. Equivalent to GLSL's '+=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignAdd(float value)
+		{
+			assignAdd(Float.toString(value));
+		}
+		
+		/**
+		 * Assigns and adds a value to a shader variable. Equivalent to GLSL's '+=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignAdd(String value)
+		{
+			mShaderSB.append(mName).append(" += ").append(value).append(";\n");
+		}
+		
+		/**
+		 * Assigns and subtracts a value to a shader variable. Equivalent to GLSL's '-=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignSubtract(ShaderVar value)
+		{
+			assignSubtract(value.getName());
+		}
+		
+		/**
+		 * Assigns and subtracts a value to a shader variable. Equivalent to GLSL's '-=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignSubtract(float value)
+		{
+			assignSubtract(Float.toString(value));
+		}
+		
+		/**
+		 * Assigns and subtracts a value to a shader variable. Equivalent to GLSL's '-=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignSubtract(String value)
+		{
+			mShaderSB.append(mName).append(" -= ").append(value).append(";\n");
+		}
+		
+		/**
+		 * Assigns and Multiplies a value to a shader variable. Equivalent to GLSL's '*=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignMultiply(ShaderVar value)
+		{
+			assignMultiply(value.getName());
+		}
+		
+		/**
+		 * Assigns and Multiplies a value to a shader variable. Equivalent to GLSL's '*=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignMultiply(float value)
+		{
+			assignMultiply(Float.toString(value));
+		}
+		
+		/**
+		 * Assigns and Multiplies a value to a shader variable. Equivalent to GLSL's '*=' operator.
+		 * 
+		 * @param value
+		 */
+		public void assignMultiply(String value)
+		{
+			mShaderSB.append(mName).append(" *= ").append(value).append(";\n");
+		}
+
 		protected void writeAssign(String value)
 		{
 			if(!mIsGlobal && !mInitialized)
@@ -824,11 +1082,21 @@ public abstract class AShaderBase {
 			return "v_" + mDataType.mTypeString + "_" + mVarCount++;
 		}
 		
+		/**
+		 * Indicate that this is a global variable. Global variables are uniforms, attributes, varyings, etc.
+		 * 
+		 * @param value
+		 */
 		protected void isGlobal(boolean value)
 		{
 			mIsGlobal = value;
 		}
 		
+		/**
+		 * Indicates that this is a global variable. Global variables are uniforms, attributes, varyings, etc.
+		 * 
+		 * @return
+		 */
 		protected boolean isGlobal()
 		{
 			return mIsGlobal;
@@ -847,16 +1115,34 @@ public abstract class AShaderBase {
 			return mArraySize;
 		}
 		
+		/**
+		 * Get an element from an array. Equivalent to GLSL's '[]' indexing operator.
+		 * 
+		 * @param index
+		 * @return
+		 */
 		public ShaderVar elementAt(int index)
 		{
 			return elementAt(Integer.toString(index));
 		}
 		
+		/**
+		 * Get an element from an array. Equivalent to GLSL's '[]' indexing operator.
+		 * 
+		 * @param index
+		 * @return
+		 */
 		public ShaderVar elementAt(ShaderVar var)
 		{
 			return elementAt(var.getVarName());
 		}
 		
+		/**
+		 * Get an element from an array. Equivalent to GLSL's '[]' indexing operator.
+		 * 
+		 * @param index
+		 * @return
+		 */
 		public ShaderVar elementAt(String index)
 		{
 			ShaderVar var = new ShaderVar(mDataType);
@@ -865,22 +1151,17 @@ public abstract class AShaderBase {
 			return var;
 		}
 		
+		/**
+		 * Negates the value of a shader variable. Similar to prefixing '-' in GLSL.
+		 * 
+		 * @return
+		 */
 		public ShaderVar negate()
 		{
 			ShaderVar var = new ShaderVar(mDataType);
 			var.setName("-" + mName);
 			var.mInitialized = true;
 			return var;
-		}
-	}
-
-	protected class Constant extends ShaderVar {
-		public Constant(String name) {
-			super(name, DataType.CONSTANT);
-		}
-
-		public Constant(String name, String value) {
-			super(name, DataType.CONSTANT, value);
 		}
 	}
 }
