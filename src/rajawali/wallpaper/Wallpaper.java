@@ -34,6 +34,7 @@ public abstract class Wallpaper extends WallpaperService {
 	private static final boolean DEBUG = false;
 	private static boolean mUsesCoverageAa;
 	public static final String SHARED_PREFS_NAME = "rajawalisharedprefs";
+	protected float mXOffsetPreview = 0.5f;
 
 	private static class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 
@@ -308,7 +309,7 @@ public abstract class Wallpaper extends WallpaperService {
 			super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			if (mRenderer != null) {
 				if (this.isPreview()) {
-					xOffset = 0.5f;
+					xOffset = mXOffsetPreview;
 				}
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			}
