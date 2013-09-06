@@ -93,7 +93,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		super();
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mGeometry = new Geometry3D();
-		mColor = new float[] {(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
+		mColor = new float[] { 0, 1, 0, 1.0f};
 	}
 
 	public Object3D(String name) {
