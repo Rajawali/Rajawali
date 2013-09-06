@@ -2,6 +2,8 @@
 
 Rajawali is a 3D engine for Android based on OpenGL ES 2.0/3.0. It can be used for normal apps as well as live wallpapers.
 
+Want to keep the developers going? Buy them a beer! (http://www.pledgie.com/campaigns/21807)
+
 [Join the Rajawali Community](https://plus.google.com/u/0/communities/116529974266844528013) on [![Rajawali Community on Google Plus](http://sinceresocial.com/wp-content/uploads/2012/05/google+-20px.png)](https://plus.google.com/u/0/communities/116529974266844528013) to stay up-to-date on the latest news. 
 
 _NOTE: Rajawali recently removed official support for versions of Android below 4.0/API 14. If you need support for these devices you will need to use the [`v0.9`](https://github.com/MasDennis/Rajawali/tree/v0.9) tag. This decision was made in order to allow us to freely improve the library in the face of the growing uptake of 4.0+ devices. Major bugs identified in this tag will be addressed, but no further improvements/enhancements should be expected._

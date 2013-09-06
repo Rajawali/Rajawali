@@ -18,11 +18,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import rajawali.util.RajLog;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.ETC1;
 import android.opengl.ETC1Util;
 import android.util.Log;
@@ -56,12 +54,6 @@ public class Etc1Texture extends ACompressedTexture {
 	{
 		this(textureName);
 		setResourceIds(resourceIds);
-	}
-
-	public Etc1Texture(String textureName, Bitmap bitmap)
-	{
-		this(textureName);
-		setBitmap(bitmap);
 	}
 
 	public Etc1Texture(String textureName, ByteBuffer byteBuffer)
@@ -117,31 +109,22 @@ public class Etc1Texture extends ACompressedTexture {
 
 	public void setResourceId(int resourceId) {
 		mResourceId = resourceId;
-		Context context = TextureManager.getInstance().getContext();
-		setBitmap(BitmapFactory.decodeResource(context.getResources(), resourceId));
+		Resources resources = TextureManager.getInstance().getContext().getResources();
+		try {
+			ETC1Util.ETC1Texture texture = ETC1Util.createTexture(resources.openRawResource(resourceId));
+			mByteBuffers = new ByteBuffer[] { texture.getData() };
+			setWidth(texture.getWidth());
+			setHeight(texture.getHeight());
+			setCompressionFormat(ETC1.ETC1_RGB8_OES);
+		} catch (IOException e) {
+			RajLog.e(e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	public int getResourceId()
 	{
 		return mResourceId;
-	}
-
-	public void setBitmap(Bitmap bitmap)
-	{
-		mBitmap = bitmap;
-		int imageSize = bitmap.getRowBytes() * bitmap.getHeight();
-		ByteBuffer uncompressedBuffer = ByteBuffer.allocateDirect(imageSize);
-		bitmap.copyPixelsToBuffer(uncompressedBuffer);
-		uncompressedBuffer.position(0);
-
-		ByteBuffer compressedBuffer = ByteBuffer.allocateDirect(
-				ETC1.getEncodedDataSize(bitmap.getWidth(), bitmap.getHeight())).order(ByteOrder.nativeOrder());
-		ETC1.encodeImage(uncompressedBuffer, bitmap.getWidth(), bitmap.getHeight(), 2, 2 * bitmap.getWidth(),
-				compressedBuffer);
-
-		mByteBuffers = new ByteBuffer[] { compressedBuffer };
-		setWidth(bitmap.getWidth());
-		setHeight(bitmap.getHeight());
 	}
 
 	public void setResourceIds(int[] resourceIds)
@@ -167,6 +150,24 @@ public class Etc1Texture extends ACompressedTexture {
 		}
 
 		mByteBuffers = mipmapChain;
+	}
+	
+	public void setBitmap(Bitmap bitmap)
+	{
+		mBitmap = bitmap;
+		int imageSize = bitmap.getRowBytes() * bitmap.getHeight();
+		ByteBuffer uncompressedBuffer = ByteBuffer.allocateDirect(imageSize);
+		bitmap.copyPixelsToBuffer(uncompressedBuffer);
+		uncompressedBuffer.position(0);
+
+		ByteBuffer compressedBuffer = ByteBuffer.allocateDirect(
+				ETC1.getEncodedDataSize(bitmap.getWidth(), bitmap.getHeight())).order(ByteOrder.nativeOrder());
+		ETC1.encodeImage(uncompressedBuffer, bitmap.getWidth(), bitmap.getHeight(), 2, 2 * bitmap.getWidth(),
+				compressedBuffer);
+
+		mByteBuffers = new ByteBuffer[] { compressedBuffer };
+		setWidth(bitmap.getWidth());
+		setHeight(bitmap.getHeight());
 	}
 
 	public void setInputStream(InputStream compressedTexture, Bitmap fallbackTexture)

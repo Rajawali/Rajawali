@@ -15,11 +15,20 @@ package rajawali.materials.methods;
 import java.util.List;
 
 import rajawali.lights.ALight;
+import rajawali.materials.Material;
 import rajawali.materials.shaders.IShaderFragment;
 
 
 public interface IDiffuseMethod {
+	/**
+	 * Returns the vertex shader fragment. This should only be used by the {@link Material} class.
+	 * @return
+	 */
 	IShaderFragment getVertexShaderFragment();
+	/**
+	 * Returns the fragmetn shader fragment. This should only be used by the {@link Material} class.
+	 * @return
+	 */
 	IShaderFragment getFragmentShaderFragment();
 	void setLights(List<ALight> lights);
 }

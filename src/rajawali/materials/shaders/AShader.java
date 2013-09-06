@@ -23,6 +23,35 @@ import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 
+/**
+ * This class is a wrapper class for shader creation. GLSL shaders are text files that are
+ * compiled at runtime. The GLSL language is based on C. This class is like a mini framework
+ * that lets you write shaders in Java. The main reason for this is maintainability and code
+ * reuse. The lack of operator overloading makes this slightly verbose however. Instead of
+ * writing this in GLSL:
+ * <pre><code>
+ * myVar *= myOtherVar;
+ * </code></pre>
+ * You'll have to write this:
+ * <pre><code>
+ * myVar.assignAdd(myOtherVar);
+ * </code></pre>
+ * GLSL data types are wrapped into their own classes. Because most of the data type names are
+ * reserved keywords in Java they are prefixed with 'R'.<br>
+ * For instance:
+ * </p> 
+ * <ul>
+ * 	<li>float: {@link RFloat}</li>
+ * 	<li>vec2: {@link RVec2}</li>
+ * 	<li>vec4: {@link RVec4}</li>
+ * 	<li>mat3: {@link RMat3}</li>
+ * 	<li>sampler2D: {@link RSampler2D}</li>
+ * </ul>
+ * 
+ * 
+ * @author dennis.ippel
+ *
+ */
 public abstract class AShader extends AShaderBase {
 	public static String SHADER_ID;
 	

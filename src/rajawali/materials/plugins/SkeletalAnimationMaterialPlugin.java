@@ -19,6 +19,40 @@ import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.fragments.animation.SkeletalAnimationVertexShaderFragment;
 
 
+/**
+ * <p>
+ * The material plugin for skeletal animation. This is the container for
+ * skeletal animation shaders and should be used as the access point to 
+ * skeletal animation properties. 
+ * </p>
+ * <p>
+ * Skeletal animation on mobile devices is limited. It is recommended to 
+ * use as few bones as possible. The number of vertex weights per bone
+ * can't be more than 8.  
+ * </p>
+ * 
+ * Example usage:
+ * 
+ * <pre><code>
+ * ...
+ * mMaterialPlugin = new SkeletalAnimationMaterialPlugin(numJoints, numVertexWeights);
+ * ...
+ * 
+ * public void setShaderParams(Camera camera) {
+ * 		super.setShaderParams(camera);
+ * 		mMaterialPlugin.setBone1Indices(mboneIndexes1BufferInfo.bufferHandle);
+ * 		mMaterialPlugin.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
+ * 		if (mMaxBoneWeightsPerVertex > 4) {
+ * 			mMaterialPlugin.setBone2Indices(mboneIndexes2BufferInfo.bufferHandle);
+ * 			mMaterialPlugin.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
+ * 		}
+ * 		mMaterialPlugin.setBoneMatrix(mSkeleton.uBoneMatrix);
+ * 	}
+ * </code></pre>
+ * 
+ * @author dennis.ippel
+ *
+ */
 public class SkeletalAnimationMaterialPlugin implements IMaterialPlugin {
 	public static enum SkeletalAnimationShaderVar implements IGlobalShaderVar {
 		U_BONE_MATRIX("uBoneMatrix", DataType.MAT4),

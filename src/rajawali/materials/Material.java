@@ -75,7 +75,6 @@ public class Material extends AFrameTask {
 	{
 		PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_BUILD
 	};
-
 	/**
 	 * The generic vertex shader. This can be extended by using vertex shader fragments.
 	 * A vertex shader is typically used to modify vertex positions, vertex colors and normals.

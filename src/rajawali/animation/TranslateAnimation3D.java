@@ -60,7 +60,6 @@ public class TranslateAnimation3D extends Animation3D {
 
 	private Vector3 mTempPoint1 = new Vector3();
 	private Vector3 mTempPoint2 = new Vector3();
-	private Vector3 mTempPoint3 = new Vector3();
 	
 	@Override
 	protected void applyTransformation() {
@@ -76,23 +75,8 @@ public class TranslateAnimation3D extends Animation3D {
 
 			if (mOrientToPath) {
 				// -- calculate tangent
-				mSplinePath.calculatePoint(mTempPoint2, mInterpolatedTime + -mLookatDelta * (mIsReversing ? -1 : 1));
-				mSplinePath.calculatePoint(mTempPoint3, mInterpolatedTime + mLookatDelta * (mIsReversing ? -1 : 1));
-				
-				// -- calculate direction vector
-				mTmpVec.subtractAndSet(mTempPoint3, mTempPoint2);
-				mTmpVec.normalize();
-					
-				mTmpOrientation.fromRotationBetween(mObjectRay, mTmpVec);
-				mTmpOrientation.normalize();
-				mTransformable3D.getOrientation(mTmpOrientation2);
-				mTmpOrientation2.normalize();
-				mTmpOrientation2.multiply(mTmpOrientation);
-				mTmpOrientation2.normalize();
-				mTransformable3D.setOrientation(mTmpOrientation2);
-				mTmpOrientation2.normalize();				
-				
-				mObjectRay.setAll(mTmpVec);
+				mSplinePath.calculatePoint(mTempPoint2, mInterpolatedTime + mLookatDelta * (mIsReversing ? -1 : 1));
+				mTransformable3D.setLookAt(mTempPoint2);
 			}
 		}
 	}
