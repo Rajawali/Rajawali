@@ -34,7 +34,6 @@ public abstract class Wallpaper extends WallpaperService {
 	private static final boolean DEBUG = false;
 	private static boolean mUsesCoverageAa;
 	public static final String SHARED_PREFS_NAME = "rajawalisharedprefs";
-	protected float mXOffsetPreview = 0.5f;
 
 	private static class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 
@@ -289,6 +288,7 @@ public abstract class Wallpaper extends WallpaperService {
 		protected RajawaliRenderer mRenderer;
 		protected GLWallpaperSurfaceView mSurfaceView;
 		protected boolean mMultisampling;
+		protected float mDefaultPreviewOffsetX;
 
 		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer) {
 			this(preferences, context, renderer, false);
@@ -301,6 +301,7 @@ public abstract class Wallpaper extends WallpaperService {
 			mRenderer.setSharedPreferences(preferences);
 			mRenderer.setEngine(this);
 			mMultisampling = useMultisampling;
+			mDefaultPreviewOffsetX = 0.5f;
 		}
 
 		@Override
@@ -308,11 +309,16 @@ public abstract class Wallpaper extends WallpaperService {
 				int xPixelOffset, int yPixelOffset) {
 			super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			if (mRenderer != null) {
-				if (this.isPreview()) {
-					xOffset = mXOffsetPreview;
-				}
+
+				if (isPreview() && enableDefaultXOffsetInPreview())
+					xOffset = mDefaultPreviewOffsetX;
+					
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			}
+		}
+		
+		public boolean enableDefaultXOffsetInPreview() {
+			return true;
 		}
 
 		@Override
