@@ -308,7 +308,9 @@ public abstract class Wallpaper extends WallpaperService {
 		public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep,
 				int xPixelOffset, int yPixelOffset) {
 			super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
-			if (mRenderer != null)
+			if (mRenderer != null) {
+				if (isPreview() && enableDefaultXOffsetInPreview())
+					xOffset = mDefaultPreviewOffsetX;
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			}
 		}
