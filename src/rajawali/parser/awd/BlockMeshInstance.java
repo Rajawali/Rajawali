@@ -2,6 +2,7 @@ package rajawali.parser.awd;
 
 import rajawali.BaseObject3D;
 import rajawali.materials.AMaterial;
+import rajawali.math.Matrix4;
 import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
 import rajawali.parser.AWDParser.BlockHeader;
 import rajawali.parser.ParsingException;
@@ -61,15 +62,22 @@ public class BlockMeshInstance extends AExportableBlockParser {
 			}
 		}
 
-		// Model matrix should not contain position as it is managed by the BaseObject3D
-		mGeometry.setX(mSceneGraphBlock.transformMatrix[12]);
-		mGeometry.setY(mSceneGraphBlock.transformMatrix[13]);
-		mGeometry.setZ(mSceneGraphBlock.transformMatrix[14]);
-		mSceneGraphBlock.transformMatrix[12] = 0;
-		mSceneGraphBlock.transformMatrix[13] = 0;
-		mSceneGraphBlock.transformMatrix[14] = 0;
+		final float[] m = mSceneGraphBlock.transformMatrix;
+		final Matrix4 matrix = new Matrix4(
+				m[0], m[4], m[8], m[12],
+				m[1], m[5], m[9], m[13],
+				m[2], m[6], m[10], m[14],
+				m[3], m[7], m[11], m[15]
+				);
 
-		System.arraycopy(mSceneGraphBlock.transformMatrix, 0, mGeometry.getModelMatrix(), 0, 16);
+		// Set translation
+		mGeometry.setPosition(matrix.getTranslation());
+		
+		// Set scale
+		mGeometry.setScale(matrix.getScale());
+		
+		// Set rotation
+		mGeometry.setOrientation(matrix.getRotation());
 
 		mGeometry.setMaterial(materials[0]);
 

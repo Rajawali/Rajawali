@@ -55,6 +55,17 @@ public final class Quaternion {
 		this.y = y;
 		this.z = z;
 	}
+	
+	public Quaternion setFromMatrix(Matrix4 matrix) {
+		final float[] m = new float[16];
+		matrix.toFloatArray(m);
+		fromAxes(
+				m[0], m[1], m[2]
+				, m[4], m[5], m[6]
+				, m[8], m[9], m[10]
+				);
+		return this;
+	}
 
 	public Quaternion fromAngleAxis(final float angle, final Axis axis) {
 		fromAngleAxis(angle, Vector3.getAxisVector(axis));
@@ -92,6 +103,78 @@ public final class Quaternion {
 		this.z = c1 * s2 * c3 - s1 * c2 * s3;
 
 		return this;
+	}
+	
+	/**
+	 * Sets the Quaternion from the given x-, y- and z-axis which have to be orthonormal.
+	 * <p>
+	 * Taken from LibGDX which was taken from Bones framework for JPCT which in turn took it from Graphics Gem code.
+	 * 
+	 * @param xx
+	 *            x-axis x-coordinate
+	 * @param xy
+	 *            x-axis y-coordinate
+	 * @param xz
+	 *            x-axis z-coordinate
+	 * @param yx
+	 *            y-axis x-coordinate
+	 * @param yy
+	 *            y-axis y-coordinate
+	 * @param yz
+	 *            y-axis z-coordinate
+	 * @param zx
+	 *            z-axis x-coordinate
+	 * @param zy
+	 *            z-axis y-coordinate
+	 * @param zz
+	 *            z-axis z-coordinate
+	 * 
+	 * @see https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java
+	 * @see http://www.aptalkarga.com/bones/
+	 * @see ftp://ftp.cis.upenn.edu/pub/graphics/shoemake/quatut.ps.Z
+	 */
+	public void fromAxes(float xx, float xy, float xz, float yx, float yy, float yz, float zx, float zy, float zz)
+	{
+		// the trace is the sum of the diagonal elements; see
+		// http://mathworld.wolfram.com/MatrixTrace.html
+		final float m00 = xx, m01 = xy, m02 = xz;
+		final float m10 = yx, m11 = yy, m12 = yz;
+		final float m20 = zx, m21 = zy, m22 = zz;
+		final float t = m00 + m11 + m22;
+
+		// we protect the division by s by ensuring that s>=1
+		double x, y, z, w;
+		if (t >= 0) { // |w| >= .5
+			double s = Math.sqrt(t + 1); // |s|>=1 ...
+			w = 0.5 * s;
+			s = 0.5 / s; // so this division isn't bad
+			x = (m21 - m12) * s;
+			y = (m02 - m20) * s;
+			z = (m10 - m01) * s;
+		} else if ((m00 > m11) && (m00 > m22)) {
+			double s = Math.sqrt(1.0 + m00 - m11 - m22); // |s|>=1
+			x = s * 0.5; // |x| >= .5
+			s = 0.5 / s;
+			y = (m10 + m01) * s;
+			z = (m02 + m20) * s;
+			w = (m21 - m12) * s;
+		} else if (m11 > m22) {
+			double s = Math.sqrt(1.0 + m11 - m00 - m22); // |s|>=1
+			y = s * 0.5; // |y| >= .5
+			s = 0.5 / s;
+			x = (m10 + m01) * s;
+			z = (m21 + m12) * s;
+			w = (m02 - m20) * s;
+		} else {
+			double s = Math.sqrt(1.0 + m22 - m00 - m11); // |s|>=1
+			z = s * 0.5; // |z| >= .5
+			s = 0.5 / s;
+			x = (m02 + m20) * s;
+			y = (m21 + m12) * s;
+			w = (m10 - m01) * s;
+		}
+
+		setAll((float) w, (float) x, (float) y, (float) z);
 	}
 	
 	public void fromAxes(final Vector3 xAxis, final Vector3 yAxis, final Vector3 zAxis)
@@ -135,7 +218,7 @@ public final class Quaternion {
 		return angleAxis;
 	}
 
-	public void fromRotationMatrix(final float[] rotMatrix) {
+	public Quaternion fromRotationMatrix(final float[] rotMatrix) {
 		// Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
 		// article "Quaternion Calculus and Fast Animation".
 
@@ -173,6 +256,8 @@ public final class Quaternion {
 			y = apkQuat[1];
 			z = apkQuat[2];
 		}
+		
+		return this;
 	}
 
 	public Vector3 getXAxis() {

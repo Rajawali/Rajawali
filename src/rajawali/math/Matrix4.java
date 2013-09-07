@@ -315,12 +315,36 @@ public final class Matrix4 {
         m[7] = v.y;
         m[11] = v.z;
     }
-
+	
+	public Quaternion getRotation() 
+	{
+		return getRotation(new Quaternion());
+	}
+	
+	public Quaternion getRotation(Quaternion rotation) 
+	{
+		rotation.setFromMatrix(this);
+		return rotation;
+	}
+    
+    public Vector3 getScale() 
+    {
+    	return getScale(new Vector3());
+    }
+    
+	public Vector3 getScale(Vector3 scale) 
+	{
+		scale.x = (float) Math.sqrt(m[0] * m[0] + m[1] * m[1] + m[2] * m[2]);
+		scale.y = (float) Math.sqrt(m[4] * m[4] + m[5] * m[5] + m[6] * m[6]);
+		scale.z = (float) Math.sqrt(m[8] * m[8] + m[9] * m[9] + m[10] * m[10]);
+		return scale;
+	}
+	
     public Vector3 getTranslation()
     {
     	return new Vector3(m[3], m[7], m[11]);
     }
-    
+
     public void makeTrans(final Vector3 v )
     {
         m[0] = 1.0f; m[1] = 0; m[2] = 0; m[3] = v.x;

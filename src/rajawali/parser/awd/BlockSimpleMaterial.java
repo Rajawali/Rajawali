@@ -151,8 +151,7 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 			colorFloat[1] = ((color >> 8) & 0xff) / 255.0f;
 			colorFloat[2] = (color & 0xff) / 255.0f;
 			colorFloat[3] = (((int) ((Double) properties.get(PROP_ALPHA, 1.0d) * 0xff)) & 0xff) / 255.0f;
-			System.out.println(Arrays.toString(colorFloat));
-
+System.out.println(Arrays.toString(colorFloat));
 			mMaterial.setColor(colorFloat);
 			break;
 		case TYPE_TEXTURE:
