@@ -49,10 +49,12 @@ import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
@@ -141,7 +143,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mSceneQueue = new LinkedList<AFrameTask>();
 		mSceneCachingEnabled = true;
 		mSceneInitialized = false;
-
+		Display display = ((WindowManager) mContext
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		mViewportWidth = size.x;
+		mViewportHeight = size.y;
 		RajawaliScene defaultScene = new RajawaliScene(this);
 		mScenes.add(defaultScene);
 		mCurrentScene = defaultScene;

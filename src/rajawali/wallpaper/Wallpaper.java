@@ -34,6 +34,7 @@ public abstract class Wallpaper extends WallpaperService {
 	private static final boolean DEBUG = false;
 	private static boolean mUsesCoverageAa;
 	public static final String SHARED_PREFS_NAME = "rajawalisharedprefs";
+	protected float mXOffsetPreview = 0.5f;
 
 	private static class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 
@@ -263,7 +264,7 @@ public abstract class Wallpaper extends WallpaperService {
 		protected int mAlphaSize;
 		protected int mDepthSize;
 		protected int mStencilSize;
-		private int[] mValue = new int[1];
+		private final int[] mValue = new int[1];
 	}
 
 	protected class WallpaperEngine extends Engine {
@@ -306,8 +307,12 @@ public abstract class Wallpaper extends WallpaperService {
 		public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep,
 				int xPixelOffset, int yPixelOffset) {
 			super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
-			if (mRenderer != null)
+			if (mRenderer != null) {
+				if (this.isPreview()) {
+					xOffset = mXOffsetPreview;
+				}
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+			}
 		}
 
 		@Override
@@ -362,7 +367,7 @@ public abstract class Wallpaper extends WallpaperService {
 					mSurfaceView.onResume();
 				} else {
 					mSurfaceView.onPause();
-				}				
+				}
 			}
 		}
 	}
