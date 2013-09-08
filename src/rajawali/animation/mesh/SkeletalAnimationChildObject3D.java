@@ -23,6 +23,7 @@ import rajawali.Geometry3D.BufferType;
 import rajawali.Object3D;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
 import rajawali.materials.plugins.SkeletalAnimationMaterialPlugin;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
@@ -70,10 +71,24 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private BoneVertex[] mVertices;
 	private BoneWeight[] mWeights;
 	private SkeletalAnimationMaterialPlugin mMaterialPlugin;
+	private boolean mInverseZScale = false;
+	private Vector3 mTmpScale = new Vector3();
 
 	public SkeletalAnimationChildObject3D() {
 		super();
 		mSkeleton = null;
+	}
+	
+	@Override
+	public void calculateModelMatrix(final Matrix4 parentMatrix) {
+		super.calculateModelMatrix(parentMatrix);
+		if(mInverseZScale)
+			mTmpScale.setAll(mScale.x, mScale.y, -mScale.z);
+		else
+			mTmpScale.setAll(mScale.x, mScale.y, mScale.z);
+		
+		mMMatrix.identity().translate(mPosition).scale(mTmpScale).multiply(mRotationMatrix);
+		if (parentMatrix != null) mMMatrix.leftMultiply(mParentMatrix);
 	}
 
 	public void setShaderParams(Camera camera) {
@@ -270,5 +285,9 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		public int jointIndex;
 		public float weightValue;
 		public Vector3 position = new Vector3();
+	}
+	
+	public void setInverseZScale(boolean value) {
+		mInverseZScale = value;
 	}
 }
