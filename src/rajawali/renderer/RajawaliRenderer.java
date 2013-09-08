@@ -600,9 +600,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onVisibilityChanged(boolean visible) {
 		if (!visible) {
 			stopRendering();
-		} else
+		} else {
 			getCurrentScene().resetGLState();
 			startRendering();
+		}
 	}
 
 	public void onSurfaceDestroyed() {
