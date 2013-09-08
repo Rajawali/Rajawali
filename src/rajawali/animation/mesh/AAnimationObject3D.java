@@ -154,4 +154,10 @@ public abstract class AAnimationObject3D extends Object3D {
 	public void setFps(int fps) {
 		this.mFps = fps;
 	}
+	
+	@Override
+	public void reload() {
+		super.reload();
+		mStartTime = SystemClock.uptimeMillis();
+	}
 }
