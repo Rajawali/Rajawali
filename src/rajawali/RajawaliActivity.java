@@ -192,7 +192,6 @@ public class RajawaliActivity extends Activity {
     	if(mRajRenderer == null) return;
     	mSurfaceView.onPause();
     	mRajRenderer.onVisibilityChanged(false);
-    	mRajRenderer.onSurfaceDestroyed();
     }
 
     @Override
@@ -203,6 +202,7 @@ public class RajawaliActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mRajRenderer.onSurfaceDestroyed();
         unbindDrawables(mLayout);
         System.gc();
     }
