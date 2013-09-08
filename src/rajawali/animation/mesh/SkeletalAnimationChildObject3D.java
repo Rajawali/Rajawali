@@ -290,4 +290,34 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	public void setInverseZScale(boolean value) {
 		mInverseZScale = value;
 	}
+	
+	public SkeletalAnimationChildObject3D clone(boolean copyMaterial)
+	{
+		SkeletalAnimationChildObject3D clone = new SkeletalAnimationChildObject3D();
+		clone.setRotation(getRotation());
+		clone.setScale(getScale());
+		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.isContainer(mIsContainerOnly);
+		clone.setMaterial(mMaterial);
+		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
+				: GLES20.GL_UNSIGNED_INT;
+		clone.mTransparent = this.mTransparent;
+		clone.mEnableBlending = this.mEnableBlending;
+		clone.mBlendFuncSFactor = this.mBlendFuncSFactor;
+		clone.mBlendFuncDFactor = this.mBlendFuncDFactor;
+		clone.mEnableDepthTest = this.mEnableDepthTest;
+		clone.mEnableDepthMask = this.mEnableDepthMask;
+
+
+		clone.setAnimationSequence(mSequence);
+		clone.setSkeleton(mSkeleton);
+		try {
+			clone.setMaxBoneWeightsPerVertex(mMaxBoneWeightsPerVertex);
+		} catch (SkeletalAnimationException e) {
+			e.printStackTrace();
+		}
+		clone.setSkeletonMeshData(mNumVertices, mVertices, 0, mWeights);
+		clone.setInverseZScale(mInverseZScale);
+		return clone;
+	}
 }
