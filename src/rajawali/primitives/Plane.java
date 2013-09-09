@@ -220,7 +220,7 @@ public class Plane extends Object3D {
 
 				normals[vertexCount] = mUpAxis == Axis.X ? 1 : 0;
 				normals[vertexCount + 1] = mUpAxis == Axis.Y ? 1 : 0;
-				normals[vertexCount + 2] = mUpAxis == Axis.Z ? 1 : 0;
+				normals[vertexCount + 2] = mUpAxis == Axis.Z ? -1 : 0;
 
 				vertexCount += 3;
 			}
@@ -236,12 +236,12 @@ public class Plane extends Object3D {
 				int ur = (col + 1) * colspan + row;
 				int lr = ur + 1;
 
-				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) ur;
+				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) lr;
 
-				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) lr;
+				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) ll;
 			}
 		}
