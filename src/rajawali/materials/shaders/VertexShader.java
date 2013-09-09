@@ -77,7 +77,7 @@ public class VertexShader extends AShader {
 	{
 		super.initialize();
 
-		addPrecisionSpecifier(DataType.FLOAT, Precision.MEDIUMP);
+		addPrecisionQualifier(DataType.FLOAT, Precision.MEDIUMP);
 
 		// -- uniforms
 
