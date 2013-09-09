@@ -43,6 +43,7 @@ public class VertexShader extends AShader {
 	private RVec4 mgPosition;
 	private RVec3 mgNormal;
 	private RVec4 mgColor;
+	private RVec2 mgTextureCoord;
 
 	private int muMVPMatrixHandle;
 	private int muNormalMatrixHandle;
@@ -111,12 +112,14 @@ public class VertexShader extends AShader {
 		mgPosition = (RVec4) addGlobal(DefaultShaderVar.G_POSITION);
 		mgNormal = (RVec3) addGlobal(DefaultShaderVar.G_NORMAL);
 		mgColor = (RVec4) addGlobal(DefaultShaderVar.G_COLOR);
+		mgTextureCoord = (RVec2) addGlobal(DefaultShaderVar.G_TEXTURE_COORD);
 	}
 
 	@Override
 	public void main() {
 		mgPosition.assign(maPosition);
 		mgNormal.assign(maNormal);
+		mgTextureCoord.assign(maTextureCoord);
 		if(mUseVertexColors)
 			mgColor.assign(maVertexColor);
 		else
@@ -146,7 +149,7 @@ public class VertexShader extends AShader {
 			mvNormal.assign(normalize(muNormalMatrix.multiply(mgNormal)));
 		}
 		
-		mvTextureCoord.assign(maTextureCoord);
+		mvTextureCoord.assign(mgTextureCoord);
 		if (mHasCubeMaps)
 			mvCubeTextureCoord.assign(castVec3(maPosition));
 		mvColor.assign(mgColor);
