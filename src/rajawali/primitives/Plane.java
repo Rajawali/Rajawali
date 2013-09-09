@@ -213,9 +213,10 @@ public class Plane extends Object3D {
 				}
 
 				if (mCreateTextureCoords) {
-					textureCoords[texCoordCount++] = ((float) i / (float) mSegmentsW) * mNumTextureTiles;
+					float u = (float) i / (float) mSegmentsW;
+					textureCoords[texCoordCount++] = (1.0f - u) * mNumTextureTiles;
 					float v = (float) j / (float) mSegmentsH;
-					textureCoords[texCoordCount++] = (mUpAxis == Axis.Y ? v : (1.0f - v)) * mNumTextureTiles;
+					textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
 				}
 
 				normals[vertexCount] = mUpAxis == Axis.X ? 1 : 0;
