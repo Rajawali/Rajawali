@@ -311,8 +311,8 @@ public abstract class Wallpaper extends WallpaperService {
 			if (mRenderer != null) {
 				if (isPreview() && enableDefaultXOffsetInPreview())
 					xOffset = mDefaultPreviewOffsetX;
-					
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+
 			}
 		}
 		
@@ -372,7 +372,7 @@ public abstract class Wallpaper extends WallpaperService {
 					mSurfaceView.onResume();
 				} else {
 					mSurfaceView.onPause();
-				}				
+				}
 			}
 		}
 	}

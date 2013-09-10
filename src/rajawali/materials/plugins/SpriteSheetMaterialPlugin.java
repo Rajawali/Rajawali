@@ -10,12 +10,23 @@ import android.os.SystemClock;
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	private SpriteSheetVertexShaderFragment mVertexShader;
 	
-	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, float fps, int numFrames)
+	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, int numFrames)
 	{
 		mVertexShader = new SpriteSheetVertexShaderFragment();
 		mVertexShader.setNumTiles(numTilesX, numTilesY);
-		mVertexShader.setFPS(fps);
 		mVertexShader.setNumFrames(numFrames);
+	}
+
+	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, float fps, int numFrames)
+	{
+		this(numTilesX, numTilesY, numFrames);
+		mVertexShader.setFPS(fps);
+	}
+
+	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, long[] frameDurations)
+	{
+		this(numTilesX, numTilesY, frameDurations.length);
+		mVertexShader.setFrameDurations(frameDurations);
 	}
 	
 	public PluginInsertLocation getInsertLocation() {
@@ -33,9 +44,25 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	public void play() {
 		mVertexShader.play();
 	}
-	
+
 	public void pause() {
 		mVertexShader.pause();
+	}
+
+	public void pause(int frameIndex) {
+		mVertexShader.pause(frameIndex);
+	}
+
+	public boolean isPlaying() {
+		return mVertexShader.isPlaying();
+	}
+
+	public void setLoop(boolean loop) {
+		mVertexShader.setLoop(loop);
+	}
+
+	public boolean getLoop() {
+		return mVertexShader.getLoop();
 	}
 
 	private final class SpriteSheetVertexShaderFragment extends AShader implements IShaderFragment
@@ -56,9 +83,13 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		
 		private long mStartTime;
 		private boolean mIsPlaying = false;
+		private float mFrameIndexStop = 0;
 		private float mFPS = 30;
 		private int mNumFrames;
-		
+		private long[] mFrameDurations;
+		private int mDuration;
+		private boolean mLoop = true;
+
 		public SpriteSheetVertexShaderFragment()
 		{
 			super(ShaderType.VERTEX_SHADER_FRAGMENT);
@@ -84,9 +115,18 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		public void applyParams() {
 			super.applyParams();
 			
-			if(mIsPlaying)
-				mCurrentFrame = (int)Math.floor((SystemClock.elapsedRealtime() - mStartTime) * (mFPS / 1000.f)) % mNumFrames;
-			
+			if ((mIsPlaying && mLoop) || (!mIsPlaying && mFrameIndexStop != mCurrentFrame)) {
+				if (mFrameDurations != null && mFrameDurations.length > 0) {
+					int time = (int) Math.floor((SystemClock.elapsedRealtime() - mStartTime) % mDuration);
+					mCurrentFrame = getFrame(time);
+				} else {
+					mCurrentFrame = (int) Math.floor((SystemClock.elapsedRealtime() - mStartTime) * (mFPS / 1000.f))
+						% mNumFrames;
+				}
+				if (mCurrentFrame == (mNumFrames - 1)) {
+					mLoop = false;
+				}
+			}
 			GLES20.glUniform1f(muCurrentFrameHandle, mCurrentFrame);
 			GLES20.glUniform2fv(muNumTilesHandle, 1, mNumTiles, 0);
 		}
@@ -115,7 +155,15 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		{
 			mFPS = fps;
 		}
-		
+
+		public void setFrameDurations(long[] frameDurations) {
+			mFrameDurations = frameDurations;
+			mDuration = 0;
+			for (int i = 0; i < mNumFrames; i++)
+			{
+				mDuration += frameDurations[i];
+			}
+		}
 		public void setNumFrames(int numFrames) {
 			mNumFrames = numFrames;
 		}
@@ -127,10 +175,38 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		
 		public void pause() {
 			mIsPlaying = false;
+			mFrameIndexStop = mCurrentFrame;
 		}
 		
+		public void pause(int frameIndex) {
+			mIsPlaying = false;
+			mFrameIndexStop = frameIndex;
+		}
+
+		public boolean isPlaying() {
+			return mIsPlaying;
+		}
+
 		public String getShaderId() {
 			return SHADER_ID;
+		}
+
+		private int getFrame(int time) {
+			int index=0;
+			int timeFrame = 0;
+			while (index < mNumFrames && time > (timeFrame + mFrameDurations[index])) {
+				timeFrame += mFrameDurations[index];
+				index++;
+			}
+			return index;
+		}
+
+		public void setLoop(boolean loop) {
+			mLoop = loop;
+		}
+
+		public boolean getLoop() {
+			return mLoop;
 		}
 	}
 }
