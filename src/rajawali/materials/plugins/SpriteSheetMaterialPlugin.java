@@ -58,6 +58,14 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		return mVertexShader.isPlaying();
 	}
 
+	public void setLoop(boolean loop) {
+		mVertexShader.setLoop(loop);
+	}
+
+	public boolean getLoop() {
+		return mVertexShader.getLoop();
+	}
+
 	private final class SpriteSheetVertexShaderFragment extends AShader implements IShaderFragment
 	{
 		public final static String SHADER_ID = "SPRITE_SHEET_VERTEX_SHADER_FRAGMENT";
@@ -81,6 +89,8 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		private int mNumFrames;
 		private long[] mFrameDurations;
 		private int mDuration;
+		private boolean mLoop = true;
+
 		public SpriteSheetVertexShaderFragment()
 		{
 			super(ShaderType.VERTEX_SHADER_FRAGMENT);
@@ -106,13 +116,16 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		public void applyParams() {
 			super.applyParams();
 			
-			if (mIsPlaying || (!mIsPlaying && mFrameIndexStop != mCurrentFrame)) {
+			if ((mIsPlaying && mLoop) || (!mIsPlaying && mFrameIndexStop != mCurrentFrame)) {
 				if (mFrameDurations != null && mFrameDurations.length > 0) {
 					int time = (int) Math.floor((SystemClock.elapsedRealtime() - mStartTime) % mDuration);
 					mCurrentFrame = getFrame(time);
 				} else {
 					mCurrentFrame = (int) Math.floor((SystemClock.elapsedRealtime() - mStartTime) * (mFPS / 1000.f))
 						% mNumFrames;
+				}
+				if (mCurrentFrame == (mNumFrames - 1)) {
+					mLoop = false;
 				}
 			}
 			GLES20.glUniform1f(muCurrentFrameHandle, mCurrentFrame);
@@ -187,6 +200,14 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 				index++;
 			}
 			return index;
+		}
+
+		public void setLoop(boolean loop) {
+			mLoop = loop;
+		}
+
+		public boolean getLoop() {
+			return mLoop;
 		}
 	}
 }
