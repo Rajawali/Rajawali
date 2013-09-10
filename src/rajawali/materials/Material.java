@@ -639,12 +639,12 @@ public class Material extends AFrameTask {
 		
 		mVertexShader.buildShader();
 		mFragmentShader.buildShader();
-
+/*
 		RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
 		RajLog.d(mVertexShader.getShaderString());
 		RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
 		RajLog.d(mFragmentShader.getShaderString());
-		
+*/		
 		mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
 		if (mProgramHandle == 0)
 		{
