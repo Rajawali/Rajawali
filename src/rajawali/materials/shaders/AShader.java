@@ -124,7 +124,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected final GLFragColor GL_FRAG_COLOR = new GLFragColor();
 	
-	private String mShaderString;
+	protected String mShaderString;
 	
 	private ShaderType mShaderType;
 	private List<String> mPreprocessorDirectives;

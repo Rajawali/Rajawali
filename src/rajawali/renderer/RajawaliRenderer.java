@@ -12,6 +12,7 @@
  */
 package rajawali.renderer;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
 import rajawali.util.OnFPSUpdateListener;
 import rajawali.util.RajLog;
+import rajawali.util.RawShaderLoader;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
 import android.content.Context;
@@ -145,6 +147,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajawaliScene defaultScene = new RajawaliScene(this);
 		mScenes.add(defaultScene);
 		mCurrentScene = defaultScene;
+		
+		RawShaderLoader.mContext = new WeakReference<Context>(context);
 	}
 	
 	/**
