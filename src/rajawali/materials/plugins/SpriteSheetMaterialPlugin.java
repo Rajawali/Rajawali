@@ -5,7 +5,6 @@ import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 import android.os.SystemClock;
-import android.util.Log;
 
 
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {

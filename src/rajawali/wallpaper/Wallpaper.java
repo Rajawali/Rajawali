@@ -263,7 +263,7 @@ public abstract class Wallpaper extends WallpaperService {
 		protected int mAlphaSize;
 		protected int mDepthSize;
 		protected int mStencilSize;
-		private final int[] mValue = new int[1];
+		private int[] mValue = new int[1];
 	}
 
 	protected class WallpaperEngine extends Engine {
@@ -312,8 +312,8 @@ public abstract class Wallpaper extends WallpaperService {
 				if (isPreview() && enableDefaultXOffsetInPreview())
 					xOffset = mDefaultPreviewOffsetX;
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
-			}
 
+			}
 		}
 		
 		public boolean enableDefaultXOffsetInPreview() {
