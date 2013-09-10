@@ -313,6 +313,7 @@ public abstract class Wallpaper extends WallpaperService {
 					xOffset = mDefaultPreviewOffsetX;
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			}
+
 		}
 		
 		public boolean enableDefaultXOffsetInPreview() {
