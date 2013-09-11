@@ -101,6 +101,10 @@ public abstract class ASingleTexture extends ATexture
 	public void setBitmap(Bitmap bitmap)
 	{
 		mBitmap = bitmap;
+		if (mBitmap != null) {
+			setWidth(mBitmap.getWidth());
+			setHeight(mBitmap.getHeight());
+		}
 	}
 
 	public Bitmap getBitmap()
