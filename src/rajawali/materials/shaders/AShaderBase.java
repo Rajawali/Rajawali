@@ -293,6 +293,7 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
 			v.setName(this.mName + ".x");
+			v.mInitialized = true;
 			return v;
 		}
 		
@@ -300,6 +301,7 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
 			v.setName(this.mName + ".y");
+			v.mInitialized = true;
 			return v;
 		}
 		
@@ -307,6 +309,7 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
 			v.setName(this.mName + ".s");
+			v.mInitialized = true;
 			return v;
 		}
 		
@@ -314,6 +317,7 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
 			v.setName(this.mName + ".t");
+			v.mInitialized = true;
 			return v;
 		}
 		

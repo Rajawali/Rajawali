@@ -236,6 +236,8 @@ public class Material extends AFrameTask {
 	 * the normal into eye space.
 	 */
 	protected Matrix4 mNormalMatrix = new Matrix4();
+	protected VertexShader mCustomVertexShader;
+	protected FragmentShader mCustomFragmentShader;
 
 	/**
 	 * The Material class is where you define the visual characteristics of your 3D model.
@@ -263,7 +265,14 @@ public class Material extends AFrameTask {
 		mAmbientColor = new float[] {.2f, .2f, .2f};
 		mAmbientIntensity = new float[] {.3f, .3f, .3f};	
 	}
-
+	
+	public Material(VertexShader customVertexShader, FragmentShader customFragmentShader)
+	{
+		this();
+		mCustomVertexShader = customVertexShader;
+		mCustomFragmentShader = customFragmentShader;
+	}
+	
 	/**
  	 * Indicates that this material should use a color value for every vertex. These colors are
 	 * contained in a separate color buffer. 
@@ -463,187 +472,195 @@ public class Material extends AFrameTask {
 		if (!mIsDirty)
 			return;
 		
-		//
-		// -- Check textures
-		//
-		
-		List<ATexture> diffuseTextures = null;
-		List<ATexture> normalMapTextures = null;
-		List<ATexture> envMapTextures = null;
-		List<ATexture> skyTextures = null;
-		List<ATexture> specMapTextures = null;
-		List<ATexture> alphaMapTextures = null;
-		
-		boolean hasCubeMaps = false;
-		boolean hasVideoTexture = false;
-		
-		for(int i=0; i<mTextureList.size(); i++)
+		if(mCustomVertexShader == null && mCustomFragmentShader == null)
 		{
-			ATexture texture = mTextureList.get(i);
-							
-			switch(texture.getTextureType())
-			{
-			case VIDEO_TEXTURE:
-				hasVideoTexture = true;
-				// no break statement, add the video texture to the diffuse textures
-			case DIFFUSE:
-				if(diffuseTextures == null) diffuseTextures = new ArrayList<ATexture>();
-				diffuseTextures.add(texture);
-				break;
-			case NORMAL:
-				if(normalMapTextures == null) normalMapTextures = new ArrayList<ATexture>();
-				normalMapTextures.add(texture);
-				break;
-			case CUBE_MAP:
-				hasCubeMaps = true;
-			case SPHERE_MAP:
-				boolean isSkyTexture = false;
-				boolean isEnvironmentTexture = false;
-				
-				if(texture.getClass() == SphereMapTexture.class)
-				{
-					isSkyTexture = ((SphereMapTexture)texture).isSkyTexture();
-					isEnvironmentTexture = ((SphereMapTexture)texture).isEnvironmentTexture();
-				}
-				else if(texture.getClass() == CubeMapTexture.class)
-				{
-					isSkyTexture = ((CubeMapTexture)texture).isSkyTexture();
-					isEnvironmentTexture = ((CubeMapTexture)texture).isEnvironmentTexture();
-				}
-				
-				if(isSkyTexture)
-				{
-					 if(skyTextures == null)
-						 skyTextures = new ArrayList<ATexture>();
-					 skyTextures.add(texture);
-				}
-				else if(isEnvironmentTexture)
-				{
-					if(envMapTextures == null)
-						envMapTextures = new ArrayList<ATexture>();
-					envMapTextures.add(texture);
-				}								
-				break;
-			case SPECULAR:
-				if(specMapTextures == null) specMapTextures = new ArrayList<ATexture>();
-				specMapTextures.add(texture);
-				break;
-			case ALPHA:
-				if(alphaMapTextures == null) alphaMapTextures = new ArrayList<ATexture>();
-				alphaMapTextures.add(texture);
-				break;
-			default:
-				break;
-			}
-		}			
-		
-		mVertexShader = new VertexShader();
-		mVertexShader.enableTime(mTimeEnabled);
-		mVertexShader.hasCubeMaps(hasCubeMaps);
-		mVertexShader.useVertexColors(mUseVertexColors);
-		mVertexShader.initialize();
-		mFragmentShader = new FragmentShader();
-		mFragmentShader.enableTime(mTimeEnabled);
-		mFragmentShader.hasCubeMaps(hasCubeMaps);
-		mFragmentShader.initialize();
-		
-		if(diffuseTextures != null  && diffuseTextures.size() > 0)
-		{
-			DiffuseTextureFragmentShaderFragment fragment = new DiffuseTextureFragmentShaderFragment(diffuseTextures);
-			mFragmentShader.addShaderFragment(fragment);
-		}
-		
-		if(normalMapTextures != null && normalMapTextures.size() > 0)
-		{
-			NormalMapFragmentShaderFragment fragment = new NormalMapFragmentShaderFragment(normalMapTextures);
-			mFragmentShader.addShaderFragment(fragment);
-		}
-
-		if(envMapTextures != null && envMapTextures.size() > 0)
-		{
-			EnvironmentMapFragmentShaderFragment fragment = new EnvironmentMapFragmentShaderFragment(envMapTextures);
-			mFragmentShader.addShaderFragment(fragment);
-		}
-		
-		if(skyTextures != null && skyTextures.size() > 0)
-		{
-			SkyTextureFragmentShaderFragment fragment = new SkyTextureFragmentShaderFragment(skyTextures);
-			mFragmentShader.addShaderFragment(fragment);
-		}
-		
-		if(hasVideoTexture)
-			mFragmentShader.addPreprocessorDirective("#extension GL_OES_EGL_image_external : require");
-
-		checkForPlugins(PluginInsertLocation.PRE_LIGHTING);		
-		
-		//
-		// -- Lighting
-		//
-		
-		if(mLightingEnabled && mLights != null && mLights.size() > 0)
-		{
-			mVertexShader.setLights(mLights);
-			mFragmentShader.setLights(mLights);
-			
-			mLightsVertexShaderFragment = new LightsVertexShaderFragment(mLights);
-			mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
-			mLightsVertexShaderFragment.setAmbientIntensity(mAmbientIntensity);
-			mVertexShader.addShaderFragment(mLightsVertexShaderFragment);
-			mFragmentShader.addShaderFragment(new LightsFragmentShaderFragment(mLights));
-
-			checkForPlugins(PluginInsertLocation.PRE_DIFFUSE);
-			
 			//
-			// -- Diffuse method
+			// -- Check textures
 			//
 			
-			if(mDiffuseMethod != null)
+			List<ATexture> diffuseTextures = null;
+			List<ATexture> normalMapTextures = null;
+			List<ATexture> envMapTextures = null;
+			List<ATexture> skyTextures = null;
+			List<ATexture> specMapTextures = null;
+			List<ATexture> alphaMapTextures = null;
+			
+			boolean hasCubeMaps = false;
+			boolean hasVideoTexture = false;
+			
+			for(int i=0; i<mTextureList.size(); i++)
 			{
-				mDiffuseMethod.setLights(mLights);
-				IShaderFragment fragment = mDiffuseMethod.getVertexShaderFragment();
-				if(fragment != null)
-					mVertexShader.addShaderFragment(fragment);
-				fragment = mDiffuseMethod.getFragmentShaderFragment();
+				ATexture texture = mTextureList.get(i);
+								
+				switch(texture.getTextureType())
+				{
+				case VIDEO_TEXTURE:
+					hasVideoTexture = true;
+					// no break statement, add the video texture to the diffuse textures
+				case DIFFUSE:
+					if(diffuseTextures == null) diffuseTextures = new ArrayList<ATexture>();
+					diffuseTextures.add(texture);
+					break;
+				case NORMAL:
+					if(normalMapTextures == null) normalMapTextures = new ArrayList<ATexture>();
+					normalMapTextures.add(texture);
+					break;
+				case CUBE_MAP:
+					hasCubeMaps = true;
+				case SPHERE_MAP:
+					boolean isSkyTexture = false;
+					boolean isEnvironmentTexture = false;
+					
+					if(texture.getClass() == SphereMapTexture.class)
+					{
+						isSkyTexture = ((SphereMapTexture)texture).isSkyTexture();
+						isEnvironmentTexture = ((SphereMapTexture)texture).isEnvironmentTexture();
+					}
+					else if(texture.getClass() == CubeMapTexture.class)
+					{
+						isSkyTexture = ((CubeMapTexture)texture).isSkyTexture();
+						isEnvironmentTexture = ((CubeMapTexture)texture).isEnvironmentTexture();
+					}
+					
+					if(isSkyTexture)
+					{
+						 if(skyTextures == null)
+							 skyTextures = new ArrayList<ATexture>();
+						 skyTextures.add(texture);
+					}
+					else if(isEnvironmentTexture)
+					{
+						if(envMapTextures == null)
+							envMapTextures = new ArrayList<ATexture>();
+						envMapTextures.add(texture);
+					}								
+					break;
+				case SPECULAR:
+					if(specMapTextures == null) specMapTextures = new ArrayList<ATexture>();
+					specMapTextures.add(texture);
+					break;
+				case ALPHA:
+					if(alphaMapTextures == null) alphaMapTextures = new ArrayList<ATexture>();
+					alphaMapTextures.add(texture);
+					break;
+				default:
+					break;
+				}
+			}			
+			
+			mVertexShader = new VertexShader();
+			mVertexShader.enableTime(mTimeEnabled);
+			mVertexShader.hasCubeMaps(hasCubeMaps);
+			mVertexShader.useVertexColors(mUseVertexColors);
+			mVertexShader.initialize();
+			mFragmentShader = new FragmentShader();
+			mFragmentShader.enableTime(mTimeEnabled);
+			mFragmentShader.hasCubeMaps(hasCubeMaps);
+			mFragmentShader.initialize();
+			
+			if(diffuseTextures != null  && diffuseTextures.size() > 0)
+			{
+				DiffuseTextureFragmentShaderFragment fragment = new DiffuseTextureFragmentShaderFragment(diffuseTextures);
 				mFragmentShader.addShaderFragment(fragment);
 			}
 			
-			checkForPlugins(PluginInsertLocation.PRE_SPECULAR);
-			
-			//
-			// -- Specular method
-			//
-			
-			if(mSpecularMethod != null)
+			if(normalMapTextures != null && normalMapTextures.size() > 0)
 			{
-				mSpecularMethod.setLights(mLights);
-				mSpecularMethod.setTextures(specMapTextures);
-				IShaderFragment fragment = mSpecularMethod.getVertexShaderFragment();
-				if(fragment != null)
-					mVertexShader.addShaderFragment(fragment);
-				
-				fragment = mSpecularMethod.getFragmentShaderFragment();
-				if(fragment != null)
-					mFragmentShader.addShaderFragment(fragment);
+				NormalMapFragmentShaderFragment fragment = new NormalMapFragmentShaderFragment(normalMapTextures);
+				mFragmentShader.addShaderFragment(fragment);
 			}
+	
+			if(envMapTextures != null && envMapTextures.size() > 0)
+			{
+				EnvironmentMapFragmentShaderFragment fragment = new EnvironmentMapFragmentShaderFragment(envMapTextures);
+				mFragmentShader.addShaderFragment(fragment);
+			}
+			
+			if(skyTextures != null && skyTextures.size() > 0)
+			{
+				SkyTextureFragmentShaderFragment fragment = new SkyTextureFragmentShaderFragment(skyTextures);
+				mFragmentShader.addShaderFragment(fragment);
+			}
+			
+			if(hasVideoTexture)
+				mFragmentShader.addPreprocessorDirective("#extension GL_OES_EGL_image_external : require");
+	
+			checkForPlugins(PluginInsertLocation.PRE_LIGHTING);		
+			
+			//
+			// -- Lighting
+			//
+			
+			if(mLightingEnabled && mLights != null && mLights.size() > 0)
+			{
+				mVertexShader.setLights(mLights);
+				mFragmentShader.setLights(mLights);
+				
+				mLightsVertexShaderFragment = new LightsVertexShaderFragment(mLights);
+				mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
+				mLightsVertexShaderFragment.setAmbientIntensity(mAmbientIntensity);
+				mVertexShader.addShaderFragment(mLightsVertexShaderFragment);
+				mFragmentShader.addShaderFragment(new LightsFragmentShaderFragment(mLights));
+	
+				checkForPlugins(PluginInsertLocation.PRE_DIFFUSE);
+				
+				//
+				// -- Diffuse method
+				//
+				
+				if(mDiffuseMethod != null)
+				{
+					mDiffuseMethod.setLights(mLights);
+					IShaderFragment fragment = mDiffuseMethod.getVertexShaderFragment();
+					if(fragment != null)
+						mVertexShader.addShaderFragment(fragment);
+					fragment = mDiffuseMethod.getFragmentShaderFragment();
+					mFragmentShader.addShaderFragment(fragment);
+				}
+				
+				checkForPlugins(PluginInsertLocation.PRE_SPECULAR);
+				
+				//
+				// -- Specular method
+				//
+				
+				if(mSpecularMethod != null)
+				{
+					mSpecularMethod.setLights(mLights);
+					mSpecularMethod.setTextures(specMapTextures);
+					IShaderFragment fragment = mSpecularMethod.getVertexShaderFragment();
+					if(fragment != null)
+						mVertexShader.addShaderFragment(fragment);
+					
+					fragment = mSpecularMethod.getFragmentShaderFragment();
+					if(fragment != null)
+						mFragmentShader.addShaderFragment(fragment);
+				}
+			}
+			
+			checkForPlugins(PluginInsertLocation.PRE_ALPHA);
+			
+			if(alphaMapTextures != null && alphaMapTextures.size() > 0)
+			{
+				AlphaMapFragmentShaderFragment fragment = new AlphaMapFragmentShaderFragment(alphaMapTextures);
+				mFragmentShader.addShaderFragment(fragment);
+			}
+			
+			checkForPlugins(PluginInsertLocation.PRE_BUILD);
+			
+			mVertexShader.buildShader();
+			mFragmentShader.buildShader();
+	
+			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
+			RajLog.d(mVertexShader.getShaderString());
+			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
+			RajLog.d(mFragmentShader.getShaderString());
 		}
-		
-		checkForPlugins(PluginInsertLocation.PRE_ALPHA);
-		
-		if(alphaMapTextures != null && alphaMapTextures.size() > 0)
+		else
 		{
-			AlphaMapFragmentShaderFragment fragment = new AlphaMapFragmentShaderFragment(alphaMapTextures);
-			mFragmentShader.addShaderFragment(fragment);
+			mVertexShader = mCustomVertexShader;
+			mFragmentShader = mCustomFragmentShader;
 		}
-		
-		checkForPlugins(PluginInsertLocation.PRE_BUILD);
-		
-		mVertexShader.buildShader();
-		mFragmentShader.buildShader();
-
-		RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
-		RajLog.d(mVertexShader.getShaderString());
-		RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
-		RajLog.d(mFragmentShader.getShaderString());
 		
 		mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
 		if (mProgramHandle == 0)
@@ -654,6 +671,12 @@ public class Material extends AFrameTask {
 
 		mVertexShader.setLocations(mProgramHandle);
 		mFragmentShader.setLocations(mProgramHandle);
+		
+		for(int i=0; i<mTextureList.size(); i++)
+		{
+			ATexture texture = mTextureList.get(i);
+			setTextureParameters(texture);
+		}
 
 		mIsDirty = false;
 	}
@@ -829,9 +852,6 @@ public class Material extends AFrameTask {
 		texture.registerMaterial(this);
 		
 		mIsDirty = true;
-		
-		if(mProgramHandle > -1)
-			setTextureParameters(texture);
 	}
 	
 	/**

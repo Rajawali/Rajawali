@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 
@@ -29,16 +28,21 @@ import android.opengl.GLES20;
  * that lets you write shaders in Java. The main reason for this is maintainability and code
  * reuse. The lack of operator overloading makes this slightly verbose however. Instead of
  * writing this in GLSL:
+ * 
  * <pre><code>
  * myVar *= myOtherVar;
  * </code></pre>
+ * 
  * You'll have to write this:
+ * 
  * <pre><code>
  * myVar.assignAdd(myOtherVar);
  * </code></pre>
+ * 
  * GLSL data types are wrapped into their own classes. Because most of the data type names are
  * reserved keywords in Java they are prefixed with 'R'.<br>
  * For instance:
+ * 
  * </p> 
  * <ul>
  * 	<li>float: {@link RFloat}</li>
@@ -48,6 +52,56 @@ import android.opengl.GLES20;
  * 	<li>sampler2D: {@link RSampler2D}</li>
  * </ul>
  * 
+ * Shader initialization should be done in the {@link AShader#initialize()} method. This is
+ * the place where you would create your uniforms, varyings, constanst, etc:
+ * 
+ * <pre><code>
+ * @Override
+ * public void initialize()
+ * {
+ * 		super.initialize();
+ * 		muMyVec3Uniform 		= (RVec3) addUniform("uMyVec3Uniform", DataType.VEC3);
+ * 		maMyVec2Attribute	= (RVec2) addAttribute("uMyVec2Attribute", DataType.VEC2);
+ * 		mvMyFloatVarying	 	= (RFloat) addVarying("vMyFloatVarying", DataType.FLOAT);
+ * 		mgMyMat4Global 		= (RMat4) addGlobal("gMyMat4Global", DataType.MAT4);
+ * 		mcMyIntConstant 		= (RInt) addConstant("cMyIntConstant", DataType.INT);
+ * }
+ * </code></pre>
+ * 
+ * All attributes and uniforms needs to get their handles. This is an integer that represents
+ * the location of a specific attribute or uniform within a shader program. 
+ * 
+ * <pre><code>
+ * @Override
+ * public void setLocations(int programHandle) {
+ * 		muMyVec3UniformHandle 	= getUniformLocation(programHandle, "uMyVec3Uniform");
+ * 		maMyVec2AttributeHandle	= getAttributeLocation(programHandle, "uMyVec2Attribute");
+ * }
+ * </code></pre>
+ * 
+ * This handle is subsequently used in {@link AShader#applyParams())} to set the attribute/uniform value:
+ * 
+ * <pre><code>
+ * @Override
+ * public void applyParams() {
+ * 		super.applyParams();
+ * 		GLES20.glUniform3fv(muMyVec3UniformHandle, 1, myFloatArrayValue, 0);
+ * }
+ * </code></pre>
+ * 
+ * The shader code that goes into main() in a regular shader goes into {@link AShader#main()}:
+ * 
+ * <pre><code>
+ * @Override
+ * public void main() {
+ *	// corresponds to GLSL: 	vec3 myVar = maMyVec3Uniform;
+ * 	RVec3 myVar = new RVec3("myVar");
+ *	myVar.assign(maMyVec3Uniform);
+ *	// corresponds to GLSL:		myVar *= 1.0f;
+ * 	myVar.assignMultiply(1.0f);
+ * 	// etc ..
+ * }
+ * </code></pre>
  * 
  * @author dennis.ippel
  *
@@ -59,10 +113,18 @@ public abstract class AShader extends AShaderBase {
 		VERTEX, FRAGMENT, VERTEX_SHADER_FRAGMENT, FRAGMENT_SHADER_FRAGMENT
 	}
 
+	/**
+	 * Defines the position of the current vertex. This is used in the vertex shader to
+	 * write the final vertex position to. This corresponds to the gl_Position GLSL variable.
+	 */
 	protected final GLPosition GL_POSITION = new GLPosition();
+	/**
+	 * Defines the color of the current fragment. This is used in the fragment shader to
+	 * write the final fragment color to. This corresponds to the gl_FragColor GLSL variable.
+	 */
 	protected final GLFragColor GL_FRAG_COLOR = new GLFragColor();
 	
-	private String mShaderString;
+	protected String mShaderString;
 	
 	private ShaderType mShaderType;
 	private List<String> mPreprocessorDirectives;
@@ -70,7 +132,7 @@ public abstract class AShader extends AShaderBase {
 	private Hashtable<String, ShaderVar> mAttributes;
 	private Hashtable<String, ShaderVar> mVaryings;
 	private Hashtable<String, ShaderVar> mGlobals;
-	private Hashtable<String, Precision> mPrecisionSpecifier;
+	private Hashtable<String, Precision> mPrecisionQualifier;
 	private Hashtable<String, ShaderVar> mConstants;
 	protected List<IShaderFragment> mShaderFragments;
 	
@@ -85,7 +147,7 @@ public abstract class AShader extends AShaderBase {
 		mAttributes = new Hashtable<String, ShaderVar>();
 		mVaryings = new Hashtable<String, ShaderVar>();
 		mGlobals = new Hashtable<String, ShaderVar>();
-		mPrecisionSpecifier = new Hashtable<String, Precision>();
+		mPrecisionQualifier = new Hashtable<String, Precision>();
 		mConstants = new Hashtable<String, ShaderVar>();
 		mShaderFragments = new ArrayList<IShaderFragment>();
 	}
@@ -93,6 +155,11 @@ public abstract class AShader extends AShaderBase {
 	public void main() {
 	}
 
+	/**
+	 * Add a preprocessor directive like #define, #extension, #version etc.
+	 * 
+	 * @param directive
+	 */
 	public void addPreprocessorDirective(String directive)
 	{
 		if(mPreprocessorDirectives == null)
@@ -100,28 +167,77 @@ public abstract class AShader extends AShaderBase {
 		mPreprocessorDirectives.add(directive);
 	}
 	
-	protected void addPrecisionSpecifier(DataType dataType, Precision precision) {
-		mPrecisionSpecifier.put(dataType.getTypeString(), precision);
+	/**
+	 * Add a precision qualifier. There are three precision qualifiers: highp​, mediump​, and lowp​.
+	 * They have no semantic meaning or functional effect. They can apply to any floating-point type 
+	 * (vector or matrix), or any integer type. All variables of a certain type can be declared to 
+	 * have a precision by using the precision​ statement. It's syntax is as follows:
+	 * <p>precision precision-qualifier​ type​;</p>
+	 * In this case, type​ can only be float​ or int​. This will affect all collections of that basic type. 
+	 * So float​ will affect all floating-point scalars, vectors, and matrices. The int​ type will affect 
+	 * all signed and unsigned integer scalars and vectors.
+	 * 
+	 * @param dataType float, int
+	 * @param precision highp, mediump, lowp
+	 */
+	protected void addPrecisionQualifier(DataType dataType, Precision precision) {
+		mPrecisionQualifier.put(dataType.getTypeString(), precision);
 	}
 
-	protected void addDefine(String name, String value) {
-	}
-
+	/**
+	 * Add a uniform. The uniform qualifier is used to declare global variables whose values are the same across the entire
+	 * primitive being processed. All uniform variables are read-only and are initialized externally either at link
+	 * time or through the API. The link time initial value is either the value of the variable's initializer, if
+	 * present, or 0 if no initializer is present. Sampler types cannot have initializers.
+	 * 
+	 * @param var	A global shader variable.
+	 * @return
+	 */
 	protected ShaderVar addUniform(IGlobalShaderVar var)
 	{
 		return addUniform(var.getVarString(), var.getDataType());
 	}
 	
+	/**
+	 * Add a uniform. The uniform qualifier is used to declare global variables whose values are the same across the entire
+	 * primitive being processed. All uniform variables are read-only and are initialized externally either at link
+	 * time or through the API. The link time initial value is either the value of the variable's initializer, if
+	 * present, or 0 if no initializer is present. Sampler types cannot have initializers.
+	 * 
+	 * @param var	A global shader variable
+	 * @param index	The index for the shader variable. This number will appear suffixed in the final shader string.
+	 * @return
+	 */
 	protected ShaderVar addUniform(IGlobalShaderVar var, int index)
 	{
 		return addUniform(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
 	
+	/**
+	 * Add a uniform. The uniform qualifier is used to declare global variables whose values are the same across the entire
+	 * primitive being processed. All uniform variables are read-only and are initialized externally either at link
+	 * time or through the API. The link time initial value is either the value of the variable's initializer, if
+	 * present, or 0 if no initializer is present. Sampler types cannot have initializers.
+	 * 
+	 * @param var		A global shader variable
+	 * @param suffix	A string that will appear suffixed in the final shader string.
+	 * @return
+	 */
 	protected ShaderVar addUniform(IGlobalShaderVar var, String suffix)
 	{
 		return addUniform(var.getVarString() + suffix, var.getDataType());
 	}
 	
+	/**
+	 * Add a uniform. The uniform qualifier is used to declare global variables whose values are the same across the entire
+	 * primitive being processed. All uniform variables are read-only and are initialized externally either at link
+	 * time or through the API. The link time initial value is either the value of the variable's initializer, if
+	 * present, or 0 if no initializer is present. Sampler types cannot have initializers.
+	 * 
+	 * @param name		The uniform name
+	 * @param dataType	The uniform data type
+	 * @return
+	 */
 	protected ShaderVar addUniform(String name, DataType dataType)
 	{
 		ShaderVar v = getInstanceForDataType(name, dataType);
@@ -130,16 +246,46 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
+	/**
+	 * Returns all uniforms
+	 * 
+	 * @return
+	 */
 	public Hashtable<String, ShaderVar> getUniforms()
 	{
 		return mUniforms;
 	}
 	
+	/**
+	 * The attribute qualifier is used to declare variables that are passed to a vertex shader from OpenGL on a
+	 * per-vertex basis. It is an error to declare an attribute variable in any type of shader other than a vertex
+	 * shader. Attribute variables are read-only as far as the vertex shader is concerned. Values for attribute
+	 * variables are passed to a vertex shader through the OpenGL vertex API or as part of a vertex array. They
+	 * convey vertex attributes to the vertex shader and are expected to change on every vertex shader run. The
+	 * attribute qualifier can be used only with float, floating-point vectors, and matrices. Attribute variables
+	 * cannot be declared as arrays or structures.
+	 * 
+	 * @param var	A global shader variable
+	 * @return
+	 */
 	protected ShaderVar addAttribute(IGlobalShaderVar var)
 	{
 		return addAttribute(var.getVarString(), var.getDataType());
 	}
 	
+	/**
+	 * The attribute qualifier is used to declare variables that are passed to a vertex shader from OpenGL on a
+	 * per-vertex basis. It is an error to declare an attribute variable in any type of shader other than a vertex
+	 * shader. Attribute variables are read-only as far as the vertex shader is concerned. Values for attribute
+	 * variables are passed to a vertex shader through the OpenGL vertex API or as part of a vertex array. They
+	 * convey vertex attributes to the vertex shader and are expected to change on every vertex shader run. The
+	 * attribute qualifier can be used only with float, floating-point vectors, and matrices. Attribute variables
+	 * cannot be declared as arrays or structures.
+	 * 
+	 * @param name		The attribute name
+	 * @param dataType	The attribute data type
+	 * @return
+	 */
 	protected ShaderVar addAttribute(String name, DataType dataType) {
 		ShaderVar v = getInstanceForDataType(name, dataType);
 		v.isGlobal(true);
@@ -147,20 +293,56 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
+	/**
+	 * Returns all attributes
+	 * @return
+	 */
 	public Hashtable<String, ShaderVar> getAttributes()
 	{
 		return mAttributes;
 	}
 
+	/**
+	 * Varying variables provide the interface between the vertex shaders, the fragment shaders, and the fixed
+	 * functionality between them. Vertex shaders will compute values per vertex (such as color, texture
+	 * coordinates, etc.) and write them to variables declared with the varying qualifier. A vertex shader may
+	 * also read varying variables, getting back the same values it has written. Reading a varying variable in a
+	 * vertex shader returns undefined values if it is read before being written.
+	 * 
+	 * @param var
+	 * @return
+	 */
 	protected ShaderVar addVarying(IGlobalShaderVar var) {
 		return addVarying(var.getVarString(), var.getDataType());
 	}
 	
+	/**
+	 * Varying variables provide the interface between the vertex shaders, the fragment shaders, and the fixed
+	 * functionality between them. Vertex shaders will compute values per vertex (such as color, texture
+	 * coordinates, etc.) and write them to variables declared with the varying qualifier. A vertex shader may
+	 * also read varying variables, getting back the same values it has written. Reading a varying variable in a
+	 * vertex shader returns undefined values if it is read before being written.
+	 * 
+	 * @param var	A global shader variable
+	 * @param index	The index for the shader variable. This number will appear suffixed in the final shader string.
+	 * @return
+	 */
 	protected ShaderVar addVarying(IGlobalShaderVar var, int index)
 	{
 		return addVarying(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
 	
+	/**
+	 * Varying variables provide the interface between the vertex shaders, the fragment shaders, and the fixed
+	 * functionality between them. Vertex shaders will compute values per vertex (such as color, texture
+	 * coordinates, etc.) and write them to variables declared with the varying qualifier. A vertex shader may
+	 * also read varying variables, getting back the same values it has written. Reading a varying variable in a
+	 * vertex shader returns undefined values if it is read before being written.
+	 * 
+	 * @param name		The varying name
+	 * @param dataType	The varying data type
+	 * @return
+	 */
 	protected ShaderVar addVarying(String name, DataType dataType) {
 		ShaderVar v = getInstanceForDataType(name, dataType);
 		v.isGlobal(true);
@@ -168,24 +350,44 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
-	public ShaderVar getVarying(IGlobalShaderVar var)
-	{
-		return getInstanceForDataType(var.getVarString(), var.getDataType());
-	}
-	
+	/**
+	 * Returns all varyings
+	 * 
+	 * @return
+	 */
 	public Hashtable<String, ShaderVar> getVaryings()
 	{
 		return mVaryings;
 	}
 
+	/**
+	 * Adds a global variable
+	 * 
+	 * @param var	A global shader variable
+	 * @return
+	 */
 	protected ShaderVar addGlobal(IGlobalShaderVar var) {
 		return addGlobal(var.getVarString(), var.getDataType());
 	}
 	
+	/**
+	 * Adds a global variable
+	 * 
+	 * @param var	A global shader variable
+	 * @param index	The index for the shader variable. This number will appear suffixed in the final shader string.
+	 * @return
+	 */
 	protected ShaderVar addGlobal(IGlobalShaderVar var, int index) {
 		return addGlobal(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
 	
+	/**
+	 * Adds a global variable
+	 * 
+	 * @param name		The global name
+	 * @param dataType	The global data type
+	 * @return
+	 */
 	protected ShaderVar addGlobal(String name, DataType dataType) {
 		ShaderVar v = getInstanceForDataType(name, dataType);
 		v.isGlobal(true);
@@ -193,11 +395,22 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
+	/**
+	 * Returns all globals
+	 * 
+	 * @return
+	 */
 	public Hashtable<String, ShaderVar> getGlobals()
 	{
 		return mGlobals;
 	}
 	
+	/**
+	 * Returns a global. This can be a regular global but also a uniform, attribute, const or varying.
+	 * 
+	 * @param var
+	 * @return
+	 */
 	public ShaderVar getGlobal(IGlobalShaderVar var)
 	{
 		ShaderVar v = getInstanceForDataType(var.getVarString(), var.getDataType());
@@ -205,6 +418,13 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
+	/**
+	 * Returns a global. This can be a regular global but also a uniform, attribute, const or varying.
+	 * 
+	 * @param var
+	 * @param index
+	 * @return
+	 */
 	public ShaderVar getGlobal(IGlobalShaderVar var, int index)
 	{
 		ShaderVar v = getInstanceForDataType(var.getVarString() + Integer.toString(index), var.getDataType());
@@ -212,18 +432,46 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
+	/**
+	 * Add a constant
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
 	protected ShaderVar addConst(String name, int value) {
 		return addConst(name, new RInt(value));
 	}
 
+	/**
+	 * Add a constant
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
 	protected ShaderVar addConst(String name, float value) {
 		return addConst(name, new RFloat(value));
 	}
 
+	/**
+	 * Add a constant
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
 	protected ShaderVar addConst(String name, double value) {
 		return addConst(name, (float)value);
 	}
 
+	/**
+	 * Add a constant
+	 * 
+	 * @param name
+	 * @param var
+	 * @return
+	 */
 	protected ShaderVar addConst(String name, ShaderVar var) {
 		ShaderVar v = getInstanceForDataType(name, var.getDataType());
 		v.setValue(var.getName());
@@ -232,6 +480,11 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
+	/**
+	 * Returns all constants
+	 * 
+	 * @return
+	 */
 	public Hashtable<String, ShaderVar> getConsts()
 	{
 		return mConstants;
@@ -258,7 +511,6 @@ public abstract class AShader extends AShaderBase {
 	
 	protected int getUniformLocation(int programHandle, String name) {
 		int result = GLES20.glGetUniformLocation(programHandle, name);
-		RajLog.i("GLES20.glGetUniformLocation(" +programHandle +", " +name+ "): " + result);
 		return result;
 	}
 
@@ -272,7 +524,6 @@ public abstract class AShader extends AShaderBase {
 	
 	protected int getAttribLocation(int programHandle, String name) {
 		int result = GLES20.glGetAttribLocation(programHandle, name);
-		RajLog.i("GLES20.glGetAttribLocation(" +programHandle +", " +name+ "): " + result);
 		return result;
 	}
 	
@@ -322,7 +573,7 @@ public abstract class AShader extends AShaderBase {
 		// -- Precision statements
 		//
 
-		Set<Entry<String, Precision>> precisionSet = mPrecisionSpecifier
+		Set<Entry<String, Precision>> precisionSet = mPrecisionQualifier
 				.entrySet();
 		Iterator<Entry<String, Precision>> precisionIter = precisionSet
 				.iterator();
@@ -620,10 +871,24 @@ public abstract class AShader extends AShaderBase {
 		s.mInitialized = true;
 		return s;
 	}
+	
+	public ShaderVar mod(ShaderVar var1, ShaderVar var2)
+	{
+		ShaderVar s = new ShaderVar("mod(" + var1.getName() + ", " + var2.getName() + ")", var1.getDataType());
+		s.mInitialized = true;
+		return s;
+	}
 
 	public ShaderVar length(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("length(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
+	}
+	
+	public ShaderVar floor(ShaderVar var)
+	{
+		ShaderVar s = new ShaderVar("floor(" + var.getName() + ")", DataType.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}

@@ -14,11 +14,10 @@ package rajawali.animation.mesh;
 
 import java.util.Stack;
 
-import android.os.SystemClock;
-
 import rajawali.Object3D;
 import rajawali.SerializedObject3D;
 import rajawali.util.RajLog;
+import android.os.SystemClock;
 
 public abstract class AAnimationObject3D extends Object3D {
 
@@ -153,5 +152,11 @@ public abstract class AAnimationObject3D extends Object3D {
 
 	public void setFps(int fps) {
 		this.mFps = fps;
+	}
+	
+	@Override
+	public void reload() {
+		super.reload();
+		mStartTime = SystemClock.uptimeMillis();
 	}
 }
