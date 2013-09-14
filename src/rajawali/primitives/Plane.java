@@ -207,7 +207,7 @@ public class Plane extends Object3D {
 				}
 				else if(mUpAxis == Axis.Z)
 				{
-					vertices[vertexCount] = v1;
+					vertices[vertexCount] = -v1;
 					vertices[vertexCount + 1] = v2;
 					vertices[vertexCount + 2] = 0;
 				}
