@@ -14,31 +14,39 @@ package rajawali.renderer;
 
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
+import rajawali.materials.textures.RenderTargetTexture;
+import rajawali.math.MathUtil;
+import rajawali.util.RajLog;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
+import android.opengl.GLU;
 
 /**
  * Defines configurations for a given render target.
  * @author Andrew Jo (andrewjo@gmail.com)
+ * @author dennis.ippel
  */
-public class RenderTarget {
+public class RenderTarget extends AFrameTask {
 	protected int mWidth;
 	protected int mHeight;
 	protected int mOffsetX;
 	protected int mOffsetY;
+	protected String mName;
 	
 	protected boolean mDepthBuffer;
 	protected boolean mStencilBuffer;
 	
-	protected boolean mGenerateMipmaps;
-	protected FilterType mFilterType;
-	protected WrapType mWrapType;
-	protected Config mBitmapConfig;
+	protected int mFrameBufferHandle;
+	protected int mDepthBufferHandle;
+	protected int mStencilBufferHandle;
 	
-	protected int mGLType;
+	protected RenderTargetTexture mTexture;
+	private static int count = 0;
 	
 	/**
 	 * Instantiates a new RenderTarget object
+	 * @param name The name of the render target. This should be unique and should
+	 * comply with regular variable naming standards.
 	 * @param width Width of the render target
 	 * @param height Height of the render target
 	 * @param offsetX Horizontal offset of the render target
@@ -55,17 +63,19 @@ public class RenderTarget {
 			boolean depthBuffer, boolean stencilBuffer, boolean mipmaps,
 			int glType, Config bitmapConfig, FilterType filterType, 
 			WrapType wrapType) {
+		mName = "uRendTarg" + count++;
 		mWidth = width;
 		mHeight = height;
 		mOffsetX = offsetX;
 		mOffsetY = offsetY;
 		mDepthBuffer = depthBuffer;
 		mStencilBuffer = stencilBuffer;
-		mGenerateMipmaps = mipmaps;
-		mGLType = glType;
-		mBitmapConfig = bitmapConfig;
-		mFilterType = filterType;
-		mWrapType = wrapType;
+		mTexture = new RenderTargetTexture(mName + "FBTex", MathUtil.getClosestPowerOfTwo(mWidth), mHeight);
+		mTexture.setMipmap(mipmaps);
+		mTexture.setGLTextureType(glType);
+		mTexture.setBitmapConfig(bitmapConfig);
+		mTexture.setFilterType(filterType);
+		mTexture.setWrapType(wrapType);
 	}
 	
 	/**
@@ -74,7 +84,7 @@ public class RenderTarget {
 	 * @param height Height of the render target
 	 */
 	public RenderTarget(int width, int height) {
-		this(width, height, 0, 0, true, true, true, GLES20.GL_UNSIGNED_BYTE, Config.ARGB_8888, FilterType.LINEAR, WrapType.CLAMP);
+		this(width, height, 0, 0, true, true, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, FilterType.LINEAR, WrapType.CLAMP);
 	}
 	
 	@Override
@@ -86,11 +96,11 @@ public class RenderTarget {
 				mOffsetY,
 				mDepthBuffer,
 				mStencilBuffer,
-				mGenerateMipmaps,
-				mGLType,
-				mBitmapConfig,
-				mFilterType,
-				mWrapType);
+				mTexture.isMipmap(),
+				mTexture.getGLTextureType(),
+				mTexture.getBitmapConfig(),
+				mTexture.getFilterType(),
+				mTexture.getWrapType());
 	}
 	
 	/**
@@ -110,22 +120,6 @@ public class RenderTarget {
 	}
 	
 	/**
-	 * Returns whether this render target is set to automatically generate mipmaps.
-	 * @return True if automatically generating mipmaps, false otherwise.
-	 */
-	public boolean isGenerateMipmaps() {
-		return mGenerateMipmaps;
-	}
-	
-	/**
-	 * Sets whether automatic mipmap generation is enabled.
-	 * @param generateMipmaps Set to true to enable automatic mipmap generation.
-	 */
-	public void enableGenerateMipmaps(boolean generateMipmaps) {
-		mGenerateMipmaps = generateMipmaps;
-	}
-	
-	/**
 	 * Returns whether stencil buffer has been enabled for this render target.
 	 * @return True if stencil buffer is enabled, false otherwise.
 	 */
@@ -139,46 +133,6 @@ public class RenderTarget {
 	 */
 	public void enableStencilBuffer(boolean stencilBuffer) {
 		mStencilBuffer = stencilBuffer;
-	}
-	
-	/**
-	 * Gets the bitmap configuration of this render target.
-	 * @return Bitmap configuration of this render type instance.
-	 */
-	public Config getBitmapConfig() {
-		return mBitmapConfig;
-	}
-	
-	/**
-	 * Sets the bitmap configuration of this render target.
-	 * @param bitmapConfig ARGB8888 and ARGB4444 configurations enable GL_RGBA mode, others enable GL_RGB mode
-	 */
-	public void setBitmapConfig(Config bitmapConfig) {
-		mBitmapConfig = bitmapConfig;
-	}
-	
-	/**
-	 * Gets the texture filter type for this render target.
-	 * @return LINEAR if using linear texture filtering, NEAREST if using nearest neighbor filtering.
-	 */
-	public FilterType getFilterType() {
-		return mFilterType;
-	}
-	
-	/**
-	 * Sets the texture filter type for this render target.
-	 * @param filterType
-	 */
-	public void setFilterType(FilterType filterType) {
-		mFilterType = filterType;
-	}
-	
-	public int getGLType() {
-		return mGLType;
-	}
-	
-	public void setGLType(int glType) {
-		mGLType = glType;
 	}
 	
 	/**
@@ -245,19 +199,79 @@ public class RenderTarget {
 		mWidth = width;
 	}
 	
-	/**
-	 * Returns the current texture wrap type.
-	 * @return CLAMP if set to clamp to edges, REPEAT if repeating. 
-	 */
-	public WrapType getWrapType() {
-		return mWrapType;
+	public void create() {
+		int[] bufferHandles = new int[1];
+		GLES20.glGenFramebuffers(1, bufferHandles, 0);
+		mFrameBufferHandle = bufferHandles[0];
+		
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
+
+		checkGLError("Could not create framebuffer: ");
+		
+		if(mDepthBuffer)
+		{
+			GLES20.glGenRenderbuffers(1, bufferHandles, 0);
+			mDepthBufferHandle = bufferHandles[0];
+			GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+			GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mWidth, mHeight);
+			GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+			
+			checkGLError("Could not create depth buffer: ");
+		}
+		
+		if(mStencilBuffer)
+		{
+			GLES20.glGenRenderbuffers(1, bufferHandles, 0);
+			mStencilBufferHandle = bufferHandles[0];
+			GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mStencilBufferHandle);
+			GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_STENCIL_INDEX8, mWidth, mHeight);
+			GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_STENCIL_ATTACHMENT, GLES20.GL_RENDERBUFFER, mStencilBufferHandle);
+			
+			checkGLError("Could not create stencil buffer: ");
+		}
+		
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 	}
 	
-	/**
-	 * Sets the current texture wrap type.
-	 * @param wrapType Set to CLAMP if clamping to edges, REPEAT if repeating.
-	 */
-	public void setWrapType(WrapType wrapType) {
-		mWrapType = wrapType;
+	public void bind() {
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
+		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTexture.getTextureId(), 0);
+		
+		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
+		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
+			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+			RajLog.d("Could not bind FrameBuffer." + mTexture.getTextureId());
+		}
+	}
+	
+	public void unbind() {
+		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+	}
+	
+	public void remove() {
+		GLES20.glDeleteFramebuffers(GLES20.GL_FRAMEBUFFER, new int[] { mFrameBufferHandle }, 0);
+	}
+	
+	public void reload() {
+		create();
+	}
+	
+	public void checkGLError(String ex) {
+		int error = GLES20.glGetError();
+		if(error != GLES20.GL_NO_ERROR)
+		{
+			String description = GLU.gluErrorString(error);
+			
+			throw new RuntimeException(ex+ ": "+description);
+		}
+	}
+	
+	public RenderTargetTexture getTexture() {
+		return mTexture;
+	}
+
+	@Override
+	public TYPE getFrameTaskType() {
+		return TYPE.RENDER_TARGET;
 	}
 }

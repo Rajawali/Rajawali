@@ -207,7 +207,7 @@ public class Plane extends Object3D {
 				}
 				else if(mUpAxis == Axis.Z)
 				{
-					vertices[vertexCount] = -v1;
+					vertices[vertexCount] = v1;
 					vertices[vertexCount + 1] = v2;
 					vertices[vertexCount + 2] = 0;
 				}
@@ -221,7 +221,7 @@ public class Plane extends Object3D {
 
 				normals[vertexCount] = mUpAxis == Axis.X ? 1 : 0;
 				normals[vertexCount + 1] = mUpAxis == Axis.Y ? 1 : 0;
-				normals[vertexCount + 2] = mUpAxis == Axis.Z ? -1 : 0;
+				normals[vertexCount + 2] = mUpAxis == Axis.Z ? 1 : 0;
 
 				vertexCount += 3;
 			}

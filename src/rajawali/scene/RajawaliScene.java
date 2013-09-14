@@ -655,15 +655,19 @@ public class RajawaliScene extends AFrameTask {
 			if (mNextCamera != null) {
 				mCamera = mNextCamera;
 				mNextCamera = null;
-				mCamera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+				mCamera.setProjectionMatrix(mRenderer.getCurrentViewportWidth(), mRenderer.getCurrentViewportHeight());
 			}
 		}
 		
 		int clearMask = mAlwaysClearColorBuffer? GLES20.GL_COLOR_BUFFER_BIT : 0;
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
-
-		if (pickerInfo != null) {
+		
+		if(renderTarget != null)
+		{
+			renderTarget.bind();
+			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
+		} else if (pickerInfo != null) {
 			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
 			mReloadPickerInfo = false;
 			try {
@@ -744,6 +748,11 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mPlugins) {
 			for (int i = 0, j = mPlugins.size(); i < j; i++)
 				mPlugins.get(i).render();
+		}
+		
+		if(renderTarget != null)
+		{
+			renderTarget.unbind();
 		}
 	}
 	

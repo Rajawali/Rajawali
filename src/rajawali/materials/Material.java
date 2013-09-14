@@ -498,6 +498,7 @@ public class Material extends AFrameTask {
 					hasVideoTexture = true;
 					// no break statement, add the video texture to the diffuse textures
 				case DIFFUSE:
+				case RENDER_TARGET:
 					if(diffuseTextures == null) diffuseTextures = new ArrayList<ATexture>();
 					diffuseTextures.add(texture);
 					break;
@@ -650,11 +651,11 @@ public class Material extends AFrameTask {
 			
 			mVertexShader.buildShader();
 			mFragmentShader.buildShader();
-	
+	/*
 			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
 			RajLog.d(mVertexShader.getShaderString());
 			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
-			RajLog.d(mFragmentShader.getShaderString());
+			RajLog.d(mFragmentShader.getShaderString());*/
 		}
 		else
 		{
@@ -850,7 +851,7 @@ public class Material extends AFrameTask {
 
 		TextureManager.getInstance().addTexture(texture);
 		texture.registerMaterial(this);
-		
+		RajLog.i("material: " + texture);
 		mIsDirty = true;
 	}
 	

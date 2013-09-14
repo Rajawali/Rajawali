@@ -19,7 +19,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import rajawali.Camera2D;
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
-import rajawali.primitives.Plane;
 import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
@@ -63,6 +62,7 @@ public class EffectComposer {
 				width = size.x;
 				height = size.y;
 			}
+			
 			mRenderTarget1 = new RenderTarget(width, height, 0, 0, true, 
 					false, true, GLES20.GL_UNSIGNED_BYTE, Config.RGB_565,
 					FilterType.LINEAR, WrapType.CLAMP);
