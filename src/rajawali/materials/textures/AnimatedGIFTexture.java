@@ -12,6 +12,11 @@
  */
 package rajawali.materials.textures;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -19,14 +24,14 @@ import android.graphics.Canvas;
 import android.graphics.Movie;
 import android.os.SystemClock;
 
-
 /**
  * Creates a texture from an animated GIF.
  * 
  * @author dennis.ippel
- *
+ * 
  */
 public class AnimatedGIFTexture extends ASingleTexture {
+
 	private Canvas mCanvas;
 	private Movie mMovie;
 	private Bitmap mGIFBitmap;
@@ -39,46 +44,84 @@ public class AnimatedGIFTexture extends ASingleTexture {
 	private boolean mLoop;
 	private int mLoopCount;
 	private boolean mAnimationRunning;
+	private String mPathName;
+	private boolean mUseResource;
+
 	public AnimatedGIFTexture(String name, int resourceId) {
 		this(name, resourceId, 512);
 	}
-	
+
+	public AnimatedGIFTexture(String name, String pathName) {
+		this(name, pathName, 512);
+
+	}
+
 	/**
 	 * Creates an animated GIF texture
 	 * 
-	 * @param resourceId	The animated GIF resource
-	 * @param textureSize 	The power of two size
+	 * @param resourceId
+	 *            The animated GIF resource
+	 * @param textureSize
+	 *            The power of two size
 	 */
 	public AnimatedGIFTexture(String name, int resourceId, int textureSize) {
 		super(TextureType.DIFFUSE, name);
-		mTextureSize = textureSize;
 		mResourceId = resourceId;
-		mLoop = true;
-		loadGIF();
+		mPathName = "";
+		mUseResource = true;
+		init(textureSize);
 	}
-	
+
+	public AnimatedGIFTexture(String name, String pathName, int textureSize) {
+		super(TextureType.DIFFUSE, name);
+		mResourceId = 0;
+		mPathName = pathName;
+		mUseResource = false;
+		init(textureSize);
+	}
+
 	public AnimatedGIFTexture(AnimatedGIFTexture other) {
 		super(other);
 		setFrom(other);
 	}
-	
+
+	private void init(int textureSize) {
+		mTextureSize = textureSize;
+		mLoop = true;
+		loadGIF();
+	}
+
 	@Override
 	public AnimatedGIFTexture clone() {
 		return new AnimatedGIFTexture(this);
 	}
-	
+
 	private void loadGIF() {
 		Context context = TextureManager.getInstance().getContext();
-		mMovie = Movie.decodeStream(context.getResources().openRawResource(mResourceId));
+		if (mUseResource) {
+			mMovie = Movie.decodeStream(context.getResources().openRawResource(mResourceId));
+		} else {
+			try {
+				int buffersize = 16 * 1024;
+				FileInputStream file = new FileInputStream(mPathName);
+				InputStream mInputStream = new BufferedInputStream(file, buffersize);
+				mInputStream.mark(buffersize);
+				mMovie = Movie.decodeStream(mInputStream);
+
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+		}
+
 		mWidth = mMovie.width();
 		mHeight = mMovie.height();
-		
+
 		mGIFBitmap = Bitmap.createBitmap(mWidth, mHeight, Config.ARGB_8888);
 		mCanvas = new Canvas(mGIFBitmap);
 		mMovie.draw(mCanvas, 0, 0);
 		mBitmap = Bitmap.createScaledBitmap(mGIFBitmap, mTextureSize, mTextureSize, false);
 	}
-	
+
 	/**
 	 * Copies every property from another AnimatedGIFTexture object
 	 * 
@@ -95,17 +138,17 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		mHeight = other.getHeight();
 		mTextureSize = other.getTextureSize();
 	}
-	
+
 	public void rewind()
 	{
 		mStartTime = SystemClock.uptimeMillis();
 		mAnimationRunning = true;
 	}
-	
+
 	@Override
 	void replace() throws TextureException
 	{
-		if(mLoadNewGIF)
+		if (mLoadNewGIF)
 		{
 			loadGIF();
 			mLoadNewGIF = false;
@@ -115,7 +158,8 @@ public class AnimatedGIFTexture extends ASingleTexture {
 
 	public void update() throws TextureException
 	{
-		if(mMovie == null || mMovie.duration() == 0) return;
+		if (mMovie == null || mMovie.duration() == 0)
+			return;
 		if (mAnimationRunning) {
 			long now = SystemClock.uptimeMillis();
 			int relTime = (int) ((now - mStartTime) % mMovie.duration());
@@ -132,42 +176,51 @@ public class AnimatedGIFTexture extends ASingleTexture {
 			replace();
 		}
 	}
-	
+
 	@Override
 	public void setResourceId(int resourceId) {
-		if(mResourceId == resourceId)
+		if (mResourceId == resourceId)
 			return;
 		mResourceId = resourceId;
 		mLoadNewGIF = true;
+		mUseResource = true;
 	}
-	
+
+	public void setPathName(String pathName) {
+		if (mPathName.equalsIgnoreCase(pathName))
+			return;
+		mPathName = pathName;
+		mUseResource = false;
+		mLoadNewGIF = true;
+	}
+
 	@Override
 	public void reset() throws TextureException
 	{
 		super.reset();
-		
-		if(mGIFBitmap != null)
+
+		if (mGIFBitmap != null)
 		{
 			mGIFBitmap.recycle();
 			mGIFBitmap = null;
 		}
-		
+
 		mCanvas = null;
 		mMovie = null;
 	}
-	
+
 	@Override
 	void remove() throws TextureException
 	{
-		if(mGIFBitmap != null)
+		if (mGIFBitmap != null)
 		{
 			mGIFBitmap.recycle();
 			mGIFBitmap = null;
 		}
-		
+
 		mCanvas = null;
 		mMovie = null;
-		
+
 		super.remove();
 	}
 
@@ -176,25 +229,25 @@ public class AnimatedGIFTexture extends ASingleTexture {
 	{
 		return mResourceId;
 	}
-	
+
 	public Canvas getCanvas() {
 		return mCanvas;
 	}
-	
+
 	public Movie getMovie() {
 		return mMovie;
 	}
-	
+
 	@Override
 	public int getWidth() {
 		return mWidth;
 	}
-	
+
 	@Override
 	public int getHeight() {
 		return mHeight;
 	}
-	
+
 	public int getTextureSize() {
 		return mTextureSize;
 	}
