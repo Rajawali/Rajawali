@@ -18,6 +18,7 @@ import java.nio.DoubleBuffer;
 
 import rajawali.BufferInfo;
 import rajawali.Camera;
+import rajawali.Object3D;
 import rajawali.Geometry3D.BufferType;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import rajawali.math.Matrix;
@@ -308,5 +309,40 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			super(msg, throwable);
 		}
 
+	}
+	
+	public SkeletalAnimationObject3D clone(boolean copyMaterial) {
+		SkeletalAnimationObject3D clone = new SkeletalAnimationObject3D();
+		clone.setRotation(getRotation());
+		clone.setScale(getScale());
+		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.isContainer(mIsContainerOnly);
+		clone.setMaterial(mMaterial);
+		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
+				: GLES20.GL_UNSIGNED_INT;
+		clone.mTransparent = this.mTransparent;
+		clone.mEnableBlending = this.mEnableBlending;
+		clone.mBlendFuncSFactor = this.mBlendFuncSFactor;
+		clone.mBlendFuncDFactor = this.mBlendFuncDFactor;
+		clone.mEnableDepthTest = this.mEnableDepthTest;
+		clone.mEnableDepthMask = this.mEnableDepthMask;
+
+		clone.setFrames(mFrames);
+		clone.setFps(mFps);
+		clone.uBoneMatrix = uBoneMatrix;
+		clone.mInverseBindPoseMatrix = mInverseBindPoseMatrix;
+		clone.setJoints(mJoints);
+		
+		for(int i=0; i<mChildren.size(); i++)
+		{
+			Object3D child = mChildren.get(i);
+			if(child.getClass() == SkeletalAnimationChildObject3D.class)
+			{
+				SkeletalAnimationChildObject3D sco = (SkeletalAnimationChildObject3D)child;
+				clone.addChild(sco.clone(copyMaterial));
+			}
+		}
+				
+		return clone;
 	}
 }

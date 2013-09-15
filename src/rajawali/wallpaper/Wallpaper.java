@@ -288,6 +288,7 @@ public abstract class Wallpaper extends WallpaperService {
 		protected RajawaliRenderer mRenderer;
 		protected GLWallpaperSurfaceView mSurfaceView;
 		protected boolean mMultisampling;
+		protected float mDefaultPreviewOffsetX;
 
 		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer) {
 			this(preferences, context, renderer, false);
@@ -300,14 +301,23 @@ public abstract class Wallpaper extends WallpaperService {
 			mRenderer.setSharedPreferences(preferences);
 			mRenderer.setEngine(this);
 			mMultisampling = useMultisampling;
+			mDefaultPreviewOffsetX = 0.5f;
 		}
 
 		@Override
 		public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep,
 				int xPixelOffset, int yPixelOffset) {
 			super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
-			if (mRenderer != null)
+			if (mRenderer != null) {
+				if (isPreview() && enableDefaultXOffsetInPreview())
+					xOffset = mDefaultPreviewOffsetX;
+					
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+			}
+		}
+		
+		public boolean enableDefaultXOffsetInPreview() {
+			return true;
 		}
 
 		@Override

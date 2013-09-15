@@ -202,7 +202,7 @@ public class RajawaliActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    	mRajRenderer.onSurfaceDestroyed();
+        mRajRenderer.onSurfaceDestroyed();
         unbindDrawables(mLayout);
         System.gc();
     }

@@ -94,7 +94,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		super();
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mGeometry = new Geometry3D();
-		mColor = new float[] {(float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f};
+		mColor = new float[] { 0, 1, 0, 1.0f};
 	}
 
 	public Object3D(String name) {
@@ -257,8 +257,14 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			mPMatrix = projMatrix;
 			if (mDoubleSided) {
 				GLES20.glDisable(GLES20.GL_CULL_FACE);
-			} else if (mBackSided) {
-				GLES20.glCullFace(GLES20.GL_FRONT);
+			} else {
+				GLES20.glEnable(GLES20.GL_CULL_FACE);
+			     if (mBackSided) {
+			          GLES20.glCullFace(GLES20.GL_FRONT);
+			     } else {
+			          GLES20.glCullFace(GLES20.GL_BACK);
+			          GLES20.glFrontFace(GLES20.GL_CCW);
+			     }
 			}
 			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
 				GLES20.glEnable(GLES20.GL_BLEND);
