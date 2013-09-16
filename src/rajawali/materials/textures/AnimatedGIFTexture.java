@@ -12,9 +12,7 @@
  */
 package rajawali.materials.textures;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import android.content.Context;
@@ -22,6 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Movie;
+import android.net.Uri;
 import android.os.SystemClock;
 
 /**
@@ -96,30 +95,40 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		return new AnimatedGIFTexture(this);
 	}
 
-	private void loadGIF() {
-		Context context = TextureManager.getInstance().getContext();
-		if (mUseResource) {
-			mMovie = Movie.decodeStream(context.getResources().openRawResource(mResourceId));
-		} else {
-			try {
-				int buffersize = 16 * 1024;
-				FileInputStream file = new FileInputStream(mPathName);
-				InputStream mInputStream = new BufferedInputStream(file, buffersize);
-				mInputStream.mark(buffersize);
-				mMovie = Movie.decodeStream(mInputStream);
-
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
+	private static byte[] streamToBytes(InputStream is) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
+		byte[] buffer = new byte[1024];
+		int len;
+		try {
+			while ((len = is.read(buffer)) >= 0) {
+				os.write(buffer, 0, len);
 			}
-		}
+		} catch (java.io.IOException e) {}
+		return os.toByteArray();
+	}
 
-		mWidth = mMovie.width();
-		mHeight = mMovie.height();
-
+	private void loadGIF() {
+		loadMovie();
 		mGIFBitmap = Bitmap.createBitmap(mWidth, mHeight, Config.ARGB_8888);
 		mCanvas = new Canvas(mGIFBitmap);
 		mMovie.draw(mCanvas, 0, 0);
 		mBitmap = Bitmap.createScaledBitmap(mGIFBitmap, mTextureSize, mTextureSize, false);
+	}
+
+	private void loadMovie() {
+		Context context = TextureManager.getInstance().getContext();
+		if (mUseResource) {
+			mMovie = Movie.decodeStream(context.getResources().openRawResource(mResourceId));
+		} else {
+			InputStream is = null;
+			try {
+				is = context.getContentResolver().openInputStream(Uri.parse(mPathName));
+			} catch (Exception e) {}
+			byte[] array = streamToBytes(is);
+			mMovie = Movie.decodeByteArray(array, 0, array.length);
+		}
+		mWidth = mMovie.width();
+		mHeight = mMovie.height();
 	}
 
 	/**
@@ -154,6 +163,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 			mLoadNewGIF = false;
 		}
 		super.replace();
+
 	}
 
 	public void update() throws TextureException
@@ -184,6 +194,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		mResourceId = resourceId;
 		mLoadNewGIF = true;
 		mUseResource = true;
+		loadMovie();
 	}
 
 	public void setPathName(String pathName) {
@@ -192,6 +203,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		mPathName = pathName;
 		mUseResource = false;
 		mLoadNewGIF = true;
+		loadMovie();
 	}
 
 	@Override
