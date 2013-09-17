@@ -50,7 +50,7 @@ public class RenderTargetTexture extends ATexture {
 		int[] textures = new int[1];
 		GLES20.glGenTextures(1, textures, 0);
 		int textureId = textures[0];
-		
+
 		if(textureId > 0) {
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 			

@@ -362,6 +362,10 @@ public class RajawaliScene extends AFrameTask {
 		return queueAddTask(child);
 	}
 	
+	public boolean addChildAt(Object3D child, int index) {
+		return queueAddTask(child, index);
+	}
+	
 	/**
 	 * Requests the addition of a {@link Collection} of children to the scene.
 	 * 

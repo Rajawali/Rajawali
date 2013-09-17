@@ -815,10 +815,18 @@ public class Material extends AFrameTask {
 
 		for (int i = 0; i < num; i++) {
 			ATexture texture = mTextureList.get(i);
+			bindTextureByName(texture.getTextureName(), i, texture);
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
 			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
 			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName()), i);
 		}
+	}
+	
+	public void bindTextureByName(String name, int index, ATexture texture)
+	{
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
+		GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName()), index);
 	}
 
 	/**
@@ -851,7 +859,7 @@ public class Material extends AFrameTask {
 
 		TextureManager.getInstance().addTexture(texture);
 		texture.registerMaterial(this);
-		RajLog.i("material: " + texture);
+
 		mIsDirty = true;
 	}
 	

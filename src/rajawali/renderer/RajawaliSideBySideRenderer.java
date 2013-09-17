@@ -217,33 +217,33 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 	}
 
 	@Override
-	protected void onRender() {
+	protected void onRender(final double deltaTime) {
 		mUserScene = getCurrentScene();
 
 		setRenderTarget(mLeftRenderTarget);
 		synchronized (mCameraOrientationLock) {
 			setViewPort(mViewportWidthHalf, mViewportHeight);
 			getCurrentScene().switchCamera(mCameraLeft);
-			getCurrentCamera().setOrientation(mCameraOrientation);
+			mCameraLeft.setOrientation(mCameraOrientation);
 		}
 
-		render();
+		render(deltaTime);
 
 		setRenderTarget(mRightRenderTarget);
 
 		synchronized (mCameraOrientationLock) {
 			getCurrentScene().switchCamera(mCameraRight);
-			getCurrentCamera().setOrientation(mCameraOrientation);
+			mCameraRight.setOrientation(mCameraOrientation);
 		}
 
-		render();
+		render(deltaTime);
 
 		switchSceneDirect(mSideBySideScene);
 
 		setRenderTarget(null);
 		setViewPort(mViewportWidth, mViewportHeight);
 
-		render();
+		render(deltaTime);
 
 		switchScene(mUserScene);
 	}

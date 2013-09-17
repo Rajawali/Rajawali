@@ -16,6 +16,7 @@ import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Camera2D;
 import rajawali.math.Matrix4;
+import rajawali.postprocessing.passes.EffectPass;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 /**
@@ -52,6 +53,8 @@ import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 public class ScreenQuad extends Object3D {
 	private Camera2D mCamera;
 	private Matrix4 mVPMatrix;
+	private EffectPass mEffectPass;
+	
 	/**
 	 * Creates a new ScreenQuad.
 	 */
@@ -100,5 +103,16 @@ public class ScreenQuad extends Object3D {
 		final Matrix4 viewMatrix = mCamera.getViewMatrix();
 		mVPMatrix.setAll(pMatrix).multiply(viewMatrix);
 		super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, null);
+	}
+	
+	@Override
+	protected void setShaderParams(Camera camera) {
+		super.setShaderParams(camera);
+		if(mEffectPass != null)
+			mEffectPass.setShaderParams();
+	}
+	
+	public void setEffectPass(EffectPass effectPass) {
+		mEffectPass = effectPass;
 	}
 }

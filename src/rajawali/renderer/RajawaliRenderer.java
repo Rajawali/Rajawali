@@ -169,7 +169,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void switchSceneDirect(RajawaliScene nextScene) {
 		mCurrentScene = nextScene;
 		mCurrentScene.resetGLState(); //Ensure that the GL state is what this scene expects
-		mCurrentScene.getCamera().setProjectionMatrix(mViewportWidth, mViewportHeight);	
+		mCurrentScene.getCamera().setProjectionMatrix(mCurrentViewportWidth, mCurrentViewportHeight);	
 	}
 
 	/**
@@ -480,7 +480,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			}
 		}
 		
-		onRender();
+		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
+		mLastRender = SystemClock.elapsedRealtime();
+		
+		onRender(deltaTime);
 		
 		++mFrameCount;
 		if (mFrameCount % 50 == 0) {
@@ -510,17 +513,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 	
-	protected void onRender()
+	protected void onRender(final double deltaTime)
 	{
-		render();
+		render(deltaTime);
 	}
 
 	/**
 	 * Called by {@link #onDrawFrame(GL10)} to render the next frame.
 	 */
-	protected void render() {
-		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
-		mLastRender = SystemClock.elapsedRealtime();
+	protected void render(final double deltaTime) {
 		
 		mCurrentScene.render(deltaTime, mCurrentRenderTarget);
 	}
