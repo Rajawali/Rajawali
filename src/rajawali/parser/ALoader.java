@@ -36,6 +36,18 @@ public abstract class ALoader implements ILoader {
 	protected String mFileOnSDCard;
 	protected File mFile;
 
+	public ALoader(File file) {
+		this(file.getAbsolutePath());
+		mFile = file;
+	}
+
+	public ALoader(String fileOnSDCard)
+	{
+		mResources = null;
+		mResourceId = 0;
+		mFileOnSDCard = fileOnSDCard;
+	}
+
 	public ALoader(RajawaliRenderer renderer, String fileOnSDCard)
 	{
 		this(renderer.getContext().getResources(), 0);
