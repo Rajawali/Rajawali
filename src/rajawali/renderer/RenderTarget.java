@@ -14,6 +14,8 @@ package rajawali.renderer;
 
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
+import rajawali.materials.textures.RenderTargetTexture.RenderTargetTextureFormat;
+import rajawali.materials.textures.RenderTargetTexture.RenderTargetTextureType;
 import rajawali.materials.textures.RenderTargetTexture;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap.Config;
@@ -42,6 +44,7 @@ public class RenderTarget extends AFrameTask {
 	protected int mStencilBufferHandle;
 
 	protected RenderTargetTexture mTexture;
+	protected RenderTargetTexture mDepthTexture;
 	private static int count = 0;
 
 	/**
@@ -127,6 +130,19 @@ public class RenderTarget extends AFrameTask {
 		mTexture.setBitmapConfig(bitmapConfig);
 		mTexture.setFilterType(filterType);
 		mTexture.setWrapType(wrapType);
+
+		if (mDepthBuffer)
+		{
+			mDepthTexture = new RenderTargetTexture(mName + "FBDepth", mWidth, mHeight,
+					RenderTargetTextureFormat.DEPTH,
+					RenderTargetTextureFormat.DEPTH,
+					RenderTargetTextureType.UNSIGNED_BYTE);
+			mDepthTexture.setMipmap(false);
+			mDepthTexture.setGLTextureType(glType);
+			mDepthTexture.setBitmapConfig(bitmapConfig);
+			mDepthTexture.setFilterType(filterType);
+			mDepthTexture.setWrapType(wrapType);
+		}
 	}
 
 	/**
@@ -285,13 +301,56 @@ public class RenderTarget extends AFrameTask {
 
 		if (mDepthBuffer)
 		{
+			int[] tex = new int[2];
+			GLES20.glGenTextures(2, tex, 0);
+			
+			  GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
+			  GLES20.glTexImage2D(
+			      GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGB, mWidth, mHeight,
+			      0, GLES20.GL_RGB, GLES20.GL_UNSIGNED_BYTE, null);
+			  GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+			  GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+			  GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+			  GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+			  GLES20.glFramebufferTexture2D(
+			      GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, tex[0], 0);
+			  
+			  mTexture.setTextureId(tex[0]);
+			      
+/*
 			GLES20.glGenRenderbuffers(1, bufferHandles, 0);
 			mDepthBufferHandle = bufferHandles[0];
 			GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
 			GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mWidth, mHeight);
-			GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER,
-					mDepthBufferHandle);
-
+			GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+*/
+			  /*
+			  GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[1]);
+			  GLES20.glTexImage2D(
+				      GLES20.GL_TEXTURE_2D, 0, GLES20.GL_DEPTH_COMPONENT, mWidth, mHeight,
+				      0, GLES20.GL_DEPTH_COMPONENT, GLES20.GL_FLOAT, null);
+			  GLES20.glFramebufferTexture2D(
+			      GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_TEXTURE_2D, tex[1], 0);
+			  */
+			//GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbuf);
+			  /*
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
+			GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_DEPTH_COMPONENT, mWidth, mHeight, 0, GLES20.GL_LUMINANCE, GLES20.GL_FLOAT, null);
+			GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_TEXTURE_2D, tex[0], 0);
+//			GLES20.glUniform1i(muDTex1, tex[0]);
+			
+			GLES20.glDepthFunc(GLES20.GL_GREATER);
+			  mTexture.setTextureId(tex[0]);
+			  mDepthTexture.setTextureId(tex[1]);
+*/
+			  
+			//GLES20.glGenRenderbuffers(1, bufferHandles, 0);
+			//mDepthBufferHandle = bufferHandles[0];
+			//GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+			//GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mWidth, mHeight);
+			//GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
+//			GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_TEXTURE_2D,
+	//				mDepthTexture.getTextureId(), 0);
 			checkGLError("Could not create depth buffer: ");
 		}
 
@@ -306,19 +365,24 @@ public class RenderTarget extends AFrameTask {
 
 			checkGLError("Could not create stencil buffer: ");
 		}
-
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 	}
 
 	public void bind() {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
-		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D,
-				mTexture.getTextureId(), 0);
-
+		//GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D,
+			//	mTexture.getTextureId(), 0);
+		RajLog.i("TEXTURE IDS: " + mTexture.getTextureId() + ", " + mDepthTexture.getTextureId());
+		/*
+		if (mDepthBuffer)
+			GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_TEXTURE_2D,
+					mDepthTexture.getTextureId(), 0);
+*/
 		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
 		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-			RajLog.d("Could not bind FrameBuffer." + status);
+			throw new RuntimeException("Could not bind FrameBuffer." + status);
 		}
 	}
 
@@ -346,6 +410,10 @@ public class RenderTarget extends AFrameTask {
 
 	public RenderTargetTexture getTexture() {
 		return mTexture;
+	}
+
+	public RenderTargetTexture getDepthTexture() {
+		return mDepthTexture;
 	}
 
 	@Override

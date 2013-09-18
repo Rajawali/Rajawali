@@ -16,12 +16,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
 import rajawali.postprocessing.IPass.PassType;
 import rajawali.postprocessing.IPostProcessingComponent.PostProcessingComponentType;
 import rajawali.postprocessing.passes.EffectPass;
 import rajawali.primitives.ScreenQuad;
+import rajawali.primitives.Sphere;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
@@ -38,8 +40,8 @@ public class PostProcessingManager {
 	protected RajawaliRenderer mRenderer;
 	protected RenderTarget mRenderTarget1;
 	protected RenderTarget mRenderTarget2;
-	protected RenderTarget mReadBuffer;
-	protected RenderTarget mWriteBuffer;
+	public RenderTarget mReadBuffer;
+	public RenderTarget mWriteBuffer;
 
 	protected List<IPostProcessingComponent> mComponents;
 	protected List<IPass> mPasses;
@@ -70,10 +72,12 @@ public class PostProcessingManager {
 			height = size.y;
 		}
 
-		mRenderTarget1 = new RenderTarget(width, height, 0, 0, true,
-				false, true, GLES20.GL_UNSIGNED_BYTE, Config.RGB_565,
+		mRenderTarget1 = new RenderTarget("renderTarget1", width, height, 0, 0, true,
+				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
-		mRenderTarget2 = mRenderTarget1.clone();
+		mRenderTarget2 = new RenderTarget("renderTarget2", width, height, 0, 0, true,
+				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
+				FilterType.LINEAR, WrapType.CLAMP);
 		
 		mWriteBuffer = mRenderTarget1;
 		mReadBuffer = mRenderTarget2;
@@ -82,7 +86,22 @@ public class PostProcessingManager {
 		mComponents = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingComponent>());
 		mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<IPass>());
 
+		mRenderer.addRenderTarget(mWriteBuffer);
+		mRenderer.addRenderTarget(mReadBuffer);
+		
+		//mRenderer.getTextureManager().addTexture(mWriteBuffer.getTexture());
+		//mRenderer.getTextureManager().addTexture(mWriteBuffer.getDepthTexture());
+		//mRenderer.getTextureManager().addTexture(mReadBuffer.getTexture());
+		//mRenderer.getTextureManager().addTexture(mReadBuffer.getDepthTexture());
+		
 		mScene.addChild(mScreenQuad);
+		mRenderer.addScene(mScene);
+		
+		Sphere sphere = new Sphere(1, 20, 20);
+		sphere.setColor(0xff0000);
+		Material sphereMaterial = new Material();
+		sphere.setMaterial(sphereMaterial);
+		mScene.addChild(sphere);
 	}
 
 	/**
@@ -149,8 +168,8 @@ public class PostProcessingManager {
 				width = size.x;
 				height = size.y;
 			}
-			mRenderTarget1 = new RenderTarget(width, height, 0, 0, true,
-					false, true, GLES20.GL_UNSIGNED_BYTE, Config.RGB_565,
+			mRenderTarget1 = new RenderTarget(width, height, 0, 0, false,
+					false, false, GLES20.GL_UNSIGNED_BYTE, Config.ARGB_8888,
 					FilterType.LINEAR, WrapType.CLAMP);
 		} else {
 			mRenderTarget1 = renderTarget;

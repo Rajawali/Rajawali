@@ -258,10 +258,22 @@ public abstract class AShader extends AShaderBase {
 		return v;
 	}
 	
-	public void setUniform(String name, float value)
+	public void setUniform1f(String name, float value)
 	{
 		int handle = getUniformLocation(mProgramHandle, name);
 		GLES20.glUniform1f(handle, value);
+	}
+	
+	public void setUniform3fv(String name, float[] value)
+	{
+		int handle = getUniformLocation(mProgramHandle, name);
+		GLES20.glUniform3fv(handle, 1, value, 0);
+	}
+	
+	public void setUniform1i(String name, int value)
+	{
+		int handle = getUniformLocation(mProgramHandle, name);
+		GLES20.glUniform1i(handle, value);
 	}
 	
 	/**

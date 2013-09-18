@@ -24,7 +24,8 @@ import rajawali.scene.RajawaliScene;
 
 public class EffectPass extends APass {
 	protected final String PARAM_OPACITY = "uOpacity";
-	private final String PARAM_TEXTURE = "uTexture";
+	protected final String PARAM_TEXTURE = "uTexture";
+	protected final String PARAM_DEPTH_TEXTURE = "uDepthTexture";
 	protected boolean mRenderToScreen;
 	protected VertexShader mVertexShader;
 	protected FragmentShader mFragmentShader;
@@ -53,14 +54,14 @@ public class EffectPass extends APass {
 		setMaterial(new Material(mVertexShader, mFragmentShader));
 	}
 	
-	public void setRenderToScreen(boolean  renderToScreen)
+	public void setRenderToScreen(boolean renderToScreen)
 	{
 		mRenderToScreen = renderToScreen;
 	}
 	
 	public void setShaderParams()
 	{
-		mFragmentShader.setUniform(PARAM_OPACITY, mOpacity);
+		mFragmentShader.setUniform1f(PARAM_OPACITY, mOpacity);
 		mMaterial.bindTextureByName(PARAM_TEXTURE, 0, mReadTarget.getTexture());
 	}
 	
@@ -71,13 +72,9 @@ public class EffectPass extends APass {
 		screenQuad.setEffectPass(this);
 		
 		if(mRenderToScreen == true)
-		{
 			scene.render(deltaTime, null);
-		}
 		else
-		{
 			scene.render(deltaTime, writeTarget);
-		}
 	}
 	
 	public void setOpacity(float value)
