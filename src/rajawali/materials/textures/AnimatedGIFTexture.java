@@ -36,7 +36,9 @@ public class AnimatedGIFTexture extends ASingleTexture {
 	private int mTextureSize;
 	private long mStartTime;
 	private boolean mLoadNewGIF;
-	
+	private boolean mLoop;
+	private int mLoopCount;
+	private boolean mAnimationRunning;
 	public AnimatedGIFTexture(String name, int resourceId) {
 		this(name, resourceId, 512);
 	}
@@ -51,6 +53,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		super(TextureType.DIFFUSE, name);
 		mTextureSize = textureSize;
 		mResourceId = resourceId;
+		mLoop = true;
 		loadGIF();
 	}
 	
@@ -96,8 +99,10 @@ public class AnimatedGIFTexture extends ASingleTexture {
 	public void rewind()
 	{
 		mStartTime = SystemClock.uptimeMillis();
+		mAnimationRunning = true;
 	}
 	
+	@Override
 	void replace() throws TextureException
 	{
 		if(mLoadNewGIF)
@@ -111,15 +116,24 @@ public class AnimatedGIFTexture extends ASingleTexture {
 	public void update() throws TextureException
 	{
 		if(mMovie == null || mMovie.duration() == 0) return;
-		long now = SystemClock.uptimeMillis();
-		int relTime = (int)((now - mStartTime) % mMovie.duration());
-		mMovie.setTime(relTime);
-		mMovie.draw(mCanvas, 0, 0);
-		mBitmap = Bitmap.createScaledBitmap(mGIFBitmap, mTextureSize, mTextureSize, false);
-		TextureManager.getInstance().replaceTexture(this);
-		replace();
+		if (mAnimationRunning) {
+			long now = SystemClock.uptimeMillis();
+			int relTime = (int) ((now - mStartTime) % mMovie.duration());
+
+			mLoopCount = ((int) ((now - mStartTime) / mMovie.duration()));
+			if (!mLoop && mLoopCount >= 1) {
+				relTime = mMovie.duration();
+				mAnimationRunning = false;
+			}
+			mMovie.setTime(relTime);
+			mMovie.draw(mCanvas, 0, 0);
+			mBitmap = Bitmap.createScaledBitmap(mGIFBitmap, mTextureSize, mTextureSize, false);
+			TextureManager.getInstance().replaceTexture(this);
+			replace();
+		}
 	}
 	
+	@Override
 	public void setResourceId(int resourceId) {
 		if(mResourceId == resourceId)
 			return;
@@ -127,6 +141,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		mLoadNewGIF = true;
 	}
 	
+	@Override
 	public void reset() throws TextureException
 	{
 		super.reset();
@@ -141,6 +156,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		mMovie = null;
 	}
 	
+	@Override
 	void remove() throws TextureException
 	{
 		if(mGIFBitmap != null)
@@ -155,6 +171,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		super.remove();
 	}
 
+	@Override
 	public int getResourceId()
 	{
 		return mResourceId;
@@ -168,15 +185,42 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		return mMovie;
 	}
 	
+	@Override
 	public int getWidth() {
 		return mWidth;
 	}
 	
+	@Override
 	public int getHeight() {
 		return mHeight;
 	}
 	
 	public int getTextureSize() {
 		return mTextureSize;
+	}
+
+	public void setLoop(boolean loop) {
+		mLoop = loop;
+	}
+
+	public boolean getLoop() {
+		return mLoop;
+	}
+
+	public int getLoopCount() {
+		return mLoopCount;
+	}
+
+	public boolean isAnimationRunning() {
+		return mAnimationRunning;
+	}
+
+	public void stopAnimation() {
+		mAnimationRunning = false;
+	}
+
+	public void animate() {
+		mLoopCount = 0;
+		rewind();
 	}
 }
