@@ -47,6 +47,18 @@ public class EffectComposer {
 	protected ScreenQuad mPostProcessingQuad = new ScreenQuad();
 	protected RajawaliScene mScene = new RajawaliScene(mRenderer, GRAPH_TYPE.NONE);
 	
+	//@JOEL: display.getSize() alternative to support old and newer devices:
+	private static Point getDisplaySize(final Display display) {
+	    final Point point = new Point();
+	    try {
+	        display.getSize(point);
+	    } catch (java.lang.NoSuchMethodError ignore) { // Older device
+	        point.x = display.getWidth();
+	        point.y = display.getHeight();
+	    }
+	    return point;
+	}	
+	
 	public EffectComposer(RajawaliRenderer renderer, RenderTarget renderTarget) {
 		mRenderer = renderer;
 		if (renderTarget == null) {
@@ -58,8 +70,8 @@ public class EffectComposer {
 				WindowManager wm = (WindowManager)renderer.getContext()
 						.getSystemService(Context.WINDOW_SERVICE);
 				Display display = wm.getDefaultDisplay();
-				Point size = new Point();
-				display.getSize(size);
+				//@JOEL: display.getSize() alternative to support old and newer devices:
+				Point size = getDisplaySize(display);
 				width = size.x;
 				height = size.y;
 			}
