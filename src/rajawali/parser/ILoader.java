@@ -12,9 +12,7 @@
  */
 package rajawali.parser;
 
-import rajawali.parser.ALoader.ParsingException;
-
-
 public interface ILoader {
+
 	public ILoader parse() throws ParsingException;
 }

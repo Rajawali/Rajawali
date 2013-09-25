@@ -80,6 +80,10 @@ public class RajLog {
 	public static final void enableDebug(boolean flag) {
 		_logDebug = flag;
 	}
+	
+	public static final boolean isDebug() {
+		return _logDebug;
+	}
 
 	public static final void i(String msg) {
 		Log.i(TAG, msg);
