@@ -1,21 +1,12 @@
-/**
- * Copyright 2013 Dennis Ippel
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package rajawali.parser.awd;
 
+import org.apache.http.ParseException;
+
 import rajawali.Object3D;
+import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
 import rajawali.parser.LoaderAWD.BlockHeader;
-import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
+import android.util.SparseArray;
 
 /**
  * The TriangleGeometry block describes a single mesh of an AWD file. Multiple TriangleGeometry blocks may exists in a
@@ -24,43 +15,62 @@ import rajawali.util.RajLog;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
-public class BlockTriangleGeometry extends ABlockLoader {
+public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
-	protected Object3D[] baseObjects;
-	protected String lookupName;
-	protected int subGeometryCount;
+	protected Object3D[] mBaseObjects;
+	protected String mLookupName;
+	protected int mSubGeometryCount;
 
 	@Override
 	public Object3D getBaseObject3D() {
-		if (baseObjects.length == 1)
-			return baseObjects[0];
+		if (mBaseObjects.length == 1)
+			return mBaseObjects[0];
 
 		final Object3D container = new Object3D();
 		container.isContainer(true);
-		for (int i = 0; i < baseObjects.length; i++)
-			container.addChild(baseObjects[i]);
+		for (int i = 0; i < mBaseObjects.length; i++)
+			container.addChild(mBaseObjects[i]);
 
 		return container;
 	}
 
-	public void parseBlock(LittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
-		// Lookup name, not sure why this is useful.
-		final int lookupNameLength = dis.readUnsignedShort();
-		lookupName = lookupNameLength == 0 ? "" : dis.readString(lookupNameLength);
-		RajLog.d("  Lookup Name: " + lookupName);
+	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
+
+		// Lookup name
+		mLookupName = dis.readVarString();
 
 		// Count of sub geometries
-		subGeometryCount = dis.readUnsignedShort();
-		baseObjects = new Object3D[subGeometryCount];
-		RajLog.d("  Sub Geometry Count: " + subGeometryCount);
+		mSubGeometryCount = dis.readUnsignedShort();
 
-		// Read properties
-		readProperties(dis);
+		// TODO Meshes need to be joined in some fashion. This might work. Need to test it I suppose.
+		// One object for each sub geometry
+		mBaseObjects = new Object3D[mSubGeometryCount];
+
+		// Debug
+		RajLog.d("  Lookup Name: " + mLookupName);
+		RajLog.d("  Sub Geometry Count: " + mSubGeometryCount);
+
+		// Determine the precision for the block
+		final boolean geoAccuracy = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_GEO) ==
+				BlockHeader.FLAG_ACCURACY_GEO;
+		final short geoNr = geoAccuracy ? AWDLittleEndianDataInputStream.TYPE_FLOAT64
+				: AWDLittleEndianDataInputStream.TYPE_FLOAT32;
+
+		// Read the properties
+		SparseArray<Short> properties = new SparseArray<Short>();
+		// Scale Texture U
+		properties.put(1, geoNr);
+		// Scale Texture V
+		properties.put(2, geoNr);
+		// TODO Apply texture scales, need example of this working.
+		dis.readProperties(properties);
+
+		// Calculate the sizes
+		final int geoPrecisionSize = blockHeader.globalPrecisionGeo ? 8 : 4;
 
 		// Read each sub mesh data
-		int parsedSubs = 0;
-		while (parsedSubs < subGeometryCount) {
-			long subMeshLength = dis.readUnsignedInt();
+		for (int parsedSub = 0; parsedSub < mSubGeometryCount; ++parsedSub) {
+			long subMeshEnd = dis.getPosition() + dis.readUnsignedInt();
 
 			// Geometry
 			float[] vertices = null;
@@ -68,72 +78,75 @@ public class BlockTriangleGeometry extends ABlockLoader {
 			float[] uvs = null;
 			float[] normals = null;
 
-			// Read properties
-			readProperties(dis);
-
-			long bytesRead = 0;
+			// Skip reading of mesh properties for now (per AWD implementation)
+			dis.readProperties();
 
 			// Read each data type from the mesh
-			while (bytesRead < subMeshLength) {
+			while (dis.getPosition() < subMeshEnd) {
 				int idx = 0;
 				int type = dis.readUnsignedByte();
 				int typeF = dis.readUnsignedByte();
 				long subLength = dis.readUnsignedInt();
-				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength);
+				long subEnd = dis.getPosition() + subLength;
+				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + dis.getPosition()
+						+ " le:" + subEnd);
 
 				// Process the mesh data by type
 				switch ((int) type) {
-				case 1: // Vertices
-					vertices = new float[(int) (subLength / 4)];
+				case 1: // Vertex positions
+					vertices = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < vertices.length) {
 						// X, Y, Z
-						vertices[idx++] = dis.readFloat();
-						vertices[idx++] = dis.readFloat();
-						vertices[idx++] = dis.readFloat();
+						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					}
 					break;
-				case 2: // Indices
+				case 2: // Face indices
 					indices = new int[(int) (subLength / 2)];
 					while (idx < indices.length)
 						indices[idx++] = dis.readUnsignedShort();
 					break;
-				case 3: // Texture Coords
-					uvs = new float[(int) (subLength / 4)];
+				case 3: // UV coordinates
+					uvs = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < uvs.length)
-						uvs[idx++] = dis.readFloat();
+						uvs[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
-				case 4: // Normals
-					normals = new float[(int) (subLength / 4)];
+				case 4: // Vertex normals
+					normals = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < normals.length)
-						normals[idx++] = dis.readFloat();
+						normals[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
-				case 5: // Not Used?
-				case 6: // Weight Indices
-				case 7: // Weights
+				case 5: // Vertex tangents
+				case 6: // Joint index
+				case 7: // Joint weight
 				default:
 					// Unknown mesh data, skipping
 					dis.skip(subLength);
 				}
 
-				// Verify the arrays
-				if (vertices == null)
-					vertices = new float[0];
-				if (normals == null)
-					normals = new float[0];
-				if (uvs == null)
-					uvs = new float[0];
-				if (indices == null)
-					indices = new int[0];
-
-				// Increment the bytes read by the size of the header and the sub block length
-				bytesRead += 6 + subLength;
+				// Validate each mesh data ending. This is a sanity check against precision flags.
+				if (dis.getPosition() != subEnd)
+					throw new ParseException("Unexpected ending. Expected " + subEnd + ". Got " + dis.getPosition());
 			}
 
-			baseObjects[parsedSubs] = new Object3D();
-			baseObjects[parsedSubs].setData(vertices, normals, uvs, null, indices);
+			dis.readUserAttributes(null);
 
-			parsedSubs++;
+			// Verify the arrays
+			if (vertices == null)
+				vertices = new float[0];
+			if (normals == null)
+				normals = new float[0];
+			if (uvs == null)
+				uvs = new float[0];
+			if (indices == null)
+				indices = new int[0];
+
+			// FIXME This should be combining sub geometry not creating objects
+			mBaseObjects[parsedSub] = new Object3D();
+			mBaseObjects[parsedSub].setData(vertices, normals, uvs, null, indices);
 		}
-	}
 
+		dis.readUserAttributes(null);
+	}
 }

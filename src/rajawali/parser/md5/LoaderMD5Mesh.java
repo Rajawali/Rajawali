@@ -36,6 +36,7 @@ import rajawali.math.Matrix;
 import rajawali.math.vector.Vector3;
 import rajawali.parser.AMeshLoader;
 import rajawali.parser.IAnimatedMeshLoader;
+import rajawali.parser.ParsingException;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.content.res.Resources;
