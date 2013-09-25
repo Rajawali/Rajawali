@@ -1,10 +1,21 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.scenegraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import android.opengl.Matrix;
 import android.util.Log;
 
 import rajawali.ATransformable3D;
@@ -12,7 +23,9 @@ import rajawali.Camera;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.bounds.IBoundingVolume;
-import rajawali.math.Vector3;
+import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 
 /**
@@ -62,8 +75,9 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	protected boolean mRecursiveAdd = false; //Default to NOT recursive add
 	protected boolean mRecursiveRemove = false; //Default to NOT recursive remove.
 
-	protected float[] mMMatrix = new float[16]; //A model matrix to use for drawing the bounds of this node.
-	protected Vector3 mPosition; //This node's center point in 3D space.
+	//Expected to never leave its default identity state.
+	protected final Matrix4 mMMatrix = new Matrix4(); //A model matrix to use for drawing the bounds of this node.
+	protected final Vector3 mPosition = new Vector3(); //This node's center point in 3D space.
 
 	/**
 	 * The region (e.g. octant) this node occupies in its parent. If this node
@@ -129,12 +143,12 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void calculateChildSideLengths() {
 		//Determine the distance on each axis
-		Vector3 temp = Vector3.subtract(mTransformedMax, mTransformedMin);
+		Vector3 temp = Vector3.subtractAndCreate(mTransformedMax, mTransformedMin);
 		temp.multiply(0.5f); //Divide it in half
 		float overlap = 1.0f + mOverlap/100.0f;
 		temp.multiply(overlap);
 		temp.absoluteValue();
-		mChildLengths.setAllFrom(temp);
+		mChildLengths.setAll(temp);
 	}
 
 	/**
@@ -180,8 +194,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		mMax.x = (float) (position.x + span_x);
 		mMax.y = (float) (position.y + span_y);
 		mMax.z = (float) (position.z + span_z);
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 	}
@@ -195,10 +209,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 */
 	protected void setBounds(int child) {
 		A_nAABBTree new_bounds = mChildren[child];
-		mMin.setAllFrom(new_bounds.mMin);
-		mMax.setAllFrom(new_bounds.mMax);
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mMin.setAll(new_bounds.mMin);
+		mMax.setAll(new_bounds.mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 	}
@@ -213,8 +227,8 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * side this node should be. 
 	 */
 	protected void setChildRegion(int region, Vector3 side_lengths) {
-		mTransformedMin.setAllFrom(mMin);
-		mTransformedMax.setAllFrom(mMax);
+		mTransformedMin.setAll(mMin);
+		mTransformedMax.setAll(mMax);
 		calculatePoints();
 		calculateChildSideLengths();
 		if (mSplit) {
@@ -466,11 +480,11 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				} else if (volume instanceof BoundingSphere) {
 					BoundingSphere bs = (BoundingSphere) volume;
 					Vector3 bs_position = bs.getPosition();
-					float radius = bs.getScaledRadius();
+					double radius = bs.getScaledRadius();
 					Vector3 rad = new Vector3();
 					rad.setAll(radius, radius, radius);
-					test_against_min = Vector3.subtract(bs_position, rad);
-					test_against_max = Vector3.add(bs_position, rad);
+					test_against_min = Vector3.subtractAndCreate(bs_position, rad);
+					test_against_max = Vector3.addAndCreate(bs_position, rad);
 				} else {
 					RajLog.e("[" + this.getClass().getName() + "] Received a bounding box of unknown type.");
 					throw new IllegalArgumentException("Received a bounding box of unknown type."); 
@@ -485,10 +499,10 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 				if(test_against_max.z > max.z) max.z = test_against_max.z;
 			}
 		}
-		mMin.setAllFrom(min);
-		mMax.setAllFrom(max);
-		mTransformedMin.setAllFrom(min);
-		mTransformedMax.setAllFrom(max);
+		mMin.setAll(min);
+		mMax.setAll(max);
+		mTransformedMin.setAll(min);
+		mTransformedMax.setAll(max);
 		calculatePoints();
 		calculateChildSideLengths();
 		if (mSplit) {
@@ -777,8 +791,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 	 * (non-Javadoc)
 	 * @see rajawali.scenegraph.IGraphNode#displayGraph(boolean)
 	 */
-	public void displayGraph(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix) {
-		Matrix.setIdentityM(mMMatrix, 0);
+	public void displayGraph(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix) {
 		drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		if (mSplit) {
 			for (int i = 0; i < CHILD_COUNT; ++i) {

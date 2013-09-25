@@ -1,7 +1,7 @@
 package rajawali.parser.awd;
 
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
+import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.parser.awd.exceptions.NotImplementedParsingException;
 import rajawali.util.RajLog;
 import android.graphics.Bitmap;

@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.scenegraph;
 
 import java.util.Collection;
@@ -5,7 +17,7 @@ import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import rajawali.Camera;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 
 
@@ -114,8 +126,8 @@ public class Octree extends A_nAABBTree {
 		Vector3 max = mParent.getMax();
 		switch (mChildRegion) {
 		case 0: //+X/+Y/+Z
-			mMax.setAllFrom(mParent.getMax());
-			mMin.setAllFrom(Vector3.subtract(mMax, side_lengths));
+			mMax.setAll(mParent.getMax());
+			mMin.subtractAndSet(mMax, side_lengths);
 			break;
 		case 1: //-X/+Y/+Z 
 			mMax.x = min.x + side_lengths.x;
@@ -158,8 +170,8 @@ public class Octree extends A_nAABBTree {
 			mMin.z = min.z;
 			break;
 		case 6: //-X/-Y/-Z
-			mMin.setAllFrom(min);
-			mMax.setAllFrom(Vector3.add(mMin, side_lengths));
+			mMin.setAll(min);
+			mMax.addAndSet(mMin, side_lengths);
 			break;
 		case 7: //+X/-Y/-Z
 			mMax.x = max.x;

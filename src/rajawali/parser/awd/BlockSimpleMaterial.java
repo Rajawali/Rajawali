@@ -1,14 +1,12 @@
 package rajawali.parser.awd;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
-import rajawali.materials.AMaterial;
-import rajawali.materials.SimpleAlphaMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.textures.Texture;
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
-import rajawali.parser.AWDParser.AwdProperties;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
+import rajawali.parser.LoaderAWD.AwdProperties;
+import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.parser.ParsingException;
 import rajawali.parser.awd.exceptions.NotParsableException;
 import rajawali.util.RajLog;
@@ -91,14 +89,14 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 		// EXPECTED_PROPS.put(PROP_LIGHT_PICKER, AWDLittleEndianDataInputStream.TYPE_BADDR);
 	}
 
-	protected AMaterial mMaterial;
+	protected Material mMaterial;
 	protected String mLookupName;
 	protected byte mMaterialType;
 	protected byte mShadingMethodCount;
 	protected int mSpezialType;
 
 	@Override
-	public AMaterial getMaterial() {
+	public Material getMaterial() {
 		return mMaterial;
 	}
 
@@ -138,12 +136,10 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 		final HashMap<String, Object> attributes = new HashMap<String, Object>();
 		dis.readUserAttributes(attributes);
 
-		mMaterial = new SimpleAlphaMaterial();
+		mMaterial = new Material();
 
 		switch (mMaterialType) {
 		case TYPE_COLOR:
-			mMaterial.setUseSingleColor(true);
-
 			// default to 0xcccccc per AWD implementation
 			final long color = (Long) properties.get((short) 1, 0xcccccc);
 			final float[] colorFloat = new float[4];
@@ -151,7 +147,6 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 			colorFloat[1] = ((color >> 8) & 0xff) / 255.0f;
 			colorFloat[2] = (color & 0xff) / 255.0f;
 			colorFloat[3] = (((int) ((Double) properties.get(PROP_ALPHA, 1.0d) * 0xff)) & 0xff) / 255.0f;
-System.out.println(Arrays.toString(colorFloat));
 			mMaterial.setColor(colorFloat);
 			break;
 		case TYPE_TEXTURE:

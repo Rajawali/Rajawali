@@ -2,9 +2,9 @@ package rajawali.parser.awd;
 
 import org.apache.http.ParseException;
 
-import rajawali.BaseObject3D;
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.Object3D;
+import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
+import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.util.RajLog;
 import android.util.SparseArray;
 
@@ -17,16 +17,16 @@ import android.util.SparseArray;
  */
 public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
-	protected BaseObject3D[] mBaseObjects;
+	protected Object3D[] mBaseObjects;
 	protected String mLookupName;
 	protected int mSubGeometryCount;
 
 	@Override
-	public BaseObject3D getBaseObject3D() {
+	public Object3D getBaseObject3D() {
 		if (mBaseObjects.length == 1)
 			return mBaseObjects[0];
 
-		final BaseObject3D container = new BaseObject3D();
+		final Object3D container = new Object3D();
 		container.isContainer(true);
 		for (int i = 0; i < mBaseObjects.length; i++)
 			container.addChild(mBaseObjects[i]);
@@ -44,7 +44,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
 		// TODO Meshes need to be joined in some fashion. This might work. Need to test it I suppose.
 		// One object for each sub geometry
-		mBaseObjects = new BaseObject3D[mSubGeometryCount];
+		mBaseObjects = new Object3D[mSubGeometryCount];
 
 		// Debug
 		RajLog.d("  Lookup Name: " + mLookupName);
@@ -143,7 +143,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 				indices = new int[0];
 
 			// FIXME This should be combining sub geometry not creating objects
-			mBaseObjects[parsedSub] = new BaseObject3D();
+			mBaseObjects[parsedSub] = new Object3D();
 			mBaseObjects[parsedSub].setData(vertices, normals, uvs, null, indices);
 		}
 

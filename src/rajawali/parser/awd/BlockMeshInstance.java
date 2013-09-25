@@ -1,10 +1,12 @@
 package rajawali.parser.awd;
 
-import rajawali.BaseObject3D;
-import rajawali.materials.AMaterial;
+import rajawali.Object3D;
+import rajawali.materials.Material;
 import rajawali.math.Matrix4;
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.math.Quaternion;
+import rajawali.math.vector.Vector3;
+import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
+import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.parser.ParsingException;
 
 /**
@@ -14,12 +16,12 @@ import rajawali.parser.ParsingException;
  */
 public class BlockMeshInstance extends AExportableBlockParser {
 
-	protected BaseObject3D mGeometry;
+	protected Object3D mGeometry;
 	protected SceneGraphBlock mSceneGraphBlock;
 	protected long mGeometryID;
 
 	@Override
-	public BaseObject3D getBaseObject3D() {
+	public Object3D getBaseObject3D() {
 		return mGeometry;
 	}
 
@@ -35,7 +37,7 @@ public class BlockMeshInstance extends AExportableBlockParser {
 		// Lookup the geometry or create it if it does not exist.
 		final BlockHeader geomHeader = blockHeader.blockHeaders.get((short) mGeometryID);
 		if (geomHeader == null) {
-			mGeometry = new BaseObject3D();
+			mGeometry = new Object3D();
 		} else {
 			if (geomHeader.parser == null
 					|| !(geomHeader.parser instanceof ABaseObjectBlockParser))
@@ -46,7 +48,7 @@ public class BlockMeshInstance extends AExportableBlockParser {
 
 		// Apply the materials
 		final int materialCount = dis.readUnsignedShort();
-		final AMaterial[] materials = new AMaterial[materialCount];
+		final Material[] materials = new Material[materialCount];
 		for (int i = 0; i < materialCount; ++i) {
 			final long materialID = dis.readUnsignedInt();
 			if (materialID == 0) {
@@ -62,24 +64,22 @@ public class BlockMeshInstance extends AExportableBlockParser {
 			}
 		}
 
-		final float[] m = mSceneGraphBlock.transformMatrix;
-		final Matrix4 matrix = new Matrix4(
-				m[0], m[4], m[8], m[12],
-				m[1], m[5], m[9], m[13],
-				m[2], m[6], m[10], m[14],
-				m[3], m[7], m[11], m[15]
-				);
-
+		final Matrix4 matrix = new Matrix4(mSceneGraphBlock.transformMatrix);
+		
 		// Set translation
 		mGeometry.setPosition(matrix.getTranslation());
-		
+
 		// Set scale
-		mGeometry.setScale(matrix.getScale());
-		
+		final Vector3 scale = matrix.getScaling();
+		mGeometry.setScale(scale.y, scale.x, scale.z);
+
 		// Set rotation
-		mGeometry.setOrientation(matrix.getRotation());
+		mGeometry.setOrientation(new Quaternion().fromMatrix(matrix));
 
 		mGeometry.setMaterial(materials[0]);
+
+		// FIXME This is a hack to get around the fact that setting the color on the material does not work right now.
+		mGeometry.setColor(mGeometry.getMaterial().getColor());
 
 		dis.skip(blockHeader.blockEnd - dis.getPosition());
 	}

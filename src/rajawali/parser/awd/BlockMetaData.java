@@ -1,8 +1,8 @@
 package rajawali.parser.awd;
 
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
-import rajawali.parser.AWDParser.AwdProperties;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
+import rajawali.parser.LoaderAWD.AwdProperties;
+import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.util.RajLog;
 import android.util.SparseArray;
 

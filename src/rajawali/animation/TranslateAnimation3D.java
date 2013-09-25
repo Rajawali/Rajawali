@@ -1,10 +1,22 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
 import rajawali.curves.ICurve3D;
 import rajawali.math.Quaternion;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 public class TranslateAnimation3D extends Animation3D {
 
@@ -21,7 +33,7 @@ public class TranslateAnimation3D extends Animation3D {
 	
 	protected boolean mOrientToPath = false;
 	protected ICurve3D mSplinePath;
-	protected float mLookatDelta;
+	protected double mLookatDelta;
 
 	public TranslateAnimation3D(Vector3 toPosition) {
 		super();
@@ -46,43 +58,25 @@ public class TranslateAnimation3D extends Animation3D {
 			mFromPosition = new Vector3(transformable3D.getPosition());
 	}
 
+	private Vector3 mTempPoint1 = new Vector3();
+	private Vector3 mTempPoint2 = new Vector3();
+	
 	@Override
 	protected void applyTransformation() {
 		if (mSplinePath == null) {
 			if (mDiffPosition == null)
-				mDiffPosition = Vector3.subtract(mToPosition, mFromPosition);
-			mMultipliedPosition.setAllFrom(mDiffPosition);
-			mMultipliedPosition.multiply((float) mInterpolatedTime);
-			mAddedPosition.setAllFrom(mFromPosition);
-			mAddedPosition.add(mMultipliedPosition);
+				mDiffPosition = Vector3.subtractAndCreate(mToPosition, mFromPosition);
+			mMultipliedPosition.scaleAndSet(mDiffPosition, mInterpolatedTime);
+			mAddedPosition.addAndSet(mFromPosition, mMultipliedPosition);
 			mTransformable3D.setPosition(mAddedPosition);
 		} else {
-			Vector3 pathPoint = mSplinePath.calculatePoint((float) mInterpolatedTime);
-			mTransformable3D.setPosition(pathPoint);
+			mSplinePath.calculatePoint(mTempPoint1, mInterpolatedTime);
+			mTransformable3D.setPosition(mTempPoint1);
 
-			if (mOrientToPath)
-			{
+			if (mOrientToPath) {
 				// -- calculate tangent
-				Vector3 point1 = mSplinePath
-							.calculatePoint((float) (mInterpolatedTime + (-mLookatDelta * (mIsReversing ? -1 : 1))));
-				Vector3 point2 = mSplinePath
-						.calculatePoint((float) (mInterpolatedTime + (mLookatDelta * (mIsReversing ? -1 : 1))));
-				
-				// -- calculate direction vector
-				mTmpVec.setAllFrom(point2);
-				mTmpVec.subtract(point1);
-				mTmpVec.normalize();
-					
-				mTmpOrientation.setFromRotationBetween(mObjectRay, mTmpVec);
-				mTmpOrientation.normalize();
-				mTmpOrientation2.setAllFrom(mTransformable3D.getOrientation());
-				mTmpOrientation2.normalize();
-				mTmpOrientation2.multiply(mTmpOrientation);
-				mTmpOrientation2.normalize();
-				mTransformable3D.setOrientation(mTmpOrientation2);
-				mTmpOrientation2.normalize();				
-				
-				mObjectRay.setAllFrom(mTmpVec);
+				mSplinePath.calculatePoint(mTempPoint2, mInterpolatedTime + mLookatDelta * (mIsReversing ? -1 : 1));
+				mTransformable3D.setLookAt(mTempPoint2);
 			}
 		}
 	}

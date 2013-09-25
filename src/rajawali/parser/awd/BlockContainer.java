@@ -1,8 +1,8 @@
 package rajawali.parser.awd;
 
-import rajawali.BaseObject3D;
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.Object3D;
+import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
+import rajawali.parser.LoaderAWD.BlockHeader;
 
 /**
  * 
@@ -11,13 +11,13 @@ import rajawali.parser.AWDParser.BlockHeader;
  */
 public class BlockContainer extends ABaseObjectBlockParser {
 
-	protected BaseObject3D mBaseObject;
+	protected Object3D mBaseObject;
 	protected SceneGraphBlock mSceneGraphBlock;
 	protected String mLookupName;
 
 	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 
-		mBaseObject = new BaseObject3D();
+		mBaseObject = new Object3D();
 
 		mSceneGraphBlock = new SceneGraphBlock();
 		mSceneGraphBlock.readGraphData(blockHeader, dis);
@@ -37,7 +37,7 @@ public class BlockContainer extends ABaseObjectBlockParser {
 	}
 
 	@Override
-	public BaseObject3D getBaseObject3D() {
+	public Object3D getBaseObject3D() {
 		return mBaseObject;
 	}
 

@@ -1,8 +1,8 @@
 package rajawali.parser.awd;
 
-import rajawali.BaseObject3D;
-import rajawali.parser.AWDParser.AWDLittleEndianDataInputStream;
-import rajawali.parser.AWDParser.BlockHeader;
+import rajawali.Object3D;
+import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
+import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.parser.ParsingException;
 import rajawali.util.RajLog;
 
@@ -18,12 +18,12 @@ public class BlockPrimitiveGeometry extends ABaseObjectBlockParser {
 		PLANE, CUBE, SPHERE, CYLINDER, CONE, CAPSULE, TORUS;
 	}
 
-	protected BaseObject3D mBaseObject;
+	protected Object3D mBaseObject;
 	protected int mPrimitiveType;
 	protected String mLookupName;
 
 	@Override
-	public BaseObject3D getBaseObject3D() {
+	public Object3D getBaseObject3D() {
 		return mBaseObject;
 	}
 

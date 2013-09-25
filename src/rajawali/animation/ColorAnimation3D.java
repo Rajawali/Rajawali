@@ -1,7 +1,19 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import android.graphics.Color;
 
 public class ColorAnimation3D extends Animation3D {
@@ -29,7 +41,7 @@ public class ColorAnimation3D extends Animation3D {
 	@Override
 	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
-		if (!(transformable3D instanceof BaseObject3D)) {
+		if (!(transformable3D instanceof Object3D)) {
 			throw new RuntimeException(
 					"ColorAnimation3D requires the passed transformable3D to be an instance of BaseObject3D.");
 		}
@@ -55,7 +67,7 @@ public class ColorAnimation3D extends Animation3D {
 		mAddedColor[1] = mFromColor[1] + mMultipliedColor[1];
 		mAddedColor[2] = mFromColor[2] + mMultipliedColor[2];
 
-		((BaseObject3D) mTransformable3D).setColor(Color.HSVToColor(mMultipliedAlpha + mFromAlpha, mAddedColor));
+		((Object3D) mTransformable3D).setColor(Color.HSVToColor(mMultipliedAlpha + mFromAlpha, mAddedColor));
 	}
 
 }

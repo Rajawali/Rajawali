@@ -1,9 +1,21 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation;
 
 import rajawali.math.MathUtil;
 import rajawali.math.Quaternion;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 
 /**
  * Performs spherical linear interpolation (SLERP) animation between two {@link Vector3}s.
@@ -27,37 +39,37 @@ public class SlerpAnimation3D extends Animation3D {
 	private Quaternion mTo;
 	private final Vector3 mForwardVec = Vector3.getAxisVector(Axis.Z);
 	private Vector3 mTmpVec;
+	private Vector3 mTmpQuatVector;
 	private Quaternion mTmpQuat;
-	private float[] mRotationMatrix;
-	private float mDistance;
+	private double[] mRotationMatrix;
+	private double mDistance;
 	
-	public SlerpAnimation3D(Vector3 from, Vector3 to)
-	{
+	public SlerpAnimation3D(Vector3 from, Vector3 to) {
 		super();
 		mFrom = quaternionFromVector(from.clone());
 		mTo = quaternionFromVector(to.clone());
 		mTmpVec = new Vector3();
+		mTmpQuatVector = new Vector3();
 		mTmpQuat = new Quaternion();
 		mDistance = from.length();
-		mRotationMatrix = new float[16];
+		mRotationMatrix = new double[16];
 	}
 	
 	@Override
 	protected void applyTransformation() {
-		mTmpQuat.slerpSelf(mFrom, mTo, (float)mInterpolatedTime);
-		mTmpVec.setAllFrom(mForwardVec);
+		mTmpQuat.slerp(mFrom, mTo, mInterpolatedTime);
+		mTmpVec.setAll(mForwardVec);
 		mTmpQuat.toRotationMatrix(mRotationMatrix);
 		mTmpVec.multiply(mRotationMatrix);
 		mTmpVec.multiply(mDistance);
 		mTransformable3D.setPosition(mTmpVec);
 	}
 	
-	private Quaternion quaternionFromVector(Vector3 vec)
-	{
+	private Quaternion quaternionFromVector(Vector3 vec) {
 		vec.normalize();
-		float angle = MathUtil.radiansToDegrees((float)Math.acos(Vector3.dot(mForwardVec, vec)));
+		double angle = MathUtil.radiansToDegrees(Math.acos(Vector3.dot(mForwardVec, vec)));
 		Quaternion q = new Quaternion();
-		q.fromAngleAxis(angle, Vector3.cross(mForwardVec, vec));
+		q.fromAngleAxis(mTmpQuatVector.crossAndSet(mForwardVec, vec), angle);
 		return q;
 	}
 }

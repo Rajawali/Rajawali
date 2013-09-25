@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation.mesh;
 
 import java.util.ArrayList;
@@ -8,7 +20,7 @@ import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationExcept
 
 public class SkeletalAnimationSequence implements IAnimationSequence {
 	private SkeletalAnimationFrame[] mFrames;
-	private float[] mFrameData;
+	private double[] mFrameData;
 	private String mName;
 	private int mNumFrames;
 	private int mFrameRate;
@@ -33,12 +45,12 @@ public class SkeletalAnimationSequence implements IAnimationSequence {
 		return mFrames[index];
 	}
 	
-	public void setFrameData(float[] frameData)
+	public void setFrameData(double[] frameData)
 	{
 		mFrameData = frameData;
 	}
 	
-	public float[] getFrameData()
+	public double[] getFrameData()
 	{
 		return mFrameData;
 	}
@@ -81,7 +93,7 @@ public class SkeletalAnimationSequence implements IAnimationSequence {
 	 * @param blendFactor
 	 * @throws SkeletalAnimationException
 	 */
-	public void blendWith(SkeletalAnimationSequence otherSequence, float blendFactor) throws SkeletalAnimationException
+	public void blendWith(SkeletalAnimationSequence otherSequence, double blendFactor) throws SkeletalAnimationException
 	{
 		int numFrames = Math.max(mNumFrames, otherSequence.getNumFrames());
 		List<SkeletalAnimationFrame> newFrames = new ArrayList<SkeletalAnimationFrame>();
@@ -112,8 +124,8 @@ public class SkeletalAnimationSequence implements IAnimationSequence {
 				SkeletonJoint newJoint = new SkeletonJoint();
 				newJoint.copyAllFrom(thisJoint);
 				
-				newJoint.getPosition().lerpSelf(thisJoint.getPosition(), otherJoint.getPosition(), blendFactor);
-				newJoint.getOrientation().slerpSelf(thisJoint.getOrientation(), otherJoint.getOrientation(), blendFactor);
+				newJoint.getPosition().lerpAndSet(thisJoint.getPosition(), otherJoint.getPosition(), blendFactor);
+				newJoint.getOrientation().slerp(thisJoint.getOrientation(), otherJoint.getOrientation(), blendFactor);
 				
 				newJoints[j] = newJoint;
 			}

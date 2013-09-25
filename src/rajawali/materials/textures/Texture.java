@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.materials.textures;
 
 import android.graphics.Bitmap;
@@ -14,9 +26,10 @@ public class Texture extends ASingleTexture {
 		super(TextureType.DIFFUSE, textureName);
 	}
 	
-	public Texture(int resourceId)
+	public Texture(String textureName, int resourceId)
 	{
-		super(TextureType.DIFFUSE, resourceId);
+		super(TextureType.DIFFUSE, textureName);
+		setResourceId(resourceId);
 	}
 	
 	public Texture(String textureName, Bitmap bitmap)
@@ -26,7 +39,7 @@ public class Texture extends ASingleTexture {
 	
 	public Texture(String textureName, TextureAtlas atlas)
 	{
-		super(TextureType.DIFFUSE, textureName, atlas.getTileNamed("boat_int_prp_tex").getPage());
+		super(TextureType.DIFFUSE, textureName, atlas.getTileNamed(textureName).getPage());
 	}
 	public Texture(String textureName, ACompressedTexture compressedTexture)
 	{

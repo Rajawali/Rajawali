@@ -1,12 +1,10 @@
 package rajawali.parser.awd;
 
-import rajawali.materials.AMaterial;
-import rajawali.materials.SimpleMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
-import rajawali.parser.AWDParser;
-import rajawali.parser.AWDParser.IBlockParser;
+import rajawali.parser.LoaderAWD.IBlockParser;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
@@ -44,8 +42,8 @@ public abstract class ABlockParser implements IBlockParser {
 				defaultTextureBitmap, defaultTextureBitmap, defaultTextureBitmap, defaultTextureBitmap });
 	}
 
-	protected static AMaterial getDefaultMaterial() {
-		return new SimpleMaterial();
+	protected static Material getDefaultMaterial() {
+		return new Material();
 	}
 
 	protected static ATexture getDefaultTexture() {

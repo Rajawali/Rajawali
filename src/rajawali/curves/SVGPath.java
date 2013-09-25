@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.curves;
 
 import java.io.BufferedReader;
@@ -7,7 +19,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
 import android.content.Context;
 
@@ -44,7 +56,7 @@ import android.content.Context;
  * 	int subdiv = 1000;
  * 	for(int j=0; j<=subdiv; j++)
  * 	{
- * 		points.add(subPath.calculatePoint((float)j / (float)subdiv));
+ * 		points.add(subPath.calculatePoint(j / subdiv));
  * 	}
  * 	pathPoints.add(points);
  * 	Line3D line = new Line3D(points, 1);
@@ -183,13 +195,13 @@ public class SVGPath {
 		switch (mCurrentCommand)
 		{
 		case MOVE_TO:
-			c = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
-			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
+			c = new Vector3(Double.parseDouble(vals[0]), -Double.parseDouble(vals[1]), 0);
+			p = mCurrentCommandIsRelative ? c.addAndSet(mPreviousPoint, c) : c;
 			break;
 		case VERTICAL:
-			c = new Vector3(0, -Float.parseFloat(vals[0]), 0);
+			c = new Vector3(0, -Double.parseDouble(vals[0]), 0);
 			if (mCurrentCommandIsRelative)
-				p = Vector3.add(mPreviousPoint, c);
+				p = c.addAndSet(mPreviousPoint, c);
 			else
 			{
 				c.x = mPreviousPoint.x;
@@ -198,9 +210,9 @@ public class SVGPath {
 			bezierPath.addCurve(new LinearBezierCurve3D(mPreviousPoint.clone(), p));
 			break;
 		case HORIZONTAL:
-			c = new Vector3(Float.parseFloat(vals[0]), 0, 0);
+			c = new Vector3(Double.parseDouble(vals[0]), 0, 0);
 			if (mCurrentCommandIsRelative)
-				p = Vector3.add(mPreviousPoint, c);
+				p = c.addAndSet(mPreviousPoint, c);
 			else
 			{
 				c.y = mPreviousPoint.y;
@@ -209,43 +221,43 @@ public class SVGPath {
 			bezierPath.addCurve(new LinearBezierCurve3D(mPreviousPoint.clone(), p));
 			break;
 		case CURVE_TO:
-			c = new Vector3(Float.parseFloat(vals[4]), -Float.parseFloat(vals[5]), 0);
-			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
-			cp1 = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
+			c = new Vector3(Double.parseDouble(vals[4]), -Double.parseDouble(vals[5]), 0);
+			p = mCurrentCommandIsRelative ? c.addAndSet(mPreviousPoint, c) : c;
+			cp1 = new Vector3(Double.parseDouble(vals[0]), -Double.parseDouble(vals[1]), 0);
 			if (mCurrentCommandIsRelative)
 				cp1.add(mPreviousPoint);
-			cp2 = new Vector3(Float.parseFloat(vals[2]), -Float.parseFloat(vals[3]), 0);
+			cp2 = new Vector3(Double.parseDouble(vals[2]), -Double.parseDouble(vals[3]), 0);
 			if (mCurrentCommandIsRelative)
 				cp2.add(mPreviousPoint);
-			mPreviousControlPoint.setAllFrom(cp2);
+			mPreviousControlPoint.setAll(cp2);
 			bezierPath.addCurve(new CubicBezierCurve3D(mPreviousPoint.clone(), cp1, cp2, p));
 			break;
 		case SMOOTH_CURVE_TO:
-			c = new Vector3(Float.parseFloat(vals[2]), -Float.parseFloat(vals[3]), 0);
-			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
+			c = new Vector3(Double.parseDouble(vals[2]), -Double.parseDouble(vals[3]), 0);
+			p = mCurrentCommandIsRelative ? c.addAndSet(mPreviousPoint, c) : c;
 			cp1 = reflect(mPreviousControlPoint, mPreviousPoint);
-			cp2 = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
+			cp2 = new Vector3(Double.parseDouble(vals[0]), -Double.parseDouble(vals[1]), 0);
 			if (mCurrentCommandIsRelative)
 				cp2.add(mPreviousPoint);
 			bezierPath.addCurve(new CubicBezierCurve3D(mPreviousPoint.clone(), cp1, cp2, p));
 			break;
 		case LINE_TO:
-			c = new Vector3(Float.parseFloat(vals[0]), -Float.parseFloat(vals[1]), 0);
-			p = mCurrentCommandIsRelative ? Vector3.add(mPreviousPoint, c) : c;
+			c = new Vector3(Double.parseDouble(vals[0]), -Double.parseDouble(vals[1]), 0);
+			p = mCurrentCommandIsRelative ? c.addAndSet(mPreviousPoint, c) : c;
 			bezierPath.addCurve(new LinearBezierCurve3D(mPreviousPoint.clone(), p));
 			break;
 		default:
 			return;
 		}
 		if (bezierPath.getNumCurves() == 0)
-			mStartPoint.setAllFrom(p);
-		mPreviousPoint.setAllFrom(p);
+			mStartPoint.setAll(p);
+		mPreviousPoint.setAll(p);
 	}
 
 	private Vector3 reflect(Vector3 point, Vector3 mirror)
 	{
-		float x = mirror.x + (mirror.x - point.x);
-		float y = mirror.y + (mirror.y - point.y);
+		double x = mirror.x + (mirror.x - point.x);
+		double y = mirror.y + (mirror.y - point.y);
 
 		return new Vector3(x, y, 0);
 	}

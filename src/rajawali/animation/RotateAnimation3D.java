@@ -1,8 +1,20 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation;
 
 import rajawali.ATransformable3D;
-import rajawali.math.Vector3;
-import rajawali.math.Vector3.Axis;
+import rajawali.math.vector.Vector3;
+import rajawali.math.vector.Vector3.Axis;
 import rajawali.math.Quaternion;
 
 public class RotateAnimation3D extends Animation3D {
@@ -39,8 +51,7 @@ public class RotateAnimation3D extends Animation3D {
 		mAngleAxisRotation = true;
 		mQuat = new Quaternion();
 		mQuatFrom = new Quaternion();
-		// TODO: Switch Quaternions to take in doubles instead of floats.
-		mQuatFrom.fromAngleAxis((float) rotateFrom, axis);
+		mQuatFrom.fromAngleAxis(axis, rotateFrom);
 		mRotationAxis = axis;
 		mRotateFrom = rotateFrom;
 		mDegreesToRotate = degreesToRotate;
@@ -58,9 +69,9 @@ public class RotateAnimation3D extends Animation3D {
 		mRotateY = yRotate;
 		mRotateZ = zRotate;
 
-		mQuat.multiply(new Quaternion().fromAngleAxis((float) yRotate, Vector3.getAxisVector(Axis.Y)));
-		mQuat.multiply(new Quaternion().fromAngleAxis((float) zRotate, Vector3.getAxisVector(Axis.Z)));
-		mQuat.multiply(new Quaternion().fromAngleAxis((float) xRotate, Vector3.getAxisVector(Axis.X)));
+		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.Y), yRotate));
+		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.Z), zRotate));
+		mQuat.multiply(new Quaternion().fromAngleAxis(Vector3.getAxisVector(Axis.X), xRotate));
 	}
 
 	public RotateAnimation3D(Vector3 rotate) {
@@ -70,7 +81,7 @@ public class RotateAnimation3D extends Animation3D {
 	@Override
 	public void eventStart() {
 		if (mCopyCurrentOrientation)
-			mQuatFrom.setAllFrom(mTransformable3D.getOrientation());
+			 mTransformable3D.getOrientation(mQuatFrom);
 		super.eventStart();
 	}
 
@@ -78,7 +89,7 @@ public class RotateAnimation3D extends Animation3D {
 	public void setTransformable3D(ATransformable3D transformable3D) {
 		super.setTransformable3D(transformable3D);
 		if (mCopyCurrentOrientation)
-			mQuatFrom.setAllFrom(transformable3D.getOrientation());
+			transformable3D.getOrientation(mQuatFrom);
 	}
 
 	@Override
@@ -86,11 +97,11 @@ public class RotateAnimation3D extends Animation3D {
 		if (mAngleAxisRotation) {
 			// Rotation around an axis by amount of degrees.
 			mRotationAngle = mRotateFrom + (mInterpolatedTime * mDegreesToRotate);
-			mQuat.fromAngleAxis((float) mRotationAngle, mRotationAxis);
+			mQuat.fromAngleAxis(mRotationAxis, mRotationAngle);
 			mQuat.multiply(mQuatFrom);
 			mTransformable3D.setOrientation(mQuat);
 		} else {
-			mTransformable3D.setOrientation(Quaternion.slerp(mQuatFrom, mQuat, (float)mInterpolatedTime));
+			mTransformable3D.setOrientation(Quaternion.slerpAndCreate(mQuatFrom, mQuat, mInterpolatedTime));
 		}
 	}
 }

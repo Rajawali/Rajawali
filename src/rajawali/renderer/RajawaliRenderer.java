@@ -1,43 +1,58 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.renderer;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
-import rajawali.BaseObject3D;
 import rajawali.Camera;
 import rajawali.Capabilities;
+import rajawali.Object3D;
 import rajawali.animation.Animation3D;
 import rajawali.effects.APass;
 import rajawali.effects.EffectComposer;
-import rajawali.materials.AMaterial;
+import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.TextureManager;
-import rajawali.math.Vector3;
+import rajawali.math.Matrix;
+import rajawali.math.vector.Vector3;
 import rajawali.renderer.plugins.Plugin;
 import rajawali.scene.RajawaliScene;
-import rajawali.util.FPSUpdateListener;
+import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
+import rajawali.util.OnFPSUpdateListener;
 import rajawali.util.RajLog;
+import rajawali.util.RawShaderLoader;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
-import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
@@ -56,21 +71,25 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected TextureManager mTextureManager; //Texture manager for ALL textures across ALL scenes.
 	protected MaterialManager mMaterialManager; //Material manager for ALL materials across ALL scenes.
 	
-	protected Timer mTimer; //Timer used to schedule drawing
-	protected float mFrameRate; //Target frame rate to render at
+	protected ScheduledExecutorService mTimer; //Timer used to schedule drawing
+	protected double mFrameRate; //Target frame rate to render at
 	protected int mFrameCount; //Used for determining FPS
 	private long mStartTime = System.nanoTime(); //Used for determining FPS
 	protected double mLastMeasuredFPS; //Last measured FPS value
-	protected FPSUpdateListener mFPSUpdateListener; //Listener to notify of new FPS values.
+	protected OnFPSUpdateListener mFPSUpdateListener; //Listener to notify of new FPS values.
 	private long mLastRender; //Time of last rendering. Used for animation delta time
 	
-	protected float[] mVMatrix = new float[16]; //The OpenGL view matrix
-	protected float[] mPMatrix = new float[16]; //The OpenGL projection matrix
+	protected double[] mVMatrix = new double[16]; //The OpenGL view matrix
+	protected double[] mPMatrix = new double[16]; //The OpenGL projection matrix
 	
 	protected boolean mEnableDepthBuffer = true; //Do we use the depth buffer?
 	protected static boolean mFogEnabled; //Is camera fog enabled?
 	protected static int mMaxLights = 1; //How many lights max?
 	protected int mLastReportedGLError = 0; // Keep track of the last reported OpenGL error
+	
+	//In case we cannot parse the version number, assume OpenGL ES 2.0
+	protected static int mGLES_Major_Version = 2; //The GL ES major version of the surface
+	protected static int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
 
 	/**
 	 * Scene caching stores all textures and relevant OpenGL-specific
@@ -118,8 +137,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajLog.i("Rajawali | Anchor Steam | Dev Branch");
 		RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
 		
-		AMaterial.setLoaderContext(context);
-
 		mContext = context;
 		mFrameRate = getRefreshRate();
 		mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
@@ -130,6 +147,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajawaliScene defaultScene = new RajawaliScene(this);
 		mScenes.add(defaultScene);
 		mCurrentScene = defaultScene;
+		
+		RawShaderLoader.mContext = new WeakReference<Context>(context);
 	}
 	
 	/**
@@ -376,23 +395,23 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
-	 * Adds a {@link BaseObject3D} child to the current scene.
+	 * Adds a {@link Object3D} child to the current scene.
 	 * 
-	 * @param child {@link BaseObject3D} object to be added.
+	 * @param child {@link Object3D} object to be added.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addChild(BaseObject3D child) {
+	public boolean addChild(Object3D child) {
 		return mCurrentScene.addChild(child);
 	}
 	
 	/**
-	 * Removes a {@link BaseObject3D} child from the current scene.
+	 * Removes a {@link Object3D} child from the current scene.
 	 * If the child is not a member of the scene, nothing will happen.
 	 * 
-	 * @param child {@link BaseObject3D} object to be removed.
+	 * @param child {@link Object3D} object to be removed.
 	 * @return boolean True if the removal was successfully queued.
 	 */
-	public boolean removeChild(BaseObject3D child) {
+	public boolean removeChild(Object3D child) {
 		return mCurrentScene.removeChild(child);
 	}
 	
@@ -496,6 +515,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		RajLog.setGL10(gl);
 		Capabilities.getInstance();
+		
+		String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
+		if (versionString.length >= 3) {
+			String[] versionParts = versionString[2].split("\\.");
+			if (versionParts.length >= 2) {
+				mGLES_Major_Version = Integer.parseInt(versionParts[0]);
+				mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
+			}
+		}
+		
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
 
 		//GLES20.glFrontFace(GLES20.GL_CCW);
@@ -551,13 +580,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		if(!mSceneInitialized) return;
 		mLastRender = SystemClock.elapsedRealtime();
 		
-		if (mTimer != null) {return;
-//			mTimer.cancel();
-	//		mTimer.purge();
-		}
+		if (mTimer != null) {return;}
 
-		mTimer = new Timer();
-		mTimer.schedule(new RequestRenderTask(), 0, (long) (1000 / mFrameRate));
+		mTimer = Executors.newScheduledThreadPool(1);
+		mTimer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / mFrameRate), TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -568,8 +594,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	protected boolean stopRendering() {
 		if (mTimer != null) {
-			mTimer.cancel();
-			mTimer.purge();
+			mTimer.shutdownNow();
 			mTimer = null;
 			return true;
 		}
@@ -579,19 +604,24 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onVisibilityChanged(boolean visible) {
 		if (!visible) {
 			stopRendering();
-		} else
+		} else {
 			getCurrentScene().resetGLState();
 			startRendering();
+		}
 	}
 
 	public void onSurfaceDestroyed() {
 		synchronized (mScenes) {
-			mTextureManager.unregisterRenderer(this);
-			mMaterialManager.unregisterRenderer(this);
 			if (mTextureManager != null)
+			{
+				mTextureManager.unregisterRenderer(this);
 				mTextureManager.taskReset(this);
+			}
 			if (mMaterialManager != null)
+			{
 				mMaterialManager.taskReset(this);
+				mMaterialManager.unregisterRenderer(this);
+			}
 			for (int i = 0, j = mScenes.size(); i < j; ++i)
 				mScenes.get(i).destroyScene();
 		}
@@ -602,7 +632,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		this.preferences = preferences;
 	}
 
-	private class RequestRenderTask extends TimerTask {
+	private class RequestRenderTask implements Runnable {
 		public void run() {
 			if (mSurfaceView != null) {
 				mSurfaceView.requestRender();
@@ -610,19 +640,19 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 
-	public Vector3 unProject(float x, float y, float z) {
+	public Vector3 unProject(double x, double y, double z) {
 		x = mViewportWidth - x;
 		y = mViewportHeight - y;
 
-		float[] m = new float[16], mvpmatrix = new float[16],
-				in = new float[4],
-				out = new float[4];
+		double[] m = new double[16], mvpmatrix = new double[16],
+				in = new double[4],
+				out = new double[4];
 
 		Matrix.multiplyMM(mvpmatrix, 0, mPMatrix, 0, mVMatrix, 0);
 		Matrix.invertM(m, 0, mvpmatrix, 0);
 
-		in[0] = (x / (float)mViewportWidth) * 2 - 1;
-		in[1] = (y / (float)mViewportHeight) * 2 - 1;
+		in[0] = (x / mViewportWidth) * 2 - 1;
+		in[1] = (y / mViewportHeight) * 2 - 1;
 		in[2] = 2 * z - 1;
 		in[3] = 1;
 
@@ -635,15 +665,15 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return new Vector3(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
 	}
 
-	public float getFrameRate() {
+	public double getFrameRate() {
 		return mFrameRate;
 	}
 
 	public void setFrameRate(int frameRate) {
-		setFrameRate((float)frameRate);
+		setFrameRate((double) frameRate);
 	}
 
-	public void setFrameRate(float frameRate) {
+	public void setFrameRate(double frameRate) {
 		this.mFrameRate = frameRate;
 		if (stopRendering()) {
 			// Restart timer with new frequency
@@ -651,7 +681,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 
-	public float getRefreshRate() {
+	public double getRefreshRate() {
 		return ((WindowManager) mContext
 				.getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay()
@@ -772,7 +802,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalAddTexture((ATexture) task, task.getIndex());
 			break;
 		case MATERIAL:
-			internalAddMaterial((AMaterial) task, task.getIndex());
+			internalAddMaterial((Material) task, task.getIndex());
 		default:
 			break;
 		}
@@ -793,7 +823,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			internalRemoveTexture((ATexture) task, task.getIndex());
 			break;
 		case MATERIAL:
-			internalRemoveMaterial((AMaterial) task, task.getIndex());
+			internalRemoveMaterial((Material) task, task.getIndex());
 			break;
 		default:
 			break;
@@ -965,16 +995,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
-	 * Internal method for adding {@link AMaterial} objects.
+	 * Internal method for adding {@link Material} objects.
 	 * Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * This takes an index for the addition, but it is pretty
 	 * meaningless.
 	 * 
-	 * @param material {@link AMaterial} to add.
+	 * @param material {@link Material} to add.
 	 * @param int index to add the animation at. 
 	 */
-	private void internalAddMaterial(AMaterial material, int index) {
+	private void internalAddMaterial(Material material, int index) {
 		mMaterialManager.taskAdd(material);
 	}
 
@@ -1006,7 +1036,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mTextureManager.taskRemove(texture);
 	}
 	
-	private void internalRemoveMaterial(AMaterial material, int index)
+	private void internalRemoveMaterial(Material material, int index)
 	{
 		mMaterialManager.taskRemove(material);
 	}
@@ -1251,7 +1281,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		RajawaliRenderer.mMaxLights = maxLights;
 	}
 
-	public void setFPSUpdateListener(FPSUpdateListener listener) {
+	public void setFPSUpdateListener(OnFPSUpdateListener listener) {
 		mFPSUpdateListener = listener;
 	}
 
@@ -1279,6 +1309,24 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		EGL10 egl = (EGL10)EGLContext.getEGL();
 		EGLContext eglContext = egl.eglGetCurrentContext();
 		return eglContext != EGL10.EGL_NO_CONTEXT;
+	}
+	
+	/**
+	 * Fetches the Open GL ES major version of the EGL surface.
+	 * 
+	 * @return int containing the major version number.
+	 */
+	public static int getGLMajorVersion() {
+		return mGLES_Major_Version;
+	}
+	
+	/**
+	 * Fetches the Open GL ES minor version of the EGL surface.
+	 * 
+	 * @return int containing the minor version number.
+	 */
+	public static int getGLMinorVersion() {
+		return mGLES_Minor_Version;
 	}
 
 	public void setUsesCoverageAa(boolean usesCoverageAa) {

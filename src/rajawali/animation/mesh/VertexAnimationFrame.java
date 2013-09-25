@@ -1,7 +1,19 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation.mesh;
 
 import rajawali.Geometry3D;
-import rajawali.math.Vector3;
+import rajawali.math.vector.Vector3;
 
 public class VertexAnimationFrame implements IAnimationFrame {
 	protected Geometry3D mGeometry;
@@ -56,15 +68,15 @@ public class VertexAnimationFrame implements IAnimationFrame {
 			v2.setAll(vertices[vid2], vertices[vid2+1], vertices[vid2+2]);
 			v3.setAll(vertices[vid3], vertices[vid3+1], vertices[vid3+2]);
 			
-			Vector3 vector1 = Vector3.subtract(v2, v1);
-            Vector3 vector2 = Vector3.subtract(v3, v1);
+			Vector3 vector1 = Vector3.subtractAndCreate(v2, v1);
+            Vector3 vector2 = Vector3.subtractAndCreate(v3, v1);
             
-            normal = Vector3.cross(vector1, vector2);
+            normal = Vector3.crossAndCreate(vector1, vector2);
             normal.normalize();
             
-            faceNormals[i] = normal.x;
-            faceNormals[i+1] = normal.y;
-            faceNormals[i+2] = normal.z;
+            faceNormals[i] = (float) normal.x;
+            faceNormals[i+1] = (float) normal.y;
+            faceNormals[i+2] = (float) normal.z;
 
 		}
 		// -- calculate vertex normals
@@ -87,9 +99,9 @@ public class VertexAnimationFrame implements IAnimationFrame {
 				}
 			}
 			vertexNormal.normalize();
-			vertNormals[i] = -vertexNormal.x;
-			vertNormals[i+1] = vertexNormal.y;
-			vertNormals[i+2] = -vertexNormal.z;
+			vertNormals[i] = (float) -vertexNormal.x;
+			vertNormals[i+1] = (float) vertexNormal.y;
+			vertNormals[i+2] = (float) -vertexNormal.z;
 		}
 		//mGeometry.setNormals(vertNormals);
 		faceNormals = null;

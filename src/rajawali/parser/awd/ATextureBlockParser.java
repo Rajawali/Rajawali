@@ -1,9 +1,9 @@
 package rajawali.parser.awd;
 
-import rajawali.materials.AMaterial;
+import rajawali.materials.Material;
 
 public abstract class ATextureBlockParser extends ABlockParser {
 
-	public abstract AMaterial getMaterial();
-	
+	public abstract Material getMaterial();
+
 }
