@@ -20,27 +20,37 @@ import rajawali.renderer.RajawaliRenderer;
 import android.content.res.Resources;
 
 public abstract class AMeshLoader extends ALoader implements IMeshLoader {
+
 	protected TextureManager mTextureManager;
-	
+
 	protected Object3D mRootObject;
+
+	public AMeshLoader(File file) {
+		super(file);
+		mRootObject = new Object3D();
+	}
+
+	public AMeshLoader(String fileOnSDCard) {
+		super(fileOnSDCard);
+		mRootObject = new Object3D();
+	}
 
 	public AMeshLoader(RajawaliRenderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 		mRootObject = new Object3D();
 	}
-	
+
 	public AMeshLoader(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, resourceId);
 		mTextureManager = textureManager;
 		mRootObject = new Object3D();
 	}
-	
-	
+
 	public AMeshLoader(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 		mRootObject = new Object3D();
 	}
-	
+
 	public AMeshLoader parse() throws ParsingException {
 		super.parse();
 		return this;
@@ -49,8 +59,9 @@ public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 	public Object3D getParsedObject() {
 		return mRootObject;
 	}
-	
+
 	protected class MaterialDef {
+
 		public String name;
 		public int ambientColor;
 		public int diffuseColor;
