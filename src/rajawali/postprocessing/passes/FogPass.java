@@ -29,7 +29,7 @@ public class FogPass extends EffectPass {
 		mFragmentShader.setUniform1f("uFogNear", mFogNear);
 		mFragmentShader.setUniform1f("uFogFar", mFogFar);
 		mFragmentShader.setUniform3fv("uFogColor", mFogColor);
-		mMaterial.bindTextureByName(PARAM_DEPTH_TEXTURE, 0, mReadTarget.getDepthTexture());
+		mMaterial.bindTextureByName(PARAM_DEPTH_TEXTURE, 1, mReadTarget.getDepthTexture());
 	}
 	
 	public void setFogNear(final float fogNear)

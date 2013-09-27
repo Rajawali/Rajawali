@@ -28,6 +28,7 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
+import rajawali.util.RajLog;
 import android.content.Context;
 import android.graphics.Bitmap.Config;
 import android.graphics.Point;
@@ -196,6 +197,7 @@ public class PostProcessingManager {
 
 		for (int i = 0; i < mNumPasses; i++) {
 			pass = mPasses.get(i);
+			RajLog.i("________________ PASS " + i + ", " + pass.getPassType());
 			if (!pass.isEnabled())
 				continue;
 
@@ -221,6 +223,8 @@ public class PostProcessingManager {
 				maskActive = true;
 			else if (type == PassType.CLEAR)
 				maskActive = false;
+			
+			RajLog.i("________________ END PASS");
 		}
 	}
 	

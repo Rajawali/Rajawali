@@ -15,4 +15,7 @@ void main() {
 	vec4 srcColor = texture2D(uTexture, vTextureCoord);
 	gl_FragColor.rgb = mix(srcColor.rgb, uFogColor, fogDensity);
 	gl_FragColor.a = srcColor.a;
+	//gl_FragColor.r = depthPixel.r;
+	gl_FragColor.g = depthPixel.g;
+	gl_FragColor.b = depthPixel.b;
 }

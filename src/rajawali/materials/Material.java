@@ -826,7 +826,7 @@ public class Material extends AFrameTask {
 	{
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
 		GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
-		GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName()), index);
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, name), index);
 	}
 
 	/**
