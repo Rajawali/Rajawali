@@ -36,6 +36,18 @@ public abstract class ALoader implements ILoader {
 	protected String mFileOnSDCard;
 	protected File mFile;
 
+	public ALoader(File file) {
+		this(file.getAbsolutePath());
+		mFile = file;
+	}
+
+	public ALoader(String fileOnSDCard)
+	{
+		mResources = null;
+		mResourceId = 0;
+		mFileOnSDCard = fileOnSDCard;
+	}
+
 	public ALoader(RajawaliRenderer renderer, String fileOnSDCard)
 	{
 		this(renderer.getContext().getResources(), 0);
@@ -192,25 +204,4 @@ public abstract class ALoader implements ILoader {
 		return fName.toLowerCase(Locale.ENGLISH).replaceAll("\\s", "_");
 	}
 
-	public static class ParsingException extends Exception {
-
-		private static final long serialVersionUID = 3732833696361901287L;
-
-		public ParsingException() {
-			super();
-		}
-
-		public ParsingException(final String msg) {
-			super(msg);
-		}
-
-		public ParsingException(final Throwable throwable) {
-			super(throwable);
-		}
-
-		public ParsingException(final String msg, final Throwable throwable) {
-			super(msg, throwable);
-		}
-
-	}
 }

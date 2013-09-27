@@ -27,6 +27,7 @@ import rajawali.animation.mesh.SkeletalAnimationSequence;
 import rajawali.math.vector.Vector3;
 import rajawali.parser.ALoader;
 import rajawali.parser.IAnimationSequenceLoader;
+import rajawali.parser.ParsingException;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 

@@ -40,6 +40,7 @@ import rajawali.materials.textures.Texture;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
 import rajawali.parser.AMeshLoader;
+import rajawali.parser.ParsingException;
 import rajawali.parser.fbx.FBXValues.Connections.Connect;
 import rajawali.parser.fbx.FBXValues.FBXColor4;
 import rajawali.parser.fbx.FBXValues.FBXFloatBuffer;
