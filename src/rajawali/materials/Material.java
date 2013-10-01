@@ -408,7 +408,7 @@ public class Material extends AFrameTask {
 	 * @param b The value [0..1] for the blue channel
 	 */
 	public void setAmbientIntensity(double r, double g, double b) {
-		setAmbientIntensity(r, g, b);
+		setAmbientIntensity((float)r, (float)g, (float)b);
 	}
 	
 	/**
