@@ -527,6 +527,7 @@ public class RajawaliScene extends AFrameTask {
 			mNextSkybox.setDoubleSided(true);
 			mSkyboxTexture = new Texture("skybox", resourceId);
 			Material material = new Material();
+			material.setColorInfluence(0);
 			material.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(material);
 		}
@@ -555,6 +556,7 @@ public class RajawaliScene extends AFrameTask {
 			mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
 			((CubeMapTexture)mSkyboxTexture).isSkyTexture(true);
 			Material mat = new Material();
+			mat.setColorInfluence(0);
 			mat.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(mat);
 		}

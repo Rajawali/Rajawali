@@ -855,7 +855,6 @@ public class Material extends AFrameTask {
 			throw new TextureException("Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
 		}
 		mTextureList.add(texture);
-		mColorInfluence = 0;
 
 		TextureManager.getInstance().addTexture(texture);
 		texture.registerMaterial(this);
@@ -870,7 +869,6 @@ public class Material extends AFrameTask {
 	 */
 	public void removeTexture(ATexture texture) {
 		mTextureList.remove(texture);
-		if(mTextureList.size() == 0) mColorInfluence = 1;
 		texture.unregisterMaterial(this);
 	}
 	
