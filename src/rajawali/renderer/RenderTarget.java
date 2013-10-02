@@ -17,7 +17,7 @@ import rajawali.materials.textures.ATexture.WrapType;
 import rajawali.materials.textures.RenderTargetTexture;
 import rajawali.materials.textures.RenderTargetTexture.RenderTargetTextureFormat;
 import rajawali.materials.textures.RenderTargetTexture.RenderTargetTextureType;
-import rajawali.util.RajLog;
+import rajawali.materials.textures.TextureManager;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLU;
@@ -35,6 +35,11 @@ public class RenderTarget extends AFrameTask {
 	protected int mOffsetX;
 	protected int mOffsetY;
 	protected String mName;
+	protected boolean mMipmaps;
+	protected int mGLType;
+	protected Config mBitmapConfig;
+	protected FilterType mFilterType;
+	protected WrapType mWrapType;
 
 	protected boolean mDepthBuffer;
 	protected boolean mStencilBuffer;
@@ -124,12 +129,18 @@ public class RenderTarget extends AFrameTask {
 		mOffsetY = offsetY;
 		mDepthBuffer = depthBuffer;
 		mStencilBuffer = stencilBuffer;
+		mMipmaps = mipmaps;
+		mGLType = glType;
+		mBitmapConfig = bitmapConfig;
+		mFilterType = filterType;
+		mWrapType = wrapType;
+		
 		mTexture = new RenderTargetTexture(mName + "FBTex", mWidth, mHeight);
-		mTexture.setMipmap(mipmaps);
-		mTexture.setGLTextureType(glType);
-		mTexture.setBitmapConfig(bitmapConfig);
-		mTexture.setFilterType(filterType);
-		mTexture.setWrapType(wrapType);
+		mTexture.setMipmap(mMipmaps);
+		mTexture.setGLTextureType(mGLType);
+		mTexture.setBitmapConfig(mBitmapConfig);
+		mTexture.setFilterType(mFilterType);
+		mTexture.setWrapType(mWrapType);
 
 		if (mDepthBuffer)
 		{
@@ -138,12 +149,13 @@ public class RenderTarget extends AFrameTask {
 					RenderTargetTextureFormat.DEPTH,
 					RenderTargetTextureType.UNSIGNED_BYTE);
 			mDepthTexture.setMipmap(false);
-			mDepthTexture.setGLTextureType(glType);
-			mDepthTexture.setBitmapConfig(bitmapConfig);
-			mDepthTexture.setFilterType(filterType);
-			mDepthTexture.setWrapType(wrapType);
+			mDepthTexture.setGLTextureType(mGLType);
+			mDepthTexture.setBitmapConfig(mBitmapConfig);
+			mDepthTexture.setFilterType(mFilterType);
+			mDepthTexture.setWrapType(mWrapType);
 		}
 	}
+	
 
 	/**
 	 * Instantiates a new RenderTarget object with default values
@@ -298,7 +310,15 @@ public class RenderTarget extends AFrameTask {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 
 		checkGLError("Could not create framebuffer: ");
+		
+		
+		// -- add the texture directly. we can afford to do this because the create()
+		//    method is called in a thread safe manner.
+		TextureManager.getInstance().taskAdd(mTexture);
+		if (mDepthBuffer)
+			TextureManager.getInstance().taskAdd(mDepthTexture);
 
+/*
 		if (mDepthBuffer)
 		{
 			int[] tex = new int[2];
@@ -332,7 +352,7 @@ public class RenderTarget extends AFrameTask {
 
 		if (mStencilBuffer)
 		{
-			/*
+			
 			GLES20.glGenRenderbuffers(1, bufferHandles, 0);
 			mStencilBufferHandle = bufferHandles[0];
 			GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mStencilBufferHandle);
@@ -340,8 +360,9 @@ public class RenderTarget extends AFrameTask {
 			GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_STENCIL_ATTACHMENT,
 					GLES20.GL_RENDERBUFFER, mStencilBufferHandle);
 
-			checkGLError("Could not create stencil buffer: ");*/
+			checkGLError("Could not create stencil buffer: ");
 		}
+	*/
 		//GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 	}

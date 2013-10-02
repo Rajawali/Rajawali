@@ -478,6 +478,7 @@ public class LoaderOBJ extends AMeshLoader {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
 					mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), BitmapFactory.decodeFile(filePath)));
 				}
+				mat.setColorInfluence(0);
 			}
 			if(hasBump) {
 				if(mFile == null) {

@@ -459,6 +459,7 @@ public class LoaderFBX extends AMeshLoader {
 							throw new ParsingException("["+getClass().getCanonicalName()+"] Could not find file " + getOnlyFileName(textureName));
 						}
 					}
+					o.getMaterial().setColorInfluence(0);
 					o.getMaterial().addTexture(new Texture(textureName.replaceAll("[\\W]|_", ""), bitmap));
 					return;
 				}

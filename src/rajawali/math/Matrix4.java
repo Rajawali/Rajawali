@@ -262,7 +262,6 @@ public final class Matrix4 {
 	public Matrix4 inverse() {
         boolean success = Matrix.invertM(mTmp, 0, m, 0);
         System.arraycopy(mTmp, 0, m, 0, 16);
-        if (!success) throw new IllegalStateException("This is a non-invertable matrix");
         return this;
     }
 	
