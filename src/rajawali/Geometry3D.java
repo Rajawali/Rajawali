@@ -1020,29 +1020,33 @@ public class Geometry3D {
 	public void calculateBounds() {		
 		//TODO think if it's a best place calculate here the bounds for boundbox
 		FloatBuffer vertices = getVertices();
-		vertices.rewind();		
-		mMin.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-		mMax.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);		
-		Vector3 vertex = new Vector3();
 		
-		while (vertices.hasRemaining()) {
-			vertex.x = vertices.get();
-			vertex.y = vertices.get();
-			vertex.z = vertices.get();
+		if(vertices != null){
 			
-			if(vertex.x < mMin.x) mMin.x = vertex.x;
-			if(vertex.y < mMin.y) mMin.y = vertex.y;
-			if(vertex.z < mMin.z) mMin.z = vertex.z;
-			if(vertex.x > mMax.x) mMax.x = vertex.x;
-			if(vertex.y > mMax.y) mMax.y = vertex.y;
-			if(vertex.z > mMax.z) mMax.z = vertex.z;
+			vertices.rewind();		
+			mMin.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+			mMax.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);		
+			Vector3 vertex = new Vector3();
+			
+			while (vertices.hasRemaining()) {
+				vertex.x = vertices.get();
+				vertex.y = vertices.get();
+				vertex.z = vertices.get();
+				
+				if(vertex.x < mMin.x) mMin.x = vertex.x;
+				if(vertex.y < mMin.y) mMin.y = vertex.y;
+				if(vertex.z < mMin.z) mMin.z = vertex.z;
+				if(vertex.x > mMax.x) mMax.x = vertex.x;
+				if(vertex.y > mMax.y) mMax.y = vertex.y;
+				if(vertex.z > mMax.z) mMax.z = vertex.z;
+			}
+	
+			mCenter.setAll(				
+				mMin.x + (mMax.x - mMin.x) * .5, 
+				mMin.y + (mMax.y - mMin.y) * .5, 
+				mMin.z + (mMax.z - mMin.z) * .5
+			);
 		}
-
-		mCenter.setAll(				
-			mMin.x + (mMax.x - mMin.x) * .5, 
-			mMin.y + (mMax.y - mMin.y) * .5, 
-			mMin.z + (mMax.z - mMin.z) * .5
-		);
 	}
 	
 	
@@ -1078,24 +1082,26 @@ public class Geometry3D {
 	public void normalize(Matrix4 matrix){		
 		
 		FloatBuffer vertices = getVertices();
-		float[] normalizedVertices = new float[vertices.limit()];  
-		vertices.rewind();
+		if(vertices != null){
+			float[] normalizedVertices = new float[vertices.limit()];  
+			vertices.rewind();
+			
+			//apply at all vertex		
+			int vertexIndex = 0;
+			Vector3 vector = new Vector3();
+			for(int i = 0; vertices.hasRemaining();i++){
+				vertexIndex = i * 3;			
+				vector.x = vertices.get();
+				vector.y = vertices.get();
+				vector.z = vertices.get();
+				vector.multiply(matrix);	
+				normalizedVertices[vertexIndex] = (float) vector.x;
+				normalizedVertices[vertexIndex+1] = (float) vector.y;
+				normalizedVertices[vertexIndex+2] = (float) vector.z;
+			}
 		
-		//apply at all vertex		
-		int vertexIndex = 0;
-		Vector3 vector = new Vector3();
-		for(int i = 0; vertices.hasRemaining();i++){
-			vertexIndex = i * 3;			
-			vector.x = vertices.get();
-			vector.y = vertices.get();
-			vector.z = vertices.get();
-			vector.multiply(matrix);	
-			normalizedVertices[vertexIndex] = (float) vector.x;
-			normalizedVertices[vertexIndex+1] = (float) vector.y;
-			normalizedVertices[vertexIndex+2] = (float) vector.z;
+			setVertices(normalizedVertices, true);
 		}
-	
-		setVertices(normalizedVertices, true);
 	}
 	
 }

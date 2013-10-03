@@ -83,11 +83,13 @@ public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 		public String bumpTexture;
 	}
 	
-	public void normalize() {	
-		Matrix4 matrix = mRootObject.getGeometry().getNormalizeTransform();
-		mRootObject.getGeometry().normalize(matrix);
-		for(Object3D child : mRootObject.getChildrens()){
-			child.getGeometry().normalize(matrix);
+	public void normalize() {			
+		if(!mRootObject.isContainer()){
+			Matrix4 matrix = mRootObject.getGeometry().getNormalizeTransform();
+			mRootObject.getGeometry().normalize(matrix);
+			for(Object3D child : mRootObject.getChildrens()){
+				child.getGeometry().normalize(matrix);
+			}
 		}
 	}
 }
