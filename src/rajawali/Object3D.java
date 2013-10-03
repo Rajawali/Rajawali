@@ -515,6 +515,11 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		return mChildren.remove(child);
 	}
 	
+	
+	public List<Object3D> getChildrens() {
+		return mChildren;
+	}
+	
 	public Object3D getParent()
 	{
 		return mParent;

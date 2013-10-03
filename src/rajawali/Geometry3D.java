@@ -24,6 +24,7 @@ import java.util.Arrays;
 import rajawali.animation.mesh.VertexAnimationObject3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
@@ -150,6 +151,11 @@ public class Geometry3D {
 	 */
 	protected boolean mHasTextureCoordinates;
 	
+	/**
+	 * Indicate the center of this geometry
+	 */
+	protected final Vector3 mCenter, mMin, mMax;
+	
 	public enum BufferType {
 		FLOAT_BUFFER,
 		INT_BUFFER,
@@ -163,6 +169,9 @@ public class Geometry3D {
 		mTexCoordBufferInfo = new BufferInfo();
 		mColorBufferInfo = new BufferInfo();
 		mNormalBufferInfo = new BufferInfo();
+		mCenter = new Vector3(0,0,0);
+		mMin = new Vector3();
+		mMax = new Vector3();
 	}
 	
 	/**
@@ -699,9 +708,16 @@ public class Geometry3D {
 			mVertices.put(vertices);
 			mVertices.position(0);
 			mNumVertices = vertices.length / 3;
+			
+			if(override == true) {
+				//change buffer data
+				changeBufferData(mVertexBufferInfo, mVertices, 0);		
+			}
 		} else {
 			mVertices.put(vertices);
 		}
+		
+		calculateBounds();
 	}
 	
 	public void setVertices(FloatBuffer vertices) {
@@ -993,4 +1009,93 @@ public class Geometry3D {
 	public int getNumTriangles() {
 		return mVertices != null ? mVertices.limit() / 9 : 0;
 	}
+	
+	
+	
+	public Vector3 getCenter(){
+		return mCenter;
+	}
+	
+	
+	public void calculateBounds() {		
+		//TODO think if it's a best place calculate here the bounds for boundbox
+		FloatBuffer vertices = getVertices();
+		vertices.rewind();		
+		mMin.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+		mMax.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);		
+		Vector3 vertex = new Vector3();
+		
+		while (vertices.hasRemaining()) {
+			vertex.x = vertices.get();
+			vertex.y = vertices.get();
+			vertex.z = vertices.get();
+			
+			if(vertex.x < mMin.x) mMin.x = vertex.x;
+			if(vertex.y < mMin.y) mMin.y = vertex.y;
+			if(vertex.z < mMin.z) mMin.z = vertex.z;
+			if(vertex.x > mMax.x) mMax.x = vertex.x;
+			if(vertex.y > mMax.y) mMax.y = vertex.y;
+			if(vertex.z > mMax.z) mMax.z = vertex.z;
+		}
+
+		mCenter.setAll(				
+			mMin.x + (mMax.x - mMin.x) * .5, 
+			mMin.y + (mMax.y - mMin.y) * .5, 
+			mMin.z + (mMax.z - mMin.z) * .5
+		);
+	}
+	
+	
+	/**
+	 * Get normalize transform matrix
+	 */
+	public Matrix4 getNormalizeTransform(){
+		
+		Matrix4 matrix = new Matrix4();	
+		
+		//calculate high scale factor
+		double scale, tmpScale = 0;
+		scale = (mMax.x - mMin.x);
+		if((tmpScale = (mMax.y - mMin.y)) > scale) scale = tmpScale;
+		if((tmpScale = (mMax.z - mMin.z)) > scale) scale = tmpScale;
+		scale = 2./scale;
+
+		//generate trasform matrix
+		matrix.identity()
+			  .translate(
+				-mCenter.x * scale, 
+			    -mCenter.y * scale, 
+			    -mCenter.z * scale)
+			  .scale(scale);
+
+		return matrix;
+	}
+	
+	/**
+	 * normalize by passed matrix
+	 * @param matrix
+	 */
+	public void normalize(Matrix4 matrix){		
+		
+		FloatBuffer vertices = getVertices();
+		float[] normalizedVertices = new float[vertices.limit()];  
+		vertices.rewind();
+		
+		//apply at all vertex		
+		int vertexIndex = 0;
+		Vector3 vector = new Vector3();
+		for(int i = 0; vertices.hasRemaining();i++){
+			vertexIndex = i * 3;			
+			vector.x = vertices.get();
+			vector.y = vertices.get();
+			vector.z = vertices.get();
+			vector.multiply(matrix);	
+			normalizedVertices[vertexIndex] = (float) vector.x;
+			normalizedVertices[vertexIndex+1] = (float) vector.y;
+			normalizedVertices[vertexIndex+2] = (float) vector.z;
+		}
+	
+		setVertices(normalizedVertices, true);
+	}
+	
 }
