@@ -5,6 +5,7 @@ import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 import android.os.SystemClock;
+import android.util.Log;
 
 
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
@@ -15,6 +16,7 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		mVertexShader = new SpriteSheetVertexShaderFragment();
 		mVertexShader.setNumTiles(numTilesX, numTilesY);
 		mVertexShader.setNumFrames(numFrames);
+        mVertexShader.setFPS(30);
 	}
 
 	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, float fps, int numFrames)
@@ -65,6 +67,14 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		return mVertexShader.getLoop();
 	}
 
+    public void setPingPong(boolean pingPong) {
+        mVertexShader.setPingPong(pingPong);
+    }
+
+    public boolean getPingPong() {
+        return mVertexShader.getPingPong();
+    }
+
 	private final class SpriteSheetVertexShaderFragment extends AShader implements IShaderFragment
 	{
 		public final static String SHADER_ID = "SPRITE_SHEET_VERTEX_SHADER_FRAGMENT";
@@ -84,11 +94,11 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		private long mStartTime;
 		private boolean mIsPlaying = false;
 		private float mFrameIndexStop = 0;
-		private float mFPS = 30;
 		private int mNumFrames;
 		private long[] mFrameDurations;
 		private int mDuration;
 		private boolean mLoop = true;
+        private boolean mPingPong=false;
 
 		public SpriteSheetVertexShaderFragment()
 		{
@@ -117,11 +127,14 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 
 			if ((mIsPlaying) || (!mIsPlaying && mFrameIndexStop != mCurrentFrame)) {
 				if (mFrameDurations != null && mFrameDurations.length > 0) {
-					int time = (int) Math.floor((SystemClock.elapsedRealtime() - mStartTime) % mDuration);
+					int time;
+                    if(mPingPong){
+                         time = (int) Math.floor((SystemClock.elapsedRealtime() - mStartTime) % getDurationPingPong());
+                    }else{
+                         time = (int) Math.floor((SystemClock.elapsedRealtime() - mStartTime) % mDuration);
+                    }
+
 					mCurrentFrame = getFrame(time);
-				} else {
-					mCurrentFrame = (int) Math.floor((SystemClock.elapsedRealtime() - mStartTime) * (mFPS / 1000.f))
-						% mNumFrames;
 				}
 				if (!mLoop && mCurrentFrame == (mNumFrames - 1)) {
 					pause();
@@ -153,7 +166,11 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 
 		public void setFPS(float fps)
 		{
-			mFPS = fps;
+            long[] frameDurations = new long[mNumFrames];
+            for(int i=0;i<mNumFrames;i++){
+                frameDurations[i]=(long)(1000.0f/fps);
+            }
+            setFrameDurations(frameDurations);
 		}
 
 		public void setFrameDurations(long[] frameDurations) {
@@ -194,6 +211,10 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		private int getFrame(int time) {
 			int index=0;
 			int timeFrame = 0;
+            if(mPingPong && time> mDuration){
+                time = (mDuration-(int)mFrameDurations[mNumFrames-1])-(time-mDuration);
+            }
+
 			while (index < mNumFrames && time > (timeFrame + mFrameDurations[index])) {
 				timeFrame += mFrameDurations[index];
 				index++;
@@ -208,5 +229,21 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		public boolean getLoop() {
 			return mLoop;
 		}
+
+        public void setPingPong(boolean pingPong) {
+            mPingPong=pingPong;
+        }
+
+        public boolean getPingPong() {
+            return mPingPong;
+        }
+
+        private int getDurationPingPong(){
+            int duration;
+            duration=mDuration*2;
+            duration-=mFrameDurations[0];
+            duration-=mFrameDurations[mNumFrames-1];
+            return duration;
+        }
 	}
 }
