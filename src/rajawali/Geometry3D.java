@@ -156,6 +156,14 @@ public class Geometry3D {
 	 */
 	protected final Vector3 mCenter, mMin, mMax;
 	
+	/**
+	 * is this geometry empty?
+	 * Geometry is considerate empty when the object is a container
+	 * and is not calculated the min and max of varius childrens
+	 */
+	protected boolean empty;
+	
+	
 	public enum BufferType {
 		FLOAT_BUFFER,
 		INT_BUFFER,
@@ -172,6 +180,7 @@ public class Geometry3D {
 		mCenter = new Vector3(0,0,0);
 		mMin = new Vector3();
 		mMax = new Vector3();
+		empty = true;
 	}
 	
 	/**
@@ -270,6 +279,10 @@ public class Geometry3D {
 		this.mOriginalGeometry = geom;
 		this.mHasNormals = geom.hasNormals();
 		this.mHasTextureCoordinates = geom.hasTextureCoordinates();
+		this.empty = geom.isEmpty();
+		this.mCenter.setAll(geom.getCenter());
+		this.mMin.setAll(geom.getMin());
+		this.mMax.setAll(geom.getMax());
 	}
 	
 	/**
@@ -1011,15 +1024,46 @@ public class Geometry3D {
 	}
 	
 	
+	/**
+	 * maximun vector that can contain the geometry
+	 * @return vector {@link Vector3}
+	 */
+	public Vector3 getMin() {
+		return mMin;
+	}
 	
+
+	/**
+	 * maximun vector that can contain the geometry
+	 * @return vector {@link Vector3}
+	 */
+	public Vector3 getMax() {
+		return mMax;
+	}
+	
+	
+	/**
+	 * The Center of this geometry
+	 * @return vector {@link Vector3}
+	 */
 	public Vector3 getCenter(){
 		return mCenter;
 	}
 	
+	/**
+	 * is empty geometry?
+	 * @return
+	 */
+	public boolean isEmpty(){
+		return empty;
+	}
 	
+	/**
+	 * Calculate limits of this geometry
+	 */
 	public void calculateBounds() {		
 		//TODO think if it's a best place calculate here the bounds for boundbox
-		FloatBuffer vertices = getVertices();
+		FloatBuffer vertices = getVertices();		
 		
 		if(vertices != null){
 			
@@ -1046,12 +1090,33 @@ public class Geometry3D {
 				mMin.y + (mMax.y - mMin.y) * .5, 
 				mMin.z + (mMax.z - mMin.z) * .5
 			);
+			
+			empty = false;
 		}
 	}
 	
+	/**
+	 * Set manual bounds
+	 * @param center
+	 * @param min
+	 * @param max
+	 */
+	public void setBounds(Vector3 min, Vector3 max){
+		mMin.setAll(min);
+		mMax.setAll(max);
+		
+		mCenter.setAll(				
+			mMin.x + (mMax.x - mMin.x) * .5, 
+			mMin.y + (mMax.y - mMin.y) * .5, 
+			mMin.z + (mMax.z - mMin.z) * .5
+		);
+		
+		empty = false;
+	}
 	
 	/**
 	 * Get normalize transform matrix
+	 * @return matrix transformation {@link Matrix4}
 	 */
 	public Matrix4 getNormalizeTransform(){
 		
@@ -1077,7 +1142,7 @@ public class Geometry3D {
 	
 	/**
 	 * normalize by passed matrix
-	 * @param matrix
+	 * @param matrix {@link Matrix4}
 	 */
 	public void normalize(Matrix4 matrix){		
 		
@@ -1103,5 +1168,6 @@ public class Geometry3D {
 			setVertices(normalizedVertices, true);
 		}
 	}
-	
+
+
 }

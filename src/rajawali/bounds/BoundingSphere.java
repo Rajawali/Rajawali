@@ -42,7 +42,7 @@ public class BoundingSphere implements IBoundingVolume {
 	
 	public BoundingSphere(Geometry3D geometry) {
 		this();
-		mGeometry = geometry;
+		mGeometry = geometry;		
 		calculateBounds(mGeometry);
 	}
 	
