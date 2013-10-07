@@ -5,7 +5,6 @@ import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 import android.os.SystemClock;
-import android.util.Log;
 
 
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
@@ -13,15 +12,14 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 
 	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, int numFrames)
 	{
-		mVertexShader = new SpriteSheetVertexShaderFragment();
-		mVertexShader.setNumTiles(numTilesX, numTilesY);
-		mVertexShader.setNumFrames(numFrames);
-        mVertexShader.setFPS(30);
+        this(numTilesX, numTilesY, 30,numFrames);
 	}
 
 	public SpriteSheetMaterialPlugin(int numTilesX, int numTilesY, float fps, int numFrames)
 	{
-		this(numTilesX, numTilesY, numFrames);
+        mVertexShader = new SpriteSheetVertexShaderFragment();
+        mVertexShader.setNumTiles(numTilesX, numTilesY);
+        mVertexShader.setNumFrames(numFrames);
 		mVertexShader.setFPS(fps);
 	}
 
