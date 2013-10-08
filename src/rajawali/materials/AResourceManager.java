@@ -84,8 +84,4 @@ public abstract class AResourceManager extends AFrameTask {
 		return mRenderer;
 	}
 
-    public void setRenderer (RajawaliRenderer renderer)
-    {
-        mRenderer = renderer;
-    }
 }
