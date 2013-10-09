@@ -408,7 +408,7 @@ public class Material extends AFrameTask {
 	 * @param b The value [0..1] for the blue channel
 	 */
 	public void setAmbientIntensity(double r, double g, double b) {
-		setAmbientIntensity(r, g, b);
+		setAmbientIntensity((float)r, (float)g, (float)b);
 	}
 	
 	/**
@@ -498,6 +498,7 @@ public class Material extends AFrameTask {
 					hasVideoTexture = true;
 					// no break statement, add the video texture to the diffuse textures
 				case DIFFUSE:
+				case RENDER_TARGET:
 					if(diffuseTextures == null) diffuseTextures = new ArrayList<ATexture>();
 					diffuseTextures.add(texture);
 					break;
@@ -650,11 +651,11 @@ public class Material extends AFrameTask {
 			
 			mVertexShader.buildShader();
 			mFragmentShader.buildShader();
-	
+	/*
 			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
 			RajLog.d(mVertexShader.getShaderString());
 			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
-			RajLog.d(mFragmentShader.getShaderString());
+			RajLog.d(mFragmentShader.getShaderString());*/
 		}
 		else
 		{
@@ -814,10 +815,18 @@ public class Material extends AFrameTask {
 
 		for (int i = 0; i < num; i++) {
 			ATexture texture = mTextureList.get(i);
+			bindTextureByName(texture.getTextureName(), i, texture);
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
 			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
 			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName()), i);
 		}
+	}
+	
+	public void bindTextureByName(String name, int index, ATexture texture)
+	{
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
+		GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, name), index);
 	}
 
 	/**
@@ -846,11 +855,10 @@ public class Material extends AFrameTask {
 			throw new TextureException("Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
 		}
 		mTextureList.add(texture);
-		mColorInfluence = 0;
 
 		TextureManager.getInstance().addTexture(texture);
 		texture.registerMaterial(this);
-		
+
 		mIsDirty = true;
 	}
 	
@@ -861,7 +869,6 @@ public class Material extends AFrameTask {
 	 */
 	public void removeTexture(ATexture texture) {
 		mTextureList.remove(texture);
-		if(mTextureList.size() == 0) mColorInfluence = 1;
 		texture.unregisterMaterial(this);
 	}
 	

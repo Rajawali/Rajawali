@@ -116,8 +116,6 @@ public class Cube extends Object3D {
 				-halfSize, -halfSize, -halfSize,		halfSize, -halfSize, -halfSize,// bottom
 		};
 
-		float t = 1;
-
 		float[] textureCoords = null;
 		float[] skyboxTextureCoords = null;
 

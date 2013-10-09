@@ -10,11 +10,14 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package rajawali.effects;
+package rajawali.postprocessing.passes;
 
-import android.opengl.GLES20;
+import rajawali.postprocessing.APass;
+import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
+import rajawali.scene.RajawaliScene;
+import android.opengl.GLES20;
 
 /**
  * Disables stencil test for previously masked rendering passes so that
@@ -27,7 +30,7 @@ public class ClearMaskPass extends APass {
 	}
 	
 	@Override
-	public void render(RajawaliRenderer renderer, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
+	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
 		// Disable stencil test so next rendering pass won't be masked.
 		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
 	}

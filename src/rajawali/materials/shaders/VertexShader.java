@@ -59,7 +59,7 @@ public class VertexShader extends AShader {
 	private int maPositionHandle;
 	private int maVertexColorBufferHandle;
 
-	private float[] mColor;
+	private float[] mColor = new float[] { 1, 0, 0, 1 };
 	private float mTime;
 	@SuppressWarnings("unused")
 	private List<ALight> mLights;
@@ -70,7 +70,16 @@ public class VertexShader extends AShader {
 	public VertexShader()
 	{
 		super(ShaderType.VERTEX);
-		mColor = new float[] { 1, 0, 0, 1 };
+	}
+	
+	public VertexShader(int resourceId)
+	{
+		super(ShaderType.VERTEX, resourceId);
+	}
+	
+	public VertexShader(String shaderString)
+	{
+		super(ShaderType.VERTEX, shaderString);
 	}
 
 	@Override
@@ -190,18 +199,21 @@ public class VertexShader extends AShader {
 	}
 
 	public void setTextureCoords(final int textureCoordBufferHandle) {
+		if(maTextureCoordHandle < 0) return;
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, textureCoordBufferHandle);
 		GLES20.glEnableVertexAttribArray(maTextureCoordHandle);
 		GLES20.glVertexAttribPointer(maTextureCoordHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
 	}
 
 	public void setNormals(final int normalBufferHandle) {
+		if(maNormalHandle < 0) return;
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
 		GLES20.glEnableVertexAttribArray(maNormalHandle);
 		GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT, false, 0, 0);
 	}
 	
 	public void setVertexColors(final int vertexColorBufferHandle) {
+		if(maVertexColorBufferHandle < 0) return;
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexColorBufferHandle);
 		GLES20.glEnableVertexAttribArray(maVertexColorBufferHandle);
 		GLES20.glVertexAttribPointer(maVertexColorBufferHandle, 4, GLES20.GL_FLOAT,

@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import rajawali.util.RawShaderLoader;
+
 import android.opengl.GLES20;
 
 
@@ -135,11 +137,21 @@ public abstract class AShader extends AShaderBase {
 	private Hashtable<String, Precision> mPrecisionQualifier;
 	private Hashtable<String, ShaderVar> mConstants;
 	protected List<IShaderFragment> mShaderFragments;
+	protected int mProgramHandle;
 	
 	public AShader() {}
 	
 	public AShader(ShaderType shaderType) {
 		mShaderType = shaderType;
+	}
+	
+	public AShader(ShaderType shaderType, int resourceId) {
+		this(shaderType, RawShaderLoader.fetch(resourceId));
+	}
+	
+	public AShader(ShaderType shaderType, String shaderString) {
+		mShaderType = shaderType;
+		mShaderString = shaderString;
 	}
 
 	public void initialize() {
@@ -244,6 +256,24 @@ public abstract class AShader extends AShaderBase {
 		v.isGlobal(true);
 		mUniforms.put(v.getName(), v);
 		return v;
+	}
+	
+	public void setUniform1f(String name, float value)
+	{
+		int handle = getUniformLocation(mProgramHandle, name);
+		GLES20.glUniform1f(handle, value);
+	}
+	
+	public void setUniform3fv(String name, float[] value)
+	{
+		int handle = getUniformLocation(mProgramHandle, name);
+		GLES20.glUniform3fv(handle, 1, value, 0);
+	}
+	
+	public void setUniform1i(String name, int value)
+	{
+		int handle = getUniformLocation(mProgramHandle, name);
+		GLES20.glUniform1i(handle, value);
 	}
 	
 	/**
@@ -492,6 +522,7 @@ public abstract class AShader extends AShaderBase {
 	
 	public void setLocations(final int programHandle)
 	{
+		mProgramHandle = programHandle;
 		if(mShaderFragments != null)
 			for(int i=0; i<mShaderFragments.size(); i++)
 				mShaderFragments.get(i).setLocations(programHandle);
@@ -727,6 +758,11 @@ public abstract class AShader extends AShaderBase {
 		if(mShaderFragments != null)
 			for(int i=0; i<mShaderFragments.size(); i++)
 				mShaderFragments.get(i).applyParams();
+	}
+	
+	public int getProgramHandle()
+	{
+		return mProgramHandle;
 	}
 	
 	public ShaderVar subtract(ShaderVar var1, ShaderVar var2)
