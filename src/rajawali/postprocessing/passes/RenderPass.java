@@ -10,8 +10,11 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package rajawali.effects;
+package rajawali.postprocessing.passes;
 
+import rajawali.Camera;
+import rajawali.postprocessing.APass;
+import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
@@ -21,9 +24,12 @@ import android.opengl.GLES20;
 /**
  * A render pass used for primarily rendering a scene to a framebuffer target.
  * @author Andrew Jo (andrewjo@gmail.com)
+ * @author dennis.ippel
  */
 public class RenderPass extends APass {
 	protected RajawaliScene mScene;
+	protected Camera mCamera;
+	protected Camera mOldCamera;
 	protected int mClearColor;
 	protected int mOldClearColor;
 	
@@ -32,8 +38,10 @@ public class RenderPass extends APass {
 	 * @param scene RajawaliScene instance to render for this pass
 	 * @param clearColor Color of the background to clear before rendering the scene
 	 */
-	public RenderPass(RajawaliScene scene, int clearColor) {
+	public RenderPass(RajawaliScene scene, Camera camera, int clearColor) {
+		mPassType = PassType.RENDER;
 		mScene = scene;
+		mCamera = camera;
 		mClearColor = clearColor;
 		mOldClearColor = 0x00000000;
 		
@@ -42,7 +50,7 @@ public class RenderPass extends APass {
 		mNeedsSwap = false;
 	}
 	
-	public void render(RajawaliRenderer renderer, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
+	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
 		// Set the background color with that of current render pass.
 		if (mClearColor != 0x00000000) {
 			mOldClearColor = renderer.getCurrentScene().getBackgroundColor();
@@ -50,7 +58,10 @@ public class RenderPass extends APass {
 		}
 		
 		// Render the current scene.
+		mOldCamera = mScene.getCamera();
+		mScene.switchCamera(mCamera);
 		mScene.render(deltaTime, readBuffer);
+		mScene.switchCamera(mOldCamera);
 		
 		// Restore the old background color.
 		if (mClearColor != 0x00000000) {

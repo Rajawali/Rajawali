@@ -44,6 +44,16 @@ public class FragmentShader extends AShader {
 		super(ShaderType.FRAGMENT);
 	}
 	
+	public FragmentShader(int resourceId)
+	{
+		super(ShaderType.FRAGMENT, resourceId);
+	}
+	
+	public FragmentShader(String shaderString)
+	{
+		super(ShaderType.FRAGMENT, shaderString);
+	}
+	
 	@Override
 	public void initialize()
 	{

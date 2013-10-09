@@ -68,6 +68,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	protected boolean mHasCubemapTexture = false;
 	protected boolean mIsVisible = true;
 	protected boolean mShowBoundingVolume = false;
+	protected boolean mOverrideMaterialColor = false;
 	protected int mDrawingMode = GLES20.GL_TRIANGLES;
 	protected int mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 
@@ -270,13 +271,17 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
 			}
 			if (!mEnableDepthTest) GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			else {
+				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+				GLES20.glDepthFunc(GLES20.GL_LESS);
+			}
 			
 			GLES20.glDepthMask(mEnableDepthMask);
 
 			if (pickerInfo != null && mIsPickingEnabled) {
 				Material pickerMat = pickerInfo.getPicker().getMaterial();
-				pickerMat.setColor(mPickingColorArray);
 				pickerMat.useProgram();
+				pickerMat.setColor(mPickingColorArray);
 				pickerMat.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			} else {
 				if (!mIsPartOfBatch) {
@@ -301,7 +306,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				}
 				mMaterial.applyParams();
-				mMaterial.setColor(mColor);
+				if(mOverrideMaterialColor)
+					mMaterial.setColor(mColor);
 			}
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -680,6 +686,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mColor[1] = Color.green(color) / 255.f;
 		mColor[2] = Color.blue(color) / 255.f;
 		mColor[3] = Color.alpha(color) / 255.f;
+		mOverrideMaterialColor = true;
 	}
 
 	public void setColor(Vector3 color) {

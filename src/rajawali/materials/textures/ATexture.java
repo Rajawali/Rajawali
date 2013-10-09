@@ -31,7 +31,7 @@ public abstract class ATexture extends AFrameTask {
 		NORMAL,
 		SPECULAR,
 		ALPHA,
-		FRAME_BUFFER,
+		RENDER_TARGET,
 		DEPTH_BUFFER,
 		LOOKUP,
 		CUBE_MAP,
@@ -200,6 +200,7 @@ public abstract class ATexture extends AFrameTask {
 		mBitmapConfig = other.getBitmapConfig();
 		mCompressedTexture = other.getCompressedTexture();
 		mGLTextureType = other.getGLTextureType();
+		mMaterialsUsingTexture = other.mMaterialsUsingTexture;
 	}
 	
 	/**

@@ -221,7 +221,7 @@ public class Plane extends Object3D {
 
 				normals[vertexCount] = mUpAxis == Axis.X ? 1 : 0;
 				normals[vertexCount + 1] = mUpAxis == Axis.Y ? 1 : 0;
-				normals[vertexCount + 2] = mUpAxis == Axis.Z ? -1 : 0;
+				normals[vertexCount + 2] = mUpAxis == Axis.Z ? 1 : 0;
 
 				vertexCount += 3;
 			}

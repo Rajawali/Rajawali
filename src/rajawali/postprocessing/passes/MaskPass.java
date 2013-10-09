@@ -10,15 +10,17 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package rajawali.effects;
+package rajawali.postprocessing.passes;
 
 /**
  * Code heavily referenced from Three.js post processing framework.
  */
-import android.opengl.GLES20;
+import rajawali.postprocessing.APass;
+import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
+import android.opengl.GLES20;
 
 /**
  * Masked render pass for drawing to stencil buffer.
@@ -29,6 +31,7 @@ public class MaskPass extends APass {
 	protected boolean mInverse;
 	
 	public MaskPass(RajawaliScene scene) {
+		mPassType = PassType.MASK;
 		mScene = scene;
 		mEnabled = true;
 		mClear = true;
@@ -53,7 +56,7 @@ public class MaskPass extends APass {
 	}
 	
 	@Override
-	public void render(RajawaliRenderer render, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
+	public void render(RajawaliScene scene, RajawaliRenderer render, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
 		// Do not update color or depth.
 		GLES20.glColorMask(false, false, false, false);
 		GLES20.glDepthMask(false);

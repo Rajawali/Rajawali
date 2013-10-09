@@ -32,8 +32,6 @@ import rajawali.Camera;
 import rajawali.Capabilities;
 import rajawali.Object3D;
 import rajawali.animation.Animation3D;
-import rajawali.effects.APass;
-import rajawali.effects.EffectComposer;
 import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
@@ -65,6 +63,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected SharedPreferences preferences; //Shared preferences for this app
 
 	protected int mViewportWidth, mViewportHeight; //Height and width of GL viewport
+	protected int mCurrentViewportWidth, mCurrentViewportHeight; //Height and width of GL viewport
 	protected WallpaperService.Engine mWallpaperEngine; //Concrete wallpaper instance
 	protected GLSurfaceView mSurfaceView; //The rendering surface
 	
@@ -99,7 +98,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	private boolean mSceneCachingEnabled; //This applies to all scenes
 	protected boolean mSceneInitialized; //This applies to all scenes
-
+	private RenderTarget mCurrentRenderTarget;
+	
 	public static boolean supportsUIntBuffers = false;
 
 	/**
@@ -113,6 +113,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	private LinkedList<AFrameTask> mSceneQueue;
 	
 	private List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
+	private List<RenderTarget> mRenderTargets;
 	
 	/**
 	 * The scene currently being displayed.
@@ -123,15 +124,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	private RajawaliScene mNextScene; //The scene which the renderer should switch to on the next frame.
 	private final Object mNextSceneLock = new Object(); //Scene switching lock
-	
-	/**
-	 * Effect composer for post processing. If the effect composer is empty,
-	 * RajawaliRenderer will render the scene normally to screen. If there are
-	 * {@link APass} instances in the composer list, it will skip rendering the
-	 * current scene and call render on the effect composer instead which will
-	 * handle scene render passes of its own.
-	 */
-	protected EffectComposer mEffectComposer;
 	
 	public RajawaliRenderer(Context context) {
 		RajLog.i("Rajawali | Anchor Steam | Dev Branch");
@@ -144,6 +136,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mSceneCachingEnabled = true;
 		mSceneInitialized = false;
 
+		mRenderTargets = Collections.synchronizedList(new CopyOnWriteArrayList<RenderTarget>());
+		
 		RajawaliScene defaultScene = new RajawaliScene(this);
 		mScenes.add(defaultScene);
 		mCurrentScene = defaultScene;
@@ -160,6 +154,22 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		synchronized (mNextSceneLock) {
 			mNextScene = scene;
 		}
+	}
+	
+	/**
+	 * Switches the {@link RajawaliScene} currently being displayed. It resets the
+	 * OpenGL state and sets the projection matrix for the new scene. 
+	 * 
+	 * This method should only be called from the main OpenGL render thread 
+	 * ({@link RajawaliRenderer#onRender()). Calling this outside of the main thread
+	 * may case unexpected behaviour. 
+	 * 
+	 * @param nextScene
+	 */
+	public void switchSceneDirect(RajawaliScene nextScene) {
+		mCurrentScene = nextScene;
+		mCurrentScene.resetGLState(); //Ensure that the GL state is what this scene expects
+		mCurrentScene.getCamera().setProjectionMatrix(mCurrentViewportWidth, mCurrentViewportHeight);	
 	}
 
 	/**
@@ -330,6 +340,26 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
+	 * Add a render target in a thread safe manner.
+	 * 
+	 * @param renderTarget 
+	 * @return
+	 */
+	public boolean addRenderTarget(RenderTarget renderTarget) {
+		return queueAddTask(renderTarget);
+	}
+	
+	/**
+	 * Remove a render target in a thread safe manner.
+	 * 
+	 * @param renderTarget
+	 * @return
+	 */
+	public boolean removeRenderTarget(RenderTarget renderTarget) {
+		return queueRemoveTask(renderTarget);
+	}
+	
+	/**
 	 * Retrieve the current {@link Camera} in use. This is the camera being
 	 * used by the current scene. 
 	 * 
@@ -445,14 +475,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		synchronized (mNextSceneLock) { 
 			//Check if we need to switch the scene, and if so, do it.
 			if (mNextScene != null) {
-				mCurrentScene = mNextScene;
-				mCurrentScene.resetGLState(); //Ensure that the GL state is what this scene expects
+				switchSceneDirect(mNextScene);
 				mNextScene = null;
-				mCurrentScene.getCamera().setProjectionMatrix(mViewportWidth, mViewportHeight);
 			}
 		}
 		
-		render(); //Render the frame
+		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
+		mLastRender = SystemClock.elapsedRealtime();
+		
+		onRender(deltaTime);
+		
 		++mFrameCount;
 		if (mFrameCount % 50 == 0) {
 			long now = System.nanoTime();
@@ -473,22 +505,25 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		{
 			if(error != mLastReportedGLError)
 			{
-				RajLog.e("OpenGL Error: " + GLU.gluErrorString(error) + " " + this.hashCode());
 				mLastReportedGLError = error;
+				throw new RuntimeException("OpenGL Error: " + GLU.gluErrorString(error) + " " + error);
 			}
 		} else {
 			mLastReportedGLError = 0;
 		}
 	}
+	
+	protected void onRender(final double deltaTime)
+	{
+		render(deltaTime);
+	}
 
 	/**
 	 * Called by {@link #onDrawFrame(GL10)} to render the next frame.
 	 */
-	private void render() {
-		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
-		mLastRender = SystemClock.elapsedRealtime();
+	protected void render(final double deltaTime) {
 		
-		mCurrentScene.render(deltaTime, null);
+		mCurrentScene.render(deltaTime, mCurrentRenderTarget);
 	}
 
 	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
@@ -501,6 +536,41 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mViewportWidth = width;
 		mViewportHeight = height;
+		
+		if (!mSceneInitialized) {
+			mTextureManager = TextureManager.getInstance();
+			mTextureManager.setContext(this.getContext());
+			mTextureManager.registerRenderer(this);
+			mMaterialManager = MaterialManager.getInstance();
+			mMaterialManager.setContext(this.getContext());
+			mMaterialManager.registerRenderer(this);
+			
+			getCurrentScene().resetGLState();
+			
+			initScene();
+		}
+
+		if (!mSceneCachingEnabled) {
+			mTextureManager.reset();
+			mMaterialManager.reset();
+			clearScenes();
+		} else if(mSceneCachingEnabled && mSceneInitialized) {
+			mTextureManager.taskReload();
+			mMaterialManager.taskReload();
+			reloadScenes();
+			reloadRenderTargets();
+		}
+		mSceneInitialized = true;
+		startRendering();
+		
+		setViewPort(width, height);
+	}
+	
+	protected void setViewPort(int width, int height)
+	{
+		mCurrentViewportWidth = width;
+		mCurrentViewportHeight = height;
+
 		mCurrentScene.updateProjectionMatrix(width, height);
 		GLES20.glViewport(0, 0, width, height);
 	}
@@ -529,33 +599,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 		//GLES20.glFrontFace(GLES20.GL_CCW);
 		//GLES20.glCullFace(GLES20.GL_BACK);
-
-		if (!mSceneInitialized) {
-			mEffectComposer = new EffectComposer(this);
-			
-			mTextureManager = TextureManager.getInstance();
-			mTextureManager.setContext(this.getContext());
-			mTextureManager.registerRenderer(this);
-			mMaterialManager = MaterialManager.getInstance();
-			mMaterialManager.setContext(this.getContext());
-			mMaterialManager.registerRenderer(this);
-			
-			getCurrentScene().resetGLState();
-			
-			initScene();
-		}
-
-		if (!mSceneCachingEnabled) {
-			mTextureManager.reset();
-			mMaterialManager.reset();
-			clearScenes();
-		} else if(mSceneCachingEnabled && mSceneInitialized) {
-			mTextureManager.taskReload();
-			mMaterialManager.taskReload();
-			reloadScenes();
-		}
-		mSceneInitialized = true;
-		startRendering();
 	}
 	
 	/**
@@ -565,6 +608,14 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		synchronized (mScenes) {
 			for (int i = 0, j = mScenes.size(); i < j; ++i) {
 				mScenes.get(i).reload();
+			}
+		}
+	}
+	
+	protected void reloadRenderTargets() {
+		synchronized (mRenderTargets) {
+			for(int i=0, j = mRenderTargets.size(); i < j; ++i) {
+				mRenderTargets.get(i).reload();
 			}
 		}
 	}
@@ -803,6 +854,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			break;
 		case MATERIAL:
 			internalAddMaterial((Material) task, task.getIndex());
+			break;
+		case RENDER_TARGET:
+			internalAddRenderTarget((RenderTarget) task);
+			break;
 		default:
 			break;
 		}
@@ -824,6 +879,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			break;
 		case MATERIAL:
 			internalRemoveMaterial((Material) task, task.getIndex());
+			break;
+		case RENDER_TARGET:
+			internalRemoveRenderTarget((RenderTarget) task);
 			break;
 		default:
 			break;
@@ -995,6 +1053,20 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 	
 	/**
+	 * Internal method for adding {@link RenderTarget} objects.
+	 * Should only be called through {@link #handleAddTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param render target {@link RenderTarget} to add.
+	 */
+	private void internalAddRenderTarget(RenderTarget renderTarget) {
+		renderTarget.create();
+		mRenderTargets.add(renderTarget);
+	}
+
+	/**
 	 * Internal method for adding {@link Material} objects.
 	 * Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
@@ -1039,6 +1111,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	private void internalRemoveMaterial(Material material, int index)
 	{
 		mMaterialManager.taskRemove(material);
+	}
+
+	private void internalRemoveRenderTarget(RenderTarget renderTarget)
+	{
+		renderTarget.remove();
+		mRenderTargets.remove(renderTarget);
 	}
 
 	/**
@@ -1245,6 +1323,14 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return mViewportHeight;
 	}
 	
+	public int getCurrentViewportWidth() {
+		return mCurrentViewportWidth;
+	}
+	
+	public int getCurrentViewportHeight() {
+		return mCurrentViewportHeight;
+	}
+	
 	public static boolean isFogEnabled() {
 		return mFogEnabled;
 	}
@@ -1260,7 +1346,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			}
 		}
 	}
-
+	
 	public boolean getSceneInitialized() {
 		return mSceneInitialized;
 	}
@@ -1280,6 +1366,22 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public static void setMaxLights(int maxLights) {
 		RajawaliRenderer.mMaxLights = maxLights;
 	}
+	
+	/**
+	 * Sets the current render target. Please mind that this CAN ONLY BE called on the main
+	 * OpenGL render thread. A subsequent call to {@link RajawaliRenderer#render()} will render
+	 * the current scene into this render target.
+	 * Setting the render target to null will switch back to normal rendering.
+	 * 
+	 * @param renderTarget
+	 */
+	public void setRenderTarget(RenderTarget renderTarget) {
+		mCurrentRenderTarget = renderTarget;
+	}
+	
+	public RenderTarget getRenderTarget() {
+		return mCurrentRenderTarget;
+	}
 
 	public void setFPSUpdateListener(OnFPSUpdateListener listener) {
 		mFPSUpdateListener = listener;
@@ -1289,12 +1391,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		int error = GLES20.glGetError();
 		if(error != GLES20.GL_NO_ERROR)
 		{
-			StringBuffer sb = new StringBuffer();
-			if(message != null)
-				sb.append("[").append(message).append("] ");
-			sb.append("GLES20 Error: ");
-			sb.append(GLU.gluErrorString(error));
-			RajLog.e(sb.toString());
+			throw new RuntimeException("[" +message+ "] GLES20 Error " +error+ ": " + GLU.gluErrorString(error));
 		}
 		return error;
 	}

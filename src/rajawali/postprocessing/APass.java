@@ -10,19 +10,28 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package rajawali.effects;
+package rajawali.postprocessing;
 
+import rajawali.materials.Material;
+import rajawali.materials.MaterialManager;
+import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
+import rajawali.scene.RajawaliScene;
 
 /**
  * Defines a rendering pass which is needed for multiple rendering passes.
  * @author Andrew Jo
+ * @author dennis.ippel
  */
-public abstract class APass {
+public abstract class APass implements IPass {
+	
 	protected boolean mEnabled;
 	protected boolean mClear;
 	protected boolean mNeedsSwap;
+	protected PassType mPassType;
+	protected IPostProcessingEffect mParent;
+	protected Material mMaterial;
 	
 	/**
 	 * Returns whether this pass is to be rendered. If false, renderer skips this pass.
@@ -45,5 +54,22 @@ public abstract class APass {
 		return mNeedsSwap;
 	}
 	
-	public void render(RajawaliRenderer renderer, RenderTarget writeTarget, RenderTarget readTarget, double deltaTime) {}
+	public abstract void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, double deltaTime);
+	
+	public PassType getPassType() {
+		return mPassType;
+	}
+	
+	public IPostProcessingEffect getParent() {
+		return mParent;
+	}
+	
+	public PostProcessingComponentType getType() {
+		return PostProcessingComponentType.PASS;
+	}
+	
+	public void setMaterial(Material material) {
+		mMaterial = material;
+		MaterialManager.getInstance().addMaterial(material);
+	}
 }
