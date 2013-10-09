@@ -605,35 +605,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		//GLES20.glFrontFace(GLES20.GL_CCW);
 		//GLES20.glCullFace(GLES20.GL_BACK);
 
-		if (!mSceneInitialized) {
-			mEffectComposer = new EffectComposer(this);
-			
-			mTextureManager = TextureManager.getInstance();
-			mTextureManager.setContext(this.getContext());
-			mTextureManager.registerRenderer(this);
-			mMaterialManager = MaterialManager.getInstance();
-			mMaterialManager.setContext(this.getContext());
-			mMaterialManager.registerRenderer(this);
-			
-			getCurrentScene().resetGLState();
-			
-			initScene();
-		}
-
-		if (!mSceneCachingEnabled) {
-			mTextureManager.reset();
-			mMaterialManager.reset();
-			clearScenes();
-		} else if(mSceneCachingEnabled && mSceneInitialized) {
-			mTextureManager.taskReload();
-			mMaterialManager.taskReload();
-			reloadScenes();
-		}
-		mSceneInitialized = true;
         mTextureManager = TextureManager.getInstance();
         mTextureManager.setContext(this.getContext());
         mTextureManager.registerRenderer(this);
-		startRendering();
 
 	}
 	
