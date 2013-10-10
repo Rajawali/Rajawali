@@ -58,9 +58,9 @@ public abstract class ASingleTexture extends ATexture
 		setBitmap(bitmap);
 	}
 	
-	public ASingleTexture(TextureType textureType, String textureName, ACompressedTexture compressedTexture)
+	public ASingleTexture(TextureType textureType, String textureName, AMultiTexture multiTexture)
 	{
-		super(textureType, textureName, compressedTexture);
+		super(textureType, textureName, multiTexture);
 	}
 	
 	public ASingleTexture(ASingleTexture other)
@@ -120,13 +120,13 @@ public abstract class ASingleTexture extends ATexture
 
 	void add() throws TextureException
 	{
-		if(mCompressedTexture != null)
+		if(mMultiTextures != null)
 		{
-			mCompressedTexture.add();
-			setWidth(mCompressedTexture.getWidth());
-			setHeight(mCompressedTexture.getHeight());
-			setTextureId(mCompressedTexture.getTextureId());
-			setUniformHandle(mCompressedTexture.getUniformHandle());
+			mMultiTextures.add();
+			setWidth(mMultiTextures.getWidth());
+			setHeight(mMultiTextures.getHeight());
+			setTextureId(mMultiTextures.getTextureId());
+			setUniformHandle(mMultiTextures.getUniformHandle());
 			return;
 		}
 		
@@ -212,21 +212,21 @@ public abstract class ASingleTexture extends ATexture
 
 	void remove() throws TextureException
 	{
-		if(mCompressedTexture != null)
-			mCompressedTexture.remove();
+		if(mMultiTextures != null)
+			mMultiTextures.remove();
 		else
 			GLES20.glDeleteTextures(1, new int[] { mTextureId }, 0);
 	}
 
 	void replace() throws TextureException
 	{
-		if(mCompressedTexture != null)
+		if(mMultiTextures != null)
 		{
-			mCompressedTexture.replace();
-			setWidth(mCompressedTexture.getWidth());
-			setHeight(mCompressedTexture.getHeight());
-			setTextureId(mCompressedTexture.getTextureId());
-			setUniformHandle(mCompressedTexture.getUniformHandle());
+			mMultiTextures.replace();
+			setWidth(mMultiTextures.getWidth());
+			setHeight(mMultiTextures.getHeight());
+			setTextureId(mMultiTextures.getTextureId());
+			setUniformHandle(mMultiTextures.getUniformHandle());
 			return;
 		}
 		
@@ -259,9 +259,9 @@ public abstract class ASingleTexture extends ATexture
 	
 	void reset() throws TextureException
 	{
-		if(mCompressedTexture != null)
+		if(mMultiTextures != null)
 		{
-			mCompressedTexture.reset();
+			mMultiTextures.reset();
 			return;
 		}
 		
@@ -283,8 +283,8 @@ public abstract class ASingleTexture extends ATexture
 	 */
 	public void setWrapType(WrapType wrapType) {
 		super.setWrapType(wrapType);
-		if(mCompressedTexture != null)
-			mCompressedTexture.setWrapType(wrapType);
+		if(mMultiTextures != null)
+			mMultiTextures.setWrapType(wrapType);
 	}
 
 	/**
@@ -293,7 +293,7 @@ public abstract class ASingleTexture extends ATexture
 	 */
 	public void setFilterType(FilterType filterType) {
 		super.setFilterType(filterType);
-		if(mCompressedTexture != null)
-			mCompressedTexture.setFilterType(filterType);
+		if(mMultiTextures != null)
+			mMultiTextures.setFilterType(filterType);
 	}
 }

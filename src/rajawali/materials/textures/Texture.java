@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 
 
 public class Texture extends ASingleTexture {
+	
 	public Texture(Texture other)
 	{
 		super(other);
@@ -41,9 +42,10 @@ public class Texture extends ASingleTexture {
 	{
 		super(TextureType.DIFFUSE, textureName, atlas.getTileNamed(textureName).getPage());
 	}
-	public Texture(String textureName, ACompressedTexture compressedTexture)
+	
+	public Texture(String textureName, AMultiTexture multiTexture)
 	{
-		super(TextureType.DIFFUSE, textureName, compressedTexture);
+		super(TextureType.DIFFUSE, textureName, multiTexture);
 	}
 	
 	public Texture clone() {

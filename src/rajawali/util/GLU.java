@@ -18,6 +18,8 @@ package rajawali.util;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import android.opengl.GLES20;
+
 import rajawali.math.Matrix;
 
 /**
@@ -39,23 +41,38 @@ public class GLU {
      */
     public static String gluErrorString(int error) {
         switch (error) {
-        case GL10.GL_NO_ERROR:
+        case GLES20.GL_NO_ERROR:
             return "no error";
-        case GL10.GL_INVALID_ENUM:
-            return "invalid enum";
-        case GL10.GL_INVALID_VALUE:
-            return "invalid value";
-        case GL10.GL_INVALID_OPERATION:
-            return "invalid operation";
+        case GLES20.GL_INVALID_ENUM:
+            return "invalid enum ->" +
+            	"An unacceptable value is specified for an enumerated argument." +
+            	"The offending command is ignored and has no other side effect than to set the error flag.";
+        case GLES20.GL_INVALID_VALUE:
+            return "invalid value ->" +
+            	"A numeric argument is out of range. The offending command is ignored" +
+            	"and has no other side effect than to set the error flag.";
+        case GLES20.GL_INVALID_OPERATION:
+            return "invalid operation ->" +
+            	"The specified operation is not allowed in the current state. The offending"+
+            	" command is ignored and has no other side effect than to set the error flag.";
+        case GLES20.GL_INVALID_FRAMEBUFFER_OPERATION:
+        	return "stack overflow ->" +
+        		"The command is trying to render to or read from the framebuffer while the "+
+				"currently bound framebuffer is not framebuffer  complete (i.e. the return value from " + 
+				"glCheckFramebufferStatus is not GL_FRAMEBUFFER_COMPLETE). The offending command is ignored " +
+				"and has no other side effect than to set the error flag.";
         case GL10.GL_STACK_OVERFLOW:
-            return "stack overflow";
+            return "stack overflow";	           
         case GL10.GL_STACK_UNDERFLOW:
             return "stack underflow";
-        case GL10.GL_OUT_OF_MEMORY:
-            return "out of memory";
+        case GLES20.GL_OUT_OF_MEMORY:
+            return "out of memory ->" +
+            	"There is not enough memory left to execute the command. The state of the GL is undefined, " +
+            	"except for the state of the error flags, after this error is recorded.";
         default:
             return null;
         }
+        
     }
 
     /**
