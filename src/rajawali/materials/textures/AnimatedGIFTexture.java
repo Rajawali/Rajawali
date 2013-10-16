@@ -222,7 +222,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 	}
 
 	@Override
-	void remove() throws TextureException
+	public void remove() throws TextureException
 	{
 		if (mGIFBitmap != null)
 		{

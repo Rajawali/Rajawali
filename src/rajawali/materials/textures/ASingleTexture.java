@@ -214,7 +214,7 @@ public abstract class ASingleTexture extends ATexture
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
-	void remove() throws TextureException
+	public void remove() throws TextureException
 	{
 		if(mCompressedTexture != null)
 			mCompressedTexture.remove();
@@ -261,7 +261,7 @@ public abstract class ASingleTexture extends ATexture
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 	
-	void reset() throws TextureException
+	public void reset() throws TextureException
 	{
 		if(mCompressedTexture != null)
 		{

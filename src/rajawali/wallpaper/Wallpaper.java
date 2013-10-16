@@ -360,6 +360,7 @@ public abstract class Wallpaper extends WallpaperService {
 			setTouchEventsEnabled(false);
 			mRenderer.onSurfaceDestroyed();
 			mRenderer = null;
+            mSurfaceView.onDestroy();
 			super.onDestroy();
 		}
 

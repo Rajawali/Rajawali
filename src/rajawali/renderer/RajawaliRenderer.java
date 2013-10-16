@@ -541,15 +541,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mViewportWidth = width;
 		mViewportHeight = height;
-		
+        mTextureManager = TextureManager.getInstance();
+        mTextureManager.setContext(this.getContext());
+        mTextureManager.registerRenderer(this);
+        mMaterialManager = MaterialManager.getInstance();
+        mMaterialManager.setContext(this.getContext());
+        mMaterialManager.registerRenderer(this);
 		if (!mSceneInitialized) {
-			mTextureManager = TextureManager.getInstance();
-			mTextureManager.setContext(this.getContext());
-			mTextureManager.registerRenderer(this);
-			mMaterialManager = MaterialManager.getInstance();
-			mMaterialManager.setContext(this.getContext());
-			mMaterialManager.registerRenderer(this);
-			
 			getCurrentScene().resetGLState();
 			
 			initScene();
