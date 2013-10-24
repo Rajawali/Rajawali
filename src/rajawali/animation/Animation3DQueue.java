@@ -12,17 +12,24 @@
  */
 package rajawali.animation;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Animation3DQueue implements IAnimation3DListener {
+    public enum RepeatMode {
+        NONE, INFINITE, RESTART
+    }
+    private final List<Animation3D> mAnimations;
 
-	private final List<Animation3D> mAnimations;
-	
-	private IAnimation3DListener mAnimationListener;
-	private int mCurrentAnimation;
+    protected IAnimation3DListener mAnimationListener;
+    protected int mCurrentAnimation;
+    protected int mRepeatCount;
+    protected RepeatMode mRepeatMode = RepeatMode.NONE;
+    protected int mNumRepeat;
 
-	public Animation3DQueue() {
+    public Animation3DQueue() {
 		mAnimations = new ArrayList<Animation3D>();
 		mCurrentAnimation = 0;
 	}
@@ -42,20 +49,29 @@ public class Animation3DQueue implements IAnimation3DListener {
 				mAnimationListener.onAnimationEnd(null);
 			
 			mCurrentAnimation = 0;
-			return;
-		}
-		mAnimations.get(++mCurrentAnimation).play();
+            switch (mRepeatMode) {
+                case NONE:
+                    break;
+                case INFINITE:
+                    start();
+                    break;
+                case RESTART:
+                    if (mRepeatCount > mNumRepeat) {
+                        mNumRepeat++;
+                        start();
+                    }
+                    break;
+            }
+		}else{
+		    mAnimations.get(++mCurrentAnimation).play();
+        }
 	}
 
 	public void onAnimationRepeat(Animation3D animation) {}
 
-	public void onAnimationStart(Animation3D animation) {
+	public void onAnimationStart(Animation3D animation) {}
 
-	}
-
-	public void onAnimationUpdate(Animation3D animation, double interpolatedTime) {
-
-	}
+	public void onAnimationUpdate(Animation3D animation, double interpolatedTime) {}
 
 	public void start() {
 		if (mAnimations.size() == 0)
@@ -65,4 +81,12 @@ public class Animation3DQueue implements IAnimation3DListener {
 		if (mAnimationListener != null)
 			mAnimationListener.onAnimationStart(null);
 	}
+
+    public void setRepeatCount(int repeatCount) {
+        mRepeatCount = repeatCount;
+    }
+
+    public void setRepeatMode(RepeatMode repeatMode) {
+        mRepeatMode = repeatMode;
+    }
 }
