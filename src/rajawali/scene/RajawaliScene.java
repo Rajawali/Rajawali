@@ -42,6 +42,7 @@ import rajawali.scenegraph.IGraphNode;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
+import rajawali.util.ObjectColorPicker;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 import android.graphics.Color;
@@ -744,7 +745,7 @@ public class RajawaliScene extends AFrameTask {
         }
 		
 		if (pickerInfo != null) {
-			pickerInfo.getPicker().createColorPickingTexture(pickerInfo);
+			ObjectColorPicker.createColorPickingTexture(pickerInfo);
 			pickerInfo.getPicker().unbindFrameBuffer();
 			pickerInfo = null;
 			mPickerInfo = null;

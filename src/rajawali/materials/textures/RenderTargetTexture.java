@@ -61,7 +61,7 @@ public class RenderTargetTexture extends ATexture {
 
 	public RenderTargetTexture(String textureName)
 	{
-		super(TextureType.RENDER_TARGET, textureName);
+		this(textureName, 32, 32);
 	}
 
 	public RenderTargetTexture(String textureName, int width, int height)
