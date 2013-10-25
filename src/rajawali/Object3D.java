@@ -278,12 +278,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			
 			GLES20.glDepthMask(mEnableDepthMask);
 
-			if (pickerInfo != null && mIsPickingEnabled) {
-				Material pickerMat = pickerInfo.getPicker().getMaterial();
-				pickerMat.useProgram();
-				pickerMat.setColor(mPickingColorArray);
-				pickerMat.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
-			} else {
+			if (pickerInfo == null || !mIsPickingEnabled) {
 				if (!mIsPartOfBatch) {
 					
 					if (mMaterial == null) {
@@ -327,6 +322,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				}
 			} else if (pickerInfo != null && mIsPickingEnabled) {
 				Material pickerMat = pickerInfo.getPicker().getMaterial();
+				pickerMat.useProgram();
+				pickerMat.setColor(mPickingColorArray);
+				pickerMat.applyParams();
+				pickerMat.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 				pickerMat.setMVPMatrix(mMVPMatrix);
 				pickerMat.setModelMatrix(mMMatrix);
 				pickerMat.setModelViewMatrix(mMVMatrix);
