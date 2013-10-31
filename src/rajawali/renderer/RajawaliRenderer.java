@@ -765,7 +765,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public TextureManager getTextureManager() {
 		return mTextureManager;
 	}
-	
+
+    public MaterialManager getMaterialManager() {
+        return mMaterialManager;
+    }
+
 	/**
 	 * Adds a task to the frame task queue.
 	 * 
