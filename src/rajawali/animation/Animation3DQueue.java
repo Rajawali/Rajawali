@@ -12,8 +12,6 @@
  */
 package rajawali.animation;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +42,7 @@ public class Animation3DQueue implements IAnimation3DListener {
 	}
 
 	public void onAnimationEnd(Animation3D animation) {
+        mAnimations.get(mCurrentAnimation).reset();
 		if (mCurrentAnimation == mAnimations.size() - 1) {
 			if (mAnimationListener != null)
 				mAnimationListener.onAnimationEnd(null);
