@@ -210,15 +210,13 @@ public final class TextureManager extends AResourceManager
 	 */
 	public void taskReload()
 	{
-		int len = mTextureList.size();
-		for (int i = 0; i < len; i++)
+		for (int i = 0; i < mTextureList.size(); i++)
 		{
 			ATexture texture = mTextureList.get(i);
 			if (texture.willRecycle())
 			{
 				mTextureList.remove(i);
 				i -= 1;
-				len -= 1;
 			}
 			else
 			{
