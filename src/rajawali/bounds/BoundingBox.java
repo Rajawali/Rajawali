@@ -54,7 +54,10 @@ public class BoundingBox implements IBoundingVolume {
 	public BoundingBox(Geometry3D geometry) {
 		this();
 		mGeometry = geometry;
-		calculateBounds(mGeometry);
+		mMin.setAll(mGeometry.getMin());
+		mMax.setAll(mGeometry.getMax());
+		//calculateBounds(mGeometry);
+		calculatePoints();
 	}
 	
 	public void copyPoints(Vector3[] pts){
@@ -122,6 +125,7 @@ public class BoundingBox implements IBoundingVolume {
 		return mBoundingColor.get();
 	}
 	
+	@Deprecated
 	public void calculateBounds(Geometry3D geometry) {
 		FloatBuffer vertices = geometry.getVertices();
 		vertices.rewind();

@@ -12,11 +12,19 @@
  */
 package rajawali.materials.textures;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import rajawali.util.RajLog;
+
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.opengl.ETC1;
+import android.opengl.ETC1Util;
+import android.opengl.GLES20;
 
 
 public abstract class AMultiTexture extends ATexture {
@@ -35,7 +43,7 @@ public abstract class AMultiTexture extends ATexture {
 	public AMultiTexture(TextureType textureType, String textureName, int[] resourceIds)
 	{
 		super(textureType, textureName);
-		setResourceIds(resourceIds);
+		setResourceIds(resourceIds);		
 	}
 	
 	public AMultiTexture(TextureType textureType, String textureName, Bitmap[] bitmaps)
@@ -73,13 +81,19 @@ public abstract class AMultiTexture extends ATexture {
 		mResourceIds = resourceIds;
 		int numResources = resourceIds.length;
 		mBitmaps = new Bitmap[numResources];
+		mByteBuffers = new ByteBuffer[resourceIds.length];
 		Context context = TextureManager.getInstance().getContext();
 
 		for(int i=0; i<numResources; i++)
 		{
 			mBitmaps[i] = BitmapFactory.decodeResource(context.getResources(), resourceIds[i]); 
+			if (i == 0) {
+				setWidth(mBitmaps[i].getWidth());
+				setHeight(mBitmaps[i].getHeight());
+			}
 		}
-	}
+	}	
+	
 	
 	public int[] getResourceIds()
 	{
@@ -98,7 +112,20 @@ public abstract class AMultiTexture extends ATexture {
 	
 	public void setByteBuffers(ByteBuffer[] byteBuffers)
 	{
-		mByteBuffers = byteBuffers;
+		
+		int numResources = byteBuffers.length;
+		mByteBuffers = new ByteBuffer[byteBuffers.length];
+
+		for(int i=0; i<numResources; i++)
+		{ 
+			mByteBuffers[i] = byteBuffers[i];
+			if (i == 0) {
+				Bitmap bitmap = BitmapFactory.decodeByteArray(byteBuffers[i].array(), 0, byteBuffers[i].array().length);
+				setWidth(bitmap.getWidth());
+				setHeight(bitmap.getHeight());
+			}
+		}
+
 	}
 	
 	public ByteBuffer[] getByteBuffers()

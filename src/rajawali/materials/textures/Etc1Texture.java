@@ -53,6 +53,7 @@ public class Etc1Texture extends ACompressedTexture {
 	public Etc1Texture(String textureName, int[] resourceIds)
 	{
 		this(textureName);
+		setMipmap(true);
 		setResourceIds(resourceIds);
 	}
 
@@ -65,6 +66,7 @@ public class Etc1Texture extends ACompressedTexture {
 	public Etc1Texture(String textureName, ByteBuffer[] byteBuffers)
 	{
 		this(textureName);
+		setMipmap(true);
 		setByteBuffers(byteBuffers);
 	}
 

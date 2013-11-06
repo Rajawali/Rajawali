@@ -21,6 +21,7 @@ import rajawali.materials.Material;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
+import rajawali.util.RajLog;
 import android.opengl.GLES20;
 
 public class BoundingSphere implements IBoundingVolume {
@@ -42,8 +43,15 @@ public class BoundingSphere implements IBoundingVolume {
 	
 	public BoundingSphere(Geometry3D geometry) {
 		this();
-		mGeometry = geometry;
-		calculateBounds(mGeometry);
+		mGeometry = geometry;	
+		Vector3 mmin = geometry.getMin();
+		Vector3 mmax = geometry.getMax();
+		double distance = 0;
+		if((mmax.x - mmin.x) > distance) distance = (mmax.x - mmin.x);
+		if((mmax.y - mmin.y) > distance) distance = (mmax.y - mmin.y);
+		if((mmax.z - mmin.z) > distance) distance = (mmax.z - mmin.z);
+		mRadius = (distance/2.0);
+		//calculateBounds(mGeometry);
 	}
 	
 	public Object3D getVisual() {
@@ -78,10 +86,13 @@ public class BoundingSphere implements IBoundingVolume {
 		mPosition.setAll(0, 0, 0);
 		mPosition.multiply(matrix);
 		matrix.getScaling(mTmpPos);
+		RajLog.d("SCALING TMP"+mTmpPos);
 		mScale = mTmpPos.x > mTmpPos.y ? mTmpPos.x : mTmpPos.y;
 		mScale = mScale > mTmpPos.z ? mScale : mTmpPos.z;
+		RajLog.d("SCALIE"+mScale);
 	}
 	
+	@Deprecated
 	public void calculateBounds(Geometry3D geometry) {
 		double radius = 0, maxRadius = 0;
 		Vector3 vertex = new Vector3();

@@ -514,6 +514,11 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		return mChildren.remove(child);
 	}
 	
+	
+	public List<Object3D> getChildrens() {
+		return mChildren;
+	}
+	
 	public Object3D getParent()
 	{
 		return mParent;
@@ -575,8 +580,32 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	public Geometry3D getGeometry() {
+		
+		if(isContainer() && mGeometry.isEmpty()){
+			RajLog.d("Calculate bounds from children");
+			//calculate geometry bounds from childs
+			Vector3 lMin = new Vector3(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+			Vector3 lMax = new Vector3(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
+			Geometry3D childGeometry;
+
+			for (int i = 0, j = mChildren.size(); i < j; i++){				
+				childGeometry = mChildren.get(i).getGeometry();
+				if(childGeometry.getMin().x < lMin.x) lMin.x = childGeometry.getMin().x;
+				if(childGeometry.getMin().y < lMin.y) lMin.y = childGeometry.getMin().y;
+				if(childGeometry.getMin().z < lMin.z) lMin.z = childGeometry.getMin().z;
+				if(childGeometry.getMax().x > lMax.x) lMax.x = childGeometry.getMax().x;
+				if(childGeometry.getMax().y > lMax.y) lMax.y = childGeometry.getMax().y;
+				if(childGeometry.getMax().z > lMax.z) lMax.z = childGeometry.getMax().z;
+			}
+			
+			RajLog.d("MIN"+lMin+" MAX"+lMax);
+			//set manual bounds
+			mGeometry.setBounds(lMin, lMax);
+		}
+		
 		return mGeometry;
 	}
+
 
 	public Material getMaterial() {
 		return mMaterial;
@@ -830,5 +859,21 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	@Override
 	public TYPE getFrameTaskType() {
 		return AFrameTask.TYPE.OBJECT3D;
+	}
+
+	public void normalize() {
+		RajLog.d("CENTER"+getGeometry().getCenter());
+		Matrix4 matrix = getGeometry().getNormalizeTransform();
+		RajLog.d(matrix.getFloatValues());
+		if(!isContainer()){
+			getGeometry().normalize(matrix);
+		} else {
+			getGeometry().getMin().multiply(matrix);
+			getGeometry().getMax().multiply(matrix);
+		}
+		
+		for(Object3D child : getChildrens()){
+			child.getGeometry().normalize(matrix);
+		}
 	}
 }

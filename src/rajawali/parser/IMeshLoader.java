@@ -15,5 +15,22 @@ package rajawali.parser;
 import rajawali.Object3D;
 
 public interface IMeshLoader extends ILoader {
+	
+	/**
+	 * get parsed object
+	 * @return {@link Object3D}
+	 */
 	public Object3D getParsedObject();
+	
+	/**
+	 * Get parsed object normalized
+	 * @param normalize boolean 
+	 * @return {@link Object3D} 
+	 */
+	public Object3D getParsedObject(boolean normalize);
+	
+	/**
+	 * Normalize object parsed from -1 to 1 
+	 */
+	public void normalize();
 }
