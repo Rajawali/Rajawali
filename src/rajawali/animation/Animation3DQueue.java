@@ -37,6 +37,10 @@ public class Animation3DQueue implements IAnimation3DListener {
 		animation.registerListener(this);
 	}
 
+    public List<Animation3D> getAnimations(){
+        return mAnimations;
+    }
+
 	public void setAnimationListener(IAnimation3DListener animationListener) {
 		mAnimationListener = animationListener;
 	}
@@ -81,6 +85,11 @@ public class Animation3DQueue implements IAnimation3DListener {
 			mAnimationListener.onAnimationStart(null);
 	}
 
+    public void pause(){
+        if (mAnimations.size() == 0)
+            return;
+        mAnimations.get(mCurrentAnimation).pause();
+    }
     public void setRepeatCount(int repeatCount) {
         mRepeatCount = repeatCount;
     }
