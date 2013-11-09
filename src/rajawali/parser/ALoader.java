@@ -35,6 +35,7 @@ public abstract class ALoader implements ILoader {
 	protected int mResourceId;
 	protected String mFileOnSDCard;
 	protected File mFile;
+	protected int mTag;
 
 	public ALoader(File file) {
 		this(file.getAbsolutePath());
@@ -77,6 +78,14 @@ public abstract class ALoader implements ILoader {
 		if (mFile != null)
 			RajLog.d("Parsing: " + mFile.getAbsolutePath());
 		return this;
+	}
+	
+	public int getTag() {
+		return mTag;
+	}
+	
+	public void setTag(int tag) {
+		mTag = tag;
 	}
 
 	/**
