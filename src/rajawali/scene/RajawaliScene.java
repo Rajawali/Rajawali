@@ -126,7 +126,7 @@ public class RajawaliScene extends AFrameTask {
 	public RajawaliScene(RajawaliRenderer renderer) {
 		mRenderer = renderer;
 		mAlpha = 0;
-		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation3D>());
+		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
@@ -976,7 +976,7 @@ public class RajawaliScene extends AFrameTask {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			internalAddAnimation((Animation3D) task, task.getIndex());
+			internalAddAnimation((Animation) task, task.getIndex());
 			break;
 		case CAMERA:
 			internalAddCamera((Camera) task, task.getIndex());
