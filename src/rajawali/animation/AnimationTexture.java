@@ -12,13 +12,33 @@
  */
 package rajawali.animation;
 
-public interface IAnimation3DListener {
 
-	public void onAnimationEnd(Animation3D animation);
+import rajawali.ATransformable3D;
+import rajawali.materials.textures.ATexture;
 
-	public void onAnimationRepeat(Animation3D animation);
 
-	public void onAnimationStart(Animation3D animation);
+public abstract class AnimationTexture extends Animation {
 
-	public void onAnimationUpdate(Animation3D animation, double interpolatedTime);
+
+	protected ATexture mTexture;
+
+	public AnimationTexture() {
+        super();
+    }
+
+	public void play() {
+        super.play();
+		if (mTexture == null)
+			throw new RuntimeException("Texture object never set, nothing to animate!");
+	}
+
+	/**
+	 * Set the texture object to be manipulated by the animation.
+	 * 
+	 * @param texture
+	 */
+	public void setTexture(ATexture texture) {
+        mTexture = texture;
+	}
+
 }
