@@ -12,32 +12,13 @@
  */
 package rajawali.animation;
 
+public interface IAnimationListener {
 
-import rajawali.ATransformable3D;
+	public void onAnimationEnd(Animation animation);
 
+	public void onAnimationRepeat(Animation animation);
 
-public abstract class Animation3D extends Animation {
+	public void onAnimationStart(Animation animation);
 
-
-	protected ATransformable3D mTransformable3D;
-
-	public Animation3D() {
-        super();
-    }
-
-	public void play() {
-        super.play();
-		if (mTransformable3D == null)
-			throw new RuntimeException("Transformable object never set, nothing to animate!");
-	}
-
-	/**
-	 * Set the transformable object to be manipulated by the animation.
-	 * 
-	 * @param transformable3D
-	 */
-	public void setTransformable3D(ATransformable3D transformable3D) {
-		mTransformable3D = transformable3D;
-	}
-
+	public void onAnimationUpdate(Animation animation, double interpolatedTime);
 }
