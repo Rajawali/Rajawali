@@ -976,7 +976,7 @@ public class RajawaliScene extends AFrameTask {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			internalAddAnimation((Animation3D) task, task.getIndex());
+			internalAddAnimation((Animation) task, task.getIndex());
 			break;
 		case CAMERA:
 			internalAddCamera((Camera) task, task.getIndex());
