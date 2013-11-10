@@ -19,7 +19,7 @@ public class AnimationQueue implements IAnimationListener {
     public enum RepeatMode {
         NONE, INFINITE, RESTART
     }
-    private final List<Animation3D> mAnimations;
+    private final List<Animation> mAnimations;
 
     protected IAnimationListener mAnimationListener;
     protected int mCurrentAnimation;
@@ -28,16 +28,16 @@ public class AnimationQueue implements IAnimationListener {
     protected int mNumRepeat;
 
     public AnimationQueue() {
-        mAnimations = new ArrayList<Animation3D>();
+        mAnimations = new ArrayList<Animation>();
         mCurrentAnimation = 0;
     }
 
-    public void addAnimation(Animation3D animation) {
+    public void addAnimation(Animation animation) {
         mAnimations.add(animation);
         animation.registerListener(this);
     }
 
-    public List<Animation3D> getAnimations(){
+    public List<Animation> getAnimations(){
         return mAnimations;
     }
 
@@ -45,7 +45,7 @@ public class AnimationQueue implements IAnimationListener {
         mAnimationListener = animationListener;
     }
 
-    public void onAnimationEnd(Animation3D animation) {
+    public void onAnimationEnd(Animation animation) {
         mAnimations.get(mCurrentAnimation).reset();
         if (mCurrentAnimation == mAnimations.size() - 1) {
             if (mAnimationListener != null)
@@ -70,11 +70,11 @@ public class AnimationQueue implements IAnimationListener {
         }
     }
 
-    public void onAnimationRepeat(Animation3D animation) {}
+    public void onAnimationRepeat(Animation animation) {}
 
-    public void onAnimationStart(Animation3D animation) {}
+    public void onAnimationStart(Animation animation) {}
 
-    public void onAnimationUpdate(Animation3D animation, double interpolatedTime) {}
+    public void onAnimationUpdate(Animation animation, double interpolatedTime) {}
 
     public void start() {
         if (mAnimations.size() == 0)
