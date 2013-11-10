@@ -31,6 +31,7 @@ import javax.microedition.khronos.opengles.GL10;
 import rajawali.Camera;
 import rajawali.Capabilities;
 import rajawali.Object3D;
+import rajawali.animation.Animation;
 import rajawali.animation.Animation3D;
 import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
@@ -321,10 +322,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * Register an animation to be managed by the current scene. This is optional 
 	 * leaving open the possibility to manage updates on Animations in your own implementation.
 	 * 
-	 * @param anim {@link Animation3D} to be registered.
+	 * @param anim {@link Animation} to be registered.
 	 * @return boolean True if the registration was queued successfully.
 	 */
-	public boolean registerAnimation(Animation3D anim) {
+	public boolean registerAnimation(Animation anim) {
 		return mCurrentScene.registerAnimation(anim);
 	}
 	
@@ -332,10 +333,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * Remove a managed animation. If the animation is not a member of the current scene, 
 	 * nothing will happen.
 	 * 
-	 * @param anim {@link Animation3D} to be unregistered.
+	 * @param anim {@link Animation} to be unregistered.
 	 * @return boolean True if the unregister was queued successfully.
 	 */
-	public boolean unregisterAnimation(Animation3D anim) {
+	public boolean unregisterAnimation(Animation anim) {
 		return mCurrentScene.unregisterAnimation(anim);
 	}
 	
