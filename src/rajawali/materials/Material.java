@@ -710,7 +710,7 @@ public class Material extends AFrameTask {
 	 */
 	private int loadShader(int shaderType, String source) {
 		int shader = GLES20.glCreateShader(shaderType);
-		if (shader != 0) {
+		if (shader != 0 && source != null) {
 			GLES20.glShaderSource(shader, source);
 			GLES20.glCompileShader(shader);
 			int[] compiled = new int[1];
