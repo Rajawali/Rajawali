@@ -22,7 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import rajawali.Camera;
 import rajawali.Object3D;
 import rajawali.animation.Animation;
-import rajawali.animation.Animation3D;
 import rajawali.lights.ALight;
 import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture;
@@ -948,7 +947,7 @@ public class RajawaliScene extends AFrameTask {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			internalReplaceAnimation(task, (Animation3D) task.getNewObject(), task.getIndex());
+			internalReplaceAnimation(task, (Animation) task.getNewObject(), task.getIndex());
 			break;
 		case CAMERA:
 			internalReplaceCamera(task, (Camera) task.getNewObject(), task.getIndex());
@@ -1004,7 +1003,7 @@ public class RajawaliScene extends AFrameTask {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			internalRemoveAnimation((Animation3D) task, task.getIndex());
+			internalRemoveAnimation((Animation) task, task.getIndex());
 			break;
 		case CAMERA:
 			internalRemoveCamera((Camera) task, task.getIndex());
@@ -1037,7 +1036,7 @@ public class RajawaliScene extends AFrameTask {
 		switch (type) {
 		case ANIMATION:
 			for (i = 0; i < j; ++i) {
-				internalAddAnimation((Animation3D) tasks[i], AFrameTask.UNUSED_INDEX);
+				internalAddAnimation((Animation) tasks[i], AFrameTask.UNUSED_INDEX);
 			}
 			break;
 		case CAMERA:
@@ -1089,7 +1088,7 @@ public class RajawaliScene extends AFrameTask {
 				internalClearAnimations();
 			} else {
 				for (i = 0; i < j; ++i) {
-					internalRemoveAnimation((Animation3D) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalRemoveAnimation((Animation) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
