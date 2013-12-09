@@ -595,7 +595,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			String[] versionParts = versionString[2].split("\\.");
 			if (versionParts.length >= 2) {
 				mGLES_Major_Version = Integer.parseInt(versionParts[0].replace(":",""));
-				mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
+				mGLES_Minor_Version = Integer.parseInt(versionParts[1].replace(":",""));
 			}
 		}
 		
