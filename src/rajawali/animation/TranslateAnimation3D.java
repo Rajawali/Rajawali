@@ -34,6 +34,10 @@ public class TranslateAnimation3D extends Animation3D {
 	protected boolean mOrientToPath = false;
 	protected ICurve3D mSplinePath;
 	protected double mLookatDelta;
+	
+	// Place holders for transformation math
+	protected final Vector3 mTempPoint1 = new Vector3();
+	protected final Vector3 mTempPoint2 = new Vector3();
 
 	public TranslateAnimation3D(Vector3 toPosition) {
 		super();
@@ -57,9 +61,6 @@ public class TranslateAnimation3D extends Animation3D {
 		if (mFromPosition == null)
 			mFromPosition = new Vector3(transformable3D.getPosition());
 	}
-
-	private Vector3 mTempPoint1 = new Vector3();
-	private Vector3 mTempPoint2 = new Vector3();
 	
 	@Override
 	protected void applyTransformation() {

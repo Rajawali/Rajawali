@@ -92,6 +92,10 @@ public class Line3D extends Object3D {
 		init();
 	}
 	
+	public Vector3 getPoint(int point) {
+		return mPoints.get(point);
+	}
+	
 	private void init() {
 		setDoubleSided(true);
 		setDrawingMode(GLES20.GL_LINE_STRIP);
