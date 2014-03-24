@@ -76,6 +76,11 @@ public class Animate {
         notifyAnimateEnded();
     }
 
+    public void destroyAnimation(){
+        endAnimation();
+        mAnimateListener=null;
+    }
+
     public void update() {
         if (mbAnimateRunning) {
             if (mFromValue < mToValue) {

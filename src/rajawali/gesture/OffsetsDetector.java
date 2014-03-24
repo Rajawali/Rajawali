@@ -10,6 +10,7 @@ public class OffsetsDetector {
     public interface OnOffsetsListener {
         public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep);
     }
+
     private static final String TAG = "OffsetsDetector";
     private final OnOffsetsListener mListener;
     Animate mSwipeAnim = null;
@@ -268,7 +269,7 @@ public class OffsetsDetector {
         if (mTotalTouchOffsetX < mScreenWidth * nbScreen) {
 
             if (mSwipeAnim != null) {
-                mSwipeAnim.endAnimation();
+                mSwipeAnim.destroyAnimation();
             }
             mSwipeAnim = new Animate(mTotalTouchOffsetX, nextScreen(mTotalTouchOffsetX));
             mSwipeAnim.setAnimationListener(new AnimateListener() {
@@ -289,23 +290,25 @@ public class OffsetsDetector {
     }
 
     private void animationLeftScreen() {
-        if (mSwipeAnim != null) {
-            mSwipeAnim.endAnimation();
+        if (mTotalTouchOffsetX > 0) {
+            if (mSwipeAnim != null) {
+                mSwipeAnim.destroyAnimation();
+            }
+            mSwipeAnim = new Animate(mTotalTouchOffsetX, beforeScreen(mTotalTouchOffsetX));
+            mSwipeAnim.setAnimationListener(new AnimateListener() {
+                public void AnimationEnded(Animate paramAnonymousAnimate) {
+                }
+
+                public void AnimationStarted(Animate paramAnonymousAnimate) {
+                }
+
+                public void AnimationUpdated(Animate paramAnonymousAnimate) {
+                    mTotalTouchOffsetX = paramAnonymousAnimate.getCurrentValue();
+                    mListener.onOffsetsChanged(getViewOffset(), yOffsetDefault, xOffsetStepDefault, yOffsetStepDefault);
+                }
+            });
+            mSwipeAnim.startAnimation();
         }
-        mSwipeAnim = new Animate(mTotalTouchOffsetX, beforeScreen(mTotalTouchOffsetX));
-        mSwipeAnim.setAnimationListener(new AnimateListener() {
-            public void AnimationEnded(Animate paramAnonymousAnimate) {
-            }
-
-            public void AnimationStarted(Animate paramAnonymousAnimate) {
-            }
-
-            public void AnimationUpdated(Animate paramAnonymousAnimate) {
-                mTotalTouchOffsetX = paramAnonymousAnimate.getCurrentValue();
-                mListener.onOffsetsChanged(getViewOffset(), yOffsetDefault, xOffsetStepDefault, yOffsetStepDefault);
-            }
-        });
-        mSwipeAnim.startAnimation();
     }
 
     public void onDestroy() {
