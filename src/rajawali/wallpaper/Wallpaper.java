@@ -16,6 +16,7 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 
+import rajawali.gesture.OffsetsDetector;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import android.annotation.TargetApi;
@@ -289,8 +290,10 @@ public abstract class Wallpaper extends WallpaperService {
 		protected GLWallpaperSurfaceView mSurfaceView;
 		protected boolean mMultisampling;
 		protected float mDefaultPreviewOffsetX;
+        protected OffsetsDetector mOffsetsDetector;
+        protected boolean mScrollingWorking = false;
 
-		public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer) {
+        public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer) {
 			this(preferences, context, renderer, false);
 		}
 
@@ -301,7 +304,17 @@ public abstract class Wallpaper extends WallpaperService {
 			mRenderer.setSharedPreferences(preferences);
 			mRenderer.setEngine(this);
 			mMultisampling = useMultisampling;
-			mDefaultPreviewOffsetX = 0.5f;
+            mDefaultPreviewOffsetX = 0.5f;
+            mOffsetsDetector = new OffsetsDetector(getBaseContext(), new
+                    OffsetsDetector.OnOffsetsListener() {
+                        @Override
+                        public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep) {
+                            if (isPreview())
+                                xOffset =mDefaultPreviewOffsetX;
+                            Log.e("TOUCH"," "+xOffset);
+                            mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, 0, 0);
+                        }
+                    }, true);
 		}
 
 		@Override
@@ -311,7 +324,12 @@ public abstract class Wallpaper extends WallpaperService {
 			if (mRenderer != null) {
 				if (isPreview() && enableDefaultXOffsetInPreview())
 					xOffset = mDefaultPreviewOffsetX;
-					
+                if(xOffsetStep>0.0f){
+                    mOffsetsDetector.setScreens((int)(1f/xOffsetStep));
+                }
+                if(xOffset!=0.5) {
+                    mScrollingWorking = true;
+                }
 				mRenderer.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			}
 		}
@@ -325,6 +343,9 @@ public abstract class Wallpaper extends WallpaperService {
 			super.onTouchEvent(event);
 			if (mRenderer != null)
 				mRenderer.onTouchEvent(event);
+            if (!mScrollingWorking) {
+                mOffsetsDetector.onTouchEvent(event);
+            }
 		}
 
 		@Override
@@ -343,12 +364,10 @@ public abstract class Wallpaper extends WallpaperService {
 			mSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0, mMultisampling));
 			mSurfaceView.setRenderer(mRenderer);
 			mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-
 			mRenderer.setUsesCoverageAa(mUsesCoverageAa);
 			mRenderer.setSurfaceView(mSurfaceView);
-
-			setTouchEventsEnabled(true);
-		}
+            setTouchEventsEnabled(false);
+        }
 
 		@Override
 		public void onSurfaceDestroyed(SurfaceHolder holder) {
@@ -357,8 +376,9 @@ public abstract class Wallpaper extends WallpaperService {
 
 		@Override
 		public void onDestroy() {
-			setTouchEventsEnabled(false);
-			mRenderer.onSurfaceDestroyed();
+            setTouchEventsEnabled(false);
+            mOffsetsDetector.onDestroy();
+            mRenderer.onSurfaceDestroyed();
 			mRenderer = null;
             mSurfaceView.onDestroy();
 			super.onDestroy();
@@ -367,7 +387,8 @@ public abstract class Wallpaper extends WallpaperService {
 		@Override
 		public void onVisibilityChanged(boolean visible) {
 			super.onVisibilityChanged(visible);
-			if (mRenderer != null) {
+            mOffsetsDetector.onVisibilityChanged(visible);
+            if (mRenderer != null) {
 				mRenderer.onVisibilityChanged(visible);
 				if (visible) {
 					mSurfaceView.onResume();
@@ -376,5 +397,11 @@ public abstract class Wallpaper extends WallpaperService {
 				}				
 			}
 		}
+
+        @Override
+        public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            super.onSurfaceChanged(holder, format, width, height);
+            mOffsetsDetector.setScreenWidth(width);
+        }
 	}
 }
