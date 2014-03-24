@@ -11,11 +11,11 @@ public class Animate {
     private boolean mbAnimateRunning = false;
 
     protected Animate() {
-        this(0.0F, 0.0F, 100.0F);
+        this(0.0F, 0.0F, 50.0F);
     }
 
     public Animate(float fromValue, float toValue) {
-        this(fromValue, toValue, 100.0F);
+        this(fromValue, toValue, 50.0F);
     }
 
     public Animate(float fromValue, float toValue, float step) {
@@ -64,37 +64,40 @@ public class Animate {
         this.mStep = step;
     }
 
-    public void startAnimation() {
+    public synchronized void startAnimation() {
         this.mbAnimateRunning = true;
         mCurrentValue = mFromValue;
         notifyAnimateStarted();
     }
 
-    public void endAnimation() {
+    public synchronized void endAnimation() {
         this.mCurrentValue = this.mToValue;
         this.mbAnimateRunning = false;
         notifyAnimateEnded();
     }
 
-    public void destroyAnimation(){
+    public synchronized void destroyAnimation(){
         endAnimation();
         mAnimateListener=null;
     }
 
     public void update() {
         if (mbAnimateRunning) {
-            if (mFromValue < mToValue) {
+            if (mFromValue <= mToValue) {
                 if (mCurrentValue >= mToValue) {
                     endAnimation();
+                }else {
+                    this.mCurrentValue += mStep;
                 }
-                this.mCurrentValue += mStep;
-            } else if (mFromValue > mToValue) {
+            } else if (mFromValue >= mToValue) {
                 if (mCurrentValue <= mToValue) {
                     endAnimation();
+                } else {
+                    this.mCurrentValue -= mStep;
                 }
-                this.mCurrentValue -= mStep;
             }
             notifyAnimateUpdated();
         }
     }
 }
+

@@ -7,9 +7,6 @@ import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 
 public class OffsetsDetector {
-    public interface OnOffsetsListener {
-        public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep);
-    }
 
     private static final String TAG = "OffsetsDetector";
     private final OnOffsetsListener mListener;
@@ -17,10 +14,12 @@ public class OffsetsDetector {
     private GestureThread mGestureThread;
     private int mMaximumFlingVelocity;
     private VelocityTracker mVelocityTracker;
-    private MotionEvent mCurrentDownEvent;
-    private MotionEvent mCurrentDeltaEvent;
-
-
+    private boolean mAlwaysInTapRegion;
+    private int mTouchSlopSquare;
+    private float mLastFocusX;
+    private float mLastFocusY;
+    private float mDownFocusX;
+    private float mDownFocusY;
     private float mTotalTouchOffsetX = -1.0F;
     private float xOffsetDefault = 0.5f;
     private float yOffsetDefault = 0.5f;
@@ -44,16 +43,25 @@ public class OffsetsDetector {
         if (mListener == null) {
             throw new NullPointerException("OnGestureListener must not be null");
         }
+        int touchSlop;
+
         if (context == null) {
+            touchSlop = ViewConfiguration.getTouchSlop();
             mMaximumFlingVelocity = ViewConfiguration.getMaximumFlingVelocity();
         } else {
             final ViewConfiguration configuration = ViewConfiguration.get(context);
+            touchSlop = configuration.getScaledTouchSlop();
             mMaximumFlingVelocity = configuration.getScaledMaximumFlingVelocity();
         }
         if (!mManualThread) {
             mGestureThread = new GestureThread();
             mGestureThread.start();
         }
+        mTouchSlopSquare = touchSlop * touchSlop;
+    }
+
+    public float getOffsetXCurrent() {
+        return getViewOffset();
     }
 
     public Animate getSwipeAnimation() {
@@ -135,83 +143,86 @@ public class OffsetsDetector {
             mVelocityTracker = VelocityTracker.obtain();
         }
         mVelocityTracker.addMovement(event);
-        final int count = event.getPointerCount();
+
+        final float focusX = event.getX(0);
+        final float focusY = event.getY(0);
 
         switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+                mDownFocusX = mLastFocusX = focusX;
+                mDownFocusY = mLastFocusY = focusY;
+                mAlwaysInTapRegion = true;
+
+                break;
             case MotionEvent.ACTION_POINTER_UP:
 
-
-                // Check the dot product of current velocities.
-                // If the pointer that left was opposing another velocity vector, clear.
-                mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
-                final int upIndex = event.getActionIndex();
-                final int id1 = event.getPointerId(upIndex);
-                final float x1 = mVelocityTracker.getXVelocity(id1);
-                final float y1 = mVelocityTracker.getYVelocity(id1);
-                for (int i = 0; i < count; i++) {
-                    if (i == upIndex) continue;
-
-                    final int id2 = event.getPointerId(i);
-                    final float x = x1 * mVelocityTracker.getXVelocity(id2);
-                    final float y = y1 * mVelocityTracker.getYVelocity(id2);
-
-                    final float dot = x + y;
-                    if (dot < 0) {
-                        mVelocityTracker.clear();
-                        break;
-                    }
+                if (event.getActionIndex() == 0) {
+                    mDownFocusX = mLastFocusX = event.getX(1);
+                    mDownFocusY = mLastFocusY = event.getY(1);
                 }
                 break;
             case MotionEvent.ACTION_DOWN:
-                if (mCurrentDownEvent != null) {
-                    mCurrentDownEvent.recycle();
-                }
-                if (mCurrentDeltaEvent != null) {
-                    mCurrentDeltaEvent.recycle();
-                }
-                mCurrentDownEvent = MotionEvent.obtain(event);
-                mCurrentDeltaEvent = MotionEvent.obtain(event);
+
+                mDownFocusX = mLastFocusX = focusX;
+                mDownFocusY = mLastFocusY = focusY;
+                mAlwaysInTapRegion = true;
+
                 break;
             case MotionEvent.ACTION_MOVE:
-                mTotalTouchOffsetX += mCurrentDeltaEvent.getX() - event.getX();
-                if (mCurrentDeltaEvent != null) {
-                    mCurrentDeltaEvent.recycle();
-                }
-                mCurrentDeltaEvent = MotionEvent.obtain(event);
+                final float scrollX = mLastFocusX - focusX;
+                final float scrollY = mLastFocusY - focusY;
+                if (mAlwaysInTapRegion) {
+                    final int deltaX = (int) (focusX - mDownFocusX);
+                    final int deltaY = (int) (focusY - mDownFocusY);
+                    int distance = (deltaX * deltaX) + (deltaY * deltaY);
+                    if (distance > mTouchSlopSquare) {
 
-                mListener.onOffsetsChanged(getViewOffset(), yOffsetDefault, xOffsetStepDefault, yOffsetStepDefault);
+                        mLastFocusX = focusX;
+                        mLastFocusY = focusY;
+                        mAlwaysInTapRegion = false;
+                        mTotalTouchOffsetX += scrollX;
+                        mListener.onOffsetsChanged(getViewOffset(), yOffsetDefault, xOffsetStepDefault, yOffsetStepDefault);
+                    }
+
+                } else if ((Math.abs(scrollX) >= 1) || (Math.abs(scrollY) >= 1)) {
+
+                    mTotalTouchOffsetX += scrollX;
+                    mListener.onOffsetsChanged(getViewOffset(), yOffsetDefault, xOffsetStepDefault, yOffsetStepDefault);
+                    mLastFocusX = focusX;
+                    mLastFocusY = focusY;
+                }
                 break;
 
             case (MotionEvent.ACTION_UP):
 
-
-                // A fling must travel the minimum tap distance
-                final VelocityTracker velocityTracker = mVelocityTracker;
-                final int pointerId = event.getPointerId(0);
-                velocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
-                final float velocityY = velocityTracker.getYVelocity(pointerId);
-                final float velocityX = velocityTracker.getXVelocity(pointerId);
-
-
-                onFling(mCurrentDownEvent, event, velocityX, velocityY);
+                if (!mAlwaysInTapRegion) {
+                    final VelocityTracker velocityTracker = mVelocityTracker;
+                    final int pointerId = event.getPointerId(0);
+                    velocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
+                    final float velocityX = velocityTracker.getXVelocity(pointerId);
+                    onFling(mDownFocusX, event.getX(), velocityX);
+                }
 
                 if (mVelocityTracker != null) {
-                    // This may have been cleared when we called out to the
-                    // application above.
                     mVelocityTracker.recycle();
                     mVelocityTracker = null;
                 }
 
                 break;
-
+            case MotionEvent.ACTION_CANCEL:
+                cancel();
+                break;
 
         }
+    }
 
-
+    private void cancel() {
+        mVelocityTracker.recycle();
+        mVelocityTracker = null;
+        mAlwaysInTapRegion = false;
     }
 
     private float getViewOffset() {
-        //Log.e("TEST","mTotalTouchOffsetX "+mTotalTouchOffsetX);
         if (mTotalTouchOffsetX < 0.0F)
             mTotalTouchOffsetX = 0.0F;
         if (mTotalTouchOffsetX > mScreenWidth * nbScreen)
@@ -219,28 +230,24 @@ public class OffsetsDetector {
         return mTotalTouchOffsetX / (float) (mScreenWidth * nbScreen);
     }
 
-    public void onFling(MotionEvent paramMotionEvent1, MotionEvent paramMotionEvent2, float paramFloat1, float paramFloat2) {
-        if (Math.abs(paramMotionEvent1.getY() - paramMotionEvent2.getY()) > 250.0F)
-            return;
-        if ((paramMotionEvent1.getX() - paramMotionEvent2.getX() > 25.0F) && (Math.abs(paramFloat1) > 500.0F)) {
+    public void onFling(float scrollDownX, Float scrollUpX, float velocityX) {
 
+        if ((scrollDownX - scrollUpX > 25.0F) && (Math.abs(velocityX) > 500.0F)) {
+            animationRightScreen();
+        } else if ((scrollDownX - scrollUpX > mScreenWidth * 0.4f)) {
             animationRightScreen();
 
-        } else if ((paramMotionEvent1.getX() - paramMotionEvent2.getX() > mScreenWidth * 0.4f)) {
-            animationRightScreen();
-
-        } else if ((paramMotionEvent1.getX() - paramMotionEvent2.getX() > 0.0F)) {
+        } else if ((scrollDownX - scrollUpX > 0.0F)) {
             animationLeftScreen();
-        } else if ((paramMotionEvent2.getX() - paramMotionEvent1.getX() > 25.0F) && (Math.abs(paramFloat1) > 500.0F) && (mTotalTouchOffsetX > 0.0F)) {
+        } else if ((scrollUpX - scrollDownX > 25.0F) && (Math.abs(velocityX) > 500.0F) && (mTotalTouchOffsetX > 0.0F)) {
 
             animationLeftScreen();
-        } else if ((paramMotionEvent2.getX() - paramMotionEvent1.getX() > mScreenWidth * 0.4f)) {
+        } else if ((scrollUpX - scrollDownX > mScreenWidth * 0.4f)) {
             animationLeftScreen();
-        } else if ((paramMotionEvent2.getX() - paramMotionEvent1.getX() > 0.0F)) {
+        } else if ((scrollUpX - scrollDownX > 0.0F)) {
             animationRightScreen();
 
         }
-
     }
 
     private float nextScreen(float mTotalTouchOffsetX) {
@@ -290,6 +297,7 @@ public class OffsetsDetector {
     }
 
     private void animationLeftScreen() {
+
         if (mTotalTouchOffsetX > 0) {
             if (mSwipeAnim != null) {
                 mSwipeAnim.destroyAnimation();
@@ -329,6 +337,10 @@ public class OffsetsDetector {
             }
         }
 
+    }
+
+    public interface OnOffsetsListener {
+        public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep);
     }
 
     class GestureThread extends Thread {
