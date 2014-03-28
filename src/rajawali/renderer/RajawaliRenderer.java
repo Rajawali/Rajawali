@@ -600,9 +600,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 		
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
-
-		//GLES20.glFrontFace(GLES20.GL_CCW);
-		//GLES20.glCullFace(GLES20.GL_BACK);
 	}
 	
 	/**
