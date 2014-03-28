@@ -1,13 +1,25 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import rajawali.BaseObject3D;
-import rajawali.materials.ColorPickerMaterial;
+import rajawali.Object3D;
+import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
-import rajawali.materials.textures.FrameBufferTexture;
+import rajawali.materials.textures.RenderTargetTexture;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import android.graphics.Color;
@@ -15,33 +27,32 @@ import android.opengl.GLES20;
 
 public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
-	protected final int FLOAT_SIZE_BYTES = 4;
+	private final ArrayList<Object3D> mObjectLookup = new ArrayList<Object3D>();
+	private final RajawaliRenderer mRenderer;
 
-	private ArrayList<BaseObject3D> mObjectLookup;
 	private int mColorIndex = 0;
-	private RajawaliRenderer mRenderer;
 	private int mFrameBufferHandle = -1;
 	private int mDepthBufferHandle = -1;
-	private FrameBufferTexture mTexture;
+	private RenderTargetTexture mTexture;
 	private boolean mIsInitialized = false;
-	private ColorPickerMaterial mPickerMaterial;
+	private Material mPickerMaterial;
 	private OnObjectPickedListener mObjectPickedListener;
 
 	public ObjectColorPicker(RajawaliRenderer renderer) {
-		mObjectLookup = new ArrayList<BaseObject3D>();
 		mRenderer = renderer;
 		mRenderer.queueInitializeTask(this);
 	}
 
 	public void initialize() {
-		int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		mTexture = new FrameBufferTexture("colorPickerTexture");
+		final int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+		mTexture = new RenderTargetTexture("colorPickerTexture");
 		mTexture.setWidth(size);
 		mTexture.setHeight(size);
 		// -- safe to use taskAdd because initalize is called in a thread safe manner
 		mRenderer.getTextureManager().taskAdd(mTexture);
 		genBuffers();
-		mPickerMaterial = new ColorPickerMaterial();
+
+		mPickerMaterial = new Material();
 		MaterialManager.getInstance().addMaterial(mPickerMaterial);
 		mIsInitialized = true;
 	}
@@ -49,15 +60,16 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 	public void reload() {
 		if (!mIsInitialized)
 			return;
+
 		genBuffers();
 	}
 
 	public void genBuffers() {
-		int[] frameBuffers = new int[1];
+		final int[] frameBuffers = new int[1];
 		GLES20.glGenFramebuffers(1, frameBuffers, 0);
 		mFrameBufferHandle = frameBuffers[0];
 
-		int[] depthBuffers = new int[1];
+		final int[] depthBuffers = new int[1];
 		GLES20.glGenRenderbuffers(1, depthBuffers, 0);
 		mDepthBufferHandle = depthBuffers[0];
 
@@ -94,15 +106,15 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 
-	public void registerObject(BaseObject3D object) {
+	public void registerObject(Object3D object) {
 		if (!mObjectLookup.contains(object)) {
 			mObjectLookup.add(object);
 			object.setPickingColor(mColorIndex);
-			mColorIndex++;
+			++mColorIndex;
 		}
 	}
 
-	public void unregisterObject(BaseObject3D object) {
+	public void unregisterObject(Object3D object) {
 		if (mObjectLookup.contains(object)) {
 			mObjectLookup.remove(object);
 		}
@@ -112,40 +124,41 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		mRenderer.getCurrentScene().requestColorPickingTexture(new ColorPickerInfo(x, y, this));
 	}
 
-	public void createColorPickingTexture(ColorPickerInfo pickerInfo) {
-		ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
+	public static void createColorPickingTexture(ColorPickerInfo pickerInfo) {
+		final ObjectColorPicker picker = pickerInfo.getPicker();
+		final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
 		pixelBuffer.order(ByteOrder.nativeOrder());
-		GLES20.glReadPixels((int) pickerInfo.getX(), mRenderer.getViewportHeight()
-				- (int) pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
+
+		GLES20.glReadPixels(pickerInfo.getX(), picker.mRenderer.getViewportHeight()
+				- pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
 				pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		pixelBuffer.rewind();
 
-		int r = pixelBuffer.get(0) & 0xff;
-		int g = pixelBuffer.get(1) & 0xff;
-		int b = pixelBuffer.get(2) & 0xff;
-		int a = pixelBuffer.get(3) & 0xff;
-		int index = Color.argb(a, r, g, b);
+		final int r = pixelBuffer.get(0) & 0xff;
+		final int g = pixelBuffer.get(1) & 0xff;
+		final int b = pixelBuffer.get(2) & 0xff;
+		final int a = pixelBuffer.get(3) & 0xff;
+		final int index = Color.argb(a, r, g, b);
 
-		if (0 <= index && index < mObjectLookup.size() && mObjectPickedListener != null) {
-			mObjectPickedListener.onObjectPicked(mObjectLookup.get(index));
-		}
+		if (0 <= index && index < picker.mObjectLookup.size() && picker.mObjectPickedListener != null)
+			picker.mObjectPickedListener.onObjectPicked(picker.mObjectLookup.get(index));
 	}
 
-	public ColorPickerMaterial getMaterial() {
+	public Material getMaterial() {
 		return mPickerMaterial;
 	}
 
 	public class ColorPickerInfo {
 
-		private float mX;
-		private float mY;
+		private int mX;
+		private int mY;
 		private ObjectColorPicker mPicker;
 		private ByteBuffer mColorPickerBuffer;
 
 		public ColorPickerInfo(float x, float y, ObjectColorPicker picker) {
-			mX = x;
-			mY = y;
+			mX = (int) x;
+			mY = (int) y;
 			mPicker = picker;
 		}
 
@@ -153,11 +166,11 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 			return mPicker;
 		}
 
-		public float getX() {
+		public int getX() {
 			return mX;
 		}
 
-		public float getY() {
+		public int getY() {
 			return mY;
 		}
 
@@ -170,7 +183,12 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		}
 	}
 
-	public static class ObjectColorPickerException extends Exception {
+	@Override
+	public TYPE getFrameTaskType() {
+		return TYPE.COLOR_PICKER;
+	}
+
+	public static final class ObjectColorPickerException extends Exception {
 
 		private static final long serialVersionUID = 3732833696361901287L;
 
@@ -190,10 +208,5 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 			super(msg, throwable);
 		}
 
-	}
-
-	@Override
-	public TYPE getFrameTaskType() {
-		return TYPE.COLOR_PICKER;
 	}
 }

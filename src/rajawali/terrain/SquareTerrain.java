@@ -1,11 +1,23 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.terrain;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import rajawali.materials.SimpleMaterial;
+import rajawali.materials.Material;
 import rajawali.math.Plane;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 
 /**
  * This is a generic Terrain class for Rajawali.
@@ -17,21 +29,21 @@ public class SquareTerrain extends Terrain {
 
 	private static final boolean debug = false;
 
-	private float[][] mTerrain;
-	private float[][] mTemperature;
+	private double[][] mTerrain;
+	private double[][] mTemperature;
 
 	@SuppressWarnings("unused")
 	private Vector3[][] mNormals; // for future use
 	private int mDivisions;
-	private float mXScale;
-	private float mZScale;
-	private float mOneOverXScale;
-	private float mOneOverZScale;
+	private double mXScale;
+	private double mZScale;
+	private double mOneOverXScale;
+	private double mOneOverZScale;
 
-	private float mMinH;
-	private float mMaxH;
-	private float mMinT;
-	private float mMaxT;
+	private double mMinH;
+	private double mMaxH;
+	private double mMinT;
+	private double mMaxT;
 
 	private Sphere mV0;
 	private Sphere mV1;
@@ -58,12 +70,12 @@ public class SquareTerrain extends Terrain {
 
 		protected Bitmap heightMapBitmap;
 		protected int divisions = 128;
-		protected Vector3 scale = new Vector3(1f, 1f, 1f);
-		protected float minTemp = 0f;
+		protected Vector3 scale = new Vector3(1, 1, 1);
+		protected double minTemp = 0;
 
-		protected float maxTemp = 100f;
+		protected double maxTemp = 100;
 		protected Bitmap colorMapBitmap = null;
-		protected float textureMult = 1f;
+		protected double textureMult = 1;
 		protected int basecolor = Color.BLUE;
 		protected int middlecolor = Color.GREEN;
 		protected int upcolor = Color.WHITE;
@@ -99,7 +111,7 @@ public class SquareTerrain extends Terrain {
 		 * @param sy
 		 * @param sz
 		 */
-		public void setScale(float sx, float sy, float sz) {
+		public void setScale(double sx, double sy, double sz) {
 			scale.setAll(sx, sy, sz);
 		}
 
@@ -108,7 +120,7 @@ public class SquareTerrain extends Terrain {
 		 * 
 		 * @param value
 		 */
-		public void setMinTemp(float value) {
+		public void setMinTemp(double value) {
 			this.minTemp = value;
 		}
 
@@ -117,7 +129,7 @@ public class SquareTerrain extends Terrain {
 		 * 
 		 * @param value
 		 */
-		public void setMaxTemp(float value) {
+		public void setMaxTemp(double value) {
 			this.maxTemp = value;
 		}
 
@@ -136,7 +148,7 @@ public class SquareTerrain extends Terrain {
 		 * 
 		 * @param value
 		 */
-		public void setTextureMult(float value) {
+		public void setTextureMult(double value) {
 			this.textureMult = value;
 		}
 
@@ -175,11 +187,11 @@ public class SquareTerrain extends Terrain {
 			return scale.clone();
 		}
 
-		public float getMinTemp() {
+		public double getMinTemp() {
 			return this.minTemp;
 		}
 
-		public float getMaxTemp(float value) {
+		public double getMaxTemp(double value) {
 			return this.maxTemp;
 		}
 
@@ -191,7 +203,7 @@ public class SquareTerrain extends Terrain {
 			return this.colorMapBitmap;
 		}
 
-		public float getTextureMult() {
+		public double getTextureMult() {
 			return this.textureMult;
 		}
 
@@ -222,8 +234,8 @@ public class SquareTerrain extends Terrain {
 	 * @param zScale
 	 *            the scale of the z component
 	 */
-	protected SquareTerrain(int divisions, float[][] terrain, Vector3[][] normals, float[][] temperature,
-			float xScale, float zScale) {
+	protected SquareTerrain(int divisions, double[][] terrain, Vector3[][] normals, double[][] temperature,
+			double xScale, double zScale) {
 		mDivisions = divisions;
 		mTerrain = terrain;
 		mTemperature = temperature;
@@ -251,8 +263,8 @@ public class SquareTerrain extends Terrain {
 			}
 
 		if (debug) {
-			SimpleMaterial mat = new SimpleMaterial();
-			mat.setUseSingleColor(true);
+			Material mat = new Material();
+			// TODO mat.useSingleColor(true);
 			mV0 = new Sphere(0.2f, 8, 8);
 			mV1 = new Sphere(0.2f, 8, 8);
 			mV2 = new Sphere(0.2f, 8, 8);
@@ -290,7 +302,7 @@ public class SquareTerrain extends Terrain {
 	/**
 	 * returns the maximum extension in X
 	 */
-	public float getExtensionX() {
+	public double getExtensionX() {
 		return mDivisions * mXScale;
 	}
 
@@ -299,7 +311,7 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return
 	 */
-	public float getExtensionZ() {
+	public double getExtensionZ() {
 		return mDivisions * mZScale;
 	}
 
@@ -308,7 +320,7 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return the minimum Altitude
 	 */
-	public float getMinAltitude() {
+	public double getMinAltitude() {
 		return mMinH;
 	}
 
@@ -317,16 +329,24 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return the maximum Altitude
 	 */
-	public float getMaxAltitude() {
+	public double getMaxAltitude() {
 		return mMaxH;
 	}
+	
+	/**
+     	 * Retrive the Terrain Heights Matrix
+     	 * 
+     	 */
+    	public double[][] getHeights(){
+        	return mTerrain;
+    	}
 
 	/**
 	 * the minimum Temperature
 	 * 
 	 * @return the minimum Temperature
 	 */
-	public float getMinTemperature() {
+	public double getMinTemperature() {
 		return mMinT;
 	}
 
@@ -335,7 +355,7 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return the maximum Temperature
 	 */
-	public float getMaxTemperature() {
+	public double getMaxTemperature() {
 		return mMaxT;
 	}
 
@@ -344,12 +364,12 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return Terrain contains point
 	 */
-	public boolean contains(float x, float z) {
+	public boolean contains(double x, double z) {
 
-		float xx = ((x - mPosition.x) * mOneOverXScale + (float) mDivisions * 0.5f);
-		float zz = ((z - mPosition.z) * mOneOverZScale + (float) mDivisions * 0.5f);
+		double xx = ((x - mPosition.x) * mOneOverXScale + mDivisions * 0.5);
+		double zz = ((z - mPosition.z) * mOneOverZScale + mDivisions * 0.5);
 
-		if (xx >= 0f && zz >= 0f) {
+		if (xx >= 0 && zz >= 0) {
 			if (xx < mDivisions && zz < mDivisions) {
 				return true;
 			}
@@ -361,8 +381,8 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return the percentage Altitude of Terrain matrix
 	 */
-	public float getPercAltitude(int i, int j) {
-		float alt = mTerrain[i][j];
+	public double getPercAltitude(int i, int j) {
+		double alt = mTerrain[i][j];
 		return (alt - mMinH) / (mMaxH - mMinH);
 	}
 
@@ -407,7 +427,7 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return the Altitude at point
 	 */
-	public float getAltitude(float x, float z) {
+	public double getAltitude(double x, double z) {
 		return getInterpolateValue(mTerrain, x, z) + mPosition.y;
 	}
 
@@ -416,10 +436,10 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return the Altitude at point
 	 */
-	private synchronized float getInterpolateValue(float[][] matrix, float x, float z) {
+	private synchronized double getInterpolateValue(double[][] matrix, double x, double z) {
 
-		float xx = ((x - mPosition.x) * mOneOverXScale + (float) mDivisions * 0.5f);
-		float zz = ((z - mPosition.z) * mOneOverZScale + (float) mDivisions * 0.5f);
+		double xx = ((x - mPosition.x) * mOneOverXScale + mDivisions * 0.5);
+		double zz = ((z - mPosition.z) * mOneOverZScale + mDivisions * 0.5);
 
 		double fx = Math.floor(xx);
 		double fz = Math.floor(zz);
@@ -448,15 +468,15 @@ public class SquareTerrain extends Terrain {
 		if ((i % 2) == 0) {
 			if ((j % 2) == 0) {
 				// Triangle A/B flagcase=0
-				mTmpV0.setAll(fx + 1f, matrix[i + 1][j], fz);
-				mTmpV1.setAll(fx, matrix[i][j + 1], fz + 1f);
+				mTmpV0.setAll(fx + 1, matrix[i + 1][j], fz);
+				mTmpV1.setAll(fx, matrix[i][j + 1], fz + 1);
 			}
 			else {
 				j--;
 				fz -= 1f;
 				// Triangle E/F flagcase=1
-				mTmpV0.setAll(fx, matrix[i][j + 1], fz + 1f);
-				mTmpV1.setAll(fx + 1f, matrix[i + 1][j + 2], fz + 2f);
+				mTmpV0.setAll(fx, matrix[i][j + 1], fz + 1);
+				mTmpV1.setAll(fx + 1, matrix[i + 1][j + 2], fz + 2);
 				flagcase = 1;
 			}
 		}
@@ -465,21 +485,21 @@ public class SquareTerrain extends Terrain {
 			fx -= 1f;
 			if ((j % 2) == 0) {
 				// Triangle C/D flagcase=2
-				mTmpV0.setAll(fx + 1f, matrix[i + 1][j], fz);
-				mTmpV1.setAll(fx + 2f, matrix[i + 2][j + 1], fz + 1f);
+				mTmpV0.setAll(fx + 1, matrix[i + 1][j], fz);
+				mTmpV1.setAll(fx + 2, matrix[i + 2][j + 1], fz + 1);
 				flagcase = 2;
 			}
 			else {
 				j--;
 				fz -= 1f;
 				// Triangle G/H flagcase=3
-				mTmpV0.setAll(fx + 2f, matrix[i + 2][j + 1], fz + 1f);
-				mTmpV1.setAll(fx + 1f, matrix[i + 1][j + 2], fz + 2f);
+				mTmpV0.setAll(fx + 2, matrix[i + 2][j + 1], fz + 1);
+				mTmpV1.setAll(fx + 1, matrix[i + 1][j + 2], fz + 2);
 				flagcase = 3;
 			}
 		}
 
-		mTmpV2.setAll(fx + 1f, 0f, fz + 1f);
+		mTmpV2.setAll(fx + 1, 0f, fz + 1);
 		mTmpS.setAll(xx, 0f, zz);
 
 		boolean useTriInt = intpoint_inside_trigon(mTmpS, mTmpV0, mTmpV1, mTmpV2);
@@ -487,22 +507,22 @@ public class SquareTerrain extends Terrain {
 			switch (flagcase) {
 			case 0: {
 				// Triangle B flagcase=0
-				mTmpV2.setAll(fx + 1f, matrix[i + 1][j + 1], fz + 1f);
+				mTmpV2.setAll(fx + 1, matrix[i + 1][j + 1], fz + 1);
 			}
 				break;
 			case 1: {
 				// Triangle F flagcase=1
-				mTmpV2.setAll(fx + 1f, matrix[i + 1][j + 1], fz + 1f);
+				mTmpV2.setAll(fx + 1, matrix[i + 1][j + 1], fz + 1);
 			}
 				break;
 			case 2: {
 				// Triangle C flagcase=2
-				mTmpV2.setAll(fx + 1f, matrix[i + 1][j + 1], fz + 1f);
+				mTmpV2.setAll(fx + 1, matrix[i + 1][j + 1], fz + 1);
 			}
 				break;
 			case 3: {
 				// Triangle G flagcase=3
-				mTmpV2.setAll(fx + 1f, matrix[i + 1][j + 1], fz + 1f);
+				mTmpV2.setAll(fx + 1, matrix[i + 1][j + 1], fz + 1);
 			}
 				break;
 			}
@@ -520,19 +540,19 @@ public class SquareTerrain extends Terrain {
 				break;
 			case 2: {
 				// Triangle D flagcase=2
-				mTmpV2.setAll(fx + 2f, matrix[i + 2][j], fz);
+				mTmpV2.setAll(fx + 2, matrix[i + 2][j], fz);
 			}
 				break;
 			case 3: {
 				// Triangle H flagcase=3
-				mTmpV2.setAll(fx + 2f, matrix[i + 2][j + 2], fz + 2f);
+				mTmpV2.setAll(fx + 2, matrix[i + 2][j + 2], fz + 2);
 			}
 				break;
 			}
 		}
 
 		mTmpPlane.set(mTmpV0, mTmpV1, mTmpV2);
-		float alt;
+		double alt;
 		if (Math.abs(mTmpPlane.mNormal.y) < 0.00001) {
 			alt = Math.min(mTmpV1.y, mTmpV0.y);
 			alt = Math.min(alt, mTmpV2.y);
@@ -543,12 +563,12 @@ public class SquareTerrain extends Terrain {
 
 		if (debug) {
 
-			mV0.setPosition((mTmpV0.x - (float) mDivisions * 0.5f) * mXScale, mTmpV0.y,
-					(mTmpV0.z - (float) mDivisions * 0.5f) * mZScale);
-			mV1.setPosition((mTmpV1.x - (float) mDivisions * 0.5f) * mXScale, mTmpV1.y,
-					(mTmpV1.z - (float) mDivisions * 0.5f) * mZScale);
-			mV2.setPosition((mTmpV2.x - (float) mDivisions * 0.5f) * mXScale, mTmpV2.y,
-					(mTmpV2.z - (float) mDivisions * 0.5f) * mZScale);
+			mV0.setPosition((mTmpV0.x - mDivisions * 0.5) * mXScale, mTmpV0.y,
+					(mTmpV0.z - mDivisions * 0.5) * mZScale);
+			mV1.setPosition((mTmpV1.x - mDivisions * 0.5) * mXScale, mTmpV1.y,
+					(mTmpV1.z - mDivisions * 0.5) * mZScale);
+			mV2.setPosition((mTmpV2.x - mDivisions * 0.5) * mXScale, mTmpV2.y,
+					(mTmpV2.z - mDivisions * 0.5) * mZScale);
 
 		}
 
@@ -558,8 +578,8 @@ public class SquareTerrain extends Terrain {
 
 	private boolean intpoint_inside_trigon(Vector3 s, Vector3 a, Vector3 b, Vector3 c)
 	{
-		float as_x = s.x - a.x;
-		float as_y = s.z - a.z;
+		double as_x = s.x - a.x;
+		double as_y = s.z - a.z;
 
 		boolean s_ab = (b.x - a.x) * as_y - (b.z - a.z) * as_x > 0;
 
@@ -577,9 +597,9 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return the point
 	 */
-	public synchronized void getNormalAt(float x, float z, Vector3 normal) {
-		float xx = ((x - mPosition.x) * mOneOverXScale + (float) mDivisions * 0.5f);
-		float zz = ((z - mPosition.z) * mOneOverZScale + (float) mDivisions * 0.5f);
+	public synchronized void getNormalAt(double x, double z, Vector3 normal) {
+		double xx = ((x - mPosition.x) * mOneOverXScale + mDivisions * 0.5);
+		double zz = ((z - mPosition.z) * mOneOverZScale + mDivisions * 0.5);
 
 		double fx = Math.floor(xx);
 		double fz = Math.floor(zz);
@@ -608,38 +628,38 @@ public class SquareTerrain extends Terrain {
 		if ((i % 2) == 0) {
 			if ((j % 2) == 0) {
 				// Triangle A/B flagcase=0
-				mTmpNorV0.setAll(fx + 1f, mTerrain[i + 1][j], fz);
-				mTmpNorV1.setAll(fx, mTerrain[i][j + 1], fz + 1f);
+				mTmpNorV0.setAll(fx + 1, mTerrain[i + 1][j], fz);
+				mTmpNorV1.setAll(fx, mTerrain[i][j + 1], fz + 1);
 			}
 			else {
 				j--;
-				fz -= 1f;
+				fz -= 1;
 				// Triangle E/F flagcase=1
-				mTmpNorV0.setAll(fx, mTerrain[i][j + 1], fz + 1f);
-				mTmpNorV1.setAll(fx + 1f, mTerrain[i + 1][j + 2], fz + 2f);
+				mTmpNorV0.setAll(fx, mTerrain[i][j + 1], fz + 1);
+				mTmpNorV1.setAll(fx + 1, mTerrain[i + 1][j + 2], fz + 2);
 				flagcase = 1;
 			}
 		}
 		else {
 			i--;
-			fx -= 1f;
+			fx -= 1;
 			if ((j % 2) == 0) {
 				// Triangle C/D flagcase=2
-				mTmpNorV0.setAll(fx + 1f, mTerrain[i + 1][j], fz);
-				mTmpNorV1.setAll(fx + 2f, mTerrain[i + 2][j + 1], fz + 1f);
+				mTmpNorV0.setAll(fx + 1, mTerrain[i + 1][j], fz);
+				mTmpNorV1.setAll(fx + 2, mTerrain[i + 2][j + 1], fz + 1);
 				flagcase = 2;
 			}
 			else {
 				j--;
-				fz -= 1f;
+				fz -= 1;
 				// Triangle G/H flagcase=3
-				mTmpNorV0.setAll(fx + 2f, mTerrain[i + 2][j + 1], fz + 1f);
-				mTmpNorV1.setAll(fx + 1f, mTerrain[i + 1][j + 2], fz + 2f);
+				mTmpNorV0.setAll(fx + 2, mTerrain[i + 2][j + 1], fz + 1);
+				mTmpNorV1.setAll(fx + 1, mTerrain[i + 1][j + 2], fz + 2);
 				flagcase = 3;
 			}
 		}
 
-		mTmpNorV2.setAll(fx + 1f, 0f, fz + 1f);
+		mTmpNorV2.setAll(fx + 1, 0f, fz + 1);
 		mTmpNorS.setAll(xx, 0f, zz);
 
 		boolean useTriInt = intpoint_inside_trigon(mTmpNorS, mTmpNorV0, mTmpNorV1, mTmpNorV2);
@@ -647,32 +667,32 @@ public class SquareTerrain extends Terrain {
 			switch (flagcase) {
 			case 0: {
 				// Triangle B flagcase=0
-				mTmpNorV2.setAll(fx + 1f, mTerrain[i + 1][j + 1], fz + 1f);
+				mTmpNorV2.setAll(fx + 1, mTerrain[i + 1][j + 1], fz + 1);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
 				normal.setAll(mTmpNorPlane.mNormal);
 			}
 				break;
 			case 1: {
 				// Triangle F flagcase=1
-				mTmpNorV2.setAll(fx + 1f, mTerrain[i + 1][j + 1], fz + 1f);
+				mTmpNorV2.setAll(fx + 1, mTerrain[i + 1][j + 1], fz + 1);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
 				normal.setAll(mTmpNorPlane.mNormal);
 			}
 				break;
 			case 2: {
 				// Triangle C flagcase=2
-				mTmpNorV2.setAll(fx + 1f, mTerrain[i + 1][j + 1], fz + 1f);
+				mTmpNorV2.setAll(fx + 1, mTerrain[i + 1][j + 1], fz + 1);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
 				normal.setAll(mTmpNorPlane.mNormal);
-				normal.multiply(-1f);
+				normal.multiply(-1);
 			}
 				break;
 			case 3: {
 				// Triangle G flagcase=3
-				mTmpNorV2.setAll(fx + 1f, mTerrain[i + 1][j + 1], fz + 1f);
+				mTmpNorV2.setAll(fx + 1, mTerrain[i + 1][j + 1], fz + 1);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
 				normal.setAll(mTmpNorPlane.mNormal);
-				normal.multiply(-1f);
+				normal.multiply(-1);
 			}
 				break;
 			}
@@ -683,27 +703,27 @@ public class SquareTerrain extends Terrain {
 				mTmpNorV2.setAll(fx, mTerrain[i][j], fz);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
 				normal.setAll(mTmpNorPlane.mNormal);
-				normal.multiply(-1f);
+				normal.multiply(-1);
 			}
 				break;
 			case 1: {
 				// Triangle E flagcase=1
-				mTmpNorV2.setAll(fx, mTerrain[i][j + 2], fz + 2f);
+				mTmpNorV2.setAll(fx, mTerrain[i][j + 2], fz + 2);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
 				normal.setAll(mTmpNorPlane.mNormal);
-				normal.multiply(-1f);
+				normal.multiply(-1);
 			}
 				break;
 			case 2: {
 				// Triangle D flagcase=2
-				mTmpNorV2.setAll(fx + 2f, mTerrain[i + 2][j], fz);
+				mTmpNorV2.setAll(fx + 2, mTerrain[i + 2][j], fz);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
 				normal.setAll(mTmpNorPlane.mNormal);
 			}
 				break;
 			case 3: {
 				// Triangle H flagcase=3
-				mTmpNorV2.setAll(fx + 2f, mTerrain[i + 2][j + 2], fz + 2f);
+				mTmpNorV2.setAll(fx + 2, mTerrain[i + 2][j + 2], fz + 2);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
 				normal.setAll(mTmpNorPlane.mNormal);
 			}
@@ -713,7 +733,7 @@ public class SquareTerrain extends Terrain {
 
 		if (debug) {
 			mNorBase.setPosition(x, getAltitude(x, z), z);
-			mNor.setPosition(x + normal.x * 4f, getAltitude(x, z) + normal.y * 4f, z + normal.z * 4f);
+			mNor.setPosition(x + normal.x * 4, getAltitude(x, z) + normal.y * 4, z + normal.z * 4);
 		}
 	}
 
@@ -722,27 +742,27 @@ public class SquareTerrain extends Terrain {
 	 * 
 	 * @return the Temperature
 	 */
-	public float getTemperature(float x, float z) {
+	public double getTemperature(double x, double z) {
 		return getInterpolateValue(mTemperature, x, z);
 	}
 
-	public void setScale(float scale) {
+	public void setScale(double scale) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 
-	public void setScale(float scaleX, float scaleY, float scaleZ) {
+	public void setScale(double scaleX, double scaleY, double scaleZ) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 
-	public void setScaleX(float scaleX) {
+	public void setScaleX(double scaleX) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 
-	public void setScaleY(float scaleY) {
+	public void setScaleY(double scaleY) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 
-	public void setScaleZ(float scaleZ) {
+	public void setScaleZ(double scaleZ) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 }

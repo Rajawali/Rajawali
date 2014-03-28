@@ -1,9 +1,22 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.primitives;
 
-import android.opengl.Matrix;
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Camera2D;
+import rajawali.math.Matrix4;
+import rajawali.postprocessing.passes.EffectPass;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 /**
@@ -28,18 +41,20 @@ import rajawali.util.ObjectColorPicker.ColorPickerInfo;
  * public void onSurfaceChanged(GL10 gl, int width, int height) {
  * 	super.onSurfaceChanged(gl, width, height);
  * 	if(width < height)
- * 		screenQuad.setScale((float)height / (float)width, 1, 0);
+ * 		screenQuad.setScale(height / width, 1, 0);
  * 	else
- * 		screenQuad.setScale(1, (float)width / (float)height, 0);
+ * 		screenQuad.setScale(1, width / height, 0);
  * }
  * </code></pre>
  * 
  * @author dennis.ippel
  *
  */
-public class ScreenQuad extends BaseObject3D {
+public class ScreenQuad extends Object3D {
 	private Camera2D mCamera;
-	private float[] mVPMatrix;
+	private Matrix4 mVPMatrix;
+	private EffectPass mEffectPass;
+	
 	/**
 	 * Creates a new ScreenQuad.
 	 */
@@ -52,7 +67,7 @@ public class ScreenQuad extends BaseObject3D {
 	private void init() {
 		mCamera = new Camera2D();
 		mCamera.setProjectionMatrix(0, 0);
-		mVPMatrix = new float[16];
+		mVPMatrix = new Matrix4();
 		
 		float[] vertices = new float[] {
 				-.5f, .5f, 0,
@@ -61,7 +76,7 @@ public class ScreenQuad extends BaseObject3D {
 				-.5f, -.5f, 0
 		};
 		float[] textureCoords = new float[] {
-				0, 0, 1, 0, 1, 1, 0, 1
+				0, 1, 1, 1, 1, 0, 0, 0
 		};
 		float[] normals = new float[] {
 				0, 0, 1,
@@ -82,11 +97,22 @@ public class ScreenQuad extends BaseObject3D {
 		mEnableDepthMask = false;
 	}
 	
-	public void render(Camera camera, float[] vpMatrix, float[] projMatrix, float[] vMatrix, final float[] parentMatrix,
-			ColorPickerInfo pickerInfo) {
-		float[] pMatrix = mCamera.getProjectionMatrix();
-		float[] viewMatrix = mCamera.getViewMatrix();
-		Matrix.multiplyMM(mVPMatrix, 0, pMatrix, 0, viewMatrix, 0);
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+			final Matrix4 vMatrix, final Matrix4 parentMatrix, ColorPickerInfo pickerInfo) {
+		final Matrix4 pMatrix = mCamera.getProjectionMatrix();
+		final Matrix4 viewMatrix = mCamera.getViewMatrix();
+		mVPMatrix.setAll(pMatrix).multiply(viewMatrix);
 		super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, null);
+	}
+	
+	@Override
+	protected void setShaderParams(Camera camera) {
+		super.setShaderParams(camera);
+		if(mEffectPass != null)
+			mEffectPass.setShaderParams();
+	}
+	
+	public void setEffectPass(EffectPass effectPass) {
+		mEffectPass = effectPass;
 	}
 }

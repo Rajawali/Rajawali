@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.parser.fbx;
 
 import java.util.Stack;
@@ -176,7 +188,7 @@ public class FBXValues {
 	
 	protected class Objects {
 		public Stack<Model> models = new Stack<Model>();
-		public Stack<Material> materials = new Stack<Material>();
+		public Stack<FBXMaterial> materials = new Stack<FBXMaterial>();
 		public Stack<Texture> textures = new Stack<Texture>();
 		public Pose pose = new Pose();
 		public GlobalSettings globalSettings = new GlobalSettings();
@@ -277,20 +289,20 @@ public class FBXValues {
 			return model;
 		}
 		
-		public Material addMaterial(String name) {
-			Material material = new Material(name);
+		public FBXMaterial addMaterial(String name) {
+			FBXMaterial material = new FBXMaterial(name);
 			materials.add(material);
 			return material;
 		}
 		
-		protected class Material {
+		protected class FBXMaterial {
 			public Integer version;
 			public String shadingModel;
 			public Integer MultiLayer;
 			public Properties properties = new Properties();
 			public String name;
 			
-			public Material(String name) {
+			public FBXMaterial(String name) {
 				this.name = name;
 			}
 			

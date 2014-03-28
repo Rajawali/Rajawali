@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.scene;
 
 import java.util.ArrayList;
@@ -7,15 +19,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.BaseObject3D;
 import rajawali.Camera;
+import rajawali.Object3D;
 import rajawali.animation.Animation3D;
-import rajawali.materials.SimpleMaterial;
-import rajawali.materials.SkyboxMaterial;
+import rajawali.lights.ALight;
+import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
@@ -29,12 +42,11 @@ import rajawali.scenegraph.IGraphNode;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
+import rajawali.util.ObjectColorPicker;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -48,14 +60,15 @@ import android.opengl.Matrix;
 public class RajawaliScene extends AFrameTask {
 	
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
-	protected float mEyeZ = 4.0f;
+	protected double mEyeZ = 4.0;
 	
 	protected RajawaliRenderer mRenderer;
 	
 	//All of these get passed to an object when it needs to draw itself
-	protected float[] mVMatrix = new float[16]; //The view matrix
-	protected float[] mPMatrix = new float[16]; //The projection matrix
-	protected float[] mVPMatrix = new float[16]; //The view-projection matrix
+	protected Matrix4 mVMatrix = new Matrix4();
+	protected Matrix4 mPMatrix = new Matrix4();
+	protected Matrix4 mVPMatrix = new Matrix4();
+	protected Matrix4 mInvVPMatrix = new Matrix4();
 	
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
@@ -67,15 +80,17 @@ public class RajawaliScene extends AFrameTask {
 	private final Object mNextSkyboxLock = new Object();
 	protected ATexture mSkyboxTexture;
 	
+	private boolean mLightsDirty;
 	protected ColorPickerInfo mPickerInfo;
 	protected boolean mReloadPickerInfo;
 	protected boolean mUsesCoverageAa;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
 
-	private List<BaseObject3D> mChildren;
+	private List<Object3D> mChildren;
 	private List<Animation3D> mAnimations;
 	private List<IRendererPlugin> mPlugins;
+	private List<ALight> mLights;
 	
 	/**
 	* The camera currently in use.
@@ -111,9 +126,10 @@ public class RajawaliScene extends AFrameTask {
 		mRenderer = renderer;
 		mAlpha = 0;
 		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation3D>());
-		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<BaseObject3D>());
+		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
+		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
 		mFrameTaskQueue = new LinkedList<AFrameTask>();
 		
 		mCamera = new Camera();
@@ -315,24 +331,24 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Replaces a {@link BaseObject3D} at the specified index with a new one.
+	 * Replaces a {@link Object3D} at the specified index with a new one.
 	 * 
-	 * @param child {@link BaseObject3D} the new child.
+	 * @param child {@link Object3D} the new child.
 	 * @param location The index of the child to replace.
 	 * @return boolean True if the replacement was successfully queued.
 	 */
-	public boolean replaceChild(BaseObject3D child, int location) {
+	public boolean replaceChild(Object3D child, int location) {
 		return queueReplaceTask(location, child);
 	}
 	
 	/**
-	 * Replaces a specified {@link BaseObject3D} with a new one.
+	 * Replaces a specified {@link Object3D} with a new one.
 	 * 
-	 * @param oldChild {@link BaseObject3D} the old child.
-	 * @param newChild {@link BaseObject3D} the new child.
+	 * @param oldChild {@link Object3D} the old child.
+	 * @param newChild {@link Object3D} the new child.
 	 * @return boolean True if the replacement was successfully queued.
 	 */
-	public boolean replaceChild(BaseObject3D oldChild, BaseObject3D newChild) {
+	public boolean replaceChild(Object3D oldChild, Object3D newChild) {
 		return queueReplaceTask(oldChild, newChild);
 	}
 	
@@ -340,20 +356,24 @@ public class RajawaliScene extends AFrameTask {
 	 * Requests the addition of a child to the scene. The child
 	 * will be added to the end of the list. 
 	 * 
-	 * @param child {@link BaseObject3D} child to be added.
+	 * @param child {@link Object3D} child to be added.
 	 * @return True if the child was successfully queued for addition.
 	 */
-	public boolean addChild(BaseObject3D child) {
+	public boolean addChild(Object3D child) {
 		return queueAddTask(child);
+	}
+	
+	public boolean addChildAt(Object3D child, int index) {
+		return queueAddTask(child, index);
 	}
 	
 	/**
 	 * Requests the addition of a {@link Collection} of children to the scene.
 	 * 
-	 * @param children {@link Collection} of {@link BaseObject3D} children to add.
+	 * @param children {@link Collection} of {@link Object3D} children to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addChildren(Collection<BaseObject3D> children) {
+	public boolean addChildren(Collection<Object3D> children) {
 		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(children);
 		return queueAddAllTask(tasks);
 	}
@@ -361,10 +381,10 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	 * Requests the removal of a child from the scene.
 	 * 
-	 * @param child {@link BaseObject3D} child to be removed.
+	 * @param child {@link Object3D} child to be removed.
 	 * @return boolean True if the child was successfully queued for removal.
 	 */
-	public boolean removeChild(BaseObject3D child) {
+	public boolean removeChild(Object3D child) {
 		return queueRemoveTask(child);
 	}
 	
@@ -375,6 +395,27 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	public boolean clearChildren() {
 		return queueClearTask(AFrameTask.TYPE.OBJECT3D);
+	}
+	
+	/**
+	 * Requests the addition of a light to the scene. The light
+	 * will be added to the end of the list. 
+	 * 
+	 * @param light {@link ALight} to be added.
+	 * @return True if the light was successfully queued for addition.
+	 */
+	public boolean addLight(ALight light) {
+		return queueAddTask(light);
+	}
+	
+	/**
+	 * Requests the removal of a light from the scene.
+	 * 
+	 * @param light {@link ALight} child to be removed.
+	 * @return boolean True if the child was successfully queued for removal.
+	 */
+	public boolean removeLight(ALight light) {
+		return queueRemoveTask(light);
 	}
 	
 	/**
@@ -391,10 +432,10 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	 * Requests the addition of a {@link Collection} of plugins to the scene.
 	 * 
-	 * @param plugins {@link Collection} of {@link BaseObject3D} children to add.
+	 * @param plugins {@link Collection} of {@link Object3D} children to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addPlugins(Collection<BaseObject3D> plugins) {
+	public boolean addPlugins(Collection<Object3D> plugins) {
 		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(plugins);
 		return queueAddAllTask(tasks);
 	}
@@ -485,8 +526,9 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true, false);
 			mNextSkybox.setDoubleSided(true);
-			mSkyboxTexture = new Texture(resourceId);
-			SimpleMaterial material = new SimpleMaterial();
+			mSkyboxTexture = new Texture("skybox", resourceId);
+			Material material = new Material();
+			material.setColorInfluence(0);
 			material.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(material);
 		}
@@ -495,26 +537,27 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	 * Creates a skybox with the specified 6 textures. 
 	 * 
-	 * @param front int Resource id for the front face.
-	 * @param right int Resource id for the right face.
-	 * @param back int Resource id for the back face.
-	 * @param left int Resource id for the left face.
-	 * @param up int Resource id for the up face.
-	 * @param down int Resource id for the down face.
+	 * @param posx int Resource id for the front face.
+	 * @param negx int Resource id for the right face.
+	 * @param posy int Resource id for the back face.
+	 * @param negy int Resource id for the left face.
+	 * @param posz int Resource id for the up face.
+	 * @param negz int Resource id for the down face.
 	 * @throws TextureException 
 	 */
-	public void setSkybox(int front, int right, int back, int left, int up, int down) throws TextureException {
+	public void setSkybox(int posx, int negx, int posy, int negy, int posz, int negz) throws TextureException {
 		synchronized (mCameras) {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
 				mCameras.get(i).setFarPlane(1000);
 		}
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true);
-			Resources res = mRenderer.getContext().getResources();
-			int[] resourceIds = new int[] { front, right, back, left, up, down };
+			int[] resourceIds = new int[] { posx, negx, posy, negy, posz, negz };
 			
-			mSkyboxTexture = new CubeMapTexture(res.getResourceEntryName(front), resourceIds);
-			SkyboxMaterial mat = new SkyboxMaterial();
+			mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
+			((CubeMapTexture)mSkyboxTexture).isSkyTexture(true);
+			Material mat = new Material();
+			mat.setColorInfluence(0);
 			mat.addTexture(mSkyboxTexture);
 			mNextSkybox.setMaterial(mat);
 		}
@@ -619,15 +662,19 @@ public class RajawaliScene extends AFrameTask {
 			if (mNextCamera != null) {
 				mCamera = mNextCamera;
 				mNextCamera = null;
-				mCamera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+				mCamera.setProjectionMatrix(mRenderer.getCurrentViewportWidth(), mRenderer.getCurrentViewportHeight());
 			}
 		}
 		
 		int clearMask = mAlwaysClearColorBuffer? GLES20.GL_COLOR_BUFFER_BIT : 0;
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
-
-		if (pickerInfo != null) {
+		
+		if(renderTarget != null)
+		{
+			renderTarget.bind();
+			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
+		} else if (pickerInfo != null) {
 			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
 			mReloadPickerInfo = false;
 			try {
@@ -651,13 +698,18 @@ public class RajawaliScene extends AFrameTask {
 		if (mUsesCoverageAa) {
 			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
+		if(mLightsDirty) {
+			updateMaterialsWithLights();
+			mLightsDirty = false;
+		}
 
 		GLES20.glClear(clearMask);
 
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
 		//Pre-multiply View and Projection matricies once for speed
-		Matrix.multiplyMM(mVPMatrix, 0, mPMatrix, 0, mVMatrix, 0);
+		mVPMatrix = mPMatrix.clone().multiply(mVMatrix);
+		mInvVPMatrix.setAll(mVPMatrix).inverse();
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -672,7 +724,7 @@ public class RajawaliScene extends AFrameTask {
 			}
 		}
 
-		mCamera.updateFrustum(mPMatrix, mVMatrix); //update frustum plane
+		mCamera.updateFrustum(mInvVPMatrix); //update frustum plane
 		
 		// Update all registered animations
 		synchronized (mAnimations) {
@@ -693,7 +745,7 @@ public class RajawaliScene extends AFrameTask {
         }
 		
 		if (pickerInfo != null) {
-			pickerInfo.getPicker().createColorPickingTexture(pickerInfo);
+			ObjectColorPicker.createColorPickingTexture(pickerInfo);
 			pickerInfo.getPicker().unbindFrameBuffer();
 			pickerInfo = null;
 			mPickerInfo = null;
@@ -703,6 +755,11 @@ public class RajawaliScene extends AFrameTask {
 		synchronized (mPlugins) {
 			for (int i = 0, j = mPlugins.size(); i < j; i++)
 				mPlugins.get(i).render();
+		}
+		
+		if(renderTarget != null)
+		{
+			renderTarget.unbind();
 		}
 	}
 	
@@ -848,6 +905,7 @@ public class RajawaliScene extends AFrameTask {
 	 * Internal method for performing frame tasks. Should be called at the
 	 * start of onDrawFrame() prior to render().
 	 */
+	@SuppressWarnings("incomplete-switch")
 	private void performFrameTasks() {
 		synchronized (mFrameTaskQueue) {
 			//Fetch the first task
@@ -895,10 +953,10 @@ public class RajawaliScene extends AFrameTask {
 			internalReplaceCamera(task, (Camera) task.getNewObject(), task.getIndex());
 			break;
 		case LIGHT:
-			//TODO: Handle light replacement
+			internalReplaceLight(task, (ALight) task.getNewObject(), task.getIndex());
 			break;
 		case OBJECT3D:
-			internalReplaceChild(task, (BaseObject3D) task.getNewObject(), task.getIndex());
+			internalReplaceChild(task, (Object3D) task.getNewObject(), task.getIndex());
 			break;
 		case PLUGIN:
 			internalReplacePlugin(task, (IRendererPlugin) task.getNewObject(), task.getIndex());
@@ -923,10 +981,10 @@ public class RajawaliScene extends AFrameTask {
 			internalAddCamera((Camera) task, task.getIndex());
 			break;
 		case LIGHT:
-			//TODO: Handle light addition
+			internalAddLight((ALight) task, task.getIndex());
 			break;
 		case OBJECT3D:
-			internalAddChild((BaseObject3D) task, task.getIndex());
+			internalAddChild((Object3D) task, task.getIndex());
 			break;
 		case PLUGIN:
 			internalAddPlugin((IRendererPlugin) task, task.getIndex());
@@ -951,10 +1009,10 @@ public class RajawaliScene extends AFrameTask {
 			internalRemoveCamera((Camera) task, task.getIndex());
 			break;
 		case LIGHT:
-			//TODO: Handle light removal
+			internalRemoveLight((ALight) task, task.getIndex());
 			break;
 		case OBJECT3D:
-			internalRemoveChild((BaseObject3D) task, task.getIndex());
+			internalRemoveChild((Object3D) task, task.getIndex());
 			break;
 		case PLUGIN:
 			internalRemovePlugin((IRendererPlugin) task, task.getIndex());
@@ -987,11 +1045,13 @@ public class RajawaliScene extends AFrameTask {
 			}
 			break;
 		case LIGHT:
-			//TODO: Handle light remove all
+			for (i = 0; i < j; ++i) {
+				internalAddLight((ALight) tasks[i], AFrameTask.UNUSED_INDEX);
+			}
 			break;
 		case OBJECT3D:
 			for (i = 0; i < j; ++i) {
-				internalAddChild((BaseObject3D) tasks[i], AFrameTask.UNUSED_INDEX);
+				internalAddChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
 			}
 			break;
 		case PLUGIN:
@@ -1042,14 +1102,20 @@ public class RajawaliScene extends AFrameTask {
 			}
 			break;
 		case LIGHT:
-			//TODO: Handle light add all
+			if (clear) {
+				internalClearLights();
+			} else {
+				for (i = 0; i < j; ++i) {
+					internalRemoveLight((ALight) tasks[i], AFrameTask.UNUSED_INDEX);
+				}
+			}
 			break;
 		case OBJECT3D:
 			if (clear) {
 				internalClearChildren();
 			} else {
 				for (i = 0; i < j; ++i) {
-					internalAddChild((BaseObject3D) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalAddChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
@@ -1230,15 +1296,147 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for replacing a {@link BaseObject3D} child. If index is
+	 * Internal method for replacing a {@link ALightD} light. If index is
 	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
 	 * 
-	 * @param child {@link BaseObject3D} The new child for the specified index.
-	 * @param replace {@link BaseObject3D} The child replacing the old child.
+	 * @param light {@link ALight} The new light for the specified index.
+	 * @param replace {@link ALight} The light replacing the old light.
 	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
 	 */
-	private void internalReplaceChild(AFrameTask child, BaseObject3D replace, int index) {
+	private void internalReplaceLight(AFrameTask child, ALight replace, int index) {
+		if (index != AFrameTask.UNUSED_INDEX) {
+			mLights.set(index, replace);
+		} else {
+			mLights.set(mChildren.indexOf(child), replace);
+		}
+		mLightsDirty = true;
+		//TODO: Handle light replacement in scene graph
+	}
+	
+	/**
+	 * Internal method for adding a {@link ALight}.
+	 * Should only be called through {@link #handleAddTask(AFrameTask)}
+	 * 
+	 * This takes an index for the addition, but it is pretty
+	 * meaningless.
+	 * 
+	 * @param light {@link ALight} to add.
+	 * @param int index to add the light at. 
+	 */
+	private void internalAddLight(ALight light, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mLights.add(light);
+		} else {
+			mLights.add(index, light);
+		}
+		if (mSceneGraph != null) {
+			//mSceneGraph.addObject(light); //TODO: Uncomment
+		}
+		mLightsDirty = true;
+	}
+	
+	/**
+	 * Internal method for removing a {@link ALight}.
+	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
+	 * 
+	 * This takes an index for the removal. 
+	 * 
+	 * NOTE: If there is only one light and it is removed, bad things
+	 * will happen.
+	 * 
+	 * @param light {@link ALight} to remove. If index is used, this is ignored.
+	 * @param index integer index to remove the light at. 
+	 */
+	private void internalRemoveLight(ALight light, int index) {
+		if (index == AFrameTask.UNUSED_INDEX) {
+			mLights.remove(light);
+		} else {
+			mLights.remove(index);
+		}
+		if (mSceneGraph != null) {
+			//mSceneGraph.removeObject(light); //TODO: Uncomment
+		}
+		mLightsDirty = true;
+	}
+	
+	/**
+	 * Internal method for removing all {@link ALight} from the light list.
+	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
+	 * Note that this will re-add the current light.
+	 */
+	private void internalClearLights() {
+		if (mSceneGraph != null) {
+			//mSceneGraph.removeAll(mLights); //TODO: Uncomment
+		}
+		mLights.clear();
+	}
+	
+	/**
+	 * Creates a shallow copy of the internal lights list. 
+	 * 
+	 * @return ArrayList containing the lights.
+	 */
+	public ArrayList<ALight> getLightsCopy() {
+		ArrayList<ALight> list = new ArrayList<ALight>();
+		list.addAll(mLights);
+		return list;
+	}
+	
+	/**
+	 * Retrieve the number of lights.
+	 * 
+	 * @return The current number of lights.
+	 */
+	public int getNumLights() {
+		//Thread safety deferred to the List
+		return mLights.size();
+	}
+	
+	/**
+	 * Set the lights on all materials used in this scene. This method
+	 * should only be called when the lights collection is dirty. It will 
+	 * trigger compilation of all light-enabled shaders.
+	 */
+	private void updateMaterialsWithLights()
+	{
+		for(Object3D child : mChildren)
+		{
+			updateChildMaterialWithLights(child);
+		}
+	}
+	
+	/**
+	 * Update the lights on this child's material. This method should only
+	 * be called when the lights collection is dirty. It will
+	 * trigger compilation of all light-enabled shaders.
+	 * 
+	 * @param child
+	 */
+	private void updateChildMaterialWithLights(Object3D child)
+	{
+		Material material = child.getMaterial();
+		if(material != null && material.lightingEnabled())
+			material.setLights(mLights);
+		
+		int numChildren = child.getNumChildren();
+		for(int i=0; i<numChildren; i++)
+		{
+			Object3D grandChild = child.getChildAt(i);
+			updateChildMaterialWithLights(grandChild);
+		}
+	};
+	
+	/**
+	 * Internal method for replacing a {@link Object3D} child. If index is
+	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
+	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
+	 * 
+	 * @param child {@link Object3D} The new child for the specified index.
+	 * @param replace {@link Object3D} The child replacing the old child.
+	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 */
+	private void internalReplaceChild(AFrameTask child, Object3D replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
 			mChildren.set(index, replace);
 		} else {
@@ -1248,16 +1446,16 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for adding {@link BaseObject3D} children.
+	 * Internal method for adding {@link Object3D} children.
 	 * Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * This takes an index for the addition, but it is pretty
 	 * meaningless.
 	 * 
-	 * @param child {@link BaseObject3D} to add.
+	 * @param child {@link Object3D} to add.
 	 * @param int index to add the child at. 
 	 */
-	private void internalAddChild(BaseObject3D child, int index) {
+	private void internalAddChild(Object3D child, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
 			mChildren.add(child);
 		} else {
@@ -1269,15 +1467,15 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for removing {@link BaseObject3D} children.
+	 * Internal method for removing {@link Object3D} children.
 	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
 	 * 
 	 * This takes an index for the removal. 
 	 * 
-	 * @param child {@link BaseObject3D} to remove. If index is used, this is ignored.
+	 * @param child {@link Object3D} to remove. If index is used, this is ignored.
 	 * @param index integer index to remove the child at. 
 	 */
-	private void internalRemoveChild(BaseObject3D child, int index) {
+	private void internalRemoveChild(Object3D child, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
 			mChildren.remove(child);
 		} else {
@@ -1289,7 +1487,7 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for removing all {@link BaseObject3D} children.
+	 * Internal method for removing all {@link Object3D} children.
 	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
 	 */
 	private void internalClearChildren() {
@@ -1304,19 +1502,19 @@ public class RajawaliScene extends AFrameTask {
 	 * 
 	 * @return ArrayList containing the children.
 	 */
-	public ArrayList<BaseObject3D> getChildrenCopy() {
-		ArrayList<BaseObject3D> list = new ArrayList<BaseObject3D>();
+	public ArrayList<Object3D> getChildrenCopy() {
+		ArrayList<Object3D> list = new ArrayList<Object3D>();
 		list.addAll(mChildren);
 		return list;
 	}
 
 	/**
-	 * Tests if the specified {@link BaseObject3D} is a child of the renderer.
+	 * Tests if the specified {@link Object3D} is a child of the renderer.
 	 * 
-	 * @param child {@link BaseObject3D} to check for.
+	 * @param child {@link Object3D} to check for.
 	 * @return boolean indicating child's presence as a child of the renderer.
 	 */
-	protected boolean hasChild(BaseObject3D child) {
+	protected boolean hasChild(Object3D child) {
 		//Thread safety deferred to the List.
 		return mChildren.contains(child);
 	}
@@ -1535,10 +1733,10 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	public int getNumTriangles() {
 		int triangleCount = 0;
-		ArrayList<BaseObject3D> children = getChildrenCopy();
+		ArrayList<Object3D> children = getChildrenCopy();
 		
 		for (int i = 0, j = children.size(); i < j; i++) {
-			BaseObject3D child = children.get(i);
+			Object3D child = children.get(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
 				if (child.getNumChildren() > 0) {
 					triangleCount += child.getNumTriangles();
@@ -1557,10 +1755,10 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	public int getNumObjects() {
 		int objectCount = 0;
-		ArrayList<BaseObject3D> children = getChildrenCopy();
+		ArrayList<Object3D> children = getChildrenCopy();
 		
 		for (int i = 0, j = children.size(); i < j; i++) {
-			BaseObject3D child = children.get(i);
+			Object3D child = children.get(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
 				if (child.getNumChildren() > 0) {
 					objectCount += child.getNumObjects() + 1;

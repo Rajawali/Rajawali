@@ -1,19 +1,32 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation.mesh;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import java.nio.DoubleBuffer;
 
 import rajawali.BufferInfo;
 import rajawali.Camera;
-import rajawali.Geometry3D;
+import rajawali.Object3D;
 import rajawali.Geometry3D.BufferType;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
+import rajawali.math.Matrix;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -32,24 +45,26 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	private SkeletonJoint mTmpJoint2;
 	private SkeletalAnimationSequence mSequence;
 	private SkeletalAnimationSequence mNextSequence;
-	private float mTransitionDuration;
-	private float mTransitionStartTime;
+	private double mTransitionDuration;
+	private double mTransitionStartTime;
 	private Interpolator mTransitionInterpolator;
 	private int mCurrentTransitionFrameIndex;
-	public float[][] mInverseBindPoseMatrix;
-	public float[] uBoneMatrix;
+	public double[][] mInverseBindPoseMatrix;
+	public double[] uBoneMatrix;
 	
-	private float[] mBoneTranslation = new float[16];
-	private float[] mBoneRotation = new float[16];
-	private float[] mBoneMatrix = new float[16];
-	private float[] mResultMatrix = new float[16];
+	private double[] mBoneTranslation = new double[16];
+	private double[] mBoneRotation = new double[16];
+	private double[] mBoneMatrix = new double[16];
+	private double[] mResultMatrix = new double[16];
 
 	public BufferInfo mBoneMatricesBufferInfo = new BufferInfo();
+	
+	private static final int DOUBLE_SIZE_BYTES = 8;
 
 	/**
-	 * FloatBuffer containing joint transformation matrices
+	 * DoubleBuffer containing joint transformation matrices
 	 */
-	protected FloatBuffer mBoneMatrices;
+	protected DoubleBuffer mBoneMatrices;
 
 	public SkeletalAnimationObject3D() {
 		mTmpJoint1 = new SkeletonJoint();
@@ -63,8 +78,8 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				mBoneMatrices.clear();
 			}
 			mBoneMatrices = ByteBuffer
-					.allocateDirect(joints.length * Geometry3D.FLOAT_SIZE_BYTES * 16)
-					.order(ByteOrder.nativeOrder()).asFloatBuffer();
+					.allocateDirect(joints.length * DOUBLE_SIZE_BYTES * 16)
+					.order(ByteOrder.nativeOrder()).asDoubleBuffer();
 
 			mBoneMatrices.put(uBoneMatrix);
 			mBoneMatrices.position(0);
@@ -155,19 +170,19 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		SkeletalAnimationFrame currentFrame = (SkeletalAnimationFrame) mSequence.getFrame(mCurrentFrameIndex);
 		SkeletalAnimationFrame nextFrame = (SkeletalAnimationFrame) mSequence.getFrame((mCurrentFrameIndex + 1) % mSequence.getNumFrames());
 
-		mInterpolation += (float) mFps * (currentTime - mStartTime) / 1000.f;
+		mInterpolation += mFps * (currentTime - mStartTime) / 1000.0;
 		
 		boolean isTransitioning = mNextSequence != null;
-		float transitionInterpolation = 0;
+		double transitionInterpolation = 0;
 		if(isTransitioning)
-			transitionInterpolation = mTransitionInterpolator.getInterpolation((currentTime - mTransitionStartTime) / mTransitionDuration);
+			transitionInterpolation = mTransitionInterpolator.getInterpolation((float) ((currentTime - mTransitionStartTime) / mTransitionDuration));
 		
 		for (int i = 0; i < mJoints.length; ++i) {
 			SkeletonJoint joint = getJoint(i);
 			SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
 			SkeletonJoint toJoint = nextFrame.getSkeleton().getJoint(i);
 			joint.setParentIndex(fromJoint.getParentIndex());
-			joint.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), (float)mInterpolation);
+			joint.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
 			joint.getOrientation().slerp(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
 			
 			if(isTransitioning)
@@ -177,7 +192,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				
 				fromJoint = currentTransFrame.getSkeleton().getJoint(i);
 				toJoint = nextTransFrame.getSkeleton().getJoint(i);
-				mTmpJoint1.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), (float)mInterpolation);
+				mTmpJoint1.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
 				mTmpJoint1.getOrientation().slerp(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
 
 				// blend the two animations
@@ -248,8 +263,8 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	}
 
 	@Override
-	public void render(Camera camera, float[] projMatrix, float[] vMatrix, float[] parentMatrix,
-			ColorPickerInfo pickerInfo) {
+	public void render(Camera camera, final Matrix4 projMatrix, final Matrix4 vMatrix, 
+			final Matrix4 parentMatrix, ColorPickerInfo pickerInfo) {
 		setShaderParams(camera);
 		super.render(camera, projMatrix, vMatrix, parentMatrix, pickerInfo);
 	}
@@ -294,5 +309,40 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			super(msg, throwable);
 		}
 
+	}
+	
+	public SkeletalAnimationObject3D clone(boolean copyMaterial) {
+		SkeletalAnimationObject3D clone = new SkeletalAnimationObject3D();
+		clone.setRotation(getRotation());
+		clone.setScale(getScale());
+		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.isContainer(mIsContainerOnly);
+		clone.setMaterial(mMaterial);
+		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
+				: GLES20.GL_UNSIGNED_INT;
+		clone.mTransparent = this.mTransparent;
+		clone.mEnableBlending = this.mEnableBlending;
+		clone.mBlendFuncSFactor = this.mBlendFuncSFactor;
+		clone.mBlendFuncDFactor = this.mBlendFuncDFactor;
+		clone.mEnableDepthTest = this.mEnableDepthTest;
+		clone.mEnableDepthMask = this.mEnableDepthMask;
+
+		clone.setFrames(mFrames);
+		clone.setFps(mFps);
+		clone.uBoneMatrix = uBoneMatrix;
+		clone.mInverseBindPoseMatrix = mInverseBindPoseMatrix;
+		clone.setJoints(mJoints);
+		
+		for(int i=0; i<mChildren.size(); i++)
+		{
+			Object3D child = mChildren.get(i);
+			if(child.getClass() == SkeletalAnimationChildObject3D.class)
+			{
+				SkeletalAnimationChildObject3D sco = (SkeletalAnimationChildObject3D)child;
+				clone.addChild(sco.clone(copyMaterial));
+			}
+		}
+				
+		return clone;
 	}
 }

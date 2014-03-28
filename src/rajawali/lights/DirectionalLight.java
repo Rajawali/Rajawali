@@ -1,11 +1,23 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.lights;
 
 import rajawali.math.vector.Vector3;
 import rajawali.math.vector.Vector3.Axis;
 
 public class DirectionalLight extends ALight {
-	protected float[] mDirection = new float[3];
-	protected float[] mRotationMatrix = new float[16];
+	protected double[] mDirection = new double[3];
+	protected double[] mRotationMatrix = new double[16];
 	protected Vector3 mDirectionVec = new Vector3();
 	final protected Vector3 mForwardAxis = Vector3.getAxisVector(Axis.Z);
 
@@ -14,12 +26,12 @@ public class DirectionalLight extends ALight {
 		setRotY(180);
 	}
 
-	public DirectionalLight(float xDir, float yDir, float zDir) {
+	public DirectionalLight(double xDir, double yDir, double zDir) {
 		super(DIRECTIONAL_LIGHT);
 		setDirection(xDir, yDir, zDir);
 	}
 
-	public void setDirection(float x, float y, float z) {
+	public void setDirection(double x, double y, double z) {
 		setLookAt(x, y, z);
 	}
 
@@ -27,7 +39,7 @@ public class DirectionalLight extends ALight {
 		setDirection(dir.x, dir.y, dir.z);
 	}
 
-	public float[] getDirection() {
+	public double[] getDirection() {
 		setOrientation();
 		mDirectionVec.setAll(mForwardAxis);
 		

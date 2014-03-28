@@ -1,15 +1,29 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.animation.mesh;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import rajawali.BaseObject3D;
 import rajawali.BufferInfo;
 import rajawali.Camera;
+import rajawali.Geometry3D;
 import rajawali.Geometry3D.BufferType;
+import rajawali.Object3D;
 import rajawali.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
-import rajawali.materials.AAdvancedMaterial;
+import rajawali.materials.plugins.SkeletalAnimationMaterialPlugin;
+import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
@@ -21,7 +35,6 @@ import android.opengl.GLES20;
  */
 public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private static final int MAX_WEIGHTS_PER_VERTEX = 8;
-	private static final int FLOAT_SIZE_BYTES = 4;
 	public int mNumJoints;
 	public SkeletalAnimationObject3D mSkeleton;
 	private SkeletalAnimationSequence mSequence;
@@ -57,25 +70,42 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private int mNumVertices;
 	private BoneVertex[] mVertices;
 	private BoneWeight[] mWeights;
+	private SkeletalAnimationMaterialPlugin mMaterialPlugin;
+	private boolean mInverseZScale = false;
+	private Vector3 mTmpScale = new Vector3();
 
 	public SkeletalAnimationChildObject3D() {
 		super();
 		mSkeleton = null;
 	}
+	
+	@Override
+	public void calculateModelMatrix(final Matrix4 parentMatrix) {
+		super.calculateModelMatrix(parentMatrix);
+		if(mInverseZScale)
+			mTmpScale.setAll(mScale.x, mScale.y, -mScale.z);
+		else
+			mTmpScale.setAll(mScale.x, mScale.y, mScale.z);
+		
+		mMMatrix.identity().translate(mPosition).scale(mTmpScale).multiply(mRotationMatrix);
+		if (parentMatrix != null) mMMatrix.leftMultiply(mParentMatrix);
+	}
 
 	public void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
-		AAdvancedMaterial material = (AAdvancedMaterial) mMaterial;
-		material.setBone1Indexes(mboneIndexes1BufferInfo.bufferHandle);
-		material.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
+		
+		if(mMaterialPlugin == null)
+			mMaterialPlugin = (SkeletalAnimationMaterialPlugin) mMaterial.getPlugin(SkeletalAnimationMaterialPlugin.class);
+		mMaterialPlugin.setBone1Indices(mboneIndexes1BufferInfo.bufferHandle);
+		mMaterialPlugin.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
 		if (mMaxBoneWeightsPerVertex > 4) {
-			material.setBone2Indexes(mboneIndexes2BufferInfo.bufferHandle);
-			material.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
+			mMaterialPlugin.setBone2Indices(mboneIndexes2BufferInfo.bufferHandle);
+			mMaterialPlugin.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
 		}
-		material.setBoneMatrix(mSkeleton.uBoneMatrix);
+		mMaterialPlugin.setBoneMatrix(mSkeleton.uBoneMatrix);
 	}
 
-	public void setSkeleton(BaseObject3D skeleton) {
+	public void setSkeleton(Object3D skeleton) {
 		if (skeleton instanceof SkeletalAnimationObject3D) {
 			mSkeleton = (SkeletalAnimationObject3D) skeleton;
 			mNumJoints = mSkeleton.getJoints().length;
@@ -108,7 +138,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private FloatBuffer alocateBuffer(FloatBuffer buffer, float[] data) {
 		if (buffer == null) {
 			buffer = ByteBuffer
-					.allocateDirect(data.length * FLOAT_SIZE_BYTES * 4)
+					.allocateDirect(data.length * Geometry3D.FLOAT_SIZE_BYTES * 4)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
 			buffer.put(data);
@@ -255,5 +285,39 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		public int jointIndex;
 		public float weightValue;
 		public Vector3 position = new Vector3();
+	}
+	
+	public void setInverseZScale(boolean value) {
+		mInverseZScale = value;
+	}
+	
+	public SkeletalAnimationChildObject3D clone(boolean copyMaterial)
+	{
+		SkeletalAnimationChildObject3D clone = new SkeletalAnimationChildObject3D();
+		clone.setRotation(getRotation());
+		clone.setScale(getScale());
+		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.isContainer(mIsContainerOnly);
+		clone.setMaterial(mMaterial);
+		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
+				: GLES20.GL_UNSIGNED_INT;
+		clone.mTransparent = this.mTransparent;
+		clone.mEnableBlending = this.mEnableBlending;
+		clone.mBlendFuncSFactor = this.mBlendFuncSFactor;
+		clone.mBlendFuncDFactor = this.mBlendFuncDFactor;
+		clone.mEnableDepthTest = this.mEnableDepthTest;
+		clone.mEnableDepthMask = this.mEnableDepthMask;
+
+
+		clone.setAnimationSequence(mSequence);
+		clone.setSkeleton(mSkeleton);
+		try {
+			clone.setMaxBoneWeightsPerVertex(mMaxBoneWeightsPerVertex);
+		} catch (SkeletalAnimationException e) {
+			e.printStackTrace();
+		}
+		clone.setSkeletonMeshData(mNumVertices, mVertices, 0, mWeights);
+		clone.setInverseZScale(mInverseZScale);
+		return clone;
 	}
 }

@@ -1,3 +1,15 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali;
 
 import java.nio.Buffer;
@@ -605,9 +617,17 @@ public class Geometry3D {
 	}
 	
 	/**
-	 * Specifies the expected usage pattern of the data store. The symbolic constant must be GLES20.GL_STREAM_DRAW, GLES20.GL_STREAM_READ, GLES20.GL_STREAM_COPY, GLES20.GL_STATIC_DRAW, GLES20.GL_STATIC_READ, GLES20.GL_STATIC_COPY, GLES20.GL_DYNAMIC_DRAW, GLES20.GL_DYNAMIC_READ, or GLES20.GL_DYNAMIC_COPY.
+	 * Specifies the expected usage pattern of the data store. The symbolic constant must be 
+	 * GLES20.GL_STREAM_DRAW, GLES20.GL_STREAM_READ, GLES20.GL_STREAM_COPY, GLES20.GL_STATIC_DRAW, 
+	 * GLES20.GL_STATIC_READ, GLES20.GL_STATIC_COPY, GLES20.GL_DYNAMIC_DRAW, GLES20.GL_DYNAMIC_READ, 
+	 * or GLES20.GL_DYNAMIC_COPY.
 	 * 
-	 * usage is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. usage can be broken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. The frequency of access may be one of these:
+	 * Usage is a hint to the GL implementation as to how a buffer object's data store will be 
+	 * accessed. This enables the GL implementation to make more intelligent decisions that may 
+	 * significantly impact buffer object performance. It does not, however, constrain the actual 
+	 * usage of the data store. usage can be broken down into two parts: first, the frequency of 
+	 * access (modification and usage), and second, the nature of that access. The frequency of 
+	 * access may be one of these:
 	 * <p>
 	 * STREAM
 	 * The data store contents will be modified once and used at most a few times.

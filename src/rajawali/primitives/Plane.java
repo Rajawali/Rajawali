@@ -1,6 +1,18 @@
+/**
+ * Copyright 2013 Dennis Ippel
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package rajawali.primitives;
 
-import rajawali.BaseObject3D;
+import rajawali.Object3D;
 import rajawali.math.vector.Vector3.Axis;
 
 /**
@@ -19,7 +31,7 @@ import rajawali.math.vector.Vector3.Axis;
  * @author dennis.ippel
  * 
  */
-public class Plane extends BaseObject3D {
+public class Plane extends Object3D {
 
 	protected float mWidth;
 	protected float mHeight;
@@ -201,9 +213,10 @@ public class Plane extends BaseObject3D {
 				}
 
 				if (mCreateTextureCoords) {
-					textureCoords[texCoordCount++] = ((float) i / (float) mSegmentsW) * mNumTextureTiles;
+					float u = (float) i / (float) mSegmentsW;
+					textureCoords[texCoordCount++] = (1.0f - u) * mNumTextureTiles;
 					float v = (float) j / (float) mSegmentsH;
-					textureCoords[texCoordCount++] = (mUpAxis == Axis.Y ? v : (1.0f - v)) * mNumTextureTiles;
+					textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
 				}
 
 				normals[vertexCount] = mUpAxis == Axis.X ? 1 : 0;
@@ -224,12 +237,12 @@ public class Plane extends BaseObject3D {
 				int ur = (col + 1) * colspan + row;
 				int lr = ur + 1;
 
-				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) ur;
+				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) lr;
 
-				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) lr;
+				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) ll;
 			}
 		}
