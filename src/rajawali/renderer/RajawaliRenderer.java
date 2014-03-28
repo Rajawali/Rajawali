@@ -587,10 +587,14 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		Capabilities.getInstance();
 		
 		String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
+		RajLog.d("Open GL ES Version String: " + gl.glGetString(GL10.GL_VERSION));
 		if (versionString.length >= 3) {
 			String[] versionParts = versionString[2].split("\\.");
 			if (versionParts.length >= 2) {
 				mGLES_Major_Version = Integer.parseInt(versionParts[0]);
+				if (versionParts[1].endsWith(":") || versionParts[1].endsWith("-")) {
+					versionParts[1] = versionParts[1].substring(0, versionParts[1].length() - 1);
+				}
 				mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
 			}
 		}
