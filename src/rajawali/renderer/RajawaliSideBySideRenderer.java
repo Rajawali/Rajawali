@@ -182,7 +182,9 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 		setPupilDistance(mPupilDistance);
 
 		mLeftQuadMaterial = new Material();
+		mLeftQuadMaterial.setColorInfluence(0);
 		mRightQuadMaterial = new Material();
+		mRightQuadMaterial.setColorInfluence(0);
 
 		mSideBySideScene = new RajawaliScene(this);
 

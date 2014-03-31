@@ -311,6 +311,8 @@ public class RenderTarget extends AFrameTask {
 
 		checkGLError("Could not create framebuffer: ");
 		
+		GLES20.glFramebufferTexture2D(
+			      GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTexture.getTextureId(), 0);
 		
 		// -- add the texture directly. we can afford to do this because the create()
 		//    method is called in a thread safe manner.
