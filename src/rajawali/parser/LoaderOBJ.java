@@ -19,9 +19,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Stack;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import rajawali.Object3D;
 import rajawali.materials.Material;
@@ -129,6 +127,12 @@ public class LoaderOBJ extends AMeshLoader {
 		ArrayList<Float> texCoords = new ArrayList<Float>();
 		ArrayList<Float> normals = new ArrayList<Float>();
 		MaterialLib matLib = new MaterialLib();
+
+		String currentMaterialName=null;
+		boolean currentObjHasFaces=false;
+		Object3D currentGroup = mRootObject;
+		mRootObject.setName("default");
+		Map<String, Object3D> groups = new HashMap<String, Object3D>();
 		
 		try {
 			while((line = buffer.readLine()) != null) {
@@ -147,6 +151,7 @@ public class LoaderOBJ extends AMeshLoader {
 					vertices.add(Float.parseFloat(parts.nextToken()));
 					vertices.add(Float.parseFloat(parts.nextToken()));
 				} else if(type.equals(FACE)) {
+					currentObjHasFaces=true;
 					boolean isQuad = numTokens == 5;
 					int[] quadvids = new int[4];
 					int[] quadtids = new int[4];
@@ -215,27 +220,43 @@ public class LoaderOBJ extends AMeshLoader {
 					normals.add(Float.parseFloat(parts.nextToken()));
                     normals.add(Float.parseFloat(parts.nextToken()));
                     normals.add(Float.parseFloat(parts.nextToken()));
-				} else if(type.equals(OBJECT) || type.equals(GROUP)) {
-					String objName = parts.hasMoreTokens() ? parts.nextToken() : "Object" + (int)(Math.random() * 10000);
-					
-					if(type.equals(OBJECT))
-					{
-						RajLog.i("Parsing object: " + objName);
-						if(currObjIndexData.targetObj.getName() != null)
-							currObjIndexData = new ObjIndexData(new Object3D(objName));
-						else
-							currObjIndexData.targetObj.setName(objName);
-						objIndices.add(currObjIndexData);
-					} else if(type.equals(GROUP)) {
-						RajLog.i("Parsing group: " + objName);
-						Object3D group = mRootObject.getChildByName(objName);
-						if(group == null)
-						{
-							group = new Object3D(objName);
-							mRootObject.addChild(group);
+				} else if(type.equals(GROUP)) {
+					parts = new StringTokenizer(line);
+					parts.nextToken();
+					StringTokenizer subParts = new StringTokenizer(parts.nextToken(), " ");
+					int numGroups = subParts.countTokens();
+					Object3D previousGroup = null;
+					for(int i=0; i<numGroups; i++) {
+						String groupName = subParts.nextToken();
+						if(!groups.containsKey(groupName)) {
+							groups.put(groupName, new Object3D(groupName));
 						}
-						group.addChild(currObjIndexData.targetObj);
+						Object3D group = groups.get(groupName);
+						if(previousGroup!=null)
+							group.addChild(previousGroup);
+						else
+							currentGroup=group;
+						previousGroup = group;
 					}
+					RajLog.i("Parsing group: " + currentGroup.getName());
+					if (currentObjHasFaces) {
+						objIndices.add(currObjIndexData);
+						currObjIndexData = new ObjIndexData(new Object3D());
+						currObjIndexData.materialName = currentMaterialName;
+						currentObjHasFaces = false;
+					}
+					currentGroup.addChild(currObjIndexData.targetObj);
+				} else if(type.equals(OBJECT)) {
+					String objName = parts.hasMoreTokens() ? parts.nextToken() : "Object" + (int) (Math.random() * 10000);
+					RajLog.i("Parsing object: " + objName);
+					if (currentObjHasFaces) {
+						objIndices.add(currObjIndexData);
+						currObjIndexData = new ObjIndexData(new Object3D());
+						currObjIndexData.materialName = currentMaterialName;
+						currentGroup.addChild(currObjIndexData.targetObj);
+						currentObjHasFaces = false;
+					}
+					currObjIndexData.targetObj.setName(objName);
 				} else if(type.equals(MATERIAL_LIB)) {
 					if(!parts.hasMoreTokens()) continue;
 					String materialLibPath = parts.nextToken().replace(".", "_");
@@ -245,7 +266,14 @@ public class LoaderOBJ extends AMeshLoader {
 					else
 						matLib.parse(materialLibPath, mResources.getResourceTypeName(mResourceId), mResources.getResourcePackageName(mResourceId));
 				} else if(type.equals(USE_MATERIAL)) {
-					currObjIndexData.materialName = parts.nextToken();
+					currentMaterialName = parts.nextToken();
+					if(currentObjHasFaces) {
+						objIndices.add(currObjIndexData);
+						currObjIndexData = new ObjIndexData(new Object3D());
+						currentGroup.addChild(currObjIndexData.targetObj);
+						currentObjHasFaces = false;
+					}
+					currObjIndexData.materialName = currentMaterialName;
 				}
 			}
 			buffer.close();
@@ -318,6 +346,10 @@ public class LoaderOBJ extends AMeshLoader {
 			}
 			if(oid.targetObj.getParent() == null)
 				mRootObject.addChild(oid.targetObj);
+		}
+		for(Object3D group : groups.values()) {
+			if(group.getParent()==null)
+				mRootObject.addChild(group);
 		}
 		
 		if(mRootObject.getNumChildren() == 1 && !mRootObject.getChildAt(0).isContainer())
