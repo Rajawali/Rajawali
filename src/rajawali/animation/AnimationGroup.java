@@ -12,13 +12,30 @@
  */
 package rajawali.animation;
 
-public interface IAnimation3DListener {
+import java.util.ArrayList;
+import java.util.List;
 
-	public void onAnimationEnd(Animation3D animation);
+public class AnimationGroup extends Animation {
 
-	public void onAnimationRepeat(Animation3D animation);
+	private final List<Animation3D> mAnimations;
 
-	public void onAnimationStart(Animation3D animation);
+	public AnimationGroup() {
+		mAnimations = new ArrayList<Animation3D>();
+	}
 
-	public void onAnimationUpdate(Animation3D animation, double interpolatedTime);
+	public void addAnimation(Animation3D animation) {
+		mAnimations.add(animation);
+	}
+
+	@Override
+	public void update(double deltaTime) {
+		for (int i = 0, j = mAnimations.size(); i < j; ++i)
+			mAnimations.get(i).update(deltaTime);
+	}
+
+	@Override
+	protected void applyTransformation() {
+		throw new UnsupportedOperationException();
+	}
+
 }

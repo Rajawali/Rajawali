@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import rajawali.Camera;
 import rajawali.Object3D;
 import rajawali.animation.Animation3D;
+import rajawali.animation.IAnimation;
 import rajawali.lights.ALight;
 import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture;
@@ -88,7 +89,7 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mAlwaysClearColorBuffer = true;
 
 	private List<Object3D> mChildren;
-	private List<Animation3D> mAnimations;
+	private List<IAnimation> mAnimations;
 	private List<IRendererPlugin> mPlugins;
 	private List<ALight> mLights;
 	
@@ -125,7 +126,7 @@ public class RajawaliScene extends AFrameTask {
 	public RajawaliScene(RajawaliRenderer renderer) {
 		mRenderer = renderer;
 		mAlpha = 0;
-		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation3D>());
+		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<IAnimation>());
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
@@ -729,7 +730,7 @@ public class RajawaliScene extends AFrameTask {
 		// Update all registered animations
 		synchronized (mAnimations) {
 			for (int i = 0, j = mAnimations.size(); i < j; ++i) {
-				Animation3D anim = mAnimations.get(i);
+				IAnimation anim = mAnimations.get(i);
 				if (anim.isPlaying())
 					anim.update(deltaTime);
 			}
