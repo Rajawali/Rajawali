@@ -15,20 +15,29 @@ package rajawali.animation;
 import java.util.ArrayList;
 import java.util.List;
 
+import rajawali.scene.RajawaliScene;
+
+/**
+ * A group of {@link Animation}s that will all be played and paused at the same time. When using a group, use
+ * {@link #addAnimation(Animation3D)} to add each desired animation to the group and register the group to the scene
+ * with {@link RajawaliScene#registerAnimation(Animation)}. When ready, call {@link #play()} to begin all animations.
+ * 
+ * @author Ian Thomas (toxicbakery@gmail.com)
+ * 
+ */
 public class AnimationGroup extends Animation {
 
-	private final List<Animation3D> mAnimations;
+	protected final List<Animation> mAnimations;
 
 	public AnimationGroup() {
-		mAnimations = new ArrayList<Animation3D>();
-	}
-
-	public void addAnimation(Animation3D animation) {
-		mAnimations.add(animation);
+		mAnimations = new ArrayList<Animation>();
 	}
 
 	@Override
 	public void update(double deltaTime) {
+		if (!isPlaying())
+			return;
+		
 		for (int i = 0, j = mAnimations.size(); i < j; ++i)
 			mAnimations.get(i).update(deltaTime);
 	}
@@ -36,6 +45,26 @@ public class AnimationGroup extends Animation {
 	@Override
 	protected void applyTransformation() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void play() {
+		super.play();
+
+		for (int i = 0, j = mAnimations.size(); i < j; ++i)
+			mAnimations.get(i).play();
+	}
+
+	@Override
+	public void pause() {
+		super.pause();
+
+		for (int i = 0, j = mAnimations.size(); i < j; ++i)
+			mAnimations.get(i).pause();
+	}
+
+	public void addAnimation(Animation animation) {
+		mAnimations.add(animation);
 	}
 
 }

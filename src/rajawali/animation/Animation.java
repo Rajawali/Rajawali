@@ -3,11 +3,10 @@ package rajawali.animation;
 import java.util.ArrayList;
 import java.util.List;
 
-import rajawali.renderer.AFrameTask;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-public abstract class Animation extends AFrameTask implements IAnimation {
+public abstract class Animation extends Playable {
 
 	public enum RepeatMode {
 		// @formatter:off
@@ -21,32 +20,25 @@ public abstract class Animation extends AFrameTask implements IAnimation {
 
 	protected final List<IAnimationListener> mAnimationListeners;
 
-	// Settings
-	protected boolean mPaused;
-	protected boolean mPlaying;
-	protected boolean mEnded;
 	protected int mRepeatCount;
 	protected double mDelay;
 	protected double mDuration;
 	protected double mStartTime;
 	protected Interpolator mInterpolator;
 	protected RepeatMode mRepeatMode = RepeatMode.NONE;
-
-	// Internal
 	protected boolean mIsReversing;
-	protected boolean mIsStarted;
 	protected double mDelayCount;
 	protected double mElapsedTime;
 	protected double mInterpolatedTime;
 	protected int mNumRepeat;
+	protected boolean mIsStarted;
 
 	private boolean mIsFirstStart;
 
 	public Animation() {
 		mAnimationListeners = new ArrayList<IAnimationListener>();
 		mInterpolator = new LinearInterpolator();
-		mIsFirstStart = true;
-		mPaused = true;
+		mRepeatMode = RepeatMode.NONE;
 	}
 
 	/**
@@ -56,55 +48,20 @@ public abstract class Animation extends AFrameTask implements IAnimation {
 	protected abstract void applyTransformation();
 
 	@Override
-	public TYPE getFrameTaskType() {
-		return AFrameTask.TYPE.ANIMATION;
-	}
-
-	@Override
-	public boolean isEnded() {
-		return mEnded;
-	}
-
-	@Override
-	public boolean isFirstStart() {
-		return mIsFirstStart;
-	}
-
-	@Override
-	public boolean isPaused() {
-		return mPaused;
-	}
-
-	@Override
-	public boolean isPlaying() {
-		return mPlaying;
-	}
-
-	@Override
-	public void pause() {
-		mPaused = true;
-		mPlaying = false;
-	}
-
-	@Override
-	public void play() {
-		mEnded = false;
-		mPaused = false;
-		mPlaying = true;
-	}
-
-	@Override
 	public void reset() {
-		mEnded = false;
-		mIsStarted = false;
-		mPaused = true;
-		mPlaying = false;
+		super.reset();
+
 		mElapsedTime = 0;
+		mIsStarted = false;
 	}
 
-	@Override
+	/**
+	 * Calculate the elapsed time and interpolated time of the IPlayable. Also responsible for firing IPlayable events.
+	 * 
+	 * @param deltaTime
+	 */
 	public void update(final double deltaTime) {
-		if (mPaused || !mPlaying)
+		if (isPaused())
 			return;
 
 		// Do not run the animation until the delay is over
@@ -139,10 +96,8 @@ public abstract class Animation extends AFrameTask implements IAnimation {
 		eventUpdate(mInterpolatedTime);
 
 		// End of animation reached
-		if (mElapsedTime >= mDuration && !mEnded) {
-			mEnded = true;
-			mPaused = false;
-			mPlaying = false;
+		if (mElapsedTime >= mDuration && !isEnded()) {
+			setState(State.ENDED);
 
 			switch (mRepeatMode) {
 			case NONE:
@@ -183,6 +138,15 @@ public abstract class Animation extends AFrameTask implements IAnimation {
 				throw new UnsupportedOperationException(mRepeatMode.toString());
 			}
 		}
+	}
+	
+	/**
+	 * Determine if the animation has never been started before.
+	 * 
+	 * @return
+	 */
+	public boolean isFirstStart() {
+		return mIsFirstStart;
 	}
 
 	/**
