@@ -37,6 +37,20 @@ public class AnimationGroup extends Animation {
 	public void update(double deltaTime) {
 		if (!isPlaying())
 			return;
+		
+		// Update the animations and determine if any animations are still playing
+		boolean stillPlaying = false;
+		for (int i = 0, j = mAnimations.size(); i < j; ++i) {
+			final Animation anim = mAnimations.get(i);
+			anim.update(deltaTime);
+
+			if (!stillPlaying && anim.isPlaying())
+				stillPlaying = true;
+		}
+		
+		// If no more animations are playing, mark the group has ended
+		if (!stillPlaying) 
+			setState(State.ENDED);
 
 		if (isEnded()) {
 			switch (mRepeatMode) {
@@ -81,15 +95,6 @@ public class AnimationGroup extends Animation {
 			}
 		}
 		
-		// If no more animations are playing, mark the group has ended
-		boolean stillPlaying = false;
-		for (int i = 0, j = mAnimations.size(); i < j; ++i) {
-			final Animation anim = mAnimations.get(i);
-			anim.update(deltaTime);
-
-			if (!stillPlaying && anim.isPlaying())
-				stillPlaying = true;
-		}
 	}
 
 	@Override
@@ -117,8 +122,11 @@ public class AnimationGroup extends Animation {
 	public void reset() {
 		super.reset();
 
-		for (int i = 0, j = mAnimations.size(); i < j; ++i)
-			mAnimations.get(i).reset();
+		for (int i = 0, j = mAnimations.size(); i < j; ++i) {
+			final Animation anim = mAnimations.get(i);
+			anim.reset();
+			anim.mNumRepeat = 0;
+		}
 	}
 
 	public void addAnimation(Animation animation) {
