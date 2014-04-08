@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.github.masdennis.rajawali</groupId>
+	<artifactId>rajawali</artifactId>
+	<version>1.0.0</version>
+	<packaging>aar</packaging>
+
+	<name>Rajawali</name>
+
+	<scm>
+		<url>https://github.com/MasDennis/Rajawali</url>
+		<connection>scm:git:git://github.com/MasDennis/Rajawali.git</connection>
+		<developerConnection>scm:git:git://github.com/MasDennis/Rajawali.git</developerConnection>
+	</scm>
+	
+	<issueManagement>
+		<url>https://www.github.com/MasDennis/Rajawali/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>android</groupId>
+            <artifactId>android</artifactId>
+            <version>4.4_r1</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+	<build>
+        <sourceDirectory>${basedir}/src</sourceDirectory>
+        <directory>${basedir}/bin</directory>
+        <outputDirectory>${basedir}/bin/classes</outputDirectory>
+        <finalName>${project.artifactId}</finalName>
+		<plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration><source>1.6</source><target>1.6</target></configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>3.8.2</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <sdk><platform>19</platform></sdk>
+                    <manifestVersionName />
+                    <manifestVersionCodeUpdateFromVersion>true</manifestVersionCodeUpdateFromVersion>
+                    <manifest>
+                        <debuggable>true</debuggable>
+                    </manifest>
+                    <attachSources>true</attachSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>manifest</id>
+                        <phase>process-resources</phase>
+                        <goals><goal>manifest-update</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+		</plugins>
+	</build>
+</project>
