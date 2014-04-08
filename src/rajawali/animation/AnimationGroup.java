@@ -37,9 +37,59 @@ public class AnimationGroup extends Animation {
 	public void update(double deltaTime) {
 		if (!isPlaying())
 			return;
+
+		if (isEnded()) {
+			switch (mRepeatMode) {
+			case NONE:
+				setState(State.ENDED);
+				eventEnd();
+				return;
+			case REVERSE_INFINITE:
+				reverseAll();
+				reset();
+				play();
+				eventRepeat();
+				return;
+			case INFINITE:
+				reset();
+				play();
+				eventRepeat();
+				return;
+			case RESTART:
+				if (mRepeatCount > mNumRepeat) {
+					++mNumRepeat;
+					reset();
+					play();
+					eventRepeat();
+				} else {
+					eventEnd();
+				}
+				return;
+			case REVERSE:
+				if (mRepeatCount > mNumRepeat) {
+					reverseAll();
+					++mNumRepeat;
+					reset();
+					play();
+					eventRepeat();
+				} else {
+					eventEnd();
+				}
+				return;
+			default:
+				throw new UnsupportedOperationException(mRepeatMode.toString());
+			}
+		}
 		
-		for (int i = 0, j = mAnimations.size(); i < j; ++i)
-			mAnimations.get(i).update(deltaTime);
+		// If no more animations are playing, mark the group has ended
+		boolean stillPlaying = false;
+		for (int i = 0, j = mAnimations.size(); i < j; ++i) {
+			final Animation anim = mAnimations.get(i);
+			anim.update(deltaTime);
+
+			if (!stillPlaying && anim.isPlaying())
+				stillPlaying = true;
+		}
 	}
 
 	@Override
@@ -63,8 +113,24 @@ public class AnimationGroup extends Animation {
 			mAnimations.get(i).pause();
 	}
 
+	@Override
+	public void reset() {
+		super.reset();
+
+		for (int i = 0, j = mAnimations.size(); i < j; ++i)
+			mAnimations.get(i).reset();
+	}
+
 	public void addAnimation(Animation animation) {
 		mAnimations.add(animation);
+	}
+	
+	protected void reverseAll() {
+		mIsReversing = !mIsReversing;
+		for (int i = 0, j = mAnimations.size(); i < j; ++i) {
+			final Animation anim = mAnimations.get(i);
+			anim.mIsReversing = !anim.mIsReversing;
+		}
 	}
 
 }
