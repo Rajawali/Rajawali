@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import rajawali.Camera;
 import rajawali.Object3D;
-import rajawali.animation.Animation3D;
+import rajawali.animation.Animation;
 import rajawali.lights.ALight;
 import rajawali.materials.Material;
 import rajawali.materials.textures.ATexture;
@@ -88,7 +88,7 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mAlwaysClearColorBuffer = true;
 
 	private List<Object3D> mChildren;
-	private List<Animation3D> mAnimations;
+	private List<Animation> mAnimations;
 	private List<IRendererPlugin> mPlugins;
 	private List<ALight> mLights;
 	
@@ -125,7 +125,7 @@ public class RajawaliScene extends AFrameTask {
 	public RajawaliScene(RajawaliRenderer renderer) {
 		mRenderer = renderer;
 		mAlpha = 0;
-		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation3D>());
+		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
@@ -463,10 +463,10 @@ public class RajawaliScene extends AFrameTask {
 	 * Register an animation to be managed by the scene. This is optional 
 	 * leaving open the possibility to manage updates on Animations in your own implementation.
 	 * 
-	 * @param anim {@link Animation3D} to be registered.
+	 * @param anim {@link Animation} to be registered.
 	 * @return boolean True if the registration was queued successfully.
 	 */
-	public boolean registerAnimation(Animation3D anim) {
+	public boolean registerAnimation(Animation anim) {
 		return queueAddTask(anim);
 	}
 	
@@ -474,37 +474,37 @@ public class RajawaliScene extends AFrameTask {
 	 * Remove a managed animation. If the animation is not a member of the scene, 
 	 * nothing will happen.
 	 * 
-	 * @param anim {@link Animation3D} to be unregistered.
+	 * @param anim {@link Animation} to be unregistered.
 	 * @return boolean True if the unregister was queued successfully.
 	 */
-	public boolean unregisterAnimation(Animation3D anim) {
+	public boolean unregisterAnimation(Animation anim) {
 		return queueRemoveTask(anim);
 	}
 	
 	/**
-	 * Replace an {@link Animation3D} with a new one.
+	 * Replace an {@link Animation} with a new one.
 	 * 
-	 * @param oldAnim {@link Animation3D} the old animation.
-	 * @param newAnim {@link Animation3D} the new animation.
+	 * @param oldAnim {@link Animation} the old animation.
+	 * @param newAnim {@link Animation} the new animation.
 	 * @return boolean True if the replacement task was queued successfully.
 	 */
-	public boolean replaceAnimation(Animation3D oldAnim, Animation3D newAnim) {
+	public boolean replaceAnimation(Animation oldAnim, Animation newAnim) {
 		return queueReplaceTask(oldAnim, newAnim);
 	}
 	
 	/**
-	 * Adds a {@link Collection} of {@link Animation3D} objects to the scene.
+	 * Adds a {@link Collection} of {@link Animation} objects to the scene.
 	 * 
-	 * @param anims {@link Collection} containing the {@link Animation3D} objects to be added.
+	 * @param anims {@link Collection} containing the {@link Animation} objects to be added.
 	 * @return boolean True if the addition was queued successfully.
 	 */
-	public boolean registerAnimations(Collection<Animation3D> anims) {
+	public boolean registerAnimations(Collection<Animation> anims) {
 		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(anims);
 		return queueAddAllTask(tasks);
 	}
 	
 	/**
-	 * Removes all {@link Animation3D} objects from the scene.
+	 * Removes all {@link Animation} objects from the scene.
 	 * 
 	 * @return boolean True if the clear task was queued successfully.
 	 */
@@ -729,7 +729,7 @@ public class RajawaliScene extends AFrameTask {
 		// Update all registered animations
 		synchronized (mAnimations) {
 			for (int i = 0, j = mAnimations.size(); i < j; ++i) {
-				Animation3D anim = mAnimations.get(i);
+				Animation anim = mAnimations.get(i);
 				if (anim.isPlaying())
 					anim.update(deltaTime);
 			}
@@ -947,7 +947,7 @@ public class RajawaliScene extends AFrameTask {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			internalReplaceAnimation(task, (Animation3D) task.getNewObject(), task.getIndex());
+			internalReplaceAnimation(task, (Animation) task.getNewObject(), task.getIndex());
 			break;
 		case CAMERA:
 			internalReplaceCamera(task, (Camera) task.getNewObject(), task.getIndex());
@@ -975,7 +975,7 @@ public class RajawaliScene extends AFrameTask {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			internalAddAnimation((Animation3D) task, task.getIndex());
+			internalAddAnimation((Animation) task, task.getIndex());
 			break;
 		case CAMERA:
 			internalAddCamera((Camera) task, task.getIndex());
@@ -1003,7 +1003,7 @@ public class RajawaliScene extends AFrameTask {
 		AFrameTask.TYPE type = task.getFrameTaskType();
 		switch (type) {
 		case ANIMATION:
-			internalRemoveAnimation((Animation3D) task, task.getIndex());
+			internalRemoveAnimation((Animation) task, task.getIndex());
 			break;
 		case CAMERA:
 			internalRemoveCamera((Camera) task, task.getIndex());
@@ -1036,7 +1036,7 @@ public class RajawaliScene extends AFrameTask {
 		switch (type) {
 		case ANIMATION:
 			for (i = 0; i < j; ++i) {
-				internalAddAnimation((Animation3D) tasks[i], AFrameTask.UNUSED_INDEX);
+				internalAddAnimation((Animation) tasks[i], AFrameTask.UNUSED_INDEX);
 			}
 			break;
 		case CAMERA:
@@ -1088,7 +1088,7 @@ public class RajawaliScene extends AFrameTask {
 				internalClearAnimations();
 			} else {
 				for (i = 0; i < j; ++i) {
-					internalRemoveAnimation((Animation3D) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalRemoveAnimation((Animation) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
@@ -1134,15 +1134,15 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for replacing a {@link Animation3D} object. If index is
+	 * Internal method for replacing a {@link Animation} object. If index is
 	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * @param anim {@link AFrameTask} The old animation.
-	 * @param replace {@link Animation3D} The animation replacing the old animation.
+	 * @param replace {@link Animation} The animation replacing the old animation.
 	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
 	 */
-	private void internalReplaceAnimation(AFrameTask anim, Animation3D replace, int index) {
+	private void internalReplaceAnimation(AFrameTask anim, Animation replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
 			mAnimations.set(index, replace);
 		} else {
@@ -1151,16 +1151,16 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for adding {@link Animation3D} objects.
+	 * Internal method for adding {@link Animation} objects.
 	 * Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * This takes an index for the addition, but it is pretty
 	 * meaningless.
 	 * 
-	 * @param anim {@link Animation3D} to add.
+	 * @param anim {@link Animation} to add.
 	 * @param int index to add the animation at. 
 	 */
-	private void internalAddAnimation(Animation3D anim, int index) {
+	private void internalAddAnimation(Animation anim, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
 			mAnimations.add(anim);
 		} else {
@@ -1169,15 +1169,15 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for removing {@link Animation3D} objects.
+	 * Internal method for removing {@link Animation} objects.
 	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
 	 * 
 	 * This takes an index for the removal. 
 	 * 
-	 * @param anim {@link Animation3D} to remove. If index is used, this is ignored.
+	 * @param anim {@link Animation} to remove. If index is used, this is ignored.
 	 * @param index integer index to remove the child at. 
 	 */
-	private void internalRemoveAnimation(Animation3D anim, int index) {
+	private void internalRemoveAnimation(Animation anim, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
 			mAnimations.remove(anim);
 		} else {
@@ -1186,7 +1186,7 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for removing all {@link Animation3D} objects.
+	 * Internal method for removing all {@link Animation} objects.
 	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
 	 */
 	private void internalClearAnimations() {

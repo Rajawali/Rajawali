@@ -12,97 +12,47 @@
  */
 package rajawali.animation;
 
-import rajawali.ATransformable3D;
-import rajawali.curves.ICurve3D;
-import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;
-import rajawali.math.vector.Vector3.Axis;
 
 public class TranslateAnimation3D extends Animation3D {
 
+	protected final Vector3 mMultipliedPosition;
+	protected final Vector3 mAddedPosition;
+	protected final Vector3 mFromPosition;
+
 	protected Vector3 mToPosition;
-	protected Vector3 mFromPosition;
 	protected Vector3 mDiffPosition;
-	protected Vector3 mMultipliedPosition = new Vector3();
-	protected Vector3 mAddedPosition = new Vector3();
-	protected Vector3 mForwardVec = Vector3.getAxisVector(Axis.Z);
-	protected Vector3 mTmpVec = new Vector3();
-	protected Vector3 mObjectRay = Vector3.getAxisVector(Axis.Z);
-	protected Quaternion mTmpOrientation = new Quaternion();
-	protected Quaternion mTmpOrientation2 = new Quaternion();
-	
-	protected boolean mOrientToPath = false;
-	protected ICurve3D mSplinePath;
-	protected double mLookatDelta;
-	
-	// Place holders for transformation math
-	protected final Vector3 mTempPoint1 = new Vector3();
-	protected final Vector3 mTempPoint2 = new Vector3();
 
 	public TranslateAnimation3D(Vector3 toPosition) {
 		super();
-		mToPosition = toPosition;
+		mFromPosition = new Vector3();
+		mMultipliedPosition = new Vector3();
+		mAddedPosition = new Vector3();
+		mToPosition = new Vector3(toPosition);
 	}
 
 	public TranslateAnimation3D(Vector3 fromPosition, Vector3 toPosition) {
-		super();
-		mFromPosition = fromPosition;
-		mToPosition = toPosition;
-	}
+		this(toPosition);
 
-	public TranslateAnimation3D(ICurve3D splinePath) {
-		super();
-		mSplinePath = splinePath;
+		mFromPosition.setAll(fromPosition);
 	}
 
 	@Override
-	public void setTransformable3D(ATransformable3D transformable3D) {
-		super.setTransformable3D(transformable3D);
-		if (mFromPosition == null)
-			mFromPosition = new Vector3(transformable3D.getPosition());
+	protected void eventStart() {
+		if (isFirstStart())
+			mFromPosition.setAll(mTransformable3D.getPosition());
+
+		super.eventStart();
 	}
-	
+
 	@Override
 	protected void applyTransformation() {
-		if (mSplinePath == null) {
-			if (mDiffPosition == null)
-				mDiffPosition = Vector3.subtractAndCreate(mToPosition, mFromPosition);
-			mMultipliedPosition.scaleAndSet(mDiffPosition, mInterpolatedTime);
-			mAddedPosition.addAndSet(mFromPosition, mMultipliedPosition);
-			mTransformable3D.setPosition(mAddedPosition);
-		} else {
-			mSplinePath.calculatePoint(mTempPoint1, mInterpolatedTime);
-			mTransformable3D.setPosition(mTempPoint1);
+		if (mDiffPosition == null)
+			mDiffPosition = Vector3.subtractAndCreate(mToPosition, mFromPosition);
 
-			if (mOrientToPath) {
-				// -- calculate tangent
-				mSplinePath.calculatePoint(mTempPoint2, mInterpolatedTime + mLookatDelta * (mIsReversing ? -1 : 1));
-				mTransformable3D.setLookAt(mTempPoint2);
-			}
-		}
+		mMultipliedPosition.scaleAndSet(mDiffPosition, mInterpolatedTime);
+		mAddedPosition.addAndSet(mFromPosition, mMultipliedPosition);
+		mTransformable3D.setPosition(mAddedPosition);
 	}
 
-	public boolean getOrientToPath() {
-		return mOrientToPath;
-	}
-
-	public void setOrientToPath(boolean orientToPath) {
-		if (mSplinePath == null)
-			throw new RuntimeException("You must set a spline path before orientation to path is possible.");
-
-		mOrientToPath = orientToPath;
-		mSplinePath.setCalculateTangents(orientToPath);
-	}
-
-	public void setDuration(long duration) {
-		super.setDuration(duration);
-		mLookatDelta = 300.f / duration;
-	}
-	
-	@Override
-	public void reset() {
-		super.reset();
-		// Diff position needs to be reset or future uses of animation will cause unexpected translations.
-		mDiffPosition = null;
-	}
 }

@@ -12,13 +12,13 @@
  */
 package rajawali.animation;
 
-public interface IAnimation3DListener {
+public interface IAnimationListener {
 
-	public void onAnimationEnd(Animation3D animation);
+	public void onAnimationEnd(Animation animation);
 
-	public void onAnimationRepeat(Animation3D animation);
+	public void onAnimationRepeat(Animation animation);
 
-	public void onAnimationStart(Animation3D animation);
+	public void onAnimationStart(Animation animation);
 
-	public void onAnimationUpdate(Animation3D animation, double interpolatedTime);
+	public void onAnimationUpdate(Animation animation, double interpolatedTime);
 }

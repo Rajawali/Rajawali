@@ -22,12 +22,12 @@ public class ColorAnimation3D extends Animation3D {
 	protected final float[] mFromColor = new float[3];
 	protected final float[] mMultipliedColor = new float[3];
 	protected final float[] mToColor = new float[3];
-
-	protected float[] mDiffColor;
-	protected int mDiffAlpha;
-	protected int mFromAlpha;
+	protected final float[] mDiffColor;
+	protected final int mDiffAlpha;
+	protected final int mFromAlpha;	
+	protected final int mToAlpha;
+	
 	protected int mMultipliedAlpha;
-	protected int mToAlpha;
 
 	public ColorAnimation3D(int fromColor, int toColor) {
 		super();
@@ -36,6 +36,13 @@ public class ColorAnimation3D extends Animation3D {
 
 		mFromAlpha = fromColor >>> 24;
 		mToAlpha = toColor >>> 24;
+		
+		mDiffColor = new float[3];
+		mDiffColor[0] = mToColor[0] - mFromColor[0];
+		mDiffColor[1] = mToColor[1] - mFromColor[1];
+		mDiffColor[2] = mToColor[2] - mFromColor[2];
+
+		mDiffAlpha = mToAlpha - mFromAlpha;
 	}
 
 	@Override
@@ -43,21 +50,13 @@ public class ColorAnimation3D extends Animation3D {
 		super.setTransformable3D(transformable3D);
 		if (!(transformable3D instanceof Object3D)) {
 			throw new RuntimeException(
-					"ColorAnimation3D requires the passed transformable3D to be an instance of BaseObject3D.");
+					"ColorAnimation3D requires the passed transformable3D to be an instance of "
+							+ Object3D.class.getSimpleName());
 		}
 	}
 
 	@Override
 	protected void applyTransformation() {
-		if (mDiffColor == null) {
-			mDiffColor = new float[3];
-			mDiffColor[0] = mToColor[0] - mFromColor[0];
-			mDiffColor[1] = mToColor[1] - mFromColor[1];
-			mDiffColor[2] = mToColor[2] - mFromColor[2];
-
-			mDiffAlpha = mToAlpha - mFromAlpha;
-		}
-
 		mMultipliedColor[0] = mDiffColor[0] * (float) mInterpolatedTime;
 		mMultipliedColor[1] = mDiffColor[1] * (float) mInterpolatedTime;
 		mMultipliedColor[2] = mDiffColor[2] * (float) mInterpolatedTime;
