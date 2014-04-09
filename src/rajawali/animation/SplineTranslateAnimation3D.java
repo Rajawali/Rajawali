@@ -47,8 +47,8 @@ public class SplineTranslateAnimation3D extends Animation3D {
 		mSplinePath.setCalculateTangents(orientToPath);
 	}
 
-	public void setDuration(long duration) {
-		super.setDuration(duration);
+	public void setDurationMilliseconds(long duration) {
+		super.setDurationMilliseconds(duration);
 		mLookatDelta = 300.f / duration;
 	}
 	

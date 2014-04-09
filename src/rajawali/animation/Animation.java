@@ -79,7 +79,7 @@ public abstract class Animation extends Playable {
 	 * 
 	 * @return {@link Double}
 	 */
-	public double getDurationD() {
+	public double getDurationDelta() {
 		return mDuration;
 	}
 
@@ -88,7 +88,7 @@ public abstract class Animation extends Playable {
 	 * 
 	 * @return {@link Long}
 	 */
-	public long getDuration() {
+	public long getDurationMilliseconds() {
 		return (long) (mDuration * 1000d);
 	}
 
@@ -133,7 +133,7 @@ public abstract class Animation extends Playable {
 	 * 
 	 * @param duration
 	 */
-	public void setDuration(double duration) {
+	public void setDurationDelta(double duration) {
 		mDuration = duration;
 	}
 
@@ -142,7 +142,7 @@ public abstract class Animation extends Playable {
 	 * 
 	 * @param duration
 	 */
-	public void setDuration(long duration) {
+	public void setDurationMilliseconds(long duration) {
 		mDuration = duration / 1000d;
 	}
 
