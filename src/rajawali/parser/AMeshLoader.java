@@ -67,7 +67,7 @@ public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 		public int diffuseColor;
 		public int specularColor;
 		public float specularCoefficient;
-		public float alpha;
+		public float alpha = 1f;
 		public String ambientTexture;
 		public String diffuseTexture;
 		public String specularColorTexture;
