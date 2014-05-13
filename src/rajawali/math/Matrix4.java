@@ -183,11 +183,10 @@ public final class Matrix4 {
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 setAll(final Vector3 xAxis, final Vector3 yAxis, final Vector3 zAxis, final Vector3 pos) {
-		m[M00] = xAxis.x; m[M01] = xAxis.y; m[M02] = xAxis.z;
-		m[M10] = yAxis.x; m[M11] = yAxis.y; m[M12] = yAxis.z;
-		m[M20] = -zAxis.x; m[M21] = -zAxis.y; m[M22] = -zAxis.z;
-		m[M03] = pos.x; m[M13] = pos.y; m[M23] = pos.z;
-		m[M30] = 0; m[M31] = 0; m[M32] = 0; m[M33] = 1;
+		m[M00] = xAxis.x;	m[M01] = yAxis.x;	m[M02] = zAxis.x;	m[M03] = pos.x;
+		m[M10] = xAxis.y; 	m[M11] = yAxis.y;	m[M12] = zAxis.y;	m[M13] = pos.y;
+		m[M20] = xAxis.z;	m[M21] = yAxis.z;	m[M22] = zAxis.z;	m[M23] = pos.z;
+		m[M30] = 0;			m[M31] = 0;			m[M32] = 0;			m[M33] = 1;
 		return this;
 	}
 		
