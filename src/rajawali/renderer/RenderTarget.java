@@ -18,6 +18,7 @@ import rajawali.materials.textures.RenderTargetTexture;
 import rajawali.materials.textures.RenderTargetTexture.RenderTargetTextureFormat;
 import rajawali.materials.textures.RenderTargetTexture.RenderTargetTextureType;
 import rajawali.materials.textures.TextureManager;
+import rajawali.util.RajLog;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLU;
@@ -313,10 +314,8 @@ public class RenderTarget extends AFrameTask {
 		
 		GLES20.glFramebufferTexture2D(
 			      GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTexture.getTextureId(), 0);
+		checkGLError("Could not create framebuffer 2: ");
 		
-		// -- add the texture directly. we can afford to do this because the create()
-		//    method is called in a thread safe manner.
-		TextureManager.getInstance().taskAdd(mTexture);
 		if (mDepthBuffer)
 			TextureManager.getInstance().taskAdd(mDepthTexture);
 
@@ -412,8 +411,8 @@ public class RenderTarget extends AFrameTask {
 		if (error != GLES20.GL_NO_ERROR)
 		{
 			String description = GLU.gluErrorString(error);
-
-			throw new RuntimeException(ex + ": " + description);
+			RajLog.e(ex + "[" + error + "]: " + description);
+			throw new RuntimeException(ex + "[" + error + "]: " + description);
 		}
 	}
 

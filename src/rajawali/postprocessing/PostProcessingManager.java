@@ -73,10 +73,10 @@ public class PostProcessingManager {
 			height = size.y;
 		}
 
-		mRenderTarget1 = new RenderTarget("renderTarget1", width, height, 0, 0, true,
+		mRenderTarget1 = new RenderTarget("renderTarget1", width, height, 0, 0, false,
 				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
-		mRenderTarget2 = new RenderTarget("renderTarget2", width, height, 0, 0, true,
+		mRenderTarget2 = new RenderTarget("renderTarget2", width, height, 0, 0, false,
 				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
 		
@@ -87,22 +87,16 @@ public class PostProcessingManager {
 		mComponents = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingComponent>());
 		mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<IPass>());
 
+		mRenderer.getTextureManager().addTexture(mWriteBuffer.getTexture());
+		//mRenderer.getTextureManager().addTexture(mWriteBuffer.getDepthTexture());
+		mRenderer.getTextureManager().addTexture(mReadBuffer.getTexture());
+		//mRenderer.getTextureManager().addTexture(mReadBuffer.getDepthTexture());
+		
 		mRenderer.addRenderTarget(mWriteBuffer);
 		mRenderer.addRenderTarget(mReadBuffer);
 		
-		//mRenderer.getTextureManager().addTexture(mWriteBuffer.getTexture());
-		//mRenderer.getTextureManager().addTexture(mWriteBuffer.getDepthTexture());
-		//mRenderer.getTextureManager().addTexture(mReadBuffer.getTexture());
-		//mRenderer.getTextureManager().addTexture(mReadBuffer.getDepthTexture());
-		
 		mScene.addChild(mScreenQuad);
 		mRenderer.addScene(mScene);
-		
-		Sphere sphere = new Sphere(1, 20, 20);
-		sphere.setColor(0xff0000);
-		Material sphereMaterial = new Material();
-		sphere.setMaterial(sphereMaterial);
-		mScene.addChild(sphere);
 	}
 
 	/**
@@ -197,7 +191,6 @@ public class PostProcessingManager {
 
 		for (int i = 0; i < mNumPasses; i++) {
 			pass = mPasses.get(i);
-			RajLog.i("________________ PASS " + i + ", " + pass.getPassType());
 			if (!pass.isEnabled())
 				continue;
 
@@ -223,8 +216,6 @@ public class PostProcessingManager {
 				maskActive = true;
 			else if (type == PassType.CLEAR)
 				maskActive = false;
-			
-			RajLog.i("________________ END PASS");
 		}
 	}
 	
