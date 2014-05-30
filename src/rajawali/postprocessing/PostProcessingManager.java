@@ -16,14 +16,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import rajawali.materials.Material;
+import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
 import rajawali.postprocessing.IPass.PassType;
 import rajawali.postprocessing.IPostProcessingComponent.PostProcessingComponentType;
 import rajawali.postprocessing.passes.EffectPass;
 import rajawali.primitives.ScreenQuad;
-import rajawali.primitives.Sphere;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
@@ -61,8 +60,8 @@ public class PostProcessingManager {
 
 		int width, height;
 		if (renderer.getSceneInitialized()) {
-			width = mRenderer.getViewportWidth();
-			height = mRenderer.getViewportHeight();
+			width = mRenderer.getCurrentViewportWidth();
+			height = mRenderer.getCurrentViewportHeight();
 		} else {
 			WindowManager wm = (WindowManager) renderer.getContext()
 					.getSystemService(Context.WINDOW_SERVICE);
@@ -73,10 +72,10 @@ public class PostProcessingManager {
 			height = size.y;
 		}
 
-		mRenderTarget1 = new RenderTarget("renderTarget1", width, height, 0, 0, false,
+		mRenderTarget1 = new RenderTarget("renderTarget1", width, height, 0, 0,
 				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
-		mRenderTarget2 = new RenderTarget("renderTarget2", width, height, 0, 0, false,
+		mRenderTarget2 = new RenderTarget("renderTarget2", width, height, 0, 0,
 				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
 		
@@ -152,8 +151,8 @@ public class PostProcessingManager {
 		if (renderTarget == null) {
 			int width, height;
 			if (mRenderer.getSceneInitialized()) {
-				width = mRenderer.getViewportWidth();
-				height = mRenderer.getViewportHeight();
+				width = mRenderer.getCurrentViewportWidth();
+				height = mRenderer.getCurrentViewportHeight();
 			} else {
 				WindowManager wm = (WindowManager) mRenderer.getContext()
 						.getSystemService(Context.WINDOW_SERVICE);
@@ -163,7 +162,7 @@ public class PostProcessingManager {
 				width = size.x;
 				height = size.y;
 			}
-			mRenderTarget1 = new RenderTarget(width, height, 0, 0, false,
+			mRenderTarget1 = new RenderTarget(width, height, 0, 0,
 					false, false, GLES20.GL_UNSIGNED_BYTE, Config.ARGB_8888,
 					FilterType.LINEAR, WrapType.CLAMP);
 		} else {
@@ -199,7 +198,7 @@ public class PostProcessingManager {
 			pass.render(type == PassType.RENDER ? mRenderer.getCurrentScene() : mScene, mRenderer,
 					mScreenQuad, mWriteBuffer, mReadBuffer, deltaTime);
 
-			if (pass.needsSwap()) {
+			if (pass.needsSwap() && i < mNumPasses - 1) {
 				if (maskActive) {
 					GLES20.glStencilFunc(GLES20.GL_NOTEQUAL, 1, 0xffffffff);
 
@@ -217,6 +216,10 @@ public class PostProcessingManager {
 			else if (type == PassType.CLEAR)
 				maskActive = false;
 		}
+	}
+	
+	public ATexture getTexture() {
+		return mWriteBuffer.getTexture();
 	}
 	
 	private void updatePassesList()

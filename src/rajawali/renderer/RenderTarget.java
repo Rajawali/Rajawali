@@ -42,7 +42,6 @@ public class RenderTarget extends AFrameTask {
 	protected FilterType mFilterType;
 	protected WrapType mWrapType;
 
-	protected boolean mDepthBuffer;
 	protected boolean mStencilBuffer;
 
 	protected int mFrameBufferHandle;
@@ -50,7 +49,6 @@ public class RenderTarget extends AFrameTask {
 	protected int mStencilBufferHandle;
 
 	protected RenderTargetTexture mTexture;
-	protected RenderTargetTexture mDepthTexture;
 	private static int count = 0;
 
 	/**
@@ -83,10 +81,10 @@ public class RenderTarget extends AFrameTask {
 	 *            Texture wrap type
 	 */
 	public RenderTarget(int width, int height, int offsetX, int offsetY,
-			boolean depthBuffer, boolean stencilBuffer, boolean mipmaps,
+			boolean stencilBuffer, boolean mipmaps,
 			int glType, Config bitmapConfig, FilterType filterType,
 			WrapType wrapType) {
-		this("uRendTarg" + count++, width, height, offsetX, offsetY, depthBuffer, stencilBuffer,
+		this("uRendTarg" + count++, width, height, offsetX, offsetY, stencilBuffer,
 				mipmaps, glType, bitmapConfig, filterType, wrapType);
 	}
 
@@ -120,7 +118,7 @@ public class RenderTarget extends AFrameTask {
 	 *            Texture wrap type
 	 */
 	public RenderTarget(String name, int width, int height, int offsetX, int offsetY,
-			boolean depthBuffer, boolean stencilBuffer, boolean mipmaps,
+			boolean stencilBuffer, boolean mipmaps,
 			int glType, Config bitmapConfig, FilterType filterType,
 			WrapType wrapType) {
 		mName = name;
@@ -128,7 +126,6 @@ public class RenderTarget extends AFrameTask {
 		mHeight = height;
 		mOffsetX = offsetX;
 		mOffsetY = offsetY;
-		mDepthBuffer = depthBuffer;
 		mStencilBuffer = stencilBuffer;
 		mMipmaps = mipmaps;
 		mGLType = glType;
@@ -142,19 +139,6 @@ public class RenderTarget extends AFrameTask {
 		mTexture.setBitmapConfig(mBitmapConfig);
 		mTexture.setFilterType(mFilterType);
 		mTexture.setWrapType(mWrapType);
-
-		if (mDepthBuffer)
-		{
-			mDepthTexture = new RenderTargetTexture(mName + "FBDepth", mWidth, mHeight,
-					RenderTargetTextureFormat.DEPTH,
-					RenderTargetTextureFormat.DEPTH,
-					RenderTargetTextureType.UNSIGNED_BYTE);
-			mDepthTexture.setMipmap(false);
-			mDepthTexture.setGLTextureType(mGLType);
-			mDepthTexture.setBitmapConfig(mBitmapConfig);
-			mDepthTexture.setFilterType(mFilterType);
-			mDepthTexture.setWrapType(mWrapType);
-		}
 	}
 	
 
@@ -167,7 +151,7 @@ public class RenderTarget extends AFrameTask {
 	 *            Height of the render target
 	 */
 	public RenderTarget(int width, int height) {
-		this(width, height, 0, 0, false, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, FilterType.LINEAR,
+		this(width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, FilterType.LINEAR,
 				WrapType.CLAMP);
 	}
 
@@ -178,32 +162,12 @@ public class RenderTarget extends AFrameTask {
 				mHeight,
 				mOffsetX,
 				mOffsetY,
-				mDepthBuffer,
 				mStencilBuffer,
 				mTexture.isMipmap(),
 				mTexture.getGLTextureType(),
 				mTexture.getBitmapConfig(),
 				mTexture.getFilterType(),
 				mTexture.getWrapType());
-	}
-
-	/**
-	 * Returns whether depth buffer has been enabled for this render target.
-	 * 
-	 * @return True if depth buffer is enabled, false otherwise.
-	 */
-	public boolean isDepthBufferEnabled() {
-		return mDepthBuffer;
-	}
-
-	/**
-	 * Sets whether depth buffer is enabled.
-	 * 
-	 * @param depthBuffer
-	 *            Set to true to enable depth buffer.
-	 */
-	public void enableDepthBuffer(boolean depthBuffer) {
-		mDepthBuffer = depthBuffer;
 	}
 
 	/**
@@ -316,41 +280,7 @@ public class RenderTarget extends AFrameTask {
 			      GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTexture.getTextureId(), 0);
 		checkGLError("Could not create framebuffer 2: ");
 		
-		if (mDepthBuffer)
-			TextureManager.getInstance().taskAdd(mDepthTexture);
-
 /*
-		if (mDepthBuffer)
-		{
-			int[] tex = new int[2];
-			GLES20.glGenTextures(2, tex, 0);
-			
-			  GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
-			  GLES20.glTexImage2D(
-			      GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, mWidth, mHeight,
-			      0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
-			  GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-			  GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-			  GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-			  GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-			  GLES20.glFramebufferTexture2D(
-			      GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, tex[0], 0);
-			  
-			  GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[1]);
-			  GLES20.glTexImage2D(
-				      GLES20.GL_TEXTURE_2D, 0, GLES20.GL_DEPTH_COMPONENT16, mWidth, mHeight,
-				      0, GLES20.GL_DEPTH_COMPONENT, GLES20.GL_UNSIGNED_INT, null);
-			  GLES20.glFramebufferTexture2D(
-			      GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_TEXTURE_2D, tex[1], 0);
-
-			  GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-
-			  mTexture.setTextureId(tex[0]);
-			  mDepthTexture.setTextureId(tex[1]);
-
-			checkGLError("Could not create depth buffer: ");
-		}
-
 		if (mStencilBuffer)
 		{
 			
@@ -419,11 +349,6 @@ public class RenderTarget extends AFrameTask {
 	public RenderTargetTexture getTexture() {
 		return mTexture;
 	}
-
-	public RenderTargetTexture getDepthTexture() {
-		return mDepthTexture;
-	}
-
 	@Override
 	public TYPE getFrameTaskType() {
 		return TYPE.RENDER_TARGET;
