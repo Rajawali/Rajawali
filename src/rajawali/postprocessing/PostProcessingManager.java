@@ -77,9 +77,6 @@ public class PostProcessingManager {
 		mComponents = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingComponent>());
 		mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<IPass>());
 
-		mRenderer.getTextureManager().addTexture(mWriteBuffer.getTexture());
-		mRenderer.getTextureManager().addTexture(mReadBuffer.getTexture());
-		
 		mRenderer.addRenderTarget(mWriteBuffer);
 		mRenderer.addRenderTarget(mReadBuffer);
 		
