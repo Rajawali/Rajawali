@@ -26,7 +26,8 @@ public class EffectPass extends APass {
 	protected final String PARAM_OPACITY = "uOpacity";
 	protected final String PARAM_TEXTURE = "uTexture";
 	protected final String PARAM_DEPTH_TEXTURE = "uDepthTexture";
-	protected boolean mRenderToScreen;
+	protected final String PARAM_BLEND_TEXTURE = "uBlendTexture";
+	
 	protected VertexShader mVertexShader;
 	protected FragmentShader mFragmentShader;
 	protected RenderTarget mReadTarget;
@@ -54,10 +55,6 @@ public class EffectPass extends APass {
 		setMaterial(new Material(mVertexShader, mFragmentShader));
 	}
 	
-	public void setRenderToScreen(boolean renderToScreen)
-	{
-		mRenderToScreen = renderToScreen;
-	}
 	
 	public void setShaderParams()
 	{

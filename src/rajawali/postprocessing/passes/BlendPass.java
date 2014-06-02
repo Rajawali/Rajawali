@@ -13,30 +13,36 @@
 package rajawali.postprocessing.passes;
 
 import rajawali.framework.R;
+import rajawali.materials.textures.ATexture;
 
-public class BlurPass extends EffectPass {
-	public enum Direction {
-		HORIZONTAL,
-		VERTICAL
+
+public class BlendPass extends EffectPass {
+	protected ATexture mBlendTexture;
+	
+	public static enum BlendMode {
+		ADD, SCREEN
 	};
 	
-	protected float[] mDirection;
-	protected float mRadius;
-	protected float mResolution;
-	
-	public BlurPass(Direction direction, float radius, float screenWidth, float screenHeight) {
+	public BlendPass(BlendMode blendMode, ATexture blendTexture) {
 		super();
-		mDirection = direction == Direction.HORIZONTAL ? new float[]{1, 0} : new float[]{0, 1};
-		mRadius = radius;
-		mResolution = direction == Direction.HORIZONTAL ? screenWidth : screenHeight;
-		createMaterial(R.raw.minimal_vertex_shader, R.raw.blur_fragment_shader);
+		createMaterial(R.raw.minimal_vertex_shader, getFragmentShader(blendMode));
+		mBlendTexture = blendTexture;
+	}
+	
+	protected int getFragmentShader(BlendMode blendMode) {
+		switch(blendMode) {
+		case ADD:
+			return R.raw.blend_add_fragment_shader;
+		case SCREEN:
+			return R.raw.blend_screen_fragment_shader;
+		default:
+			return R.raw.blend_add_fragment_shader;
+		}
 	}
 	
 	public void setShaderParams()
 	{
 		super.setShaderParams();
-		mFragmentShader.setUniform2fv("uDirection", mDirection);
-		mFragmentShader.setUniform1f("uRadius", mRadius);
-		mFragmentShader.setUniform1f("uResolution", mResolution);
+		mMaterial.bindTextureByName(PARAM_BLEND_TEXTURE, 1, mBlendTexture);		
 	}
 }

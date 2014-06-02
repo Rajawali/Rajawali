@@ -21,19 +21,15 @@ import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
 import rajawali.postprocessing.IPass.PassType;
 import rajawali.postprocessing.IPostProcessingComponent.PostProcessingComponentType;
+import rajawali.postprocessing.passes.CopyPass;
 import rajawali.postprocessing.passes.EffectPass;
 import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
-import rajawali.util.RajLog;
-import android.content.Context;
 import android.graphics.Bitmap.Config;
-import android.graphics.Point;
 import android.opengl.GLES20;
-import android.view.Display;
-import android.view.WindowManager;
 
 public class PostProcessingManager {
 
@@ -63,13 +59,8 @@ public class PostProcessingManager {
 			width = mRenderer.getCurrentViewportWidth();
 			height = mRenderer.getCurrentViewportHeight();
 		} else {
-			WindowManager wm = (WindowManager) renderer.getContext()
-					.getSystemService(Context.WINDOW_SERVICE);
-			Display display = wm.getDefaultDisplay();
-			Point size = new Point();
-			display.getSize(size);
-			width = size.x;
-			height = size.y;
+			width = mRenderer.getViewportWidth();
+			height = mRenderer.getViewportHeight();
 		}
 
 		mRenderTarget1 = new RenderTarget("renderTarget1", width, height, 0, 0,
@@ -82,14 +73,12 @@ public class PostProcessingManager {
 		mWriteBuffer = mRenderTarget1;
 		mReadBuffer = mRenderTarget2;
 
-		mCopyPass = new EffectPass(new CopyEffect());
+		mCopyPass = new EffectPass(new CopyPass());
 		mComponents = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingComponent>());
 		mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<IPass>());
 
 		mRenderer.getTextureManager().addTexture(mWriteBuffer.getTexture());
-		//mRenderer.getTextureManager().addTexture(mWriteBuffer.getDepthTexture());
 		mRenderer.getTextureManager().addTexture(mReadBuffer.getTexture());
-		//mRenderer.getTextureManager().addTexture(mReadBuffer.getDepthTexture());
 		
 		mRenderer.addRenderTarget(mWriteBuffer);
 		mRenderer.addRenderTarget(mReadBuffer);
@@ -111,9 +100,21 @@ public class PostProcessingManager {
 		mComponents.add(pass);
 		mComponentsDirty = true;
 	}
+	
+	public void addEffect(IPostProcessingEffect multiPass) {
+		multiPass.initialize(mRenderer);
+		mComponents.addAll(multiPass.getPasses());
+		mComponentsDirty = true;
+	}
 
 	public void insertPass(int index, IPass pass) {
 		mComponents.add(index, pass);
+		mComponentsDirty = true;
+	}
+	
+	public void insertEffect(int index, IPostProcessingEffect multiPass) {
+		multiPass.initialize(mRenderer);
+		mComponents.addAll(index, multiPass.getPasses());
 		mComponentsDirty = true;
 	}
 
@@ -122,24 +123,11 @@ public class PostProcessingManager {
 		mComponentsDirty = true;
 	}
 	
-	public void addEffect(IPostProcessingEffect effect) {
-		mComponents.add(effect);
+	public void removeEffect(IPostProcessingEffect multiPass) {
+		mComponents.removeAll(multiPass.getPasses());
 		mComponentsDirty = true;
-		effect.setManager(this);
 	}
 	
-	public void insertEffect(IPostProcessingEffect effect) {
-		mComponents.add(effect);
-		mComponentsDirty = true;
-		effect.setManager(this);
-	}
-	
-	public void removeEffect(IPostProcessingEffect effect) {
-		mComponents.remove(effect);
-		mComponentsDirty = true;
-		effect.setManager(null);
-	}
-
 	public void setSize(int width, int height) {
 		RenderTarget renderTarget = mRenderTarget1.clone();
 		renderTarget.setWidth(width);
@@ -154,13 +142,8 @@ public class PostProcessingManager {
 				width = mRenderer.getCurrentViewportWidth();
 				height = mRenderer.getCurrentViewportHeight();
 			} else {
-				WindowManager wm = (WindowManager) mRenderer.getContext()
-						.getSystemService(Context.WINDOW_SERVICE);
-				Display display = wm.getDefaultDisplay();
-				Point size = new Point();
-				display.getSize(size);
-				width = size.x;
-				height = size.y;
+				width = mRenderer.getViewportWidth();
+				height = mRenderer.getViewportHeight();
 			}
 			mRenderTarget1 = new RenderTarget(width, height, 0, 0,
 					false, false, GLES20.GL_UNSIGNED_BYTE, Config.ARGB_8888,
