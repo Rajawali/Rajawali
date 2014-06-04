@@ -12,6 +12,7 @@
  */
 package rajawali.materials.shaders.fragments.diffuse;
 
+import rajawali.materials.Material.PluginInsertLocation;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 
@@ -26,5 +27,9 @@ public class LambertVertexShaderFragment extends AShader implements IShaderFragm
 	public String getShaderId() {
 		return SHADER_ID;
 	}
-
+	
+	@Override
+	public PluginInsertLocation getInsertLocation() {
+		return PluginInsertLocation.IGNORE;
+	}
 }

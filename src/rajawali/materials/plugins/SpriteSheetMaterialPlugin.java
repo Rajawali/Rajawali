@@ -132,5 +132,10 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		public String getShaderId() {
 			return SHADER_ID;
 		}
+		
+		@Override
+		public PluginInsertLocation getInsertLocation() {
+			return PluginInsertLocation.IGNORE;
+		}
 	}
 }

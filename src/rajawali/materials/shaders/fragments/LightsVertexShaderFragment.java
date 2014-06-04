@@ -15,11 +15,11 @@ package rajawali.materials.shaders.fragments;
 import java.util.List;
 
 import android.opengl.GLES20;
-
 import rajawali.lights.ALight;
 import rajawali.lights.DirectionalLight;
 import rajawali.lights.PointLight;
 import rajawali.lights.SpotLight;
+import rajawali.materials.Material.PluginInsertLocation;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.util.ArrayUtils;
@@ -316,5 +316,10 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		mAmbientIntensity[0] = ambientIntensity[0];
 		mAmbientIntensity[1] = ambientIntensity[1];
 		mAmbientIntensity[2] = ambientIntensity[2];
+	}
+	
+	@Override
+	public PluginInsertLocation getInsertLocation() {
+		return PluginInsertLocation.IGNORE;
 	}
 }

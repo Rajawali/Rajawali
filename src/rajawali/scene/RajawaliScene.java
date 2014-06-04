@@ -24,6 +24,8 @@ import rajawali.Object3D;
 import rajawali.animation.Animation;
 import rajawali.lights.ALight;
 import rajawali.materials.Material;
+import rajawali.materials.plugins.FogMaterialPlugin;
+import rajawali.materials.plugins.FogMaterialPlugin.FogParams;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
@@ -44,7 +46,6 @@ import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
 import rajawali.util.ObjectColorPicker;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
-import rajawali.util.ObjectColorPicker.ObjectColorPickerException;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -72,6 +73,7 @@ public class RajawaliScene extends AFrameTask {
 	
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
+	protected FogParams mFogParams;
 	/**
 	* Temporary camera which will be switched to by the GL thread.
 	* Guarded by {@link #mNextSkyboxLock}
@@ -513,6 +515,15 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
+	 * Sets fog. 
+	 * 
+	 * @param fogParams
+	 */
+	public void setFog(FogParams fogParams) {
+		mFogParams = fogParams;
+	}
+	
+	/**
 	 * Creates a skybox with the specified single texture.
 	 * 
 	 * @param resourceId int Resouce id of the skybox texture.
@@ -650,6 +661,11 @@ public class RajawaliScene extends AFrameTask {
 	
 	public void render(double deltaTime, RenderTarget renderTarget) {
 		performFrameTasks(); //Handle the task queue
+		if(mLightsDirty) {
+			updateMaterialsWithLights();
+			mLightsDirty = false;
+		}
+
 		synchronized (mNextSkyboxLock) {
 			//Check if we need to switch the skybox, and if so, do it.
 			if (mNextSkybox != null) {
@@ -675,13 +691,7 @@ public class RajawaliScene extends AFrameTask {
 			renderTarget.bind();
 			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
 		} else if (pickerInfo != null) {
-			if(mReloadPickerInfo) pickerInfo.getPicker().reload();
-			mReloadPickerInfo = false;
-			try {
-				pickerInfo.getPicker().bindFrameBuffer();
-			} catch (ObjectColorPickerException e) {
-				e.printStackTrace();
-			}
+			pickerInfo.getPicker().getRenderTarget().bind();
 			GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		} else {
 			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
@@ -698,16 +708,12 @@ public class RajawaliScene extends AFrameTask {
 		if (mUsesCoverageAa) {
 			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
-		if(mLightsDirty) {
-			updateMaterialsWithLights();
-			mLightsDirty = false;
-		}
 
 		GLES20.glClear(clearMask);
 
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
-		//Pre-multiply View and Projection matricies once for speed
+		// Pre-multiply View and Projection matrices once for speed
 		mVPMatrix = mPMatrix.clone().multiply(mVMatrix);
 		mInvVPMatrix.setAll(mVPMatrix).inverse();
 
@@ -746,7 +752,7 @@ public class RajawaliScene extends AFrameTask {
 		
 		if (pickerInfo != null) {
 			ObjectColorPicker.createColorPickingTexture(pickerInfo);
-			pickerInfo.getPicker().unbindFrameBuffer();
+			pickerInfo.getPicker().getRenderTarget().unbind();
 			pickerInfo = null;
 			mPickerInfo = null;
 			render(deltaTime, renderTarget); //TODO Possible timing error here
@@ -1418,6 +1424,8 @@ public class RajawaliScene extends AFrameTask {
 		Material material = child.getMaterial();
 		if(material != null && material.lightingEnabled())
 			material.setLights(mLights);
+		if(material!= null && mFogParams != null)
+			material.addPlugin(new FogMaterialPlugin(mFogParams));
 		
 		int numChildren = child.getNumChildren();
 		for(int i=0; i<numChildren; i++)
@@ -1768,7 +1776,6 @@ public class RajawaliScene extends AFrameTask {
 		}
 		return objectCount;
 	}
-	
 
 	@Override
 	public TYPE getFrameTaskType() {

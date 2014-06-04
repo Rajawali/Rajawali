@@ -73,7 +73,7 @@ public class Material extends AFrameTask {
 	 */
 	public static enum PluginInsertLocation
 	{
-		PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_BUILD
+		PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_TRANSFORM, POST_TRANSFORM, IGNORE
 	};
 	/**
 	 * The generic vertex shader. This can be extended by using vertex shader fragments.
@@ -431,6 +431,9 @@ public class Material extends AFrameTask {
 	 */
 	void add()
 	{
+		if(mLightingEnabled && mLights == null)
+			return;
+
 		createShaders();
 	}
 
@@ -647,15 +650,18 @@ public class Material extends AFrameTask {
 				mFragmentShader.addShaderFragment(fragment);
 			}
 			
-			checkForPlugins(PluginInsertLocation.PRE_BUILD);
+			checkForPlugins(PluginInsertLocation.PRE_TRANSFORM);
+			checkForPlugins(PluginInsertLocation.POST_TRANSFORM);
 			
 			mVertexShader.buildShader();
 			mFragmentShader.buildShader();
-	/*
+			
+			/*
 			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
 			RajLog.d(mVertexShader.getShaderString());
 			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
-			RajLog.d(mFragmentShader.getShaderString());*/
+			RajLog.d(mFragmentShader.getShaderString());
+			*/
 		}
 		else
 		{
@@ -1097,12 +1103,7 @@ public class Material extends AFrameTask {
 			}
 		} else {
 			hasChanged = true;
-		}
-		
-		if(hasChanged)
-		{
 			mLights = lights;
-			mIsDirty = true;
 		}
 	}
 
@@ -1184,7 +1185,9 @@ public class Material extends AFrameTask {
 		if(mPlugins == null)
 			mPlugins = new ArrayList<IMaterialPlugin>();
 		
-		if(mPlugins.contains(plugin)) return;
+		if(mPlugins.contains(plugin)) 
+			return;
+		
 		mPlugins.add(plugin);
 		mIsDirty = true;
 	}

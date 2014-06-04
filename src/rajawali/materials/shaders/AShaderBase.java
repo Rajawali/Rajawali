@@ -172,6 +172,8 @@ public abstract class AShaderBase {
 			return new RMat3(name);
 		case MAT4:
 			return new RMat4(name);
+		case BOOL:
+			return new RBool(name);
 		case SAMPLER2D:
 			return new RSampler2D(name);
 		case SAMPLERCUBE:
@@ -592,6 +594,44 @@ public abstract class AShaderBase {
 	}
 	
 	/**
+	 * @author dennis.ippel
+	 * 
+	 * Defines a boolean. This corresponds to the bool GLSL data type.
+	 *
+	 */
+	protected class RBool extends ShaderVar
+	{
+		public RBool()
+		{
+			super(DataType.BOOL);
+		}
+		
+		public RBool(String name)
+		{
+			super(name, DataType.BOOL);
+		}
+		
+		public RBool(DataType dataType)
+		{
+			super(dataType);
+		}
+		
+		public RBool(String name, DataType dataType)
+		{
+			super(name, dataType);
+		}
+		
+		public RBool(ShaderVar value) {
+			super(DataType.BOOL, value);
+		}
+		
+		public RBool(DataType dataType, ShaderVar value)
+		{
+			super(dataType, value);
+		}
+	}
+	
+	/**
 	 * Defines a 3x3 matrix. This corresponds to the mat3 GLSL data type.
 	 * 
 	 * @author dennis.ippel
@@ -682,6 +722,21 @@ public abstract class AShaderBase {
 		public GLFragColor()
 		{
 			super("gl_FragColor");
+			mInitialized = true;
+		}
+	}
+	
+	/**
+	 * Contains the window-relative coordinates of the current fragment
+	 * 
+	 * @author dennis.ippel
+	 *
+	 */
+	protected final class GLFragCoord extends RVec4
+	{
+		public GLFragCoord()
+		{
+			super("gl_FragCoord");
 			mInitialized = true;
 		}
 	}

@@ -15,7 +15,6 @@ package rajawali.util;
 import javax.microedition.khronos.opengles.GL10;
 
 import rajawali.Capabilities;
-
 import android.util.Log;
 
 public class RajLog {
@@ -103,6 +102,13 @@ public class RajLog {
 	
 	public static final void setGL10(GL10 gl) {
 		RajLog.gl = gl;
+	}
+	
+	public static final void checkGLError(String message) {
+		int error = RajLog.gl.glGetError();
+		
+		if(error > 0)
+			throw new RuntimeException("OpenGL Error: " + GLU.gluErrorString(error) + " " + error + " | " + message);
 	}
 	
 	/**

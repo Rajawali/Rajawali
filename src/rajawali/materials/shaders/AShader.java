@@ -125,6 +125,10 @@ public abstract class AShader extends AShaderBase {
 	 * write the final fragment color to. This corresponds to the gl_FragColor GLSL variable.
 	 */
 	protected final GLFragColor GL_FRAG_COLOR = new GLFragColor();
+	/**
+	 * Contains the window-relative coordinates of the current fragment 
+	 */
+	protected final GLFragCoord GL_FRAG_COORD = new GLFragCoord();
 	
 	protected String mShaderString;
 	
@@ -879,6 +883,27 @@ public abstract class AShader extends AShaderBase {
 		return s;
 	}
 	
+	public ShaderVar clamp(ShaderVar var, float value1, float value2)
+	{
+		ShaderVar s = new ShaderVar("clamp(" + var.getName() + ", " + Float.toString(value1) + ", " + Float.toString(value2) + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
+	}
+	
+	public ShaderVar mix(ShaderVar var1, ShaderVar var2, float value) 
+	{
+		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + Float.toString(value) + ")", DataType.VEC3);
+		s.mInitialized = true;
+		return s;
+	}
+	
+	public ShaderVar mix(ShaderVar var1, ShaderVar var2, ShaderVar var3)
+	{
+		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + var3.getName() + ")", DataType.VEC3);
+		s.mInitialized = true;
+		return s;
+	}
+	
 	public ShaderVar dot(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("dot(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
@@ -963,6 +988,11 @@ public abstract class AShader extends AShaderBase {
 	public void startif(ShaderVar var, String operator, float value)
 	{
 		startif(var, operator, Float.toString(value));
+	}
+	
+	public void startif(ShaderVar var, String operator, boolean value)
+	{
+		startif(var, operator, value == true ? "true" : "false");
 	}
 	
 	public void startif(ShaderVar var, String operator, String value)

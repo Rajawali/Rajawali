@@ -19,9 +19,12 @@ import java.util.ArrayList;
 import rajawali.Object3D;
 import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
-import rajawali.materials.textures.RenderTargetTexture;
+import rajawali.materials.textures.ATexture.FilterType;
+import rajawali.materials.textures.ATexture.WrapType;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.renderer.RenderTarget;
+import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -31,10 +34,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 	private final RajawaliRenderer mRenderer;
 
 	private int mColorIndex = 0;
-	private int mFrameBufferHandle = -1;
-	private int mDepthBufferHandle = -1;
-	private RenderTargetTexture mTexture;
-	private boolean mIsInitialized = false;
+	private RenderTarget mRenderTarget;
 	private Material mPickerMaterial;
 	private OnObjectPickedListener mObjectPickedListener;
 
@@ -45,65 +45,18 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
 	public void initialize() {
 		final int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		mTexture = new RenderTargetTexture("colorPickerTexture");
-		mTexture.setWidth(size);
-		mTexture.setHeight(size);
-		// -- safe to use taskAdd because initalize is called in a thread safe manner
-		mRenderer.getTextureManager().taskAdd(mTexture);
-		genBuffers();
+		
+		mRenderTarget = new RenderTarget("colorPickerTarget", size, size, 
+				0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, 
+				FilterType.LINEAR, WrapType.CLAMP);
+		mRenderer.addRenderTarget(mRenderTarget);
 
 		mPickerMaterial = new Material();
 		MaterialManager.getInstance().addMaterial(mPickerMaterial);
-		mIsInitialized = true;
-	}
-
-	public void reload() {
-		if (!mIsInitialized)
-			return;
-
-		genBuffers();
-	}
-
-	public void genBuffers() {
-		final int[] frameBuffers = new int[1];
-		GLES20.glGenFramebuffers(1, frameBuffers, 0);
-		mFrameBufferHandle = frameBuffers[0];
-
-		final int[] depthBuffers = new int[1];
-		GLES20.glGenRenderbuffers(1, depthBuffers, 0);
-		mDepthBufferHandle = depthBuffers[0];
-
-		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
-		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16,
-				mTexture.getWidth(), mTexture.getHeight());
-		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 
 	public void setOnObjectPickedListener(OnObjectPickedListener objectPickedListener) {
 		mObjectPickedListener = objectPickedListener;
-	}
-
-	public void bindFrameBuffer() throws ObjectColorPickerException {
-		if (!mIsInitialized)
-		{
-			mRenderer.queueInitializeTask(this);
-			return;
-		}
-		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
-		GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
-				GLES20.GL_TEXTURE_2D, mTexture.getTextureId(), 0);
-		int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
-		if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
-			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-			RajLog.d("Could not bind FrameBuffer for color picking." + mTexture.getTextureId());
-		}
-		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
-				GLES20.GL_RENDERBUFFER, mDepthBufferHandle);
-	}
-
-	public void unbindFrameBuffer() {
-		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
 	}
 
 	public void registerObject(Object3D object) {
@@ -122,6 +75,10 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
 	public void getObjectAt(float x, float y) {
 		mRenderer.getCurrentScene().requestColorPickingTexture(new ColorPickerInfo(x, y, this));
+	}
+	
+	public RenderTarget getRenderTarget() {
+		return mRenderTarget;
 	}
 
 	public static void createColorPickingTexture(ColorPickerInfo pickerInfo) {

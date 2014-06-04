@@ -14,6 +14,7 @@ package rajawali.materials.shaders.fragments.texture;
 
 import java.util.List;
 
+import rajawali.materials.Material.PluginInsertLocation;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureType;
 import rajawali.materials.textures.ATexture.WrapType;
@@ -53,5 +54,10 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 			texColor.assignMultiply(muInfluence[i]);
 			color.assignAdd(texColor);
 		}
+	}
+	
+	@Override
+	public PluginInsertLocation getInsertLocation() {
+		return PluginInsertLocation.IGNORE;
 	}
 }

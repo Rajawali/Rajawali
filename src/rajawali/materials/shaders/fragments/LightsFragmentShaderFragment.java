@@ -15,6 +15,7 @@ package rajawali.materials.shaders.fragments;
 import java.util.List;
 
 import rajawali.lights.ALight;
+import rajawali.materials.Material.PluginInsertLocation;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
 import rajawali.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
@@ -187,6 +188,11 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 	@Override
 	public void setLocations(int programHandle) {
 
+	}
+	
+	@Override
+	public PluginInsertLocation getInsertLocation() {
+		return PluginInsertLocation.IGNORE;
 	}
 
 	@Override

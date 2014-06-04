@@ -47,11 +47,6 @@ public class Camera extends ATransformable3D {
 	 * End guarded members
 	 */
 		
-	protected int mFogColor = 0xdddddd;
-	protected float mFogNear = 5f;
-	protected float mFogFar = 25f;
-	protected boolean mFogEnabled = false;
-	
 	public Camera() {
 		super();
 		mLocalOrientation = Quaternion.getIdentity();
@@ -191,38 +186,6 @@ public class Camera extends ATransformable3D {
 		synchronized (mFrustumLock) {
 			mUseRotationMatrix = useRotationMatrix;
 		}
-	}
-
-	public int getFogColor() {
-		return mFogColor;
-	}
-
-	public void setFogColor(int fogColor) {
-		mFogColor = fogColor;
-	}
-
-	public float getFogNear() {
-		return mFogNear;
-	}
-
-	public void setFogNear(float fogNear) {
-		mFogNear = fogNear;
-	}
-
-	public float getFogFar() {
-		return mFogFar;
-	}
-
-	public void setFogFar(float fogFar) {
-		mFogFar = fogFar;
-	}
-
-	public boolean isFogEnabled() {
-		return mFogEnabled;
-	}
-
-	public void setFogEnabled(boolean fogEnabled) {
-		mFogEnabled = fogEnabled;
 	}
 
 	/*

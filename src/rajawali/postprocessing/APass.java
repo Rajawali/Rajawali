@@ -54,7 +54,7 @@ public abstract class APass implements IPass {
 	public boolean needsSwap() {
 		return mNeedsSwap;
 	}
-
+	
 	public abstract void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad,
 			RenderTarget writeTarget, RenderTarget readTarget, double deltaTime);
 

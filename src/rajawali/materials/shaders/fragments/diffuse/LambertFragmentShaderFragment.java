@@ -15,6 +15,7 @@ package rajawali.materials.shaders.fragments.diffuse;
 import java.util.List;
 
 import rajawali.lights.ALight;
+import rajawali.materials.Material.PluginInsertLocation;
 import rajawali.materials.methods.DiffuseMethod.DiffuseShaderVar;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
@@ -82,5 +83,10 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		RVec3 ambientColor = (RVec3) getGlobal(LightsShaderVar.V_AMBIENT_COLOR);
 		color.rgb().assign(enclose(diffuse.multiply(color.rgb())).add(ambientColor));
+	}
+	
+	@Override
+	public PluginInsertLocation getInsertLocation() {
+		return PluginInsertLocation.IGNORE;
 	}
 }

@@ -14,6 +14,7 @@ package rajawali.materials.shaders.fragments.texture;
 
 import java.util.List;
 
+import rajawali.materials.Material.PluginInsertLocation;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureType;
 
@@ -56,5 +57,10 @@ public class SkyTextureFragmentShaderFragment extends ATextureFragmentShaderFrag
 			skyColor.assignMultiply(muInfluence[i]);
 			color.assignAdd(skyColor);
 		}
+	}
+	
+	@Override
+	public PluginInsertLocation getInsertLocation() {
+		return PluginInsertLocation.IGNORE;
 	}
 }

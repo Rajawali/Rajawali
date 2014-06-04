@@ -239,17 +239,16 @@ public class LoaderOBJ extends AMeshLoader {
 					addChildSetParent(currentGroup, currObjIndexData.targetObj);
 				} else if(type.equals(OBJECT)) {
 					String objName = parts.hasMoreTokens() ? parts.nextToken() : generateObjectName();
+
 					if (currentObjHasFaces) {
 						objIndices.add(currObjIndexData);
-						currObjIndexData = new ObjIndexData(new Object3D(objName));
+						currObjIndexData = new ObjIndexData(new Object3D(currObjIndexData.targetObj.getName()));
 						currObjIndexData.materialName = currentMaterialName;
 						addChildSetParent(currentGroup, currObjIndexData.targetObj);
 						RajLog.i("Parsing object: " + currObjIndexData.targetObj.getName());
 						currentObjHasFaces = false;
-					} else {
-						RajLog.i("Naming object: " + objName);
-						currObjIndexData.targetObj.setName(objName);
 					}
+					currObjIndexData.targetObj.setName(objName);
 				} else if(type.equals(MATERIAL_LIB)) {
 					if(!parts.hasMoreTokens()) continue;
 					String materialLibPath = parts.nextToken().replace(".", "_");
@@ -272,9 +271,12 @@ public class LoaderOBJ extends AMeshLoader {
 			}
 			buffer.close();
 			
-			if(objIndices.size() == 0) {
+			if(currentObjHasFaces) {
+				RajLog.i("Parsing object: " + currObjIndexData.targetObj.getName());
 				objIndices.add(currObjIndexData);
 			}
+			
+			
 		} catch (IOException e) {
 			throw new ParsingException(e);
 		}
@@ -545,6 +547,11 @@ public class LoaderOBJ extends AMeshLoader {
 		}
 		
 		public void setMaterial(Object3D object, String materialName) throws TextureException {
+			if(materialName == null) {
+				RajLog.i(object.getName() + " has no material definition." );
+				return;
+			}
+			
 			MaterialDef matDef = null;
 			
 			for(int i=0; i<mMaterials.size(); ++i) {

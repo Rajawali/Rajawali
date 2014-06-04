@@ -1208,22 +1208,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return mCurrentViewportHeight;
 	}
 	
-	public static boolean isFogEnabled() {
-		return mFogEnabled;
-	}
-	
-	public void setFogEnabled(boolean enabled) {
-		mFogEnabled = enabled;
-		synchronized (mScenes) {
-			for (int i = 0, j = mScenes.size(); i < j; ++i) {
-				List<Camera> cams = mScenes.get(i).getCamerasCopy();
-				for (int n = 0, k = cams.size(); n < k; ++n) {
-					cams.get(n).setFogEnabled(enabled);
-				}
-			}
-		}
-	}
-	
 	public boolean getSceneInitialized() {
 		return mSceneInitialized;
 	}

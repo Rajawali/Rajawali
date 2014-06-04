@@ -14,11 +14,21 @@ package rajawali.materials.shaders;
 
 import java.util.Hashtable;
 
+import rajawali.materials.Material;
+import rajawali.materials.Material.PluginInsertLocation;
 import rajawali.materials.shaders.AShaderBase.ShaderVar;
 
 
 
 public interface IShaderFragment {
+	/**
+	 * Where to insert the plugin. The {@link Material} class needs to know at 
+	 * what location the shader fragments should be inserted when assembling the
+	 * shaders. The locations are defined in the {@link PluginInsertLocation}
+	 * enum. 
+	 * @return
+	 */
+	PluginInsertLocation getInsertLocation();
 	String getShaderId();
 	Hashtable<String, ShaderVar> getUniforms();
 	Hashtable<String, ShaderVar> getAttributes();

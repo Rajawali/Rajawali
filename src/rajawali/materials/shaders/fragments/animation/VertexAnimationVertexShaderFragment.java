@@ -12,6 +12,7 @@
  */
 package rajawali.materials.shaders.fragments.animation;
 
+import rajawali.materials.Material.PluginInsertLocation;
 import rajawali.materials.plugins.VertexAnimationMaterialPlugin.VertexAnimationShaderVar;
 import rajawali.materials.shaders.AShader;
 import rajawali.materials.shaders.IShaderFragment;
@@ -92,5 +93,10 @@ public class VertexAnimationVertexShaderFragment extends AShader implements ISha
 	
 	public void setInterpolation(double interpolation) {
 		GLES20.glUniform1f(muInterpolationHandle, (float) interpolation);
+	}
+	
+	@Override
+	public PluginInsertLocation getInsertLocation() {
+		return PluginInsertLocation.IGNORE;
 	}
 }
