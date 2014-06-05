@@ -43,6 +43,8 @@ public class PostProcessingManager {
 	protected List<IPass> mPasses;
 	protected boolean mComponentsDirty = false;
 	protected int mNumPasses;
+	protected int mWidth;
+	protected int mHeight;
 	
 	protected EffectPass mCopyPass;
 
@@ -50,23 +52,32 @@ public class PostProcessingManager {
 	protected RajawaliScene mScene;
 
 	public PostProcessingManager(RajawaliRenderer renderer) {
-		mScreenQuad = new ScreenQuad();
+		this(renderer, -1, -1);
+	}
+	
+	public PostProcessingManager(RajawaliRenderer renderer, int width, int height) {
 		mRenderer = renderer;
+
+		if(width == -1 && height == -1) {
+			if (mRenderer.getSceneInitialized()) {
+				width = mRenderer.getCurrentViewportWidth();
+				height = mRenderer.getCurrentViewportHeight();
+			} else {
+				width = mRenderer.getViewportWidth();
+				height = mRenderer.getViewportHeight();
+			}
+		}		
+		
+		mWidth = width;
+		mHeight = height;
+		
+		mScreenQuad = new ScreenQuad();
 		mScene = new RajawaliScene(mRenderer, GRAPH_TYPE.NONE);
 
-		int width, height;
-		if (renderer.getSceneInitialized()) {
-			width = mRenderer.getCurrentViewportWidth();
-			height = mRenderer.getCurrentViewportHeight();
-		} else {
-			width = mRenderer.getViewportWidth();
-			height = mRenderer.getViewportHeight();
-		}
-
-		mRenderTarget1 = new RenderTarget("renderTarget1", width, height, 0, 0,
+		mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
 				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
-		mRenderTarget2 = new RenderTarget("renderTarget2", width, height, 0, 0,
+		mRenderTarget2 = new RenderTarget("rt2" + hashCode(), width, height, 0, 0,
 				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
 		
@@ -130,19 +141,13 @@ public class PostProcessingManager {
 		renderTarget.setWidth(width);
 		renderTarget.setHeight(height);
 		reset(renderTarget);
+		mWidth = width;
+		mHeight = height;
 	}
 
 	public void reset(RenderTarget renderTarget) {
 		if (renderTarget == null) {
-			int width, height;
-			if (mRenderer.getSceneInitialized()) {
-				width = mRenderer.getCurrentViewportWidth();
-				height = mRenderer.getCurrentViewportHeight();
-			} else {
-				width = mRenderer.getViewportWidth();
-				height = mRenderer.getViewportHeight();
-			}
-			mRenderTarget1 = new RenderTarget(width, height, 0, 0,
+			mRenderTarget1 = new RenderTarget(mWidth, mHeight, 0, 0,
 					false, false, GLES20.GL_UNSIGNED_BYTE, Config.ARGB_8888,
 					FilterType.LINEAR, WrapType.CLAMP);
 		} else {
