@@ -824,6 +824,21 @@ public abstract class AShader extends AShaderBase {
 		return s;
 	}
 	
+	public ShaderVar min(ShaderVar var1, ShaderVar var2)
+	{
+		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		var.setName("min(" + var1.getName() + ", " + var2.getName() + ")");
+		var.mInitialized = true;
+		return var;
+	}
+	
+	public ShaderVar min(ShaderVar var1, float value2)
+	{
+		ShaderVar s = new ShaderVar("min(" + var1.getName() + ", " + Float.toString(value2) + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
+	}
+
 	public String normalize(String value)
 	{
 		return "normalize(" + value + ")";

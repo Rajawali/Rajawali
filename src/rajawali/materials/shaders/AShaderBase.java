@@ -927,6 +927,20 @@ public abstract class AShaderBase {
 		}
 		
 		/**
+		 * Subtracts two shader variables. Equivalent to GLSL's '-' operator.
+		 * 
+		 * @param value
+		 * @return
+		 */
+		public ShaderVar subtract(float value)
+		{
+			ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
+			v.setValue(this.mName + " - " + Float.toString(value));
+			v.setName(v.getValue());
+			return v;
+		}
+		
+		/**
 		 * Multiplies two shader variables. Equivalent to GLSL's '*' operator.
 		 * 
 		 * @param value
@@ -964,6 +978,14 @@ public abstract class AShaderBase {
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
 			v.setValue(this.mName + " / " + value.getName());
+			v.setName(v.getValue());
+			return v;
+		}
+		
+		public ShaderVar divide(float value)
+		{
+			ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
+			v.setValue(this.mName + " / " + Float.toString(value));
 			v.setName(v.getValue());
 			return v;
 		}
