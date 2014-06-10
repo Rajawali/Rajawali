@@ -37,13 +37,14 @@ public class BlockMeshInstance extends AExportableBlockParser {
 		// Lookup the geometry or create it if it does not exist.
 		final BlockHeader geomHeader = blockHeader.blockHeaders.get((short) mGeometryID);
 		if (geomHeader == null) {
-			mGeometry = new Object3D();
+			mGeometry = new Object3D(mSceneGraphBlock.lookupName);
 		} else {
 			if (geomHeader.parser == null
 					|| !(geomHeader.parser instanceof ABaseObjectBlockParser))
 				throw new ParsingException("Invalid block reference.");
 
 			mGeometry = ((ABaseObjectBlockParser) geomHeader.parser).getBaseObject3D().clone();
+			mGeometry.setName(mSceneGraphBlock.lookupName);
 		}
 
 		// Apply the materials

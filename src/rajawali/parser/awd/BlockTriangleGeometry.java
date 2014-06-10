@@ -26,7 +26,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 		if (mBaseObjects.length == 1)
 			return mBaseObjects[0];
 
-		final Object3D container = new Object3D();
+		final Object3D container = new Object3D(mLookupName);
 		container.isContainer(true);
 		for (int i = 0; i < mBaseObjects.length; i++)
 			container.addChild(mBaseObjects[i]);
