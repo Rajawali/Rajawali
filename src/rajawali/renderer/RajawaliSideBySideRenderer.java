@@ -204,8 +204,8 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 
 		mViewportWidthHalf = (int) (mViewportWidth * .5f);
 
-		mLeftRenderTarget = new RenderTarget(mViewportWidthHalf, mViewportHeight);
-		mRightRenderTarget = new RenderTarget(mViewportWidthHalf, mViewportHeight);
+		mLeftRenderTarget = new RenderTarget("sbsLeftRT", mViewportWidthHalf, mViewportHeight);
+		mRightRenderTarget = new RenderTarget("sbsRightRT", mViewportWidthHalf, mViewportHeight);
 
 		addRenderTarget(mLeftRenderTarget);
 		addRenderTarget(mRightRenderTarget);

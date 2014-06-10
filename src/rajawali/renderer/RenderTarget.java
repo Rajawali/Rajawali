@@ -47,44 +47,6 @@ public class RenderTarget extends AFrameTask {
 	protected int mStencilBufferHandle;
 
 	protected RenderTargetTexture mTexture;
-	private static int count = 0;
-
-	/**
-	 * Instantiates a new RenderTarget object
-	 * 
-	 * @param name
-	 *            The name of the render target. This should be unique and should comply with regular variable naming
-	 *            standards.
-	 * @param width
-	 *            Width of the render target
-	 * @param height
-	 *            Height of the render target
-	 * @param offsetX
-	 *            Horizontal offset of the render target
-	 * @param offsetY
-	 *            Vertical offset of the render target
-	 * @param depthBuffer
-	 *            Set to true to enable depth buffer
-	 * @param stencilBuffer
-	 *            Set to true to enable stencil buffer
-	 * @param mipmaps
-	 *            Set to true to enable automatic mipmap generation
-	 * @param glType
-	 *            Datatype to use for the texture
-	 * @param bitmapConfig
-	 *            Bitmap configuration
-	 * @param filterType
-	 *            Texture filter type
-	 * @param wrapType
-	 *            Texture wrap type
-	 */
-	public RenderTarget(int width, int height, int offsetX, int offsetY,
-			boolean stencilBuffer, boolean mipmaps,
-			int glType, Config bitmapConfig, FilterType filterType,
-			WrapType wrapType) {
-		this("uRendTarg" + count++, width, height, offsetX, offsetY, stencilBuffer,
-				mipmaps, glType, bitmapConfig, filterType, wrapType);
-	}
 
 	/**
 	 * Instantiates a new RenderTarget object
@@ -148,14 +110,15 @@ public class RenderTarget extends AFrameTask {
 	 * @param height
 	 *            Height of the render target
 	 */
-	public RenderTarget(int width, int height) {
-		this(width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, FilterType.LINEAR,
+	public RenderTarget(String name, int width, int height) {
+		this(name, width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, FilterType.LINEAR,
 				WrapType.CLAMP);
 	}
 
 	@Override
 	public RenderTarget clone() {
 		return new RenderTarget(
+				mName,
 				mWidth,
 				mHeight,
 				mOffsetX,
@@ -205,6 +168,7 @@ public class RenderTarget extends AFrameTask {
 	 */
 	public void setHeight(int height) {
 		mHeight = height;
+		mTexture.setHeight(height);
 	}
 
 	/**
@@ -263,9 +227,11 @@ public class RenderTarget extends AFrameTask {
 	 */
 	public void setWidth(int width) {
 		mWidth = width;
+		mTexture.setWidth(width);
 	}
 
 	public void create() {
+		RajLog.i("rendertarget create");
 		int[] bufferHandles = new int[1];
 		GLES20.glGenFramebuffers(1, bufferHandles, 0);
 		mFrameBufferHandle = bufferHandles[0];

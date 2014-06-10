@@ -33,6 +33,8 @@ public abstract class APass implements IPass {
 	protected PassType mPassType;
 	protected Material mMaterial;
 	protected boolean mRenderToScreen;
+	protected int mWidth;
+	protected int mHeight;	
 
 	/**
 	 * Returns whether this pass is to be rendered. If false, renderer skips this pass.
@@ -73,5 +75,26 @@ public abstract class APass implements IPass {
 
 	public void setRenderToScreen(boolean renderToScreen) {
 		mRenderToScreen = renderToScreen;
+	}
+	
+	public void setWidth(int width) {
+		mWidth = width;
+	}
+	
+	public int getWidth() {
+		return mWidth;
+	}
+	
+	public void setHeight(int height) {
+		mHeight = height;
+	}
+	
+	public int getHeight() {
+		return mHeight;
+	}
+	
+	public void setSize(int width, int height) {
+		mWidth = width;
+		mHeight = height;
 	}
 }

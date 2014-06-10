@@ -661,7 +661,7 @@ public class Material extends AFrameTask {
 			RajLog.d(mVertexShader.getShaderString());
 			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
 			RajLog.d(mFragmentShader.getShaderString());
-			*/
+		*/
 		}
 		else
 		{
@@ -1182,11 +1182,14 @@ public class Material extends AFrameTask {
 	 */
 	public void addPlugin(IMaterialPlugin plugin)
 	{
-		if(mPlugins == null)
+		if(mPlugins == null) {
 			mPlugins = new ArrayList<IMaterialPlugin>();
-		
-		if(mPlugins.contains(plugin)) 
-			return;
+		} else {
+			for(IMaterialPlugin p : mPlugins) {
+				if(plugin.getClass().getSimpleName().equals(p.getClass().getSimpleName()))
+					return;
+			}
+		}
 		
 		mPlugins.add(plugin);
 		mIsDirty = true;

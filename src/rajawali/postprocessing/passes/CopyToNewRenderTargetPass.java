@@ -44,4 +44,11 @@ public class CopyToNewRenderTargetPass extends EffectPass {
 	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, double deltaTime) {
 		super.render(scene, renderer, screenQuad, mRenderTarget, readTarget, deltaTime);
 	}
+	
+	@Override
+	public void setSize(int width, int height) {
+		super.setSize(width, height);
+		mRenderTarget.setWidth(width);
+		mRenderTarget.setHeight(height);
+	}
 }

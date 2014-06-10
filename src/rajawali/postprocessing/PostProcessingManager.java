@@ -67,7 +67,7 @@ public class PostProcessingManager {
 				height = mRenderer.getViewportHeight();
 			}
 		}		
-		
+
 		mWidth = width;
 		mHeight = height;
 		
@@ -137,26 +137,21 @@ public class PostProcessingManager {
 	}
 	
 	public void setSize(int width, int height) {
-		RenderTarget renderTarget = mRenderTarget1.clone();
-		renderTarget.setWidth(width);
-		renderTarget.setHeight(height);
-		reset(renderTarget);
+		mRenderTarget1.setWidth(width);
+		mRenderTarget1.setHeight(height);
+		mRenderTarget2.setWidth(width);
+		mRenderTarget2.setHeight(height);
+		
+		for(IPass pass : mPasses) {
+			pass.setSize(width, height);
+		}
+		
+		//reset(renderTarget);
 		mWidth = width;
 		mHeight = height;
 	}
 
 	public void reset(RenderTarget renderTarget) {
-		if (renderTarget == null) {
-			mRenderTarget1 = new RenderTarget(mWidth, mHeight, 0, 0,
-					false, false, GLES20.GL_UNSIGNED_BYTE, Config.ARGB_8888,
-					FilterType.LINEAR, WrapType.CLAMP);
-		} else {
-			mRenderTarget1 = renderTarget;
-		}
-
-		mRenderTarget2 = mRenderTarget1.clone();
-		mWriteBuffer = mRenderTarget1;
-		mReadBuffer = mRenderTarget2;
 	}
 
 	public void render(double deltaTime) {

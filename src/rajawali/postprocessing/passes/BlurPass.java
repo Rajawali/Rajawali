@@ -20,15 +20,17 @@ public class BlurPass extends EffectPass {
 		VERTICAL
 	};
 	
+	protected Direction mBlurDirection;
 	protected float[] mDirection;
 	protected float mRadius;
 	protected float mResolution;
 	
-	public BlurPass(Direction direction, float radius, float screenWidth, float screenHeight) {
+	public BlurPass(Direction direction, float radius, int screenWidth, int screenHeight) {
 		super();
 		mDirection = direction == Direction.HORIZONTAL ? new float[]{1, 0} : new float[]{0, 1};
 		mRadius = radius;
-		mResolution = direction == Direction.HORIZONTAL ? screenWidth : screenHeight;
+		mBlurDirection = direction;
+		setSize(screenWidth, screenHeight);
 		createMaterial(R.raw.minimal_vertex_shader, R.raw.blur_fragment_shader);
 	}
 	
@@ -38,5 +40,11 @@ public class BlurPass extends EffectPass {
 		mFragmentShader.setUniform2fv("uDirection", mDirection);
 		mFragmentShader.setUniform1f("uRadius", mRadius);
 		mFragmentShader.setUniform1f("uResolution", mResolution);
+	}
+
+	@Override
+	public void setSize(int width, int height) {
+		super.setSize(width, height);
+		mResolution = mBlurDirection == Direction.HORIZONTAL ? width : height;
 	}
 }

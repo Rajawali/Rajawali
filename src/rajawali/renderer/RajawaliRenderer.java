@@ -439,9 +439,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mSceneInitialized = true;
 		startRendering();
 		
-		setViewPort(
-				mCurrentViewportWidth == 0 ? mViewportWidth : mCurrentViewportWidth, 
-				mCurrentViewportHeight == 0 ? mViewportHeight : mCurrentViewportHeight);
+		setViewPort(mViewportWidth, mViewportHeight);
 	}
 	
 	protected void setViewPort(int width, int height)

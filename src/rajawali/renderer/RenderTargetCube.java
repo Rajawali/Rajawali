@@ -25,14 +25,14 @@ public class RenderTargetCube extends RenderTarget {
 	// Refer to TextureManager.CUBE_FACES.
 	protected int mActiveCubeFace;
 	
-	public RenderTargetCube(int width, int height, int offsetX, int offsetY,
+	public RenderTargetCube(String name, int width, int height, int offsetX, int offsetY,
 			boolean stencilBuffer, boolean mipmaps, int glType, Config bitmapConfig, FilterType filterType,
 			WrapType wrapType) {
-		super(width, height, offsetX, offsetY, stencilBuffer, mipmaps, glType, bitmapConfig, filterType, wrapType);
+		super(name, width, height, offsetX, offsetY, stencilBuffer, mipmaps, glType, bitmapConfig, filterType, wrapType);
 	}
 
-	public RenderTargetCube(int width, int height) {
-		super(width, height);
+	public RenderTargetCube(String name, int width, int height) {
+		super(name, width, height);
 	}
 	
 	/**
