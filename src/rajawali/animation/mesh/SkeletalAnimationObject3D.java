@@ -18,13 +18,13 @@ import java.nio.DoubleBuffer;
 
 import rajawali.BufferInfo;
 import rajawali.Camera;
-import rajawali.Object3D;
 import rajawali.Geometry3D.BufferType;
+import rajawali.Object3D;
 import rajawali.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
+import rajawali.materials.Material;
 import rajawali.math.Matrix;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
-import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import android.opengl.GLES20;
 import android.os.SystemClock;
@@ -264,9 +264,9 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 
 	@Override
 	public void render(Camera camera, final Matrix4 projMatrix, final Matrix4 vMatrix, 
-			final Matrix4 parentMatrix, ColorPickerInfo pickerInfo) {
+			final Matrix4 parentMatrix, Material sceneMaterial) {
 		setShaderParams(camera);
-		super.render(camera, projMatrix, vMatrix, parentMatrix, pickerInfo);
+		super.render(camera, projMatrix, vMatrix, parentMatrix, sceneMaterial);
 	}
 	
 	@Override

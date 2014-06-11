@@ -741,6 +741,39 @@ public abstract class AShaderBase {
 		}
 	}
 	
+	protected final class GLDepthRange extends RVec3
+	{
+		public GLDepthRange()
+		{
+			super("gl_DepthRange");
+			mInitialized = true;
+		}
+		
+		public ShaderVar near()
+		{
+			ShaderVar v = new RFloat();
+			v.setName(this.mName + ".near");
+			v.mInitialized = true;
+			return v;
+		}
+		
+		public ShaderVar far()
+		{
+			ShaderVar v = new RFloat();
+			v.setName(this.mName + ".far");
+			v.mInitialized = true;
+			return v;
+		}
+		
+		public ShaderVar diff()
+		{
+			ShaderVar v = new RFloat();
+			v.setName(this.mName + ".diff");
+			v.mInitialized = true;
+			return v;
+		}
+	}
+	
 	/**
 	 * Defines a floating point data type. This corresponds to the float GLSL data type.
 	 * 

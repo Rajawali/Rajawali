@@ -660,6 +660,10 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	public void render(double deltaTime, RenderTarget renderTarget) {
+		render(deltaTime, renderTarget, null);
+	}
+	
+	public void render(double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
 		performFrameTasks(); //Handle the task queue
 		if(mLightsDirty) {
 			updateMaterialsWithLights();
@@ -722,7 +726,7 @@ public class RajawaliScene extends AFrameTask {
 			GLES20.glDepthMask(false);
 
 			mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
-			mSkybox.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
+			mSkybox.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, null);
 
 			if (mEnableDepthBuffer) {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -740,22 +744,41 @@ public class RajawaliScene extends AFrameTask {
 					anim.update(deltaTime);
 			}
 		}
+		
+		Material sceneMat = pickerInfo == null ? sceneMaterial : pickerInfo.getPicker().getMaterial();
+		
+		if(sceneMat != null) {
+			sceneMat.useProgram();
+			sceneMat.bindTextures();
+		}		
 
-		synchronized (mChildren) {
-			for (int i = 0, j = mChildren.size(); i < j; ++i) 
-				mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickerInfo);
+		synchronized (mChildren) {			
+			for (int i = 0, j = mChildren.size(); i < j; ++i) {
+				Object3D child = mChildren.get(i);
+				boolean blendingEnabled = child.isBlendingEnabled();
+				if(pickerInfo != null && child.isPickingEnabled()) {
+					child.setBlendingEnabled(false);
+					pickerInfo.getPicker().getMaterial().setColor(child.getPickingColor());
+				}
+				child.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, sceneMat);
+				child.setBlendingEnabled(blendingEnabled);
+			}
 		}
 
 		if (mDisplaySceneGraph) {
 			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
         }
 		
+		if(sceneMat != null) {
+			sceneMat.unbindTextures();
+		}
+		
 		if (pickerInfo != null) {
 			ObjectColorPicker.createColorPickingTexture(pickerInfo);
 			pickerInfo.getPicker().getRenderTarget().unbind();
 			pickerInfo = null;
 			mPickerInfo = null;
-			render(deltaTime, renderTarget); //TODO Possible timing error here
+			render(deltaTime, renderTarget, sceneMaterial); //TODO Possible timing error here
 		}
 
 		synchronized (mPlugins) {

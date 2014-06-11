@@ -163,7 +163,7 @@ public class PostProcessingManager {
 		
 		mWriteBuffer = mRenderTarget1;
 		mReadBuffer = mRenderTarget2;
-
+		
 		boolean maskActive = false;
 
 		IPass pass;
@@ -175,7 +175,7 @@ public class PostProcessingManager {
 
 			PassType type = pass.getPassType();
 			
-			pass.render(type == PassType.RENDER ? mRenderer.getCurrentScene() : mScene, mRenderer,
+			pass.render(type == PassType.RENDER || type == PassType.DEPTH ? mRenderer.getCurrentScene() : mScene, mRenderer,
 					mScreenQuad, mWriteBuffer, mReadBuffer, deltaTime);
 
 			if (pass.needsSwap() && i < mNumPasses - 1) {

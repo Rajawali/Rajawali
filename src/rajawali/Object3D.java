@@ -30,7 +30,6 @@ import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.AFrameTask;
 import rajawali.util.GLU;
-import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 import rajawali.util.RajLog;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
@@ -216,8 +215,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
 	 */
 	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
-			final Matrix4 vMatrix, ColorPickerInfo pickerInfo) {
-		render(camera, vpMatrix, projMatrix, vMatrix, null, pickerInfo);
+			final Matrix4 vMatrix, Material sceneMaterial) {
+		render(camera, vpMatrix, projMatrix, vMatrix, null, sceneMaterial);
 	}
 
 	/**
@@ -231,9 +230,11 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
 	 */
 	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix, 
-			final Matrix4 parentMatrix, ColorPickerInfo pickerInfo) {
+			final Matrix4 parentMatrix, Material sceneMaterial) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
+		
+		Material material = sceneMaterial == null ? mMaterial : sceneMaterial;
 
 		preRender();
 
@@ -266,7 +267,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			          GLES20.glFrontFace(GLES20.GL_CCW);
 			     }
 			}
-			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
+			if (mEnableBlending) {
 				GLES20.glEnable(GLES20.GL_BLEND);
 				GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
 			}
@@ -278,65 +279,46 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			
 			GLES20.glDepthMask(mEnableDepthMask);
 
-			if (pickerInfo == null || !mIsPickingEnabled) {
-				if (!mIsPartOfBatch) {
-					
-					if (mMaterial == null) {
-						RajLog.e("[" + this.getClass().getName()
-								+ "] This object can't render because there's no material attached to it.");
-						throw new RuntimeException(
-								"This object can't render because there's no material attached to it.");
-					}
-					mMaterial.useProgram();
-					
-					setShaderParams(camera);
-					mMaterial.bindTextures();
-					if(mGeometry.hasTextureCoordinates())
-						mMaterial.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle);
-					if(mGeometry.hasNormals())
-						mMaterial.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
-					if(mMaterial.usingVertexColors())
-						mMaterial.setVertexColors(mGeometry.getColorBufferInfo().bufferHandle);
-					
-					mMaterial.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
+			if (!mIsPartOfBatch) {				
+				if (material == null) {
+					RajLog.e("[" + this.getClass().getName()
+							+ "] This object can't render because there's no material attached to it.");
+					throw new RuntimeException(
+							"This object can't render because there's no material attached to it.");
 				}
-				mMaterial.applyParams();
-				if(mOverrideMaterialColor)
-					mMaterial.setColor(mColor);
+				material.useProgram();
+				
+				setShaderParams(camera);
+				material.bindTextures();
+				if(mGeometry.hasTextureCoordinates())
+					material.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle);
+				if(mGeometry.hasNormals())
+					material.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
+				if(mMaterial.usingVertexColors())
+					material.setVertexColors(mGeometry.getColorBufferInfo().bufferHandle);
+				
+				material.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			}
+			material.applyParams();
+			if(mOverrideMaterialColor)
+				material.setColor(mColor);
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-			if (pickerInfo == null) {
-				mMaterial.setMVPMatrix(mMVPMatrix);
-				mMaterial.setModelMatrix(mMMatrix);
-				mMaterial.setModelViewMatrix(mMVMatrix);
+			material.setMVPMatrix(mMVPMatrix);
+			material.setModelMatrix(mMMatrix);
+			material.setModelViewMatrix(mMVMatrix);
 
-				if(mIsVisible) {
-					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
-					GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,	0);
-					GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-				}
-				if (!mIsPartOfBatch && !mRenderChildrenAsBatch) {
-					mMaterial.unbindTextures();
-				}
-			} else if (pickerInfo != null && mIsPickingEnabled) {
-				Material pickerMat = pickerInfo.getPicker().getMaterial();
-				pickerMat.useProgram();
-				pickerMat.setColor(mPickingColorArray);
-				pickerMat.applyParams();
-				pickerMat.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
-				pickerMat.setMVPMatrix(mMVPMatrix);
-				pickerMat.setModelMatrix(mMMatrix);
-				pickerMat.setModelViewMatrix(mMVMatrix);
+			if(mIsVisible) {
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
-				GLES20.glDrawElements(GLES20.GL_TRIANGLES, mGeometry.getNumIndices(), mElementsBufferType,	0);
+				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,	0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-
-				pickerMat.unbindTextures();
+			}
+			if (!mIsPartOfBatch && !mRenderChildrenAsBatch && sceneMaterial == null) {
+				material.unbindTextures();
 			}
 			
-			if (mEnableBlending && !(pickerInfo != null && mIsPickingEnabled)) {
+			if (mEnableBlending) {
 				GLES20.glDisable(GLES20.GL_BLEND);
 			}
 			
@@ -363,11 +345,11 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			Object3D child = mChildren.get(i);
 			if(mRenderChildrenAsBatch || mIsPartOfBatch)
 				child.setPartOfBatch(true);
-			child.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, pickerInfo);
+			child.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, sceneMaterial);
 		}
 
-		if (mRenderChildrenAsBatch) {
-			mMaterial.unbindTextures();
+		if (mRenderChildrenAsBatch && sceneMaterial == null) {
+			material.unbindTextures();
 		}
 	}
 
@@ -430,10 +412,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 		GLU.gluUnProject(x, viewportHeight - y, 0.0, modelMatrix, 0, mPMatrix.getDoubleValues(), 0, viewport, 0, r1, 0);
 		setPosition(r1[0] * eyeZ, r1[1] * -eyeZ, 0);
-	}
-
-	public Matrix4 getModelMatrix() {
-		return mMMatrix;
 	}
 
 	public boolean isDoubleSided() {
@@ -706,6 +684,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mPickingColorArray[3] = Color.alpha(pickingColor) / 255f;
 		mIsPickingEnabled = true;
 	}
+	
+	public boolean isPickingEnabled() {
+		return mIsPickingEnabled;
+	}
 
 	public void setShowBoundingVolume(boolean showBoundingVolume) {
 		this.mShowBoundingVolume = showBoundingVolume;
@@ -777,6 +759,18 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		Vector3 worldPos = mPosition.clone();
 		worldPos.multiply(mParentMatrix);
 		return worldPos;
+	}
+	
+	public Matrix4 getModelViewProjectionMatrix() {
+		return mMVPMatrix;
+	}
+	
+	public Matrix4 getModelMatrix() {
+		return mMMatrix;
+	}
+	
+	public Matrix4 getModelViewMatrix() {
+		return mMVMatrix;
 	}
 
 	/**

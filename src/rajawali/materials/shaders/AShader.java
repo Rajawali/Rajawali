@@ -129,6 +129,13 @@ public abstract class AShader extends AShaderBase {
 	 * Contains the window-relative coordinates of the current fragment 
 	 */
 	protected final GLFragCoord GL_FRAG_COORD = new GLFragCoord();
+	/**
+	 * Specifies depth range in window coordinates. If an implementation does 
+	 * not support highp precision in the fragment language, and state is listed as
+	 * highp, then that state will only be available as mediump in the fragment
+	 * language.
+	 */
+	protected final GLDepthRange GL_DEPTH_RANGE = new GLDepthRange();
 	
 	protected String mShaderString;
 	
