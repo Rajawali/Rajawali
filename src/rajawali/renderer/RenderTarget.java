@@ -247,6 +247,12 @@ public class RenderTarget extends AFrameTask {
 		
 		checkGLError("Could not create framebuffer 2: ");
 		
+		GLES20.glGenRenderbuffers(1, bufferHandles, 0);
+		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, bufferHandles[0]);
+		GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, mWidth, mHeight);
+		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, bufferHandles[0]);
+		
+		checkGLError("Could not create framebuffer 3: ");
 /*
 		if (mStencilBuffer)
 		{

@@ -249,7 +249,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
 			BoundingBox bbox = mGeometry.getBoundingBox();
 			bbox.transform(mMMatrix);
-			if (!camera.mFrustum.boundsInFrustum(bbox)) {
+			if (!camera.getFrustum().boundsInFrustum(bbox)) {
 				mIsInFrustum = false;
 			}
 		}

@@ -1073,6 +1073,13 @@ public final class Matrix4 {
 		System.arraycopy(m, 0, doubleArray, 0, 16);
 	}
 	
+	public void toFloatArray(float[] floatArray) {
+		floatArray[0] = (float)m[0];	floatArray[1] = (float)m[1];	floatArray[2] = (float)m[2];	floatArray[3] = (float)m[3];
+		floatArray[4] = (float)m[4];	floatArray[5] = (float)m[5];	floatArray[6] = (float)m[6];	floatArray[7] = (float)m[7];
+		floatArray[8] = (float)m[8];	floatArray[9] = (float)m[9];	floatArray[10] = (float)m[10];	floatArray[11] = (float)m[11];
+		floatArray[12] = (float)m[12];	floatArray[13] = (float)m[13];	floatArray[14] = (float)m[14];	floatArray[15] = (float)m[15];		
+	}
+	
 	/**
 	 * Determines if this {@link Matrix4} is equivalent to the provided {@link Matrix4}. For this 
 	 * to be true each element must match exactly between the two.

@@ -45,7 +45,7 @@ public final class Intersector {
 			
 			if (hitPoint != null) hitPoint.addAndSet(rayStart, Vector3.scaleAndCreate(rayDir, t));
 			return true;
-		} else if (plane.getPointSide(rayStart) == Plane.PlaneSide.OnPlane) {
+		} else if (plane.getPointSide(rayStart) == Plane.PlaneSide.ONPLANE) {
 			if (hitPoint != null) hitPoint.setAll(rayStart);
 			return true;
 		} else {
@@ -53,7 +53,7 @@ public final class Intersector {
 		}
 	}
 	
-	private static final Plane p = new Plane(new Vector3(), 0);
+	private static final Plane p = new Plane();
 	private static final Vector3 i = new Vector3();
 	
 	/**

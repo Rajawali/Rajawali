@@ -149,6 +149,7 @@ public abstract class AShader extends AShaderBase {
 	private Hashtable<String, ShaderVar> mConstants;
 	protected List<IShaderFragment> mShaderFragments;
 	protected int mProgramHandle;
+	protected boolean mNeedsBuild = true;
 	
 	public AShader() {}
 	
@@ -1185,5 +1186,13 @@ public abstract class AShader extends AShaderBase {
 		var.setValue("(" + value.getName() + ")");
 		var.setName(var.getValue());
 		return var;
+	}
+	
+	public boolean needsBuild() {
+		return mNeedsBuild;
+	}
+	
+	public void setNeedsBuild(boolean needsBuild) {
+		mNeedsBuild = needsBuild;
 	}
 }

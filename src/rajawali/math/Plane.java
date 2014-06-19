@@ -15,77 +15,73 @@ package rajawali.math;
 import rajawali.math.vector.Vector3;
 
 public class Plane {
-	private static Vector3 mTmp1;
-	private static Vector3 mTmp2;
-	public final Vector3 mNormal;
-	public double d = 0;
-
-	public enum PlaneSide {
-		Back, OnPlane,  Front
+	public static enum PlaneSide {
+		BACK, ONPLANE, FRONT
 	}
-
+	/**
+	 * Plane normal
+	 */
+	private Vector3 mNormal;
+	private double mD;	
+	
 	public Plane() {
-		mTmp1 = new Vector3();
-		mTmp2 = new Vector3();
 		mNormal = new Vector3();
 	}
 	
-	public Plane(Vector3 normal, double d) {
-		this();
-		mNormal.setAll(normal);
-		mNormal.normalize();
-		this.d = d;
-	} 
-
+	/**
+	 * Create a plane from coplanar points
+	 * 
+	 * @param point1
+	 * @param point2
+	 * @param point3
+	 */
 	public Plane(Vector3 point1, Vector3 point2, Vector3 point3) {
-		this();
 		set(point1, point2, point3);
 	}
-
+	
 	public void set(Vector3 point1, Vector3 point2, Vector3 point3) {
-		mTmp1.setAll(point1);
-		mTmp2.setAll(point2);
-		mTmp1.x -= mTmp2.x; mTmp1.y -= mTmp2.y; mTmp1.z -= mTmp2.z;
-		mTmp2.x -= point3.x; mTmp2.y -= point3.y; mTmp2.z -= point3.z;
-
-		mNormal.setAll((mTmp1.y * mTmp2.z) - (mTmp1.z * mTmp2.y), (mTmp1.z * mTmp2.x) - (mTmp1.x * mTmp2.z), (mTmp1.x * mTmp2.y) - (mTmp1.y * mTmp2.x));
-
+		Vector3 v1 = new Vector3();
+		Vector3 v2 = new Vector3();
+		v1.subtractAndSet(point1, point2);
+		v2.subtractAndSet(point3, point2);
+		mNormal = v1.cross(v2);
 		mNormal.normalize();
-
-		d = -Vector3.dot(point1, mNormal); 
+		
+		mD = -point1.dot(mNormal);
 	}
-
-	public void setAll(double nx, double ny, double nz, double d) {
-		mNormal.setAll(nx, ny, nz);
-		this.d = d;
+	
+	public void setComponents(double x, double y, double z, double w) {
+		mNormal.setAll(x, y, z);
+		mD = w;
 	}
-
-	public double distance(Vector3 point) {
-		return Vector3.dot(mNormal, point) + d;
+	
+	public double getDistanceTo(Vector3 point) {
+		return mD + mNormal.dot(point);
 	}
-
-	public PlaneSide getPointSide(Vector3 point) {
-		double dist =Vector3.dot(mNormal, point) + d;
-		if (dist == 0) {return PlaneSide.OnPlane;}
-		else if (dist < 0){ return PlaneSide.Back;}
-		else {return PlaneSide.Front;}
-	}
-
-	public boolean isFrontFacing(Vector3 direction) {
-		double dot = Vector3.dot(mNormal, direction); 
-		return dot <= 0;
-	}
-
+	
 	public Vector3 getNormal() {
 		return mNormal;
 	}
-
+	
 	public double getD() {
-		return d;
+		return mD;
 	}
-
-	public void setAllFrom(Plane plane) {
-		this.mNormal.setAll(plane.mNormal);
-		this.d = plane.d;
+	
+	public PlaneSide getPointSide(Vector3 point) {
+		double distance = Vector3.dot(mNormal, point) + mD;
+		if(distance == 0) return PlaneSide.ONPLANE;
+		else if(distance < 0) return PlaneSide.BACK;
+		else return PlaneSide.FRONT;
+	}
+	
+	public boolean isFrontFacing(Vector3 direction) {
+		double dot = Vector3.dot(mNormal, direction);
+		return dot <= 0;
+	}
+	
+	public void normalize() {
+		double inverseNormalLength = 1.0 / mNormal.length();
+		mNormal.multiply(inverseNormalLength);
+		mD *= inverseNormalLength;
 	}
 }

@@ -294,6 +294,7 @@ public class LoaderAWD extends AMeshLoader {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new ParsingException("Unexpected error. File is not in a supported AWD format.", e);
 		}
 

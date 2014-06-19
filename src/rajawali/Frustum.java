@@ -15,123 +15,75 @@ package rajawali;
 import rajawali.bounds.BoundingBox;
 import rajawali.math.Matrix4;
 import rajawali.math.Plane;
-import rajawali.math.Plane.PlaneSide;
 import rajawali.math.vector.Vector3;
-import rajawali.primitives.Sphere;
 
 public class Frustum {
-	private Vector3[] mTmp = new Vector3[8];
-	protected Sphere mVisualSphere;
-	protected BoundingBox mBoundingBox;
-	protected Matrix4 mTmpMatrix = new Matrix4();
-	protected static final Vector3[] mClipSpacePlanePoints = { 
-		new Vector3(-1, -1, -1), 
-		new Vector3( 1, -1, -1), 
-		new Vector3( 1,  1, -1), 
-		new Vector3(-1,  1, -1), 
-		new Vector3(-1, -1,  1), 
-		new Vector3( 1, -1,  1), 
-		new Vector3( 1,  1,  1),
-		new Vector3(-1,  1,  1)}; 
-
-	public final Plane[] planes = new Plane[6];     
-
-	protected final Vector3[] planePoints = { new Vector3(), new Vector3(), new Vector3(), new Vector3(), 
-			new Vector3(), new Vector3(), new Vector3(), new Vector3() 
-	};      
+	private final Plane[] mPlanes;
+	private Vector3 mPoint1;
+	private Vector3 mPoint2;
 
 	public Frustum() {
-		for(int i = 0; i < 6; i++) {
-			planes[i] = new Plane(new Vector3(), 0);
-		}
-		for(int i=0;i<8;i++){
-			mTmp[i]=new Vector3();
-		}
+		mPlanes = new Plane[6];
+		mPoint1 = new Vector3();
+		mPoint2 = new Vector3();
+		for (int i = 0; i < 6; i++)
+			mPlanes[i] = new Plane();
 	}
 
-	public void update(Matrix4 inverseProjectionView) {             
-
-		for(int i = 0; i < 8; i++) {
-			planePoints[i].setAll(mClipSpacePlanePoints[i]);
-			planePoints[i].project(inverseProjectionView);   
-		}
-
-		planes[0].set(planePoints[1], planePoints[0], planePoints[2]);
-		planes[1].set(planePoints[4], planePoints[5], planePoints[7]);
-		planes[2].set(planePoints[0], planePoints[4], planePoints[3]);
-		planes[3].set(planePoints[5], planePoints[1], planePoints[6]);
-		planes[4].set(planePoints[2], planePoints[3], planePoints[6]);
-		planes[5].set(planePoints[4], planePoints[0], planePoints[1]);
-		setBounds();
-	}       
-
-
-	public boolean sphereInFrustum (Vector3 center, double radius) {
-		for (int i = 0; i < planes.length; i++)
-			if (planes[i].distance(center) < -radius) return false;
-
-		return true;
+	public void update(Matrix4 inverseProjectionView) {
+		float[] m = inverseProjectionView.getFloatValues();
+		
+		mPlanes[0].setComponents(m[Matrix4.M30] - m[Matrix4.M00], m[Matrix4.M31] - m[Matrix4.M01], m[Matrix4.M32] - m[Matrix4.M02], m[Matrix4.M33] - m[Matrix4.M03]);
+		mPlanes[1].setComponents(m[Matrix4.M30] + m[Matrix4.M00], m[Matrix4.M31] + m[Matrix4.M01], m[Matrix4.M32] + m[Matrix4.M02], m[Matrix4.M33] + m[Matrix4.M03]);
+		mPlanes[2].setComponents(m[Matrix4.M30] + m[Matrix4.M10], m[Matrix4.M31] + m[Matrix4.M11], m[Matrix4.M32] + m[Matrix4.M12], m[Matrix4.M33] + m[Matrix4.M13]);
+		mPlanes[3].setComponents(m[Matrix4.M30] - m[Matrix4.M10], m[Matrix4.M31] - m[Matrix4.M11], m[Matrix4.M32] - m[Matrix4.M12], m[Matrix4.M33] - m[Matrix4.M13]);
+		mPlanes[4].setComponents(m[Matrix4.M30] - m[Matrix4.M20], m[Matrix4.M31] - m[Matrix4.M21], m[Matrix4.M32] - m[Matrix4.M22], m[Matrix4.M33] - m[Matrix4.M23]);
+		mPlanes[5].setComponents(m[Matrix4.M30] + m[Matrix4.M20], m[Matrix4.M31] + m[Matrix4.M21], m[Matrix4.M32] + m[Matrix4.M22], m[Matrix4.M33] + m[Matrix4.M23]);
+		
+		mPlanes[0].normalize();
+		mPlanes[1].normalize();
+		mPlanes[2].normalize();
+		mPlanes[3].normalize();
+		mPlanes[4].normalize();
+		mPlanes[5].normalize();
 	}
 
-	public boolean boundsInFrustum (BoundingBox bounds) {
-		Vector3[] corners = mTmp;
-		bounds.copyPoints(mTmp);//copy transformed points and test
-		int isout;
-		for (int i = 0; i < 6; i++) {
-			isout= 0;
-			for (int j = 0; j < 8; j++)
-				if (planes[i].getPointSide(corners[j]) == PlaneSide.Back){ isout++; }
-
-			if (isout == 8) { 
+	public boolean sphereInFrustum(Vector3 center, double radius) {
+		for(int i=0; i<6; i++) {
+			double distance = mPlanes[i].getDistanceTo(center);
+			if(distance < -radius)
 				return false;
-			}
 		}
-
+		
 		return true;
 	}
 
-	public boolean pointInFrustum (Vector3 point) {
-		for (int i = 0; i < planes.length; i++) {
-			PlaneSide result = planes[i].getPointSide(point);
-			if (result == PlaneSide.Back) {return false;}
+	public boolean boundsInFrustum(BoundingBox bounds) {
+		for(int i=0; i<6; i++) {
+			Plane p = mPlanes[i];
+			mPoint1.x = p.getNormal().x > 0 ? bounds.getMin().x : bounds.getMax().x;
+			mPoint2.x = p.getNormal().x > 0 ? bounds.getMax().x : bounds.getMin().x;
+			mPoint1.y = p.getNormal().y > 0 ? bounds.getMin().y : bounds.getMax().y;
+			mPoint2.y = p.getNormal().y > 0 ? bounds.getMax().y : bounds.getMin().y;
+			mPoint1.z = p.getNormal().z > 0 ? bounds.getMin().z : bounds.getMax().z;
+			mPoint2.z = p.getNormal().z > 0 ? bounds.getMax().z : bounds.getMin().z;
+
+			double distance1 = p.getDistanceTo(mPoint1);
+			double distance2 = p.getDistanceTo(mPoint2);
+
+			if ( distance1 < 0 && distance2 < 0 )
+				return false;
 		}
+		
 		return true;
 	}
-	
-	/**
-	 * Sets the bounds of the frustum's BoundingBox.
-	 * Should be called internally whenever a change to
-	 * the frustum occurs.
-	 */
-	protected void setBounds() {
-		if (mBoundingBox == null) {
-			mBoundingBox = new BoundingBox();
+
+	public boolean pointInFrustum(Vector3 point) {
+		for(int i=0; i<6; i++) {
+			double distance = mPlanes[i].getDistanceTo(point);
+			if(distance < 0)
+				return false;
 		}
-		Vector3 min = new Vector3();
-		Vector3 max = new Vector3();
-		min.setAll(planePoints[0]);
-		min.x = planePoints[5].x;
-		min.y = planePoints[5].y;
-		max.setAll(planePoints[7]);
-		//Log.i("Rajawali", "Min/Max: " + min + "/" + max);
-		mTmpMatrix.identity();
-		mBoundingBox.setMin(min);
-		mBoundingBox.setMax(max);
-		mBoundingBox.calculatePoints();
-		mBoundingBox.transform(mTmpMatrix);
-		//Log.i("Rajawali", "Camera bounds: " + mBoundingBox);
-	}
-	
-	/**
-	 * Returns a BoundingBox representative of this frustum.
-	 * This will create the BoundingBox if necessary.
-	 * 
-	 * @return BoundingBox which contains this frustum.
-	 */
-	public BoundingBox getBoundingBox() {
-		if (mBoundingBox == null) {
-			setBounds();
-		} 
-		return mBoundingBox;
+		return true;
 	}
 }

@@ -661,12 +661,29 @@ public class Material extends AFrameTask {
 			RajLog.d(mVertexShader.getShaderString());
 			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
 			RajLog.d(mFragmentShader.getShaderString());
-		*/
+	*/
 		}
 		else
 		{
 			mVertexShader = mCustomVertexShader;
 			mFragmentShader = mCustomFragmentShader;
+			
+			mVertexShader.initialize();
+			mFragmentShader.initialize();
+
+			if(mVertexShader.needsBuild()) mVertexShader.buildShader();
+			if(mFragmentShader.needsBuild()) mFragmentShader.buildShader();
+			
+			/*
+			mVertexShader.initialize();
+			mVertexShader.buildShader();
+			mFragmentShader.initialize();
+			mFragmentShader.buildShader();
+			
+			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
+			RajLog.d(mVertexShader.getShaderString());
+			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
+			RajLog.d(mFragmentShader.getShaderString());*/
 		}
 		
 		mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
