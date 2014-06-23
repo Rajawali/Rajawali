@@ -91,7 +91,7 @@ public class Camera extends ATransformable3D {
 	
 	public void getFrustumCorners(Vector3[] points, boolean transformed) {
 		if(mCameraDirty) {
-			double aspect = mLastWidth / mLastHeight;
+			double aspect = mLastWidth / (double)mLastHeight;
 			double nearHeight = 2.0 * Math.tan(mFieldOfView / 2.0) * mNearPlane;
 			double nearWidth = nearHeight * aspect;
 			
@@ -357,5 +357,21 @@ public class Camera extends ATransformable3D {
 
 	public void setDebugColor(int debugColor) {
 		mDebugColor = debugColor;
+	}
+	
+	public Camera clone() {
+		Camera cam = new Camera();
+		cam.setDebugColor(mDebugColor);
+		cam.setFarPlane(mFarPlane);
+		cam.setFieldOfView(mFieldOfView);
+		cam.setGraphNode(mGraphNode, mInsideGraph);
+		cam.setLookAt(mLookAt.clone());
+		cam.setNearPlane(mNearPlane);
+		cam.setOrientation(mOrientation.clone());
+		cam.setPosition(mPosition.clone());
+		cam.setProjectionMatrix(mLastWidth, mLastHeight);
+		cam.setUseRotationMatrix(mUseRotationMatrix);
+		
+		return cam;
 	}
 }

@@ -61,7 +61,7 @@ public class BoundingBox implements IBoundingVolume {
 				if(p.z > mMax.z) mMax.z = p.z;
 			}
 			
-			mPoints[i] = points[i] == null ? new Vector3() : points[i];
+			mPoints[i] = points[i] == null ? new Vector3() : points[i].clone();
 			mTmp[i] = new Vector3();
 		}
 	}
