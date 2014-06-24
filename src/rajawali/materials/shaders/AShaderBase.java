@@ -692,6 +692,17 @@ public abstract class AShaderBase {
 		{
 			super(DataType.MAT4, value);
 		}
+		
+		public void setValue(float m00, float m01, float m02, float m03,
+				float m10, float m11, float m12, float m13,
+				float m20, float m21, float m22, float m23,
+				float m30, float m31, float m32, float m33) {
+			mValue = "mat4("
+					+ "" + m00 + "," + m01 + "," + m02 + "," + m03 + ",\n"
+					+ "" + m10 + "," + m11 + "," + m12 + "," + m13 + ",\n"
+					+ "" + m20 + "," + m21 + "," + m22 + "," + m23 + ",\n"
+					+ "" + m30 + "," + m31 + "," + m32 + "," + m33 + ");";
+		}
 	}
 	
 	/**

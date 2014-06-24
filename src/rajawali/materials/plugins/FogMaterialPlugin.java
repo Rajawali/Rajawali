@@ -114,7 +114,7 @@ public class FogMaterialPlugin implements IMaterialPlugin {
 			mvFogDensity.assign(0);
 			
 			// -- if (uFogEnabled == true){
-			startif(muFogEnabled, "==", true);
+			startif(new Condition(muFogEnabled, Operator.EQUALS, true));
 			{
 				// -- vFogDensity = (gl_Position.z - uFogNear) / (uFogFar - uFogNear);
 				mvFogDensity.assign(

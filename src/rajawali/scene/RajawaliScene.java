@@ -25,7 +25,9 @@ import rajawali.animation.Animation;
 import rajawali.lights.ALight;
 import rajawali.materials.Material;
 import rajawali.materials.plugins.FogMaterialPlugin;
+import rajawali.materials.plugins.IMaterialPlugin;
 import rajawali.materials.plugins.FogMaterialPlugin.FogParams;
+import rajawali.materials.plugins.ShadowMapMaterialPlugin;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
@@ -88,6 +90,7 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mUsesCoverageAa;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
+	protected boolean mShadowsEnabled = false;
 
 	private List<Object3D> mChildren;
 	private List<Animation> mAnimations;
@@ -1767,6 +1770,23 @@ public class RajawaliScene extends AFrameTask {
 	
 	public void setUsesCoverageAa(boolean value) {
 		mUsesCoverageAa = value;
+	}
+	
+	public void enableShadows(boolean enable) {
+		mShadowsEnabled = enable;
+		
+		if(mShadowsEnabled) {
+			for(int i=0; i<mChildren.size(); i++)
+				addShadowMaterial(mChildren.get(i));
+		}
+	}
+	
+	private void addShadowMaterial(Object3D o) {
+		Material m = o.getMaterial();
+		
+		if(m != null) {
+			//m.addPlugin(plugin);
+		}
 	}
 	
 	/**
