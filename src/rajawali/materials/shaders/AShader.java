@@ -537,7 +537,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected ShaderVar addConst(String name, ShaderVar var) {
 		ShaderVar v = getInstanceForDataType(name, var.getDataType());
-		v.setValue(var.getName());
+		v.setValue(var.getValue());
 		v.isGlobal(true);
 		mConstants.put(v.getName(), v);
 		return v;
@@ -914,9 +914,9 @@ public abstract class AShader extends AShaderBase {
 		return s;
 	}
 	
-	public ShaderVar texture2DProj(ShaderVar var1, ShaderVar var2)
+	public RVec4 texture2DProj(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("texture2DProj(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		RVec4 s = new RVec4("texture2DProj(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
 		s.mInitialized = true;
 		return s;
 	}

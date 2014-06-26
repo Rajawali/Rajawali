@@ -1,28 +1,48 @@
 package rajawali.postprocessing.materials;
 
+import java.util.Arrays;
+
 import rajawali.Camera;
 import rajawali.bounds.BoundingBox;
 import rajawali.lights.DirectionalLight;
 import rajawali.materials.Material;
+import rajawali.materials.plugins.ShadowMapMaterialPlugin;
 import rajawali.materials.shaders.FragmentShader;
 import rajawali.materials.shaders.VertexShader;
+import rajawali.materials.textures.ATexture;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.scene.RajawaliScene;
+import rajawali.util.RajLog;
 import android.opengl.GLES20;
+import android.opengl.GLUtils;
 
 
 public class ShadowMapMaterial extends Material {
 	private RajawaliScene mScene;
+	private ShadowMapMaterialPlugin mMaterialPlugin;
+	private ShadowMapVertexShader mVertexShader;
+	private float mFrustumSize;
 	
 	public ShadowMapMaterial() {
 		super();
-		mCustomVertexShader = new ShadowMapVertexShader();
+		mVertexShader = new ShadowMapVertexShader();
+		mCustomVertexShader = mVertexShader;
 		mCustomFragmentShader = new ShadowMapFragmentShader();
+		mMaterialPlugin = new ShadowMapMaterialPlugin();
+	}
+	
+	public ShadowMapMaterial(Camera camera, RajawaliScene scene, DirectionalLight light) {
+		this();
+		setCamera(camera);
+		setScene(scene);
+		setLight(light);
 	}
 	
 	public void setCamera(Camera camera) {
 		((ShadowMapVertexShader)mCustomVertexShader).setCamera(camera);
+		mFrustumSize = (float)camera.getFarPlane();
+		mMaterialPlugin.setFrustumSize((float)camera.getFarPlane());
 	}
 	
 	public void setLight(DirectionalLight light) {
@@ -31,6 +51,23 @@ public class ShadowMapMaterial extends Material {
 	
 	public void setScene(RajawaliScene scene) {
 		mScene = scene;
+		mScene.setShadowMapMaterial(this);
+	}
+	
+	public void setShadowMapTexture(ATexture shadowMapTexture) {
+		mMaterialPlugin.setShadowMapTexture(shadowMapTexture);
+	}
+	
+	public ShadowMapMaterialPlugin getMaterialPlugin() {
+		return mMaterialPlugin;
+	}
+
+	@Override
+	public void applyParams()
+	{
+		super.applyParams();
+		mMaterialPlugin.setLightViewMatrix(mVertexShader.getLightViewMatrix());
+		mMaterialPlugin.setLightProjectionMatrix(mVertexShader.getLightProjectionMatrix());
 	}
 	
 	private final class ShadowMapVertexShader extends VertexShader {
@@ -54,7 +91,7 @@ public class ShadowMapMaterial extends Material {
 		
 		public ShadowMapVertexShader() {
 			super();
-						mFrustumCorners = new Vector3[8];
+			mFrustumCorners = new Vector3[8];
 			for(int i=0; i<8; i++)
 				mFrustumCorners[i] = new Vector3();
 		}
@@ -77,11 +114,17 @@ public class ShadowMapMaterial extends Material {
 		}
 		
 		@Override
+		public void setLocations(int programHandle) {
+			super.setLocations(programHandle);
+			muLightMatrixHandle = getUniformLocation(programHandle, U_MVP_LIGHT);
+		}
+
+		
+		@Override
 		public void applyParams() {
 			super.applyParams();
 
 			createLightViewProjectionMatrix(mLight).toFloatArray(mLightMatrix);
-			
 			GLES20.glUniformMatrix4fv(muLightMatrixHandle, 1, false, mLightMatrix, 0);
 		}
 		
@@ -132,11 +175,28 @@ public class ShadowMapMaterial extends Material {
 		public void setLight(DirectionalLight light) {
 			mLight = light;
 		}
+		
+		public Matrix4 getLightViewProjectionMatrix() {
+			return mLightViewProjectionMatrix;
+		}
+		
+		public Matrix4 getLightViewMatrix() {
+			return mLightViewMatrix;
+		}
+		
+		public Matrix4 getLightProjectionMatrix() {
+			return mLightProjectionMatrix;
+		}
 	}
 	
 	private final class ShadowMapFragmentShader extends FragmentShader {
 		private final static String V_TEXTURE_COORD = "vTextureCoord";
+		private final static String U_FRUSTUM_SIZE = "uFrustumSize";
+		
 		private RVec4 mvTextureCoord;
+		private RFloat muFrustumSize;
+		
+		private int muFrustumSizeHandle;
 		
 		public ShadowMapFragmentShader() {
 			super();
@@ -147,21 +207,27 @@ public class ShadowMapMaterial extends Material {
 			super.initialize();
 			
 			mvTextureCoord = (RVec4) addVarying(V_TEXTURE_COORD, DataType.VEC4);
+			muFrustumSize = (RFloat) addUniform(U_FRUSTUM_SIZE, DataType.FLOAT);
+		}
+		
+		@Override
+		public void setLocations(int programHandle) {
+			super.setLocations(programHandle);
+			muFrustumSizeHandle = getUniformLocation(programHandle, U_FRUSTUM_SIZE);
 		}
 		
 		@Override
 		public void main() {
 			// float value = 10.0 - v_v4TexCoord.z;
 			RFloat value = new RFloat("value");
-			value.assign(10.0f);
-			value.assignSubtract(mvTextureCoord.z());
+			value.assign(muFrustumSize.subtract(mvTextureCoord.z()));
 		    // float v = floor(value);
 		    // float f = value - v;
 			RFloat fraction = new RFloat("fraction");
 			fraction.assign(value.subtract(floor(value)));
 		    // float vn = v * 0.1;
 			RFloat valueNorm = new RFloat("valueNorm");
-			valueNorm.assign(value.multiply(0.1f));
+			valueNorm.assign(value.divide(muFrustumSize));
 		    // gl_FragColor = vec4(vn, f, 0.0, 1.0);
 			
 			RFloat depth = new RFloat("depth");
@@ -170,7 +236,7 @@ public class ShadowMapMaterial extends Material {
 //			GL_FRAG_COLOR.r().assign(valueNorm);
 //			GL_FRAG_COLOR.g().assign(fraction);
 //			GL_FRAG_COLOR.b().assign(0);
-			GL_FRAG_COLOR.a().assign(1);
+//			GL_FRAG_COLOR.a().assign(1);
 			GL_FRAG_COLOR.r().assign(depth);
 			GL_FRAG_COLOR.g().assign(depth);
 			GL_FRAG_COLOR.b().assign(depth);
@@ -179,6 +245,7 @@ public class ShadowMapMaterial extends Material {
 		@Override
 		public void applyParams() {
 			super.applyParams();
+			GLES20.glUniform1f(muFrustumSizeHandle, mFrustumSize);
 		}
 	}
 }

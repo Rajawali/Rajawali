@@ -51,4 +51,7 @@ public class AlphaMapFragmentShaderFragment extends ATextureFragmentShaderFragme
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}
+	
+	public void bindTextures(int nextIndex) {}
+	public void unbindTextures() {}
 }

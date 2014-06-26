@@ -31,6 +31,11 @@ public class DepthMaterialPlugin implements IMaterialPlugin {
 	public void setFarPlane(float farPlane) {
 		mFragmentShader.setFarPlane(farPlane);
 	}
+	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
 
 	private final class DepthFragmentShaderFragment extends AShader implements IShaderFragment {
 		public final static String SHADER_ID = "DEPTH_FRAGMENT_SHADER_FRAGMENT";
@@ -47,6 +52,11 @@ public class DepthMaterialPlugin implements IMaterialPlugin {
 			super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
 			initialize();
 		}
+		
+		@Override
+		public void bindTextures(int nextIndex) {}
+		@Override
+		public void unbindTextures() {}
 		
 		@Override
 		public void initialize() {

@@ -25,7 +25,6 @@ import rajawali.animation.Animation;
 import rajawali.lights.ALight;
 import rajawali.materials.Material;
 import rajawali.materials.plugins.FogMaterialPlugin;
-import rajawali.materials.plugins.IMaterialPlugin;
 import rajawali.materials.plugins.FogMaterialPlugin.FogParams;
 import rajawali.materials.plugins.ShadowMapMaterialPlugin;
 import rajawali.materials.textures.ATexture;
@@ -34,6 +33,7 @@ import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
+import rajawali.postprocessing.materials.ShadowMapMaterial;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.EmptyTask;
@@ -90,7 +90,7 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mUsesCoverageAa;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
-	protected boolean mShadowsEnabled = false;
+	private ShadowMapMaterial mShadowMapMaterial;
 
 	private List<Object3D> mChildren;
 	private List<Animation> mAnimations;
@@ -1516,6 +1516,7 @@ public class RajawaliScene extends AFrameTask {
 		if (mSceneGraph != null) {
 			mSceneGraph.addObject(child);
 		}
+		addShadowMapMaterialPlugin(child, mShadowMapMaterial == null ? null : mShadowMapMaterial.getMaterialPlugin());
 	}
 	
 	/**
@@ -1772,21 +1773,23 @@ public class RajawaliScene extends AFrameTask {
 		mUsesCoverageAa = value;
 	}
 	
-	public void enableShadows(boolean enable) {
-		mShadowsEnabled = enable;
-		
-		if(mShadowsEnabled) {
-			for(int i=0; i<mChildren.size(); i++)
-				addShadowMaterial(mChildren.get(i));
-		}
+	public void setShadowMapMaterial(ShadowMapMaterial material) {
+		mShadowMapMaterial = material;
 	}
 	
-	private void addShadowMaterial(Object3D o) {
+	private void addShadowMapMaterialPlugin(Object3D o, ShadowMapMaterialPlugin materialPlugin) {
 		Material m = o.getMaterial();
 		
 		if(m != null) {
-			//m.addPlugin(plugin);
+			if(materialPlugin != null) {
+				m.addPlugin(materialPlugin);			
+			} else {
+				m.removePlugin(mShadowMapMaterial.getMaterialPlugin());
+			}
 		}
+		
+		for(int i=0; i<o.getNumChildren(); i++)
+			addShadowMapMaterialPlugin(o.getChildAt(i), materialPlugin);
 	}
 	
 	/**

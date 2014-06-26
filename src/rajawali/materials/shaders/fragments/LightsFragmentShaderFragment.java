@@ -180,6 +180,11 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 		}
 	}
 	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
+	
 	public String getShaderId()
 	{
 		return SHADER_ID;

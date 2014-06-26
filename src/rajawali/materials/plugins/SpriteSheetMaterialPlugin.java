@@ -37,6 +37,11 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	public void pause() {
 		mVertexShader.pause();
 	}
+	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
 
 	private final class SpriteSheetVertexShaderFragment extends AShader implements IShaderFragment
 	{
@@ -137,5 +142,10 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		public PluginInsertLocation getInsertLocation() {
 			return PluginInsertLocation.IGNORE;
 		}
+		
+		@Override
+		public void bindTextures(int nextIndex) {}
+		@Override
+		public void unbindTextures() {}
 	}
 }

@@ -71,7 +71,10 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 	public String getShaderId() {
 		return SHADER_ID;
 	}
-	
+
+	public void bindTextures(int nextIndex) {}
+	public void unbindTextures() {}
+
 	@Override
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;

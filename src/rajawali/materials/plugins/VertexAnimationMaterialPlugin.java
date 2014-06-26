@@ -74,4 +74,9 @@ public class VertexAnimationMaterialPlugin implements IMaterialPlugin {
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.PRE_LIGHTING;
 	}
+	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
 }

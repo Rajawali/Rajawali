@@ -117,4 +117,9 @@ public class SkeletalAnimationMaterialPlugin implements IMaterialPlugin {
 	public void setBoneMatrix(double[] boneMatrix) {
 		mVertexShader.setBoneMatrix(boneMatrix);
 	}
+	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
 }

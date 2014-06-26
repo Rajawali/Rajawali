@@ -91,7 +91,7 @@ public abstract class AShaderBase {
 		U_TIME("uTime", DataType.FLOAT),
 		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3), A_VERTEX_COLOR("aVertexColor", DataType.VEC4),
 		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_CUBE_TEXTURE_COORD("vCubeTextureCoord", DataType.VEC3), V_NORMAL("vNormal", DataType.VEC3), V_COLOR("vColor", DataType.VEC4), V_EYE_DIR("vEyeDir", DataType.VEC3),
-		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4), G_TEXTURE_COORD("gTextureCoord", DataType.VEC2);
+		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4), G_TEXTURE_COORD("gTextureCoord", DataType.VEC2), G_SHADOW_VALUE("gShadowValue", DataType.FLOAT);
 		
 		private String mVarString;
 		private DataType mDataType;
@@ -701,7 +701,7 @@ public abstract class AShaderBase {
 					+ "" + m00 + "," + m01 + "," + m02 + "," + m03 + ",\n"
 					+ "" + m10 + "," + m11 + "," + m12 + "," + m13 + ",\n"
 					+ "" + m20 + "," + m21 + "," + m22 + "," + m23 + ",\n"
-					+ "" + m30 + "," + m31 + "," + m32 + "," + m33 + ");";
+					+ "" + m30 + "," + m31 + "," + m32 + "," + m33 + ")";
 		}
 	}
 	

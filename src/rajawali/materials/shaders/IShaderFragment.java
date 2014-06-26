@@ -39,4 +39,6 @@ public interface IShaderFragment {
 	void main();
 	void applyParams();
 	void setLocations(int programHandle);
+	void bindTextures(int nextIndex);
+	void unbindTextures();
 }

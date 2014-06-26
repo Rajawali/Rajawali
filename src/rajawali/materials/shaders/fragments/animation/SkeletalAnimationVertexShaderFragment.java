@@ -174,6 +174,11 @@ public class SkeletalAnimationVertexShaderFragment extends AShader implements IS
 	}
 	
 	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
+	
+	@Override
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}

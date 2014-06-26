@@ -151,4 +151,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}
+	
+	public void bindTextures(int nextIndex) {}
+	public void unbindTextures() {}
 }

@@ -656,12 +656,11 @@ public class Material extends AFrameTask {
 			mVertexShader.buildShader();
 			mFragmentShader.buildShader();
 			
-			/*
 			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
 			RajLog.d(mVertexShader.getShaderString());
 			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
 			RajLog.d(mFragmentShader.getShaderString());
-	*/
+			
 		}
 		else
 		{
@@ -674,16 +673,10 @@ public class Material extends AFrameTask {
 			if(mVertexShader.needsBuild()) mVertexShader.buildShader();
 			if(mFragmentShader.needsBuild()) mFragmentShader.buildShader();
 			
-			/*
-			mVertexShader.initialize();
-			mVertexShader.buildShader();
-			mFragmentShader.initialize();
-			mFragmentShader.buildShader();
-			
 			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
 			RajLog.d(mVertexShader.getShaderString());
 			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
-			RajLog.d(mFragmentShader.getShaderString());*/
+			RajLog.d(mFragmentShader.getShaderString());
 		}
 		
 		mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
@@ -843,6 +836,10 @@ public class Material extends AFrameTask {
 			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
 			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName()), i);
 		}
+		
+		if(mPlugins != null)
+			for(IMaterialPlugin plugin : mPlugins)
+				plugin.bindTextures(num);
 	}
 	
 	public void bindTextureByName(String name, int index, ATexture texture)
@@ -858,6 +855,10 @@ public class Material extends AFrameTask {
 	public void unbindTextures() {
 		int num = mTextureList.size();
 
+		if(mPlugins != null)
+			for(IMaterialPlugin plugin : mPlugins)
+				plugin.unbindTextures();
+		
 		for (int i = 0; i < num; i++) {
 			ATexture texture = mTextureList.get(i);
 			GLES20.glBindTexture(texture.getGLTextureType(), 0);

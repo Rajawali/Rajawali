@@ -167,4 +167,9 @@ public class ToonFragmentShaderFragment extends AShader implements IShaderFragme
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}
+	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
 }
