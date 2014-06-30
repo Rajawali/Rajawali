@@ -157,6 +157,7 @@ public class Camera extends ATransformable3D {
 
 	public void setProjectionMatrix(int width, int height) {
 		synchronized (mFrustumLock) {
+			if(mLastWidth != width || mLastHeight != height) mCameraDirty = true;
 			mLastWidth = width;
 			mLastHeight = height;
 			double ratio = ((double) width) / ((double) height);

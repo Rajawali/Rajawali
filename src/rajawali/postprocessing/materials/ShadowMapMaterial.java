@@ -1,8 +1,7 @@
 package rajawali.postprocessing.materials;
 
-import java.util.Arrays;
-
 import rajawali.Camera;
+import rajawali.Object3D;
 import rajawali.bounds.BoundingBox;
 import rajawali.lights.DirectionalLight;
 import rajawali.materials.Material;
@@ -13,16 +12,15 @@ import rajawali.materials.textures.ATexture;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.scene.RajawaliScene;
-import rajawali.util.RajLog;
 import android.opengl.GLES20;
-import android.opengl.GLUtils;
 
 
 public class ShadowMapMaterial extends Material {
 	private RajawaliScene mScene;
 	private ShadowMapMaterialPlugin mMaterialPlugin;
 	private ShadowMapVertexShader mVertexShader;
-	private float mFrustumSize;
+	private boolean mCurrentObjectIsBackSided;
+	private boolean mCurrentObjectIsDoubleSided;
 	
 	public ShadowMapMaterial() {
 		super();
@@ -41,8 +39,6 @@ public class ShadowMapMaterial extends Material {
 	
 	public void setCamera(Camera camera) {
 		((ShadowMapVertexShader)mCustomVertexShader).setCamera(camera);
-		mFrustumSize = (float)camera.getFarPlane();
-		mMaterialPlugin.setFrustumSize((float)camera.getFarPlane());
 	}
 	
 	public void setLight(DirectionalLight light) {
@@ -58,6 +54,19 @@ public class ShadowMapMaterial extends Material {
 		mMaterialPlugin.setShadowMapTexture(shadowMapTexture);
 	}
 	
+	public void setCurrentObject(Object3D currentObject) {
+		mCurrentObjectIsBackSided = currentObject.isBackSided();
+		mCurrentObjectIsDoubleSided = currentObject.isDoubleSided();
+		
+		currentObject.setBackSided(true);
+	}
+	
+	public void unsetCurrentObject(Object3D currentObject) {
+		currentObject.setBackSided(mCurrentObjectIsBackSided);
+		currentObject.setDoubleSided(mCurrentObjectIsDoubleSided);
+	}
+
+	
 	public ShadowMapMaterialPlugin getMaterialPlugin() {
 		return mMaterialPlugin;
 	}
@@ -66,17 +75,15 @@ public class ShadowMapMaterial extends Material {
 	public void applyParams()
 	{
 		super.applyParams();
-		mMaterialPlugin.setLightViewMatrix(mVertexShader.getLightViewMatrix());
-		mMaterialPlugin.setLightProjectionMatrix(mVertexShader.getLightProjectionMatrix());
+		mMaterialPlugin.setLightModelViewProjectionMatrix(mVertexShader.getLightViewProjectionMatrix());
 	}
 	
 	private final class ShadowMapVertexShader extends VertexShader {
 		private final static String U_MVP_LIGHT = "uMVPLight";
-		private final static String V_TEXTURE_COORD = "vTextureCoord";
 		
 		private RVec4 maPosition;
 		private RMat4 muLightMatrix;
-		private RVec4 mvTextureCoord;
+		private RMat4 muModelMatrix;
 		
 		private int muLightMatrixHandle;
 		
@@ -87,7 +94,7 @@ public class ShadowMapMaterial extends Material {
 		private Vector3 mFrustumCentroid = new Vector3();
 		private Matrix4 mLightViewMatrix = new Matrix4();
 		private Matrix4 mLightProjectionMatrix = new Matrix4();
-		private Matrix4 mLightViewProjectionMatrix = new Matrix4();
+		private Matrix4 mLightModelViewProjectionMatrix = new Matrix4();
 		
 		public ShadowMapVertexShader() {
 			super();
@@ -100,17 +107,14 @@ public class ShadowMapMaterial extends Material {
 		public void initialize() {
 			super.initialize();
 			
+			muModelMatrix = (RMat4) addUniform(DefaultShaderVar.U_MODEL_MATRIX);
 			muLightMatrix = (RMat4) addUniform(U_MVP_LIGHT, DataType.MAT4);
 			maPosition = (RVec4) addAttribute(DefaultShaderVar.A_POSITION);
-			mvTextureCoord = (RVec4) addVarying(V_TEXTURE_COORD, DataType.VEC4);
 		}
 		
 		@Override
 		public void main() {
-			//v_v4TexCoord = u_m4LightMVP * a_v4Position;
-		    //gl_Position = u_m4LightMVP * a_v4Position;
-		    mvTextureCoord.assign(muLightMatrix.multiply(maPosition));
-		    GL_POSITION.assign(muLightMatrix.multiply(maPosition));
+		    GL_POSITION.assign(muLightMatrix.multiply(muModelMatrix.multiply(maPosition)));
 		}
 		
 		@Override
@@ -144,6 +148,7 @@ public class ShadowMapMaterial extends Material {
 			//
 			// -- 
 			//
+			
 			BoundingBox lightBox = new BoundingBox(mFrustumCorners);
 			double distance = mFrustumCentroid.distanceTo(lightBox.getMin());
 			Vector3 lightDirection = light.getDirectionVector().clone();
@@ -162,10 +167,9 @@ public class ShadowMapMaterial extends Material {
             BoundingBox b = new BoundingBox(mFrustumCorners);
             mLightProjectionMatrix.setToOrthographic(b.getMin().x, b.getMax().x, b.getMin().y, b.getMax().y, -b.getMax().z, -b.getMin().z);
 
-            mLightViewProjectionMatrix.setAll(mLightProjectionMatrix);
-            mLightViewProjectionMatrix.multiply(mLightViewMatrix);
-            
-			return mLightViewProjectionMatrix;
+            mLightModelViewProjectionMatrix.setAll(mLightProjectionMatrix);
+            mLightModelViewProjectionMatrix.multiply(mLightViewMatrix);
+			return mLightModelViewProjectionMatrix;
 		}
 		
 		public void setCamera(Camera camera) {
@@ -177,27 +181,11 @@ public class ShadowMapMaterial extends Material {
 		}
 		
 		public Matrix4 getLightViewProjectionMatrix() {
-			return mLightViewProjectionMatrix;
-		}
-		
-		public Matrix4 getLightViewMatrix() {
-			return mLightViewMatrix;
-		}
-		
-		public Matrix4 getLightProjectionMatrix() {
-			return mLightProjectionMatrix;
+			return mLightModelViewProjectionMatrix;
 		}
 	}
 	
 	private final class ShadowMapFragmentShader extends FragmentShader {
-		private final static String V_TEXTURE_COORD = "vTextureCoord";
-		private final static String U_FRUSTUM_SIZE = "uFrustumSize";
-		
-		private RVec4 mvTextureCoord;
-		private RFloat muFrustumSize;
-		
-		private int muFrustumSizeHandle;
-		
 		public ShadowMapFragmentShader() {
 			super();
 		}
@@ -205,47 +193,24 @@ public class ShadowMapMaterial extends Material {
 		@Override
 		public void initialize() {
 			super.initialize();
-			
-			mvTextureCoord = (RVec4) addVarying(V_TEXTURE_COORD, DataType.VEC4);
-			muFrustumSize = (RFloat) addUniform(U_FRUSTUM_SIZE, DataType.FLOAT);
 		}
 		
 		@Override
 		public void setLocations(int programHandle) {
 			super.setLocations(programHandle);
-			muFrustumSizeHandle = getUniformLocation(programHandle, U_FRUSTUM_SIZE);
 		}
 		
 		@Override
 		public void main() {
-			// float value = 10.0 - v_v4TexCoord.z;
-			RFloat value = new RFloat("value");
-			value.assign(muFrustumSize.subtract(mvTextureCoord.z()));
-		    // float v = floor(value);
-		    // float f = value - v;
-			RFloat fraction = new RFloat("fraction");
-			fraction.assign(value.subtract(floor(value)));
-		    // float vn = v * 0.1;
-			RFloat valueNorm = new RFloat("valueNorm");
-			valueNorm.assign(value.divide(muFrustumSize));
-		    // gl_FragColor = vec4(vn, f, 0.0, 1.0);
-			
-			RFloat depth = new RFloat("depth");
-			depth.assign(GL_FRAG_COORD.z().divide(GL_FRAG_COORD.w()));
-			
-//			GL_FRAG_COLOR.r().assign(valueNorm);
-//			GL_FRAG_COLOR.g().assign(fraction);
-//			GL_FRAG_COLOR.b().assign(0);
-//			GL_FRAG_COLOR.a().assign(1);
-			GL_FRAG_COLOR.r().assign(depth);
-			GL_FRAG_COLOR.g().assign(depth);
-			GL_FRAG_COLOR.b().assign(depth);
+			GL_FRAG_COLOR.a().assign(1);
+			GL_FRAG_COLOR.r().assign(GL_FRAG_COORD.z());
+			GL_FRAG_COLOR.g().assign(GL_FRAG_COORD.z());
+			GL_FRAG_COLOR.b().assign(GL_FRAG_COORD.z());
 		}
 		
 		@Override
 		public void applyParams() {
 			super.applyParams();
-			GLES20.glUniform1f(muFrustumSizeHandle, mFrustumSize);
 		}
 	}
 }

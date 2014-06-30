@@ -963,6 +963,13 @@ public abstract class AShader extends AShaderBase {
 		return s;
 	}
 	
+	public ShaderVar acos(ShaderVar var)
+	{
+		ShaderVar s = new ShaderVar("acos(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
+	}
+	
 	public ShaderVar sin(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("sin(" + var.getName() + ")", DataType.FLOAT);

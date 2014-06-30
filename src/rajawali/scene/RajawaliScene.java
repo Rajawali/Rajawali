@@ -1794,7 +1794,7 @@ public class RajawaliScene extends AFrameTask {
 	
 	/**
 	 * Set if the scene graph should be displayed. How it is 
-	 * displayed is left to the implimentation of the graph.
+	 * displayed is left to the implementation of the graph.
 	 * 
 	 * @param display If true, the scene graph will be displayed.
 	 */

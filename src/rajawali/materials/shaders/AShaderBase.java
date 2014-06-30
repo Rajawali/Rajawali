@@ -827,6 +827,10 @@ public abstract class AShaderBase {
 		{
 			super(Float.toString(value), DataType.FLOAT, Float.toString(value), false);
 		}
+		
+		public void setValue(float value) {
+			super.setValue(Float.toString(value));
+		}
 	}
 
 	/**
