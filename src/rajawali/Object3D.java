@@ -249,7 +249,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
 			BoundingBox bbox = mGeometry.getBoundingBox();
 			bbox.transform(mMMatrix);
-			if (!camera.mFrustum.boundsInFrustum(bbox)) {
+			if (!camera.getFrustum().boundsInFrustum(bbox)) {
 				mIsInFrustum = false;
 			}
 		}
@@ -299,6 +299,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				
 				material.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			}
+			material.setCurrentObject(this);
 			material.applyParams();
 			if(mOverrideMaterialColor)
 				material.setColor(mColor);
@@ -317,6 +318,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			if (!mIsPartOfBatch && !mRenderChildrenAsBatch && sceneMaterial == null) {
 				material.unbindTextures();
 			}
+			
+			material.unsetCurrentObject(this);
 			
 			if (mEnableBlending) {
 				GLES20.glDisable(GLES20.GL_BLEND);

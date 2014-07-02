@@ -128,12 +128,12 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 					//
 					// -- if(uSpotCutoffAngle < 180.0 ) {
 					//
-					startif(muSpotCutoffAngle[spotCount], "<", 180.0f);
+					startif(new Condition(muSpotCutoffAngle[spotCount], Operator.LESS_THAN, 180.0f));
 					{
 						//
 						// -- if(spotFactor >= cos(radians(uSpotCutoffAngle))) {
 						//
-						startif(spotFactor, ">=", cos(radians(muSpotCutoffAngle[spotCount])));
+						startif(new Condition(spotFactor, Operator.GREATER_THAN_EQUALS, cos(radians(muSpotCutoffAngle[spotCount]))));
 						{
 							//
 							// -- spotFactor = (1.0 - (1.0 - spotFactor * 1.0 / (1.0 - cos(radians(uSpotCutoffAngle))));
@@ -179,6 +179,11 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 			}
 		}
 	}
+	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
 	
 	public String getShaderId()
 	{

@@ -49,7 +49,10 @@ public class Vector3 {
 	 * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
 	 */
 	public static final Vector3 Z = new Vector3(0,0,1);
-
+	/**
+	 * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+	 */
+	public static final Vector3 ZERO = new Vector3(0, 0, 0);
 	//Scratch vector. We use lazy loading here.
 	private Vector3 mTemp = null;
 
@@ -385,6 +388,17 @@ public class Vector3 {
 	 */
 	public static Vector3 multiplyAndCreate(Vector3 a, Vector3 b) {
 		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+	}
+	
+	/**
+	 * Scales each component of this {@link Vector3} by the specified value and creates a new one to hold the result.
+	 * 
+	 * @param a {@link Vector3} The first vector.
+	 * @param value double The value to scale each component by.
+	 * @return {@link Vector3} The resulting {@link Vector3}.
+	 */
+	public static Vector3 multiplyAndCreate(Vector3 a, double value) {
+		return new Vector3(a.x * value, a.y * value, a.z * value);
 	}
 	
 	/**

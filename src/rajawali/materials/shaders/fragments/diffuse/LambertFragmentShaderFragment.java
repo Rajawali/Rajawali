@@ -83,7 +83,15 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		RVec3 ambientColor = (RVec3) getGlobal(LightsShaderVar.V_AMBIENT_COLOR);
 		color.rgb().assign(enclose(diffuse.multiply(color.rgb())).add(ambientColor));
+		ShaderVar gShadowValue = getGlobal(DefaultShaderVar.G_SHADOW_VALUE);
+		color.rgb().assign(
+				color.rgb().multiply(enclose(new RFloat("1.0").subtract(gShadowValue))));
 	}
+	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
 	
 	@Override
 	public PluginInsertLocation getInsertLocation() {

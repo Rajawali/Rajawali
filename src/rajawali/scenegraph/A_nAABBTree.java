@@ -16,17 +16,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import android.util.Log;
-
 import rajawali.ATransformable3D;
 import rajawali.Camera;
 import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.bounds.IBoundingVolume;
-import rajawali.math.Matrix;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
+import android.util.Log;
 
 /**
  * Generic Axis Aligned Bounding Box based tree sorting hierarchy. Subclasses

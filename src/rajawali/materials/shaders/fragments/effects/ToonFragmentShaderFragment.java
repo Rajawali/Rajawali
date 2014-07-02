@@ -102,15 +102,15 @@ public class ToonFragmentShaderFragment extends AShader implements IShaderFragme
 			intensity.assignAdd(power);
 		}
 		
-		startif(intensity, ">", .95f);
+		startif(new Condition(intensity, Operator.GREATER_THAN, .95f));
 		{
 			color.assign(muToonColor0);
 		}
-		ifelseif(intensity, ">", .5f);
+		ifelseif(new Condition(intensity, Operator.GREATER_THAN, .5f));
 		{
 			color.assign(muToonColor1);
 		}
-		ifelseif(intensity, ">", .25f);
+		ifelseif(new Condition(intensity, Operator.GREATER_THAN, .25f));
 		{
 			color.assign(muToonColor2);
 		}
@@ -167,4 +167,9 @@ public class ToonFragmentShaderFragment extends AShader implements IShaderFragme
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}
+	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
 }

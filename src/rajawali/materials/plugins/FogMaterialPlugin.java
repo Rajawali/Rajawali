@@ -55,6 +55,11 @@ public class FogMaterialPlugin implements IMaterialPlugin {
 		return mFragmentShader;
 	}
 	
+	@Override
+	public void bindTextures(int nextIndex) {}
+	@Override
+	public void unbindTextures() {}
+	
 	private final class FogVertexShaderFragment extends AShader implements IShaderFragment {
 		public final static String SHADER_ID = "FOG_VERTEX_SHADER_FRAGMENT";
 		
@@ -114,7 +119,7 @@ public class FogMaterialPlugin implements IMaterialPlugin {
 			mvFogDensity.assign(0);
 			
 			// -- if (uFogEnabled == true){
-			startif(muFogEnabled, "==", true);
+			startif(new Condition(muFogEnabled, Operator.EQUALS, true));
 			{
 				// -- vFogDensity = (gl_Position.z - uFogNear) / (uFogFar - uFogNear);
 				mvFogDensity.assign(
@@ -136,7 +141,12 @@ public class FogMaterialPlugin implements IMaterialPlugin {
 		@Override
 		public String getShaderId() {
 			return SHADER_ID;
-		}		
+		}
+		
+		@Override
+		public void bindTextures(int nextIndex) {}
+		@Override
+		public void unbindTextures() {}
 	}
 
 	private final class FogFragmentShaderFragment extends AShader implements IShaderFragment {
@@ -195,6 +205,11 @@ public class FogMaterialPlugin implements IMaterialPlugin {
 		@Override
 		public String getShaderId() {
 			return SHADER_ID;
-		}		
+		}	
+		
+		@Override
+		public void bindTextures(int nextIndex) {}
+		@Override
+		public void unbindTextures() {}
 	}
 }

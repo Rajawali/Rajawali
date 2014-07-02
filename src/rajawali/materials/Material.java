@@ -147,7 +147,7 @@ public class Material extends AFrameTask {
 	/**
 	 * The model matrix holds the object's local coordinates
 	 */
-	private float[] mModelMatrix;
+	private Matrix4 mModelMatrix;
 	/**
 	 * The model view matrix is used to transform vertices to eye coordinates
 	 */
@@ -655,18 +655,29 @@ public class Material extends AFrameTask {
 			
 			mVertexShader.buildShader();
 			mFragmentShader.buildShader();
-			
 			/*
 			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
 			RajLog.d(mVertexShader.getShaderString());
 			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
 			RajLog.d(mFragmentShader.getShaderString());
-		*/
+			*/
 		}
 		else
 		{
 			mVertexShader = mCustomVertexShader;
 			mFragmentShader = mCustomFragmentShader;
+			
+			mVertexShader.initialize();
+			mFragmentShader.initialize();
+
+			if(mVertexShader.needsBuild()) mVertexShader.buildShader();
+			if(mFragmentShader.needsBuild()) mFragmentShader.buildShader();
+			/*
+			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
+			RajLog.d(mVertexShader.getShaderString());
+			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
+			RajLog.d(mFragmentShader.getShaderString());
+			*/
 		}
 		
 		mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
@@ -826,6 +837,10 @@ public class Material extends AFrameTask {
 			GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
 			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName()), i);
 		}
+		
+		if(mPlugins != null)
+			for(IMaterialPlugin plugin : mPlugins)
+				plugin.bindTextures(num);
 	}
 	
 	public void bindTextureByName(String name, int index, ATexture texture)
@@ -841,6 +856,10 @@ public class Material extends AFrameTask {
 	public void unbindTextures() {
 		int num = mTextureList.size();
 
+		if(mPlugins != null)
+			for(IMaterialPlugin plugin : mPlugins)
+				plugin.unbindTextures();
+		
 		for (int i = 0; i < num; i++) {
 			ATexture texture = mTextureList.get(i);
 			GLES20.glBindTexture(texture.getGLTextureType(), 0);
@@ -941,7 +960,7 @@ public class Material extends AFrameTask {
 	 * 
 	 * @return
 	 */
-	public float[] getModelViewMatrix() {
+	public Matrix4 getModelViewMatrix() {
 		return mModelMatrix;
 	}
 
@@ -960,7 +979,7 @@ public class Material extends AFrameTask {
 	 * @param modelMatrix
 	 */
 	public void setModelMatrix(Matrix4 modelMatrix) {
-		mModelMatrix = modelMatrix.getFloatValues();
+		mModelMatrix = modelMatrix;//.getFloatValues();
 		mVertexShader.setModelMatrix(mModelMatrix);
 		
 		mNormalMatrix.setAll(modelMatrix).setToNormalMatrix();
@@ -1215,6 +1234,10 @@ public class Material extends AFrameTask {
 		
 		return null;
 	}
+	
+	public void setCurrentObject(Object3D currentObject) {}
+	
+	public void unsetCurrentObject(Object3D currentObject) {}
 	
 	/**
 	 * Remove a material plugin. A material plugin is basically

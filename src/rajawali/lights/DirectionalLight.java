@@ -54,4 +54,9 @@ public class DirectionalLight extends ALight {
 		mDirection[2] = mDirectionVec.z;
 		return mDirection;
 	}
+	
+	public Vector3 getDirectionVector() {
+		getDirection();
+		return mDirectionVec;
+	}
 }

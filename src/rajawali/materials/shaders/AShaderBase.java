@@ -91,7 +91,8 @@ public abstract class AShaderBase {
 		U_TIME("uTime", DataType.FLOAT),
 		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3), A_VERTEX_COLOR("aVertexColor", DataType.VEC4),
 		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_CUBE_TEXTURE_COORD("vCubeTextureCoord", DataType.VEC3), V_NORMAL("vNormal", DataType.VEC3), V_COLOR("vColor", DataType.VEC4), V_EYE_DIR("vEyeDir", DataType.VEC3),
-		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4), G_TEXTURE_COORD("gTextureCoord", DataType.VEC2);
+		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4), G_TEXTURE_COORD("gTextureCoord", DataType.VEC2), G_SHADOW_VALUE("gShadowValue", DataType.FLOAT),
+		G_SPECULAR_VALUE("gSpecularValue", DataType.FLOAT);
 		
 		private String mVarString;
 		private DataType mDataType;
@@ -692,6 +693,17 @@ public abstract class AShaderBase {
 		{
 			super(DataType.MAT4, value);
 		}
+		
+		public void setValue(float m00, float m01, float m02, float m03,
+				float m10, float m11, float m12, float m13,
+				float m20, float m21, float m22, float m23,
+				float m30, float m31, float m32, float m33) {
+			mValue = "mat4("
+					+ "" + m00 + "," + m01 + "," + m02 + "," + m03 + ",\n"
+					+ "" + m10 + "," + m11 + "," + m12 + "," + m13 + ",\n"
+					+ "" + m20 + "," + m21 + "," + m22 + "," + m23 + ",\n"
+					+ "" + m30 + "," + m31 + "," + m32 + "," + m33 + ")";
+		}
 	}
 	
 	/**
@@ -815,6 +827,10 @@ public abstract class AShaderBase {
 		public RFloat(float value)
 		{
 			super(Float.toString(value), DataType.FLOAT, Float.toString(value), false);
+		}
+		
+		public void setValue(float value) {
+			super.setValue(Float.toString(value));
 		}
 	}
 

@@ -67,6 +67,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 	@Override
 	public void main() {
 		RFloat specular = new RFloat("specular");
+		RFloat gSpecularValue = (RFloat) getGlobal(DefaultShaderVar.G_SPECULAR_VALUE);
 		specular.assign(0);
 		
 		for(int i=0; i<mLights.size(); ++i) {
@@ -79,10 +80,10 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 			specular.assignAdd(spec);
 		}
 				
-		specular.assignMultiply(muSpecularIntensity);
+		specular.assignMultiply(muSpecularIntensity.multiply(gSpecularValue));
 		
 		RVec2 textureCoord = (RVec2)getGlobal(DefaultShaderVar.G_TEXTURE_COORD);
-		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
+		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);		
 		
 		if(mTextures != null && mTextures.size() > 0)
 		{
@@ -151,4 +152,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}
+	
+	public void bindTextures(int nextIndex) {}
+	public void unbindTextures() {}
 }

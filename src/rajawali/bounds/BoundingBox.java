@@ -37,16 +37,31 @@ public class BoundingBox implements IBoundingVolume {
 	protected AtomicInteger mBoundingColor = new AtomicInteger(0xffffff00);
 	
 	public BoundingBox() {
+		this(new Vector3[8]);
+	}
+	
+	public BoundingBox(Vector3[] points) {
 		mTransformedMin = new Vector3();
 		mTransformedMax = new Vector3();
 		mTmpMin = new Vector3();
 		mTmpMax = new Vector3();
 		mPoints = new Vector3[8];
 		mTmp = new Vector3[8];
-		mMin = new Vector3();
-		mMax = new Vector3();
+		mMin = new Vector3(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+		mMax = new Vector3(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
+
 		for(int i=0; i<8; ++i) {
-			mPoints[i] = new Vector3();
+			if(points[i] != null) {
+				Vector3 p = points[i]; 
+				if(p.x < mMin.x) mMin.x = p.x;
+				if(p.y < mMin.y) mMin.y = p.y;
+				if(p.z < mMin.z) mMin.z = p.z;
+				if(p.x > mMax.x) mMax.x = p.x;
+				if(p.y > mMax.y) mMax.y = p.y;
+				if(p.z > mMax.z) mMax.z = p.z;
+			}
+			
+			mPoints[i] = points[i] == null ? new Vector3() : points[i].clone();
 			mTmp[i] = new Vector3();
 		}
 	}
@@ -59,8 +74,8 @@ public class BoundingBox implements IBoundingVolume {
 	
 	public void copyPoints(Vector3[] pts){
 		
-		Vector3 min = mTransformedMin;
-		Vector3 max = mTransformedMax;
+		Vector3 min = mMin;
+		Vector3 max = mMax;
 		// -- bottom plane
 		// -- -x, -y, -z
 		pts[0].setAll(min.x, min.y, min.z);

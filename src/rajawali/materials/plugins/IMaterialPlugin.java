@@ -50,4 +50,6 @@ public interface IMaterialPlugin {
 	 * @return
 	 */
 	IShaderFragment getFragmentShaderFragment();
+	void bindTextures(int nextIndex);
+	void unbindTextures();
 }

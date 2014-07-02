@@ -26,12 +26,14 @@ import rajawali.lights.ALight;
 import rajawali.materials.Material;
 import rajawali.materials.plugins.FogMaterialPlugin;
 import rajawali.materials.plugins.FogMaterialPlugin.FogParams;
+import rajawali.materials.plugins.ShadowMapMaterialPlugin;
 import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
+import rajawali.postprocessing.materials.ShadowMapMaterial;
 import rajawali.primitives.Cube;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.EmptyTask;
@@ -88,6 +90,7 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mUsesCoverageAa;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
+	private ShadowMapMaterial mShadowMapMaterial;
 
 	private List<Object3D> mChildren;
 	private List<Animation> mAnimations;
@@ -108,6 +111,7 @@ public class RajawaliScene extends AFrameTask {
 	*/
 	private Camera mNextCamera;
 	private final Object mNextCameraLock = new Object();
+	private boolean mDebugCameras = false;
 	
 	/**
 	 * Frame task queue. Adding, removing or replacing members
@@ -764,6 +768,19 @@ public class RajawaliScene extends AFrameTask {
 				child.setBlendingEnabled(blendingEnabled);
 			}
 		}
+		
+		if(mDebugCameras) {
+			for(Camera camera : mCameras) {
+				if(camera == mCamera) continue;
+				camera.setProjectionMatrix(mRenderer.getCurrentViewportWidth(), mRenderer.getCurrentViewportHeight());
+				Matrix4 viewMatrix = camera.getViewMatrix();
+				Matrix4 projectionMatrix = camera.getProjectionMatrix();
+				Matrix4 viewProjectionMatrix = projectionMatrix.clone().multiply(viewMatrix);
+				viewProjectionMatrix.inverse();
+				camera.updateFrustum(viewProjectionMatrix);
+				camera.drawFrustum(mCamera, mVPMatrix, mPMatrix, mVMatrix, null);
+			}
+		}
 
 		if (mDisplaySceneGraph) {
 			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
@@ -1401,6 +1418,10 @@ public class RajawaliScene extends AFrameTask {
 		mLights.clear();
 	}
 	
+	public List<ALight> getLights() {
+		return mLights;
+	}
+	
 	/**
 	 * Creates a shallow copy of the internal lights list. 
 	 * 
@@ -1495,6 +1516,7 @@ public class RajawaliScene extends AFrameTask {
 		if (mSceneGraph != null) {
 			mSceneGraph.addObject(child);
 		}
+		addShadowMapMaterialPlugin(child, mShadowMapMaterial == null ? null : mShadowMapMaterial.getMaterialPlugin());
 	}
 	
 	/**
@@ -1733,6 +1755,10 @@ public class RajawaliScene extends AFrameTask {
 		return mAlwaysClearColorBuffer;
 	}
 	
+	public void setDebugCameras(boolean debugCameras) {
+		mDebugCameras = debugCameras;
+	}
+	
 	/**
 	 * Updates the projection matrix of the current camera for new view port dimensions.
 	 * 
@@ -1747,9 +1773,28 @@ public class RajawaliScene extends AFrameTask {
 		mUsesCoverageAa = value;
 	}
 	
+	public void setShadowMapMaterial(ShadowMapMaterial material) {
+		mShadowMapMaterial = material;
+	}
+	
+	private void addShadowMapMaterialPlugin(Object3D o, ShadowMapMaterialPlugin materialPlugin) {
+		Material m = o.getMaterial();
+		
+		if(m != null && m.lightingEnabled()) {
+			if(materialPlugin != null) {
+				m.addPlugin(materialPlugin);			
+			} else if(mShadowMapMaterial != null) {
+				m.removePlugin(mShadowMapMaterial.getMaterialPlugin());
+			}
+		}
+		
+		for(int i=0; i<o.getNumChildren(); i++)
+			addShadowMapMaterialPlugin(o.getChildAt(i), materialPlugin);
+	}
+	
 	/**
 	 * Set if the scene graph should be displayed. How it is 
-	 * displayed is left to the implimentation of the graph.
+	 * displayed is left to the implementation of the graph.
 	 * 
 	 * @param display If true, the scene graph will be displayed.
 	 */

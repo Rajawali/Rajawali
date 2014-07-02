@@ -553,12 +553,12 @@ public class SquareTerrain extends Terrain {
 
 		mTmpPlane.set(mTmpV0, mTmpV1, mTmpV2);
 		double alt;
-		if (Math.abs(mTmpPlane.mNormal.y) < 0.00001) {
+		if (Math.abs(mTmpPlane.getNormal().y) < 0.00001) {
 			alt = Math.min(mTmpV1.y, mTmpV0.y);
 			alt = Math.min(alt, mTmpV2.y);
 		}
 		else {
-			alt = (-mTmpPlane.mNormal.x * xx - mTmpPlane.mNormal.z * zz - mTmpPlane.d) / mTmpPlane.mNormal.y;
+			alt = (-mTmpPlane.getNormal().x * xx - mTmpPlane.getNormal().z * zz - mTmpPlane.getD()) / mTmpPlane.getNormal().y;
 		}
 
 		if (debug) {
@@ -669,21 +669,21 @@ public class SquareTerrain extends Terrain {
 				// Triangle B flagcase=0
 				mTmpNorV2.setAll(fx + 1, mTerrain[i + 1][j + 1], fz + 1);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
-				normal.setAll(mTmpNorPlane.mNormal);
+				normal.setAll(mTmpNorPlane.getNormal());
 			}
 				break;
 			case 1: {
 				// Triangle F flagcase=1
 				mTmpNorV2.setAll(fx + 1, mTerrain[i + 1][j + 1], fz + 1);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
-				normal.setAll(mTmpNorPlane.mNormal);
+				normal.setAll(mTmpNorPlane.getNormal());
 			}
 				break;
 			case 2: {
 				// Triangle C flagcase=2
 				mTmpNorV2.setAll(fx + 1, mTerrain[i + 1][j + 1], fz + 1);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
-				normal.setAll(mTmpNorPlane.mNormal);
+				normal.setAll(mTmpNorPlane.getNormal());
 				normal.multiply(-1);
 			}
 				break;
@@ -691,7 +691,7 @@ public class SquareTerrain extends Terrain {
 				// Triangle G flagcase=3
 				mTmpNorV2.setAll(fx + 1, mTerrain[i + 1][j + 1], fz + 1);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
-				normal.setAll(mTmpNorPlane.mNormal);
+				normal.setAll(mTmpNorPlane.getNormal());
 				normal.multiply(-1);
 			}
 				break;
@@ -702,7 +702,7 @@ public class SquareTerrain extends Terrain {
 				// Triangle A flagcase=0
 				mTmpNorV2.setAll(fx, mTerrain[i][j], fz);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
-				normal.setAll(mTmpNorPlane.mNormal);
+				normal.setAll(mTmpNorPlane.getNormal());
 				normal.multiply(-1);
 			}
 				break;
@@ -710,7 +710,7 @@ public class SquareTerrain extends Terrain {
 				// Triangle E flagcase=1
 				mTmpNorV2.setAll(fx, mTerrain[i][j + 2], fz + 2);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
-				normal.setAll(mTmpNorPlane.mNormal);
+				normal.setAll(mTmpNorPlane.getNormal());
 				normal.multiply(-1);
 			}
 				break;
@@ -718,14 +718,14 @@ public class SquareTerrain extends Terrain {
 				// Triangle D flagcase=2
 				mTmpNorV2.setAll(fx + 2, mTerrain[i + 2][j], fz);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
-				normal.setAll(mTmpNorPlane.mNormal);
+				normal.setAll(mTmpNorPlane.getNormal());
 			}
 				break;
 			case 3: {
 				// Triangle H flagcase=3
 				mTmpNorV2.setAll(fx + 2, mTerrain[i + 2][j + 2], fz + 2);
 				mTmpNorPlane.set(mTmpNorV0, mTmpNorV1, mTmpNorV2);
-				normal.setAll(mTmpNorPlane.mNormal);
+				normal.setAll(mTmpNorPlane.getNormal());
 			}
 				break;
 			}

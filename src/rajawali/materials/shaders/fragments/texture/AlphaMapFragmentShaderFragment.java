@@ -39,7 +39,7 @@ public class AlphaMapFragmentShaderFragment extends ATextureFragmentShaderFragme
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			alphaMaskColor.assign(texture2D(muTextures[i], textureCoord));
-			startif(alphaMaskColor.r(), "<", .5f);
+			startif(new Condition(alphaMaskColor.r(), Operator.LESS_THAN, .5f));
 			{
 				discard();
 			}
@@ -51,4 +51,7 @@ public class AlphaMapFragmentShaderFragment extends ATextureFragmentShaderFragme
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}
+	
+	public void bindTextures(int nextIndex) {}
+	public void unbindTextures() {}
 }

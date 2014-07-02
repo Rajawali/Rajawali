@@ -37,12 +37,7 @@ public class CopyPass extends Material {
 	{
 		public MinimalVertexShader() {
 			super();
-			initialize();
-		}
-		
-		@Override
-		public void initialize()
-		{
+			mNeedsBuild = false;
 			mShaderString = RawShaderLoader.fetch(R.raw.minimal_vertex_shader);
 		}
 	}
@@ -54,12 +49,7 @@ public class CopyPass extends Material {
 		
 		public CopyFragmentShader() {
 			super();
-			initialize();
-		}
-		
-		@Override
-		public void initialize()
-		{
+			mNeedsBuild = false;
 			mShaderString = RawShaderLoader.fetch(R.raw.copy_fragment_shader);
 		}
 		

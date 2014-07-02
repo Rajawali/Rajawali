@@ -114,6 +114,21 @@ public abstract class AShader extends AShaderBase {
 	public static enum ShaderType {
 		VERTEX, FRAGMENT, VERTEX_SHADER_FRAGMENT, FRAGMENT_SHADER_FRAGMENT
 	}
+	
+	public static enum Operator {
+		LESS_THAN("<"), LESS_THAN_EQUALS("<="), GREATER_THAN(">"), GREATER_THAN_EQUALS(">="),
+		EQUALS("=="), NOT_EQUALS("!="), AND("&&"), OR("||"), XOR("^^");
+		
+		private String mOperatorString;
+		
+		Operator(String operatorString) {
+			mOperatorString = operatorString;
+		}
+		
+		public String getOperatorString() {
+			return mOperatorString;
+		}
+	}
 
 	/**
 	 * Defines the position of the current vertex. This is used in the vertex shader to
@@ -149,6 +164,7 @@ public abstract class AShader extends AShaderBase {
 	private Hashtable<String, ShaderVar> mConstants;
 	protected List<IShaderFragment> mShaderFragments;
 	protected int mProgramHandle;
+	protected boolean mNeedsBuild = true;
 	
 	public AShader() {}
 	
@@ -521,7 +537,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected ShaderVar addConst(String name, ShaderVar var) {
 		ShaderVar v = getInstanceForDataType(name, var.getDataType());
-		v.setValue(var.getName());
+		v.setValue(var.getValue());
 		v.isGlobal(true);
 		mConstants.put(v.getName(), v);
 		return v;
@@ -897,6 +913,13 @@ public abstract class AShader extends AShaderBase {
 		s.mInitialized = true;
 		return s;
 	}
+	
+	public RVec4 texture2DProj(ShaderVar var1, ShaderVar var2)
+	{
+		RVec4 s = new RVec4("texture2DProj(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		s.mInitialized = true;
+		return s;
+	}
 
 	public ShaderVar distance(ShaderVar var1, ShaderVar var2)
 	{
@@ -936,6 +959,13 @@ public abstract class AShader extends AShaderBase {
 	public ShaderVar cos(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("cos(" + var.getName() + ")", DataType.FLOAT);
+		s.mInitialized = true;
+		return s;
+	}
+	
+	public ShaderVar acos(ShaderVar var)
+	{
+		ShaderVar s = new ShaderVar("acos(" + var.getName() + ")", DataType.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
@@ -1002,42 +1032,109 @@ public abstract class AShader extends AShaderBase {
 		mShaderSB.append("discard;\n");
 	}
 	
-	public void startif(ShaderVar var1, String operator, ShaderVar var2)
-	{
-		startif(var1, operator, var2.getName());
-	}
-
-	public void startif(ShaderVar var, String operator, float value)
-	{
-		startif(var, operator, Float.toString(value));
+	public static class Condition {
+		private ShaderVar mLeftValue;
+		private Operator mOperator;
+		private String mRightValue;
+		private Operator mJoinOperator;		
+		
+		public Condition(Operator joinOperator, ShaderVar leftValue, Operator operator, String rightValue) {
+			mJoinOperator = joinOperator;
+			mLeftValue = leftValue;
+			mOperator = operator;
+			mRightValue = rightValue;
+		}
+		
+		public Condition(Operator joinOperator, ShaderVar leftValue, Operator operator, ShaderVar rightValue) {
+			this(joinOperator, leftValue, operator, rightValue.getName());
+		}
+		
+		public Condition(Operator joinOperator, ShaderVar leftValue, Operator operator, float rightValue) {
+			this(joinOperator, leftValue, operator, Float.toString(rightValue));
+		}
+		
+		public Condition(Operator joinOperator, ShaderVar leftValue, Operator operator, boolean rightValue)
+		{
+			this(joinOperator, leftValue, operator, rightValue == true ? "true" : "false");
+		}
+		
+		public Condition(ShaderVar leftValue, Operator operator, String rightValue) {
+			this(null, leftValue, operator, rightValue);
+		}
+		
+		public Condition(ShaderVar leftValue, Operator operator, ShaderVar rightValue) {
+			this(leftValue, operator, rightValue.getName());
+		}
+		
+		public Condition(ShaderVar leftValue, Operator operator, float rightValue)
+		{
+			this(leftValue, operator, Float.toString(rightValue));
+		}
+		
+		public Condition(ShaderVar leftValue, Operator operator, boolean rightValue)
+		{
+			this(leftValue, operator, rightValue == true ? "true" : "false");
+		}
+		
+		public ShaderVar getLeftValue() {
+			return mLeftValue;
+		}
+		
+		public Operator getOperator() {
+			return mOperator;
+		}
+		
+		public String getRightValue() {
+			return mRightValue;
+		}
+		
+		public Operator getJoinOperator() {
+			return mJoinOperator;
+		}
 	}
 	
-	public void startif(ShaderVar var, String operator, boolean value)
-	{
-		startif(var, operator, value == true ? "true" : "false");
-	}
-	
-	public void startif(ShaderVar var, String operator, String value)
-	{
+	public void startif(Condition... conditions) {
 		mShaderSB.append("if(");
-		mShaderSB.append(var.getName());
-		mShaderSB.append(operator);
-		mShaderSB.append(value);
+		for(int i=0; i<conditions.length; i++) {
+			Condition condition = conditions[i];
+			if(i > 0) mShaderSB.append(condition.getJoinOperator().getOperatorString());			
+			mShaderSB.append(condition.getLeftValue().getVarName());
+			mShaderSB.append(condition.getOperator().getOperatorString());
+			mShaderSB.append(condition.getRightValue());
+		}
 		mShaderSB.append(")\n{\n");
 	}
 	
-	public void ifelseif(ShaderVar var, String operator, float value)
+	public void startif(Condition condition)
 	{
-		ifelseif(var, operator, Float.toString(value));
+		mShaderSB.append("if(");
+		mShaderSB.append(condition.getLeftValue().getVarName());
+		mShaderSB.append(condition.getOperator().getOperatorString());
+		mShaderSB.append(condition.getRightValue());
+		mShaderSB.append(")\n{\n");
 	}
 	
-	public void ifelseif(ShaderVar var, String operator, String value)
+	public void ifelseif(Condition... conditions)
 	{
 		mShaderSB.append("} else ");
 		mShaderSB.append("if(");
-		mShaderSB.append(var.getName());
-		mShaderSB.append(operator);
-		mShaderSB.append(value);
+		for(int i=0; i<conditions.length; i++) {
+			Condition condition = conditions[i];
+			if(i > 0) mShaderSB.append(condition.getJoinOperator().getOperatorString());			
+			mShaderSB.append(condition.getLeftValue().getVarName());
+			mShaderSB.append(condition.getOperator().getOperatorString());
+			mShaderSB.append(condition.getRightValue());
+		}
+		mShaderSB.append(")\n{\n");
+	}
+	
+	public void ifelseif(Condition condition)
+	{
+		mShaderSB.append("} else ");
+		mShaderSB.append("if(");
+		mShaderSB.append(condition.getLeftValue().getVarName());
+		mShaderSB.append(condition.getOperator().getOperatorString());
+		mShaderSB.append(condition.getRightValue());
 		mShaderSB.append(")\n{\n");
 	}
 	
@@ -1185,5 +1282,13 @@ public abstract class AShader extends AShaderBase {
 		var.setValue("(" + value.getName() + ")");
 		var.setName(var.getValue());
 		return var;
+	}
+	
+	public boolean needsBuild() {
+		return mNeedsBuild;
+	}
+	
+	public void setNeedsBuild(boolean needsBuild) {
+		mNeedsBuild = needsBuild;
 	}
 }

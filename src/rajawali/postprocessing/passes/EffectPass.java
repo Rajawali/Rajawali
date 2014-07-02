@@ -52,6 +52,8 @@ public class EffectPass extends APass {
 	{
 		mVertexShader = new VertexShader(vertexShaderResourceId);
 		mFragmentShader = new FragmentShader(fragmentShaderResourceId);
+		mVertexShader.setNeedsBuild(false);
+		mFragmentShader.setNeedsBuild(false);
 		setMaterial(new Material(mVertexShader, mFragmentShader));
 	}
 	
