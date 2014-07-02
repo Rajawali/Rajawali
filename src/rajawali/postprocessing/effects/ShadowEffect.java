@@ -5,6 +5,7 @@ import rajawali.lights.DirectionalLight;
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
 import rajawali.postprocessing.APostProcessingEffect;
+import rajawali.postprocessing.materials.ShadowMapMaterial;
 import rajawali.postprocessing.passes.ShadowPass;
 import rajawali.postprocessing.passes.ShadowPass.ShadowPassType;
 import rajawali.renderer.RajawaliRenderer;
@@ -20,6 +21,8 @@ public class ShadowEffect extends APostProcessingEffect {
 	private DirectionalLight mLight;
 	private int mShadowMapSize;
 	private RenderTarget mShadowRenderTarget;
+	private float mShadowInfluence;
+	private ShadowMapMaterial mShadowMapMaterial;
 	
 	public ShadowEffect(RajawaliScene scene, Camera camera, DirectionalLight light, int shadowMapSize) {
 		super();
@@ -27,6 +30,12 @@ public class ShadowEffect extends APostProcessingEffect {
 		mCamera = camera;
 		mLight = light;
 		mShadowMapSize = shadowMapSize;
+	}
+	
+	public void setShadowInfluence(float influence) {
+		mShadowInfluence = influence;
+		if(mShadowMapMaterial != null)
+			mShadowMapMaterial.setShadowInfluence(influence);
 	}
 
 	@Override
@@ -39,6 +48,8 @@ public class ShadowEffect extends APostProcessingEffect {
 		ShadowPass pass1 = new ShadowPass(ShadowPassType.CREATE_SHADOW_MAP, mScene, mCamera, mLight, mShadowRenderTarget);
 		addPass(pass1);
 		ShadowPass pass2 = new ShadowPass(ShadowPassType.APPLY_SHADOW_MAP, mScene, mCamera, mLight, mShadowRenderTarget);
+		mShadowMapMaterial = pass1.getShadowMapMaterial();
+		mShadowMapMaterial.setShadowInfluence(mShadowInfluence);
 		pass2.setShadowMapMaterial(pass1.getShadowMapMaterial());
 		addPass(pass2);
 	}

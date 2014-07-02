@@ -1780,10 +1780,10 @@ public class RajawaliScene extends AFrameTask {
 	private void addShadowMapMaterialPlugin(Object3D o, ShadowMapMaterialPlugin materialPlugin) {
 		Material m = o.getMaterial();
 		
-		if(m != null) {
+		if(m != null && m.lightingEnabled()) {
 			if(materialPlugin != null) {
 				m.addPlugin(materialPlugin);			
-			} else {
+			} else if(mShadowMapMaterial != null) {
 				m.removePlugin(mShadowMapMaterial.getMaterialPlugin());
 			}
 		}

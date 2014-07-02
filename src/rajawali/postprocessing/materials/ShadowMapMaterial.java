@@ -19,8 +19,7 @@ public class ShadowMapMaterial extends Material {
 	private RajawaliScene mScene;
 	private ShadowMapMaterialPlugin mMaterialPlugin;
 	private ShadowMapVertexShader mVertexShader;
-	private boolean mCurrentObjectIsBackSided;
-	private boolean mCurrentObjectIsDoubleSided;
+	private DirectionalLight mLight;
 	
 	public ShadowMapMaterial() {
 		super();
@@ -43,6 +42,7 @@ public class ShadowMapMaterial extends Material {
 	
 	public void setLight(DirectionalLight light) {
 		((ShadowMapVertexShader)mCustomVertexShader).setLight(light);
+		mLight = light;
 	}
 	
 	public void setScene(RajawaliScene scene) {
@@ -50,20 +50,18 @@ public class ShadowMapMaterial extends Material {
 		mScene.setShadowMapMaterial(this);
 	}
 	
+	public void setShadowInfluence(float influence) {
+		mMaterialPlugin.setShadowInfluence(influence);
+	}
+	
 	public void setShadowMapTexture(ATexture shadowMapTexture) {
 		mMaterialPlugin.setShadowMapTexture(shadowMapTexture);
 	}
 	
 	public void setCurrentObject(Object3D currentObject) {
-		mCurrentObjectIsBackSided = currentObject.isBackSided();
-		mCurrentObjectIsDoubleSided = currentObject.isDoubleSided();
-		
-		currentObject.setBackSided(true);
 	}
 	
 	public void unsetCurrentObject(Object3D currentObject) {
-		currentObject.setBackSided(mCurrentObjectIsBackSided);
-		currentObject.setDoubleSided(mCurrentObjectIsDoubleSided);
 	}
 
 	
@@ -76,6 +74,7 @@ public class ShadowMapMaterial extends Material {
 	{
 		super.applyParams();
 		mMaterialPlugin.setLightModelViewProjectionMatrix(mVertexShader.getLightViewProjectionMatrix());
+		mMaterialPlugin.setLightDirection(mLight.getDirectionVector());
 	}
 	
 	private final class ShadowMapVertexShader extends VertexShader {
