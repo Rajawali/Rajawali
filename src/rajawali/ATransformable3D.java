@@ -95,15 +95,15 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		if(!mRotationDirty && mLookAt == null) return;
 
 		mOrientation.identity();
-		if(mLookAt != null) {			
+		if(mLookAt != null) {
 			mTmpRotZ.setAll(mLookAt)
 				.subtract(mPosition)
 				.normalize();
 			
 			if(mTmpRotZ.isZero()) mTmpRotZ.z = 1;
 			
-			mTmpRotX.setAll(Vector3.Y)
-				.cross(mTmpRotZ)
+			mTmpRotX.setAll(mTmpRotZ)
+				.cross(Vector3.Y)
 				.normalize();
 			
 			if(mTmpRotX.isZero()) {
@@ -111,8 +111,8 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 				mTmpRotX.cross(mTmpRotZ).normalize();
 			}
 			
-			mTmpRotY.setAll(mTmpRotZ);
-			mTmpRotY.cross(mTmpRotX);
+			mTmpRotY.setAll(mTmpRotX);
+			mTmpRotY.cross(mTmpRotZ);
 			
 			Matrix.setIdentityM(mLookAtMatrix, 0);
 			mLookAtMatrix[Matrix4.M00] = mTmpRotX.x;
@@ -124,7 +124,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 			mLookAtMatrix[Matrix4.M02] = mTmpRotZ.x;
 			mLookAtMatrix[Matrix4.M12] = mTmpRotZ.y;
 			mLookAtMatrix[Matrix4.M22] = mTmpRotZ.z;
-			
+
 			//TODO: This will be fixed by Issue #968
 			mOrientation.fromRotationMatrix(mLookAtMatrix);
 		} else {
