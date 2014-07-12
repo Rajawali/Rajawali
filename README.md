@@ -32,6 +32,12 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 
 [YouTube Video of RajawaliVuforia in action](http://www.youtube.com/watch?v=rjLa4K9Ffuo)
 
+## Rajawali + Virtual Reality
+
+[RajawaliVR GitHub](https://github.com/MasDennis/RajawaliVR)
+
+[YouTube Video of RajawaliVR in action](https://www.youtube.com/watch?v=3L0l_jmkcBE&feature=youtu.be)
+
 ## Tutorials
 
 1. [Basic Setup & a Sphere](https://github.com/MasDennis/Rajawali/wiki/Tutorial-01----Basic-Setup-&-a-Sphere)  

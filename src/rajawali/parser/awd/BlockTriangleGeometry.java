@@ -97,7 +97,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 					vertices = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < vertices.length) {
 						// X, Y, Z
-						vertices[idx++] = ((float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo)) * -1.f;
+						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					}
@@ -116,7 +116,6 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 					normals = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < normals.length) {
 						normals[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
-						if((idx-1) % 3==0) normals[idx-1] *= -1.f;
 					}
 					break;
 				case 5: // Vertex tangents

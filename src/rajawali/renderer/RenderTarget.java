@@ -41,6 +41,7 @@ public class RenderTarget extends AFrameTask {
 	protected WrapType mWrapType;
 
 	protected boolean mStencilBuffer;
+	protected boolean mFullscreen = true;
 
 	protected int mFrameBufferHandle;
 	protected int mDepthBufferHandle;
@@ -292,6 +293,7 @@ public class RenderTarget extends AFrameTask {
 				break;
 			case GLES20.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
 				errorString = "GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS: not all attached images have the same width and height.";
+				RajLog.i(mWidth + ", " + mHeight + " || " + mTexture.getWidth() + ", " + mTexture.getHeight());
 				break;
 			}
 			throw new RuntimeException(errorString);
@@ -320,6 +322,14 @@ public class RenderTarget extends AFrameTask {
 		}
 	}
 
+	public void setFullscreen(boolean fullscreen) {
+		mFullscreen = fullscreen;
+	}
+	
+	public boolean getFullscreen() {
+		return mFullscreen;
+	}
+	
 	public RenderTargetTexture getTexture() {
 		return mTexture;
 	}
@@ -331,5 +341,9 @@ public class RenderTarget extends AFrameTask {
 	public int getFrameBufferHandle()
 	{
 		return mFrameBufferHandle;
+	}
+	
+	public String getName() {
+		return mName;
 	}
 }

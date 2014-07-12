@@ -667,8 +667,8 @@ public class Material extends AFrameTask {
 			mVertexShader = mCustomVertexShader;
 			mFragmentShader = mCustomFragmentShader;
 			
-			mVertexShader.initialize();
-			mFragmentShader.initialize();
+			if(mVertexShader.needsBuild()) mVertexShader.initialize();
+			if(mFragmentShader.needsBuild()) mFragmentShader.initialize();
 
 			if(mVertexShader.needsBuild()) mVertexShader.buildShader();
 			if(mFragmentShader.needsBuild()) mFragmentShader.buildShader();

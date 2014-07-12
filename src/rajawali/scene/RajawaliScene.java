@@ -686,7 +686,6 @@ public class RajawaliScene extends AFrameTask {
 			if (mNextCamera != null) {
 				mCamera = mNextCamera;
 				mNextCamera = null;
-				mCamera.setProjectionMatrix(mRenderer.getCurrentViewportWidth(), mRenderer.getCurrentViewportHeight());
 			}
 		}
 		
