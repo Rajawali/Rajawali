@@ -69,7 +69,7 @@ public class RajLog {
 		return _logDebug;
 	}	
 	
-	/*
+	/**
 	 *  Sets minimum debug level to display in log.<br>
 	 *  Use DEBUG_LEVEL_X constants.<br>
 	 *  LOG_LEVEL_VERBOSE 0 (Lowest)<br>
