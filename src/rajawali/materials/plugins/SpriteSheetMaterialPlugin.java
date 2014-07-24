@@ -108,7 +108,7 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 			RFloat texSOffset = new RFloat("texSOffset", gTextureCoord.s().multiply(tileSizeX));
 			RFloat texTOffset = new RFloat("texTOffset", gTextureCoord.t().multiply(tileSizeY));
 			gTextureCoord.s().assign(mod(muCurrentFrame, muNumTiles.x()).multiply(tileSizeX).add(texSOffset));
-			gTextureCoord.t().assign(tileSizeY.multiply(floor(muCurrentFrame.divide(muNumTiles.y()))).add(texTOffset));			
+			gTextureCoord.t().assign(tileSizeY.multiply(floor(muCurrentFrame.divide(muNumTiles.x()))).add(texTOffset));
 		}
 		
 		public void setNumTiles(float numTilesX, float numTilesY) {
