@@ -206,11 +206,11 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 
 		for (int i = 0; i < mHeader.numFrames; i++) {
 			float scaleX = is.readFloat();
-			float scaleZ = is.readFloat();
 			float scaleY = is.readFloat();
+			float scaleZ = is.readFloat();
 			float translateX = is.readFloat();
-			float translateZ = is.readFloat();
 			float translateY = is.readFloat();
+			float translateZ = is.readFloat();
 			String name = is.readString(16);
 			IAnimationFrame frame = mFrames.get(i);
 
@@ -225,8 +225,8 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 
 			for (int j = 0; j < mHeader.numVerts; j++) {
 				vertices[index + 0] = scaleX * is.readUnsignedByte() + translateX;
-				vertices[index + 2] = scaleZ * is.readUnsignedByte() + translateZ;
-				vertices[index + 1] = scaleY * is.readUnsignedByte() + translateY;
+				vertices[index + 1] = scaleY * is.readUnsignedByte() + translateZ;
+				vertices[index + 2] = scaleZ * is.readUnsignedByte() + translateY;
 				index += 3;
 				is.readUnsignedByte();
 
