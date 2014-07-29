@@ -34,18 +34,37 @@ public class RajLog {
 	public static final byte LOG_LEVEL_ERROR = 4;
 	public static final byte LOG_LEVEL_WTF = 5;	
 	
-	private static boolean _logDebug = true;
+	private static boolean _logEnabled = true;
 	private static GL10 gl;
 	private static byte minLogLevel = LOG_LEVEL_VERBOSE;
 
 	/**
 	 * Enable Rajawali logging.
 	 * 
-	 * param state
+	 * @param state
 	 * 		State to change to. 
 	 */		
-	public static final void enableDebug(boolean state) {
-		_logDebug = state;
+	public static final void enableLogging(boolean state) {
+		_logEnabled = state;
+	}
+	
+	/**
+	 * Turns logging on/off.  Deprecated - use enableLogging()
+	 * @param state
+	 */
+	@Deprecated
+	public static final void enableDebug(boolean state){
+		_logEnabled = state;		
+	}
+	
+	/**
+	 * Returns logging state. Deprecated - use isLogging()
+	 * @return
+	 */
+	
+	@Deprecated
+	public static final boolean isDebug(){
+		return _logEnabled;
 	}
 
 	/**
@@ -56,8 +75,8 @@ public class RajLog {
 	 * @param logLevel
 	 * 		Minimum log level to display. (use RajLog.Log_Level_X constants)
 	 */		
-	public static final void enableDebugAtLevel(boolean state, byte logLevel) {
-		_logDebug = state;
+	public static final void enableLoggingAtLevel(boolean state, byte logLevel) {
+		_logEnabled = state;
 		minLogLevel = logLevel;
 	}	
 	
@@ -65,8 +84,8 @@ public class RajLog {
 	 * Returns whether logging is currently enabled.
 	 * 
 	 */	
-	public static final boolean isDebug() {
-		return _logDebug;
+	public static final boolean isLogging() {
+		return _logEnabled;
 	}	
 	
 	/**
@@ -108,10 +127,10 @@ public class RajLog {
 	 * 		Calling class object.
 	 */			
 	public static final void d(Object obj, String msg) {
-		if (msg == null | obj == null)
+		if (msg == null || obj == null)
 			return;
 
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_DEBUG))
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_DEBUG))
 			Log.d(cutClassName(obj.getClass().toString()), msg);
 	}
 	
@@ -120,7 +139,7 @@ public class RajLog {
 	 * Sends a 'd'ebug log message. Will use default 'Rajawali' tag.
 	 * 
 	 * Example:  
-	 	RajLog.d(this, "This is a message");
+	 	RajLog.d("This is a message");
 
 	 	Output:  "Rajawali", "This is a message."
 	 * 
@@ -132,7 +151,7 @@ public class RajLog {
 		if (msg == null)
 			return;
 
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_DEBUG))
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_DEBUG))
 			Log.d(TAG, msg);
 	}
 
@@ -152,7 +171,7 @@ public class RajLog {
 	 * 
 	 */		
 	public static final void d(float[] values) {
-		if(_logDebug & (minLogLevel <= LOG_LEVEL_DEBUG)) {
+		if(_logEnabled && (minLogLevel <= LOG_LEVEL_DEBUG)) {
 			StringBuffer sb = new StringBuffer();
 			int len = values.length;
 			for(int i=0; i<len; ++i) {
@@ -167,14 +186,14 @@ public class RajLog {
 
 	/**
 	 * Since d supports string varargs use this method to produce a 'd'ebug message
-	 * with a custom tag.
+	 * with a custom tag. 
 	 * 
 	 */
 	public static final void dCustomTag(String tag, String msg){
 		if (msg == null)
 			return;
 
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_DEBUG))
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_DEBUG))
 			Log.d(tag, msg);		
 	}
 	
@@ -193,7 +212,7 @@ public class RajLog {
 	 * 
 	 */			
 	public static final void d(String... values) {
-		if(_logDebug & (minLogLevel <= LOG_LEVEL_DEBUG)) {
+		if(_logEnabled && (minLogLevel <= LOG_LEVEL_DEBUG)) {
 			
 			if (values.length < 3){
 				dCustomTag(values[0], values[1]);
@@ -226,7 +245,7 @@ public class RajLog {
 	 * 
 	 */		
 	public static final void d(int[] values) {
-		if(_logDebug & (minLogLevel <= LOG_LEVEL_DEBUG)) {
+		if(_logEnabled && (minLogLevel <= LOG_LEVEL_DEBUG)) {
 			StringBuffer sb = new StringBuffer();
 			int len = values.length;
 			for(int i=0; i<len; ++i) {
@@ -252,7 +271,7 @@ public class RajLog {
 	 * 
 	 */		
 	public static final void e(String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_ERROR)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_ERROR)){
 			Log.e(TAG, msg);			
 		}
 	}
@@ -279,7 +298,7 @@ public class RajLog {
 	 * 		Calling class object.
 	 */		
 	public static final void e(Object obj, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_ERROR)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_ERROR)){
 			Log.e(cutClassName(obj.getClass().toString()), msg);			
 		}
 	}	
@@ -300,7 +319,7 @@ public class RajLog {
 	 * 		Tag string to be used for filtering.
 	 */		
 	public static final void e(String tag, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_ERROR)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_ERROR)){
 			Log.e(tag, msg);			
 		}
 	}	
@@ -320,7 +339,7 @@ public class RajLog {
 	 * 
 	 */	
 	public static final void i(String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_INFO)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_INFO)){
 			Log.i(TAG, msg);
 		}
 	}
@@ -340,7 +359,7 @@ public class RajLog {
 	 * 		Tag string to be used for filtering.
 	 */		
 	public static final void i(String tag, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_INFO)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_INFO)){
 			Log.i(tag, msg);
 		}
 	}	
@@ -365,7 +384,7 @@ public class RajLog {
 	 * 		Calling class object.
 	 */		
 	public static final void i(Object obj, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_INFO)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_INFO)){
 			Log.i(cutClassName(obj.getClass().toString()), msg);
 		}
 	}	
@@ -384,7 +403,7 @@ public class RajLog {
 	 * 
 	 */	
 	public static final void v(String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_VERBOSE)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_VERBOSE)){
 			Log.v(TAG, msg);
 		}
 	}
@@ -404,7 +423,7 @@ public class RajLog {
 	 * 		Tag string to be used for filtering.
 	 */		
 	public static final void v(String tag, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_VERBOSE)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_VERBOSE)){
 			Log.v(tag, msg);
 		}
 	}	
@@ -430,7 +449,7 @@ public class RajLog {
 	 * 		Calling class object.
 	 */		
 	public static final void v(Object obj, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_VERBOSE)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_VERBOSE)){
 			Log.v(cutClassName(obj.getClass().toString()), msg);
 		}
 	}
@@ -449,7 +468,7 @@ public class RajLog {
 	 * 
 	 */			
 	public static final void w(String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_WARN)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_WARN)){
 			Log.w(TAG, msg);
 		}
 	}
@@ -470,7 +489,7 @@ public class RajLog {
 	 * 		Tag string to be used for filtering.
 	 */		
 	public static final void w(String tag, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_WARN)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_WARN)){
 			Log.w(tag, msg);
 		}
 	}	
@@ -494,7 +513,7 @@ public class RajLog {
 	 * 		Calling class object.
 	 */		
 	public static final void w(Object obj, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_WARN)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_WARN)){
 			Log.w(cutClassName(obj.getClass().toString()), msg);
 		}
 	}
@@ -514,7 +533,7 @@ public class RajLog {
 	 * 
 	 */	
 	public static final void wtf(String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_WTF)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_WTF)){
 			Log.wtf(TAG, msg);
 		}
 	}
@@ -536,7 +555,7 @@ public class RajLog {
 	 * 		Tag string to be used for filtering. 
 	 */		
 	public static final void wtf(String tag, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_WTF)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_WTF)){
 			Log.wtf(tag, msg);
 		}
 	}
@@ -562,7 +581,7 @@ public class RajLog {
 	 * 		Calling class object.
 	 */		
 	public static final void wtf(Object obj, String msg) {
-		if (_logDebug & (minLogLevel <= LOG_LEVEL_WTF)){
+		if (_logEnabled && (minLogLevel <= LOG_LEVEL_WTF)){
 			Log.wtf(cutClassName(obj.getClass().toString()), msg);
 		}
 	}	
