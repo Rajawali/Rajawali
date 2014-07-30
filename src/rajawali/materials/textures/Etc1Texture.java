@@ -177,16 +177,16 @@ public class Etc1Texture extends ACompressedTexture {
 		try {
 			texture = ETC1Util.createTexture(compressedTexture);
 		} catch (IOException e) {
-			Log.e("addEtc1Texture", e.getMessage());
+			RajLog.e("addEtc1Texture", e.getMessage());
 		} finally {
 			if (texture == null) {
 				setBitmap(fallbackTexture);
-				Log.d("ETC1", "Falling back to uncompressed texture");
+				RajLog.d("ETC1", "Falling back to uncompressed texture");
 			} else {
 				setByteBuffer(texture.getData());
 				setWidth(texture.getWidth());
 				setHeight(texture.getHeight());
-				Log.d("ETC1", "ETC1 texture load successful");
+				RajLog.d("ETC1", "ETC1 texture load successful");
 			}
 		}
 	}
