@@ -163,9 +163,9 @@ public abstract class Wallpaper extends WallpaperService {
 		private void printConfigs(EGL10 egl, EGLDisplay display,
 				EGLConfig[] configs) {
 			int numConfigs = configs.length;
-			Log.w(TAG, String.format("%d configurations", numConfigs));
+			RajLog.w(TAG, String.format("%d configurations", numConfigs));
 			for (int i = 0; i < numConfigs; i++) {
-				Log.w(TAG, String.format("Configuration %d:\n", i));
+				RajLog.w(TAG, String.format("Configuration %d:\n", i));
 				printConfig(egl, display, configs[i]);
 			}
 		}
@@ -247,9 +247,9 @@ public abstract class Wallpaper extends WallpaperService {
 				int attribute = attributes[i];
 				String name = names[i];
 				if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
-					Log.w(TAG, String.format("  %s: %d\n", name, value[0]));
+					RajLog.w(TAG, String.format("  %s: %d\n", name, value[0]));
 				} else {
-					// Log.w(TAG, String.format("  %s: failed\n", name));
+					// RajLog.w(TAG, String.format("  %s: failed\n", name));
 					while (egl.eglGetError() != EGL10.EGL_SUCCESS);
 				}
 			}
