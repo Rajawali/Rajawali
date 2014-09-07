@@ -256,6 +256,7 @@ public class Geometry3D {
 		this.mVertexBufferInfo = geom.getVertexBufferInfo();
 		this.mIndexBufferInfo = geom.getIndexBufferInfo();
 		this.mTexCoordBufferInfo = geom.getTexCoordBufferInfo();
+		this.mOnlyShortBufferSupported = geom.areOnlyShortBuffersSupported();
 		if(mColors == null) this.mColorBufferInfo = geom.getColorBufferInfo();
 		this.mNormalBufferInfo = geom.getNormalBufferInfo();
 		this.mOriginalGeometry = geom;
