@@ -1109,19 +1109,17 @@ public class Material extends AFrameTask {
 	 * @param lights The lights collection
 	 */
 	public void setLights(List<ALight> lights) {
-		boolean hasChanged = false;
 		if(mLights != null)
 		{
 			for(ALight light : lights)
 			{
 				if (!mLights.contains(light))
 				{
-					hasChanged = true;
 					break;
 				}
 			}
 		} else {
-			hasChanged = true;
+			mIsDirty = true;
 			mLights = lights;
 		}
 	}
