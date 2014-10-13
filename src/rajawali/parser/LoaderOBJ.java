@@ -601,7 +601,7 @@ public class LoaderOBJ extends AMeshLoader {
 							fis = new FileInputStream(filePath);
 							mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), new Etc1Texture(getOnlyFileName(matDef.diffuseTexture)+"etc1", fis, null)));
 						} catch (FileNotFoundException e) {
-							RajLog.e("LoaderOBJ", "File decode error", e);
+							RajLog.e("LoaderOBJ", "File decode error");
 						} finally {
 							try {
 								fis.close();
