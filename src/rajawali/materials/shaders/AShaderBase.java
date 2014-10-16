@@ -198,7 +198,7 @@ public abstract class AShaderBase {
 	{
 		ShaderVar out = null;
 		
-		if(left == right)
+		if(left != right)
 			out = getInstanceForDataType(left);
 		else if(left == DataType.IVEC4 || right == DataType.IVEC4)
 			out = getInstanceForDataType(DataType.IVEC4);
