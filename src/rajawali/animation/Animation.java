@@ -33,7 +33,7 @@ public abstract class Animation extends Playable {
 	protected int mNumRepeat;
 	protected boolean mIsStarted;
 
-	private boolean mIsFirstStart;
+	private boolean mIsFirstStart = true;
 
 	public Animation() {
 		mAnimationListeners = new ArrayList<IAnimationListener>();
