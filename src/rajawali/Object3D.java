@@ -644,13 +644,28 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		clone.mEnableDepthTest = this.mEnableDepthTest;
 		clone.mEnableDepthMask = this.mEnableDepthMask;
 	}
+ 
 
-	public Object3D clone(boolean copyMaterial) {
+	public Object3D clone(boolean copyMaterial, boolean cloneChildren) {
 		Object3D clone = new Object3D();
 		cloneTo(clone, copyMaterial);
 		clone.setRotation(getRotation());
 		clone.setScale(getScale());
+		
+		if(cloneChildren)
+		{
+			int childCount = this.getNumChildren();
+			for(int i = 0; i < childCount; i++)
+			{
+				clone.addChild(this.getChildAt(i).clone(copyMaterial, cloneChildren));
+			}
+		}
+		
 		return clone;
+	}
+
+	public Object3D clone(boolean copyMaterial) {
+        	return clone(copyMaterial, false);
 	}
 
 	public Object3D clone() {
