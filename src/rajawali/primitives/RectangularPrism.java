@@ -33,8 +33,8 @@ import rajawali.Object3D;
 public class RectangularPrism extends Object3D {
 
 	private float mWidth;
-    private float mHeight;
-    private float mDepth;
+	private float mHeight;
+	private float mDepth;
 	private boolean mCreateTextureCoords;
 	private boolean mCreateVertexColorBuffer;
 
@@ -49,10 +49,10 @@ public class RectangularPrism extends Object3D {
 	/**
 	 * Creates a cube primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 *
-     * @param width		    			The width of the prism.
-     * @param height					The height of the prism.
-     * @param depth					    The depth of the prism.
-     *
+	 * @param width						The width of the prism.
+	 * @param height					The height of the prism.
+	 * @param depth						The depth of the prism.
+	 *
 	 */
 	public RectangularPrism(float width, float height, float depth) {
 		this(width, height, depth, false, true, false);
@@ -61,10 +61,10 @@ public class RectangularPrism extends Object3D {
 	/**
 	 * Creates a cube primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 *
-     * @param width		    		The width of the prism.
-     * @param height				The height of the prism.
-     * @param depth				    The depth of the prism.
-     * @param hasCubemapTexture		A boolean that indicates a cube map texture will be used (6 textures) or a regular
+	 * @param width					The width of the prism.
+	 * @param height				The height of the prism.
+	 * @param depth					The depth of the prism.
+	 * @param hasCubemapTexture		A boolean that indicates a cube map texture will be used (6 textures) or a regular
 	 * 								single texture.
 	 */
 	public RectangularPrism(float width, float height, float depth, boolean hasCubemapTexture)
@@ -75,21 +75,21 @@ public class RectangularPrism extends Object3D {
 	/**
 	 * Creates a cube primitive.
 	 *
-	 * @param width		    			The width of the prism.
+	 * @param width						The width of the prism.
 	 * @param height					The height of the prism.
-     * @param depth		        		The depth of the prism.
-     * @param hasCubemapTexture			A boolean that indicates a cube map texture will be used (6 textures) or a regular
+	 * @param depth						The depth of the prism.
+	 * @param hasCubemapTexture			A boolean that indicates a cube map texture will be used (6 textures) or a regular
 	 * 									single texture.
 	 * @param createTextureCoordinates	A boolean that indicates whether the texture coordinates should be calculated or not.
 	 * @param createVertexColorBuffer	A boolean that indicates whether a vertex color buffer should be created or not.
 	 */
 	public RectangularPrism(float width, float height, float depth, boolean hasCubemapTexture,
-                            boolean createTextureCoordinates, boolean createVertexColorBuffer) {
+							boolean createTextureCoordinates, boolean createVertexColorBuffer) {
 		super();
-        mWidth = width;
-        mHeight = height;
-        mDepth = depth;
-        mHasCubemapTexture = hasCubemapTexture;
+		mWidth = width;
+		mHeight = height;
+		mDepth = depth;
+		mHasCubemapTexture = hasCubemapTexture;
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
 		init();
@@ -98,26 +98,26 @@ public class RectangularPrism extends Object3D {
 	private void init()
 	{
 		float halfWidth = mWidth * .5f;
-        float halfHeight = mHeight * .5f;
-        float halfDepth = mDepth * .5f;
+		float halfHeight = mHeight * .5f;
+		float halfDepth = mDepth * .5f;
 		float[] vertices = {
 				// -- back
-				 halfWidth,  halfHeight,  halfDepth,        -halfWidth,  halfHeight,  halfDepth,
-                -halfWidth, -halfHeight,  halfDepth,		 halfWidth, -halfHeight,  halfDepth, // 0-1-halfSize-3 front
+				 halfWidth,  halfHeight,  halfDepth,		-halfWidth,  halfHeight,  halfDepth,
+				-halfWidth, -halfHeight,  halfDepth,		 halfWidth, -halfHeight,  halfDepth, // 0-1-halfSize-3 front
 
-                 halfWidth,  halfHeight,  halfDepth, 		 halfWidth, -halfHeight,  halfDepth,
-                 halfWidth, -halfHeight, -halfDepth, 		 halfWidth,  halfHeight, -halfDepth,// 0-3-4-5 right
+				 halfWidth,  halfHeight,  halfDepth, 		 halfWidth, -halfHeight,  halfDepth,
+				 halfWidth, -halfHeight, -halfDepth, 		 halfWidth,  halfHeight, -halfDepth,// 0-3-4-5 right
 				// -- front
-                 halfWidth, -halfHeight, -halfDepth, 		-halfWidth, -halfHeight, -halfDepth,
+				 halfWidth, -halfHeight, -halfDepth, 		-halfWidth, -halfHeight, -halfDepth,
 				-halfWidth,  halfHeight, -halfDepth,		 halfWidth,  halfHeight, -halfDepth,// 4-7-6-5 back
 				
 				-halfWidth,  halfHeight,  halfDepth, 		-halfWidth,  halfHeight, -halfDepth,
 				-halfWidth, -halfHeight, -halfDepth,		-halfWidth,	-halfHeight,  halfDepth,// 1-6-7-halfSize left
 
-                 halfWidth,  halfHeight,  halfDepth, 		 halfWidth,  halfHeight, -halfDepth,
+				 halfWidth,  halfHeight,  halfDepth, 		 halfWidth,  halfHeight, -halfDepth,
 				-halfWidth,  halfHeight, -halfDepth, 		-halfWidth,  halfHeight,  halfDepth, // top
 
-                 halfWidth, -halfHeight,  halfDepth, 		-halfWidth, -halfHeight,  halfDepth,
+				 halfWidth, -halfHeight,  halfDepth, 		-halfWidth, -halfHeight,  halfDepth,
 				-halfWidth, -halfHeight, -halfDepth,		 halfWidth, -halfHeight, -halfDepth,// bottom
 		};
 
