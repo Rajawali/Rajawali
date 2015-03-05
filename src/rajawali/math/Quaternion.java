@@ -1104,6 +1104,24 @@ public final class Quaternion {
 		return (Math.abs(angle) <= tolerance) || MathUtil.realEqual(angle, MathUtil.PI, tolerance);
 	}
 	
+    /**
+     * Measures the angle between this {@link Quaternion} and another.
+     *
+     * @param other {@link Quaterion} The other {@link Quaternion}.
+     * @param tolerance double The tolerance for equality.
+     * @returns the angle between the two {@link Quaternions}.
+     */
+    public double angleBetween(final Quaternion other) {
+        double fCos = dot(other);
+        Math.max(0, Math.min(1, fCos));
+        double angle = Math.acos(fCos);
+        if (angle > MathUtil.PI / 2) {
+            return Math.abs(MathUtil.PI - angle);
+        } else {
+            return Math.abs(angle);
+        }
+    }
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
