@@ -1099,8 +1099,8 @@ public final class Quaternion {
 	 */
 	public boolean equals(final Quaternion other, final double tolerance) {
 		double fCos = dot(other);
+		if (fCos > 1.0 && (fCos - 1.0) < tolerance) return true;
 		double angle = Math.acos(fCos);
-
 		return (Math.abs(angle) <= tolerance) || MathUtil.realEqual(angle, MathUtil.PI, tolerance);
 	}
 	
