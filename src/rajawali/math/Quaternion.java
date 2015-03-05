@@ -1093,9 +1093,9 @@ public final class Quaternion {
 	/**
 	 * Compares this {@link Quaternion} to another with a tolerance.
 	 * 
-	 * @param other {@link Quaterion} The other {@link Quaternion}.
+	 * @param other {@link Quaternion} The other {@link Quaternion}.
 	 * @param tolerance double The tolerance for equality.
-	 * @return boolean True if the two {@link Quaternions} equate within the specified tolerance.
+	 * @return boolean True if the two {@link Quaternion}s equate within the specified tolerance.
 	 */
 	public boolean equals(final Quaternion other, final double tolerance) {
 		double fCos = dot(other);
@@ -1108,12 +1108,11 @@ public final class Quaternion {
      * Measures the angle between this {@link Quaternion} and another.
      *
      * @param other {@link Quaterion} The other {@link Quaternion}.
-     * @param tolerance double The tolerance for equality.
-     * @returns the angle between the two {@link Quaternions}.
+     * @returns double with the angle between the two {@link Quaternion}s.
      */
     public double angleBetween(final Quaternion other) {
         double fCos = dot(other);
-        Math.max(0, Math.min(1, fCos));
+        fCos = Math.max(-1.0, Math.min(1.0, fCos));
         double angle = Math.acos(fCos);
         if (angle > MathUtil.PI / 2) {
             return Math.abs(MathUtil.PI - angle);
