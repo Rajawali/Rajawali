@@ -649,8 +649,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public Object3D clone(boolean copyMaterial, boolean cloneChildren) {
 		Object3D clone = new Object3D();
 		cloneTo(clone, copyMaterial);
-		clone.setRotation(getRotation());
-		clone.setScale(getScale());
+        clone.setRotation(getRotation());
+        clone.setScale(getScale());
 		
 		if(cloneChildren)
 		{
