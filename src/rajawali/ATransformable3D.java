@@ -260,7 +260,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 	}
 
 	public void setScale(Vector3 scale) {
-		mScale = scale;
+		mScale.setAll(scale);
 		if (mGraphNode != null) mGraphNode.updateObject(this);
 	}
 
