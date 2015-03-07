@@ -1046,6 +1046,29 @@ public final class Quaternion {
 		}
 	}
 	
+    /**
+     * Sets this {@link Quaternion} to be oriented to a target {@link Vector3}.
+     * It is safe to use the input vectors for other things as they are cloned internally.
+     *
+     * @param lookAt {@link Vector3} The point to look at.
+     * @param upDirection {@link Vector3} to use as the up direction.
+     * @return A reference to this {@link Quaternion} to facilitate chaining.
+     */
+    public Quaternion lookAt(Vector3 lookAt, Vector3 upDirection) {
+        Vector3 forward = lookAt.clone();
+        Vector3 up = upDirection.clone();
+        Vector3[] vecs = new Vector3[2];
+        vecs[0] = forward;
+        vecs[1] = up;
+
+        Vector3.orthoNormalize(vecs);
+        Vector3 right = Vector3.crossAndCreate(forward, up);
+
+        setAll(fromAxes(right, up, forward));
+
+        return this;
+    }
+	
 	/**
 	 * Creates a new {@link Quaternion} which is oriented to a target {@link Vector3}.
 	 * It is safe to use the input vectors for other things as they are cloned internally.
