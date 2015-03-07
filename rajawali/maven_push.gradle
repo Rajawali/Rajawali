@@ -1,0 +1,89 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+def getRepositoryUsername() {
+    return hasProperty('sonatype_user') ? sonatype_user : ""
+}
+
+def getRepositoryPassword() {
+    return hasProperty('sonatype_pass') ? sonatype_pass : ""
+}
+
+boolean isRelease() {
+    return VERSION_NAME.contains("SNAPSHOT") == false
+}
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                pom.artifactId = POM_ARTIFACT_ID
+
+                repository(url: isRelease() ? "https://oss.sonatype.org/service/local/staging/deploy/maven2/" : mavenLocal().url) {
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                }
+
+                snapshotRepository(url: isRelease() ? "https://oss.sonatype.org/content/repositories/snapshots" : mavenLocal().url) {
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                }
+
+                pom.project {
+                    name POM_NAME
+                    packaging POM_PACKAGING
+                    description POM_DESCRIPTION
+                    url POM_URL
+
+                    scm {
+                        url POM_SCM_URL
+                        connection POM_SCM_CONNECTION
+                        developerConnection POM_SCM_DEV_CONNECTION
+                    }
+
+                    licenses {
+                        license {
+                            name POM_LICENCE_NAME
+                            url POM_LICENCE_URL
+                            distribution POM_LICENCE_DIST
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id POM_DEVELOPER_ID
+                            name POM_DEVELOPER_NAME
+                            email POM_DEVELOPER_EMAIL
+                            organization POM_DEVELOPER_ORGANIZATION
+                            organizationUrl POM_DEVELOPER_ORGANIZATION_URL
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        required { isRelease() && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+
+    task androidJavadocs(type: Javadoc) {
+        source = android.sourceSets.main.java.sourceFiles
+    }
+
+    task androidJavadocsJar(type: Jar) {
+        classifier = 'javadoc'
+        from androidJavadocs.destinationDir
+    }
+
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.sourceFiles
+    }
+
+    artifacts {
+        archives androidSourcesJar
+        archives androidJavadocsJar
+    }
+}
