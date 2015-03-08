@@ -414,15 +414,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mViewportHeight = height;
 		
 		if (!mSceneInitialized) {
-			mTextureManager = TextureManager.getInstance();
-			mTextureManager.setContext(this.getContext());
-			mTextureManager.registerRenderer(this);
-			mMaterialManager = MaterialManager.getInstance();
-			mMaterialManager.setContext(this.getContext());
-			mMaterialManager.registerRenderer(this);
-			
 			getCurrentScene().resetGLState();
-			
 			initScene();
 		}
 
@@ -448,8 +440,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		setViewPort(mViewportWidth, mViewportHeight);
 	}
 	
-	public void setViewPort(int width, int height)
-	{
+	public void setViewPort(int width, int height) {
 		mCurrentViewportWidth = width;
 		mCurrentViewportHeight = height;
 
@@ -482,6 +473,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 		
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
+		
+		mTextureManager = TextureManager.getInstance();
+		mTextureManager.setContext(this.getContext());
+		mTextureManager.registerRenderer(this);
+		mMaterialManager = MaterialManager.getInstance();
+		mMaterialManager.setContext(this.getContext());
+		mMaterialManager.registerRenderer(this);
 	}
 	
 	/**
