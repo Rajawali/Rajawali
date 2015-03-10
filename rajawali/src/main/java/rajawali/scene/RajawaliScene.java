@@ -92,10 +92,10 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mAlwaysClearColorBuffer = true;
 	private ShadowMapMaterial mShadowMapMaterial;
 
-	private List<Object3D> mChildren;
-	private List<Animation> mAnimations;
-	private List<IRendererPlugin> mPlugins;
-	private List<ALight> mLights;
+	private final List<Object3D> mChildren;
+	private final List<Animation> mAnimations;
+	private final List<IRendererPlugin> mPlugins;
+	private final List<ALight> mLights;
 	
 	/**
 	* The camera currently in use.
