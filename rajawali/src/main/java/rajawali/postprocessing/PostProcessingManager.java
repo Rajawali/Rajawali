@@ -12,6 +12,9 @@
  */
 package rajawali.postprocessing;
 
+import android.graphics.Bitmap.Config;
+import android.opengl.GLES20;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,8 +31,6 @@ import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
-import android.graphics.Bitmap.Config;
-import android.opengl.GLES20;
 
 public class PostProcessingManager {
 
@@ -154,8 +155,8 @@ public class PostProcessingManager {
 	public void reset(RenderTarget renderTarget) {
 	}
 
-	public void render(double deltaTime) {
-		if(mComponentsDirty == true)
+	public void render(long ellapsedTime, double deltaTime) {
+		if(mComponentsDirty)
 		{
 			updatePassesList();
 			mComponentsDirty = false;
@@ -176,13 +177,13 @@ public class PostProcessingManager {
 			PassType type = pass.getPassType();
 			
 			pass.render(type == PassType.RENDER || type == PassType.DEPTH ? mRenderer.getCurrentScene() : mScene, mRenderer,
-					mScreenQuad, mWriteBuffer, mReadBuffer, deltaTime);
+					mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
 
 			if (pass.needsSwap() && i < mNumPasses - 1) {
 				if (maskActive) {
 					GLES20.glStencilFunc(GLES20.GL_NOTEQUAL, 1, 0xffffffff);
 
-					mCopyPass.render(mScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, deltaTime);
+					mCopyPass.render(mScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
 
 					GLES20.glStencilFunc(GLES20.GL_EQUAL, 1, 0xffffffff);
 				}

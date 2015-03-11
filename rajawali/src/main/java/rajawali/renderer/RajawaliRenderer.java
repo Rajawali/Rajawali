@@ -44,10 +44,13 @@ import rajawali.util.RajLog;
 import rajawali.util.RawShaderLoader;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
+
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.os.Build;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
@@ -96,7 +99,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	private boolean mSceneCachingEnabled; //This applies to all scenes
 	protected boolean mSceneInitialized; //This applies to all scenes
 	private RenderTarget mCurrentRenderTarget;
-	
+
 	public static boolean supportsUIntBuffers = false;
 
 	/**
@@ -121,7 +124,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	private RajawaliScene mNextScene; //The scene which the renderer should switch to on the next frame.
 	private final Object mNextSceneLock = new Object(); //Scene switching lock
-	
+
+    private long mRenderStartTime;
+
 	public RajawaliRenderer(Context context) {
 		RajLog.i("Rajawali | Anchor Steam | Dev Branch");
 		RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
@@ -135,7 +140,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 		mRenderTargets = Collections.synchronizedList(new CopyOnWriteArrayList<RenderTarget>());
 		
-		RajawaliScene defaultScene = new RajawaliScene(this);
+		final RajawaliScene defaultScene = new RajawaliScene(this);
 		mScenes.add(defaultScene);
 		mCurrentScene = defaultScene;
 		
@@ -343,7 +348,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public Camera getCurrentCamera() {
 		return mCurrentScene.getCamera();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
@@ -357,11 +362,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 				mNextScene = null;
 			}
 		}
+
+        final long elapsedRenderTime = System.nanoTime() - mRenderStartTime;
+		final double deltaTime = (elapsedRenderTime - mLastRender) / 1e9;
+		mLastRender = elapsedRenderTime;
 		
-		final double deltaTime = (SystemClock.elapsedRealtime() - mLastRender) / 1000d;
-		mLastRender = SystemClock.elapsedRealtime();
-		
-		onRender(deltaTime);
+		onRender(elapsedRenderTime, deltaTime);
 		
 		++mFrameCount;
 		if (mFrameCount % 50 == 0) {
@@ -391,15 +397,18 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		}
 	}
 	
-	protected void onRender(final double deltaTime) {
-		render(deltaTime);
+	protected void onRender(final long ellapsedRealtime, final double deltaTime) {
+		render(ellapsedRealtime, deltaTime);
 	}
 
 	/**
 	 * Called by {@link #onDrawFrame(GL10)} to render the next frame.
+     *
+     * @param ellapsedRealtime {@code long} Render ellapsed time in milliseconds.
+     * @param deltaTime {@code double} Time passed since last frame in seconds.
 	 */
-	protected void render(final double deltaTime) {
-		mCurrentScene.render(deltaTime, mCurrentRenderTarget);
+	protected void render(final long ellapsedRealtime, final double deltaTime) {
+		mCurrentScene.render(ellapsedRealtime, deltaTime, mCurrentRenderTarget);
 	}
 
 	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
@@ -512,10 +521,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void startRendering() {
 		if(!mSceneInitialized) return;
-		mLastRender = SystemClock.elapsedRealtime();
-		
+		mRenderStartTime = System.nanoTime();
+        mLastRender = mRenderStartTime;
 		if (mTimer != null) {return;}
-
 		mTimer = Executors.newScheduledThreadPool(1);
 		mTimer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / mFrameRate), TimeUnit.MILLISECONDS);
 	}
@@ -645,7 +653,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	public TextureManager getTextureManager() {
 		return mTextureManager;
 	}
-	
+
 	/**
 	 * Adds a task to the frame task queue.
 	 * 
@@ -877,12 +885,12 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	/**
 	 * Internal method for replacing a {@link RajawaliScene} object. If index is
-	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
+	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * @param scene {@link AFrameTask} The old scene.
 	 * @param replace {@link RajawaliScene} The scene replacing the old scene.
-	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
 	 */
 	private void internalReplaceScene(AFrameTask scene, RajawaliScene replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
@@ -896,8 +904,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * Internal method for replacing a {@link ATexture} object. Should only be
 	 * called through {@link #handleAddTask(AFrameTask)}
 	 * 
-	 * @param texture {@link ATexture} The texture to be replaced.
-	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 * @param textureConfig {@link ATexture} The texture to be replaced.
+	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
 	 */
 	private void internalReplaceTexture(ATexture textureConfig, int index) {
 		mTextureManager.taskReplace(textureConfig);
@@ -911,7 +919,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * meaningless.
 	 * 
 	 * @param scene {@link RajawaliScene} to add.
-	 * @param int index to add the animation at. 
+	 * @param index int index to add the animation at.
 	 */
 	private void internalAddScene(RajawaliScene scene, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
@@ -928,8 +936,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * This takes an index for the addition, but it is pretty
 	 * meaningless.
 	 * 
-	 * @param texture {@link ATexture} to add.
-	 * @param int index to add the animation at. 
+	 * @param textureConfig {@link ATexture} to add.
+	 * @param index int index to add the animation at.
 	 */
 	private void internalAddTexture(ATexture textureConfig, int index) {
 		mTextureManager.taskAdd(textureConfig);
@@ -942,7 +950,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * This takes an index for the addition, but it is pretty
 	 * meaningless.
 	 * 
-	 * @param render target {@link RenderTarget} to add.
+	 * @param renderTarget {@link RenderTarget} to add.
 	 */
 	private void internalAddRenderTarget(RenderTarget renderTarget) {
 		renderTarget.create();
@@ -957,7 +965,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * meaningless.
 	 * 
 	 * @param material {@link Material} to add.
-	 * @param int index to add the animation at. 
+	 * @param index int index to add the animation at.
 	 */
 	private void internalAddMaterial(Material material, int index) {
 		mMaterialManager.taskAdd(material);
@@ -969,7 +977,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 * This takes an index for the removal. 
 	 * 
-	 * @param anim {@link RajawaliScene} to remove. If index is used, this is ignored.
+	 * @param scene {@link RajawaliScene} to remove. If index is used, this is ignored.
 	 * @param index integer index to remove the child at. 
 	 */
 	private void internalRemoveScene(RajawaliScene scene, int index) {
