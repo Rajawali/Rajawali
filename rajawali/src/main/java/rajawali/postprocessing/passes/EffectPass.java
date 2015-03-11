@@ -64,16 +64,16 @@ public class EffectPass extends APass {
 		mMaterial.bindTextureByName(PARAM_TEXTURE, 0, mReadTarget.getTexture());
 	}
 	
-	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, double deltaTime) {
+	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime) {
 		mReadTarget = readTarget;
 		mWriteTarget = writeTarget;
 		screenQuad.setMaterial(mMaterial);
 		screenQuad.setEffectPass(this);
 		
-		if(mRenderToScreen == true)
-			scene.render(deltaTime, null);
+		if(mRenderToScreen)
+			scene.render(ellapsedTime, deltaTime, null);
 		else
-			scene.render(deltaTime, writeTarget);
+			scene.render(ellapsedTime, deltaTime, writeTarget);
 	}
 	
 	public void setOpacity(float value)

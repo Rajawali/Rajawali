@@ -12,14 +12,15 @@
  */
 package rajawali.postprocessing.passes;
 
+import android.graphics.Color;
+import android.opengl.GLES20;
+
 import rajawali.Camera;
 import rajawali.postprocessing.APass;
 import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
-import android.graphics.Color;
-import android.opengl.GLES20;
 
 /**
  * A render pass used for primarily rendering a scene to a framebuffer target.
@@ -50,7 +51,7 @@ public class RenderPass extends APass {
 		mNeedsSwap = true;
 	}
 	
-	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
+	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
 		// Set the background color with that of current render pass.
 		if (mClearColor != 0x00000000) {
 			mOldClearColor = renderer.getCurrentScene().getBackgroundColor();
@@ -60,7 +61,7 @@ public class RenderPass extends APass {
 		// Render the current scene.
 		mOldCamera = mScene.getCamera();
 		mScene.switchCamera(mCamera);
-		mScene.render(deltaTime, mRenderToScreen == true ? null : writeBuffer, mMaterial);
+		mScene.render(ellapsedTime, deltaTime, mRenderToScreen ? null : writeBuffer, mMaterial);
 		mScene.switchCamera(mOldCamera);
 		
 		// Restore the old background color.

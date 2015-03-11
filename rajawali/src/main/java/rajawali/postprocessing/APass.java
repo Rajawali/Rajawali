@@ -58,7 +58,7 @@ public abstract class APass implements IPass {
 	}
 	
 	public abstract void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad,
-			RenderTarget writeTarget, RenderTarget readTarget, double deltaTime);
+			RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime);
 
 	public PassType getPassType() {
 		return mPassType;

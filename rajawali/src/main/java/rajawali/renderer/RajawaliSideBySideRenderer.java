@@ -12,6 +12,11 @@
  */
 package rajawali.renderer;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
+import android.opengl.GLES20;
+
 import rajawali.Camera;
 import rajawali.RajawaliActivity;
 import rajawali.materials.Material;
@@ -20,10 +25,6 @@ import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3.Axis;
 import rajawali.primitives.ScreenQuad;
 import rajawali.scene.RajawaliScene;
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEventListener;
-import android.opengl.GLES20;
 
 /**
  * <p>
@@ -225,7 +226,7 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 	}
 
 	@Override
-	protected void onRender(final double deltaTime) {
+	protected void onRender(final long ellapsedTime, final double deltaTime) {
 		mUserScene = getCurrentScene();
 
 		setRenderTarget(mLeftRenderTarget);
@@ -234,7 +235,7 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 		mCameraLeft.setProjectionMatrix(mViewportWidthHalf, mViewportHeight);
 		mCameraLeft.setOrientation(mCameraOrientation);
 
-		render(deltaTime);
+		render(ellapsedTime, deltaTime);
 
 		setRenderTarget(mRightRenderTarget);
 
@@ -242,14 +243,14 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 		mCameraRight.setProjectionMatrix(mViewportWidthHalf, mViewportHeight);
 		mCameraRight.setOrientation(mCameraOrientation);
 
-		render(deltaTime);
+		render(ellapsedTime, deltaTime);
 
 		switchSceneDirect(mSideBySideScene);
 		GLES20.glViewport(0, 0, mViewportWidth, mViewportHeight);
 
 		setRenderTarget(null);
 
-		render(deltaTime);
+		render(ellapsedTime, deltaTime);
 
 		switchSceneDirect(mUserScene);
 	}

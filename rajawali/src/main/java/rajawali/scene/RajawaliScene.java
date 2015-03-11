@@ -92,11 +92,13 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mAlwaysClearColorBuffer = true;
 	private ShadowMapMaterial mShadowMapMaterial;
 
-	private List<Object3D> mChildren;
-	private List<Animation> mAnimations;
-	private List<IRendererPlugin> mPlugins;
-	private List<ALight> mLights;
-	
+	private final List<Object3D> mChildren;
+    private final List<ASceneFrameCallback> mPreCallbacks;
+    private final List<ASceneFrameCallback> mPostCallbacks;
+	private final List<Animation> mAnimations;
+	private final List<IRendererPlugin> mPlugins;
+	private final List<ALight> mLights;
+
 	/**
 	* The camera currently in use.
 	* Not thread safe for speed, should
@@ -104,7 +106,8 @@ public class RajawaliScene extends AFrameTask {
 	* or prior to rendering such as initScene(). 
 	*/
 	protected Camera mCamera;
-	private List<Camera> mCameras; //List of all cameras in the scene.
+	private final List<Camera> mCameras; //List of all cameras in the scene.
+
 	/**
 	* Temporary camera which will be switched to by the GL thread.
 	* Guarded by {@link #mNextCameraLock}
@@ -122,7 +125,7 @@ public class RajawaliScene extends AFrameTask {
 	 * 
 	 * Guarded by itself
 	 */
-	private LinkedList<AFrameTask> mFrameTaskQueue;
+	private final LinkedList<AFrameTask> mFrameTaskQueue;
 
 	protected boolean mDisplaySceneGraph = false;
 	protected IGraphNode mSceneGraph; //The scenegraph for this scene
@@ -132,6 +135,8 @@ public class RajawaliScene extends AFrameTask {
 		mRenderer = renderer;
 		mAlpha = 0;
 		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
+        mPreCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
+        mPostCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
@@ -140,7 +145,6 @@ public class RajawaliScene extends AFrameTask {
 		
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
-		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
 		mCameras.add(mCamera);
 	}
 	
@@ -194,7 +198,7 @@ public class RajawaliScene extends AFrameTask {
 	/**
 	* Switches the {@link Camera} currently being used to display the scene.
 	* 
-	* @param mCamera {@link Camera} object to display the scene with.
+	* @param camera {@link Camera} object to display the scene with.
 	*/
 	public void switchCamera(Camera camera) {
 		synchronized (mNextCameraLock) {
@@ -276,7 +280,7 @@ public class RajawaliScene extends AFrameTask {
 	* 
 	* @param camera {@link Camera} object to add.
 	* @param location Integer index of the camera to replace.
-	* @param boolean True if the replacement was successfully queued.
+	* @return  boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceCamera(Camera camera, int location) {
 		return queueReplaceTask(location, camera);
@@ -290,7 +294,7 @@ public class RajawaliScene extends AFrameTask {
 	* 
 	* @param oldCamera {@link Camera} object to be replaced.
 	* @param newCamera {@link Camera} object replacing the old.
-	* @param boolean True if the replacement was successfully queued.
+	* @return  boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceCamera(Camera oldCamera, Camera newCamera) {
 		return queueReplaceTask(oldCamera, newCamera);
@@ -328,7 +332,7 @@ public class RajawaliScene extends AFrameTask {
 	* 
 	* @param oldCamera {@link Camera} object to be replaced.
 	* @param newCamera {@link Camera} object replacing the old.
-	* @param boolean True if the replacement was successfully queued.
+	* @return  boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceAndSwitchCamera(Camera oldCamera, Camera newCamera) {
 		boolean success = queueReplaceTask(oldCamera, newCamera);
@@ -431,8 +435,8 @@ public class RajawaliScene extends AFrameTask {
 	 * @param plugin {@link Plugin} child to be added.
 	 * @return True if the plugin was successfully queued for addition.
 	 */
-	public boolean addPlugin(Plugin plugins) {
-		return queueAddTask(plugins);
+	public boolean addPlugin(Plugin plugin) {
+		return queueAddTask(plugin);
 	}
 	
 	/**
@@ -517,6 +521,38 @@ public class RajawaliScene extends AFrameTask {
 	public boolean clearAnimations() {
 		return queueClearTask(AFrameTask.TYPE.ANIMATION);
 	}
+
+    /**
+     * Register a frame callback for this scene.
+     *
+     * @param callback {@link ASceneFrameCallback} to be registered.
+     *
+     * @return {@code boolean} True if the registration was queued successfully.
+     */
+    public boolean registerFrameCallback(ASceneFrameCallback callback) {
+        return queueAddTask(callback);
+    }
+
+    /**
+     * Remove a frame callback. If the callback is not a member of the scene,
+     * nothing will happen.
+     *
+     * @param callback {@link ASceneFrameCallback} to be unregistered.
+     *
+     * @return {@code boolean} True if the unregister was queued successfully.
+     */
+    public boolean unregisterFrameCallback(ASceneFrameCallback callback) {
+        return queueRemoveTask(callback);
+    }
+
+    /**
+     * Removes all {@link ASceneFrameCallback} objects from the scene.
+     *
+     * @return {@code boolean} True if the clear task was queued successfully.
+     */
+    public boolean clearFrameCallbacks() {
+        return queueClearTask(AFrameTask.TYPE.FRAME_CALLBACK);
+    }
 	
 	/**
 	 * Sets fog. 
@@ -663,11 +699,11 @@ public class RajawaliScene extends AFrameTask {
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 	}
 	
-	public void render(double deltaTime, RenderTarget renderTarget) {
-		render(deltaTime, renderTarget, null);
+	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget) {
+		render(ellapsedTime, deltaTime, renderTarget, null);
 	}
 	
-	public void render(double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
+	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
 		performFrameTasks(); //Handle the task queue
 		if(mLightsDirty) {
 			updateMaterialsWithLights();
@@ -718,6 +754,17 @@ public class RajawaliScene extends AFrameTask {
 
 		GLES20.glClear(clearMask);
 
+        // Execute pre-render callbacks
+        // We explicitly break out the steps here to help the compiler optimize
+        final int preCount = mPreCallbacks.size();
+        if (preCount > 0) {
+            synchronized (mPreCallbacks) {
+                for (int i = 0; i < preCount; ++i) {
+                    mPreCallbacks.get(i).onPreFrame(ellapsedTime, deltaTime);
+                }
+            }
+        }
+
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
 		// Pre-multiply View and Projection matrices once for speed
@@ -747,7 +794,7 @@ public class RajawaliScene extends AFrameTask {
 					anim.update(deltaTime);
 			}
 		}
-		
+
 		Material sceneMat = pickerInfo == null ? sceneMaterial : pickerInfo.getPicker().getMaterial();
 		
 		if(sceneMat != null) {
@@ -794,7 +841,7 @@ public class RajawaliScene extends AFrameTask {
 			pickerInfo.getPicker().getRenderTarget().unbind();
 			pickerInfo = null;
 			mPickerInfo = null;
-			render(deltaTime, renderTarget, sceneMaterial); //TODO Possible timing error here
+			render(ellapsedTime, deltaTime, renderTarget, sceneMaterial); //TODO Possible timing error here
 		}
 
 		synchronized (mPlugins) {
@@ -806,6 +853,17 @@ public class RajawaliScene extends AFrameTask {
 		{
 			renderTarget.unbind();
 		}
+
+        // Execute post-render callbacks
+        // We explicitly break out the steps here to help the compiler optimize
+        final int postCount = mPostCallbacks.size();
+        if (postCount > 0) {
+            synchronized (mPostCallbacks) {
+                for (int i = 0; i < postCount; ++i) {
+                    mPostCallbacks.get(i).onPostFrame(ellapsedTime, deltaTime);
+                }
+            }
+        }
 	}
 	
 	/**
@@ -1033,6 +1091,8 @@ public class RajawaliScene extends AFrameTask {
 			break;
 		case PLUGIN:
 			internalAddPlugin((IRendererPlugin) task, task.getIndex());
+        case FRAME_CALLBACK:
+            internalAddFrameCallback((ASceneFrameCallback) task, task.getIndex());
 			break;
 		default:
 			break;
@@ -1062,6 +1122,9 @@ public class RajawaliScene extends AFrameTask {
 		case PLUGIN:
 			internalRemovePlugin((IRendererPlugin) task, task.getIndex());
 			break;
+        case FRAME_CALLBACK:
+            internalRemoveFrameCallback((ASceneFrameCallback) task);
+            break;
 		default:
 			break;
 		}
@@ -1173,6 +1236,12 @@ public class RajawaliScene extends AFrameTask {
 				}
 			}
 			break;
+        case FRAME_CALLBACK:
+            if (clear) {
+                internalClearFrameCallbacks();
+            } else {
+                //TODO: Implement if adding frame callback collections is added
+            }
 		default:
 			break;
 		}
@@ -1180,12 +1249,12 @@ public class RajawaliScene extends AFrameTask {
 	
 	/**
 	 * Internal method for replacing a {@link Animation} object. If index is
-	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
+	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleAddTask(AFrameTask)}
 	 * 
 	 * @param anim {@link AFrameTask} The old animation.
 	 * @param replace {@link Animation} The animation replacing the old animation.
-	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
 	 */
 	private void internalReplaceAnimation(AFrameTask anim, Animation replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
@@ -1203,7 +1272,7 @@ public class RajawaliScene extends AFrameTask {
 	 * meaningless.
 	 * 
 	 * @param anim {@link Animation} to add.
-	 * @param int index to add the animation at. 
+	 * @param index int index to add the animation at.
 	 */
 	private void internalAddAnimation(Animation anim, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
@@ -1212,7 +1281,7 @@ public class RajawaliScene extends AFrameTask {
 			mAnimations.add(index, anim);
 		}
 	}
-	
+
 	/**
 	 * Internal method for removing {@link Animation} objects.
 	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
@@ -1237,15 +1306,56 @@ public class RajawaliScene extends AFrameTask {
 	private void internalClearAnimations() {
 		mAnimations.clear();
 	}
-	
+
+    /**
+     * Internal method for adding {@link ASceneFrameCallback} objects.
+     * Should only be called through {@link #handleAddTask(AFrameTask)}
+     * <p/>
+     * This takes an index for the addition, but it is pretty
+     * meaningless.
+     *
+     * @param callback {@link ASceneFrameCallback} to add.
+     * @param index    int  index to add the animation at.
+     */
+    private void internalAddFrameCallback(ASceneFrameCallback callback, int index) {
+        if (index == AFrameTask.UNUSED_INDEX) {
+            if (callback.callPreFrame()) mPreCallbacks.add(callback);
+            if (callback.callPostFrame()) mPostCallbacks.add(callback);
+        } else {
+            if (callback.callPreFrame()) mPreCallbacks.add(index, callback);
+            if (callback.callPostFrame()) mPostCallbacks.add(index, callback);
+        }
+    }
+
+    /**
+     * Internal method for removing {@link ASceneFrameCallback} objects.
+     * Should only be called through {@link #handleRemoveTask(AFrameTask)}
+     * <p/>
+     *
+     * @param callback  {@link ASceneFrameCallback} to remove. If index is used, this is ignored.
+     */
+    private void internalRemoveFrameCallback(ASceneFrameCallback callback) {
+        if (callback.callPreFrame()) mPreCallbacks.remove(callback);
+        if (callback.callPostFrame()) mPostCallbacks.remove(callback);
+    }
+
+    /**
+     * Internal method for removing all {@link ASceneFrameCallback} objects.
+     * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
+     */
+    private void internalClearFrameCallbacks() {
+        mPreCallbacks.clear();
+        mPostCallbacks.clear();
+    }
+
 	/**
 	 * Internal method for replacing a {@link Camera}. If index is
-	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
+	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
 	 * 
 	 * @param camera {@link Camera} The old camera.
 	 * @param replace {@link Camera} The camera replacing the old camera.
-	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
 	 */
 	private void internalReplaceCamera(AFrameTask camera, Camera replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
@@ -1264,7 +1374,7 @@ public class RajawaliScene extends AFrameTask {
 	 * meaningless.
 	 * 
 	 * @param camera {@link Camera} to add.
-	 * @param int index to add the camera at. 
+	 * @param index int index to add the camera at.
 	 */
 	private void internalAddCamera(Camera camera, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
@@ -1341,13 +1451,13 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Internal method for replacing a {@link ALightD} light. If index is
-	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
+	 * Internal method for replacing a {@link ALight} light. If index is
+	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
 	 * 
-	 * @param light {@link ALight} The new light for the specified index.
+	 * @param child {@link AFrameTask} The new light for the specified index.
 	 * @param replace {@link ALight} The light replacing the old light.
-	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
 	 */
 	private void internalReplaceLight(AFrameTask child, ALight replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
@@ -1367,7 +1477,7 @@ public class RajawaliScene extends AFrameTask {
 	 * meaningless.
 	 * 
 	 * @param light {@link ALight} to add.
-	 * @param int index to add the light at. 
+	 * @param index int index to add the light at.
 	 */
 	private void internalAddLight(ALight light, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
@@ -1480,12 +1590,12 @@ public class RajawaliScene extends AFrameTask {
 	
 	/**
 	 * Internal method for replacing a {@link Object3D} child. If index is
-	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
+	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
 	 * 
 	 * @param child {@link Object3D} The new child for the specified index.
 	 * @param replace {@link Object3D} The child replacing the old child.
-	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
 	 */
 	private void internalReplaceChild(AFrameTask child, Object3D replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
@@ -1504,7 +1614,7 @@ public class RajawaliScene extends AFrameTask {
 	 * meaningless.
 	 * 
 	 * @param child {@link Object3D} to add.
-	 * @param int index to add the child at. 
+	 * @param index int index to add the child at.
 	 */
 	private void internalAddChild(Object3D child, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {
@@ -1583,12 +1693,12 @@ public class RajawaliScene extends AFrameTask {
 
 	/**
 	 * Internal method for replacing a {@link IRendererPlugin}. If index is
-	 * {@link AFrameTask.UNUSED_INDEX} then it will be used, otherwise the replace
+	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
 	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
 	 * 
 	 * @param plugin {@link IRendererPlugin} The new plugin for the specified index.
 	 * @param replace {@link IRendererPlugin} The plugin replacing the old plugin.
-	 * @param index integer index to effect. Set to {@link AFrameTask.UNUSED_INDEX} if not used.
+	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
 	 */
 	private void internalReplacePlugin(AFrameTask plugin, IRendererPlugin replace, int index) {
 		if (index != AFrameTask.UNUSED_INDEX) {
@@ -1606,7 +1716,7 @@ public class RajawaliScene extends AFrameTask {
 	 * meaningless.
 	 * 
 	 * @param plugin {@link IRendererPlugin} to add.
-	 * @param int index to add the child at. 
+	 * @param index int index to add the child at.
 	 */
 	private void internalAddPlugin(IRendererPlugin plugin, int index) {
 		if (index == AFrameTask.UNUSED_INDEX) {

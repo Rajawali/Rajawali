@@ -35,15 +35,15 @@ public class ShadowPass extends RenderPass {
 	}
 	
 	@Override
-	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
+	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
 		if(mShadowPassType == ShadowPassType.APPLY_SHADOW_MAP) {
 			mShadowMapMaterial.setShadowMapTexture(mShadowRenderTarget.getTexture());
-			super.render(scene, renderer, screenQuad, writeBuffer, readBuffer, deltaTime);
+			super.render(scene, renderer, screenQuad, writeBuffer, readBuffer, ellapsedTime, deltaTime);
 		} else {
 			int oldWidth = renderer.getCurrentViewportWidth();
 			int oldHeight = renderer.getCurrentViewportHeight();
 			renderer.setViewPort(mShadowMapSize, mShadowMapSize);
-			super.render(scene, renderer, screenQuad, mShadowRenderTarget, readBuffer, deltaTime);
+			super.render(scene, renderer, screenQuad, mShadowRenderTarget, readBuffer, ellapsedTime, deltaTime);
 			renderer.setViewPort(oldWidth, oldHeight);
 		}
 	}
