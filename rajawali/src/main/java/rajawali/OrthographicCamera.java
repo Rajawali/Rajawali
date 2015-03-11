@@ -23,18 +23,24 @@ public class OrthographicCamera extends Camera {
 	public void setProjectionMatrix(int width, int height) 
 	{
 		double aspect = (double) width / (double) height;
-		mProjMatrix.setToOrthographic(-aspect, aspect, -1, 1, mNearPlane, mFarPlane);
-		mProjMatrix.setCoordinateZoom(mZoom);
+		synchronized (mFrustumLock) {
+			mProjMatrix.setToOrthographic(-aspect, aspect, -1, 1, mNearPlane, mFarPlane);
+			mProjMatrix.setCoordinateZoom(mZoom);
+		}
 	}
 	
 	public void setZoom(double zoom)
 	{
-		mZoom = zoom;
-		mProjMatrix.setCoordinateZoom(zoom);
+		synchronized (mFrustumLock) {
+			mZoom = zoom;
+			mProjMatrix.setCoordinateZoom(zoom);
+		}
 	}
 	
 	public double getZoom()
 	{
-		return mZoom;
+		synchronized (mFrustumLock) {
+			return mZoom;
+		}
 	}
 }
