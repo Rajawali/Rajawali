@@ -363,9 +363,10 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			}
 		}
 
-        final long elapsedRenderTime = System.nanoTime() - mRenderStartTime;
-		final double deltaTime = (elapsedRenderTime - mLastRender) / 1e9;
-		mLastRender = elapsedRenderTime;
+        final long currentTime = System.nanoTime();
+        final long elapsedRenderTime = currentTime - mRenderStartTime;
+		final double deltaTime = (currentTime - mLastRender) / 1e9;
+		mLastRender = currentTime;
 		
 		onRender(elapsedRenderTime, deltaTime);
 		
