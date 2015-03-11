@@ -13,11 +13,12 @@
 package rajawali.renderer;
 
 
+import rajawali.scene.RajawaliScene;
 
 /**
  * This is an abstract class to extend for things which need to have
  * their addition/removal/modification in the scene properly regulated
- * by the {@link RajawaliRenderer} and OpenGL thread. 
+ * by the {@link RajawaliScene} and OpenGL thread.
  * 
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
@@ -48,7 +49,7 @@ public abstract class AFrameTask {
 	/**
 	 * The type of object this task is acting on.
 	 */
-	public enum TYPE {ANIMATION, CAMERA, LIGHT, OBJECT3D, PLUGIN, TEXTURE, SCENE, TEXTURE_MANAGER, COLOR_PICKER, MATERIAL, MATERIAL_MANAGER, RENDER_TARGET, EFFECT};
+	public enum TYPE {ANIMATION, CAMERA, LIGHT, OBJECT3D, PLUGIN, TEXTURE, SCENE, TEXTURE_MANAGER, COLOR_PICKER, MATERIAL, MATERIAL_MANAGER, RENDER_TARGET, EFFECT, FRAME_CALLBACK};
 	
 	private AFrameTask.TASK mFrameTask = AFrameTask.TASK.NONE; //The task to perform
 	private int mFrameTaskIndex = UNUSED_INDEX; //The index to replace, if relevant
@@ -73,7 +74,7 @@ public abstract class AFrameTask {
 	/**
 	 * Sets the task to be performed.
 	 * 
-	 * @param task {@AFrameTask.TASK} to be performed.
+	 * @param task {@link AFrameTask.TASK} to be performed.
 	 */
 	public void setTask(AFrameTask.TASK task) {
 		mFrameTask = task;
@@ -91,7 +92,7 @@ public abstract class AFrameTask {
 	/**
 	 * Sets the index this task acts on.
 	 * 
-	 * @param int The index.
+	 * @param index {@code int} The index.
 	 */
 	public void setIndex(int index) {
 		mFrameTaskIndex = index;

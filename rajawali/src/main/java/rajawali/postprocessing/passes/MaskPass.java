@@ -15,12 +15,13 @@ package rajawali.postprocessing.passes;
 /**
  * Code heavily referenced from Three.js post processing framework.
  */
+import android.opengl.GLES20;
+
 import rajawali.postprocessing.APass;
 import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
-import android.opengl.GLES20;
 
 /**
  * Masked render pass for drawing to stencil buffer.
@@ -56,7 +57,7 @@ public class MaskPass extends APass {
 	}
 	
 	@Override
-	public void render(RajawaliScene scene, RajawaliRenderer render, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, double deltaTime) {
+	public void render(RajawaliScene scene, RajawaliRenderer render, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
 		// Do not update color or depth.
 		GLES20.glColorMask(false, false, false, false);
 		GLES20.glDepthMask(false);
@@ -78,8 +79,8 @@ public class MaskPass extends APass {
 		GLES20.glClearStencil(clearValue);
 		
 		// Draw into the stencil buffer.
-		mScene.render(deltaTime, readBuffer);
-		mScene.render(deltaTime, writeBuffer);
+		mScene.render(ellapsedTime, deltaTime, readBuffer);
+		mScene.render(ellapsedTime, deltaTime, writeBuffer);
 		
 		// Re-enable color and depth.
 		GLES20.glColorMask(true, true, true, true);

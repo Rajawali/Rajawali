@@ -12,6 +12,9 @@
  */
 package rajawali.postprocessing.passes;
 
+import android.graphics.Bitmap.Config;
+import android.opengl.GLES20;
+
 import rajawali.framework.R;
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;
@@ -19,8 +22,6 @@ import rajawali.primitives.ScreenQuad;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.renderer.RenderTarget;
 import rajawali.scene.RajawaliScene;
-import android.graphics.Bitmap.Config;
-import android.opengl.GLES20;
 
 public class CopyToNewRenderTargetPass extends EffectPass {
 	private RenderTarget mRenderTarget;
@@ -40,8 +41,8 @@ public class CopyToNewRenderTargetPass extends EffectPass {
 		return mRenderTarget;
 	}
 	
-	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, double deltaTime) {
-		super.render(scene, renderer, screenQuad, mRenderTarget, readTarget, deltaTime);
+	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime) {
+		super.render(scene, renderer, screenQuad, mRenderTarget, readTarget, ellapsedTime, deltaTime);
 	}
 	
 	@Override
