@@ -92,13 +92,13 @@ public class RajawaliScene extends AFrameTask {
 	protected boolean mAlwaysClearColorBuffer = true;
 	private ShadowMapMaterial mShadowMapMaterial;
 
-	private List<Object3D> mChildren;
+	private final List<Object3D> mChildren;
     private final List<ASceneFrameCallback> mPreCallbacks;
     private final List<ASceneFrameCallback> mPostCallbacks;
-	private List<Animation> mAnimations;
-	private List<IRendererPlugin> mPlugins;
-	private List<ALight> mLights;
-	
+	private final List<Animation> mAnimations;
+	private final List<IRendererPlugin> mPlugins;
+	private final List<ALight> mLights;
+
 	/**
 	* The camera currently in use.
 	* Not thread safe for speed, should
@@ -106,7 +106,7 @@ public class RajawaliScene extends AFrameTask {
 	* or prior to rendering such as initScene(). 
 	*/
 	protected Camera mCamera;
-	private List<Camera> mCameras; //List of all cameras in the scene.
+	private final List<Camera> mCameras; //List of all cameras in the scene.
 
 	/**
 	* Temporary camera which will be switched to by the GL thread.
@@ -125,7 +125,7 @@ public class RajawaliScene extends AFrameTask {
 	 * 
 	 * Guarded by itself
 	 */
-	private LinkedList<AFrameTask> mFrameTaskQueue;
+	private final LinkedList<AFrameTask> mFrameTaskQueue;
 
 	protected boolean mDisplaySceneGraph = false;
 	protected IGraphNode mSceneGraph; //The scenegraph for this scene
@@ -145,7 +145,6 @@ public class RajawaliScene extends AFrameTask {
 		
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
-		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
 		mCameras.add(mCamera);
 	}
 	
