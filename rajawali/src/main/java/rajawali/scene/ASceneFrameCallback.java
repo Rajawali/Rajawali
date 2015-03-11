@@ -21,7 +21,7 @@ public abstract class ASceneFrameCallback extends AFrameTask {
     /**
      * Pre frame render callback. This will be called prior to any camera or animation updates in the scene.
      *
-     * @param sceneTime {@code long} Rendering elapsed time in milliseconds.
+     * @param sceneTime {@code long} Rendering elapsed time in nanoseconds.
      * @param deltaTime {@code double} Time passed since last frame in seconds.
      */
     public abstract void onPreFrame(long sceneTime, double deltaTime);
@@ -29,7 +29,7 @@ public abstract class ASceneFrameCallback extends AFrameTask {
     /**
      * Post frame render callback. Called after all frame drawing has completed, including plugins.
      *
-     * @param sceneTime {@code long} Rendering elapsed time in milliseconds.
+     * @param sceneTime {@code long} Rendering elapsed time in nanoseconds.
      * @param deltaTime {@code double} Time passed since last frame in seconds.
      */
     public abstract void onPostFrame(long sceneTime, double deltaTime);
