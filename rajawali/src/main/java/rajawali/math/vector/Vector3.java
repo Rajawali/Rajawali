@@ -813,8 +813,8 @@ public class Vector3 {
 	/**
 	 * Transforms this {@link Vector3} using the given {@link Quaternion}.
 	 * 
-	 * @param v {@link Vector3} The {@link Vector3} to transform.
-	 * @return {@link Vector3} The transformed {@link Vector3}. This is the same as the parameter v.
+	 * @param quat {@link Vector3} The {@link Vector3} to transform.
+	 * @return {@link Vector3} The transformed {@link Vector3}. This is the same as the parameter quat.
 	 */
 	public Vector3 transform(Quaternion quat) {
 		Quaternion tmp = new Quaternion(quat);
@@ -824,6 +824,18 @@ public class Vector3 {
 
 		return setAll(tmp.x, tmp.y, tmp.z);
 	}
+
+    /**
+     * Calculates the angle between this {@link Vector3} and the provided {@link Vector3}.
+     *
+     * @param v {@link Vector3} The {@link Vector3} The {@link Vector3} to calculate the angle to.
+     * @return {@code double} The calculated angle, in degrees.
+     */
+    public double angle(final Vector3 v) {
+        double dot = dot(v);
+        dot /= (length() * v.length());
+        return Math.toDegrees(Math.acos(dot));
+    }
 	
 	/**
 	 * Computes the vector dot product between the two specified {@link Vector3} objects.
