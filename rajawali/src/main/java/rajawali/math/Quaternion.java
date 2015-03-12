@@ -626,6 +626,22 @@ public final class Quaternion {
 	}
 	
 	/**
+	 * Creates a {@link Vector3} which represents the specified axis of this {@link Quaternion}.
+	 *
+	 * @param axis {@Link Axis} The axis of this {@link Quaternion} to be returned.
+	 * @return {@link Vector3} The z axis of this {@link Quaternion}.
+	 */
+	public Vector3 getAxis(Axis axis) {
+		if (axis == Axis.X) {
+			return getXAxis();
+		} else if (axis == Axis.Y) {
+			return getYAxis();
+		} else {
+			return getZAxis();
+		}
+	}
+	
+	/**
 	 * Calculates the Euclidean length of this {@link Quaternion}.
 	 * 
 	 * @return double The Euclidean length.
