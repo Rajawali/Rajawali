@@ -90,7 +90,9 @@ public abstract class ASingleTexture extends ATexture
 	public void setResourceId(int resourceId) {
 		mResourceId = resourceId;
 		Context context = TextureManager.getInstance().getContext();
-		setBitmap(BitmapFactory.decodeResource(context.getResources(), resourceId));
+		BitmapFactory.Options bitmapScalingOptions = new BitmapFactory.Options();
+		bitmapScalingOptions.inScaled = false;
+		setBitmap(BitmapFactory.decodeResource(context.getResources(), resourceId, bitmapScalingOptions));
 	}
 
 	public int getResourceId()
