@@ -721,6 +721,7 @@ public class RajawaliScene extends AFrameTask {
 			//Check if we need to switch the camera, and if so, do it.
 			if (mNextCamera != null) {
 				mCamera = mNextCamera;
+                mCamera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
 				mNextCamera = null;
 			}
 		}
