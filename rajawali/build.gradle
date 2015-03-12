@@ -1,0 +1,31 @@
+apply plugin: 'com.android.library'
+apply plugin: 'signing'
+
+group = GROUP
+version = VERSION_NAME
+status = 'debug'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.0"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    buildTypes {
+        release {
+            status = 'release'
+        }
+    }
+}
+
+apply from: 'maven_push.gradle'
