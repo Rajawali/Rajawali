@@ -45,7 +45,7 @@ public class ArchimedeanSpiral3D extends ASpiral3D {
         a = scale;
         mInvDensity = 1.0 / mDensity;
         // Calculate the starting offset
-        mThetaOffset = mSpiralIn ? (Math.pow(10.0, mDensity * Math.log10(mStart.length() / a))) :
+        mThetaOffset = mSpiralIn ? calculateThetaForRadius(mStart.length()) :
             mRotation.getXAxis().angle(mStart);
     }
 
@@ -74,5 +74,10 @@ public class ArchimedeanSpiral3D extends ASpiral3D {
         if (mCalculateTangents) {
             mCurrentTangent.crossAndSet(mUp, mScratch);
         }
+    }
+
+    @Override
+    public double calculateThetaForRadius(double r) {
+        return (Math.pow(10.0, mDensity * Math.log10(r / a)));
     }
 }
