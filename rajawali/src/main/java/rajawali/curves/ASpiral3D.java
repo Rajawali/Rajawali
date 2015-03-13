@@ -87,6 +87,14 @@ public abstract class ASpiral3D implements ICurve3D {
     }
 
     /**
+     * Calculates the angle in radians to be on the spiral for a given radius.
+     *
+     * @param r {@code double} The radius to calculate for.
+     * @return {@code double} The calculated angle in radians.
+     */
+    public abstract double calculateThetaForRadius(double r);
+
+    /**
      * Calculates the position on the spiral for the specified polar angle. This takes an additional
      * parameter of a {@link Vector3} which will be set to the calculated position.
      *
