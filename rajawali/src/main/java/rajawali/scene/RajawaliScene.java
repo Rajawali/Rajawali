@@ -1224,7 +1224,7 @@ public class RajawaliScene extends AFrameTask {
 				internalClearChildren();
 			} else {
 				for (i = 0; i < j; ++i) {
-					internalAddChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalRemoveChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
@@ -1233,7 +1233,7 @@ public class RajawaliScene extends AFrameTask {
 				internalClearPlugins();
 			} else {
 				for (i = 0; i < j; ++i) {
-					internalAddPlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalRemovePlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
