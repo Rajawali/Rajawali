@@ -1184,8 +1184,9 @@ public class RajawaliScene extends AFrameTask {
 		boolean clear = false;
 		AFrameTask[] tasks = null;
 		int i = 0, j = 0;
-		if (type == null) {
-			clear = true;
+		if (group.getCollection() == null) {
+            // In this case we simply clear everything
+            clear = true;
 		} else {
 			tasks = (AFrameTask[]) group.getCollection().toArray();
 			type = tasks[0].getFrameTaskType();
