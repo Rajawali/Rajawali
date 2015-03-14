@@ -21,7 +21,7 @@ import org.rajawali3d.math.vector.Vector3.Axis;
  * Ported from http://www.ogre3d.org/docs/api/html/classOgre_1_1Quaternion.html
  * 
  * Rewritten July 27, 2013 by Jared Woolston with heavy influence from libGDX
- * @see https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java
+ * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
  * 
  * @author dennis.ippel
  * @author Jared Woolston (jwoolston@tenkiv.com)
@@ -1005,15 +1005,15 @@ public final class Quaternion {
 	 * @param matrix double[] representing a 4x4 rotation matrix in column major order.
 	 */
 	public void toRotationMatrix(double[] matrix) {
-		double x2 = x * x;
-		double y2 = y * y;
-		double z2 = z * z;
-		double xy = x * y;
-		double xz = x * z;
-		double yz = y * z;
-		double wx = w * x;
-		double wy = w * y;
-		double wz = w * z;
+        final double x2 = x * x;
+        final double y2 = y * y;
+        final double z2 = z * z;
+        final double xy = x * y;
+        final double xz = x * z;
+        final double yz = y * z;
+        final double wx = w * x;
+        final double wy = w * y;
+        final double wz = w * z;
 
 		matrix[Matrix4.M00] = 1.0 - 2.0 * (y2 + z2);
 		matrix[Matrix4.M10] = 2.0 * (xy - wz);
@@ -1036,32 +1036,6 @@ public final class Quaternion {
 		matrix[Matrix4.M33] = 1;
 	}
 	
-	/**
-	 * Sets this {@link Quaternion} to be oriented to a target {@link Vector3}.
-	 * It is safe to use the input vectors for other things as they are cloned internally.
-	 * 
-	 * @param lookAt {@link Vector3} The point to look at.
-	 * @param upDirection {@link Vector3} to use as the up direction.
-	 * @param isCamera boolean indicating if this orientation is for a camera.
-	 * @return A reference to this {@link Quaternion} to facilitate chaining.
-	 */
-	public Quaternion lookAt(Vector3 lookAt, Vector3 upDirection, boolean isCamera) {
-		Vector3 forward = lookAt.clone(); 
-		Vector3 up = upDirection.clone();
-		Vector3[] vecs = new Vector3[2];
-		vecs[0] = forward; 
-		vecs[1] = up;
-
-		Vector3.orthoNormalize(vecs);
-		Vector3 right = Vector3.crossAndCreate(forward, up);
-		fromAxes(right, up, forward);
-		if (isCamera) {
-			return this;
-		} else {
-			return inverse();
-		}
-	}
-	
     /**
      * Sets this {@link Quaternion} to be oriented to a target {@link Vector3}.
      * It is safe to use the input vectors for other things as they are cloned internally.
@@ -1073,14 +1047,10 @@ public final class Quaternion {
     public Quaternion lookAt(Vector3 lookAt, Vector3 upDirection) {
         Vector3 forward = lookAt.clone();
         Vector3 up = upDirection.clone();
-        Vector3[] vecs = new Vector3[2];
-        vecs[0] = forward;
-        vecs[1] = up;
-
-        Vector3.orthoNormalize(vecs);
+        Vector3.orthoNormalize(new Vector3[]{forward, up});
         Vector3 right = Vector3.crossAndCreate(forward, up);
 
-        setAll(fromAxes(right, up, forward));
+        fromAxes(right, up, forward);
 
         return this;
     }
@@ -1091,12 +1061,11 @@ public final class Quaternion {
 	 * 
 	 * @param lookAt {@link Vector3} The point to look at.
 	 * @param upDirection {@link Vector3} to use as the up direction.
-	 * @param isCamera boolean indicating if this orientation is for a camera.
 	 * @return {@link Quaternion} The new {@link Quaternion} representing the requested orientation.
 	 */
-    public static Quaternion lookAtAndCreate(Vector3 lookAt, Vector3 upDirection, boolean isCamera) {
+    public static Quaternion lookAtAndCreate(Vector3 lookAt, Vector3 upDirection) {
 		Quaternion ret = new Quaternion();
-		return ret.lookAt(lookAt, upDirection, isCamera);
+		return ret.lookAt(lookAt, upDirection);
 	}
     
     
@@ -1146,7 +1115,7 @@ public final class Quaternion {
     /**
      * Measures the angle between this {@link Quaternion} and another.
      *
-     * @param other {@link Quaterion} The other {@link Quaternion}.
+     * @param other {@link Quaternion} The other {@link Quaternion}.
      * @returns double with the angle between the two {@link Quaternion}s.
      */
     public double angleBetween(final Quaternion other) {

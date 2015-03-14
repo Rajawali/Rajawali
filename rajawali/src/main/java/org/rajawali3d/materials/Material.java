@@ -500,7 +500,6 @@ public class Material extends AFrameTask {
 	{
 		if (!mIsDirty)
 			return;
-		if (debug) RajLog.d(this, "Creating shaders.");
 		if(mCustomVertexShader == null && mCustomFragmentShader == null)
 		{
 			//
@@ -623,7 +622,6 @@ public class Material extends AFrameTask {
 			
 			if(mLightingEnabled && mLights != null && mLights.size() > 0)
 			{
-                if (debug) RajLog.d(this, "Processing lighting...");
 				mVertexShader.setLights(mLights);
 				mFragmentShader.setLights(mLights);
 				
@@ -667,9 +665,7 @@ public class Material extends AFrameTask {
 					if(fragment != null)
 						mFragmentShader.addShaderFragment(fragment);
 				}
-			} else {
-                if (debug) RajLog.d(this, "Not adding lighting to material.");
-            }
+			}
 			
 			checkForPlugins(PluginInsertLocation.PRE_ALPHA);
 			

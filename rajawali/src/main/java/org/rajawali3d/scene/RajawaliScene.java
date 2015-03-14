@@ -44,7 +44,6 @@ import org.rajawali3d.scenegraph.IGraphNodeMember;
 import org.rajawali3d.scenegraph.Octree;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
-import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -381,7 +380,15 @@ public class RajawaliScene extends AFrameTask {
 	public boolean addChild(Object3D child) {
 		return queueAddTask(child);
 	}
-	
+
+    /**
+     * Requests the addition of a child to the scene. The child
+     * will be added at the specified location in the list.
+     *
+     * @param child {@link Object3D} {@link Object3D} child to be added.
+     * @param index {@code int} Integer index of the location.
+     * @return True if the child was successfully queued for addition.
+     */
 	public boolean addChildAt(Object3D child, int index) {
 		return queueAddTask(child, index);
 	}
@@ -714,8 +721,8 @@ public class RajawaliScene extends AFrameTask {
 	
 	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
 		performFrameTasks(); //Handle the task queue
-        RajLog.d(this, "Are lights dirty? " + mLightsDirty);
-		if(mLightsDirty) {
+
+        if(mLightsDirty) {
 			updateMaterialsWithLights();
 			mLightsDirty = false;
 		}
@@ -740,8 +747,7 @@ public class RajawaliScene extends AFrameTask {
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
 		
-		if(renderTarget != null)
-		{
+		if (renderTarget != null) {
 			renderTarget.bind();
 			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
 		} else if (pickerInfo != null) {
@@ -776,33 +782,46 @@ public class RajawaliScene extends AFrameTask {
             }
         }
 
+        // Update all registered animations
+        synchronized (mAnimations) {
+            for (int i = 0, j = mAnimations.size(); i < j; ++i) {
+                Animation anim = mAnimations.get(i);
+                if (anim.isPlaying())
+                    anim.update(deltaTime);
+            }
+        }
+
+        // We are beginning the render process so we need to update the camera matrix before fetching its values
+        mCamera.onRecalculateModelMatrix(null);
+
+        // Get the view and projection matrices in advance
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
 		// Pre-multiply View and Projection matrices once for speed
 		mVPMatrix = mPMatrix.clone().multiply(mVMatrix);
 		mInvVPMatrix.setAll(mVPMatrix).inverse();
+        mCamera.updateFrustum(mInvVPMatrix); // Update frustum plane
+
+        // Update the model matrices of all the lights
+        synchronized (mLights) {
+            final int numLights = mLights.size();
+            for (int i = 0; i < numLights; ++i) {
+                mLights.get(i).onRecalculateModelMatrix(null);
+            }
+        }
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
 
 			mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
+            // Model matrix updates are deferred to the render method due to parent matrix needs
+            // Render the skybox
 			mSkybox.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, null);
 
 			if (mEnableDepthBuffer) {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 				GLES20.glDepthMask(true);
-			}
-		}
-
-		mCamera.updateFrustum(mInvVPMatrix); //update frustum plane
-		
-		// Update all registered animations
-		synchronized (mAnimations) {
-			for (int i = 0, j = mAnimations.size(); i < j; ++i) {
-				Animation anim = mAnimations.get(i);
-				if (anim.isPlaying())
-					anim.update(deltaTime);
 			}
 		}
 
@@ -821,6 +840,7 @@ public class RajawaliScene extends AFrameTask {
 					child.setBlendingEnabled(false);
 					pickerInfo.getPicker().getMaterial().setColor(child.getPickingColor());
 				}
+                // Model matrix updates are deferred to the render method due to parent matrix needs
 				child.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, sceneMat);
 				child.setBlendingEnabled(blendingEnabled);
 			}
@@ -860,8 +880,7 @@ public class RajawaliScene extends AFrameTask {
 				mPlugins.get(i).render();
 		}
 		
-		if(renderTarget != null)
-		{
+		if(renderTarget != null) {
 			renderTarget.unbind();
 		}
 
@@ -1586,7 +1605,6 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	private void updateChildMaterialWithLights(Object3D child)
 	{
-        RajLog.d(this, "Updating lit materials for child: " + child);
 		Material material = child.getMaterial();
 		if(material != null && material.lightingEnabled())
 			material.setLights(mLights);

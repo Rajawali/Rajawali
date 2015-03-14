@@ -19,12 +19,13 @@ import org.rajawali3d.util.ArrayUtils;
 /**
  * Encapsulates a column major 4x4 Matrix.
  * 
- * Rewritten August 8, 2013 by Jared Woolston with heavy influence from libGDX
- * @see https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java
- * 
  * This class is not thread safe and must be confined to a single thread or protected by
  * some external locking mechanism if necessary. All static methods are thread safe.
- * 
+ *
+ * Rewritten August 8, 2013 by Jared Woolston (jwoolston@tenkiv.com) with heavy influence from libGDX
+ * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java">
+ *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java</a>
+ *
  * @author dennis.ippel
  * @author Jared Woolston (jwoolston@tenkiv.com)
  *
@@ -197,6 +198,53 @@ public final class Matrix4 {
 		m[M30] = 0;			m[M31] = 0;			m[M32] = 0;			m[M33] = 1;
 		return this;
 	}
+
+    /**
+     * Sets the values of this {@link Matrix4} to the values corresponding to a Translation x Scale x Rotation.
+     * This is useful for composing a model matrix as efficiently as possible, eliminating any extraneous calculations.
+     *
+     * @param position {@link Vector3} representing the translation.
+     * @param scale {@link Vector3} representing the scaling.
+     * @param rotation {@link Quaternion} representing the rotation.
+     * @return A reference to this {@link Matrix4} to facilitate chaining.
+     */
+    public Matrix4 setAll(final Vector3 position, final Vector3 scale, final Quaternion rotation) {
+        // Precompute these factors for speed
+        final double x2 = rotation.x * rotation.x;
+        final double y2 = rotation.y * rotation.y;
+        final double z2 = rotation.z * rotation.z;
+        final double xy = rotation.x * rotation.y;
+        final double xz = rotation.x * rotation.z;
+        final double yz = rotation.y * rotation.z;
+        final double wx = rotation.w * rotation.x;
+        final double wy = rotation.w * rotation.y;
+        final double wz = rotation.w * rotation.z;
+
+        // Column 0
+        m[M00] = scale.x * (1.0 - 2.0 * (y2 + z2));
+        m[M10] = 2.0 * scale.y * (xy - wz);
+        m[M20] = 2.0 * scale.z * (xz + wy);
+        m[M30] = 0;
+
+        // Column 1
+        m[M01] = 2.0 * scale.x * (xy + wz);
+        m[M11] = scale.y * (1.0 - 2.0 * (x2 + z2));
+        m[M21] = 2.0 * scale.z * (yz - wx);
+        m[M31] = 0;
+
+        // Column 2
+        m[M02] = 2.0 * scale.x * (xz - wy);
+        m[M12] = 2.0 * scale.y * (yz + wx);
+        m[M22] = scale.z * (1.0 - 2.0 * (x2 + y2));
+        m[M32] = 0;
+
+        // Column 3
+        m[M03] = position.x;
+        m[M13] = position.y;
+        m[M23] = position.z;
+        m[M33] = 1.0;
+        return this;
+    }
 		
 	/**
 	 * Sets this {@link Matrix4} to an identity matrix.
@@ -577,7 +625,7 @@ public final class Matrix4 {
 	 * the given factor.
 	 * 
 	 * @param matrix {@link Matrix4} The other matrix.
-	 * @param t double The interpolation ratio. The result is weighted to this value on the {@link matrix}.
+	 * @param t {@code double} The interpolation ratio. The result is weighted to this value on the {@link Matrix4}.
 	 * @return A reference to this {@link Matrix4} to facilitate chaining.
 	 */
 	public Matrix4 lerp(Matrix4 matrix, double t) {

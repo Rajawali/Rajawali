@@ -33,6 +33,12 @@ public class DirectionalLight extends ALight {
 
 	public void setDirection(double x, double y, double z) {
 		setLookAt(x, y, z);
+        mDirectionVec.setAll(mForwardAxis);
+        mDirectionVec.rotateBy(mOrientation);
+        mDirectionVec.inverse();
+        mDirection[0] = (float) mDirectionVec.x;
+        mDirection[1] = (float) mDirectionVec.y;
+        mDirection[2] = (float) mDirectionVec.z;
 	}
 
 	public void setDirection(Vector3 dir) {
@@ -40,23 +46,10 @@ public class DirectionalLight extends ALight {
 	}
 
 	public double[] getDirection() {
-		setOrientation();
-		mDirectionVec.setAll(mForwardAxis);
-		
-		if (mLookAt == null) {
-			mOrientation.toRotationMatrix(mRotationMatrix);
-		} else {
-			System.arraycopy(mLookAtMatrix, 0, mRotationMatrix, 0, 16);
-		}
-		mDirectionVec.multiply(mRotationMatrix);
-		mDirection[0] = mDirectionVec.x;
-		mDirection[1] = mDirectionVec.y;
-		mDirection[2] = mDirectionVec.z;
 		return mDirection;
 	}
 	
 	public Vector3 getDirectionVector() {
-		getDirection();
 		return mDirectionVec;
 	}
 }
