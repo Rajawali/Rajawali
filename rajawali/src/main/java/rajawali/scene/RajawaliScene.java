@@ -1184,8 +1184,9 @@ public class RajawaliScene extends AFrameTask {
 		boolean clear = false;
 		AFrameTask[] tasks = null;
 		int i = 0, j = 0;
-		if (type == null) {
-			clear = true;
+		if (group.getCollection() == null) {
+            // In this case we simply clear everything
+            clear = true;
 		} else {
 			tasks = (AFrameTask[]) group.getCollection().toArray();
 			type = tasks[0].getFrameTaskType();
@@ -1224,7 +1225,7 @@ public class RajawaliScene extends AFrameTask {
 				internalClearChildren();
 			} else {
 				for (i = 0; i < j; ++i) {
-					internalAddChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalRemoveChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
@@ -1233,7 +1234,7 @@ public class RajawaliScene extends AFrameTask {
 				internalClearPlugins();
 			} else {
 				for (i = 0; i < j; ++i) {
-					internalAddPlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
+					internalRemovePlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
 				}
 			}
 			break;
