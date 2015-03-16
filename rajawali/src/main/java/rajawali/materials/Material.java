@@ -239,6 +239,8 @@ public class Material extends AFrameTask {
 	protected VertexShader mCustomVertexShader;
 	protected FragmentShader mCustomFragmentShader;
 
+    private boolean debug;
+
 	/**
 	 * The Material class is where you define the visual characteristics of your 3D model.
 	 * Here you can specify lighting parameters, specular highlights, ambient colors and much more.
@@ -272,6 +274,10 @@ public class Material extends AFrameTask {
 		mCustomVertexShader = customVertexShader;
 		mCustomFragmentShader = customFragmentShader;
 	}
+
+    public void setDebug(boolean flag) {
+        debug = flag;
+    }
 	
 	/**
  	 * Indicates that this material should use a color value for every vertex. These colors are
@@ -655,12 +661,6 @@ public class Material extends AFrameTask {
 			
 			mVertexShader.buildShader();
 			mFragmentShader.buildShader();
-			/*
-			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
-			RajLog.d(mVertexShader.getShaderString());
-			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
-			RajLog.d(mFragmentShader.getShaderString());
-			*/
 		}
 		else
 		{
@@ -672,13 +672,14 @@ public class Material extends AFrameTask {
 
 			if(mVertexShader.needsBuild()) mVertexShader.buildShader();
 			if(mFragmentShader.needsBuild()) mFragmentShader.buildShader();
-			/*
-			RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
-			RajLog.d(mVertexShader.getShaderString());
-			RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
-			RajLog.d(mFragmentShader.getShaderString());
-			*/
 		}
+
+        if (debug) {
+            RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
+            RajLog.d(mVertexShader.getShaderString());
+            RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
+            RajLog.d(mFragmentShader.getShaderString());
+        }
 		
 		mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
 		if (mProgramHandle == 0)
