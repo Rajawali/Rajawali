@@ -1206,7 +1206,8 @@ public abstract class AShader extends AShaderBase {
 	
 	public ShaderVar castVec3(ShaderVar x, ShaderVar y, ShaderVar z)
 	{
-		ShaderVar v = new ShaderVar("vec3(" + x.getName() + ", " + y.getName() + ", " + z.getName() + ")", DataType.VEC3);
+		ShaderVar v = new ShaderVar(DataType.VEC3);
+        v.setValue("vec3(" + x.getName() + ", " + y.getName() + ", " + z.getName() + ")");
 		v.mInitialized = true;
 		return v;
 	}
