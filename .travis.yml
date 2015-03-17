@@ -29,8 +29,7 @@ script:
 branches:
     only:
         - master
-        - travis_setup
 
 notifications:
   email:
-    - jwoolston@tenkiv.com
+    - rajawali.framework@gmail.com
