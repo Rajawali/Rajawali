@@ -12,23 +12,38 @@
  */
 package rajawali.parser;
 
-import java.io.*;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 import rajawali.Object3D;
 import rajawali.materials.Material;
 import rajawali.materials.methods.DiffuseMethod;
 import rajawali.materials.methods.SpecularMethod;
-import rajawali.materials.textures.*;
 import rajawali.materials.textures.ATexture.TextureException;
+import rajawali.materials.textures.Etc1Texture;
+import rajawali.materials.textures.NormalMapTexture;
+import rajawali.materials.textures.SpecularMapTexture;
+import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
 import rajawali.wallpaper.Wallpaper;
-import android.content.res.Resources;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.util.Log;
 
 /**
  * The most important thing is that the model should be triangulated. Rajawali doesn�t accept quads, only tris. In Blender, this is an option you can select in the exporter. In a program like MeshLab, this is done automatically.
@@ -333,7 +348,7 @@ public class LoaderOBJ extends AMeshLoader {
 				aNormals[ni+2] = normals.get(normalIndex + 2);
 			}
 			
-			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices);
+			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices, false);
 			try {
 				matLib.setMaterial(oid.targetObj, oid.materialName);
 			} catch(TextureException tme) {

@@ -12,6 +12,19 @@
  */
 package rajawali.animation.mesh;
 
+import android.opengl.GLES20;
+import android.os.SystemClock;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
@@ -26,18 +39,6 @@ import rajawali.math.Matrix;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.util.RajLog;
-import android.opengl.GLES20;
-import android.os.SystemClock;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AnticipateInterpolator;
-import android.view.animation.AnticipateOvershootInterpolator;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.CycleInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.OvershootInterpolator;
 
 public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	private SkeletonJoint[] mJoints;
@@ -263,7 +264,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	}
 
 	@Override
-	public void render(Camera camera, final Matrix4 projMatrix, final Matrix4 vMatrix, 
+	public void render(Camera camera, final Matrix4 projMatrix, final Matrix4 vMatrix,
 			final Matrix4 parentMatrix, Material sceneMaterial) {
 		setShaderParams(camera);
 		super.render(camera, projMatrix, vMatrix, parentMatrix, sceneMaterial);

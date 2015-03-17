@@ -12,12 +12,13 @@
  */
 package rajawali.primitives;
 
+import android.graphics.Color;
+import android.opengl.GLES20;
+
 import java.util.Stack;
 
 import rajawali.Object3D;
 import rajawali.math.vector.Vector3;
-import android.graphics.Color;
-import android.opengl.GLES20;
 
 /**
  * The Line3D takes a list of Vector3 points, thickness and a color.
@@ -81,22 +82,33 @@ public class Line3D extends Object3D {
 	 * @param thickness
 	 * @param colors
 	 */
-	public Line3D(Stack<Vector3> points, float thickness, int[] colors)
-	{
-		super();
-		mPoints = points;
-		mThickness = thickness;
-		mColors = colors;
-		if(colors != null && colors.length != points.size())
-			throw new RuntimeException("The number of line points and colors is not the same.");
-		init();
+	public Line3D(Stack<Vector3> points, float thickness, int[] colors) {
+		this(points, thickness, colors, true);
 	}
+
+    /**
+     * Creates a line primitive with a specified color for each point.
+     *
+     * @param points
+     * @param thickness
+     * @param colors
+     * @param createVBOs
+     */
+    public Line3D(Stack<Vector3> points, float thickness, int[] colors, boolean createVBOs) {
+        super();
+        mPoints = points;
+        mThickness = thickness;
+        mColors = colors;
+        if (colors != null && colors.length != points.size())
+            throw new RuntimeException("The number of line points and colors is not the same.");
+        init(createVBOs);
+    }
 	
 	public Vector3 getPoint(int point) {
 		return mPoints.get(point);
 	}
 	
-	private void init() {
+	private void init(boolean createVBOs) {
 		setDoubleSided(true);
 		setDrawingMode(GLES20.GL_LINE_STRIP);
 		
@@ -130,7 +142,7 @@ public class Line3D extends Object3D {
 			}
 		}
 		
-		setData(vertices, null, null, colors, indices);
+		setData(vertices, null, null, colors, indices, createVBOs);
 		
 		vertices = null;
 		colors = null;

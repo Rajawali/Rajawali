@@ -139,7 +139,23 @@ public class Plane extends Object3D {
 		this(width, height, segmentsW, segmentsH, upAxis, createTextureCoordinates, createVertexColorBuffer, 1);
 	}
 
-	
+    /**
+     * Creates a plane primitive.
+     *
+     * @param width                    The plane width
+     * @param height                   The plane height
+     * @param segmentsW                The number of vertical segments
+     * @param segmentsH                The number of horizontal segments
+     * @param upAxis                   The up axis. Choose Axis.Y for a ground plane and Axis.Z for a camera facing plane.
+     * @param createTextureCoordinates A boolean that indicates whether the texture coordinates should be calculated or not.
+     * @param createVertexColorBuffer  A boolean that indicates whether a vertex color buffer should be created or not.
+     * @param numTextureTiles          The number of texture tiles. If more than 1 the texture will be repeat by n times.
+     */
+    public Plane(float width, float height, int segmentsW, int segmentsH, Axis upAxis, boolean createTextureCoordinates,
+                 boolean createVertexColorBuffer, int numTextureTiles) {
+        this(width, height, segmentsW, segmentsH, upAxis, createTextureCoordinates, createVertexColorBuffer, numTextureTiles, true);
+    }
+
 	/**
 	 * Creates a plane primitive.
 	 * 
@@ -159,9 +175,11 @@ public class Plane extends Object3D {
 	 *            A boolean that indicates whether a vertex color buffer should be created or not.
 	 * @param numTextureTiles
 	 * 			  The number of texture tiles. If more than 1 the texture will be repeat by n times.
+     * @param createVBOs
+     *            A boolean that indicates whether the VBOs should be created immediately.
 	 */
 	public Plane(float width, float height, int segmentsW, int segmentsH, Axis upAxis, boolean createTextureCoordinates,
-			boolean createVertexColorBuffer, int numTextureTiles) {
+			boolean createVertexColorBuffer, int numTextureTiles, boolean createVBOs) {
 		super();
 		mWidth = width;
 		mHeight = height;
@@ -171,10 +189,10 @@ public class Plane extends Object3D {
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
 		mNumTextureTiles = numTextureTiles;
-		init();
+		init(createVBOs);
 	}
 
-	private void init() {
+	private void init(boolean createVBOs) {
 		int i, j;
 		int numVertices = (mSegmentsW + 1) * (mSegmentsH + 1);
 		float[] vertices = new float[numVertices * 3];
@@ -259,7 +277,7 @@ public class Plane extends Object3D {
 			}
 		}
 
-		setData(vertices, normals, textureCoords, colors, indices);
+		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
 		
 		vertices = null;
 		normals = null;
