@@ -1,14 +1,6 @@
-language android
-jdk: oraclejdk7
-
-branches:
-    only:
-        - master
-        - travis_setup
-
-notifications:
-  email:
-    - jwoolston@tenkiv.com
+language: android
+jdk:
+    - oraclejdk7
 
 android:
     components:
@@ -29,7 +21,16 @@ android:
         # if you need to run emulator(s) during your tests
         # - sys-img-armeabi-v7a-android-22
 
-    script:
-        - echo "Travis branch is $TRAVIS_BRANCH"
-        - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
-        - gradle assembleRelease
+script:
+    - echo "Travis branch is $TRAVIS_BRANCH"
+    - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
+    - gradle assembleRelease
+
+branches:
+    only:
+        - master
+        - travis_setup
+
+notifications:
+  email:
+    - jwoolston@tenkiv.com
