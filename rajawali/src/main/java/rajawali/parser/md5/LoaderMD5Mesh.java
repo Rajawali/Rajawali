@@ -12,6 +12,9 @@
  */
 package rajawali.parser.md5;
 
+import android.content.res.Resources;
+import android.opengl.GLES20;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -39,8 +42,6 @@ import rajawali.parser.IAnimatedMeshLoader;
 import rajawali.parser.ParsingException;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
-import android.content.res.Resources;
-import android.opengl.GLES20;
 
 public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 
@@ -424,8 +425,8 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 					mesh.normals, GLES20.GL_STREAM_DRAW,
 					mesh.textureCoordinates, GLES20.GL_STATIC_DRAW,
 					null, GLES20.GL_STATIC_DRAW,
-					mesh.indices, GLES20.GL_STATIC_DRAW
-					);
+					mesh.indices, GLES20.GL_STATIC_DRAW,
+					false);
 			o.setMaxBoneWeightsPerVertex(mesh.maxBoneWeightsPerVertex);
 			o.setSkeletonMeshData(mesh.numVertices, mesh.boneVertices, mesh.numWeights, mesh.boneWeights);
 			o.setName("MD5Mesh_" + i);

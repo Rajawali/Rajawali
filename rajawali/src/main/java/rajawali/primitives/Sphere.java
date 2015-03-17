@@ -50,7 +50,7 @@ public class Sphere extends Object3D {
 	 *            The number of horizontal segments
 	 */
 	public Sphere(float radius, int segmentsW, int segmentsH) {
-		this(radius, segmentsW, segmentsH, true, false);
+		this(radius, segmentsW, segmentsH, true, false, true);
 	}
 
 	/**
@@ -66,19 +66,21 @@ public class Sphere extends Object3D {
 	 *            A boolean that indicates whether the texture coordinates should be calculated or not.
 	 * @param createVertexColorBuffer
 	 *            A boolean that indicates whether a vertex color buffer should be created or not.
+     * @param createVertexColorBuffer
+     *            A boolean that indicates whether the VBOs should be created immediately.
 	 */
 	public Sphere(float radius, int segmentsW, int segmentsH, boolean createTextureCoordinates,
-			boolean createVertexColorBuffer) {
+			boolean createVertexColorBuffer, boolean createVBOs) {
 		super();
 		mRadius = radius;
 		mSegmentsW = segmentsW;
 		mSegmentsH = segmentsH;
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
-		init();
+		init(createVBOs);
 	}
 
-	protected void init() {
+	protected void init(boolean createVBOs) {
 		int numVertices = (mSegmentsW + 1) * (mSegmentsH + 1);
 		int numIndices = 2 * mSegmentsW * (mSegmentsH - 1) * 3;
 
@@ -162,7 +164,7 @@ public class Sphere extends Object3D {
 			}
 		}
 
-		setData(vertices, normals, textureCoords, colors, indices);
+		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
 
 		vertices = null;
 		normals = null;

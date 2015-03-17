@@ -12,6 +12,14 @@
  */
 package rajawali.renderer;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.service.wallpaper.WallpaperService;
+import android.view.MotionEvent;
+import android.view.WindowManager;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,14 +53,6 @@ import rajawali.util.RajLog;
 import rajawali.util.RawShaderLoader;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
-import android.service.wallpaper.WallpaperService;
-import android.view.MotionEvent;
-import android.view.WindowManager;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;

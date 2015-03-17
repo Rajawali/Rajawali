@@ -12,6 +12,8 @@
  */
 package rajawali.renderer.plugins;
 
+import android.opengl.GLES20;
+
 import java.util.Stack;
 
 import rajawali.Camera;
@@ -22,7 +24,6 @@ import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector2;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
-import android.opengl.GLES20;
 
 
 /**
@@ -207,11 +208,15 @@ public final class LensFlarePlugin extends Plugin {
 	private ASingleTexture mOcclusionMapTexture;
 	
 	public LensFlarePlugin(RajawaliRenderer renderer) {
-		super(renderer);
+		this(renderer, true);
 	}
+
+    public LensFlarePlugin(RajawaliRenderer renderer, boolean createVBOs) {
+        super(renderer, createVBOs);
+    }
 	
 	@Override
-	protected void init() {
+	protected void init(boolean createVBOs) {
 		mLensFlares = new Stack<LensFlare>();
 		int[] maxVertexTextureImageUnits = new int[1]; 
 		GLES20.glGetIntegerv(GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, maxVertexTextureImageUnits, 0);
@@ -259,7 +264,7 @@ public final class LensFlarePlugin extends Plugin {
         }
         
         // Set geometry data.
-        setData(vertices, normals, textureCoords, colors, indices);
+        setData(vertices, normals, textureCoords, colors, indices, createVBOs);
         
         // TODO: deal with this
         /*
@@ -292,6 +297,7 @@ public final class LensFlarePlugin extends Plugin {
 	
 	@Override
 	public void render() {
+        super.render();
 		int f, i, numLensFlares = mLensFlares.size();
 		// Calculate world space position to normalized screen space.
 		double viewportWidth = mRenderer.getViewportWidth(), viewportHeight = mRenderer.getViewportHeight();

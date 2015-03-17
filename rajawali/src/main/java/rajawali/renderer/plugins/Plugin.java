@@ -12,11 +12,12 @@
  */
 package rajawali.renderer.plugins;
 
+import android.opengl.GLES20;
+
 import rajawali.Geometry3D;
 import rajawali.renderer.AFrameTask;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
-import android.opengl.GLES20;
 
 
 /**
@@ -37,13 +38,24 @@ public abstract class Plugin extends AFrameTask implements IRendererPlugin {
 	
 	/**
 	 * Instantiates a new renderer plugin.
+     *
 	 * @param renderer RajawaliRenderer instance which will be using this plugin.
 	 */
 	public Plugin(RajawaliRenderer renderer) {
-		mGeometry = new Geometry3D();
-		mRenderer = renderer;
-		init();
+		this(renderer, true);
 	}
+
+    /**
+     * Instantiates a new renderer plugin.
+     *
+     * @param renderer RajawaliRenderer instance which will be using this plugin.
+     * @param createVBOs {@code boolean} If true, any VBOs will be created immediately.
+     */
+    public Plugin(RajawaliRenderer renderer, boolean createVBOs) {
+        mGeometry = new Geometry3D();
+        mRenderer = renderer;
+        init(createVBOs);
+    }
 	
 	protected int createProgram(String vertexShader, String fragmentShader) {
 		mVShaderHandle = loadShader(GLES20.GL_VERTEX_SHADER, vertexShader);
@@ -93,7 +105,7 @@ public abstract class Plugin extends AFrameTask implements IRendererPlugin {
 	/**
 	 * Be sure to set up all the GL buffers and other initializations here.  
 	 */
-	protected void init() {}
+	protected void init(boolean createVBOs) {}
 	
 	protected int loadShader(int shaderType, String source) {
 		int shader = GLES20.glCreateShader(shaderType);
@@ -124,10 +136,12 @@ public abstract class Plugin extends AFrameTask implements IRendererPlugin {
 	/* (non-Javadoc)
 	 * @see rajawali.renderer.plugins.IRendererPlugin#render()
 	 */
-	public void render() {}
+	public void render() {
+        mGeometry.validateBuffers();
+    }
 	
-	protected void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices) {
-		mGeometry.setData(vertices, normals, textureCoords, colors, indices);
+	protected void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
+		mGeometry.setData(vertices, normals, textureCoords, colors, indices, createVBOs);
 	}
 	
 	protected void setShaders(String vertexShader, String fragmentShader) {

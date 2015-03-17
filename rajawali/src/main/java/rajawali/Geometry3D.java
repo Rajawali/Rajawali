@@ -26,9 +26,12 @@ import rajawali.bounds.BoundingBox;
 import rajawali.bounds.BoundingSphere;
 import rajawali.math.vector.Vector3;
 import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.GLU;
 import rajawali.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored.
@@ -59,6 +62,7 @@ import android.opengl.GLES20;
  *
  */
 public class Geometry3D {
+
 	public static final int FLOAT_SIZE_BYTES = 4;
 	public static final int INT_SIZE_BYTES = 4;
 	public static final int SHORT_SIZE_BYTES = 2;
@@ -127,12 +131,19 @@ public class Geometry3D {
 	 * Normal buffer info object.
 	 */
 	protected BufferInfo mNormalBufferInfo;
+
 	/**
 	 * Indices whether only short buffers are supported. Not all devices support
 	 * integer buffers.
 	 * @see RajawaliRenderer.supportsUIntBuffers
 	 */
 	protected boolean mOnlyShortBufferSupported = false;
+
+    /**
+     * Boolean to keep track of if the buffers for this geometry have been through their initial creation.
+     */
+    protected boolean mHaveCreatedBuffers;
+
 	/**
 	 * The bounding box for this geometry. This is used for collision detection. 
 	 */
@@ -149,7 +160,7 @@ public class Geometry3D {
 	 * Indicates whether this geometry contains texture coordinates or not.
 	 */
 	protected boolean mHasTextureCoordinates;
-	
+
 	public enum BufferType {
 		FLOAT_BUFFER,
 		INT_BUFFER,
@@ -157,12 +168,12 @@ public class Geometry3D {
 	}
 	
 	public Geometry3D() {
-		super();
-		mVertexBufferInfo = new BufferInfo();
-		mIndexBufferInfo = new BufferInfo();
-		mTexCoordBufferInfo = new BufferInfo();
-		mColorBufferInfo = new BufferInfo();
-		mNormalBufferInfo = new BufferInfo();
+        mHaveCreatedBuffers = false;
+        mVertexBufferInfo = new BufferInfo();
+        mIndexBufferInfo = new BufferInfo();
+        mTexCoordBufferInfo = new BufferInfo();
+        mColorBufferInfo = new BufferInfo();
+        mNormalBufferInfo = new BufferInfo();
 	}
 	
 	/**
@@ -270,8 +281,9 @@ public class Geometry3D {
 	 * 
 	 * @param offset {@link Vector3} containing the offset in each direction. Can be null.
 	 * @param geometry {@link Geometry3D} to be added.
+     * @param createVBOs {@code boolean} If true, create the VBOs immediately.
 	 */
-	public void addFromGeometry3D(Vector3 offset, Geometry3D geometry) {
+	public void addFromGeometry3D(Vector3 offset, Geometry3D geometry, boolean createVBOs) {
 		float[] newVertices = null;
 		float[] newNormals = null;
 		float[] newColors = null;
@@ -343,8 +355,10 @@ public class Geometry3D {
 		mIndicesShort = null;
 		setIndices(newIntIndices);
 
-		//Create the new buffers
-		createBuffers();
+        if (createVBOs) {
+            //Create the new buffers
+            createBuffers();
+        }
 	}
 	
 	/**
@@ -359,10 +373,11 @@ public class Geometry3D {
 	 * @param textureCoords
 	 * @param colors
 	 * @param indices
+     * @param createVBOs
 	 * @see VertexAnimationObject3D
 	 */
 	public void setData(BufferInfo vertexBufferInfo, BufferInfo normalBufferInfo,
-			float[] textureCoords, float[] colors, int[] indices) {
+			float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
 		if(textureCoords == null || textureCoords.length == 0)
 			textureCoords = new float[(mNumVertices / 3) * 2];
 		setTextureCoords(textureCoords);
@@ -376,8 +391,10 @@ public class Geometry3D {
 		mNormalBufferInfo = normalBufferInfo;
 		
 		mOriginalGeometry = null;
-		
-		createBuffers();
+
+        if (createVBOs) {
+            createBuffers();
+        }
 	}
 	
 	/**
@@ -389,11 +406,13 @@ public class Geometry3D {
 	 * @param textureCoords
 	 * @param colors
 	 * @param indices
-	 * @see GLES20.GL_STATIC_DRAW
+     * @param createVBOs
+	 * @see GLES20#GL_STATIC_DRAW
 	 */
 	public void setData(float[] vertices, float[] normals,
-			float[] textureCoords, float[] colors, int[] indices) {
-		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords, GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW);
+			float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
+		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords,
+            GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
 	}
 	
 	/**
@@ -433,10 +452,11 @@ public class Geometry3D {
 	 * @param colorsUsage
 	 * @param indices
 	 * @param indicesUsage
+     * @param createVBOs
 	 */
 	public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage,
 			float[] textureCoords, int textureCoordsUsage, float[] colors, int colorsUsage, 
-			int[] indices, int indicesUsage) {
+			int[] indices, int indicesUsage, boolean createVBOs) {
 		mVertexBufferInfo.usage = verticesUsage;
 		mNormalBufferInfo.usage = normalsUsage;
 		mTexCoordBufferInfo.usage = textureCoordsUsage;
@@ -453,7 +473,9 @@ public class Geometry3D {
 			setColors(colors);
 		setIndices(indices);
 
-		createBuffers();
+        if (createVBOs) {
+            createBuffers();
+        }
 	}
 	
 	/**
@@ -513,6 +535,8 @@ public class Geometry3D {
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+        mHaveCreatedBuffers = true;
 	}
 	
 	/**
@@ -581,6 +605,7 @@ public class Geometry3D {
 	public void createBuffer(BufferInfo bufferInfo, BufferType type, Buffer buffer, int target, int usage) {
 		int buff[] = new int[1];
 		GLES20.glGenBuffers(1, buff, 0);
+
 		int handle = buff[0];
 		int byteSize = FLOAT_SIZE_BYTES;
 		if(type == BufferType.SHORT_BUFFER)
@@ -590,7 +615,7 @@ public class Geometry3D {
 		GLES20.glBindBuffer(target, handle);
 		GLES20.glBufferData(target, buffer.limit() * byteSize, buffer, usage);
 		GLES20.glBindBuffer(target, 0);
-		
+
 		bufferInfo.buffer = buffer;
 		bufferInfo.bufferHandle = handle;
 		bufferInfo.bufferType = type;
@@ -604,17 +629,28 @@ public class Geometry3D {
 	}
 	
 	public void validateBuffers() {
-		if(mOriginalGeometry != null) return;
-		if(mVertexBufferInfo != null && mVertexBufferInfo.bufferHandle == 0)
-			createBuffer(mVertexBufferInfo);
-		if(mIndexBufferInfo != null && mIndexBufferInfo.bufferHandle == 0)
-			createBuffer(mIndexBufferInfo);
-		if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.bufferHandle == 0)
-			createBuffer(mTexCoordBufferInfo);
-		if(mColorBufferInfo != null && mColorBufferInfo.bufferHandle == 0)
-			createBuffer(mColorBufferInfo);
-		if(mNormalBufferInfo != null && mNormalBufferInfo.bufferHandle == 0)
-			createBuffer(mNormalBufferInfo);
+        if (!mHaveCreatedBuffers) {
+            createBuffers();
+        }
+		if(mOriginalGeometry != null) {
+            mOriginalGeometry.validateBuffers();
+            return;
+        }
+		if(mVertexBufferInfo != null && mVertexBufferInfo.bufferHandle == 0) {
+            createBuffer(mVertexBufferInfo);
+        }
+		if(mIndexBufferInfo != null && mIndexBufferInfo.bufferHandle == 0) {
+            createBuffer(mIndexBufferInfo);
+        }
+		if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.bufferHandle == 0) {
+            createBuffer(mTexCoordBufferInfo);
+        }
+		if(mColorBufferInfo != null && mColorBufferInfo.bufferHandle == 0) {
+            createBuffer(mColorBufferInfo);
+        }
+		if(mNormalBufferInfo != null && mNormalBufferInfo.bufferHandle == 0) {
+            createBuffer(mNormalBufferInfo);
+        }
 	}
 	
 	/**

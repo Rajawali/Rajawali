@@ -36,9 +36,10 @@ public class TerrainGenerator {
 	 *            object that specify: ARGB Bitmap (R is temparature G is depth, A and B not used) Color Bitmpa
 	 *            (Optional) Number of divisions Scale of x,y,z coordinate TextureMult Specify the grid/texture relation
 	 *            Basecolor start color in relation with depth Middlecolor middle color Upcolor max depth color
+     * @param createVBOs
 	 * @return
 	 */
-	public static SquareTerrain createSquareTerrainFromBitmap(SquareTerrain.Parameters prs) {
+	public static SquareTerrain createSquareTerrainFromBitmap(SquareTerrain.Parameters prs, boolean createVBOs) {
 
 		int divisions = prs.divisions;
 
@@ -346,7 +347,7 @@ public class TerrainGenerator {
 
 		}
 
-		sq.setData(vertices, nors, textureCoords, colors, indices);
+		sq.setData(vertices, nors, textureCoords, colors, indices, createVBOs);
 		nors = null;
 		colors = null;
 		indices = null;
