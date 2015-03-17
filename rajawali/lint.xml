@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <lint>
+ <issue id="UnusedResources">
+     <ignore path="src/main/res/raw/fog_fragment_shader.glsl"/>
+ </issue>
 </lint>
