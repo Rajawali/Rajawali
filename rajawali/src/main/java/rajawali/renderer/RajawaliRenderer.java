@@ -110,8 +110,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	private LinkedList<AFrameTask> mSceneQueue;
 	
-	private List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
-	private List<RenderTarget> mRenderTargets;
+	private final List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
+	private final List<RenderTarget> mRenderTargets;
 	
 	/**
 	 * The scene currently being displayed.
