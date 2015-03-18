@@ -42,7 +42,7 @@ public class Cube extends Object3D {
 	 * @param size		The size of the cube.
 	 */
 	public Cube(float size) {
-		this(size, false, false, true, false);
+		this(size, false, false, true, false, true);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class Cube extends Object3D {
 	 * 						be inverted.
 	 */
 	public Cube(float size, boolean isSkybox) {
-		this(size, isSkybox, true, true, false);
+		this(size, isSkybox, true, true, false, true);
 	}
 	
 	/**
@@ -67,7 +67,7 @@ public class Cube extends Object3D {
 	 */
 	public Cube(float size, boolean isSkybox, boolean hasCubemapTexture)
 	{
-		this(size, isSkybox, hasCubemapTexture, true, false);
+		this(size, isSkybox, hasCubemapTexture, true, false, true);
 	}
 
 	/**
@@ -80,19 +80,20 @@ public class Cube extends Object3D {
 	 * 									single texture.
 	 * @param createTextureCoordinates	A boolean that indicates whether the texture coordinates should be calculated or not.
 	 * @param createVertexColorBuffer	A boolean that indicates whether a vertex color buffer should be created or not.
+     * @param createVBOs                A boolean that indicates whether the VBOs should be created immediately.
 	 */
 	public Cube(float size, boolean isSkybox, boolean hasCubemapTexture, boolean createTextureCoordinates,
-			boolean createVertexColorBuffer) {
+			boolean createVertexColorBuffer, boolean createVBOs) {
 		super();
 		mIsSkybox = isSkybox;
 		mSize = size;
 		mHasCubemapTexture = hasCubemapTexture;
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
-		init();
+		init(createVBOs);
 	}
 
-	private void init()
+	private void init(boolean createVBOs)
 	{
 		float halfSize = mSize * .5f;
 		float[] vertices = {
@@ -185,7 +186,7 @@ public class Cube extends Object3D {
 		};
 
 		setData(vertices, normals, mIsSkybox || mHasCubemapTexture ? skyboxTextureCoords : textureCoords, colors,
-				mIsSkybox && mHasCubemapTexture ? skyboxIndices : indices);
+				mIsSkybox && mHasCubemapTexture ? skyboxIndices : indices, createVBOs);
 		
 		vertices = null;
 		normals = null;

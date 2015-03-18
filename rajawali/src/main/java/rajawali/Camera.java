@@ -12,6 +12,9 @@
  */
 package rajawali;
 
+import android.graphics.Color;
+import android.opengl.GLES20;
+
 import java.nio.FloatBuffer;
 import java.util.Stack;
 
@@ -23,8 +26,6 @@ import rajawali.math.Quaternion;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Line3D;
 import rajawali.renderer.AFrameTask;
-import android.graphics.Color;
-import android.opengl.GLES20;
 
 public class Camera extends ATransformable3D {
 	protected final Object mFrustumLock = new Object();	

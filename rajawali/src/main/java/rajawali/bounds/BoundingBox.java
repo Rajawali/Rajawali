@@ -12,6 +12,8 @@
  */
 package rajawali.bounds;
 
+import android.opengl.GLES20;
+
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,7 +24,6 @@ import rajawali.materials.Material;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Cube;
-import android.opengl.GLES20;
 
 public class BoundingBox implements IBoundingVolume {
 	protected Geometry3D mGeometry;

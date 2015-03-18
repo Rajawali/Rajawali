@@ -12,6 +12,10 @@
  */
 package rajawali.parser;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -34,9 +38,6 @@ import rajawali.materials.textures.TextureManager;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 
@@ -115,7 +116,7 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 			material.addPlugin(new VertexAnimationMaterialPlugin());
 			mObject.getGeometry().copyFromGeometry3D(firstFrame.getGeometry());
 			mObject.setData(firstFrame.getGeometry().getVertexBufferInfo(), firstFrame.getGeometry()
-					.getNormalBufferInfo(), mTextureCoords, null, mIndices);
+					.getNormalBufferInfo(), mTextureCoords, null, mIndices, false);
 			mObject.setMaterial(material);
 			
 			mObject.setColor(0xffffffff);

@@ -49,8 +49,10 @@ import rajawali.scenegraph.IGraphNode;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
+import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
+import rajawali.util.RajLog;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -802,9 +804,9 @@ public class RajawaliScene extends AFrameTask {
 		if(sceneMat != null) {
 			sceneMat.useProgram();
 			sceneMat.bindTextures();
-		}		
+		}
 
-		synchronized (mChildren) {			
+        synchronized (mChildren) {
 			for (int i = 0, j = mChildren.size(); i < j; ++i) {
 				Object3D child = mChildren.get(i);
 				boolean blendingEnabled = child.isBlendingEnabled();

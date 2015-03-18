@@ -1,6 +1,9 @@
 package rajawali.postprocessing.passes;
 
 import android.opengl.GLES20;
+
+import javax.microedition.khronos.opengles.GL10;
+
 import rajawali.Camera;
 import rajawali.materials.Material;
 import rajawali.materials.plugins.DepthMaterialPlugin;

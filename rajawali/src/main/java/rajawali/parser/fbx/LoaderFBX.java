@@ -12,6 +12,10 @@
  */
 package rajawali.parser.fbx;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,9 +54,6 @@ import rajawali.parser.fbx.FBXValues.Objects.FBXMaterial;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 public class LoaderFBX extends AMeshLoader {
 	private static final char COMMENT = ';';
 	private static final String OBJECT_TYPE = "ObjectType:";
@@ -385,7 +386,8 @@ public class LoaderFBX extends AMeshLoader {
 			}
 		}
 		
-		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null, convertIntegers(indices));
+		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null,
+            convertIntegers(indices), false);
 		
 		vertices.clear();
 		vertices = null;

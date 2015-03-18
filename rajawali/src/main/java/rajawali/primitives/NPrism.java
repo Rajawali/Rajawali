@@ -58,8 +58,23 @@ public class NPrism extends Object3D {
 	 * @param height Double the height of the prism.
 	 */
 	public NPrism(int sides, double radiusTop, double radiusBase, double height) {
-		this(sides, radiusTop, radiusBase, 0.0, height);
+		this(sides, radiusTop, radiusBase, 0.0, height, true);
 	}
+
+    /**
+     * Creates a frustum like prism with elliptical base rather than circular.
+     * The major axis is equivalent to the radius specified and the minor axis
+     * is computed from the eccentricity.
+     *
+     * @param sides        Integer number of sides to the prism.
+     * @param radiusTop    Double the radius of the top.
+     * @param radiusBase   Double the radius of the base.
+     * @param eccentricity Double the eccentricity of the ellipse.
+     * @param height       Double the height of the prism.
+     */
+    public NPrism(int sides, double radiusTop, double radiusBase, double eccentricity, double height) {
+        this(sides, radiusTop, radiusBase, eccentricity, height, true);
+    }
 	
 	/**
 	 * Creates a frustum like prism with elliptical base rather than circular. 
@@ -71,8 +86,9 @@ public class NPrism extends Object3D {
 	 * @param radiusBase Double the radius of the base.
 	 * @param eccentricity Double the eccentricity of the ellipse.
 	 * @param height Double the height of the prism.
+     * @param createVBOs Boolean If true, the VBOs are created immediately.
 	 */
-	public NPrism(int sides, double radiusTop, double radiusBase, double eccentricity, double height) {
+	public NPrism(int sides, double radiusTop, double radiusBase, double eccentricity, double height, boolean createVBOs) {
 		if (sides < 3) throw new IllegalArgumentException("Prisms must have at least 3 sides!");
 		if ((eccentricity < 0) || (eccentricity >= 1)) throw new IllegalArgumentException("Eccentricity must be in the range [0,1)");
 		mSideCount = sides;
@@ -82,14 +98,14 @@ public class NPrism extends Object3D {
 		mRadiusBase = radiusBase;
 		mMinorBase = calculateMinorAxis(mRadiusBase);
 		mHeight = height;
-		init();
+		init(createVBOs);
 	}
 	
 	protected double calculateMinorAxis(double major) {
 		return Math.sqrt(Math.pow(major, 2.0)*(1 - Math.pow(mEccentricity, 2.0)));
 	}
 
-	protected void init() {
+	protected void init(boolean createVBOs) {
 		int vertex_count = 6*mSideCount + 2;
 		int tri_count = 4*mSideCount;
 		int top_center_index = 3*vertex_count - 6;
@@ -274,6 +290,6 @@ public class NPrism extends Object3D {
 			colors[i] = 1.0f;
 		}
 
-		setData(vertices, normals, texture, colors, indices);
+		setData(vertices, normals, texture, colors, indices, createVBOs);
 	}
 }

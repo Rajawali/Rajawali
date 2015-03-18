@@ -261,7 +261,7 @@ public class Loader3DSMax extends AMeshLoader {
 			}
 
 			Object3D targetObj = new Object3D(mObjNames.get(j));
-			targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices);
+			targetObj.setData(aVertices, aNormals, aTexCoords, null, aIndices, false);
 			// -- diffuse material with random color. for now.
 			Material material = new Material();
 			material.setDiffuseMethod(new DiffuseMethod.Lambert());
