@@ -12,6 +12,9 @@
  */
 package rajawali.scene;
 
+import android.graphics.Color;
+import android.opengl.GLES20;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,8 +51,6 @@ import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
 import rajawali.util.ObjectColorPicker;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
-import android.graphics.Color;
-import android.opengl.GLES20;
 
 /**
  * This is the container class for scenes in Rajawali.
