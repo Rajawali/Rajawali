@@ -2,11 +2,11 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 def getRepositoryUsername() {
-    return hasProperty('rajawali_sonatype_user') ? sonatype_user : ""
+    return hasProperty('SONATYPE_UID') ? SONATYPE_UID : ""
 }
 
 def getRepositoryPassword() {
-    return hasProperty('rajawali_sonatype_pass') ? sonatype_pass : ""
+    return hasProperty('SONATYPE_PASS') ? SONATYPE_PASS : ""
 }
 
 boolean isRelease() {
@@ -17,6 +17,7 @@ afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
+                System.out.println("Sonatype User name: " + getRepositoryUsername())
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
                 pom.artifactId = POM_ARTIFACT_ID
