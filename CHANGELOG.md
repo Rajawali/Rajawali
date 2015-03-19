@@ -147,4 +147,6 @@ Some new classes have been added:
 - `LinearBezierCurve3D`: A linear bezier curve. Basically just a straight line. This is useful for compound curves.
 - `QuadraticBezierCurve3D`: A quadratic bezier curve. This type of Bezier curve take only one control point instead of two.
 - `SVGPath`: takes an SVG-style path string and creates a `CompoundCurve3D`. Still a work in progress.
+- `LogarithmicSpiral3D` : A spiral curve, often refered to as a "Golden Spiral" or "Nautalus Spiral"
+- `ArchimedeanSpiral3D` : A spiral curve, with several variants based on a constant exponent.
 
