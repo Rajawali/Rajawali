@@ -25,7 +25,7 @@ public class LogarithmicSpiral3D extends ASpiral3D {
         a = mStart.length();
 
         // Calculate the starting offset
-        mThetaOffset = mSpiralIn ? (Math.log(mStart.length() / a) / mDensity) : mRotation.getXAxis().angle(mStart);
+        mThetaOffset = mSpiralIn ? calculateThetaForRadius(mStart.length()) : mRotation.getXAxis().angle(mStart);
     }
 
     /**
@@ -48,7 +48,7 @@ public class LogarithmicSpiral3D extends ASpiral3D {
      */
     @Override
     public void calculatePoint(Vector3 result, double theta) {
-        final double angle = mSpiralIn ? mThetaOffset - theta : theta + mThetaOffset;
+        final double angle = mSpiralIn ? mThetaOffset + theta : theta - mThetaOffset;
         final double r = a * Math.exp(mDensity * angle);
 
         // Update the rotation
@@ -62,6 +62,11 @@ public class LogarithmicSpiral3D extends ASpiral3D {
         if (mCalculateTangents) {
             mCurrentTangent.crossAndSet(mUp, mScratch);
         }
+    }
+
+    @Override
+    public double calculateThetaForRadius(double r) {
+        return (Math.log(r / a) / mDensity);
     }
 
     @Override

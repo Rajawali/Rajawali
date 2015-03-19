@@ -12,6 +12,10 @@
  */
 package rajawali.parser.fbx;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,9 +54,6 @@ import rajawali.parser.fbx.FBXValues.Objects.FBXMaterial;
 import rajawali.parser.fbx.FBXValues.Objects.Model;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.RajLog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 public class LoaderFBX extends AMeshLoader {
 	private static final char COMMENT = ';';
 	private static final String OBJECT_TYPE = "ObjectType:";
@@ -74,7 +75,7 @@ public class LoaderFBX extends AMeshLoader {
 	private static final String CONNECT = "Connect:";
 	private static final String TEXTURE = "Texture:";
 	private static final String FBX_U = "FBX";
-	private static final String FBX_L = FBX_U.toLowerCase();
+	private static final String FBX_L = FBX_U.toLowerCase(Locale.US);
 	
 	private static final String REGEX_CLEAN = "\\s|\\t|\\n";
 	private static final String REGEX_NO_SPACE_NO_QUOTE = "\\\"|\\s";
@@ -385,7 +386,8 @@ public class LoaderFBX extends AMeshLoader {
 			}
 		}
 		
-		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null, convertIntegers(indices));
+		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null,
+            convertIntegers(indices), false);
 		
 		vertices.clear();
 		vertices = null;
@@ -449,7 +451,7 @@ public class LoaderFBX extends AMeshLoader {
 
 					Bitmap bitmap = null;
 					if(mFile == null) {
-						int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(Locale.getDefault()), "drawable", mResources.getResourcePackageName(mResourceId));
+						int identifier = mResources.getIdentifier(getFileNameWithoutExtension(textureName).toLowerCase(Locale.US), "drawable", mResources.getResourcePackageName(mResourceId));
 						bitmap = BitmapFactory.decodeResource(mResources, identifier);
 					} else {
 						try {
@@ -578,7 +580,7 @@ public class LoaderFBX extends AMeshLoader {
 			
 			line = line.replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
 			line = line.replaceAll(FBX_U, FBX_L);
-			line = line.substring(0,1).toLowerCase() + line.substring(1);
+			line = line.substring(0,1).toLowerCase(Locale.US) + line.substring(1);
 			
 			try {
 				Field field = last.getClass().getField(line);
@@ -602,7 +604,7 @@ public class LoaderFBX extends AMeshLoader {
 			if(spl.length == 0) return;
 			String prop = spl[0].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
 			prop = prop.replaceAll(FBX_U, FBX_L);
-			prop = prop.substring(0,1).toLowerCase() + prop.substring(1);
+			prop = prop.substring(0,1).toLowerCase(Locale.US) + prop.substring(1);
 			boolean processNextLine = false;
 			
 			Object obj = mObjStack.peek();
@@ -613,7 +615,7 @@ public class LoaderFBX extends AMeshLoader {
 				if(line.contains(PROPERTY)) {
 					String[] vals = val.split(",");
 					prop = vals[0].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
-					prop = prop.substring(0,1).toLowerCase() + prop.substring(1);
+					prop = prop.substring(0,1).toLowerCase(Locale.US) + prop.substring(1);
 					String type = vals[1].replaceAll(REGEX_NO_FUNNY_CHARS, REPLACE_EMPTY);
 				
 					if(type.equals(TYPE_VECTOR3D) || type.equals(TYPE_COLOR) || type.equals(TYPE_COLOR_RGB) || type.equals(TYPE_LCL_ROTATION) 

@@ -15,6 +15,8 @@ package rajawali.postprocessing.passes;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import rajawali.framework.R;
 import rajawali.materials.textures.ATexture.FilterType;
 import rajawali.materials.textures.ATexture.WrapType;

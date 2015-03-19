@@ -12,13 +12,12 @@
  */
 package rajawali.primitives;
 
-import rajawali.Object3D;
 import rajawali.Camera;
 import rajawali.Camera2D;
+import rajawali.Object3D;
 import rajawali.materials.Material;
 import rajawali.math.Matrix4;
 import rajawali.postprocessing.passes.EffectPass;
-import rajawali.util.ObjectColorPicker.ColorPickerInfo;
 
 /**
  * A screen quad is a plane that covers the whole screen. When used in conjunction with
@@ -55,17 +54,24 @@ public class ScreenQuad extends Object3D {
 	private Camera2D mCamera;
 	private Matrix4 mVPMatrix;
 	private EffectPass mEffectPass;
-	
+
+    /**
+     * Creates a new ScreenQuad.
+     */
+    public ScreenQuad() {
+        this(true);
+    }
+
 	/**
 	 * Creates a new ScreenQuad.
 	 */
-	public ScreenQuad()
+	public ScreenQuad(boolean createVBOs)
 	{
 		super();
-		init();
+		init(createVBOs);
 	}
 
-	private void init() {
+	private void init(boolean createVBOs) {
 		mCamera = new Camera2D();
 		mCamera.setProjectionMatrix(0, 0);
 		mVPMatrix = new Matrix4();
@@ -87,7 +93,7 @@ public class ScreenQuad extends Object3D {
 		};
 		int[] indices = new int[] { 0, 2, 1, 0, 3, 2 };
 		
-		setData(vertices, normals, textureCoords, null, indices);
+		setData(vertices, normals, textureCoords, null, indices, createVBOs);
 		
 		vertices = null;
 		normals = null;

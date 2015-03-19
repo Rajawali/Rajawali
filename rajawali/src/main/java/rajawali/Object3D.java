@@ -115,9 +115,27 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param ser
 	 */
 	public Object3D(SerializedObject3D ser) {
-		this();
-		setData(ser);
+		this(ser, true);
 	}
+
+    /**
+     * Creates a BaseObject3D from a serialized file. A serialized file can be a BaseObject3D but also a
+     * VertexAnimationObject3D.
+     * <p/>
+     * A serialized file can be created by the MeshExporter class. Example: <code>
+     * Cube cube = new Cube(2);
+     * MeshExporter exporter = new MeshExporter(cube);
+     * exporter.export("myobject.ser", ExportType.SERIALIZED);
+     * </code> This saves the serialized file to
+     * the SD card.
+     *
+     * @param ser
+     * @param createVBOs
+     */
+    public Object3D(SerializedObject3D ser, boolean createVBOs) {
+        this();
+        setData(ser, createVBOs);
+    }
 
 	/**
 	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
@@ -132,10 +150,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 *            A float array containing color values (rgba)
 	 * @param indices
 	 *            An integer array containing face indices
+     * @param createVBOs
+     *            A boolean controlling if the VBOs are create immediately.
 	 */
 	public void setData(BufferInfo vertexBufferInfo, BufferInfo normalBufferInfo, float[] textureCoords,
-			float[] colors, int[] indices) {
-		mGeometry.setData(vertexBufferInfo, normalBufferInfo, textureCoords, colors, indices);
+			float[] colors, int[] indices, boolean createVBOs) {
+		mGeometry.setData(vertexBufferInfo, normalBufferInfo, textureCoords, colors, indices, createVBOs);
 		mIsContainerOnly = false;
 		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
 				: GLES20.GL_UNSIGNED_INT;
@@ -154,10 +174,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 *            A float array containing color values (rgba)
 	 * @param indices
 	 *            An integer array containing face indices
+     * @param createVBOs
+     *            A boolean controlling if the VBOs are create immediately.
 	 */
-	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices) {
+	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
 		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords, GLES20.GL_STATIC_DRAW,
-				colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW);
+				colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
 	}
 
 	/**
@@ -171,16 +193,17 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * the SD card.
 	 * 
 	 * @param ser
+     * @param createVBOs
 	 */
-	public void setData(SerializedObject3D ser) {
-		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices());
+	public void setData(SerializedObject3D ser, boolean createVBOs) {
+		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices(), createVBOs);
 	}
 
 	public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage, float[] textureCoords,
 			int textureCoordsUsage,
-			float[] colors, int colorsUsage, int[] indices, int indicesUsage) {
+			float[] colors, int colorsUsage, int[] indices, int indicesUsage, boolean createVBOs) {
 		mGeometry.setData(vertices, verticesUsage, normals, normalsUsage, textureCoords, textureCoordsUsage, colors,
-				colorsUsage, indices, indicesUsage);
+				colorsUsage, indices, indicesUsage, createVBOs);
 		mIsContainerOnly = false;
 		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
 				: GLES20.GL_UNSIGNED_INT;
@@ -214,7 +237,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param vMatrix {@link Matrix4} The view matrix
 	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
 	 */
-	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
 			final Matrix4 vMatrix, Material sceneMaterial) {
 		render(camera, vpMatrix, projMatrix, vMatrix, null, sceneMaterial);
 	}
@@ -229,13 +252,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param parentMatrix {@link Matrix4} This object's parent matrix
 	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
 	 */
-	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix, 
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix,
 			final Matrix4 parentMatrix, Material sceneMaterial) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
 		
 		Material material = sceneMaterial == null ? mMaterial : sceneMaterial;
-
 		preRender();
 
 		// -- move view matrix transformation first
@@ -343,11 +365,11 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				mGeometry.getBoundingSphere().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		}
 		// Draw children without frustum test
-		for (int i = 0, j = mChildren.size(); i < j; i++)
-		{
+		for (int i = 0, j = mChildren.size(); i < j; i++) {
 			Object3D child = mChildren.get(i);
-			if(mRenderChildrenAsBatch || mIsPartOfBatch)
-				child.setPartOfBatch(true);
+            if(mRenderChildrenAsBatch || mIsPartOfBatch) {
+                child.setPartOfBatch(true);
+            }
 			child.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, sceneMaterial);
 		}
 

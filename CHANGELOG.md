@@ -4,6 +4,10 @@ Rajawali "Anchor Steam" Development Branch
 "Anchor Steam", the next Rajawali version contains significant changes to the API.
 Here's what's new:
 
+### Android Studio and Continuous Integration
+
+The project has been migrated to Android Studio and the Gradle build system. Along with this, we have setup builds with Travis CI. Build status badges have been added to the [Readme](https://github.com/Rajawali/Rajawali/blob/master/README.md) to indicate the status. We are currently in the process of deploying the project to Maven.
+
 ### Garbage
 
 Across the library we have tried to reduce the ammount of garbage that is generated. Animations now generate little to
@@ -14,6 +18,14 @@ no garbage, even when run for very long periods of time.
 To eliminate a number of issues which stemmed from trying to change scene contents in the middle of a render cycle,
 a task queue system has been added to Rajawali. You no longer have direct access to lists such as `mChildren`. Helper
 methods such as `addChild()` exist and will automatically queue everything for you.
+
+### Scene Frame Callbacks
+
+Scene frame callbacks were added to provide a easy way for user code to tie into the render cycle while receiving timing information about the scene. These callbacks receive the typical frame delta time (measured in seconds), used by the animation system, as well as an additional parameter - the rendering elapsed time (measured in nanoseconds). For more information, see [The Wiki](https://github.com/Rajawali/Rajawali/wiki/Scene-Frame-Callbacks)
+
+### Lazy VBO creation
+
+In the past, all VBOs were created immediately in the `Object3D` constructor. This is still the default behavior, however a new constructor has been added with a `boolean` parameter which allows for the creation of these VBOs to be deferred until the first render pass. If they are deferred, the initial frame may incur a slight delay, but in most cases this will not be noticable. Deferred creation is useful if you would like to build a complete `RajawaliScene` before having a running `RajawaliRenderer`.
 
 ### Conversion to double precision
 
@@ -125,6 +137,10 @@ public void nextCamera() {
 Materials & textures have become much more flexible. Please check this wiki pages for all the changes: https://github.com/MasDennis/Rajawali/wiki/Materials
 
 
+### Post Processing
+
+The old filter system has been replaced with a new modular post processing framework. This allows for complex effects based on frame buffer objects and multi-pass rendering. The documentation of details of this will be a work in progress. In the meantime, the examples app is the best place to start.
+
 ### Lights
 
 Lights aren't added directly to objects anymore. In Anchor Steam they have to be added to the scene:
@@ -147,4 +163,7 @@ Some new classes have been added:
 - `LinearBezierCurve3D`: A linear bezier curve. Basically just a straight line. This is useful for compound curves.
 - `QuadraticBezierCurve3D`: A quadratic bezier curve. This type of Bezier curve take only one control point instead of two.
 - `SVGPath`: takes an SVG-style path string and creates a `CompoundCurve3D`. Still a work in progress.
+- `LogarithmicSpiral3D` : A spiral curve, often refered to as a "Golden Spiral" or "Nautalus Spiral"
+- `ArchimedeanSpiral3D` : A spiral curve, with several variants based on a constant exponent.
+
 

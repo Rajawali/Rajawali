@@ -72,6 +72,22 @@ public class RectangularPrism extends Object3D {
 		this(width, height, depth, hasCubemapTexture, true, false);
 	}
 
+    /**
+     * Creates a cube primitive.
+     *
+     * @param width                    The width of the prism.
+     * @param height                   The height of the prism.
+     * @param depth                    The depth of the prism.
+     * @param hasCubemapTexture        A boolean that indicates a cube map texture will be used (6 textures) or a regular
+     *                                 single texture.
+     * @param createTextureCoordinates A boolean that indicates whether the texture coordinates should be calculated or not.
+     * @param createVertexColorBuffer  A boolean that indicates whether a vertex color buffer should be created or not.
+     */
+    public RectangularPrism(float width, float height, float depth, boolean hasCubemapTexture,
+                            boolean createTextureCoordinates, boolean createVertexColorBuffer) {
+        this(width, height, depth, hasCubemapTexture, createTextureCoordinates, createVertexColorBuffer, true);
+    }
+
 	/**
 	 * Creates a cube primitive.
 	 *
@@ -82,9 +98,10 @@ public class RectangularPrism extends Object3D {
 	 * 									single texture.
 	 * @param createTextureCoordinates	A boolean that indicates whether the texture coordinates should be calculated or not.
 	 * @param createVertexColorBuffer	A boolean that indicates whether a vertex color buffer should be created or not.
+     * @param createVBOs                A boolean that indicates whether the VBOs should be created imediately or not.
 	 */
 	public RectangularPrism(float width, float height, float depth, boolean hasCubemapTexture,
-							boolean createTextureCoordinates, boolean createVertexColorBuffer) {
+							boolean createTextureCoordinates, boolean createVertexColorBuffer, boolean createVBOs) {
 		super();
 		mWidth = width;
 		mHeight = height;
@@ -92,10 +109,10 @@ public class RectangularPrism extends Object3D {
 		mHasCubemapTexture = hasCubemapTexture;
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
-		init();
+		init(createVBOs);
 	}
 
-	private void init()
+	private void init(boolean createVBOs)
 	{
 		float halfWidth = mWidth * .5f;
 		float halfHeight = mHeight * .5f;
@@ -170,7 +187,7 @@ public class RectangularPrism extends Object3D {
 				20, 21, 22, 20, 22, 23,
 		};
 
-		setData(vertices, normals, textureCoords, colors, indices);
+		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
 		
 		vertices = null;
 		normals = null;

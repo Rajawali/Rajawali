@@ -1,0 +1,37 @@
+language: android
+jdk:
+    - oraclejdk7
+
+android:
+    components:
+        # Uncomment the lines below if you want to
+        # use the latest revision of Android SDK Tools
+        # - platform-tools
+        # - tools
+
+        # The BuildTools version used by your project
+        - build-tools-22.0.0
+
+        # The SDK version used to compile your project
+        - android-22
+
+        # Additional Components
+        - extra
+
+        # Specify at least one system image,
+        # if you need to run emulator(s) during your tests
+        # - sys-img-armeabi-v7a-android-22
+
+script:
+    - echo "Travis branch is $TRAVIS_BRANCH"
+    - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
+    - gradle assembleRelease
+
+branches:
+    only:
+        - master
+        - development
+
+notifications:
+  email:
+    - rajawali.framework@gmail.com

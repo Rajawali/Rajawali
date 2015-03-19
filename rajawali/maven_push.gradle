@@ -2,11 +2,11 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 def getRepositoryUsername() {
-    return hasProperty('sonatype_user') ? sonatype_user : ""
+    return hasProperty('rajawali_sonatype_user') ? sonatype_user : ""
 }
 
 def getRepositoryPassword() {
-    return hasProperty('sonatype_pass') ? sonatype_pass : ""
+    return hasProperty('rajawali_sonatype_pass') ? sonatype_pass : ""
 }
 
 boolean isRelease() {

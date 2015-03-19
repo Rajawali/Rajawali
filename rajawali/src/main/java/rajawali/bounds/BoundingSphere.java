@@ -12,6 +12,8 @@
  */
 package rajawali.bounds;
 
+import android.opengl.GLES20;
+
 import java.nio.FloatBuffer;
 
 import rajawali.Camera;
@@ -21,7 +23,6 @@ import rajawali.materials.Material;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.primitives.Sphere;
-import android.opengl.GLES20;
 
 public class BoundingSphere implements IBoundingVolume {
 	protected Geometry3D mGeometry;

@@ -12,12 +12,21 @@
  */
 package rajawali.renderer;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.service.wallpaper.WallpaperService;
+import android.view.MotionEvent;
+import android.view.WindowManager;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,17 +53,6 @@ import rajawali.util.RajLog;
 import rajawali.util.RawShaderLoader;
 import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
-
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
-import android.os.Build;
-import android.os.SystemClock;
-import android.service.wallpaper.WallpaperService;
-import android.view.MotionEvent;
-import android.view.WindowManager;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
@@ -112,8 +110,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 */
 	private LinkedList<AFrameTask> mSceneQueue;
 	
-	private List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
-	private List<RenderTarget> mRenderTargets;
+	private final List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
+	private final List<RenderTarget> mRenderTargets;
 	
 	/**
 	 * The scene currently being displayed.
@@ -430,7 +428,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}		
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		mViewportWidth = width;
+		RajLog.d(this, "onSurfaceChanged()");
+        mViewportWidth = width;
 		mViewportHeight = height;
 		
 		if (!mSceneInitialized) {
@@ -486,14 +485,13 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			String[] versionParts = versionString[2].split("\\.");
 			if (versionParts.length >= 2) {
 				mGLES_Major_Version = Integer.parseInt(versionParts[0]);
-				if (versionParts[1].endsWith(":") || versionParts[1].endsWith("-")) {
-					versionParts[1] = versionParts[1].substring(0, versionParts[1].length() - 1);
-				}
+                versionParts[1] = versionParts[1].replaceAll("([^0-9].+)", "");
 				mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
 			}
 		}
+        RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
 		
-		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).indexOf("GL_OES_element_index_uint") > -1;
+		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
 		
 		mTextureManager = TextureManager.getInstance();
 		mTextureManager.setContext(this.getContext());
@@ -554,10 +552,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public void onVisibilityChanged(boolean visible) {
+        RajLog.d(this, "Visibility changed. Is visible? " + visible);
 		if (!visible) {
 			stopRendering();
 		} else {
-			getCurrentScene().resetGLState();
+			if (mSceneInitialized) getCurrentScene().resetGLState();
 			startRendering();
 		}
 	}

@@ -12,6 +12,8 @@
  */
 package rajawali.postprocessing.passes;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import rajawali.materials.Material;
 import rajawali.materials.shaders.FragmentShader;
 import rajawali.materials.shaders.VertexShader;

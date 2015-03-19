@@ -1,12 +1,13 @@
 package rajawali.parser.awd;
 
+import android.util.SparseArray;
+
 import org.apache.http.ParseException;
 
 import rajawali.Object3D;
 import rajawali.parser.LoaderAWD.AWDLittleEndianDataInputStream;
 import rajawali.parser.LoaderAWD.BlockHeader;
 import rajawali.util.RajLog;
-import android.util.SparseArray;
 
 /**
  * The TriangleGeometry block describes a single mesh of an AWD file. Multiple TriangleGeometry blocks may exists in a
@@ -145,7 +146,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
 			// FIXME This should be combining sub geometry not creating objects
 			mBaseObjects[parsedSub] = new Object3D();
-			mBaseObjects[parsedSub].setData(vertices, normals, uvs, null, indices);
+			mBaseObjects[parsedSub].setData(vertices, normals, uvs, null, indices, false);
 		}
 
 		dis.readUserAttributes(null);

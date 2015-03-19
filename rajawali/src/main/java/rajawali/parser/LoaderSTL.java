@@ -12,6 +12,9 @@
  */
 package rajawali.parser;
 
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,8 +27,6 @@ import java.util.List;
 import rajawali.renderer.RajawaliRenderer;
 import rajawali.util.LittleEndianDataInputStream;
 import rajawali.util.RajLog;
-import android.content.res.Resources;
-import android.content.res.Resources.NotFoundException;
 
 /**
  * STL Parser written using the ASCII format as describe on Wikipedia.
@@ -206,7 +207,7 @@ public class LoaderSTL extends AMeshLoader {
 		for (i = 0; i < indicesArr.length; i++)
 			indicesArr[i] = i;
 
-		mRootObject.setData(verticesArr, normalsArr, null, null, indicesArr);
+		mRootObject.setData(verticesArr, normalsArr, null, null, indicesArr, false);
 	}
 
 	/**
@@ -262,7 +263,7 @@ public class LoaderSTL extends AMeshLoader {
 			dis.skip(2);
 		}
 
-		mRootObject.setData(verticesArr, normalsArr, null, null, indicesArr);
+		mRootObject.setData(verticesArr, normalsArr, null, null, indicesArr, false);
 	}
 
 	/**
