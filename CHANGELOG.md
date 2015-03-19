@@ -15,6 +15,10 @@ To eliminate a number of issues which stemmed from trying to change scene conten
 a task queue system has been added to Rajawali. You no longer have direct access to lists such as `mChildren`. Helper
 methods such as `addChild()` exist and will automatically queue everything for you.
 
+### Scene Frame Callbacks
+
+Scene frame callbacks were added to provide a easy way for user code to tie into the render cycle while receiving timing information about the scene. These callbacks receive the typical frame delta time (measured in seconds), used by the animation system, as well as an additional parameter - the rendering elapsed time (measured in nanoseconds). For more information, see [The Wiki](https://github.com/Rajawali/Rajawali/wiki/Scene-Frame-Callbacks)
+
 ### Conversion to double precision
 
 Rajawali has been converted to double precision internally. Some of the public API has changed as a result of this switch,
