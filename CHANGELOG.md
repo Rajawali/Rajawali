@@ -4,6 +4,10 @@ Rajawali "Anchor Steam" Development Branch
 "Anchor Steam", the next Rajawali version contains significant changes to the API.
 Here's what's new:
 
+### Android Studio and Continuous Integration
+
+The project has been migrated to Android Studio and the Gradle build system. Along with this, we have setup builds with Travis CI. Build status badges have been added to the [Readme](https://github.com/Rajawali/Rajawali/blob/master/README.md) to indicate the status. We are currently in the process of deploying the project to Maven.
+
 ### Garbage
 
 Across the library we have tried to reduce the ammount of garbage that is generated. Animations now generate little to
