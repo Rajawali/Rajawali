@@ -119,8 +119,8 @@ public abstract class RajawaliSupportFragment extends Fragment implements IRajaw
     }
 
     protected void onNotVisibleToUser() {
-        mSurfaceView.onPause();
-        mRenderer.onVisibilityChanged(false);
+        if (mSurfaceView != null) mSurfaceView.onPause();
+        if (mRenderer != null) mRenderer.onVisibilityChanged(false);
     }
 
     protected boolean isTransparentSurfaceView() {
