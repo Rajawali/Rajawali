@@ -23,6 +23,11 @@ methods such as `addChild()` exist and will automatically queue everything for y
 
 Scene frame callbacks were added to provide a easy way for user code to tie into the render cycle while receiving timing information about the scene. These callbacks receive the typical frame delta time (measured in seconds), used by the animation system, as well as an additional parameter - the rendering elapsed time (measured in nanoseconds). For more information, see [The Wiki](https://github.com/Rajawali/Rajawali/wiki/Scene-Frame-Callbacks)
 
+ 
+### Lazy VBO creation
+
+In the past, all VBOs were created immediately in the `Object3D` constructor. This is still the default behavior, however a new constructor has been added with a `boolean` parameter which allows for the creation of these VBOs to be deferred until the first render pass. If they are deferred, the initial frame may incur a slight delay, but in most cases this will not be noticable. Deferred creation is useful if you would like to build a complete `RajawaliScene` before having a running `RajawaliRenderer`.
+
 ### Conversion to double precision
 
 Rajawali has been converted to double precision internally. Some of the public API has changed as a result of this switch,
@@ -157,4 +162,5 @@ Some new classes have been added:
 - `SVGPath`: takes an SVG-style path string and creates a `CompoundCurve3D`. Still a work in progress.
 - `LogarithmicSpiral3D` : A spiral curve, often refered to as a "Golden Spiral" or "Nautalus Spiral"
 - `ArchimedeanSpiral3D` : A spiral curve, with several variants based on a constant exponent.
+
 
