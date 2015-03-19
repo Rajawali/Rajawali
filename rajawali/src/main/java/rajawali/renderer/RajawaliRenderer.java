@@ -418,7 +418,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}		
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		mViewportWidth = width;
+		RajLog.d(this, "onSurfaceChanged()");
+        mViewportWidth = width;
 		mViewportHeight = height;
 		
 		if (!mSceneInitialized) {
@@ -540,10 +541,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	}
 
 	public void onVisibilityChanged(boolean visible) {
+        RajLog.d(this, "Visibility changed. Is visible? " + visible);
 		if (!visible) {
 			stopRendering();
 		} else {
-			getCurrentScene().resetGLState();
+			if (mSceneInitialized) getCurrentScene().resetGLState();
 			startRendering();
 		}
 	}
