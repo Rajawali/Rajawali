@@ -21,7 +21,7 @@ methods such as `addChild()` exist and will automatically queue everything for y
 
 ### Asyncronous Loading
 
-To fully take advantage of `RajawaliScene` (see the Scenes section below), it is necessary to be able to load models on a background thread while rendering is active. To fascilitate this, asyncronous loading options have been added to `RajawaliRenderer`. Your code can now request an asyncronous load of any `ALoader` implementation (your own included) and receive a notification of success or failure via the `IAsyncLoaderCallback` interface.
+To fully take advantage of `RajawaliScene` (see the Scenes section below), it is necessary to be able to load models on a background thread while rendering is active. To fascilitate this, asyncronous loading options have been added to `RajawaliRenderer`. Your code can now request an asyncronous load of any `ALoader` implementation (your own included) and receive a notification of success or failure via the `IAsyncLoaderCallback` interface. See [The wiki explanation](https://github.com/Rajawali/Rajawali/wiki/Async-Loaders) or Rajawali Examples for more information.
 
 ### Scene Frame Callbacks
 
