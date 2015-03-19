@@ -12,20 +12,31 @@
  */
 package rajawali.scene;
 
+import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.SparseArray;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import rajawali.Camera;
 import rajawali.Object3D;
 import rajawali.animation.Animation;
 import rajawali.lights.ALight;
+import rajawali.loader.ALoader;
+import rajawali.loader.async.IAsyncLoaderCallback;
 import rajawali.materials.Material;
 import rajawali.materials.plugins.FogMaterialPlugin;
 import rajawali.materials.plugins.FogMaterialPlugin.FogParams;
@@ -34,6 +45,7 @@ import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.postprocessing.materials.ShadowMapMaterial;
@@ -49,10 +61,8 @@ import rajawali.scenegraph.IGraphNode;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
-import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
-import rajawali.util.RajLog;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -63,10 +73,15 @@ import rajawali.util.RajLog;
  * 
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
+@SuppressWarnings("Convert2Diamond")
 public class RajawaliScene extends AFrameTask {
+
+    protected static final int AVAILABLE_CORES = Runtime.getRuntime().availableProcessors();
+    protected final Executor mLoaderExecutor = Executors.newFixedThreadPool(AVAILABLE_CORES == 1 ? 1
+        : AVAILABLE_CORES - 1);
 	
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
-	protected double mEyeZ = 4.0;
+	protected double mEyeZ = 4.0; //TODO: Is this necessary?
 	
 	protected RajawaliRenderer mRenderer;
 	
@@ -101,6 +116,8 @@ public class RajawaliScene extends AFrameTask {
 	private final List<Animation> mAnimations;
 	private final List<IRendererPlugin> mPlugins;
 	private final List<ALight> mLights;
+    private final SparseArray<ModelRunnable> mLoaderThreads;
+    private final SparseArray<IAsyncLoaderCallback> mLoaderCallbacks;
 
 	/**
 	* The camera currently in use.
@@ -144,6 +161,8 @@ public class RajawaliScene extends AFrameTask {
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
+        mLoaderThreads = new SparseArray<ModelRunnable>();
+        mLoaderCallbacks = new SparseArray<IAsyncLoaderCallback>();
 		mFrameTaskQueue = new LinkedList<AFrameTask>();
 		
 		mCamera = new Camera();
@@ -163,7 +182,7 @@ public class RajawaliScene extends AFrameTask {
 	 * method. 
 	 */
 	protected void initSceneGraph() {
-		switch (mSceneGraphType) { //Contrived with only one type I know. For the future!
+		switch (mSceneGraphType) { //I know its contrived with only one type. For the future!
 		case OCTREE:
 			mSceneGraph = new Octree();
 			break;
@@ -171,6 +190,12 @@ public class RajawaliScene extends AFrameTask {
 			break;
 		}
 	}
+
+    /**
+     * Called by the renderer after {@link RajawaliRenderer#initScene()}.
+     */
+    public void initScene() {
+    }
 	
 	/**
 	 * Fetch the minimum bounds of the scene.
@@ -995,7 +1020,78 @@ public class RajawaliScene extends AFrameTask {
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		return addTaskToQueue(task);
 	}
-	
+
+    /**
+     * Add an {@link ALoader} instance to queue parsing for the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)},
+     * {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)}, and
+     * {@link #onModelProgress(int, int)} to monitor the status of loading.
+     *
+     * @param loader
+     * @param tag
+     *
+     * @return
+     */
+    public ALoader loadModel(ALoader loader, IAsyncLoaderCallback callback, int tag) {
+        loader.setTag(tag);
+
+        try {
+            final int id = mLoaderThreads.size();
+            final ModelRunnable runnable = new ModelRunnable(loader, id);
+
+            mLoaderThreads.put(id, runnable);
+            mLoaderCallbacks.put(id, callback);
+            mLoaderExecutor.execute(runnable);
+        } catch (Exception e) {
+            callback.onModelLoadFailed(loader);
+        }
+
+        return loader;
+    }
+
+    /**
+     * Create and add an {@link ALoader} instance using reflection to queue parsing of the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)}, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)},
+     * and {@link #onModelProgress(int, int)} to monitor the status of loading. Returns null if the loader fails to
+     * instantiate, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)} will still be called. A tag will be set
+     * automatically for the model equal to the resource ID passed.
+     *
+     * @param loaderClass
+     * @param resID
+     *
+     * @return
+     */
+    public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID) {
+        return loadModel(loaderClass, callback, resID, resID);
+    }
+
+    /**
+     * Create and add an {@link ALoader} instance using reflection to queue parsing of the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)}, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)},
+     * and {@link #onModelProgress(int, int)} to monitor the status of loading. Returns null if the loader fails to
+     * instantiate, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)} will still be called. Use the tag identified to
+     * determine which model completed loading when multiple models are loaded.
+     *
+     * @param loaderClass
+     * @param resID
+     * @param tag
+     *
+     * @return
+     */
+    public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID, int tag) {
+        try {
+            final Constructor<? extends ALoader> constructor = loaderClass.getConstructor(Resources.class,
+                TextureManager.class, int.class);
+            final ALoader loader = constructor.newInstance(mRenderer.getContext().getResources(),
+                mRenderer.getTextureManager(), resID);
+
+            return loadModel(loader, callback, tag);
+        } catch (Exception e) {
+            callback.onModelLoadFailed(null);
+            return null;
+        }
+    }
+
 	/**
 	 * Adds a task to the frame task queue.
 	 * 
@@ -1963,4 +2059,63 @@ public class RajawaliScene extends AFrameTask {
 	public TYPE getFrameTaskType() {
 		return AFrameTask.TYPE.SCENE;
 	}
+
+    @SuppressLint("HandlerLeak")
+    private final Handler mLoaderHandler = new Handler(Looper.getMainLooper()) {
+
+        @Override
+        public void handleMessage(Message msg) {
+
+            final int id = msg.arg2;
+            final ALoader loader = mLoaderThreads.get(id).mLoader;
+            final IAsyncLoaderCallback callback = mLoaderCallbacks.get(id);
+
+            mLoaderThreads.remove(id);
+            mLoaderCallbacks.remove(id);
+
+            switch (msg.arg1) {
+                case 0:
+                    // Failure
+                    callback.onModelLoadFailed(loader);
+                    break;
+                case 1:
+                    // Success
+                    callback.onModelLoadComplete(loader);
+                    break;
+            }
+        }
+
+    };
+
+    /**
+     * Lightweight Async implementation for executing model parsing.
+     *
+     * @author Ian Thomas (toxicbakery@gmail.com)
+     */
+    private final class ModelRunnable implements Runnable {
+
+        final int id;
+        final ALoader mLoader;
+
+        public ModelRunnable(ALoader loader, int id) {
+            this.id = id;
+            mLoader = loader;
+        }
+
+        public void run() {
+
+            final Message msg = Message.obtain();
+            msg.arg2 = id;
+
+            try {
+                mLoader.parse();
+                msg.arg1 = 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg.arg1 = 0;
+            }
+
+            mLoaderHandler.sendMessage(msg);
+        }
+    }
 }

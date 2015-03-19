@@ -137,11 +137,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mSceneInitialized = false;
 
 		mRenderTargets = Collections.synchronizedList(new CopyOnWriteArrayList<RenderTarget>());
-		
-		final RajawaliScene defaultScene = new RajawaliScene(this);
-		mScenes.add(defaultScene);
-		mCurrentScene = defaultScene;
-		
+
+        final RajawaliScene defaultScene = getNewDefaultScene();
+        mScenes.add(defaultScene);
+        mCurrentScene = defaultScene;
+
 		RawShaderLoader.mContext = new WeakReference<Context>(context);
 	}
 	
