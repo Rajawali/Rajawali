@@ -104,7 +104,7 @@ which should not produce extra garbage and will dramatically simplify code which
 
 ### Parsers
 
-All parser classes which were previously called `xxParser` are now called `Loaderxx`. For example, `OBJParser` is now `LoaderOBJ`.
+All parser classes which were previously called `xxParser` are now called `Loaderxx`. For example, `OBJParser` is now `LoaderOBJ`. They have also been moved from the `parser` package to `loader`.
 
 ### GL State
 
