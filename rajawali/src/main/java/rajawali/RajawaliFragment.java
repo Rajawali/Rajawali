@@ -101,6 +101,7 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
         super.onDestroy();
         try {
             mRenderer.onSurfaceDestroyed();
+            mRenderer = null;
             unbindDrawables(mLayout);
             System.gc();
         } catch (Exception e) {
@@ -131,8 +132,8 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
     }
 
     protected void onNotVisibleToUser() {
-        mSurfaceView.onPause();
-        mRenderer.onVisibilityChanged(false);
+        if (mSurfaceView != null) mSurfaceView.onPause();
+        if (mRenderer != null) mRenderer.onVisibilityChanged(false);
     }
 
     protected boolean isTransparentSurfaceView() {

@@ -12,15 +12,22 @@
  */
 package rajawali.renderer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.service.wallpaper.WallpaperService;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +47,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 import rajawali.Camera;
 import rajawali.Capabilities;
+import rajawali.loader.ALoader;
+import rajawali.loader.async.IAsyncLoaderCallback;
 import rajawali.materials.Material;
 import rajawali.materials.MaterialManager;
 import rajawali.materials.textures.ATexture;
@@ -55,7 +65,9 @@ import rajawali.visitors.INode;
 import rajawali.visitors.INodeVisitor;
 
 public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
-	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
+    protected static final int AVAILABLE_CORES = Runtime.getRuntime().availableProcessors();
+    protected final Executor mLoaderExecutor = Executors.newFixedThreadPool(AVAILABLE_CORES == 1 ? 1
+        : AVAILABLE_CORES - 1);
 
 	protected Context mContext; //Context the renderer is running in
 	protected SharedPreferences preferences; //Shared preferences for this app
@@ -112,6 +124,9 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	
 	private final List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
 	private final List<RenderTarget> mRenderTargets;
+
+    private final SparseArray<ModelRunnable> mLoaderThreads;
+    private final SparseArray<IAsyncLoaderCallback> mLoaderCallbacks;
 	
 	/**
 	 * The scene currently being displayed.
@@ -132,17 +147,30 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		mContext = context;
 		mFrameRate = getRefreshRate();
 		mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
-		mSceneQueue = new LinkedList<AFrameTask>();
-		mSceneCachingEnabled = true;
-		mSceneInitialized = false;
+        mRenderTargets = Collections.synchronizedList(new CopyOnWriteArrayList<RenderTarget>());
+        mSceneQueue = new LinkedList<AFrameTask>();
+        mSceneCachingEnabled = true;
+        mSceneInitialized = false;
 
-		mRenderTargets = Collections.synchronizedList(new CopyOnWriteArrayList<RenderTarget>());
-		
-		final RajawaliScene defaultScene = new RajawaliScene(this);
-		mScenes.add(defaultScene);
-		mCurrentScene = defaultScene;
-		
+        mLoaderThreads = new SparseArray<ModelRunnable>();
+        mLoaderCallbacks = new SparseArray<IAsyncLoaderCallback>();
+
+
+        final RajawaliScene defaultScene = getNewDefaultScene();
+        mScenes.add(defaultScene);
+        mCurrentScene = defaultScene;
+
 		RawShaderLoader.mContext = new WeakReference<Context>(context);
+	}
+	
+	/**
+	 * Return a new instance of the default initial scene for the {@link RajawaliRenderer} instance. This method is only
+	 * intended to be called one time by the renderer itself and should not be used elsewhere.
+	 * 
+	 * @return
+	 */
+	protected RajawaliScene getNewDefaultScene() {
+		return new RajawaliScene(this);
 	}
 	
 	/**
@@ -347,6 +375,77 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		return mCurrentScene.getCamera();
 	}
 
+    /**
+     * Add an {@link ALoader} instance to queue parsing for the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)},
+     * {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)}, and
+     * {@link #onModelProgress(int, int)} to monitor the status of loading.
+     *
+     * @param loader
+     * @param tag
+     *
+     * @return
+     */
+    public ALoader loadModel(ALoader loader, IAsyncLoaderCallback callback, int tag) {
+        loader.setTag(tag);
+
+        try {
+            final int id = mLoaderThreads.size();
+            final ModelRunnable runnable = new ModelRunnable(loader, id);
+
+            mLoaderThreads.put(id, runnable);
+            mLoaderCallbacks.put(id, callback);
+            mLoaderExecutor.execute(runnable);
+        } catch (Exception e) {
+            callback.onModelLoadFailed(loader);
+        }
+
+        return loader;
+    }
+
+    /**
+     * Create and add an {@link ALoader} instance using reflection to queue parsing of the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)}, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)},
+     * and {@link #onModelProgress(int, int)} to monitor the status of loading. Returns null if the loader fails to
+     * instantiate, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)} will still be called. A tag will be set
+     * automatically for the model equal to the resource ID passed.
+     *
+     * @param loaderClass
+     * @param resID
+     *
+     * @return
+     */
+    public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID) {
+        return loadModel(loaderClass, callback, resID, resID);
+    }
+
+    /**
+     * Create and add an {@link ALoader} instance using reflection to queue parsing of the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)}, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)},
+     * and {@link #onModelProgress(int, int)} to monitor the status of loading. Returns null if the loader fails to
+     * instantiate, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)} will still be called. Use the tag identified to
+     * determine which model completed loading when multiple models are loaded.
+     *
+     * @param loaderClass
+     * @param resID
+     * @param tag
+     *
+     * @return
+     */
+    public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID, int tag) {
+        try {
+            final Constructor<? extends ALoader> constructor = loaderClass.getConstructor(Resources.class,
+                TextureManager.class, int.class);
+            final ALoader loader = constructor.newInstance(getContext().getResources(),
+                getTextureManager(), resID);
+
+            return loadModel(loader, callback, tag);
+        } catch (Exception e) {
+            callback.onModelLoadFailed(null);
+            return null;
+        }
+    }
+
 	/*
 	 * (non-Javadoc)
 	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
@@ -425,6 +524,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 		if (!mSceneInitialized) {
 			getCurrentScene().resetGLState();
 			initScene();
+			getCurrentScene().initScene();
 		}
 
 		if (!mSceneCachingEnabled) {
@@ -1310,4 +1410,63 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			}
 		}
 	}
+
+    @SuppressLint("HandlerLeak")
+    private final Handler mLoaderHandler = new Handler(Looper.getMainLooper()) {
+
+        @Override
+        public void handleMessage(Message msg) {
+
+            final int id = msg.arg2;
+            final ALoader loader = mLoaderThreads.get(id).mLoader;
+            final IAsyncLoaderCallback callback = mLoaderCallbacks.get(id);
+
+            mLoaderThreads.remove(id);
+            mLoaderCallbacks.remove(id);
+
+            switch (msg.arg1) {
+                case 0:
+                    // Failure
+                    callback.onModelLoadFailed(loader);
+                    break;
+                case 1:
+                    // Success
+                    callback.onModelLoadComplete(loader);
+                    break;
+            }
+        }
+
+    };
+
+    /**
+     * Lightweight Async implementation for executing model parsing.
+     *
+     * @author Ian Thomas (toxicbakery@gmail.com)
+     */
+    private final class ModelRunnable implements Runnable {
+
+        final int id;
+        final ALoader mLoader;
+
+        public ModelRunnable(ALoader loader, int id) {
+            this.id = id;
+            mLoader = loader;
+        }
+
+        public void run() {
+
+            final Message msg = Message.obtain();
+            msg.arg2 = id;
+
+            try {
+                mLoader.parse();
+                msg.arg1 = 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg.arg1 = 0;
+            }
+
+            mLoaderHandler.sendMessage(msg);
+        }
+    }
 }

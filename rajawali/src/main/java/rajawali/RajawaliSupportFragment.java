@@ -86,8 +86,14 @@ public abstract class RajawaliSupportFragment extends Fragment implements IRajaw
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unbindDrawables(mLayout);
-        System.gc();
+        try {
+            mRenderer.onSurfaceDestroyed();
+            mRenderer = null;
+            unbindDrawables(mLayout);
+            System.gc();
+        } catch (Exception e) {
+            // Do nothing
+        }
     }
 
     @Override
@@ -113,8 +119,8 @@ public abstract class RajawaliSupportFragment extends Fragment implements IRajaw
     }
 
     protected void onNotVisibleToUser() {
-        mSurfaceView.onPause();
-        mRenderer.onVisibilityChanged(false);
+        if (mSurfaceView != null) mSurfaceView.onPause();
+        if (mRenderer != null) mRenderer.onVisibilityChanged(false);
     }
 
     protected boolean isTransparentSurfaceView() {

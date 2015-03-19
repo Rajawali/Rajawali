@@ -12,20 +12,31 @@
  */
 package rajawali.scene;
 
+import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.SparseArray;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import rajawali.Camera;
 import rajawali.Object3D;
 import rajawali.animation.Animation;
 import rajawali.lights.ALight;
+import rajawali.loader.ALoader;
+import rajawali.loader.async.IAsyncLoaderCallback;
 import rajawali.materials.Material;
 import rajawali.materials.plugins.FogMaterialPlugin;
 import rajawali.materials.plugins.FogMaterialPlugin.FogParams;
@@ -34,6 +45,7 @@ import rajawali.materials.textures.ATexture;
 import rajawali.materials.textures.ATexture.TextureException;
 import rajawali.materials.textures.CubeMapTexture;
 import rajawali.materials.textures.Texture;
+import rajawali.materials.textures.TextureManager;
 import rajawali.math.Matrix4;
 import rajawali.math.vector.Vector3;
 import rajawali.postprocessing.materials.ShadowMapMaterial;
@@ -49,10 +61,8 @@ import rajawali.scenegraph.IGraphNode;
 import rajawali.scenegraph.IGraphNode.GRAPH_TYPE;
 import rajawali.scenegraph.IGraphNodeMember;
 import rajawali.scenegraph.Octree;
-import rajawali.util.GLU;
 import rajawali.util.ObjectColorPicker;
 import rajawali.util.ObjectColorPicker.ColorPickerInfo;
-import rajawali.util.RajLog;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -63,10 +73,11 @@ import rajawali.util.RajLog;
  * 
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
+@SuppressWarnings("Convert2Diamond")
 public class RajawaliScene extends AFrameTask {
-	
+
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
-	protected double mEyeZ = 4.0;
+	protected double mEyeZ = 4.0; //TODO: Is this necessary?
 	
 	protected RajawaliRenderer mRenderer;
 	
@@ -163,7 +174,7 @@ public class RajawaliScene extends AFrameTask {
 	 * method. 
 	 */
 	protected void initSceneGraph() {
-		switch (mSceneGraphType) { //Contrived with only one type I know. For the future!
+		switch (mSceneGraphType) { //I know its contrived with only one type. For the future!
 		case OCTREE:
 			mSceneGraph = new Octree();
 			break;
@@ -171,6 +182,12 @@ public class RajawaliScene extends AFrameTask {
 			break;
 		}
 	}
+
+    /**
+     * Called by the renderer after {@link RajawaliRenderer#initScene()}.
+     */
+    public void initScene() {
+    }
 	
 	/**
 	 * Fetch the minimum bounds of the scene.
@@ -995,7 +1012,7 @@ public class RajawaliScene extends AFrameTask {
 		task.setIndex(AFrameTask.UNUSED_INDEX);
 		return addTaskToQueue(task);
 	}
-	
+
 	/**
 	 * Adds a task to the frame task queue.
 	 * 
