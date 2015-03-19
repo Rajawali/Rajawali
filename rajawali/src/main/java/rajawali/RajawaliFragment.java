@@ -101,6 +101,7 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
         super.onDestroy();
         try {
             mRenderer.onSurfaceDestroyed();
+            mRenderer = null;
             unbindDrawables(mLayout);
             System.gc();
         } catch (Exception e) {

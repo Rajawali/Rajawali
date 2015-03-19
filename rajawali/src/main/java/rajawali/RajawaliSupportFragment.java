@@ -86,8 +86,14 @@ public abstract class RajawaliSupportFragment extends Fragment implements IRajaw
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unbindDrawables(mLayout);
-        System.gc();
+        try {
+            mRenderer.onSurfaceDestroyed();
+            mRenderer = null;
+            unbindDrawables(mLayout);
+            System.gc();
+        } catch (Exception e) {
+            // Do nothing
+        }
     }
 
     @Override
