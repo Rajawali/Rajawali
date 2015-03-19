@@ -16,6 +16,7 @@ android:
         - android-22
 
         # Additional Components
+        - extra
 
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
