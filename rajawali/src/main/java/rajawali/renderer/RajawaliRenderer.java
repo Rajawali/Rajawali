@@ -140,10 +140,16 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
     private long mRenderStartTime;
 
-	public RajawaliRenderer(Context context) {
+    private final boolean mHaveRegisteredForResources;
+
+    public RajawaliRenderer(Context context) {
+        this(context, false);
+    }
+
+	public RajawaliRenderer(Context context, boolean registerForResources) {
 		RajLog.i("Rajawali | Anchor Steam | Dev Branch");
 		RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
-		
+		mHaveRegisteredForResources = registerForResources;
 		mContext = context;
 		mFrameRate = getRefreshRate();
 		mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
@@ -161,6 +167,20 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
         mCurrentScene = defaultScene;
 
 		RawShaderLoader.mContext = new WeakReference<Context>(context);
+
+        // Make sure we have a texture manager
+        mTextureManager = TextureManager.getInstance();
+        mTextureManager.setContext(getContext());
+
+        // Make sure we have a material manager
+        mMaterialManager = MaterialManager.getInstance();
+        mMaterialManager.setContext(getContext());
+
+        // We are registering now
+        if (registerForResources) {
+            mTextureManager.registerRenderer(this);
+            mMaterialManager.registerRenderer(this);
+        }
 	}
 	
 	/**
@@ -581,13 +601,11 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
         RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
 		
 		supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
-		
-		mTextureManager = TextureManager.getInstance();
-		mTextureManager.setContext(this.getContext());
-		mTextureManager.registerRenderer(this);
-		mMaterialManager = MaterialManager.getInstance();
-		mMaterialManager.setContext(this.getContext());
-		mMaterialManager.registerRenderer(this);
+
+        if (!mHaveRegisteredForResources) {
+            mTextureManager.registerRenderer(this);
+            mMaterialManager.registerRenderer(this);
+        }
 	}
 	
 	/**

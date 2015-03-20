@@ -606,15 +606,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public void setForcedDepth(boolean forcedDepth) {
 		this.mForcedDepth = forcedDepth;
 	}
-/*
-	public ArrayList<TextureInfo> getTextureInfoList() {
-		ArrayList<TextureInfo> ti = mMaterial.getTextureInfoList();
 
-		for (int i = 0, j = mChildren.size(); i < j; i++)
-			ti.addAll(mChildren.get(i).getTextureInfoList());
-		return ti;
-	}
-*/
 	public SerializedObject3D toSerializedObject3D() {
 		SerializedObject3D ser = new SerializedObject3D(
 				mGeometry.getVertices() != null ? mGeometry.getVertices().capacity() : 0,
