@@ -853,7 +853,7 @@ public class Material extends AFrameTask {
 	
 	/**
 	 * Binds the textures to an OpenGL texturing target. Called every frame by 
-	 * {@link RajawaliScene#render(double, rajawali.renderer.RenderTarget)}. Shouldn't
+	 * {@link RajawaliScene#render(long, double, rajawali.renderer.RenderTarget)}. Shouldn't
 	 * be called manually.
 	 */
 	public void bindTextures() {
@@ -861,7 +861,11 @@ public class Material extends AFrameTask {
         int num = mTextureList.size();
         // Check if the number of applied textures is larger than the max texture count
         // - this would be due to deferred capabilities checking. If so, choose max texture count.
-        if (num > mMaxTextures) num = mMaxTextures;
+        if (num > mMaxTextures) {
+            RajLog.e(this, num + " textures have been added to this material but this device supports a max of "
+                + mMaxTextures + " textures in the fragment shader. Only the first " + mMaxTextures + " will be used.");
+            num = mMaxTextures;
+        }
 
 		for (int i = 0; i < num; i++) {
 			ATexture texture = mTextureList.get(i);
