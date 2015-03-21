@@ -31,7 +31,7 @@ import rajawali.util.egl.RajawaliEGLConfigChooser;
  * provide it as a {@link android.widget.FrameLayout} and be sure to call {@link super#onCreateView(LayoutInflater, ViewGroup, Bundle)}
  * once you have set {@link #mLayout}.
  *
- * @author Jared Woolston (jwoolston@idealcorp.com)
+ * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public abstract class RajawaliSupportFragment extends Fragment implements IRajawaliDisplay {
 
