@@ -74,7 +74,7 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
         }
 
         mSurfaceView = new GLSurfaceView(getActivity());
-        mSurfaceView.setEGLContextClientVersion(2);
+        mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
         mRenderer = createRenderer();
         if (mRenderer == null)
