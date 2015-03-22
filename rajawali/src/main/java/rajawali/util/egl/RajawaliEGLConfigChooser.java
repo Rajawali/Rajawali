@@ -34,6 +34,7 @@ public class RajawaliEGLConfigChooser implements GLSurfaceView.EGLConfigChooser 
         return usesCoverageAa;
     }
 
+    @Override
     public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
         int[] configSpec = new int[] {
                 EGL10.EGL_RED_SIZE, 5,

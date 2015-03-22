@@ -39,7 +39,7 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
 		super.onAttachedToWindow();
 
 		mSurfaceView = new GLSurfaceView(this);
-		mSurfaceView.setEGLContextClientVersion(2);
+		mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
 		setInteractive(false);
 		setFullscreen(true);
