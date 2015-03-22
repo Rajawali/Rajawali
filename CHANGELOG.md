@@ -8,6 +8,12 @@ Here's what's new:
 
 The project has been migrated to Android Studio and the Gradle build system. Along with this, we have setup builds with Travis CI. Build status badges have been added to the [Readme](https://github.com/Rajawali/Rajawali/blob/master/README.md) to indicate the status. We are currently in the process of deploying the project to Maven.
 
+### OpenGL ES 3.0
+
+Rajawali will automatically determine if a device supports OpenGL ES 3.x. If it does, Rajawali will automatically request a GLES 3 context rather than 2. If the device does not support GLES 3, Rajawali will request a GLES 2 surface. The GLES 3 feature set supported Rajawali is currently minimal, but the following has been implemented:
+
+- ETC2 Texture compression. All formats of ETC2 compression except for the 3 sRGB formats are currently supported. At present, we have been unable to find information relating to the internal format codes of the PKM file header for the sRGB formats. When that information is available, a very small modification will be all that is required to add support for these files. The `Etc2Texture` class is the Rajawali native wrapper for these textures. It has the added benefit of accepting ETC1 textures.
+
 ### Garbage
 
 Across the library we have tried to reduce the ammount of garbage that is generated. Animations now generate little to
