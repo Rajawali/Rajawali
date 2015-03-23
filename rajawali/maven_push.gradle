@@ -2,11 +2,11 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 def getRepositoryUsername() {
-    return hasProperty('SONATYPE_UID') ? SONATYPE_UID : ""
+    return hasProperty('SONATYPE_USERNAME') ? SONATYPE_USERNAME : System.getenv('SONATYPE_USERNAME') != null ? System.getenv('SONATYPE_USERNAME') : ""
 }
 
 def getRepositoryPassword() {
-    return hasProperty('SONATYPE_PASS') ? SONATYPE_PASS : ""
+    return hasProperty('SONATYPE_PASSWORD') ? SONATYPE_PASSWORD : System.getenv('SONATYPE_PASSWORD') != null ? System.getenv('SONATYPE_PASSWORD') : ""
 }
 
 boolean isLocal() {
@@ -17,20 +17,10 @@ boolean isRelease() {
     return VERSION_NAME.contains("SNAPSHOT") == false
 }
 
-static String executeCommand(String command) {
-    return command.execute().text.trim()
-}
-
-boolean isTag() {
-    return !executeCommand("git name-rev --name-only --tags HEAD").isEmpty()
-}
-
 afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
-                VERSION_NAME = isTag() ? VERSION_NAME.replace("-SNAPSHOT", "") : VERSION_NAME
-
                 beforeDeployment {
                     MavenDeployment deployment -> signing.signPom(deployment)
                 }

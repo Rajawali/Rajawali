@@ -5,6 +5,14 @@ group = GROUP
 version = VERSION_NAME
 status = 'debug'
 
+static String executeCommand(String command) {
+    return command.execute().text.trim()
+}
+
+static boolean isTag() {
+    return !executeCommand("git name-rev --name-only --tags HEAD").isEmpty()
+}
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.0"
@@ -24,6 +32,19 @@ android {
     buildTypes {
         release {
             status = 'release'
+
+            ext."signing.keyId" = System.getenv("SIGNING_KEY")
+            ext."signing.password" = System.getenv("SIGNING_KEY_PASSWORD")
+            ext."signing.secretKeyRingFile" = "./rajawali_secret.gpg"
+
+            def buildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
+            version = version.replaceAll("0\$", buildNumber == null ? "0" : buildNumber)
+
+            println version
+            if (isTag()) {
+                println "This is a tag - removing SNAPSHOT suffix."
+                version = VERSION_NAME.replace("-SNAPSHOT", "")
+            }
         }
     }
 }
