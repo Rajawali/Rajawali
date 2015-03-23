@@ -27,6 +27,7 @@ public abstract class ACompressedTexture extends ATexture {
 	public enum CompressionType {
 		NONE,
 		ETC1,
+        ETC2,
 		PALETTED,
 		THREEDC,
 		ATC,

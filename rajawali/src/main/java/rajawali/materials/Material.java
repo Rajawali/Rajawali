@@ -75,6 +75,9 @@ public class Material extends AFrameTask {
 	{
 		PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_TRANSFORM, POST_TRANSFORM, IGNORE
 	};
+
+    private final boolean mCapabilitiesCheckDeferred;
+
 	/**
 	 * The generic vertex shader. This can be extended by using vertex shader fragments.
 	 * A vertex shader is typically used to modify vertex positions, vertex colors and normals.
@@ -259,21 +262,35 @@ public class Material extends AFrameTask {
 	 * </code></pre>
 	 *
 	 */	
-	public Material()
-	{
-		mTextureList = new ArrayList<ATexture>();
-		mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
-		mColor = new float[] { 1, 0, 0, 1 };
-		mAmbientColor = new float[] {.2f, .2f, .2f};
-		mAmbientIntensity = new float[] {.3f, .3f, .3f};	
+	public Material() {
+		this(false);
 	}
+
+    public Material(boolean deferCapabilitiesCheck) {
+        mCapabilitiesCheckDeferred = deferCapabilitiesCheck;
+        mTextureList = new ArrayList<ATexture>();
+
+        // If we have deffered the capabilities check, we have no way of knowing how many textures this material
+        // is capable of having. We could choose 8, the minimum required fragment shader texture unit count, but
+        // that would not allow us to finish construction of this material until the EGL context is available. Instead,
+        // we are choosing the maximum integer Java can handle, and we will print a warning if the number of added textures
+        // exceeds the capability once known. In this event they will be used in listed order until the max is hit.
+        mMaxTextures = mCapabilitiesCheckDeferred ? Integer.MAX_VALUE : Capabilities.getInstance().getMaxTextureImageUnits();
+
+        mColor = new float[]{1, 0, 0, 1};
+        mAmbientColor = new float[]{.2f, .2f, .2f};
+        mAmbientIntensity = new float[]{.3f, .3f, .3f};
+    }
 	
-	public Material(VertexShader customVertexShader, FragmentShader customFragmentShader)
-	{
-		this();
-		mCustomVertexShader = customVertexShader;
-		mCustomFragmentShader = customFragmentShader;
+	public Material(VertexShader customVertexShader, FragmentShader customFragmentShader) {
+		this(customVertexShader, customFragmentShader, false);
 	}
+
+    public Material(VertexShader customVertexShader, FragmentShader customFragmentShader, boolean deferCapabilitiesCheck) {
+        this(deferCapabilitiesCheck);
+        mCustomVertexShader = customVertexShader;
+        mCustomFragmentShader = customFragmentShader;
+    }
 
     public void setDebug(boolean flag) {
         debug = flag;
@@ -437,7 +454,10 @@ public class Material extends AFrameTask {
 	 */
 	void add()
 	{
-		if(mLightingEnabled && mLights == null)
+        // We are being added to the scene, check the capabilities now if needed since they are available.
+		checkCapabilitiesIfNeeded();
+
+        if(mLightingEnabled && mLights == null)
 			return;
 
 		createShaders();
@@ -699,6 +719,14 @@ public class Material extends AFrameTask {
 
 		mIsDirty = false;
 	}
+
+    /**
+     * Checks if the device capabilities need to be checked to update the count of available texture units.
+     */
+    private void checkCapabilitiesIfNeeded() {
+        if (!mCapabilitiesCheckDeferred) return;
+        mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
+    }
 	
 	/**
 	 * Checks if any {@link IMaterialPlugin}s have been added. If so they will be added
@@ -825,11 +853,19 @@ public class Material extends AFrameTask {
 	
 	/**
 	 * Binds the textures to an OpenGL texturing target. Called every frame by 
-	 * {@link RajawaliScene#render(double, rajawali.renderer.RenderTarget)}. Shouldn't
+	 * {@link RajawaliScene#render(long, double, rajawali.renderer.RenderTarget)}. Shouldn't
 	 * be called manually.
 	 */
 	public void bindTextures() {
-		int num = mTextureList.size();
+		// Assume its the number of textures
+        int num = mTextureList.size();
+        // Check if the number of applied textures is larger than the max texture count
+        // - this would be due to deferred capabilities checking. If so, choose max texture count.
+        if (num > mMaxTextures) {
+            RajLog.e(this, num + " textures have been added to this material but this device supports a max of "
+                + mMaxTextures + " textures in the fragment shader. Only the first " + mMaxTextures + " will be used.");
+            num = mMaxTextures;
+        }
 
 		for (int i = 0; i < num; i++) {
 			ATexture texture = mTextureList.get(i);

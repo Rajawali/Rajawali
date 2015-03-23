@@ -12,14 +12,6 @@
  */
 package rajawali;
 
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLDisplay;
-
-import rajawali.renderer.RajawaliRenderer;
-import rajawali.util.RajLog;
-import rajawali.util.egl.RajawaliEGLConfigChooser;
-
 import android.annotation.TargetApi;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
@@ -29,9 +21,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
+import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.egl.RajawaliEGLConfigChooser;
+
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-public abstract class RajawaliDaydream extends DreamService {
+public abstract class RajawaliDaydream extends DreamService implements IRajawaliDisplay {
 
 	protected boolean mUsesCoverageAa;
 	protected GLSurfaceView mSurfaceView;
@@ -44,7 +39,7 @@ public abstract class RajawaliDaydream extends DreamService {
 		super.onAttachedToWindow();
 
 		mSurfaceView = new GLSurfaceView(this);
-		mSurfaceView.setEGLContextClientVersion(2);
+		mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
 		setInteractive(false);
 		setFullscreen(true);
@@ -57,7 +52,6 @@ public abstract class RajawaliDaydream extends DreamService {
 		setRenderer(createRenderer());
 	}
 
-	
 	@Override
 	public void onDreamingStarted() {
 		super.onDreamingStarted();
@@ -78,10 +72,14 @@ public abstract class RajawaliDaydream extends DreamService {
 		unbindDrawables(mLayout);
 		System.gc();
 	}
-	
-	protected abstract RajawaliRenderer createRenderer();
 
-	protected void createMultisampleConfig() {
+    @Override
+    public int getLayoutID() {
+        // We dont need this for daydreams, just return 0;
+        return 0;
+    }
+
+    protected void createMultisampleConfig() {
 		mSurfaceView.setEGLConfigChooser(new RajawaliEGLConfigChooser());
 	}
 

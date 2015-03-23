@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -38,9 +38,9 @@ import android.opengl.GLES20;
 
 /**
  * This is the main object that all other 3D objects inherit from.
- * 
+ *
  * @author dennis.ippel
- * 
+ *
  */
 public class Object3D extends ATransformable3D implements Comparable<Object3D>, INode {
 
@@ -104,14 +104,14 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	/**
 	 * Creates a BaseObject3D from a serialized file. A serialized file can be a BaseObject3D but also a
 	 * VertexAnimationObject3D.
-	 * 
+	 *
 	 * A serialized file can be created by the MeshExporter class. Example: <code>
 	  	Cube cube = new Cube(2);
 	 	MeshExporter exporter = new MeshExporter(cube);
 	 	exporter.export("myobject.ser", ExportType.SERIALIZED);
 	 	</code> This saves the serialized file to
 	 * the SD card.
-	 * 
+	 *
 	 * @param ser
 	 */
 	public Object3D(SerializedObject3D ser) {
@@ -139,7 +139,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	/**
 	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
-	 * 
+	 *
 	 * @param vertexBufferInfo
 	 *            The handle to the vertex buffer
 	 * @param normalBufferInfo
@@ -163,7 +163,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	/**
 	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
-	 * 
+	 *
 	 * @param vertices
 	 *            A float array containing vertex data
 	 * @param normals
@@ -184,14 +184,14 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	/**
 	 * Passes serialized data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
-	 * 
+	 *
 	 * A serialized file can be created by the MeshExporter class. Example: <code>
 		Cube cube = new Cube(2);
 		MeshExporter exporter = new MeshExporter(cube);
 		exporter.export("myobject.ser", ExportType.SERIALIZED);
 		</code> This saves the serialized file to
 	 * the SD card.
-	 * 
+	 *
 	 * @param ser
      * @param createVBOs
 	 */
@@ -215,7 +215,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	protected void preRender() {
 		mGeometry.validateBuffers();
 	}
-	
+
 	public void calculateModelMatrix(final Matrix4 parentMatrix) {
 		mParentMatrix = parentMatrix;
 		setOrientation();
@@ -230,7 +230,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	/**
 	 * Renders the object with no parent matrix.
-	 * 
+	 *
 	 * @param camera The camera
 	 * @param vpMatrix {@link Matrix4} The view-projection matrix
 	 * @param projMatrix {@link Matrix4} The projection matrix
@@ -244,7 +244,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	/**
 	 * Renders the object
-	 * 
+	 *
 	 * @param camera The camera
 	 * @param vpMatrix {@link Matrix4} The view-projection matrix
 	 * @param projMatrix {@link Matrix4} The projection matrix
@@ -256,7 +256,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			final Matrix4 parentMatrix, Material sceneMaterial) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
-		
+
 		Material material = sceneMaterial == null ? mMaterial : sceneMaterial;
 		preRender();
 
@@ -298,10 +298,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 				GLES20.glDepthFunc(GLES20.GL_LESS);
 			}
-			
+
 			GLES20.glDepthMask(mEnableDepthMask);
 
-			if (!mIsPartOfBatch) {				
+			if (!mIsPartOfBatch) {
 				if (material == null) {
 					RajLog.e("[" + this.getClass().getName()
 							+ "] This object can't render because there's no material attached to it.");
@@ -309,7 +309,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 							"This object can't render because there's no material attached to it.");
 				}
 				material.useProgram();
-				
+
 				setShaderParams(camera);
 				material.bindTextures();
 				if(mGeometry.hasTextureCoordinates())
@@ -318,7 +318,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 					material.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
 				if(mMaterial.usingVertexColors())
 					material.setVertexColors(mGeometry.getColorBufferInfo().bufferHandle);
-				
+
 				material.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
 			}
 			material.setCurrentObject(this);
@@ -340,13 +340,13 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			if (!mIsPartOfBatch && !mRenderChildrenAsBatch && sceneMaterial == null) {
 				material.unbindTextures();
 			}
-			
+
 			material.unsetCurrentObject(this);
-			
+
 			if (mEnableBlending) {
 				GLES20.glDisable(GLES20.GL_BLEND);
 			}
-			
+
 			if (mDoubleSided) {
 				GLES20.glEnable(GLES20.GL_CULL_FACE);
 			} else if (mBackSided) {
@@ -380,7 +380,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	/**
 	 * This is where the parameters for the shaders are set. It is called every frame.
-	 * 
+	 *
 	 * @param camera
 	 */
 	protected void setShaderParams(Camera camera) {
@@ -422,7 +422,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	/**
 	 * Maps screen coordinates to object coordinates
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param viewportWidth
@@ -442,7 +442,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public boolean isDoubleSided() {
 		return mDoubleSided;
 	}
-	
+
 	public boolean isBackSided() {
 		return mBackSided;
 	}
@@ -454,7 +454,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public void setDoubleSided(boolean doubleSided) {
 		this.mDoubleSided = doubleSided;
 	}
-	
+
 	public void setBackSided(boolean backSided) {
 		this.mBackSided = backSided;
 	}
@@ -466,7 +466,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	/**
 	 * Use this together with the alpha channel when calling BaseObject3D.setColor(): 0xaarrggbb. So for 50% transparent
 	 * red, set transparent to true and call: * <code>setColor(0x7fff0000);</code>
-	 * 
+	 *
 	 * @param transparent
 	 */
 	public void setTransparent(boolean value) {
@@ -483,8 +483,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	/**
 	 * Sets the OpenGL drawing mode. GLES20.GL_TRIANGLES is the default. Other values can be GL_LINES, GL_LINE_LOOP,
 	 * GL_LINE_LOOP, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP
-	 * 
-	 * 
+	 *
+	 *
 	 * @param drawingMode
 	 */
 	public void setDrawingMode(int drawingMode) {
@@ -516,7 +516,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public boolean removeChild(Object3D child) {
 		return mChildren.remove(child);
 	}
-	
+
 	public Object3D getParent()
 	{
 		return mParent;
@@ -524,12 +524,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	/**
 	 * Retrieve the number of triangles of the object, recursive method
-	 * 
+	 *
 	 * @return int the total triangle count for the object.
 	 */
 	public int getNumTriangles() {
 		int triangleCount = 0;
-		
+
 		for (int i = 0, j = getNumChildren(); i < j; i++) {
 			Object3D child = getChildAt(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
@@ -543,12 +543,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 	/**
 	 * Retrieve the number of objects in the object, recursive method
-	 * 
+	 *
 	 * @return int the total object count for the object.
 	 */
 	public int getNumObjects() {
 		int objectCount = 0;
-		
+
 		for (int i = 0, j = getNumChildren(); i < j; i++) {
 			Object3D child = getChildAt(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
@@ -606,15 +606,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public void setForcedDepth(boolean forcedDepth) {
 		this.mForcedDepth = forcedDepth;
 	}
-/*
-	public ArrayList<TextureInfo> getTextureInfoList() {
-		ArrayList<TextureInfo> ti = mMaterial.getTextureInfoList();
 
-		for (int i = 0, j = mChildren.size(); i < j; i++)
-			ti.addAll(mChildren.get(i).getTextureInfoList());
-		return ti;
-	}
-*/
 	public SerializedObject3D toSerializedObject3D() {
 		SerializedObject3D ser = new SerializedObject3D(
 				mGeometry.getVertices() != null ? mGeometry.getVertices().capacity() : 0,
@@ -654,6 +646,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	protected void cloneTo(Object3D clone, boolean copyMaterial) {
+        clone.setName(mName);
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
@@ -666,14 +659,14 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		clone.mEnableDepthTest = this.mEnableDepthTest;
 		clone.mEnableDepthMask = this.mEnableDepthMask;
 	}
- 
+
 
 	public Object3D clone(boolean copyMaterial, boolean cloneChildren) {
 		Object3D clone = new Object3D();
 		cloneTo(clone, copyMaterial);
         clone.setRotation(getRotation());
         clone.setScale(getScale());
-		
+
 		if(cloneChildren)
 		{
 			int childCount = this.getNumChildren();
@@ -682,7 +675,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				clone.addChild(this.getChildAt(i).clone(copyMaterial, cloneChildren));
 			}
 		}
-		
+
 		return clone;
 	}
 
@@ -724,7 +717,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mPickingColorArray[3] = Color.alpha(pickingColor) / 255f;
 		mIsPickingEnabled = true;
 	}
-	
+
 	public boolean isPickingEnabled() {
 		return mIsPickingEnabled;
 	}
@@ -793,22 +786,22 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public boolean isDepthMaskEnabled() {
 		return mEnableDepthMask;
 	}
-	
+
 	public Vector3 getWorldPosition() {
 		if(mParentMatrix == null) return mPosition;
 		Vector3 worldPos = mPosition.clone();
 		worldPos.multiply(mParentMatrix);
 		return worldPos;
 	}
-	
+
 	public Matrix4 getModelViewProjectionMatrix() {
 		return mMVPMatrix;
 	}
-	
+
 	public Matrix4 getModelMatrix() {
 		return mMMatrix;
 	}
-	
+
 	public Matrix4 getModelViewMatrix() {
 		return mMVMatrix;
 	}
@@ -816,7 +809,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	/**
 	 * Maps the (x,y) coordinates of <code>tileName</code> in <code>atlas</code>
 	 * to the TextureCoordinates of this BaseObject3D
-	 * 
+	 *
 	 * @param tileName
 	 * @param atlas
 	 */
@@ -835,7 +828,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mGeometry.changeBufferData(mGeometry.mTexCoordBufferInfo, fb, 0);
 
 	}
-	
+
 	public void destroy() {
 		if (mGeometry != null)
 			mGeometry.destroy();
@@ -860,7 +853,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		volume.transform(mMMatrix);
 		return volume;
 	}
-	
+
 	@Override
 	public TYPE getFrameTaskType() {
 		return AFrameTask.TYPE.OBJECT3D;

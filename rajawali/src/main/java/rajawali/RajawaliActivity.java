@@ -12,9 +12,6 @@
  */
 package rajawali;
 
-import rajawali.renderer.RajawaliRenderer;
-import rajawali.util.egl.RajawaliEGLConfigChooser;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -27,13 +24,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
+import rajawali.renderer.RajawaliRenderer;
+import rajawali.util.egl.RajawaliEGLConfigChooser;
+
 /**
  * This is a standard Android SDK based activity which manages 
  * the Rajawali engine. In general, you may want to consider
- * using {@link RajawaliFragment} over this class, however if you are
- * developing for compatibility with API 8-10 (2.2-2.3.3), and want
- * to use fragments in your app, you will need to use 
- * {@link RajawaliFragmentActivity} instead.
+ * using {@link RajawaliFragment} over this class.
  */
 public class RajawaliActivity extends Activity {
 	protected GLSurfaceView mSurfaceView;
@@ -60,7 +57,7 @@ public class RajawaliActivity extends Activity {
         	if(info.reqGlEsVersion < 0x20000)
         		throw new Error("OpenGL ES 2.0 is not supported by this device");
         }
-        mSurfaceView.setEGLContextClientVersion(2);
+        mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
         
         mLayout = new FrameLayout(this);
         mLayout.addView(mSurfaceView);

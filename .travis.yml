@@ -8,6 +8,9 @@ android:
     - build-tools-22.0.0
     - android-22
 
+    # Additional Components
+    - extra
+
 before_install:
     - openssl aes-256-cbc -K $encrypted_03ed3df01a3f_key -iv $encrypted_03ed3df01a3f_iv
         -in rajawali_secret.gpg.enc -out rajawali_secret.gpg -d
