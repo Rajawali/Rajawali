@@ -11,16 +11,12 @@ android:
     # Additional Components
     - extra
 
-before_install:
-    - openssl aes-256-cbc -K $encrypted_03ed3df01a3f_key -iv $encrypted_03ed3df01a3f_iv
-        -in rajawali_secret.gpg.enc -out rajawali_secret.gpg -d
-
 before_script:
     - chmod +x .utility/initiate-publish.sh
 
 script:
     - echo "Travis branch is $TRAVIS_BRANCH"
-    - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
+    - echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
     - gradle assembleRelease
 
 after_success:
