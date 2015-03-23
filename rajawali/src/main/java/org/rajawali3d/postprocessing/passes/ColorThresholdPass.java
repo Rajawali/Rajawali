@@ -13,7 +13,7 @@
 package org.rajawali3d.postprocessing.passes;
 
 import android.graphics.Color;
-import org.rajawali3d.framework.R;
+import org.rajawali3d.R;
 
 
 public class ColorThresholdPass extends EffectPass {

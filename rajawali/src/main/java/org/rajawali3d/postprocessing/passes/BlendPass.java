@@ -12,7 +12,7 @@
  */
 package org.rajawali3d.postprocessing.passes;
 
-import org.rajawali3d.framework.R;
+import org.rajawali3d.R;
 import org.rajawali3d.materials.textures.ATexture;
 
 

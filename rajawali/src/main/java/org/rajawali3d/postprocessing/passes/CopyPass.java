@@ -13,7 +13,7 @@
 package org.rajawali3d.postprocessing.passes;
 
 import android.opengl.GLES20;
-import org.rajawali3d.framework.R;
+import org.rajawali3d.R;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
