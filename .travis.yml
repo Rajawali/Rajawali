@@ -11,16 +11,11 @@ android:
     # Additional Components
     - extra
 
-before_script:
-    - chmod +x .utility/initiate-publish.sh
-
 script:
     - echo "Travis branch is $TRAVIS_BRANCH"
     - echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
+    - echo "Travis tag $TRAVIS_TAG"
     - gradle assembleRelease
-
-after_success:
-    - .utility/initiate-publish.sh
 
 notifications:
   email:
