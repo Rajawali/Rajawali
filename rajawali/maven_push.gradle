@@ -9,24 +9,39 @@ def getRepositoryPassword() {
     return hasProperty('SONATYPE_PASS') ? SONATYPE_PASS : ""
 }
 
+boolean isLocal() {
+    return (getRepositoryUsername().isEmpty() || getRepositoryPassword().isEmpty())
+}
+
 boolean isRelease() {
     return VERSION_NAME.contains("SNAPSHOT") == false
+}
+
+static String executeCommand(String command) {
+    return command.execute().text.trim()
+}
+
+boolean isTag() {
+    return !executeCommand("git name-rev --name-only --tags HEAD").isEmpty()
 }
 
 afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
-                System.out.println("Sonatype User name: " + getRepositoryUsername())
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                VERSION_NAME = isTag() ? VERSION_NAME.replace("-SNAPSHOT", "") : VERSION_NAME
+
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
 
                 pom.artifactId = POM_ARTIFACT_ID
 
-                repository(url: isRelease() ? "https://oss.sonatype.org/service/local/staging/deploy/maven2/" : mavenLocal().url) {
+                repository(url: isLocal() ? mavenLocal().url : "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
-                snapshotRepository(url: isRelease() ? "https://oss.sonatype.org/content/repositories/snapshots" : mavenLocal().url) {
+                snapshotRepository(url: isLocal() ? mavenLocal().url : "https://oss.sonatype.org/content/repositories/snapshots") {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
