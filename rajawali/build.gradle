@@ -38,7 +38,7 @@ android {
             ext."signing.secretKeyRingFile" = "./rajawali_secret.gpg"
 
             def buildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
-            version = version.replaceAll("0\$", buildNumber == null ? "0" : buildNumber)
+            version = version.replaceAll("(0(?=-SNAPSHOT)|0\$)", buildNumber == null ? "0" : buildNumber)
 
             println version
             if (isTag()) {
