@@ -10,7 +10,7 @@ static String executeCommand(String command) {
 }
 
 static boolean isTag() {
-    return !executeCommand("git name-rev --name-only --tags HEAD").isEmpty()
+    return System.getenv("TRAVIS_TAG") != null ? System.getenv("TRAVIS_TAG").isEmpty() : false
 }
 
 android {
@@ -33,14 +33,23 @@ android {
         release {
             status = 'release'
 
-            ext."signing.keyId" = System.getenv("SIGNING_KEY")
-            ext."signing.password" = System.getenv("SIGNING_KEY_PASSWORD")
+            Properties properties = new Properties()
+            def propsFile = project.rootProject.file('local.properties')
+            if (propsFile.exists()) {
+                properties.load(propsFile.newDataInputStream())
+            }
+
+            ext."signing.keyId" = System.getenv('SIGNING_KEY') != null ? System.getenv('SIGNING_KEY') : properties.getProperty('SIGNING_KEY')
+            ext."signing.password" = System.getenv('SIGNING_KEY_PASSWORD') != null ? System.getenv('SIGNING_KEY_PASSWORD') : properties.getProperty('SIGNING_KEY_PASSWORD')
             ext."signing.secretKeyRingFile" = "./rajawali_secret.gpg"
 
             def buildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
-            version = version.replaceAll("(0(?=-SNAPSHOT)|0\$)", buildNumber == null ? "0" : buildNumber)
+            if (buildNumber == null) {
+                buildNumber = properties.getProperty('TRAVIS_BUILD_NUMBER')
+                if (buildNumber == null) throw new Exception("Build number was null! Failing!")
+            }
+            version = version.replaceAll("(0(?=-SNAPSHOT)|0\$)", buildNumber)
 
-            println version
             if (isTag()) {
                 println "This is a tag - removing SNAPSHOT suffix."
                 version = VERSION_NAME.replace("-SNAPSHOT", "")
