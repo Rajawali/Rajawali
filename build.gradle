@@ -13,3 +13,40 @@ allprojects {
         jcenter()
     }
 }
+
+static String executeCommand(String command) {
+    return command.execute().text.trim()
+}
+
+static boolean isTag() {
+    def travisIsTag = System.getenv("TRAVIS_TAG")
+    if (travisIsTag == null) {
+        println "TRAVIS_TAG is null, checkout is not a tag."
+        return false
+    }
+    if (travisIsTag.isEmpty()) {
+        println "TRAVIS_TAG is an empty string, checkout is not running on Travis."
+        return false;
+    }
+    println "TRAVIS_TAG is valid, checkout is a tag running on Travis."
+    return true
+}
+
+static def getReleaseVersion(baseVersion) {
+    def buildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
+    if (buildNumber == null) {
+        buildNumber = "0"
+    }
+    String version = baseVersion.replaceAll("(0(?=-SNAPSHOT)|0\$)", buildNumber)
+
+    if (isTag()) {
+        println "This is a tag - removing SNAPSHOT suffix."
+        version = baseVersion.replace("-SNAPSHOT", "")
+    }
+
+    return version
+}
+
+static String getBranchName() {
+    return System.getenv('TRAVIS_BRANCH') ? System.getenv('TRAVIS_BRANCH') : System.properties['TRAVIS_BRANCH'] ? System.properties['TRAVIS_BRANCH'] : executeCommand("git rev-parse --abbrev-ref HEAD")
+}
