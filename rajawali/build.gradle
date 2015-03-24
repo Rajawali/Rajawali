@@ -12,7 +12,16 @@ static String executeCommand(String command) {
 static boolean isTag() {
     def travisIsTag = System.getenv("TRAVIS_TAG")
     println "TRAVIS TAG: " + travisIsTag
-    return System.getenv("TRAVIS_TAG") != null
+    if (travisIsTag == null) {
+        println "TRAVIS_TAG is null, returning false."
+        return false
+    }
+    if (travisIsTag.isEmpty()) {
+        println "TRAVIS_TAG is an empty string, returning false."
+        return false;
+    }
+    println "TRAVIS_TAG is valid. Returning true."
+    return true
 }
 
 android {
@@ -60,7 +69,7 @@ android {
             def branchName = System.getenv('TRAVIS_BRANCH') != null ? System.getenv('TRAVIS_BRANCH') : properties.getProperty('TRAVIS_BRANCH')
             if (branchName == null) throw new Exception("Branch name was null! Failing!")
             if (!branchName.equals('master') && !isTag()) {
-                println "Branch is not master. Canceling upload of artifacts."
+                println "Branch is not master or a tag. Canceling upload of artifacts."
                 project.uploadArchives.enabled = false
             }
         }
