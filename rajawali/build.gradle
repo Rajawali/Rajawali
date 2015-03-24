@@ -54,6 +54,13 @@ android {
                 println "This is a tag - removing SNAPSHOT suffix."
                 version = VERSION_NAME.replace("-SNAPSHOT", "")
             }
+
+            def branchName = System.getenv('TRAVIS_BRANCH') != null ? System.getenv('TRAVIS_BRANCH') : properties.getProperty('TRAVIS_BRANCH')
+            if (branchName == null) throw new Exception("Branch name was null! Failing!")
+            if (!branchName.equals('master')) {
+                println "Branch is not master. Canceling upload of artifacts."
+                project.uploadArchives.enabled = false
+            }
         }
     }
 }

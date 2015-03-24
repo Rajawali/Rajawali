@@ -15,7 +15,7 @@ script:
     - echo "Travis branch is $TRAVIS_BRANCH"
     - echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
     - echo "Travis tag $TRAVIS_TAG"
-    - gradle -i assembleRelease
+    - gradle assembleRelease uploadArchives
 
 notifications:
   email:

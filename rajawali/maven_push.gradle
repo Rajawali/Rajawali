@@ -19,18 +19,6 @@ boolean isRelease() {
 
 afterEvaluate { project ->
     uploadArchives {
-        Properties properties = new Properties()
-        def propsFile = project.rootProject.file('local.properties')
-        if (propsFile.exists()) {
-            properties.load(propsFile.newDataInputStream())
-        }
-
-        def branchName = System.getenv('TRAVIS_BRANCH') != null ? System.getenv('TRAVIS_BRANCH') : properties.getProperty('TRAVIS_BRANCH')
-        if (branchName == null) throw new Exception("Branch name was null! Failing!")
-        if (!branchName.equals('master')) {
-            throw new StopExecutionException("Branch is not master. Canceling upload of artifacts.")
-        }
-
         repositories {
             mavenDeployer {
                 beforeDeployment {
