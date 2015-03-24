@@ -12,12 +12,8 @@
  */
 package org.rajawali3d;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import android.graphics.Color;
+import android.opengl.GLES20;
 
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
@@ -33,8 +29,13 @@ import org.rajawali3d.util.GLU;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.visitors.INode;
 import org.rajawali3d.visitors.INodeVisitor;
-import android.graphics.Color;
-import android.opengl.GLES20;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This is the main object that all other 3D objects inherit from.
@@ -43,6 +44,11 @@ import android.opengl.GLES20;
  *
  */
 public class Object3D extends ATransformable3D implements Comparable<Object3D>, INode {
+
+    public static final int RED = 0;
+    public static final int GREEN = 1;
+    public static final int BLUE = 2;
+    public static final int ALPHA = 3;
 
 	protected final Matrix4 mMVPMatrix = new Matrix4();
 	protected final Matrix4 mMMatrix = new Matrix4();
@@ -691,11 +697,19 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mIsVisible = visible;
 	}
 
+    public void setAlpha(int alpha) {
+        mColor[ALPHA] = alpha / 255.f;
+    }
+
+    public void setAlpha(float alpha) {
+        mColor[ALPHA] = alpha;
+    }
+
 	public void setColor(int color) {
-		mColor[0] = Color.red(color) / 255.f;
-		mColor[1] = Color.green(color) / 255.f;
-		mColor[2] = Color.blue(color) / 255.f;
-		mColor[3] = Color.alpha(color) / 255.f;
+		mColor[RED] = Color.red(color) / 255.f;
+		mColor[GREEN] = Color.green(color) / 255.f;
+		mColor[BLUE] = Color.blue(color) / 255.f;
+		mColor[ALPHA] = Color.alpha(color) / 255.f;
 		mOverrideMaterialColor = true;
 	}
 
