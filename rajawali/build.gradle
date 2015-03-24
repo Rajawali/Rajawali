@@ -57,7 +57,7 @@ android {
 
             def branchName = System.getenv('TRAVIS_BRANCH') != null ? System.getenv('TRAVIS_BRANCH') : properties.getProperty('TRAVIS_BRANCH')
             if (branchName == null) throw new Exception("Branch name was null! Failing!")
-            if (!branchName.equals('master')) {
+            if (!branchName.equals('master') && !isTag()) {
                 println "Branch is not master. Canceling upload of artifacts."
                 project.uploadArchives.enabled = false
             }
