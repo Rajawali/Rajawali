@@ -10,7 +10,7 @@ static String executeCommand(String command) {
 }
 
 static boolean isTag() {
-    return System.getenv("TRAVIS_TAG") != null ? System.getenv("TRAVIS_TAG").isEmpty() : false
+    return System.getenv("TRAVIS_TAG") != null
 }
 
 android {
