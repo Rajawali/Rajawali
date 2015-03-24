@@ -2,11 +2,15 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 def getRepositoryUsername() {
-    return hasProperty('rajawali_sonatype_user') ? sonatype_user : ""
+    return hasProperty('SONATYPE_USERNAME') ? SONATYPE_USERNAME : System.getenv('SONATYPE_USERNAME') != null ? System.getenv('SONATYPE_USERNAME') : ""
 }
 
 def getRepositoryPassword() {
-    return hasProperty('rajawali_sonatype_pass') ? sonatype_pass : ""
+    return hasProperty('SONATYPE_PASSWORD') ? SONATYPE_PASSWORD : System.getenv('SONATYPE_PASSWORD') != null ? System.getenv('SONATYPE_PASSWORD') : ""
+}
+
+boolean isLocal() {
+    return (getRepositoryUsername().isEmpty() || getRepositoryPassword().isEmpty())
 }
 
 boolean isRelease() {
@@ -17,15 +21,17 @@ afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
 
                 pom.artifactId = POM_ARTIFACT_ID
 
-                repository(url: isRelease() ? "https://oss.sonatype.org/service/local/staging/deploy/maven2/" : mavenLocal().url) {
+                repository(url: isLocal() ? mavenLocal().url : "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
-                snapshotRepository(url: isRelease() ? "https://oss.sonatype.org/content/repositories/snapshots" : mavenLocal().url) {
+                snapshotRepository(url: isLocal() ? mavenLocal().url : "https://oss.sonatype.org/content/repositories/snapshots") {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
