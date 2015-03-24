@@ -8,6 +8,10 @@ Here's what's new:
 
 The project has been migrated to Android Studio and the Gradle build system. Along with this, we have setup builds with Travis CI. Build status badges have been added to the [Readme](https://github.com/Rajawali/Rajawali/blob/master/README.md) to indicate the status. We are currently in the process of deploying the project to Maven.
 
+### Package Name
+
+In preparation for deployment into Maven, the package name of the Rajawali library has changed. The old packages `rajawali` and `rajawali.framework` are now `org.rajawali3d`, which will be the Maven group id.
+
 ### OpenGL ES 3.0
 
 Rajawali will automatically determine if a device supports OpenGL ES 3.x. If it does, Rajawali will automatically request a GLES 3 context rather than 2. If the device does not support GLES 3, Rajawali will request a GLES 2 surface. The GLES 3 feature set supported Rajawali is currently minimal, but the following has been implemented:
