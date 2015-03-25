@@ -36,6 +36,10 @@ To use the `master` branch build 48 snapshot `1.0.48-SNAPSHOT`, you would use:
 
 All commits to `master` branch or deployed as snapshots. All tags will be deployed as releases. To see the latest build number, click on the `master` build status above.
 
+For the above to work you will need to make sure your repository list includes:
+
+`mavenCentral()` for releases, and `maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }` for snapshots.
+
 ## Rajawali Examples On The Market
 
 [Download the free app](https://market.android.com/details?id=com.monyetmabuk.rajawali.tutorials)
