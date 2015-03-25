@@ -10,11 +10,11 @@ def getRepositoryPassword() {
 }
 
 boolean isLocal() {
-    return (getRepositoryUsername().isEmpty() || getRepositoryPassword().isEmpty())
+    return !isRelease() || (getRepositoryUsername().isEmpty() || getRepositoryPassword().isEmpty())
 }
 
 boolean isRelease() {
-    return VERSION_NAME.contains("SNAPSHOT") == false
+    return (isTag() || getBranchName().equals("master")) && !VERSION_NAME.contains("SNAPSHOT")
 }
 
 afterEvaluate { project ->
@@ -75,20 +75,23 @@ afterEvaluate { project ->
     }
 
     task androidJavadocs(type: Javadoc) {
-        source = android.sourceSets.main.java.sourceFiles
+        source = android.sourceSets.main.java.srcDirs
     }
 
     task androidJavadocsJar(type: Jar) {
         classifier = 'javadoc'
+        baseName = project.projectDir.getName().toLowerCase()
         from androidJavadocs.destinationDir
     }
 
     task androidSourcesJar(type: Jar) {
         classifier = 'sources'
-        from android.sourceSets.main.java.sourceFiles
+        baseName = project.projectDir.getName().toLowerCase()
+        from android.sourceSets.main.java.srcDirs
     }
 
     artifacts {
+        archives packageReleaseJar
         archives androidSourcesJar
         archives androidJavadocsJar
     }
