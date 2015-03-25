@@ -15,13 +15,6 @@ package org.rajawali3d.scene;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.rajawali3d.Camera;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
@@ -51,6 +44,14 @@ import org.rajawali3d.scenegraph.IGraphNodeMember;
 import org.rajawali3d.scenegraph.Octree;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
+import org.rajawali3d.util.RajLog;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This is the container class for scenes in Rajawali.
@@ -713,6 +714,7 @@ public class RajawaliScene extends AFrameTask {
 	
 	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
 		performFrameTasks(); //Handle the task queue
+        RajLog.d(this, "Are lights dirty? " + mLightsDirty);
 		if(mLightsDirty) {
 			updateMaterialsWithLights();
 			mLightsDirty = false;
@@ -1584,6 +1586,7 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	private void updateChildMaterialWithLights(Object3D child)
 	{
+        RajLog.d(this, "Updating lit materials for child: " + child);
 		Material material = child.getMaterial();
 		if(material != null && material.lightingEnabled())
 			material.setLights(mLights);
