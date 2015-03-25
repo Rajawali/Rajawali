@@ -164,7 +164,7 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 						//
 						// -- lightDir = vec3(L.x, L.y, L.z) * spotFactor;
 						//
-						lightDir.assign(multiply(castVec3(lightDir.x(), lightDir.y(), lightDir.z()), spotFactor));
+						lightDir.assign(multiply(castVec3(lightDir), spotFactor));
 					}
 					endif();
 
