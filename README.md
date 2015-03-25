@@ -34,11 +34,13 @@ To use the `master` branch build 48 snapshot `1.0.48-SNAPSHOT`, you would use:
 
 `compile 'org.rajawali3d:rajawali:1.0.48-SNAPSHOT@aar`
 
-All commits to `master` branch or deployed as snapshots. All tags will be deployed as releases. To see the latest build number, click on the `master` build status above.
+All commits to `master` branch or deployed as snapshots. All tags will be deployed as releases. To see the latest build number, see the [build history](https://travis-ci.org/Rajawali/Rajawali/builds) and be sure you choose a `master` branch build.
 
 For the above to work you will need to make sure your repository list includes:
 
 `mavenCentral()` for releases, and `maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }` for snapshots.
+
+Alternatively, if you checkout Rajawali via GIT, you can run `gradle assembleRelease uploadArchives` (or simply add a Gralde launch config to Android Studio for the `assembleRelease` and `uploadArchives` tasks). This will deploy to your local maven ropository. Consuming apps should have `mavenLocal()` in their repository list and add `compile 'org.rajawali3d:rajawali:1.0.0-SNAPSHOT@aar` to their dependencies.
 
 ## Rajawali Examples On The Market
 
