@@ -30,6 +30,10 @@ import org.rajawali3d.util.RajLog;
 import org.rajawali3d.visitors.INode;
 import org.rajawali3d.visitors.INodeVisitor;
 
+import android.graphics.Color;
+import android.opengl.GLES20;
+import android.util.Log;
+
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -51,7 +55,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
     public static final int ALPHA = 3;
 
 	protected final Matrix4 mMVPMatrix = new Matrix4();
-	protected final Matrix4 mMMatrix = new Matrix4();
+
 	protected final Matrix4 mMVMatrix = new Matrix4();
 	protected Matrix4 mPMatrix;
 	protected Matrix4 mParentMatrix;
@@ -222,18 +226,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mGeometry.validateBuffers();
 	}
 
-	public void calculateModelMatrix(final Matrix4 parentMatrix) {
-		mParentMatrix = parentMatrix;
-		setOrientation();
-		if (mLookAt == null) {
-			mOrientation.toRotationMatrix(mRotationMatrix);
-		} else {
-			mRotationMatrix.setAll(mLookAtMatrix);
-		}
-		mMMatrix.identity().translate(mPosition).scale(mScale).multiply(mRotationMatrix);
-		if (parentMatrix != null) mMMatrix.leftMultiply(parentMatrix);
-	}
-
 	/**
 	 * Renders the object with no parent matrix.
 	 *
@@ -267,7 +259,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		preRender();
 
 		// -- move view matrix transformation first
-		calculateModelMatrix(parentMatrix);
+		onRecalculateModelMatrix(parentMatrix);
 		// -- calculate model view matrix;
 		mMVMatrix.setAll(vMatrix).multiply(mMMatrix);
 		//Create MVP Matrix from View-Projection Matrix
@@ -655,7 +647,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
         clone.setName(mName);
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
-		clone.setMaterial(mMaterial);
+		if (copyMaterial) clone.setMaterial(mMaterial);
 		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
 				: GLES20.GL_UNSIGNED_INT;
 		clone.mTransparent = this.mTransparent;
@@ -666,11 +658,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		clone.mEnableDepthMask = this.mEnableDepthMask;
 	}
 
-
 	public Object3D clone(boolean copyMaterial, boolean cloneChildren) {
-		Object3D clone = new Object3D();
+		final Object3D clone = new Object3D();
 		cloneTo(clone, copyMaterial);
-        clone.setRotation(getRotation());
+        clone.setOrientation(mOrientation);
         clone.setScale(getScale());
 
 		if(cloneChildren)
@@ -810,10 +801,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	public Matrix4 getModelViewProjectionMatrix() {
 		return mMVPMatrix;
-	}
-
-	public Matrix4 getModelMatrix() {
-		return mMMatrix;
 	}
 
 	public Matrix4 getModelViewMatrix() {

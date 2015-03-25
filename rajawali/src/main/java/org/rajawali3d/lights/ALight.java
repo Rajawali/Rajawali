@@ -67,7 +67,7 @@ public abstract class ALight extends ATransformable3D {
 	}
 
 	public void shouldUseObjectTransform(boolean useObjectTransform) {
-		this.mUseObjectTransform = useObjectTransform;
+		mUseObjectTransform = useObjectTransform;
 	}
 
 	public int getLightType() {
@@ -75,7 +75,7 @@ public abstract class ALight extends ATransformable3D {
 	}
 
 	public void setLightType(int lightType) {
-		this.mLightType = lightType;
+		mLightType = lightType;
 	}
 
 	public double[] getPositionArray() {

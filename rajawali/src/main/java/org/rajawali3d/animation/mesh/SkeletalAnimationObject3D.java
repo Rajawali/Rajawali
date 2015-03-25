@@ -25,10 +25,6 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.DoubleBuffer;
-
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Camera;
 import org.rajawali3d.Geometry3D.BufferType;
@@ -39,6 +35,10 @@ import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.util.RajLog;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
 
 public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	private SkeletonJoint[] mJoints;
@@ -314,7 +314,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	
 	public SkeletalAnimationObject3D clone(boolean copyMaterial) {
 		SkeletalAnimationObject3D clone = new SkeletalAnimationObject3D();
-		clone.setRotation(getRotation());
+		clone.setRotation(getOrientation());
 		clone.setScale(getScale());
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);

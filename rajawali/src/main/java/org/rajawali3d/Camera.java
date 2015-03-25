@@ -15,9 +15,6 @@ package org.rajawali3d;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
-import java.nio.FloatBuffer;
-import java.util.Stack;
-
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.materials.Material;
@@ -27,20 +24,23 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Line3D;
 import org.rajawali3d.renderer.AFrameTask;
 
+import java.nio.FloatBuffer;
+import java.util.Stack;
+
 public class Camera extends ATransformable3D {
-	protected final Object mFrustumLock = new Object();	
+
+	protected final Object mFrustumLock = new Object();
+
 	/**
 	 * The following members are all guarded by {@link #mFrustumLock}
 	 */
 	protected final Matrix4 mViewMatrix = new Matrix4();
-	protected final Matrix4 mRotationMatrix = new Matrix4();
 	protected final Matrix4 mProjMatrix = new Matrix4();
 	protected double mNearPlane = 1.0;
 	protected double mFarPlane = 120.0;
 	protected double mFieldOfView = 45.0;
 	protected int mLastWidth;
 	protected int mLastHeight;
-	protected boolean mUseRotationMatrix = false;
 	protected boolean mCameraDirty = true;
 	protected Frustum mFrustum;
 	protected BoundingBox mBoundingBox = new BoundingBox();
@@ -70,22 +70,46 @@ public class Camera extends ATransformable3D {
 
 	public Matrix4 getViewMatrix() {
 		synchronized (mFrustumLock) {
-			if (mLookAt != null) {
-				mViewMatrix.setToLookAt(mPosition, mLookAt, Vector3.Y);
-				mLocalOrientation.fromEuler(mRotation.y, mRotation.z, mRotation.x);
-				mViewMatrix.rotate(mLocalOrientation);
-			} else {
-				if (mUseRotationMatrix == false && mRotationDirty) {
-					setOrientation();
-					mRotationDirty = false;
-				}
-				if (mUseRotationMatrix == false) {
-					mOrientation.toRotationMatrix(mViewMatrix);
-				} else {
-					mViewMatrix.setAll(mRotationMatrix);
-				}
-				mViewMatrix.negTranslate(mPosition);
-			}
+            // Create an inverted orientation
+            mTmpOrientation.setAll(mOrientation);
+            mTmpOrientation.inverse();
+
+            // Create the view matrix
+            final double[] matrix = mViewMatrix.getDoubleValues();
+            // Precompute these factors for speed
+            final double x2 = mTmpOrientation.x * mTmpOrientation.x;
+            final double y2 = mTmpOrientation.y * mTmpOrientation.y;
+            final double z2 = mTmpOrientation.z * mTmpOrientation.z;
+            final double xy = mTmpOrientation.x * mTmpOrientation.y;
+            final double xz = mTmpOrientation.x * mTmpOrientation.z;
+            final double yz = mTmpOrientation.y * mTmpOrientation.z;
+            final double wx = mTmpOrientation.w * mTmpOrientation.x;
+            final double wy = mTmpOrientation.w * mTmpOrientation.y;
+            final double wz = mTmpOrientation.w * mTmpOrientation.z;
+
+            matrix[Matrix4.M00] = 1.0 - 2.0 * (y2 + z2);
+            matrix[Matrix4.M10] = 2.0 * (xy - wz);
+            matrix[Matrix4.M20] = 2.0 * (xz + wy);
+            matrix[Matrix4.M30] = 0;
+
+            matrix[Matrix4.M01] = 2.0 * (xy + wz);
+            matrix[Matrix4.M11] = 1.0 - 2.0 * (x2 + z2);
+            matrix[Matrix4.M21] = 2.0 * (yz - wx);
+            matrix[Matrix4.M31] = 0;
+
+            matrix[Matrix4.M02] = 2.0 * (xz - wy);
+            matrix[Matrix4.M12] = 2.0 * (yz + wx);
+            matrix[Matrix4.M22] = 1.0 - 2.0 * (x2 + y2);
+            matrix[Matrix4.M32] = 0;
+
+            matrix[Matrix4.M03] = -mPosition.x * matrix[Matrix4.M00]
+                + -mPosition.y * matrix[Matrix4.M01] + -mPosition.z * matrix[Matrix4.M02];
+            matrix[Matrix4.M13] = -mPosition.x * matrix[Matrix4.M10]
+                + -mPosition.y * matrix[Matrix4.M11] + -mPosition.z * matrix[Matrix4.M12];
+            matrix[Matrix4.M23] = -mPosition.x * matrix[Matrix4.M20]
+                + -mPosition.y * matrix[Matrix4.M21] + -mPosition.z * matrix[Matrix4.M22];
+            matrix[Matrix4.M33] = 1;
+
 			return mViewMatrix;
 		}
 	}
@@ -117,18 +141,12 @@ public class Camera extends ATransformable3D {
 			mFrustumCorners[7].setAll(farWidth / -2, farHeight / -2, mFarPlane);
 			mCameraDirty = false;
 		}
-		
-		for(int i=0; i<8; i++) {
-			points[i].setAll(mFrustumCorners[i]);
-			
-			if(transformed) {
-				setOrientation();
-				if (mLookAt == null) {
-					mOrientation.toRotationMatrix(mRotationMatrix);
-				} else {
-					mRotationMatrix.setAll(mLookAtMatrix);
-				}
-				mMMatrix.identity().translate(mPosition).multiply(mRotationMatrix);
+
+        mMMatrix.identity().translate(mPosition).rotate(mOrientation);
+
+        for (int i = 0; i < 8; ++i) {
+            points[i].setAll(mFrustumCorners[i]);
+            if(transformed) {
 				points[i].multiply(mMMatrix);
 			}
 		}
@@ -141,19 +159,9 @@ public class Camera extends ATransformable3D {
 	}
 	
 	public Frustum getFrustum() {
-		return mFrustum;
-	}
-
-	public void setRotationMatrix(Matrix4 m) {
-		synchronized (mFrustumLock) {
-			mRotationMatrix.setAll(m);
-		}
-	}
-	
-	public Matrix4 getRotationMatrix() {
-		synchronized (mFrustumLock) {
-			return mRotationMatrix;
-		}
+        synchronized (mFrustumLock) {
+            return mFrustum;
+        }
 	}
 
 	public void setProjectionMatrix(int width, int height) {
@@ -219,18 +227,6 @@ public class Camera extends ATransformable3D {
 			mFieldOfView = fieldOfView;
 			mCameraDirty = true;
 			setProjectionMatrix(mLastWidth, mLastHeight);
-		}
-	}
-
-	public boolean getUseRotationMatrix() {
-		synchronized (mFrustumLock) {
-			return mUseRotationMatrix;
-		}
-	}
-
-	public void setUseRotationMatrix(boolean useRotationMatrix) {
-		synchronized (mFrustumLock) {
-			mUseRotationMatrix = useRotationMatrix;
 		}
 	}
 
@@ -372,8 +368,7 @@ public class Camera extends ATransformable3D {
 		cam.setOrientation(mOrientation.clone());
 		cam.setPosition(mPosition.clone());
 		cam.setProjectionMatrix(mLastWidth, mLastHeight);
-		cam.setUseRotationMatrix(mUseRotationMatrix);
-		
+
 		return cam;
 	}
 }

@@ -12,9 +12,7 @@
  */
 package org.rajawali3d.animation.mesh;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import android.opengl.GLES20;
 
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Camera;
@@ -27,7 +25,10 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector2;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.util.RajLog;
-import android.opengl.GLES20;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 /*
  * Making Skeleton a top level object, because it is shared between all the meshes and needs to be animated only once
@@ -294,7 +295,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	public SkeletalAnimationChildObject3D clone(boolean copyMaterial)
 	{
 		SkeletalAnimationChildObject3D clone = new SkeletalAnimationChildObject3D();
-		clone.setRotation(getRotation());
+		clone.setRotation(getOrientation());
 		clone.setScale(getScale());
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);

@@ -12,12 +12,14 @@
  */
 package org.rajawali3d.terrain;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+
+import org.rajawali3d.ATransformable3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 
 /**
  * This is a generic Terrain class for Rajawali.
@@ -746,23 +748,23 @@ public class SquareTerrain extends Terrain {
 		return getInterpolateValue(mTemperature, x, z);
 	}
 
-	public void setScale(double scale) {
+	public ATransformable3D setScale(double scale) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 
-	public void setScale(double scaleX, double scaleY, double scaleZ) {
+	public ATransformable3D setScale(double scaleX, double scaleY, double scaleZ) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 
-	public void setScaleX(double scaleX) {
+	public ATransformable3D setScaleX(double scaleX) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 
-	public void setScaleY(double scaleY) {
+	public ATransformable3D setScaleY(double scaleY) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 
-	public void setScaleZ(double scaleZ) {
+	public ATransformable3D setScaleZ(double scaleZ) {
 		throw new RuntimeException("Not permitted for Terrain Object");
 	}
 }
