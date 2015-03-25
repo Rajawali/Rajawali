@@ -14,7 +14,7 @@ boolean isLocal() {
 }
 
 boolean isRelease() {
-    return (isTag() || getBranchName().equals("master")) && !VERSION_NAME.contains("SNAPSHOT")
+    return isTag() || getBranchName().equals("master")
 }
 
 afterEvaluate { project ->
