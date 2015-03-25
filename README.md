@@ -14,8 +14,6 @@ Want to keep the developers going? Buy them a beer! (http://www.pledgie.com/camp
 
 [Join the Rajawali Community](https://plus.google.com/u/0/communities/116529974266844528013) on [![Rajawali Community on Google Plus](http://sinceresocial.com/wp-content/uploads/2012/05/google+-20px.png)](https://plus.google.com/u/0/communities/116529974266844528013) to stay up-to-date on the latest news. 
 
-_NOTE: Rajawali recently removed official support for versions of Android below 4.0/API 14. If you need support for these devices you will need to use the [`v0.9`](https://github.com/MasDennis/Rajawali/tree/v0.9) tag. This decision was made in order to allow us to freely improve the library in the face of the growing uptake of 4.0+ devices. Major bugs identified in this tag will be addressed, but no further improvements/enhancements should be expected._
-
 _NOTE: Rajawali's release process is changing and the master branch should be considered unstable. Use the [`v0.9`](https://github.com/MasDennis/Rajawali/tree/v0.9) tag if you need a stable version. We are working to improve documentation on this subject._
 
 The [RajawaliExamples](https://github.com/MasDennis/RajawaliExamples) project is an ever growing toolkit for developing 3D content. [Check it out!](https://github.com/MasDennis/RajawaliExamples)
@@ -26,9 +24,17 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 
 ## Using Rajawali
 
-1. Clone or download a copy of the Rajawali source code.
-2. Import the Rajawali project into Eclipse.
-3. In your project's settings, [add a library reference](https://developer.android.com/tools/projects/projects-eclipse.html#ReferencingLibraryProject) to Rajawali.
+Using Rajawali is as simple as adding a single line to your gradle dependencies:
+
+`compile 'org.rajawali3d:rajawali:x.x.x` where x.x.x is the version number (and the last number is the build number). If you wish to use the `master` branch snapshot, append `-SNAPSHOT`. For example, to use release `1.0.48`, you would use:
+
+`compile 'org.rajawali3d:rajawal:1.0.48`
+
+To use the `master` branch build 48 snapshot `1.0.48-SNAPSHOT`, you would use:
+
+`compile 'org.rajawali3d:rajawali:1.0.48-SNAPSHOT`
+
+All commits to `master` branch or deployed as snapshots. All tags will be deployed as releases. To see the latest build number, click on the `master` build status above.
 
 ## Rajawali Examples On The Market
 
