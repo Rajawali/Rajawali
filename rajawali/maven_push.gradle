@@ -19,6 +19,15 @@ boolean isRelease() {
 
 afterEvaluate { project ->
     uploadArchives {
+
+        println "Is Tag ${isTag()}"
+        println "Branch ${getBranchName()}"
+        println "Is Release ${isRelease()}"
+        println "Is Local ${isLocal()}"
+        println "Has Username ${!getRepositoryUsername().empty}"
+        println "Has Password ${!getRepositoryPassword().empty}"
+        println "Determined Version ${version}"
+
         repositories {
             mavenDeployer {
                 beforeDeployment {
