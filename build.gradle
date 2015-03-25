@@ -15,7 +15,11 @@ allprojects {
 }
 
 static String executeCommand(String command) {
-    return command.execute().text.trim()
+    try {
+        return command.execute().text.trim()
+    } catch (Exception ignored) {
+        return ""
+    }
 }
 
 static boolean isTag() {
