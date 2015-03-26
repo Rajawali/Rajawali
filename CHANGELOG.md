@@ -10,7 +10,7 @@ The project has been migrated to Android Studio and the Gradle build system. Alo
 
 ### Package Name
 
-In preparation for deployment into Maven, the package name of the Rajawali library has changed. The old packages `rajawali` and `rajawali.framework` are now `org.rajawali3d`, which will be the Maven group id.
+In preparation for deployment into Maven, the package name of the Rajawali library has changed. The old packages `rajawali` and `rajawali.framework` are now `org.rajawali3d`, which is the Maven group id.
 
 ### OpenGL ES 3.0
 
@@ -103,6 +103,14 @@ signatures have changed, but only in their data types.
 
 While you can still use float or double arrays for matrices if you prefer, `Matrix4` has been implemented in an efficient manner
 which should not produce extra garbage and will dramatically simplify code which performs lots of matrix operations.
+
+### ATransformable3D 
+
+The orientation, rotation and look at functionality of `ATransformable3D` have been modified. Look at tracking has the ability to operate automatically now. To enable, set your look at point via `ATransformable3D.setLookAt(Vector3 look)` and call `ATransformable3D.enableLookAt()`. At this point, anytime your object moves, it will automatically re-orient itself to look at its look at point. 
+
+The model matrix is now the responsibility of `ATransformable3D`. Calculation is handled on an as needed basis now, saving processing time. When an object is moved/rotated, its model matrix is marked as dirty. The next time it is requested in a render loop, the matrix will then be re-calculated. By marking as dirty, we save multiple recalculations when an object has several transformations applied between frames. 
+
+Finally, the orientation of all `ATransformable3D` objects is defined solely as a quaternion. This eliminates the ambiguity of the old system, provides no chance of gimble lock and generally increases efficiency. The previous model matrix calculation required 100 floating point operations and 4 loops. The new method requires only 27 floating point operations. View matrix calculation has seen similar improvements.
 
 ### BaseObject3D
 
