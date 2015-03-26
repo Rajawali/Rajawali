@@ -112,42 +112,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	/**
-	 * Creates a BaseObject3D from a serialized file. A serialized file can be a BaseObject3D but also a
-	 * VertexAnimationObject3D.
-	 *
-	 * A serialized file can be created by the MeshExporter class. Example: <code>
-	  	Cube cube = new Cube(2);
-	 	MeshExporter exporter = new MeshExporter(cube);
-	 	exporter.export("myobject.ser", ExportType.SERIALIZED);
-	 	</code> This saves the serialized file to
-	 * the SD card.
-	 *
-	 * @param ser
-	 */
-	public Object3D(SerializedObject3D ser) {
-		this(ser, true);
-	}
-
-    /**
-     * Creates a BaseObject3D from a serialized file. A serialized file can be a BaseObject3D but also a
-     * VertexAnimationObject3D.
-     * <p/>
-     * A serialized file can be created by the MeshExporter class. Example: <code>
-     * Cube cube = new Cube(2);
-     * MeshExporter exporter = new MeshExporter(cube);
-     * exporter.export("myobject.ser", ExportType.SERIALIZED);
-     * </code> This saves the serialized file to
-     * the SD card.
-     *
-     * @param ser
-     * @param createVBOs
-     */
-    public Object3D(SerializedObject3D ser, boolean createVBOs) {
-        this();
-        setData(ser, createVBOs);
-    }
-
-	/**
 	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
 	 *
 	 * @param vertexBufferInfo
@@ -190,23 +154,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
 		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords, GLES20.GL_STATIC_DRAW,
 				colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
-	}
-
-	/**
-	 * Passes serialized data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
-	 *
-	 * A serialized file can be created by the MeshExporter class. Example: <code>
-		Cube cube = new Cube(2);
-		MeshExporter exporter = new MeshExporter(cube);
-		exporter.export("myobject.ser", ExportType.SERIALIZED);
-		</code> This saves the serialized file to
-	 * the SD card.
-	 *
-	 * @param ser
-     * @param createVBOs
-	 */
-	public void setData(SerializedObject3D ser, boolean createVBOs) {
-		setData(ser.getVertices(), ser.getNormals(), ser.getTextureCoords(), ser.getColors(), ser.getIndices(), createVBOs);
 	}
 
 	public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage, float[] textureCoords,
@@ -603,44 +550,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	public void setForcedDepth(boolean forcedDepth) {
 		this.mForcedDepth = forcedDepth;
-	}
-
-	public SerializedObject3D toSerializedObject3D() {
-		SerializedObject3D ser = new SerializedObject3D(
-				mGeometry.getVertices() != null ? mGeometry.getVertices().capacity() : 0,
-				mGeometry.getNormals() != null ? mGeometry.getNormals().capacity() : 0,
-				mGeometry.getTextureCoords() != null ? mGeometry.getTextureCoords().capacity() : 0,
-				mGeometry.getColors() != null ? mGeometry.getColors().capacity() : 0,
-				mGeometry.getIndices() != null ? mGeometry.getIndices().capacity() : 0);
-
-		int i;
-
-		if (mGeometry.getVertices() != null)
-			for (i = 0; i < mGeometry.getVertices().capacity(); i++)
-				ser.getVertices()[i] = mGeometry.getVertices().get(i);
-		if (mGeometry.getNormals() != null)
-			for (i = 0; i < mGeometry.getNormals().capacity(); i++)
-				ser.getNormals()[i] = mGeometry.getNormals().get(i);
-		if (mGeometry.getTextureCoords() != null)
-			for (i = 0; i < mGeometry.getTextureCoords().capacity(); i++)
-				ser.getTextureCoords()[i] = mGeometry.getTextureCoords().get(i);
-		if (mGeometry.getColors() != null)
-			for (i = 0; i < mGeometry.getColors().capacity(); i++)
-				ser.getColors()[i] = mGeometry.getColors().get(i);
-		if (mGeometry.getIndices() != null)
-		{
-			if (!mGeometry.areOnlyShortBuffersSupported()) {
-				IntBuffer buff = (IntBuffer) mGeometry.getIndices();
-				for (i = 0; i < mGeometry.getIndices().capacity(); i++)
-					ser.getIndices()[i] = buff.get(i);
-			} else {
-				ShortBuffer buff = (ShortBuffer) mGeometry.getIndices();
-				for (i = 0; i < mGeometry.getIndices().capacity(); i++)
-					ser.getIndices()[i] = buff.get(i);
-			}
-		}
-
-		return ser;
 	}
 
 	protected void cloneTo(Object3D clone, boolean copyMaterial) {

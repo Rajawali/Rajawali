@@ -17,7 +17,6 @@ import android.os.SystemClock;
 
 import org.rajawali3d.Camera;
 import org.rajawali3d.Geometry3D;
-import org.rajawali3d.SerializedObject3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.IMaterialPlugin;
 import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin;
@@ -28,24 +27,6 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 	
 	public VertexAnimationObject3D() {
 		super();
-	}
-
-	public VertexAnimationObject3D(SerializedObject3D ser) {
-		super(ser);
-		float[][] v = ser.getFrameVertices();
-		float[][] n = ser.getFrameNormals();
-		String[] frameNames = ser.getFrameNames();
-
-		mNumFrames = v.length;
-
-		for (int i = 0; i < mNumFrames; ++i) {
-			VertexAnimationFrame frame = new VertexAnimationFrame();
-			frame.getGeometry().setVertices(v[i]);
-			frame.getGeometry().setNormals(n[i]);
-			frame.getGeometry().createVertexAndNormalBuffersOnly();
-			frame.setName(frameNames[i]);
-			mFrames.add(frame);
-		}
 	}
 
 	public void setShaderParams(Camera camera) {

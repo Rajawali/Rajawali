@@ -12,12 +12,12 @@
  */
 package org.rajawali3d.animation.mesh;
 
-import java.util.Stack;
+import android.os.SystemClock;
 
 import org.rajawali3d.Object3D;
-import org.rajawali3d.SerializedObject3D;
 import org.rajawali3d.util.RajLog;
-import android.os.SystemClock;
+
+import java.util.Stack;
 
 public abstract class AAnimationObject3D extends Object3D {
 
@@ -35,11 +35,6 @@ public abstract class AAnimationObject3D extends Object3D {
 
 	public AAnimationObject3D() {
 		super();
-		mFrames = new Stack<IAnimationFrame>();
-	}
-
-	public AAnimationObject3D(SerializedObject3D ser) {
-		super(ser);
 		mFrames = new Stack<IAnimationFrame>();
 	}
 
