@@ -12,6 +12,10 @@ The project has been migrated to Android Studio and the Gradle build system. Alo
 
 In preparation for deployment into Maven, the package name of the Rajawali library has changed. The old packages `rajawali` and `rajawali.framework` are now `org.rajawali3d`, which is the Maven group id.
 
+### Debugging
+
+A new renderer class, `RajawaliDebugRenderer` has been added. It has an additional constructor parameter for a `RajawaliGLDebug.Builder` instance which will configure the debug behavior. You can enable automatic glError() calls after every GL call, enforcment of all GL calls coming from the same thread and argument name printing for GL calls. With the addition of this class, `RajawaliRenderer` no longer checks for GL errors at the end of each frame. This is for performance reasons. Of course in your own implementation you could still check at the end of each frame if you so chose. 
+
 ### OpenGL ES 3.0
 
 Rajawali will automatically determine if a device supports OpenGL ES 3.x. If it does, Rajawali will automatically request a GLES 3 context rather than 2. If the device does not support GLES 3, Rajawali will request a GLES 2 surface. The GLES 3 feature set supported Rajawali is currently minimal, but the following has been implemented:
