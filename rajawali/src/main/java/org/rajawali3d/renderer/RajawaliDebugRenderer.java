@@ -14,7 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
  * will provide you with the exact call which failed. You should use this renderer if you see
  * unexpected results in rendering to confirm if it is a GL error or something else.
  *
- * @author Jared Woolston (jwoolston@idealcorp.com)
+ * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public class RajawaliDebugRenderer extends RajawaliRenderer {
     private final RajawaliGLDebugger.Builder mDebugBuilder;
