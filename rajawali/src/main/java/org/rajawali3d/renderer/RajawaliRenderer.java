@@ -60,6 +60,7 @@ import org.rajawali3d.util.GLU;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
+import org.rajawali3d.util.RajawaliGLDebugger;
 import org.rajawali3d.util.RawShaderLoader;
 import org.rajawali3d.visitors.INode;
 import org.rajawali3d.visitors.INodeVisitor;
@@ -94,8 +95,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	protected boolean mEnableDepthBuffer = true; //Do we use the depth buffer?
 	protected static boolean mFogEnabled; //Is camera fog enabled?
 	protected static int mMaxLights = 1; //How many lights max?
-	protected int mLastReportedGLError = 0; // Keep track of the last reported OpenGL error
-	
+
 	//In case we cannot parse the version number, assume OpenGL ES 2.0
 	protected static int mGLES_Major_Version = 2; //The GL ES major version of the surface
 	protected static int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
@@ -182,7 +182,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
             mMaterialManager.registerRenderer(this);
         }
 	}
-	
+
 	/**
 	 * Return a new instance of the default initial scene for the {@link RajawaliRenderer} instance. This method is only
 	 * intended to be called one time by the renderer itself and should not be used elsewhere.
@@ -500,19 +500,6 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 			if(mFPSUpdateListener != null)
 				mFPSUpdateListener.onFPSUpdate(mLastMeasuredFPS); //Update the FPS listener
 		}
-		
-		int error = glUnused.glGetError();
-		
-		if(error > 0)
-		{
-			if(error != mLastReportedGLError)
-			{
-				mLastReportedGLError = error;
-				throw new RuntimeException("OpenGL Error: " + GLU.gluErrorString(error) + " " + error);
-			}
-		} else {
-			mLastReportedGLError = 0;
-		}
 	}
 	
 	protected void onRender(final long ellapsedRealtime, final double deltaTime) {
@@ -585,8 +572,8 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 	 * 
 	 */
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		RajLog.setGL10(gl);
-		Capabilities.getInstance();
+        RajLog.setGL10(gl);
+        Capabilities.getInstance();
 		
 		String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
 		RajLog.d("Open GL ES Version String: " + gl.glGetString(GL10.GL_VERSION));
