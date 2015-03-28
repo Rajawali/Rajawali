@@ -31,7 +31,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 
     protected Vector3 mLookAt; //The look at target
     protected boolean mLookAtValid = false; //Is the look at target up to date?
-    protected boolean mLookAtEnabled = true; //Should we auto enforce look at target?
+    protected boolean mLookAtEnabled; //Should we auto enforce look at target?
     protected boolean mIsCamera; //is this a camera object?
     protected boolean mIsModelMatrixDirty = true; // If true, the model matrix needs to be recalculated.
     protected boolean mInsideGraph = false; //Default to being outside the graph

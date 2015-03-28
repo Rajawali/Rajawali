@@ -16,6 +16,31 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
+import org.rajawali3d.Camera;
+import org.rajawali3d.Object3D;
+import org.rajawali3d.lights.ALight;
+import org.rajawali3d.lights.DirectionalLight;
+import org.rajawali3d.lights.PointLight;
+import org.rajawali3d.lights.SpotLight;
+import org.rajawali3d.loader.AMeshLoader;
+import org.rajawali3d.loader.ParsingException;
+import org.rajawali3d.loader.fbx.FBXValues.Connections.Connect;
+import org.rajawali3d.loader.fbx.FBXValues.FBXColor4;
+import org.rajawali3d.loader.fbx.FBXValues.FBXFloatBuffer;
+import org.rajawali3d.loader.fbx.FBXValues.FBXIntBuffer;
+import org.rajawali3d.loader.fbx.FBXValues.FBXMatrix;
+import org.rajawali3d.loader.fbx.FBXValues.Objects.FBXMaterial;
+import org.rajawali3d.loader.fbx.FBXValues.Objects.Model;
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.materials.methods.DiffuseMethod;
+import org.rajawali3d.materials.methods.SpecularMethod;
+import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.math.vector.Vector2;
+import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.util.RajLog;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,31 +54,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
-
-import org.rajawali3d.Camera;
-import org.rajawali3d.Object3D;
-import org.rajawali3d.lights.ALight;
-import org.rajawali3d.lights.DirectionalLight;
-import org.rajawali3d.lights.PointLight;
-import org.rajawali3d.lights.SpotLight;
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
-import org.rajawali3d.materials.textures.Texture;
-import org.rajawali3d.math.vector.Vector2;
-import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.loader.AMeshLoader;
-import org.rajawali3d.loader.ParsingException;
-import org.rajawali3d.loader.fbx.FBXValues.Connections.Connect;
-import org.rajawali3d.loader.fbx.FBXValues.FBXColor4;
-import org.rajawali3d.loader.fbx.FBXValues.FBXFloatBuffer;
-import org.rajawali3d.loader.fbx.FBXValues.FBXIntBuffer;
-import org.rajawali3d.loader.fbx.FBXValues.FBXMatrix;
-import org.rajawali3d.loader.fbx.FBXValues.Objects.FBXMaterial;
-import org.rajawali3d.loader.fbx.FBXValues.Objects.Model;
-import org.rajawali3d.renderer.RajawaliRenderer;
-import org.rajawali3d.util.RajLog;
 public class LoaderFBX extends AMeshLoader {
 	private static final char COMMENT = ';';
 	private static final String OBJECT_TYPE = "ObjectType:";
@@ -232,7 +232,7 @@ public class LoaderFBX extends AMeshLoader {
 			return light;			
 			
 		case ALight.DIRECTIONAL_LIGHT:		//Area
-			DirectionalLight lD = new DirectionalLight(0,-1,0);  //TODO calculate direction based on position and rotation
+			DirectionalLight lD = new DirectionalLight();  //TODO calculate direction based on position and rotation
 			lD.setPosition(l.properties.lclTranslation);
 			lD.setX(lD.getX() * -1f);
 			lD.setRotation(l.properties.lclRotation);

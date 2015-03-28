@@ -30,7 +30,7 @@ public class SpotLight extends DirectionalLight {
 
 	public SpotLight(float xDir, float yDir, float zDir) {
 		this();
-		setDirection(xDir, yDir, zDir);
+		setLookAt(xDir, yDir, zDir);
 	}
 
 	public void setAttenuation(float range, float constant, float linear, float quadratic) {

@@ -468,8 +468,8 @@ public final class Quaternion {
 	 */
 	public Vector3 multiply(final Vector3 vector) {
 		mTmpVec3.setAll(x, y, z);
-		mTmpVec1 = Vector3.crossAndCreate(mTmpVec3, vector);
-		mTmpVec2 = Vector3.crossAndCreate(mTmpVec3, mTmpVec1);
+        mTmpVec1.crossAndSet(mTmpVec3, vector);
+		mTmpVec2.crossAndSet(mTmpVec3, mTmpVec1);
 		mTmpVec1.multiply(2.0 * w);
 		mTmpVec2.multiply(2.0);
 
