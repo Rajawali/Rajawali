@@ -70,7 +70,8 @@ public class Camera extends ATransformable3D {
 
 	public Matrix4 getViewMatrix() {
 		synchronized (mFrustumLock) {
-            // Create an inverted orientation
+            // Create an inverted orientation. This is because the view matrix is the
+            // inverse operation of a model matrix
             mTmpOrientation.setAll(mOrientation);
             mTmpOrientation.inverse();
 

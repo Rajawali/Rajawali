@@ -49,8 +49,6 @@ public class DirectionalLight extends ALight {
         mDirectionVec.setAll(mForwardAxis);
         // Rotate the vector based on our orientation
         mDirectionVec.rotateBy(mOrientation);
-        // We need to invert the direction - to be honest not sure why
-        mDirectionVec.inverse();
         return this;
     }
 }

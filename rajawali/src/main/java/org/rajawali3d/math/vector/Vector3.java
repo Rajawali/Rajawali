@@ -52,6 +52,18 @@ public class Vector3 {
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    public static final Vector3 NEG_X = new Vector3(-1, 0, 0);
+    /**
+     * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+     */
+    public static final Vector3 NEG_Y = new Vector3(0, -1, 0);
+    /**
+     * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+     */
+    public static final Vector3 NEG_Z = new Vector3(0, 0, -1);
+    /**
+     * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+     */
     public static final Vector3 ZERO = new Vector3(0, 0, 0);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
@@ -1206,6 +1218,19 @@ public class Vector3 {
      */
     public boolean equals(final Vector3 obj) {
         return obj.x == x && obj.y == y && obj.z == z;
+    }
+
+    /**
+     * Does a component by component comparison of this {@link Vector3} and the specified {@link Vector3}
+     * with an error parameter and returns the result.
+     *
+     * @param obj {@link Vector3} to compare with this one.
+     * @param error {@code double} The maximum allowable difference to be considered equal.
+     *
+     * @return boolean True if this {@link Vector3}'s components match with the components of the input.
+     */
+    public boolean equals(final Vector3 obj, double error) {
+        return (Math.abs(obj.x - x) <= error) && (Math.abs(obj.y - y) <= error) && (Math.abs(obj.y - y) <= error);
     }
 
     /*

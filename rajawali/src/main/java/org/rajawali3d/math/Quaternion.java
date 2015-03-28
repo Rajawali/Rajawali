@@ -12,8 +12,10 @@
  */
 package org.rajawali3d.math;
 
+import org.rajawali3d.WorldParameters;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
+import org.rajawali3d.util.RajLog;
 
 /**
  * Encapsulates a quaternion.
@@ -348,7 +350,7 @@ public final class Quaternion {
 	
 	/**
 	 * Set this {@link Quaternion}'s components to the rotation between the given
-	 * two {@link Vector3}s.
+	 * two {@link Vector3}s. This will fail if the two vectors are parallel.
 	 * 
 	 * @param v1 {@link Vector3} The base vector, should be normalized.
 	 * @param v2 {@link Vector3} The target vector, should be normalized.
@@ -356,6 +358,24 @@ public final class Quaternion {
 	 */
 	public Quaternion fromRotationBetween(final Vector3 v1, final Vector3 v2) {
 		final double dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
+        final double dotError = 1.0 - Math.abs(dot);
+        if (dotError <= 1e-6) {
+            // The look and up vectors are parallel/anti-parallel
+            if (dot < 0) {
+                // The look and up vectors are parallel but opposite direction
+                mTmpVec3.crossAndSet(Vector3.X, v1);
+                if (mTmpVec3.length() < 1e-6) {
+                    // Vectors were co-linear, pick another
+                    mTmpVec3.crossAndSet(Vector3.Y, v1);
+                }
+                mTmpVec3.normalize();
+                return fromAngleAxis(mTmpVec3, 180.0);
+            } else {
+                // The look and up vectors are parallel in the same direction
+                return identity();
+            }
+        }
+
 		final double angle = Math.toDegrees(Math.acos(dot));
 		return fromAngleAxis(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, 
 				v1.x * v2.y - v1.y * v2.x, angle);
@@ -363,7 +383,8 @@ public final class Quaternion {
 	
 	/**
 	 * Sets this {@link Quaternion}'s components to the rotation between the given
-	 * two vectors. The incoming vectors should be normalized.
+	 * two vectors. The incoming vectors should be normalized. This will fail if the two
+     * vectors are parallel.
 	 * 
 	 * @param x1 double The base vector's x component.
 	 * @param y1 double The base vector's y component.
@@ -375,9 +396,9 @@ public final class Quaternion {
 	 */
 	public Quaternion fromRotationBetween(final double x1, final double y1, final double z1, final double x2,
 			final double y2, final double z2) {
-		final double dot = MathUtil.clamp(Vector3.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
-		final double angle = Math.toDegrees(Math.acos(dot));
-		return fromAngleAxis(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2, angle);
+        mTmpVec1.setAll(x1, y1, z1).normalize();
+        mTmpVec2.setAll(x2, y2, z2).normalize();
+        return fromRotationBetween(mTmpVec1, mTmpVec2);
 	}
 	
 	/**
@@ -525,9 +546,9 @@ public final class Quaternion {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Quaternion inverse() {
-		double norm = length2();
+		final double norm = length2();
 		if (norm > 0) {
-			double invNorm = 1.0 / norm;
+			final double invNorm = 1.0 / norm;
 			setAll(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
 		}
 		return this;
@@ -1045,13 +1066,21 @@ public final class Quaternion {
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
     public Quaternion lookAt(Vector3 lookAt, Vector3 upDirection) {
-        Vector3 forward = lookAt.clone();
-        Vector3 up = upDirection.clone();
-        Vector3.orthoNormalize(new Vector3[]{forward, up});
-        Vector3 right = Vector3.crossAndCreate(forward, up);
-
-        fromAxes(right, up, forward);
-
+        mTmpVec1.setAll(lookAt);
+        mTmpVec2.setAll(upDirection);
+        final double dotProduct = Vector3.dot(lookAt, upDirection);
+        final double dotError = Math.abs(Math.abs(dotProduct) - (lookAt.length() * upDirection.length()));
+        if (dotError <= 1e-6) {
+            // The look and up vectors are parallel
+            mTmpVec2.normalize();
+            // The look and up vectors are parallel in the same direction
+            RajLog.d(this, "Computing rotation between world up axis and " + mTmpVec1);
+            fromRotationBetween(WorldParameters.FORWARD_AXIS, mTmpVec1);
+            return this;
+        }
+        Vector3.orthoNormalize(mTmpVec1, mTmpVec2); // Find the forward and up vectors
+        mTmpVec3.crossAndSet(mTmpVec1, mTmpVec2); // Create the right vector
+        fromAxes(mTmpVec3, mTmpVec2, mTmpVec1);
         return this;
     }
 	

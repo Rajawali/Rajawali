@@ -19,6 +19,7 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.AFrameTask;
 import org.rajawali3d.scenegraph.IGraphNode;
 import org.rajawali3d.scenegraph.IGraphNodeMember;
+import org.rajawali3d.util.RajLog;
 
 public abstract class ATransformable3D extends AFrameTask implements IGraphNodeMember {
     protected final Matrix4 mMMatrix = new Matrix4(); //The model matrix
@@ -655,8 +656,13 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D resetToLookAt(Vector3 upAxis) {
-        mTempVec.subtractAndSet(mPosition, mLookAt);
+        mTempVec.subtractAndSet(mLookAt, mPosition);
+        // In OpenGL, Cameras are defined such that their forward axis is -Z, not +Z like we have defined objects.
+        if (mIsCamera) mTempVec.inverse();
+        RajLog.d(this, "Calculating look at for vectors: Look: " + mTempVec + " Up: " + upAxis);
         mOrientation.lookAt(mTempVec, upAxis);
+        RajLog.d(this, "Orientation: " + mOrientation);
+        RajLog.d(this, "Angles: <" + Math.toDegrees(getRotX()) + ", " + Math.toDegrees(getRotY()) + ", " + Math.toDegrees(getRotZ()) + ">");
         mLookAtValid = true;
         markModelMatrixDirty();
         return this;
