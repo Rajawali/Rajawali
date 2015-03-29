@@ -206,7 +206,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		preRender();
 
 		// -- move view matrix transformation first
-		onRecalculateModelMatrix(parentMatrix);
+		boolean modelMatrixWasRecalculated = onRecalculateModelMatrix(parentMatrix);
 		// -- calculate model view matrix;
 		mMVMatrix.setAll(vMatrix).multiply(mMMatrix);
 		//Create MVP Matrix from View-Projection Matrix
@@ -315,6 +315,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
             if(mRenderChildrenAsBatch || mIsPartOfBatch) {
                 child.setPartOfBatch(true);
             }
+            if(modelMatrixWasRecalculated) child.markModelMatrixDirty();
 			child.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, sceneMaterial);
 		}
 
