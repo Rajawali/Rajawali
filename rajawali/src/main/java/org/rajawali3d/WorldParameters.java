@@ -54,9 +54,9 @@ public final class WorldParameters {
      * is to verify that the cross product between {@code right} and {@code up} is equivilant to {@code forward}
      * withing 1ppm error on each component.
      *
-     * @param right {@link Vector3} The desired right vector. Should be normalized.
-     * @param up {@link Vector3} The desired up vector. Should be normalized.
-     * @param forward {@link Vector3} The desired forward vector. Should be normalized.
+     * @param right {@link Vector3} The desired right vector. Must be normalized.
+     * @param up {@link Vector3} The desired up vector. Must be normalized.
+     * @param forward {@link Vector3} The desired forward vector. Must be normalized.
      */
     public static void setWorldAxes(Vector3 right, Vector3 up, Vector3 forward) {
         TEMP_VECTOR.crossAndSet(right, up);
