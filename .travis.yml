@@ -1,0 +1,23 @@
+language: android
+
+jdk:
+    - oraclejdk7
+
+android:
+  components:
+    - build-tools-22.0.0
+    - android-22
+
+    # Additional Components
+    - extra
+
+script:
+    - echo "Travis branch is $TRAVIS_BRANCH"
+    - echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
+    - echo "Travis tag $TRAVIS_TAG"
+    - gradle assembleRelease uploadArchives
+
+notifications:
+  email:
+    - rajawali.framework@gmail.com
+    - jwoolston@tenkiv.com

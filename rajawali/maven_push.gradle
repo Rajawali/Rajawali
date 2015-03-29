@@ -2,30 +2,45 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 def getRepositoryUsername() {
-    return hasProperty('sonatype_user') ? sonatype_user : ""
+    return hasProperty('SONATYPE_USERNAME') ? SONATYPE_USERNAME : System.getenv('SONATYPE_USERNAME') != null ? System.getenv('SONATYPE_USERNAME') : ""
 }
 
 def getRepositoryPassword() {
-    return hasProperty('sonatype_pass') ? sonatype_pass : ""
+    return hasProperty('SONATYPE_PASSWORD') ? SONATYPE_PASSWORD : System.getenv('SONATYPE_PASSWORD') != null ? System.getenv('SONATYPE_PASSWORD') : ""
+}
+
+boolean isLocal() {
+    return !isRelease() || (getRepositoryUsername().isEmpty() || getRepositoryPassword().isEmpty())
 }
 
 boolean isRelease() {
-    return VERSION_NAME.contains("SNAPSHOT") == false
+    return isTag() || getBranchName().equals("master")
 }
 
 afterEvaluate { project ->
     uploadArchives {
+
+        println "Is Tag ${isTag()}"
+        println "Branch ${getBranchName()}"
+        println "Is Release ${isRelease()}"
+        println "Is Local ${isLocal()}"
+        println "Has Username ${!getRepositoryUsername().empty}"
+        println "Has Password ${!getRepositoryPassword().empty}"
+        println "Determined Version ${version}"
+
         repositories {
             mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
 
                 pom.artifactId = POM_ARTIFACT_ID
 
-                repository(url: isRelease() ? "https://oss.sonatype.org/service/local/staging/deploy/maven2/" : mavenLocal().url) {
+                repository(url: isLocal() ? mavenLocal().url : "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
-                snapshotRepository(url: isRelease() ? "https://oss.sonatype.org/content/repositories/snapshots" : mavenLocal().url) {
+                snapshotRepository(url: isLocal() ? mavenLocal().url : "https://oss.sonatype.org/content/repositories/snapshots") {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
@@ -69,20 +84,23 @@ afterEvaluate { project ->
     }
 
     task androidJavadocs(type: Javadoc) {
-        source = android.sourceSets.main.java.sourceFiles
+        source = android.sourceSets.main.java.srcDirs
     }
 
     task androidJavadocsJar(type: Jar) {
         classifier = 'javadoc'
+        baseName = project.projectDir.getName().toLowerCase()
         from androidJavadocs.destinationDir
     }
 
     task androidSourcesJar(type: Jar) {
         classifier = 'sources'
-        from android.sourceSets.main.java.sourceFiles
+        baseName = project.projectDir.getName().toLowerCase()
+        from android.sourceSets.main.java.srcDirs
     }
 
     artifacts {
+        archives packageReleaseJar
         archives androidSourcesJar
         archives androidJavadocsJar
     }

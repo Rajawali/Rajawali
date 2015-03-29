@@ -4,6 +4,24 @@ Rajawali "Anchor Steam" Development Branch
 "Anchor Steam", the next Rajawali version contains significant changes to the API.
 Here's what's new:
 
+### Android Studio and Continuous Integration
+
+The project has been migrated to Android Studio and the Gradle build system. Along with this, we have setup builds with Travis CI. Build status badges have been added to the [Readme](https://github.com/Rajawali/Rajawali/blob/master/README.md) to indicate the status. We are currently in the process of deploying the project to Maven.
+
+### Package Name
+
+In preparation for deployment into Maven, the package name of the Rajawali library has changed. The old packages `rajawali` and `rajawali.framework` are now `org.rajawali3d`, which is the Maven group id.
+
+### Debugging
+
+A new renderer class, `RajawaliDebugRenderer` has been added. It has an additional constructor parameter for a `RajawaliGLDebug.Builder` instance which will configure the debug behavior. You can enable automatic glError() calls after every GL call, enforcment of all GL calls coming from the same thread and argument name printing for GL calls. With the addition of this class, `RajawaliRenderer` no longer checks for GL errors at the end of each frame. This is for performance reasons. Of course in your own implementation you could still check at the end of each frame if you so chose. 
+
+### OpenGL ES 3.0
+
+Rajawali will automatically determine if a device supports OpenGL ES 3.x. If it does, Rajawali will automatically request a GLES 3 context rather than 2. If the device does not support GLES 3, Rajawali will request a GLES 2 surface. The GLES 3 feature set supported Rajawali is currently minimal, but the following has been implemented:
+
+- ETC2 Texture compression. All formats of ETC2 compression except for the 3 sRGB formats are currently supported. At present, we have been unable to find information relating to the internal format codes of the PKM file header for the sRGB formats. When that information is available, a very small modification will be all that is required to add support for these files. The `Etc2Texture` class is the Rajawali native wrapper for these textures. It has the added benefit of accepting ETC1 textures.
+
 ### Garbage
 
 Across the library we have tried to reduce the ammount of garbage that is generated. Animations now generate little to
@@ -14,6 +32,18 @@ no garbage, even when run for very long periods of time.
 To eliminate a number of issues which stemmed from trying to change scene contents in the middle of a render cycle,
 a task queue system has been added to Rajawali. You no longer have direct access to lists such as `mChildren`. Helper
 methods such as `addChild()` exist and will automatically queue everything for you.
+
+### Asyncronous Loading
+
+To fully take advantage of `RajawaliScene` (see the Scenes section below), it is necessary to be able to load models on a background thread while rendering is active. To fascilitate this, asyncronous loading options have been added to `RajawaliRenderer`. Your code can now request an asyncronous load of any `ALoader` implementation (your own included) and receive a notification of success or failure via the `IAsyncLoaderCallback` interface. See [The wiki explanation](https://github.com/Rajawali/Rajawali/wiki/Async-Loaders) or Rajawali Examples for more information.
+
+### Scene Frame Callbacks
+
+Scene frame callbacks were added to provide a easy way for user code to tie into the render cycle while receiving timing information about the scene. These callbacks receive the typical frame delta time (measured in seconds), used by the animation system, as well as an additional parameter - the rendering elapsed time (measured in nanoseconds). For more information, see [The Wiki](https://github.com/Rajawali/Rajawali/wiki/Scene-Frame-Callbacks)
+
+### Lazy VBO creation
+
+In the past, all VBOs were created immediately in the `Object3D` constructor. This is still the default behavior, however a new constructor has been added with a `boolean` parameter which allows for the creation of these VBOs to be deferred until the first render pass. If they are deferred, the initial frame may incur a slight delay, but in most cases this will not be noticable. Deferred creation is useful if you would like to build a complete `RajawaliScene` before having a running `RajawaliRenderer`.
 
 ### Conversion to double precision
 
@@ -78,6 +108,14 @@ signatures have changed, but only in their data types.
 While you can still use float or double arrays for matrices if you prefer, `Matrix4` has been implemented in an efficient manner
 which should not produce extra garbage and will dramatically simplify code which performs lots of matrix operations.
 
+### ATransformable3D 
+
+The orientation, rotation and look at functionality of `ATransformable3D` have been modified. Look at tracking has the ability to operate automatically now. To enable, set your look at point via `ATransformable3D.setLookAt(Vector3 look)` and call `ATransformable3D.enableLookAt()`. At this point, anytime your object moves, it will automatically re-orient itself to look at its look at point. 
+
+The model matrix is now the responsibility of `ATransformable3D`. Calculation is handled on an as needed basis now, saving processing time. When an object is moved/rotated, its model matrix is marked as dirty. The next time it is requested in a render loop, the matrix will then be re-calculated. By marking as dirty, we save multiple recalculations when an object has several transformations applied between frames. 
+
+Finally, the orientation of all `ATransformable3D` objects is defined solely as a quaternion. This eliminates the ambiguity of the old system, provides no chance of gimble lock and generally increases efficiency. The previous model matrix calculation required 100 floating point operations and 4 loops. The new method requires only 27 floating point operations. View matrix calculation has seen similar improvements.
+
 ### BaseObject3D
 
 `BaseObject3D` has been renamed to `Object3D`.
@@ -88,7 +126,7 @@ which should not produce extra garbage and will dramatically simplify code which
 
 ### Parsers
 
-All parser classes which were previously called `xxParser` are now called `Loaderxx`. For example, `OBJParser` is now `LoaderOBJ`.
+All parser classes which were previously called `xxParser` are now called `Loaderxx`. For example, `OBJParser` is now `LoaderOBJ`. They have also been moved from the `parser` package to `loader`.
 
 ### GL State
 
@@ -125,6 +163,10 @@ public void nextCamera() {
 Materials & textures have become much more flexible. Please check this wiki pages for all the changes: https://github.com/MasDennis/Rajawali/wiki/Materials
 
 
+### Post Processing
+
+The old filter system has been replaced with a new modular post processing framework. This allows for complex effects based on frame buffer objects and multi-pass rendering. The documentation of details of this will be a work in progress. In the meantime, the examples app is the best place to start.
+
 ### Lights
 
 Lights aren't added directly to objects anymore. In Anchor Steam they have to be added to the scene:
@@ -147,4 +189,7 @@ Some new classes have been added:
 - `LinearBezierCurve3D`: A linear bezier curve. Basically just a straight line. This is useful for compound curves.
 - `QuadraticBezierCurve3D`: A quadratic bezier curve. This type of Bezier curve take only one control point instead of two.
 - `SVGPath`: takes an SVG-style path string and creates a `CompoundCurve3D`. Still a work in progress.
+- `LogarithmicSpiral3D` : A spiral curve, often refered to as a "Golden Spiral" or "Nautalus Spiral"
+- `ArchimedeanSpiral3D` : A spiral curve, with several variants based on a constant exponent.
+
 

@@ -13,3 +13,32 @@ allprojects {
         jcenter()
     }
 }
+
+static String executeCommand(String command) {
+    try {
+        return command.execute().text.trim()
+    } catch (Exception ignored) {
+        return ""
+    }
+}
+
+static boolean isTag() {
+    def travisIsTag = System.getenv("TRAVIS_TAG")
+    return !(travisIsTag == null || travisIsTag.isEmpty())
+}
+
+static def getReleaseVersion(baseVersion) {
+    def buildNumber = System.getenv('TRAVIS_BUILD_NUMBER') ? System.getenv('TRAVIS_BUILD_NUMBER') : "0";
+    String version = baseVersion.replaceAll("(0(?=-SNAPSHOT)|0\$)", buildNumber)
+
+    if (isTag()) {
+        println "This is a tag - removing SNAPSHOT suffix."
+        version = baseVersion.replace("-SNAPSHOT", "")
+    }
+
+    return version
+}
+
+static String getBranchName() {
+    return System.getenv('TRAVIS_BRANCH') ? System.getenv('TRAVIS_BRANCH') : System.properties['TRAVIS_BRANCH'] ? System.properties['TRAVIS_BRANCH'] : executeCommand("git rev-parse --abbrev-ref HEAD")
+}
