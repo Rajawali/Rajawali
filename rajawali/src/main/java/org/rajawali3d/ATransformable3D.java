@@ -48,7 +48,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		mScale = new Vector3(1, 1, 1);
 		mOrientation = new Quaternion();
 		mTmpOrientation = new Quaternion();
-        mUpAxis = new Vector3(Vector3.getAxisVector(Vector3.Axis.Y)); //Default to +Y
+        mUpAxis = new Vector3(WorldParameters.UP_AXIS);
 	}
 
     /**
