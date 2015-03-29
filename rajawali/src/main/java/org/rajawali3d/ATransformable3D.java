@@ -61,13 +61,16 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * Recalculates the model matrix for this {@link ATransformable3D} object if necessary.
      *
      * @param parentMatrix {@link Matrix4} The parent matrix, if any, to apply to this object.
+     * @return A flag indicating whether the model matrix was recalculated or not.
      */
-    public void onRecalculateModelMatrix(Matrix4 parentMatrix) {
+    public boolean onRecalculateModelMatrix(Matrix4 parentMatrix) {
         if (mIsModelMatrixDirty) {
             calculateModelMatrix(parentMatrix);
             if (mGraphNode != null) mGraphNode.updateObject(this);
             mIsModelMatrixDirty = false;
+            return true;
         }
+        return false;
     }
 
     /**

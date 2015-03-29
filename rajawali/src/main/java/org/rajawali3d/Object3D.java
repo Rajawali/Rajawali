@@ -206,7 +206,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		preRender();
 
 		// -- move view matrix transformation first
-		onRecalculateModelMatrix(parentMatrix);
+		boolean modelMatrixWasRecalculated = onRecalculateModelMatrix(parentMatrix);
 		// -- calculate model view matrix;
 		mMVMatrix.setAll(vMatrix).multiply(mMMatrix);
 		//Create MVP Matrix from View-Projection Matrix
@@ -258,13 +258,13 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				setShaderParams(camera);
 				material.bindTextures();
 				if(mGeometry.hasTextureCoordinates())
-					material.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle);
+					material.setTextureCoords(mGeometry.getTexCoordBufferInfo());
 				if(mGeometry.hasNormals())
-					material.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
+					material.setNormals(mGeometry.getNormalBufferInfo());
 				if(mMaterial.usingVertexColors())
-					material.setVertexColors(mGeometry.getColorBufferInfo().bufferHandle);
-
-				material.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
+					material.setVertexColors(mGeometry.getColorBufferInfo());
+				
+				material.setVertices(mGeometry.getVertexBufferInfo());
 			}
 			material.setCurrentObject(this);
 			material.applyParams();
@@ -315,6 +315,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
             if(mRenderChildrenAsBatch || mIsPartOfBatch) {
                 child.setPartOfBatch(true);
             }
+            if(modelMatrixWasRecalculated) child.markModelMatrixDirty();
 			child.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, sceneMaterial);
 		}
 
