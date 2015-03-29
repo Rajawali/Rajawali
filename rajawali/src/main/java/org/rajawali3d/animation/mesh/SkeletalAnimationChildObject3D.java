@@ -89,7 +89,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 			mTmpScale.setAll(mScale.x, mScale.y, mScale.z);
 		
 		mMMatrix.identity().translate(mPosition).scale(mTmpScale).multiply(mRotationMatrix);
-		if (parentMatrix != null) mMMatrix.leftMultiply(mParentMatrix);
+		if (parentMatrix != null) mMMatrix.leftMultiply(parentMatrix);
 	}
 
 	public void setShaderParams(Camera camera) {
