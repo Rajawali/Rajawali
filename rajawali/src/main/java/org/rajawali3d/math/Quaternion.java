@@ -168,9 +168,10 @@ public final class Quaternion {
 			return identity();
 		}
 		d = 1.0f / d;
-		double l_ang = angle * Math.toRadians(angle);
+        final double radians = Math.toRadians(angle);
+		double l_ang = radians < 0 ? MathUtil.TWO_PI - (-radians % MathUtil.TWO_PI) : radians % MathUtil.TWO_PI;
 		double l_sin = Math.sin(l_ang * 0.5);
-		double l_cos = Math.cos(l_ang * 0.5); 
+		double l_cos = Math.cos(l_ang * 0.5);
 		return this.setAll(l_cos, d * x * l_sin, d * y * l_sin, d * z * l_sin);
 	}
 	
@@ -934,72 +935,55 @@ public final class Quaternion {
 		result.normalize();
 		return result;
 	}
+
+    /**
+     * Get the pole of the gimbal lock, if any.
+     *
+     * @return positive (+1) for north pole, negative (-1) for south pole, zero (0) when no gimbal lock
+     * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
+     *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
+     */
+    public int getGimbalPole() {
+        final double t = y * x + z * w;
+        return t > 0.499 ? 1 : (t < -0.499 ? -1 : 0);
+    }
 	
 	/**
-	 * Gets the roll angle from this {@link Quaternion}. 
+	 * Gets the roll angle from this {@link Quaternion}. This is defined as the rotation about the Z axis.
 	 * 
-	 * @param reprojectAxis boolean Whether or not to reproject the axes.
 	 * @return double The roll angle in radians.
+     * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
+     *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
 	 */
-	public double getRoll(boolean reprojectAxis) {
-		if (reprojectAxis) {
-			// double fTx = 2.0 * x;
-			double fTy = 2.0 * y;
-			double fTz = 2.0 * z;
-			double fTwz = fTz * w;
-			double fTxy = fTy * x;
-			double fTyy = fTy * y;
-			double fTzz = fTz * z;
-
-			return Math.atan2(fTxy + fTwz, 1.0 - (fTyy + fTzz));
-		} else {
-			return Math.atan2(2 * (x * y + w * z), w * w + x * x - y * y - z * z);
-		}
+	public double getRoll() {
+        normalize();
+        final int pole = getGimbalPole();
+        return pole == 0 ? Math.atan2(2.0 * (w * z + y * x), 1.0 - 2.0 * (x * x + z * z)) : pole * 2.0 * Math.atan2(y, w);
 	}
 
 	/**
-	 * Gets the pitch angle from this {@link Quaternion}. 
+	 * Gets the pitch angle from this {@link Quaternion}. This is defined as the rotation about the X axis.
 	 * 
-	 * @param reprojectAxis boolean Whether or not to reproject the axes.
 	 * @return double The pitch angle in radians.
+     * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
+     *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
 	 */
-	public double getPitch(boolean reprojectAxis) {
-		if (reprojectAxis) {
-			double fTx = 2.0 * x;
-			// double fTy = 2.0 * y;
-			double fTz = 2.0 * z;
-			double fTwx = fTx * w;
-			double fTxx = fTx * x;
-			double fTyz = fTz * y;
-			double fTzz = fTz * z;
-
-			return Math.atan2(fTyz + fTwx, 1.0 - (fTxx + fTzz));
-		} else {
-			return Math.atan2(2 * (y * z + w * x), w * w - x * x - y * y + z * z);
-		}
+	public double getPitch() {
+        normalize();
+        final int pole = getGimbalPole();
+        return pole == 0 ? Math.asin(MathUtil.clamp(2.0 * (w * x - z * y), -1.0, 1.0)) : pole * MathUtil.PI * 0.5;
 	}
 
 	/**
-	 * Gets the yaw angle from this {@link Quaternion}. 
-	 * 
-	 * @param reprojectAxis boolean Whether or not to reproject the axes.
+	 * Gets the yaw angle from this {@link Quaternion}. This is defined as the rotation about the Y axis.
+	 *
 	 * @return double The yaw angle in radians.
+     * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
+     *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
 	 */
-	public double getYaw(boolean reprojectAxis) {
-		if (reprojectAxis) {
-			double fTx = 2.0 * x;
-			double fTy = 2.0 * y;
-			double fTz = 2.0 * z;
-			double fTwy = fTy * w;
-			double fTxx = fTx * x;
-			double fTxz = fTz * x;
-			double fTyy = fTy * y;
-
-			return Math.atan2(fTxz + fTwy, 1.0 - (fTxx + fTyy));
-
-		} else {
-			return Math.asin(-2 * (x * z - w * y));
-		}
+	public double getYaw() {
+        normalize();
+        return getGimbalPole() == 0 ? Math.atan2(2.0 * (y * w + x * z), 1.0 - 2.0 * (y * y + x * x)) : 0.0;
 	}
 	
 	/**
@@ -1093,7 +1077,7 @@ public final class Quaternion {
 	 * @return {@link Quaternion} The new {@link Quaternion} representing the requested orientation.
 	 */
     public static Quaternion lookAtAndCreate(Vector3 lookAt, Vector3 upDirection) {
-		Quaternion ret = new Quaternion();
+		final Quaternion ret = new Quaternion();
 		return ret.lookAt(lookAt, upDirection);
 	}
     

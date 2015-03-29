@@ -417,7 +417,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      */
     public ATransformable3D setRotX(double rotX) {
         mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(mTmpOrientation.getYaw(false), mTmpOrientation.getPitch(false), rotX);
+        mOrientation.fromEuler(mTmpOrientation.getYaw(), mTmpOrientation.getPitch(), rotX);
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -434,7 +434,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      */
     public ATransformable3D setRotY(double rotY) {
         mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(rotY, mTmpOrientation.getPitch(false), mTmpOrientation.getRoll(false));
+        mOrientation.fromEuler(rotY, mTmpOrientation.getPitch(), mTmpOrientation.getRoll());
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -451,7 +451,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      */
     public ATransformable3D setRotZ(double rotZ) {
         mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(mTmpOrientation.getYaw(false), rotZ, mTmpOrientation.getRoll(false));
+        mOrientation.fromEuler(mTmpOrientation.getYaw(), rotZ, mTmpOrientation.getRoll());
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -463,7 +463,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return double The roll Euler angle.
      */
     public double getRotX() {
-        return mOrientation.getRoll(false);
+        return mOrientation.getPitch();
     }
 
     /**
@@ -472,7 +472,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return double The yaw Euler angle.
      */
     public double getRotY() {
-        return mOrientation.getYaw(false);
+        return mOrientation.getYaw();
     }
 
     /**
@@ -481,7 +481,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return double The pitch Euler angle.
      */
     public double getRotZ() {
-        return mOrientation.getPitch(false);
+        return mOrientation.getRoll();
     }
 
     /**
