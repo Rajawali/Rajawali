@@ -187,10 +187,11 @@ public abstract class ACompressedTexture extends ATexture {
 		if (mByteBuffers == null || mByteBuffers.length == 0)
 			throw new TextureException("Texture could not be replaced because there is no ByteBuffer set.");
 
-		if (mWidth == 0 || mHeight == 0 || mBitmapFormat == 0)
+		if (mWidth == 0 || mHeight == 0)
 			throw new TextureException(
-					"Could not update ByteBuffer texture. One or more of the following properties haven't been set: width, height or bitmap format");
+					"Could not update ByteBuffer texture. One or more of the following properties haven't been set: width or height");
 
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId);
 		int w = mWidth, h = mHeight;
 		for (int i = 0; i < mByteBuffers.length; i++) {
 			GLES20.glCompressedTexSubImage2D(GLES20.GL_TEXTURE_2D, i, 0, 0, w, h, mCompressionFormat,
@@ -198,6 +199,7 @@ public abstract class ACompressedTexture extends ATexture {
 			w = w > 1 ? w / 2 : 1;
 			h = h > 1 ? h / 2 : 1;
 		}
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
 	void reset() throws TextureException

@@ -204,32 +204,47 @@ public class VertexShader extends AShader {
 		super.setLocations(programHandle);
 	}
 
-	public void setVertices(final int vertexBufferHandle) {
+    public void setVertices(final int vertexBufferHandle) {
+        setVertices(vertexBufferHandle, GLES20.GL_FLOAT, 0, 0);
+    }
+
+	public void setVertices(final int vertexBufferHandle, final int type, final int stride, final int offset) {
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle);
 		GLES20.glEnableVertexAttribArray(maPositionHandle);
-		GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT, false, 0, 0);
+		GLES20.glVertexAttribPointer(maPositionHandle, 3, type, false, stride, offset);
 	}
 
-	public void setTextureCoords(final int textureCoordBufferHandle) {
+    public void setTextureCoords(final int textureCoordBufferHandle) {
+        setTextureCoords(textureCoordBufferHandle, GLES20.GL_FLOAT, 0, 0);
+    }
+
+	public void setTextureCoords(final int textureCoordBufferHandle, final int type, final int stride, final int offset) {
 		if(maTextureCoordHandle < 0) return;
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, textureCoordBufferHandle);
 		GLES20.glEnableVertexAttribArray(maTextureCoordHandle);
-		GLES20.glVertexAttribPointer(maTextureCoordHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
+		GLES20.glVertexAttribPointer(maTextureCoordHandle, 2, type, false, stride, offset);
 	}
 
-	public void setNormals(final int normalBufferHandle) {
+    public void setNormals(final int normalBufferHandle) {
+        setNormals(normalBufferHandle, GLES20.GL_FLOAT, 0, 0);
+    }
+
+	public void setNormals(final int normalBufferHandle, final int type, final int stride, final int offset) {
 		if(maNormalHandle < 0) return;
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalBufferHandle);
 		GLES20.glEnableVertexAttribArray(maNormalHandle);
-		GLES20.glVertexAttribPointer(maNormalHandle, 3, GLES20.GL_FLOAT, false, 0, 0);
+		GLES20.glVertexAttribPointer(maNormalHandle, 3, type, false, stride, offset);
 	}
-	
-	public void setVertexColors(final int vertexColorBufferHandle) {
+
+    public void setVertexColors(final int vertexColorBufferHandle) {
+        setVertexColors(vertexColorBufferHandle, GLES20.GL_FLOAT, 0, 0);
+    }
+
+	public void setVertexColors(final int vertexColorBufferHandle, final int type, final int stride, final int offset) {
 		if(maVertexColorBufferHandle < 0) return;
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexColorBufferHandle);
 		GLES20.glEnableVertexAttribArray(maVertexColorBufferHandle);
-		GLES20.glVertexAttribPointer(maVertexColorBufferHandle, 4, GLES20.GL_FLOAT,
-				false, 0, 0);
+		GLES20.glVertexAttribPointer(maVertexColorBufferHandle, 4, type, false, stride, offset);
 	}
 
 	public void setMVPMatrix(float[] mvpMatrix) {

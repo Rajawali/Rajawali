@@ -15,6 +15,7 @@ package rajawali.materials;
 import java.util.ArrayList;
 import java.util.List;
 
+import rajawali.BufferInfo;
 import rajawali.Capabilities;
 import rajawali.Object3D;
 import rajawali.lights.ALight;
@@ -928,6 +929,15 @@ public class Material extends AFrameTask {
 		mVertexShader.setVertices(vertexBufferHandle);
 	}
 
+    /**
+     * Set the vertex buffer handle. This is passed to {@link VertexShader#setVertices(int)}
+     *
+     * @param bufferInfo
+     */
+    public void setVertices(BufferInfo bufferInfo) {
+        mVertexShader.setVertices(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+    }
+
 	/**
 	 * Set the texture coordinates buffer handle. This is passed to {@link VertexShader#setTextureCoords(int)}
 	 * 
@@ -936,6 +946,15 @@ public class Material extends AFrameTask {
 	public void setTextureCoords(final int textureCoordBufferHandle) {
 		mVertexShader.setTextureCoords(textureCoordBufferHandle);
 	}
+
+    /**
+     * Set the texture coordinates buffer handle. This is passed to {@link VertexShader#setTextureCoords(int)}
+     *
+     * @param bufferInfo
+     */
+    public void setTextureCoords(BufferInfo bufferInfo) {
+        mVertexShader.setTextureCoords(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+    }
 	
 	/**
 	 * Set the normal buffer handle. This is passed to {@link VertexShader#setNormals(int)}
@@ -945,8 +964,17 @@ public class Material extends AFrameTask {
 	public void setNormals(final int normalBufferHandle) {
 		mVertexShader.setNormals(normalBufferHandle);
 	}
-	
-	/**
+
+    /**
+     * Set the normal buffer handle. This is passed to {@link VertexShader#setNormals(int)}
+     *
+     * @param bufferInfo
+     */
+    public void setNormals(BufferInfo bufferInfo) {
+        mVertexShader.setNormals(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+    }
+
+    /**
 	 * Set the vertex color buffer handle. This is passed to {@link VertexShader#setColorBuffer(int)}
 	 * 
 	 * @param vertexColorBufferHandle
@@ -955,7 +983,16 @@ public class Material extends AFrameTask {
 		mVertexShader.setVertexColors(vertexColorBufferHandle);
 	}
 
-	/**
+    /**
+     * Set the vertex color buffer handle. This is passed to {@link VertexShader#setColorBuffer(int)}
+     *
+     * @param bufferInfo
+     */
+    public void setVertexColors(BufferInfo bufferInfo) {
+        mVertexShader.setVertexColors(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+    }
+
+    /**
 	 * Returns the model view matrix. The model view matrix is used to transform vertices to eye coordinates.
 	 * 
 	 * @return

@@ -291,13 +291,13 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				setShaderParams(camera);
 				material.bindTextures();
 				if(mGeometry.hasTextureCoordinates())
-					material.setTextureCoords(mGeometry.getTexCoordBufferInfo().bufferHandle);
+					material.setTextureCoords(mGeometry.getTexCoordBufferInfo());
 				if(mGeometry.hasNormals())
-					material.setNormals(mGeometry.getNormalBufferInfo().bufferHandle);
+					material.setNormals(mGeometry.getNormalBufferInfo());
 				if(mMaterial.usingVertexColors())
-					material.setVertexColors(mGeometry.getColorBufferInfo().bufferHandle);
+					material.setVertexColors(mGeometry.getColorBufferInfo());
 				
-				material.setVertices(mGeometry.getVertexBufferInfo().bufferHandle);
+				material.setVertices(mGeometry.getVertexBufferInfo());
 			}
 			material.setCurrentObject(this);
 			material.applyParams();

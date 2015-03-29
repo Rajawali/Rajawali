@@ -25,6 +25,9 @@ public class BufferInfo {
 	public int target;
 	public int byteSize;
 	public int usage;
+    public int stride = 0;
+    public int offset = 0;
+    public int type = GLES20.GL_FLOAT;
 	
 	public BufferInfo() {
 		this.usage = GLES20.GL_STATIC_DRAW;
