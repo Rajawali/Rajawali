@@ -358,16 +358,17 @@ public final class Quaternion {
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion fromRotationBetween(final Vector3 v1, final Vector3 v2) {
+        RajLog.d(this, "Computing rotation between: " + v1 + " and " + v2);
 		final double dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
         final double dotError = 1.0 - Math.abs(dot);
         if (dotError <= 1e-6) {
             // The look and up vectors are parallel/anti-parallel
             if (dot < 0) {
                 // The look and up vectors are parallel but opposite direction
-                mTmpVec3.crossAndSet(Vector3.X, v1);
+                mTmpVec3.crossAndSet(WorldParameters.RIGHT_AXIS, v1);
                 if (mTmpVec3.length() < 1e-6) {
                     // Vectors were co-linear, pick another
-                    mTmpVec3.crossAndSet(Vector3.Y, v1);
+                    mTmpVec3.crossAndSet(WorldParameters.UP_AXIS, v1);
                 }
                 mTmpVec3.normalize();
                 return fromAngleAxis(mTmpVec3, 180.0);
@@ -378,7 +379,7 @@ public final class Quaternion {
         }
 
 		final double angle = Math.toDegrees(Math.acos(dot));
-		return fromAngleAxis(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, 
+        return fromAngleAxis(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z,
 				v1.x * v2.y - v1.y * v2.x, angle);
 	}
 	
@@ -1052,13 +1053,12 @@ public final class Quaternion {
     public Quaternion lookAt(Vector3 lookAt, Vector3 upDirection) {
         mTmpVec1.setAll(lookAt);
         mTmpVec2.setAll(upDirection);
+        // Vectors are parallel/anti-parallel if their dot product magnitude and length product are equal
         final double dotProduct = Vector3.dot(lookAt, upDirection);
         final double dotError = Math.abs(Math.abs(dotProduct) - (lookAt.length() * upDirection.length()));
         if (dotError <= 1e-6) {
             // The look and up vectors are parallel
             mTmpVec2.normalize();
-            // The look and up vectors are parallel in the same direction
-            RajLog.d(this, "Computing rotation between world up axis and " + mTmpVec1);
             fromRotationBetween(WorldParameters.FORWARD_AXIS, mTmpVec1);
             return this;
         }

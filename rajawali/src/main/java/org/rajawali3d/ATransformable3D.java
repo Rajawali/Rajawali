@@ -659,10 +659,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
         mTempVec.subtractAndSet(mLookAt, mPosition);
         // In OpenGL, Cameras are defined such that their forward axis is -Z, not +Z like we have defined objects.
         if (mIsCamera) mTempVec.inverse();
-        RajLog.d(this, "Calculating look at for vectors: Look: " + mTempVec + " Up: " + upAxis);
         mOrientation.lookAt(mTempVec, upAxis);
-        RajLog.d(this, "Orientation: " + mOrientation);
-        RajLog.d(this, "Angles: <" + Math.toDegrees(getRotX()) + ", " + Math.toDegrees(getRotY()) + ", " + Math.toDegrees(getRotZ()) + ">");
         mLookAtValid = true;
         markModelMatrixDirty();
         return this;
