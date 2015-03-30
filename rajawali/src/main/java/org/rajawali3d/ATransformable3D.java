@@ -19,6 +19,7 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.AFrameTask;
 import org.rajawali3d.scenegraph.IGraphNode;
 import org.rajawali3d.scenegraph.IGraphNodeMember;
+import org.rajawali3d.util.RajLog;
 
 public abstract class ATransformable3D extends AFrameTask implements IGraphNodeMember {
     protected final Matrix4 mMMatrix = new Matrix4(); //The model matrix
@@ -31,7 +32,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 
     protected Vector3 mLookAt; //The look at target
     protected boolean mLookAtValid = false; //Is the look at target up to date?
-    protected boolean mLookAtEnabled = true; //Should we auto enforce look at target?
+    protected boolean mLookAtEnabled; //Should we auto enforce look at target?
     protected boolean mIsCamera; //is this a camera object?
     protected boolean mIsModelMatrixDirty = true; // If true, the model matrix needs to be recalculated.
     protected boolean mInsideGraph = false; //Default to being outside the graph
@@ -47,7 +48,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
 		mScale = new Vector3(1, 1, 1);
 		mOrientation = new Quaternion();
 		mTmpOrientation = new Quaternion();
-        mUpAxis = new Vector3(Vector3.getAxisVector(Vector3.Axis.Y)); //Default to +Y
+        mUpAxis = new Vector3(WorldParameters.UP_AXIS);
 	}
 
     /**
@@ -419,7 +420,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      */
     public ATransformable3D setRotX(double rotX) {
         mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(mTmpOrientation.getYaw(false), mTmpOrientation.getPitch(false), rotX);
+        mOrientation.fromEuler(mTmpOrientation.getYaw(), mTmpOrientation.getPitch(), rotX);
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -436,7 +437,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      */
     public ATransformable3D setRotY(double rotY) {
         mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(rotY, mTmpOrientation.getPitch(false), mTmpOrientation.getRoll(false));
+        mOrientation.fromEuler(rotY, mTmpOrientation.getPitch(), mTmpOrientation.getRoll());
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -453,7 +454,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      */
     public ATransformable3D setRotZ(double rotZ) {
         mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(mTmpOrientation.getYaw(false), rotZ, mTmpOrientation.getRoll(false));
+        mOrientation.fromEuler(mTmpOrientation.getYaw(), rotZ, mTmpOrientation.getRoll());
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -465,7 +466,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return double The roll Euler angle.
      */
     public double getRotX() {
-        return mOrientation.getRoll(false);
+        return mOrientation.getPitch();
     }
 
     /**
@@ -474,7 +475,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return double The yaw Euler angle.
      */
     public double getRotY() {
-        return mOrientation.getYaw(false);
+        return mOrientation.getYaw();
     }
 
     /**
@@ -483,7 +484,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return double The pitch Euler angle.
      */
     public double getRotZ() {
-        return mOrientation.getPitch(false);
+        return mOrientation.getRoll();
     }
 
     /**
@@ -658,7 +659,9 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D resetToLookAt(Vector3 upAxis) {
-        mTempVec.subtractAndSet(mPosition, mLookAt);
+        mTempVec.subtractAndSet(mLookAt, mPosition);
+        // In OpenGL, Cameras are defined such that their forward axis is -Z, not +Z like we have defined objects.
+        if (mIsCamera) mTempVec.inverse();
         mOrientation.lookAt(mTempVec, upAxis);
         mLookAtValid = true;
         markModelMatrixDirty();

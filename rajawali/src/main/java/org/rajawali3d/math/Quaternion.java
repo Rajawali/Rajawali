@@ -12,8 +12,10 @@
  */
 package org.rajawali3d.math;
 
+import org.rajawali3d.WorldParameters;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
+import org.rajawali3d.util.RajLog;
 
 /**
  * Encapsulates a quaternion.
@@ -166,9 +168,10 @@ public final class Quaternion {
 			return identity();
 		}
 		d = 1.0f / d;
-		double l_ang = angle * Math.toRadians(angle);
+        final double radians = Math.toRadians(angle);
+		double l_ang = radians < 0 ? MathUtil.TWO_PI - (-radians % MathUtil.TWO_PI) : radians % MathUtil.TWO_PI;
 		double l_sin = Math.sin(l_ang * 0.5);
-		double l_cos = Math.cos(l_ang * 0.5); 
+		double l_cos = Math.cos(l_ang * 0.5);
 		return this.setAll(l_cos, d * x * l_sin, d * y * l_sin, d * z * l_sin);
 	}
 	
@@ -348,22 +351,42 @@ public final class Quaternion {
 	
 	/**
 	 * Set this {@link Quaternion}'s components to the rotation between the given
-	 * two {@link Vector3}s.
+	 * two {@link Vector3}s. This will fail if the two vectors are parallel.
 	 * 
 	 * @param v1 {@link Vector3} The base vector, should be normalized.
 	 * @param v2 {@link Vector3} The target vector, should be normalized.
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion fromRotationBetween(final Vector3 v1, final Vector3 v2) {
+        RajLog.d(this, "Computing rotation between: " + v1 + " and " + v2);
 		final double dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
+        final double dotError = 1.0 - Math.abs(dot);
+        if (dotError <= 1e-6) {
+            // The look and up vectors are parallel/anti-parallel
+            if (dot < 0) {
+                // The look and up vectors are parallel but opposite direction
+                mTmpVec3.crossAndSet(WorldParameters.RIGHT_AXIS, v1);
+                if (mTmpVec3.length() < 1e-6) {
+                    // Vectors were co-linear, pick another
+                    mTmpVec3.crossAndSet(WorldParameters.UP_AXIS, v1);
+                }
+                mTmpVec3.normalize();
+                return fromAngleAxis(mTmpVec3, 180.0);
+            } else {
+                // The look and up vectors are parallel in the same direction
+                return identity();
+            }
+        }
+
 		final double angle = Math.toDegrees(Math.acos(dot));
-		return fromAngleAxis(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, 
+        return fromAngleAxis(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z,
 				v1.x * v2.y - v1.y * v2.x, angle);
 	}
 	
 	/**
 	 * Sets this {@link Quaternion}'s components to the rotation between the given
-	 * two vectors. The incoming vectors should be normalized.
+	 * two vectors. The incoming vectors should be normalized. This will fail if the two
+     * vectors are parallel.
 	 * 
 	 * @param x1 double The base vector's x component.
 	 * @param y1 double The base vector's y component.
@@ -375,9 +398,9 @@ public final class Quaternion {
 	 */
 	public Quaternion fromRotationBetween(final double x1, final double y1, final double z1, final double x2,
 			final double y2, final double z2) {
-		final double dot = MathUtil.clamp(Vector3.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
-		final double angle = Math.toDegrees(Math.acos(dot));
-		return fromAngleAxis(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2, angle);
+        mTmpVec1.setAll(x1, y1, z1).normalize();
+        mTmpVec2.setAll(x2, y2, z2).normalize();
+        return fromRotationBetween(mTmpVec1, mTmpVec2);
 	}
 	
 	/**
@@ -468,8 +491,8 @@ public final class Quaternion {
 	 */
 	public Vector3 multiply(final Vector3 vector) {
 		mTmpVec3.setAll(x, y, z);
-		mTmpVec1 = Vector3.crossAndCreate(mTmpVec3, vector);
-		mTmpVec2 = Vector3.crossAndCreate(mTmpVec3, mTmpVec1);
+        mTmpVec1.crossAndSet(mTmpVec3, vector);
+		mTmpVec2.crossAndSet(mTmpVec3, mTmpVec1);
 		mTmpVec1.multiply(2.0 * w);
 		mTmpVec2.multiply(2.0);
 
@@ -525,9 +548,9 @@ public final class Quaternion {
 	 * @return A reference to this {@link Vector3} to facilitate chaining.
 	 */
 	public Quaternion inverse() {
-		double norm = length2();
+		final double norm = length2();
 		if (norm > 0) {
-			double invNorm = 1.0 / norm;
+			final double invNorm = 1.0 / norm;
 			setAll(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
 		}
 		return this;
@@ -913,72 +936,55 @@ public final class Quaternion {
 		result.normalize();
 		return result;
 	}
+
+    /**
+     * Get the pole of the gimbal lock, if any.
+     *
+     * @return positive (+1) for north pole, negative (-1) for south pole, zero (0) when no gimbal lock
+     * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
+     *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
+     */
+    public int getGimbalPole() {
+        final double t = y * x + z * w;
+        return t > 0.499 ? 1 : (t < -0.499 ? -1 : 0);
+    }
 	
 	/**
-	 * Gets the roll angle from this {@link Quaternion}. 
+	 * Gets the roll angle from this {@link Quaternion}. This is defined as the rotation about the Z axis.
 	 * 
-	 * @param reprojectAxis boolean Whether or not to reproject the axes.
 	 * @return double The roll angle in radians.
+     * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
+     *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
 	 */
-	public double getRoll(boolean reprojectAxis) {
-		if (reprojectAxis) {
-			// double fTx = 2.0 * x;
-			double fTy = 2.0 * y;
-			double fTz = 2.0 * z;
-			double fTwz = fTz * w;
-			double fTxy = fTy * x;
-			double fTyy = fTy * y;
-			double fTzz = fTz * z;
-
-			return Math.atan2(fTxy + fTwz, 1.0 - (fTyy + fTzz));
-		} else {
-			return Math.atan2(2 * (x * y + w * z), w * w + x * x - y * y - z * z);
-		}
+	public double getRoll() {
+        normalize();
+        final int pole = getGimbalPole();
+        return pole == 0 ? Math.atan2(2.0 * (w * z + y * x), 1.0 - 2.0 * (x * x + z * z)) : pole * 2.0 * Math.atan2(y, w);
 	}
 
 	/**
-	 * Gets the pitch angle from this {@link Quaternion}. 
+	 * Gets the pitch angle from this {@link Quaternion}. This is defined as the rotation about the X axis.
 	 * 
-	 * @param reprojectAxis boolean Whether or not to reproject the axes.
 	 * @return double The pitch angle in radians.
+     * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
+     *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
 	 */
-	public double getPitch(boolean reprojectAxis) {
-		if (reprojectAxis) {
-			double fTx = 2.0 * x;
-			// double fTy = 2.0 * y;
-			double fTz = 2.0 * z;
-			double fTwx = fTx * w;
-			double fTxx = fTx * x;
-			double fTyz = fTz * y;
-			double fTzz = fTz * z;
-
-			return Math.atan2(fTyz + fTwx, 1.0 - (fTxx + fTzz));
-		} else {
-			return Math.atan2(2 * (y * z + w * x), w * w - x * x - y * y + z * z);
-		}
+	public double getPitch() {
+        normalize();
+        final int pole = getGimbalPole();
+        return pole == 0 ? Math.asin(MathUtil.clamp(2.0 * (w * x - z * y), -1.0, 1.0)) : pole * MathUtil.PI * 0.5;
 	}
 
 	/**
-	 * Gets the yaw angle from this {@link Quaternion}. 
-	 * 
-	 * @param reprojectAxis boolean Whether or not to reproject the axes.
+	 * Gets the yaw angle from this {@link Quaternion}. This is defined as the rotation about the Y axis.
+	 *
 	 * @return double The yaw angle in radians.
+     * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
+     *     https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
 	 */
-	public double getYaw(boolean reprojectAxis) {
-		if (reprojectAxis) {
-			double fTx = 2.0 * x;
-			double fTy = 2.0 * y;
-			double fTz = 2.0 * z;
-			double fTwy = fTy * w;
-			double fTxx = fTx * x;
-			double fTxz = fTz * x;
-			double fTyy = fTy * y;
-
-			return Math.atan2(fTxz + fTwy, 1.0 - (fTxx + fTyy));
-
-		} else {
-			return Math.asin(-2 * (x * z - w * y));
-		}
+	public double getYaw() {
+        normalize();
+        return getGimbalPole() == 0 ? Math.atan2(2.0 * (y * w + x * z), 1.0 - 2.0 * (y * y + x * x)) : 0.0;
 	}
 	
 	/**
@@ -1045,13 +1051,20 @@ public final class Quaternion {
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
     public Quaternion lookAt(Vector3 lookAt, Vector3 upDirection) {
-        Vector3 forward = lookAt.clone();
-        Vector3 up = upDirection.clone();
-        Vector3.orthoNormalize(new Vector3[]{forward, up});
-        Vector3 right = Vector3.crossAndCreate(forward, up);
-
-        fromAxes(right, up, forward);
-
+        mTmpVec1.setAll(lookAt);
+        mTmpVec2.setAll(upDirection);
+        // Vectors are parallel/anti-parallel if their dot product magnitude and length product are equal
+        final double dotProduct = Vector3.dot(lookAt, upDirection);
+        final double dotError = Math.abs(Math.abs(dotProduct) - (lookAt.length() * upDirection.length()));
+        if (dotError <= 1e-6) {
+            // The look and up vectors are parallel
+            mTmpVec2.normalize();
+            fromRotationBetween(WorldParameters.FORWARD_AXIS, mTmpVec1);
+            return this;
+        }
+        Vector3.orthoNormalize(mTmpVec1, mTmpVec2); // Find the forward and up vectors
+        mTmpVec3.crossAndSet(mTmpVec1, mTmpVec2); // Create the right vector
+        fromAxes(mTmpVec3, mTmpVec2, mTmpVec1);
         return this;
     }
 	
@@ -1064,7 +1077,7 @@ public final class Quaternion {
 	 * @return {@link Quaternion} The new {@link Quaternion} representing the requested orientation.
 	 */
     public static Quaternion lookAtAndCreate(Vector3 lookAt, Vector3 upDirection) {
-		Quaternion ret = new Quaternion();
+		final Quaternion ret = new Quaternion();
 		return ret.lookAt(lookAt, upDirection);
 	}
     

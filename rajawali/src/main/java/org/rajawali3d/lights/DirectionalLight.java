@@ -12,44 +12,43 @@
  */
 package org.rajawali3d.lights;
 
+import org.rajawali3d.ATransformable3D;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.math.vector.Vector3.Axis;
 
 public class DirectionalLight extends ALight {
 	protected double[] mDirection = new double[3];
-	protected double[] mRotationMatrix = new double[16];
 	protected Vector3 mDirectionVec = new Vector3();
-	final protected Vector3 mForwardAxis = Vector3.getAxisVector(Axis.Z);
+    // We are defining Rajawali Engine lights to be emitting from their +Z side. We are using a
+    // Forward axis since that is what the look at orientation will be effecting.
+	final protected Vector3 mForwardAxis = Vector3.getAxisVector(Vector3.Axis.Z);
 
 	public DirectionalLight() {
 		super(DIRECTIONAL_LIGHT);
-		setRotY(180);
 	}
 
 	public DirectionalLight(double xDir, double yDir, double zDir) {
-		super(DIRECTIONAL_LIGHT);
-		setDirection(xDir, yDir, zDir);
-	}
-
-	public void setDirection(double x, double y, double z) {
-		setLookAt(x, y, z);
-        mDirectionVec.setAll(mForwardAxis);
-        mDirectionVec.rotateBy(mOrientation);
-        mDirectionVec.inverse();
-        mDirection[0] = (float) mDirectionVec.x;
-        mDirection[1] = (float) mDirectionVec.y;
-        mDirection[2] = (float) mDirectionVec.z;
-	}
-
-	public void setDirection(Vector3 dir) {
-		setDirection(dir.x, dir.y, dir.z);
+		this();
+		setLookAt(xDir, yDir, zDir);
 	}
 
 	public double[] getDirection() {
+        mDirection[0] = mDirectionVec.x;
+        mDirection[1] = mDirectionVec.y;
+        mDirection[2] = mDirectionVec.z;
 		return mDirection;
 	}
 	
 	public Vector3 getDirectionVector() {
 		return mDirectionVec;
 	}
+
+    @Override
+    public ATransformable3D resetToLookAt(Vector3 upAxis) {
+        super.resetToLookAt(upAxis);
+        // We want to rotate the forward axis since that's what Quaternion.lookAt() affects
+        mDirectionVec.setAll(mForwardAxis);
+        // Rotate the vector based on our orientation
+        mDirectionVec.rotateBy(mOrientation);
+        return this;
+    }
 }

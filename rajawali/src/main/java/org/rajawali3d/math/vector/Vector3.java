@@ -52,6 +52,18 @@ public class Vector3 {
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    public static final Vector3 NEG_X = new Vector3(-1, 0, 0);
+    /**
+     * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+     */
+    public static final Vector3 NEG_Y = new Vector3(0, -1, 0);
+    /**
+     * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+     */
+    public static final Vector3 NEG_Z = new Vector3(0, 0, -1);
+    /**
+     * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
+     */
     public static final Vector3 ZERO = new Vector3(0, 0, 0);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
@@ -582,40 +594,24 @@ public class Vector3 {
      * @param vecs Array of {@link Vector3} objects to be ortho-normalized.
      */
     public static void orthoNormalize(Vector3[] vecs) {
-        final Vector3 accum = new Vector3(0.0, 0.0, 0.0);
         for (int i = 0; i < vecs.length; ++i) {
-            accum.setAll(0.0, 0.0, 0.0);
-
-            for (int j = 0; j < i; ++j)
-                accum.add(Vector3.projectAndCreate(vecs[i], vecs[j]));
-
-            vecs[i].subtract(accum).normalize();
+            vecs[i].normalize();
+            for (int j = i + 1; j < vecs.length; ++j) {
+                vecs[j].subtract(Vector3.projectAndCreate(vecs[j], vecs[i]));
+            }
         }
     }
 
     /**
-     * Applies Gram-Schmitt Ortho-normalization to the given two input {@link Vector3} objects.
-     * This is a more efficient, specialized case for handling a pair of vectors.
+     * Efficient Gram-Schmitt Ortho-normalization for the special case of 2 vectors.
      *
-     * @param vec1 The first {@link Vector3} object to be ortho-normalized.
-     * @param vec2 The first {@link Vector3} object to be ortho-normalized.
+     * @param v1 The first {@link Vector3} object to be ortho-normalized.
+     * @param v2 The second {@link Vector3}. {@link Vector3} object to be ortho-normalized.
      */
-    public static void orthoNormalize(Vector3 vec1, Vector3 vec2) {
-        final Vector3 accum = new Vector3(0.0, 0.0, 0.0);
-
-        // Normalize vec1
-        accum.setAll(0.0, 0.0, 0.0);
-        accum.add(Vector3.projectAndCreate(vec1, vec1));
-        accum.add(Vector3.projectAndCreate(vec1, vec2));
-        vec1.subtract(accum).normalize();
-
-        // Normalize vec2
-        accum.setAll(0.0, 0.0, 0.0);
-
-        accum.add(Vector3.projectAndCreate(vec2, vec1));
-        accum.add(Vector3.projectAndCreate(vec2, vec2));
-
-        vec2.subtract(accum).normalize();
+    public static void orthoNormalize(Vector3 v1, Vector3 v2) {
+        v1.normalize();
+        v2.subtract(Vector3.projectAndCreate(v2, v1));
+        v2.normalize();
     }
 
     /**
@@ -1222,6 +1218,19 @@ public class Vector3 {
      */
     public boolean equals(final Vector3 obj) {
         return obj.x == x && obj.y == y && obj.z == z;
+    }
+
+    /**
+     * Does a component by component comparison of this {@link Vector3} and the specified {@link Vector3}
+     * with an error parameter and returns the result.
+     *
+     * @param obj {@link Vector3} to compare with this one.
+     * @param error {@code double} The maximum allowable difference to be considered equal.
+     *
+     * @return boolean True if this {@link Vector3}'s components match with the components of the input.
+     */
+    public boolean equals(final Vector3 obj, double error) {
+        return (Math.abs(obj.x - x) <= error) && (Math.abs(obj.y - y) <= error) && (Math.abs(obj.y - y) <= error);
     }
 
     /*
