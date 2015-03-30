@@ -15,7 +15,6 @@ package org.rajawali3d.math;
 import org.rajawali3d.WorldParameters;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
-import org.rajawali3d.util.RajLog;
 
 /**
  * Encapsulates a quaternion.
@@ -358,7 +357,6 @@ public final class Quaternion {
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion fromRotationBetween(final Vector3 v1, final Vector3 v2) {
-        RajLog.d(this, "Computing rotation between: " + v1 + " and " + v2);
 		final double dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
         final double dotError = 1.0 - Math.abs(dot);
         if (dotError <= 1e-6) {
@@ -1059,6 +1057,7 @@ public final class Quaternion {
         if (dotError <= 1e-6) {
             // The look and up vectors are parallel
             mTmpVec2.normalize();
+            if (dotProduct < 0) mTmpVec1.inverse();
             fromRotationBetween(WorldParameters.FORWARD_AXIS, mTmpVec1);
             return this;
         }
