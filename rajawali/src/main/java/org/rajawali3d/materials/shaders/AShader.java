@@ -12,16 +12,17 @@
  */
 package org.rajawali3d.materials.shaders;
 
+import android.opengl.GLES20;
+
+import org.rajawali3d.util.RajLog;
+import org.rajawali3d.util.RawShaderLoader;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.rajawali3d.util.RawShaderLoader;
-
-import android.opengl.GLES20;
 
 
 /**
@@ -575,6 +576,7 @@ public abstract class AShader extends AShaderBase {
 	
 	protected int getUniformLocation(int programHandle, String name) {
 		int result = GLES20.glGetUniformLocation(programHandle, name);
+        if (result < 0) RajLog.e(this, "Getting location of uniform: " + name + " returned -1!");
 		return result;
 	}
 

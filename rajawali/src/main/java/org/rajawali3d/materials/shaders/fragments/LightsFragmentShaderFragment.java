@@ -12,13 +12,13 @@
  */
 package org.rajawali3d.materials.shaders.fragments;
 
-import java.util.List;
-
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
+
+import java.util.List;
 
 
 public class LightsFragmentShaderFragment extends AShader implements IShaderFragment {
@@ -117,7 +117,8 @@ public class LightsFragmentShaderFragment extends AShader implements IShaderFrag
 					// -- vec3 spotDir = normalize(-uLightDirection);
 					//
 					RVec3 spotDir = new RVec3("spotDir" + spotCount);
-					spotDir.assign(normalize(muLightDirection[lightAttCount].multiply(-1.0f)));
+					spotDir.assign(normalize(muLightDirection[lightDirCount].multiply(-1.0f)));
+                    lightDirCount++;
 					
 					//
 					// -- float spot_factor = dot(lightDir, spotDir);

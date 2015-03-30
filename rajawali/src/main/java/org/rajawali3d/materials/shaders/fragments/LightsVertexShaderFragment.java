@@ -12,9 +12,8 @@
  */
 package org.rajawali3d.materials.shaders.fragments;
 
-import java.util.List;
-
 import android.opengl.GLES20;
+
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.lights.PointLight;
@@ -23,6 +22,8 @@ import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.util.ArrayUtils;
+
+import java.util.List;
 
 public class LightsVertexShaderFragment extends AShader implements IShaderFragment {
 
@@ -166,6 +167,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 				muSpotCutoffAngle[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_CUTOFF_ANGLE, spotCount);
 				muSpotFalloff[spotCount] = (RFloat) addUniform(LightsShaderVar.U_SPOT_FALLOFF, spotCount);
 				spotCount++;
+                //TODO: Perhaps a problem will arrise if directional and spot lights are used together due to counting each separately?
 			}
 		}
 		
