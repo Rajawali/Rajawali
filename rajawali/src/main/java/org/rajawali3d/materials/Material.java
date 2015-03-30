@@ -12,8 +12,8 @@
  */
 package org.rajawali3d.materials;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.graphics.Color;
+import android.opengl.GLES20;
 
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Capabilities;
@@ -45,8 +45,8 @@ import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.scene.RajawaliScene;
 import org.rajawali3d.util.RajLog;
 
-import android.graphics.Color;
-import android.opengl.GLES20;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Material class is where you define the visual characteristics of your 3D model.

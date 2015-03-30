@@ -14,6 +14,7 @@ package org.rajawali3d.lights;
 
 import org.rajawali3d.ATransformable3D;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.util.RajLog;
 
 public class DirectionalLight extends ALight {
 	protected double[] mDirection = new double[3];
