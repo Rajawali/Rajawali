@@ -99,9 +99,9 @@ public class VertexAnimationFrame implements IAnimationFrame {
 				}
 			}
 			vertexNormal.normalize();
-			vertNormals[i] = (float) -vertexNormal.x;
+			vertNormals[i] = (float) vertexNormal.x;
 			vertNormals[i+1] = (float) vertexNormal.y;
-			vertNormals[i+2] = (float) -vertexNormal.z;
+			vertNormals[i+2] = (float) vertexNormal.z;
 		}
 		//mGeometry.setNormals(vertNormals);
 		faceNormals = null;
