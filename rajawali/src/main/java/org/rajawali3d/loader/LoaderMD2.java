@@ -35,6 +35,7 @@ import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.materials.textures.TextureManager;
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
@@ -224,10 +225,17 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 			float vertices[] = new float[mHeader.numVerts * 3];
 			int index = 0;
 
+            Vector3 v = new Vector3();
+
 			for (int j = 0; j < mHeader.numVerts; j++) {
-				vertices[index + 0] = scaleX * is.readUnsignedByte() + translateX;
-				vertices[index + 1] = scaleY * is.readUnsignedByte() + translateZ;
-				vertices[index + 2] = scaleZ * is.readUnsignedByte() + translateY;
+                v.x = scaleX * is.readUnsignedByte() + translateX;
+                v.y = scaleY * is.readUnsignedByte() + translateY;
+                v.z = scaleZ * is.readUnsignedByte() + translateZ;
+                v.rotateZ(-90);
+                v.rotateX(-90);
+				vertices[index + 0] = (float)v.x;
+				vertices[index + 1] = (float)v.y;
+				vertices[index + 2] = (float)v.z;
 				index += 3;
 				is.readUnsignedByte();
 
@@ -248,12 +256,14 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 		int index = 0, uvIndex = 0;
 
 		for (int i = 0; i < mHeader.numTriangles; i++) {
-			indices[index++] = is.readShort();
-			indices[index++] = is.readShort();
-			indices[index++] = is.readShort();
-			uvIndices[uvIndex++] = is.readShort();
-			uvIndices[uvIndex++] = is.readShort();
-			uvIndices[uvIndex++] = is.readShort();
+			indices[index+2] = is.readShort();
+			indices[index+1] = is.readShort();
+			indices[index] = is.readShort();
+            index += 3;
+			uvIndices[uvIndex+2] = is.readShort();
+			uvIndices[uvIndex+1] = is.readShort();
+			uvIndices[uvIndex] = is.readShort();
+            uvIndex += 3;
 		}
 		is.close();
 

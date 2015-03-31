@@ -49,7 +49,6 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 				}
 			}
 			mInterpolation -= (int) mInterpolation; // clamp to [0, 1)
-			RajLog.i("interp: " + mInterpolation);
 		}
 
 		// Update geometry (if current frame is different from before)
@@ -70,7 +69,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 			}
 		}
 		if (nextFrame >= 0 && nextFrame < mNumFrames) {
-			nextGeometry = ((VertexAnimationFrame) mFrames.get(nextFrame)).getGeometry();
+			nextGeometry = mFrames.get(nextFrame).getGeometry();
 		}
 
 		// Set shader parameters

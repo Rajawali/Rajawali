@@ -63,6 +63,7 @@ public class Geometry3D {
 	public static final int FLOAT_SIZE_BYTES = 4;
 	public static final int INT_SIZE_BYTES = 4;
 	public static final int SHORT_SIZE_BYTES = 2;
+    public static final int BYTE_SIZE_BYTES = 1;
 	
 	/**
 	 * FloatBuffer containing vertex data (x, y, z)
@@ -161,7 +162,8 @@ public class Geometry3D {
 	public enum BufferType {
 		FLOAT_BUFFER,
 		INT_BUFFER,
-		SHORT_BUFFER
+		SHORT_BUFFER,
+        BYTE_BUFFER
 	}
 	
 	public Geometry3D() {
@@ -589,38 +591,44 @@ public class Geometry3D {
 	public void createBuffer(BufferInfo bufferInfo, BufferType type, Buffer buffer, int target) {
 		createBuffer(bufferInfo, type, buffer, target, bufferInfo.usage);
 	}
-	
-	/**
-	 * Creates a buffer and uploads it to the GPU.
-	 * 
-	 * @param bufferInfo
-	 * @param type
-	 * @param buffer
-	 * @param target
-	 * @param usage
-	 */
-	public void createBuffer(BufferInfo bufferInfo, BufferType type, Buffer buffer, int target, int usage) {
-		int buff[] = new int[1];
-		GLES20.glGenBuffers(1, buff, 0);
 
-		int handle = buff[0];
-		int byteSize = FLOAT_SIZE_BYTES;
-		if(type == BufferType.SHORT_BUFFER)
-			byteSize = SHORT_SIZE_BYTES;
-		
-		buffer.rewind();
-		GLES20.glBindBuffer(target, handle);
-		GLES20.glBufferData(target, buffer.limit() * byteSize, buffer, usage);
-		GLES20.glBindBuffer(target, 0);
+    /**
+     * Creates a buffer and uploads it to the GPU.
+     *
+     * @param bufferInfo
+     * @param type
+     * @param buffer
+     * @param target
+     * @param usage
+     */
+    public void createBuffer(BufferInfo bufferInfo, BufferType type, Buffer buffer, int target, int usage) {
+        int byteSize = FLOAT_SIZE_BYTES;
+        if(type == BufferType.SHORT_BUFFER)
+            byteSize = SHORT_SIZE_BYTES;
+        else if(type == BufferType.BYTE_BUFFER)
+            byteSize = BYTE_SIZE_BYTES;
+        else if(type == BufferType.INT_BUFFER)
+            byteSize = INT_SIZE_BYTES;
+        bufferInfo.byteSize = byteSize;
 
-		bufferInfo.buffer = buffer;
-		bufferInfo.bufferHandle = handle;
-		bufferInfo.bufferType = type;
-		bufferInfo.target = target;
-		bufferInfo.byteSize = byteSize;
-		bufferInfo.usage = usage;
-	}
-	
+        int buff[] = new int[1];
+        GLES20.glGenBuffers(1, buff, 0);
+
+        int handle = buff[0];
+
+        buffer.rewind();
+        GLES20.glBindBuffer(target, handle);
+        GLES20.glBufferData(target, buffer.capacity() * byteSize, buffer, usage);
+        GLES20.glBindBuffer(target, 0);
+
+        bufferInfo.buffer = buffer;
+        bufferInfo.bufferHandle = handle;
+        bufferInfo.bufferType = type;
+        bufferInfo.target = target;
+
+        bufferInfo.usage = usage;
+    }
+
 	public void createBuffer(BufferInfo bufferInfo) {
 		createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.buffer, bufferInfo.target, bufferInfo.usage);
 	}
@@ -691,29 +699,63 @@ public class Geometry3D {
 		createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.buffer, bufferInfo.target);
 	}
 	
-	/**
-	 * Change a specific buffer's data at the given offset to the end of the passed buffer.
-	 * 
-	 * @param bufferInfo
-	 * @param newData
-	 * @param index
-	 */
-	public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index) {
-	    changeBufferData(bufferInfo, newData, index, newData.capacity());
-	}
+    /**
+     * Change a specific subset of the buffer's data at the given offset to the given length.
+     *
+     * @param bufferInfo
+     * @param newData
+     * @param index
+     */
+    public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index) {
+        this.changeBufferData(bufferInfo, newData, index, false);
+    }
 
-	/**
-	 * Change a specific subset of the buffer's data at the given offset to the given length.
-	 * 
-	 * @param bufferInfo
-	 * @param newData
-	 * @param index
-	 * @param length
-	 */
-	public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, int length) {
+    /**
+     * Change a specific subset of the buffer's data at the given offset to the given length.
+     *
+     * @param bufferInfo
+     * @param newData
+     * @param index
+     * @param size
+     */
+    public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, int size) {
+        this.changeBufferData(bufferInfo, newData, index, size, false);
+    }
+
+    /**
+     * Change a specific subset of the buffer's data at the given offset to the given length.
+     *
+     * @param bufferInfo
+     * @param newData
+     * @param index
+     * @param size
+     * @param resizeBuffer
+     */
+    public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, boolean resizeBuffer) {
+        changeBufferData(bufferInfo, newData, index, newData.capacity(), resizeBuffer);
+    }
+
+    /**
+     * Change a specific subset of the buffer's data at the given offset to the given length.
+     *
+     * @param bufferInfo
+     * @param newData
+     * @param index
+     * @param size
+     * @param resizeBuffer
+     */
+	public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, int size, boolean resizeBuffer) {
 		newData.rewind();
-	    GLES20.glBindBuffer(bufferInfo.target, bufferInfo.bufferHandle);
-	    GLES20.glBufferSubData(bufferInfo.target, index * bufferInfo.byteSize, length * FLOAT_SIZE_BYTES, newData);
+
+        GLES20.glBindBuffer(bufferInfo.target, bufferInfo.bufferHandle);
+        if(resizeBuffer) {
+            bufferInfo.buffer = newData;
+            GLES20.glBufferData(bufferInfo.target, size * bufferInfo.byteSize, newData, bufferInfo.usage);
+        }
+        else
+        {
+            GLES20.glBufferSubData(bufferInfo.target, index * bufferInfo.byteSize, size * bufferInfo.byteSize, newData);
+        }
 	    GLES20.glBindBuffer(bufferInfo.target, 0);
 	}
 
@@ -854,9 +896,17 @@ public class Geometry3D {
 		return mNumIndices;
 	}
 
-	public int getNumVertices() {
+    public void setNumIndices(int numIndices) {
+        mNumIndices = numIndices;
+    }
+
+    public int getNumVertices() {
 		return mNumVertices;
 	}
+
+    public void setNumVertices(int numVertices) {
+        mNumVertices = numVertices;
+    }
 	
 	public void setColor(float r, float g, float b, float a) {
 		setColor(r, g, b, a, false);
@@ -997,6 +1047,7 @@ public class Geometry3D {
 
 	public void setTexCoordBufferInfo(BufferInfo texCoordBufferInfo) {
 		this.mTexCoordBufferInfo = texCoordBufferInfo;
+        this.mHasTextureCoordinates = true;
 	}
 
 	public BufferInfo getColorBufferInfo() {
@@ -1013,6 +1064,7 @@ public class Geometry3D {
 
 	public void setNormalBufferInfo(BufferInfo normalBufferInfo) {
 		this.mNormalBufferInfo = normalBufferInfo;
+        this.mHasNormals = true;
 	}
 	
 	/**
