@@ -12,6 +12,7 @@
  */
 package org.rajawali3d.scene;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -44,6 +45,7 @@ import org.rajawali3d.scenegraph.IGraphNodeMember;
 import org.rajawali3d.scenegraph.Octree;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
+import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -629,6 +631,32 @@ public class RajawaliScene extends AFrameTask {
 			mNextSkybox.setMaterial(mat);
 		}
 	}
+
+    /**
+     * Creates a skybox with the specified 6 {@link Bitmap} textures.
+     *
+     * @param bitmaps {@link Bitmap} array containing the cube map textures.
+     */
+    public void setSkybox(Bitmap[] bitmaps) {
+        synchronized (mCameras) {
+            for (int i = 0, j = mCameras.size(); i < j; ++i)
+                mCameras.get(i).setFarPlane(1000);
+        }
+        final Cube skybox = new Cube(700, true);
+        final CubeMapTexture texture = new CubeMapTexture("bitmap_skybox", bitmaps);
+        texture.isSkyTexture(true);
+        final Material material = new Material();
+        material.setColorInfluence(0);
+        try {
+            material.addTexture(texture);
+        } catch (TextureException e) {
+            RajLog.e(this, e.getMessage());
+        }
+        skybox.setMaterial(material);
+        synchronized (mNextCameraLock) {
+            mNextSkybox = skybox;
+        }
+    }
 	
 	/**
 	 * Updates the sky box textures with a single texture. 
