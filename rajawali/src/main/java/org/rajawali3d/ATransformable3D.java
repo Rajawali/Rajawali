@@ -418,8 +418,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotX(double rotX) {
-        mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(mTmpOrientation.getYaw(), mTmpOrientation.getPitch(), rotX);
+        mOrientation.fromEuler(mOrientation.getYaw(), mOrientation.getPitch(), rotX);
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -435,8 +434,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotY(double rotY) {
-        mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(rotY, mTmpOrientation.getPitch(), mTmpOrientation.getRoll());
+        mOrientation.fromEuler(rotY, mOrientation.getPitch(), mOrientation.getRoll());
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -452,8 +450,7 @@ public abstract class ATransformable3D extends AFrameTask implements IGraphNodeM
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotZ(double rotZ) {
-        mTmpOrientation.setAll(mOrientation);
-        mOrientation.fromEuler(mTmpOrientation.getYaw(), rotZ, mTmpOrientation.getRoll());
+        mOrientation.fromEuler(mOrientation.getYaw(), rotZ, mOrientation.getRoll());
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
