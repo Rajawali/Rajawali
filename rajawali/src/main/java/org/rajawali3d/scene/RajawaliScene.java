@@ -1195,7 +1195,7 @@ public class RajawaliScene extends AFrameTask {
 	 */
 	private void handleAddAllTask(AFrameTask task) {
 		GroupTask group = (GroupTask) task;
-		AFrameTask[] tasks = (AFrameTask[]) group.getCollection().toArray();
+		AFrameTask[] tasks = group.getCollection().toArray(new AFrameTask[group.getCollection().size()]);
 		AFrameTask.TYPE type = tasks[0].getFrameTaskType();
 		int i = 0;
 		int j = tasks.length;
