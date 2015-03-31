@@ -715,6 +715,7 @@ public class LoaderAWD extends AMeshLoader {
 				break;
 			case TYPE_NR:
 				attrValue = mPropPrecision ? readDouble() : readFloat();
+				break;
 			default:
 				RajLog.e("Skipping unknown attribute (" + attrType + ")");
 				skip(attrLength);
