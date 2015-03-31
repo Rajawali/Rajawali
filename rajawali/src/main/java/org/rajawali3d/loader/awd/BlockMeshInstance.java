@@ -43,7 +43,7 @@ public class BlockMeshInstance extends AExportableBlockParser {
 					|| !(geomHeader.parser instanceof ABaseObjectBlockParser))
 				throw new ParsingException("Invalid block reference.");
 
-			mGeometry = ((ABaseObjectBlockParser) geomHeader.parser).getBaseObject3D().clone();
+			mGeometry = ((ABaseObjectBlockParser) geomHeader.parser).getBaseObject3D().clone(false, true);
 			mGeometry.setName(mSceneGraphBlock.lookupName);
 		}
 
@@ -77,10 +77,16 @@ public class BlockMeshInstance extends AExportableBlockParser {
 		// Set rotation
 		mGeometry.setOrientation(new Quaternion().fromMatrix(matrix));
 
-		mGeometry.setMaterial(materials[0]);
+		int m = 0;
+
+		if(!mGeometry.isContainer())
+			mGeometry.setMaterial(materials[m++]);
+
+		for(int i = 0; i < mGeometry.getNumChildren(); i++)
+			mGeometry.getChildAt(i).setMaterial(materials[Math.min(materials.length-1, m++)]);
 
 		// FIXME This is a hack to get around the fact that setting the color on the material does not work right now.
-		mGeometry.setColor(mGeometry.getMaterial().getColor());
+		//mGeometry.setColor(mGeometry.getMaterial().getColor());
 
 		dis.skip(blockHeader.blockEnd - dis.getPosition());
 	}
