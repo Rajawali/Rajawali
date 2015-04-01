@@ -38,6 +38,11 @@ public class NPrism extends Object3D {
 	private static final Vector3 UP = new Vector3(0, 1, 0);
 	private static final Vector3 DOWN = new Vector3(0, -1, 0);
 
+    private int mVertexIndex;
+    private int mTextureIndex;
+    private int mNormalIndex;
+    private int mColorIndex;
+
 	/**
 	 * Creates a terminated prism.
 	 * 
@@ -105,15 +110,18 @@ public class NPrism extends Object3D {
 		return Math.sqrt(Math.pow(major, 2.0)*(1 - Math.pow(mEccentricity, 2.0)));
 	}
 
-	protected void init(boolean createVBOs) {
-		int vertex_count = 6*mSideCount + 2;
-		int tri_count = 4*mSideCount;
-		int top_center_index = 3*vertex_count - 6;
-		int bottom_center_index = 3*vertex_count - 3;
+    private void setIndices(final int triangle) {
+        mVertexIndex = 9*triangle; // 3 vertices per triangle
+        mTextureIndex = 6*triangle;
+        mNormalIndex = 9*triangle;
+        mColorIndex = 12*triangle;
+    }
 
-		int offset = 0;
+	protected void init(boolean createVBOs) {
+		int vertex_count = 6*mSideCount + 6*mSideCount; // Six vertices per side plus 3 per side per top/bottom
+		int tri_count = 2*mSideCount + 2*mSideCount; //2 per side plus 1 per side per top/bottom
+
 		int triangle = 0;
-		int vertex = 0;
 		float[] vertices = new float[3*vertex_count];
 		float[] normals = new float[3*vertex_count];
 		float[] texture = new float[2*vertex_count];
@@ -121,168 +129,209 @@ public class NPrism extends Object3D {
 		int[] indices = new int[3*tri_count];
 		
 		double angle_delta = 2*Math.PI/mSideCount;
-		double angle = 0;
-		double x = 1.0, y = 1.0, z = 1.0;
-		double u = 0, v = 1;
-		double u_delta = 1.0/mSideCount;
-		double MAG = Math.sqrt(Math.pow((mRadiusTop - mRadiusBase), 2.0) + Math.pow(mHeight, 2.0));
-		Vector3 temp_normal = new Vector3();
-		if (mSideCount % 2 == 0) angle = angle_delta/2.0;
 
-		//Populate the vertices
-		int base_index;
-		angle = (mSideCount % 2 == 0) ? angle = angle_delta/2.0 : 0;
+		// Populate the vertices
+        int indexIndex = 0; // Increments by 3
+
+        // If the side count is even, we want to start at half the angle or we will appear rotated.
+		final double angle0 = (mSideCount % 2 == 0) ? angle_delta/2.0 : 0;
 		
-		x = mRadiusTop*Math.cos(angle);
-		z = mMinorTop*Math.sin(angle);
+        final Vector3 vertex0 = new Vector3();
+        final Vector3 vertex1 = new Vector3();
+        final Vector3 vertex2 = new Vector3();
+        final Vector3 scratch0 = new Vector3();
+        final Vector3 scratch1 = new Vector3();
+        final Vector3 temp_normal = new Vector3();
 		for (int side = 0; side < mSideCount; ++side) {
-			base_index = 3*triangle;
-			//Handle the top
-			y = mHeight/2;
-			v = 0;
-			temp_normal.x = mMinorTop*MAG*Math.cos(angle + angle_delta/2);
-			temp_normal.y = MAG;
-			temp_normal.z = mRadiusTop*MAG*Math.sin(angle + angle_delta/2);
-			temp_normal.normalize();
-			temp_normal.z = -temp_normal.z;
+			// Handle the side
+            // Even Triangle
+            setIndices(triangle);
+            vertex0.x = mRadiusTop * Math.cos(angle0 + side * angle_delta);
+            vertex0.y = mHeight/2.0;
+            vertex0.z = mMinorTop * Math.sin(angle0 + side * angle_delta);
+            vertex1.x = mRadiusTop * Math.cos(angle0 + (side + 1) * angle_delta);
+            vertex1.y = vertex0.y;
+            vertex1.z = mMinorTop * Math.sin(angle0 + (side + 1) * angle_delta);
+            vertex2.x = mRadiusBase * Math.cos(angle0 + side * angle_delta);
+            vertex2.y = -vertex0.y;
+            vertex2.z = mMinorBase * Math.sin(angle0 + side * angle_delta);
 
-			vertices[offset] = (float) x;
-			texture[2*vertex] = (float) u;
-			texture[2*vertex+1] = (float) v;
-			normals[offset++] = (float) temp_normal.x;
-			vertices[offset] = (float) y;
-			normals[offset++] = (float) temp_normal.y;
-			vertices[offset] = (float) z;
-			normals[offset++] = (float) temp_normal.z;
-			indices[base_index+2] = vertex++;
+            scratch0.subtractAndSet(vertex0, vertex1);
+            scratch1.subtractAndSet(vertex0, vertex2);
+            temp_normal.crossAndSet(scratch1, scratch0);
+            temp_normal.normalize();
+            // Vertex 0
+            vertices[mVertexIndex] = (float) vertex0.x;
+            vertices[mVertexIndex + 1] = (float) vertex0.y;
+            vertices[mVertexIndex + 2] = (float) vertex0.z;
+            normals[mNormalIndex] = (float) temp_normal.x;
+            normals[mNormalIndex + 1] = (float) temp_normal.y;
+            normals[mNormalIndex + 2] = (float) temp_normal.z;
+            texture[mTextureIndex] = (float) Math.cos(angle0 + side * angle_delta);
+            texture[mTextureIndex + 1] = 1.0f;
+            // Vertex 1
+            vertices[mVertexIndex + 3] = (float) vertex1.x;
+            vertices[mVertexIndex + 4] = (float) vertex1.y;
+            vertices[mVertexIndex + 5] = (float) vertex1.z;
+            normals[mNormalIndex + 3] = (float) temp_normal.x;
+            normals[mNormalIndex + 4] = (float) temp_normal.y;
+            normals[mNormalIndex + 5] = (float) temp_normal.z;
+            texture[mTextureIndex + 2] = (float) Math.cos(angle0 + (side + 1) * angle_delta);
+            texture[mTextureIndex + 3] = 1.0f;
+            // Vertex 2
+            vertices[mVertexIndex + 6] = (float) vertex2.x;
+            vertices[mVertexIndex + 7] = (float) vertex2.y;
+            vertices[mVertexIndex + 8] = (float) vertex2.z;
+            normals[mNormalIndex + 6] = (float) temp_normal.x;
+            normals[mNormalIndex + 7] = (float) temp_normal.y;
+            normals[mNormalIndex + 8] = (float) temp_normal.z;
+            texture[mTextureIndex + 4] = (float) Math.cos(angle0 + side * angle_delta);
+            texture[mTextureIndex + 5] = 0.0f;
+            indices[indexIndex] = indexIndex;
+            indices[indexIndex + 1] = indexIndex + 1;
+            indices[indexIndex + 2] = indexIndex + 2;
+            indexIndex += 3;
+            ++triangle;
 
-			y = -mHeight/2;
-			v = 1;
-			x = mRadiusBase*Math.cos(angle);
-			z = mMinorBase*Math.sin(angle);
-			vertices[offset] = (float) x;
-			texture[2*vertex] = (float) u;
-			texture[2*vertex+1] = (float) v;
-			normals[offset++] = (float) temp_normal.x;
-			vertices[offset] = (float) y;
-			normals[offset++] = (float) temp_normal.y;
-			vertices[offset] = (float) z;
-			normals[offset++] = (float) temp_normal.z;
-			indices[base_index+1] = vertex++;
+            // Odd Triangle
+            setIndices(triangle);
+            vertex0.x = vertex2.x;
+            vertex0.y = vertex2.y;
+            vertex0.z = vertex2.z;
+            // Vertex 1 is the same as the even triangle
+            vertex2.x = mRadiusBase * Math.cos(angle0 + (side + 1) * angle_delta);
+            vertex2.y = -mHeight/2.0;
+            vertex2.z = mMinorBase * Math.sin(angle0 + (side + 1) * angle_delta);
+            scratch0.subtractAndSet(vertex2, vertex0);
+            scratch1.subtractAndSet(vertex2, vertex1);
+            temp_normal.crossAndSet(scratch1, scratch0);
+            temp_normal.normalize();
+            // Vertex 0
+            vertices[mVertexIndex] = (float) vertex0.x;
+            vertices[mVertexIndex + 1] = (float) vertex0.y;
+            vertices[mVertexIndex + 2] = (float) vertex0.z;
+            normals[mNormalIndex] = (float) temp_normal.x;
+            normals[mNormalIndex + 1] = (float) temp_normal.y;
+            normals[mNormalIndex + 2] = (float) temp_normal.z;
+            texture[mTextureIndex] = (float) Math.cos(angle0 + side * angle_delta);
+            texture[mTextureIndex + 1] = 0.0f;
+            // Vertex 1
+            vertices[mVertexIndex + 3] = (float) vertex1.x;
+            vertices[mVertexIndex + 4] = (float) vertex1.y;
+            vertices[mVertexIndex + 5] = (float) vertex1.z;
+            normals[mNormalIndex + 3] = (float) temp_normal.x;
+            normals[mNormalIndex + 4] = (float) temp_normal.y;
+            normals[mNormalIndex + 5] = (float) temp_normal.z;
+            texture[mTextureIndex + 2] = (float) Math.cos(angle0 + (side + 1) * angle_delta);
+            texture[mTextureIndex + 3] = 1.0f;
+            // Vertex 2
+            vertices[mVertexIndex + 6] = (float) vertex2.x;
+            vertices[mVertexIndex + 7] = (float) vertex2.y;
+            vertices[mVertexIndex + 8] = (float) vertex2.z;
+            normals[mNormalIndex + 6] = (float) temp_normal.x;
+            normals[mNormalIndex + 7] = (float) temp_normal.y;
+            normals[mNormalIndex + 8] = (float) temp_normal.z;
+            texture[mTextureIndex + 4] = (float) Math.cos(angle0 + (side + 1) * angle_delta);
+            texture[mTextureIndex + 5] = 0.0f;
+            indices[indexIndex] = indexIndex;
+            indices[indexIndex + 1] = indexIndex + 1;
+            indices[indexIndex + 2] = indexIndex + 2;
+            indexIndex += 3;
+            ++triangle;
 
-			angle += angle_delta;
-			u += u_delta;
-			x = mRadiusBase*Math.cos(angle);
-			z = mMinorBase*Math.sin(angle);
-			vertices[offset] = (float) x;
-			texture[2*vertex] = (float) u;
-			texture[2*vertex+1] = (float) v;
-			normals[offset++] = (float) temp_normal.x;
-			vertices[offset] = (float) y;
-			normals[offset++] = (float) temp_normal.y;
-			vertices[offset] = (float) z;
-			normals[offset++] = (float) temp_normal.z;
-			indices[base_index] = vertex++;
-			++triangle;
-			base_index = 3*triangle;
-			y = mHeight/2;
-			v = 0;
-			x = mRadiusTop*Math.cos(angle);
-			z = mMinorTop*Math.sin(angle);
-			vertices[offset] = (float) x;
-			texture[2*vertex] = (float) u;
-			texture[2*vertex+1] = (float) v;
-			normals[offset++] = (float) temp_normal.x;
-			vertices[offset] = (float) y;
-			normals[offset++] = (float) temp_normal.y;
-			vertices[offset] = (float) z;
-			normals[offset++] = (float) temp_normal.z;
-			indices[base_index+2] = vertex - 3;
-			indices[base_index+1] = vertex - 1;
-			indices[base_index] = vertex++;
-			++triangle;
-		}
+            // Handle the top
+            setIndices(triangle);
+            vertex0.x = mRadiusTop * Math.cos(angle0 + side * angle_delta);
+            vertex0.y = mHeight / 2.0;
+            vertex0.z = mMinorTop * Math.sin(angle0 + side * angle_delta);
+            vertex1.x = 0;
+            vertex1.y = vertex0.y;
+            vertex1.z = 0;
+            vertex2.x = mRadiusTop * Math.cos(angle0 + (side + 1) * angle_delta);
+            vertex2.y = vertex0.y;
+            vertex2.z = mMinorTop * Math.sin(angle0 + (side + 1) * angle_delta);
+            temp_normal.x = 0;
+            temp_normal.y = 1.0;
+            temp_normal.z = 0;
+            // Vertex 0
+            vertices[mVertexIndex] = (float) vertex0.x;
+            vertices[mVertexIndex + 1] = (float) vertex0.y;
+            vertices[mVertexIndex + 2] = (float) vertex0.z;
+            normals[mNormalIndex] = (float) temp_normal.x;
+            normals[mNormalIndex + 1] = (float) temp_normal.y;
+            normals[mNormalIndex + 2] = (float) temp_normal.z;
+            texture[mTextureIndex] = (float) Math.cos(angle0 + side * angle_delta);
+            texture[mTextureIndex + 1] = 1.0f;
+            // Vertex 1
+            vertices[mVertexIndex + 3] = (float) vertex1.x;
+            vertices[mVertexIndex + 4] = (float) vertex1.y;
+            vertices[mVertexIndex + 5] = (float) vertex1.z;
+            normals[mNormalIndex + 3] = (float) temp_normal.x;
+            normals[mNormalIndex + 4] = (float) temp_normal.y;
+            normals[mNormalIndex + 5] = (float) temp_normal.z;
+            texture[mTextureIndex + 2] = (float) Math.cos(angle0 + (side + 1) * angle_delta);
+            texture[mTextureIndex + 3] = 1.0f;
+            // Vertex 2
+            vertices[mVertexIndex + 6] = (float) vertex2.x;
+            vertices[mVertexIndex + 7] = (float) vertex2.y;
+            vertices[mVertexIndex + 8] = (float) vertex2.z;
+            normals[mNormalIndex + 6] = (float) temp_normal.x;
+            normals[mNormalIndex + 7] = (float) temp_normal.y;
+            normals[mNormalIndex + 8] = (float) temp_normal.z;
+            texture[mTextureIndex + 4] = (float) Math.cos(angle0 + side * angle_delta);
+            texture[mTextureIndex + 5] = 1.0f;
+            indices[indexIndex] = indexIndex;
+            indices[indexIndex + 1] = indexIndex + 1;
+            indices[indexIndex + 2] = indexIndex + 2;
+            indexIndex += 3;
+            ++triangle;
 
-		int offset_holder = offset;
-		//Add in the top center
-		offset = top_center_index;
-		vertices[offset] = 0.0f;
-		normals[offset++] = (float) UP.x;
-		vertices[offset] = (float) mHeight/2;
-		normals[offset++] = (float) UP.y;
-		vertices[offset] = 0.0f;
-		normals[offset++] = (float) UP.z;
-		texture[12*mSideCount] = 0.5f;
-		texture[12*mSideCount+1] = 0.5f;
-		//Add in the base center
-		offset = bottom_center_index;
-		vertices[offset] = 0.0f;
-		normals[offset++] = (float) DOWN.x;
-		vertices[offset] = (float) -mHeight/2;
-		normals[offset++] = (float) DOWN.y;
-		vertices[offset] = 0.0f;
-		normals[offset++] = (float) DOWN.z;
-		texture[12*mSideCount+2] = 0.5f;
-		texture[12*mSideCount+3] = 0.5f;
-
-		offset = offset_holder;
-		angle = (mSideCount % 2 == 0) ? angle = angle_delta/2.0 : 0;
-		double minorTexture = calculateMinorAxis(1.0);
-		y = mHeight/2;
-		for (int side = 0; side < mSideCount; ++side) {
-			base_index = 3*triangle;
-			x = mRadiusTop*Math.cos(angle);
-			z = mMinorTop*Math.sin(angle);
-			u = Math.cos(angle);
-			v = minorTexture*Math.sin(angle);
-			//Handle the top
-			vertices[offset] = (float) x;
-			texture[2*vertex] = (float) u;
-			texture[2*vertex+1] = (float) v;
-			normals[offset++] = (float) UP.x;
-			vertices[offset] = (float) y;
-			normals[offset++] = (float) UP.y;
-			vertices[offset] = (float) z;
-			normals[offset++] = (float) UP.z;
-
-			indices[base_index+2] = vertex_count - 2;
-			indices[base_index+1] = vertex;
-			if (side == (mSideCount-1)) {
-				indices[base_index] = 4*mSideCount;
-			} else {
-				indices[base_index] = ++vertex; //Moving to the next vertex
-			}
-			++triangle;
-			angle += angle_delta;
-		}
-
-		angle = (mSideCount % 2 == 0) ? angle = angle_delta/2.0 : 0;
-		y = -mHeight/2;
-		for (int side = 0; side < mSideCount; ++side) {
-			base_index = 3*triangle;
-			x = mRadiusBase*Math.cos(angle);
-			z = mMinorBase*Math.sin(angle);
-			u = Math.cos(angle);
-			v = -minorTexture*Math.sin(angle);
-			//Handle the bottom
-			vertices[offset] = (float) x;
-			texture[2*vertex] = (float) u;
-			texture[2*vertex+1] = (float) v;
-			normals[offset++] = (float) DOWN.x;
-			vertices[offset] = (float) y;
-			normals[offset++] = (float) DOWN.y;
-			vertices[offset] = (float) z;
-			normals[offset++] = (float) DOWN.z;
-
-			indices[base_index+2] = ++vertex;
-			indices[base_index+1] = vertex_count - 1;
-			if (side == (mSideCount-1)) {
-				indices[base_index] = 5*mSideCount;
-			} else {
-				indices[base_index] = indices[base_index+2] + 1;
-			}
-			angle += angle_delta;
-			++triangle;
+            // Handle the bottom
+            setIndices(triangle);
+            vertex0.x = mRadiusBase * Math.cos(angle0 + side * angle_delta);
+            vertex0.y = -mHeight / 2.0;
+            vertex0.z = mMinorBase * Math.sin(angle0 + side * angle_delta);
+            vertex1.x = 0;
+            vertex1.y = vertex0.y;
+            vertex1.z = 0;
+            vertex2.x = mRadiusBase * Math.cos(angle0 + (side + 1) * angle_delta);
+            vertex2.y = vertex0.y;
+            vertex2.z = mMinorBase * Math.sin(angle0 + (side + 1) * angle_delta);
+            temp_normal.x = 0;
+            temp_normal.y = -1.0;
+            temp_normal.z = 0;
+            // Vertex 0
+            vertices[mVertexIndex] = (float) vertex0.x;
+            vertices[mVertexIndex + 1] = (float) vertex0.y;
+            vertices[mVertexIndex + 2] = (float) vertex0.z;
+            normals[mNormalIndex] = (float) temp_normal.x;
+            normals[mNormalIndex + 1] = (float) temp_normal.y;
+            normals[mNormalIndex + 2] = (float) temp_normal.z;
+            texture[mTextureIndex] = (float) Math.cos(angle0 + side * angle_delta);
+            texture[mTextureIndex + 1] = 1.0f;
+            // Vertex 1
+            vertices[mVertexIndex + 3] = (float) vertex1.x;
+            vertices[mVertexIndex + 4] = (float) vertex1.y;
+            vertices[mVertexIndex + 5] = (float) vertex1.z;
+            normals[mNormalIndex + 3] = (float) temp_normal.x;
+            normals[mNormalIndex + 4] = (float) temp_normal.y;
+            normals[mNormalIndex + 5] = (float) temp_normal.z;
+            texture[mTextureIndex + 2] = (float) Math.cos(angle0 + (side + 1) * angle_delta);
+            texture[mTextureIndex + 3] = 1.0f;
+            // Vertex 2
+            vertices[mVertexIndex + 6] = (float) vertex2.x;
+            vertices[mVertexIndex + 7] = (float) vertex2.y;
+            vertices[mVertexIndex + 8] = (float) vertex2.z;
+            normals[mNormalIndex + 6] = (float) temp_normal.x;
+            normals[mNormalIndex + 7] = (float) temp_normal.y;
+            normals[mNormalIndex + 8] = (float) temp_normal.z;
+            texture[mTextureIndex + 4] = (float) Math.cos(angle0 + side * angle_delta);
+            texture[mTextureIndex + 5] = 0.0f;
+            indices[indexIndex] = indexIndex;
+            indices[indexIndex + 1] = indexIndex + 1;
+            indices[indexIndex + 2] = indexIndex + 2;
+            indexIndex += 3;
+            ++triangle;
 		}
 
 		//Populate the colors
