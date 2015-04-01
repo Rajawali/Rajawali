@@ -98,6 +98,7 @@ public class RajawaliScene extends AFrameTask {
 
 	private final List<Object3D> mChildren;
     private final List<ASceneFrameCallback> mPreCallbacks;
+    private final List<ASceneFrameCallback> mPreDrawCallbacks;
     private final List<ASceneFrameCallback> mPostCallbacks;
 	private final List<Animation> mAnimations;
 	private final List<IRendererPlugin> mPlugins;
@@ -139,6 +140,7 @@ public class RajawaliScene extends AFrameTask {
 		mAlpha = 0;
 		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
         mPreCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
+        mPreDrawCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
         mPostCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
@@ -798,7 +800,7 @@ public class RajawaliScene extends AFrameTask {
 
 		GLES20.glClear(clearMask);
 
-        // Execute pre-render callbacks
+        // Execute pre-frame callbacks
         // We explicitly break out the steps here to help the compiler optimize
         final int preCount = mPreCallbacks.size();
         if (preCount > 0) {
@@ -834,6 +836,17 @@ public class RajawaliScene extends AFrameTask {
             final int numLights = mLights.size();
             for (int i = 0; i < numLights; ++i) {
                 mLights.get(i).onRecalculateModelMatrix(null);
+            }
+        }
+
+        // Execute pre-frame callbacks
+        // We explicitly break out the steps here to help the compiler optimize
+        final int preRenderCount = mPreDrawCallbacks.size();
+        if (preRenderCount > 0) {
+            synchronized (mPreDrawCallbacks) {
+                for (int i = 0; i < preCount; ++i) {
+                    mPreDrawCallbacks.get(i).onPreDraw(ellapsedTime, deltaTime);
+                }
             }
         }
 
@@ -1365,9 +1378,11 @@ public class RajawaliScene extends AFrameTask {
     private void internalAddFrameCallback(ASceneFrameCallback callback, int index) {
         if (index == AFrameTask.UNUSED_INDEX) {
             if (callback.callPreFrame()) mPreCallbacks.add(callback);
+            if (callback.callPreDraw()) mPreDrawCallbacks.add(callback);
             if (callback.callPostFrame()) mPostCallbacks.add(callback);
         } else {
             if (callback.callPreFrame()) mPreCallbacks.add(index, callback);
+            if (callback.callPreDraw()) mPreDrawCallbacks.add(index, callback);
             if (callback.callPostFrame()) mPostCallbacks.add(index, callback);
         }
     }
@@ -1381,6 +1396,7 @@ public class RajawaliScene extends AFrameTask {
      */
     private void internalRemoveFrameCallback(ASceneFrameCallback callback) {
         if (callback.callPreFrame()) mPreCallbacks.remove(callback);
+        if (callback.callPreDraw()) mPreDrawCallbacks.remove(callback);
         if (callback.callPostFrame()) mPostCallbacks.remove(callback);
     }
 
@@ -1390,6 +1406,7 @@ public class RajawaliScene extends AFrameTask {
      */
     private void internalClearFrameCallbacks() {
         mPreCallbacks.clear();
+        mPreDrawCallbacks.clear();
         mPostCallbacks.clear();
     }
 

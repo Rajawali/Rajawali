@@ -19,12 +19,21 @@ import org.rajawali3d.renderer.AFrameTask;
 public abstract class ASceneFrameCallback extends AFrameTask {
 
     /**
-     * Pre frame render callback. This will be called prior to any camera or animation updates in the scene.
+     * Pre frame handling callback. This will be called prior to any camera or animation updates in the scene.
      *
      * @param sceneTime {@code long} Rendering elapsed time in nanoseconds.
      * @param deltaTime {@code double} Time passed since last frame in seconds.
      */
     public abstract void onPreFrame(long sceneTime, double deltaTime);
+
+    /**
+     * Pre frame render callback. This will be called after any camera or animation updates in the scene but
+     * before rendering.
+     *
+     * @param sceneTime {@code long} Rendering elapsed time in nanoseconds.
+     * @param deltaTime {@code double} Time passed since last frame in seconds.
+     */
+    public abstract void onPreDraw(long sceneTime, double deltaTime);
 
     /**
      * Post frame render callback. Called after all frame drawing has completed, including plugins.
@@ -40,6 +49,15 @@ public abstract class ASceneFrameCallback extends AFrameTask {
      * @return {@code boolean} True if this is a pre-frame callback implementation.
      */
     public boolean callPreFrame() {
+        return false;
+    }
+
+    /**
+     * Should this be registered as a pre-draw callback.
+     *
+     * @return {@code boolean} True if this is a pre-draw callback implementation.
+     */
+    public boolean callPreDraw() {
         return false;
     }
 

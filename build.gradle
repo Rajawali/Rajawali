@@ -1,4 +1,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+if (file('local.gradle').exists()) {
+    apply from: 'local.gradle'
+}
+
 buildscript {
     repositories {
         jcenter()
