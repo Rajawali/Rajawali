@@ -31,14 +31,14 @@ public class RajawaliDebugRenderer extends RajawaliRenderer {
             mDebugBuilder.setGL(gl);
             mGLDebugger = mDebugBuilder.build();
         }
-        super.onSurfaceCreated(mGLDebugger.getGL(), config);
+        super.onRenderSurfaceCreated(config, mGLDebugger.getGL(), -1, -1);
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        super.onSurfaceChanged(mGLDebugger.getGL(), width, height);
+        super.onRenderSurfaceSizeChanged(mGLDebugger.getGL(), width, height);
     }
 
     public void onDrawFrame(GL10 glUnused) {
-        super.onDrawFrame(mGLDebugger.getGL());
+        super.onRenderFrame(mGLDebugger.getGL());
     }
 }

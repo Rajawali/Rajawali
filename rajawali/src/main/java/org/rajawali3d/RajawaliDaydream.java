@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
 import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.surface.RajawaliSurfaceView;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 
@@ -29,7 +30,7 @@ import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 public abstract class RajawaliDaydream extends DreamService implements IRajawaliDisplay {
 
 	protected boolean mUsesCoverageAa;
-	protected GLSurfaceView mSurfaceView;
+	protected RajawaliSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
 	
 	private RajawaliRenderer mRajRenderer;
@@ -38,7 +39,7 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 
-		mSurfaceView = new GLSurfaceView(this);
+		mSurfaceView = new RajawaliSurfaceView(this);
 		mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
 		setInteractive(false);
@@ -68,7 +69,7 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
 	@Override
 	public void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		mRajRenderer.onSurfaceDestroyed();
+		mRajRenderer.onRenderSurfaceDestroyed(null);
 		unbindDrawables(mLayout);
 		System.gc();
 	}
@@ -85,7 +86,7 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
 
 	protected void setRenderer(RajawaliRenderer renderer) {
 		mRajRenderer = renderer;
-		mSurfaceView.setRenderer(renderer);
+        final RajawaliSurfaceView.RendererDelegate delegate = new RajawaliSurfaceView.RendererDelegate(mRajRenderer, mSurfaceView);
 	}
 
 	private void unbindDrawables(View view) {

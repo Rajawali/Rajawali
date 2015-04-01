@@ -18,7 +18,6 @@ import android.hardware.SensorEventListener;
 import android.opengl.GLES20;
 
 import org.rajawali3d.Camera;
-import org.rajawali3d.RajawaliActivity;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture.TextureException;
 import org.rajawali3d.math.Quaternion;

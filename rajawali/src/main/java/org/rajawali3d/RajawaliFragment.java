@@ -27,6 +27,7 @@ import android.widget.FrameLayout;
 
 import org.rajawali3d.renderer.NullRenderer;
 import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.surface.RajawaliSurfaceView;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 /**
@@ -46,7 +47,7 @@ import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 public abstract class RajawaliFragment extends Fragment implements IRajawaliDisplay {
 
     protected RajawaliRenderer mRenderer;
-	protected GLSurfaceView mSurfaceView;
+	protected RajawaliSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
 	protected boolean mMultisamplingEnabled = false;
 	protected boolean mUsesCoverageAa;
@@ -55,8 +56,7 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSurfaceView = new GLSurfaceView(this.getActivity());
-        
+
         ActivityManager am = (ActivityManager)this.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
         if(checkOpenGLVersion) {
         	ConfigurationInfo info = am.getDeviceConfigurationInfo();
@@ -73,16 +73,13 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
                 container, false);
         }
 
-        mSurfaceView = new GLSurfaceView(getActivity());
+        mSurfaceView = new RajawaliSurfaceView(getActivity());
         mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
         mRenderer = createRenderer();
+        final RajawaliSurfaceView.RendererDelegate delegate = new RajawaliSurfaceView.RendererDelegate(mRenderer, mSurfaceView);
         if (mRenderer == null)
             mRenderer = new NullRenderer(getActivity());
-
-        mRenderer.setSurfaceView(mSurfaceView);
-        setRenderer(mRenderer);
-        mSurfaceView.onPause();
 
         if (mMultisamplingEnabled) {
             createMultisampleConfig();
@@ -100,7 +97,7 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
     public void onDestroy() {
         super.onDestroy();
         try {
-            mRenderer.onSurfaceDestroyed();
+            mRenderer.onRenderSurfaceDestroyed(null);
             mRenderer = null;
             unbindDrawables(mLayout);
             System.gc();
@@ -154,10 +151,6 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
             mSurfaceView.getHolder().setFormat(PixelFormat.RGBA_8888);
             mSurfaceView.setZOrderOnTop(false);
     	}
-    }
-    
-    protected void setRenderer(RajawaliRenderer renderer) {
-    	mSurfaceView.setRenderer(renderer);
     }
     
     private void unbindDrawables(View view) {

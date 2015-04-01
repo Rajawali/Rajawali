@@ -12,12 +12,6 @@
  */
 package org.rajawali3d.wallpaper;
 
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLDisplay;
-
-import org.rajawali3d.renderer.RajawaliRenderer;
-import org.rajawali3d.util.RajLog;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -26,6 +20,14 @@ import android.os.Build;
 import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+
+import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.surface.RajawaliSurfaceView;
+import org.rajawali3d.util.RajLog;
+
+import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGLDisplay;
 
 public abstract class Wallpaper extends WallpaperService {
 
@@ -267,7 +269,7 @@ public abstract class Wallpaper extends WallpaperService {
 
 	protected class WallpaperEngine extends Engine {
 
-		protected class GLWallpaperSurfaceView extends GLSurfaceView {
+		protected class GLWallpaperSurfaceView extends RajawaliSurfaceView {
 
 			GLWallpaperSurfaceView(Context context) {
 				super(context);
@@ -340,12 +342,9 @@ public abstract class Wallpaper extends WallpaperService {
 			mSurfaceView = new GLWallpaperSurfaceView(mContext);
 			mSurfaceView.setEGLContextClientVersion(2);
 			mSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0, mMultisampling));
-			mSurfaceView.setRenderer(mRenderer);
-			mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-
-			mRenderer.setUsesCoverageAa(mUsesCoverageAa);
-			mRenderer.setSurfaceView(mSurfaceView);
-
+            mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+            mRenderer.setUsesCoverageAa(mUsesCoverageAa);
+            final RajawaliSurfaceView.RendererDelegate delegate = new RajawaliSurfaceView.RendererDelegate(mRenderer, mSurfaceView);
 			setTouchEventsEnabled(true);
 		}
 
@@ -357,7 +356,7 @@ public abstract class Wallpaper extends WallpaperService {
 		@Override
 		public void onDestroy() {
 			setTouchEventsEnabled(false);
-			mRenderer.onSurfaceDestroyed();
+			mRenderer.onRenderSurfaceDestroyed(null);
 			mRenderer = null;
 			super.onDestroy();
 		}
