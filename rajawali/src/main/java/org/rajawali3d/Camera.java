@@ -44,12 +44,9 @@ public class Camera extends ATransformable3D {
 	protected boolean mCameraDirty = true;
 	protected Frustum mFrustum;
 	protected BoundingBox mBoundingBox = new BoundingBox();
-	protected int mDebugColor = Color.RED;
-	protected Line3D mVisualFrustum;
 	protected Vector3[] mFrustumCorners;
-	protected Vector3[] mFrustumCornersTransformed;
-	protected Matrix4 mMMatrix;	
 	protected Quaternion mLocalOrientation;
+    protected boolean mIsInitialized;
 	/**
 	 * End guarded members
 	 */
@@ -59,13 +56,10 @@ public class Camera extends ATransformable3D {
 		mLocalOrientation = Quaternion.getIdentity();
 		mIsCamera = true;
 		mFrustum = new Frustum();
-		mMMatrix = new Matrix4();
 		mFrustumCorners = new Vector3[8];
-		mFrustumCornersTransformed = new Vector3[8];
-		for(int i=0; i<8; i++) {
-			mFrustumCorners[i] = new Vector3();
-			mFrustumCornersTransformed[i] = new Vector3();
-		}
+        for(int i=0; i<8; i++) {
+            mFrustumCorners[i] = new Vector3();
+        }
 	}
 
 	public Matrix4 getViewMatrix() {
@@ -114,8 +108,16 @@ public class Camera extends ATransformable3D {
 			return mViewMatrix;
 		}
 	}
-	
-	public void getFrustumCorners(Vector3[] points, boolean transformed) {
+
+    public void getFrustumCorners(Vector3[] points) {
+        getFrustumCorners(points, false);
+    }
+
+    public void getFrustumCorners(Vector3[] points, boolean transformed) {
+        getFrustumCorners(points, transformed, false);
+    }
+
+	public void getFrustumCorners(Vector3[] points, boolean transformed, boolean inverse) {
 		if(mCameraDirty) {
 			double aspect = mLastWidth / (double)mLastHeight;
 			double nearHeight = 2.0 * Math.tan(mFieldOfView / 2.0) * mNearPlane;
@@ -143,14 +145,19 @@ public class Camera extends ATransformable3D {
 			mCameraDirty = false;
 		}
 
-        mMMatrix.identity().translate(mPosition).rotate(mOrientation);
+        if(transformed) {
+            mMMatrix.identity();
+            if(inverse)
+                mMMatrix.scale(-1);
+            mMMatrix.translate(mPosition).rotate(mOrientation);
+        }
 
         for (int i = 0; i < 8; ++i) {
             points[i].setAll(mFrustumCorners[i]);
             if(transformed) {
-				points[i].multiply(mMMatrix);
-			}
-		}
+                points[i].multiply(mMMatrix);
+            }
+        }
 	}
 	
 	public void updateFrustum(Matrix4 invVPMatrix) {
@@ -172,6 +179,7 @@ public class Camera extends ATransformable3D {
 			mLastHeight = height;
 			double ratio = ((double) width) / ((double) height);
 			mProjMatrix.setToPerspective(mNearPlane, mFarPlane, mFieldOfView, ratio);
+            mIsInitialized = true;
 		}
 	}
 	
@@ -231,6 +239,12 @@ public class Camera extends ATransformable3D {
 		}
 	}
 
+    public boolean isInitialized() {
+        synchronized (mFrustumLock) {
+            return mIsInitialized;
+        }
+    }
+
 	/*
 	 * (non-Javadoc)
 	 * @see rajawali.ATransformable3D#getTransformedBoundingVolume()
@@ -247,120 +261,9 @@ public class Camera extends ATransformable3D {
 	public TYPE getFrameTaskType() {
 		return AFrameTask.TYPE.CAMERA;
 	}
-	
-	public void drawFrustum(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
-			final Matrix4 vMatrix, final Matrix4 mMatrix) {
-		if (mVisualFrustum == null) {
-			if(mLastWidth == 0) return;
-			
-			Stack<Vector3> points = new Stack<Vector3>();
-			
-			getFrustumCorners(mFrustumCornersTransformed, true);
-			
-			//
-			// -- Near plane
-			//
-			
-			points.push(mFrustumCornersTransformed[0]);
-			points.push(mFrustumCornersTransformed[1]);
-			points.push(mFrustumCornersTransformed[1]);
-			points.push(mFrustumCornersTransformed[2]);
-			points.push(mFrustumCornersTransformed[2]);
-			points.push(mFrustumCornersTransformed[3]);
-			points.push(mFrustumCornersTransformed[3]);
-			points.push(mFrustumCornersTransformed[0]);
 
-			//
-			// -- Far plane
-			//
-
-			points.push(mFrustumCornersTransformed[4]);
-			points.push(mFrustumCornersTransformed[5]);
-			points.push(mFrustumCornersTransformed[5]);
-			points.push(mFrustumCornersTransformed[6]);
-			points.push(mFrustumCornersTransformed[6]);
-			points.push(mFrustumCornersTransformed[7]);
-			points.push(mFrustumCornersTransformed[7]);
-			points.push(mFrustumCornersTransformed[4]);
-
-			//
-			// -- Near to far plane
-			//
-			
-			points.push(mFrustumCornersTransformed[0]);
-			points.push(mFrustumCornersTransformed[4]);
-			points.push(mFrustumCornersTransformed[1]);
-			points.push(mFrustumCornersTransformed[5]);
-			points.push(mFrustumCornersTransformed[2]);
-			points.push(mFrustumCornersTransformed[6]);
-			points.push(mFrustumCornersTransformed[3]);
-			points.push(mFrustumCornersTransformed[7]);
-
-			mVisualFrustum = new Line3D(points, 1, mDebugColor);
-			mVisualFrustum.setDrawingMode(GLES20.GL_LINES);
-			mVisualFrustum.setMaterial(new Material());
-
-			mVisualFrustum.getGeometry().changeBufferUsage(
-					mVisualFrustum.getGeometry().getVertexBufferInfo(), GLES20.GL_DYNAMIC_DRAW);
-		}
-
-		getFrustumCorners(mFrustumCornersTransformed, true);
-		
-		FloatBuffer b = mVisualFrustum.getGeometry().getVertices();
-		int index = 0;
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[0]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[1]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[1]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[2]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[2]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[3]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[3]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[0]);
-
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[4]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[5]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[5]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[6]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[6]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[7]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[7]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[4]);
-		
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[0]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[4]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[1]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[5]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[2]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[6]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[3]);
-		addVertexToBuffer(b, index++, mFrustumCornersTransformed[7]);
-
-		mVisualFrustum.getGeometry().changeBufferData(
-				mVisualFrustum.getGeometry().getVertexBufferInfo(),
-				mVisualFrustum.getGeometry().getVertices(), 0);
-
-		mVisualFrustum.render(camera, vpMatrix, projMatrix, vMatrix, null);
-	}
-
-	private void addVertexToBuffer(FloatBuffer b, int index, Vector3 vertex) {
-		int vertIndex = index * 3;
-
-		b.put(vertIndex, (float) vertex.x);
-		b.put(vertIndex + 1, (float) vertex.y);
-		b.put(vertIndex + 2, (float) vertex.z);
-	}
-
-	public Object3D getVisual() {
-		return mVisualFrustum;
-	}
-
-	public void setDebugColor(int debugColor) {
-		mDebugColor = debugColor;
-	}
-	
 	public Camera clone() {
 		Camera cam = new Camera();
-		cam.setDebugColor(mDebugColor);
 		cam.setFarPlane(mFarPlane);
 		cam.setFieldOfView(mFieldOfView);
 		cam.setGraphNode(mGraphNode, mInsideGraph);

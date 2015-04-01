@@ -118,8 +118,7 @@ public class RajawaliScene extends AFrameTask {
 	*/
 	private Camera mNextCamera;
 	private final Object mNextCameraLock = new Object();
-	private boolean mDebugCameras = false;
-	
+
 	/**
 	 * Frame task queue. Adding, removing or replacing members
 	 * such as children, cameras, plugins, etc is now prohibited
@@ -874,19 +873,6 @@ public class RajawaliScene extends AFrameTask {
 			}
 		}
 		
-		if(mDebugCameras) {
-			for(Camera camera : mCameras) {
-				if(camera == mCamera) continue;
-				camera.setProjectionMatrix(mRenderer.getCurrentViewportWidth(), mRenderer.getCurrentViewportHeight());
-				Matrix4 viewMatrix = camera.getViewMatrix();
-				Matrix4 projectionMatrix = camera.getProjectionMatrix();
-				Matrix4 viewProjectionMatrix = projectionMatrix.clone().multiply(viewMatrix);
-				viewProjectionMatrix.inverse();
-				camera.updateFrustum(viewProjectionMatrix);
-				camera.drawFrustum(mCamera, mVPMatrix, mPMatrix, mVMatrix, null);
-			}
-		}
-
 		if (mDisplaySceneGraph) {
 			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
         }
@@ -1921,10 +1907,6 @@ public class RajawaliScene extends AFrameTask {
 	public boolean alwaysClearColorBuffer()
 	{
 		return mAlwaysClearColorBuffer;
-	}
-	
-	public void setDebugCameras(boolean debugCameras) {
-		mDebugCameras = debugCameras;
 	}
 	
 	/**

@@ -47,10 +47,12 @@ import org.rajawali3d.math.vector.Vector3;
  *
  */
 public class Line3D extends Object3D {
-	private Stack<Vector3> mPoints;
-	private float mThickness;
-	private int[] mColors;
-	
+	protected Stack<Vector3> mPoints;
+	protected float mLineThickness;
+	protected int[] mColors;
+
+    public Line3D() {}
+
 	/**
 	 * Creates a line primitive.
 	 * 
@@ -97,7 +99,7 @@ public class Line3D extends Object3D {
     public Line3D(Stack<Vector3> points, float thickness, int[] colors, boolean createVBOs) {
         super();
         mPoints = points;
-        mThickness = thickness;
+        mLineThickness = thickness;
         mColors = colors;
         if (colors != null && colors.length != points.size())
             throw new RuntimeException("The number of line points and colors is not the same.");
@@ -108,7 +110,7 @@ public class Line3D extends Object3D {
 		return mPoints.get(point);
 	}
 	
-	private void init(boolean createVBOs) {
+	protected void init(boolean createVBOs) {
 		setDoubleSided(true);
 		setDrawingMode(GLES20.GL_LINE_STRIP);
 		
@@ -127,8 +129,6 @@ public class Line3D extends Object3D {
 			vertices[index] = (float) point.x;
 			vertices[index+1] = (float) point.y;
 			vertices[index+2] = (float) point.z;
-			index = i * 2;
-			index = i * 4;
 			indices[i] = (short)i;
 			
 			if(mColors != null)
@@ -151,6 +151,14 @@ public class Line3D extends Object3D {
 	
 	public void preRender() {
 		super.preRender();
-		GLES20.glLineWidth(mThickness);
+		GLES20.glLineWidth(mLineThickness);
 	}
+
+    public void setLineThickness(final float lineThickness) {
+        mLineThickness = lineThickness;
+    }
+
+    public float getLineThickness() {
+        return mLineThickness;
+    }
 }
