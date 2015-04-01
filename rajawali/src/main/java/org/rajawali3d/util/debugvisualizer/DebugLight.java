@@ -19,6 +19,8 @@ import java.util.Stack;
 public class DebugLight extends DebugObject3D {
     private ALight mLight;
     private Line3D mCircle;
+    private Line3D mLine;
+    private int mColor;
 
     public DebugLight(ALight light) {
         this(light, Color.YELLOW, 1);
@@ -27,14 +29,19 @@ public class DebugLight extends DebugObject3D {
     public DebugLight(ALight light, int color, int lineThickness) {
         super(color, lineThickness);
         mLight = light;
+        mColor = color;
     }
 
-    private void updateLightTransform() {
-        if(mPoints == null)
+    private void updateLightTransform(Camera camera) {
+        if(mCircle == null)
             createLines();
 
-        setPosition(mPosition);
-        setOrientation(mOrientation);
+        mCircle.setLookAt(camera.getPosition());
+        mCircle.setScale(mPosition.distanceTo(camera.getPosition()) * 0.1f);
+        mCircle.setPosition(mLight.getPosition());
+
+        mLine.setPosition(mLight.getPosition());
+        mLine.setOrientation(mLight.getOrientation());
     }
 
     private void createLines() {
@@ -61,13 +68,15 @@ public class DebugLight extends DebugObject3D {
             points.add(p2);
         }
 
-        mCircle = new Line3D(points, mLineThickness, Color.YELLOW);
-        mCircle.setMaterial(new Material());
+        Material material = new Material();
+
+        mCircle = new Line3D(points, mLineThickness, mColor);
+        mCircle.setMaterial(material);
         mCircle.setDrawingMode(GLES20.GL_LINES);
         mCircle.enableLookAt();
         addChild(mCircle);
 
-        mPoints = new Stack<>();
+        points = new Stack<>();
 
         if(mLight.getLightType() == mLight.DIRECTIONAL_LIGHT || mLight.getLightType() == mLight.SPOT_LIGHT)
         {
@@ -76,21 +85,21 @@ public class DebugLight extends DebugObject3D {
                 p1.z = i * 0.5f;
                 Vector3 p2 = new Vector3();
                 p2.z = (i + 1) * 0.5f;
-                mPoints.add(p1);
-                mPoints.add(p2);
+                points.add(p1);
+                points.add(p2);
             }
 
-            init(true);
-            setDrawingMode(GLES20.GL_LINES);
-            setMaterial(new Material());
+            mLine = new Line3D(points, mLineThickness, mColor);
+            mLine.setMaterial(material);
+            mLine.setDrawingMode(GLES20.GL_LINES);
+            mLine.enableLookAt();
+            addChild(mLine);
         }
     }
 
     public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
                        final Matrix4 vMatrix, final Matrix4 parentMatrix, Material sceneMaterial) {
-        updateLightTransform();
-        mCircle.setLookAt(camera.getPosition());
-        mCircle.setScale(mPosition.distanceTo(camera.getPosition()) * 0.2f);
+        updateLightTransform(camera);
 
         super.render(camera, vpMatrix, projMatrix, vMatrix, parentMatrix, sceneMaterial);
     }
