@@ -578,34 +578,27 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     @Override
-    public void onRenderSurfaceCreated(EGLConfig config, Object surface, int width, int height) {
-        if (config != null) {
-            // We are rendering to a Surface View
-            final GL10 gl = (GL10) surface;
-            RajLog.setGL10(gl);
-            Capabilities.getInstance();
+    public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
+        RajLog.setGL10(gl);
+        Capabilities.getInstance();
 
-            String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
-            RajLog.d("Open GL ES Version String: " + gl.glGetString(GL10.GL_VERSION));
-            if (versionString.length >= 3) {
-                String[] versionParts = versionString[2].split("\\.");
-                if (versionParts.length >= 2) {
-                    mGLES_Major_Version = Integer.parseInt(versionParts[0]);
-                    versionParts[1] = versionParts[1].replaceAll("([^0-9].+)", "");
-                    mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
-                }
+        String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
+        RajLog.d("Open GL ES Version String: " + gl.glGetString(GL10.GL_VERSION));
+        if (versionString.length >= 3) {
+            String[] versionParts = versionString[2].split("\\.");
+            if (versionParts.length >= 2) {
+                mGLES_Major_Version = Integer.parseInt(versionParts[0]);
+                versionParts[1] = versionParts[1].replaceAll("([^0-9].+)", "");
+                mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
             }
-            RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
+        }
+        RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
 
-            supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
+        supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
 
-            if (!mHaveRegisteredForResources) {
-                mTextureManager.registerRenderer(this);
-                mMaterialManager.registerRenderer(this);
-            }
-        } else {
-            // We are rendering to a TextureView
-            //TODO Handle texture view
+        if (!mHaveRegisteredForResources) {
+            mTextureManager.registerRenderer(this);
+            mMaterialManager.registerRenderer(this);
         }
     }
 
@@ -624,11 +617,10 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
                 mScenes.get(i).destroyScene();
         }
         stopRendering();
-        //TODO Handle texture view
     }
 
     @Override
-    public void onRenderSurfaceSizeChanged(Object surface, int width, int height) {
+    public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
         RajLog.d(this, "onSurfaceChanged()");
         mViewportWidth = width;
         mViewportHeight = height;
@@ -662,7 +654,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     @Override
-    public void onRenderFrame(Object surface) {
+    public void onRenderFrame(GL10 gl) {
         performFrameTasks(); //Execute any pending frame tasks
         synchronized (mNextSceneLock) {
             //Check if we need to switch the scene, and if so, do it.

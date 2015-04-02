@@ -28,6 +28,7 @@ import android.widget.FrameLayout;
 import org.rajawali3d.renderer.NullRenderer;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.surface.RajawaliSurfaceView;
+import org.rajawali3d.surface.RajawaliTextureView;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 /**
@@ -48,6 +49,7 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
 
     protected RajawaliRenderer mRenderer;
 	protected RajawaliSurfaceView mSurfaceView;
+    protected RajawaliTextureView mTextureView;
 	protected FrameLayout mLayout;
 	protected boolean mMultisamplingEnabled = false;
 	protected boolean mUsesCoverageAa;
@@ -73,13 +75,17 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
                 container, false);
         }
 
-        mSurfaceView = new RajawaliSurfaceView(getActivity());
-        mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
+        //mSurfaceView = new RajawaliSurfaceView(getActivity());
+        //mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
+
+        mTextureView = new RajawaliTextureView(getActivity());
+        mTextureView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
         mRenderer = createRenderer();
         if (mRenderer == null)
             mRenderer = new NullRenderer(getActivity());
-        mSurfaceView.setSurfaceRenderer(mRenderer);
+        //mSurfaceView.setSurfaceRenderer(mRenderer);
+        mTextureView.setSurfaceRenderer(mRenderer);
 
         if (mMultisamplingEnabled) {
             createMultisampleConfig();
@@ -89,7 +95,8 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
             setGLBackgroundTransparent(true);
         }
 
-        mLayout.addView(mSurfaceView);
+        //mLayout.addView(mSurfaceView);
+        mLayout.addView(mTextureView);
         return mLayout;
     }
 
@@ -123,13 +130,16 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
     }
 
     protected void onVisibleToUser() {
-        mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        mSurfaceView.onResume();
+        //mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        //mSurfaceView.onResume();
+        mTextureView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        mTextureView.onResume();
         mRenderer.onVisibilityChanged(true);
     }
 
     protected void onNotVisibleToUser() {
-        if (mSurfaceView != null) mSurfaceView.onPause();
+        //if (mSurfaceView != null) mSurfaceView.onPause();
+        if (mTextureView != null) mTextureView.onPause();
         if (mRenderer != null) mRenderer.onVisibilityChanged(false);
     }
 
@@ -138,19 +148,23 @@ public abstract class RajawaliFragment extends Fragment implements IRajawaliDisp
     }
 	
     protected void createMultisampleConfig() {
-        mSurfaceView.setEGLConfigChooser(new RajawaliEGLConfigChooser());
+        //mSurfaceView.setEGLConfigChooser(new RajawaliEGLConfigChooser());
+        mTextureView.setEGLConfigChooser(new RajawaliEGLConfigChooser());
     }
     
     protected void setGLBackgroundTransparent(boolean transparent) {
-    	if(transparent) {
-            mSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-            mSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-            mSurfaceView.setZOrderOnTop(true);
-    	} else {
-            mSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-            mSurfaceView.getHolder().setFormat(PixelFormat.RGBA_8888);
-            mSurfaceView.setZOrderOnTop(false);
-    	}
+    	//if(transparent) {
+            //mSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+            //mSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+            //mSurfaceView.setZOrderOnTop(true);
+
+            mTextureView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+            //TODO Pixel Format and Z order
+    	//} else {
+        //  mSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        //  mSurfaceView.getHolder().setFormat(PixelFormat.RGBA_8888);
+        //    mSurfaceView.setZOrderOnTop(false);
+    	//}
     }
     
     private void unbindDrawables(View view) {

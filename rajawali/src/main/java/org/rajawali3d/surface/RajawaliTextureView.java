@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.TextureView;
 
 import org.rajawali3d.Capabilities;
-import org.rajawali3d.util.RajLog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -32,13 +31,13 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class RajawaliTextureView extends TextureView implements IRajawaliSurface {
     private final static String TAG = "RajawaliTextureView";
-    private final static boolean LOG_ATTACH_DETACH = true;
-    private final static boolean LOG_THREADS = true;
-    private final static boolean LOG_PAUSE_RESUME = true;
-    private final static boolean LOG_SURFACE = true;
-    private final static boolean LOG_RENDERER = true;
-    private final static boolean LOG_RENDERER_DRAW_FRAME = true;
-    private final static boolean LOG_EGL = true;
+    private final static boolean LOG_ATTACH_DETACH = false;
+    private final static boolean LOG_THREADS = false;
+    private final static boolean LOG_PAUSE_RESUME = false;
+    private final static boolean LOG_SURFACE = false;
+    private final static boolean LOG_RENDERER = false;
+    private final static boolean LOG_RENDERER_DRAW_FRAME = false;
+    private final static boolean LOG_EGL = false;
 
     private static final GLThreadManager sGLThreadManager = new GLThreadManager();
 
@@ -408,7 +407,6 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         private final IRajawaliSurfaceRenderer mRenderer;
 
         public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliTextureView textureView) {
-            RajLog.d(this, "Creating TextureView Render Delegate.");
             mRenderer = renderer;
             mRajawaliTextureView = textureView;
             mRenderer.setRenderSurface(mRajawaliTextureView);
@@ -417,13 +415,11 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            RajLog.d(this, "SurfaceTexture available. Dimensions(" + width + ", " + height + ")");
             mRajawaliTextureView.surfaceCreated(width, height);
         }
 
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-            RajLog.d(this, "SurfaceTexture changed. Dimensions(" + width + ", " + height + ")");
             mRajawaliTextureView.surfaceChanged(width, height);
         }
 
@@ -436,8 +432,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-            RajLog.d(this, "SurfaceTexture updated.");
-            mRenderer.onRenderFrame(surface);
+            // Do nothing
         }
     }
 
@@ -1075,7 +1070,6 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
                             // Ready to draw?
                             if (readyToDraw()) {
-                                Log.i("RajawaliGLThread", "ready to draw.");
                                 // If we don't have an EGL context, try to acquire one.
                                 if (!mHaveEglContext) {
                                     if (askedToReleaseEglContext) {
@@ -1120,8 +1114,6 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                                     sGLThreadManager.notifyAll();
                                     break;
                                 }
-                            } else {
-                                Log.i("RajawaliGLThread", "not ready to draw.");
                             }
 
                             // By design, this is the only place in a RajawaliGLThread thread where we wait().
