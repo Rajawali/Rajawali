@@ -5,12 +5,14 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
+import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.TextureView;
 
 import org.rajawali3d.Capabilities;
+import org.rajawali3d.util.RajLog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -30,22 +32,22 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class RajawaliTextureView extends TextureView implements IRajawaliSurface {
     private final static String TAG = "RajawaliTextureView";
-    private final static boolean LOG_ATTACH_DETACH = false;
-    private final static boolean LOG_THREADS = false;
-    private final static boolean LOG_PAUSE_RESUME = false;
-    private final static boolean LOG_SURFACE = false;
-    private final static boolean LOG_RENDERER = false;
-    private final static boolean LOG_RENDERER_DRAW_FRAME = false;
-    private final static boolean LOG_EGL = false;
+    private final static boolean LOG_ATTACH_DETACH = true;
+    private final static boolean LOG_THREADS = true;
+    private final static boolean LOG_PAUSE_RESUME = true;
+    private final static boolean LOG_SURFACE = true;
+    private final static boolean LOG_RENDERER = true;
+    private final static boolean LOG_RENDERER_DRAW_FRAME = true;
+    private final static boolean LOG_EGL = true;
 
     private static final GLThreadManager sGLThreadManager = new GLThreadManager();
 
     private final WeakReference<RajawaliTextureView> mThisWeakRef = new WeakReference<>(this);
     private GLThread mGLThread;
     private boolean mDetached;
-    private EGLConfigChooser mEGLConfigChooser;
-    private EGLContextFactory mEGLContextFactory;
-    private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
+    private GLSurfaceView.EGLConfigChooser mEGLConfigChooser;
+    private GLSurfaceView.EGLContextFactory mEGLContextFactory;
+    private GLSurfaceView.EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
     private int mEGLContextClientVersion;
     private boolean mPreserveEGLContextOnPause;
 
@@ -134,8 +136,8 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * This method is part of the SurfaceTexture.Callback interface, and is
      * not normally called or subclassed by clients of RajawaliTextureView.
      */
-    private void surfaceCreated() {
-        mGLThread.surfaceCreated();
+    private void surfaceCreated(int width, int height) {
+        mGLThread.surfaceCreated(width, height);
     }
 
     /**
@@ -194,7 +196,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * a context will be created with no shared context and
      * with a null attribute list.
      */
-    public void setEGLContextFactory(EGLContextFactory factory) {
+    public void setEGLContextFactory(GLSurfaceView.EGLContextFactory factory) {
         checkRenderThreadState();
         mEGLContextFactory = factory;
     }
@@ -208,7 +210,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * If this method is not called, then by default
      * a window surface will be created with a null attribute list.
      */
-    public void setEGLWindowSurfaceFactory(EGLWindowSurfaceFactory factory) {
+    public void setEGLWindowSurfaceFactory(GLSurfaceView.EGLWindowSurfaceFactory factory) {
         checkRenderThreadState();
         mEGLWindowSurfaceFactory = factory;
     }
@@ -224,9 +226,9 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * android.view.Surface, with a depth buffer depth of
      * at least 16 bits.
      *
-     * @param configChooser {@link EGLConfigChooser} The EGL Configuration chooser.
+     * @param configChooser {@link GLSurfaceView.EGLConfigChooser} The EGL Configuration chooser.
      */
-    public void setEGLConfigChooser(EGLConfigChooser configChooser) {
+    public void setEGLConfigChooser(GLSurfaceView.EGLConfigChooser configChooser) {
         checkRenderThreadState();
         mEGLConfigChooser = configChooser;
     }
@@ -286,10 +288,10 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * is called.
      * <p>This method only affects the behavior of the default EGLContexFactory and the
      * default EGLConfigChooser. If
-     * {@link #setEGLContextFactory(EGLContextFactory)} has been called, then the supplied
+     * {@link #setEGLContextFactory(GLSurfaceView.EGLContextFactory)} has been called, then the supplied
      * EGLContextFactory is responsible for creating an OpenGL ES 2.0-compatible context.
      * If
-     * {@link #setEGLConfigChooser(EGLConfigChooser)} has been called, then the supplied
+     * {@link #setEGLConfigChooser(GLSurfaceView.EGLConfigChooser)} has been called, then the supplied
      * EGLConfigChooser is responsible for choosing an OpenGL ES 2.0-compatible config.
      *
      * @param version The EGLContext client version to choose. Use 2 for OpenGL ES 2.0
@@ -406,18 +408,22 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         private final IRajawaliSurfaceRenderer mRenderer;
 
         public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliTextureView textureView) {
+            RajLog.d(this, "Creating TextureView Render Delegate.");
             mRenderer = renderer;
             mRajawaliTextureView = textureView;
+            mRenderer.setRenderSurface(mRajawaliTextureView);
             mRajawaliTextureView.setSurfaceTextureListener(this);
         }
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            mRajawaliTextureView.surfaceCreated();
+            RajLog.d(this, "SurfaceTexture available. Dimensions(" + width + ", " + height + ")");
+            mRajawaliTextureView.surfaceCreated(width, height);
         }
 
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+            RajLog.d(this, "SurfaceTexture changed. Dimensions(" + width + ", " + height + ")");
             mRajawaliTextureView.surfaceChanged(width, height);
         }
 
@@ -430,23 +436,12 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+            RajLog.d(this, "SurfaceTexture updated.");
             mRenderer.onRenderFrame(surface);
         }
     }
 
-    /**
-     * An interface for customizing the eglCreateContext and eglDestroyContext calls.
-     * <p/>
-     * This interface must be implemented by clients wishing to call
-     * {@link RajawaliTextureView#setEGLContextFactory(EGLContextFactory)}
-     */
-    public interface EGLContextFactory {
-        EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig);
-
-        void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context);
-    }
-
-    private class DefaultContextFactory implements EGLContextFactory {
+    private class DefaultContextFactory implements GLSurfaceView.EGLContextFactory {
         private int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
 
         public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig config) {
@@ -468,22 +463,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         }
     }
 
-    /**
-     * An interface for customizing the eglCreateWindowSurface and eglDestroySurface calls.
-     * <p/>
-     * This interface must be implemented by clients wishing to call
-     * {@link RajawaliTextureView#setEGLWindowSurfaceFactory(EGLWindowSurfaceFactory)}
-     */
-    public interface EGLWindowSurfaceFactory {
-        /**
-         * @return null if the surface cannot be constructed.
-         */
-        EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display, EGLConfig config, Object nativeWindow);
-
-        void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface);
-    }
-
-    private static class DefaultWindowSurfaceFactory implements EGLWindowSurfaceFactory {
+    private static class DefaultWindowSurfaceFactory implements GLSurfaceView.EGLWindowSurfaceFactory {
 
         public EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display,
                                               EGLConfig config, Object nativeWindow) {
@@ -508,30 +488,8 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         }
     }
 
-    /**
-     * An interface for choosing an EGLConfig configuration from a list of
-     * potential configurations.
-     * <p/>
-     * This interface must be implemented by clients wishing to call
-     * {@link RajawaliTextureView#setEGLConfigChooser(EGLConfigChooser)}
-     */
-    public interface EGLConfigChooser {
-        /**
-         * Choose a configuration from the list. Implementors typically
-         * implement this method by calling
-         * {@link EGL10#eglChooseConfig} and iterating through the results. Please consult the
-         * EGL specification available from The Khronos Group to learn how to call eglChooseConfig.
-         *
-         * @param egl     the EGL10 for the current display.
-         * @param display the current display.
-         *
-         * @return the chosen configuration.
-         */
-        EGLConfig chooseConfig(EGL10 egl, EGLDisplay display);
-    }
-
     private abstract class BaseConfigChooser
-        implements EGLConfigChooser {
+        implements GLSurfaceView.EGLConfigChooser {
         public BaseConfigChooser(int[] configSpec) {
             mConfigSpec = filterConfigSpec(configSpec);
         }
@@ -913,6 +871,39 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * sGLThreadManager object. This avoids multiple-lock ordering issues.
      */
     static class GLThread extends Thread {
+
+        // Once the thread is started, all accesses to the following member
+        // variables are protected by the sGLThreadManager monitor
+        private boolean mShouldExit;
+        private boolean mExited;
+        private boolean mRequestPaused;
+        private boolean mPaused;
+        private boolean mHasSurface;
+        private boolean mSurfaceIsBad;
+        private boolean mWaitingForSurface;
+        private boolean mHaveEglContext;
+        private boolean mHaveEglSurface;
+        private boolean mFinishedCreatingEglSurface;
+        private boolean mShouldReleaseEglContext;
+        private int mWidth;
+        private int mHeight;
+        private int mRenderMode;
+        private boolean mRequestRender;
+        private boolean mRenderComplete;
+        private ArrayList<Runnable> mEventQueue = new ArrayList<>();
+        private boolean mSizeChanged = true;
+
+        // End of member variables protected by the sGLThreadManager monitor.
+
+        private EglHelper mEglHelper;
+
+        /**
+         * Set once at thread construction time, nulled out when the parent view is garbage
+         * called. This weak reference allows the RajawaliTextureView to be garbage collected while
+         * the RajawaliGLThread is still alive.
+         */
+        private WeakReference<RajawaliTextureView> mRajawaliTextureViewWeakRef;
+
         GLThread(WeakReference<RajawaliTextureView> glSurfaceViewWeakRef) {
             super();
             mWidth = 0;
@@ -1084,7 +1075,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
                             // Ready to draw?
                             if (readyToDraw()) {
-
+                                Log.i("RajawaliGLThread", "ready to draw.");
                                 // If we don't have an EGL context, try to acquire one.
                                 if (!mHaveEglContext) {
                                     if (askedToReleaseEglContext) {
@@ -1117,9 +1108,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                                         h = mHeight;
                                         wantRenderNotification = true;
                                         if (LOG_SURFACE) {
-                                            Log.i("RajawaliGLThread",
-                                                "noticing that we want render notification tid="
-                                                    + getId());
+                                            Log.i("RajawaliGLThread", "noticing that we want render notification tid=" + getId());
                                         }
 
                                         // Destroy and recreate the EGL surface.
@@ -1131,9 +1120,11 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                                     sGLThreadManager.notifyAll();
                                     break;
                                 }
+                            } else {
+                                Log.i("RajawaliGLThread", "not ready to draw.");
                             }
 
-                            // By design, this is the only place in a GLThread thread where we wait().
+                            // By design, this is the only place in a RajawaliGLThread thread where we wait().
                             if (LOG_THREADS) {
                                 Log.i("RajawaliGLThread", "waiting tid=" + getId()
                                     + " mHaveEglContext: " + mHaveEglContext
@@ -1289,12 +1280,14 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
             }
         }
 
-        public void surfaceCreated() {
+        public void surfaceCreated(int w, int h) {
             synchronized (sGLThreadManager) {
                 if (LOG_THREADS) {
-                    Log.i("GLThread", "surfaceCreated tid=" + getId());
+                    Log.i("RajawaliGLThread", "surfaceCreated tid=" + getId());
                 }
                 mHasSurface = true;
+                mWidth = w;
+                mHeight = h;
                 mFinishedCreatingEglSurface = false;
                 sGLThreadManager.notifyAll();
                 while (mWaitingForSurface
@@ -1312,7 +1305,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         public void surfaceDestroyed() {
             synchronized (sGLThreadManager) {
                 if (LOG_THREADS) {
-                    Log.i("GLThread", "surfaceDestroyed tid=" + getId());
+                    Log.i("RajawaliGLThread", "surfaceDestroyed tid=" + getId());
                 }
                 mHasSurface = false;
                 sGLThreadManager.notifyAll();
@@ -1329,7 +1322,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         public void onPause() {
             synchronized (sGLThreadManager) {
                 if (LOG_PAUSE_RESUME) {
-                    Log.i("GLThread", "onPause tid=" + getId());
+                    Log.i("RajawaliGLThread", "onPause tid=" + getId());
                 }
                 mRequestPaused = true;
                 sGLThreadManager.notifyAll();
@@ -1349,7 +1342,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         public void onResume() {
             synchronized (sGLThreadManager) {
                 if (LOG_PAUSE_RESUME) {
-                    Log.i("GLThread", "onResume tid=" + getId());
+                    Log.i("RajawaliGLThread", "onResume tid=" + getId());
                 }
                 mRequestPaused = false;
                 mRequestRender = true;
@@ -1393,7 +1386,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         }
 
         public void requestExitAndWait() {
-            // don't call this from GLThread thread or it is a guaranteed
+            // don't call this from RajawaliGLThread thread or it is a guaranteed
             // deadlock!
             synchronized (sGLThreadManager) {
                 mShouldExit = true;
@@ -1427,39 +1420,6 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                 sGLThreadManager.notifyAll();
             }
         }
-
-        // Once the thread is started, all accesses to the following member
-        // variables are protected by the sGLThreadManager monitor
-        private boolean mShouldExit;
-        private boolean mExited;
-        private boolean mRequestPaused;
-        private boolean mPaused;
-        private boolean mHasSurface;
-        private boolean mSurfaceIsBad;
-        private boolean mWaitingForSurface;
-        private boolean mHaveEglContext;
-        private boolean mHaveEglSurface;
-        private boolean mFinishedCreatingEglSurface;
-        private boolean mShouldReleaseEglContext;
-        private int mWidth;
-        private int mHeight;
-        private int mRenderMode;
-        private boolean mRequestRender;
-        private boolean mRenderComplete;
-        private ArrayList<Runnable> mEventQueue = new ArrayList<>();
-        private boolean mSizeChanged = true;
-
-        // End of member variables protected by the sGLThreadManager monitor.
-
-        private EglHelper mEglHelper;
-
-        /**
-         * Set once at thread construction time, nulled out when the parent view is garbage
-         * called. This weak reference allows the RajawaliTextureView to be garbage collected while
-         * the GLThread is still alive.
-         */
-        private WeakReference<RajawaliTextureView> mRajawaliTextureViewWeakRef;
-
     }
 
     private void checkRenderThreadState() {
@@ -1470,6 +1430,15 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     private static class GLThreadManager {
         private static String TAG = "RajawaliGLThreadManager";
+
+        private boolean mGLESVersionCheckComplete;
+        private int mGLESVersion;
+        private boolean mGLESDriverCheckComplete;
+        private boolean mMultipleGLESContextsAllowed;
+        private boolean mLimitedGLESContexts;
+        private static final int kGLES_20 = 0x20000;
+        private static final String kMSM7K_RENDERER_PREFIX = "Q3Dimension MSM7500 ";
+        private GLThread mEglOwner;
 
         public synchronized void threadExiting(GLThread thread) {
             if (LOG_THREADS) {
@@ -1564,15 +1533,5 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                 mGLESDriverCheckComplete = true;
             }
         }
-
-        private boolean mGLESVersionCheckComplete;
-        private int mGLESVersion;
-        private boolean mGLESDriverCheckComplete;
-        private boolean mMultipleGLESContextsAllowed;
-        private boolean mLimitedGLESContexts;
-        private static final int kGLES_20 = 0x20000;
-        private static final String kMSM7K_RENDERER_PREFIX =
-            "Q3Dimension MSM7500 ";
-        private GLThread mEglOwner;
     }
 }
