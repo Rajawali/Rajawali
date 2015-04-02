@@ -1,7 +1,6 @@
 package org.rajawali3d.util;
 
 import android.opengl.GLDebugHelper;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -23,26 +22,39 @@ public class RajawaliGLDebugger {
     final GL10 mGL;
     final EGL mEGL;
 
-    StringBuilder mBuilder;
+    final StringBuilder mBuilder = new StringBuilder();
 
     private RajawaliGLDebugger(int config, GL gl, EGL egl) {
         mConfig = config;
         mWriter = new Writer() {
+
             @Override
             public void close() throws IOException {
-                // Do nothing
+                flushBuilder();
             }
 
             @Override
             public void flush() throws IOException {
-                Log.e("RajawaliGLDebugging", mBuilder.toString());
-                mBuilder = null;
+                flushBuilder();
             }
 
             @Override
             public void write(char[] buf, int offset, int count) throws IOException {
-                if (mBuilder == null) mBuilder = new StringBuilder();
-                mBuilder.append(buf, offset, count);
+                for (int i = 0; i < count; i++) {
+                    char c = buf[offset + i];
+                    if (c == '\n') {
+                        flushBuilder();
+                    } else {
+                        mBuilder.append(c);
+                    }
+                }
+            }
+
+            private void flushBuilder() {
+                if (mBuilder.length() > 0) {
+                    RajLog.v(mBuilder.toString());
+                    mBuilder.delete(0, mBuilder.length());
+                }
             }
         };
 
