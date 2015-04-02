@@ -1,8 +1,11 @@
 package org.rajawali3d.surface;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+
+import org.rajawali3d.R;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -17,19 +20,33 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
 
     private RendererDelegate mRendererDelegate;
 
+    private double mFrameRate = 60.0;
+    private int mRenderMode = RENDERMODE_WHEN_DIRTY;
+
     public RajawaliSurfaceView(Context context) {
         super(context);
     }
 
     public RajawaliSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RajawaliSurfaceView);
+        final int count = array.getIndexCount();
+        for (int i = 0; i < count; ++i) {
+            int attr = array.getIndex(i);
+            if (attr == R.styleable.RajawaliSurfaceView_frameRate) {
+                mFrameRate = array.getFloat(i, 60.0f);
+            } else if (attr == R.styleable.RajawaliSurfaceView_renderMode) {
+                mRenderMode = array.getInt(i, RENDERMODE_WHEN_DIRTY);
+            }
+        }
+        array.recycle();
     }
 
     @Override
     public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) {
         mRendererDelegate = new RajawaliSurfaceView.RendererDelegate(renderer, this);
         super.setRenderer(mRendererDelegate);
-        setRenderMode(RENDERMODE_WHEN_DIRTY);
+        setRenderMode(mRenderMode);
         onPause(); // We want to halt the surface view until we are ready
     }
 
@@ -52,6 +69,7 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
             mRenderer = renderer;
             mRajawaliSurfaceView = surfaceView;
             mRenderer.setRenderSurface(mRajawaliSurfaceView);
+            mRenderer.setFrameRate(mRajawaliSurfaceView.mFrameRate);
         }
 
         @Override

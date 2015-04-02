@@ -2,6 +2,7 @@ package org.rajawali3d.surface;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.TextureView;
 
 import org.rajawali3d.Capabilities;
+import org.rajawali3d.R;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -42,6 +44,10 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     private static final GLThreadManager sGLThreadManager = new GLThreadManager();
 
     private final WeakReference<RajawaliTextureView> mThisWeakRef = new WeakReference<>(this);
+
+    private double mFrameRate = 60.0;
+    private int mRenderMode = RENDERMODE_WHEN_DIRTY;
+
     private GLThread mGLThread;
     private boolean mDetached;
     private GLSurfaceView.EGLConfigChooser mEGLConfigChooser;
@@ -78,15 +84,32 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     public RajawaliTextureView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        applyAttributes(context, attrs);
     }
 
     public RajawaliTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        applyAttributes(context, attrs);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public RajawaliTextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        applyAttributes(context, attrs);
+    }
+
+    private void applyAttributes(Context context, AttributeSet attrs) {
+        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RajawaliTextureView);
+        final int count = array.getIndexCount();
+        for (int i = 0; i < count; ++i) {
+            int attr = array.getIndex(i);
+            if (attr == R.styleable.RajawaliTextureView_frameRate) {
+                mFrameRate = array.getFloat(i, 60.0f);
+            } else if (attr == R.styleable.RajawaliTextureView_renderMode) {
+                mRenderMode = array.getInt(i, RENDERMODE_WHEN_DIRTY);
+            }
+        }
+        array.recycle();
     }
 
     @Override

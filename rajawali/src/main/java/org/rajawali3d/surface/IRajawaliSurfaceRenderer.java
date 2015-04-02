@@ -18,6 +18,27 @@ import javax.microedition.khronos.opengles.GL10;
 public interface IRajawaliSurfaceRenderer {
 
     /**
+     * Fetch the current target frame rate in frames per second.
+     *
+     * @return {@code double} The target frame rate.
+     */
+    public double getFrameRate();
+
+    /**
+     * Sets the target frame rate in frames per second.
+     *
+     * @param rate {@code int} The target rate.
+     */
+    public void setFrameRate(int rate);
+
+    /**
+     * Sets the target frame rate in frames per second.
+     *
+     * @param rate {@code double} The target rate.
+     */
+    public void setFrameRate(double rate);
+
+    /**
      * Sets the {@link IRajawaliSurface} which this implementation will be rendering on.
      *
      * @param surface {@link IRajawaliSurface} The rendering surface.

@@ -184,8 +184,136 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     @Override
+    public double getFrameRate() {
+        return mFrameRate;
+    }
+
+    @Override
+    public void setFrameRate(int frameRate) {
+        setFrameRate((double) frameRate);
+    }
+
+    @Override
+    public void setFrameRate(double frameRate) {
+        this.mFrameRate = frameRate;
+        if (stopRendering()) {
+            // Restart timer with new frequency
+            startRendering();
+        }
+    }
+
+    @Override
     public void setRenderSurface(IRajawaliSurface surface) {
         mSurface = surface;
+    }
+
+    @Override
+    public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
+        RajLog.setGL10(gl);
+        Capabilities.getInstance();
+
+        String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
+        RajLog.d("Open GL ES Version String: " + gl.glGetString(GL10.GL_VERSION));
+        if (versionString.length >= 3) {
+            String[] versionParts = versionString[2].split("\\.");
+            if (versionParts.length >= 2) {
+                mGLES_Major_Version = Integer.parseInt(versionParts[0]);
+                versionParts[1] = versionParts[1].replaceAll("([^0-9].+)", "");
+                mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
+            }
+        }
+        RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
+
+        supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
+
+        if (!mHaveRegisteredForResources) {
+            mTextureManager.registerRenderer(this);
+            mMaterialManager.registerRenderer(this);
+        }
+    }
+
+    @Override
+    public void onRenderSurfaceDestroyed(SurfaceTexture surface) {
+        synchronized (mScenes) {
+            if (mTextureManager != null) {
+                mTextureManager.unregisterRenderer(this);
+                mTextureManager.taskReset(this);
+            }
+            if (mMaterialManager != null) {
+                mMaterialManager.taskReset(this);
+                mMaterialManager.unregisterRenderer(this);
+            }
+            for (int i = 0, j = mScenes.size(); i < j; ++i)
+                mScenes.get(i).destroyScene();
+        }
+        stopRendering();
+    }
+
+    @Override
+    public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
+        RajLog.d(this, "onSurfaceChanged()");
+        mViewportWidth = width;
+        mViewportHeight = height;
+
+        if (!mSceneInitialized) {
+            getCurrentScene().resetGLState();
+            initScene();
+            getCurrentScene().initScene();
+        }
+
+        if (!mSceneCachingEnabled) {
+            mTextureManager.reset();
+            mMaterialManager.reset();
+            clearScenes();
+        } else if (mSceneCachingEnabled && mSceneInitialized) {
+            for (int i = 0, j = mRenderTargets.size(); i < j; ++i) {
+                if (mRenderTargets.get(i).getFullscreen()) {
+                    mRenderTargets.get(i).setWidth(mViewportWidth);
+                    mRenderTargets.get(i).setHeight(mViewportHeight);
+                }
+            }
+            mTextureManager.taskReload();
+            mMaterialManager.taskReload();
+            reloadScenes();
+            reloadRenderTargets();
+        }
+        mSceneInitialized = true;
+        startRendering();
+
+        setViewPort(mViewportWidth, mViewportHeight);
+    }
+
+    @Override
+    public void onRenderFrame(GL10 gl) {
+        performFrameTasks(); //Execute any pending frame tasks
+        synchronized (mNextSceneLock) {
+            //Check if we need to switch the scene, and if so, do it.
+            if (mNextScene != null) {
+                switchSceneDirect(mNextScene);
+                mNextScene = null;
+            }
+        }
+
+        final long currentTime = System.nanoTime();
+        final long elapsedRenderTime = currentTime - mRenderStartTime;
+        final double deltaTime = (currentTime - mLastRender) / 1e9;
+        mLastRender = currentTime;
+
+        onRender(elapsedRenderTime, deltaTime);
+
+        ++mFrameCount;
+        if (mFrameCount % 50 == 0) {
+            long now = System.nanoTime();
+            double elapsedS = (now - mStartTime) / 1.0e9;
+            double msPerFrame = (1000 * elapsedS / mFrameCount);
+            mLastMeasuredFPS = 1000 / msPerFrame;
+
+            mFrameCount = 0;
+            mStartTime = now;
+
+            if (mFPSUpdateListener != null)
+                mFPSUpdateListener.onFPSUpdate(mLastMeasuredFPS); //Update the FPS listener
+        }
     }
 
     /**
@@ -577,115 +705,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         this.preferences = preferences;
     }
 
-    @Override
-    public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
-        RajLog.setGL10(gl);
-        Capabilities.getInstance();
-
-        String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
-        RajLog.d("Open GL ES Version String: " + gl.glGetString(GL10.GL_VERSION));
-        if (versionString.length >= 3) {
-            String[] versionParts = versionString[2].split("\\.");
-            if (versionParts.length >= 2) {
-                mGLES_Major_Version = Integer.parseInt(versionParts[0]);
-                versionParts[1] = versionParts[1].replaceAll("([^0-9].+)", "");
-                mGLES_Minor_Version = Integer.parseInt(versionParts[1]);
-            }
-        }
-        RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
-
-        supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
-
-        if (!mHaveRegisteredForResources) {
-            mTextureManager.registerRenderer(this);
-            mMaterialManager.registerRenderer(this);
-        }
-    }
-
-    @Override
-    public void onRenderSurfaceDestroyed(SurfaceTexture surface) {
-        synchronized (mScenes) {
-            if (mTextureManager != null) {
-                mTextureManager.unregisterRenderer(this);
-                mTextureManager.taskReset(this);
-            }
-            if (mMaterialManager != null) {
-                mMaterialManager.taskReset(this);
-                mMaterialManager.unregisterRenderer(this);
-            }
-            for (int i = 0, j = mScenes.size(); i < j; ++i)
-                mScenes.get(i).destroyScene();
-        }
-        stopRendering();
-    }
-
-    @Override
-    public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
-        RajLog.d(this, "onSurfaceChanged()");
-        mViewportWidth = width;
-        mViewportHeight = height;
-
-        if (!mSceneInitialized) {
-            getCurrentScene().resetGLState();
-            initScene();
-            getCurrentScene().initScene();
-        }
-
-        if (!mSceneCachingEnabled) {
-            mTextureManager.reset();
-            mMaterialManager.reset();
-            clearScenes();
-        } else if (mSceneCachingEnabled && mSceneInitialized) {
-            for (int i = 0, j = mRenderTargets.size(); i < j; ++i) {
-                if (mRenderTargets.get(i).getFullscreen()) {
-                    mRenderTargets.get(i).setWidth(mViewportWidth);
-                    mRenderTargets.get(i).setHeight(mViewportHeight);
-                }
-            }
-            mTextureManager.taskReload();
-            mMaterialManager.taskReload();
-            reloadScenes();
-            reloadRenderTargets();
-        }
-        mSceneInitialized = true;
-        startRendering();
-
-        setViewPort(mViewportWidth, mViewportHeight);
-    }
-
-    @Override
-    public void onRenderFrame(GL10 gl) {
-        performFrameTasks(); //Execute any pending frame tasks
-        synchronized (mNextSceneLock) {
-            //Check if we need to switch the scene, and if so, do it.
-            if (mNextScene != null) {
-                switchSceneDirect(mNextScene);
-                mNextScene = null;
-            }
-        }
-
-        final long currentTime = System.nanoTime();
-        final long elapsedRenderTime = currentTime - mRenderStartTime;
-        final double deltaTime = (currentTime - mLastRender) / 1e9;
-        mLastRender = currentTime;
-
-        onRender(elapsedRenderTime, deltaTime);
-
-        ++mFrameCount;
-        if (mFrameCount % 50 == 0) {
-            long now = System.nanoTime();
-            double elapsedS = (now - mStartTime) / 1.0e9;
-            double msPerFrame = (1000 * elapsedS / mFrameCount);
-            mLastMeasuredFPS = 1000 / msPerFrame;
-
-            mFrameCount = 0;
-            mStartTime = now;
-
-            if (mFPSUpdateListener != null)
-                mFPSUpdateListener.onFPSUpdate(mLastMeasuredFPS); //Update the FPS listener
-        }
-    }
-
     private class RequestRenderTask implements Runnable {
         public void run() {
             if (mSurface != null) {
@@ -717,22 +736,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
 
         out[3] = 1 / out[3];
         return new Vector3(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
-    }
-
-    public double getFrameRate() {
-        return mFrameRate;
-    }
-
-    public void setFrameRate(int frameRate) {
-        setFrameRate((double) frameRate);
-    }
-
-    public void setFrameRate(double frameRate) {
-        this.mFrameRate = frameRate;
-        if (stopRendering()) {
-            // Restart timer with new frequency
-            startRendering();
-        }
     }
 
     public double getRefreshRate() {
