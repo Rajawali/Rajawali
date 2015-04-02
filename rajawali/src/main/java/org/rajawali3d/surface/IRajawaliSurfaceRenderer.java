@@ -4,13 +4,25 @@ import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.view.TextureView;
 
+import org.rajawali3d.renderer.RajawaliRenderer;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
+ * Interface that a class must implement to be able to render to an {@link IRajawaliSurface}. Most often you will want
+ * to simply extend {@link RajawaliRenderer} which handles much of this for you.
+ *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public interface IRajawaliSurfaceRenderer {
+
+    /**
+     * Sets the {@link IRajawaliSurface} which this implementation will be rendering on.
+     *
+     * @param surface {@link IRajawaliSurface} The rendering surface.
+     */
+    public void setRenderSurface(IRajawaliSurface surface);
 
     /**
      * This corresponds to {@link TextureView.SurfaceTextureListener#onSurfaceTextureAvailable(SurfaceTexture, int, int)}

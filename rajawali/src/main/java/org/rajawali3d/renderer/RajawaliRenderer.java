@@ -58,7 +58,6 @@ import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -156,19 +155,18 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         mFrameRate = getRefreshRate();
         mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
         mRenderTargets = Collections.synchronizedList(new CopyOnWriteArrayList<RenderTarget>());
-        mSceneQueue = new LinkedList<AFrameTask>();
+        mSceneQueue = new LinkedList<>();
         mSceneCachingEnabled = true;
         mSceneInitialized = false;
 
-        mLoaderThreads = new SparseArray<ModelRunnable>();
-        mLoaderCallbacks = new SparseArray<IAsyncLoaderCallback>();
-
+        mLoaderThreads = new SparseArray<>();
+        mLoaderCallbacks = new SparseArray<>();
 
         final RajawaliScene defaultScene = getNewDefaultScene();
         mScenes.add(defaultScene);
         mCurrentScene = defaultScene;
 
-        RawShaderLoader.mContext = new WeakReference<Context>(context);
+        RawShaderLoader.mContext = new WeakReference<>(context);
 
         // Make sure we have a texture manager
         mTextureManager = TextureManager.getInstance();
@@ -185,6 +183,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         }
     }
 
+    @Override
     public void setRenderSurface(IRajawaliSurface surface) {
         mSurface = surface;
     }
@@ -193,7 +192,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * Return a new instance of the default initial scene for the {@link RajawaliRenderer} instance. This method is only
      * intended to be called one time by the renderer itself and should not be used elsewhere.
      *
-     * @return
+     * @return {@link RajawaliScene} The default scene.
      */
     protected RajawaliScene getNewDefaultScene() {
         return new RajawaliScene(this);
@@ -215,10 +214,10 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * OpenGL state and sets the projection matrix for the new scene.
      * <p/>
      * This method should only be called from the main OpenGL render thread
-     * ({@link RajawaliRenderer#onRender()). Calling this outside of the main thread
+     * ({@link RajawaliRenderer#onRender(long, double)}). Calling this outside of the main thread
      * may case unexpected behaviour.
      *
-     * @param nextScene
+     * @param nextScene {@link RajawaliScene} The scene to switch to.
      */
     public void switchSceneDirect(RajawaliScene nextScene) {
         mCurrentScene = nextScene;
@@ -270,7 +269,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * @param scene    {@link RajawaliScene} object to add.
      * @param location Integer index of the {@link RajawaliScene} to replace.
      *
-     * @return boolean True if the replace task was successfully queued.
+     * @return {@code boolean} True if the replace task was successfully queued.
      */
     public boolean replaceScene(RajawaliScene scene, int location) {
         return queueReplaceTask(location, scene);
@@ -285,7 +284,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * @param oldScene {@link RajawaliScene} object to be replaced.
      * @param newScene {@link RajawaliScene} which will replace the old.
      *
-     * @return boolean True if the replace task was successfully queued.
+     * @return {@code boolean} True if the replace task was successfully queued.
      */
     public boolean replaceScene(RajawaliScene oldScene, RajawaliScene newScene) {
         return queueReplaceTask(oldScene, newScene);
@@ -296,7 +295,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param scene {@link RajawaliScene} object to add.
      *
-     * @return boolean True if this addition was successfully queued.
+     * @return {@code boolean} True if this addition was successfully queued.
      */
     public boolean addScene(RajawaliScene scene) {
         return queueAddTask(scene);
@@ -307,7 +306,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param scenes {@link Collection} of scenes to be added.
      *
-     * @return boolean True if the addition was successfully queued.
+     * @return {@code boolean} True if the addition was successfully queued.
      */
     public boolean addScenes(Collection<RajawaliScene> scenes) {
         ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(scenes);
@@ -321,7 +320,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param scene {@link RajawaliScene} object to be removed.
      *
-     * @return boolean True if the removal was successfully queued.
+     * @return {@code boolean} True if the removal was successfully queued.
      */
     public boolean removeScene(RajawaliScene scene) {
         return queueRemoveTask(scene);
@@ -341,7 +340,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param scene The {@link RajawaliScene} to add.
      *
-     * @return boolean True if the addition task was successfully queued.
+     * @return {@code boolean} True if the addition task was successfully queued.
      */
     public boolean addAndSwitchScene(RajawaliScene scene) {
         boolean success = addScene(scene);
@@ -356,7 +355,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * @param scene    The {@link RajawaliScene} to add.
      * @param location The index of the scene to replace.
      *
-     * @return boolean True if the replace task was successfully queued.
+     * @return {@code boolean} True if the replace task was successfully queued.
      */
     public boolean replaceAndSwitchScene(RajawaliScene scene, int location) {
         boolean success = replaceScene(scene, location);
@@ -372,7 +371,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * @param oldScene {@link RajawaliScene} object to be replaced.
      * @param newScene {@link RajawaliScene} which will replace the old.
      *
-     * @return boolean True if the replace task was successfully queued.
+     * @return {@code boolean} True if the replace task was successfully queued.
      */
     public boolean replaceAndSwitchScene(RajawaliScene oldScene, RajawaliScene newScene) {
         boolean success = queueReplaceTask(oldScene, newScene);
@@ -385,7 +384,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param renderTarget
      *
-     * @return
+     * @return {@code boolean} True if the add task was successfully queued.
      */
     public boolean addRenderTarget(RenderTarget renderTarget) {
         return queueAddTask(renderTarget);
@@ -396,7 +395,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param renderTarget
      *
-     * @return
+     * @return {@code boolean} True if the remove task was successfully queued.
      */
     public boolean removeRenderTarget(RenderTarget renderTarget) {
         return queueRemoveTask(renderTarget);
@@ -564,7 +563,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     public void onVisibilityChanged(boolean visible) {
-        RajLog.d(this, "Visibility changed. Is visible? " + visible);
         if (!visible) {
             stopRendering();
         } else {
@@ -607,6 +605,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
             }
         } else {
             // We are rendering to a TextureView
+            //TODO Handle texture view
         }
     }
 
@@ -625,6 +624,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
                 mScenes.get(i).destroyScene();
         }
         stopRendering();
+        //TODO Handle texture view
     }
 
     @Override
@@ -771,7 +771,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param task AFrameTask to be added.
      *
-     * @return boolean True on successful addition to queue.
+     * @return {@code boolean} True on successful addition to queue.
      */
     private boolean addTaskToQueue(AFrameTask task) {
         synchronized (mSceneQueue) {
@@ -1167,7 +1167,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param task {@link AFrameTask} to be added.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueAddTask(AFrameTask task) {
         task.setTask(AFrameTask.TASK.ADD);
@@ -1183,7 +1183,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * @param task  {@link AFrameTask} to be added.
      * @param index Integer index to place the object at.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueAddTask(AFrameTask task, int index) {
         task.setTask(AFrameTask.TASK.ADD);
@@ -1198,7 +1198,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * @param type  {@link AFrameTask.TYPE} Which list to remove from.
      * @param index Integer index to remove the object at.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueRemoveTask(AFrameTask.TYPE type, int index) {
         EmptyTask task = new EmptyTask(type);
@@ -1212,7 +1212,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param task {@link AFrameTask} to be removed.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueRemoveTask(AFrameTask task) {
         task.setTask(AFrameTask.TASK.REMOVE);
@@ -1228,7 +1228,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * @param index       Integer index of the object to replace.
      * @param replacement {@link AFrameTask} the object replacing the old.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueReplaceTask(int index, AFrameTask replacement) {
         EmptyTask task = new EmptyTask(replacement.getFrameTaskType());
@@ -1244,7 +1244,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      * @param task        {@link AFrameTask} the object to replace.
      * @param replacement {@link AFrameTask} the object replacing the old.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueReplaceTask(AFrameTask task, AFrameTask replacement) {
         task.setTask(AFrameTask.TASK.REPLACE);
@@ -1258,7 +1258,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param collection {@link Collection} containing all the objects to add.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueAddAllTask(Collection<AFrameTask> collection) {
         GroupTask task = new GroupTask(collection);
@@ -1272,7 +1272,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param type {@link AFrameTask.TYPE} Which object list to clear (Cameras, BaseObject3D, etc)
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueClearTask(AFrameTask.TYPE type) {
         GroupTask task = new GroupTask(type);
@@ -1286,7 +1286,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param task {@link AFrameTask} to be reloaded.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueReloadTask(AFrameTask task) {
         task.setTask(AFrameTask.TASK.RELOAD);
@@ -1299,7 +1299,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param task {@link AFrameTask} to be reset.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueResetTask(AFrameTask task) {
         task.setTask(AFrameTask.TASK.RELOAD);
@@ -1312,7 +1312,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
      *
      * @param task {@link AFrameTask} to be added.
      *
-     * @return boolean True if the task was successfully queued.
+     * @return {@code boolean} True if the task was successfully queued.
      */
     public boolean queueInitializeTask(AFrameTask task) {
         task.setTask(AFrameTask.TASK.INITIALIZE);

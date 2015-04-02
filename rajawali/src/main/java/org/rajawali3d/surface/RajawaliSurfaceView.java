@@ -5,13 +5,15 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import org.rajawali3d.renderer.RajawaliRenderer;
-import org.rajawali3d.util.RajLog;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * @author Jared Woolston (jwoolston@idealcorp.com)
+ * Rajawali version of a {@link GLSurfaceView}. If you plan on using Rajawali with a {@link GLSurfaceView},
+ * it is imperative that you extend this class or life cycle events may not function as you expect.
+ *
+ * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurface {
 
@@ -28,36 +30,37 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
         requestRender();
     }
 
+    /**
+     * Delegate used to translate between {@link GLSurfaceView.Renderer} and {@link IRajawaliSurfaceRenderer}.
+     *
+     * @author Jared Woolston (jwoolston@tenkiv.com)
+     */
     public static class RendererDelegate implements Renderer {
 
-        private final RajawaliSurfaceView mRajawaliSurfaceView;
-        private final RajawaliRenderer mRenderer;
+        private final RajawaliSurfaceView mRajawaliSurfaceView; // The surface view to render on
+        private final RajawaliRenderer mRenderer; // The renderer
 
         public RendererDelegate(RajawaliRenderer renderer, RajawaliSurfaceView surfaceView) {
-            RajLog.d(this, "Constructing RajawaliSurfaceView render delegate.");
             mRenderer = renderer;
             mRajawaliSurfaceView = surfaceView;
             mRenderer.setRenderSurface(mRajawaliSurfaceView);
             mRajawaliSurfaceView.setRenderer(this);
             mRajawaliSurfaceView.setRenderMode(RENDERMODE_WHEN_DIRTY);
-            mRajawaliSurfaceView.onPause();
+            mRajawaliSurfaceView.onPause(); // We want to halt the surface view until we are ready
         }
 
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            RajLog.d(this, "onSurfaceCreated()");
             mRenderer.onRenderSurfaceCreated(config, gl, -1, -1);
         }
 
         @Override
         public void onSurfaceChanged(GL10 gl, int width, int height) {
-            RajLog.d(this, "onSurfaceChanged()");
             mRenderer.onRenderSurfaceSizeChanged(gl, width, height);
         }
 
         @Override
         public void onDrawFrame(GL10 gl) {
-            RajLog.d(this, "onDrawFrame()");
             mRenderer.onRenderFrame(gl);
         }
     }
