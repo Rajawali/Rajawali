@@ -18,6 +18,11 @@ public final class NullRenderer extends RajawaliRenderer {
     }
 
     @Override
+    protected void initScene() {
+
+    }
+
+    @Override
     public void onRenderSurfaceDestroyed(SurfaceTexture surface) {
         super.onRenderSurfaceDestroyed(surface);
         stopRendering();

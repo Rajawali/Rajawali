@@ -5,7 +5,7 @@ import android.content.Context;
 import org.rajawali3d.util.RajawaliGLDebugger;
 
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL;
 
 /**
  * Special Debugging enabled {@link RajawaliRenderer}. By extending this class for your renderer
@@ -16,7 +16,7 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class RajawaliDebugRenderer extends RajawaliRenderer {
+public abstract class RajawaliDebugRenderer extends RajawaliRenderer {
     private final RajawaliGLDebugger.Builder mDebugBuilder;
 
     private RajawaliGLDebugger mGLDebugger;
@@ -26,19 +26,22 @@ public class RajawaliDebugRenderer extends RajawaliRenderer {
         mDebugBuilder = debugConfig;
     }
 
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    @Override
+    public void onRenderSurfaceCreated(EGLConfig config, Object surface, int width, int height) {
         if (mDebugBuilder != null) {
-            mDebugBuilder.setGL(gl);
+            mDebugBuilder.setGL((GL) surface);
             mGLDebugger = mDebugBuilder.build();
         }
         super.onRenderSurfaceCreated(config, mGLDebugger.getGL(), -1, -1);
     }
 
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
+    @Override
+    public void onRenderSurfaceSizeChanged(Object surface, int width, int height) {
         super.onRenderSurfaceSizeChanged(mGLDebugger.getGL(), width, height);
     }
 
-    public void onDrawFrame(GL10 glUnused) {
+    @Override
+    public void onRenderFrame(Object surface) {
         super.onRenderFrame(mGLDebugger.getGL());
     }
 }
