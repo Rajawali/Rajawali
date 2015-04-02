@@ -40,7 +40,19 @@ public abstract class AResourceManager extends AFrameTask {
 	 */
 	public void registerRenderer(RajawaliRenderer renderer)
 	{
-		mRenderers.add(renderer);
+        boolean alreadyRegistered = false;
+
+        for (int i=0;i<mRenderers.size();i++) {
+            if (renderer == mRenderers.get(i)) {
+                alreadyRegistered = true;
+                break;
+            }
+        }
+
+        if (!alreadyRegistered) {
+            mRenderers.add(renderer);            
+        }
+        
 		mRenderer = renderer;
 	}
 
