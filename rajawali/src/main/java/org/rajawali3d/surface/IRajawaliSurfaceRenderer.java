@@ -46,9 +46,18 @@ public interface IRajawaliSurfaceRenderer {
     public void setRenderSurface(IRajawaliSurface surface);
 
     /**
+     * Called when the renderer should pause all of its rendering activities, such as frame draw requests.
+     */
+    public void onPause();
+
+    /**
+     * Called when the renderer should continue all of its rendering activities, such as frame draw requests.
+     */
+    public void onResume();
+
+    /**
      * This corresponds to {@link TextureView.SurfaceTextureListener#onSurfaceTextureAvailable(SurfaceTexture, int, int)}
      * and {@link GLSurfaceView.Renderer#onSurfaceCreated(GL10, EGLConfig)}. Unused parameters are passed as null or -1.
-     * The surface parameter needs to be cast by the delegate to either {@link SurfaceTexture} or {@link GL10} as appropriate.
      *
      * @param config {@link EGLConfig config}. This is used if the surface is {@link GL10} type (SurfaceView).
      * @param gl {@link GL10} for rendering.
@@ -58,8 +67,7 @@ public interface IRajawaliSurfaceRenderer {
     public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height);
 
     /**
-     * This corresponds to {@link TextureView.SurfaceTextureListener#onSurfaceTextureDestroyed(SurfaceTexture)}. It
-     * serves no use if the render surface is a {@link GLSurfaceView} and should be left empty.
+     * Called when the rendering surface has been destroyed, such as the view being detached from the window.
      *
      * @param surface {@link SurfaceTexture} The texture which was being rendered to.
      */
@@ -76,8 +84,7 @@ public interface IRajawaliSurfaceRenderer {
     public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height);
 
     /**
-     * This corresponds to {@link TextureView.SurfaceTextureListener#onSurfaceTextureUpdated(SurfaceTexture)}
-     * and {@link GLSurfaceView.Renderer#onDrawFrame(GL10)}.
+     * Called when the renderer should draw its next frame.
      *
      * @param gl {@link GL10} for rendering.
      */

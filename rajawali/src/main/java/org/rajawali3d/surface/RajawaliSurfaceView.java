@@ -2,10 +2,13 @@ package org.rajawali3d.surface;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.view.View;
 
 import org.rajawali3d.R;
+import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -18,10 +21,13 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurface {
 
-    private RendererDelegate mRendererDelegate;
+    protected RendererDelegate mRendererDelegate;
 
-    private double mFrameRate = 60.0;
-    private int mRenderMode = RENDERMODE_WHEN_DIRTY;
+    protected double mFrameRate = 60.0;
+    protected int mRenderMode = RENDERMODE_WHEN_DIRTY;
+    protected boolean mMultisamplingEnabled = false;
+    protected boolean mUsesCoverageAa = false;
+    protected boolean mIsTransparent = false;
 
     public RajawaliSurfaceView(Context context) {
         super(context);
@@ -29,6 +35,10 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
 
     public RajawaliSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        applyAttributes(context, attrs);
+    }
+
+    private void applyAttributes(Context context, AttributeSet attrs) {
         final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RajawaliSurfaceView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
@@ -37,13 +47,75 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
                 mFrameRate = array.getFloat(i, 60.0f);
             } else if (attr == R.styleable.RajawaliSurfaceView_renderMode) {
                 mRenderMode = array.getInt(i, RENDERMODE_WHEN_DIRTY);
+            } else if (attr == R.styleable.RajawaliSurfaceView_multisamplingEnabled) {
+                mMultisamplingEnabled = array.getBoolean(i, false);
+            } else if (attr == R.styleable.RajawaliSurfaceView_useCoverageAntiAliasing) {
+                mUsesCoverageAa = array.getBoolean(i, false);
+            } else if (attr == R.styleable.RajawaliSurfaceView_isTransparent) {
+                mIsTransparent = array.getBoolean(i, false);
             }
         }
         array.recycle();
     }
 
+    private void initialize() {
+        if (mMultisamplingEnabled) {
+            setEGLConfigChooser(new RajawaliEGLConfigChooser());
+        }
+
+        if (mIsTransparent) {
+            setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+            getHolder().setFormat(PixelFormat.TRANSLUCENT);
+            setZOrderOnTop(true);
+        } else {
+            setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+            getHolder().setFormat(PixelFormat.RGBA_8888);
+            setZOrderOnTop(false);
+        }
+    }
+
     @Override
-    public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) {
+    public void onPause() {
+        super.onPause();
+        mRendererDelegate.mRenderer.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mRendererDelegate.mRenderer.onResume();
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        if (visibility == View.GONE || visibility == View.INVISIBLE) {
+            onPause();
+        } else {
+            onResume();
+        }
+        super.onVisibilityChanged(changedView, visibility);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+    }
+
+    @Override
+    public void setMultisamplingEnabled(boolean enabled) {
+        mMultisamplingEnabled = enabled;
+    }
+
+    @Override
+    public void setUsesCovererageAntiAliasing(boolean enabled) {
+        mUsesCoverageAa = enabled;
+    }
+
+    @Override
+    public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) throws IllegalStateException {
+        if (mRendererDelegate != null) throw new IllegalStateException("A renderer has already been set for this view.");
+        initialize();
         mRendererDelegate = new RajawaliSurfaceView.RendererDelegate(renderer, this);
         super.setRenderer(mRendererDelegate);
         setRenderMode(mRenderMode);
@@ -60,10 +132,10 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
      *
      * @author Jared Woolston (jwoolston@tenkiv.com)
      */
-    public static class RendererDelegate implements Renderer {
+    private static class RendererDelegate implements Renderer {
 
-        private final RajawaliSurfaceView mRajawaliSurfaceView; // The surface view to render on
-        private final IRajawaliSurfaceRenderer mRenderer; // The renderer
+        final RajawaliSurfaceView mRajawaliSurfaceView; // The surface view to render on
+        final IRajawaliSurfaceRenderer mRenderer; // The renderer
 
         public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliSurfaceView surfaceView) {
             mRenderer = renderer;

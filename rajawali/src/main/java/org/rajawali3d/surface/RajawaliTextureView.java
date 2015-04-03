@@ -11,9 +11,11 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.TextureView;
+import android.view.View;
 
 import org.rajawali3d.Capabilities;
 import org.rajawali3d.R;
+import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -45,8 +47,10 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     private final WeakReference<RajawaliTextureView> mThisWeakRef = new WeakReference<>(this);
 
-    private double mFrameRate = 60.0;
-    private int mRenderMode = RENDERMODE_WHEN_DIRTY;
+    protected double mFrameRate = 60.0;
+    protected int mRenderMode = RENDERMODE_WHEN_DIRTY;
+    protected boolean mMultisamplingEnabled = false;
+    protected boolean mUsesCoverageAa = false;
 
     private GLThread mGLThread;
     private boolean mDetached;
@@ -54,10 +58,11 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     private GLSurfaceView.EGLContextFactory mEGLContextFactory;
     private GLSurfaceView.EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
     private int mEGLContextClientVersion;
-    private boolean mPreserveEGLContextOnPause;
 
+    private boolean mPreserveEGLContextOnPause;
     private SurfaceTexture mCleanupTexture;
-    private RendererDelegate mRendererDelegate;
+
+    protected RendererDelegate mRendererDelegate;
 
     /**
      * The renderer only renders
@@ -107,47 +112,25 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                 mFrameRate = array.getFloat(i, 60.0f);
             } else if (attr == R.styleable.RajawaliTextureView_renderMode) {
                 mRenderMode = array.getInt(i, RENDERMODE_WHEN_DIRTY);
+            } else if (attr == R.styleable.RajawaliTextureView_multisamplingEnabled) {
+                mMultisamplingEnabled = array.getBoolean(i, false);
+            } else if (attr == R.styleable.RajawaliTextureView_useCoverageAntiAliasing) {
+                mUsesCoverageAa = array.getBoolean(i, false);
             }
         }
         array.recycle();
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            if (mGLThread != null) {
-                // GLThread may still be running if this view was never
-                // attached to a window.
-                mGLThread.requestExitAndWait();
-            }
-        } finally {
-            if (mCleanupTexture != null) mCleanupTexture.release();
-            mCleanupTexture = null;
-            super.finalize();
+    private void initialize() {
+        if (mMultisamplingEnabled) {
+            setEGLConfigChooser(new RajawaliEGLConfigChooser());
         }
     }
 
-    @Override
-    public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) {
-        checkRenderThreadState();
-        if (mEGLConfigChooser == null) {
-            mEGLConfigChooser = new SimpleEGLConfigChooser(true);
+    private void checkRenderThreadState() {
+        if (mGLThread != null) {
+            throw new IllegalStateException("setRenderer has already been called for this instance.");
         }
-        if (mEGLContextFactory == null) {
-            mEGLContextFactory = new DefaultContextFactory();
-        }
-        if (mEGLWindowSurfaceFactory == null) {
-            mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
-        }
-        mRendererDelegate = new RajawaliTextureView.RendererDelegate(renderer, this);
-        mGLThread = new GLThread(mThisWeakRef);
-        mGLThread.start();
-        setSurfaceTextureListener(mRendererDelegate);
-    }
-
-    @Override
-    public void requestRenderUpdate() {
-        mGLThread.requestRender();
     }
 
     private void setCleanupTexture(SurfaceTexture surface) {
@@ -177,6 +160,103 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      */
     private void surfaceChanged(int w, int h) {
         mGLThread.onWindowResize(w, h);
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        if (visibility == View.GONE || visibility == View.INVISIBLE) {
+            onPause();
+        } else {
+            onResume();
+        }
+        super.onVisibilityChanged(changedView, visibility);
+    }
+
+    /**
+     * This method is used as part of the View class and is not normally
+     * called or subclassed by clients of RajawaliTextureView.
+     */
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (LOG_ATTACH_DETACH) {
+            Log.d(TAG, "onAttachedToWindow reattach =" + mDetached);
+        }
+        if (mDetached && (mRendererDelegate != null)) {
+            int renderMode = RENDERMODE_CONTINUOUSLY;
+            if (mGLThread != null) {
+                renderMode = mGLThread.getRenderMode();
+            }
+            mGLThread = new GLThread(mThisWeakRef);
+            if (renderMode != RENDERMODE_CONTINUOUSLY) {
+                mGLThread.setRenderMode(renderMode);
+            }
+            mGLThread.start();
+        }
+        mDetached = false;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (LOG_ATTACH_DETACH) {
+            Log.d(TAG, "onDetachedFromWindow");
+        }
+        if (mGLThread != null) {
+            mGLThread.requestExitAndWait();
+        }
+        mDetached = true;
+        mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+        super.onDetachedFromWindow();
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            if (mGLThread != null) {
+                // GLThread may still be running if this view was never
+                // attached to a window.
+                mGLThread.requestExitAndWait();
+            }
+        } finally {
+            if (mCleanupTexture != null) mCleanupTexture.release();
+            mCleanupTexture = null;
+            super.finalize();
+        }
+    }
+
+    @Override
+    public void setMultisamplingEnabled(boolean enabled) {
+        mMultisamplingEnabled = enabled;
+    }
+
+    @Override
+    public void setUsesCovererageAntiAliasing(boolean enabled) {
+        mUsesCoverageAa = enabled;
+    }
+
+    @Override
+    public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) throws IllegalStateException {
+        if (mRendererDelegate != null) throw new IllegalStateException("A renderer has already been set for this view.");
+        initialize();
+        checkRenderThreadState();
+        if (mEGLConfigChooser == null) {
+            mEGLConfigChooser = new SimpleEGLConfigChooser(true);
+        }
+        if (mEGLContextFactory == null) {
+            mEGLContextFactory = new DefaultContextFactory();
+        }
+        if (mEGLWindowSurfaceFactory == null) {
+            mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
+        }
+        mRendererDelegate = new RajawaliTextureView.RendererDelegate(renderer, this);
+        mGLThread = new GLThread(mThisWeakRef);
+        mGLThread.start();
+        setSurfaceTextureListener(mRendererDelegate);
+    }
+
+    @Override
+    public void requestRenderUpdate() {
+        mGLThread.requestRender();
     }
 
     /**
@@ -363,6 +443,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * Must not be called before a renderer has been set.
      */
     public void onPause() {
+        mRendererDelegate.mRenderer.onPause();
         mGLThread.onPause();
     }
 
@@ -374,6 +455,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * Must not be called before a renderer has been set.
      */
     public void onResume() {
+        mRendererDelegate.mRenderer.onResume();
         mGLThread.onResume();
     }
 
@@ -388,46 +470,10 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         mGLThread.queueEvent(r);
     }
 
-    /**
-     * This method is used as part of the View class and is not normally
-     * called or subclassed by clients of RajawaliTextureView.
-     */
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (LOG_ATTACH_DETACH) {
-            Log.d(TAG, "onAttachedToWindow reattach =" + mDetached);
-        }
-        if (mDetached && (mRendererDelegate != null)) {
-            int renderMode = RENDERMODE_CONTINUOUSLY;
-            if (mGLThread != null) {
-                renderMode = mGLThread.getRenderMode();
-            }
-            mGLThread = new GLThread(mThisWeakRef);
-            if (renderMode != RENDERMODE_CONTINUOUSLY) {
-                mGLThread.setRenderMode(renderMode);
-            }
-            mGLThread.start();
-        }
-        mDetached = false;
-    }
+    private static class RendererDelegate implements SurfaceTextureListener {
 
-    @Override
-    protected void onDetachedFromWindow() {
-        if (LOG_ATTACH_DETACH) {
-            Log.d(TAG, "onDetachedFromWindow");
-        }
-        if (mGLThread != null) {
-            mGLThread.requestExitAndWait();
-        }
-        mDetached = true;
-        super.onDetachedFromWindow();
-    }
-
-    public static class RendererDelegate implements SurfaceTextureListener {
-
-        private final RajawaliTextureView mRajawaliTextureView;
-        private final IRajawaliSurfaceRenderer mRenderer;
+        final RajawaliTextureView mRajawaliTextureView;
+        final IRajawaliSurfaceRenderer mRenderer;
 
         public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliTextureView textureView) {
             mRenderer = renderer;
@@ -1434,12 +1480,6 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                 mEventQueue.add(r);
                 sGLThreadManager.notifyAll();
             }
-        }
-    }
-
-    private void checkRenderThreadState() {
-        if (mGLThread != null) {
-            throw new IllegalStateException("setRenderer has already been called for this instance.");
         }
     }
 

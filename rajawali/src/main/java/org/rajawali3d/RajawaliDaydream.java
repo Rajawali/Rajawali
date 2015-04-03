@@ -23,17 +23,15 @@ import android.widget.FrameLayout;
 
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.surface.RajawaliSurfaceView;
-import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public abstract class RajawaliDaydream extends DreamService implements IRajawaliDisplay {
 
-	protected boolean mUsesCoverageAa;
 	protected RajawaliSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
 	
-	private RajawaliRenderer mRajRenderer;
+	private RajawaliRenderer mRajawaliRenderer;
 	
 	@Override
 	public void onAttachedToWindow() {
@@ -69,7 +67,7 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
 	@Override
 	public void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		mRajRenderer.onRenderSurfaceDestroyed(null);
+		mRajawaliRenderer.onRenderSurfaceDestroyed(null);
 		unbindDrawables(mLayout);
 		System.gc();
 	}
@@ -80,13 +78,13 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
         return 0;
     }
 
-    protected void createMultisampleConfig() {
-		mSurfaceView.setEGLConfigChooser(new RajawaliEGLConfigChooser());
+    protected void setMultisamplingEnabled(boolean enabled) {
+		mSurfaceView.setMultisamplingEnabled(enabled);
 	}
 
 	protected void setRenderer(RajawaliRenderer renderer) {
-		mRajRenderer = renderer;
-        final RajawaliSurfaceView.RendererDelegate delegate = new RajawaliSurfaceView.RendererDelegate(mRajRenderer, mSurfaceView);
+		mRajawaliRenderer = renderer;
+        mSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
 	}
 
 	private void unbindDrawables(View view) {

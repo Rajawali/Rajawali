@@ -143,6 +143,11 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
 
     private final boolean mHaveRegisteredForResources;
 
+    /**
+     * Scene construction should happen here, not in onSurfaceCreated()
+     */
+    protected abstract void initScene();
+
     public RajawaliRenderer(Context context) {
         this(context, false);
     }
@@ -203,6 +208,19 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     @Override
+    public void onPause() {
+        stopRendering();
+    }
+
+    @Override
+    public void onResume() {
+        if (mSceneInitialized) {
+            getCurrentScene().resetGLState();
+            startRendering();
+        }
+    }
+
+    @Override
     public void setRenderSurface(IRajawaliSurface surface) {
         mSurface = surface;
     }
@@ -234,6 +252,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
 
     @Override
     public void onRenderSurfaceDestroyed(SurfaceTexture surface) {
+        stopRendering();
         synchronized (mScenes) {
             if (mTextureManager != null) {
                 mTextureManager.unregisterRenderer(this);
@@ -246,7 +265,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
             for (int i = 0, j = mScenes.size(); i < j; ++i)
                 mScenes.get(i).destroyScene();
         }
-        stopRendering();
     }
 
     @Override
@@ -658,11 +676,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         }
     }
 
-    /**
-     * Scene construction should happen here, not in onSurfaceCreated()
-     */
-    protected abstract void initScene();
-
     public void startRendering() {
         RajLog.d(this, "startRendering()");
         if (!mSceneInitialized) {
@@ -688,17 +701,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
             return true;
         }
         return false;
-    }
-
-    public void onVisibilityChanged(boolean visible) {
-        if (!visible) {
-            stopRendering();
-        } else {
-            if (mSceneInitialized) {
-                getCurrentScene().resetGLState();
-                startRendering();
-            }
-        }
     }
 
     public void setSharedPreferences(SharedPreferences preferences) {
