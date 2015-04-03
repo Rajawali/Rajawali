@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.rajawali3d.Capabilities;
 import org.rajawali3d.R;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
@@ -59,6 +60,8 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     }
 
     private void initialize() {
+        setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
+
         if (mMultisamplingEnabled) {
             setEGLConfigChooser(new RajawaliEGLConfigChooser());
         }
@@ -102,6 +105,16 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
         mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
     }
 
+    /**
+     * Enable/Disable transparent background for this surface view.
+     * Must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}.
+     *
+     * @param isTransparent {@code boolean} If true, this {@link RajawaliSurfaceView} will be drawn transparent.
+     */
+    public void setTransparent(boolean isTransparent) {
+        mIsTransparent = isTransparent;
+    }
+
     @Override
     public void setMultisamplingEnabled(boolean enabled) {
         mMultisamplingEnabled = enabled;
@@ -118,6 +131,7 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
         initialize();
         mRendererDelegate = new RajawaliSurfaceView.RendererDelegate(renderer, this);
         super.setRenderer(mRendererDelegate);
+        // Render mode cant be set until the GL thread exists
         setRenderMode(mRenderMode);
         onPause(); // We want to halt the surface view until we are ready
     }
@@ -140,8 +154,8 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
         public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliSurfaceView surfaceView) {
             mRenderer = renderer;
             mRajawaliSurfaceView = surfaceView;
-            mRenderer.setRenderSurface(mRajawaliSurfaceView);
             mRenderer.setFrameRate(mRajawaliSurfaceView.mFrameRate);
+            mRenderer.setRenderSurface(mRajawaliSurfaceView);
         }
 
         @Override

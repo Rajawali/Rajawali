@@ -122,6 +122,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     }
 
     private void initialize() {
+        setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
         if (mMultisamplingEnabled) {
             setEGLConfigChooser(new RajawaliEGLConfigChooser());
         }
@@ -238,6 +239,8 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) throws IllegalStateException {
         if (mRendererDelegate != null) throw new IllegalStateException("A renderer has already been set for this view.");
         initialize();
+
+        // Configure the EGL stuff
         checkRenderThreadState();
         if (mEGLConfigChooser == null) {
             mEGLConfigChooser = new SimpleEGLConfigChooser(true);
@@ -248,9 +251,14 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         if (mEGLWindowSurfaceFactory == null) {
             mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
         }
+        // Create our delegate
         mRendererDelegate = new RajawaliTextureView.RendererDelegate(renderer, this);
+        // Create the GL thread
         mGLThread = new GLThread(mThisWeakRef);
         mGLThread.start();
+        // Render mode cant be set until the GL thread exists
+        setRenderMode(mRenderMode);
+        // Register the delegate for callbacks
         setSurfaceTextureListener(mRendererDelegate);
     }
 
@@ -478,6 +486,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliTextureView textureView) {
             mRenderer = renderer;
             mRajawaliTextureView = textureView;
+            mRenderer.setFrameRate(mRajawaliTextureView.mFrameRate);
             mRenderer.setRenderSurface(mRajawaliTextureView);
             mRajawaliTextureView.setSurfaceTextureListener(this);
         }

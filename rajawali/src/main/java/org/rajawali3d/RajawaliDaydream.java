@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.surface.IRajawaliSurfaceRenderer;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 
@@ -31,7 +31,7 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
 	protected RajawaliSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
 	
-	private RajawaliRenderer mRajawaliRenderer;
+	private IRajawaliSurfaceRenderer mRajawaliRenderer;
 	
 	@Override
 	public void onAttachedToWindow() {
@@ -82,7 +82,7 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
 		mSurfaceView.setMultisamplingEnabled(enabled);
 	}
 
-	protected void setRenderer(RajawaliRenderer renderer) {
+	protected void setRenderer(IRajawaliSurfaceRenderer renderer) {
 		mRajawaliRenderer = renderer;
         mSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
 	}

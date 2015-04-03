@@ -200,7 +200,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
 
     @Override
     public void setFrameRate(double frameRate) {
-        this.mFrameRate = frameRate;
+        mFrameRate = frameRate;
         if (stopRendering()) {
             // Restart timer with new frequency
             startRendering();
