@@ -86,7 +86,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
 		pixelBuffer.order(ByteOrder.nativeOrder());
 
-		GLES20.glReadPixels(pickerInfo.getX(), picker.mRenderer.getViewportHeight()
+		GLES20.glReadPixels(pickerInfo.getX(), picker.mRenderer.getDefaultViewportHeight()
 				- pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
 				pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);

@@ -299,7 +299,7 @@ public abstract class Wallpaper extends WallpaperService {
                                boolean useMultisampling) {
             mContext = context;
             mRenderer = renderer;
-            mRenderer.setSharedPreferences(preferences);
+            //TODO Preferences
             mRenderer.setEngine(this);
             mMultisampling = useMultisampling;
             mDefaultPreviewOffsetX = 0.5f;
@@ -324,8 +324,8 @@ public abstract class Wallpaper extends WallpaperService {
         @Override
         public void onTouchEvent(MotionEvent event) {
             super.onTouchEvent(event);
-            if (mRenderer != null)
-                mRenderer.onTouchEvent(event);
+            /*if (mRenderer != null)
+                mRenderer.onTouchEvent(event);*/ //TODO Touch event
         }
 
         @Override

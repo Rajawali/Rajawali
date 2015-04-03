@@ -30,7 +30,7 @@ import android.os.Environment;
  * <pre><code>
  * public void onDrawFrame(GL10 glUnused) {
  * 		super.onDrawFrame(glUnused);
- * 		Screengrab.saveAsImage(0, 0, mViewportWidth, mViewportHeight, "/frame_" + mFrameCount + ".png", CompressFormat.PNG);
+ * 		Screengrab.saveAsImage(0, 0, mDefaultViewportWidth, mDefaultViewportHeight, "/frame_" + mFrameCount + ".png", CompressFormat.PNG);
  * }
  * </code></pre>
  * 

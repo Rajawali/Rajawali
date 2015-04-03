@@ -14,7 +14,6 @@ package org.rajawali3d.renderer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
@@ -23,7 +22,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.service.wallpaper.WallpaperService;
 import android.util.SparseArray;
-import android.view.MotionEvent;
 import android.view.WindowManager;
 
 import org.rajawali3d.Camera;
@@ -73,10 +71,10 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
 
     protected Context mContext; //Context the renderer is running in
     protected IRajawaliSurface mSurface;
-    protected SharedPreferences preferences; //Shared preferences for this app
 
-    protected int mViewportWidth, mViewportHeight; //Height and width of GL viewport
-    protected int mCurrentViewportWidth, mCurrentViewportHeight; //Height and width of GL viewport
+    protected int mCurrentViewportWidth, mCurrentViewportHeight; //The current width and height of the GL viewport
+    protected int mDefaultViewportWidth, mDefaultViewportHeight; //The default width and height of the GL viewport
+    protected int mOverrideViewportWidth, mOverrideViewportHeight; //The overridden width and height of the GL viewport
     protected WallpaperService.Engine mWallpaperEngine; //Concrete wallpaper instance
 
     protected TextureManager mTextureManager; //Texture manager for ALL textures across ALL scenes.
@@ -157,6 +155,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
         mHaveRegisteredForResources = registerForResources;
         mContext = context;
+        RawShaderLoader.mContext = new WeakReference<>(context);
         mFrameRate = getRefreshRate();
         mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
         mRenderTargets = Collections.synchronizedList(new CopyOnWriteArrayList<RenderTarget>());
@@ -171,7 +170,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         mScenes.add(defaultScene);
         mCurrentScene = defaultScene;
 
-        RawShaderLoader.mContext = new WeakReference<>(context);
+        // Make sure we use the default viewport size initially
+        clearOverrideViewportDimensions();
 
         // Make sure we have a texture manager
         mTextureManager = TextureManager.getInstance();
@@ -218,6 +218,33 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
             getCurrentScene().resetGLState();
             startRendering();
         }
+    }
+
+    public void startRendering() {
+        RajLog.d(this, "startRendering()");
+        if (!mSceneInitialized) {
+            return;
+        }
+        mRenderStartTime = System.nanoTime();
+        mLastRender = mRenderStartTime;
+        if (mTimer != null) return;
+        mTimer = Executors.newScheduledThreadPool(1);
+        mTimer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / mFrameRate), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Stop rendering the scene.
+     *
+     * @return true if rendering was stopped, false if rendering was already
+     * stopped (no action taken)
+     */
+    public boolean stopRendering() {
+        if (mTimer != null) {
+            mTimer.shutdownNow();
+            mTimer = null;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -269,9 +296,12 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
 
     @Override
     public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
-        RajLog.d(this, "onSurfaceChanged()");
-        mViewportWidth = width;
-        mViewportHeight = height;
+        mDefaultViewportWidth = width;
+        mDefaultViewportHeight = height;
+
+        final int wViewport = mOverrideViewportWidth > -1 ? mOverrideViewportWidth : mDefaultViewportWidth;
+        final int hViewport = mOverrideViewportHeight > -1 ? mOverrideViewportHeight : mDefaultViewportHeight;
+        setViewPort(wViewport, hViewport);
 
         if (!mSceneInitialized) {
             getCurrentScene().resetGLState();
@@ -286,8 +316,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         } else if (mSceneCachingEnabled && mSceneInitialized) {
             for (int i = 0, j = mRenderTargets.size(); i < j; ++i) {
                 if (mRenderTargets.get(i).getFullscreen()) {
-                    mRenderTargets.get(i).setWidth(mViewportWidth);
-                    mRenderTargets.get(i).setHeight(mViewportHeight);
+                    mRenderTargets.get(i).setWidth(mDefaultViewportWidth);
+                    mRenderTargets.get(i).setHeight(mDefaultViewportHeight);
                 }
             }
             mTextureManager.taskReload();
@@ -297,8 +327,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         }
         mSceneInitialized = true;
         startRendering();
-
-        setViewPort(mViewportWidth, mViewportHeight);
     }
 
     @Override
@@ -335,13 +363,53 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     /**
-     * Return a new instance of the default initial scene for the {@link RajawaliRenderer} instance. This method is only
-     * intended to be called one time by the renderer itself and should not be used elsewhere.
+     * Sets the GL Viewport used. User code is free to override this method, so long as the viewport
+     * is set somewhere (and the projection matrix updated).
      *
-     * @return {@link RajawaliScene} The default scene.
+     * @param width {@code int} The viewport width in pixels.
+     * @param height {@code int} The viewport height in pixels.
      */
-    protected RajawaliScene getNewDefaultScene() {
-        return new RajawaliScene(this);
+    public void setViewPort(int width, int height) {
+        RajLog.d(this, "Setting viewport dimensions <" + width + ", " + height + ">");
+        mCurrentViewportWidth = width;
+        mCurrentViewportHeight = height;
+        mCurrentScene.updateProjectionMatrix(width, height);
+        GLES20.glViewport(0, 0, width, height);
+    }
+
+    public int getDefaultViewportWidth() {
+        return mDefaultViewportWidth;
+    }
+
+    public int getDefaultViewportHeight() {
+        return mDefaultViewportHeight;
+    }
+
+    public void clearOverrideViewportDimensions() {
+        mOverrideViewportWidth = -1;
+        mOverrideViewportHeight = -1;
+        setViewPort(mDefaultViewportWidth, mDefaultViewportHeight);
+    }
+
+    public void setOverrideViewportDimensions(int width, int height) {
+        mOverrideViewportWidth = width;
+        mOverrideViewportHeight = height;
+    }
+
+    public int getOverrideViewportWidth() {
+        return mOverrideViewportWidth;
+    }
+
+    public int getOverrideViewportHeight() {
+        return mOverrideViewportHeight;
+    }
+
+    public int getViewportWidth() {
+        return mCurrentViewportWidth;
+    }
+
+    public int getViewportHeight() {
+        return mCurrentViewportHeight;
     }
 
     /**
@@ -368,7 +436,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     public void switchSceneDirect(RajawaliScene nextScene) {
         mCurrentScene = nextScene;
         mCurrentScene.resetGLState(); //Ensure that the GL state is what this scene expects
-        mCurrentScene.getCamera().setProjectionMatrix(mCurrentViewportWidth, mCurrentViewportHeight);
+        mCurrentScene.getCamera().setProjectionMatrix(mOverrideViewportWidth, mOverrideViewportHeight);
     }
 
     /**
@@ -645,18 +713,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
     }
 
-    public void onTouchEvent(MotionEvent event) {
-
-    }
-
-    public void setViewPort(int width, int height) {
-        mCurrentViewportWidth = width;
-        mCurrentViewportHeight = height;
-
-        mCurrentScene.updateProjectionMatrix(width, height);
-        GLES20.glViewport(0, 0, width, height);
-    }
-
     /**
      * Called to reload the scenes.
      */
@@ -676,35 +732,14 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         }
     }
 
-    public void startRendering() {
-        RajLog.d(this, "startRendering()");
-        if (!mSceneInitialized) {
-            return;
-        }
-        mRenderStartTime = System.nanoTime();
-        mLastRender = mRenderStartTime;
-        if (mTimer != null) return;
-        mTimer = Executors.newScheduledThreadPool(1);
-        mTimer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / mFrameRate), TimeUnit.MILLISECONDS);
-    }
-
     /**
-     * Stop rendering the scene.
+     * Return a new instance of the default initial scene for the {@link RajawaliRenderer} instance. This method is only
+     * intended to be called one time by the renderer itself and should not be used elsewhere.
      *
-     * @return true if rendering was stopped, false if rendering was already
-     * stopped (no action taken)
+     * @return {@link RajawaliScene} The default scene.
      */
-    protected boolean stopRendering() {
-        if (mTimer != null) {
-            mTimer.shutdownNow();
-            mTimer = null;
-            return true;
-        }
-        return false;
-    }
-
-    public void setSharedPreferences(SharedPreferences preferences) {
-        this.preferences = preferences;
+    protected RajawaliScene getNewDefaultScene() {
+        return new RajawaliScene(this);
     }
 
     private class RequestRenderTask implements Runnable {
@@ -716,8 +751,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     public Vector3 unProject(double x, double y, double z) {
-        x = mViewportWidth - x;
-        y = mViewportHeight - y;
+        x = mDefaultViewportWidth - x;
+        y = mDefaultViewportHeight - y;
 
         double[] m = new double[16], mvpmatrix = new double[16],
             in = new double[4],
@@ -726,8 +761,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         Matrix.multiplyMM(mvpmatrix, 0, mPMatrix, 0, mVMatrix, 0);
         Matrix.invertM(m, 0, mvpmatrix, 0);
 
-        in[0] = (x / mViewportWidth) * 2 - 1;
-        in[1] = (y / mViewportHeight) * 2 - 1;
+        in[0] = (x / mDefaultViewportWidth) * 2 - 1;
+        in[1] = (y / mDefaultViewportHeight) * 2 - 1;
         in[2] = 2 * z - 1;
         in[3] = 1;
 
@@ -1322,22 +1357,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         visitor.apply(this);
         //for (int i = 0; i < mChildren.size(); i++)
         //	mChildren.get(i).accept(visitor);
-    }
-
-    public int getViewportWidth() {
-        return mViewportWidth;
-    }
-
-    public int getViewportHeight() {
-        return mViewportHeight;
-    }
-
-    public int getCurrentViewportWidth() {
-        return mCurrentViewportWidth;
-    }
-
-    public int getCurrentViewportHeight() {
-        return mCurrentViewportHeight;
     }
 
     public boolean getSceneInitialized() {

@@ -7,8 +7,10 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.apache.http.impl.io.ContentLengthInputStream;
 import org.rajawali3d.Capabilities;
 import org.rajawali3d.R;
+import org.rajawali3d.util.RajLog;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -97,6 +99,12 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
             onResume();
         }
         super.onVisibilityChanged(changedView, visibility);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        onResume();
     }
 
     @Override
