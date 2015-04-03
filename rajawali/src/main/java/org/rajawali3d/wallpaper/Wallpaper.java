@@ -31,7 +31,6 @@ import javax.microedition.khronos.egl.EGLDisplay;
 
 public abstract class Wallpaper extends WallpaperService {
 
-    public static String TAG = "Rajawali";
     private static final boolean DEBUG = false;
     private static boolean mUsesCoverageAa;
     public static final String SHARED_PREFS_NAME = "rajawalisharedprefs";
@@ -164,9 +163,9 @@ public abstract class Wallpaper extends WallpaperService {
         private void printConfigs(EGL10 egl, EGLDisplay display,
                                   EGLConfig[] configs) {
             int numConfigs = configs.length;
-            RajLog.w(TAG, String.format("%d configurations", numConfigs));
+            RajLog.w(this, String.format("%d configurations", numConfigs));
             for (int i = 0; i < numConfigs; i++) {
-                RajLog.w(TAG, String.format("Configuration %d:\n", i));
+                RajLog.w(this, String.format("Configuration %d:\n", i));
                 printConfig(egl, display, configs[i]);
             }
         }
@@ -248,7 +247,7 @@ public abstract class Wallpaper extends WallpaperService {
                 int attribute = attributes[i];
                 String name = names[i];
                 if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
-                    RajLog.w(TAG, String.format("  %s: %d\n", name, value[0]));
+                    RajLog.w(this, String.format("  %s: %d\n", name, value[0]));
                 } else {
                     // RajLog.w(TAG, String.format("  %s: failed\n", name));
                     while (egl.eglGetError() != EGL10.EGL_SUCCESS) ;

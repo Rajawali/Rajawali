@@ -16,7 +16,7 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 
 import org.rajawali3d.BufferInfo;
-import org.rajawali3d.Capabilities;
+import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.methods.DiffuseMethod;

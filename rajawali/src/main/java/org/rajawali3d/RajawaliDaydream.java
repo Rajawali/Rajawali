@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 
 import org.rajawali3d.surface.IRajawaliSurfaceRenderer;
 import org.rajawali3d.surface.RajawaliSurfaceView;
+import org.rajawali3d.util.Capabilities;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

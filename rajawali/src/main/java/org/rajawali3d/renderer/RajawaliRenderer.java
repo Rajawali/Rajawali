@@ -25,7 +25,7 @@ import android.util.SparseArray;
 import android.view.WindowManager;
 
 import org.rajawali3d.Camera;
-import org.rajawali3d.Capabilities;
+import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.async.IAsyncLoaderCallback;
 import org.rajawali3d.materials.Material;
@@ -64,7 +64,9 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
-public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INode {
+public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
+    public static boolean supportsUIntBuffers = false;
+
     protected static final int AVAILABLE_CORES = Runtime.getRuntime().availableProcessors();
     protected final Executor mLoaderExecutor = Executors.newFixedThreadPool(AVAILABLE_CORES == 1 ? 1
         : AVAILABLE_CORES - 1);
@@ -96,8 +98,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     protected static int mMaxLights = 1; //How many lights max?
 
     //In case we cannot parse the version number, assume OpenGL ES 2.0
-    protected static int mGLES_Major_Version = 2; //The GL ES major version of the surface
-    protected static int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
+    protected int mGLES_Major_Version = 2; //The GL ES major version of the surface
+    protected int mGLES_Minor_Version = 0; //The GL ES minor version of the surface
 
     /**
      * Scene caching stores all textures and relevant OpenGL-specific
@@ -108,8 +110,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     private boolean mSceneCachingEnabled; //This applies to all scenes
     protected boolean mSceneInitialized; //This applies to all scenes
     private RenderTarget mCurrentRenderTarget;
-
-    public static boolean supportsUIntBuffers = false;
 
     /**
      * Frame task queue. Adding, removing or replacing scenes is prohibited
@@ -140,6 +140,28 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     private long mRenderStartTime;
 
     private final boolean mHaveRegisteredForResources;
+
+    public static int getMaxLights() {
+        return mMaxLights;
+    }
+
+    public static void setMaxLights(int maxLights) {
+        RajawaliRenderer.mMaxLights = maxLights;
+    }
+
+    /**
+     * Indicates whether the OpenGL context is still alive or not.
+     *
+     * @return {@code boolean} True if the OpenGL context is still alive.
+     */
+    public static boolean hasGLContext() {
+        EGL10 egl = (EGL10) EGLContext.getEGL();
+        EGLContext eglContext = egl.eglGetCurrentContext();
+        return eglContext != EGL10.EGL_NO_CONTEXT;
+    }
+
+    public abstract void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep,
+                                          float yOffsetStep, int xPixelOffset, int yPixelOffset);
 
     /**
      * Scene construction should happen here, not in onSurfaceCreated()
@@ -186,6 +208,14 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
             mTextureManager.registerRenderer(this);
             mMaterialManager.registerRenderer(this);
         }
+    }
+
+    public Context getContext() {
+        return mContext;
+    }
+
+    public TextureManager getTextureManager() {
+        return mTextureManager;
     }
 
     @Override
@@ -245,6 +275,42 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
             return true;
         }
         return false;
+    }
+
+    /**
+     * Retrieve the {@link WallpaperService.Engine} instance this renderer is attached to.
+     *
+     * @return {@link WallpaperService.Engine} The instance.
+     */
+    public WallpaperService.Engine getEngine() {
+        return mWallpaperEngine;
+    }
+
+    /**
+     * Sets the {@link WallpaperService.Engine} instance this renderer is attached to.
+     *
+     * @param engine {@link WallpaperService.Engine} instance.
+     */
+    public void setEngine(WallpaperService.Engine engine) {
+        mWallpaperEngine = engine;
+    }
+
+    /**
+     * Fetches the Open GL ES major version of the EGL surface.
+     *
+     * @return int containing the major version number.
+     */
+    public int getGLMajorVersion() {
+        return mGLES_Major_Version;
+    }
+
+    /**
+     * Fetches the Open GL ES minor version of the EGL surface.
+     *
+     * @return int containing the minor version number.
+     */
+    public int getGLMinorVersion() {
+        return mGLES_Minor_Version;
     }
 
     @Override
@@ -363,6 +429,87 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     /**
+     * Called by {@link #onRenderFrame(GL10)} to render the next frame. This is
+     * called prior to the current scene's {@link RajawaliScene#render(long, double, RenderTarget)} method.
+     *
+     * @param ellapsedRealtime {@code long} The total ellapsed rendering time in milliseconds.
+     * @param deltaTime        {@code double} The time passes since the last frame, in seconds.
+     */
+    protected void onRender(final long ellapsedRealtime, final double deltaTime) {
+        render(ellapsedRealtime, deltaTime);
+    }
+
+    /**
+     * Called by {@link #onRender(long, double)} to render the next frame.
+     *
+     * @param ellapsedRealtime {@code long} Render ellapsed time in milliseconds.
+     * @param deltaTime        {@code double} Time passed since last frame, in seconds.
+     */
+    protected void render(final long ellapsedRealtime, final double deltaTime) {
+        mCurrentScene.render(ellapsedRealtime, deltaTime, mCurrentRenderTarget);
+    }
+
+    public boolean getSceneInitialized() {
+        return mSceneInitialized;
+    }
+
+    public void setSceneCachingEnabled(boolean enabled) {
+        mSceneCachingEnabled = enabled;
+    }
+
+    public boolean getSceneCachingEnabled() {
+        return mSceneCachingEnabled;
+    }
+
+    public Vector3 unProject(double x, double y, double z) {
+        x = mDefaultViewportWidth - x;
+        y = mDefaultViewportHeight - y;
+
+        double[] m = new double[16], mvpmatrix = new double[16],
+            in = new double[4],
+            out = new double[4];
+
+        Matrix.multiplyMM(mvpmatrix, 0, mPMatrix, 0, mVMatrix, 0);
+        Matrix.invertM(m, 0, mvpmatrix, 0);
+
+        in[0] = (x / mDefaultViewportWidth) * 2 - 1;
+        in[1] = (y / mDefaultViewportHeight) * 2 - 1;
+        in[2] = 2 * z - 1;
+        in[3] = 1;
+
+        Matrix.multiplyMV(out, 0, m, 0, in, 0);
+
+        if (out[3] == 0)
+            return null;
+
+        out[3] = 1 / out[3];
+        return new Vector3(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
+    }
+
+    public double getRefreshRate() {
+        return ((WindowManager) mContext
+            .getSystemService(Context.WINDOW_SERVICE))
+            .getDefaultDisplay()
+            .getRefreshRate();
+    }
+
+    public void setFPSUpdateListener(OnFPSUpdateListener listener) {
+        mFPSUpdateListener = listener;
+    }
+
+    public void setUsesCoverageAa(boolean usesCoverageAa) {
+        mCurrentScene.setUsesCoverageAa(usesCoverageAa);
+    }
+
+    public void setUsesCoverageAaAll(boolean usesCoverageAa) {
+        synchronized (mScenes) {
+            for (int i = 0, j = mScenes.size(); i < j; ++i) {
+                mScenes.get(i).setUsesCoverageAa(usesCoverageAa);
+            }
+        }
+    }
+
+    /**
      * Sets the GL Viewport used. User code is free to override this method, so long as the viewport
      * is set somewhere (and the projection matrix updated).
      *
@@ -411,6 +558,82 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     public int getViewportHeight() {
         return mCurrentViewportHeight;
     }
+
+    /**
+     * Add an {@link ALoader} instance to queue parsing for the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)},
+     * {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)}, and
+     * {@link #onModelProgress(int, int)} to monitor the status of loading.
+     *
+     * @param loader
+     * @param tag
+     *
+     * @return
+     */
+    public ALoader loadModel(ALoader loader, IAsyncLoaderCallback callback, int tag) {
+        loader.setTag(tag);
+
+        try {
+            final int id = mLoaderThreads.size();
+            final ModelRunnable runnable = new ModelRunnable(loader, id);
+
+            mLoaderThreads.put(id, runnable);
+            mLoaderCallbacks.put(id, callback);
+            mLoaderExecutor.execute(runnable);
+        } catch (Exception e) {
+            callback.onModelLoadFailed(loader);
+        }
+
+        return loader;
+    }
+
+    /**
+     * Create and add an {@link ALoader} instance using reflection to queue parsing of the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)}, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)},
+     * and {@link #onModelProgress(int, int)} to monitor the status of loading. Returns null if the loader fails to
+     * instantiate, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)} will still be called. A tag will be set
+     * automatically for the model equal to the resource ID passed.
+     *
+     * @param loaderClass
+     * @param resID
+     *
+     * @return
+     */
+    public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID) {
+        return loadModel(loaderClass, callback, resID, resID);
+    }
+
+    /**
+     * Create and add an {@link ALoader} instance using reflection to queue parsing of the given resource ID. Use
+     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)}, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)},
+     * and {@link #onModelProgress(int, int)} to monitor the status of loading. Returns null if the loader fails to
+     * instantiate, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)} will still be called. Use the tag identified to
+     * determine which model completed loading when multiple models are loaded.
+     *
+     * @param loaderClass
+     * @param resID
+     * @param tag
+     *
+     * @return
+     */
+    public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID, int tag) {
+        try {
+            final Constructor<? extends ALoader> constructor = loaderClass.getConstructor(Resources.class,
+                TextureManager.class, int.class);
+            final ALoader loader = constructor.newInstance(getContext().getResources(),
+                getTextureManager(), resID);
+
+            return loadModel(loader, callback, tag);
+        } catch (Exception e) {
+            callback.onModelLoadFailed(null);
+            return null;
+        }
+    }
+
+
+    //---------------------------
+    // Scene methods
+    //---------------------------
 
     /**
      * Switches the {@link RajawaliScene} currently being displayed.
@@ -626,94 +849,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
     }
 
     /**
-     * Add an {@link ALoader} instance to queue parsing for the given resource ID. Use
-     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)},
-     * {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)}, and
-     * {@link #onModelProgress(int, int)} to monitor the status of loading.
-     *
-     * @param loader
-     * @param tag
-     *
-     * @return
-     */
-    public ALoader loadModel(ALoader loader, IAsyncLoaderCallback callback, int tag) {
-        loader.setTag(tag);
-
-        try {
-            final int id = mLoaderThreads.size();
-            final ModelRunnable runnable = new ModelRunnable(loader, id);
-
-            mLoaderThreads.put(id, runnable);
-            mLoaderCallbacks.put(id, callback);
-            mLoaderExecutor.execute(runnable);
-        } catch (Exception e) {
-            callback.onModelLoadFailed(loader);
-        }
-
-        return loader;
-    }
-
-    /**
-     * Create and add an {@link ALoader} instance using reflection to queue parsing of the given resource ID. Use
-     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)}, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)},
-     * and {@link #onModelProgress(int, int)} to monitor the status of loading. Returns null if the loader fails to
-     * instantiate, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)} will still be called. A tag will be set
-     * automatically for the model equal to the resource ID passed.
-     *
-     * @param loaderClass
-     * @param resID
-     *
-     * @return
-     */
-    public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID) {
-        return loadModel(loaderClass, callback, resID, resID);
-    }
-
-    /**
-     * Create and add an {@link ALoader} instance using reflection to queue parsing of the given resource ID. Use
-     * {@link IAsyncLoaderCallback#onModelLoadComplete(ALoader)}, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)},
-     * and {@link #onModelProgress(int, int)} to monitor the status of loading. Returns null if the loader fails to
-     * instantiate, {@link IAsyncLoaderCallback#onModelLoadFailed(ALoader)} will still be called. Use the tag identified to
-     * determine which model completed loading when multiple models are loaded.
-     *
-     * @param loaderClass
-     * @param resID
-     * @param tag
-     *
-     * @return
-     */
-    public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID, int tag) {
-        try {
-            final Constructor<? extends ALoader> constructor = loaderClass.getConstructor(Resources.class,
-                TextureManager.class, int.class);
-            final ALoader loader = constructor.newInstance(getContext().getResources(),
-                getTextureManager(), resID);
-
-            return loadModel(loader, callback, tag);
-        } catch (Exception e) {
-            callback.onModelLoadFailed(null);
-            return null;
-        }
-    }
-
-    protected void onRender(final long ellapsedRealtime, final double deltaTime) {
-        render(ellapsedRealtime, deltaTime);
-    }
-
-    /**
-     * Called by {@link #onRenderFrame(Object)} to render the next frame.
-     *
-     * @param ellapsedRealtime {@code long} Render ellapsed time in milliseconds.
-     * @param deltaTime        {@code double} Time passed since last frame in seconds.
-     */
-    protected void render(final long ellapsedRealtime, final double deltaTime) {
-        mCurrentScene.render(ellapsedRealtime, deltaTime, mCurrentRenderTarget);
-    }
-
-    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
-    }
-
-    /**
      * Called to reload the scenes.
      */
     protected void reloadScenes() {
@@ -748,54 +883,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
                 mSurface.requestRenderUpdate();
             }
         }
-    }
-
-    public Vector3 unProject(double x, double y, double z) {
-        x = mDefaultViewportWidth - x;
-        y = mDefaultViewportHeight - y;
-
-        double[] m = new double[16], mvpmatrix = new double[16],
-            in = new double[4],
-            out = new double[4];
-
-        Matrix.multiplyMM(mvpmatrix, 0, mPMatrix, 0, mVMatrix, 0);
-        Matrix.invertM(m, 0, mvpmatrix, 0);
-
-        in[0] = (x / mDefaultViewportWidth) * 2 - 1;
-        in[1] = (y / mDefaultViewportHeight) * 2 - 1;
-        in[2] = 2 * z - 1;
-        in[3] = 1;
-
-        Matrix.multiplyMV(out, 0, m, 0, in, 0);
-
-        if (out[3] == 0)
-            return null;
-
-        out[3] = 1 / out[3];
-        return new Vector3(out[0] * out[3], out[1] * out[3], out[2] * out[3]);
-    }
-
-    public double getRefreshRate() {
-        return ((WindowManager) mContext
-            .getSystemService(Context.WINDOW_SERVICE))
-            .getDefaultDisplay()
-            .getRefreshRate();
-    }
-
-    public WallpaperService.Engine getEngine() {
-        return mWallpaperEngine;
-    }
-
-    public void setEngine(WallpaperService.Engine engine) {
-        this.mWallpaperEngine = engine;
-    }
-
-    public Context getContext() {
-        return mContext;
-    }
-
-    public TextureManager getTextureManager() {
-        return mTextureManager;
     }
 
     /**
@@ -1352,36 +1439,9 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
         return addTaskToQueue(task);
     }
 
-
-    public void accept(INodeVisitor visitor) { //TODO: Handle
-        visitor.apply(this);
-        //for (int i = 0; i < mChildren.size(); i++)
-        //	mChildren.get(i).accept(visitor);
-    }
-
-    public boolean getSceneInitialized() {
-        return mSceneInitialized;
-    }
-
-    public void setSceneCachingEnabled(boolean enabled) {
-        mSceneCachingEnabled = enabled;
-    }
-
-    public boolean getSceneCachingEnabled() {
-        return mSceneCachingEnabled;
-    }
-
-    public static int getMaxLights() {
-        return mMaxLights;
-    }
-
-    public static void setMaxLights(int maxLights) {
-        RajawaliRenderer.mMaxLights = maxLights;
-    }
-
     /**
      * Sets the current render target. Please mind that this CAN ONLY BE called on the main
-     * OpenGL render thread. A subsequent call to {@link RajawaliRenderer#render()} will render
+     * OpenGL render thread. A subsequent call to {@link RajawaliRenderer#render(long, double)} will render
      * the current scene into this render target.
      * Setting the render target to null will switch back to normal rendering.
      *
@@ -1393,59 +1453,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer, INod
 
     public RenderTarget getRenderTarget() {
         return mCurrentRenderTarget;
-    }
-
-    public void setFPSUpdateListener(OnFPSUpdateListener listener) {
-        mFPSUpdateListener = listener;
-    }
-
-    public static int checkGLError(String message) {
-        int error = GLES20.glGetError();
-        if (error != GLES20.GL_NO_ERROR) {
-            throw new RuntimeException("[" + message + "] GLES20 Error " + error + ": " + GLU.gluErrorString(error));
-        }
-        return error;
-    }
-
-    /**
-     * Indicates whether the OpenGL context is still alive or not.
-     *
-     * @return
-     */
-    public static boolean hasGLContext() {
-        EGL10 egl = (EGL10) EGLContext.getEGL();
-        EGLContext eglContext = egl.eglGetCurrentContext();
-        return eglContext != EGL10.EGL_NO_CONTEXT;
-    }
-
-    /**
-     * Fetches the Open GL ES major version of the EGL surface.
-     *
-     * @return int containing the major version number.
-     */
-    public static int getGLMajorVersion() {
-        return mGLES_Major_Version;
-    }
-
-    /**
-     * Fetches the Open GL ES minor version of the EGL surface.
-     *
-     * @return int containing the minor version number.
-     */
-    public static int getGLMinorVersion() {
-        return mGLES_Minor_Version;
-    }
-
-    public void setUsesCoverageAa(boolean usesCoverageAa) {
-        mCurrentScene.setUsesCoverageAa(usesCoverageAa);
-    }
-
-    public void setUsesCoverageAaAll(boolean usesCoverageAa) {
-        synchronized (mScenes) {
-            for (int i = 0, j = mScenes.size(); i < j; ++i) {
-                mScenes.get(i).setUsesCoverageAa(usesCoverageAa);
-            }
-        }
     }
 
     @SuppressLint("HandlerLeak")
