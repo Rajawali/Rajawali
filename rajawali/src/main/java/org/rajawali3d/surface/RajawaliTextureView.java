@@ -64,25 +64,6 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     protected RendererDelegate mRendererDelegate;
 
-    /**
-     * The renderer only renders
-     * when the surface is created, or when {@link #requestRenderUpdate()} is called.
-     *
-     * @see #getRenderMode()
-     * @see #setRenderMode(int)
-     * @see #requestRenderUpdate()
-     */
-    public final static int RENDERMODE_WHEN_DIRTY = 0;
-    /**
-     * The renderer is called
-     * continuously to re-render the scene.
-     *
-     * @see #getRenderMode()
-     * @see #setRenderMode(int)
-     */
-    public final static int RENDERMODE_CONTINUOUSLY = 1;
-
-
     public RajawaliTextureView(Context context) {
         super(context);
     }
@@ -226,6 +207,31 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     }
 
     @Override
+    public void setFrameRate(double rate) {
+        mFrameRate = rate;
+        if (mRendererDelegate != null) {
+            mRendererDelegate.mRenderer.setFrameRate(rate);
+        }
+    }
+
+    @Override
+    public int getRenderMode() {
+        if (mRendererDelegate != null) {
+            return getRenderModeInternal();
+        } else {
+            return mRenderMode;
+        }
+    }
+
+    @Override
+    public void setRenderMode(int mode) {
+        mRenderMode = mode;
+        if (mRendererDelegate != null) {
+            setRenderModeInternal(mRenderMode);
+        }
+    }
+
+    @Override
     public void setMultisamplingEnabled(boolean enabled) {
         mMultisamplingEnabled = enabled;
     }
@@ -252,13 +258,14 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
             mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
         }
         // Create our delegate
-        mRendererDelegate = new RajawaliTextureView.RendererDelegate(renderer, this);
+        final RendererDelegate delegate = new RajawaliTextureView.RendererDelegate(renderer, this);
         // Create the GL thread
         mGLThread = new GLThread(mThisWeakRef);
         mGLThread.start();
         // Render mode cant be set until the GL thread exists
-        setRenderMode(mRenderMode);
+        setRenderModeInternal(mRenderMode);
         // Register the delegate for callbacks
+        mRendererDelegate = delegate; // Done to make sure we dont publish a reference before its safe.
         setSurfaceTextureListener(mRendererDelegate);
     }
 
@@ -428,7 +435,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * @see #RENDERMODE_CONTINUOUSLY
      * @see #RENDERMODE_WHEN_DIRTY
      */
-    public void setRenderMode(int renderMode) {
+    private void setRenderModeInternal(int renderMode) {
         mGLThread.setRenderMode(renderMode);
     }
 
@@ -440,7 +447,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * @see #RENDERMODE_CONTINUOUSLY
      * @see #RENDERMODE_WHEN_DIRTY
      */
-    public int getRenderMode() {
+    private int getRenderModeInternal() {
         return mGLThread.getRenderMode();
     }
 

@@ -11,6 +11,45 @@ import org.rajawali3d.renderer.RajawaliRenderer;
 public interface IRajawaliSurface {
 
     /**
+     * The renderer only renders
+     * when the surface is created, or when {@link #requestRenderUpdate()} is called.
+     *
+     * @see #getRenderMode()
+     * @see #setRenderMode(int)
+     * @see #requestRenderUpdate()
+     */
+    public final static int RENDERMODE_WHEN_DIRTY = 0;
+    /**
+     * The renderer is called
+     * continuously to re-render the scene.
+     *
+     * @see #getRenderMode()
+     * @see #setRenderMode(int)
+     */
+    public final static int RENDERMODE_CONTINUOUSLY = 1;
+
+    /**
+     * Sets the target frame rate in frames per second.
+     *
+     * @param rate {@code double} The target rate.
+     */
+    public void setFrameRate(double rate);
+
+    /**
+     * Gets the current rendering mode.
+     *
+     * @return {@code int} The current rendering mode.
+     */
+    public int getRenderMode();
+
+    /**
+     * Sets the desired rendering mode
+     *
+     * @param mode {@code int} The desired rendering mode.
+     */
+    public void setRenderMode(int mode);
+
+    /**
      * Called to enable/disable multisampling on this surface.
      * Must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}.
      *

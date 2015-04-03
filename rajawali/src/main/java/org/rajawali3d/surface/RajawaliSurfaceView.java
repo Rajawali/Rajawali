@@ -7,10 +7,8 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
 
-import org.apache.http.impl.io.ContentLengthInputStream;
 import org.rajawali3d.Capabilities;
 import org.rajawali3d.R;
-import org.rajawali3d.util.RajLog;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -27,7 +25,7 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     protected RendererDelegate mRendererDelegate;
 
     protected double mFrameRate = 60.0;
-    protected int mRenderMode = RENDERMODE_WHEN_DIRTY;
+    protected int mRenderMode = IRajawaliSurface.RENDERMODE_WHEN_DIRTY;
     protected boolean mMultisamplingEnabled = false;
     protected boolean mUsesCoverageAa = false;
     protected boolean mIsTransparent = false;
@@ -39,6 +37,7 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     public RajawaliSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         applyAttributes(context, attrs);
+
     }
 
     private void applyAttributes(Context context, AttributeSet attrs) {
@@ -49,7 +48,7 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
             if (attr == R.styleable.RajawaliSurfaceView_frameRate) {
                 mFrameRate = array.getFloat(i, 60.0f);
             } else if (attr == R.styleable.RajawaliSurfaceView_renderMode) {
-                mRenderMode = array.getInt(i, RENDERMODE_WHEN_DIRTY);
+                mRenderMode = array.getInt(i, IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
             } else if (attr == R.styleable.RajawaliSurfaceView_multisamplingEnabled) {
                 mMultisamplingEnabled = array.getBoolean(i, false);
             } else if (attr == R.styleable.RajawaliSurfaceView_useCoverageAntiAliasing) {
@@ -113,6 +112,31 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
         mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
     }
 
+    @Override
+    public void setFrameRate(double rate) {
+        mFrameRate = rate;
+        if (mRendererDelegate != null) {
+            mRendererDelegate.mRenderer.setFrameRate(rate);
+        }
+    }
+
+    @Override
+    public int getRenderMode() {
+        if (mRendererDelegate != null) {
+            return super.getRenderMode();
+        } else {
+            return mRenderMode;
+        }
+    }
+
+    @Override
+    public void setRenderMode(int mode) {
+        mRenderMode = mode;
+        if (mRendererDelegate != null) {
+            super.setRenderMode(mRenderMode);
+        }
+    }
+
     /**
      * Enable/Disable transparent background for this surface view.
      * Must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}.
@@ -137,8 +161,9 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) throws IllegalStateException {
         if (mRendererDelegate != null) throw new IllegalStateException("A renderer has already been set for this view.");
         initialize();
-        mRendererDelegate = new RajawaliSurfaceView.RendererDelegate(renderer, this);
-        super.setRenderer(mRendererDelegate);
+        final RendererDelegate delegate = new RajawaliSurfaceView.RendererDelegate(renderer, this);
+        super.setRenderer(delegate);
+        mRendererDelegate = delegate; // Done to make sure we dont publish a reference before its safe.
         // Render mode cant be set until the GL thread exists
         setRenderMode(mRenderMode);
         onPause(); // We want to halt the surface view until we are ready
