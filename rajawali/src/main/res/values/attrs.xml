@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RajawaliSurfaceView">
+        <attr name="frameRate" />
+        <attr name="renderMode" />
+        <attr name="multisamplingEnabled" />
+        <attr name="useCoverageAntiAliasing" />
+        <attr name="isTransparent" />
+    </declare-styleable>
+
+    <declare-styleable name="RajawaliTextureView">
+        <attr name="frameRate" />
+        <attr name="renderMode" />
+        <attr name="multisamplingEnabled" />
+        <attr name="useCoverageAntiAliasing" />
+    </declare-styleable>
+
+    <attr name="frameRate" format="float" />
+    <attr name="multisamplingEnabled" format="boolean" />
+    <attr name="useCoverageAntiAliasing" format="boolean" />
+    <attr name="isTransparent" format="boolean" />
+
+    <attr name="renderMode" format="enum">
+        <enum name="RENDER_WHEN_DIRTY" value="0" />
+        <enum name="RENDER_CONTINUOUS" value="1" />
+    </attr>
+</resources>

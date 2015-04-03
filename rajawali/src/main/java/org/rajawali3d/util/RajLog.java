@@ -12,16 +12,16 @@
  */
 package org.rajawali3d.util;
 
-import javax.microedition.khronos.opengles.GL10;
-
-import org.rajawali3d.Capabilities;
-import org.rajawali3d.RajawaliActivity;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
+
+import org.rajawali3d.Capabilities;
+
+import javax.microedition.khronos.opengles.GL10;
 
 public class RajLog {
 
@@ -653,22 +653,20 @@ public class RajLog {
 	
 	/**
 	 * Outputs memory characteristics of the device.
-	 * Requires a reference to the current Activity so
-	 * ideally it should be called from onCreate in your RajawaliActivity
+	 * Requires a reference to the current Activity.
 	 * Available for API 16+
 	 * 
-	 * @param ra
-	 * 		A reference to your RajawaliActivity
+	 * @param context An activity {@link Context} reference.
 	 */	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	public static void getDeviceMemoryCharacteristics(RajawaliActivity ra){
+	public static void getDeviceMemoryCharacteristics(Context context){
 		
 		String memInfo;
 		ActivityManager am;
 		
 		MemoryInfo mi = new MemoryInfo();
 		
-		am = (ActivityManager)ra.getSystemService( Context.ACTIVITY_SERVICE );
+		am = (ActivityManager) context.getSystemService( Context.ACTIVITY_SERVICE );
 		
 		memInfo = "-----------------------------------------\n";
 		memInfo += "Standard Heap per Application :  " + am.getMemoryClass() + "mb \n";

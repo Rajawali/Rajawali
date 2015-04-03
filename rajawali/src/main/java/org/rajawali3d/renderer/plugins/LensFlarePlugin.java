@@ -300,7 +300,7 @@ public final class LensFlarePlugin extends Plugin {
         super.render();
 		int f, i, numLensFlares = mLensFlares.size();
 		// Calculate world space position to normalized screen space.
-		double viewportWidth = mRenderer.getViewportWidth(), viewportHeight = mRenderer.getViewportHeight();
+		double viewportWidth = mRenderer.getViewportWidth(), viewportHeight = mRenderer.getDefaultViewportHeight();
 		double invAspect = viewportHeight / viewportWidth;
 		double size;
 		Vector2 scale = new Vector2();

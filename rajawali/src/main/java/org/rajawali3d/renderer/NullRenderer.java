@@ -1,6 +1,7 @@
 package org.rajawali3d.renderer;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 
 import org.rajawali3d.util.RajLog;
 
@@ -17,7 +18,13 @@ public final class NullRenderer extends RajawaliRenderer {
     }
 
     @Override
-    public void onSurfaceDestroyed() {
+    protected void initScene() {
+
+    }
+
+    @Override
+    public void onRenderSurfaceDestroyed(SurfaceTexture surface) {
+        super.onRenderSurfaceDestroyed(surface);
         stopRendering();
     }
 }
