@@ -84,8 +84,11 @@ public class RajawaliScene {
 	private Cube mNextSkybox;
 	private final Object mNextSkyboxLock = new Object();
 	protected ATexture mSkyboxTexture;
-	
-	private boolean mLightsDirty;
+
+    /**
+     * Guarded by {@link #mFrameTaskQueue}.
+     */
+	private volatile boolean mLightsDirty;
 	protected ColorPickerInfo mPickerInfo;
 	protected boolean mReloadPickerInfo;
 	protected boolean mUsesCoverageAa;
@@ -560,6 +563,7 @@ public class RajawaliScene {
             @Override
             protected void doTask() {
                 mLights.add(light);
+                mLightsDirty = true;
             }
         };
         return internalOfferTask(task);
@@ -576,6 +580,7 @@ public class RajawaliScene {
             @Override
             protected void doTask() {
                 mLights.remove(light);
+                mLightsDirty = true;
             }
         };
         return internalOfferTask(task);
@@ -591,6 +596,7 @@ public class RajawaliScene {
             @Override
             protected void doTask() {
                 mLights.clear();
+                mLightsDirty = true;
             }
         };
         return internalOfferTask(task);
@@ -964,10 +970,12 @@ public class RajawaliScene {
 	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
 		performFrameTasks(); //Handle the task queue
 
-        if(mLightsDirty) {
-			updateMaterialsWithLights();
-			mLightsDirty = false;
-		}
+        synchronized (mFrameTaskQueue) {
+            if (mLightsDirty) {
+                updateMaterialsWithLights();
+                mLightsDirty = false;
+            }
+        }
 
 		synchronized (mNextSkyboxLock) {
 			//Check if we need to switch the skybox, and if so, do it.
