@@ -45,7 +45,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Capabilities;
 import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.async.IAsyncLoaderCallback;
@@ -60,7 +60,6 @@ import org.rajawali3d.util.GLU;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
-import org.rajawali3d.util.RajawaliGLDebugger;
 import org.rajawali3d.util.RawShaderLoader;
 import org.rajawali3d.visitors.INode;
 import org.rajawali3d.visitors.INodeVisitor;
@@ -521,7 +520,7 @@ public class RajawaliRenderer implements GLSurfaceView.Renderer, INode {
 
 	public void onTouchEvent(MotionEvent event) {
 
-	}		
+    }
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		RajLog.d(this, "onSurfaceChanged()");

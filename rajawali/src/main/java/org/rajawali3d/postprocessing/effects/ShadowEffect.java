@@ -1,6 +1,6 @@
 package org.rajawali3d.postprocessing.effects;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.textures.ATexture.FilterType;
 import org.rajawali3d.materials.textures.ATexture.WrapType;

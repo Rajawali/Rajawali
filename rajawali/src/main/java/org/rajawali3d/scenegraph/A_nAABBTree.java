@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.rajawali3d.ATransformable3D;
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.BoundingSphere;
 import org.rajawali3d.bounds.IBoundingVolume;
