@@ -12,14 +12,14 @@
  */
 package org.rajawali3d.materials;
 
-import java.util.List;
-
 import android.content.Context;
-import org.rajawali3d.renderer.AFrameTask;
+
 import org.rajawali3d.renderer.RajawaliRenderer;
 
+import java.util.List;
 
-public abstract class AResourceManager extends AFrameTask {
+
+public abstract class AResourceManager {
 	/**
 	 * The application context
 	 */

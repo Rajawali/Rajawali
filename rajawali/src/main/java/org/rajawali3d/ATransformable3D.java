@@ -16,11 +16,10 @@ import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.AFrameTask;
 import org.rajawali3d.scenegraph.IGraphNode;
 import org.rajawali3d.scenegraph.IGraphNodeMember;
 
-public abstract class ATransformable3D extends AFrameTask implements IGraphNodeMember {
+public abstract class ATransformable3D implements IGraphNodeMember {
     protected final Matrix4 mMMatrix = new Matrix4(); //The model matrix
     protected final Vector3 mPosition; //The position
     protected final Vector3 mScale; //The scale

@@ -2,7 +2,6 @@ package org.rajawali3d.cameras;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.view.GestureDetectorCompat;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -22,7 +21,7 @@ public class ArcballCamera extends Camera {
     private Context mContext;
     private ScaleGestureDetector mScaleDetector;
     private View.OnTouchListener mGestureListener;
-    private GestureDetectorCompat mDetector;
+    private GestureDetector mDetector;
     private View mView;
     private float mScaleFactor;
     private float mRadius = 20;
@@ -133,7 +132,7 @@ public class ArcballCamera extends Camera {
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mDetector = new GestureDetectorCompat(mContext, new GestureListener());
+                mDetector = new GestureDetector(mContext, new GestureListener());
                 mScaleDetector = new ScaleGestureDetector(mContext, new ScaleListener());
 
                 mGestureListener = new View.OnTouchListener() {
@@ -158,7 +157,7 @@ public class ArcballCamera extends Camera {
         @Override
         public boolean onScroll(MotionEvent event1, MotionEvent event2, float distanceX, float distanceY) {
             if(mIsRotating == false) {
-                startRotation(event2.getX(), event2.getY());
+                startRotation(event1.getX(), event1.getY());
                 return true;
             }
             mIsRotating = true;

@@ -19,7 +19,6 @@ import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.AFrameTask;
 
 public class Camera extends ATransformable3D {
 
@@ -251,11 +250,6 @@ public class Camera extends ATransformable3D {
 		}
 	}
 	
-	@Override
-	public TYPE getFrameTaskType() {
-		return AFrameTask.TYPE.CAMERA;
-	}
-
 	public Camera clone() {
 		Camera cam = new Camera();
 		cam.setFarPlane(mFarPlane);

@@ -12,14 +12,14 @@
  */
 package org.rajawali3d.animation;
 
+import org.rajawali3d.scene.RajawaliScene;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.rajawali3d.scene.RajawaliScene;
-
 /**
  * A group of {@link Animation}s that will all be played and paused at the same time. When using a group, use
- * {@link #addAnimation(Animation3D)} to add each desired animation to the group and register the group to the scene
+ * {@link AnimationGroup#addAnimation(Animation)} to add each desired animation to the group and register the group to the scene
  * with {@link RajawaliScene#registerAnimation(Animation)}. When ready, call {@link #play()} to begin all animations.
  * 
  * @author Ian Thomas (toxicbakery@gmail.com)

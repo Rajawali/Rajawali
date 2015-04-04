@@ -1,7 +1,5 @@
 package org.rajawali3d.scene;
 
-import org.rajawali3d.renderer.AFrameTask;
-
 /**
  * Abstract class for receiving frame callbacks from {@link RajawaliScene}. The timing
  * of this interface assumes that the rendering time does not affect the timing of
@@ -16,7 +14,7 @@ import org.rajawali3d.renderer.AFrameTask;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public abstract class ASceneFrameCallback extends AFrameTask {
+public abstract class ASceneFrameCallback {
 
     /**
      * Pre frame handling callback. This will be called prior to any camera or animation updates in the scene.
@@ -68,10 +66,5 @@ public abstract class ASceneFrameCallback extends AFrameTask {
      */
     public boolean callPostFrame() {
         return false;
-    }
-
-    @Override
-    public TYPE getFrameTaskType() {
-        return TYPE.FRAME_CALLBACK;
     }
 }

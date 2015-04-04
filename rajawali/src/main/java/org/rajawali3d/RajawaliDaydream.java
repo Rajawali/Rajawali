@@ -21,24 +21,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
-import org.rajawali3d.renderer.RajawaliRenderer;
-import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
+import org.rajawali3d.surface.IRajawaliSurfaceRenderer;
+import org.rajawali3d.surface.RajawaliSurfaceView;
+import org.rajawali3d.util.Capabilities;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public abstract class RajawaliDaydream extends DreamService implements IRajawaliDisplay {
 
-	protected boolean mUsesCoverageAa;
-	protected GLSurfaceView mSurfaceView;
+	protected RajawaliSurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
 	
-	private RajawaliRenderer mRajRenderer;
+	private IRajawaliSurfaceRenderer mRajawaliRenderer;
 	
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 
-		mSurfaceView = new GLSurfaceView(this);
+		mSurfaceView = new RajawaliSurfaceView(this);
 		mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
 		setInteractive(false);
@@ -68,7 +68,7 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
 	@Override
 	public void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		mRajRenderer.onSurfaceDestroyed();
+		mRajawaliRenderer.onRenderSurfaceDestroyed(null);
 		unbindDrawables(mLayout);
 		System.gc();
 	}
@@ -79,13 +79,13 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
         return 0;
     }
 
-    protected void createMultisampleConfig() {
-		mSurfaceView.setEGLConfigChooser(new RajawaliEGLConfigChooser());
+    protected void setMultisamplingEnabled(boolean enabled) {
+		mSurfaceView.setMultisamplingEnabled(enabled);
 	}
 
-	protected void setRenderer(RajawaliRenderer renderer) {
-		mRajRenderer = renderer;
-		mSurfaceView.setRenderer(renderer);
+	protected void setRenderer(IRajawaliSurfaceRenderer renderer) {
+		mRajawaliRenderer = renderer;
+        mSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
 	}
 
 	private void unbindDrawables(View view) {

@@ -207,10 +207,13 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		//Create MVP Matrix from View-Projection Matrix
 		mMVPMatrix.setAll(vpMatrix).multiply(mMMatrix);
 
+        // Transform the bounding volumes if they exist
+        if (mGeometry.hasBoundingBox()) mGeometry.getBoundingBox().transform(getModelMatrix());
+        if (mGeometry.hasBoundingSphere()) mGeometry.getBoundingSphere().transform(getModelMatrix());
+
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
 			BoundingBox bbox = mGeometry.getBoundingBox();
-			bbox.transform(mMMatrix);
 			if (!camera.getFrustum().boundsInFrustum(bbox)) {
 				mIsInFrustum = false;
 			}
@@ -352,6 +355,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		if (mGeometry.hasBoundingSphere() && mGeometry.getBoundingSphere().getVisual() != null)
 			mGeometry.getBoundingSphere().getVisual().reload();
 	}
+
+    public boolean hasBoundingVolume() {
+        return mGeometry.hasBoundingBox() || mGeometry.hasBoundingSphere();
+    }
 
 	public void isContainer(boolean isContainer) {
 		mIsContainerOnly = isContainer;
@@ -758,10 +765,5 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		calculateModelMatrix(null);
 		volume.transform(mMMatrix);
 		return volume;
-	}
-
-	@Override
-	public TYPE getFrameTaskType() {
-		return AFrameTask.TYPE.OBJECT3D;
 	}
 }

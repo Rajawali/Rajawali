@@ -18,7 +18,6 @@ import android.hardware.SensorEventListener;
 import android.opengl.GLES20;
 
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.RajawaliActivity;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture.TextureException;
 import org.rajawali3d.math.Quaternion;
@@ -82,7 +81,7 @@ import org.rajawali3d.scene.RajawaliScene;
  * @author dennis.ippel
  *
  */
-public class RajawaliSideBySideRenderer extends RajawaliRenderer {
+public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
 	/**
 	 * Stores the camera's orientation. This is set from the 
 	 * activity by the rotation vector sensor.
@@ -204,15 +203,15 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 
 		addScene(mSideBySideScene);
 
-		mViewportWidthHalf = (int) (mViewportWidth * .5f);
+		mViewportWidthHalf = (int) (mDefaultViewportWidth * .5f);
 
-		mLeftRenderTarget = new RenderTarget("sbsLeftRT", mViewportWidthHalf, mViewportHeight);
+		mLeftRenderTarget = new RenderTarget("sbsLeftRT", mViewportWidthHalf, mDefaultViewportHeight);
 		mLeftRenderTarget.setFullscreen(false);
-		mRightRenderTarget = new RenderTarget("sbsRightRT", mViewportWidthHalf, mViewportHeight);
+		mRightRenderTarget = new RenderTarget("sbsRightRT", mViewportWidthHalf, mDefaultViewportHeight);
 		mRightRenderTarget.setFullscreen(false);
 
-		mCameraLeft.setProjectionMatrix(mViewportWidthHalf, mViewportHeight);
-		mCameraRight.setProjectionMatrix(mViewportWidthHalf, mViewportHeight);
+		mCameraLeft.setProjectionMatrix(mViewportWidthHalf, mDefaultViewportHeight);
+		mCameraRight.setProjectionMatrix(mViewportWidthHalf, mDefaultViewportHeight);
 		
 		addRenderTarget(mLeftRenderTarget);
 		addRenderTarget(mRightRenderTarget);
@@ -231,8 +230,8 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 
 		setRenderTarget(mLeftRenderTarget);
 		getCurrentScene().switchCamera(mCameraLeft);
-		GLES20.glViewport(0, 0, mViewportWidthHalf, mViewportHeight);
-		mCameraLeft.setProjectionMatrix(mViewportWidthHalf, mViewportHeight);
+		GLES20.glViewport(0, 0, mViewportWidthHalf, mDefaultViewportHeight);
+		mCameraLeft.setProjectionMatrix(mViewportWidthHalf, mDefaultViewportHeight);
 		mCameraLeft.setOrientation(mCameraOrientation);
 
 		render(ellapsedTime, deltaTime);
@@ -240,13 +239,13 @@ public class RajawaliSideBySideRenderer extends RajawaliRenderer {
 		setRenderTarget(mRightRenderTarget);
 
 		getCurrentScene().switchCamera(mCameraRight);
-		mCameraRight.setProjectionMatrix(mViewportWidthHalf, mViewportHeight);
+		mCameraRight.setProjectionMatrix(mViewportWidthHalf, mDefaultViewportHeight);
 		mCameraRight.setOrientation(mCameraOrientation);
 
 		render(ellapsedTime, deltaTime);
 
 		switchSceneDirect(mSideBySideScene);
-		GLES20.glViewport(0, 0, mViewportWidth, mViewportHeight);
+		GLES20.glViewport(0, 0, mDefaultViewportWidth, mDefaultViewportHeight);
 
 		setRenderTarget(null);
 

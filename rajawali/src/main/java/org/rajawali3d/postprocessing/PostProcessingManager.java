@@ -61,11 +61,11 @@ public class PostProcessingManager {
 
 		if(width == -1 && height == -1) {
 			if (mRenderer.getSceneInitialized()) {
-				width = mRenderer.getCurrentViewportWidth();
-				height = mRenderer.getCurrentViewportHeight();
+				width = mRenderer.getOverrideViewportWidth();
+				height = mRenderer.getOverrideViewportHeight();
 			} else {
 				width = mRenderer.getViewportWidth();
-				height = mRenderer.getViewportHeight();
+				height = mRenderer.getDefaultViewportHeight();
 			}
 		}		
 

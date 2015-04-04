@@ -16,7 +16,7 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class RajawaliDebugRenderer extends RajawaliRenderer {
+public abstract class RajawaliDebugRenderer extends RajawaliRenderer {
     private final RajawaliGLDebugger.Builder mDebugBuilder;
 
     private RajawaliGLDebugger mGLDebugger;
@@ -26,19 +26,22 @@ public class RajawaliDebugRenderer extends RajawaliRenderer {
         mDebugBuilder = debugConfig;
     }
 
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    @Override
+    public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
         if (mDebugBuilder != null) {
             mDebugBuilder.setGL(gl);
             mGLDebugger = mDebugBuilder.build();
         }
-        super.onSurfaceCreated(mGLDebugger.getGL(), config);
+        super.onRenderSurfaceCreated(config, mGLDebugger.getGL(), width, height);
     }
 
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        super.onSurfaceChanged(mGLDebugger.getGL(), width, height);
+    @Override
+    public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
+        super.onRenderSurfaceSizeChanged(mGLDebugger.getGL(), width, height);
     }
 
-    public void onDrawFrame(GL10 glUnused) {
-        super.onDrawFrame(mGLDebugger.getGL());
+    @Override
+    public void onRenderFrame(GL10 gl) {
+        super.onRenderFrame(mGLDebugger.getGL());
     }
 }

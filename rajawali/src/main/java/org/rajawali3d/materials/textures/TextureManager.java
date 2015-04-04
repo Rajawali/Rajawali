@@ -33,8 +33,7 @@ import android.opengl.GLES20;
  * @author dennis.ippel
  * 
  */
-public final class TextureManager extends AResourceManager
-{
+public final class TextureManager extends AResourceManager {
 	/**
 	 * Stores the singleton instance
 	 */
@@ -73,36 +72,31 @@ public final class TextureManager extends AResourceManager
 	 * @return
 	 */
 	public ATexture addTexture(ATexture texture) {
-		mRenderer.queueAddTask(texture);
+		mRenderer.addTexture(texture);
 		return texture;
 	}
 
 	/**
-	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link RajawaliRender}.
+	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link RajawaliRenderer}.
 	 * 
 	 * @param texture
 	 */
-	public void taskAdd(ATexture texture)
-	{
+	public void taskAdd(ATexture texture) {
 		taskAdd(texture, false);
 	}
 
 	/**
-	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link RajawaliRender}.
+	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link RajawaliRenderer}.
 	 * 
 	 * @param texture
 	 * @param isUpdatingAfterContextWasLost
 	 */
-	private void taskAdd(ATexture texture, boolean isUpdatingAfterContextWasLost)
-	{
-		if (!isUpdatingAfterContextWasLost)
-		{
+	private void taskAdd(ATexture texture, boolean isUpdatingAfterContextWasLost) {
+		if (!isUpdatingAfterContextWasLost) {
 			// -- check if texture exists already
 			int count = mTextureList.size();
-			for (int i = 0; i < count; i++)
-			{
-				if (mTextureList.get(i).getTextureName().equals(texture.getTextureName()))
-				{
+			for (int i = 0; i < count; i++) {
+				if (mTextureList.get(i).getTextureName().equals(texture.getTextureName())) {
 					if (mTextureList.get(i) != texture)
 						texture.setFrom(mTextureList.get(i));
 					else
@@ -128,13 +122,12 @@ public final class TextureManager extends AResourceManager
 	 * @param texture
 	 * @return
 	 */
-	public void replaceTexture(ATexture texture)
-	{
-		mRenderer.queueReplaceTask(texture, null);
+	public void replaceTexture(ATexture texture) {
+		mRenderer.replaceTexture(texture);
 	}
 
 	/**
-	 * Replaces an existing {@link ATexture}. This should only be called by {@link RajawaliRender}.
+	 * Replaces an existing {@link ATexture}. This should only be called by {@link RajawaliRenderer}.
 	 * 
 	 * @param texture
 	 * @return
@@ -155,7 +148,7 @@ public final class TextureManager extends AResourceManager
 	 * @return
 	 */
 	public void removeTexture(ATexture texture) {
-		mRenderer.queueRemoveTask(texture);
+		mRenderer.removeTexture(texture);
 	}
 
 	/**
@@ -164,24 +157,21 @@ public final class TextureManager extends AResourceManager
 	 * @param texture
 	 * @return
 	 */
-	public void removeTextures(List<ATexture> textures)
-	{
+	public void removeTextures(List<ATexture> textures) {
 		int numTextures = textures.size();
 
-		for (int i = 0; i < numTextures; i++)
-		{
+		for (int i = 0; i < numTextures; i++) {
 			removeTexture(textures.get(i));
 		}
 	}
 
 	/**
-	 * Removes a {@link ATexture} from the TextureManager. This should only be called by {@link RajawaliRender}.
+	 * Removes a {@link ATexture} from the TextureManager. This should only be called by {@link RajawaliRenderer}.
 	 * 
 	 * @param texture
 	 * @return
 	 */
-	public void taskRemove(ATexture texture)
-	{
+	public void taskRemove(ATexture texture) {
 		try {
 			texture.remove();
 		} catch (TextureException e) {
@@ -199,29 +189,23 @@ public final class TextureManager extends AResourceManager
 	 * The advantage of storing the Bitmap in memory is that it the texture can quickly be recovered when the context is
 	 * restored.
 	 */
-	public void reload()
-	{
-		mRenderer.queueReloadTask(this);
+	public void reload() {
+		mRenderer.reloadTextures();
 	}
 
 	/**
 	 * Restores all textures that are managed by the TextureManager. This should only be called by
-	 * {@link RajawaliRender}.
+	 * {@link RajawaliRenderer}.
 	 */
-	public void taskReload()
-	{
+	public void taskReload() {
 		int len = mTextureList.size();
-		for (int i = 0; i < len; i++)
-		{
+		for (int i = 0; i < len; i++) {
 			ATexture texture = mTextureList.get(i);
-			if (texture.willRecycle())
-			{
+			if (texture.willRecycle()) {
 				mTextureList.remove(i);
 				i -= 1;
 				len -= 1;
-			}
-			else
-			{
+			} else {
 				taskAdd(texture, true);
 			}
 		}
@@ -230,26 +214,21 @@ public final class TextureManager extends AResourceManager
 	/**
 	 * Completely resets the TextureManager. Disposes the Bitmaps and removes all references.
 	 */
-	public void reset()
-	{
-		mRenderer.queueResetTask(this);
+	public void reset() {
+		mRenderer.resetTextures();
 	}
 
 	/**
-	 * Completely resets the TextureManager. This should only be called by {@link RajawaliRender}.
+	 * Completely resets the TextureManager. This should only be called by {@link RajawaliRenderer}.
 	 */
-	public void taskReset()
-	{
+	public void taskReset() {
 		try {
 			int count = mTextureList.size();
 
 			int[] textures = new int[count];
-			for (int i = 0; i < count; i++)
-			{
+			for (int i = 0; i < count; i++) {
 				ATexture texture = mTextureList.get(i);
-
-				if (texture.getOwnerIdentity().equals(mRenderer.getClass().toString()) || texture.willRecycle())
-				{
+				if (texture.getOwnerIdentity().equals(mRenderer.getClass().toString()) || texture.willRecycle()) {
 					texture.reset();
 					textures[i] = texture.getTextureId();
 					mTextureList.remove(i);
@@ -261,8 +240,7 @@ public final class TextureManager extends AResourceManager
 			if(RajawaliRenderer.hasGLContext())
 				GLES20.glDeleteTextures(count, textures, 0);
 
-			if (mRenderers.size() > 0)
-			{
+			if (mRenderers.size() > 0) {
 				mRenderer = mRenderers.get(mRenderers.size() - 1);
 				reload();
 			} else {
@@ -274,14 +252,12 @@ public final class TextureManager extends AResourceManager
 	}
 
 	/**
-	 * Completely resets the TextureManager. This should only be called by {@link RajawaliRender}.
+	 * Completely resets the TextureManager. This should only be called by {@link RajawaliRenderer}.
 	 * 
 	 * @param renderer
 	 */
-	public void taskReset(RajawaliRenderer renderer)
-	{
-		if (mRenderers.size() == 0)
-		{
+	public void taskReset(RajawaliRenderer renderer) {
+		if (mRenderers.size() == 0) {
 			taskReset();
 		}
 	}
@@ -291,12 +267,7 @@ public final class TextureManager extends AResourceManager
 	 * 
 	 * @return
 	 */
-	public int getNumTextures() {
+	public int getTextureCount() {
 		return mTextureList.size();
-	}
-
-
-	public TYPE getFrameTaskType() {
-		return TYPE.TEXTURE_MANAGER;
 	}
 }

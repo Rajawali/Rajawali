@@ -28,7 +28,7 @@ public class DebugCamera extends DebugObject3D {
     }
 
     public void updateFrustum() {
-        mCamera.setProjectionMatrix(mRenderer.getCurrentViewportWidth(), mRenderer.getCurrentViewportHeight());
+        mCamera.setProjectionMatrix(mRenderer.getOverrideViewportWidth(), mRenderer.getOverrideViewportHeight());
         if (mPoints == null) {
             if(!mCamera.isInitialized()) return;
 

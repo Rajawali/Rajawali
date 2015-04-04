@@ -40,8 +40,8 @@ public class ShadowPass extends RenderPass {
 			mShadowMapMaterial.setShadowMapTexture(mShadowRenderTarget.getTexture());
 			super.render(scene, renderer, screenQuad, writeBuffer, readBuffer, ellapsedTime, deltaTime);
 		} else {
-			int oldWidth = renderer.getCurrentViewportWidth();
-			int oldHeight = renderer.getCurrentViewportHeight();
+			int oldWidth = renderer.getOverrideViewportWidth();
+			int oldHeight = renderer.getOverrideViewportHeight();
 			renderer.setViewPort(mShadowMapSize, mShadowMapSize);
 			super.render(scene, renderer, screenQuad, mShadowRenderTarget, readBuffer, ellapsedTime, deltaTime);
 			renderer.setViewPort(oldWidth, oldHeight);

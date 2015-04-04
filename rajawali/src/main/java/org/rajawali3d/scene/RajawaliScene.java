@@ -33,15 +33,12 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.AFrameTask;
-import org.rajawali3d.renderer.EmptyTask;
-import org.rajawali3d.renderer.GroupTask;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.plugins.IRendererPlugin;
 import org.rajawali3d.renderer.plugins.Plugin;
 import org.rajawali3d.scenegraph.IGraphNode;
 import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
-import org.rajawali3d.scenegraph.IGraphNodeMember;
 import org.rajawali3d.scenegraph.Octree;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
@@ -63,8 +60,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-@SuppressWarnings("Convert2Diamond")
-public class RajawaliScene extends AFrameTask {
+@SuppressWarnings("StatementWithEmptyBody")
+public class RajawaliScene {
 
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
 	protected double mEyeZ = 4.0; //TODO: Is this necessary?
@@ -146,7 +143,7 @@ public class RajawaliScene extends AFrameTask {
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
-		mFrameTaskQueue = new LinkedList<AFrameTask>();
+		mFrameTaskQueue = new LinkedList<>();
 		
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
@@ -232,7 +229,7 @@ public class RajawaliScene extends AFrameTask {
 	* with extreme caution.
 	* 
 	* @return {@link Camera} object currently used for the scene.
-	* @see {@link RajawaliRenderer#mCamera}
+	* @see {@link RajawaliScene#mCamera}
 	*/
 	public Camera getCamera() {
 		return this.mCamera;
@@ -254,8 +251,17 @@ public class RajawaliScene extends AFrameTask {
 	* @param camera {@link Camera} object to add.
 	* @return boolean True if the addition was successfully queued.
 	*/
-	public boolean addCamera(Camera camera) {
-		return queueAddTask(camera);
+	public boolean addCamera(final Camera camera) {
+		final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mCameras.add(camera);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.addObject(camera); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -264,9 +270,17 @@ public class RajawaliScene extends AFrameTask {
 	 * @param cameras {@link Collection} of {@link Camera} objects to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addCameras(Collection<Camera> cameras) {
-		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(cameras);
-		return queueAddAllTask(tasks);
+	public boolean addCameras(final Collection<Camera> cameras) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mCameras.addAll(cameras);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.addObject(camera); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -277,9 +291,33 @@ public class RajawaliScene extends AFrameTask {
 	 * @param camera {@link Camera} object to remove.
 	 * @return boolean True if the removal was successfully queued.
 	 */
-	public boolean removeCamera(Camera camera) {
-		return queueRemoveTask(camera);
+	public boolean removeCamera(final Camera camera) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mCameras.remove(camera);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.removeObject(camera); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
+
+    /**
+     * Requests the removal of all cameras from the scene.
+     *
+     * @return boolean True if the task was successfully queued for removal.
+     */
+    public boolean clearCameras() {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mCameras.clear();
+            }
+        };
+        return internalOfferTask(task);
+    }
 
 	/**
 	* Replaces a {@link Camera} in the renderer at the specified location
@@ -293,8 +331,18 @@ public class RajawaliScene extends AFrameTask {
 	* @param location Integer index of the camera to replace.
 	* @return  boolean True if the replacement was successfully queued.
 	*/
-	public boolean replaceCamera(Camera camera, int location) {
-		return queueReplaceTask(location, camera);
+	public boolean replaceCamera(final Camera camera, final int location) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                final Camera old = mCameras.set(location, camera);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.removeObject(old);
+                    //mSceneGraph.addObject(camera); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -307,8 +355,18 @@ public class RajawaliScene extends AFrameTask {
 	* @param newCamera {@link Camera} object replacing the old.
 	* @return  boolean True if the replacement was successfully queued.
 	*/
-	public boolean replaceCamera(Camera oldCamera, Camera newCamera) {
-		return queueReplaceTask(oldCamera, newCamera);
+	public boolean replaceCamera(final Camera oldCamera, final Camera newCamera) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mCameras.set(mCameras.indexOf(oldCamera), newCamera);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.removeObject(oldCamera);
+                    //mSceneGraph.addObject(newCamera); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 
 	/**
@@ -346,7 +404,7 @@ public class RajawaliScene extends AFrameTask {
 	* @return  boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceAndSwitchCamera(Camera oldCamera, Camera newCamera) {
-		boolean success = queueReplaceTask(oldCamera, newCamera);
+		boolean success = replaceCamera(oldCamera, newCamera);
 		switchCamera(newCamera);
 		return success;
 	}
@@ -358,8 +416,18 @@ public class RajawaliScene extends AFrameTask {
 	 * @param location The index of the child to replace.
 	 * @return boolean True if the replacement was successfully queued.
 	 */
-	public boolean replaceChild(Object3D child, int location) {
-		return queueReplaceTask(location, child);
+	public boolean replaceChild(final Object3D child, final int location) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                final Object3D old = mChildren.set(location, child);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.removeObject(old);
+                    //mSceneGraph.addObject(child); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -369,8 +437,18 @@ public class RajawaliScene extends AFrameTask {
 	 * @param newChild {@link Object3D} the new child.
 	 * @return boolean True if the replacement was successfully queued.
 	 */
-	public boolean replaceChild(Object3D oldChild, Object3D newChild) {
-		return queueReplaceTask(oldChild, newChild);
+	public boolean replaceChild(final Object3D oldChild, final Object3D newChild) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mChildren.set(mChildren.indexOf(oldChild), newChild);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.removeObject(oldChild);
+                    //mSceneGraph.addObject(newChild); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -380,8 +458,17 @@ public class RajawaliScene extends AFrameTask {
 	 * @param child {@link Object3D} child to be added.
 	 * @return True if the child was successfully queued for addition.
 	 */
-	public boolean addChild(Object3D child) {
-		return queueAddTask(child);
+	public boolean addChild(final Object3D child) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mChildren.add(child);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.addObject(child); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 
     /**
@@ -392,8 +479,17 @@ public class RajawaliScene extends AFrameTask {
      * @param index {@code int} Integer index of the location.
      * @return True if the child was successfully queued for addition.
      */
-	public boolean addChildAt(Object3D child, int index) {
-		return queueAddTask(child, index);
+	public boolean addChildAt(final Object3D child, final int index) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mChildren.add(index, child);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.addObject(child); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -402,9 +498,17 @@ public class RajawaliScene extends AFrameTask {
 	 * @param children {@link Collection} of {@link Object3D} children to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addChildren(Collection<Object3D> children) {
-		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(children);
-		return queueAddAllTask(tasks);
+	public boolean addChildren(final Collection<Object3D> children) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mChildren.addAll(children);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.addObject(child); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -413,8 +517,17 @@ public class RajawaliScene extends AFrameTask {
 	 * @param child {@link Object3D} child to be removed.
 	 * @return boolean True if the child was successfully queued for removal.
 	 */
-	public boolean removeChild(Object3D child) {
-		return queueRemoveTask(child);
+	public boolean removeChild(final Object3D child) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mChildren.remove(child);
+                if (mSceneGraph != null) {
+                    //mSceneGraph.removeObject(child); //TODO: Uncomment
+                }
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -423,7 +536,16 @@ public class RajawaliScene extends AFrameTask {
 	 * @return boolean True if the clear was successfully queued.
 	 */
 	public boolean clearChildren() {
-		return queueClearTask(AFrameTask.TYPE.OBJECT3D);
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                /*if (mSceneGraph != null) {
+                    mSceneGraph.removeObjects(new ArrayList<IGraphNodeMember>(mChildren));
+                }*/ //TODO: Uncomment
+                mChildren.clear();
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -433,8 +555,14 @@ public class RajawaliScene extends AFrameTask {
 	 * @param light {@link ALight} to be added.
 	 * @return True if the light was successfully queued for addition.
 	 */
-	public boolean addLight(ALight light) {
-		return queueAddTask(light);
+	public boolean addLight(final ALight light) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mLights.add(light);
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -443,9 +571,30 @@ public class RajawaliScene extends AFrameTask {
 	 * @param light {@link ALight} child to be removed.
 	 * @return boolean True if the child was successfully queued for removal.
 	 */
-	public boolean removeLight(ALight light) {
-		return queueRemoveTask(light);
+	public boolean removeLight(final ALight light) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mLights.remove(light);
+            }
+        };
+        return internalOfferTask(task);
 	}
+
+    /**
+     * Requests the removal of all lights from the scene.
+     *
+     * @return boolean True if the light was successfully queued for removal.
+     */
+    public boolean clearLights() {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mLights.clear();
+            }
+        };
+        return internalOfferTask(task);
+    }
 	
 	/**
 	 * Requests the addition of a plugin to the scene. The plugin
@@ -454,8 +603,14 @@ public class RajawaliScene extends AFrameTask {
 	 * @param plugin {@link Plugin} child to be added.
 	 * @return True if the plugin was successfully queued for addition.
 	 */
-	public boolean addPlugin(Plugin plugin) {
-		return queueAddTask(plugin);
+	public boolean addPlugin(final Plugin plugin) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mPlugins.add(plugin);
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -464,9 +619,14 @@ public class RajawaliScene extends AFrameTask {
 	 * @param plugins {@link Collection} of {@link Object3D} children to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
-	public boolean addPlugins(Collection<Object3D> plugins) {
-		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(plugins);
-		return queueAddAllTask(tasks);
+	public boolean addPlugins(final Collection<Plugin> plugins) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mPlugins.addAll(plugins);
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -475,8 +635,14 @@ public class RajawaliScene extends AFrameTask {
 	 * @param plugin {@link Plugin} child to be removed.
 	 * @return boolean True if the plugin was successfully queued for removal.
 	 */
-	public boolean removePlugin(Plugin plugin) {
-		return queueRemoveTask(plugin);
+	public boolean removePlugin(final Plugin plugin) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mPlugins.add(plugin);
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -485,7 +651,13 @@ public class RajawaliScene extends AFrameTask {
 	 * @return boolean True if the clear was successfully queued.
 	 */
 	public boolean clearPlugins() {
-		return queueClearTask(AFrameTask.TYPE.PLUGIN);
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mPlugins.clear();
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -495,8 +667,14 @@ public class RajawaliScene extends AFrameTask {
 	 * @param anim {@link Animation} to be registered.
 	 * @return boolean True if the registration was queued successfully.
 	 */
-	public boolean registerAnimation(Animation anim) {
-		return queueAddTask(anim);
+	public boolean registerAnimation(final Animation anim) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mAnimations.add(anim);
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -506,8 +684,14 @@ public class RajawaliScene extends AFrameTask {
 	 * @param anim {@link Animation} to be unregistered.
 	 * @return boolean True if the unregister was queued successfully.
 	 */
-	public boolean unregisterAnimation(Animation anim) {
-		return queueRemoveTask(anim);
+	public boolean unregisterAnimation(final Animation anim) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mAnimations.remove(anim);
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -517,8 +701,14 @@ public class RajawaliScene extends AFrameTask {
 	 * @param newAnim {@link Animation} the new animation.
 	 * @return boolean True if the replacement task was queued successfully.
 	 */
-	public boolean replaceAnimation(Animation oldAnim, Animation newAnim) {
-		return queueReplaceTask(oldAnim, newAnim);
+	public boolean replaceAnimation(final Animation oldAnim, final Animation newAnim) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mAnimations.set(mAnimations.indexOf(oldAnim), newAnim);
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -527,9 +717,14 @@ public class RajawaliScene extends AFrameTask {
 	 * @param anims {@link Collection} containing the {@link Animation} objects to be added.
 	 * @return boolean True if the addition was queued successfully.
 	 */
-	public boolean registerAnimations(Collection<Animation> anims) {
-		ArrayList<AFrameTask> tasks = new ArrayList<AFrameTask>(anims);
-		return queueAddAllTask(tasks);
+	public boolean registerAnimations(final Collection<Animation> anims) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mAnimations.addAll(anims);
+            }
+        };
+        return internalOfferTask(task);
 	}
 	
 	/**
@@ -538,7 +733,13 @@ public class RajawaliScene extends AFrameTask {
 	 * @return boolean True if the clear task was queued successfully.
 	 */
 	public boolean clearAnimations() {
-		return queueClearTask(AFrameTask.TYPE.ANIMATION);
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mAnimations.clear();
+            }
+        };
+        return internalOfferTask(task);
 	}
 
     /**
@@ -548,8 +749,16 @@ public class RajawaliScene extends AFrameTask {
      *
      * @return {@code boolean} True if the registration was queued successfully.
      */
-    public boolean registerFrameCallback(ASceneFrameCallback callback) {
-        return queueAddTask(callback);
+    public boolean registerFrameCallback(final ASceneFrameCallback callback) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                if (callback.callPreFrame()) mPreCallbacks.add(callback);
+                if (callback.callPreDraw()) mPreDrawCallbacks.add(callback);
+                if (callback.callPostFrame()) mPostCallbacks.add(callback);
+            }
+        };
+        return internalOfferTask(task);
     }
 
     /**
@@ -560,8 +769,16 @@ public class RajawaliScene extends AFrameTask {
      *
      * @return {@code boolean} True if the unregister was queued successfully.
      */
-    public boolean unregisterFrameCallback(ASceneFrameCallback callback) {
-        return queueRemoveTask(callback);
+    public boolean unregisterFrameCallback(final ASceneFrameCallback callback) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                if (callback.callPreFrame()) mPreCallbacks.remove(callback);
+                if (callback.callPreDraw()) mPreDrawCallbacks.remove(callback);
+                if (callback.callPostFrame()) mPostCallbacks.remove(callback);
+            }
+        };
+        return internalOfferTask(task);
     }
 
     /**
@@ -570,7 +787,15 @@ public class RajawaliScene extends AFrameTask {
      * @return {@code boolean} True if the clear task was queued successfully.
      */
     public boolean clearFrameCallbacks() {
-        return queueClearTask(AFrameTask.TYPE.FRAME_CALLBACK);
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mPreCallbacks.clear();
+                mPreDrawCallbacks.clear();
+                mPostCallbacks.clear();
+            }
+        };
+        return internalOfferTask(task);
     }
 	
 	/**
@@ -712,18 +937,6 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Clears the scene of contents. Note that this is NOT the same as destroying the scene.
-	 */
-	public void clear() {
-		if (mChildren.size() > 0) {
-			queueClearTask(AFrameTask.TYPE.OBJECT3D);
-		}
-		if (mPlugins.size() > 0) {
-			queueClearTask(AFrameTask.TYPE.PLUGIN);
-		}
-	}
-	
-	/**
 	 * Is the object picking info?
 	 * 
 	 * @return boolean True if object picking is active.
@@ -767,7 +980,7 @@ public class RajawaliScene extends AFrameTask {
 			//Check if we need to switch the camera, and if so, do it.
 			if (mNextCamera != null) {
 				mCamera = mNextCamera;
-                mCamera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+                mCamera.setProjectionMatrix(mRenderer.getViewportWidth(), mRenderer.getDefaultViewportHeight());
 				mNextCamera = null;
 			}
 		}
@@ -924,138 +1137,12 @@ public class RajawaliScene extends AFrameTask {
 	}
 	
 	/**
-	 * Queue an addition task. The added object will be placed
-	 * at the end of the renderer's list.
-	 * 
-	 * @param task {@link AFrameTask} to be added.
-	 * @return boolean True if the task was successfully queued.
-	 */
-	public boolean queueAddTask(AFrameTask task) {
-		task.setTask(AFrameTask.TASK.ADD);
-		task.setIndex(AFrameTask.UNUSED_INDEX);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Queue an addition task. The added object will be placed
-	 * at the specified index in the renderer's list, or the end
-	 * if out of range. 
-	 * 
-	 * @param task {@link AFrameTask} to be added.
-	 * @param index Integer index to place the object at.
-	 * @return boolean True if the task was successfully queued.
-	 */
-	public boolean queueAddTask(AFrameTask task, int index) {
-		task.setTask(AFrameTask.TASK.ADD);
-		task.setIndex(index);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Queue a removal task. The removal will occur at the specified
-	 * index, or at the end of the list if out of range.
-	 * 
-	 * @param type {@link AFrameTask.TYPE} Which list to remove from.
-	 * @param index Integer index to remove the object at.
-	 * @return boolean True if the task was successfully queued.
-	 */
-	protected boolean queueRemoveTask(AFrameTask.TYPE type, int index) {
-		EmptyTask task = new EmptyTask(type);
-		task.setTask(AFrameTask.TASK.REMOVE);
-		task.setIndex(index);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Queue a removal task to remove the specified object.
-	 * 
-	 * @param task {@link AFrameTask} to be removed.
-	 * @return boolean True if the task was successfully queued.
-	 */
-	protected boolean queueRemoveTask(AFrameTask task) {
-		task.setTask(AFrameTask.TASK.REMOVE);
-		task.setIndex(AFrameTask.UNUSED_INDEX);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Queue a replacement task to replace the object at the
-	 * specified index with a new one. Replaces the object at
-	 * the end of the list if index is out of range.
-	 * 
-	 * @param index Integer index of the object to replace.
-	 * @param replacement {@link AFrameTask} the object replacing the old.
-	 * @return boolean True if the task was successfully queued.
-	 */
-	protected boolean queueReplaceTask(int index, AFrameTask replacement) {
-		EmptyTask task = new EmptyTask(replacement.getFrameTaskType());
-		task.setTask(AFrameTask.TASK.REPLACE);
-		task.setIndex(index);
-		task.setNewObject(replacement);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Queue a replacement task to replace the specified object with the new one.
-	 * 
-	 * @param task {@link AFrameTask} the object to replace.
-	 * @param replacement {@link AFrameTask} the object replacing the old.
-	 * @return boolean True if the task was successfully queued.
-	 */
-	protected boolean queueReplaceTask(AFrameTask task, AFrameTask replacement) {
-		task.setTask(AFrameTask.TASK.REPLACE);
-		task.setIndex(AFrameTask.UNUSED_INDEX);
-		task.setNewObject(replacement);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Queue an add all task to add all objects from the given collection.
-	 * 
-	 * @param collection {@link Collection} containing all the objects to add.
-	 * @return boolean True if the task was successfully queued. 
-	 */
-	protected boolean queueAddAllTask(Collection<AFrameTask> collection) {
-		GroupTask task = new GroupTask(collection);
-		task.setTask(AFrameTask.TASK.ADD_ALL);
-		task.setIndex(AFrameTask.UNUSED_INDEX);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Queue a remove all task which will clear the related list.
-	 * 
-	 * @param type {@link AFrameTask.TYPE} Which object list to clear (Cameras, BaseObject3D, etc)
-	 * @return boolean True if the task was successfully queued.
-	 */
-	protected boolean queueClearTask(AFrameTask.TYPE type) {
-		GroupTask task = new GroupTask(type);
-		task.setTask(AFrameTask.TASK.REMOVE_ALL);
-		task.setIndex(AFrameTask.UNUSED_INDEX);
-		return addTaskToQueue(task);
-	}
-	
-	/**
-	 * Queue a remove all task which will remove all objects from the given collection
-	 * from the related list.
-	 * 
-	 * @param collection {@link Collection} containing all the objects to be removed.
-	 * @return boolean True if the task was successfully queued.
-	 */
-	protected boolean queueRemoveAllTask(Collection<AFrameTask> collection) { 
-		GroupTask task = new GroupTask(collection);
-		task.setTask(AFrameTask.TASK.REMOVE_ALL);
-		task.setIndex(AFrameTask.UNUSED_INDEX);
-		return addTaskToQueue(task);
-	}
-
-	/**
 	 * Adds a task to the frame task queue.
 	 * 
 	 * @param task AFrameTask to be added.
 	 * @return boolean True on successful addition to queue.
 	 */
-	private boolean addTaskToQueue(AFrameTask task) {
+	private boolean internalOfferTask(AFrameTask task) {
 		synchronized (mFrameTaskQueue) {
 			return mFrameTaskQueue.offer(task);
 		}
@@ -1065,431 +1152,17 @@ public class RajawaliScene extends AFrameTask {
 	 * Internal method for performing frame tasks. Should be called at the
 	 * start of onDrawFrame() prior to render().
 	 */
-	@SuppressWarnings("incomplete-switch")
 	private void performFrameTasks() {
 		synchronized (mFrameTaskQueue) {
 			//Fetch the first task
-			AFrameTask taskObject = mFrameTaskQueue.poll();
-			while (taskObject != null) {
-				AFrameTask.TASK task = taskObject.getTask();
-				switch (task) {
-				case NONE:
-					//DO NOTHING
-					return;
-				case ADD:
-					handleAddTask(taskObject);
-					break;
-				case ADD_ALL:
-					handleAddAllTask(taskObject);
-					break;
-				case REMOVE:
-					handleRemoveTask(taskObject);
-					break;
-				case REMOVE_ALL:
-					handleRemoveAllTask(taskObject);
-					break;
-				case REPLACE:
-					handleReplaceTask(taskObject);
-					break;
-				}
+			AFrameTask task = mFrameTaskQueue.poll();
+			while (task != null) {
+                task.run();
 				//Retrieve the next task
-				taskObject = mFrameTaskQueue.poll();
+                task = mFrameTaskQueue.poll();
 			}
 		}
 	}
-	
-	/**
-	 * Internal method for handling replacement tasks.
-	 * 
-	 * @param task {@link AFrameTask} object to process.
-	 */
-	private void handleReplaceTask(AFrameTask task) {
-		AFrameTask.TYPE type = task.getFrameTaskType();
-		switch (type) {
-		case ANIMATION:
-			internalReplaceAnimation(task, (Animation) task.getNewObject(), task.getIndex());
-			break;
-		case CAMERA:
-			internalReplaceCamera(task, (Camera) task.getNewObject(), task.getIndex());
-			break;
-		case LIGHT:
-			internalReplaceLight(task, (ALight) task.getNewObject(), task.getIndex());
-			break;
-		case OBJECT3D:
-			internalReplaceChild(task, (Object3D) task.getNewObject(), task.getIndex());
-			break;
-		case PLUGIN:
-			internalReplacePlugin(task, (IRendererPlugin) task.getNewObject(), task.getIndex());
-			break;
-		default:
-			break;
-		}
-	}
-
-	/**
-	 * Internal method for handling addition tasks.
-	 * 
-	 * @param task {@link AFrameTask} object to process.
-	 */
-	private void handleAddTask(AFrameTask task) {
-		AFrameTask.TYPE type = task.getFrameTaskType();
-		switch (type) {
-		case ANIMATION:
-			internalAddAnimation((Animation) task, task.getIndex());
-			break;
-		case CAMERA:
-			internalAddCamera((Camera) task, task.getIndex());
-			break;
-		case LIGHT:
-			internalAddLight((ALight) task, task.getIndex());
-			break;
-		case OBJECT3D:
-			internalAddChild((Object3D) task, task.getIndex());
-			break;
-		case PLUGIN:
-			internalAddPlugin((IRendererPlugin) task, task.getIndex());
-        case FRAME_CALLBACK:
-            internalAddFrameCallback((ASceneFrameCallback) task, task.getIndex());
-			break;
-		default:
-			break;
-		}
-	}
-	
-	/**
-	 * Internal method for handling removal tasks.
-	 * 
-	 * @param task {@link AFrameTask} object to process.
-	 */
-	private void handleRemoveTask(AFrameTask task) {
-		AFrameTask.TYPE type = task.getFrameTaskType();
-		switch (type) {
-		case ANIMATION:
-			internalRemoveAnimation((Animation) task, task.getIndex());
-			break;
-		case CAMERA:
-			internalRemoveCamera((Camera) task, task.getIndex());
-			break;
-		case LIGHT:
-			internalRemoveLight((ALight) task, task.getIndex());
-			break;
-		case OBJECT3D:
-			internalRemoveChild((Object3D) task, task.getIndex());
-			break;
-		case PLUGIN:
-			internalRemovePlugin((IRendererPlugin) task, task.getIndex());
-			break;
-        case FRAME_CALLBACK:
-            internalRemoveFrameCallback((ASceneFrameCallback) task);
-            break;
-		default:
-			break;
-		}
-	}
-	
-	/**
-	 * Internal method for handling add all tasks.
-	 * 
-	 * @param task {@link AFrameTask} object to process.
-	 */
-	private void handleAddAllTask(AFrameTask task) {
-		GroupTask group = (GroupTask) task;
-		AFrameTask[] tasks = group.getCollection().toArray(new AFrameTask[group.getCollection().size()]);
-		AFrameTask.TYPE type = tasks[0].getFrameTaskType();
-		int i = 0;
-		int j = tasks.length;
-		switch (type) {
-		case ANIMATION:
-			for (i = 0; i < j; ++i) {
-				internalAddAnimation((Animation) tasks[i], AFrameTask.UNUSED_INDEX);
-			}
-			break;
-		case CAMERA:
-			for (i = 0; i < j; ++i) {
-				internalAddCamera((Camera) tasks[i], AFrameTask.UNUSED_INDEX);
-			}
-			break;
-		case LIGHT:
-			for (i = 0; i < j; ++i) {
-				internalAddLight((ALight) tasks[i], AFrameTask.UNUSED_INDEX);
-			}
-			break;
-		case OBJECT3D:
-			for (i = 0; i < j; ++i) {
-				internalAddChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
-			}
-			break;
-		case PLUGIN:
-			for (i = 0; i < j; ++i) {
-				internalAddPlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
-			}
-			break;
-		default:
-			break;
-		}
-	}
-	
-	/**
-	 * Internal method for handling remove all tasks.
-	 * 
-	 * @param task {@link AFrameTask} object to process.
-	 */
-	private void handleRemoveAllTask(AFrameTask task) {
-		GroupTask group = (GroupTask) task;
-		AFrameTask.TYPE type = group.getFrameTaskType();
-		boolean clear = false;
-		AFrameTask[] tasks = null;
-		int i = 0, j = 0;
-		if (group.getCollection() == null) {
-            // In this case we simply clear everything
-            clear = true;
-		} else {
-			tasks = (AFrameTask[]) group.getCollection().toArray();
-			type = tasks[0].getFrameTaskType();
-			j = tasks.length;
-		}
-		switch (type) {
-		case ANIMATION:
-			if (clear) {
-				internalClearAnimations();
-			} else {
-				for (i = 0; i < j; ++i) {
-					internalRemoveAnimation((Animation) tasks[i], AFrameTask.UNUSED_INDEX);
-				}
-			}
-			break;
-		case CAMERA:
-			if (clear) {
-				internalClearCameras();
-			} else {
-				for (i = 0; i < j; ++i) {
-					internalRemoveCamera((Camera) tasks[i], AFrameTask.UNUSED_INDEX);
-				}
-			}
-			break;
-		case LIGHT:
-			if (clear) {
-				internalClearLights();
-			} else {
-				for (i = 0; i < j; ++i) {
-					internalRemoveLight((ALight) tasks[i], AFrameTask.UNUSED_INDEX);
-				}
-			}
-			break;
-		case OBJECT3D:
-			if (clear) {
-				internalClearChildren();
-			} else {
-				for (i = 0; i < j; ++i) {
-					internalRemoveChild((Object3D) tasks[i], AFrameTask.UNUSED_INDEX);
-				}
-			}
-			break;
-		case PLUGIN:
-			if (clear) {
-				internalClearPlugins();
-			} else {
-				for (i = 0; i < j; ++i) {
-					internalRemovePlugin((IRendererPlugin) tasks[i], AFrameTask.UNUSED_INDEX);
-				}
-			}
-			break;
-        case FRAME_CALLBACK:
-            if (clear) {
-                internalClearFrameCallbacks();
-            } else {
-                //TODO: Implement if adding frame callback collections is added
-            }
-		default:
-			break;
-		}
-	}
-	
-	/**
-	 * Internal method for replacing a {@link Animation} object. If index is
-	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
-	 * object is used. Should only be called through {@link #handleAddTask(AFrameTask)}
-	 * 
-	 * @param anim {@link AFrameTask} The old animation.
-	 * @param replace {@link Animation} The animation replacing the old animation.
-	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
-	 */
-	private void internalReplaceAnimation(AFrameTask anim, Animation replace, int index) {
-		if (index != AFrameTask.UNUSED_INDEX) {
-			mAnimations.set(index, replace);
-		} else {
-			mAnimations.set(mAnimations.indexOf(anim), replace);
-		}
-	}
-	
-	/**
-	 * Internal method for adding {@link Animation} objects.
-	 * Should only be called through {@link #handleAddTask(AFrameTask)}
-	 * 
-	 * This takes an index for the addition, but it is pretty
-	 * meaningless.
-	 * 
-	 * @param anim {@link Animation} to add.
-	 * @param index int index to add the animation at.
-	 */
-	private void internalAddAnimation(Animation anim, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mAnimations.add(anim);
-		} else {
-			mAnimations.add(index, anim);
-		}
-	}
-
-	/**
-	 * Internal method for removing {@link Animation} objects.
-	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
-	 * 
-	 * This takes an index for the removal. 
-	 * 
-	 * @param anim {@link Animation} to remove. If index is used, this is ignored.
-	 * @param index integer index to remove the child at. 
-	 */
-	private void internalRemoveAnimation(Animation anim, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mAnimations.remove(anim);
-		} else {
-			mAnimations.remove(index);
-		}
-	}
-	
-	/**
-	 * Internal method for removing all {@link Animation} objects.
-	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
-	 */
-	private void internalClearAnimations() {
-		mAnimations.clear();
-	}
-
-    /**
-     * Internal method for adding {@link ASceneFrameCallback} objects.
-     * Should only be called through {@link #handleAddTask(AFrameTask)}
-     * <p/>
-     * This takes an index for the addition, but it is pretty
-     * meaningless.
-     *
-     * @param callback {@link ASceneFrameCallback} to add.
-     * @param index    int  index to add the animation at.
-     */
-    private void internalAddFrameCallback(ASceneFrameCallback callback, int index) {
-        if (index == AFrameTask.UNUSED_INDEX) {
-            if (callback.callPreFrame()) mPreCallbacks.add(callback);
-            if (callback.callPreDraw()) mPreDrawCallbacks.add(callback);
-            if (callback.callPostFrame()) mPostCallbacks.add(callback);
-        } else {
-            if (callback.callPreFrame()) mPreCallbacks.add(index, callback);
-            if (callback.callPreDraw()) mPreDrawCallbacks.add(index, callback);
-            if (callback.callPostFrame()) mPostCallbacks.add(index, callback);
-        }
-    }
-
-    /**
-     * Internal method for removing {@link ASceneFrameCallback} objects.
-     * Should only be called through {@link #handleRemoveTask(AFrameTask)}
-     * <p/>
-     *
-     * @param callback  {@link ASceneFrameCallback} to remove. If index is used, this is ignored.
-     */
-    private void internalRemoveFrameCallback(ASceneFrameCallback callback) {
-        if (callback.callPreFrame()) mPreCallbacks.remove(callback);
-        if (callback.callPreDraw()) mPreDrawCallbacks.remove(callback);
-        if (callback.callPostFrame()) mPostCallbacks.remove(callback);
-    }
-
-    /**
-     * Internal method for removing all {@link ASceneFrameCallback} objects.
-     * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
-     */
-    private void internalClearFrameCallbacks() {
-        mPreCallbacks.clear();
-        mPreDrawCallbacks.clear();
-        mPostCallbacks.clear();
-    }
-
-	/**
-	 * Internal method for replacing a {@link Camera}. If index is
-	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
-	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
-	 * 
-	 * @param camera {@link Camera} The old camera.
-	 * @param replace {@link Camera} The camera replacing the old camera.
-	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
-	 */
-	private void internalReplaceCamera(AFrameTask camera, Camera replace, int index) {
-		if (index != AFrameTask.UNUSED_INDEX) {
-			mCameras.set(index, replace);
-		} else {
-			mCameras.set(mCameras.indexOf(camera), replace);
-		}
-		//TODO: Handle camera replacement in scenegraph
-	}
-	
-	/**
-	 * Internal method for adding a {@link Camera}.
-	 * Should only be called through {@link #handleAddTask(AFrameTask)}
-	 * 
-	 * This takes an index for the addition, but it is pretty
-	 * meaningless.
-	 * 
-	 * @param camera {@link Camera} to add.
-	 * @param index int index to add the camera at.
-	 */
-	private void internalAddCamera(Camera camera, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mCameras.add(camera);
-		} else {
-			mCameras.add(index, camera);
-		}
-		if (mSceneGraph != null) {
-			//mSceneGraph.addObject(camera); //TODO: Uncomment
-		}
-	}
-	
-	/**
-	 * Internal method for removing a {@link Camera}.
-	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
-	 * 
-	 * This takes an index for the removal. 
-	 * 
-	 * NOTE: If there is only one camera and it is removed, bad things
-	 * will happen.
-	 * 
-	 * @param camera {@link Camera} to remove. If index is used, this is ignored.
-	 * @param index integer index to remove the camera at. 
-	 */
-	private void internalRemoveCamera(Camera camera, int index) {
-		Camera cam = camera;
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mCameras.remove(camera);
-		} else {
-			cam = mCameras.remove(index);
-		}
-		if (mCamera.equals(cam)) {
-			//If the current camera is the one being removed,
-			//switch to the new 0 index camera.
-			mCamera = mCameras.get(0);
-		}
-		if (mSceneGraph != null) {
-			//mSceneGraph.removeObject(camera); //TODO: Uncomment
-		}
-	}
-	
-	/**
-	 * Internal method for removing all {@link Camera} from the camera list.
-	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
-	 * Note that this will re-add the current camera.
-	 */
-	private void internalClearCameras() {
-		if (mSceneGraph != null) {
-			//mSceneGraph.removeAll(mCameras); //TODO: Uncomment
-		}
-		mCameras.clear();
-		mCameras.add(mCamera);
-	}	
 	
 	/**
 	 * Creates a shallow copy of the internal cameras list. 
@@ -1507,86 +1180,9 @@ public class RajawaliScene extends AFrameTask {
 	 * 
 	 * @return The current number of cameras.
 	 */
-	public int getNumCameras() {
+	public int getCameraCount() {
 		//Thread safety deferred to the List
 		return mCameras.size();
-	}
-	
-	/**
-	 * Internal method for replacing a {@link ALight} light. If index is
-	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
-	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
-	 * 
-	 * @param child {@link AFrameTask} The new light for the specified index.
-	 * @param replace {@link ALight} The light replacing the old light.
-	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
-	 */
-	private void internalReplaceLight(AFrameTask child, ALight replace, int index) {
-		if (index != AFrameTask.UNUSED_INDEX) {
-			mLights.set(index, replace);
-		} else {
-			mLights.set(mChildren.indexOf(child), replace);
-		}
-		mLightsDirty = true;
-		//TODO: Handle light replacement in scene graph
-	}
-	
-	/**
-	 * Internal method for adding a {@link ALight}.
-	 * Should only be called through {@link #handleAddTask(AFrameTask)}
-	 * 
-	 * This takes an index for the addition, but it is pretty
-	 * meaningless.
-	 * 
-	 * @param light {@link ALight} to add.
-	 * @param index int index to add the light at.
-	 */
-	private void internalAddLight(ALight light, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mLights.add(light);
-		} else {
-			mLights.add(index, light);
-		}
-		if (mSceneGraph != null) {
-			//mSceneGraph.addObject(light); //TODO: Uncomment
-		}
-		mLightsDirty = true;
-	}
-	
-	/**
-	 * Internal method for removing a {@link ALight}.
-	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
-	 * 
-	 * This takes an index for the removal. 
-	 * 
-	 * NOTE: If there is only one light and it is removed, bad things
-	 * will happen.
-	 * 
-	 * @param light {@link ALight} to remove. If index is used, this is ignored.
-	 * @param index integer index to remove the light at. 
-	 */
-	private void internalRemoveLight(ALight light, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mLights.remove(light);
-		} else {
-			mLights.remove(index);
-		}
-		if (mSceneGraph != null) {
-			//mSceneGraph.removeObject(light); //TODO: Uncomment
-		}
-		mLightsDirty = true;
-	}
-	
-	/**
-	 * Internal method for removing all {@link ALight} from the light list.
-	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
-	 * Note that this will re-add the current light.
-	 */
-	private void internalClearLights() {
-		if (mSceneGraph != null) {
-			//mSceneGraph.removeAll(mLights); //TODO: Uncomment
-		}
-		mLights.clear();
 	}
 	
 	public List<ALight> getLights() {
@@ -1619,10 +1215,8 @@ public class RajawaliScene extends AFrameTask {
 	 * should only be called when the lights collection is dirty. It will 
 	 * trigger compilation of all light-enabled shaders.
 	 */
-	private void updateMaterialsWithLights()
-	{
-		for(Object3D child : mChildren)
-		{
+	private void updateMaterialsWithLights() {
+		for(Object3D child : mChildren) {
 			updateChildMaterialWithLights(child);
 		}
 	}
@@ -1634,8 +1228,7 @@ public class RajawaliScene extends AFrameTask {
 	 * 
 	 * @param child
 	 */
-	private void updateChildMaterialWithLights(Object3D child)
-	{
+	private void updateChildMaterialWithLights(Object3D child) {
 		Material material = child.getMaterial();
 		if(material != null && material.lightingEnabled())
 			material.setLights(mLights);
@@ -1643,82 +1236,10 @@ public class RajawaliScene extends AFrameTask {
 			material.addPlugin(new FogMaterialPlugin(mFogParams));
 		
 		int numChildren = child.getNumChildren();
-		for(int i=0; i<numChildren; i++)
-		{
+		for(int i=0; i<numChildren; i++) {
 			Object3D grandChild = child.getChildAt(i);
 			updateChildMaterialWithLights(grandChild);
 		}
-	};
-	
-	/**
-	 * Internal method for replacing a {@link Object3D} child. If index is
-	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
-	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
-	 * 
-	 * @param child {@link Object3D} The new child for the specified index.
-	 * @param replace {@link Object3D} The child replacing the old child.
-	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
-	 */
-	private void internalReplaceChild(AFrameTask child, Object3D replace, int index) {
-		if (index != AFrameTask.UNUSED_INDEX) {
-			mChildren.set(index, replace);
-		} else {
-			mChildren.set(mChildren.indexOf(child), replace);
-		}
-		//TODO: Handle child replacement in scene graph
-	}
-	
-	/**
-	 * Internal method for adding {@link Object3D} children.
-	 * Should only be called through {@link #handleAddTask(AFrameTask)}
-	 * 
-	 * This takes an index for the addition, but it is pretty
-	 * meaningless.
-	 * 
-	 * @param child {@link Object3D} to add.
-	 * @param index int index to add the child at.
-	 */
-	private void internalAddChild(Object3D child, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mChildren.add(child);
-		} else {
-			mChildren.add(index, child);
-		}
-		if (mSceneGraph != null) {
-			mSceneGraph.addObject(child);
-		}
-		addShadowMapMaterialPlugin(child, mShadowMapMaterial == null ? null : mShadowMapMaterial.getMaterialPlugin());
-	}
-	
-	/**
-	 * Internal method for removing {@link Object3D} children.
-	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
-	 * 
-	 * This takes an index for the removal. 
-	 * 
-	 * @param child {@link Object3D} to remove. If index is used, this is ignored.
-	 * @param index integer index to remove the child at. 
-	 */
-	private void internalRemoveChild(Object3D child, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mChildren.remove(child);
-		} else {
-			mChildren.remove(index);
-		}
-		if (mSceneGraph != null) {
-			mSceneGraph.removeObject(child);
-		}
-	}
-	
-	/**
-	 * Internal method for removing all {@link Object3D} children.
-	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
-	 */
-	private void internalClearChildren() {
-		if (mSceneGraph != null) {
-			mSceneGraph.removeObjects(new ArrayList<IGraphNodeMember>(mChildren));
-		}
-		mChildren.clear();
 	}
 	
 	/**
@@ -1727,7 +1248,7 @@ public class RajawaliScene extends AFrameTask {
 	 * @return ArrayList containing the children.
 	 */
 	public ArrayList<Object3D> getChildrenCopy() {
-		ArrayList<Object3D> list = new ArrayList<Object3D>();
+		ArrayList<Object3D> list = new ArrayList<>();
 		list.addAll(mChildren);
 		return list;
 	}
@@ -1753,66 +1274,6 @@ public class RajawaliScene extends AFrameTask {
 		return mChildren.size();
 	}
 
-	/**
-	 * Internal method for replacing a {@link IRendererPlugin}. If index is
-	 * {@link AFrameTask#UNUSED_INDEX} then it will be used, otherwise the replace
-	 * object is used. Should only be called through {@link #handleReplaceTask(AFrameTask)}
-	 * 
-	 * @param plugin {@link IRendererPlugin} The new plugin for the specified index.
-	 * @param replace {@link IRendererPlugin} The plugin replacing the old plugin.
-	 * @param index integer index to effect. Set to {@link AFrameTask#UNUSED_INDEX} if not used.
-	 */
-	private void internalReplacePlugin(AFrameTask plugin, IRendererPlugin replace, int index) {
-		if (index != AFrameTask.UNUSED_INDEX) {
-			mPlugins.set(index, replace);
-		} else {
-			mPlugins.set(mPlugins.indexOf(plugin), replace);
-		}
-	}
-	
-	/**
-	 * Internal method for adding {@link IRendererPlugin} renderer.
-	 * Should only be called through {@link #handleAddTask(AFrameTask)}
-	 * 
-	 * This takes an index for the addition, but it is pretty
-	 * meaningless.
-	 * 
-	 * @param plugin {@link IRendererPlugin} to add.
-	 * @param index int index to add the child at.
-	 */
-	private void internalAddPlugin(IRendererPlugin plugin, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mPlugins.add(plugin);
-		} else {
-			mPlugins.add(index, plugin);
-		}
-	}
-	
-	/**
-	 * Internal method for removing {@link IRendererPlugin} renderer.
-	 * Should only be called through {@link #handleRemoveTask(AFrameTask)}
-	 * 
-	 * This takes an index for the removal. 
-	 * 
-	 * @param plugin {@link IRendererPlugin} to remove. If index is used, this is ignored.
-	 * @param index integer index to remove the child at. 
-	 */
-	private void internalRemovePlugin(IRendererPlugin plugin, int index) {
-		if (index == AFrameTask.UNUSED_INDEX) {
-			mPlugins.remove(plugin);
-		} else {
-			mPlugins.remove(index);
-		}
-	}
-	
-	/**
-	 * Internal method for removing all {@link IRendererPlugin} renderers.
-	 * Should only be called through {@link #handleRemoveAllTask(AFrameTask)}
-	 */
-	private void internalClearPlugins() {
-		mPlugins.clear();
-	}
-	
 	/**
 	 * Creates a shallow copy of the internal plugin list. 
 	 * 
@@ -1870,11 +1331,12 @@ public class RajawaliScene extends AFrameTask {
 	 * not clear the items themselves as they may be held by some other scene.
 	 */
 	public void destroyScene() {
-		queueClearTask(AFrameTask.TYPE.ANIMATION);
-		queueClearTask(AFrameTask.TYPE.CAMERA);
-		queueClearTask(AFrameTask.TYPE.LIGHT);
-		queueClearTask(AFrameTask.TYPE.OBJECT3D);
-		queueClearTask(AFrameTask.TYPE.PLUGIN);
+		clearAnimations();
+		clearCameras();
+		clearLights();
+		clearPlugins();
+        clearChildren();
+        clearFrameCallbacks();
 	}
 	
 	/**
@@ -2010,10 +1472,5 @@ public class RajawaliScene extends AFrameTask {
 				}
 		}
 		return objectCount;
-	}
-
-	@Override
-	public TYPE getFrameTaskType() {
-		return AFrameTask.TYPE.SCENE;
 	}
 }

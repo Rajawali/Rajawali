@@ -12,25 +12,25 @@
  */
 package org.rajawali3d.util;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
+import android.graphics.Bitmap.Config;
+import android.graphics.Color;
+import android.opengl.GLES20;
 
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.materials.textures.ATexture.FilterType;
 import org.rajawali3d.materials.textures.ATexture.WrapType;
-import org.rajawali3d.renderer.AFrameTask;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.renderer.RenderTarget;
-import android.graphics.Bitmap.Config;
-import android.graphics.Color;
-import android.opengl.GLES20;
 
-public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
 
-	private final ArrayList<Object3D> mObjectLookup = new ArrayList<Object3D>();
+public class ObjectColorPicker implements IObjectPicker {
+
+	private final ArrayList<Object3D> mObjectLookup = new ArrayList<>();
 	private final RajawaliRenderer mRenderer;
 
 	private int mColorIndex = 0;
@@ -40,7 +40,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 
 	public ObjectColorPicker(RajawaliRenderer renderer) {
 		mRenderer = renderer;
-		mRenderer.queueInitializeTask(this);
+		mRenderer.initializeColorPicker(this);
 	}
 
 	public void initialize() {
@@ -86,7 +86,7 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
 		pixelBuffer.order(ByteOrder.nativeOrder());
 
-		GLES20.glReadPixels(pickerInfo.getX(), picker.mRenderer.getViewportHeight()
+		GLES20.glReadPixels(pickerInfo.getX(), picker.mRenderer.getDefaultViewportHeight()
 				- pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
 				pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
@@ -138,11 +138,6 @@ public class ObjectColorPicker extends AFrameTask implements IObjectPicker {
 		public ByteBuffer getColorPickerBuffer() {
 			return mColorPickerBuffer;
 		}
-	}
-
-	@Override
-	public TYPE getFrameTaskType() {
-		return TYPE.COLOR_PICKER;
 	}
 
 	public static final class ObjectColorPickerException extends Exception {
