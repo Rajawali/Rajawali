@@ -12,15 +12,16 @@
  */
 package org.rajawali3d.materials.shaders;
 
-import java.util.List;
+import android.graphics.Color;
+import android.opengl.GLES20;
 
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin.SkeletalAnimationShaderVar;
 import org.rajawali3d.materials.shaders.fragments.animation.SkeletalAnimationVertexShaderFragment;
 import org.rajawali3d.math.Matrix4;
-import android.graphics.Color;
-import android.opengl.GLES20;
+
+import java.util.List;
 
 public class VertexShader extends AShader {
 
@@ -178,10 +179,8 @@ public class VertexShader extends AShader {
 	}
 
 	@Override
-	public void applyParams()
-	{
+	public void applyParams() {
 		super.applyParams();
-
 		GLES20.glUniform4fv(muColorHandle, 1, mColor, 0);
 		GLES20.glUniform1f(muTimeHandle, mTime);
 	}

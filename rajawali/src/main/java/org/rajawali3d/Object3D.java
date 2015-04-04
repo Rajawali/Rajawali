@@ -37,6 +37,7 @@ import android.util.Log;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -270,9 +271,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				material.setVertices(mGeometry.getVertexBufferInfo());
 			}
 			material.setCurrentObject(this);
-			material.applyParams();
-			if(mOverrideMaterialColor)
-				material.setColor(mColor);
+			if(mOverrideMaterialColor) {
+                material.setColor(mColor);
+            }
+            material.applyParams();
 
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 

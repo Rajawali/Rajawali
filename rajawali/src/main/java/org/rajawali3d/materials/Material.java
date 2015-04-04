@@ -827,8 +827,7 @@ public class Material {
 	 * Applies parameters that should be set on the shaders. These are parameters
 	 * like time, color, buffer handles, etc.
 	 */
-	public void applyParams()
-	{
+	public void applyParams() {
 		mVertexShader.setColor(mColor);
 		mVertexShader.setTime(mTime);
 		mVertexShader.applyParams();

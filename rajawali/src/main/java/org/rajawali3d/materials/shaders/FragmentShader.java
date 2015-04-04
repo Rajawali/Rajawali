@@ -12,10 +12,11 @@
  */
 package org.rajawali3d.materials.shaders;
 
-import java.util.List;
+import android.opengl.GLES20;
 
 import org.rajawali3d.lights.ALight;
-import android.opengl.GLES20;
+
+import java.util.List;
 
 
 public class FragmentShader extends AShader {
@@ -106,8 +107,7 @@ public class FragmentShader extends AShader {
 	}
 	
 	@Override
-	public void applyParams()
-	{
+	public void applyParams() {
 		super.applyParams();
 		
 		GLES20.glUniform1f(muColorInfluenceHandle, mColorInfluence);
