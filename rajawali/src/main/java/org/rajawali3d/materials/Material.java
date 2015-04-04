@@ -557,22 +557,22 @@ public class Material {
 					if(isSkyTexture)
 					{
 						 if(skyTextures == null)
-							 skyTextures = new ArrayList<ATexture>();
+							 skyTextures = new ArrayList<>();
 						 skyTextures.add(texture);
 					}
 					else if(isEnvironmentTexture)
 					{
 						if(envMapTextures == null)
-							envMapTextures = new ArrayList<ATexture>();
+							envMapTextures = new ArrayList<>();
 						envMapTextures.add(texture);
 					}								
 					break;
 				case SPECULAR:
-					if(specMapTextures == null) specMapTextures = new ArrayList<ATexture>();
+					if(specMapTextures == null) specMapTextures = new ArrayList<>();
 					specMapTextures.add(texture);
 					break;
 				case ALPHA:
-					if(alphaMapTextures == null) alphaMapTextures = new ArrayList<ATexture>();
+					if(alphaMapTextures == null) alphaMapTextures = new ArrayList<>();
 					alphaMapTextures.add(texture);
 					break;
 				default:
