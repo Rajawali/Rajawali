@@ -12,70 +12,59 @@
  */
 package org.rajawali3d.materials;
 
+import org.rajawali3d.renderer.RajawaliRenderer;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.rajawali3d.renderer.RajawaliRenderer;
-
 
 public class MaterialManager extends AResourceManager {
 	private static MaterialManager instance = null;
 	private List<Material> mMaterialList;
 	
-	private MaterialManager()
-	{
+	private MaterialManager() {
 		mMaterialList = Collections.synchronizedList(new CopyOnWriteArrayList<Material>());
 		mRenderers = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliRenderer>());
 	}
 	
-	public static MaterialManager getInstance()
-	{
-		if(instance == null)
-		{
+	public static MaterialManager getInstance() {
+		if(instance == null) {
 			instance = new MaterialManager();
 		}
 		return instance;
 	}
 	
-	public Material addMaterial(Material material)
-	{
+	public Material addMaterial(Material material) {
 		if(material == null) return null;
-		for(Material mat : mMaterialList)
-		{
+		for(Material mat : mMaterialList) {
 			if(mat == material)
 				return material;
 		}
-		mRenderer.queueAddTask(material);
+		mRenderer.addMaterial(material);
 		mMaterialList.add(material);
 		return material;
 	}
 	
-	public void taskAdd(Material material)
-	{
+	public void taskAdd(Material material) {
 		material.setOwnerIdentity(mRenderer.getClass().toString());
 		material.add();
 	}
 	
-	public void removeMaterial(Material material)
-	{
+	public void removeMaterial(Material material) {
 		if(material == null) return;
-		mRenderer.queueRemoveTask(material);
+		mRenderer.removeMaterial(material);
 	}
 	
-	public void taskRemove(Material material)
-	{
+	public void taskRemove(Material material) {
 		material.remove();
 		mMaterialList.remove(material);
 	}
 	
-	public void reload()
-	{
-		mRenderer.queueReloadTask(this);
+	public void reload() {
+		mRenderer.reloadMaterials();
 	}
 	
-	public void taskReload()
-	{
+	public void taskReload() {
 		int len = mMaterialList.size();
 		for (int i = 0; i < len; i++)
 		{
@@ -84,21 +73,17 @@ public class MaterialManager extends AResourceManager {
 		}
 	}
 	
-	public void reset()
-	{
-		mRenderer.queueResetTask(this);
+	public void reset() {
+		mRenderer.resetMaterials();
 	}
 	
-	public void taskReset()
-	{
+	public void taskReset() {
 		int count = mMaterialList.size();
 		
-		for(int i=0; i<count; i++)
-		{
+		for(int i=0; i<count; i++) {
 			Material material = mMaterialList.get(i);
 			
-			if(material.getOwnerIdentity() != null && material.getOwnerIdentity().equals(mRenderer.getClass().toString()))
-			{
+			if(material.getOwnerIdentity() != null && material.getOwnerIdentity().equals(mRenderer.getClass().toString())) {
 				material.remove();
 				mMaterialList.remove(i);
 				i -= 1;
@@ -106,8 +91,7 @@ public class MaterialManager extends AResourceManager {
 			}			
 		}
 		
-		if (mRenderers.size() > 0)
-		{
+		if (mRenderers.size() > 0) {
 			mRenderer = mRenderers.get(mRenderers.size() - 1);
 			reload();
 		} else {
@@ -115,20 +99,13 @@ public class MaterialManager extends AResourceManager {
 		}
 	}
 	
-	public void taskReset(RajawaliRenderer renderer)
-	{
-		if (mRenderers.size() == 0)
-		{
+	public void taskReset(RajawaliRenderer renderer) {
+		if (mRenderers.size() == 0) {
 			taskReset();
 		}
 	}
 	
-	public int getNumMaterials()
-	{
+	public int getMaterialCount() {
 		return mMaterialList.size();
-	}
-	
-	public TYPE getFrameTaskType() {
-		return TYPE.MATERIAL_MANAGER;
 	}
 }

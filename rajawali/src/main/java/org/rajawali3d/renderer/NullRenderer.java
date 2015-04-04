@@ -18,6 +18,11 @@ public final class NullRenderer extends RajawaliRenderer {
     }
 
     @Override
+    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
+
+    }
+
+    @Override
     protected void initScene() {
 
     }

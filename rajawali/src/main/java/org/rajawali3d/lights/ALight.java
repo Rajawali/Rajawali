@@ -14,7 +14,6 @@ package org.rajawali3d.lights;
 
 import org.rajawali3d.ATransformable3D;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.AFrameTask;
 
 public abstract class ALight extends ATransformable3D {
 	public static final int DIRECTIONAL_LIGHT = 0;
@@ -83,10 +82,5 @@ public abstract class ALight extends ATransformable3D {
 		mPositionArray[1] = mPosition.y;
 		mPositionArray[2] = mPosition.z;
 		return mPositionArray;
-	}
-	
-	@Override
-	public AFrameTask.TYPE getFrameTaskType() {
-		return AFrameTask.TYPE.LIGHT;
 	}
 }

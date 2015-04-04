@@ -52,7 +52,7 @@ import java.util.List;
  * The Material class is where you define the visual characteristics of your 3D model.
  * Here you can specify lighting parameters, specular highlights, ambient colors and much more.
  * This is the place where you add textures as well. For an overview of the different types
- * of materials and parameters visit the Rajawali Wiki. {@link https://github.com/MasDennis/Rajawali/wiki/Materials}
+ * of materials and parameters visit the Rajawali Wiki.
  * 
  * This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights:
  * <pre><code>
@@ -66,9 +66,9 @@ import java.util.List;
  * </code></pre>
  * 
  * @author dennis.ippel
- *
+ * @see <a href="https://github.com/MasDennis/Rajawali/wiki/Materials">https://github.com/MasDennis/Rajawali/wiki/Materials</a>
  */
-public class Material extends AFrameTask {
+public class Material {
 	/**
 	 * This tells the Material class where to insert a shader fragment into either
 	 * the vertex of fragment shader.
@@ -250,7 +250,7 @@ public class Material extends AFrameTask {
 	 * The Material class is where you define the visual characteristics of your 3D model.
 	 * Here you can specify lighting parameters, specular highlights, ambient colors and much more.
 	 * This is the place where you add textures as well. For an overview of the different types
-	 * of materials and parameters visit the Rajawali Wiki. {@link https://github.com/MasDennis/Rajawali/wiki/Materials}
+	 * of materials and parameters visit the Rajawali Wiki.
 	 * 
 	 * This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights:
 	 * <pre><code>
@@ -263,6 +263,7 @@ public class Material extends AFrameTask {
 	 * myObject.setMaterial(material);
 	 * </code></pre>
 	 *
+     * @see <a href="https://github.com/MasDennis/Rajawali/wiki/Materials">https://github.com/MasDennis/Rajawali/wiki/Materials</a>
 	 */	
 	public Material() {
 		this(false);
@@ -327,7 +328,7 @@ public class Material extends AFrameTask {
 	 * This color will be applied to the whole object. For vertex colors use {@link Material#useVertexColors(boolean)}
 	 * and {@link Material#setVertexColors(int)}.
 	 * 
-	 * @param int color The color to be used. Color.RED for instance. Or 0xffff0000.
+	 * @param color {@code int} color The color to be used. Color.RED for instance. Or 0xffff0000.
 	 */
 	public void setColor(int color) {
 		mColor[0] = (float)Color.red(color) / 255.f;
@@ -1343,13 +1344,5 @@ public class Material extends AFrameTask {
 	public String getOwnerIdentity()
 	{
 		return mOwnerIdentity;
-	}
-
-	/* (non-Javadoc)
-	 * @see rajawali.renderer.AFrameTask#getFrameTaskType()
-	 */
-	@Override
-	public TYPE getFrameTaskType() {
-		return TYPE.MATERIAL;
 	}
 }

@@ -771,9 +771,4 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		volume.transform(mMMatrix);
 		return volume;
 	}
-
-	@Override
-	public TYPE getFrameTaskType() {
-		return AFrameTask.TYPE.OBJECT3D;
-	}
 }

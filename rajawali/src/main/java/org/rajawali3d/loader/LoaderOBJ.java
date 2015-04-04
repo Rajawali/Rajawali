@@ -16,6 +16,19 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
+import org.rajawali3d.Object3D;
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.materials.methods.DiffuseMethod;
+import org.rajawali3d.materials.methods.SpecularMethod;
+import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.Etc1Texture;
+import org.rajawali3d.materials.textures.NormalMapTexture;
+import org.rajawali3d.materials.textures.SpecularMapTexture;
+import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureManager;
+import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.util.RajLog;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,20 +43,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringTokenizer;
-
-import org.rajawali3d.Object3D;
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
-import org.rajawali3d.materials.textures.Etc1Texture;
-import org.rajawali3d.materials.textures.NormalMapTexture;
-import org.rajawali3d.materials.textures.SpecularMapTexture;
-import org.rajawali3d.materials.textures.Texture;
-import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.renderer.RajawaliRenderer;
-import org.rajawali3d.util.RajLog;
-import org.rajawali3d.wallpaper.Wallpaper;
 
 /**
  * The most important thing is that the model should be triangulated. Rajawali doesn�t accept quads, only tris. In Blender, this is an option you can select in the exporter. In a program like MeshLab, this is done automatically.
@@ -267,7 +266,7 @@ public class LoaderOBJ extends AMeshLoader {
 				} else if(type.equals(MATERIAL_LIB)) {
 					if(!parts.hasMoreTokens()) continue;
 					String materialLibPath = parts.nextToken().replace(".", "_");
-					RajLog.d(Wallpaper.TAG, "Found Material Lib: " + materialLibPath);
+					RajLog.d(this, "Found Material Lib: " + materialLibPath);
 					if(mFile != null)
 						matLib.parse(materialLibPath, null, null);
 					else
@@ -529,7 +528,7 @@ public class LoaderOBJ extends AMeshLoader {
 						if(matDef != null) mMaterials.add(matDef);
 						matDef = new MaterialDef();
 						matDef.name = parts.hasMoreTokens() ? parts.nextToken() : "";
-						RajLog.d(Wallpaper.TAG, "Parsing material: " + matDef.name);
+						RajLog.d(this, "Parsing material: " + matDef.name);
 					} else if(type.equals(DIFFUSE_COLOR)) {
 						matDef.diffuseColor = getColorFromParts(parts);
 					} else if(type.equals(AMBIENT_COLOR)) {

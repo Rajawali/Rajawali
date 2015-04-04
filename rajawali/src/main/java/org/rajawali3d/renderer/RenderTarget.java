@@ -27,7 +27,7 @@ import android.opengl.GLU;
  * @author Andrew Jo (andrewjo@gmail.com)
  * @author dennis.ippel
  */
-public class RenderTarget extends AFrameTask {
+public class RenderTarget {
 
 	protected int mWidth;
 	protected int mHeight;
@@ -333,13 +333,8 @@ public class RenderTarget extends AFrameTask {
 	public RenderTargetTexture getTexture() {
 		return mTexture;
 	}
-	@Override
-	public TYPE getFrameTaskType() {
-		return TYPE.RENDER_TARGET;
-	}
 
-	public int getFrameBufferHandle()
-	{
+	public int getFrameBufferHandle() {
 		return mFrameBufferHandle;
 	}
 	
