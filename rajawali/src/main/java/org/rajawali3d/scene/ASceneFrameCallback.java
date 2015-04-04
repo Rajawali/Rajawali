@@ -69,9 +69,4 @@ public abstract class ASceneFrameCallback extends AFrameTask {
     public boolean callPostFrame() {
         return false;
     }
-
-    @Override
-    public TYPE getFrameTaskType() {
-        return TYPE.FRAME_CALLBACK;
-    }
 }

@@ -1,8 +1,6 @@
 package org.rajawali3d.animation;
 
-import org.rajawali3d.renderer.AFrameTask;
-
-public abstract class Playable extends AFrameTask implements IPlayable {
+public abstract class Playable implements IPlayable {
 
 	protected static enum State {
 		// @formatter:off
@@ -17,11 +15,6 @@ public abstract class Playable extends AFrameTask implements IPlayable {
 	
 	public Playable() {
 		mState = State.PAUSED;
-	}
-
-	@Override
-	public TYPE getFrameTaskType() {
-		return AFrameTask.TYPE.ANIMATION;
 	}
 
 	@Override

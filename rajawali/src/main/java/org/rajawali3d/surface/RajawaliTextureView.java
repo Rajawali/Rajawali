@@ -13,7 +13,7 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 
-import org.rajawali3d.Capabilities;
+import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.R;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
@@ -31,7 +31,10 @@ import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * @author Jared Woolston (jwoolston@idealcorp.com)
+ * Rajawali version of a {@link TextureView}. If you plan on using Rajawali with a {@link TextureView},
+ * it is imperative that you extend this class or life cycle events may not function as you expect.
+ *
+ * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public class RajawaliTextureView extends TextureView implements IRajawaliSurface {
     private final static String TAG = "RajawaliTextureView";

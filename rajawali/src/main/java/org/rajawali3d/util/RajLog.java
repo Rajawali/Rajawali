@@ -19,8 +19,6 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import org.rajawali3d.Capabilities;
-
 import javax.microedition.khronos.opengles.GL10;
 
 public class RajLog {

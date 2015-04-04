@@ -81,7 +81,7 @@ import org.rajawali3d.scene.RajawaliScene;
  * @author dennis.ippel
  *
  */
-public class RajawaliSideBySideRenderer extends RajawaliRenderer {
+public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
 	/**
 	 * Stores the camera's orientation. This is set from the 
 	 * activity by the rotation vector sensor.

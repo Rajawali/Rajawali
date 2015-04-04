@@ -12,20 +12,11 @@
  */
 package org.rajawali3d;
 
-import android.graphics.Color;
-import android.opengl.GLES20;
-
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
-import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.primitives.Line3D;
-import org.rajawali3d.renderer.AFrameTask;
-
-import java.nio.FloatBuffer;
-import java.util.Stack;
 
 public class Camera extends ATransformable3D {
 
@@ -257,11 +248,6 @@ public class Camera extends ATransformable3D {
 		}
 	}
 	
-	@Override
-	public TYPE getFrameTaskType() {
-		return AFrameTask.TYPE.CAMERA;
-	}
-
 	public Camera clone() {
 		Camera cam = new Camera();
 		cam.setFarPlane(mFarPlane);

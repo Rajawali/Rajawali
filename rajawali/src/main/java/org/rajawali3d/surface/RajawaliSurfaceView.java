@@ -7,7 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
 
-import org.rajawali3d.Capabilities;
+import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.R;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
