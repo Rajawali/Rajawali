@@ -517,7 +517,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
      * @param height {@code int} The viewport height in pixels.
      */
     public void setViewPort(int width, int height) {
-        RajLog.d(this, "Setting viewport dimensions <" + width + ", " + height + ">");
         mCurrentViewportWidth = width;
         mCurrentViewportHeight = height;
         mCurrentScene.updateProjectionMatrix(width, height);
