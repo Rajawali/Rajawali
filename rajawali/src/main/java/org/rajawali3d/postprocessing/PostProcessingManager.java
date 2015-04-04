@@ -15,10 +15,6 @@ package org.rajawali3d.postprocessing;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.ATexture.FilterType;
 import org.rajawali3d.materials.textures.ATexture.WrapType;
@@ -31,6 +27,10 @@ import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.scene.RajawaliScene;
 import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PostProcessingManager {
 
@@ -60,14 +60,9 @@ public class PostProcessingManager {
 		mRenderer = renderer;
 
 		if(width == -1 && height == -1) {
-			if (mRenderer.getSceneInitialized()) {
-				width = mRenderer.getOverrideViewportWidth();
-				height = mRenderer.getOverrideViewportHeight();
-			} else {
-				width = mRenderer.getViewportWidth();
-				height = mRenderer.getDefaultViewportHeight();
-			}
-		}		
+			width = mRenderer.getViewportWidth();
+    		height = mRenderer.getViewportHeight();
+		}
 
 		mWidth = width;
 		mHeight = height;
