@@ -25,19 +25,12 @@ import org.rajawali3d.materials.textures.TexturePacker.Tile;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.AFrameTask;
 import org.rajawali3d.util.GLU;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.visitors.INode;
 import org.rajawali3d.visitors.INodeVisitor;
 
 import java.nio.FloatBuffer;
-<<<<<<< HEAD
-=======
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.Arrays;
->>>>>>> eda2cb5c5eaed32a69950ae1fe2706d4e4ec852b
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

@@ -16,7 +16,7 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.util.RajLog;
 
 /**
- * https://braintrekking.wordpress.com/2012/08/21/tutorial-of-arcball-without-quaternions/
+ *
  * @author dennis.ippel
  */
 public class ArcballCamera extends Camera {
@@ -25,15 +25,15 @@ public class ArcballCamera extends Camera {
     private View.OnTouchListener mGestureListener;
     private GestureDetector mDetector;
     private View mView;
-    private float mScaleFactor;
     private boolean mIsRotating = false;
-    private Vector3 mPrevVec = new Vector3();
-    private Vector3 mCurrVec = new Vector3();
-    private Vector2 mPrevCoord = new Vector2();
-    private Vector2 mCurrCoord = new Vector2();
+    private boolean mIsScaling = false;
+    private Vector3 mPrevSphereCoord = new Vector3();
+    private Vector3 mCurrSphereCoord = new Vector3();
+    private Vector2 mPrevScreenCoord = new Vector2();
+    private Vector2 mCurrScreenCoord = new Vector2();
     private Quaternion mStartOrientation = new Quaternion();
     private Quaternion mCurrentOrientation = new Quaternion();
-    private Object3D mObj;
+    private Object3D mEmpty;
     private double mStartFOV;
 
     public ArcballCamera(Context context, View view) {
@@ -41,8 +41,7 @@ public class ArcballCamera extends Camera {
         mContext = context;
         mView = view;
         mLookAtEnabled = true;
-        mObj = new Object3D();
-        mObj.setPosition(0, 0, 1);
+        mEmpty = new Object3D();
         mStartFOV = mFieldOfView;
         addListeners();
     }
@@ -74,53 +73,51 @@ public class ArcballCamera extends Camera {
 
     private void startRotation(final float x, final float y)
     {
-        mapToScreen(x, y, mPrevCoord);
+        mapToScreen(x, y, mPrevScreenCoord);
 
-        mCurrCoord.setAll(mPrevCoord.getX(), mPrevCoord.getY());
+        mCurrScreenCoord.setAll(mPrevScreenCoord.getX(), mPrevScreenCoord.getY());
 
         mIsRotating = true;
     }
 
     private void updateRotation(final float x, final float y)
     {
-        mapToScreen(x, y, mCurrCoord);
+        mapToScreen(x, y, mCurrScreenCoord);
 
         applyRotation();
     }
 
     private void endRotation()
     {
-        Quaternion q = new Quaternion(mStartOrientation);
-        q.multiply(mCurrentOrientation);
-        mStartOrientation.setAll(q);
+        mStartOrientation.multiply(mCurrentOrientation);
     }
 
     private void applyRotation()
     {
         if (mIsRotating)
         {
-            mapToSphere((float) mPrevCoord.getX(), (float) mPrevCoord.getY(), mPrevVec);
-            mapToSphere((float) mCurrCoord.getX(), (float) mCurrCoord.getY(), mCurrVec);
+            mapToSphere((float) mPrevScreenCoord.getX(), (float) mPrevScreenCoord.getY(), mPrevSphereCoord);
+            mapToSphere((float) mCurrScreenCoord.getX(), (float) mCurrScreenCoord.getY(), mCurrSphereCoord);
 
-            Vector3 rotationAxis = mPrevVec.clone();
-            rotationAxis.cross(mCurrVec);
+            Vector3 rotationAxis = mPrevSphereCoord.clone();
+            rotationAxis.cross(mCurrSphereCoord);
             rotationAxis.normalize();
 
-            double rotationAngle = Math.acos(Math.min(1, mPrevVec.dot(mCurrVec)));
+            double rotationAngle = Math.acos(Math.min(1, mPrevSphereCoord.dot(mCurrSphereCoord)));
             mCurrentOrientation.fromAngleAxis(rotationAxis, MathUtil.radiansToDegrees(rotationAngle));
             mCurrentOrientation.normalize();
 
             Quaternion q = new Quaternion(mStartOrientation);
             q.multiply(mCurrentOrientation);
 
-            mObj.setOrientation(q);
+            mEmpty.setOrientation(q);
         }
     }
 
     public Matrix4 getViewMatrix() {
         synchronized (mFrustumLock) {
             Matrix4 m = super.getViewMatrix();
-            m.rotate(mObj.getOrientation());
+            m.rotate(mEmpty.getOrientation());
             return m;
         }
     }
@@ -141,11 +138,16 @@ public class ArcballCamera extends Camera {
 
                 mGestureListener = new View.OnTouchListener() {
                     public boolean onTouch(View v, MotionEvent event) {
-                        mDetector.onTouchEvent(event);
-                        if(event.getAction() == MotionEvent.ACTION_UP) {
-                            if(mIsRotating) {
-                                endRotation();
-                                mIsRotating = false;
+                        mScaleDetector.onTouchEvent(event);
+
+                        if(!mIsScaling) {
+                            mDetector.onTouchEvent(event);
+
+                            if(event.getAction() == MotionEvent.ACTION_UP) {
+                                if(mIsRotating) {
+                                    endRotation();
+                                    mIsRotating = false;
+                                }
                             }
                         }
 
@@ -174,10 +176,20 @@ public class ArcballCamera extends Camera {
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            mScaleFactor *= detector.getScaleFactor();
-            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 2.0f));
-            mFieldOfView = mStartFOV * mScaleFactor;
+            double fov = Math.max(30, Math.min(100, mStartFOV * (1.0 / detector.getScaleFactor())));
+            setFieldOfView(fov);
             return true;
+        }
+
+        @Override
+        public boolean onScaleBegin (ScaleGestureDetector detector) {
+            mIsScaling = true;
+            return super.onScaleBegin(detector);
+        }
+
+        @Override
+        public void onScaleEnd (ScaleGestureDetector detector) {
+            mIsScaling = false;
         }
     }
 }
