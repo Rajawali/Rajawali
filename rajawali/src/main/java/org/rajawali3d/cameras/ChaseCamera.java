@@ -10,8 +10,9 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d;
+package org.rajawali3d.cameras;
 
+import org.rajawali3d.Object3D;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 

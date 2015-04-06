@@ -15,7 +15,7 @@ package org.rajawali3d.postprocessing.passes;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.postprocessing.APass;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.RajawaliRenderer;

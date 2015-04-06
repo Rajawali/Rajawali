@@ -1,6 +1,6 @@
 package org.rajawali3d.postprocessing.materials;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.lights.DirectionalLight;

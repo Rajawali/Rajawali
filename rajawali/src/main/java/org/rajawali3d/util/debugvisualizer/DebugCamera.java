@@ -3,7 +3,7 @@ package org.rajawali3d.util.debugvisualizer;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;

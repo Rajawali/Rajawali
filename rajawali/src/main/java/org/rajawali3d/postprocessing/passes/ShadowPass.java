@@ -1,6 +1,6 @@
 package org.rajawali3d.postprocessing.passes;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.ScreenQuad;

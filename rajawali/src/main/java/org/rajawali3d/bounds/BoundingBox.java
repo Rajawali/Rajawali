@@ -17,7 +17,7 @@ import android.opengl.GLES20;
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Geometry3D;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;

@@ -16,7 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.lights.DirectionalLight;

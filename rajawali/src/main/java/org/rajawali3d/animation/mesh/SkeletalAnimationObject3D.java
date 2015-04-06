@@ -26,7 +26,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import org.rajawali3d.BufferInfo;
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Geometry3D.BufferType;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;

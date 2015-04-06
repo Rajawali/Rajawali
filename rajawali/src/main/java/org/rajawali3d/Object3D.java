@@ -17,6 +17,7 @@ import android.opengl.GLES20;
 
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.materials.textures.TextureAtlas;
@@ -24,20 +25,12 @@ import org.rajawali3d.materials.textures.TexturePacker.Tile;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.AFrameTask;
 import org.rajawali3d.util.GLU;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.visitors.INode;
 import org.rajawali3d.visitors.INodeVisitor;
 
-import android.graphics.Color;
-import android.opengl.GLES20;
-import android.util.Log;
-
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

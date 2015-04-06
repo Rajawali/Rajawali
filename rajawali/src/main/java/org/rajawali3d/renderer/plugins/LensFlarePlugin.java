@@ -16,7 +16,7 @@ import android.opengl.GLES20;
 
 import java.util.Stack;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.extras.LensFlare;
 import org.rajawali3d.extras.LensFlare.FlareInfo;
 import org.rajawali3d.materials.textures.ASingleTexture;

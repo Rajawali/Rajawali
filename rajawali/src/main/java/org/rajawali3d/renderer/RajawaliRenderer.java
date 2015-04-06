@@ -23,7 +23,7 @@ import android.os.Message;
 import android.util.SparseArray;
 import android.view.WindowManager;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.async.IAsyncLoaderCallback;
 import org.rajawali3d.materials.Material;

@@ -15,7 +15,7 @@ package org.rajawali3d.animation.mesh;
 import android.opengl.GLES20;
 
 import org.rajawali3d.BufferInfo;
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Geometry3D;
 import org.rajawali3d.Geometry3D.BufferType;
 import org.rajawali3d.Object3D;

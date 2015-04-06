@@ -15,12 +15,11 @@ package org.rajawali3d.animation.mesh;
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Geometry3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.IMaterialPlugin;
 import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin;
-import org.rajawali3d.util.RajLog;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
 	private VertexAnimationMaterialPlugin mMaterialPlugin;

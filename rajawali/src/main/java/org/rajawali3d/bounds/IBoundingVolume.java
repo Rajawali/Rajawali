@@ -13,7 +13,7 @@
 package org.rajawali3d.bounds;
 
 import org.rajawali3d.Object3D;
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Geometry3D;
 import org.rajawali3d.math.Matrix4;
 

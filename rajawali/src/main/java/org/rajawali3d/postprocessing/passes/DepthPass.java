@@ -2,7 +2,7 @@ package org.rajawali3d.postprocessing.passes;
 
 import android.opengl.GLES20;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.DepthMaterialPlugin;
 import org.rajawali3d.postprocessing.APass;

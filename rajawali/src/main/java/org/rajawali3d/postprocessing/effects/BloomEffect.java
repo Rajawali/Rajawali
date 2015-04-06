@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  */package org.rajawali3d.postprocessing.effects;
 
-import org.rajawali3d.Camera;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.postprocessing.APostProcessingEffect;
 import org.rajawali3d.postprocessing.passes.BlendPass;
 import org.rajawali3d.postprocessing.passes.BlendPass.BlendMode;
