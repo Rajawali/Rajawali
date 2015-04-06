@@ -123,6 +123,60 @@ public abstract class ATransformable3D implements IGraphNodeMember {
     }
 
     /**
+     * Utility method to move the specified number of units along the current forward axis. This will
+     * also adjust the look at target (if a valid one is currently set).
+     *
+     * @param units {@code double} Number of units to move. If negative, movement will be in the "back" direction.
+     */
+    public void moveForward(double units) {
+        mTempVec.setAll(WorldParameters.FORWARD_AXIS);
+        mTempVec.rotateBy(mOrientation).normalize();
+        mTempVec.multiply(units);
+        mPosition.add(mTempVec);
+        if (mLookAtEnabled && mLookAtValid) {
+            mLookAt.add(mTempVec);
+            resetToLookAt();
+        }
+        markModelMatrixDirty();
+    }
+
+    /**
+     * Utility method to move the specified number of units along the current right axis. This will
+     * also adjust the look at target (if a valid one is currently set).
+     *
+     * @param units {@code double} Number of units to move. If negative, movement will be in the "left" direction.
+     */
+    public void moveRight(double units) {
+        mTempVec.setAll(WorldParameters.RIGHT_AXIS);
+        mTempVec.rotateBy(mOrientation).normalize();
+        mTempVec.multiply(units);
+        mPosition.add(mTempVec);
+        if (mLookAtValid) {
+            mLookAt.add(mTempVec);
+            resetToLookAt();
+        }
+        markModelMatrixDirty();
+    }
+
+    /**
+     * Utility method to move the specified number of units along the current up axis. This will
+     * also adjust the look at target (if a valid one is currently set).
+     *
+     * @param units {@code double} Number of units to move. If negative, movement will be in the "down" direction.
+     */
+    public void moveUp(double units) {
+        mTempVec.setAll(WorldParameters.UP_AXIS);
+        mTempVec.rotateBy(mOrientation).normalize();
+        mTempVec.multiply(units);
+        mPosition.add(mTempVec);
+        if (mLookAtEnabled && mLookAtValid) {
+            mLookAt.add(mTempVec);
+            resetToLookAt();
+        }
+        markModelMatrixDirty();
+    }
+
+    /**
      * Sets the x component of the position for this {@link ATransformable3D}.
      * If this is part of a scene graph, the graph will be notified of the change.
      *
