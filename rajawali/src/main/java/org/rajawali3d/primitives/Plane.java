@@ -255,13 +255,23 @@ public class Plane extends Object3D {
 				int ur = (col + 1) * colspan + row;
 				int lr = ur + 1;
 
-				indices[indexCount++] = (int) ur;
-				indices[indexCount++] = (int) lr;
-				indices[indexCount++] = (int) ul;
+                if (mUpAxis == Axis.X || mUpAxis == Axis.Z) {
+                    indices[indexCount++] = (int) ur;
+                    indices[indexCount++] = (int) lr;
+                    indices[indexCount++] = (int) ul;
 
-				indices[indexCount++] = (int) lr;
-				indices[indexCount++] = (int) ll;
-				indices[indexCount++] = (int) ul;
+                    indices[indexCount++] = (int) lr;
+                    indices[indexCount++] = (int) ll;
+                    indices[indexCount++] = (int) ul;
+                } else {
+                    indices[indexCount++] = (int) ur;
+                    indices[indexCount++] = (int) ul;
+                    indices[indexCount++] = (int) lr;
+
+                    indices[indexCount++] = (int) lr;
+                    indices[indexCount++] = (int) ul;
+                    indices[indexCount++] = (int) ll;
+                }
 			}
 		}
 
