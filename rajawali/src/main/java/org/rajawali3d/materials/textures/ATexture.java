@@ -215,7 +215,7 @@ public abstract class ATexture {
 	 *            the texture id to set
 	 */
 	public void setTextureId(int textureId) {
-		this.mTextureId = textureId;
+		mTextureId = textureId;
 	}
 
 	/**
