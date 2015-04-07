@@ -25,25 +25,41 @@ public class ArcballCamera extends Camera {
     private View.OnTouchListener mGestureListener;
     private GestureDetector mDetector;
     private View mView;
-    private boolean mIsRotating = false;
-    private boolean mIsScaling = false;
-    private Vector3 mPrevSphereCoord = new Vector3();
-    private Vector3 mCurrSphereCoord = new Vector3();
-    private Vector2 mPrevScreenCoord = new Vector2();
-    private Vector2 mCurrScreenCoord = new Vector2();
-    private Quaternion mStartOrientation = new Quaternion();
-    private Quaternion mCurrentOrientation = new Quaternion();
+    private boolean mIsRotating;
+    private boolean mIsScaling;
+    private Vector3 mPrevSphereCoord;
+    private Vector3 mCurrSphereCoord;
+    private Vector2 mPrevScreenCoord;
+    private Vector2 mCurrScreenCoord;
+    private Quaternion mStartOrientation;
+    private Quaternion mCurrentOrientation;
     private Object3D mEmpty;
+    private Object3D mTarget;
     private double mStartFOV;
 
     public ArcballCamera(Context context, View view) {
+        this(context, view, null);
+    }
+
+    public ArcballCamera(Context context, View view, Object3D target) {
         super();
         mContext = context;
+        mTarget = target;
         mView = view;
+        initialize();
+        addListeners();
+    }
+
+    private void initialize() {
+        mStartFOV = mFieldOfView;
         mLookAtEnabled = true;
         mEmpty = new Object3D();
-        mStartFOV = mFieldOfView;
-        addListeners();
+        mPrevSphereCoord = new Vector3();
+        mCurrSphereCoord = new Vector3();
+        mPrevScreenCoord = new Vector2();
+        mCurrScreenCoord = new Vector2();
+        mStartOrientation = new Quaternion();
+        mCurrentOrientation = new Quaternion();
     }
 
     @Override
@@ -162,13 +178,15 @@ public class ArcballCamera extends Camera {
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onScroll(MotionEvent event1, MotionEvent event2, float distanceX, float distanceY) {
+            RajLog.i(event1.getAction() +" "+ event1.getActionIndex() +" "+ event2.getAction() +" "+ event2.getActionIndex());
+
             if(mIsRotating == false) {
-                startRotation(event1.getX(), event1.getY());
-                return true;
+                startRotation(event2.getX(), event2.getY());
+                return false;
             }
             mIsRotating = true;
             updateRotation(event2.getX(), event2.getY());
-            return true;
+            return false;
         }
     }
 
@@ -183,12 +201,14 @@ public class ArcballCamera extends Camera {
 
         @Override
         public boolean onScaleBegin (ScaleGestureDetector detector) {
+            RajLog.d("SCALE BEGIN");
             mIsScaling = true;
             return super.onScaleBegin(detector);
         }
 
         @Override
         public void onScaleEnd (ScaleGestureDetector detector) {
+            RajLog.d("SCALE END");
             mIsScaling = false;
         }
     }
