@@ -842,6 +842,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
+                renderTarget.create();
                 mRenderTargets.add(renderTarget);
             }
         };
