@@ -59,8 +59,8 @@ Alternatively, if you checkout Rajawali via GIT, you can run `gradle assembleRel
 [YouTube Video of RajawaliVR in action](https://www.youtube.com/watch?v=3L0l_jmkcBE&feature=youtu.be)
 
 ## Tutorials
-
-1. [Basic Setup & a Sphere](https://github.com/MasDennis/Rajawali/wiki/Tutorial-01----Basic-Setup-&-a-Sphere)  
+1. [Basic Setup & Sphere (Maven)](http://www.clintonmedbery.com/?p=59)
+~~1. [Basic Setup & a Sphere (Out of date)](https://github.com/MasDennis/Rajawali/wiki/Tutorial-01----Basic-Setup-&-a-Sphere)~~  
 2. [Creating a Live Wallpaper and Importing a Model](https://github.com/MasDennis/Rajawali/wiki/Tutorial-02-Creating-a-Live-Wallpaper-and-Importing-a-Model)  
 3. [Materials](https://github.com/MasDennis/Rajawali/wiki/Tutorial-03-Materials)  
 4. [Optimization](https://github.com/MasDennis/Rajawali/wiki/Tutorial-04-Optimization)  

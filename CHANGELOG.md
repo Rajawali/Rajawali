@@ -12,9 +12,15 @@ The project has been migrated to Android Studio and the Gradle build system. Alo
 
 In preparation for deployment into Maven, the package name of the Rajawali library has changed. The old packages `rajawali` and `rajawali.framework` are now `org.rajawali3d`, which is the Maven group id.
 
+### No more `RajawaliFragment` or `RajawaliActivity`
+
+`RajawaliSurfaceView` and `RajawaliTextureView` are the classes which replace `RajawaliFragment`, `RajawaliSupportFragment` and `RajawaliActivity`. They extend a common interface, `IRajawaliSurface`. This was done to simplify development of the framework by reducing the duplication of life cycle related code as much as possible. While you may need to take a few extra steps to bring Rajawali into your Fragment/Activity, these steps have been simplified and made more consistent across the multiple use cases. What follows is an explanation of setting up these views in a `Fragment`, though it would be no different for an `Activity`. For more details, see [Using RajawaliSurfaceView and RajawaliTextureView](https://github.com/Rajawali/Rajawali/wiki/Using-RajawaliSurfaceView-and-RajawaliTextureView)
+
 ### Debugging
 
 A new renderer class, `RajawaliDebugRenderer` has been added. It has an additional constructor parameter for a `RajawaliGLDebug.Builder` instance which will configure the debug behavior. You can enable automatic glError() calls after every GL call, enforcment of all GL calls coming from the same thread and argument name printing for GL calls. With the addition of this class, `RajawaliRenderer` no longer checks for GL errors at the end of each frame. This is for performance reasons. Of course in your own implementation you could still check at the end of each frame if you so chose. 
+
+Additionally, the `org.rajawali3d.util.debugvisualizer` package has been added. It contains several classes which allow you to easily add visuals to your scene for things like camera frustrum, lights, bounding volumes, etc. 
 
 ### OpenGL ES 3.0
 

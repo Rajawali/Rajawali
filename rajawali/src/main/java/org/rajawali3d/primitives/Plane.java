@@ -256,12 +256,12 @@ public class Plane extends Object3D {
 				int lr = ur + 1;
 
 				indices[indexCount++] = (int) ur;
-				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) lr;
+				indices[indexCount++] = (int) ul;
 
 				indices[indexCount++] = (int) lr;
-				indices[indexCount++] = (int) ul;
 				indices[indexCount++] = (int) ll;
+				indices[indexCount++] = (int) ul;
 			}
 		}
 

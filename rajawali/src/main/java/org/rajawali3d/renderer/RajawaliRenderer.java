@@ -20,24 +20,23 @@ import android.opengl.GLES20;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.service.wallpaper.WallpaperService;
 import android.util.SparseArray;
 import android.view.WindowManager;
 
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.async.IAsyncLoaderCallback;
+import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
+import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix;
+import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.RajawaliScene;
 import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.surface.IRajawaliSurfaceRenderer;
+import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
@@ -74,7 +73,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     protected Context mContext; // Context the renderer is running in
 
     protected IRajawaliSurface mSurface; // The rendering surface
-    protected WallpaperService.Engine mWallpaperEngine; // Concrete wallpaper instance
     protected int mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
     protected int mDefaultViewportWidth, mDefaultViewportHeight; // The default width and height of the GL viewport
     protected int mOverrideViewportWidth, mOverrideViewportHeight; // The overridden width and height of the GL viewport
@@ -144,9 +142,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
         EGLContext eglContext = egl.eglGetCurrentContext();
         return eglContext != EGL10.EGL_NO_CONTEXT;
     }
-
-    public abstract void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep,
-                                          float yOffsetStep, int xPixelOffset, int yPixelOffset);
 
     /**
      * Scene construction should happen here, not in onSurfaceCreated()
@@ -261,24 +256,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Retrieve the {@link WallpaperService.Engine} instance this renderer is attached to.
-     *
-     * @return {@link WallpaperService.Engine} The instance.
-     */
-    public WallpaperService.Engine getEngine() {
-        return mWallpaperEngine;
-    }
-
-    /**
-     * Sets the {@link WallpaperService.Engine} instance this renderer is attached to.
-     *
-     * @param engine {@link WallpaperService.Engine} instance.
-     */
-    public void setEngine(WallpaperService.Engine engine) {
-        mWallpaperEngine = engine;
     }
 
     /**

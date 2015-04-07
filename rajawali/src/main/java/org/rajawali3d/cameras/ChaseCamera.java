@@ -16,9 +16,7 @@ import org.rajawali3d.Object3D;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
-public class ChaseCamera extends Camera {
-	protected Vector3 mCameraOffset;
-	protected Object3D mObjectToChase;
+public class ChaseCamera extends AObjectCamera {
 
 	public ChaseCamera() {
 		this(new Vector3(0, 3, 16), null);
@@ -29,36 +27,20 @@ public class ChaseCamera extends Camera {
 	}
 
 	public ChaseCamera(Vector3 cameraOffset, Object3D objectToChase) {
-		super();
-		mCameraOffset = cameraOffset;
-		mObjectToChase = objectToChase;
+		super(cameraOffset, objectToChase);
 	}
-	
+
+    @Override
 	public Matrix4 getViewMatrix() {
-        mPosition.addAndSet(mObjectToChase.getWorldPosition(), mCameraOffset);
-        setLookAt(mObjectToChase.getWorldPosition());
+        mPosition.addAndSet(mLinkedObject.getWorldPosition(), mCameraOffset);
+        setLookAt(mLinkedObject.getWorldPosition());
         onRecalculateModelMatrix(null);
 		return super.getViewMatrix();
 	}
 
-	public void setCameraOffset(Vector3 offset) {
-		mCameraOffset.setAll(offset);
-	}
-	
-	public Vector3 getCameraOffset() {
-		return mCameraOffset;
-	}
-	
-	public Object3D getObjectToChase() {
-		return mObjectToChase;
-	}
-
-	public void setObjectToChase(Object3D objectToChase) {
-		mObjectToChase = objectToChase;
+    @Override
+    public void setLinkedObject(Object3D object) {
+        super.setLinkedObject(object);
         enableLookAt();
-	}
-	
-	public Object3D getChasedObject() {
-		return mObjectToChase;
-	}	
+    }
 }

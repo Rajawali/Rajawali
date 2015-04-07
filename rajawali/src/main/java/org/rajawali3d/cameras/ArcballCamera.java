@@ -13,7 +13,6 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector2;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.util.RajLog;
 
 /**
  *
@@ -132,8 +131,23 @@ public class ArcballCamera extends Camera {
 
     public Matrix4 getViewMatrix() {
         synchronized (mFrustumLock) {
+            Vector3 pos = new Vector3(mLookAt);
+
+            if(mTarget != null) {
+                setLookAt(mLookAt.subtract(mTarget.getPosition()));
+            } else {
+                setLookAt(0, 0, 0);
+            }
+
             Matrix4 m = super.getViewMatrix();
             m.rotate(mEmpty.getOrientation());
+
+            if(mTarget != null) {
+                m.translate(mTarget.getPosition());
+            }
+
+            mLookAt.setAll(pos);
+
             return m;
         }
     }
@@ -175,12 +189,18 @@ public class ArcballCamera extends Camera {
         });
     }
 
+    public void setTarget(Object3D target) {
+        mTarget = target;
+    }
+
+    public Object3D getTarget() {
+        return mTarget;
+    }
+
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onScroll(MotionEvent event1, MotionEvent event2, float distanceX, float distanceY) {
-            RajLog.i(event1.getAction() +" "+ event1.getActionIndex() +" "+ event2.getAction() +" "+ event2.getActionIndex());
-
-            if(mIsRotating == false) {
+            if(!mIsRotating) {
                 startRotation(event2.getX(), event2.getY());
                 return false;
             }
@@ -201,14 +221,14 @@ public class ArcballCamera extends Camera {
 
         @Override
         public boolean onScaleBegin (ScaleGestureDetector detector) {
-            RajLog.d("SCALE BEGIN");
             mIsScaling = true;
+            mIsRotating = false;
             return super.onScaleBegin(detector);
         }
 
         @Override
         public void onScaleEnd (ScaleGestureDetector detector) {
-            RajLog.d("SCALE END");
+            mIsRotating = false;
             mIsScaling = false;
         }
     }

@@ -14,263 +14,30 @@ package org.rajawali3d.wallpaper;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.surface.IRajawaliSurface;
+import org.rajawali3d.surface.IRajawaliSurfaceRenderer;
 import org.rajawali3d.surface.RajawaliSurfaceView;
-import org.rajawali3d.util.RajLog;
-
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLDisplay;
+import org.rajawali3d.util.Capabilities;
 
 public abstract class Wallpaper extends WallpaperService {
 
-    private static final boolean DEBUG = false;
-    private static boolean mUsesCoverageAa;
-    public static final String SHARED_PREFS_NAME = "rajawalisharedprefs";
-
-    private static class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
-
-        public ConfigChooser(int r, int g, int b, int a, int depth, int stencil, boolean useMultisample) {
-            mRedSize = r;
-            mGreenSize = g;
-            mBlueSize = b;
-            mAlphaSize = a;
-            mDepthSize = depth;
-            mStencilSize = stencil;
-            mUseMultiSample = useMultisample;
-        }
-
-        /*
-         * This EGL config specification is used to specify 2.0 rendering. We use a minimum size of 4 bits for
-         * red/green/blue, but will perform actual matching in chooseConfig() below.
-         */
-        private static final int EGL_OPENGL_ES2_BIT = 4;
-        private static final int EGL_COVERAGE_BUFFERS_NV = 0x30E0;
-        private static final int EGL_COVERAGE_SAMPLES_NV = 0x30E1;
-        private static int[] s_configAttribs2 = {
-            EGL10.EGL_RED_SIZE, 4,
-            EGL10.EGL_GREEN_SIZE, 4,
-            EGL10.EGL_BLUE_SIZE, 4,
-            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-            EGL10.EGL_NONE
-        };
-        private static int[] s_configAttribsMultisamp1 = {
-            EGL10.EGL_RED_SIZE, 5,
-            EGL10.EGL_GREEN_SIZE, 6,
-            EGL10.EGL_BLUE_SIZE, 5,
-            EGL10.EGL_DEPTH_SIZE, 16,
-            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-            EGL10.EGL_SAMPLE_BUFFERS, 1,
-            EGL10.EGL_SAMPLES, 2,
-            EGL10.EGL_NONE
-        };
-        private static int[] s_configAttribsMultisamp2 = {
-            EGL10.EGL_RED_SIZE, 5,
-            EGL10.EGL_GREEN_SIZE, 6,
-            EGL10.EGL_BLUE_SIZE, 5,
-            EGL10.EGL_DEPTH_SIZE, 16,
-            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-            EGL_COVERAGE_BUFFERS_NV, 1,
-            EGL_COVERAGE_SAMPLES_NV, 2,
-            EGL10.EGL_NONE
-        };
-
-        public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
-            /*
-			 * Get the number of minimally matching EGL configurations
-			 */
-            int[] num_config = new int[1];
-            int[] configAttribs = mUseMultiSample ? s_configAttribsMultisamp1 : s_configAttribs2;
-            egl.eglChooseConfig(display, configAttribs, null, 0, num_config);
-            int numConfigs = num_config[0];
-
-            if (numConfigs <= 0) {
-                if (mUseMultiSample) {
-                    // no multisampling, check for coverage multisampling
-                    configAttribs = s_configAttribsMultisamp2;
-                    egl.eglChooseConfig(display, configAttribs, null, 0, num_config);
-                    numConfigs = num_config[0];
-                    if (numConfigs <= 0) {
-                        RajLog.e("Multisampling configuration failed. Multisampling is not possible on your device.");
-                        throw new IllegalArgumentException("No configs match configSpec");
-                    } else {
-                        mUsesCoverageAa = true;
-                    }
-                } else {
-                    throw new IllegalArgumentException("No configs match configSpec");
-                }
-            }
-
-			/*
-			 * Allocate then read the array of minimally matching EGL configs
-			 */
-            EGLConfig[] configs = new EGLConfig[numConfigs];
-            egl.eglChooseConfig(display, configAttribs, configs, numConfigs, num_config);
-
-            if (DEBUG) {
-                printConfigs(egl, display, configs);
-            }
-			/*
-			 * Now return the "best" one
-			 */
-            return chooseConfig(egl, display, configs);
-        }
-
-        public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display,
-                                      EGLConfig[] configs) {
-            for (EGLConfig config : configs) {
-                int d = findConfigAttrib(egl, display, config,
-                    EGL10.EGL_DEPTH_SIZE, 0);
-                int s = findConfigAttrib(egl, display, config,
-                    EGL10.EGL_STENCIL_SIZE, 0);
-
-                // We need at least mDepthSize and mStencilSize bits
-                if (d < mDepthSize || s < mStencilSize)
-                    continue;
-
-                // We want an *exact* match for red/green/blue/alpha
-                int r = findConfigAttrib(egl, display, config,
-                    EGL10.EGL_RED_SIZE, 0);
-                int g = findConfigAttrib(egl, display, config,
-                    EGL10.EGL_GREEN_SIZE, 0);
-                int b = findConfigAttrib(egl, display, config,
-                    EGL10.EGL_BLUE_SIZE, 0);
-                int a = findConfigAttrib(egl, display, config,
-                    EGL10.EGL_ALPHA_SIZE, 0);
-
-                if (r == mRedSize && g == mGreenSize && b == mBlueSize && a == mAlphaSize)
-                    return config;
-            }
-            return null;
-        }
-
-        private int findConfigAttrib(EGL10 egl, EGLDisplay display,
-                                     EGLConfig config, int attribute, int defaultValue) {
-
-            if (egl.eglGetConfigAttrib(display, config, attribute, mValue)) {
-                return mValue[0];
-            }
-            return defaultValue;
-        }
-
-        private void printConfigs(EGL10 egl, EGLDisplay display,
-                                  EGLConfig[] configs) {
-            int numConfigs = configs.length;
-            RajLog.w(this, String.format("%d configurations", numConfigs));
-            for (int i = 0; i < numConfigs; i++) {
-                RajLog.w(this, String.format("Configuration %d:\n", i));
-                printConfig(egl, display, configs[i]);
-            }
-        }
-
-        private void printConfig(EGL10 egl, EGLDisplay display,
-                                 EGLConfig config) {
-            int[] attributes = {
-                EGL10.EGL_BUFFER_SIZE,
-                EGL10.EGL_ALPHA_SIZE,
-                EGL10.EGL_BLUE_SIZE,
-                EGL10.EGL_GREEN_SIZE,
-                EGL10.EGL_RED_SIZE,
-                EGL10.EGL_DEPTH_SIZE,
-                EGL10.EGL_STENCIL_SIZE,
-                EGL10.EGL_CONFIG_CAVEAT,
-                EGL10.EGL_CONFIG_ID,
-                EGL10.EGL_LEVEL,
-                EGL10.EGL_MAX_PBUFFER_HEIGHT,
-                EGL10.EGL_MAX_PBUFFER_PIXELS,
-                EGL10.EGL_MAX_PBUFFER_WIDTH,
-                EGL10.EGL_NATIVE_RENDERABLE,
-                EGL10.EGL_NATIVE_VISUAL_ID,
-                EGL10.EGL_NATIVE_VISUAL_TYPE,
-                0x3030, // EGL10.EGL_PRESERVED_RESOURCES,
-                EGL10.EGL_SAMPLES,
-                EGL10.EGL_SAMPLE_BUFFERS,
-                EGL10.EGL_SURFACE_TYPE,
-                EGL10.EGL_TRANSPARENT_TYPE,
-                EGL10.EGL_TRANSPARENT_RED_VALUE,
-                EGL10.EGL_TRANSPARENT_GREEN_VALUE,
-                EGL10.EGL_TRANSPARENT_BLUE_VALUE,
-                0x3039, // EGL10.EGL_BIND_TO_TEXTURE_RGB,
-                0x303A, // EGL10.EGL_BIND_TO_TEXTURE_RGBA,
-                0x303B, // EGL10.EGL_MIN_SWAP_INTERVAL,
-                0x303C, // EGL10.EGL_MAX_SWAP_INTERVAL,
-                EGL10.EGL_LUMINANCE_SIZE,
-                EGL10.EGL_ALPHA_MASK_SIZE,
-                EGL10.EGL_COLOR_BUFFER_TYPE,
-                EGL10.EGL_RENDERABLE_TYPE,
-                0x3042 // EGL10.EGL_CONFORMANT
-            };
-            String[] names = {
-                "EGL_BUFFER_SIZE",
-                "EGL_ALPHA_SIZE",
-                "EGL_BLUE_SIZE",
-                "EGL_GREEN_SIZE",
-                "EGL_RED_SIZE",
-                "EGL_DEPTH_SIZE",
-                "EGL_STENCIL_SIZE",
-                "EGL_CONFIG_CAVEAT",
-                "EGL_CONFIG_ID",
-                "EGL_LEVEL",
-                "EGL_MAX_PBUFFER_HEIGHT",
-                "EGL_MAX_PBUFFER_PIXELS",
-                "EGL_MAX_PBUFFER_WIDTH",
-                "EGL_NATIVE_RENDERABLE",
-                "EGL_NATIVE_VISUAL_ID",
-                "EGL_NATIVE_VISUAL_TYPE",
-                "EGL_PRESERVED_RESOURCES",
-                "EGL_SAMPLES",
-                "EGL_SAMPLE_BUFFERS",
-                "EGL_SURFACE_TYPE",
-                "EGL_TRANSPARENT_TYPE",
-                "EGL_TRANSPARENT_RED_VALUE",
-                "EGL_TRANSPARENT_GREEN_VALUE",
-                "EGL_TRANSPARENT_BLUE_VALUE",
-                "EGL_BIND_TO_TEXTURE_RGB",
-                "EGL_BIND_TO_TEXTURE_RGBA",
-                "EGL_MIN_SWAP_INTERVAL",
-                "EGL_MAX_SWAP_INTERVAL",
-                "EGL_LUMINANCE_SIZE",
-                "EGL_ALPHA_MASK_SIZE",
-                "EGL_COLOR_BUFFER_TYPE",
-                "EGL_RENDERABLE_TYPE",
-                "EGL_CONFORMANT"
-            };
-            int[] value = new int[1];
-            for (int i = 0; i < attributes.length; i++) {
-                int attribute = attributes[i];
-                String name = names[i];
-                if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
-                    RajLog.w(this, String.format("  %s: %d\n", name, value[0]));
-                } else {
-                    // RajLog.w(TAG, String.format("  %s: failed\n", name));
-                    while (egl.eglGetError() != EGL10.EGL_SUCCESS) ;
-                }
-            }
-        }
-
-        // Subclasses can adjust these values:
-        protected boolean mUseMultiSample;
-        protected int mRedSize;
-        protected int mGreenSize;
-        protected int mBlueSize;
-        protected int mAlphaSize;
-        protected int mDepthSize;
-        protected int mStencilSize;
-        private int[] mValue = new int[1];
-    }
-
     protected class WallpaperEngine extends Engine {
 
-        protected class GLWallpaperSurfaceView extends RajawaliSurfaceView {
+        protected Context mContext;
+        protected IRajawaliSurfaceRenderer mRenderer;
+        protected WallpaperSurfaceView mSurfaceView;
+        protected boolean mUsesCoverageAa;
+        protected boolean mMultisampling;
+        protected float mDefaultPreviewOffsetX;
 
-            GLWallpaperSurfaceView(Context context) {
+        class WallpaperSurfaceView extends RajawaliSurfaceView {
+
+            WallpaperSurfaceView(Context context) {
                 super(context);
             }
 
@@ -284,22 +51,15 @@ public abstract class Wallpaper extends WallpaperService {
             }
         }
 
-        protected Context mContext;
-        protected RajawaliRenderer mRenderer;
-        protected GLWallpaperSurfaceView mSurfaceView;
-        protected boolean mMultisampling;
-        protected float mDefaultPreviewOffsetX;
-
-        public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer) {
-            this(preferences, context, renderer, false);
+        public WallpaperEngine(Context context, IRajawaliSurfaceRenderer renderer) {
+            this(context, renderer, false, false);
         }
 
-        public WallpaperEngine(SharedPreferences preferences, Context context, RajawaliRenderer renderer,
+        public WallpaperEngine(Context context, IRajawaliSurfaceRenderer renderer, boolean useCoverageAa,
                                boolean useMultisampling) {
             mContext = context;
             mRenderer = renderer;
-            //TODO Preferences
-            mRenderer.setEngine(this);
+            mUsesCoverageAa = useCoverageAa;
             mMultisampling = useMultisampling;
             mDefaultPreviewOffsetX = 0.5f;
         }
@@ -323,8 +83,8 @@ public abstract class Wallpaper extends WallpaperService {
         @Override
         public void onTouchEvent(MotionEvent event) {
             super.onTouchEvent(event);
-            /*if (mRenderer != null)
-                mRenderer.onTouchEvent(event);*/ //TODO Touch event
+            if (mRenderer != null)
+                mRenderer.onTouchEvent(event);
         }
 
         @Override
@@ -338,11 +98,11 @@ public abstract class Wallpaper extends WallpaperService {
         @Override
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
-            mSurfaceView = new GLWallpaperSurfaceView(mContext);
-            mSurfaceView.setEGLContextClientVersion(2);
-            mSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 16, 0, mMultisampling));
-            mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+            mSurfaceView = new WallpaperSurfaceView(mContext);
+            mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
+            mSurfaceView.setRenderMode(IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
             mSurfaceView.setUsesCovererageAntiAliasing(mUsesCoverageAa);
+            mSurfaceView.setMultisamplingEnabled(mMultisampling);
             mSurfaceView.setSurfaceRenderer(mRenderer);
             setTouchEventsEnabled(true);
         }
@@ -357,6 +117,7 @@ public abstract class Wallpaper extends WallpaperService {
             setTouchEventsEnabled(false);
             mRenderer.onRenderSurfaceDestroyed(null);
             mRenderer = null;
+            mSurfaceView.onDestroy();
             super.onDestroy();
         }
 

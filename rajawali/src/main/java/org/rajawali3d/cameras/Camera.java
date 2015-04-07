@@ -13,7 +13,6 @@
 package org.rajawali3d.cameras;
 
 import org.rajawali3d.ATransformable3D;
-import org.rajawali3d.Frustum;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.math.Matrix4;
@@ -54,6 +53,33 @@ public class Camera extends ATransformable3D {
             mFrustumCorners[i] = new Vector3();
         }
 	}
+
+    @Override
+    public boolean onRecalculateModelMatrix(Matrix4 parentMatrix) {
+        super.onRecalculateModelMatrix(parentMatrix);
+        mMMatrix.rotate(mLocalOrientation);
+        return true;
+    }
+
+    public void setCameraOrientation(Quaternion quaternion) {
+        mLocalOrientation.setAll(quaternion);
+    }
+
+    public void setCameraYaw(double angle) {
+        mLocalOrientation.fromEuler(angle, mLocalOrientation.getPitch(), mLocalOrientation.getRoll());
+    }
+
+    public void setCameraPitch(double angle) {
+        mLocalOrientation.fromEuler(mLocalOrientation.getYaw(), angle, mLocalOrientation.getRoll());
+    }
+
+    public void setCameraRoll(double angle) {
+        mLocalOrientation.fromEuler(mLocalOrientation.getYaw(), mLocalOrientation.getPitch(), angle);
+    }
+
+    public void resetCameraOrientation() {
+        mLocalOrientation.identity();
+    }
 
 	public Matrix4 getViewMatrix() {
 		synchronized (mFrustumLock) {
@@ -97,6 +123,10 @@ public class Camera extends ATransformable3D {
             matrix[Matrix4.M23] = -mPosition.x * matrix[Matrix4.M20]
                 + -mPosition.y * matrix[Matrix4.M21] + -mPosition.z * matrix[Matrix4.M22];
             matrix[Matrix4.M33] = 1;
+
+            mTmpOrientation.setAll(mLocalOrientation).inverse();
+            mViewMatrix.leftMultiply(mTmpOrientation.toRotationMatrix());
+            //mViewMatrix.rotate(mTmpOrientation);
 
 			return mViewMatrix;
 		}
