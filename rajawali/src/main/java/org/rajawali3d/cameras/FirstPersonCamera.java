@@ -24,6 +24,7 @@ public class FirstPersonCamera extends AObjectCamera {
     @Override
     public Matrix4 getViewMatrix() {
         mPosition.addAndSet(mLinkedObject.getWorldPosition(), mCameraOffset);
+        mLinkedObject.getOrientation(mOrientation);
         onRecalculateModelMatrix(null);
         return super.getViewMatrix();
     }
