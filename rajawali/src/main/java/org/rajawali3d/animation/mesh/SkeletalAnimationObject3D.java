@@ -39,11 +39,13 @@ import org.rajawali3d.util.RajLog;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
+import java.util.Arrays;
 
 public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	private SkeletonJoint[] mJoints;
 	private SkeletonJoint mTmpJoint1;
 	private SkeletonJoint mTmpJoint2;
+	private SkeletalAnimationSequence[] mSequences;
 	private SkeletalAnimationSequence mSequence;
 	private SkeletalAnimationSequence mNextSequence;
 	private double mTransitionDuration;
@@ -72,21 +74,90 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		mTmpJoint2 = new SkeletonJoint();
 	}
 
-	public void setJoints(SkeletonJoint[] joints) {
-		mJoints = joints;
-		if (mBoneMatrices == null) {
-			if (mBoneMatrices != null) {
-				mBoneMatrices.clear();
-			}
-			mBoneMatrices = ByteBuffer
-					.allocateDirect(joints.length * DOUBLE_SIZE_BYTES * 16)
-					.order(ByteOrder.nativeOrder()).asDoubleBuffer();
+	/*
+	 * Sets bind pose matrices from argument and computes
+	 * inverse bind poses.
+	 */
+	public void setBindPoseMatrices(double[] bp)
+	{
+		uBoneMatrix = bp;
 
-			mBoneMatrices.put(uBoneMatrix);
-			mBoneMatrices.position(0);
-		} else {
-			mBoneMatrices.put(uBoneMatrix);
-		}
+		mInverseBindPoseMatrix = new double[bp.length/16][16];
+
+		for(int i = 0; i < mInverseBindPoseMatrix.length; i++)
+			Matrix.invertM(mInverseBindPoseMatrix[i], 0, bp, i * 16);
+	}
+
+	/*
+	 * Sets inverse bind pose matrices from argument and computes
+	 * bind poses.
+	 */
+	public void setInverseBindPoseMatrices(double[][] invbp)
+	{
+		uBoneMatrix = new double[invbp.length * 16];
+
+		mInverseBindPoseMatrix = invbp;
+
+		for(int i = 0; i < invbp.length; i++)
+			Matrix.invertM(uBoneMatrix, i * 16, invbp[i], 0);
+	}
+
+	/*
+	 * Sets bind pose and inverse matrices from arguments.
+	 */
+	public void setAllBindPoseMatrices(double[] bp, double[][] invbp)
+	{
+		mInverseBindPoseMatrix = invbp;
+		uBoneMatrix = bp;
+	}
+
+	/*
+	 * Takes a joint hierarchy where each SkeletonJoint's matrix is that
+	 * joint's bind pose. Assigns joints, bind poses, and inverses.
+	 */
+	public void setJointsWithBindPoseMatrices(SkeletonJoint[] joints)
+	{
+		double[] bp = new double[joints.length * 16];
+
+		for(int i = 0; i < joints.length; i++)
+			System.arraycopy(joints[i].getMatrix(), 0, bp, i * 16, 16);
+
+		setBindPoseMatrices(bp);
+		setJoints(joints);
+	}
+
+	/*
+	 * Takes a joint hierarchy where each SkeletonJoint's matrix is that
+	 * joint's inverse bind pose. Assigns joints, bind poses, and inverses.
+	 */
+	public void setJointsWithInverseBindPoseMatrices(SkeletonJoint[] joints)
+	{
+		double[][] invbp = new double[joints.length][];
+
+		for(int i = 0; i < joints.length; i++)
+			invbp[i] = Arrays.copyOf(joints[i].getMatrix(), 16);
+
+		setInverseBindPoseMatrices(invbp);
+		setJoints(joints);
+	}
+
+	public void setJoints(SkeletonJoint[] joints) {
+
+		if(joints == null)
+			return;
+
+		mJoints = joints;
+
+		if (mBoneMatrices == null) {
+			mBoneMatrices = ByteBuffer
+				.allocateDirect(joints.length * DOUBLE_SIZE_BYTES * 16)
+				.order(ByteOrder.nativeOrder()).asDoubleBuffer();
+		} else
+			mBoneMatrices.clear();
+
+		mBoneMatrices.put(uBoneMatrix);
+		mBoneMatrices.position(0);
+
 		mGeometry.createBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, mBoneMatrices, GLES20.GL_ARRAY_BUFFER);
 	}
 
@@ -98,6 +169,11 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		return mJoints;
 	}
 
+	public void setAnimationSequences(SkeletalAnimationSequence[] sequences)
+	{
+		mSequences = sequences;
+	}
+
 	/**
 	 * Sets a new {@link SkeletalAnimationSequence}. It will use this one immediately no
 	 * blending will be done.
@@ -107,16 +183,43 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	public void setAnimationSequence(SkeletalAnimationSequence sequence)
 	{
 		mSequence = sequence;
+
 		if (sequence != null && sequence.getFrames() != null)
 		{
 			mNumFrames = sequence.getFrames().length;
 			
-			for (int i = 0, j = mChildren.size(); i < j; i++)
-				if (mChildren.get(i) instanceof SkeletalAnimationChildObject3D)
-					((SkeletalAnimationChildObject3D) mChildren.get(i)).setAnimationSequence(sequence);
+			for (Object3D child : mChildren)
+			{
+				if (child instanceof SkeletalAnimationChildObject3D)
+					((SkeletalAnimationChildObject3D) child).setAnimationSequence(sequence);
+			}
 		}
 	}
-	
+
+	public boolean setAnimationSequence(String name)
+	{
+		SkeletalAnimationSequence sequence = getAnimationSequence(name);
+
+		if(sequence == null)
+			return false;
+
+		setAnimationSequence(sequence);
+
+		return true;
+	}
+
+	public boolean setAnimationSequence(int index)
+	{
+		SkeletalAnimationSequence sequence = getAnimationSequence(index);
+
+		if(sequence == null)
+			return false;
+
+		setAnimationSequence(sequence);
+
+		return true;
+	}
+
 	/**
 	 * Transition to a new {@link SkeletalAnimationSequence} with the specified duration in milliseconds.
 	 * This method will use a {@link LinearInterpolator} for interpolation. To use a different type of
@@ -148,6 +251,67 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		mTransitionInterpolator = interpolator;
 		mTransitionStartTime = SystemClock.uptimeMillis();
 		mCurrentTransitionFrameIndex = 0;
+	}
+
+	public boolean transitionToAnimationSequence(String name, int duration)
+	{
+		return transitionToAnimationSequence(name, duration, new LinearInterpolator());
+	}
+
+	public boolean transitionToAnimationSequence(String name, int duration, Interpolator interpolator)
+	{
+		SkeletalAnimationSequence sequence = getAnimationSequence(name);
+
+		if(sequence == null)
+			return false;
+
+		transitionToAnimationSequence(sequence, duration, interpolator);
+
+		return true;
+	}
+
+	public boolean transitionToAnimationSequence(int index, int duration)
+	{
+		return transitionToAnimationSequence(index, duration, new LinearInterpolator());
+	}
+
+	public boolean transitionToAnimationSequence(int index, int duration, Interpolator interpolator)
+	{
+		SkeletalAnimationSequence sequence = getAnimationSequence(index);
+
+		if(sequence == null)
+			return false;
+
+		transitionToAnimationSequence(sequence, duration, interpolator);
+
+		return true;
+	}
+
+	public SkeletalAnimationSequence[] getAnimationSequences()
+	{
+		return mSequences;
+	}
+
+	public SkeletalAnimationSequence getAnimationSequence(int index)
+	{
+		if(mSequences == null || index < 0 || index >= mSequences.length)
+			return null;
+
+		return mSequences[index];
+	}
+
+	public SkeletalAnimationSequence getAnimationSequence(String name)
+	{
+		if(mSequences == null)
+			return null;
+
+		for(SkeletalAnimationSequence seq : mSequences)
+		{
+			if(seq.getName() != null && seq.getName().equals(name))
+				return seq;
+		}
+
+		return null;
 	}
 
 	/**
@@ -258,9 +422,9 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			return;
 		}
 		super.play();
-		for (int i = 0, j = mChildren.size(); i < j; i++)
-			if (mChildren.get(i) instanceof AAnimationObject3D)
-				((AAnimationObject3D) mChildren.get(i)).play();
+		for (Object3D child : mChildren)
+			if (child instanceof AAnimationObject3D)
+				((AAnimationObject3D) child).play();
 	}
 
 	@Override
@@ -311,10 +475,15 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		}
 
 	}
-	
+
 	public SkeletalAnimationObject3D clone(boolean copyMaterial) {
+		return clone(copyMaterial, true);
+	}
+
+	public SkeletalAnimationObject3D clone(boolean copyMaterial, boolean cloneChildren) {
 		SkeletalAnimationObject3D clone = new SkeletalAnimationObject3D();
 		clone.setRotation(getOrientation());
+		clone.setPosition(getPosition());
 		clone.setScale(getScale());
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
@@ -333,17 +502,23 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		clone.uBoneMatrix = uBoneMatrix;
 		clone.mInverseBindPoseMatrix = mInverseBindPoseMatrix;
 		clone.setJoints(mJoints);
-		
-		for(int i=0; i<mChildren.size(); i++)
+
+		if(!cloneChildren)
+			return clone;
+
+		for(Object3D child : mChildren)
 		{
-			Object3D child = mChildren.get(i);
 			if(child.getClass() == SkeletalAnimationChildObject3D.class)
 			{
-				SkeletalAnimationChildObject3D sco = (SkeletalAnimationChildObject3D)child;
-				clone.addChild(sco.clone(copyMaterial));
+				SkeletalAnimationChildObject3D scoclone =
+					(SkeletalAnimationChildObject3D)child.clone(copyMaterial, cloneChildren);
+
+				// TODO: setSkeleton in addChild?
+				scoclone.setSkeleton(clone);
+				clone.addChild(scoclone);
 			}
 		}
-				
+
 		return clone;
 	}
 }

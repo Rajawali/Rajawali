@@ -594,6 +594,8 @@ public class LoaderAWD extends AMeshLoader {
 			// Determine the length of the properties
 			final long propsLength = readUnsignedInt();
 
+			final long endPosition = mPosition + propsLength;
+
 			// Skip properties if null is passed
 			if (expected == null) {
 				RajLog.d("  Skipping property values.");
@@ -606,7 +608,6 @@ public class LoaderAWD extends AMeshLoader {
 			if (propsLength == 0)
 				return props;
 
-			final long endPosition = mPosition + propsLength;
 			short propKey;
 			long propLength;
 
@@ -617,6 +618,7 @@ public class LoaderAWD extends AMeshLoader {
 
 				if (mPosition + propLength > endPosition) {
 					RajLog.e("Unexpected properties length. Properties attemped to read past total properties length.");
+
 					if (endPosition > mPosition)
 						skip(endPosition - mPosition);
 

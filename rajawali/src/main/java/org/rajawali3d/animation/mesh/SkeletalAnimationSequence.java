@@ -33,6 +33,7 @@ public class SkeletalAnimationSequence implements IAnimationSequence {
 	public void setFrames(SkeletalAnimationFrame[] frames)
 	{
 		mFrames = frames;
+		mNumFrames = frames.length;
 	}
 	
 	public SkeletalAnimationFrame[] getFrames()

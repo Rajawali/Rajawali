@@ -131,8 +131,13 @@ public class LittleEndianDataInputStream extends InputStream implements DataInpu
 		mPosition += len;
 		d.readFully(b, off, len);
 	}
-	
+
 	public final long skip(int n) throws IOException {
+		mPosition += n;
+		return d.skip(n);
+	}
+
+	public final long skip(long n) throws IOException {
 		mPosition += n;
 		return d.skip(n);
 	}

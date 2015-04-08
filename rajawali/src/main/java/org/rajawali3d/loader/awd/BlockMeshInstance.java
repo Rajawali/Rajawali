@@ -1,13 +1,16 @@
 package org.rajawali3d.loader.awd;
 
 import org.rajawali3d.Object3D;
+import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
+import org.rajawali3d.loader.LoaderAWD.AwdProperties;
+import org.rajawali3d.loader.LoaderAWD.BlockHeader;
+import org.rajawali3d.loader.ParsingException;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
-import org.rajawali3d.loader.LoaderAWD.BlockHeader;
-import org.rajawali3d.loader.ParsingException;
+
+import android.util.SparseArray;
 
 /**
  * 
@@ -16,9 +19,20 @@ import org.rajawali3d.loader.ParsingException;
  */
 public class BlockMeshInstance extends AExportableBlockParser {
 
+	protected static final short PROP_CASTS_SHADOW = 5;
+
 	protected Object3D mGeometry;
 	protected SceneGraphBlock mSceneGraphBlock;
+	protected boolean mCastsShadow;
 	protected long mGeometryID;
+
+	private static final SparseArray<Short>
+		EXPECTED_PROPS = new SparseArray<Short>();
+
+	static
+	{
+		EXPECTED_PROPS.put(PROP_CASTS_SHADOW, AWDLittleEndianDataInputStream.TYPE_BOOL);
+	}
 
 	@Override
 	public Object3D getBaseObject3D() {
@@ -65,6 +79,10 @@ public class BlockMeshInstance extends AExportableBlockParser {
 			}
 		}
 
+		// mesh instance properties; does it cast a shadow?
+		AwdProperties properties = dis.readProperties(EXPECTED_PROPS);
+		mCastsShadow = (boolean)properties.get(PROP_CASTS_SHADOW, true);
+
 		final Matrix4 matrix = new Matrix4(mSceneGraphBlock.transformMatrix);
 		
 		// Set translation
@@ -85,10 +103,7 @@ public class BlockMeshInstance extends AExportableBlockParser {
 		for(int i = 0; i < mGeometry.getNumChildren(); i++)
 			mGeometry.getChildAt(i).setMaterial(materials[Math.min(materials.length-1, m++)]);
 
-		// FIXME This is a hack to get around the fact that setting the color on the material does not work right now.
-		//mGeometry.setColor(mGeometry.getMaterial().getColor());
-
+		// ignore user properties, skip to end of block
 		dis.skip(blockHeader.blockEnd - dis.getPosition());
 	}
-
 }
