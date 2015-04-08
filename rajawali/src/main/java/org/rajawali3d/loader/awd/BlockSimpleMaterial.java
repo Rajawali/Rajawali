@@ -155,7 +155,7 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 		switch (mMaterialType) {
 		case TYPE_COLOR:
 			// default to 0xcccccc per AWD implementation
-			diffuseColor = (Long) properties.get((short) 1, 0xccccccl);
+			diffuseColor = (Long) properties.get((short) 1, 0xccccccL);
 			final float[] colorFloat = new float[4];
 			colorFloat[0] = ((diffuseColor >> 16) & 0xff) / 255.0f;
 			colorFloat[1] = ((diffuseColor >> 8) & 0xff) / 255.0f;
