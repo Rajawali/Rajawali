@@ -947,9 +947,13 @@ public final class Matrix4 {
      * @return {@link Vector3} representing the translation.
      */
     public Vector3 getTranslation() {
-    	return new Vector3(m[M03], m[M13], m[M23]);
+    	return getTranslation(new Vector3());
     }
-    
+
+    public Vector3 getTranslation(Vector3 vec) {
+    	return vec.setAll(m[M03], m[M13], m[M23]);
+    }
+
     /**
      * Creates a new {@link Vector3} representing the scaling component
      * of this {@link Matrix4}.
