@@ -3,7 +3,7 @@ package org.rajawali3d.loader.awd;
 import org.rajawali3d.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
 import org.rajawali3d.loader.LoaderAWD.BlockHeader;
-import org.rajawali3d.util.ArrayUtils;
+import org.rajawali3d.math.Matrix4;
 
 /**
  * Specifies the joint hierarchy and inverse-bind-pose matrices.
@@ -21,7 +21,7 @@ public class BlockSkeleton extends ABlockParser {
 	protected String mLookupName;
 	protected int mNumJoints;
 
-	private final float[] transformMatrix = new float[16];
+	private final Matrix4 transformMatrix = new Matrix4();
 
 	// extract the inverse-bind-pose matrices for each joint in the skeleton
 	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
@@ -58,7 +58,7 @@ public class BlockSkeleton extends ABlockParser {
 			joint.setIndex(jointID);
 
 			// this is the INVERSE bind-pose matrix, take note for BlockAnimator
-			joint.setMatrix(ArrayUtils.convertFloatsToDoubles(transformMatrix));
+			joint.setMatrix(transformMatrix.getDoubleValues());
 
 			mJoints[i] = joint;
 		}

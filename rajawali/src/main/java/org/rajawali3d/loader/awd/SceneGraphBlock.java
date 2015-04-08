@@ -1,11 +1,12 @@
 package org.rajawali3d.loader.awd;
 
-import java.io.IOException;
-
 import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
 import org.rajawali3d.loader.LoaderAWD.BlockHeader;
 import org.rajawali3d.loader.ParsingException;
+import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.util.RajLog;
+
+import java.io.IOException;
 
 /**
  * 
@@ -14,7 +15,7 @@ import org.rajawali3d.util.RajLog;
  */
 public class SceneGraphBlock {
 
-	public final float[] transformMatrix = new float[16];
+	public final Matrix4 transformMatrix = new Matrix4();
 
 	public int parentID;
 	public String lookupName;
