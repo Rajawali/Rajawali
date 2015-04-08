@@ -194,7 +194,7 @@ public class ArcballCamera extends Camera {
                         return true;
                     }
                 };
-                ((View) mView.getParent()).setOnTouchListener(mGestureListener);
+                mView.setOnTouchListener(mGestureListener);
             }
         });
     }
