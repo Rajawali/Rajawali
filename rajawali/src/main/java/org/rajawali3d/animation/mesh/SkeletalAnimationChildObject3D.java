@@ -35,8 +35,8 @@ import java.nio.FloatBuffer;
  * per rendering cycle
  */
 public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
-	private static final int MAX_WEIGHTS_PER_VERTEX = 8;
-	public int mNumJoints;
+	public static final int MAX_WEIGHTS_PER_VERTEX = 8;
+
 	public SkeletalAnimationObject3D mSkeleton;
 	private SkeletalAnimationSequence mSequence;
 	public float[] boneWeights1, boneIndexes1, boneWeights2, boneIndexes2;
@@ -73,23 +73,18 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private BoneWeight[] mWeights;
 	private SkeletalAnimationMaterialPlugin mMaterialPlugin;
 	private boolean mInverseZScale = false;
-	private Vector3 mTmpScale = new Vector3();
 
 	public SkeletalAnimationChildObject3D() {
 		super();
 		mSkeleton = null;
 	}
-	
+
 	@Override
 	public void calculateModelMatrix(final Matrix4 parentMatrix) {
 		super.calculateModelMatrix(parentMatrix);
+
 		if(mInverseZScale)
-			mTmpScale.setAll(mScale.x, mScale.y, -mScale.z);
-		else
-			mTmpScale.setAll(mScale.x, mScale.y, mScale.z);
-		
-		mMMatrix.identity().translate(mPosition).scale(mTmpScale).multiply(mRotationMatrix);
-		if (parentMatrix != null) mMMatrix.leftMultiply(parentMatrix);
+			mMMatrix.scale(1, 1, -1);
 	}
 
 	public void setShaderParams(Camera camera) {
@@ -109,11 +104,20 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	public void setSkeleton(Object3D skeleton) {
 		if (skeleton instanceof SkeletalAnimationObject3D) {
 			mSkeleton = (SkeletalAnimationObject3D) skeleton;
-			mNumJoints = mSkeleton.getJoints().length;
 		}
 		else
 			throw new RuntimeException(
 					"Skeleton must be of type AnimationSkeleton!");
+	}
+
+	public int getNumJoints()
+	{
+		return (mSkeleton == null || mSkeleton.getJoints() == null ? 0 : mSkeleton.getJoints().length);
+	}
+
+	public void setSkeletonMeshData(BoneVertex[] vertices, BoneWeight[] weights)
+	{
+		setSkeletonMeshData(vertices.length, vertices, weights.length, weights);
 	}
 
 	public void setSkeletonMeshData(int numVertices, BoneVertex[] vertices, int numWeights, BoneWeight[] weights) {
@@ -157,9 +161,11 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 			return;
 		}
 		super.play();
-		for (int i = 0, j = mChildren.size(); i < j; i++)
-			if (mChildren.get(i) instanceof AAnimationObject3D)
-				((AAnimationObject3D) mChildren.get(i)).play();
+		for (Object3D child : mChildren)
+		{
+			if (child instanceof AAnimationObject3D)
+				((AAnimationObject3D) child).play();
+		}
 	}
 
 	public void setAnimationSequence(SkeletalAnimationSequence sequence)
@@ -169,9 +175,11 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		{
 			mNumFrames = sequence.getFrames().length;
 
-			for (int i = 0, j = mChildren.size(); i < j; i++)
-				if (mChildren.get(i) instanceof SkeletalAnimationChildObject3D)
-					((SkeletalAnimationChildObject3D) mChildren.get(i)).setAnimationSequence(sequence);
+			for (Object3D child : mChildren)
+			{
+				if (child instanceof SkeletalAnimationChildObject3D)
+					((SkeletalAnimationChildObject3D) child).setAnimationSequence(sequence);
+			}
 		}
 	}
 
@@ -291,11 +299,28 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	public void setInverseZScale(boolean value) {
 		mInverseZScale = value;
 	}
-	
-	public SkeletalAnimationChildObject3D clone(boolean copyMaterial)
+
+	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices, boolean createVBOs)
+	{
+		setData
+		(
+			vertices, GLES20.GL_STREAM_DRAW,
+			normals, GLES20.GL_STREAM_DRAW,
+			textureCoords, GLES20.GL_STATIC_DRAW,
+			colors, GLES20.GL_STATIC_DRAW,
+			indices, GLES20.GL_STATIC_DRAW,
+			createVBOs
+		);
+
+	}
+
+	// The cloneChildren argument isn't used here; it's included to prevent
+	// calls to clone(boolean, boolean) from falling through to Object3D
+	public SkeletalAnimationChildObject3D clone(boolean copyMaterial, boolean cloneChildren)
 	{
 		SkeletalAnimationChildObject3D clone = new SkeletalAnimationChildObject3D();
 		clone.setRotation(getOrientation());
+		clone.setPosition(getPosition());
 		clone.setScale(getScale());
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
