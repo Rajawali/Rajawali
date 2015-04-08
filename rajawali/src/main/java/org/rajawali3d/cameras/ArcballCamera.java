@@ -26,6 +26,7 @@ public class ArcballCamera extends Camera {
     private View mView;
     private boolean mIsRotating;
     private boolean mIsScaling;
+    private Vector3 mCameraStartPos;
     private Vector3 mPrevSphereCoord;
     private Vector3 mCurrSphereCoord;
     private Vector2 mPrevScreenCoord;
@@ -34,6 +35,8 @@ public class ArcballCamera extends Camera {
     private Quaternion mCurrentOrientation;
     private Object3D mEmpty;
     private Object3D mTarget;
+    private Matrix4 mScratchMatrix;
+    private Vector3 mScratchVector;
     private double mStartFOV;
 
     public ArcballCamera(Context context, View view) {
@@ -52,7 +55,11 @@ public class ArcballCamera extends Camera {
     private void initialize() {
         mStartFOV = mFieldOfView;
         mLookAtEnabled = true;
+        setLookAt(0, 0, 0);
         mEmpty = new Object3D();
+        mScratchMatrix = new Matrix4();
+        mScratchVector = new Vector3();
+        mCameraStartPos = new Vector3();
         mPrevSphereCoord = new Vector3();
         mCurrSphereCoord = new Vector3();
         mPrevScreenCoord = new Vector2();
@@ -129,27 +136,30 @@ public class ArcballCamera extends Camera {
         }
     }
 
+    @Override
     public Matrix4 getViewMatrix() {
-        synchronized (mFrustumLock) {
-            Vector3 pos = new Vector3(mLookAt);
+        Matrix4 m = super.getViewMatrix();
 
-            if(mTarget != null) {
-                setLookAt(mLookAt.subtract(mTarget.getPosition()));
-            } else {
-                setLookAt(0, 0, 0);
-            }
-
-            Matrix4 m = super.getViewMatrix();
-            m.rotate(mEmpty.getOrientation());
-
-            if(mTarget != null) {
-                m.translate(mTarget.getPosition());
-            }
-
-            mLookAt.setAll(pos);
-
-            return m;
+        if(mTarget != null) {
+            mScratchMatrix.identity();
+            mScratchMatrix.translate(mTarget.getPosition());
+            m.multiply(mScratchMatrix);
         }
+
+        mScratchMatrix.identity();
+        mScratchMatrix.rotate(mEmpty.getOrientation());
+        m.multiply(mScratchMatrix);
+
+        if(mTarget != null) {
+            mScratchVector.setAll(mTarget.getPosition());
+            mScratchVector.inverse();
+
+            mScratchMatrix.identity();
+            mScratchMatrix.translate(mScratchVector);
+            m.multiply(mScratchMatrix);
+        }
+
+        return m;
     }
 
     public void setFieldOfView(double fieldOfView) {
@@ -170,11 +180,11 @@ public class ArcballCamera extends Camera {
                     public boolean onTouch(View v, MotionEvent event) {
                         mScaleDetector.onTouchEvent(event);
 
-                        if(!mIsScaling) {
+                        if (!mIsScaling) {
                             mDetector.onTouchEvent(event);
 
-                            if(event.getAction() == MotionEvent.ACTION_UP) {
-                                if(mIsRotating) {
+                            if (event.getAction() == MotionEvent.ACTION_UP) {
+                                if (mIsRotating) {
                                     endRotation();
                                     mIsRotating = false;
                                 }
@@ -184,13 +194,14 @@ public class ArcballCamera extends Camera {
                         return true;
                     }
                 };
-                ((View)mView.getParent()).setOnTouchListener(mGestureListener);
+                ((View) mView.getParent()).setOnTouchListener(mGestureListener);
             }
         });
     }
 
     public void setTarget(Object3D target) {
         mTarget = target;
+        setLookAt(mTarget.getPosition());
     }
 
     public Object3D getTarget() {
