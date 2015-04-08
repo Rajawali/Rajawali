@@ -64,7 +64,7 @@ import javax.microedition.khronos.opengles.GL10;
 public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     protected static final int AVAILABLE_CORES = Runtime.getRuntime().availableProcessors();
     protected final Executor mLoaderExecutor = Executors.newFixedThreadPool(AVAILABLE_CORES == 1 ? 1
-        : AVAILABLE_CORES - 1);
+            : AVAILABLE_CORES - 1);
 
     protected static boolean mFogEnabled; // Is camera fog enabled?
     protected static int sMaxLights = 1; // How many lights max?
@@ -449,9 +449,9 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
 
     public double getRefreshRate() {
         return ((WindowManager) mContext
-            .getSystemService(Context.WINDOW_SERVICE))
-            .getDefaultDisplay()
-            .getRefreshRate();
+                .getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay()
+                .getRefreshRate();
     }
 
     public void setFPSUpdateListener(OnFPSUpdateListener listener) {
@@ -594,9 +594,9 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     public ALoader loadModel(Class<? extends ALoader> loaderClass, IAsyncLoaderCallback callback, int resID, int tag) {
         try {
             final Constructor<? extends ALoader> constructor = loaderClass.getConstructor(Resources.class,
-                TextureManager.class, int.class);
+                    TextureManager.class, int.class);
             final ALoader loader = constructor.newInstance(getContext().getResources(),
-                getTextureManager(), resID);
+                    getTextureManager(), resID);
 
             return loadModel(loader, callback, tag);
         } catch (Exception e) {
