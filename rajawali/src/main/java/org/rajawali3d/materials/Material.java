@@ -583,7 +583,7 @@ public class Material {
 			mVertexShader = new VertexShader();
 			mVertexShader.enableTime(mTimeEnabled);
 			mVertexShader.hasCubeMaps(hasCubeMaps);
-            mVertexShader.hasSkyTexture(skyTextures.size() > 0);
+            mVertexShader.hasSkyTexture(skyTextures != null && skyTextures.size() > 0);
 			mVertexShader.useVertexColors(mUseVertexColors);
 			mVertexShader.initialize();
 			mFragmentShader = new FragmentShader();
