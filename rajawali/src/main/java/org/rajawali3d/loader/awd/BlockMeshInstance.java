@@ -1,5 +1,7 @@
 package org.rajawali3d.loader.awd;
 
+import android.util.SparseArray;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
 import org.rajawali3d.loader.LoaderAWD.AwdProperties;
@@ -9,13 +11,11 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-
-import android.util.SparseArray;
+import org.rajawali3d.util.RajLog;
 
 /**
  * 
  * @author Ian Thomas (toxicbakery@gmail.com)
- * 
  */
 public class BlockMeshInstance extends AExportableBlockParser {
 
@@ -42,6 +42,7 @@ public class BlockMeshInstance extends AExportableBlockParser {
 	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 
 		// Parse scene block
+        RajLog.d(this, "Parsing SceneGraph Block at position: " + dis.getPosition());
 		mSceneGraphBlock = new SceneGraphBlock();
 		mSceneGraphBlock.readGraphData(blockHeader, dis);
 

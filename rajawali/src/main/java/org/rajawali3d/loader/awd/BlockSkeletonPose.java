@@ -4,7 +4,7 @@ import org.rajawali3d.animation.mesh.SkeletalAnimationFrame;
 import org.rajawali3d.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
 import org.rajawali3d.loader.LoaderAWD.BlockHeader;
-import org.rajawali3d.util.ArrayUtils;
+import org.rajawali3d.math.Matrix4;
 
 /**
  * Transformations of certain (not necessarily all) joints, specifying a single keyframe.
@@ -24,7 +24,7 @@ public class BlockSkeletonPose extends ABlockParser {
 	protected String mLookupName;
 	protected int mNumTransforms;
 
-	private final float[] transformMatrix = new float[16];
+	private final Matrix4 transformMatrix = new Matrix4();
 
 	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 
@@ -48,7 +48,7 @@ public class BlockSkeletonPose extends ABlockParser {
 			{
 				// keep raw matrix for poses, extract pos + quat later in BlockAnimator
 				dis.readMatrix3D(transformMatrix, blockHeader.globalPrecisionMatrix);
-				pose.setMatrix(ArrayUtils.convertFloatsToDoubles(transformMatrix));
+				pose.setMatrix(transformMatrix.getDoubleValues());
 			}
 
 			pose.setIndex(i);

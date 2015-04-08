@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,6 +40,9 @@ import org.rajawali3d.loader.awd.BlockTextureProjector;
 import org.rajawali3d.loader.awd.BlockTriangleGeometry;
 import org.rajawali3d.loader.awd.BlockUVAnimation;
 import org.rajawali3d.loader.awd.exceptions.NotImplementedParsingException;
+import org.rajawali3d.math.Matrix;
+import org.rajawali3d.math.Matrix4;
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.scene.RajawaliScene;
 import org.rajawali3d.util.LittleEndianDataInputStream;
@@ -65,6 +69,7 @@ import android.util.SparseArray;
  * </pre></code>
  * 
  * @author Ian Thomas (toxicbakery@gmail.com)
+ * @author Jared Woolston (jwoolston@tenkiv.com)
  * 
  * @see <a href="http://awaytools.com/">Away Tools Homepage</a> <p>
  * @see <a href="https://github.com/awaytools/awd-sdk/blob/master/docs/AWD_format_specification2_1_Alpha.pdf">Official
@@ -270,6 +275,7 @@ public class LoaderAWD extends AMeshLoader {
 					blockParsers.add(parser);
 
 					RajLog.d(" Parsing block with: " + parser.getClass().getSimpleName());
+                    RajLog.d(" Starting at position: " + dis.getPosition());
 
 					// Begin parsing
 					try {
@@ -540,26 +546,28 @@ public class LoaderAWD extends AMeshLoader {
 		 * @throws ParsingException
 		 * @throws IOException
 		 */
-		public void readMatrix3D(float[] matrix, boolean usePrecision) throws ParsingException, IOException {
-			if (matrix == null || matrix.length != 16)
+		public void readMatrix3D(Matrix4 matrix, boolean usePrecision) throws ParsingException, IOException {
+            final double[] m = matrix.getDoubleValues();
+
+			if (m == null || m.length != 16)
 				throw new ParsingException("Matrix array must be of size 16");
 
-			matrix[0] = (float) readPrecisionNumber(usePrecision);
-			matrix[1] = (float) readPrecisionNumber(usePrecision);
-			matrix[2] = (float) readPrecisionNumber(usePrecision);
-			matrix[3] = 0f;
-			matrix[4] = (float) readPrecisionNumber(usePrecision);
-			matrix[5] = (float) readPrecisionNumber(usePrecision);
-			matrix[6] = (float) readPrecisionNumber(usePrecision);
-			matrix[7] = 0f;
-			matrix[8] = (float) readPrecisionNumber(usePrecision);
-			matrix[9] = (float) readPrecisionNumber(usePrecision);
-			matrix[10] = (float) readPrecisionNumber(usePrecision);
-			matrix[11] = 0f;
-			matrix[12] = (float) readPrecisionNumber(usePrecision);
-			matrix[13] = (float) readPrecisionNumber(usePrecision);
-			matrix[14] = (float) readPrecisionNumber(usePrecision);
-			matrix[15] = 1f;
+			m[Matrix4.M00] = readPrecisionNumber(usePrecision);
+			m[Matrix4.M01] = readPrecisionNumber(usePrecision);
+			m[Matrix4.M02] = readPrecisionNumber(usePrecision);
+			m[Matrix4.M10] = readPrecisionNumber(usePrecision);
+            m[Matrix4.M11] = readPrecisionNumber(usePrecision);
+            m[Matrix4.M12] = readPrecisionNumber(usePrecision);
+            m[Matrix4.M20] = readPrecisionNumber(usePrecision);
+            m[Matrix4.M21] = readPrecisionNumber(usePrecision);
+            m[Matrix4.M22] = readPrecisionNumber(usePrecision);
+            m[Matrix4.M03] = readPrecisionNumber(usePrecision);
+            m[Matrix4.M13] = readPrecisionNumber(usePrecision);
+            m[Matrix4.M23] = -readPrecisionNumber(usePrecision);
+            m[Matrix4.M30] = 0;
+            m[Matrix4.M31] = 0;
+            m[Matrix4.M32] = 0;
+            m[Matrix4.M33] = 1;
 		}
 
 		/**
