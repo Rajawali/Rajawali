@@ -128,10 +128,12 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 			throw new NotParsableException("Spezial type " + mSpezialType + " is not currently supported.");
 
 		// Debug
-		RajLog.d("  Lookup Name: " + mLookupName);
-		RajLog.d("  Material Type: " + mMaterialType);
-		RajLog.d("  Shading Methods: " + mShadingMethodCount);
-		RajLog.d("  Spezial Type: " + mSpezialType);
+        if (RajLog.isDebugEnabled()) {
+            RajLog.d("  Lookup Name: " + mLookupName);
+            RajLog.d("  Material Type: " + mMaterialType);
+            RajLog.d("  Shading Methods: " + mShadingMethodCount);
+            RajLog.d("  Spezial Type: " + mSpezialType);
+        }
 
 		// Parse the methods
 		for (int i = 0; i < mShadingMethodCount; ++i) {

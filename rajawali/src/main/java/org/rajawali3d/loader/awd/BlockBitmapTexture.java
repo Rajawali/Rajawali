@@ -34,8 +34,10 @@ public class BlockBitmapTexture extends ABlockParser {
 		mDataLength = dis.readUnsignedInt();
 
 		// Debug
-		RajLog.d("  Lookup Name: " + mLookupName);
-		RajLog.d("  Data Length: " + mDataLength);
+        if (RajLog.isDebugEnabled()) {
+            RajLog.d("  Lookup Name: " + mLookupName);
+            RajLog.d("  Data Length: " + mDataLength);
+        }
 
 		switch (mImageType) {
 		case IMAGE_TYPE_EXTERNAL:
@@ -44,7 +46,6 @@ public class BlockBitmapTexture extends ABlockParser {
 			byte[] imageData = new byte[(int) mDataLength];
 			dis.readFully(imageData);
 			mBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-			imageData = null;
 			break;
 		}
 

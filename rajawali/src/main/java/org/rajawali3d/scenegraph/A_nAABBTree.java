@@ -683,7 +683,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		}
 		IGraphNode container = object.getGraphNode(); //Get the container node
 		handleRecursiveUpdate((A_nAABBTree) container, object);
-		RajLog.e("Rajawali", "Node: " + this + " Object Container: " + container);
+		RajLog.e("Node: " + this + " Object Container: " + container);
 	}
 
 	/**
@@ -699,7 +699,6 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		boolean updated = false;
 		while (!updated) {
 			if (local_container.contains(object.getTransformedBoundingVolume())) {
-				RajLog.v("Rajawali", "INSIDE");
 				int fits_in_child = -1;
 				if (mSplit) {
 					for (int j = 0; j < CHILD_COUNT; ++j) {
@@ -715,18 +714,18 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 						}
 					}
 					if (fits_in_child >= 0) { //If a single child was marked
-						RajLog.i("Rajawali", "Fits in a single child.");
+						RajLog.i("Fits in a single child.");
 						local_container.removeFromMembers(object);
 						mChildren[fits_in_child].internalAddObject(object);
 						updated = true;
 					} else { //TODO: WORKS
-						RajLog.i("Rajwali", "Fits in multiple children, leaving in place.");
+						RajLog.i("Fits in multiple children, leaving in place.");
 						updated = true;
 					}
 				} else {
-					RajLog.i("Rajawali", "No children so we are leaving in same node.");
+					RajLog.i("No children so we are leaving in same node.");
 					if (!object.isInGraph()) {
-						RajLog.i("Rajawali", "Removing from outside graph and moving to inside root.");
+						RajLog.i("Removing from outside graph and moving to inside root.");
 						local_container.mOutside.remove(object);
 						local_container.internalAddObject(object);
 					}
@@ -744,7 +743,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 					//RajLog.e("Rajawali", "Node after addToOutside: " + object.getGraphNode());
 					updated = true;
 				} else {
-					RajLog.i("Rajawali", "Container is not root (" + local_container + "). Moving search up a level.");
+					RajLog.i("Container is not root (" + local_container + "). Moving search up a level.");
 					local_container = local_container.mParent;
 				}
 			}

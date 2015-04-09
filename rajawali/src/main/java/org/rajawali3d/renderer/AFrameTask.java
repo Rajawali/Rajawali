@@ -14,7 +14,7 @@ public abstract class AFrameTask implements Runnable {
         try {
             doTask();
         } catch (Exception e) {
-            RajLog.e(this, "Execution Failed: " + e.getMessage());
+            RajLog.e("Execution Failed: " + e.getMessage());
         }
     }
 }

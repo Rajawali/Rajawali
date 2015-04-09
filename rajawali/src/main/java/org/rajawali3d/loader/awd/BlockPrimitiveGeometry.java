@@ -33,11 +33,14 @@ public class BlockPrimitiveGeometry extends ABaseObjectBlockParser {
 
 		// Lookup name, not sure why this is useful.
 		mLookupName = dis.readVarString();
-		RajLog.d("  Lookup Name: " + mLookupName);
 
 		// Read the primitive type
 		mPrimitiveType = dis.readUnsignedByte();
-		RajLog.d("  Primitive Type: " + mPrimitiveType);
+
+        if (RajLog.isDebugEnabled()) {
+            RajLog.d("  Lookup Name: " + mLookupName);
+            RajLog.d("  Primitive Type: " + mPrimitiveType);
+        }
 
 		// Read primitive properties and construct a new base object determined by the primitive type
 		switch (PrimitiveType.values()[mPrimitiveType - 1]) {

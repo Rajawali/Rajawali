@@ -244,8 +244,6 @@ public class Material {
 	protected VertexShader mCustomVertexShader;
 	protected FragmentShader mCustomFragmentShader;
 
-    private boolean debug;
-
 	/**
 	 * The Material class is where you define the visual characteristics of your 3D model.
 	 * Here you can specify lighting parameters, specular highlights, ambient colors and much more.
@@ -293,10 +291,6 @@ public class Material {
         this(deferCapabilitiesCheck);
         mCustomVertexShader = customVertexShader;
         mCustomFragmentShader = customFragmentShader;
-    }
-
-    public void setDebug(boolean flag) {
-        debug = flag;
     }
 	
 	/**
@@ -697,7 +691,7 @@ public class Material {
 			if(mFragmentShader.needsBuild()) mFragmentShader.buildShader();
 		}
 
-        if (debug) {
+        if (RajLog.isDebugEnabled()) {
             RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
             RajLog.d(mVertexShader.getShaderString());
             RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
@@ -864,7 +858,7 @@ public class Material {
         // Check if the number of applied textures is larger than the max texture count
         // - this would be due to deferred capabilities checking. If so, choose max texture count.
         if (num > mMaxTextures) {
-            RajLog.e(this, num + " textures have been added to this material but this device supports a max of "
+            RajLog.e(num + " textures have been added to this material but this device supports a max of "
                 + mMaxTextures + " textures in the fragment shader. Only the first " + mMaxTextures + " will be used.");
             num = mMaxTextures;
         }

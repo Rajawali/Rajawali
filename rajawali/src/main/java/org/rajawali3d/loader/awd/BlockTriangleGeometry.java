@@ -78,8 +78,10 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 		mBaseObjects = new Object3D[mSubGeometryCount];
 
 		// Debug
-		RajLog.d("  Lookup Name: " + mLookupName);
-		RajLog.d("  Sub Geometry Count: " + mSubGeometryCount);
+        if (RajLog.isDebugEnabled()) {
+            RajLog.d("  Lookup Name: " + mLookupName);
+            RajLog.d("  Sub Geometry Count: " + mSubGeometryCount);
+        }
 
 		// Determine the precision for the block
 		final boolean geoAccuracy = (blockHeader.flags & BlockHeader.FLAG_ACCURACY_GEO) ==
@@ -122,8 +124,9 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 				int typeF = dis.readUnsignedByte();
 				long subLength = dis.readUnsignedInt();
 				long subEnd = dis.getPosition() + subLength;
-				RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + dis.getPosition()
-						+ " le:" + subEnd);
+
+                if (RajLog.isDebugEnabled())
+                    RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + dis.getPosition() + " le:" + subEnd);
 
 				// Process the mesh data by type
 				switch ((int) type) {

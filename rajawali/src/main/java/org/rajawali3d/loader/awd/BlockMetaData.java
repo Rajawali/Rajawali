@@ -45,7 +45,7 @@ public class BlockMetaData extends ABlockParser {
 		mGeneratorName = properties.get(PROP_GENERATOR_NAME).toString();
 		mGeneratorVersion = properties.get(PROP_GENERATOR_VERSION).toString();
 
-		if (RajLog.isDebug()) {
+		if (RajLog.isDebugEnabled()) {
 			RajLog.d("  Timestamp: " + mTimeStamp);
 			RajLog.d("  Encoder Name: " + mEncoderName);
 			RajLog.d("  Encoder Version: " + mEncoderVersion);

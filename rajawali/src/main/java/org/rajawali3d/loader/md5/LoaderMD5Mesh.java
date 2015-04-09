@@ -115,7 +115,8 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 				String type = parts.nextToken();
 
 				if (type.equalsIgnoreCase(MD5_VERSION)) {
-					RajLog.d("MD5 Version: " + parts.nextToken());
+                    if (RajLog.isDebugEnabled())
+					    RajLog.d("MD5 Version: " + parts.nextToken());
 				} else if (type.equalsIgnoreCase(COMMAND_LINE)) {} else if (type.equalsIgnoreCase(NUM_JOINTS)) {
 					mNumJoints = Integer.parseInt(parts.nextToken());
 					mJoints = new SkeletonJoint[mNumJoints];

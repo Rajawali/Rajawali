@@ -232,7 +232,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     }
 
     public void startRendering() {
-        RajLog.d(this, "startRendering()");
+        RajLog.d("startRendering()");
         if (!mSceneInitialized) {
             return;
         }
@@ -283,7 +283,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
 
     @Override
     public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
-        RajLog.setGL10(gl);
         Capabilities.getInstance();
 
         String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
