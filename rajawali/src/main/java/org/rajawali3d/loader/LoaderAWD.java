@@ -36,6 +36,8 @@ import org.rajawali3d.loader.awd.BlockUVAnimation;
 import org.rajawali3d.loader.awd.exceptions.NotImplementedParsingException;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
+import org.rajawali3d.math.Quaternion;
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.scene.RajawaliScene;
 import org.rajawali3d.util.LittleEndianDataInputStream;
@@ -517,8 +519,13 @@ public class LoaderAWD extends AMeshLoader {
 
         private boolean mPropPrecision;
 
+        private final Vector3 mTempVector3;
+        private final Quaternion mTempQuaternion;
+
         public AWDLittleEndianDataInputStream(InputStream in) {
             super(in);
+            mTempVector3 = new Vector3();
+            mTempQuaternion = new Quaternion();
         }
 
         public void setPropertyPrecision(boolean flag) {
@@ -574,6 +581,15 @@ public class LoaderAWD extends AMeshLoader {
             m[Matrix4.M31] = 0;
             m[Matrix4.M32] = 0;
             m[Matrix4.M33] = 1;
+
+            matrix.getTranslation(mTempVector3);
+            mTempQuaternion.fromMatrix(matrix);
+            mTempQuaternion.computeW();
+            mTempQuaternion.z = -mTempQuaternion.z;
+            mTempQuaternion.w = -mTempQuaternion.w;
+            matrix.setAll(mTempQuaternion);
+            matrix.setTranslation(mTempVector3);
+
         }
 
         /**
