@@ -469,6 +469,7 @@ public class RajawaliScene {
                 if (mSceneGraph != null) {
                     //mSceneGraph.addObject(child); //TODO: Uncomment
                 }
+                addShadowMapMaterialPlugin(child, mShadowMapMaterial == null ? null : mShadowMapMaterial.getMaterialPlugin());
             }
         };
         return internalOfferTask(task);
