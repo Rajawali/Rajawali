@@ -103,6 +103,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     protected boolean mSceneInitialized; //This applies to all scenes
     protected boolean mEnableDepthBuffer = true; // Do we use the depth buffer?
     private RenderTarget mCurrentRenderTarget;
+    private IRajawaliSurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 
     protected final List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
     protected final List<RenderTarget> mRenderTargets; //List of all render targets this renderer is aware of.
@@ -215,6 +216,16 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
         if (stopRendering()) {
             // Restart timer with new frequency
             startRendering();
+        }
+    }
+
+    @Override
+    public void setAntiAliasingMode(IRajawaliSurface.ANTI_ALIASING_CONFIG config) {
+        mAntiAliasingConfig = config;
+        synchronized (mScenes) {
+            for (int i = 0, j = mScenes.size(); i < j; ++i) {
+                mScenes.get(i).setAntiAliasingConfig(config);
+            }
         }
     }
 
@@ -471,18 +482,6 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
 
     public RenderTarget getRenderTarget() {
         return mCurrentRenderTarget;
-    }
-
-    public void setUsesCoverageAa(boolean usesCoverageAa) {
-        mCurrentScene.setUsesCoverageAa(usesCoverageAa);
-    }
-
-    public void setUsesCoverageAaAll(boolean usesCoverageAa) {
-        synchronized (mScenes) {
-            for (int i = 0, j = mScenes.size(); i < j; ++i) {
-                mScenes.get(i).setUsesCoverageAa(usesCoverageAa);
-            }
-        }
     }
 
     /**

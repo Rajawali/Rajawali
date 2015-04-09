@@ -11,6 +11,25 @@ import org.rajawali3d.renderer.RajawaliRenderer;
 public interface IRajawaliSurface {
 
     /**
+     * Enum of available anti-aliasing configurations.
+     */
+    public static enum ANTI_ALIASING_CONFIG {
+        NONE, MULTISAMPLING, COVERAGE;
+
+        public static ANTI_ALIASING_CONFIG fromInteger(int i) {
+            switch (i) {
+                case 0:
+                    return NONE;
+                case 1:
+                    return MULTISAMPLING;
+                case 2:
+                    return COVERAGE;
+            }
+            return NONE;
+        }
+    }
+
+    /**
      * The renderer only renders
      * when the surface is created, or when {@link #requestRenderUpdate()} is called.
      *
@@ -53,17 +72,16 @@ public interface IRajawaliSurface {
      * Called to enable/disable multisampling on this surface.
      * Must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}.
      *
-     * @param enabled {@code boolean} If true, multisampling will be enabled.
+     * @param config {@link ANTI_ALIASING_CONFIG} The desired anti aliasing configuration.
      */
-    public void setMultisamplingEnabled(boolean enabled);
+    public void setAntiAliasingMode(ANTI_ALIASING_CONFIG config);
 
     /**
-     * Called to enable/disable coverage anti aliasing on this surface.
-     * Must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}.
+     * Sets the sample count to use. Only applies if multisample antialiasing is active.
      *
-     * @param enabled {@code boolean} If true, coverage anti-aliasing will be enabled.
+     * @param count {@code int} The sample count.
      */
-    public void setUsesCovererageAntiAliasing(boolean enabled);
+    public void setSampleCount(int count);
 
     /**
      * Called to set the {@link IRajawaliSurfaceRenderer} which will render on this surface.

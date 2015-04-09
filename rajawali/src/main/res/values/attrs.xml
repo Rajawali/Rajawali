@@ -3,23 +3,41 @@
     <declare-styleable name="RajawaliSurfaceView">
         <attr name="frameRate" />
         <attr name="renderMode" />
-        <attr name="multisamplingEnabled" />
-        <attr name="useCoverageAntiAliasing" />
+        <attr name="antiAliasingType"/>
         <attr name="isTransparent" />
+        <attr name="bitsRed" />
+        <attr name="bitsGreen" />
+        <attr name="bitsBlue" />
+        <attr name="bitsAlpha"/>
+        <attr name="bitsDepth" />
+        <attr name="multiSampleCount" />
     </declare-styleable>
 
     <declare-styleable name="RajawaliTextureView">
         <attr name="frameRate" />
         <attr name="renderMode" />
-        <attr name="multisamplingEnabled" />
-        <attr name="useCoverageAntiAliasing" />
+        <attr name="antiAliasingType" />
+        <attr name="bitsRed"/>
+        <attr name="bitsGreen"/>
+        <attr name="bitsBlue"/>
+        <attr name="bitsAlpha" />
+        <attr name="bitsDepth"/>
+        <attr name="multiSampleCount"/>
     </declare-styleable>
 
     <attr name="frameRate" format="float" />
-    <attr name="multisamplingEnabled" format="boolean" />
-    <attr name="useCoverageAntiAliasing" format="boolean" />
     <attr name="isTransparent" format="boolean" />
+    <attr name="bitsRed" format="integer" />
+    <attr name="bitsGreen" format="integer" />
+    <attr name="bitsBlue" format="integer" />
+    <attr name="bitsAlpha" format="integer" />
+    <attr name="bitsDepth" format="integer" />
+    <attr name="multiSampleCount" format="integer" />
 
+    <attr name="antiAliasingType" format="enum">
+        <enum name="multisample" value="1"/>
+        <enum name="coverage" value="2"/>
+    </attr>
     <attr name="renderMode" format="enum">
         <enum name="RENDER_WHEN_DIRTY" value="0" />
         <enum name="RENDER_CONTINUOUS" value="1" />

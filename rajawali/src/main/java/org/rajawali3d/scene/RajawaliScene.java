@@ -40,6 +40,7 @@ import org.rajawali3d.renderer.plugins.Plugin;
 import org.rajawali3d.scenegraph.IGraphNode;
 import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
 import org.rajawali3d.scenegraph.Octree;
+import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
 import org.rajawali3d.util.RajLog;
@@ -91,7 +92,7 @@ public class RajawaliScene {
 	private volatile boolean mLightsDirty;
 	protected ColorPickerInfo mPickerInfo;
 	protected boolean mReloadPickerInfo;
-	protected boolean mUsesCoverageAa;
+	protected IRajawaliSurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
 	private ShadowMapMaterial mShadowMapMaterial;
@@ -151,6 +152,8 @@ public class RajawaliScene {
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
 		mCameras.add(mCamera);
+
+        mAntiAliasingConfig = IRajawaliSurface.ANTI_ALIASING_CONFIG.NONE; // Default to none
 	}
 	
 	public RajawaliScene(RajawaliRenderer renderer, GRAPH_TYPE type) {
@@ -1016,7 +1019,7 @@ public class RajawaliScene {
 			GLES20.glDepthMask(true);
 			GLES20.glClearDepthf(1.0f);
 		}
-		if (mUsesCoverageAa) {
+		if (mAntiAliasingConfig.equals(IRajawaliSurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
 			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
 
@@ -1407,8 +1410,8 @@ public class RajawaliScene {
 		mCamera.setProjectionMatrix(width, height);
 	}
 	
-	public void setUsesCoverageAa(boolean value) {
-		mUsesCoverageAa = value;
+	public void setAntiAliasingConfig(IRajawaliSurface.ANTI_ALIASING_CONFIG config) {
+		mAntiAliasingConfig = config;
 	}
 	
 	public void setShadowMapMaterial(ShadowMapMaterial material) {

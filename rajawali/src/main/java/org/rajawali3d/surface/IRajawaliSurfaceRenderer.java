@@ -40,6 +40,13 @@ public interface IRajawaliSurfaceRenderer {
     public void setFrameRate(double rate);
 
     /**
+     * Called to inform the renderer of the multisampling configuration on this surface.
+     *
+     * @param config {@link IRajawaliSurface.ANTI_ALIASING_CONFIG} The desired anti aliasing configuration.
+     */
+    public void setAntiAliasingMode(IRajawaliSurface.ANTI_ALIASING_CONFIG config);
+
+    /**
      * Sets the {@link IRajawaliSurface} which this implementation will be rendering on.
      *
      * @param surface {@link IRajawaliSurface} The rendering surface.

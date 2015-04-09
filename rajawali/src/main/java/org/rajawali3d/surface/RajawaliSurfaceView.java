@@ -26,9 +26,14 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
 
     protected double mFrameRate = 60.0;
     protected int mRenderMode = IRajawaliSurface.RENDERMODE_WHEN_DIRTY;
-    protected boolean mMultisamplingEnabled = false;
-    protected boolean mUsesCoverageAa = false;
+    protected ANTI_ALIASING_CONFIG mAntiAliasingConfig = ANTI_ALIASING_CONFIG.NONE;
     protected boolean mIsTransparent = false;
+    protected int mBitsRed = 5;
+    protected int mBitsGreen = 6;
+    protected int mBitsBlue = 5;
+    protected int mBitsAlpha = 0;
+    protected int mBitsDepth = 16;
+    protected int mMultiSampleCount = 0;
 
     public RajawaliSurfaceView(Context context) {
         super(context);
@@ -49,30 +54,38 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
                 mFrameRate = array.getFloat(i, 60.0f);
             } else if (attr == R.styleable.RajawaliSurfaceView_renderMode) {
                 mRenderMode = array.getInt(i, IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
-            } else if (attr == R.styleable.RajawaliSurfaceView_multisamplingEnabled) {
-                mMultisamplingEnabled = array.getBoolean(i, false);
-            } else if (attr == R.styleable.RajawaliSurfaceView_useCoverageAntiAliasing) {
-                mUsesCoverageAa = array.getBoolean(i, false);
+            } else if (attr == R.styleable.RajawaliSurfaceView_antiAliasingType) {
+                mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(i, ANTI_ALIASING_CONFIG.NONE.ordinal()));
+            } else if (attr == R.styleable.RajawaliSurfaceView_multiSampleCount) {
+                mMultiSampleCount = array.getInteger(i, 0);
             } else if (attr == R.styleable.RajawaliSurfaceView_isTransparent) {
                 mIsTransparent = array.getBoolean(i, false);
+            } else if (attr == R.styleable.RajawaliSurfaceView_bitsRed) {
+                mBitsRed = array.getInteger(i, 5);
+            } else if (attr == R.styleable.RajawaliSurfaceView_bitsGreen) {
+                mBitsGreen = array.getInteger(i, 6);
+            } else if (attr == R.styleable.RajawaliSurfaceView_bitsBlue) {
+                mBitsBlue = array.getInteger(i, 5);
+            } else if (attr == R.styleable.RajawaliSurfaceView_bitsAlpha) {
+                mBitsAlpha = array.getInteger(i, 0);
+            } else if (attr == R.styleable.RajawaliSurfaceView_bitsDepth) {
+                mBitsDepth = array.getInteger(i, 16);
             }
         }
         array.recycle();
     }
 
     private void initialize() {
-        setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
+        final int glesMajorVersion = Capabilities.getGLESMajorVersion();
+        setEGLContextClientVersion(glesMajorVersion);
 
-        if (mMultisamplingEnabled) {
-            setEGLConfigChooser(new RajawaliEGLConfigChooser());
-        }
+        setEGLConfigChooser(new RajawaliEGLConfigChooser(glesMajorVersion, mAntiAliasingConfig, mMultiSampleCount,
+            mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
 
         if (mIsTransparent) {
-            setEGLConfigChooser(8, 8, 8, 8, 16, 0);
             getHolder().setFormat(PixelFormat.TRANSLUCENT);
             setZOrderOnTop(true);
         } else {
-            setEGLConfigChooser(8, 8, 8, 8, 16, 0);
             getHolder().setFormat(PixelFormat.RGBA_8888);
             setZOrderOnTop(false);
         }
@@ -148,13 +161,13 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     }
 
     @Override
-    public void setMultisamplingEnabled(boolean enabled) {
-        mMultisamplingEnabled = enabled;
+    public void setAntiAliasingMode(ANTI_ALIASING_CONFIG config) {
+        mAntiAliasingConfig = config;
     }
 
     @Override
-    public void setUsesCovererageAntiAliasing(boolean enabled) {
-        mUsesCoverageAa = enabled;
+    public void setSampleCount(int count) {
+        mMultiSampleCount = count;
     }
 
     @Override
@@ -187,7 +200,9 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
         public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliSurfaceView surfaceView) {
             mRenderer = renderer;
             mRajawaliSurfaceView = surfaceView;
-            mRenderer.setFrameRate(mRajawaliSurfaceView.mFrameRate);
+            mRenderer.setFrameRate(mRajawaliSurfaceView.mRenderMode == IRajawaliSurface.RENDERMODE_WHEN_DIRTY ?
+                mRajawaliSurfaceView.mFrameRate : 0);
+            mRenderer.setAntiAliasingMode(mRajawaliSurfaceView.mAntiAliasingConfig);
             mRenderer.setRenderSurface(mRajawaliSurfaceView);
         }
 

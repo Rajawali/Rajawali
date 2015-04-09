@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
+import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.surface.IRajawaliSurfaceRenderer;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 import org.rajawali3d.util.Capabilities;
@@ -79,8 +80,8 @@ public abstract class RajawaliDaydream extends DreamService implements IRajawali
         return 0;
     }
 
-    protected void setMultisamplingEnabled(boolean enabled) {
-		mSurfaceView.setMultisamplingEnabled(enabled);
+    protected void setAntiAliasingConfig(IRajawaliSurface.ANTI_ALIASING_CONFIG config) {
+		mSurfaceView.setAntiAliasingMode(config);
 	}
 
 	protected void setRenderer(IRajawaliSurfaceRenderer renderer) {

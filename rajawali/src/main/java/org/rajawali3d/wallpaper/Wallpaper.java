@@ -31,8 +31,7 @@ public abstract class Wallpaper extends WallpaperService {
         protected Context mContext;
         protected IRajawaliSurfaceRenderer mRenderer;
         protected WallpaperSurfaceView mSurfaceView;
-        protected boolean mUsesCoverageAa;
-        protected boolean mMultisampling;
+        protected IRajawaliSurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
         protected float mDefaultPreviewOffsetX;
 
         class WallpaperSurfaceView extends RajawaliSurfaceView {
@@ -52,15 +51,14 @@ public abstract class Wallpaper extends WallpaperService {
         }
 
         public WallpaperEngine(Context context, IRajawaliSurfaceRenderer renderer) {
-            this(context, renderer, false, false);
+            this(context, renderer, IRajawaliSurface.ANTI_ALIASING_CONFIG.NONE);
         }
 
-        public WallpaperEngine(Context context, IRajawaliSurfaceRenderer renderer, boolean useCoverageAa,
-                               boolean useMultisampling) {
+        public WallpaperEngine(Context context, IRajawaliSurfaceRenderer renderer,
+                               IRajawaliSurface.ANTI_ALIASING_CONFIG antiAliasingConfig) {
             mContext = context;
             mRenderer = renderer;
-            mUsesCoverageAa = useCoverageAa;
-            mMultisampling = useMultisampling;
+            mAntiAliasingConfig = antiAliasingConfig;
             mDefaultPreviewOffsetX = 0.5f;
         }
 
@@ -101,8 +99,7 @@ public abstract class Wallpaper extends WallpaperService {
             mSurfaceView = new WallpaperSurfaceView(mContext);
             mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
             mSurfaceView.setRenderMode(IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
-            mSurfaceView.setUsesCovererageAntiAliasing(mUsesCoverageAa);
-            mSurfaceView.setMultisamplingEnabled(mMultisampling);
+            mSurfaceView.setAntiAliasingMode(mAntiAliasingConfig);
             mSurfaceView.setSurfaceRenderer(mRenderer);
             setTouchEventsEnabled(true);
         }
