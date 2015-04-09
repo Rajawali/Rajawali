@@ -882,7 +882,7 @@ public class RajawaliScene {
         try {
             material.addTexture(texture);
         } catch (TextureException e) {
-            RajLog.e(this, e.getMessage());
+            RajLog.e(e.getMessage());
         }
         skybox.setMaterial(material);
         synchronized (mNextCameraLock) {

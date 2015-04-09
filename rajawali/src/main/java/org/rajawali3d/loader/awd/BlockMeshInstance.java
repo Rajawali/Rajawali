@@ -42,7 +42,7 @@ public class BlockMeshInstance extends AExportableBlockParser {
 	public void parseBlock(AWDLittleEndianDataInputStream dis, BlockHeader blockHeader) throws Exception {
 
 		// Parse scene block
-        RajLog.d(this, "Parsing SceneGraph Block at position: " + dis.getPosition());
+        RajLog.d("Parsing SceneGraph Block at position: " + dis.getPosition());
 		mSceneGraphBlock = new SceneGraphBlock();
 		mSceneGraphBlock.readGraphData(blockHeader, dis);
 

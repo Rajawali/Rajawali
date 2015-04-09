@@ -76,7 +76,7 @@ public abstract class ALoader implements ILoader {
 		if (mFile == null && mFileOnSDCard != null)
 			mFile = new File(Environment.getExternalStorageDirectory(), mFileOnSDCard);
 
-		if (mFile != null)
+		if (mFile != null && RajLog.isDebugEnabled())
 			RajLog.d("Parsing: " + mFile.getAbsolutePath());
 		return this;
 	}

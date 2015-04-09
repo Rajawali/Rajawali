@@ -266,7 +266,7 @@ public class LoaderOBJ extends AMeshLoader {
 				} else if(type.equals(MATERIAL_LIB)) {
 					if(!parts.hasMoreTokens()) continue;
 					String materialLibPath = parts.nextToken().replace(".", "_");
-					RajLog.d(this, "Found Material Lib: " + materialLibPath);
+					RajLog.d("Found Material Lib: " + materialLibPath);
 					if(mFile != null)
 						matLib.parse(materialLibPath, null, null);
 					else
@@ -316,7 +316,7 @@ public class LoaderOBJ extends AMeshLoader {
 					aVertices[vertexIndex+2] = vertices.get(faceIndex + 2);
 					aIndices[i] = i;
 				} catch(ArrayIndexOutOfBoundsException e) {
-					RajLog.d("Rajawali", "ERROR!! " + vertexIndex + ", " + faceIndex);
+					RajLog.d("Obj array index out of bounds: " + vertexIndex + ", " + faceIndex);
 				}
 			}
 			if(texCoords != null && texCoords.size() > 0) {
@@ -528,7 +528,7 @@ public class LoaderOBJ extends AMeshLoader {
 						if(matDef != null) mMaterials.add(matDef);
 						matDef = new MaterialDef();
 						matDef.name = parts.hasMoreTokens() ? parts.nextToken() : "";
-						RajLog.d(this, "Parsing material: " + matDef.name);
+						RajLog.d("Parsing material: " + matDef.name);
 					} else if(type.equals(DIFFUSE_COLOR)) {
 						matDef.diffuseColor = getColorFromParts(parts);
 					} else if(type.equals(AMBIENT_COLOR)) {
@@ -615,7 +615,7 @@ public class LoaderOBJ extends AMeshLoader {
 							fis = new FileInputStream(filePath);
 							mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), new Etc1Texture(getOnlyFileName(matDef.diffuseTexture)+"etc1", fis, null)));
 						} catch (FileNotFoundException e) {
-							RajLog.e("LoaderOBJ", "File decode error");
+							RajLog.e("File decode error");
 						} finally {
 							try {
 								fis.close();

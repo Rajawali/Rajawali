@@ -163,17 +163,21 @@ public class Etc2Texture extends ACompressedTexture {
         try {
             texture = ETC2Util.createTexture(compressedTexture);
         } catch (IOException e) {
-            RajLog.e("addEtc2Texture", e.getMessage());
+            RajLog.e("addEtc2Texture:" + e.getMessage());
         } finally {
             if (texture == null) {
                 setBitmap(fallbackTexture);
-                RajLog.d("ETC2", "Falling back to ETC1 texture from fallback texture.");
+
+                if (RajLog.isDebugEnabled())
+                    RajLog.d("Falling back to ETC1 texture from fallback texture.");
             } else {
                 setCompressionFormat(texture.getCompressionFormat());
                 setByteBuffer(texture.getData());
                 setWidth(texture.getWidth());
                 setHeight(texture.getHeight());
-                RajLog.d("ETC2", "ETC2 texture load successful");
+
+                if (RajLog.isDebugEnabled())
+                    RajLog.d("ETC2 texture load successful");
             }
         }
     }

@@ -99,7 +99,7 @@ public class Capabilities {
     }
 
     private void initialize() {
-        RajLog.d(this, "Fetching device capabilities.");
+        RajLog.d("Fetching device capabilities.");
 
         mParam = new int[1];
 

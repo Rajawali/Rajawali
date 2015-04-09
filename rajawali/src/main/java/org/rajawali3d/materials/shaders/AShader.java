@@ -576,7 +576,7 @@ public abstract class AShader extends AShaderBase {
 	
 	protected int getUniformLocation(int programHandle, String name) {
 		int result = GLES20.glGetUniformLocation(programHandle, name);
-        if (result < 0) RajLog.e(this, "Getting location of uniform: " + name + " returned -1!");
+        if (result < 0) RajLog.e("Getting location of uniform: " + name + " returned -1!");
 		return result;
 	}
 
