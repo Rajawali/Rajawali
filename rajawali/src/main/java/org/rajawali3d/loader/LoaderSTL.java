@@ -15,6 +15,11 @@ package org.rajawali3d.loader;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 
+import org.rajawali3d.materials.textures.TextureManager;
+import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.util.LittleEndianDataInputStream;
+import org.rajawali3d.util.RajLog;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,10 +28,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.rajawali3d.renderer.RajawaliRenderer;
-import org.rajawali3d.util.LittleEndianDataInputStream;
-import org.rajawali3d.util.RajLog;
 
 /**
  * STL Parser written using the ASCII format as describe on Wikipedia.
@@ -49,21 +50,17 @@ public class LoaderSTL extends AMeshLoader {
 		BINARY
 	}
 
-	public LoaderSTL(RajawaliRenderer renderer, String fileOnSDCard) {
-		super(renderer, fileOnSDCard);
-	}
-
-	public LoaderSTL() {
-		super(null, "");
-	}
-
-	public LoaderSTL(Resources resources, int resourceId) {
-		super(resources, null, resourceId);
-	}
-
 	public LoaderSTL(RajawaliRenderer renderer, File file) {
 		super(renderer, file);
 	}
+
+    public LoaderSTL(Resources resources, TextureManager textureManager, int resourceId) {
+        super(resources, textureManager, resourceId);
+    }
+
+    public LoaderSTL(RajawaliRenderer renderer, String fileOnSDCard) {
+        super(renderer, fileOnSDCard);
+    }
 
 	@Override
 	public AMeshLoader parse() throws ParsingException {
