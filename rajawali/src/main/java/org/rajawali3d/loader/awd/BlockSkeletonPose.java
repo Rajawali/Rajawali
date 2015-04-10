@@ -47,7 +47,7 @@ public class BlockSkeletonPose extends ABlockParser {
 			if(dis.readBoolean())
 			{
 				// keep raw matrix for poses, extract pos + quat later in BlockAnimator
-				dis.readMatrix3D(transformMatrix, blockHeader.globalPrecisionMatrix);
+				dis.readMatrix3D(transformMatrix, blockHeader.globalPrecisionMatrix, false);
 				pose.setMatrix(transformMatrix.getDoubleValues());
 			}
 

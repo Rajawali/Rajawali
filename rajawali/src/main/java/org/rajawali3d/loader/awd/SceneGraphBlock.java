@@ -24,7 +24,7 @@ public class SceneGraphBlock {
         parentID = awddis.readInt();
 
         // Transformation matrix
-        awddis.readMatrix3D(transformMatrix, blockHeader.globalPrecisionMatrix);
+        awddis.readMatrix3D(transformMatrix, blockHeader.globalPrecisionMatrix, true);
 
         // Lookup name
         lookupName = awddis.readVarString();

@@ -559,37 +559,55 @@ public class LoaderAWD extends AMeshLoader {
          * @throws ParsingException
          * @throws IOException
          */
-        public void readMatrix3D(Matrix4 matrix, boolean usePrecision) throws ParsingException, IOException {
+        public void readMatrix3D(Matrix4 matrix, boolean usePrecision, boolean convert) throws ParsingException, IOException {
             final double[] m = matrix.getDoubleValues();
 
             if (m == null || m.length != 16)
                 throw new ParsingException("Matrix array must be of size 16");
 
-            m[Matrix4.M00] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M01] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M02] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M10] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M11] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M12] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M20] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M21] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M22] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M03] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M13] = readPrecisionNumber(usePrecision);
-            m[Matrix4.M23] = -readPrecisionNumber(usePrecision);
-            m[Matrix4.M30] = 0;
-            m[Matrix4.M31] = 0;
-            m[Matrix4.M32] = 0;
-            m[Matrix4.M33] = 1;
+            if (convert) {
+                m[Matrix4.M00] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M01] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M02] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M10] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M11] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M12] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M20] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M21] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M22] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M03] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M13] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M23] = -readPrecisionNumber(usePrecision);
+                m[Matrix4.M30] = 0;
+                m[Matrix4.M31] = 0;
+                m[Matrix4.M32] = 0;
+                m[Matrix4.M33] = 1;
 
-            matrix.getTranslation(mTempVector3);
-            mTempQuaternion.fromMatrix(matrix);
-            mTempQuaternion.computeW();
-            mTempQuaternion.z = -mTempQuaternion.z;
-            mTempQuaternion.w = -mTempQuaternion.w;
-            matrix.setAll(mTempQuaternion);
-            matrix.setTranslation(mTempVector3);
-
+                matrix.getTranslation(mTempVector3);
+                mTempQuaternion.fromMatrix(matrix);
+                mTempQuaternion.computeW();
+                mTempQuaternion.z = -mTempQuaternion.z;
+                mTempQuaternion.w = -mTempQuaternion.w;
+                matrix.setAll(mTempQuaternion);
+                matrix.setTranslation(mTempVector3);
+            } else {
+                m[0] = readPrecisionNumber(usePrecision);
+                m[1] = readPrecisionNumber(usePrecision);
+                m[2] = readPrecisionNumber(usePrecision);
+                m[3] = 0;
+                m[4] = readPrecisionNumber(usePrecision);
+                m[5] = readPrecisionNumber(usePrecision);
+                m[6] = readPrecisionNumber(usePrecision);
+                m[7] = 0;
+                m[8] = readPrecisionNumber(usePrecision);
+                m[9] = readPrecisionNumber(usePrecision);
+                m[10] = readPrecisionNumber(usePrecision);
+                m[11] = 0;
+                m[12] = readPrecisionNumber(usePrecision);
+                m[13] = readPrecisionNumber(usePrecision);
+                m[14] = readPrecisionNumber(usePrecision);
+                m[Matrix4.M33] = 1;
+            }
         }
 
         /**

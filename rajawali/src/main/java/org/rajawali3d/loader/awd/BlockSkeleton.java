@@ -44,7 +44,7 @@ public class BlockSkeleton extends ABlockParser {
 			int parentID = dis.readUnsignedShort() - 1;
 			String lookupName = dis.readVarString();
 
-			dis.readMatrix3D(transformMatrix, blockHeader.globalPrecisionMatrix);
+			dis.readMatrix3D(transformMatrix, blockHeader.globalPrecisionMatrix, false);
 
 			// skip joint & user properties
 			dis.readProperties(null);
