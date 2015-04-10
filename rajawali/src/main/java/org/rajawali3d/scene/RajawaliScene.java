@@ -1221,6 +1221,16 @@ public class RajawaliScene {
 		//Thread safety deferred to the List
 		return mLights.size();
 	}
+
+    /**
+     * Marks the lighting in the scene dirty, forcing all materials
+     * to be updated on the next render loop.
+     */
+    public void markLightingDirty() {
+        synchronized (mFrameTaskQueue) {
+            mLightsDirty = true;
+        }
+    }
 	
 	/**
 	 * Set the lights on all materials used in this scene. This method

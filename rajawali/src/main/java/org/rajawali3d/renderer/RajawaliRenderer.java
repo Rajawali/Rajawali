@@ -637,7 +637,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
      */
     public void switchSceneDirect(RajawaliScene nextScene) {
         mCurrentScene = nextScene;
-        mCurrentScene.resetGLState(); //Ensure that the GL state is what this scene expects
+        mCurrentScene.markLightingDirty(); // Make sure the lighting is updated for the new scene
+        mCurrentScene.resetGLState(); // Ensure that the GL state is what this scene expects
         mCurrentScene.getCamera().setProjectionMatrix(mOverrideViewportWidth, mOverrideViewportHeight);
     }
 
@@ -920,6 +921,9 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
             @Override
             protected void doTask() {
                 mMaterialManager.taskAdd(material);
+                if (mSceneInitialized) {
+                    getCurrentScene().markLightingDirty();
+                }
             }
         };
         return internalOfferTask(task);

@@ -12,11 +12,12 @@
  */
 package org.rajawali3d.util;
 
-import java.io.File;
+import android.os.Environment;
 
 import org.rajawali3d.Object3D;
 import org.rajawali3d.util.exporter.AExporter;
-import android.os.Environment;
+
+import java.io.File;
 
 /**
  * Utility class for exporting models in various types. The exporter is flexible and should permit support of
@@ -36,6 +37,7 @@ import android.os.Environment;
  * @author Ian Thomas (toxicbakery@gmail.com)
  * 
  */
+@Deprecated
 public class MeshExporter {
 
 	private Object3D mObject;

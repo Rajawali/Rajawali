@@ -12,11 +12,12 @@
  */
 package org.rajawali3d.util.exporter;
 
-import java.io.File;
-
 import org.rajawali3d.Object3D;
 import org.rajawali3d.util.MeshExporter;
 
+import java.io.File;
+
+@Deprecated
 public abstract class AExporter {
 
 	protected Object3D mObject;

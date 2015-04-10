@@ -12,6 +12,9 @@
  */
 package org.rajawali3d.util.exporter;
 
+import org.rajawali3d.Geometry3D;
+import org.rajawali3d.util.RajLog;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,9 +22,7 @@ import java.io.Writer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import org.rajawali3d.Geometry3D;
-import org.rajawali3d.util.RajLog;
-
+@Deprecated
 public class ObjExporter extends AExporter {
 
 	@Override

@@ -12,17 +12,18 @@
  */
 package org.rajawali3d.util.exporter;
 
+import org.rajawali3d.Geometry3D;
+import org.rajawali3d.util.LittleEndianOutputStream;
+import org.rajawali3d.util.MeshExporter.ExporterException;
+import org.rajawali3d.util.RajLog;
+
 import java.io.FileOutputStream;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import org.rajawali3d.Geometry3D;
-import org.rajawali3d.util.LittleEndianOutputStream;
-import org.rajawali3d.util.MeshExporter.ExporterException;
-import org.rajawali3d.util.RajLog;
-
+@Deprecated
 public class AwdExporter extends AExporter {
 
 	@Override
