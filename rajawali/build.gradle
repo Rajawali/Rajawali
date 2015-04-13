@@ -22,6 +22,7 @@ android {
     buildTypes {
         release {
             status = 'release'
+            minifyEnabled false
 
             // Update the signing information with the secure keys stored in Travis
             ext."signing.keyId" = System.getenv('SIGNING_KEY') != null ? System.getenv('SIGNING_KEY') : System.properties['SIGNING_KEY'] ? System.properties['SIGNING_KEY'] : hasProperty('SIGNING_KEY') ? property('SIGNING_KEY') : ""

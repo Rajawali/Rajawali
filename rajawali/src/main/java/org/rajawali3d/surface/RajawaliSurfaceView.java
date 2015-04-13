@@ -42,10 +42,10 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     public RajawaliSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         applyAttributes(context, attrs);
-
     }
 
     private void applyAttributes(Context context, AttributeSet attrs) {
+        if (attrs == null) return;
         final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RajawaliSurfaceView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
