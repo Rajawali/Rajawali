@@ -114,6 +114,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		long now = SystemClock.uptimeMillis();
 		int relTime = (int)((now - mStartTime) % mMovie.duration());
 		mMovie.setTime(relTime);
+		mGIFBitmap.eraseColor(Color.TRANSPARENT);
 		mMovie.draw(mCanvas, 0, 0);
 		mBitmap = Bitmap.createScaledBitmap(mGIFBitmap, mTextureSize, mTextureSize, false);
 		TextureManager.getInstance().replaceTexture(this);
