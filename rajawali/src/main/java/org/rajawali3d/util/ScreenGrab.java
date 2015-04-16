@@ -43,12 +43,12 @@ public class ScreenGrab {
 	 * 
 	 * @param width		the image width
 	 * @param height	the image height
-	 * @param name		the file name
+	 * @param path		the file path
 	 * @throws FileNotFoundException 
 	 */
-	public static void saveAsImage(int width, int height, String name) throws FileNotFoundException
+	public static void saveAsImage(int width, int height, String path) throws FileNotFoundException
 	{
-		saveAsImage(0, 0, width, height, name, CompressFormat.PNG, 100);
+		saveAsImage(0, 0, width, height, path, CompressFormat.PNG, 100);
 	}
 		
 	/**
@@ -58,15 +58,15 @@ public class ScreenGrab {
 	 * @param y					the image origin y
 	 * @param width				the image width
 	 * @param height			the image height
-	 * @param name				the file name
+	 * @param path				the file path
 	 * @param compressFormat	the compression format {@link CompressFormat}
 	 * @param quality			the compression quality
 	 * @throws FileNotFoundException 
 	 */
-	public static void saveAsImage(int x, int y, int width, int height, String name, CompressFormat compressFormat, int quality) throws FileNotFoundException {
+	public static void saveAsImage(int x, int y, int width, int height, String path, CompressFormat compressFormat, int quality) throws FileNotFoundException {
 		Bitmap bmp = getPixelsFromBuffer(x, y, width, height);
 		try {
-			File file = new File(Environment.getExternalStorageDirectory() + "/", name);
+			File file = new File(path);
 
 			try {
 				file.createNewFile();
