@@ -13,6 +13,7 @@
 package org.rajawali3d.materials.textures;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
