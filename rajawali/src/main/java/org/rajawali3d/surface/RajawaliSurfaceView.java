@@ -51,25 +51,25 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
             if (attr == R.styleable.RajawaliSurfaceView_frameRate) {
-                mFrameRate = array.getFloat(i, 60.0f);
+                mFrameRate = array.getFloat(attr, 60.0f);
             } else if (attr == R.styleable.RajawaliSurfaceView_renderMode) {
-                mRenderMode = array.getInt(i, IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
+                mRenderMode = array.getInt(attr, IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
             } else if (attr == R.styleable.RajawaliSurfaceView_antiAliasingType) {
-                mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(i, ANTI_ALIASING_CONFIG.NONE.ordinal()));
+                mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(attr, ANTI_ALIASING_CONFIG.NONE.ordinal()));
             } else if (attr == R.styleable.RajawaliSurfaceView_multiSampleCount) {
-                mMultiSampleCount = array.getInteger(i, 0);
+                mMultiSampleCount = array.getInteger(attr, 0);
             } else if (attr == R.styleable.RajawaliSurfaceView_isTransparent) {
-                mIsTransparent = array.getBoolean(i, false);
+                mIsTransparent = array.getBoolean(attr, false);
             } else if (attr == R.styleable.RajawaliSurfaceView_bitsRed) {
-                mBitsRed = array.getInteger(i, 5);
+                mBitsRed = array.getInteger(attr, 5);
             } else if (attr == R.styleable.RajawaliSurfaceView_bitsGreen) {
-                mBitsGreen = array.getInteger(i, 6);
+                mBitsGreen = array.getInteger(attr, 6);
             } else if (attr == R.styleable.RajawaliSurfaceView_bitsBlue) {
-                mBitsBlue = array.getInteger(i, 5);
+                mBitsBlue = array.getInteger(attr, 5);
             } else if (attr == R.styleable.RajawaliSurfaceView_bitsAlpha) {
-                mBitsAlpha = array.getInteger(i, 0);
+                mBitsAlpha = array.getInteger(attr, 0);
             } else if (attr == R.styleable.RajawaliSurfaceView_bitsDepth) {
-                mBitsDepth = array.getInteger(i, 16);
+                mBitsDepth = array.getInteger(attr, 16);
             }
         }
         array.recycle();
