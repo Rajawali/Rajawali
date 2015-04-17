@@ -99,21 +99,21 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
             if (attr == R.styleable.RajawaliTextureView_frameRate) {
-                mFrameRate = array.getFloat(i, 60.0f);
+                mFrameRate = array.getFloat(attr, 60.0f);
             } else if (attr == R.styleable.RajawaliTextureView_renderMode) {
-                mRenderMode = array.getInt(i, RENDERMODE_WHEN_DIRTY);
+                mRenderMode = array.getInt(attr, RENDERMODE_WHEN_DIRTY);
             } else if (attr == R.styleable.RajawaliTextureView_antiAliasingType) {
-                mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(i, ANTI_ALIASING_CONFIG.NONE.ordinal()));
+                mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(attr, ANTI_ALIASING_CONFIG.NONE.ordinal()));
             } else if (attr == R.styleable.RajawaliTextureView_bitsRed) {
-                mBitsRed = array.getInteger(i, 5);
+                mBitsRed = array.getInteger(attr, 5);
             } else if (attr == R.styleable.RajawaliTextureView_bitsGreen) {
-                mBitsGreen = array.getInteger(i, 6);
+                mBitsGreen = array.getInteger(attr, 6);
             } else if (attr == R.styleable.RajawaliTextureView_bitsBlue) {
-                mBitsBlue = array.getInteger(i, 5);
+                mBitsBlue = array.getInteger(attr, 5);
             } else if (attr == R.styleable.RajawaliTextureView_bitsAlpha) {
-                mBitsAlpha = array.getInteger(i, 0);
+                mBitsAlpha = array.getInteger(attr, 0);
             } else if (attr == R.styleable.RajawaliTextureView_bitsDepth) {
-                mBitsDepth = array.getInteger(i, 16);
+                mBitsDepth = array.getInteger(attr, 16);
             }
         }
         array.recycle();
