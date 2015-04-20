@@ -16,6 +16,8 @@ import java.nio.ByteBuffer;
 
 import android.opengl.GLES20;
 
+import org.rajawali3d.util.RajLog;
+
 public abstract class ACompressedTexture extends ATexture {
 
 	protected ByteBuffer[] mByteBuffers;
@@ -152,7 +154,6 @@ public abstract class ACompressedTexture extends ATexture {
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 			}
-
 			if ((mByteBuffers != null && mByteBuffers.length == 0) || mByteBuffers == null) {
 				GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, 0, mCompressionFormat, mWidth, mHeight, 0, 0, null);
 			} else {

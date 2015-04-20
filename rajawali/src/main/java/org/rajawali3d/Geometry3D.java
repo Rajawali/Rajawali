@@ -616,10 +616,12 @@ public class Geometry3D {
 
         int handle = buff[0];
 
-        buffer.rewind();
-        GLES20.glBindBuffer(target, handle);
-        GLES20.glBufferData(target, buffer.capacity() * byteSize, buffer, usage);
-        GLES20.glBindBuffer(target, 0);
+        if(buffer != null) {
+            buffer.rewind();
+            GLES20.glBindBuffer(target, handle);
+            GLES20.glBufferData(target, buffer.capacity() * byteSize, buffer, usage);
+            GLES20.glBindBuffer(target, 0);
+        }
 
         bufferInfo.buffer = buffer;
         bufferInfo.bufferHandle = handle;
@@ -1079,4 +1081,8 @@ public class Geometry3D {
 	public int getNumTriangles() {
 		return mVertices != null ? mVertices.limit() / 9 : 0;
 	}
+
+    public void setBuffersCreated(boolean created) {
+        mHaveCreatedBuffers = created;//
+    }
 }
