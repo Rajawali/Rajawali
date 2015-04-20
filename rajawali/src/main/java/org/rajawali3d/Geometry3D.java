@@ -1083,6 +1083,6 @@ public class Geometry3D {
 	}
 
     public void setBuffersCreated(boolean created) {
-        mHaveCreatedBuffers = created;
+        mHaveCreatedBuffers = created;//
     }
 }
