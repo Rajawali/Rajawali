@@ -578,14 +578,14 @@ public class Vector3 {
      * @return double The initial magnitude.
      */
     public double normalize() {
-        double mod = Math.sqrt(x * x + y * y + z * z);
-        if (mod != 0 && mod != 1) {
-            mod = 1 / mod;
+        double mag = Math.sqrt(x * x + y * y + z * z);
+        if (mag != 0 && mag != 1) {
+            double mod = 1 / mag;
             x *= mod;
             y *= mod;
             z *= mod;
         }
-        return mod;
+        return mag;
     }
 
     /**
@@ -1231,6 +1231,37 @@ public class Vector3 {
      */
     public boolean equals(final Vector3 obj, double error) {
         return (Math.abs(obj.x - x) <= error) && (Math.abs(obj.y - y) <= error) && (Math.abs(obj.y - y) <= error);
+    }
+
+    /**
+     * Fills x, y, z values into first three positions in the
+     * supplied array, if it is large enough to accommodate
+     * them.
+     * 
+     * @param array The array to be populated
+     * 
+     * @return The passed array with the xyz values inserted
+     */
+    public double[] toArray(double[] array)
+    {
+    	if(array != null && array.length >= 3)
+    	{
+    		array[0] = x;
+    		array[1] = y;
+    		array[2] = z;
+    	}
+
+    	return array;
+    }
+
+    /**
+     * Returns an array representation of this Vector3.
+     * 
+     * @return An array containing this Vector3's xyz values.
+     */
+    public double[] toArray()
+    {
+    	return toArray(new double[3]);
     }
 
     /*
