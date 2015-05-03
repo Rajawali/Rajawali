@@ -368,7 +368,7 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotation(final Vector3 axis, double angle) {
-        mOrientation.multiply(mTmpOrientation.fromAngleAxis(axis, angle));
+        mOrientation.fromAngleAxis(axis, angle);
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -385,7 +385,7 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotation(final Vector3.Axis axis, double angle) {
-        mOrientation.multiply(mTmpOrientation.fromAngleAxis(axis, angle));
+        mOrientation.fromAngleAxis(axis, angle);
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -404,7 +404,7 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotation(double x, double y, double z, double angle) {
-        mOrientation.multiply(mTmpOrientation.fromAngleAxis(x, y, z, angle));
+        mOrientation.fromAngleAxis(x, y, z, angle);
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -420,7 +420,7 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotation(final Matrix4 matrix) {
-        mOrientation.multiply(mTmpOrientation.fromMatrix(matrix));
+        mOrientation.fromMatrix(matrix);
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
