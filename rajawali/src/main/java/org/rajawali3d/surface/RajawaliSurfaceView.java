@@ -79,13 +79,16 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
         final int glesMajorVersion = Capabilities.getGLESMajorVersion();
         setEGLContextClientVersion(glesMajorVersion);
 
-        setEGLConfigChooser(new RajawaliEGLConfigChooser(glesMajorVersion, mAntiAliasingConfig, mMultiSampleCount,
-            mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
-
         if (mIsTransparent) {
+            setEGLConfigChooser(new RajawaliEGLConfigChooser(glesMajorVersion, mAntiAliasingConfig, mMultiSampleCount,
+                    8, 8, 8, 8, mBitsDepth));
+
             getHolder().setFormat(PixelFormat.TRANSLUCENT);
             setZOrderOnTop(true);
         } else {
+            setEGLConfigChooser(new RajawaliEGLConfigChooser(glesMajorVersion, mAntiAliasingConfig, mMultiSampleCount,
+                    mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
+
             getHolder().setFormat(PixelFormat.RGBA_8888);
             setZOrderOnTop(false);
         }
