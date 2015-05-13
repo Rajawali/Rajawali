@@ -136,13 +136,17 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 						// X, Y, Z
 						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
-						vertices[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+						vertices[idx++] = (float) -dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					}
 					break;
 				case 2: // Face indices
 					indices = new int[(int) (subLength / 2)];
-					while (idx < indices.length)
-						indices[idx++] = dis.readUnsignedShort();
+					while (idx < indices.length) {
+                        indices[idx+2] = dis.readUnsignedShort();
+                        indices[idx+1] = dis.readUnsignedShort();
+                        indices[idx] = dis.readUnsignedShort();
+                        idx += 3;
+                    }
 					break;
 				case 3: // UV coordinates
 					uvs = new float[(int) (subLength / geoPrecisionSize)];
@@ -153,6 +157,8 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 					normals = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < normals.length) {
 						normals[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+                        normals[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
+                        normals[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					}
 					break;
 				case 6: // Joint index

@@ -276,8 +276,9 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			material.setModelViewMatrix(mMVMatrix);
 
 			if(mIsVisible) {
+                int bufferType = mGeometry.getIndexBufferInfo().bufferType == Geometry3D.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
-				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), mElementsBufferType,	0);
+				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 			}
 			if (!mIsPartOfBatch && !mRenderChildrenAsBatch && sceneMaterial == null) {

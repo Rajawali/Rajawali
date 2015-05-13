@@ -97,13 +97,15 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     @Override
     public void onPause() {
         super.onPause();
-        mRendererDelegate.mRenderer.onPause();
+        if(mRendererDelegate != null)
+            mRendererDelegate.mRenderer.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mRendererDelegate.mRenderer.onResume();
+        if(mRendererDelegate != null)
+            mRendererDelegate.mRenderer.onResume();
     }
 
     @Override
