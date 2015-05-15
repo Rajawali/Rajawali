@@ -54,6 +54,7 @@ public abstract class Animation extends Playable {
 		setState(State.PAUSED);
 		mElapsedTime = 0;
 		mIsStarted = false;
+        mDelayCount = 0;
 	}
 	
 	/**
