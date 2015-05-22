@@ -39,3 +39,5 @@ ehthumbs.db
 Thumbs.db
 bin/
 gen/
+.idea/dictionaries/dennis.xml
+local.properties~
