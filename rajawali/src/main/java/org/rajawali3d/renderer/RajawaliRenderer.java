@@ -294,11 +294,10 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
 
     @Override
     public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
-        RajLog.setGL10(gl);
         Capabilities.getInstance();
 
-        String[] versionString = (gl.glGetString(GL10.GL_VERSION)).split(" ");
-        RajLog.d("Open GL ES Version String: " + gl.glGetString(GL10.GL_VERSION));
+        String[] versionString = (GLES20.glGetString(GLES20.GL_VERSION)).split(" ");
+        RajLog.d("Open GL ES Version String: " + GLES20.glGetString(GLES20.GL_VERSION));
         if (versionString.length >= 3) {
             String[] versionParts = versionString[2].split("\\.");
             if (versionParts.length >= 2) {
@@ -309,7 +308,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
         }
         RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
 
-        supportsUIntBuffers = gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
+        supportsUIntBuffers = GLES20.glGetString(GLES20.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
 
         if (!mHaveRegisteredForResources) {
             mTextureManager.registerRenderer(this);
