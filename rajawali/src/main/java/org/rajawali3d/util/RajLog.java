@@ -15,18 +15,15 @@ package org.rajawali3d.util;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.opengl.GLES20;
 import android.os.Build;
 import android.util.Log;
-
-import javax.microedition.khronos.opengles.GL10;
 
 public final class RajLog {
 
     public static final String TAG = "Rajawali";
 
     private static boolean debugEnabled;
-
-    private static GL10 sGL10;
 
     public static void setDebugEnabled(boolean flag) {
         debugEnabled = flag;
@@ -57,12 +54,8 @@ public final class RajLog {
         Log.w(TAG, msg);
     }
 
-    public static void setGL10(GL10 gl) {
-        sGL10 = gl;
-    }
-
     public static void checkGLError(String message) {
-        int error = sGL10.glGetError();
+        int error = GLES20.glGetError();
         if (error > 0)
             throw new RuntimeException("OpenGL Error: " + GLU.gluErrorString(error) + " " + error + " | " + message);
     }
@@ -83,23 +76,19 @@ public final class RajLog {
         sb.append("-=-=-=- /Device Information -=-=-=-\n\n");
 
         sb.append("-=-=-=- OpenGL Information -=-=-=-\n");
-        if (sGL10 != null) {
-            sb.append("Vendor : ").append(sGL10.glGetString(GL10.GL_VENDOR)).append("\n");
-            sb.append("Renderer : ").append(sGL10.glGetString(GL10.GL_RENDERER)).append("\n");
-            sb.append("Version : ").append(sGL10.glGetString(GL10.GL_VERSION)).append("\n");
+        sb.append("Vendor : ").append(GLES20.glGetString(GLES20.GL_VENDOR)).append("\n");
+        sb.append("Renderer : ").append(GLES20.glGetString(GLES20.GL_RENDERER)).append("\n");
+        sb.append("Version : ").append(GLES20.glGetString(GLES20.GL_VERSION)).append("\n");
 
-            String extensions = sGL10.glGetString(GL10.GL_EXTENSIONS);
-            String[] ext = extensions.split(" ");
-            int extLength = ext.length;
+        String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+        String[] ext = extensions.split(" ");
+        int extLength = ext.length;
 
-            if (extLength > 0) {
-                sb.append("Extensions : ").append(ext[0]).append("\n");
-                for (int i = 1; i < extLength; i++) {
-                    sb.append(" : ").append(ext[i]).append("\n");
-                }
+        if (extLength > 0) {
+            sb.append("Extensions : ").append(ext[0]).append("\n");
+            for (int i = 1; i < extLength; i++) {
+                sb.append(" : ").append(ext[i]).append("\n");
             }
-        } else {
-            sb.append("OpenGL info : Cannot find OpenGL information. Please call this function from initScene().\n");
         }
         sb.append("-=-=-=- /OpenGL Information -=-=-=-\n");
         sb.append(Capabilities.getInstance().toString());
