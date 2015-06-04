@@ -1008,7 +1008,7 @@ public class RajawaliScene {
 			pickerInfo.getPicker().getRenderTarget().bind();
 			GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		} else {
-			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+//			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
 		}
 
