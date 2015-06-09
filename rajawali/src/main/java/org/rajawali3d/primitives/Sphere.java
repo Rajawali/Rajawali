@@ -38,6 +38,7 @@ public class Sphere extends Object3D {
 	private int mSegmentsH;
 	private boolean mCreateTextureCoords;
 	private boolean mCreateVertexColorBuffer;
+    private boolean mMirrorTextureCoords;
 
 	/**
 	 * Creates a sphere primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
@@ -53,30 +54,70 @@ public class Sphere extends Object3D {
 		this(radius, segmentsW, segmentsH, true, false, true);
 	}
 
-	/**
-	 * Creates a sphere primitive.
-	 * 
-	 * @param radius
-	 *            The radius of the sphere
-	 * @param segmentsW
-	 *            The number of vertical segments
-	 * @param segmentsH
-	 *            The number of horizontal segments
-	 * @param createTextureCoordinates
-	 *            A boolean that indicates whether the texture coordinates should be calculated or not.
-	 * @param createVertexColorBuffer
-	 *            A boolean that indicates whether a vertex color buffer should be created or not.
+    /**
+     * Creates a sphere primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
+     *
+     * @param radius
+     *            The radius of the sphere
+     * @param segmentsW
+     *            The number of vertical segments
+     * @param segmentsH
+     *            The number of horizontal segments
+     * @param mirrorTextureCoords
+     *            A boolean that indicates if the texture coords should be mirrored horizontally.
+     */
+    public Sphere(float radius, int segmentsW, int segmentsH, boolean mirrorTextureCoords) {
+        this(radius, segmentsW, segmentsH, true, false, true, mirrorTextureCoords);
+    }
+
+    /**
+     * Creates a sphere primitive.
+     *
+     * @param radius
+     *            The radius of the sphere
+     * @param segmentsW
+     *            The number of vertical segments
+     * @param segmentsH
+     *            The number of horizontal segments
+     * @param createTextureCoordinates
+     *            A boolean that indicates if the texture coordinates should be calculated or not.
      * @param createVertexColorBuffer
-     *            A boolean that indicates whether the VBOs should be created immediately.
-	 */
+     *            A boolean that indicates if a vertex color buffer should be created or not.
+     * @param createVBOs
+     *            A boolean that indicates if the VBOs should be created immediately.
+     */
+    public Sphere(float radius, int segmentsW, int segmentsH, boolean createTextureCoordinates,
+                  boolean createVertexColorBuffer, boolean createVBOs) {
+        this(radius, segmentsW, segmentsH, createTextureCoordinates, createVertexColorBuffer, createVBOs, false);
+    }
+
+    /**
+     * Creates a sphere primitive.
+     *
+     * @param radius
+     *            The radius of the sphere
+     * @param segmentsW
+     *            The number of vertical segments
+     * @param segmentsH
+     *            The number of horizontal segments
+     * @param createTextureCoordinates
+     *            A boolean that indicates if the texture coordinates should be calculated or not.
+     * @param createVertexColorBuffer
+     *            A boolean that indicates if a vertex color buffer should be created or not.
+     * @param createVBOs
+     *            A boolean that indicates if the VBOs should be created immediately.
+     * @param mirrorTextureCoords
+     *            A boolean that indicates if the texture coords should be mirrored horizontally.
+     */
 	public Sphere(float radius, int segmentsW, int segmentsH, boolean createTextureCoordinates,
-			boolean createVertexColorBuffer, boolean createVBOs) {
+			boolean createVertexColorBuffer, boolean createVBOs, boolean mirrorTextureCoords) {
 		super();
 		mRadius = radius;
 		mSegmentsW = segmentsW;
 		mSegmentsH = segmentsH;
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
+        mMirrorTextureCoords = mirrorTextureCoords;
 		init(createVBOs);
 	}
 
@@ -143,7 +184,8 @@ public class Sphere extends Object3D {
 			numUvs = 0;
 			for (j = 0; j <= mSegmentsH; ++j) {
 				for (i = mSegmentsW; i >= 0; --i) {
-					textureCoords[numUvs++] = (float) i / mSegmentsW;
+                    float u = (float) i / mSegmentsW;
+					textureCoords[numUvs++] = mMirrorTextureCoords ? 1.0f - u : u;
 					textureCoords[numUvs++] = (float) j / mSegmentsH;
 				}
 			}
