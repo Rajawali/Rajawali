@@ -18,6 +18,7 @@ import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.util.RajLog;
 
 public class Camera extends ATransformable3D {
 
@@ -205,14 +206,26 @@ public class Camera extends ATransformable3D {
             mIsInitialized = true;
 		}
 	}
-	
+
 	public void setProjectionMatrix(double fieldOfView, int width, int height)
 	{
 		synchronized (mFrustumLock) {
-			mFieldOfView = fieldOfView;
-			setProjectionMatrix(width, height);
-		}		
+            mFieldOfView = fieldOfView;
+            setProjectionMatrix(width, height);
+        }
 	}
+
+    public void updatePerspective(double left, double right, double bottom, double top) {
+        updatePerspective(left + right, bottom + top);
+    }
+
+    public void updatePerspective(double fovX, double fovY) {
+        synchronized (mFrustumLock) {
+            double ratio = fovX / fovY;
+            mFieldOfView = fovX;
+            mProjMatrix.setToPerspective(mNearPlane, mFarPlane, fovX, ratio);
+        }
+    }
 
 	public Matrix4 getProjectionMatrix() {
 		synchronized (mFrustumLock) {
