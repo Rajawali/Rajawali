@@ -83,7 +83,7 @@ public class ScreenQuad extends Object3D {
 				-.5f, -.5f, 0
 		};
 		float[] textureCoords = new float[] {
-				0, 1, 1, 1, 1, 0, 0, 0
+				0, 0, 1, 0, 1, 1, 0, 1
 		};
 		float[] normals = new float[] {
 				0, 0, 1,
