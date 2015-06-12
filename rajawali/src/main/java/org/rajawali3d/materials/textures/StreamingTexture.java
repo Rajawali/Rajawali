@@ -33,6 +33,7 @@ public class StreamingTexture extends ATexture {
     private Camera mCamera;
     private ISurfaceListener mSurfaceListener;
     private SurfaceTexture mSurfaceTexture;
+    private Surface mSurface;
     SurfaceTexture.OnFrameAvailableListener mOnFrameAvailableListener;
 
     public StreamingTexture(String textureName, MediaPlayer mediaPlayer) {
@@ -78,7 +79,8 @@ public class StreamingTexture extends ATexture {
         setTextureId(textureId);
         mSurfaceTexture = new SurfaceTexture(textureId);
         if (mMediaPlayer != null) {
-            mMediaPlayer.setSurface(new Surface(mSurfaceTexture));
+            mSurface = new Surface(mSurfaceTexture);
+            mMediaPlayer.setSurface(mSurface);
         } else if (mCamera != null) {
             try {
                 mSurfaceTexture.setOnFrameAvailableListener(mOnFrameAvailableListener);
@@ -111,5 +113,10 @@ public class StreamingTexture extends ATexture {
     public void update() {
         if (mSurfaceTexture != null)
             mSurfaceTexture.updateTexImage();
+    }
+
+    public void updateMediaPlayer(MediaPlayer mediaPlayer) {
+        mMediaPlayer = mediaPlayer;
+        mMediaPlayer.setSurface(mSurface);
     }
 }
