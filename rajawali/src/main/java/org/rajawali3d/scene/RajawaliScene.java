@@ -1064,12 +1064,12 @@ public class RajawaliScene {
             }
         }
 
-        // Execute pre-frame callbacks
+        // Execute pre-draw callbacks
         // We explicitly break out the steps here to help the compiler optimize
-        final int preRenderCount = mPreDrawCallbacks.size();
-        if (preRenderCount > 0) {
+        final int preDrawCount = mPreDrawCallbacks.size();
+        if (preDrawCount > 0) {
             synchronized (mPreDrawCallbacks) {
-                for (int i = 0; i < preCount; ++i) {
+                for (int i = 0; i < preDrawCount; ++i) {
                     mPreDrawCallbacks.get(i).onPreDraw(ellapsedTime, deltaTime);
                 }
             }
