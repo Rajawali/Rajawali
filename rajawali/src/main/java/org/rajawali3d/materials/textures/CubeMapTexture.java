@@ -186,6 +186,7 @@ public class CubeMapTexture extends AMultiTexture {
             if(mHasCompressedTextures) {
                 for (int i = 0; i < 6; i++) {
                     ACompressedTexture tex = mCompressedTextures[i];
+                    tex.add();
                     int w = tex.getWidth(), h = tex.getHeight();
                     for (int j = 0; j < tex.getByteBuffers().length; j++) {
                         GLES20.glCompressedTexSubImage2D(CUBE_FACES[i], j, 0, 0, w, h, tex.getCompressionFormat(),
