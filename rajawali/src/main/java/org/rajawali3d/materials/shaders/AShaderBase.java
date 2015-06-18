@@ -960,6 +960,13 @@ public abstract class AShaderBase {
 			v.setName(v.getValue());
 			return v;
 		}
+
+        public ShaderVar add(float value) {
+            ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
+            v.setValue(this.mName + " + " + Float.toString(value));
+            v.setName(v.getValue());
+            return v;
+        }
 		
 		/**
 		 * Subtracts two shader variables. Equivalent to GLSL's '-' operator.
@@ -1053,7 +1060,7 @@ public abstract class AShaderBase {
 			v.setName(v.getValue());
 			return v;
 		}
-		
+
 		/**
 		 * Assigns a value to a shader variable. Equivalent to GLSL's '=' operator.
 		 * 

@@ -985,8 +985,15 @@ public abstract class AShader extends AShaderBase {
 		s.mInitialized = true;
 		return s;
 	}
-	
-	public ShaderVar pow(ShaderVar var1, ShaderVar var2)
+
+    public ShaderVar atan(ShaderVar y, ShaderVar x) {
+        ShaderVar s = new ShaderVar("atan(" + y.getName() + ", " + x.getName() + ")", DataType.FLOAT);
+        s.mInitialized = true;
+        return s;
+    }
+
+
+    public ShaderVar pow(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("pow(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
 		s.mInitialized = true;

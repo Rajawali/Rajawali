@@ -22,6 +22,7 @@ import android.graphics.BitmapFactory;
 public abstract class AMultiTexture extends ATexture {
 	protected Bitmap[] mBitmaps;
 	protected ByteBuffer[] mByteBuffers;
+    protected ACompressedTexture[] mCompressedTextures;
 	protected int[] mResourceIds;
 
 	protected AMultiTexture() {
@@ -49,6 +50,12 @@ public abstract class AMultiTexture extends ATexture {
 		super(textureType, textureName);
 		setByteBuffers(byteBuffers);
 	}
+
+    public AMultiTexture(TextureType textureType, String textureName, ACompressedTexture[] compressedTextures)
+    {
+        super(textureType, textureName);
+        setCompressedTextures(compressedTextures);
+    }
 
 	public AMultiTexture(ATexture other) {
 		super(other);
@@ -105,6 +112,16 @@ public abstract class AMultiTexture extends ATexture {
 	{
 		return mByteBuffers;
 	}
+
+    public ACompressedTexture[] getCompressedTextures()
+    {
+        return mCompressedTextures;
+    }
+
+    public void setCompressedTextures(ACompressedTexture[] compressedTextures)
+    {
+        mCompressedTextures = compressedTextures;
+    }
 	
 	void reset() throws TextureException
 	{
@@ -115,7 +132,6 @@ public abstract class AMultiTexture extends ATexture {
 			{
 				Bitmap bitmap = mBitmaps[i];
 				bitmap.recycle();
-				bitmap = null;
 				mBitmaps[i] = null;
 			}
 		}
@@ -126,9 +142,18 @@ public abstract class AMultiTexture extends ATexture {
 			{
 				ByteBuffer byteBuffer = mByteBuffers[i];
 				byteBuffer.clear();
-				byteBuffer = null;
 				mByteBuffers[i] = null;
 			}
 		}
+        if(mCompressedTextures != null)
+        {
+            int count = mCompressedTextures.length;
+            for(int i=0; i<count; i++)
+            {
+                ACompressedTexture texture = mCompressedTextures[i];
+                texture.remove();
+                mCompressedTextures[i] = null;
+            }
+        }
 	}
 }
