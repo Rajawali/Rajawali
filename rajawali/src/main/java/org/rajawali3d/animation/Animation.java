@@ -351,4 +351,7 @@ public abstract class Animation extends Playable {
 			mAnimationListeners.get(i).onAnimationUpdate(this, interpolatedTime);
 	}
 
+    public double getInterpolatedTime() {
+        return mInterpolatedTime;
+    }
 }

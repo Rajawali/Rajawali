@@ -27,7 +27,8 @@ import java.nio.ByteOrder;
 
 public class Etc1Texture extends ACompressedTexture {
 
-    protected int mResourceId;
+    protected int mResourceId = -1;
+    protected int[] mResourceIds;
     protected Bitmap mBitmap;
 
     public Etc1Texture(String textureName) {
@@ -79,11 +80,54 @@ public class Etc1Texture extends ACompressedTexture {
 
     @Override
     void add() throws TextureException {
+        if(mResourceId != -1) {
+            Resources resources = TextureManager.getInstance().getContext().getResources();
+            try {
+                ETC1Util.ETC1Texture texture = ETC1Util.createTexture(resources.openRawResource(mResourceId));
+                mByteBuffers = new ByteBuffer[]{texture.getData()};
+                setWidth(texture.getWidth());
+                setHeight(texture.getHeight());
+                setCompressionFormat(ETC1.ETC1_RGB8_OES);
+            } catch (IOException e) {
+                RajLog.e(e.getMessage());
+                e.printStackTrace();
+            }
+        } else if(mResourceIds != null) {
+            ByteBuffer[] mipmapChain = new ByteBuffer[mResourceIds.length];
+            Resources resources = TextureManager.getInstance().getContext().getResources();
+            int mip_0_width = 1, mip_0_height = 1;
+            try {
+                for (int i = 0, length = mResourceIds.length; i < length; i++) {
+                    ETC1Util.ETC1Texture texture = ETC1Util.createTexture(resources.openRawResource(mResourceIds[i]));
+                    mipmapChain[i] = texture.getData();
+                    if (i == 0) {
+                        mip_0_width = texture.getWidth();
+                        mip_0_height = texture.getHeight();
+                    }
+                }
+                setWidth(mip_0_width);
+                setHeight(mip_0_height);
+                setCompressionFormat(ETC1.ETC1_RGB8_OES);
+            } catch (IOException e) {
+                RajLog.e(e.getMessage());
+                e.printStackTrace();
+            }
+
+            mByteBuffers = mipmapChain;
+        }
         super.add();
         if (mShouldRecycle) {
             if (mBitmap != null) {
                 mBitmap.recycle();
                 mBitmap = null;
+            }
+            if(mByteBuffers != null) {
+                int count = mByteBuffers.length;
+                for(int i=0; i <count; i++) {
+                    mByteBuffers[i].clear();
+                    mByteBuffers[i] = null;
+                }
+                mByteBuffers = null;
             }
         }
     }
@@ -95,21 +139,18 @@ public class Etc1Texture extends ACompressedTexture {
             mBitmap.recycle();
             mBitmap = null;
         }
+        if(mByteBuffers != null) {
+            int count = mByteBuffers.length;
+            for(int i=0; i <count; i++) {
+                mByteBuffers[i].clear();
+                mByteBuffers[i] = null;
+            }
+            mByteBuffers = null;
+        }
     }
 
     public void setResourceId(int resourceId) {
         mResourceId = resourceId;
-        Resources resources = TextureManager.getInstance().getContext().getResources();
-        try {
-            ETC1Util.ETC1Texture texture = ETC1Util.createTexture(resources.openRawResource(resourceId));
-            mByteBuffers = new ByteBuffer[]{texture.getData()};
-            setWidth(texture.getWidth());
-            setHeight(texture.getHeight());
-            setCompressionFormat(ETC1.ETC1_RGB8_OES);
-        } catch (IOException e) {
-            RajLog.e(e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     public int getResourceId() {
@@ -117,27 +158,7 @@ public class Etc1Texture extends ACompressedTexture {
     }
 
     public void setResourceIds(int[] resourceIds) {
-        ByteBuffer[] mipmapChain = new ByteBuffer[resourceIds.length];
-        Resources resources = TextureManager.getInstance().getContext().getResources();
-        int mip_0_width = 1, mip_0_height = 1;
-        try {
-            for (int i = 0, length = resourceIds.length; i < length; i++) {
-                ETC1Util.ETC1Texture texture = ETC1Util.createTexture(resources.openRawResource(resourceIds[i]));
-                mipmapChain[i] = texture.getData();
-                if (i == 0) {
-                    mip_0_width = texture.getWidth();
-                    mip_0_height = texture.getHeight();
-                }
-            }
-            setWidth(mip_0_width);
-            setHeight(mip_0_height);
-            setCompressionFormat(ETC1.ETC1_RGB8_OES);
-        } catch (IOException e) {
-            RajLog.e(e.getMessage());
-            e.printStackTrace();
-        }
-
-        mByteBuffers = mipmapChain;
+        mResourceIds = resourceIds;
     }
 
     public void setBitmap(Bitmap bitmap) {

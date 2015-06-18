@@ -128,7 +128,11 @@ public abstract class ACompressedTexture extends ATexture {
 		mByteBuffers = byteBuffers;
 	}
 
-	void add() throws TextureException
+    public ByteBuffer[] getByteBuffers() {
+        return mByteBuffers;
+    }
+
+    void add() throws TextureException
 	{
 		int[] textures = new int[1];
 		GLES20.glGenTextures(1, textures, 0);

@@ -32,6 +32,7 @@ public class CubeMapTexture extends AMultiTexture {
 
     private boolean mIsSkyTexture;
     private boolean mIsEnvironmentTexture;
+    private boolean mHasCompressedTextures;
 
     public CubeMapTexture(CubeMapTexture other) {
         super(other);
@@ -61,12 +62,19 @@ public class CubeMapTexture extends AMultiTexture {
         setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
+    public CubeMapTexture(String textureName, ACompressedTexture[] compressedTextures) {
+        super(TextureType.CUBE_MAP, textureName, compressedTextures);
+        mHasCompressedTextures = true;
+        setWrapType(WrapType.CLAMP);
+        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+    }
+
     public CubeMapTexture clone() {
         return new CubeMapTexture(this);
     }
 
     private void checkBitmapConfiguration() throws TextureException {
-        if ((mBitmaps == null || mBitmaps.length == 0) && (mByteBuffers == null || mByteBuffers.length == 0))
+        if ((mBitmaps == null || mBitmaps.length == 0) && (mByteBuffers == null || mByteBuffers.length == 0) && !mHasCompressedTextures)
             throw new TextureException("Texture could not be added because no Bitmaps or ByteBuffers set.");
         if (mBitmaps != null && mBitmaps.length != 6)
             throw new TextureException("CubeMapTexture could not be added because it needs six textures instead of " + mBitmaps.length);
@@ -109,11 +117,21 @@ public class CubeMapTexture extends AMultiTexture {
 
         for (int i = 0; i < 6; i++) {
             GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
-            if (mBitmaps != null)
+            if (mBitmaps != null) {
                 GLUtils.texImage2D(CUBE_FACES[i], 0, mBitmaps[i], 0);
-            else
+            } else if(mHasCompressedTextures) {
+                ACompressedTexture tex = mCompressedTextures[i];
+                int w = tex.getWidth(), h = tex.getHeight();
+                for (int j = 0; j < tex.getByteBuffers().length; j++) {
+                    GLES20.glCompressedTexImage2D(CUBE_FACES[i], j, tex.getCompressionFormat(), w, h, 0,
+                            tex.getByteBuffers()[j].capacity(), tex.getByteBuffers()[j]);
+                    w = w > 1 ? w / 2 : 1;
+                    h = h > 1 ? h / 2 : 1;
+                }
+            } else {
                 GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, mBitmapFormat, mWidth, mHeight, 0, mBitmapFormat,
-                    GLES20.GL_UNSIGNED_BYTE, mByteBuffers[i]);
+                        GLES20.GL_UNSIGNED_BYTE, mByteBuffers[i]);
+            }
         }
 
         if (isMipmap())
@@ -135,6 +153,11 @@ public class CubeMapTexture extends AMultiTexture {
 
     @Override
     void add() throws TextureException {
+        if(mHasCompressedTextures) {
+            for(int i=0; i<mCompressedTextures.length; i++) {
+                mCompressedTextures[i].add();
+            }
+        }
         checkBitmapConfiguration();
         int[] genTextureNames = new int[1];
         GLES20.glGenTextures(1, genTextureNames, 0);
@@ -160,7 +183,21 @@ public class CubeMapTexture extends AMultiTexture {
 
         if (mTextureId > 0) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, mTextureId);
-            setTextureData();
+            if(mHasCompressedTextures) {
+                for (int i = 0; i < 6; i++) {
+                    ACompressedTexture tex = mCompressedTextures[i];
+                    int w = tex.getWidth(), h = tex.getHeight();
+                    for (int j = 0; j < tex.getByteBuffers().length; j++) {
+                        GLES20.glCompressedTexSubImage2D(CUBE_FACES[i], j, 0, 0, w, h, tex.getCompressionFormat(),
+                                tex.getByteBuffers()[j].capacity(), tex.getByteBuffers()[j]);
+                        w = w > 1 ? w / 2 : 1;
+                        h = h > 1 ? h / 2 : 1;
+                    }
+                }
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, 0);
+            } else {
+                setTextureData();
+            }
         } else {
             throw new TextureException("Couldn't generate a texture name.");
         }
