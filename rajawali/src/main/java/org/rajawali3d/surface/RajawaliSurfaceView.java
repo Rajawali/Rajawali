@@ -121,7 +121,9 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        onResume();
+        if (!isInEditMode()) {
+            onResume();
+        }
     }
 
     @Override
