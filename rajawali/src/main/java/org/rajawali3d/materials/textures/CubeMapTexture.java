@@ -174,6 +174,11 @@ public class CubeMapTexture extends AMultiTexture {
 
     @Override
     void remove() throws TextureException {
+        if(mHasCompressedTextures) {
+            for(int i=0; i<mCompressedTextures.length; i++) {
+                mCompressedTextures[i].remove();
+            }
+        }
         GLES20.glDeleteTextures(1, new int[]{mTextureId}, 0);
     }
 
