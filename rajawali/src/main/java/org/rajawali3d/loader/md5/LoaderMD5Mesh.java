@@ -13,9 +13,11 @@
 package org.rajawali3d.loader.md5;
 
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
@@ -220,6 +222,9 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 						lastDelim = shader.lastIndexOf("\\");
 					if (lastDelim > -1)
 						mesh.textureName = shader.substring(lastDelim + 1, shader.length());
+					
+					if (mFile != null)
+					    continue;
 
 					int dot = shader.lastIndexOf(".");
 					if (dot > -1)
@@ -444,13 +449,26 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 			if (!hasTexture) {
 				o.setColor(0xff000000 + (int) (Math.random() * 0xffffff));
 			} else {
-				int identifier = mResources.getIdentifier(mesh.textureName, "drawable",
-						mResources.getResourcePackageName(mResourceId));
-				if (identifier == 0) {
-					throw new ParsingException("Couldn't find texture " + mesh.textureName);
-				}
-				mat.setColorInfluence(0);
-				mat.addTexture(new Texture("md5tex" + i, identifier));
+			    if (mFile == null) {
+	                int identifier = mResources.getIdentifier(mesh.textureName, "drawable",
+	                        mResources.getResourcePackageName(mResourceId));
+	                if (identifier == 0) {
+	                    throw new ParsingException("Couldn't find texture " + mesh.textureName);
+	                }
+	                mat.setColorInfluence(0);
+	                mat.addTexture(new Texture("md5tex" + i, identifier));
+			    } else {
+                    try {
+                        String filePath = mFile.getParent() + File.separatorChar + mesh.textureName;
+                        mat.setColorInfluence(0);
+                        mat.addTexture(new Texture("md5tex" + i, BitmapFactory.decodeFile(filePath)));
+                    } catch (Exception e) {
+                        RajLog.e("[" + getClass().getCanonicalName() + "] Could not find file " + mesh.textureName);
+                        e.printStackTrace();
+                        return;
+                    }
+			    }
+
 			}
 			mRootObject.addChild(o);
 			
