@@ -840,9 +840,6 @@ public class Material {
         for (int i = 0; i < num; i++) {
             ATexture texture = mTextureList.get(i);
             bindTextureByName(texture.getTextureName(), i, texture);
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
-            GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
-            GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName()), i);
         }
 
         if (mPlugins != null)
