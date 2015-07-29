@@ -1230,7 +1230,7 @@ public class Vector3 {
      * @return boolean True if this {@link Vector3}'s components match with the components of the input.
      */
     public boolean equals(final Vector3 obj, double error) {
-        return (Math.abs(obj.x - x) <= error) && (Math.abs(obj.y - y) <= error) && (Math.abs(obj.y - y) <= error);
+        return (Math.abs(obj.x - x) <= error) && (Math.abs(obj.y - y) <= error) && (Math.abs(obj.z - z) <= error);
     }
 
     /**
