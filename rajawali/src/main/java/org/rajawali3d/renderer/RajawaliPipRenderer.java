@@ -48,11 +48,11 @@ public class RajawaliPipRenderer extends RajawaliRenderer {
 
     // These variables control where the minimap is placed. Note they are specified in standardized
     // OpenGL coordinates 0 to 1
-    private final float pipScale;
-    private final float pipMarginX;
-    private final float pipMarginY;
+    private final float mPipScale;
+    private final float mPipMarginX;
+    private final float mPipMarginY;
 
-    private float miniXmin, miniXmax, miniYmin, miniYmax;
+    private float mMiniXmin, mMiniXmax, mMiniYmin, mMiniYmax;
 
     /**
      * @param pipScale   Size of the mini view from 0 to 1, i.e.: ratio of full screen to mini
@@ -61,17 +61,17 @@ public class RajawaliPipRenderer extends RajawaliRenderer {
      */
     public RajawaliPipRenderer(Context context, float pipScale, float pipMarginX, float pipMarginY) {
         super(context);
-        this.pipScale = pipScale;
-        this.pipMarginX = pipMarginX;
-        this.pipMarginY = pipMarginY;
+        mPipScale = pipScale;
+        mPipMarginX = pipMarginX;
+        mPipMarginY = pipMarginY;
     }
 
-    public void setMiniRenderer(SubRenderer mMiniRenderer) {
-        this.mMiniRenderer = mMiniRenderer;
+    public void setMiniRenderer(SubRenderer miniRenderer) {
+        mMiniRenderer = miniRenderer;
     }
 
-    public void setMainRenderer(SubRenderer mMainRenderer) {
-        this.mMainRenderer = mMainRenderer;
+    public void setMainRenderer(SubRenderer mainRenderer) {
+        mMainRenderer = mainRenderer;
     }
 
     @Override
@@ -90,14 +90,14 @@ public class RajawaliPipRenderer extends RajawaliRenderer {
         setupMiniTouchLimits();
 
         mMiniQuad = new WorkaroundScreenQuad();
-        // Set the size of the mini view using a scale factor (pipScale times the main view)
-        mMiniQuad.setScale(pipScale);
+        // Set the size of the mini view using a scale factor (mPipScale times the main view)
+        mMiniQuad.setScale(mPipScale);
         // Position the mini view in the top right corner
         // For X and Y, the position is:
         //   50% screen shift to the right/top minus half the size of the minimap to bring it back
         //   left/bottom into full view plus a little bit more left/bottom to leave margin
-        mMiniQuad.setX(.5 - pipScale / 2 - pipMarginX / (2 * mDefaultViewportWidth));
-        mMiniQuad.setY(.5 - pipScale / 2 - pipMarginY / (2 * mDefaultViewportHeight));
+        mMiniQuad.setX(.5d - mPipScale / 2d - mPipMarginX / mDefaultViewportWidth);
+        mMiniQuad.setY(.5d - mPipScale / 2d - mPipMarginY / mDefaultViewportHeight);
         mMiniQuad.setMaterial(mMiniQuadMaterial);
 
         mMainRenderTarget =
@@ -156,17 +156,17 @@ public class RajawaliPipRenderer extends RajawaliRenderer {
      */
     private void setupMiniTouchLimits() {
         // Start and end of the Quad in OpenGL standardized coordinates
-        float minX = 1 - pipScale - pipMarginX / mDefaultViewportWidth;
-        float maxX = 1 - pipMarginX / mDefaultViewportWidth;
+        float minX = 1 - mPipScale - mPipMarginX / mDefaultViewportWidth;
+        float maxX = 1 - mPipMarginX / mDefaultViewportWidth;
 
-        float minY = 1 - pipScale - pipMarginX / mDefaultViewportHeight;
-        float maxY = 1 - pipMarginX / mDefaultViewportHeight;
+        float minY = 1 - mPipScale - mPipMarginX / mDefaultViewportHeight;
+        float maxY = 1 - mPipMarginX / mDefaultViewportHeight;
 
-        miniXmin = minX * mDefaultViewportWidth;
-        miniXmax = maxX * mDefaultViewportWidth;
+        mMiniXmin = minX * mDefaultViewportWidth;
+        mMiniXmax = maxX * mDefaultViewportWidth;
         // Note that Y is reversed between OpenGL (+up) and screen coordinates (+down)
-        miniYmin = (1 - maxY) * mDefaultViewportHeight;
-        miniYmax = (1 - minY) * mDefaultViewportHeight;
+        mMiniYmin = (1 - maxY) * mDefaultViewportHeight;
+        mMiniYmax = (1 - minY) * mDefaultViewportHeight;
     }
 
     @Override
@@ -182,7 +182,7 @@ public class RajawaliPipRenderer extends RajawaliRenderer {
         // If the event falls into the mini scene, forward the event to the mini renderer
         // TODO(adamantivm) See if there is a way to delegate the calculation of whether a click
         // falls inside a Quad or not, so that we don't have to do the calculation ourselves
-        if (x > miniXmin && x < miniXmax && y > miniYmin && y < miniYmax) {
+        if (x > mMiniXmin && x < mMiniXmax && y > mMiniYmin && y < mMiniYmax) {
             mMiniRenderer.onTouchEvent(event);
             // Otherwise dispatch it to the main renderer
         } else {
