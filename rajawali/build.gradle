@@ -29,17 +29,9 @@ android {
             ext."signing.password" = System.getenv('SIGNING_KEY_PASSWORD') != null ? System.getenv('SIGNING_KEY_PASSWORD') : System.properties['SIGNING_KEY_PASSWORD'] ? System.properties['SIGNING_KEY_PASSWORD'] : hasProperty('SIGNING_KEY_PASSWORD') ? property('SIGNING_KEY_PASSWORD') : ""
             ext."signing.secretKeyRingFile" = "./rajawali_secret.gpg"
 
-            // version = rootProject.getReleaseVersion(property('VERSION_NAME'))
+            version = rootProject.getReleaseVersion(property('VERSION_NAME'))
         }
     }
-}
-
-def isTag() {
-    return false
-}
-
-def getBranchName() {
-    return 'master'
 }
 
 dependencies {
