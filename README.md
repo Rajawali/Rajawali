@@ -28,7 +28,7 @@ Using Rajawali is as simple as adding a single line to your gradle dependencies:
 
 `compile 'org.rajawali3d:rajawali:x.x.x@aar` where x.x.x is the version number (and the last number is the build number). If you wish to use the `master` branch snapshot, append `-SNAPSHOT`. For example, to use release `1.0.48`, you would use:
 
-`compile 'org.rajawali3d:rajawal:1.0.48@aar`
+`compile 'org.rajawali3d:rajawali:1.0.48@aar`
 
 To use the `master` branch build 48 snapshot `1.0.48-SNAPSHOT`, you would use:
 
