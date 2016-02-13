@@ -33,13 +33,13 @@ public class Torus extends Object3D {
 	 *			The large radius of the torus
 	 * @param smallRadius
 	 *			The small radius of the torus
-	 * @param segmentsW
-	 *			The number of vertical segments
-	 * @param segmentsH
-	 *			The number of horizontal segments
+	 * @param segmentsL
+	 *			The number of segments on the large radius
+	 * @param segmentsS
+	 *			The number of segments on the small radius
 	 */
-	public Torus(float largeRadius, float smallRadius, int segmentsW, int segmentsH) {
-		this(largeRadius, smallRadius, segmentsW, segmentsH, true, false, true);
+	public Torus(float largeRadius, float smallRadius, int segmentsL, int segmentsS) {
+		this(largeRadius, smallRadius, segmentsL, segmentsS, true, false, true);
 	}
 
 	/**
