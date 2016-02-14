@@ -25,7 +25,6 @@ public class Cylinder extends Object3D {
 	private int mSegmentsL;
 	private boolean mCreateTextureCoords;
 	private boolean mCreateVertexColorBuffer;
-	private Sphere s;
 
 	/**
 	 * Creates a cylinder primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
