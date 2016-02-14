@@ -99,8 +99,6 @@ public class Cylinder extends Object3D {
 				vertices[vertIndex++] = y;
 				normals[vertIndex] = 0;
 				vertices[vertIndex++] = z;
-				System.out.println("normal["+((vertIndex-3)/3) +"]="+normals[vertIndex-3]+","+normals[vertIndex-2]+","+normals[vertIndex-1]);/////
-				System.out.println("vertices["+((vertIndex-3)/3) +"]="+vertices[vertIndex-3]+","+vertices[vertIndex-2]+","+vertices[vertIndex-1]);/////
 				if (i > 0 && j > 0) {
 					int a = (mSegmentsC + 1) * j + i;
 					int b = (mSegmentsC + 1) * j + i - 1;
@@ -109,11 +107,9 @@ public class Cylinder extends Object3D {
 					indices[index++] = a;
 					indices[index++] = b;
 					indices[index++] = c;
-					System.out.println("indices3["+((index-3)/3) +"]="+indices[index-3]+","+indices[index-2]+","+indices[index-1]);/////
 					indices[index++] = a;
 					indices[index++] = c;
 					indices[index++] = d;
-					System.out.println("indices4["+((index-3)/3) +"]="+indices[index-3]+","+indices[index-2]+","+indices[index-1]);/////
 				}
 			}
 		}
