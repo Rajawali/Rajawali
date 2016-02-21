@@ -41,3 +41,4 @@ bin/
 gen/
 .idea/dictionaries/dennis.xml
 local.properties~
+.idea/
