@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -45,13 +45,13 @@ public class ObjectColorPicker implements IObjectPicker {
 
 	public void initialize() {
 		final int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		
-		mRenderTarget = new RenderTarget("colorPickerTarget", size, size, 
-				0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, 
+
+		mRenderTarget = new RenderTarget("colorPickerTarget", size, size,
+				0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
 		mRenderer.addRenderTarget(mRenderTarget);
 
-		mPickerMaterial = new Material();
+		mPickerMaterial = new Material(this);
 		MaterialManager.getInstance().addMaterial(mPickerMaterial);
 	}
 
@@ -71,24 +71,30 @@ public class ObjectColorPicker implements IObjectPicker {
 		if (mObjectLookup.contains(object)) {
 			mObjectLookup.remove(object);
 		}
+		object.setPickingColor(Object3D.UNPICKABLE);
 	}
 
 	public void getObjectAt(float x, float y) {
-		mRenderer.getCurrentScene().requestColorPickingTexture(new ColorPickerInfo(x, y, this));
+		mRenderer.getCurrentScene().requestObjectPicking(new ColorPickerInfo(x, y, this));
 	}
-	
+
 	public RenderTarget getRenderTarget() {
 		return mRenderTarget;
 	}
 
+	@Deprecated
 	public static void createColorPickingTexture(ColorPickerInfo pickerInfo) {
+		pickObject(pickerInfo);
+	}
+
+	public static void pickObject(ColorPickerInfo pickerInfo) {
 		final ObjectColorPicker picker = pickerInfo.getPicker();
 		final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
 		pixelBuffer.order(ByteOrder.nativeOrder());
 
-		GLES20.glReadPixels(pickerInfo.getX(), picker.mRenderer.getDefaultViewportHeight()
-				- pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
-				pixelBuffer);
+		GLES20.glReadPixels(pickerInfo.getX(),
+				picker.mRenderer.getDefaultViewportHeight() - pickerInfo.getY(),
+				1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		pixelBuffer.rewind();
 
