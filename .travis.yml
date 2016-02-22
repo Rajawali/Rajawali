@@ -24,7 +24,7 @@ script:
     - echo -e "signing.keyId=${signing_keyId}" >> "gradle.properties"
     - echo -e "signing.password=${signing_password}" >> "gradle.properties"
     - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
-    - gradlew clean assemble test uploadArchives --continue
+    - gradle clean assemble test uploadArchives --continue
 
 install:
     - true
