@@ -2,6 +2,10 @@ language: android
 
 sudo: false
 
+before_install:
+    - openssl aes-256-cbc -K $encrypted_18952ce94174_key -iv $encrypted_18952ce94174_iv -in rajawali_secret.gpg.enc -out rajawali_secret.gpg -d
+    - chmod +x gradlew
+
 jdk:
     - oraclejdk7
 
@@ -17,7 +21,13 @@ script:
     - echo "Travis branch is $TRAVIS_BRANCH"
     - echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
     - echo "Travis tag $TRAVIS_TAG"
-    - gradle assembleRelease uploadArchives
+    - echo -e "signing.keyId=${signing_keyId}" >> "gradle.properties"
+    - echo -e "signing.password=${signing_password}" >> "gradle.properties"
+    - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
+    - gradlew clean assemble test uploadArchives --continue
+
+install:
+    - true
 
 notifications:
   email:
