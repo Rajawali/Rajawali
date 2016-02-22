@@ -8,11 +8,11 @@ if (isReleaseBuild()) {
 }
 
 def getRepositoryUsername() {
-    return System.getenv('sonatype_user') ?: hasProperty('sonatype_user') ? sonatype_user : ""
+    return System.getenv('SONATYPE_USERNAME') ?: hasProperty('SONATYPE_USERNAME') ? sonatype_user : ""
 }
 
 def getRepositoryPassword() {
-    return System.getenv('sonatype_pass') ?: hasProperty('sonatype_pass') ? sonatype_pass : ""
+    return System.getenv('SONATYPE_PASSWORD') ?: hasProperty('SONATYPE_PASSWORD') ? sonatype_pass : ""
 }
 
 String getBranchName() {
