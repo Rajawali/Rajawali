@@ -51,7 +51,7 @@ public class ObjectColorPicker implements IObjectPicker {
 				FilterType.LINEAR, WrapType.CLAMP);
 		mRenderer.addRenderTarget(mRenderTarget);
 
-		mPickerMaterial = new Material(this);
+		mPickerMaterial = new Material();
 		MaterialManager.getInstance().addMaterial(mPickerMaterial);
 	}
 

@@ -40,6 +40,7 @@ import org.rajawali3d.materials.textures.CubeMapTexture;
 import org.rajawali3d.materials.textures.SphereMapTexture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
+import org.rajawali3d.renderer.AFrameTask;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.scene.RajawaliScene;
 import org.rajawali3d.util.ObjectColorPicker;
@@ -138,10 +139,6 @@ public class Material {
      * be re-compiled.
      */
     private boolean mIsDirty = true;
-    /**
-     * Indicates this is a scene-level Material used by an ObjectColorPicker.
-     */
-    private boolean mIsColorPicking;
     /**
      * Holds a reference to the shader program
      */
@@ -298,11 +295,6 @@ public class Material {
         mCustomFragmentShader = customFragmentShader;
     }
 
-    public Material(ObjectColorPicker objectColorPicker) {
-        this(false);
-        mIsColorPicking = objectColorPicker != null;
-    }
-
     /**
      * Indicates that this material should use a color value for every vertex. These colors are
      * contained in a separate color buffer.
@@ -454,13 +446,6 @@ public class Material {
         mAmbientIntensity[2] = b;
         if (mLightsVertexShaderFragment != null)
             mLightsVertexShaderFragment.setAmbientIntensity(mAmbientIntensity);
-    }
-
-    /**
-     * Check for use as by an ObjectColorPicker
-     */
-    public boolean isColorPicking() {
-        return mIsColorPicking;
     }
 
     /**
