@@ -34,8 +34,7 @@ import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.RajawaliScene;
-import org.rajawali3d.surface.IRajawaliSurface;
-import org.rajawali3d.surface.IRajawaliSurfaceRenderer;
+import org.rajawali3d.view.ISurface;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
@@ -61,7 +60,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
-public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
+public abstract class Renderer implements ISurfaceRenderer {
     protected static final int AVAILABLE_CORES = Runtime.getRuntime().availableProcessors();
     protected final Executor mLoaderExecutor = Executors.newFixedThreadPool(AVAILABLE_CORES == 1 ? 1
             : AVAILABLE_CORES - 1);
@@ -72,8 +71,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
 
     protected Context mContext; // Context the renderer is running in
 
-    protected IRajawaliSurface mSurface; // The rendering surface
-    protected int mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
+    protected ISurface mSurface; // The rendering surface
+    protected int      mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
     protected int mDefaultViewportWidth, mDefaultViewportHeight; // The default width and height of the GL viewport
     protected int mOverrideViewportWidth, mOverrideViewportHeight; // The overridden width and height of the GL viewport
 
@@ -102,8 +101,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     private boolean mSceneCachingEnabled; //This applies to all scenes
     protected boolean mSceneInitialized; //This applies to all scenes
     protected boolean mEnableDepthBuffer = true; // Do we use the depth buffer?
-    private RenderTarget mCurrentRenderTarget;
-    private IRajawaliSurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+    private RenderTarget                  mCurrentRenderTarget;
+    private ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 
     protected final List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
     protected final List<RenderTarget> mRenderTargets; //List of all render targets this renderer is aware of.
@@ -130,7 +129,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     }
 
     public static void setMaxLights(int maxLights) {
-        RajawaliRenderer.sMaxLights = maxLights;
+        Renderer.sMaxLights = maxLights;
     }
 
     /**
@@ -149,11 +148,11 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
      */
     protected abstract void initScene();
 
-    public RajawaliRenderer(Context context) {
+    public Renderer(Context context) {
         this(context, false);
     }
 
-    public RajawaliRenderer(Context context, boolean registerForResources) {
+    public Renderer(Context context, boolean registerForResources) {
         RajLog.i("Rajawali | Anchor Steam | v1.0 ");
         //RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
         mHaveRegisteredForResources = registerForResources;
@@ -220,7 +219,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     }
 
     @Override
-    public void setAntiAliasingMode(IRajawaliSurface.ANTI_ALIASING_CONFIG config) {
+    public void setAntiAliasingMode(ISurface.ANTI_ALIASING_CONFIG config) {
         mAntiAliasingConfig = config;
         synchronized (mScenes) {
             for (int i = 0, j = mScenes.size(); i < j; ++i) {
@@ -288,7 +287,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     }
 
     @Override
-    public void setRenderSurface(IRajawaliSurface surface) {
+    public void setRenderSurface(ISurface surface) {
         mSurface = surface;
     }
 
@@ -471,7 +470,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
 
     /**
      * Sets the current render target. Please mind that this CAN ONLY BE called on the main
-     * OpenGL render thread. A subsequent call to {@link RajawaliRenderer#render(long, double)} will render
+     * OpenGL render thread. A subsequent call to {@link Renderer#render(long, double)} will render
      * the current scene into this render target.
      * Setting the render target to null will switch back to normal rendering.
      *
@@ -630,7 +629,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
      * OpenGL state and sets the projection matrix for the new scene.
      * <p/>
      * This method should only be called from the main OpenGL render thread
-     * ({@link RajawaliRenderer#onRender(long, double)}). Calling this outside of the main thread
+     * ({@link Renderer#onRender(long, double)}). Calling this outside of the main thread
      * may case unexpected behaviour.
      *
      * @param nextScene {@link RajawaliScene} The scene to switch to.
@@ -657,7 +656,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
      * with extreme caution.
      *
      * @return {@link RajawaliScene} object currently used for the scene.
-     * @see {@link RajawaliRenderer#mCurrentScene}
+     * @see {@link Renderer#mCurrentScene}
      */
     public RajawaliScene getCurrentScene() {
         return mCurrentScene;
@@ -989,7 +988,7 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
     }
 
     /**
-     * Return a new instance of the default initial scene for the {@link RajawaliRenderer} instance. This method is only
+     * Return a new instance of the default initial scene for the {@link Renderer} instance. This method is only
      * intended to be called one time by the renderer itself and should not be used elsewhere.
      *
      * @return {@link RajawaliScene} The default scene.

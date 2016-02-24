@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ import org.rajawali3d.materials.textures.NormalMapTexture;
 import org.rajawali3d.materials.textures.SpecularMapTexture;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.RajLog;
 
 import java.io.BufferedReader;
@@ -77,7 +77,7 @@ import java.util.StringTokenizer;
  * addChild(mObject);
  * }
  * </pre>
- * 
+ *
  * @author dennis.ippel
  *
  */
@@ -93,23 +93,23 @@ public class LoaderOBJ extends AMeshLoader {
     protected final String NEW_MATERIAL = "newmtl";
     protected final String DIFFUSE_COLOR = "Kd";
     protected final String DIFFUSE_TEX_MAP = "map_Kd";
-	
-    public LoaderOBJ(RajawaliRenderer renderer, String fileOnSDCard) {
+
+    public LoaderOBJ(Renderer renderer, String fileOnSDCard) {
     	super(renderer, fileOnSDCard);
     }
-    
-    public LoaderOBJ(RajawaliRenderer renderer, int resourceId) {
+
+    public LoaderOBJ(Renderer renderer, int resourceId) {
     	this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
     }
-    
+
 	public LoaderOBJ(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
-	
-	public LoaderOBJ(RajawaliRenderer renderer, File file) {
+
+	public LoaderOBJ(Renderer renderer, File file) {
 		super(renderer, file);
 	}
-	
+
 	@Override
 	public LoaderOBJ parse() throws ParsingException {
 		super.parse();
@@ -128,7 +128,7 @@ public class LoaderOBJ extends AMeshLoader {
 		String line;
 		ObjIndexData currObjIndexData = new ObjIndexData(new Object3D(generateObjectName()));
 		ArrayList<ObjIndexData> objIndices = new ArrayList<ObjIndexData>();
-				
+
 		ArrayList<Float> vertices = new ArrayList<Float>();
 		ArrayList<Float> texCoords = new ArrayList<Float>();
 		ArrayList<Float> normals = new ArrayList<Float>();
@@ -139,7 +139,7 @@ public class LoaderOBJ extends AMeshLoader {
 		Object3D currentGroup = mRootObject;
 		mRootObject.setName("default");
 		Map<String, Object3D> groups = new HashMap<String, Object3D>();
-		
+
 		try {
 			while((line = buffer.readLine()) != null) {
 				// Skip comments and empty lines.
@@ -147,11 +147,11 @@ public class LoaderOBJ extends AMeshLoader {
 					continue;
 				StringTokenizer parts = new StringTokenizer(line, " ");
 				int numTokens = parts.countTokens();
-				
+
 				if(numTokens == 0)
 					continue;
 				String type = parts.nextToken();
-				
+
 				if(type.equals(VERTEX)) {
 					vertices.add(Float.parseFloat(parts.nextToken()));
 					vertices.add(Float.parseFloat(parts.nextToken()));
@@ -162,20 +162,20 @@ public class LoaderOBJ extends AMeshLoader {
 					int[] quadvids = new int[4];
 					int[] quadtids = new int[4];
 					int[] quadnids = new int[4];
-					
+
                     boolean emptyVt = line.indexOf("//") > -1;
                     if(emptyVt) line = line.replace("//", "/");
-                    
+
                     parts = new StringTokenizer(line);
-                    
+
                     parts.nextToken();
                     StringTokenizer subParts = new StringTokenizer(parts.nextToken(), "/");
                     int partLength = subParts.countTokens();
-                    
+
                     boolean hasuv = partLength >= 2 && !emptyVt;
                     boolean hasn = partLength == 3 || (partLength == 2 && emptyVt);
                     int idx;
-                    
+
                     for (int i = 1; i < numTokens; i++) {
                     	if(i > 1)
                     		subParts = new StringTokenizer(parts.nextToken(), "/");
@@ -185,7 +185,7 @@ public class LoaderOBJ extends AMeshLoader {
                     	else idx -= 1;
                         if(!isQuad)
                         	currObjIndexData.vertexIndices.add(idx);
-                        else 
+                        else
                         	quadvids[i-1] = idx;
                         if (hasuv)
                         {
@@ -194,7 +194,7 @@ public class LoaderOBJ extends AMeshLoader {
                         	else idx -= 1;
                         	if(!isQuad)
                         		currObjIndexData.texCoordIndices.add(idx);
-                        	else 
+                        	else
                             	quadtids[i-1] = idx;
                         }
                         if (hasn)
@@ -204,14 +204,14 @@ public class LoaderOBJ extends AMeshLoader {
                         	else idx -= 1;
                         	if(!isQuad)
                         		currObjIndexData.normalIndices.add(idx);
-                        	else 
+                        	else
                             	quadnids[i-1] = idx;
                         }
                     }
-                    
+
                     if(isQuad) {
                     	int[] indices = new int[] { 0, 1, 2, 0, 2, 3 };
-                    	
+
                     	for(int i=0; i<6; ++i) {
                     		int index = indices[i];
                         	currObjIndexData.vertexIndices.add(quadvids[index]);
@@ -284,29 +284,29 @@ public class LoaderOBJ extends AMeshLoader {
 				}
 			}
 			buffer.close();
-			
+
 			if(currentObjHasFaces) {
 				RajLog.i("Parsing object: " + currObjIndexData.targetObj.getName());
 				objIndices.add(currObjIndexData);
 			}
-			
-			
+
+
 		} catch (IOException e) {
 			throw new ParsingException(e);
 		}
 
 		int numObjects = objIndices.size();
-		
+
 		for(int j=0; j<numObjects; ++j) {
 			ObjIndexData oid = objIndices.get(j);
-			
+
 			int i;
 			float[] aVertices 	= new float[oid.vertexIndices.size() * 3];
 			float[] aTexCoords 	= new float[oid.texCoordIndices.size() * 2];
 			float[] aNormals 	= new float[oid.normalIndices.size() * 3];
 			float[] aColors		= new float[oid.colorIndices.size() * 4];
 			int[] aIndices 		= new int[oid.vertexIndices.size()];
-			
+
 			for(i=0; i<oid.vertexIndices.size(); ++i) {
 				int faceIndex = oid.vertexIndices.get(i) * 3;
 				int vertexIndex = i * 3;
@@ -346,7 +346,7 @@ public class LoaderOBJ extends AMeshLoader {
 				aNormals[ni+1] = normals.get(normalIndex + 1);
 				aNormals[ni+2] = normals.get(normalIndex + 2);
 			}
-			
+
 			oid.targetObj.setData(aVertices, aNormals, aTexCoords, aColors, aIndices, false);
 			try {
 				matLib.setMaterial(oid.targetObj, oid.materialName);
@@ -360,13 +360,13 @@ public class LoaderOBJ extends AMeshLoader {
 			if(group.getParent()==null)
 				addChildSetParent(mRootObject, group);
 		}
-		
+
 		if(mRootObject.getNumChildren() == 1 && !mRootObject.getChildAt(0).isContainer())
 			mRootObject = mRootObject.getChildAt(0);
 
 		for(int i=0; i<mRootObject.getNumChildren(); i++)
 			mergeGroupsAsObjects(mRootObject.getChildAt(i));
-		
+
 		return this;
 	}
 
@@ -444,14 +444,14 @@ public class LoaderOBJ extends AMeshLoader {
 
 	protected class ObjIndexData {
 		public Object3D targetObj;
-		
+
 		public ArrayList<Integer> vertexIndices;
 		public ArrayList<Integer> texCoordIndices;
 		public ArrayList<Integer> colorIndices;
 		public ArrayList<Integer> normalIndices;
-		
+
 		public String materialName;
-		
+
 		public ObjIndexData(Object3D targetObj) {
 			this.targetObj = targetObj;
 			vertexIndices = new ArrayList<Integer>();
@@ -460,7 +460,7 @@ public class LoaderOBJ extends AMeshLoader {
 			normalIndices = new ArrayList<Integer>();
 		}
 	}
-	
+
 	protected class MaterialLib {
 		private final String MATERIAL_NAME = "newmtl";
 		private final String AMBIENT_COLOR = "Ka";
@@ -476,14 +476,14 @@ public class LoaderOBJ extends AMeshLoader {
 		private final String ALPHA_TEXTURE_1 = "map_d";
 		private final String ALPHA_TEXTURE_2 = "map_Tr";
 		private final String BUMP_TEXTURE = "map_Bump";
-		
+
 		private Stack<MaterialDef> mMaterials;
 		private String mResourcePackage;
-		
+
 		public MaterialLib() {
 			mMaterials = new Stack<LoaderOBJ.MaterialDef>();
 		}
-		
+
 		public void parse(String materialLibPath, String resourceType, String resourcePackage) {
 			BufferedReader buffer = null;
 			if(mFile == null) {
@@ -506,10 +506,10 @@ public class LoaderOBJ extends AMeshLoader {
 					return;
 				}
 			}
-			
+
 			String line;
 			MaterialDef matDef = null;
-			
+
 			try {
 				while((line = buffer.readLine()) != null) {
 					// Skip comments and empty lines.
@@ -517,13 +517,13 @@ public class LoaderOBJ extends AMeshLoader {
 						continue;
 					StringTokenizer parts = new StringTokenizer(line, " ");
 					int numTokens = parts.countTokens();
-					
+
 					if(numTokens == 0)
 						continue;
 					String type = parts.nextToken();
 					type = type.replaceAll("\\t", "");
 					type = type.replaceAll(" ", "");
-					
+
 					if(type.equals(MATERIAL_NAME)) {
 						if(matDef != null) mMaterials.add(matDef);
 						matDef = new MaterialDef();
@@ -559,15 +559,15 @@ public class LoaderOBJ extends AMeshLoader {
 				e.printStackTrace();
 			}
 		}
-		
+
 		public void setMaterial(Object3D object, String materialName) throws TextureException {
 			if(materialName == null) {
 				RajLog.i(object.getName() + " has no material definition." );
 				return;
 			}
-			
+
 			MaterialDef matDef = null;
-			
+
 			for(int i=0; i<mMaterials.size(); ++i) {
 				if(mMaterials.get(i).name.equals(materialName))
 				{
@@ -596,7 +596,7 @@ public class LoaderOBJ extends AMeshLoader {
 				method.setSpecularColor(matDef.specularColor);
 				method.setShininess(matDef.specularCoefficient);
 			}
-			
+
 			if(hasTexture) {
 				if(mFile == null) {
 					final String fileNameWithoutExtension = getFileNameWithoutExtension(matDef.diffuseTexture);
@@ -649,7 +649,7 @@ public class LoaderOBJ extends AMeshLoader {
 			if(matDef!=null && matDef.alpha<1f)
 				object.setTransparent(true);
 		}
-		
+
 		private int getColorFromParts(StringTokenizer parts) {
 			int r = (int)(Float.parseFloat(parts.nextToken()) * 255f);
 			int g = (int)(Float.parseFloat(parts.nextToken()) * 255f);

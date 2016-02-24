@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -21,7 +21,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.materials.textures.ATexture.FilterType;
 import org.rajawali3d.materials.textures.ATexture.WrapType;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
 
 import java.nio.ByteBuffer;
@@ -31,23 +31,23 @@ import java.util.ArrayList;
 public class ObjectColorPicker implements IObjectPicker {
 
 	private final ArrayList<Object3D> mObjectLookup = new ArrayList<>();
-	private final RajawaliRenderer mRenderer;
+	private final Renderer mRenderer;
 
 	private int mColorIndex = 0;
 	private RenderTarget mRenderTarget;
 	private Material mPickerMaterial;
 	private OnObjectPickedListener mObjectPickedListener;
 
-	public ObjectColorPicker(RajawaliRenderer renderer) {
+	public ObjectColorPicker(Renderer renderer) {
 		mRenderer = renderer;
 		mRenderer.initializeColorPicker(this);
 	}
 
 	public void initialize() {
 		final int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
-		
-		mRenderTarget = new RenderTarget("colorPickerTarget", size, size, 
-				0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, 
+
+		mRenderTarget = new RenderTarget("colorPickerTarget", size, size,
+				0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
 				FilterType.LINEAR, WrapType.CLAMP);
 		mRenderer.addRenderTarget(mRenderTarget);
 
@@ -76,7 +76,7 @@ public class ObjectColorPicker implements IObjectPicker {
 	public void getObjectAt(float x, float y) {
 		mRenderer.getCurrentScene().requestColorPickingTexture(new ColorPickerInfo(x, y, this));
 	}
-	
+
 	public RenderTarget getRenderTarget() {
 		return mRenderTarget;
 	}
