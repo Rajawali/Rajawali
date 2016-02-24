@@ -3,19 +3,24 @@
 ## About
 [![AndroidLibs](https://img.shields.io/badge/AndroidLibs-Rajawali-brightgreen.svg?style=flat)](https://www.android-libs.com/lib/rajawali?utm_source=github-badge&utm_medium=github-badge&utm_campaign=github-badge)
 [![License](https://img.shields.io/badge/license-Apache%202.0%20License-blue.svg)](https://github.com/Rajawali/Rajawali/blob/master/LICENSE.txt)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.rajawali3d/rajawali/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.rajawali3d/rajawali/badge.svg
 
 ### Build Status
 **Master Branch Status**  [![master](https://travis-ci.org/Rajawali/Rajawali.svg?branch=master)](https://travis-ci.org/Rajawali/Rajawali)
 
 **Development Branch Status**  [![development](https://travis-ci.org/Rajawali/Rajawali.svg?branch=development)](https://travis-ci.org/Rajawali/Rajawali)
 
+### News
+
+Rajawali recently made its first major release `1.0.325`. We had already deprecated support for the `v0.9` tag, but with this release we will not make any attempts at supporting usage of `v0.9`. Efforts will be made to bring all documentation up to date and support requests for the `1.0.x` builds will be handled on a best effort basis. Issues against `v0.9` will be closed immediately. Please do not take it personally, its simply a resource issue.
+
+### General
+
 Rajawali is a 3D engine for Android based on OpenGL ES 2.0/3.0. It can be used for normal apps as well as live wallpapers.
 
 Want to keep the developers going? Buy them a beer! (http://www.pledgie.com/campaigns/21807)
 
 [Join the Rajawali Community](https://plus.google.com/u/0/communities/116529974266844528013) on [![Rajawali Community on Google Plus](http://sinceresocial.com/wp-content/uploads/2012/05/google+-20px.png)](https://plus.google.com/u/0/communities/116529974266844528013) to stay up-to-date on the latest news. 
-
-_NOTE: Rajawali's release process is changing and the master branch should be considered unstable. Use the [`v0.9`](https://github.com/MasDennis/Rajawali/tree/v0.9) tag if you need a stable version. We are working to improve documentation on this subject._
 
 The [RajawaliExamples](https://github.com/MasDennis/RajawaliExamples) project is an ever growing toolkit for developing 3D content. [Check it out!](https://github.com/MasDennis/RajawaliExamples)
 
@@ -27,15 +32,15 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 
 Using Rajawali is as simple as adding a single line to your gradle dependencies:
 
-`compile 'org.rajawali3d:rajawali:x.x.x@aar` where x.x.x is the version number (and the last number is the build number). If you wish to use the `master` branch snapshot, append `-SNAPSHOT`. For example, to use release `1.0.48`, you would use:
+`compile 'org.rajawali3d:rajawali:x.x.x@aar` where x.x.x is the version number (and the last number is the build number). If you wish to use the `master` branch snapshot, append `-SNAPSHOT`. For example, to use release `1.0.325`, you would use:
 
-`compile 'org.rajawali3d:rajawali:1.0.48@aar`
+`compile 'org.rajawali3d:rajawali:1.0.325@aar`
 
 To use the `master` branch build 48 snapshot `1.0.48-SNAPSHOT`, you would use:
 
 `compile 'org.rajawali3d:rajawali:1.0.48-SNAPSHOT@aar`
 
-All commits to `master` branch or deployed as snapshots. All tags will be deployed as releases. To see the latest build number, see the [build history](https://travis-ci.org/Rajawali/Rajawali/builds) and be sure you choose a `master` branch build.
+All commits to `master` and `development` branch are deployed as snapshots. All tags will be deployed as releases. To see the latest build number, see the [build history](https://travis-ci.org/Rajawali/Rajawali/builds) and be sure you choose a `master` branch build.
 
 For the above to work you will need to make sure your repository list includes:
 
