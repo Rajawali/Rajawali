@@ -16,8 +16,8 @@ script:
 - echo "Travis branch is $TRAVIS_BRANCH"
 - echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
 - echo "Travis tag $TRAVIS_TAG"
-- echo -e "signing.keyId=${signing_keyId}" >> "gradle.properties"
-- echo -e "signing.password=${signing_password}" >> "gradle.properties"
+- echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
+- echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
 - gradle clean assemble uploadArchives --continue
 install:
