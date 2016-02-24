@@ -10,7 +10,7 @@ import org.rajawali3d.renderer.ISurfaceRenderer;
  *
  * @author Jared Woolston (jwoolston@idealcorp.com)
  */
-public interface IRajawaliDisplay {
+public interface IDisplay {
 
     /**
      * Creates the {@link ISurfaceRenderer} to use in this display. Optionally null can be returned by displays

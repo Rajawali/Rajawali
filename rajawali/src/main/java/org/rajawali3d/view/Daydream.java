@@ -27,7 +27,7 @@ import org.rajawali3d.util.Capabilities;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-public abstract class Daydream extends DreamService implements IRajawaliDisplay {
+public abstract class Daydream extends DreamService implements IDisplay {
 
 	protected SurfaceView mSurfaceView;
 	protected FrameLayout mLayout;
