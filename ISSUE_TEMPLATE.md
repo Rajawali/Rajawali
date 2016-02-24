@@ -6,6 +6,6 @@
 
 #### Summary
 
-#### Steps to Reproduce
+#### Steps to Reproduce (Sample code is helpful)
 
 #### Trace or Log Output
