@@ -12,6 +12,10 @@
 
 ### News
 
+**2/23/2016**
+Following the `1.0.325` release, I have also created a `1.1.x` release. This release is functionally identical though it represents an API change to deal with the class names being smurf like. Additionally, some class locations were altered. For users of the `master` branch prior to release, support will continue, though all bugfixes will occur in `1.1.x` releases unless we receive PRs for hotfixes.
+
+**2/23/2016**
 Rajawali recently made its first major release `1.0.325`. We had already deprecated support for the `v0.9` tag, but with this release we will not make any attempts at supporting usage of `v0.9`. Efforts will be made to bring all documentation up to date and support requests for the `1.0.x` builds will be handled on a best effort basis. Issues against `v0.9` will be closed immediately. Please do not take it personally, its simply a resource issue.
 
 ### General

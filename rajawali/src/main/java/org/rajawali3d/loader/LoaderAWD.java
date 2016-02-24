@@ -38,7 +38,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.RajawaliScene;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
@@ -112,7 +112,7 @@ public class LoaderAWD extends AMeshLoader {
     protected boolean awdHeaderAccuracyProps;
     protected boolean mAlwaysUseContainer;
 
-    public LoaderAWD(RajawaliRenderer renderer, File file) {
+    public LoaderAWD(Renderer renderer, File file) {
         super(renderer, file);
         init();
     }
@@ -122,7 +122,7 @@ public class LoaderAWD extends AMeshLoader {
         init();
     }
 
-    public LoaderAWD(RajawaliRenderer renderer, String fileOnSDCard) {
+    public LoaderAWD(Renderer renderer, String fileOnSDCard) {
         super(renderer, fileOnSDCard);
         init();
     }

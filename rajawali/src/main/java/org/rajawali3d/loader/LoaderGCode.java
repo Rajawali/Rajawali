@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Free Beachler, Longevity Software d.b.a. Terawatt Industries
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.loader.LoaderSTL.StlParseException;
 import org.rajawali3d.primitives.Line3D;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.RajLog;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
@@ -35,7 +35,7 @@ import android.util.Log;
 
 /**
  * @author fbeachler
- * 
+ *
  */
 public class LoaderGCode extends AMeshLoader {
 
@@ -159,9 +159,9 @@ public class LoaderGCode extends AMeshLoader {
 
 	/**
 	 * Usage of this class has proven too memory intensive.
-	 * 
+	 *
 	 * @author fbeachler
-	 * 
+	 *
 	 */
 	public static class GCodeLine {
 
@@ -189,14 +189,14 @@ public class LoaderGCode extends AMeshLoader {
 
 		/**
 		 * Parses a gcode motion line and hydrates x, y, z, e, f values.
-		 * 
+		 *
 		 * <pre>
-		 * 	Example: 
-		 * 		G1 Z1.0 F3000 
-		 * 		G1 X99.9948 Y80.0611 Z15.0 F1500.0 E981.64869 
+		 * 	Example:
+		 * 		G1 Z1.0 F3000
+		 * 		G1 X99.9948 Y80.0611 Z15.0 F1500.0 E981.64869
 		 * 		G1 E104.25841 F1800.0
 		 * </pre>
-		 * 
+		 *
 		 * @param in
 		 */
 		public GCodeLine(final String in) {
@@ -460,12 +460,12 @@ public class LoaderGCode extends AMeshLoader {
 		init();
 	}
 
-	public LoaderGCode(RajawaliRenderer renderer, File file) {
+	public LoaderGCode(Renderer renderer, File file) {
 		super(renderer, file);
 		init();
 	}
 
-	public LoaderGCode(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderGCode(Renderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 		init();
 	}
@@ -511,7 +511,7 @@ public class LoaderGCode extends AMeshLoader {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see rajawali.parser.AMeshLoader#parse()
 	 */
 	@Override
@@ -559,7 +559,7 @@ public class LoaderGCode extends AMeshLoader {
 
 	/**
 	 * Open a BufferedReader for the current resource or file with a buffer size of 8192 bytes.
-	 * 
+	 *
 	 * @return
 	 * @throws FileNotFoundException
 	 */
@@ -750,7 +750,7 @@ public class LoaderGCode extends AMeshLoader {
 
 	/**
 	 * Determine the content generator (i.e. Slic3r, Skeinforge) for the given file.
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 * @throws IOException
@@ -772,7 +772,7 @@ public class LoaderGCode extends AMeshLoader {
 
 	/**
 	 * Determine the content generator (i.e. Slic3r, Skeinforge) for the given resource.
-	 * 
+	 *
 	 * @param res
 	 * @param resId
 	 * @return
@@ -788,7 +788,7 @@ public class LoaderGCode extends AMeshLoader {
 
 	/**
 	 * Determine the content generator (i.e. Slic3r, Skeinforge) for the given BufferedReader.
-	 * 
+	 *
 	 * @param buffer
 	 * @return
 	 * @throws IOException

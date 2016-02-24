@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 
 import org.rajawali3d.BufferInfo;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
@@ -40,8 +41,6 @@ import org.rajawali3d.materials.textures.CubeMapTexture;
 import org.rajawali3d.materials.textures.SphereMapTexture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.renderer.AFrameTask;
-import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.scene.RajawaliScene;
 import org.rajawali3d.util.RajLog;
 
@@ -187,7 +186,7 @@ public class Material {
      * Sets the time value that is used in the shaders to create animated effects.
      * <p/>
      * <pre><code>
-     * public class MyRenderer extends RajawaliRenderer
+     * public class MyRenderer extends Renderer
      * {
      * 		private double mStartTime;
      * 		private Material mMyMaterial;
@@ -220,7 +219,7 @@ public class Material {
 
     /**
      * This texture's unique owner identity String. This is usually the fully qualified name of the
-     * {@link RajawaliRenderer} instance.
+     * {@link Renderer} instance.
      */
     protected String mOwnerIdentity;
     /**
@@ -473,7 +472,7 @@ public class Material {
         if (mTextureList != null)
             mTextureList.clear();
 
-        if (RajawaliRenderer.hasGLContext()) {
+        if (Renderer.hasGLContext()) {
             GLES20.glDeleteShader(mVShaderHandle);
             GLES20.glDeleteShader(mFShaderHandle);
             GLES20.glDeleteProgram(mProgramHandle);
@@ -1100,7 +1099,7 @@ public class Material {
      * Sets the time value that is used in the shaders to create animated effects.
      * <p/>
      * <pre><code>
-     * public class MyRenderer extends RajawaliRenderer
+     * public class MyRenderer extends Renderer
      * {
      * 		private double mStartTime;
      * 		private Material mMyMaterial;
@@ -1128,7 +1127,7 @@ public class Material {
      * Sets the time value that is used in the shaders to create animated effects.
      * <p/>
      * <pre><code>
-     * public class MyRenderer extends RajawaliRenderer
+     * public class MyRenderer extends Renderer
      * {
      * 		private double mStartTime;
      * 		private Material mMyMaterial;

@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -16,7 +16,8 @@ import java.io.File;
 
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
+
 import android.content.res.Resources;
 
 public abstract class AMeshLoader extends ALoader implements IMeshLoader {
@@ -35,7 +36,7 @@ public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 		mRootObject = new Object3D();
 	}
 
-	public AMeshLoader(RajawaliRenderer renderer, String fileOnSDCard) {
+	public AMeshLoader(Renderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 		mRootObject = new Object3D();
 	}
@@ -46,7 +47,7 @@ public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 		mRootObject = new Object3D();
 	}
 
-	public AMeshLoader(RajawaliRenderer renderer, File file) {
+	public AMeshLoader(Renderer renderer, File file) {
 		super(renderer, file);
 		mRootObject = new Object3D();
 	}

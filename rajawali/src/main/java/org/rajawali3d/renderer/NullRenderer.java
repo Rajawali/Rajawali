@@ -7,11 +7,11 @@ import android.view.MotionEvent;
 import org.rajawali3d.util.RajLog;
 
 /**
- * Minimal {@link RajawaliRenderer} implementation which will cause no rendering to occur.
+ * Minimal {@link Renderer} implementation which will cause no rendering to occur.
  *
  * @author Ian Thomas (toxicbakery@gmail.com)
  */
-public final class NullRenderer extends RajawaliRenderer {
+public final class NullRenderer extends Renderer {
 
     public NullRenderer(Context context) {
         super(context);

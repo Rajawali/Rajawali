@@ -1,4 +1,4 @@
-package org.rajawali3d.surface;
+package org.rajawali3d.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -10,9 +10,9 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.TextureView;
 import android.view.View;
 
+import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.R;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
@@ -36,8 +36,8 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class RajawaliTextureView extends TextureView implements IRajawaliSurface {
-    private final static String TAG = "RajawaliTextureView";
+public class TextureView extends android.view.TextureView implements ISurface {
+    private final static String TAG = "TextureView";
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;
     private final static boolean LOG_PAUSE_RESUME = false;
@@ -48,7 +48,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     private static final GLThreadManager sGLThreadManager = new GLThreadManager();
 
-    private final WeakReference<RajawaliTextureView> mThisWeakRef = new WeakReference<>(this);
+    private final WeakReference<TextureView> mThisWeakRef = new WeakReference<>(this);
 
     protected double mFrameRate = 60.0;
     protected int mRenderMode = RENDERMODE_WHEN_DIRTY;
@@ -72,47 +72,47 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     protected RendererDelegate mRendererDelegate;
 
-    public RajawaliTextureView(Context context) {
+    public TextureView(Context context) {
         super(context);
     }
 
-    public RajawaliTextureView(Context context, AttributeSet attrs) {
+    public TextureView(Context context, AttributeSet attrs) {
         super(context, attrs);
         applyAttributes(context, attrs);
     }
 
-    public RajawaliTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         applyAttributes(context, attrs);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public RajawaliTextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         applyAttributes(context, attrs);
     }
 
     private void applyAttributes(Context context, AttributeSet attrs) {
         if (attrs == null) return;
-        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RajawaliTextureView);
+        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.TextureView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
-            if (attr == R.styleable.RajawaliTextureView_frameRate) {
+            if (attr == R.styleable.TextureView_frameRate) {
                 mFrameRate = array.getFloat(attr, 60.0f);
-            } else if (attr == R.styleable.RajawaliTextureView_renderMode) {
+            } else if (attr == R.styleable.TextureView_renderMode) {
                 mRenderMode = array.getInt(attr, RENDERMODE_WHEN_DIRTY);
-            } else if (attr == R.styleable.RajawaliTextureView_antiAliasingType) {
+            } else if (attr == R.styleable.TextureView_antiAliasingType) {
                 mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(attr, ANTI_ALIASING_CONFIG.NONE.ordinal()));
-            } else if (attr == R.styleable.RajawaliTextureView_bitsRed) {
+            } else if (attr == R.styleable.TextureView_bitsRed) {
                 mBitsRed = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.RajawaliTextureView_bitsGreen) {
+            } else if (attr == R.styleable.TextureView_bitsGreen) {
                 mBitsGreen = array.getInteger(attr, 6);
-            } else if (attr == R.styleable.RajawaliTextureView_bitsBlue) {
+            } else if (attr == R.styleable.TextureView_bitsBlue) {
                 mBitsBlue = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.RajawaliTextureView_bitsAlpha) {
+            } else if (attr == R.styleable.TextureView_bitsAlpha) {
                 mBitsAlpha = array.getInteger(attr, 0);
-            } else if (attr == R.styleable.RajawaliTextureView_bitsDepth) {
+            } else if (attr == R.styleable.TextureView_bitsDepth) {
                 mBitsDepth = array.getInteger(attr, 16);
             }
         }
@@ -139,7 +139,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     /**
      * This method is part of the SurfaceTexture.Callback interface, and is
-     * not normally called or subclassed by clients of RajawaliTextureView.
+     * not normally called or subclassed by clients of TextureView.
      */
     private void surfaceCreated(int width, int height) {
         mGLThread.surfaceCreated(width, height);
@@ -147,7 +147,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     /**
      * This method is part of the SurfaceTexture.Callback interface, and is
-     * not normally called or subclassed by clients of RajawaliTextureView.
+     * not normally called or subclassed by clients of TextureView.
      */
     private void surfaceDestroyed() {
         // Surface will be destroyed when we return
@@ -156,7 +156,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     /**
      * This method is part of the SurfaceTexture.Callback interface, and is
-     * not normally called or subclassed by clients of RajawaliTextureView.
+     * not normally called or subclassed by clients of TextureView.
      */
     private void surfaceChanged(int w, int h) {
         mGLThread.onWindowResize(w, h);
@@ -174,7 +174,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     /**
      * This method is used as part of the View class and is not normally
-     * called or subclassed by clients of RajawaliTextureView.
+     * called or subclassed by clients of TextureView.
      */
     @Override
     protected void onAttachedToWindow() {
@@ -260,7 +260,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     }
 
     @Override
-    public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) throws IllegalStateException {
+    public void setSurfaceRenderer(ISurfaceRenderer renderer) throws IllegalStateException {
         if (mRendererDelegate != null) throw new IllegalStateException("A renderer has already been set for this view.");
         initialize();
 
@@ -276,7 +276,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
             mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
         }
         // Create our delegate
-        final RendererDelegate delegate = new RajawaliTextureView.RendererDelegate(renderer, this);
+        final RendererDelegate delegate = new TextureView.RendererDelegate(renderer, this);
         // Create the GL thread
         mGLThread = new GLThread(mThisWeakRef);
         mGLThread.start();
@@ -293,17 +293,17 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     }
 
     /**
-     * Control whether the EGL context is preserved when the RajawaliTextureView is paused and
+     * Control whether the EGL context is preserved when the TextureView is paused and
      * resumed.
      * <p/>
-     * If set to true, then the EGL context may be preserved when the RajawaliTextureView is paused.
+     * If set to true, then the EGL context may be preserved when the TextureView is paused.
      * Whether the EGL context is actually preserved or not depends upon whether the
      * Android device that the program is running on can support an arbitrary number of EGL
      * contexts or not. Devices that can only support a limited number of EGL contexts must
      * release the  EGL context in order to allow multiple applications to share the GPU.
      * <p/>
-     * If set to false, the EGL context will be released when the RajawaliTextureView is paused,
-     * and recreated when the RajawaliTextureView is resumed.
+     * If set to false, the EGL context will be released when the TextureView is paused,
+     * and recreated when the TextureView is resumed.
      * <p/>
      * <p/>
      * The default is false.
@@ -324,7 +324,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     /**
      * Install a custom EGLContextFactory.
      * <p>If this method is
-     * called, it must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}
+     * called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
      * is called.
      * <p/>
      * If this method is not called, then by default
@@ -339,7 +339,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     /**
      * Install a custom EGLWindowSurfaceFactory.
      * <p>If this method is
-     * called, it must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}
+     * called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
      * is called.
      * <p/>
      * If this method is not called, then by default
@@ -353,7 +353,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
     /**
      * Install a custom EGLConfigChooser.
      * <p>If this method is
-     * called, it must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}
+     * called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
      * is called.
      * <p/>
      * If no setEGLConfigChooser method is called, then by default the
@@ -373,7 +373,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * with at least the specified depthSize and stencilSize,
      * and exactly the specified redSize, greenSize, blueSize and alphaSize.
      * <p>If this method is
-     * called, it must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}
+     * called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
      * is called.
      * <p/>
      * If no setEGLConfigChooser method is called, then by default the
@@ -401,7 +401,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * <p>Note: Activities which require OpenGL ES 2.0 should indicate this by
      * setting @lt;uses-feature android:glEsVersion="0x00020000" /> in the activity's
      * AndroidManifest.xml file.
-     * <p>If this method is called, it must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}
+     * <p>If this method is called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
      * is called.
      * <p>This method only affects the behavior of the default EGLContexFactory and the
      * default EGLConfigChooser. If
@@ -428,7 +428,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * Using RENDERMODE_WHEN_DIRTY can improve battery life and overall system performance
      * by allowing the GPU and CPU to idle when the view does not need to be updated.
      * <p/>
-     * This method can only be called after {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}
+     * This method can only be called after {@link #setSurfaceRenderer(ISurfaceRenderer)}
      *
      * @param renderMode one of the RENDERMODE_X constants
      *
@@ -487,13 +487,13 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
     private static class RendererDelegate implements SurfaceTextureListener {
 
-        final RajawaliTextureView mRajawaliTextureView;
-        final IRajawaliSurfaceRenderer mRenderer;
+        final TextureView      mRajawaliTextureView;
+        final ISurfaceRenderer mRenderer;
 
-        public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliTextureView textureView) {
+        public RendererDelegate(ISurfaceRenderer renderer, TextureView textureView) {
             mRenderer = renderer;
             mRajawaliTextureView = textureView;
-            mRenderer.setFrameRate(mRajawaliTextureView.mRenderMode == IRajawaliSurface.RENDERMODE_WHEN_DIRTY ?
+            mRenderer.setFrameRate(mRajawaliTextureView.mRenderMode == ISurface.RENDERMODE_WHEN_DIRTY ?
                 mRajawaliTextureView.mFrameRate : 0);
             mRenderer.setAntiAliasingMode(mRajawaliTextureView.mAntiAliasingConfig);
             mRenderer.setRenderSurface(mRajawaliTextureView);
@@ -691,14 +691,14 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
      * An EGL helper class.
      */
     private static class EglHelper {
-        private WeakReference<RajawaliTextureView> mRajawaliTextureViewWeakRef;
+        private WeakReference<TextureView> mRajawaliTextureViewWeakRef;
         EGL10 mEgl;
         EGLDisplay mEglDisplay;
         EGLSurface mEglSurface;
         EGLConfig mEglConfig;
         EGLContext mEglContext;
 
-        public EglHelper(WeakReference<RajawaliTextureView> glSurfaceViewWeakRef) {
+        public EglHelper(WeakReference<TextureView> glSurfaceViewWeakRef) {
             mRajawaliTextureViewWeakRef = glSurfaceViewWeakRef;
         }
 
@@ -730,7 +730,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
             if (!mEgl.eglInitialize(mEglDisplay, version)) {
                 throw new RuntimeException("eglInitialize failed");
             }
-            RajawaliTextureView view = mRajawaliTextureViewWeakRef.get();
+            TextureView view = mRajawaliTextureViewWeakRef.get();
             if (view == null) {
                 mEglConfig = null;
                 mEglContext = null;
@@ -786,7 +786,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
             /*
              * Create an EGL surface we can render into.
              */
-            RajawaliTextureView view = mRajawaliTextureViewWeakRef.get();
+            TextureView view = mRajawaliTextureViewWeakRef.get();
             if (view != null) {
                 mEglSurface = view.mEGLWindowSurfaceFactory.createWindowSurface(mEgl,
                     mEglDisplay, mEglConfig, view.getSurfaceTexture());
@@ -851,7 +851,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                 mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_CONTEXT);
-                RajawaliTextureView view = mRajawaliTextureViewWeakRef.get();
+                TextureView view = mRajawaliTextureViewWeakRef.get();
                 if (view != null) {
                     view.mEGLWindowSurfaceFactory.destroySurface(mEgl, mEglDisplay, mEglSurface);
                 }
@@ -864,7 +864,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                 Log.w("EglHelper", "finish() tid=" + Thread.currentThread().getId());
             }
             if (mEglContext != null) {
-                RajawaliTextureView view = mRajawaliTextureViewWeakRef.get();
+                TextureView view = mRajawaliTextureViewWeakRef.get();
                 if (view != null) {
                     view.mEGLContextFactory.destroyContext(mEgl, mEglDisplay, mEglContext);
                 }
@@ -972,12 +972,12 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
         /**
          * Set once at thread construction time, nulled out when the parent view is garbage
-         * called. This weak reference allows the RajawaliTextureView to be garbage collected while
+         * called. This weak reference allows the TextureView to be garbage collected while
          * the RajawaliGLThread is still alive.
          */
-        private WeakReference<RajawaliTextureView> mRajawaliTextureViewWeakRef;
+        private WeakReference<TextureView> mRajawaliTextureViewWeakRef;
 
-        GLThread(WeakReference<RajawaliTextureView> glSurfaceViewWeakRef) {
+        GLThread(WeakReference<TextureView> glSurfaceViewWeakRef) {
             super();
             mWidth = 0;
             mHeight = 0;
@@ -1094,7 +1094,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
 
                             // When pausing, optionally release the EGL Context:
                             if (pausing && mHaveEglContext) {
-                                RajawaliTextureView view = mRajawaliTextureViewWeakRef.get();
+                                TextureView view = mRajawaliTextureViewWeakRef.get();
                                 boolean preserveEglContextOnPause = (view != null) && view.mPreserveEGLContextOnPause;
                                 if (!preserveEglContextOnPause || sGLThreadManager.shouldReleaseEGLContextWhenPausing()) {
                                     stopEglContextLocked();
@@ -1250,7 +1250,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                         if (LOG_RENDERER) {
                             Log.w("RajawaliGLThread", "onSurfaceCreated");
                         }
-                        RajawaliTextureView view = mRajawaliTextureViewWeakRef.get();
+                        TextureView view = mRajawaliTextureViewWeakRef.get();
                         if (view != null) {
                             view.mRendererDelegate.mRenderer.onRenderSurfaceCreated(mEglHelper.mEglConfig, gl, -1, -1);
                         }
@@ -1261,7 +1261,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                         if (LOG_RENDERER) {
                             Log.w("RajawaliGLThread", "onSurfaceChanged(" + w + ", " + h + ")");
                         }
-                        RajawaliTextureView view = mRajawaliTextureViewWeakRef.get();
+                        TextureView view = mRajawaliTextureViewWeakRef.get();
                         if (view != null) {
                             view.mRendererDelegate.mRenderer.onRenderSurfaceSizeChanged(gl, w, h);
                         }
@@ -1272,7 +1272,7 @@ public class RajawaliTextureView extends TextureView implements IRajawaliSurface
                         Log.w("RajawaliGLThread", "onDrawFrame tid=" + getId());
                     }
                     {
-                        RajawaliTextureView view = mRajawaliTextureViewWeakRef.get();
+                        TextureView view = mRajawaliTextureViewWeakRef.get();
                         if (view != null) {
                             view.mRendererDelegate.mRenderer.onRenderFrame(gl);
                         }

@@ -1,4 +1,4 @@
-package org.rajawali3d.util.debugvisualizer;
+package org.rajawali3d.debug;
 
 import android.graphics.Color;
 import android.opengl.GLES20;

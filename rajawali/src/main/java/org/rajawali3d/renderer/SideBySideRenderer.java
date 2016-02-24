@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -33,13 +33,13 @@ import org.rajawali3d.scene.RajawaliScene;
  * </p>
  * <p>
  * You can set up your scene like a regular Rajawali project. The only difference
- * is that you should call <code>super.initScene()</code> at the end of the 
- * <code>initScene()</code> method. 
+ * is that you should call <code>super.initScene()</code> at the end of the
+ * <code>initScene()</code> method.
  * </p>
  * <p>
  * Your application's activity should implement the {@link SensorEventListener}
  * interface. The sensor to use is {@link Sensor#TYPE_ROTATION_VECTOR}.
- * In {@link SensorEventListener#onSensorChanged(android.hardware.SensorEvent)} the 
+ * In {@link SensorEventListener#onSensorChanged(android.hardware.SensorEvent)} the
  * {@link this#setSensorOrientation(float[])} method should be called. Here's an example
  * of how to do this.
  * </p>
@@ -51,9 +51,9 @@ import org.rajawali3d.scene.RajawaliScene;
  * 	mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
  * 	mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
  * }
- * 
+ *
  * // ...
- * 
+ *
  * public void onSensorChanged(SensorEvent event) {
  * 	if(event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR_
  * 	{
@@ -61,29 +61,29 @@ import org.rajawali3d.scene.RajawaliScene;
  * 		mRender.setSensorOrientation(mQuaternion);
  * 	}
  * }
- * 
+ *
  * // ...
- * 
+ *
  * protected void onResume() {
  * 	super.onResume();
  * 	mSensorManager.registerListener(this, mSensor, 10000);
  * }
- * 
+ *
  * // ...
- * 
+ *
  * protected void onPause() {
  * 	super.onPause();
  * 	mSensorManager.unregisterListener(this);
- * } 
+ * }
  * </code></pre>
- * 
- * 
+ *
+ *
  * @author dennis.ippel
  *
  */
-public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
+public abstract class SideBySideRenderer extends Renderer {
 	/**
-	 * Stores the camera's orientation. This is set from the 
+	 * Stores the camera's orientation. This is set from the
 	 * activity by the rotation vector sensor.
 	 */
 	private Quaternion mCameraOrientation = new Quaternion();
@@ -114,23 +114,23 @@ public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
 	 */
 	private int mViewportWidthHalf;
 	/**
-	 * The texture that will be used to render the scene into from the 
+	 * The texture that will be used to render the scene into from the
 	 * perspective of the left eye.
 	 */
 	private RenderTarget mLeftRenderTarget;
 	/**
-	 * The texture that will be used to render the scene into from the 
+	 * The texture that will be used to render the scene into from the
 	 * perspective of the right eye.
 	 */
 	private RenderTarget mRightRenderTarget;
 	/**
-	 * Used to store a reference to the user's scene. 
+	 * Used to store a reference to the user's scene.
 	 */
 	private RajawaliScene mUserScene;
 	/**
 	 * The side by side scene is what will finally be shown onto the screen.
 	 * This scene contains two quads. The left quad is the scene as viewed
-	 * from the left eye. The right quad is the scene as viewed from the 
+	 * from the left eye. The right quad is the scene as viewed from the
 	 * right eye.
 	 */
 	private RajawaliScene mSideBySideScene;
@@ -155,12 +155,12 @@ public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
 	 */
 	private double mPupilDistance = .06;
 
-	public RajawaliSideBySideRenderer(Context context)
+	public SideBySideRenderer(Context context)
 	{
 		super(context);
 	}
 
-	public RajawaliSideBySideRenderer(Context context, double pupilDistance)
+	public SideBySideRenderer(Context context, double pupilDistance)
 	{
 		this(context);
 		mPupilDistance = pupilDistance;
@@ -179,7 +179,7 @@ public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
 		mCameraRight.setFieldOfView(getCurrentCamera().getFieldOfView());
 		mCameraRight.setNearPlane(getCurrentCamera().getNearPlane());
 		mCameraRight.setFarPlane(getCurrentCamera().getFarPlane());
-		
+
 		setPupilDistance(mPupilDistance);
 
 		mLeftQuadMaterial = new Material();
@@ -212,7 +212,7 @@ public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
 
 		mCameraLeft.setProjectionMatrix(mViewportWidthHalf, mDefaultViewportHeight);
 		mCameraRight.setProjectionMatrix(mViewportWidthHalf, mDefaultViewportHeight);
-		
+
 		addRenderTarget(mLeftRenderTarget);
 		addRenderTarget(mRightRenderTarget);
 
@@ -259,7 +259,7 @@ public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
 			mCameraOrientation.setAll(cameraOrientation);
 		}
 	}
-	
+
 	public void setSensorOrientation(float[] quaternion)
 	{
 		synchronized (mCameraOrientationLock) {
@@ -270,12 +270,12 @@ public abstract class RajawaliSideBySideRenderer extends RajawaliRenderer {
 
 			mScratchQuaternion1.fromAngleAxis(Axis.X, -90);
 			mScratchQuaternion1.multiply(mCameraOrientation);
-	
+
 			mScratchQuaternion2.fromAngleAxis(Axis.Z, -90);
 			mScratchQuaternion1.multiply(mScratchQuaternion2);
 
 			mCameraOrientation.setAll(mScratchQuaternion1);
-		
+
 		}
 	}
 

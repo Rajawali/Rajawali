@@ -1,22 +1,22 @@
-package org.rajawali3d.surface;
+package org.rajawali3d.renderer;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 import android.view.TextureView;
 
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.view.ISurface;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Interface that a class must implement to be able to render to an {@link IRajawaliSurface}. Most often you will want
- * to simply extend {@link RajawaliRenderer} which handles much of this for you.
+ * Interface that a class must implement to be able to render to an {@link ISurface}. Most often you will want
+ * to simply extend {@link Renderer} which handles much of this for you.
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public interface IRajawaliSurfaceRenderer {
+public interface ISurfaceRenderer {
 
     /**
      * Fetch the current target frame rate in frames per second.
@@ -42,16 +42,16 @@ public interface IRajawaliSurfaceRenderer {
     /**
      * Called to inform the renderer of the multisampling configuration on this surface.
      *
-     * @param config {@link IRajawaliSurface.ANTI_ALIASING_CONFIG} The desired anti aliasing configuration.
+     * @param config {@link ISurface.ANTI_ALIASING_CONFIG} The desired anti aliasing configuration.
      */
-    public void setAntiAliasingMode(IRajawaliSurface.ANTI_ALIASING_CONFIG config);
+    public void setAntiAliasingMode(ISurface.ANTI_ALIASING_CONFIG config);
 
     /**
-     * Sets the {@link IRajawaliSurface} which this implementation will be rendering on.
+     * Sets the {@link ISurface} which this implementation will be rendering on.
      *
-     * @param surface {@link IRajawaliSurface} The rendering surface.
+     * @param surface {@link ISurface} The rendering surface.
      */
-    public void setRenderSurface(IRajawaliSurface surface);
+    public void setRenderSurface(ISurface surface);
 
     /**
      * Called when the renderer should pause all of its rendering activities, such as frame draw requests.

@@ -1,4 +1,4 @@
-package org.rajawali3d.util.debugvisualizer;
+package org.rajawali3d.debug;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -7,7 +7,6 @@ import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.primitives.Line3D;
 
 import java.nio.FloatBuffer;
 import java.util.Stack;
