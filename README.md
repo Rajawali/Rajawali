@@ -3,7 +3,7 @@
 ## About
 [![AndroidLibs](https://img.shields.io/badge/AndroidLibs-Rajawali-brightgreen.svg?style=flat)](https://www.android-libs.com/lib/rajawali?utm_source=github-badge&utm_medium=github-badge&utm_campaign=github-badge)
 [![License](https://img.shields.io/badge/license-Apache%202.0%20License-blue.svg)](https://github.com/Rajawali/Rajawali/blob/master/LICENSE.txt)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.rajawali3d/rajawali/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.rajawali3d/rajawali/badge.svg
+[![Maven Central](https://img.shields.io/maven-central/v/org.rajawali3d/rajawali.svg)]()
 
 ### Build Status
 **Master Branch Status**  [![master](https://travis-ci.org/Rajawali/Rajawali.svg?branch=master)](https://travis-ci.org/Rajawali/Rajawali)
