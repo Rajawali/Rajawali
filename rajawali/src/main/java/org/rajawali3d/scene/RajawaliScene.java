@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -33,14 +33,14 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.AFrameTask;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.plugins.IRendererPlugin;
 import org.rajawali3d.renderer.plugins.Plugin;
 import org.rajawali3d.scenegraph.IGraphNode;
 import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
 import org.rajawali3d.scenegraph.Octree;
-import org.rajawali3d.surface.IRajawaliSurface;
+import org.rajawali3d.view.ISurface;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
 import org.rajawali3d.util.RajLog;
@@ -54,11 +54,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This is the container class for scenes in Rajawali.
- * 
+ *
  * It is intended that children, lights, cameras and animations
  * will be added to this object and this object will be added
- * to the {@link RajawaliRenderer} instance.
- * 
+ * to the {@link Renderer} instance.
+ *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 @SuppressWarnings("StatementWithEmptyBody")
@@ -66,15 +66,15 @@ public class RajawaliScene {
 
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
 	protected double mEyeZ = 4.0; //TODO: Is this necessary?
-	
-	protected RajawaliRenderer mRenderer;
-	
+
+	protected Renderer mRenderer;
+
 	//All of these get passed to an object when it needs to draw itself
 	protected Matrix4 mVMatrix = new Matrix4();
 	protected Matrix4 mPMatrix = new Matrix4();
 	protected Matrix4 mVPMatrix = new Matrix4();
 	protected Matrix4 mInvVPMatrix = new Matrix4();
-	
+
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
 	protected FogParams mFogParams;
@@ -89,10 +89,10 @@ public class RajawaliScene {
     /**
      * Guarded by {@link #mFrameTaskQueue}.
      */
-	private volatile boolean mLightsDirty;
-	protected ColorPickerInfo mPickerInfo;
-	protected boolean mReloadPickerInfo;
-	protected IRajawaliSurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+	private volatile boolean                mLightsDirty;
+	protected ColorPickerInfo               mPickerInfo;
+	protected boolean                       mReloadPickerInfo;
+	protected ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
 	private ShadowMapMaterial mShadowMapMaterial;
@@ -109,7 +109,7 @@ public class RajawaliScene {
 	* The camera currently in use.
 	* Not thread safe for speed, should
 	* only be used by GL thread (onDrawFrame() and render())
-	* or prior to rendering such as initScene(). 
+	* or prior to rendering such as initScene().
 	*/
 	protected Camera mCamera;
 	private final List<Camera> mCameras; //List of all cameras in the scene.
@@ -125,9 +125,9 @@ public class RajawaliScene {
 	 * Frame task queue. Adding, removing or replacing members
 	 * such as children, cameras, plugins, etc is now prohibited
 	 * outside the use of this queue. The render thread will automatically
-	 * handle the necessary operations at an appropriate time, ensuring 
+	 * handle the necessary operations at an appropriate time, ensuring
 	 * thread safety and general correct operation.
-	 * 
+	 *
 	 * Guarded by itself
 	 */
 	private final LinkedList<AFrameTask> mFrameTaskQueue;
@@ -135,8 +135,8 @@ public class RajawaliScene {
 	protected boolean mDisplaySceneGraph = false;
 	protected IGraphNode mSceneGraph; //The scenegraph for this scene
 	protected GRAPH_TYPE mSceneGraphType = GRAPH_TYPE.NONE; //The type of graph type for this scene.
-	
-	public RajawaliScene(RajawaliRenderer renderer) {
+
+	public RajawaliScene(Renderer renderer) {
 		mRenderer = renderer;
 		mAlpha = 0;
 		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
@@ -148,24 +148,24 @@ public class RajawaliScene {
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
 		mLights = Collections.synchronizedList(new CopyOnWriteArrayList<ALight>());
 		mFrameTaskQueue = new LinkedList<>();
-		
+
 		mCamera = new Camera();
 		mCamera.setZ(mEyeZ);
 		mCameras.add(mCamera);
 
-        mAntiAliasingConfig = IRajawaliSurface.ANTI_ALIASING_CONFIG.NONE; // Default to none
+        mAntiAliasingConfig = ISurface.ANTI_ALIASING_CONFIG.NONE; // Default to none
 	}
-	
-	public RajawaliScene(RajawaliRenderer renderer, GRAPH_TYPE type) {
+
+	public RajawaliScene(Renderer renderer, GRAPH_TYPE type) {
 		this(renderer);
 		mSceneGraphType = type;
 		initSceneGraph();
 	}
-	
+
 	/**
 	 * Automatically creates the specified scene graph type with that graph's default
 	 * behavior. If you want to use a specific constructor you will need to override this
-	 * method. 
+	 * method.
 	 */
 	protected void initSceneGraph() {
 		switch (mSceneGraphType) { //I know its contrived with only one type. For the future!
@@ -178,14 +178,14 @@ public class RajawaliScene {
 	}
 
     /**
-     * Called by the renderer after {@link RajawaliRenderer#initScene()}.
+     * Called by the renderer after {@link Renderer#initScene()}.
      */
     public void initScene() {
     }
-	
+
 	/**
 	 * Fetch the minimum bounds of the scene.
-	 * 
+	 *
 	 * @return {@link Vector3} containing the minimum values along each axis.
 	 */
 	public Vector3 getSceneMinBound() {
@@ -195,10 +195,10 @@ public class RajawaliScene {
 			return new Vector3(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
 		}
 	}
-	
+
 	/**
 	 * Fetch the maximum bounds of the scene.
-	 * 
+	 *
 	 * @return {@link Vector3} containing the maximum values along each axis.
 	 */
 	public Vector3 getSceneMaxBound() {
@@ -208,10 +208,10 @@ public class RajawaliScene {
 			return new Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 		}
 	}
-	
+
 	/**
 	* Switches the {@link Camera} currently being used to display the scene.
-	* 
+	*
 	* @param camera {@link Camera} object to display the scene with.
 	*/
 	public void switchCamera(Camera camera) {
@@ -222,7 +222,7 @@ public class RajawaliScene {
 
 	/**
 	* Switches the {@link Camera} currently being used to display the scene.
-	* 
+	*
 	* @param camera Index of the {@link Camera} to use.
 	*/
 	public void switchCamera(int camera) {
@@ -233,7 +233,7 @@ public class RajawaliScene {
 	* Fetches the {@link Camera} currently being used to display the scene.
 	* Note that the camera is not thread safe so this should be used
 	* with extreme caution.
-	* 
+	*
 	* @return {@link Camera} object currently used for the scene.
 	* @see {@link RajawaliScene#mCamera}
 	*/
@@ -242,8 +242,8 @@ public class RajawaliScene {
 	}
 
 	/**
-	* Fetches the specified {@link Camera}. 
-	* 
+	* Fetches the specified {@link Camera}.
+	*
 	* @param camera Index of the {@link Camera} to fetch.
 	* @return Camera which was retrieved.
 	*/
@@ -253,7 +253,7 @@ public class RajawaliScene {
 
 	/**
 	* Adds a {@link Camera} to the scene.
-	* 
+	*
 	* @param camera {@link Camera} object to add.
 	* @return boolean True if the addition was successfully queued.
 	*/
@@ -269,10 +269,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Adds a {@link Collection} of {@link Camera} objects to the scene.
-	 * 
+	 *
 	 * @param cameras {@link Collection} of {@link Camera} objects to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
@@ -288,12 +288,12 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Removes a {@link Camera} from the scene. If the {@link Camera}
 	 * being removed is the one in current use, the 0 index {@link Camera}
 	 * will be selected on the next frame.
-	 * 
+	 *
 	 * @param camera {@link Camera} object to remove.
 	 * @return boolean True if the removal was successfully queued.
 	 */
@@ -329,10 +329,10 @@ public class RajawaliScene {
 	* Replaces a {@link Camera} in the renderer at the specified location
 	* in the list. This does not validate the index, so if it is not
 	* contained in the list already, an exception will be thrown.
-	* 
-	* If the {@link Camera} being replaced is the one in current use, 
+	*
+	* If the {@link Camera} being replaced is the one in current use,
 	* the replacement will be selected on the next frame.
-	* 
+	*
 	* @param camera {@link Camera} object to add.
 	* @param location Integer index of the camera to replace.
 	* @return  boolean True if the replacement was successfully queued.
@@ -350,13 +350,13 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	* Replaces the specified {@link Camera} in the renderer with the
 	* provided {@link Camera}. If the {@link Camera} being replaced is
 	* the one in current use, the replacement will be selected on the next
 	* frame.
-	* 
+	*
 	* @param oldCamera {@link Camera} object to be replaced.
 	* @param newCamera {@link Camera} object replacing the old.
 	* @return  boolean True if the replacement was successfully queued.
@@ -377,7 +377,7 @@ public class RajawaliScene {
 
 	/**
 	* Adds a {@link Camera}, switching to it immediately.
-	* 
+	*
 	* @param camera The {@link Camera} to add.
 	* @return boolean True if the addition was successfully queued.
 	*/
@@ -390,7 +390,7 @@ public class RajawaliScene {
 	/**
 	* Replaces a {@link Camera} at the specified index with an option to switch to it
 	* immediately.
-	* 
+	*
 	* @param camera The {@link Camera} to add.
 	* @param location The index of the camera to replace.
 	* @return boolean True if the replacement was successfully queued.
@@ -400,11 +400,11 @@ public class RajawaliScene {
 		switchCamera(camera);
 		return success;
 	}
-	
+
 	/**
 	* Replaces the specified {@link Camera} in the renderer with the
 	* provided {@link Camera}, switching immediately.
-	* 
+	*
 	* @param oldCamera {@link Camera} object to be replaced.
 	* @param newCamera {@link Camera} object replacing the old.
 	* @return  boolean True if the replacement was successfully queued.
@@ -414,10 +414,10 @@ public class RajawaliScene {
 		switchCamera(newCamera);
 		return success;
 	}
-	
+
 	/**
 	 * Replaces a {@link Object3D} at the specified index with a new one.
-	 * 
+	 *
 	 * @param child {@link Object3D} the new child.
 	 * @param location The index of the child to replace.
 	 * @return boolean True if the replacement was successfully queued.
@@ -435,10 +435,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Replaces a specified {@link Object3D} with a new one.
-	 * 
+	 *
 	 * @param oldChild {@link Object3D} the old child.
 	 * @param newChild {@link Object3D} the new child.
 	 * @return boolean True if the replacement was successfully queued.
@@ -456,11 +456,11 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the addition of a child to the scene. The child
-	 * will be added to the end of the list. 
-	 * 
+	 * will be added to the end of the list.
+	 *
 	 * @param child {@link Object3D} child to be added.
 	 * @return True if the child was successfully queued for addition.
 	 */
@@ -498,10 +498,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the addition of a {@link Collection} of children to the scene.
-	 * 
+	 *
 	 * @param children {@link Collection} of {@link Object3D} children to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
@@ -517,10 +517,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the removal of a child from the scene.
-	 * 
+	 *
 	 * @param child {@link Object3D} child to be removed.
 	 * @return boolean True if the child was successfully queued for removal.
 	 */
@@ -536,10 +536,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the removal of all children from the scene.
-	 * 
+	 *
 	 * @return boolean True if the clear was successfully queued.
 	 */
 	public boolean clearChildren() {
@@ -554,11 +554,11 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the addition of a light to the scene. The light
-	 * will be added to the end of the list. 
-	 * 
+	 * will be added to the end of the list.
+	 *
 	 * @param light {@link ALight} to be added.
 	 * @return True if the light was successfully queued for addition.
 	 */
@@ -572,10 +572,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the removal of a light from the scene.
-	 * 
+	 *
 	 * @param light {@link ALight} child to be removed.
 	 * @return boolean True if the child was successfully queued for removal.
 	 */
@@ -605,11 +605,11 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
     }
-	
+
 	/**
 	 * Requests the addition of a plugin to the scene. The plugin
-	 * will be added to the end of the list. 
-	 * 
+	 * will be added to the end of the list.
+	 *
 	 * @param plugin {@link Plugin} child to be added.
 	 * @return True if the plugin was successfully queued for addition.
 	 */
@@ -622,10 +622,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the addition of a {@link Collection} of plugins to the scene.
-	 * 
+	 *
 	 * @param plugins {@link Collection} of {@link Object3D} children to add.
 	 * @return boolean True if the addition was successfully queued.
 	 */
@@ -638,10 +638,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the removal of a plugin from the scene.
-	 * 
+	 *
 	 * @param plugin {@link Plugin} child to be removed.
 	 * @return boolean True if the plugin was successfully queued for removal.
 	 */
@@ -654,10 +654,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Requests the removal of all plugins from the scene.
-	 * 
+	 *
 	 * @return boolean True if the clear was successfully queued.
 	 */
 	public boolean clearPlugins() {
@@ -669,11 +669,11 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
-	 * Register an animation to be managed by the scene. This is optional 
+	 * Register an animation to be managed by the scene. This is optional
 	 * leaving open the possibility to manage updates on Animations in your own implementation.
-	 * 
+	 *
 	 * @param anim {@link Animation} to be registered.
 	 * @return boolean True if the registration was queued successfully.
 	 */
@@ -686,11 +686,11 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
-	 * Remove a managed animation. If the animation is not a member of the scene, 
+	 * Remove a managed animation. If the animation is not a member of the scene,
 	 * nothing will happen.
-	 * 
+	 *
 	 * @param anim {@link Animation} to be unregistered.
 	 * @return boolean True if the unregister was queued successfully.
 	 */
@@ -703,10 +703,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Replace an {@link Animation} with a new one.
-	 * 
+	 *
 	 * @param oldAnim {@link Animation} the old animation.
 	 * @param newAnim {@link Animation} the new animation.
 	 * @return boolean True if the replacement task was queued successfully.
@@ -720,10 +720,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Adds a {@link Collection} of {@link Animation} objects to the scene.
-	 * 
+	 *
 	 * @param anims {@link Collection} containing the {@link Animation} objects to be added.
 	 * @return boolean True if the addition was queued successfully.
 	 */
@@ -736,10 +736,10 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
 	}
-	
+
 	/**
 	 * Removes all {@link Animation} objects from the scene.
-	 * 
+	 *
 	 * @return boolean True if the clear task was queued successfully.
 	 */
 	public boolean clearAnimations() {
@@ -807,21 +807,21 @@ public class RajawaliScene {
         };
         return internalOfferTask(task);
     }
-	
+
 	/**
-	 * Sets fog. 
-	 * 
+	 * Sets fog.
+	 *
 	 * @param fogParams
 	 */
 	public void setFog(FogParams fogParams) {
 		mFogParams = fogParams;
 	}
-	
+
 	/**
 	 * Creates a skybox with the specified single texture.
-	 * 
+	 *
 	 * @param resourceId int Resouce id of the skybox texture.
-	 * @throws TextureException 
+	 * @throws TextureException
 	 */
 	public void setSkybox(int resourceId) throws TextureException {
 		synchronized (mCameras) {
@@ -840,15 +840,15 @@ public class RajawaliScene {
 	}
 
 	/**
-	 * Creates a skybox with the specified 6 textures. 
-	 * 
+	 * Creates a skybox with the specified 6 textures.
+	 *
 	 * @param posx int Resource id for the front face.
 	 * @param negx int Resource id for the right face.
 	 * @param posy int Resource id for the back face.
 	 * @param negy int Resource id for the left face.
 	 * @param posz int Resource id for the up face.
 	 * @param negz int Resource id for the down face.
-	 * @throws TextureException 
+	 * @throws TextureException
 	 */
 	public void setSkybox(int posx, int negx, int posy, int negy, int posz, int negz) throws TextureException {
 		synchronized (mCameras) {
@@ -858,7 +858,7 @@ public class RajawaliScene {
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true);
 			int[] resourceIds = new int[] { posx, negx, posy, negy, posz, negz };
-			
+
 			mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
 			((CubeMapTexture)mSkyboxTexture).isSkyTexture(true);
 			Material mat = new Material();
@@ -893,32 +893,32 @@ public class RajawaliScene {
             mNextSkybox = skybox;
         }
     }
-	
+
 	/**
-	 * Updates the sky box textures with a single texture. 
-	 * 
+	 * Updates the sky box textures with a single texture.
+	 *
 	 * @param resourceId int the resource id of the new texture.
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void updateSkybox(int resourceId) throws Exception {
 		if(mSkyboxTexture.getClass() != Texture.class)
 			throw new Exception("The skybox texture cannot be updated.");
-		
+
 		Texture texture = (Texture)mSkyboxTexture;
 		texture.setResourceId(resourceId);
 		mRenderer.getTextureManager().replaceTexture(texture);
 	}
-	
+
 	/**
-	 * Updates the sky box textures with 6 new resource ids. 
-	 * 
+	 * Updates the sky box textures with 6 new resource ids.
+	 *
 	 * @param front int Resource id for the front face.
 	 * @param right int Resource id for the right face.
 	 * @param back int Resource id for the back face.
 	 * @param left int Resource id for the left face.
 	 * @param up int Resource id for the up face.
 	 * @param down int Resource id for the down face.
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void updateSkybox(int front, int right, int back, int left, int up, int down) throws Exception {
 		if(mSkyboxTexture.getClass() != CubeMapTexture.class)
@@ -930,11 +930,11 @@ public class RajawaliScene {
 		cubemap.setResourceIds(resourceIds);
 		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}
-	
+
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
-	
+
 	/**
 	 * Reloads this scene.
 	 */
@@ -945,16 +945,16 @@ public class RajawaliScene {
 		reloadPlugins();
 		mReloadPickerInfo = true;
 	}
-	
+
 	/**
 	 * Is the object picking info?
-	 * 
+	 *
 	 * @return boolean True if object picking is active.
 	 */
 	public boolean hasPickerInfo() {
 		return (mPickerInfo != null);
 	}
-	
+
 	/**
 	 * Applies the Rajawali default GL state to the driver. Developers who wish
 	 * to change this default behavior can override this method.
@@ -966,11 +966,11 @@ public class RajawaliScene {
 		GLES20.glDisable(GLES20.GL_BLEND);
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 	}
-	
+
 	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget) {
 		render(ellapsedTime, deltaTime, renderTarget, null);
 	}
-	
+
 	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
 		performFrameTasks(); //Handle the task queue
 
@@ -988,7 +988,7 @@ public class RajawaliScene {
 				mNextSkybox = null;
 			}
 		}
-		synchronized (mNextCameraLock) { 
+		synchronized (mNextCameraLock) {
 			//Check if we need to switch the camera, and if so, do it.
 			if (mNextCamera != null) {
 				mCamera = mNextCamera;
@@ -996,11 +996,11 @@ public class RajawaliScene {
 				mNextCamera = null;
 			}
 		}
-		
+
 		int clearMask = mAlwaysClearColorBuffer? GLES20.GL_COLOR_BUFFER_BIT : 0;
 
 		ColorPickerInfo pickerInfo = mPickerInfo;
-		
+
 		if (renderTarget != null) {
 			renderTarget.bind();
 			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
@@ -1019,7 +1019,7 @@ public class RajawaliScene {
 			GLES20.glDepthMask(true);
 			GLES20.glClearDepthf(1.0f);
 		}
-		if (mAntiAliasingConfig.equals(IRajawaliSurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
+		if (mAntiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
 			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
 
@@ -1091,7 +1091,7 @@ public class RajawaliScene {
 		}
 
 		Material sceneMat = pickerInfo == null ? sceneMaterial : pickerInfo.getPicker().getMaterial();
-		
+
 		if(sceneMat != null) {
 			sceneMat.useProgram();
 			sceneMat.bindTextures();
@@ -1110,15 +1110,15 @@ public class RajawaliScene {
 				child.setBlendingEnabled(blendingEnabled);
 			}
 		}
-		
+
 		if (mDisplaySceneGraph) {
 			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
         }
-		
+
 		if(sceneMat != null) {
 			sceneMat.unbindTextures();
 		}
-		
+
 		if (pickerInfo != null) {
 			ObjectColorPicker.createColorPickingTexture(pickerInfo);
 			pickerInfo.getPicker().getRenderTarget().unbind();
@@ -1131,7 +1131,7 @@ public class RajawaliScene {
 			for (int i = 0, j = mPlugins.size(); i < j; i++)
 				mPlugins.get(i).render();
 		}
-		
+
 		if(renderTarget != null) {
 			renderTarget.unbind();
 		}
@@ -1147,10 +1147,10 @@ public class RajawaliScene {
             }
         }
 	}
-	
+
 	/**
 	 * Adds a task to the frame task queue.
-	 * 
+	 *
 	 * @param task AFrameTask to be added.
 	 * @return boolean True on successful addition to queue.
 	 */
@@ -1159,7 +1159,7 @@ public class RajawaliScene {
 			return mFrameTaskQueue.offer(task);
 		}
 	}
-	
+
 	/**
 	 * Internal method for performing frame tasks. Should be called at the
 	 * start of onDrawFrame() prior to render().
@@ -1175,10 +1175,10 @@ public class RajawaliScene {
 			}
 		}
 	}
-	
+
 	/**
-	 * Creates a shallow copy of the internal cameras list. 
-	 * 
+	 * Creates a shallow copy of the internal cameras list.
+	 *
 	 * @return ArrayList containing the cameras.
 	 */
 	public ArrayList<Camera> getCamerasCopy() {
@@ -1186,24 +1186,24 @@ public class RajawaliScene {
 		list.addAll(mCameras);
 		return list;
 	}
-	
+
 	/**
 	 * Retrieve the number of cameras.
-	 * 
+	 *
 	 * @return The current number of cameras.
 	 */
 	public int getCameraCount() {
 		//Thread safety deferred to the List
 		return mCameras.size();
 	}
-	
+
 	public List<ALight> getLights() {
 		return mLights;
 	}
-	
+
 	/**
-	 * Creates a shallow copy of the internal lights list. 
-	 * 
+	 * Creates a shallow copy of the internal lights list.
+	 *
 	 * @return ArrayList containing the lights.
 	 */
 	public ArrayList<ALight> getLightsCopy() {
@@ -1211,10 +1211,10 @@ public class RajawaliScene {
 		list.addAll(mLights);
 		return list;
 	}
-	
+
 	/**
 	 * Retrieve the number of lights.
-	 * 
+	 *
 	 * @return The current number of lights.
 	 */
 	public int getNumLights() {
@@ -1231,10 +1231,10 @@ public class RajawaliScene {
             mLightsDirty = true;
         }
     }
-	
+
 	/**
 	 * Set the lights on all materials used in this scene. This method
-	 * should only be called when the lights collection is dirty. It will 
+	 * should only be called when the lights collection is dirty. It will
 	 * trigger compilation of all light-enabled shaders.
 	 */
 	private void updateMaterialsWithLights() {
@@ -1242,12 +1242,12 @@ public class RajawaliScene {
 			updateChildMaterialWithLights(child);
 		}
 	}
-	
+
 	/**
 	 * Update the lights on this child's material. This method should only
 	 * be called when the lights collection is dirty. It will
 	 * trigger compilation of all light-enabled shaders.
-	 * 
+	 *
 	 * @param child
 	 */
 	private void updateChildMaterialWithLights(Object3D child) {
@@ -1256,17 +1256,17 @@ public class RajawaliScene {
 			material.setLights(mLights);
 		if(material!= null && mFogParams != null)
 			material.addPlugin(new FogMaterialPlugin(mFogParams));
-		
+
 		int numChildren = child.getNumChildren();
 		for(int i=0; i<numChildren; i++) {
 			Object3D grandChild = child.getChildAt(i);
 			updateChildMaterialWithLights(grandChild);
 		}
 	}
-	
+
 	/**
-	 * Creates a shallow copy of the internal child list. 
-	 * 
+	 * Creates a shallow copy of the internal child list.
+	 *
 	 * @return ArrayList containing the children.
 	 */
 	public ArrayList<Object3D> getChildrenCopy() {
@@ -1277,7 +1277,7 @@ public class RajawaliScene {
 
 	/**
 	 * Tests if the specified {@link Object3D} is a child of the renderer.
-	 * 
+	 *
 	 * @param child {@link Object3D} to check for.
 	 * @return boolean indicating child's presence as a child of the renderer.
 	 */
@@ -1285,10 +1285,10 @@ public class RajawaliScene {
 		//Thread safety deferred to the List.
 		return mChildren.contains(child);
 	}
-	
+
 	/**
 	 * Retrieve the number of children.
-	 * 
+	 *
 	 * @return The current number of children.
 	 */
 	public int getNumChildren() {
@@ -1297,8 +1297,8 @@ public class RajawaliScene {
 	}
 
 	/**
-	 * Creates a shallow copy of the internal plugin list. 
-	 * 
+	 * Creates a shallow copy of the internal plugin list.
+	 *
 	 * @return ArrayList containing the plugins.
 	 */
 	public ArrayList<IRendererPlugin> getPluginsCopy() {
@@ -1309,7 +1309,7 @@ public class RajawaliScene {
 
 	/**
 	 * Tests if the specified {@link IRendererPlugin} is a plugin of the renderer.
-	 * 
+	 *
 	 * @param plugin {@link IRendererPlugin} to check for.
 	 * @return boolean indicating plugin's presence as a plugin of the renderer.
 	 */
@@ -1317,17 +1317,17 @@ public class RajawaliScene {
 		//Thread safety deferred to the List.
 		return mPlugins.contains(plugin);
 	}
-	
+
 	/**
 	 * Retrieve the number of plugins.
-	 * 
+	 *
 	 * @return The current number of plugins.
 	 */
 	public int getNumPlugins() {
 		//Thread safety deferred to the List
 		return mPlugins.size();
 	}
-	
+
 	/**
 	 * Reload all the children
 	 */
@@ -1360,10 +1360,10 @@ public class RajawaliScene {
         clearChildren();
         clearFrameCallbacks();
 	}
-	
+
 	/**
 	 * Sets the background color of the scene.
-	 * 
+	 *
 	 * @param red float red component (0-1.0f).
 	 * @param green float green component (0-1.0f).
 	 * @param blue float blue component (0-1.0f).
@@ -1375,25 +1375,25 @@ public class RajawaliScene {
 		mBlue = blue;
 		mAlpha = alpha;
 	}
-	
+
 	/**
-	 * Sets the background color of the scene. 
-	 * 
+	 * Sets the background color of the scene.
+	 *
 	 * @param color Android color integer.
 	 */
 	public void setBackgroundColor(int color) {
 		setBackgroundColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f);
 	}
-	
+
 	/**
 	 * Retrieves the background color of the scene.
-	 * 
+	 *
 	 * @return Android color integer.
 	 */
 	public int getBackgroundColor() {
 		return Color.argb((int) (mAlpha*255f), (int) (mRed*255f), (int) (mGreen*255f), (int) (mBlue*255f));
 	}
-	
+
 	/**
 	 * Indicate that the color buffer should be cleared on every frame. This is set to true by default.
 	 * Reasons for settings this to false might be integration with augmented reality frameworks or
@@ -1404,49 +1404,49 @@ public class RajawaliScene {
 	{
 		mAlwaysClearColorBuffer = value;
 	}
-	
+
 	public boolean alwaysClearColorBuffer()
 	{
 		return mAlwaysClearColorBuffer;
 	}
-	
+
 	/**
 	 * Updates the projection matrix of the current camera for new view port dimensions.
-	 * 
+	 *
 	 * @param width int the new viewport width in pixels.
 	 * @param height in the new viewport height in pixes.
 	 */
 	public void updateProjectionMatrix(int width, int height) {
 		mCamera.setProjectionMatrix(width, height);
 	}
-	
-	public void setAntiAliasingConfig(IRajawaliSurface.ANTI_ALIASING_CONFIG config) {
+
+	public void setAntiAliasingConfig(ISurface.ANTI_ALIASING_CONFIG config) {
 		mAntiAliasingConfig = config;
 	}
-	
+
 	public void setShadowMapMaterial(ShadowMapMaterial material) {
 		mShadowMapMaterial = material;
 	}
-	
+
 	private void addShadowMapMaterialPlugin(Object3D o, ShadowMapMaterialPlugin materialPlugin) {
 		Material m = o.getMaterial();
-		
+
 		if(m != null && m.lightingEnabled()) {
 			if(materialPlugin != null) {
-				m.addPlugin(materialPlugin);			
+				m.addPlugin(materialPlugin);
 			} else if(mShadowMapMaterial != null) {
 				m.removePlugin(mShadowMapMaterial.getMaterialPlugin());
 			}
 		}
-		
+
 		for(int i=0; i<o.getNumChildren(); i++)
 			addShadowMapMaterialPlugin(o.getChildAt(i), materialPlugin);
 	}
-	
+
 	/**
-	 * Set if the scene graph should be displayed. How it is 
+	 * Set if the scene graph should be displayed. How it is
 	 * displayed is left to the implementation of the graph.
-	 * 
+	 *
 	 * @param display If true, the scene graph will be displayed.
 	 */
 	public void displaySceneGraph(boolean display) {
@@ -1455,13 +1455,13 @@ public class RajawaliScene {
 
 	/**
 	 * Retrieve the number of triangles this scene contains, recursive method
-	 * 
+	 *
 	 * @return int the total triangle count for the scene.
 	 */
 	public int getNumTriangles() {
 		int triangleCount = 0;
 		ArrayList<Object3D> children = getChildrenCopy();
-		
+
 		for (int i = 0, j = children.size(); i < j; i++) {
 			Object3D child = children.get(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())
@@ -1473,17 +1473,17 @@ public class RajawaliScene {
 		}
 		return triangleCount;
 	}
-	
-	
+
+
 	/**
 	 * Retrieve the number of objects on the screen, recursive method
-	 * 
+	 *
 	 * @return int the total object count for the screen.
 	 */
 	public int getNumObjects() {
 		int objectCount = 0;
 		ArrayList<Object3D> children = getChildrenCopy();
-		
+
 		for (int i = 0, j = children.size(); i < j; i++) {
 			Object3D child = children.get(i);
 			if (child.getGeometry() != null && child.getGeometry().getVertices() != null && child.isVisible())

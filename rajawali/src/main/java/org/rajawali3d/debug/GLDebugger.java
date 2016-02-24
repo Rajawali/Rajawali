@@ -1,6 +1,8 @@
-package org.rajawali3d.util;
+package org.rajawali3d.debug;
 
 import android.opengl.GLDebugHelper;
+
+import org.rajawali3d.util.RajLog;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -11,11 +13,11 @@ import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Immutable helper class for OpenGL debugging. Instances can be created through
- * {@link RajawaliGLDebugger.Builder}.
+ * {@link GLDebugger.Builder}.
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class RajawaliGLDebugger {
+public class GLDebugger {
 
     final Writer mWriter;
     final int mConfig;
@@ -24,7 +26,7 @@ public class RajawaliGLDebugger {
 
     final StringBuilder mBuilder = new StringBuilder();
 
-    private RajawaliGLDebugger(int config, GL gl, EGL egl) {
+    private GLDebugger(int config, GL gl, EGL egl) {
         mConfig = config;
         mWriter = new Writer() {
 
@@ -87,7 +89,7 @@ public class RajawaliGLDebugger {
     }
 
     /**
-     * Builder for creating an {@link RajawaliGLDebugger} instance.
+     * Builder for creating an {@link GLDebugger} instance.
      *
      * @author Jared Woolston (jwoolston@tenkiv.com)
      */
@@ -97,8 +99,8 @@ public class RajawaliGLDebugger {
         private GL mGL;
         private EGL mEGL;
 
-        public RajawaliGLDebugger build() {
-            return new RajawaliGLDebugger(mBuilderConfig, mGL, mEGL);
+        public GLDebugger build() {
+            return new GLDebugger(mBuilderConfig, mGL, mEGL);
         }
 
         /**

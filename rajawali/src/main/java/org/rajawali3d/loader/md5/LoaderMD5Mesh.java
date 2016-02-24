@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -40,7 +40,7 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.loader.AMeshLoader;
 import org.rajawali3d.loader.IAnimatedMeshLoader;
 import org.rajawali3d.loader.ParsingException;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.RajLog;
 
 public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
@@ -71,11 +71,11 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 	public double[] mBindPoseMatrix;
 	public double[][] mInverseBindPoseMatrix;
 
-	public LoaderMD5Mesh(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderMD5Mesh(Renderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
 
-	public LoaderMD5Mesh(RajawaliRenderer renderer, int resourceId) {
+	public LoaderMD5Mesh(Renderer renderer, int resourceId) {
 		this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 	}
 
@@ -453,7 +453,7 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 				mat.addTexture(new Texture("md5tex" + i, identifier));
 			}
 			mRootObject.addChild(o);
-			
+
 			mesh.destroy();
 			mesh = null;
 		}
@@ -473,7 +473,7 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 		public int[] indices;
 		public float[] textureCoordinates;
 		public float[] weights;
-		
+
 		public void destroy()
 		{
 			boneVertices = null;

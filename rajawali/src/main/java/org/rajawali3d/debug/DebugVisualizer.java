@@ -1,15 +1,15 @@
-package org.rajawali3d.util.debugvisualizer;
+package org.rajawali3d.debug;
 
 import org.rajawali3d.Object3D;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 
 /**
  * @author dennis.ippel
  */
 public class DebugVisualizer extends Object3D {
-    private RajawaliRenderer mRenderer;
+    private Renderer mRenderer;
 
-    public DebugVisualizer(RajawaliRenderer renderer) {
+    public DebugVisualizer(Renderer renderer) {
         mRenderer = renderer;
     }
 

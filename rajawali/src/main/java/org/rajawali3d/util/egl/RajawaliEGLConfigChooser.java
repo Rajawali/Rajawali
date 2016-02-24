@@ -7,7 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
-import org.rajawali3d.surface.IRajawaliSurface;
+import org.rajawali3d.view.ISurface;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -23,27 +23,27 @@ public class RajawaliEGLConfigChooser implements GLSurfaceView.EGLConfigChooser 
 
     private final int[] mConfigSpec;
 
-    private final IRajawaliSurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+    private final ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 
-    public RajawaliEGLConfigChooser(int glMajorVersion, @NonNull IRajawaliSurface.ANTI_ALIASING_CONFIG antiAliasingConfig,
+    public RajawaliEGLConfigChooser(int glMajorVersion, @NonNull ISurface.ANTI_ALIASING_CONFIG antiAliasingConfig,
                                     int sampleCount, int bitsRed, int bitsGreen, int bitsBlue, int bitsAlpha, int bitsDepth) {
         mAntiAliasingConfig = antiAliasingConfig;
 
-        if (mAntiAliasingConfig.equals(IRajawaliSurface.ANTI_ALIASING_CONFIG.MULTISAMPLING)) {
+        if (mAntiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING)) {
             mConfigSpec = new int[]{
-                EGL10.EGL_RED_SIZE, bitsRed,
-                EGL10.EGL_GREEN_SIZE, bitsGreen,
-                EGL10.EGL_BLUE_SIZE, bitsBlue,
-                EGL10.EGL_ALPHA_SIZE, bitsAlpha,
-                EGL10.EGL_DEPTH_SIZE, bitsDepth,
-                EGL10.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
-                EGL10.EGL_SAMPLE_BUFFERS,
-                antiAliasingConfig.equals(IRajawaliSurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) ? 1 : 0, /* Do we use sample buffers */
+                    EGL10.EGL_RED_SIZE, bitsRed,
+                    EGL10.EGL_GREEN_SIZE, bitsGreen,
+                    EGL10.EGL_BLUE_SIZE, bitsBlue,
+                    EGL10.EGL_ALPHA_SIZE, bitsAlpha,
+                    EGL10.EGL_DEPTH_SIZE, bitsDepth,
+                    EGL10.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+                    EGL10.EGL_SAMPLE_BUFFERS,
+                    antiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) ? 1 : 0, /* Do we use sample buffers */
                 EGL10.EGL_SAMPLES,
-                antiAliasingConfig.equals(IRajawaliSurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) ? sampleCount : 0, /* Sample count */
+                    antiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) ? sampleCount : 0, /* Sample count */
                 EGL10.EGL_NONE
             };
-        } else if (mAntiAliasingConfig.equals(IRajawaliSurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
+        } else if (mAntiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
             mConfigSpec = new int[]{
                 EGL10.EGL_RED_SIZE, bitsRed,
                 EGL10.EGL_GREEN_SIZE, bitsGreen,
@@ -77,7 +77,7 @@ public class RajawaliEGLConfigChooser implements GLSurfaceView.EGLConfigChooser 
         mConfigSpec[11] = EGLExt.EGL_OPENGL_ES3_BIT_KHR;
     }
 
-    public IRajawaliSurface.ANTI_ALIASING_CONFIG getAntiAliasingConfig() {
+    public ISurface.ANTI_ALIASING_CONFIG getAntiAliasingConfig() {
         return mAntiAliasingConfig;
     }
 

@@ -19,22 +19,22 @@ import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
-import org.rajawali3d.surface.IRajawaliSurface;
-import org.rajawali3d.surface.IRajawaliSurfaceRenderer;
-import org.rajawali3d.surface.RajawaliSurfaceView;
+import org.rajawali3d.view.ISurface;
+import org.rajawali3d.renderer.ISurfaceRenderer;
+import org.rajawali3d.view.SurfaceView;
 import org.rajawali3d.util.Capabilities;
 
 public abstract class Wallpaper extends WallpaperService {
 
     protected class WallpaperEngine extends Engine {
 
-        protected Context mContext;
-        protected IRajawaliSurfaceRenderer mRenderer;
-        protected WallpaperSurfaceView mSurfaceView;
-        protected IRajawaliSurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
-        protected float mDefaultPreviewOffsetX;
+        protected Context                       mContext;
+        protected ISurfaceRenderer              mRenderer;
+        protected WallpaperSurfaceView          mSurfaceView;
+        protected ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+        protected float                         mDefaultPreviewOffsetX;
 
-        class WallpaperSurfaceView extends RajawaliSurfaceView {
+        class WallpaperSurfaceView extends SurfaceView {
 
             WallpaperSurfaceView(Context context) {
                 super(context);
@@ -50,12 +50,12 @@ public abstract class Wallpaper extends WallpaperService {
             }
         }
 
-        public WallpaperEngine(Context context, IRajawaliSurfaceRenderer renderer) {
-            this(context, renderer, IRajawaliSurface.ANTI_ALIASING_CONFIG.NONE);
+        public WallpaperEngine(Context context, ISurfaceRenderer renderer) {
+            this(context, renderer, ISurface.ANTI_ALIASING_CONFIG.NONE);
         }
 
-        public WallpaperEngine(Context context, IRajawaliSurfaceRenderer renderer,
-                               IRajawaliSurface.ANTI_ALIASING_CONFIG antiAliasingConfig) {
+        public WallpaperEngine(Context context, ISurfaceRenderer renderer,
+                               ISurface.ANTI_ALIASING_CONFIG antiAliasingConfig) {
             mContext = context;
             mRenderer = renderer;
             mAntiAliasingConfig = antiAliasingConfig;
@@ -98,7 +98,7 @@ public abstract class Wallpaper extends WallpaperService {
             super.onCreate(holder);
             mSurfaceView = new WallpaperSurfaceView(mContext);
             mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
-            mSurfaceView.setRenderMode(IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
+            mSurfaceView.setRenderMode(ISurface.RENDERMODE_WHEN_DIRTY);
             mSurfaceView.setAntiAliasingMode(mAntiAliasingConfig);
             mSurfaceView.setSurfaceRenderer(mRenderer);
             setTouchEventsEnabled(true);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -36,7 +36,7 @@ import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 
@@ -51,19 +51,19 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 	private int[] mIndices;
 	private float[] mTextureCoords;
 
-	public LoaderMD2(RajawaliRenderer renderer, String fileOnSDCard) {
+	public LoaderMD2(Renderer renderer, String fileOnSDCard) {
 		super(renderer, fileOnSDCard);
 	}
 
-	public LoaderMD2(RajawaliRenderer renderer, int resourceId) {
+	public LoaderMD2(Renderer renderer, int resourceId) {
 		this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
 	}
 
 	public LoaderMD2(Resources resources, TextureManager textureManager, int resourceId) {
 		super(resources, textureManager, resourceId);
 	}
-	
-	public LoaderMD2(RajawaliRenderer renderer, File file) {
+
+	public LoaderMD2(Renderer renderer, File file) {
 		super(renderer, file);
 	}
 
@@ -119,7 +119,7 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 			mObject.setData(firstFrame.getGeometry().getVertexBufferInfo(), firstFrame.getGeometry()
 					.getNormalBufferInfo(), mTextureCoords, null, mIndices, false);
 			mObject.setMaterial(material);
-			
+
 			mObject.setColor(0xffffffff);
 			if (mTexture != null)
 			{
