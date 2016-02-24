@@ -440,7 +440,8 @@ public abstract class RajawaliRenderer implements IRajawaliSurfaceRenderer {
 
         final double[] in = new double[4], out = new double[4];
 
-        Matrix4 MVPMatrix = getCurrentCamera().getProjectionMatrix().multiply(getCurrentCamera().getViewMatrix());
+        Matrix4 projectionMatrix = getCurrentCamera().getProjectionMatrix().clone();
+        Matrix4 MVPMatrix = projectionMatrix.multiply(getCurrentCamera().getViewMatrix());
         MVPMatrix.inverse();
 
         in[0] = (x / mDefaultViewportWidth) * 2 - 1;
