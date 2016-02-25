@@ -42,7 +42,6 @@ import org.rajawali3d.materials.textures.SphereMapTexture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.scene.RajawaliScene;
-import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
