@@ -23,17 +23,16 @@ import org.rajawali3d.postprocessing.passes.EffectPass;
  * A screen quad is a plane that covers the whole screen. When used in conjunction with
  * {@link Camera2D} you'll get a pixel perfect screen filling plane. This is perfect for
  * things like image slide shows or fragment shader only apps and live wallpapers.
+ *
+ * When creating solid color plane both <code>createTextureCoordinates</code> and <code>createVertexColorBuffer</code>
+ * can be set to <code>false</code>.
  * <p>
- * Usage:
- * </p>
- * <pre><code>
- * // -- Use the 2D camera
- * getCurrentScene().switchCamera(new Camera2D());
- * ScreenQuad screenQuad = new ScreenQuad();
- * SimpleMaterial material = new SimpleMaterial();
- * screenQuad.setMaterial(material);
- * </code></pre>
- * 
+ * When creating a textured plane <code>createTextureCoordinates</code> should be set to <code>true</code> and
+ * <code>createVertexColorBuffer</code> should be set to <code>false</code>.
+ * <p>
+ * When creating a plane without a texture but with different colors per texture <code>createTextureCoordinates</code>
+ * should be set to <code>false</code> and <code>createVertexColorBuffer</code> should be set to <code>true</code>.
+ *
  * If you want to show square images without distortion you'll need to resize the quad
  * when the surface changes:
  * 
@@ -51,53 +50,192 @@ import org.rajawali3d.postprocessing.passes.EffectPass;
  *
  */
 public class ScreenQuad extends Object3D {
+
+	protected int mSegmentsW;
+	protected int mSegmentsH;
+	protected int mNumTextureTiles;
+	private boolean mCreateTextureCoords;
+	private boolean mCreateVertexColorBuffer;
 	private Camera2D mCamera;
 	private Matrix4 mVPMatrix;
 	private EffectPass mEffectPass;
 
-    /**
-     * Creates a new ScreenQuad.
-     */
-    public ScreenQuad() {
-        this(true);
-    }
+	public ScreenQuad() {
+		this(1, 1, true, false, 1, true);
+	}
 
 	/**
-	 * Creates a new ScreenQuad.
+	 * Create a ScreenQuad. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 */
-	public ScreenQuad(boolean createVBOs)
+	public ScreenQuad(boolean createVBOs) {
+		this(1, 1, true, false, 1, createVBOs);
+	}
+
+	/**
+	 * Create a ScreenQuad. Calling this constructor will create texture coordinates but no vertex color buffer.
+	 *
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 */
+	public ScreenQuad(int segmentsW, int segmentsH)
 	{
+		this(segmentsW, segmentsH, true, false, 1, true);
+	}
+	
+	/**
+	 * Create a ScreenQuad. Calling this constructor will create texture coordinates but no vertex color buffer.
+	 *
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 * @param numTextureTiles
+	 * 			  The number of texture tiles. If more than 1 the texture will be repeat by n times.
+	 */
+	public ScreenQuad(int segmentsW, int segmentsH, int numTextureTiles, boolean createVBOs)
+	{
+		this(segmentsW, segmentsH, true, false, numTextureTiles, createVBOs);
+	}
+
+	/**
+	 * Create a ScreenQuad. Calling this constructor will create texture coordinates but no vertex color buffer.
+	 * 
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 */
+	public ScreenQuad(int segmentsW, int segmentsH, boolean createVBOs)
+	{
+		this(segmentsW, segmentsH, true, false, 1, createVBOs);
+	}
+
+	/**
+	 * Creates a ScreenQuad.
+	 * 
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 * @param createTextureCoordinates
+	 *            A boolean that indicates whether the texture coordinates should be calculated or not.
+	 * @param createVertexColorBuffer
+	 *            A boolean that indicates whether a vertex color buffer should be created or not.
+	 */
+	public ScreenQuad(int segmentsW, int segmentsH, boolean createTextureCoordinates,
+			boolean createVertexColorBuffer, boolean createVBOs) {
+		this(segmentsW, segmentsH, createTextureCoordinates, createVertexColorBuffer, 1, createVBOs);
+	}
+
+	/**
+	 * Creates a ScreenQuad.
+	 * 
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 * @param createTextureCoordinates
+	 *            A boolean that indicates whether the texture coordinates should be calculated or not.
+	 * @param createVertexColorBuffer
+	 *            A boolean that indicates whether a vertex color buffer should be created or not.
+	 * @param numTextureTiles
+	 * 			  The number of texture tiles. If more than 1 the texture will be repeat by n times.
+     * @param createVBOs
+     *            A boolean that indicates whether the VBOs should be created immediately.
+	 */
+	public ScreenQuad(int segmentsW, int segmentsH, boolean createTextureCoordinates,
+			boolean createVertexColorBuffer, int numTextureTiles, boolean createVBOs) {
 		super();
+		mSegmentsW = segmentsW;
+		mSegmentsH = segmentsH;
+		mCreateTextureCoords = createTextureCoordinates;
+		mCreateVertexColorBuffer = createVertexColorBuffer;
+		mNumTextureTiles = numTextureTiles;
 		init(createVBOs);
 	}
 
 	private void init(boolean createVBOs) {
+		int i, j;
+		int numVertices = (mSegmentsW + 1) * (mSegmentsH + 1);
+		float[] vertices = new float[numVertices * 3];
+		float[] textureCoords = null;
+		if (mCreateTextureCoords)
+			textureCoords = new float[numVertices * 2];
+		float[] normals = new float[numVertices * 3];
+		float[] colors = null;
+		if (mCreateVertexColorBuffer)
+			colors = new float[numVertices * 4];
+		int[] indices = new int[mSegmentsW * mSegmentsH * 6];
+		int vertexCount = 0;
+		int texCoordCount = 0;
+
 		mCamera = new Camera2D();
 		mCamera.setProjectionMatrix(0, 0);
 		mVPMatrix = new Matrix4();
-		
-		float[] vertices = new float[] {
-				-.5f, .5f, 0,
-				.5f, .5f, 0,
-				.5f, -.5f, 0,
-				-.5f, -.5f, 0
-		};
-		float[] textureCoords = new float[] {
-				0, 0, 1, 0, 1, 1, 0, 1
-		};
-		float[] normals = new float[] {
-				0, 0, 1,
-				0, 0, 1,
-				0, 0, 1,
-				0, 0, 1
-		};
-		int[] indices = new int[] { 0, 2, 1, 0, 3, 2 };
-		
-		setData(vertices, normals, textureCoords, null, indices, createVBOs);
+
+		for (i = 0; i <= mSegmentsW; i++) {
+			for (j = 0; j <= mSegmentsH; j++) {
+				float v1 = ((float) i / (float) mSegmentsW - 0.5f);
+				float v2 = ((float) j / (float) mSegmentsH - 0.5f);
+				vertices[vertexCount] = v1;
+				vertices[vertexCount + 1] = v2;
+				vertices[vertexCount + 2] = 0;
+
+				if (mCreateTextureCoords) {
+					float u = (float) mSegmentsW - ((float) i / (float) mSegmentsW);
+					textureCoords[texCoordCount++] = (1.0f - u) * mNumTextureTiles;
+					float v = (float) j / (float) mSegmentsH;
+					textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
+				}
+
+				normals[vertexCount] = 0;
+				normals[vertexCount + 1] = 0;
+				normals[vertexCount + 2] = 1;
+
+				vertexCount += 3;
+			}
+		}
+
+		int colspan = mSegmentsH + 1;
+		int indexCount = 0;
+
+		for (int col = 0; col < mSegmentsW; col++) {
+			for (int row = 0; row < mSegmentsH; row++) {
+				int ul = col * colspan + row;
+				int ll = ul + 1;
+				int ur = (col + 1) * colspan + row;
+				int lr = ur + 1;
+
+				indices[indexCount++] = (int) ur;
+				indices[indexCount++] = (int) lr;
+				indices[indexCount++] = (int) ul;
+
+				indices[indexCount++] = (int) lr;
+				indices[indexCount++] = (int) ll;
+				indices[indexCount++] = (int) ul;
+			}
+		}
+
+		if (mCreateVertexColorBuffer)
+		{
+			int numColors = numVertices * 4;
+			for (j = 0; j < numColors; j += 4)
+			{
+				colors[j] = 1.0f;
+				colors[j + 1] = 1.0f;
+				colors[j + 2] = 1.0f;
+				colors[j + 3] = 1.0f;
+			}
+		}
+
+		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
 		
 		vertices = null;
 		normals = null;
 		textureCoords = null;
+		colors = null;
 		indices = null;
 		
 		mEnableDepthTest = false;
