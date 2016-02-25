@@ -79,7 +79,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	protected boolean mIsContainerOnly = true;
 	protected int mPickingColor = UNPICKABLE;
-	protected boolean mIsPickingEnabled = false;
 	protected float[] mPickingColorArray;
 
 	protected boolean mFrustumTest = false;
@@ -253,7 +252,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			          GLES20.glFrontFace(GLES20.GL_CCW);
 			     }
 			}
-            if (isColorPicking && mIsPickingEnabled) {
+            if (isColorPicking) {
                 GLES20.glDisable(GLES20.GL_BLEND);
                 GLES20.glDepthMask(true);
             } else {
@@ -665,11 +664,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mPickingColorArray[1] = Color.green(pickingColor) / 255f;
 		mPickingColorArray[2] = Color.blue(pickingColor) / 255f;
 		mPickingColorArray[3] = Color.alpha(pickingColor) / 255f;
-		mIsPickingEnabled = true;
 	}
 
 	public boolean isPickingEnabled() {
-		return mIsPickingEnabled;
+		return mPickingColor != UNPICKABLE;
 	}
 
 	public void setShowBoundingVolume(boolean showBoundingVolume) {
