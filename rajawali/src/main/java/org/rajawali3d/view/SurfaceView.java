@@ -1,4 +1,4 @@
-package org.rajawali3d.surface;
+package org.rajawali3d.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.R;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
@@ -20,12 +21,12 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurface {
+public class SurfaceView extends GLSurfaceView implements ISurface {
 
     protected RendererDelegate mRendererDelegate;
 
     protected double mFrameRate = 60.0;
-    protected int mRenderMode = IRajawaliSurface.RENDERMODE_WHEN_DIRTY;
+    protected int mRenderMode = ISurface.RENDERMODE_WHEN_DIRTY;
     protected ANTI_ALIASING_CONFIG mAntiAliasingConfig = ANTI_ALIASING_CONFIG.NONE;
     protected boolean mIsTransparent = false;
     protected int mBitsRed = 5;
@@ -35,40 +36,40 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     protected int mBitsDepth = 16;
     protected int mMultiSampleCount = 0;
 
-    public RajawaliSurfaceView(Context context) {
+    public SurfaceView(Context context) {
         super(context);
     }
 
-    public RajawaliSurfaceView(Context context, AttributeSet attrs) {
+    public SurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         applyAttributes(context, attrs);
     }
 
     private void applyAttributes(Context context, AttributeSet attrs) {
         if (attrs == null) return;
-        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RajawaliSurfaceView);
+        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.SurfaceView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
-            if (attr == R.styleable.RajawaliSurfaceView_frameRate) {
+            if (attr == R.styleable.SurfaceView_frameRate) {
                 mFrameRate = array.getFloat(attr, 60.0f);
-            } else if (attr == R.styleable.RajawaliSurfaceView_renderMode) {
-                mRenderMode = array.getInt(attr, IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
-            } else if (attr == R.styleable.RajawaliSurfaceView_antiAliasingType) {
+            } else if (attr == R.styleable.SurfaceView_renderMode) {
+                mRenderMode = array.getInt(attr, ISurface.RENDERMODE_WHEN_DIRTY);
+            } else if (attr == R.styleable.SurfaceView_antiAliasingType) {
                 mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(attr, ANTI_ALIASING_CONFIG.NONE.ordinal()));
-            } else if (attr == R.styleable.RajawaliSurfaceView_multiSampleCount) {
+            } else if (attr == R.styleable.SurfaceView_multiSampleCount) {
                 mMultiSampleCount = array.getInteger(attr, 0);
-            } else if (attr == R.styleable.RajawaliSurfaceView_isTransparent) {
+            } else if (attr == R.styleable.SurfaceView_isTransparent) {
                 mIsTransparent = array.getBoolean(attr, false);
-            } else if (attr == R.styleable.RajawaliSurfaceView_bitsRed) {
+            } else if (attr == R.styleable.SurfaceView_bitsRed) {
                 mBitsRed = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.RajawaliSurfaceView_bitsGreen) {
+            } else if (attr == R.styleable.SurfaceView_bitsGreen) {
                 mBitsGreen = array.getInteger(attr, 6);
-            } else if (attr == R.styleable.RajawaliSurfaceView_bitsBlue) {
+            } else if (attr == R.styleable.SurfaceView_bitsBlue) {
                 mBitsBlue = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.RajawaliSurfaceView_bitsAlpha) {
+            } else if (attr == R.styleable.SurfaceView_bitsAlpha) {
                 mBitsAlpha = array.getInteger(attr, 0);
-            } else if (attr == R.styleable.RajawaliSurfaceView_bitsDepth) {
+            } else if (attr == R.styleable.SurfaceView_bitsDepth) {
                 mBitsDepth = array.getInteger(attr, 16);
             }
         }
@@ -159,9 +160,9 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
 
     /**
      * Enable/Disable transparent background for this surface view.
-     * Must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}.
+     * Must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}.
      *
-     * @param isTransparent {@code boolean} If true, this {@link RajawaliSurfaceView} will be drawn transparent.
+     * @param isTransparent {@code boolean} If true, this {@link SurfaceView} will be drawn transparent.
      */
     public void setTransparent(boolean isTransparent) {
         mIsTransparent = isTransparent;
@@ -178,10 +179,10 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     }
 
     @Override
-    public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) throws IllegalStateException {
+    public void setSurfaceRenderer(ISurfaceRenderer renderer) throws IllegalStateException {
         if (mRendererDelegate != null) throw new IllegalStateException("A renderer has already been set for this view.");
         initialize();
-        final RendererDelegate delegate = new RajawaliSurfaceView.RendererDelegate(renderer, this);
+        final RendererDelegate delegate = new SurfaceView.RendererDelegate(renderer, this);
         super.setRenderer(delegate);
         mRendererDelegate = delegate; // Done to make sure we dont publish a reference before its safe.
         // Render mode cant be set until the GL thread exists
@@ -195,19 +196,19 @@ public class RajawaliSurfaceView extends GLSurfaceView implements IRajawaliSurfa
     }
 
     /**
-     * Delegate used to translate between {@link GLSurfaceView.Renderer} and {@link IRajawaliSurfaceRenderer}.
+     * Delegate used to translate between {@link GLSurfaceView.Renderer} and {@link ISurfaceRenderer}.
      *
      * @author Jared Woolston (jwoolston@tenkiv.com)
      */
     private static class RendererDelegate implements Renderer {
 
-        final RajawaliSurfaceView mRajawaliSurfaceView; // The surface view to render on
-        final IRajawaliSurfaceRenderer mRenderer; // The renderer
+        final SurfaceView      mRajawaliSurfaceView; // The surface view to render on
+        final ISurfaceRenderer mRenderer; // The renderer
 
-        public RendererDelegate(IRajawaliSurfaceRenderer renderer, RajawaliSurfaceView surfaceView) {
+        public RendererDelegate(ISurfaceRenderer renderer, SurfaceView surfaceView) {
             mRenderer = renderer;
             mRajawaliSurfaceView = surfaceView;
-            mRenderer.setFrameRate(mRajawaliSurfaceView.mRenderMode == IRajawaliSurface.RENDERMODE_WHEN_DIRTY ?
+            mRenderer.setFrameRate(mRajawaliSurfaceView.mRenderMode == ISurface.RENDERMODE_WHEN_DIRTY ?
                 mRajawaliSurfaceView.mFrameRate : 0);
             mRenderer.setAntiAliasingMode(mRajawaliSurfaceView.mAntiAliasingConfig);
             mRenderer.setRenderSurface(mRajawaliSurfaceView);

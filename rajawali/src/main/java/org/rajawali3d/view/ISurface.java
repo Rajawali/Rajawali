@@ -1,14 +1,15 @@
-package org.rajawali3d.surface;
+package org.rajawali3d.view;
 
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.ISurfaceRenderer;
+import org.rajawali3d.renderer.Renderer;
 
 /**
- * Interface which all rendering surfaces must implement so that {@link RajawaliRenderer} may send
+ * Interface which all rendering surfaces must implement so that {@link Renderer} may send
  * the few control signals it needs.
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public interface IRajawaliSurface {
+public interface ISurface {
 
     /**
      * Enum of available anti-aliasing configurations.
@@ -70,7 +71,7 @@ public interface IRajawaliSurface {
 
     /**
      * Called to enable/disable multisampling on this surface.
-     * Must be called before {@link #setSurfaceRenderer(IRajawaliSurfaceRenderer)}.
+     * Must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}.
      *
      * @param config {@link ANTI_ALIASING_CONFIG} The desired anti aliasing configuration.
      */
@@ -84,12 +85,12 @@ public interface IRajawaliSurface {
     public void setSampleCount(int count);
 
     /**
-     * Called to set the {@link IRajawaliSurfaceRenderer} which will render on this surface.
+     * Called to set the {@link ISurfaceRenderer} which will render on this surface.
      *
-     * @param renderer {@link IRajawaliSurfaceRenderer} instance.
+     * @param renderer {@link ISurfaceRenderer} instance.
      * @throws IllegalStateException Thrown if a renderer has already been set.
      */
-    public void setSurfaceRenderer(IRajawaliSurfaceRenderer renderer) throws IllegalStateException ;
+    public void setSurfaceRenderer(ISurfaceRenderer renderer) throws IllegalStateException ;
 
     /**
      * Called when a render request should be made.

@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -28,13 +28,13 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.IAnimationSequenceLoader;
 import org.rajawali3d.loader.ParsingException;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.RajLog;
 
 public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 	private static final String MD5_VERSION = "MD5Version";
 	private static final String COMMAND_LINE = "commandline";
-	
+
 	private static final String NUM_JOINTS = "numJoints";
 	private static final String NUM_FRAMES = "numFrames";
 	private static final String FRAME_RATE = "frameRate";
@@ -43,21 +43,21 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 	private static final String BOUNDS = "bounds";
 	private static final String BASEFRAME = "baseframe";
 	private static final String FRAME = "frame";
-	
+
 	private SkeletalAnimationSequence mSequence;
 	private String mAnimationName;
 	private SkeletonJoint[] mBaseFrame;
 	private SkeletonJoint[] mJoints;
 	private int mNumJoints;
 	private int mNumAnimatedComponents;
-	
-	public LoaderMD5Anim(String animationName, RajawaliRenderer renderer, String fileOnSDCard)
+
+	public LoaderMD5Anim(String animationName, Renderer renderer, String fileOnSDCard)
 	{
 		super(renderer, fileOnSDCard);
 		mAnimationName = animationName;
 	}
-	
-	public LoaderMD5Anim(String animationName, RajawaliRenderer renderer, int resourceId)
+
+	public LoaderMD5Anim(String animationName, Renderer renderer, int resourceId)
 	{
 		super(renderer, resourceId);
 		mAnimationName = animationName;
@@ -65,7 +65,7 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 
 	public LoaderMD5Anim parse() throws ParsingException {
 		super.parse();
-		
+
 		BufferedReader buffer = null;
 		if(mFile == null) {
 			InputStream fileIn = mResources.openRawResource(mResourceId);
@@ -78,23 +78,23 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 				e.printStackTrace();
 			}
 		}
-		
+
 		mSequence = new SkeletalAnimationSequence(mAnimationName);
 		SkeletalAnimationFrame[] frames = null;
 		String line;
-		
+
 		try {
 			while((line = buffer.readLine()) != null) {
 				line = line.replace("\t", " ");
 				StringTokenizer parts = new StringTokenizer(line, " ");
 				int numTokens = parts.countTokens();
-				
+
 				if(numTokens == 0)
 					continue;
 				String type = parts.nextToken();
-				
+
 				if(type.equalsIgnoreCase(MD5_VERSION)) {
-				} else if(type.equalsIgnoreCase(COMMAND_LINE)) { 
+				} else if(type.equalsIgnoreCase(COMMAND_LINE)) {
 				} else if(type.equalsIgnoreCase(NUM_JOINTS)) {
 					mNumJoints = Integer.parseInt(parts.nextToken());
 					mJoints = new SkeletonJoint[mNumJoints];
@@ -120,32 +120,32 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		mSequence.setFrames(frames);
-		
+
 		return this;
 	}
 
 	public IAnimationSequence getParsedAnimationSequence() {
 		return mSequence;
 	}
-	
+
 	private void parseHierarchy(BufferedReader buffer) {
 		try {
 			String line;
 			int index = 0;
-			
+
 			while((line = buffer.readLine()) != null) {
 				line = line.replace("\t", " ");
 				StringTokenizer parts = new StringTokenizer(line, " ");
-				
+
 				int numTokens = parts.countTokens();
-				
+
 				if(line.indexOf('}') > -1) return;
 				if(numTokens == 0) continue;
-				
+
 				SkeletonJoint joint = new SkeletonJoint();
-				
+
 				joint.setIndex(index);
 				joint.setName(parts.nextToken());
 				joint.setParentIndex(Integer.parseInt(parts.nextToken()));
@@ -158,7 +158,7 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void parseBounds(SkeletalAnimationFrame[] frames, BufferedReader buffer) {
 		try {
 			String line;
@@ -169,7 +169,7 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 				int numTokens = parts.countTokens();
 				if(line.indexOf('}') > -1) return;
 				if(numTokens == 0) continue;
-				
+
 				SkeletalAnimationFrame frame = new SkeletalAnimationFrame();
 				frames[index++] = frame;
 				// discard (
@@ -180,16 +180,16 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 				parts.nextToken();
 				// discard (
 				parts.nextToken();
-			
+
 				Vector3 max = new Vector3(Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()), Float.parseFloat(parts.nextToken()));
-				
+
 				frame.setBounds(min, max);
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void parseFrame(SkeletalAnimationFrame[] frames, int frameIndex, BufferedReader buffer) {
 		try {
 			String line;
@@ -199,12 +199,12 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 			SkeletonJoint[] joints = new SkeletonJoint[mNumJoints];
 			float[] frameData = new float[mNumAnimatedComponents];
 			int index = 0;
-			
+
 			while((line = buffer.readLine()) != null) {
 				line = line.replace("\t", " ");
 
 				StringTokenizer parts = new StringTokenizer(line, " ");
-				
+
 				if(line.indexOf('}') > -1) {
 					skeleton.setJoints(joints);
 					buildFrameSkeleton(frameData, skeleton);
@@ -224,7 +224,7 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 		for(int i=0; i<mNumJoints; ++i) {
 			SkeletonJoint joint = new SkeletonJoint(mBaseFrame[i]);
 			SkeletonJoint jointInfo = mJoints[i];
-		
+
 			joint.setParentIndex(jointInfo.getParentIndex());
 
 			int j = 0;
@@ -237,7 +237,7 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 			if((jointInfo.getFlags() & 16) == 16) joint.getOrientation().z = frameData[startIndex + j++];
 			if((jointInfo.getFlags() & 32) == 32) joint.getOrientation().y = frameData[startIndex + j++];
 			joint.getOrientation().computeW();
-			
+
 			if (joint.getParentIndex() >= 0 ) // Has a parent joint
 	        {
 	            SkeletonJoint parentJoint = skeleton.getJoint(joint.getParentIndex());
@@ -250,34 +250,34 @@ public class LoaderMD5Anim extends ALoader implements IAnimationSequenceLoader {
 			skeleton.setJoint(i, joint);
 		}
 	}
-	
+
 	private void parseBaseFrame(BufferedReader buffer) {
 		try {
 			String line;
 			int index = 0;
-			
+
 			while((line = buffer.readLine()) != null) {
 				line = line.replace("\t", " ");
 				StringTokenizer parts = new StringTokenizer(line, " ");
 				int numTokens = parts.countTokens();
 				if(line.indexOf('}') > -1) return;
 				if(numTokens == 0) continue;
-				
+
 				SkeletonJoint joint = new SkeletonJoint();
 				mBaseFrame[index++] = joint;
-				
+
 				// ignore "("
 				parts.nextToken();
 				float x = Float.parseFloat(parts.nextToken());
 				float y = Float.parseFloat(parts.nextToken());
 				float z = Float.parseFloat(parts.nextToken());
 				joint.setPosition(x, z, y);
-				
+
 				// ignore ")"
 				parts.nextToken();
 				// ignore "("
 				parts.nextToken();
-				
+
 				x = Float.parseFloat(parts.nextToken());
 				y = Float.parseFloat(parts.nextToken());
 				z = Float.parseFloat(parts.nextToken());

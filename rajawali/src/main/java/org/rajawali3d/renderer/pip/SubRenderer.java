@@ -11,25 +11,21 @@
 package org.rajawali3d.renderer.pip;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.RajawaliScene;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * This class is intended to be used with <code>RajawaliPipRenderer</code>.
+ * This class is intended to be used with <code>PipRenderer</code>.
  */
 public abstract class SubRenderer {
     private static final String TAG = "SubRenderer";
     private RajawaliScene scene;
-    private RajawaliRenderer renderer;
+    private Renderer      renderer;
 
-    public SubRenderer(RajawaliRenderer renderer) {
+    public SubRenderer(Renderer renderer) {
         scene = new RajawaliScene(renderer);
         renderer.addScene(scene);
         this.renderer = renderer;

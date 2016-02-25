@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="RajawaliSurfaceView">
+    <declare-styleable name="SurfaceView">
         <attr name="frameRate" />
         <attr name="renderMode" />
         <attr name="antiAliasingType"/>
@@ -13,7 +13,7 @@
         <attr name="multiSampleCount" />
     </declare-styleable>
 
-    <declare-styleable name="RajawaliTextureView">
+    <declare-styleable name="TextureView">
         <attr name="frameRate" />
         <attr name="renderMode" />
         <attr name="antiAliasingType" />

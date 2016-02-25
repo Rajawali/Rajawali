@@ -30,8 +30,8 @@ import org.rajawali3d.scene.RajawaliScene;
  * is placed.
  * </p>
  */
-public class RajawaliPipRenderer extends RajawaliRenderer {
-    private static final String TAG = "RajawaliPipRenderer";
+public class PipRenderer extends Renderer {
+    private static final String TAG = "PipRenderer";
 
     private RenderTarget mMainRenderTarget;
     private RenderTarget mMiniRenderTarget;
@@ -59,7 +59,7 @@ public class RajawaliPipRenderer extends RajawaliRenderer {
      * @param pipMarginX Margin space from the mini view to the edge of the main view in pixels
      * @param pipMarginY Margin space from the mini view to the edge of the main view in pixels
      */
-    public RajawaliPipRenderer(Context context, float pipScale, float pipMarginX, float pipMarginY) {
+    public PipRenderer(Context context, float pipScale, float pipMarginX, float pipMarginY) {
         super(context);
         mPipScale = pipScale;
         mPipMarginX = pipMarginX;

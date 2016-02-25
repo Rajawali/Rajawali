@@ -4,7 +4,7 @@ import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.ScreenQuad;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.scene.RajawaliScene;
 
@@ -12,11 +12,11 @@ import org.rajawali3d.scene.RajawaliScene;
 public class ShadowPass extends RenderPass {
 	private RenderTarget mShadowRenderTarget;
 	private int mShadowMapSize;
-	
+
 	public static enum ShadowPassType {
 		CREATE_SHADOW_MAP, APPLY_SHADOW_MAP
 	}
-	
+
 	private ShadowMapMaterial mShadowMapMaterial;
 	private ShadowPassType mShadowPassType;
 
@@ -33,9 +33,9 @@ public class ShadowPass extends RenderPass {
 			setMaterial(mShadowMapMaterial);
 		}
 	}
-	
+
 	@Override
-	public void render(RajawaliScene scene, RajawaliRenderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
+	public void render(RajawaliScene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
 		if(mShadowPassType == ShadowPassType.APPLY_SHADOW_MAP) {
 			mShadowMapMaterial.setShadowMapTexture(mShadowRenderTarget.getTexture());
 			super.render(scene, renderer, screenQuad, writeBuffer, readBuffer, ellapsedTime, deltaTime);
@@ -45,11 +45,11 @@ public class ShadowPass extends RenderPass {
             renderer.clearOverrideViewportDimensions();
 		}
 	}
-	
+
 	public ShadowMapMaterial getShadowMapMaterial() {
 		return mShadowMapMaterial;
 	}
-	
+
 	public void setShadowMapMaterial(ShadowMapMaterial shadowMapMaterial) {
 		mShadowMapMaterial = shadowMapMaterial;
 	}

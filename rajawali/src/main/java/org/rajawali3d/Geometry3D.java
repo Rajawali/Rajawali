@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -25,7 +25,7 @@ import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.BoundingSphere;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.RajLog;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -49,12 +49,12 @@ import android.opengl.GLES20;
  * // Get colors (r, g, b, a)
  * FloatBuffer colors = geom.getColors();
  * // Get indices. This can be either a ShortBuffer or a FloatBuffer. This depends
- * // on the device it runs on. (See RajawaliRenderer.supportsUIntBuffers)
+ * // on the device it runs on. (See Renderer.supportsUIntBuffers)
  * FloatBuffer indices = geom.getIndices();
  * ShortBuffer indices = geom.getIndices();
  * </pre></code>
- * 
- * @see RajawaliRenderer.supportsUIntBuffers
+ *
+ * @see Renderer.supportsUIntBuffers
  * @author dennis.ippel
  *
  */
@@ -64,13 +64,13 @@ public class Geometry3D {
 	public static final int INT_SIZE_BYTES = 4;
 	public static final int SHORT_SIZE_BYTES = 2;
     public static final int BYTE_SIZE_BYTES = 1;
-	
+
 	/**
 	 * FloatBuffer containing vertex data (x, y, z)
 	 */
 	protected FloatBuffer mVertices;
 	/**
-	 * FloatBuffer containing normal data (x, y, z) 
+	 * FloatBuffer containing normal data (x, y, z)
 	 */
 	protected FloatBuffer mNormals;
 	/**
@@ -85,14 +85,14 @@ public class Geometry3D {
 	 * IntBuffer containing index data. Whether this buffer is used or not depends
 	 * on the hardware capabilities. If int buffers aren't supported then short
 	 * buffers will be used.
-	 * @see RajawaliRenderer.supportsUIntBuffers
+	 * @see Renderer.supportsUIntBuffers
 	 */
 	protected IntBuffer mIndicesInt;
 	/**
 	 * ShortBuffer containing index data. Whether this buffer is used or not depends
 	 * on the hardware capabilities. If int buffers aren't supported then short
 	 * buffers will be used.
-	 * @see RajawaliRenderer.supportsUIntBuffers
+	 * @see Renderer.supportsUIntBuffers
 	 */
 	protected ShortBuffer mIndicesShort;
 	/**
@@ -133,7 +133,7 @@ public class Geometry3D {
 	/**
 	 * Indices whether only short buffers are supported. Not all devices support
 	 * integer buffers.
-	 * @see RajawaliRenderer.supportsUIntBuffers
+	 * @see Renderer.supportsUIntBuffers
 	 */
 	protected boolean mOnlyShortBufferSupported = false;
 
@@ -143,7 +143,7 @@ public class Geometry3D {
     protected boolean mHaveCreatedBuffers;
 
 	/**
-	 * The bounding box for this geometry. This is used for collision detection. 
+	 * The bounding box for this geometry. This is used for collision detection.
 	 */
 	protected BoundingBox mBoundingBox;
 	/**
@@ -165,7 +165,7 @@ public class Geometry3D {
 		SHORT_BUFFER,
         BYTE_BUFFER
 	}
-	
+
 	public Geometry3D() {
         mHaveCreatedBuffers = false;
         mVertexBufferInfo = new BufferInfo();
@@ -174,13 +174,13 @@ public class Geometry3D {
         mColorBufferInfo = new BufferInfo();
         mNormalBufferInfo = new BufferInfo();
 	}
-	
+
 	/**
 	 * Concatenates a list of float arrays into a single array.
-	 * 
+	 *
 	 * @param arrays The arrays.
 	 * @return The concatenated array.
-	 * 
+	 *
 	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
 	 */
 	public static float[] concatAllFloat(float[] ... arrays) {
@@ -197,13 +197,13 @@ public class Geometry3D {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Concatenates a list of int arrays into a single array.
-	 * 
+	 *
 	 * @param arrays The arrays.
 	 * @return The concatenated array.
-	 * 
+	 *
 	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
 	 */
 	public static int[] concatAllInt(int[] ... arrays) {
@@ -220,7 +220,7 @@ public class Geometry3D {
 		}
 		return result;
 	}
-	
+
 	public static float[] getFloatArrayFromBuffer(FloatBuffer buffer) {
 		float[] array = null;
 		if (buffer.hasArray()) {
@@ -228,11 +228,11 @@ public class Geometry3D {
 		} else {
 			buffer.rewind();
 			array = new float[buffer.capacity()];
-			buffer.get(array);		
+			buffer.get(array);
 		}
 		return array;
 	}
-	
+
 	public static int[] getIntArrayFromBuffer(Buffer buffer) {
 		int[] array = null;
 		if (buffer.hasArray()) {
@@ -252,7 +252,7 @@ public class Geometry3D {
 		}
 		return array;
 	}
-	
+
 	/**
 	 * Copies another Geometry3D's BufferInfo objects. This means that it
 	 * doesn't copy or clone the actual data. It will just use the pointers
@@ -273,11 +273,11 @@ public class Geometry3D {
 		this.mHasNormals = geom.hasNormals();
 		this.mHasTextureCoordinates = geom.hasTextureCoordinates();
 	}
-	
+
 	/**
 	 * Adds the geometry from the incoming geometry with the specified offset.
 	 * Note that the offset is only applied to the vertex positions.
-	 * 
+	 *
 	 * @param offset {@link Vector3} containing the offset in each direction. Can be null.
 	 * @param geometry {@link Geometry3D} to be added.
      * @param createVBOs {@code boolean} If true, create the VBOs immediately.
@@ -304,7 +304,7 @@ public class Geometry3D {
 		} else {
         	mIndicesArray = getIntArrayFromBuffer(mIndicesShort);
         }
-		
+
 		//Get the new data, offset the vertices
 		int axis = 0;
 		float[] addVertices = getFloatArrayFromBuffer(geometry.getVertices());
@@ -334,14 +334,14 @@ public class Geometry3D {
 		for (int i = 0, j = addIndices.length; i < j; ++i) {
 			addIndices[i] += index_offset;
 		}
-		
+
 		//Concatenate the old and new data
 		newVertices = concatAllFloat(mVerticesArray, addVertices);
 		newNormals = concatAllFloat(mNormalsArray, addNormals);
 		newColors = concatAllFloat(mColorsArray, addColors);
 		newTextureCoords = concatAllFloat(mTextureCoordsArray, addTextureCoords);
 		newIntIndices = concatAllInt(mIndicesArray, (int[]) addIndices);
-		
+
 		//Set the new data
 		setVertices(newVertices, true);
 		mNormals = null;
@@ -359,14 +359,14 @@ public class Geometry3D {
             createBuffers();
         }
 	}
-	
+
 	/**
 	 * Sets the data. This methods takes two BufferInfo objects which means it'll use another
 	 * Geometry3D instance's data (vertices and normals). The remaining parameters are arrays
 	 * which will be used to create buffers that are unique to this instance.
 	 * <p>
 	 * This is typically used with VertexAnimationObject3D instances.
-	 * 
+	 *
 	 * @param vertexBufferInfo
 	 * @param normalBufferInfo
 	 * @param textureCoords
@@ -383,23 +383,23 @@ public class Geometry3D {
 		if(colors == null || colors.length == 0)
 			setColors(0xff000000 + (int)(Math.random() * 0xffffff));
 		else
-			setColors(colors);	
+			setColors(colors);
 		setIndices(indices);
-		
+
 		mVertexBufferInfo = vertexBufferInfo;
 		mNormalBufferInfo = normalBufferInfo;
-		
+
 		mOriginalGeometry = null;
 
         if (createVBOs) {
             createBuffers();
         }
 	}
-	
+
 	/**
 	 * Sets the data. Assumes that the data will never be changed and passes GLES20.GL_STATIC_DRAW
-	 * to the OpenGL context when the buffers are created. 
-	 * 
+	 * to the OpenGL context when the buffers are created.
+	 *
 	 * @param vertices
 	 * @param normals
 	 * @param textureCoords
@@ -413,11 +413,11 @@ public class Geometry3D {
 		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords,
             GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
 	}
-	
+
 	/**
 	 * Sets the data. This method takes an additional parameters that specifies the data used for each buffer.
 	 * <p>
-	 * Usage is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. 
+	 * Usage is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store.
 	 * <p>
 	 * Usage can be broken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. The frequency of access may be one of these:
 	 * <p>
@@ -440,7 +440,7 @@ public class Geometry3D {
 	 * <p>
 	 * COPY
 	 * The data store contents are modified by reading data from the GL, and used as the source for GL drawing and image specification commands.
-	 * 
+	 *
 	 * @param vertices
 	 * @param verticesUsage
 	 * @param normals
@@ -454,7 +454,7 @@ public class Geometry3D {
      * @param createVBOs
 	 */
 	public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage,
-			float[] textureCoords, int textureCoordsUsage, float[] colors, int colorsUsage, 
+			float[] textureCoords, int textureCoordsUsage, float[] colors, int colorsUsage,
 			int[] indices, int indicesUsage, boolean createVBOs) {
 		mVertexBufferInfo.usage = verticesUsage;
 		mNormalBufferInfo.usage = normalsUsage;
@@ -466,7 +466,7 @@ public class Geometry3D {
 			setNormals(normals);
 		if(textureCoords == null || textureCoords.length == 0)
 			textureCoords = new float[(vertices.length / 3) * 2];
-		
+
 		setTextureCoords(textureCoords);
 		if(colors != null && colors.length > 0)
 			setColors(colors);
@@ -476,13 +476,13 @@ public class Geometry3D {
             createBuffers();
         }
 	}
-	
+
 	/**
-	 * Creates the actual Buffer objects. 
+	 * Creates the actual Buffer objects.
 	 */
 	public void createBuffers() {
-		boolean supportsUIntBuffers = RajawaliRenderer.supportsUIntBuffers;
-		
+		boolean supportsUIntBuffers = Renderer.supportsUIntBuffers;
+
 		if(mVertices != null) {
 			mVertices.compact().position(0);
 			createBuffer(mVertexBufferInfo, BufferType.FLOAT_BUFFER, mVertices, GLES20.GL_ARRAY_BUFFER);
@@ -503,16 +503,16 @@ public class Geometry3D {
 			mIndicesInt.compact().position(0);
 			createBuffer(mIndexBufferInfo, BufferType.INT_BUFFER, mIndicesInt, GLES20.GL_ELEMENT_ARRAY_BUFFER);
 		}
-		
+
 		if(mOnlyShortBufferSupported || !supportsUIntBuffers) {
 			mOnlyShortBufferSupported = true;
-			
+
 			if(mIndicesShort == null && mIndicesInt != null) {
 				mIndicesInt.position(0);
 				mIndicesShort = ByteBuffer
 						.allocateDirect(mNumIndices * SHORT_SIZE_BYTES)
 						.order(ByteOrder.nativeOrder()).asShortBuffer();
-				
+
 				try {
 					for(int i=0; i<mNumIndices; ++i) {
 						mIndicesShort.put((short)mIndicesInt.get(i));
@@ -521,7 +521,7 @@ public class Geometry3D {
 					RajLog.e("Buffer overflow. Unfortunately your device doesn't supported int type index buffers. The mesh is too big.");
 					throw(e);
 				}
-				
+
 				mIndicesInt.clear();
 				mIndicesInt.limit();
 				mIndicesInt = null;
@@ -537,7 +537,7 @@ public class Geometry3D {
 
         mHaveCreatedBuffers = true;
 	}
-	
+
 	/**
 	 * Reload is typically called whenever the OpenGL context needs to be restored.
 	 * All buffer data is re-uploaded and a new handle is obtained.
@@ -552,7 +552,7 @@ public class Geometry3D {
 		}
 		createBuffers();
 	}
-	
+
 	/**
 	 * Checks whether the handle to the vertex buffer is still valid or not.
 	 * The handle typically becomes invalid whenever the OpenGL context is lost.
@@ -562,27 +562,27 @@ public class Geometry3D {
 	public boolean isValid() {
 		return GLES20.glIsBuffer(mVertexBufferInfo.bufferHandle);
 	}
-	
+
 	/**
-	 * Creates the vertex and normal buffers only. This is typically used for a 
+	 * Creates the vertex and normal buffers only. This is typically used for a
 	 * VertexAnimationObject3D's frames.
-	 * 
+	 *
 	 * @see VertexAnimationObject3D
 	 */
 	public void createVertexAndNormalBuffersOnly() {
 		mVertices.compact().position(0);
 		mNormals.compact().position(0);
-		
+
 		createBuffer(mVertexBufferInfo, BufferType.FLOAT_BUFFER, mVertices, GLES20.GL_ARRAY_BUFFER);
 		createBuffer(mNormalBufferInfo, BufferType.FLOAT_BUFFER, mNormals, GLES20.GL_ARRAY_BUFFER);
 
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
-	
+
 	/**
 	 * Creates a buffer and assumes the buffer will be used for static drawing only.
-	 * 
+	 *
 	 * @param bufferInfo
 	 * @param type
 	 * @param buffer
@@ -634,7 +634,7 @@ public class Geometry3D {
 	public void createBuffer(BufferInfo bufferInfo) {
 		createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.buffer, bufferInfo.target, bufferInfo.usage);
 	}
-	
+
 	public void validateBuffers() {
         if (!mHaveCreatedBuffers) {
             createBuffers();
@@ -659,18 +659,18 @@ public class Geometry3D {
             createBuffer(mNormalBufferInfo);
         }
 	}
-	
+
 	/**
-	 * Specifies the expected usage pattern of the data store. The symbolic constant must be 
-	 * GLES20.GL_STREAM_DRAW, GLES20.GL_STREAM_READ, GLES20.GL_STREAM_COPY, GLES20.GL_STATIC_DRAW, 
-	 * GLES20.GL_STATIC_READ, GLES20.GL_STATIC_COPY, GLES20.GL_DYNAMIC_DRAW, GLES20.GL_DYNAMIC_READ, 
+	 * Specifies the expected usage pattern of the data store. The symbolic constant must be
+	 * GLES20.GL_STREAM_DRAW, GLES20.GL_STREAM_READ, GLES20.GL_STREAM_COPY, GLES20.GL_STATIC_DRAW,
+	 * GLES20.GL_STATIC_READ, GLES20.GL_STATIC_COPY, GLES20.GL_DYNAMIC_DRAW, GLES20.GL_DYNAMIC_READ,
 	 * or GLES20.GL_DYNAMIC_COPY.
-	 * 
-	 * Usage is a hint to the GL implementation as to how a buffer object's data store will be 
-	 * accessed. This enables the GL implementation to make more intelligent decisions that may 
-	 * significantly impact buffer object performance. It does not, however, constrain the actual 
-	 * usage of the data store. usage can be broken down into two parts: first, the frequency of 
-	 * access (modification and usage), and second, the nature of that access. The frequency of 
+	 *
+	 * Usage is a hint to the GL implementation as to how a buffer object's data store will be
+	 * accessed. This enables the GL implementation to make more intelligent decisions that may
+	 * significantly impact buffer object performance. It does not, however, constrain the actual
+	 * usage of the data store. usage can be broken down into two parts: first, the frequency of
+	 * access (modification and usage), and second, the nature of that access. The frequency of
 	 * access may be one of these:
 	 * <p>
 	 * STREAM
@@ -692,7 +692,7 @@ public class Geometry3D {
 	 * <p>
 	 * COPY
 	 * The data store contents are modified by reading data from the GL, and used as the source for GL drawing and image specification commands.
-	 * 
+	 *
 	 * @param bufferHandle
 	 * @param usage
 	 */
@@ -700,7 +700,7 @@ public class Geometry3D {
 		GLES20.glDeleteBuffers(1, new int[] { bufferInfo.bufferHandle }, 0);
 		createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.buffer, bufferInfo.target);
 	}
-	
+
     /**
      * Change a specific subset of the buffer's data at the given offset to the given length.
      *
@@ -764,7 +764,7 @@ public class Geometry3D {
 	public void setVertices(float[] vertices) {
 		setVertices(vertices, false);
 	}
-	
+
 	public void setVertices(float[] vertices, boolean override) {
 		if(mVertices == null || override == true) {
 			if(mVertices != null) {
@@ -773,7 +773,7 @@ public class Geometry3D {
 			mVertices = ByteBuffer
 					.allocateDirect(vertices.length * FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
-			
+
 			mVertices.put(vertices);
 			mVertices.position(0);
 			mNumVertices = vertices.length / 3;
@@ -781,20 +781,20 @@ public class Geometry3D {
 			mVertices.put(vertices);
 		}
 	}
-	
+
 	public void setVertices(FloatBuffer vertices) {
 		vertices.position(0);
 		float[] v = new float[vertices.capacity()];
 		vertices.get(v);
 		setVertices(v);
 	}
-	
+
 	public FloatBuffer getVertices() {
 		if(mOriginalGeometry != null)
 			return mOriginalGeometry.getVertices();
 		return mVertices;
 	}
-	
+
 	public void setNormals(float[] normals) {
 		if(normals == null) return;
 		if(mNormals == null) {
@@ -807,10 +807,10 @@ public class Geometry3D {
 			mNormals.put(normals);
 			mNormals.position(0);
 		}
-		
+
 		mHasNormals = true;
 	}
-	
+
 	public void setNormals(FloatBuffer normals) {
 		normals.position(0);
 		float[] n = new float[normals.capacity()];
@@ -818,35 +818,35 @@ public class Geometry3D {
 		setNormals(n);
 	}
 
-	
+
 	public FloatBuffer getNormals() {
 		if(mOriginalGeometry != null)
 			return mOriginalGeometry.getNormals();
 		return mNormals;
 	}
-	
+
 	public boolean hasNormals() {
 		return mHasNormals;
 	}
-	
+
 	public void setIndices(int[] indices) {
 		if(mIndicesInt == null) {
 			mIndicesInt = ByteBuffer.allocateDirect(indices.length * INT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asIntBuffer();
 			mIndicesInt.put(indices).position(0);
-	
+
 			mNumIndices = indices.length;
 		} else {
 			mIndicesInt.put(indices);
 		}
 	}
-	
+
 	public Buffer getIndices() {
 		if(mIndicesInt == null && mOriginalGeometry != null)
 			return mOriginalGeometry.getIndices();
 		return mOnlyShortBufferSupported ? mIndicesShort : mIndicesInt;
 	}
-	
+
 	public void setTextureCoords(float[] textureCoords) {
 		if(textureCoords == null) return;
 		if(mTextureCoords == null) {
@@ -860,21 +860,21 @@ public class Geometry3D {
 		}
 		mHasTextureCoordinates = true;
 	}
-	
+
 	public FloatBuffer getTextureCoords() {
 		if(mTextureCoords == null && mOriginalGeometry != null)
 			return mOriginalGeometry.getTextureCoords();
 		return mTextureCoords;
 	}
-	
+
 	public boolean hasTextureCoordinates() {
 		return mHasTextureCoordinates;
 	}
-	
+
 	public void setColors(int color) {
 		setColor(Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color));
 	}
-	
+
 	public void setColors(float[] colors) {
 		if(mColors == null) {
 			mColors = ByteBuffer
@@ -887,13 +887,13 @@ public class Geometry3D {
 			mColors.position(0);
 		}
 	}
-	
+
 	public FloatBuffer getColors() {
 		if(mColors == null && mOriginalGeometry != null)
 			return mOriginalGeometry.getColors();
 		return mColors;
 	}
-	
+
 	public int getNumIndices() {
 		return mNumIndices;
 	}
@@ -909,11 +909,11 @@ public class Geometry3D {
     public void setNumVertices(int numVertices) {
         mNumVertices = numVertices;
     }
-	
+
 	public void setColor(float r, float g, float b, float a) {
 		setColor(r, g, b, a, false);
 	}
-	
+
 	public void setColor(float r, float g, float b, float a, boolean createNewBuffer) {
 		if(mColors == null || mColors.limit() == 0)
 		{
@@ -922,9 +922,9 @@ public class Geometry3D {
 			.order(ByteOrder.nativeOrder()).asFloatBuffer();
 			createNewBuffer = true;
 		}
-		
+
 		mColors.position(0);
-		
+
 		while(mColors.remaining() > 3) {
 			mColors.put(r);
 			mColors.put(g);
@@ -932,7 +932,7 @@ public class Geometry3D {
 			mColors.put(a);
 		}
 		mColors.position(0);
-		
+
 		if(createNewBuffer == true) {
 			createBuffer(mColorBufferInfo, BufferType.FLOAT_BUFFER, mColors, GLES20.GL_ARRAY_BUFFER);
 		} else {
@@ -941,23 +941,23 @@ public class Geometry3D {
 		}
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 	}
-	
+
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		if(mIndicesInt != null) buff.append("Geometry3D indices: ").append(mIndicesInt.capacity());
 		if(mVertices != null) buff.append(", vertices: ").append(mVertices.capacity());
 		if(mNormals != null) buff.append(", normals: ").append(mNormals.capacity());
 		if(mTextureCoords != null) buff.append(", uvs: ").append(mTextureCoords.capacity()).append("\n");
-		
+
 		if(mVertexBufferInfo != null) buff.append("vertex buffer handle: ").append(mVertexBufferInfo.bufferHandle).append("\n");
 	    if(mIndexBufferInfo != null) buff.append("index buffer handle: ").append(mIndexBufferInfo.bufferHandle).append("\n");
 	    if(mNormalBufferInfo != null) buff.append("normal buffer handle: ").append(mNormalBufferInfo.bufferHandle).append("\n");
 	    if(mTexCoordBufferInfo != null) buff.append("texcoord buffer handle: ").append(mTexCoordBufferInfo.bufferHandle).append("\n");
 	    if(mColorBufferInfo != null) buff.append("color buffer handle: ").append(mColorBufferInfo.bufferHandle).append("\n");
-		
+
 		return buff.toString();
 	}
-	
+
 	public void destroy() {
 		int[] buffers  = new int[5];
 	    if(mIndexBufferInfo != null) buffers[0] = mIndexBufferInfo.bufferHandle;
@@ -995,15 +995,15 @@ public class Geometry3D {
 	    mNormalBufferInfo=null;
 	    mTexCoordBufferInfo=null;
 	}
-	
+
 	public boolean hasBoundingBox() {
 		return mBoundingBox != null;
 	}
-	
+
 	/**
 	 * Gets the bounding box for this geometry. If there is no current bounding
-	 * box it will be calculated. 
-	 * 
+	 * box it will be calculated.
+	 *
 	 * @return
 	 */
 	public BoundingBox getBoundingBox() {
@@ -1015,7 +1015,7 @@ public class Geometry3D {
 	public boolean hasBoundingSphere() {
 		return mBoundingSphere != null;
 	}
-	
+
 	/**
 	 * Gets the bounding sphere for this geometry. If there is not current bounding
 	 * sphere it will be calculated.
@@ -1068,16 +1068,16 @@ public class Geometry3D {
 		this.mNormalBufferInfo = normalBufferInfo;
         this.mHasNormals = true;
 	}
-	
+
 	/**
 	 * Indices whether only short buffers are supported. Not all devices support
 	 * integer buffers.
-	 * @see RajawaliRenderer.supportsUIntBuffers
+	 * @see Renderer.supportsUIntBuffers
 	 */
 	public boolean areOnlyShortBuffersSupported() {
 		return mOnlyShortBufferSupported;
 	}
-	
+
 	public int getNumTriangles() {
 		return mVertices != null ? mVertices.limit() / 9 : 0;
 	}

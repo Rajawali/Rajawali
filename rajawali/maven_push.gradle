@@ -1,12 +1,22 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+if (isReleaseBuild()) {
+    println 'RELEASE BUILD'
+} else {
+    println 'DEBUG BUILD'
+}
+
 def getRepositoryUsername() {
-    return hasProperty('SONATYPE_USERNAME') ? SONATYPE_USERNAME : System.getenv('SONATYPE_USERNAME') != null ? System.getenv('SONATYPE_USERNAME') : ""
+    return System.getenv('SONATYPE_USERNAME') ?: hasProperty('SONATYPE_USERNAME') ? sonatype_user : ""
 }
 
 def getRepositoryPassword() {
-    return hasProperty('SONATYPE_PASSWORD') ? SONATYPE_PASSWORD : System.getenv('SONATYPE_PASSWORD') != null ? System.getenv('SONATYPE_PASSWORD') : ""
+    return System.getenv('SONATYPE_PASSWORD') ?: hasProperty('SONATYPE_PASSWORD') ? sonatype_pass : ""
+}
+
+String getBranchName() {
+    return System.getenv('TRAVIS_BRANCH')
 }
 
 boolean isLocal() {
@@ -18,29 +28,27 @@ boolean isRelease() {
 }
 
 afterEvaluate { project ->
+
+    println "Is Tag ${isTag()}"
+    println "Branch ${getBranchName()}"
+    println "Is Release ${isReleaseBuild()}"
+    println "Is Travis ${isTravis()}"
+    println "Has Username ${!getRepositoryUsername().empty}"
+    println "Has Password ${!getRepositoryPassword().empty}"
+    println "Determined Version ${version}"
+
     uploadArchives {
-
-        println "Is Tag ${isTag()}"
-        println "Branch ${getBranchName()}"
-        println "Is Release ${isRelease()}"
-        println "Is Local ${isLocal()}"
-        println "Has Username ${!getRepositoryUsername().empty}"
-        println "Has Password ${!getRepositoryPassword().empty}"
-        println "Determined Version ${version}"
-
         repositories {
             mavenDeployer {
-                beforeDeployment {
-                    MavenDeployment deployment -> signing.signPom(deployment)
-                }
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
                 pom.artifactId = POM_ARTIFACT_ID
 
-                repository(url: isLocal() ? mavenLocal().url : "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
-                snapshotRepository(url: isLocal() ? mavenLocal().url : "https://oss.sonatype.org/content/repositories/snapshots") {
+                snapshotRepository(url: isTravis() ? "https://oss.sonatype.org/content/repositories/snapshots" : mavenLocal().url) {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
 
@@ -79,28 +87,28 @@ afterEvaluate { project ->
     }
 
     signing {
-        required { isRelease() && gradle.taskGraph.hasTask("uploadArchives") }
+        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
         sign configurations.archives
     }
 
     task androidJavadocs(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
+        source = android.sourceSets.main.java.sourceFiles
     }
 
     task androidJavadocsJar(type: Jar) {
         classifier = 'javadoc'
-        baseName = project.projectDir.getName().toLowerCase()
+        //basename = artifact_id
         from androidJavadocs.destinationDir
     }
 
     task androidSourcesJar(type: Jar) {
         classifier = 'sources'
-        baseName = project.projectDir.getName().toLowerCase()
-        from android.sourceSets.main.java.srcDirs
+        //basename = artifact_id
+        from android.sourceSets.main.java.sourceFiles
     }
 
     artifacts {
-        archives packageReleaseJar
+        //archives packageReleaseJar
         archives androidSourcesJar
         archives androidJavadocsJar
     }

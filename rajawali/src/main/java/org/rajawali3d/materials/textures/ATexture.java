@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.renderer.AFrameTask;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
@@ -78,7 +77,7 @@ public abstract class ATexture {
 	/**
 	 * Possible bitmap configurations. A bitmap configuration describes how pixels are stored. This affects the quality
 	 * (color depth) as well as the ability to display transparent/translucent colors.
-	 * 
+	 *
 	 * {@link Config}
 	 */
 	protected int mBitmapFormat;
@@ -116,7 +115,7 @@ public abstract class ATexture {
 	 */
 	protected Config mBitmapConfig;
 	/**
-	 * A list of materials that use this texture. 
+	 * A list of materials that use this texture.
 	 */
 	protected List<Material> mMaterialsUsingTexture;
 	/**
@@ -128,18 +127,18 @@ public abstract class ATexture {
 	 */
 	protected int mGLTextureType = GLES20.GL_TEXTURE_2D;
 	/**
-	 * This texture's unique owner identity String. This is usually the 
-	 * fully qualified name of the {@link RajawaliRenderer} instance.  
+	 * This texture's unique owner identity String. This is usually the
+	 * fully qualified name of the {@link Renderer} instance.
 	 */
 	protected String mOwnerIdentity;
 	protected float mInfluence = 1.0f;
 	protected float[] mRepeat = new float[] { 1, 1 };
 	protected boolean mEnableOffset;
 	protected float[] mOffset = new float[] { 0, 0 };
-	
+
 	/**
 	 * Creates a new ATexture instance with the specified texture type
-	 * 
+	 *
 	 * @param textureType
 	 */
 	public ATexture(TextureType textureType, String textureName)
@@ -152,35 +151,35 @@ public abstract class ATexture {
 		mWrapType = WrapType.REPEAT;
 		mFilterType = FilterType.LINEAR;
 	}
-	
+
 	public ATexture(TextureType textureType, String textureName, ACompressedTexture compressedTexture)
 	{
 		this(textureType, textureName);
 		setCompressedTexture(compressedTexture);
 	}
-	
+
 	protected ATexture() {
 		mMaterialsUsingTexture = Collections.synchronizedList(new CopyOnWriteArrayList<Material>());
 	}
 
 	/**
 	 * Creates a new TextureConfig instance and copies all properties from another TextureConfig object.
-	 * 
+	 *
 	 * @param other
 	 */
 	public ATexture(ATexture other)
 	{
 		setFrom(other);
 	}
-	
+
 	/**
 	 * Creates a clone
 	 */
 	abstract public ATexture clone();
-	
+
 	/**
 	 * Copies every property from another ATexture object
-	 * 
+	 *
 	 * @param other
 	 *            another ATexture object to copy from
 	 */
@@ -202,7 +201,7 @@ public abstract class ATexture {
 		mGLTextureType = other.getGLTextureType();
 		mMaterialsUsingTexture = other.mMaterialsUsingTexture;
 	}
-	
+
 	/**
 	 * @return the texture id
 	 */
@@ -278,7 +277,7 @@ public abstract class ATexture {
 	public void setBitmapFormat(int bitmapFormat) {
 		this.mBitmapFormat = bitmapFormat;
 	}
-	
+
 	/**
 	 * @return a boolean describing whether this is a mipmap or not.
 	 */
@@ -318,7 +317,7 @@ public abstract class ATexture {
 	public void shouldRecycle(boolean shouldRecycle) {
 		this.mShouldRecycle = shouldRecycle;
 	}
-	
+
 	/**
 	 * @return The texture name that will be used in the shader.
 	 */
@@ -389,36 +388,36 @@ public abstract class ATexture {
 	public void setBitmapConfig(Config bitmapConfig) {
 		this.mBitmapConfig = bitmapConfig;
 	}
-	
+
 	public int getGLTextureType()
 	{
 		return mGLTextureType;
 	}
-	
+
 	public void setGLTextureType(int glTextureType) {
 		mGLTextureType = glTextureType;
 	}
-	
+
 	public void setOwnerIdentity(String identity)
 	{
 		mOwnerIdentity = identity;
 	}
-	
+
 	public String getOwnerIdentity()
 	{
 		return mOwnerIdentity;
 	}
-	
+
 	public boolean registerMaterial(Material material) {
 		if(isMaterialRegistered(material)) return false;
 		mMaterialsUsingTexture.add(material);
 		return true;
 	}
-	
+
 	public boolean unregisterMaterial(Material material) {
 		return mMaterialsUsingTexture.remove(material);
 	}
-	
+
 	private boolean isMaterialRegistered(Material material) {
 		int count = mMaterialsUsingTexture.size();
 		for(int i=0; i<count; i++)
@@ -428,99 +427,99 @@ public abstract class ATexture {
 		}
 		return false;
 	}
-	
+
 	public void setInfluence(float influence)
 	{
 		mInfluence = influence;
 	}
-	
+
 	public float getInfluence()
 	{
 		return mInfluence;
 	}
-	
+
 	public void setRepeatU(float value)
 	{
 		mRepeat[0] = value;
 	}
-	
+
 	public float getRepeatU()
 	{
 		return mRepeat[0];
 	}
-	
+
 	public void setRepeatV(float value)
 	{
 		mRepeat[1] = value;
 	}
-	
+
 	public float getRepeatV()
 	{
 		return mRepeat[1];
 	}
-	
+
 	public void setRepeat(float u, float v)
 	{
 		mRepeat[0] = u;
 		mRepeat[1] = v;
 	}
-	
+
 	public float[] getRepeat()
 	{
 		return mRepeat;
 	}
-	
+
 	public void enableOffset(boolean value)
 	{
 		mEnableOffset = value;
 	}
-	
+
 	public boolean offsetEnabled()
 	{
 		return mEnableOffset;
 	}
-	
+
 	public void setOffsetU(float value)
 	{
 		mOffset[0] = value;
 	}
-	
+
 	public float getOffsetU()
 	{
 		return mOffset[0];
 	}
-	
+
 	public float[] getOffset()
 	{
 		return mOffset;
 	}
-	
+
 	public void setOffsetV(float value)
 	{
 		mOffset[1] = value;
 	}
-	
+
 	public float getOffsetV()
 	{
 		return mOffset[1];
 	}
-	
+
 	public void setOffset(float u, float v)
 	{
 		mOffset[0] = u;
 		mOffset[1] = v;
 	}
-	
+
 	public void setCompressedTexture(ACompressedTexture compressedTexture)
 	{
 		mCompressedTexture = compressedTexture;
 	}
-	
+
 	public ACompressedTexture getCompressedTexture()
 	{
 		return mCompressedTexture;
 	}
-	
+
 	abstract void add() throws TextureException;
 	abstract void remove() throws TextureException;
 	abstract void replace() throws TextureException;
@@ -532,17 +531,17 @@ public abstract class ATexture {
 		public TextureException() {
 			super();
 		}
-		
+
 		public TextureException(final String msg) {
 			super(msg);
 		}
-		
+
 		public TextureException(final Throwable throwable) {
 			super(throwable);
 		}
-		
+
 		public TextureException(final String msg, final Throwable throwable) {
 			super(msg, throwable);
-		}		
+		}
 	}
 }

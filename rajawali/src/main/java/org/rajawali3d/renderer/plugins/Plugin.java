@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -15,7 +15,7 @@ package org.rajawali3d.renderer.plugins;
 import android.opengl.GLES20;
 
 import org.rajawali3d.Geometry3D;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.RajLog;
 
 
@@ -25,8 +25,8 @@ import org.rajawali3d.util.RajLog;
  */
 public abstract class Plugin implements IRendererPlugin {
 	protected Geometry3D mGeometry;
-	protected RajawaliRenderer mRenderer;
-	
+	protected Renderer   mRenderer;
+
 	// Field variables for shader programs.
 	protected String mVertexShader;
 	protected String mFragmentShader;
@@ -34,28 +34,28 @@ public abstract class Plugin implements IRendererPlugin {
 	protected int mFShaderHandle;
 	protected int mProgram;
 	protected boolean mProgramCreated = false;
-	
+
 	/**
 	 * Instantiates a new renderer plugin.
      *
-	 * @param renderer RajawaliRenderer instance which will be using this plugin.
+	 * @param renderer Renderer instance which will be using this plugin.
 	 */
-	public Plugin(RajawaliRenderer renderer) {
+	public Plugin(Renderer renderer) {
 		this(renderer, true);
 	}
 
     /**
      * Instantiates a new renderer plugin.
      *
-     * @param renderer RajawaliRenderer instance which will be using this plugin.
+     * @param renderer Renderer instance which will be using this plugin.
      * @param createVBOs {@code boolean} If true, any VBOs will be created immediately.
      */
-    public Plugin(RajawaliRenderer renderer, boolean createVBOs) {
+    public Plugin(Renderer renderer, boolean createVBOs) {
         mGeometry = new Geometry3D();
         mRenderer = renderer;
         init(createVBOs);
     }
-	
+
 	protected int createProgram(String vertexShader, String fragmentShader) {
 		mVShaderHandle = loadShader(GLES20.GL_VERTEX_SHADER, vertexShader);
 		if (mVShaderHandle == 0) {
@@ -88,11 +88,11 @@ public abstract class Plugin implements IRendererPlugin {
 		}
 		return program;
 	}
-	
+
 	public void destroy() {
 		unload();
 	}
-	
+
 	protected int getUniformLocation(String name) {
 		return GLES20.glGetUniformLocation(mProgram, name);
 	}
@@ -100,12 +100,12 @@ public abstract class Plugin implements IRendererPlugin {
 	protected int getAttribLocation(String name) {
 		return GLES20.glGetAttribLocation(mProgram, name);
 	}
-	
+
 	/**
-	 * Be sure to set up all the GL buffers and other initializations here.  
+	 * Be sure to set up all the GL buffers and other initializations here.
 	 */
 	protected void init(boolean createVBOs) {}
-	
+
 	protected int loadShader(int shaderType, String source) {
 		int shader = GLES20.glCreateShader(shaderType);
 		if (shader != 0) {
@@ -113,7 +113,7 @@ public abstract class Plugin implements IRendererPlugin {
 			GLES20.glCompileShader(shader);
 			int[] compiled = new int[1];
 			GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
-			
+
 			if (compiled[0] == 0) {
 				RajLog.e("[" +getClass().getName()+ "] Could not compile " + (shaderType == GLES20.GL_FRAGMENT_SHADER ? "fragment" : "vertex") + " shader:");
 				RajLog.e("Shader log: " + GLES20.glGetShaderInfoLog(shader));
@@ -123,7 +123,7 @@ public abstract class Plugin implements IRendererPlugin {
 		}
 		return shader;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see rajawali.renderer.plugins.IRendererPlugin#reload()
 	 */
@@ -138,11 +138,11 @@ public abstract class Plugin implements IRendererPlugin {
 	public void render() {
         mGeometry.validateBuffers();
     }
-	
+
 	protected void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
 		mGeometry.setData(vertices, normals, textureCoords, colors, indices, createVBOs);
 	}
-	
+
 	protected void setShaders(String vertexShader, String fragmentShader) {
 		mVertexShader = vertexShader;
 		mFragmentShader = fragmentShader;
@@ -151,10 +151,10 @@ public abstract class Plugin implements IRendererPlugin {
 			RajLog.e("Failed to create program");
 			return;
 		}
-		
+
 		mProgramCreated = true;
 	}
-	
+
 	/**
 	 * Unloads and deletes references to the shader program
 	 */
@@ -163,7 +163,7 @@ public abstract class Plugin implements IRendererPlugin {
 		GLES20.glDeleteShader(mFShaderHandle);
 		GLES20.glDeleteProgram(mProgram);
 	}
-	
+
 	protected void useProgram(int programHandle) {
 		if(!mProgramCreated) {
 			reload();

@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -18,7 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.rajawali3d.materials.AResourceManager;
 import org.rajawali3d.materials.textures.ATexture.TextureException;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
+
 import android.opengl.GLES20;
 
 /**
@@ -29,9 +30,9 @@ import android.opengl.GLES20;
  * <p>
  * The advantage of storing the Bitmap in memory is that it the texture can quickly be recovered when the context is
  * restored.
- * 
+ *
  * @author dennis.ippel
- * 
+ *
  */
 public final class TextureManager extends AResourceManager {
 	/**
@@ -49,11 +50,11 @@ public final class TextureManager extends AResourceManager {
 	private TextureManager()
 	{
 		mTextureList = Collections.synchronizedList(new CopyOnWriteArrayList<ATexture>());
-		mRenderers = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliRenderer>());
+		mRenderers = Collections.synchronizedList(new CopyOnWriteArrayList<Renderer>());
 	}
 
 	/**
-	 * 
+	 *
 	 * @return The TextureManager instance
 	 */
 	public static TextureManager getInstance()
@@ -67,7 +68,7 @@ public final class TextureManager extends AResourceManager {
 
 	/**
 	 * Adds a new {@link ATexture} to the TextureManager.
-	 * 
+	 *
 	 * @param texture
 	 * @return
 	 */
@@ -77,8 +78,8 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link RajawaliRenderer}.
-	 * 
+	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link Renderer}.
+	 *
 	 * @param texture
 	 */
 	public void taskAdd(ATexture texture) {
@@ -86,8 +87,8 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link RajawaliRenderer}.
-	 * 
+	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link Renderer}.
+	 *
 	 * @param texture
 	 * @param isUpdatingAfterContextWasLost
 	 */
@@ -118,7 +119,7 @@ public final class TextureManager extends AResourceManager {
 
 	/**
 	 * Replaces an existing {@link ATexture}.
-	 * 
+	 *
 	 * @param texture
 	 * @return
 	 */
@@ -127,8 +128,8 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Replaces an existing {@link ATexture}. This should only be called by {@link RajawaliRenderer}.
-	 * 
+	 * Replaces an existing {@link ATexture}. This should only be called by {@link Renderer}.
+	 *
 	 * @param texture
 	 * @return
 	 */
@@ -143,7 +144,7 @@ public final class TextureManager extends AResourceManager {
 
 	/**
 	 * Removes a {@link ATexture} from the TextureManager.
-	 * 
+	 *
 	 * @param texture
 	 * @return
 	 */
@@ -153,7 +154,7 @@ public final class TextureManager extends AResourceManager {
 
 	/**
 	 * Removes a list of {@link ATexture}s from the TextureManager.
-	 * 
+	 *
 	 * @param texture
 	 * @return
 	 */
@@ -166,8 +167,8 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Removes a {@link ATexture} from the TextureManager. This should only be called by {@link RajawaliRenderer}.
-	 * 
+	 * Removes a {@link ATexture} from the TextureManager. This should only be called by {@link Renderer}.
+	 *
 	 * @param texture
 	 * @return
 	 */
@@ -195,7 +196,7 @@ public final class TextureManager extends AResourceManager {
 
 	/**
 	 * Restores all textures that are managed by the TextureManager. This should only be called by
-	 * {@link RajawaliRenderer}.
+	 * {@link Renderer}.
 	 */
 	public void taskReload() {
 		int len = mTextureList.size();
@@ -219,7 +220,7 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Completely resets the TextureManager. This should only be called by {@link RajawaliRenderer}.
+	 * Completely resets the TextureManager. This should only be called by {@link Renderer}.
 	 */
 	public void taskReset() {
 		try {
@@ -236,8 +237,8 @@ public final class TextureManager extends AResourceManager {
 					count -= 1;
 				}
 			}
-			
-			if(RajawaliRenderer.hasGLContext())
+
+			if(Renderer.hasGLContext())
 				GLES20.glDeleteTextures(count, textures, 0);
 
 			if (mRenderers.size() > 0) {
@@ -252,11 +253,11 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Completely resets the TextureManager. This should only be called by {@link RajawaliRenderer}.
-	 * 
+	 * Completely resets the TextureManager. This should only be called by {@link Renderer}.
+	 *
 	 * @param renderer
 	 */
-	public void taskReset(RajawaliRenderer renderer) {
+	public void taskReset(Renderer renderer) {
 		if (mRenderers.size() == 0) {
 			taskReset();
 		}
@@ -264,7 +265,7 @@ public final class TextureManager extends AResourceManager {
 
 	/**
 	 * Returns the number of textures currently managed.
-	 * 
+	 *
 	 * @return
 	 */
 	public int getTextureCount() {

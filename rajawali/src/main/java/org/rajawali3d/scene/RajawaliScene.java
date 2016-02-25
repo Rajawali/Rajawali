@@ -33,14 +33,14 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.AFrameTask;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.plugins.IRendererPlugin;
 import org.rajawali3d.renderer.plugins.Plugin;
 import org.rajawali3d.scenegraph.IGraphNode;
 import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
 import org.rajawali3d.scenegraph.Octree;
-import org.rajawali3d.surface.IRajawaliSurface;
+import org.rajawali3d.view.ISurface;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
 import org.rajawali3d.util.RajLog;
@@ -57,7 +57,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * It is intended that children, lights, cameras and animations
  * will be added to this object and this object will be added
- * to the {@link RajawaliRenderer} instance.
+ * to the {@link Renderer} instance.
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
@@ -67,7 +67,7 @@ public class RajawaliScene {
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
 	protected double mEyeZ = 4.0; //TODO: Is this necessary?
 
-	protected RajawaliRenderer mRenderer;
+	protected Renderer mRenderer;
 
 	//All of these get passed to an object when it needs to draw itself
 	protected Matrix4 mVMatrix = new Matrix4();
@@ -89,10 +89,10 @@ public class RajawaliScene {
     /**
      * Guarded by {@link #mFrameTaskQueue}.
      */
-	private volatile boolean mLightsDirty;
-	protected ColorPickerInfo mPickerInfo;
-	protected boolean mReloadPickerInfo;
-	protected IRajawaliSurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+	private volatile boolean                mLightsDirty;
+	protected ColorPickerInfo               mPickerInfo;
+	protected boolean                       mReloadPickerInfo;
+	protected ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
 	private ShadowMapMaterial mShadowMapMaterial;
@@ -136,7 +136,7 @@ public class RajawaliScene {
 	protected IGraphNode mSceneGraph; //The scenegraph for this scene
 	protected GRAPH_TYPE mSceneGraphType = GRAPH_TYPE.NONE; //The type of graph type for this scene.
 
-	public RajawaliScene(RajawaliRenderer renderer) {
+	public RajawaliScene(Renderer renderer) {
 		mRenderer = renderer;
 		mAlpha = 0;
 		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
@@ -153,10 +153,10 @@ public class RajawaliScene {
 		mCamera.setZ(mEyeZ);
 		mCameras.add(mCamera);
 
-        mAntiAliasingConfig = IRajawaliSurface.ANTI_ALIASING_CONFIG.NONE; // Default to none
+        mAntiAliasingConfig = ISurface.ANTI_ALIASING_CONFIG.NONE; // Default to none
 	}
 
-	public RajawaliScene(RajawaliRenderer renderer, GRAPH_TYPE type) {
+	public RajawaliScene(Renderer renderer, GRAPH_TYPE type) {
 		this(renderer);
 		mSceneGraphType = type;
 		initSceneGraph();
@@ -178,7 +178,7 @@ public class RajawaliScene {
 	}
 
     /**
-     * Called by the renderer after {@link RajawaliRenderer#initScene()}.
+     * Called by the renderer after {@link Renderer#initScene()}.
      */
     public void initScene() {
     }
@@ -940,10 +940,6 @@ public class RajawaliScene {
 		mPickerInfo = pickerInfo;
 	}
 
-	public boolean isObjectPickingRequested() {
-		return mPickerInfo != null;
-	}
-
 	/**
 	 * Reloads this scene.
 	 */
@@ -1174,11 +1170,12 @@ public class RajawaliScene {
 		}
 
 		//
-		if (mAntiAliasingConfig.equals(IRajawaliSurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
+		if (mAntiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
 			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
 		GLES20.glClear(clearMask);
 	}
+
 
 	/**
 	 * Adds a task to the frame task queue.
@@ -1452,7 +1449,7 @@ public class RajawaliScene {
 		mCamera.setProjectionMatrix(width, height);
 	}
 
-	public void setAntiAliasingConfig(IRajawaliSurface.ANTI_ALIASING_CONFIG config) {
+	public void setAntiAliasingConfig(ISurface.ANTI_ALIASING_CONFIG config) {
 		mAntiAliasingConfig = config;
 	}
 
@@ -1505,7 +1502,6 @@ public class RajawaliScene {
 		}
 		return triangleCount;
 	}
-
 
 	/**
 	 * Retrieve the number of objects on the screen, recursive method

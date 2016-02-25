@@ -21,7 +21,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.materials.textures.ATexture.FilterType;
 import org.rajawali3d.materials.textures.ATexture.WrapType;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
 
 import java.nio.ByteBuffer;
@@ -31,14 +31,14 @@ import java.util.ArrayList;
 public class ObjectColorPicker implements IObjectPicker {
 
 	private final ArrayList<Object3D> mObjectLookup = new ArrayList<>();
-	private final RajawaliRenderer mRenderer;
+	private final Renderer mRenderer;
 
 	private int mColorIndex = 0;
 	private RenderTarget mRenderTarget;
 	private Material mPickerMaterial;
 	private OnObjectPickedListener mObjectPickedListener;
 
-	public ObjectColorPicker(RajawaliRenderer renderer) {
+	public ObjectColorPicker(Renderer renderer) {
 		mRenderer = renderer;
 		mRenderer.initializeColorPicker(this);
 	}

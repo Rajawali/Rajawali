@@ -1,11 +1,25 @@
 apply plugin: 'com.android.library'
 apply plugin: 'signing'
+
+String getVersionString() {
+    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
+    v = isTag() ? v : v + "-SNAPSHOT"
+    return v
+}
+
 group = GROUP
-version = VERSION_NAME
-status = 'debug'
+version = getVersionString()
+
+
+if (isReleaseBuild()) {
+    status = 'release'
+} else {
+    status = 'integration'
+}
+
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
@@ -22,21 +36,14 @@ android {
 
     buildTypes {
         release {
-            status = 'release'
             minifyEnabled false
-
-            // Update the signing information with the secure keys stored in Travis
-            ext."signing.keyId" = System.getenv('SIGNING_KEY') != null ? System.getenv('SIGNING_KEY') : System.properties['SIGNING_KEY'] ? System.properties['SIGNING_KEY'] : hasProperty('SIGNING_KEY') ? property('SIGNING_KEY') : ""
-            ext."signing.password" = System.getenv('SIGNING_KEY_PASSWORD') != null ? System.getenv('SIGNING_KEY_PASSWORD') : System.properties['SIGNING_KEY_PASSWORD'] ? System.properties['SIGNING_KEY_PASSWORD'] : hasProperty('SIGNING_KEY_PASSWORD') ? property('SIGNING_KEY_PASSWORD') : ""
-            ext."signing.secretKeyRingFile" = "./rajawali_secret.gpg"
-
-            version = rootProject.getReleaseVersion(property('VERSION_NAME'))
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:23.0.1'
+    compile 'com.android.support:support-annotations:23.1.1'
 }
 
 apply from: 'maven_push.gradle'

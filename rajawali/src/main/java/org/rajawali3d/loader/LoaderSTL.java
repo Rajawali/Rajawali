@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -16,7 +16,7 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 
 import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 
@@ -32,9 +32,9 @@ import java.util.List;
 /**
  * STL Parser written using the ASCII format as describe on Wikipedia.
  * <p>
- * 
+ *
  * @author Ian Thomas (toxicbakery@gmail.com)
- * 
+ *
  * @see <a href="http://en.wikipedia.org/wiki/STL_(file_format)">http://en.wikipedia.org/wiki/STL_(file_format)</a>
  */
 public class LoaderSTL extends AMeshLoader {
@@ -50,7 +50,7 @@ public class LoaderSTL extends AMeshLoader {
 		BINARY
 	}
 
-	public LoaderSTL(RajawaliRenderer renderer, File file) {
+	public LoaderSTL(Renderer renderer, File file) {
 		super(renderer, file);
 	}
 
@@ -58,7 +58,7 @@ public class LoaderSTL extends AMeshLoader {
         super(resources, textureManager, resourceId);
     }
 
-    public LoaderSTL(RajawaliRenderer renderer, String fileOnSDCard) {
+    public LoaderSTL(Renderer renderer, String fileOnSDCard) {
         super(renderer, fileOnSDCard);
     }
 
@@ -129,7 +129,7 @@ public class LoaderSTL extends AMeshLoader {
 	 * Read stream as ASCII. While this works well, ASCII is painfully slow on mobile devices due to tight memory
 	 * constraints and lower processing power compared to desktops. It is advisable to use the binary parser whenever
 	 * possible.
-	 * 
+	 *
 	 * @param buffer
 	 * @throws NumberFormatException
 	 * @throws IOException
@@ -210,7 +210,7 @@ public class LoaderSTL extends AMeshLoader {
 	/**
 	 * Read stream as binary STL. This is significantly faster than ASCII parsing. Additionally binary files are much
 	 * more compressed allowing smaller file sizes for larger models compared to ASCII.
-	 * 
+	 *
 	 * @param dis
 	 * @throws IOException
 	 */
@@ -265,7 +265,7 @@ public class LoaderSTL extends AMeshLoader {
 
 	/**
 	 * Determine if a given file appears to be in ASCII format.
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 * @throws IOException
@@ -287,7 +287,7 @@ public class LoaderSTL extends AMeshLoader {
 
 	/**
 	 * Determine if a given resource appears to be in ASCII format.
-	 * 
+	 *
 	 * @param res
 	 * @param resId
 	 * @return
@@ -303,7 +303,7 @@ public class LoaderSTL extends AMeshLoader {
 
 	/**
 	 * Determine if a given BufferedReader appears to be in ASCII format.
-	 * 
+	 *
 	 * @param buffer
 	 * @return
 	 * @throws IOException

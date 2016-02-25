@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Locale;
 
-import org.rajawali3d.renderer.RajawaliRenderer;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 
@@ -50,13 +50,13 @@ public abstract class ALoader implements ILoader {
 		mFileOnSDCard = fileOnSDCard;
 	}
 
-	public ALoader(RajawaliRenderer renderer, String fileOnSDCard)
+	public ALoader(Renderer renderer, String fileOnSDCard)
 	{
 		this(renderer.getContext().getResources(), 0);
 		mFileOnSDCard = fileOnSDCard;
 	}
 
-	public ALoader(RajawaliRenderer renderer, int resourceId)
+	public ALoader(Renderer renderer, int resourceId)
 	{
 		this(renderer.getContext().getResources(), resourceId);
 	}
@@ -67,7 +67,7 @@ public abstract class ALoader implements ILoader {
 		mResourceId = resourceId;
 	}
 
-	public ALoader(RajawaliRenderer renderer, File file) {
+	public ALoader(Renderer renderer, File file) {
 		this(renderer.getContext().getResources(), 0);
 		mFile = file;
 	}
@@ -80,18 +80,18 @@ public abstract class ALoader implements ILoader {
 			RajLog.d("Parsing: " + mFile.getAbsolutePath());
 		return this;
 	}
-	
+
 	public int getTag() {
 		return mTag;
 	}
-	
+
 	public void setTag(int tag) {
 		mTag = tag;
 	}
 
 	/**
 	 * Open a BufferedReader for the current resource or file with a buffer size of 8192 bytes.
-	 * 
+	 *
 	 * @return
 	 * @throws FileNotFoundException
 	 */
@@ -101,7 +101,7 @@ public abstract class ALoader implements ILoader {
 
 	/**
 	 * Open a BufferedReader for the current resource or file with a given buffer size.
-	 * 
+	 *
 	 * @param size
 	 *            Size of buffer in number of bytes
 	 * @return
@@ -121,7 +121,7 @@ public abstract class ALoader implements ILoader {
 
 	/**
 	 * Open a BufferedReader for the current resource or file with a buffer size of 8192 bytes.
-	 * 
+	 *
 	 * @return
 	 * @throws FileNotFoundException
 	 */
@@ -131,7 +131,7 @@ public abstract class ALoader implements ILoader {
 
 	/**
 	 * Open a BufferedReader for the current resource or file using the given buffer size.
-	 * 
+	 *
 	 * @param size
 	 * @return
 	 * @throws FileNotFoundException
@@ -151,7 +151,7 @@ public abstract class ALoader implements ILoader {
 	/**
 	 * Open a DataInputStream for the current resource or file using Little Endian format with a buffer size of 8192
 	 * bytes.
-	 * 
+	 *
 	 * @return
 	 * @throws FileNotFoundException
 	 */
@@ -161,7 +161,7 @@ public abstract class ALoader implements ILoader {
 
 	/**
 	 * Open a DataInputStream for the current resource or file using Little Endian format with a given buffer size.
-	 * 
+	 *
 	 * @param size
 	 *            Size of buffer in number of bytes
 	 * @return
