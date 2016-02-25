@@ -43,7 +43,6 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.AFrameTask;
 import org.rajawali3d.renderer.RajawaliRenderer;
 import org.rajawali3d.scene.RajawaliScene;
-import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
