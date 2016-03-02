@@ -82,11 +82,6 @@ public class ObjectColorPicker implements IObjectPicker {
 		return mRenderTarget;
 	}
 
-	@Deprecated
-	public static void createColorPickingTexture(ColorPickerInfo pickerInfo) {
-		pickObject(pickerInfo);
-	}
-
 	public static void pickObject(ColorPickerInfo pickerInfo) {
 		final ObjectColorPicker picker = pickerInfo.getPicker();
 		final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
