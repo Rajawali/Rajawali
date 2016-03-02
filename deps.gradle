@@ -1,0 +1,5 @@
+project.ext.set('depAndroidSupport', 'com.android.support:support-v13:23.1.0')
+project.ext.set('depSupportAnnotations', 'com.android.support:support-annotations:23.2.0')
+project.ext.set('depAppCompat', 'com.android.support:appcompat-v7:23.1.0')
+project.ext.set('depGSON', 'com.google.code.gson:gson:2.6.2')
+project.ext.set('depIon', 'com.koushikdutta.ion:ion:2.1.7')

@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "com.monyetmabuk.rajawali.tutorials"
+        minSdkVersion 15
+        targetSdkVersion 23
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    dexOptions {
+        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
+        preDexLibraries = !isTravis()
+    }
+
+    lintOptions {
+        abortOnError false;
+    }
+}
+
+dependencies {
+    compile project.depAndroidSupport
+    compile project.depAppCompat
+    compile project.depGSON
+    compile project.depIon
+
+    compile project(':rajawali')
+}

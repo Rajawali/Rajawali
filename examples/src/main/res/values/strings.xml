@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App Base -->
+    <string name="app_name">Rajawali Examples</string>
+    <string name="empty"></string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="placeholder">Placeholder</string>
+    <!-- Menu -->
+    <string name="menu_main_community_stream">Community Stream</string>
+    <string name="menu_main_meet_the_team">Meet The Team</string>
+    <!-- Curves Fragment -->
+    <string name="curves_fragment_text_view_curve_types">Cubic Bezier, Linear Bezier, Quadratic Bezier, Catmull Rom, Compound Curve</string>
+    <!-- Spirals Fragment -->
+    <string name="spirals_fragment_text_view_spiral_types">Logarithmic Spiral, Archimedean Spiral</string>
+    <!-- FBX Fragment -->
+    <string name="fbx_fragment_button_model_by">Model by Sampo Rask</string>
+    <!-- MD2 Fragment -->
+    <string name="md2_fragment_button_salute">Salute</string>
+    <string name="md2_fragment_button_death">Death</string>
+    <string name="md2_fragment_button_walk">Walk</string>
+    <string name="md2_fragment_button_wave">Wave</string>
+    <string name="md2_fragment_button_loop_all">Loop All</string>
+    <!-- Object Picking Fragment -->
+    <string name="object_picking_fragment">Touch a monkey :)</string>
+    <!-- Touch Ripples Fragment -->
+    <string name="touch_ripples_fragment_button_touch_me">Touch Me</string>
+    <!-- UIElements Fragment -->
+    <string name="ui_elements_fragment_text_view_halo_dunia">Halo Dunia!</string>
+    <!-- Uniform Distribution Fragment -->
+    <string name="uniform_distribution_fragment_text_view_info">How to distribute points uniformly along a curve. Useful for constant speed animations. White: original curve. Red: reparametrized curve.</string>
+    <!-- Skeletal Animation Blending Fragment -->
+    <string name="skeletal_animation_blending_button_idle">IDLE</string>
+    <string name="skeletal_animation_blending_button_walk">WALK</string>
+    <string name="skeletal_animation_blending_button_arm_stretch">ARM STRETCH</string>
+    <string name="skeletal_animation_blending_button_bend">BEND</string>
+    <string name="skeletal_animation_blending_created_by">Model by Tiziana Loni. Lame animations by MasDennis.</string>
+    <!-- Touch and Drag Fragment -->
+    <string name="touch_and_drag_fragment_info">Touch &amp; drag</string>
+    <!-- Meet The Team Fragment -->
+    <string name="textview_favorite_beers">Favorite Beers</string>
+    <!-- Community Fragment -->
+    <string name="imageview_user_image">User Image</string>
+    <!-- GCode Fragment -->
+    <string name="gcode_fragment_by">Model by Terawatt Industries</string>
+    <!-- ExceptionDialog -->
+    <string name="exception_dialog_title">Exception Occurred</string>
+    <string name="exception_dialog_message_unknown">Unknown error!</string>
+
+    <!-- Wallpaper -->
+    <!-- Name in Live Wallpaper Picker list -->
+    <string name="lwp_name">Rajawali LWP Example</string>
+
+    <!-- Description in Live Wallpaper Picker list -->
+    <string name="lwp_desc">Example wallpaper that uses Rajawali, an open-source OpenGL ES 2.x/3.x engine for Android.</string>
+
+    <!-- Author -->
+    <string name="lwp_author">Rajawali Contributors</string>
+
+    <!-- Quick little message displayed when the Live Wallpaper Picker is opened -->
+    <!-- The message text is the prefix, lwp_name, and suffix concatenated -->
+    <string name="picker_toast_prefix">Choose \"</string>
+    <string name="picker_toast_suffix">\" from the list of live wallpapers</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="renderer_category">Wallpaper Renderer</string>
+    <string name="renderer_picker_title">Renderer</string>
+    <string name="renderer_picker_summary">Choose the renderer class to use for the wallpaper demo.</string>
+
+</resources>

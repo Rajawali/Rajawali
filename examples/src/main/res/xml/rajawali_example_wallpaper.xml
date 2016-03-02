@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wallpaper
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:thumbnail="@drawable/ic_launcher"
+    android:author="@string/lwp_author"
+    android:description="@string/lwp_desc"
+    android:settingsActivity="com.monyetmabuk.rajawali.tutorials.wallpaper.WallpaperPreferenceActivity"
+    />
