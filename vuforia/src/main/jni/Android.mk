@@ -17,9 +17,9 @@ LOCAL_PATH := $(call my-dir)
 # and setting the include path for library-specific header files.
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := Vuforia-prebuilt
-LOCAL_SRC_FILES = ../../../../../vuforia-sdk-android-2-8-8/build/lib/$(TARGET_ARCH_ABI)/libVuforia.so
-LOCAL_EXPORT_C_INCLUDES := ../../../../../vuforia-sdk-android-2-8-8/build/include
+LOCAL_MODULE := Vuforia
+LOCAL_SRC_FILES = vuforia-sdk-android-3-0-9/build/lib/$(TARGET_ARCH_ABI)/libVuforia.so
+LOCAL_EXPORT_C_INCLUDES := vuforia-sdk-android-3-0-9/build/include
 include $(PREBUILT_SHARED_LIBRARY)
 
 #-----------------------------------------------------------------------------
@@ -41,6 +41,10 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := RajawaliVuforia
 
+LOCAL_C_INCLUDES := ./jni/vuforia-sdk-android-3-0-9/build/include
+
+TARGET_ARCH_ABI := armeabi-v7a
+
 # This sample always uses OpenGL ES 2.0.
 
 OPENGLES_LIB  := -lGLESv2
@@ -54,7 +58,7 @@ OPENGLES_DEF  := -DUSE_OPENGL_ES_2_0
 # The flag "-Wno-psabi" removes warning about "mangling of 'va_list' has
 #   changed in GCC 4.4" when compiled with certain Android NDK versions.
 
-LOCAL_CFLAGS := -Wno-write-strings -Wno-psabi $(OPENGLES_DEF)
+LOCAL_CFLAGS := -v -Wno-write-strings -Wno-psabi $(OPENGLES_DEF)
 
 # The list of additional linker flags to be used when building your
 # module. Use the "-l" prefix in front of the name of libraries you want to
@@ -68,7 +72,7 @@ LOCAL_LDLIBS := \
 # in the generated file. Here we reference the prebuilt library defined earlier
 # in this makefile.
 
-LOCAL_SHARED_LIBRARIES := Vuforia-prebuilt
+LOCAL_SHARED_LIBRARIES := Vuforia
 
 # The LOCAL_SRC_FILES variables must contain a list of C/C++ source files
 # that will be built and assembled into a module. Note that you should not

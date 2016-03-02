@@ -39,4 +39,5 @@ dependencies {
     compile project.depIon
 
     compile project(':rajawali')
+    compile project(':vuforia')
 }

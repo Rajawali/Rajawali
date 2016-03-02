@@ -172,15 +172,15 @@ class ImageTargets_UpdateCallback: public QCAR::UpdateCallback {
 ImageTargets_UpdateCallback updateCallback;
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setActivityPortraitMode(JNIEnv *,
+Java_org_rajawali3d_vuforia_VuforiaManager_setActivityPortraitMode(JNIEnv *,
 		jobject, jboolean isPortrait) {
 	isActivityInPortraitMode = isPortrait;
 }
 
 JNIEXPORT int JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_initTracker(JNIEnv *env,
+Java_org_rajawali3d_vuforia_VuforiaManager_initTracker(JNIEnv *env,
 		jobject object, jint trackerType) {
-	LOG("Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_initTrackerox");
+	LOG("Java_org_rajawali3d_vuforia_VuforiaManager_initTrackerox");
 
 	// Initialize the marker tracker:
 	QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
@@ -215,7 +215,7 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_initTracker(JNIEnv *env,
 }
 
 JNIEXPORT int JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_createFrameMarker(JNIEnv* env,
+Java_org_rajawali3d_vuforia_VuforiaManager_createFrameMarker(JNIEnv* env,
 		jobject object, jint markerId, jstring markerName, jfloat width,
 		jfloat height) {
 	QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
@@ -238,7 +238,7 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_createFrameMarker(JNIEnv* en
 }
 
 JNIEXPORT int JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_createImageMarker(JNIEnv* env,
+Java_org_rajawali3d_vuforia_VuforiaManager_createImageMarker(JNIEnv* env,
 		jobject object, jstring dataSetFile) {
 	QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
 	QCAR::ImageTracker* imageTracker =
@@ -278,8 +278,8 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_createImageMarker(JNIEnv* en
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_deinitTracker(JNIEnv *, jobject) {
-	LOG("Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_deinitTracker");
+Java_org_rajawali3d_vuforia_VuforiaManager_deinitTracker(JNIEnv *, jobject) {
+	LOG("Java_org_rajawali3d_vuforia_VuforiaManager_deinitTracker");
 
 	// Deinit the marker tracker, this will destroy all created frame markers:
 	QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
@@ -413,9 +413,9 @@ void configureVideoBackground() {
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_initApplicationNative(JNIEnv* env,
+Java_org_rajawali3d_vuforia_VuforiaManager_initApplicationNative(JNIEnv* env,
 		jobject obj, jint width, jint height) {
-	LOG("Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_initApplicationNative");
+	LOG("Java_org_rajawali3d_vuforia_VuforiaManager_initApplicationNative");
 	QCAR::setHint(QCAR::HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, maximumSimultaneousImageTargets);
 	QCAR::registerCallback(&updateCallback);
 	// Store screen dimensions
@@ -424,17 +424,17 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_initApplicationNative(JNIEnv
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_deinitApplicationNative(
+Java_org_rajawali3d_vuforia_VuforiaManager_deinitApplicationNative(
 		JNIEnv* env, jobject obj) {
 	isExtendedTrackingActivated = false;
 	LOG(
-			"Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_deinitApplicationNative");
+			"Java_org_rajawali3d_vuforia_VuforiaManager_deinitApplicationNative");
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_startCamera(JNIEnv *env,
+Java_org_rajawali3d_vuforia_VuforiaManager_startCamera(JNIEnv *env,
 		jobject object) {
-	LOG("Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_startCamera");
+	LOG("Java_org_rajawali3d_vuforia_VuforiaManager_startCamera");
 
 	// Select the camera to open, set this to QCAR::CameraDevice::CAMERA_FRONT
 	// to activate the front camera instead.
@@ -504,8 +504,8 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaRenderer_getVideoHeight(JNIEnv *env,
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_stopCamera(JNIEnv *, jobject) {
-	LOG("Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_stopCamera");
+Java_org_rajawali3d_vuforia_VuforiaManager_stopCamera(JNIEnv *, jobject) {
+	LOG("Java_org_rajawali3d_vuforia_VuforiaManager_stopCamera");
 
 	// Stop the tracker:
 	QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
@@ -537,9 +537,9 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_stopCamera(JNIEnv *, jobject
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setProjectionMatrix(JNIEnv *env,
+Java_org_rajawali3d_vuforia_VuforiaManager_setProjectionMatrix(JNIEnv *env,
 		jobject object) {
-	LOG("Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setProjectionMatrix");
+	LOG("Java_org_rajawali3d_vuforia_VuforiaManager_setProjectionMatrix");
 
 	// Cache the projection matrix:
 	const QCAR::CameraCalibration& cameraCalibration =
@@ -549,13 +549,13 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setProjectionMatrix(JNIEnv *
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_autofocus(JNIEnv*, jobject) {
+Java_org_rajawali3d_vuforia_VuforiaManager_autofocus(JNIEnv*, jobject) {
 	return QCAR::CameraDevice::getInstance().setFocusMode(
 			QCAR::CameraDevice::FOCUS_MODE_TRIGGERAUTO) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setFocusMode(JNIEnv*, jobject,
+Java_org_rajawali3d_vuforia_VuforiaManager_setFocusMode(JNIEnv*, jobject,
 		jint mode) {
 	int qcarFocusMode;
 
@@ -585,7 +585,7 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setFocusMode(JNIEnv*, jobjec
 }
 
 JNIEXPORT int JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_destroyTrackerData(JNIEnv *env,
+Java_org_rajawali3d_vuforia_VuforiaManager_destroyTrackerData(JNIEnv *env,
 		jobject object) {
 	LOG("Java_org_rajawali3d_vuforia_RajawaliVuforiaRenderer_destroyTrackerData");
 
@@ -607,12 +607,12 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_destroyTrackerData(JNIEnv *e
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_activateAndStartExtendedTracking(JNIEnv*, jobject) {
+Java_org_rajawali3d_vuforia_VuforiaManager_activateAndStartExtendedTracking(JNIEnv*, jobject) {
 	activateExtendedTracking = true;
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_startExtendedTracking(JNIEnv*, jobject)
+Java_org_rajawali3d_vuforia_VuforiaManager_startExtendedTracking(JNIEnv*, jobject)
 {
     QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
     QCAR::ImageTracker* imageTracker = static_cast<QCAR::ImageTracker*>(
@@ -635,7 +635,7 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_startExtendedTracking(JNIEnv
 
 
 JNIEXPORT jboolean JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_stopExtendedTracking(JNIEnv*, jobject)
+Java_org_rajawali3d_vuforia_VuforiaManager_stopExtendedTracking(JNIEnv*, jobject)
 {
     QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
     QCAR::ImageTracker* imageTracker = static_cast<QCAR::ImageTracker*>(
@@ -676,7 +676,7 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaRenderer_updateRendering(JNIEnv* env,
 }
 
 JNIEXPORT int JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_initCloudReco(JNIEnv *, jobject) {
+Java_org_rajawali3d_vuforia_VuforiaManager_initCloudReco(JNIEnv *, jobject) {
 	LOG(
 			"Java_com_qualcomm_QCARSamples_ImageTargets_ImageTargets_initCloudReco");
 
@@ -710,7 +710,7 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_initCloudReco(JNIEnv *, jobj
 }
 
 JNIEXPORT int JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_deinitCloudReco(JNIEnv *,
+Java_org_rajawali3d_vuforia_VuforiaManager_deinitCloudReco(JNIEnv *,
 		jobject) {
 
 	// Get the image tracker:
@@ -733,7 +733,7 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_deinitCloudReco(JNIEnv *,
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_enterScanningModeNative(JNIEnv*,
+Java_org_rajawali3d_vuforia_VuforiaManager_enterScanningModeNative(JNIEnv*,
 		jobject) {
 	QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
 	QCAR::ImageTracker* imageTracker =
@@ -755,13 +755,13 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_enterScanningModeNative(JNIE
 }
 
 JNIEXPORT bool JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_getScanningModeNative(JNIEnv*,
+Java_org_rajawali3d_vuforia_VuforiaManager_getScanningModeNative(JNIEnv*,
 		jobject) {
 	return scanningMode;
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setCloudRecoDatabase(JNIEnv* env,
+Java_org_rajawali3d_vuforia_VuforiaManager_setCloudRecoDatabase(JNIEnv* env,
 		jobject, jstring AccessKey, jstring SecretKey) {
 	const jbyte* argvv = (jbyte*) env->GetStringUTFChars(AccessKey, NULL);
 	kAccessKey = (char *) argvv;
@@ -770,13 +770,13 @@ Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setCloudRecoDatabase(JNIEnv*
 }
 
 JNIEXPORT void JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_setMaxSimultaneousImageTargets(JNIEnv* env,
+Java_org_rajawali3d_vuforia_VuforiaManager_setMaxSimultaneousImageTargets(JNIEnv* env,
         jobject obj, jint maxSimImageTargets) {
     maximumSimultaneousImageTargets = (int)maxSimImageTargets;
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_rajawali3d_vuforia_RajawaliVuforiaActivity_getMetadataNative(JNIEnv* env,
+Java_org_rajawali3d_vuforia_VuforiaManager_getMetadataNative(JNIEnv* env,
 		jobject) {
 //	char *buf = (char*)malloc(CONTENT_MAX);
 //	strcpy(buf, targetMetadata);

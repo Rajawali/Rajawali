@@ -36,7 +36,7 @@ public class TouchAndDragFragment extends AExampleFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-        ((View) mRajawaliSurface).setOnTouchListener(this);
+        ((View) mRenderSurface).setOnTouchListener(this);
 		LinearLayout ll = new LinearLayout(getActivity());
 		ll.setOrientation(LinearLayout.VERTICAL);
 		ll.setGravity(Gravity.BOTTOM);

@@ -1,10 +1,6 @@
 package org.rajawali3d.loader.awd;
 
-import java.util.ArrayList;
-
 import android.util.SparseArray;
-
-import org.apache.http.ParseException;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationChildObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationChildObject3D.BoneVertex;
@@ -12,14 +8,17 @@ import org.rajawali3d.animation.mesh.SkeletalAnimationChildObject3D.BoneWeight;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
 import org.rajawali3d.loader.LoaderAWD.BlockHeader;
+import org.rajawali3d.loader.ParsingException;
 import org.rajawali3d.util.RajLog;
+
+import java.util.ArrayList;
 
 /**
  * The TriangleGeometry block describes a single mesh of an AWD file. Multiple TriangleGeometry blocks may exists in a
  * single AWD file as part of a single model, multiple models, or scene.
- * 
+ *
  * @author Ian Thomas (toxicbakery@gmail.com)
- * 
+ *
  */
 public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
@@ -179,7 +178,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
 				// Validate each mesh data ending. This is a sanity check against precision flags.
 				if (dis.getPosition() != subEnd)
-					throw new ParseException("Unexpected ending. Expected " + subEnd + ". Got " + dis.getPosition());
+					throw new ParsingException("Unexpected ending. Expected " + subEnd + ". Got " + dis.getPosition());
 			}
 
 			dis.readUserAttributes(null);
