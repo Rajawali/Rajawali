@@ -24,5 +24,6 @@ install:
 - true
 notifications:
   email:
+  - info@rozengain.com
   - rajawali.framework@gmail.com
   - jwoolston@tenkiv.com
