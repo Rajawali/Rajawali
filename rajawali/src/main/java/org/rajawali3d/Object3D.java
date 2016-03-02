@@ -216,9 +216,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 		Material material = sceneMaterial == null ? mMaterial : sceneMaterial;
 
-        if (!isColorPicking) {
-            preRender();
-        }
+		preRender();
 
 		// -- move view matrix transformation first
 		boolean modelMatrixWasRecalculated = onRecalculateModelMatrix(parentMatrix);
