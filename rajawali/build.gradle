@@ -50,4 +50,4 @@ dependencies {
     compile project.depSupportAnnotations
 }
 
-apply from: 'maven_push.gradle'
+apply from: '../maven_push.gradle'
