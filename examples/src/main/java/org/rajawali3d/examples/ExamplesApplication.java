@@ -69,6 +69,7 @@ import org.rajawali3d.examples.examples.postprocessing.ShadowMappingFragment;
 import org.rajawali3d.examples.examples.scene.SceneFrameCallbackFragment;
 import org.rajawali3d.examples.examples.ui.AnimatedTextureViewFragment;
 import org.rajawali3d.examples.examples.ui.CanvasTextFragment;
+import org.rajawali3d.examples.examples.ui.ScrollingTextureViewFragment;
 import org.rajawali3d.examples.examples.ui.TransparentSurfaceFragment;
 import org.rajawali3d.examples.examples.ui.TwoDimensionalFragment;
 import org.rajawali3d.examples.examples.ui.UIElementsFragment;
@@ -160,8 +161,9 @@ public class ExamplesApplication extends Application {
 		ITEMS.put(Category.UI, new ExampleItem[] {
 				new ExampleItem("UI Elements", UIElementsFragment.class)
 				, new ExampleItem("2D Renderer", TwoDimensionalFragment.class)
-				, new ExampleItem("Transparent GLSurfaceView", TransparentSurfaceFragment.class)
-                , new ExampleItem("RajawaliTextureView/XML", AnimatedTextureViewFragment.class)
+				, new ExampleItem("Transparent SurfaceView", TransparentSurfaceFragment.class)
+                , new ExampleItem("TextureView/XML", AnimatedTextureViewFragment.class)
+				, new ExampleItem("Scrolling TextureView", ScrollingTextureViewFragment.class)
 				, new ExampleItem("View To Texture", ViewToTextureFragment.class)
 			});
 		ITEMS.put(Category.OPTIMIZATIONS, new ExampleItem[] {

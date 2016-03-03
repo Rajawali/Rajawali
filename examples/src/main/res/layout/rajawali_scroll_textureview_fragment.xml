@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:textureview="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/texture_scroll_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scrollbarAlwaysDrawVerticalTrack="true">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            layout="@layout/relative_layout_loader_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <org.rajawali3d.view.TextureView
+            android:id="@+id/rajwali_surface"
+            android:layout_width="fill_parent"
+            android:layout_height="3000dp"
+            textureview:frameRate="60.0"
+            textureview:renderMode="RENDER_WHEN_DIRTY"/>
+
+    </FrameLayout>
+</ScrollView>
