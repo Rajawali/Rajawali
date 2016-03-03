@@ -2,47 +2,28 @@ package org.rajawali3d.examples.examples.interactive;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.lights.PointLight;
+import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnObjectPickedListener;
 
-public class ObjectPickingFragment extends AExampleFragment implements
-    OnTouchListener {
+public class ObjectPickingFragment extends AExampleFragment implements OnTouchListener {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
         ((View) mRajawaliSurface).setOnTouchListener(this);
-
-        LinearLayout ll = new LinearLayout(getActivity());
-        ll.setOrientation(LinearLayout.VERTICAL);
-        ll.setGravity(Gravity.CENTER);
-
-        TextView label = new TextView(getActivity());
-        label.setText(R.string.object_picking_fragment);
-        label.setTextSize(20);
-        label.setGravity(Gravity.CENTER);
-        label.setHeight(100);
-        ll.addView(label);
-
-        mLayout.addView(ll);
-
+        inflater.inflate(R.layout.object_picking_overlay, mLayout, true);
         return mLayout;
     }
 
@@ -54,21 +35,19 @@ public class ObjectPickingFragment extends AExampleFragment implements
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            ((ObjectPickingRenderer) mRenderer).getObjectAt(event.getX(),
-                event.getY());
+            ((ObjectPickingRenderer) mRenderer).getObjectAt(event.getX(), event.getY());
         }
 
         return getActivity().onTouchEvent(event);
     }
 
-    private final class ObjectPickingRenderer extends AExampleRenderer
-        implements OnObjectPickedListener {
+    private final class ObjectPickingRenderer extends AExampleRenderer implements OnObjectPickedListener {
 
-        private PointLight mLight;
-        private Object3D mMonkey1;
-        private Object3D mMonkey2;
-        private Object3D mMonkey3;
-        private Object3D mMonkey4;
+        private DirectionalLight  mLight;
+        private Object3D          mMonkey1;
+        private Object3D          mMonkey2;
+        private Object3D          mMonkey3;
+        private Object3D          mMonkey4;
         private ObjectColorPicker mPicker;
 
         public ObjectPickingRenderer(Context context) {
@@ -80,8 +59,8 @@ public class ObjectPickingFragment extends AExampleFragment implements
             try {
                 mPicker = new ObjectColorPicker(this);
                 mPicker.setOnObjectPickedListener(this);
-                mLight = new PointLight();
-                mLight.setPosition(0, 0, 4);
+                mLight = new DirectionalLight(-1, 0, 1);
+                mLight.setPosition(0, 0, -4);
                 mLight.setPower(1.5f);
                 getCurrentScene().addLight(mLight);
                 getCurrentCamera().setPosition(0, 0, 7);
@@ -130,7 +109,7 @@ public class ObjectPickingFragment extends AExampleFragment implements
                 mPicker.registerObject(mMonkey2);
                 mPicker.registerObject(mMonkey3);
                 mPicker.registerObject(mMonkey4);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
