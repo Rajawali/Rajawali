@@ -98,9 +98,9 @@ public class RajawaliScene {
 	private ShadowMapMaterial mShadowMapMaterial;
 
 	private final List<Object3D> mChildren;
-    private final List<ASceneFrameCallback> mPreCallbacks;
+    private final List<ASceneFrameCallback> mPreFrameCallbacks;
     private final List<ASceneFrameCallback> mPreDrawCallbacks;
-    private final List<ASceneFrameCallback> mPostCallbacks;
+    private final List<ASceneFrameCallback> mPostFrameCallbacks;
 	private final List<Animation> mAnimations;
 	private final List<IRendererPlugin> mPlugins;
 	private final List<ALight> mLights;
@@ -140,9 +140,9 @@ public class RajawaliScene {
 		mRenderer = renderer;
 		mAlpha = 0;
 		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
-        mPreCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
+        mPreFrameCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
         mPreDrawCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
-        mPostCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
+        mPostFrameCallbacks = Collections.synchronizedList(new CopyOnWriteArrayList<ASceneFrameCallback>());
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mPlugins = Collections.synchronizedList(new CopyOnWriteArrayList<IRendererPlugin>());
 		mCameras = Collections.synchronizedList(new CopyOnWriteArrayList<Camera>());
@@ -763,9 +763,9 @@ public class RajawaliScene {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
-                if (callback.callPreFrame()) mPreCallbacks.add(callback);
+                if (callback.callPreFrame()) mPreFrameCallbacks.add(callback);
                 if (callback.callPreDraw()) mPreDrawCallbacks.add(callback);
-                if (callback.callPostFrame()) mPostCallbacks.add(callback);
+                if (callback.callPostFrame()) mPostFrameCallbacks.add(callback);
             }
         };
         return internalOfferTask(task);
@@ -783,9 +783,9 @@ public class RajawaliScene {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
-                if (callback.callPreFrame()) mPreCallbacks.remove(callback);
+                if (callback.callPreFrame()) mPreFrameCallbacks.remove(callback);
                 if (callback.callPreDraw()) mPreDrawCallbacks.remove(callback);
-                if (callback.callPostFrame()) mPostCallbacks.remove(callback);
+                if (callback.callPostFrame()) mPostFrameCallbacks.remove(callback);
             }
         };
         return internalOfferTask(task);
@@ -800,9 +800,9 @@ public class RajawaliScene {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
-                mPreCallbacks.clear();
+                mPreFrameCallbacks.clear();
                 mPreDrawCallbacks.clear();
-                mPostCallbacks.clear();
+                mPostFrameCallbacks.clear();
             }
         };
         return internalOfferTask(task);
@@ -931,7 +931,12 @@ public class RajawaliScene {
 		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}
 
+	@Deprecated
 	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
+		requestObjectPicking(pickerInfo);
+	}
+
+	public void requestObjectPicking(ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
 
@@ -972,6 +977,14 @@ public class RajawaliScene {
 	}
 
 	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
+
+		// ObjectColorPicker requests are relative to the prior frame's render state,
+		// so handle any pending request before applying frame updates...
+		if (mPickerInfo != null) {
+			doColorPicking(mPickerInfo);
+			mPickerInfo = null;
+		}
+
 		performFrameTasks(); //Handle the task queue
 
         synchronized (mFrameTaskQueue) {
@@ -997,41 +1010,13 @@ public class RajawaliScene {
 			}
 		}
 
-		int clearMask = mAlwaysClearColorBuffer? GLES20.GL_COLOR_BUFFER_BIT : 0;
-
-		ColorPickerInfo pickerInfo = mPickerInfo;
-
-		if (renderTarget != null) {
-			renderTarget.bind();
-			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
-		} else if (pickerInfo != null) {
-			pickerInfo.getPicker().getRenderTarget().bind();
-			GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		} else {
-//			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
-		}
-
-		if (mEnableDepthBuffer) {
-			clearMask |= GLES20.GL_DEPTH_BUFFER_BIT;
-			GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-			GLES20.glDepthFunc(GLES20.GL_LESS);
-			GLES20.glDepthMask(true);
-			GLES20.glClearDepthf(1.0f);
-		}
-		if (mAntiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
-			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
-		}
-
-		GLES20.glClear(clearMask);
-
         // Execute pre-frame callbacks
         // We explicitly break out the steps here to help the compiler optimize
-        final int preCount = mPreCallbacks.size();
-        if (preCount > 0) {
-            synchronized (mPreCallbacks) {
-                for (int i = 0; i < preCount; ++i) {
-                    mPreCallbacks.get(i).onPreFrame(ellapsedTime, deltaTime);
+        final int preFrameCount = mPreFrameCallbacks.size();
+        if (preFrameCount > 0) {
+            synchronized (mPreFrameCallbacks) {
+                for (int i = 0; i < preFrameCount; ++i) {
+                    mPreFrameCallbacks.get(i).onPreFrame(ellapsedTime, deltaTime);
                 }
             }
         }
@@ -1066,14 +1051,21 @@ public class RajawaliScene {
 
         // Execute pre-frame callbacks
         // We explicitly break out the steps here to help the compiler optimize
-        final int preRenderCount = mPreDrawCallbacks.size();
-        if (preRenderCount > 0) {
+        final int preDrawCount = mPreDrawCallbacks.size();
+        if (preDrawCount > 0) {
             synchronized (mPreDrawCallbacks) {
-                for (int i = 0; i < preCount; ++i) {
+                for (int i = 0; i < preDrawCount; ++i) {
                     mPreDrawCallbacks.get(i).onPreDraw(ellapsedTime, deltaTime);
                 }
             }
         }
+
+		configureTargetRendering(renderTarget, mRed, mGreen, mBlue, mAlpha);
+
+		if(sceneMaterial != null) {
+			sceneMaterial.useProgram();
+			sceneMaterial.bindTextures();
+		}
 
 		if (mSkybox != null) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -1082,7 +1074,7 @@ public class RajawaliScene {
 			mSkybox.setPosition(mCamera.getX(), mCamera.getY(), mCamera.getZ());
             // Model matrix updates are deferred to the render method due to parent matrix needs
             // Render the skybox
-			mSkybox.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, null);
+			mSkybox.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, sceneMaterial);
 
 			if (mEnableDepthBuffer) {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -1090,24 +1082,10 @@ public class RajawaliScene {
 			}
 		}
 
-		Material sceneMat = pickerInfo == null ? sceneMaterial : pickerInfo.getPicker().getMaterial();
-
-		if(sceneMat != null) {
-			sceneMat.useProgram();
-			sceneMat.bindTextures();
-		}
-
         synchronized (mChildren) {
 			for (int i = 0, j = mChildren.size(); i < j; ++i) {
-				Object3D child = mChildren.get(i);
-				boolean blendingEnabled = child.isBlendingEnabled();
-				if(pickerInfo != null && child.isPickingEnabled()) {
-					child.setBlendingEnabled(false);
-					pickerInfo.getPicker().getMaterial().setColor(child.getPickingColor());
-				}
-                // Model matrix updates are deferred to the render method due to parent matrix needs
-				child.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, sceneMat);
-				child.setBlendingEnabled(blendingEnabled);
+				// Model matrix updates are deferred to the render method due to parent matrix needs
+				mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, sceneMaterial);
 			}
 		}
 
@@ -1115,16 +1093,8 @@ public class RajawaliScene {
 			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
         }
 
-		if(sceneMat != null) {
-			sceneMat.unbindTextures();
-		}
-
-		if (pickerInfo != null) {
-			ObjectColorPicker.createColorPickingTexture(pickerInfo);
-			pickerInfo.getPicker().getRenderTarget().unbind();
-			pickerInfo = null;
-			mPickerInfo = null;
-			render(ellapsedTime, deltaTime, renderTarget, sceneMaterial); //TODO Possible timing error here
+		if(sceneMaterial != null) {
+			sceneMaterial.unbindTextures();
 		}
 
 		synchronized (mPlugins) {
@@ -1138,15 +1108,74 @@ public class RajawaliScene {
 
         // Execute post-render callbacks
         // We explicitly break out the steps here to help the compiler optimize
-        final int postCount = mPostCallbacks.size();
-        if (postCount > 0) {
-            synchronized (mPostCallbacks) {
-                for (int i = 0; i < postCount; ++i) {
-                    mPostCallbacks.get(i).onPostFrame(ellapsedTime, deltaTime);
+        final int postFrameCount = mPostFrameCallbacks.size();
+        if (postFrameCount > 0) {
+            synchronized (mPostFrameCallbacks) {
+                for (int i = 0; i < postFrameCount; ++i) {
+                    mPostFrameCallbacks.get(i).onPostFrame(ellapsedTime, deltaTime);
                 }
             }
         }
 	}
+
+	protected void doColorPicking(ColorPickerInfo pickerInfo) {
+
+		ObjectColorPicker picker = pickerInfo.getPicker();
+		RenderTarget pickingTarget = picker.getRenderTarget();
+		configureTargetRendering(pickingTarget, 1.0f, 1.0f, 1.0f, 1.0f);
+
+		Material material = picker.getMaterial();
+
+		if (mSkybox != null && mSkybox.isPickingEnabled()) {
+			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			GLES20.glDepthMask(false);
+
+			mSkybox.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, null, material, true);
+
+			if (mEnableDepthBuffer) {
+				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+				GLES20.glDepthMask(true);
+			}
+		}
+
+		synchronized (mChildren) {
+			for (int i = 0, j = mChildren.size(); i < j; ++i) {
+				mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, null, material, true);
+			}
+		}
+
+		// pickObject() unbinds the renderTarget's framebuffer...
+        ObjectColorPicker.pickObject(pickerInfo);
+	}
+
+	protected void configureTargetRendering(RenderTarget renderTarget,
+											float red, float green, float blue, float alpha) {
+		if (renderTarget != null) {
+			renderTarget.bind();
+		}
+
+		// Set the clearing (background) color
+		GLES20.glClearColor(red, green, blue, alpha);
+
+		// Init the clear mask
+		int clearMask = mAlwaysClearColorBuffer? GLES20.GL_COLOR_BUFFER_BIT : 0;
+
+		// Configure depth buffer/testing
+		if (mEnableDepthBuffer) {
+			GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+			GLES20.glDepthFunc(GLES20.GL_LESS);
+			GLES20.glDepthMask(true);
+			GLES20.glClearDepthf(1.0f);
+			clearMask |= GLES20.GL_DEPTH_BUFFER_BIT;
+		}
+
+		//
+		if (mAntiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
+			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
+		}
+		GLES20.glClear(clearMask);
+	}
+
 
 	/**
 	 * Adds a task to the frame task queue.
@@ -1473,7 +1502,6 @@ public class RajawaliScene {
 		}
 		return triangleCount;
 	}
-
 
 	/**
 	 * Retrieve the number of objects on the screen, recursive method

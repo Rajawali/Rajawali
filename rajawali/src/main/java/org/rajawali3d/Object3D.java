@@ -48,6 +48,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
     public static final int BLUE = 2;
     public static final int ALPHA = 3;
 
+	public static final int UNPICKABLE = Color.argb(255, 255, 255, 255);
+
 	protected final Matrix4 mMVPMatrix = new Matrix4();
 
 	protected final Matrix4 mMVMatrix = new Matrix4();
@@ -76,8 +78,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	protected int mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 
 	protected boolean mIsContainerOnly = true;
-	protected int mPickingColor;
-	protected boolean mIsPickingEnabled = false;
+	protected int mPickingColor = UNPICKABLE;
 	protected float[] mPickingColorArray;
 
 	protected boolean mFrustumTest = false;
@@ -174,30 +175,50 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param vpMatrix {@link Matrix4} The view-projection matrix
 	 * @param projMatrix {@link Matrix4} The projection matrix
 	 * @param vMatrix {@link Matrix4} The view matrix
-	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
+	 * @param sceneMaterial The scene-wide Material to use, if any.
 	 */
 	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
 			final Matrix4 vMatrix, Material sceneMaterial) {
-		render(camera, vpMatrix, projMatrix, vMatrix, null, sceneMaterial);
+		render(camera, vpMatrix, projMatrix, vMatrix, null, sceneMaterial, false);
 	}
 
-	/**
-	 * Renders the object
-	 *
-	 * @param camera The camera
-	 * @param vpMatrix {@link Matrix4} The view-projection matrix
-	 * @param projMatrix {@link Matrix4} The projection matrix
-	 * @param vMatrix {@link Matrix4} The view matrix
-	 * @param parentMatrix {@link Matrix4} This object's parent matrix
-	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
-	 */
+    /**
+     * Renders the object with a parent matrix
+     *
+     * @param camera The camera
+     * @param vpMatrix {@link Matrix4} The view-projection matrix
+     * @param projMatrix {@link Matrix4} The projection matrix
+     * @param vMatrix {@link Matrix4} The view matrix
+     * @param parentMatrix {@link Matrix4} This object's parent matrix
+     * @param sceneMaterial The scene-wide Material to use, if any.
+     */
+    public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix,
+                       final Matrix4 parentMatrix, Material sceneMaterial) {
+        render(camera, vpMatrix, projMatrix, vMatrix, parentMatrix, sceneMaterial, false);
+    }
+
+    /**
+     * Renders the object with a parent matrix, and optional color picking
+     *
+     * @param camera The camera
+     * @param vpMatrix {@link Matrix4} The view-projection matrix
+     * @param projMatrix {@link Matrix4} The projection matrix
+     * @param vMatrix {@link Matrix4} The view matrix
+     * @param parentMatrix {@link Matrix4} This object's parent matrix
+     * @param sceneMaterial The scene-wide Material to use, if any.
+     * @param isColorPicking True for color-picking render
+     */
 	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix,
-			final Matrix4 parentMatrix, Material sceneMaterial) {
+			final Matrix4 parentMatrix, Material sceneMaterial, boolean isColorPicking) {
+
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			return;
 
 		Material material = sceneMaterial == null ? mMaterial : sceneMaterial;
-		preRender();
+
+        if (!isColorPicking) {
+            preRender();
+        }
 
 		// -- move view matrix transformation first
 		boolean modelMatrixWasRecalculated = onRecalculateModelMatrix(parentMatrix);
@@ -231,17 +252,25 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			          GLES20.glFrontFace(GLES20.GL_CCW);
 			     }
 			}
-			if (mEnableBlending) {
-				GLES20.glEnable(GLES20.GL_BLEND);
-				GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
-			}
-			if (!mEnableDepthTest) GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-			else {
+            if (isColorPicking) {
+                GLES20.glDisable(GLES20.GL_BLEND);
+                GLES20.glDepthMask(true);
+            } else {
+			    if (mEnableBlending) {
+				    GLES20.glEnable(GLES20.GL_BLEND);
+				    GLES20.glBlendFunc(mBlendFuncSFactor, mBlendFuncDFactor);
+			    } else {
+                    GLES20.glDisable(GLES20.GL_BLEND);
+                }
+                GLES20.glDepthMask(mEnableDepthMask);
+            }
+			if (!mEnableDepthTest) {
+				GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			} else {
 				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 				GLES20.glDepthFunc(GLES20.GL_LESS);
 			}
 
-			GLES20.glDepthMask(mEnableDepthMask);
 
 			if (!mIsPartOfBatch) {
 				if (material == null) {
@@ -260,11 +289,13 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 					material.setNormals(mGeometry.getNormalBufferInfo());
 				if(mMaterial.usingVertexColors())
 					material.setVertexColors(mGeometry.getColorBufferInfo());
-				
+
 				material.setVertices(mGeometry.getVertexBufferInfo());
 			}
 			material.setCurrentObject(this);
-			if(mOverrideMaterialColor) {
+			if (isColorPicking) {
+                material.setColor(mPickingColor);
+            } else if (mOverrideMaterialColor) {
                 material.setColor(mColor);
             }
             material.applyParams();
@@ -315,7 +346,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
                 child.setPartOfBatch(true);
             }
             if(modelMatrixWasRecalculated) child.markModelMatrixDirty();
-			child.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, sceneMaterial);
+			child.render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, sceneMaterial, isColorPicking);
 		}
 
 		if (mRenderChildrenAsBatch && sceneMaterial == null) {
@@ -416,7 +447,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * Use this together with the alpha channel when calling BaseObject3D.setColor(): 0xaarrggbb. So for 50% transparent
 	 * red, set transparent to true and call: * <code>setColor(0x7fff0000);</code>
 	 *
-	 * @param transparent
+	 * @param value
 	 */
 	public void setTransparent(boolean value) {
 		mTransparent = value;
@@ -633,11 +664,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mPickingColorArray[1] = Color.green(pickingColor) / 255f;
 		mPickingColorArray[2] = Color.blue(pickingColor) / 255f;
 		mPickingColorArray[3] = Color.alpha(pickingColor) / 255f;
-		mIsPickingEnabled = true;
 	}
 
 	public boolean isPickingEnabled() {
-		return mIsPickingEnabled;
+		return mPickingColor != UNPICKABLE;
 	}
 
 	public void setShowBoundingVolume(boolean showBoundingVolume) {
