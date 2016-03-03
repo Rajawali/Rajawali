@@ -14,10 +14,8 @@ package org.rajawali3d.materials;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-
+import android.support.annotation.NonNull;
 import org.rajawali3d.BufferInfo;
-import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.methods.DiffuseMethod;
@@ -47,7 +45,9 @@ import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Material class is where you define the visual characteristics of your 3D model.
@@ -231,6 +231,8 @@ public class Material {
      * The list of textures that are assigned by this materials.
      */
     protected ArrayList<ATexture> mTextureList;
+
+    protected Map<String, Integer> mTextureHandles;
     /**
      * Contains the normal matrix. The normal matrix is used in the shaders to transform
      * the normal into eye space.
@@ -269,7 +271,8 @@ public class Material {
 
     public Material(boolean deferCapabilitiesCheck) {
         mCapabilitiesCheckDeferred = deferCapabilitiesCheck;
-        mTextureList = new ArrayList<ATexture>();
+        mTextureList = new ArrayList<>();
+        mTextureHandles = new HashMap<>();
 
         // If we have deffered the capabilities check, we have no way of knowing how many textures this material
         // is capable of having. We could choose 8, the minimum required fragment shader texture unit count, but
@@ -510,7 +513,7 @@ public class Material {
             boolean hasVideoTexture = false;
 
             for (int i = 0; i < mTextureList.size(); i++) {
-                ATexture texture = mTextureList.get(i);
+                ATexture texture  = mTextureList.get(i);
 
                 switch (texture.getTextureType()) {
                     case VIDEO_TEXTURE:
@@ -518,11 +521,11 @@ public class Material {
                         // no break statement, add the video texture to the diffuse textures
                     case DIFFUSE:
                     case RENDER_TARGET:
-                        if (diffuseTextures == null) diffuseTextures = new ArrayList<ATexture>();
+                        if (diffuseTextures == null) diffuseTextures = new ArrayList<>();
                         diffuseTextures.add(texture);
                         break;
                     case NORMAL:
-                        if (normalMapTextures == null) normalMapTextures = new ArrayList<ATexture>();
+                        if (normalMapTextures == null) normalMapTextures = new ArrayList<>();
                         normalMapTextures.add(texture);
                         break;
                     case CUBE_MAP:
@@ -685,9 +688,12 @@ public class Material {
         mVertexShader.setLocations(mProgramHandle);
         mFragmentShader.setLocations(mProgramHandle);
 
+        for (String name : mTextureHandles.keySet()) {
+            setTextureHandleForName(name);
+        }
+
         for (int i = 0; i < mTextureList.size(); i++) {
-            ATexture texture = mTextureList.get(i);
-            setTextureParameters(texture);
+            setTextureParameters(mTextureList.get(i));
         }
 
         mIsDirty = false;
@@ -810,14 +816,27 @@ public class Material {
      * @param texture
      */
     private void setTextureParameters(ATexture texture) {
-        if (texture.getUniformHandle() > -1) return;
+        if (mTextureHandles.containsKey(texture.getTextureName())) return;
 
         int textureHandle = GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName());
-        if (textureHandle == -1) {
-            RajLog.d("Could not get attrib location for "
-                + texture.getTextureName() + ", " + texture.getTextureType());
+        if (textureHandle == -1 && RajLog.isDebugEnabled()) {
+            RajLog.e("Could not get uniform location for " + texture.getTextureName() + ", "
+                     + texture.getTextureType());
+            return;
         }
-        texture.setUniformHandle(textureHandle);
+        mTextureHandles.put(texture.getTextureName(), textureHandle);
+    }
+
+    public void setTextureHandleForName(@NonNull String name) {
+        if (mProgramHandle < 0 || mTextureHandles.containsKey(name) && mTextureHandles.get(name) > -1) {
+            return;
+        }
+        int textureHandle = GLES20.glGetUniformLocation(mProgramHandle, name);
+        if (textureHandle == -1 && RajLog.isDebugEnabled()) {
+            RajLog.e("Could not get uniform location for " + name + " Program Handle: " + mProgramHandle);
+            return;
+        }
+        mTextureHandles.put(name, textureHandle);
     }
 
     /**
@@ -837,8 +856,7 @@ public class Material {
         }
 
         for (int i = 0; i < num; i++) {
-            ATexture texture = mTextureList.get(i);
-            bindTextureByName(texture.getTextureName(), i, texture);
+            bindTextureByName(i, mTextureList.get(i));
         }
 
         if (mPlugins != null)
@@ -846,10 +864,22 @@ public class Material {
                 plugin.bindTextures(num);
     }
 
-    public void bindTextureByName(String name, int index, ATexture texture) {
+    public void bindTextureByName(int index, ATexture texture) {
+        if (!mTextureHandles.containsKey(texture.getTextureName())) {
+            setTextureParameters(texture);
+        }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
         GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
-        GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgramHandle, name), index);
+        GLES20.glUniform1i(mTextureHandles.get(texture.getTextureName()), index);
+    }
+
+    public void bindTextureByName(String name, int index, ATexture texture) {
+        if (!mTextureHandles.containsKey(texture.getTextureName())) {
+            setTextureHandleForName(name);
+        }
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
+        GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+        GLES20.glUniform1i(mTextureHandles.get(name), index);
     }
 
     /**

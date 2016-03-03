@@ -17,8 +17,8 @@ import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
 import org.rajawali3d.postprocessing.APass;
 import org.rajawali3d.primitives.ScreenQuad;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
 
 
