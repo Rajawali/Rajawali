@@ -6,7 +6,7 @@ import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 
 public class ShadowPass extends RenderPass {
@@ -20,7 +20,7 @@ public class ShadowPass extends RenderPass {
 	private ShadowMapMaterial mShadowMapMaterial;
 	private ShadowPassType mShadowPassType;
 
-	public ShadowPass(ShadowPassType shadowPassType, RajawaliScene scene, Camera camera, DirectionalLight light, RenderTarget renderTarget) {
+	public ShadowPass(ShadowPassType shadowPassType, Scene scene, Camera camera, DirectionalLight light, RenderTarget renderTarget) {
 		super(scene, camera, 0);
 		mShadowPassType = shadowPassType;
 		mShadowRenderTarget = renderTarget;
@@ -35,7 +35,7 @@ public class ShadowPass extends RenderPass {
 	}
 
 	@Override
-	public void render(RajawaliScene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
 		if(mShadowPassType == ShadowPassType.APPLY_SHADOW_MAP) {
 			mShadowMapMaterial.setShadowMapTexture(mShadowRenderTarget.getTexture());
 			super.render(scene, renderer, screenQuad, writeBuffer, readBuffer, ellapsedTime, deltaTime);

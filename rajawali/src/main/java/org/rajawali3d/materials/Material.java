@@ -41,7 +41,9 @@ import org.rajawali3d.materials.textures.CubeMapTexture;
 import org.rajawali3d.materials.textures.SphereMapTexture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.scene.Scene;
+import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
@@ -74,9 +76,7 @@ public class Material {
      */
     public static enum PluginInsertLocation {
         PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_TRANSFORM, POST_TRANSFORM, IGNORE
-    }
-
-    ;
+    };
 
     private final boolean mCapabilitiesCheckDeferred;
 
@@ -121,7 +121,7 @@ public class Material {
     private boolean mUseVertexColors;
     /**
      * Indicates whether lighting should be used or not. This must be set to true when using a
-     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link RajawaliScene}
+     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link Scene}
      * and are automatically added to the material.
      */
     private boolean mLightingEnabled;
@@ -207,7 +207,7 @@ public class Material {
     private float mTime;
     /**
      * The lights that affect the material. Lights shouldn't be managed by any other class
-     * than {@link RajawaliScene}. To add lights to a scene call {@link RajawaliScene#addLight(ALight).
+     * than {@link Scene}. To add lights to a scene call {@link Scene#addLight(ALight).
      */
     protected List<ALight> mLights;
     /**
@@ -822,7 +822,7 @@ public class Material {
 
     /**
      * Binds the textures to an OpenGL texturing target. Called every frame by
-     * {@link RajawaliScene#render(long, double, org.rajawali3d.renderer.RenderTarget)}. Shouldn't
+     * {@link Scene#render(long, double, org.rajawali3d.renderer.RenderTarget)}. Shouldn't
      * be called manually.
      */
     public void bindTextures() {
@@ -978,7 +978,7 @@ public class Material {
     }
 
     /**
-     * Set the vertex color buffer handle. This is passed to {@link VertexShader#setColorBuffer(int)}
+     * Set the vertex color buffer handle. This is passed to {@link VertexShader#setVertexColors(int)}
      *
      * @param vertexColorBufferHandle
      */
@@ -987,7 +987,7 @@ public class Material {
     }
 
     /**
-     * Set the vertex color buffer handle. This is passed to {@link VertexShader#setColorBuffer(int)}
+     * Set the vertex color buffer handle. This is passed to {@link VertexShader#setVertexColors(int)}
      *
      * @param bufferInfo
      */
@@ -1051,7 +1051,7 @@ public class Material {
 
     /**
      * Indicates whether lighting should be used or not. This must be set to true when using a
-     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link RajawaliScene}
+     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link Scene}
      * and are automatically added to the material.
      *
      * @param value
@@ -1062,7 +1062,7 @@ public class Material {
 
     /**
      * Indicates whether lighting should be used or not. This must be set to true when using a
-     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link RajawaliScene}
+     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link Scene}
      * and are automatically added to the material.
      *
      * @return
@@ -1153,7 +1153,7 @@ public class Material {
 
     /**
      * The lights that affect the material. Lights shouldn't be managed by any other class
-     * than {@link RajawaliScene}. To add lights to a scene call {@link RajawaliScene#addLight(ALight).
+     * than {@link Scene}. To add lights to a scene call {@link Scene#addLight(ALight).
      *
      * @param lights The lights collection
      */

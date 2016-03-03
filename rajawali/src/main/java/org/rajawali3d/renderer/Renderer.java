@@ -33,7 +33,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 import org.rajawali3d.view.ISurface;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.ObjectColorPicker;
@@ -104,10 +104,10 @@ public abstract class Renderer implements ISurfaceRenderer {
     private RenderTarget                  mCurrentRenderTarget;
     private ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 
-    protected final List<RajawaliScene> mScenes; //List of all scenes this renderer is aware of.
-    protected final List<RenderTarget> mRenderTargets; //List of all render targets this renderer is aware of.
-    private final Queue<AFrameTask> mFrameTaskQueue;
-    private final SparseArray<ModelRunnable> mLoaderThreads;
+    protected final List<Scene>                     mScenes; //List of all scenes this renderer is aware of.
+    protected final List<RenderTarget>              mRenderTargets; //List of all render targets this renderer is aware of.
+    private final Queue<AFrameTask>                 mFrameTaskQueue;
+    private final SparseArray<ModelRunnable>        mLoaderThreads;
     private final SparseArray<IAsyncLoaderCallback> mLoaderCallbacks;
 
     /**
@@ -115,9 +115,9 @@ public abstract class Renderer implements ISurfaceRenderer {
      * <p/>
      * Guarded by {@link #mNextSceneLock}
      */
-    private RajawaliScene mCurrentScene;
+    private Scene mCurrentScene;
 
-    private RajawaliScene mNextScene; //The scene which the renderer should switch to on the next frame.
+    private Scene mNextScene; //The scene which the renderer should switch to on the next frame.
     private final Object mNextSceneLock = new Object(); //Scene switching lock
 
     private long mRenderStartTime;
@@ -159,7 +159,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         mContext = context;
         RawShaderLoader.mContext = new WeakReference<>(context);
         mFrameRate = getRefreshRate();
-        mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<RajawaliScene>());
+        mScenes = Collections.synchronizedList(new CopyOnWriteArrayList<Scene>());
         mRenderTargets = Collections.synchronizedList(new CopyOnWriteArrayList<RenderTarget>());
         mFrameTaskQueue = new LinkedList<>();
 
@@ -169,7 +169,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         mLoaderThreads = new SparseArray<>();
         mLoaderCallbacks = new SparseArray<>();
 
-        final RajawaliScene defaultScene = getNewDefaultScene();
+        final Scene defaultScene = getNewDefaultScene();
         mScenes.add(defaultScene);
         mCurrentScene = defaultScene;
 
@@ -402,7 +402,7 @@ public abstract class Renderer implements ISurfaceRenderer {
 
     /**
      * Called by {@link #onRenderFrame(GL10)} to render the next frame. This is
-     * called prior to the current scene's {@link RajawaliScene#render(long, double, RenderTarget)} method.
+     * called prior to the current scene's {@link Scene#render(long, double, RenderTarget)} method.
      *
      * @param ellapsedRealtime {@code long} The total ellapsed rendering time in milliseconds.
      * @param deltaTime        {@code double} The time passes since the last frame, in seconds.
@@ -614,27 +614,27 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Switches the {@link RajawaliScene} currently being displayed.
+     * Switches the {@link Scene} currently being displayed.
      *
-     * @param scene {@link RajawaliScene} object to display.
+     * @param scene {@link Scene} object to display.
      */
-    public void switchScene(RajawaliScene scene) {
+    public void switchScene(Scene scene) {
         synchronized (mNextSceneLock) {
             mNextScene = scene;
         }
     }
 
     /**
-     * Switches the {@link RajawaliScene} currently being displayed. It resets the
+     * Switches the {@link Scene} currently being displayed. It resets the
      * OpenGL state and sets the projection matrix for the new scene.
      * <p/>
      * This method should only be called from the main OpenGL render thread
      * ({@link Renderer#onRender(long, double)}). Calling this outside of the main thread
      * may case unexpected behaviour.
      *
-     * @param nextScene {@link RajawaliScene} The scene to switch to.
+     * @param nextScene {@link Scene} The scene to switch to.
      */
-    public void switchSceneDirect(RajawaliScene nextScene) {
+    public void switchSceneDirect(Scene nextScene) {
         mCurrentScene = nextScene;
         mCurrentScene.markLightingDirty(); // Make sure the lighting is updated for the new scene
         mCurrentScene.resetGLState(); // Ensure that the GL state is what this scene expects
@@ -642,52 +642,52 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Switches the {@link RajawaliScene} currently being displayed.
+     * Switches the {@link Scene} currently being displayed.
      *
-     * @param scene Index of the {@link RajawaliScene} to use.
+     * @param scene Index of the {@link Scene} to use.
      */
     public void switchScene(int scene) {
         switchScene(mScenes.get(scene));
     }
 
     /**
-     * Fetches the {@link RajawaliScene} currently being being displayed.
+     * Fetches the {@link Scene} currently being being displayed.
      * Note that the scene is not thread safe so this should be used
      * with extreme caution.
      *
-     * @return {@link RajawaliScene} object currently used for the scene.
+     * @return {@link Scene} object currently used for the scene.
      * @see {@link Renderer#mCurrentScene}
      */
-    public RajawaliScene getCurrentScene() {
+    public Scene getCurrentScene() {
         return mCurrentScene;
     }
 
     /**
      * Fetches the specified scene.
      *
-     * @param scene Index of the {@link RajawaliScene} to fetch.
+     * @param scene Index of the {@link Scene} to fetch.
      *
-     * @return {@link RajawaliScene} which was retrieved.
+     * @return {@link Scene} which was retrieved.
      */
-    public RajawaliScene getScene(int scene) {
+    public Scene getScene(int scene) {
         return mScenes.get(scene);
     }
 
     /**
-     * Replaces a {@link RajawaliScene} in the renderer at the specified location
+     * Replaces a {@link Scene} in the renderer at the specified location
      * in the list. This does not validate the index, so if it is not
      * contained in the list already, an exception will be thrown.
      * <p/>
-     * If the {@link RajawaliScene} being replaced is
+     * If the {@link Scene} being replaced is
      * the one in current use, the replacement will be selected on the next
      * frame.
      *
-     * @param scene    {@link RajawaliScene} object to add.
-     * @param location Integer index of the {@link RajawaliScene} to replace.
+     * @param scene    {@link Scene} object to add.
+     * @param location Integer index of the {@link Scene} to replace.
      *
      * @return {@code boolean} True if the replace task was successfully queued.
      */
-    public boolean replaceScene(final RajawaliScene scene, final int location) {
+    public boolean replaceScene(final Scene scene, final int location) {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
@@ -698,17 +698,17 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Replaces the specified {@link RajawaliScene} in the renderer with the
-     * new one. If the {@link RajawaliScene} being replaced is
+     * Replaces the specified {@link Scene} in the renderer with the
+     * new one. If the {@link Scene} being replaced is
      * the one in current use, the replacement will be selected on the next
      * frame.
      *
-     * @param oldScene {@link RajawaliScene} object to be replaced.
-     * @param newScene {@link RajawaliScene} which will replace the old.
+     * @param oldScene {@link Scene} object to be replaced.
+     * @param newScene {@link Scene} which will replace the old.
      *
      * @return {@code boolean} True if the replace task was successfully queued.
      */
-    public boolean replaceScene(final RajawaliScene oldScene, final RajawaliScene newScene) {
+    public boolean replaceScene(final Scene oldScene, final Scene newScene) {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
@@ -719,13 +719,13 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Adds a {@link RajawaliScene} to the renderer.
+     * Adds a {@link Scene} to the renderer.
      *
-     * @param scene {@link RajawaliScene} object to add.
+     * @param scene {@link Scene} object to add.
      *
      * @return {@code boolean} True if this addition was successfully queued.
      */
-    public boolean addScene(final RajawaliScene scene) {
+    public boolean addScene(final Scene scene) {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
@@ -742,7 +742,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      *
      * @return {@code boolean} True if the addition was successfully queued.
      */
-    public boolean addScenes(final Collection<RajawaliScene> scenes) {
+    public boolean addScenes(final Collection<Scene> scenes) {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
@@ -753,15 +753,15 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Removes a {@link RajawaliScene} from the renderer. If the {@link RajawaliScene}
-     * being removed is the one in current use, the 0 index {@link RajawaliScene}
+     * Removes a {@link Scene} from the renderer. If the {@link Scene}
+     * being removed is the one in current use, the 0 index {@link Scene}
      * will be selected on the next frame.
      *
-     * @param scene {@link RajawaliScene} object to be removed.
+     * @param scene {@link Scene} object to be removed.
      *
      * @return {@code boolean} True if the removal was successfully queued.
      */
-    public boolean removeScene(final RajawaliScene scene) {
+    public boolean removeScene(final Scene scene) {
         final AFrameTask task = new AFrameTask() {
             @Override
             protected void doTask() {
@@ -787,44 +787,44 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Adds a {@link RajawaliScene}, switching to it immediately
+     * Adds a {@link Scene}, switching to it immediately
      *
-     * @param scene The {@link RajawaliScene} to add.
+     * @param scene The {@link Scene} to add.
      *
      * @return {@code boolean} True if the addition task was successfully queued.
      */
-    public boolean addAndSwitchScene(RajawaliScene scene) {
+    public boolean addAndSwitchScene(Scene scene) {
         boolean success = addScene(scene);
         switchScene(scene);
         return success;
     }
 
     /**
-     * Replaces a {@link RajawaliScene} at the specified index, switching to the
+     * Replaces a {@link Scene} at the specified index, switching to the
      * replacement immediately on the next frame. This does not validate the index.
      *
-     * @param scene    The {@link RajawaliScene} to add.
+     * @param scene    The {@link Scene} to add.
      * @param location The index of the scene to replace.
      *
      * @return {@code boolean} True if the replace task was successfully queued.
      */
-    public boolean replaceAndSwitchScene(RajawaliScene scene, int location) {
+    public boolean replaceAndSwitchScene(Scene scene, int location) {
         boolean success = replaceScene(scene, location);
         switchScene(scene);
         return success;
     }
 
     /**
-     * Replaces the specified {@link RajawaliScene} in the renderer with the
+     * Replaces the specified {@link Scene} in the renderer with the
      * new one, switching to it immediately on the next frame. If the scene to
      * replace does not exist, nothing will happen.
      *
-     * @param oldScene {@link RajawaliScene} object to be replaced.
-     * @param newScene {@link RajawaliScene} which will replace the old.
+     * @param oldScene {@link Scene} object to be replaced.
+     * @param newScene {@link Scene} which will replace the old.
      *
      * @return {@code boolean} True if the replace task was successfully queued.
      */
-    public boolean replaceAndSwitchScene(RajawaliScene oldScene, RajawaliScene newScene) {
+    public boolean replaceAndSwitchScene(Scene oldScene, Scene newScene) {
         boolean success = replaceScene(oldScene, newScene);
         switchScene(newScene);
         return success;
@@ -991,10 +991,10 @@ public abstract class Renderer implements ISurfaceRenderer {
      * Return a new instance of the default initial scene for the {@link Renderer} instance. This method is only
      * intended to be called one time by the renderer itself and should not be used elsewhere.
      *
-     * @return {@link RajawaliScene} The default scene.
+     * @return {@link Scene} The default scene.
      */
-    protected RajawaliScene getNewDefaultScene() {
-        return new RajawaliScene(this);
+    protected Scene getNewDefaultScene() {
+        return new Scene(this);
     }
 
     protected boolean internalOfferTask(AFrameTask task) {

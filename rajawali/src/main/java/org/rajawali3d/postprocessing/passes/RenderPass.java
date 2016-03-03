@@ -20,7 +20,7 @@ import org.rajawali3d.postprocessing.APass;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 /**
  * A render pass used for primarily rendering a scene to a framebuffer target.
@@ -28,18 +28,18 @@ import org.rajawali3d.scene.RajawaliScene;
  * @author dennis.ippel
  */
 public class RenderPass extends APass {
-	protected RajawaliScene mScene;
+	protected Scene  mScene;
 	protected Camera mCamera;
 	protected Camera mOldCamera;
-	protected int mClearColor;
-	protected int mOldClearColor;
+	protected int    mClearColor;
+	protected int    mOldClearColor;
 
 	/**
 	 * Instantiates a new RenderPass object.
-	 * @param scene RajawaliScene instance to render for this pass
+	 * @param scene Scene instance to render for this pass
 	 * @param clearColor Color of the background to clear before rendering the scene
 	 */
-	public RenderPass(RajawaliScene scene, Camera camera, int clearColor) {
+	public RenderPass(Scene scene, Camera camera, int clearColor) {
 		mPassType = PassType.RENDER;
 		mScene = scene;
 		mCamera = camera;
@@ -51,7 +51,7 @@ public class RenderPass extends APass {
 		mNeedsSwap = true;
 	}
 
-	public void render(RajawaliScene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
 		// Set the background color with that of current render pass.
 		if (mClearColor != 0x00000000) {
 			mOldClearColor = renderer.getCurrentScene().getBackgroundColor();

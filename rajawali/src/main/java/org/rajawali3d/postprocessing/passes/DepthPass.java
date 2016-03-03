@@ -9,16 +9,16 @@ import org.rajawali3d.postprocessing.APass;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 
 public class DepthPass extends APass {
-	protected RajawaliScene mScene;
-	protected Camera mCamera;
-	protected Camera mOldCamera;
+	protected Scene               mScene;
+	protected Camera              mCamera;
+	protected Camera              mOldCamera;
 	protected DepthMaterialPlugin mDepthPlugin;
 
-	public DepthPass(RajawaliScene scene, Camera camera) {
+	public DepthPass(Scene scene, Camera camera) {
 		mPassType = PassType.DEPTH;
 		mScene = scene;
 		mCamera = camera;
@@ -34,7 +34,7 @@ public class DepthPass extends APass {
 	}
 
 	@Override
-	public void render(RajawaliScene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget,
+	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget,
 					   RenderTarget readTarget, long ellapsedTime, double deltaTime) {
 		GLES20.glClearColor(0, 0, 0, 1);
 		mDepthPlugin.setFarPlane((float)mCamera.getFarPlane());

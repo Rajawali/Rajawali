@@ -15,23 +15,23 @@ import android.view.MotionEvent;
 
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 /**
  * This class is intended to be used with <code>PipRenderer</code>.
  */
 public abstract class SubRenderer {
     private static final String TAG = "SubRenderer";
-    private RajawaliScene scene;
-    private Renderer      renderer;
+    private Scene    scene;
+    private Renderer renderer;
 
     public SubRenderer(Renderer renderer) {
-        scene = new RajawaliScene(renderer);
+        scene = new Scene(renderer);
         renderer.addScene(scene);
         this.renderer = renderer;
     }
 
-    public RajawaliScene getCurrentScene() {
+    public Scene getCurrentScene() {
         return scene;
     }
 

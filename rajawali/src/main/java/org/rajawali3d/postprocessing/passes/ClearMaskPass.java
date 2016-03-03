@@ -18,7 +18,7 @@ import org.rajawali3d.postprocessing.APass;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 /**
  * Disables stencil test for previously masked rendering passes so that
@@ -31,7 +31,7 @@ public class ClearMaskPass extends APass {
 	}
 
 	@Override
-	public void render(RajawaliScene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
 		// Disable stencil test so next rendering pass won't be masked.
 		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
 	}

@@ -21,17 +21,17 @@ import org.rajawali3d.postprocessing.APass;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 /**
  * Masked render pass for drawing to stencil buffer.
  * @author Andrew Jo (andrewjo@gmail.com / www.andrewjo.com)
  */
 public class MaskPass extends APass {
-	protected RajawaliScene mScene;
+	protected Scene   mScene;
 	protected boolean mInverse;
 
-	public MaskPass(RajawaliScene scene) {
+	public MaskPass(Scene scene) {
 		mPassType = PassType.MASK;
 		mScene = scene;
 		mEnabled = true;
@@ -57,7 +57,7 @@ public class MaskPass extends APass {
 	}
 
 	@Override
-	public void render(RajawaliScene scene, Renderer render, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer render, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
 		// Do not update color or depth.
 		GLES20.glColorMask(false, false, false, false);
 		GLES20.glDepthMask(false);

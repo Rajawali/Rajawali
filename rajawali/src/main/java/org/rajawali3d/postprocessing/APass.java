@@ -17,7 +17,7 @@ import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 /**
  * Defines a rendering pass which is needed for multiple rendering passes.
@@ -57,7 +57,7 @@ public abstract class APass implements IPass {
 		return mNeedsSwap;
 	}
 
-	public abstract void render(RajawaliScene scene, Renderer renderer, ScreenQuad screenQuad,
+	public abstract void render(Scene scene, Renderer renderer, ScreenQuad screenQuad,
 								RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime);
 
 	public PassType getPassType() {

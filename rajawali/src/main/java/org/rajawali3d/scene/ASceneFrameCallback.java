@@ -1,7 +1,7 @@
 package org.rajawali3d.scene;
 
 /**
- * Abstract class for receiving frame callbacks from {@link RajawaliScene}. The timing
+ * Abstract class for receiving frame callbacks from {@link Scene}. The timing
  * of this interface assumes that the rendering time does not affect the timing of
  * operations before and after the frame. Pre- and Post- operations are provided
  * because of how these tie in with the animation system. Pre- tasks will be executed

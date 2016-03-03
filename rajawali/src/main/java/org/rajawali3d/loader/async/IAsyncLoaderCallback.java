@@ -1,11 +1,11 @@
 package org.rajawali3d.loader.async;
 
 import org.rajawali3d.loader.ALoader;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 /**
  * Interface for defining a asynchronous loader callback. This will be provided
- * to the {@link RajawaliScene#loadModel(ALoader, IAsyncLoaderCallback, int)} and
+ * to the {@link Scene#loadModel(ALoader, IAsyncLoaderCallback, int)} and
  * related calls.
  *
  * @author Jared Woolston (jwoolston@idealcorp.com)

@@ -10,21 +10,21 @@ import org.rajawali3d.postprocessing.passes.ShadowPass;
 import org.rajawali3d.postprocessing.passes.ShadowPass.ShadowPassType;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
 
 public class ShadowEffect extends APostProcessingEffect {
-	private RajawaliScene mScene;
-	private Camera mCamera;
-	private DirectionalLight mLight;
-	private int mShadowMapSize;
-	private RenderTarget mShadowRenderTarget;
-	private float mShadowInfluence;
+	private Scene             mScene;
+	private Camera            mCamera;
+	private DirectionalLight  mLight;
+	private int               mShadowMapSize;
+	private RenderTarget      mShadowRenderTarget;
+	private float             mShadowInfluence;
 	private ShadowMapMaterial mShadowMapMaterial;
 
-	public ShadowEffect(RajawaliScene scene, Camera camera, DirectionalLight light, int shadowMapSize) {
+	public ShadowEffect(Scene scene, Camera camera, DirectionalLight light, int shadowMapSize) {
 		super();
 		mScene = scene;
 		mCamera = camera;

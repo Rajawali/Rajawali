@@ -62,7 +62,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 @SuppressWarnings("StatementWithEmptyBody")
-public class RajawaliScene {
+public class Scene {
 
 	protected final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
 	protected double mEyeZ = 4.0; //TODO: Is this necessary?
@@ -136,7 +136,7 @@ public class RajawaliScene {
 	protected IGraphNode mSceneGraph; //The scenegraph for this scene
 	protected GRAPH_TYPE mSceneGraphType = GRAPH_TYPE.NONE; //The type of graph type for this scene.
 
-	public RajawaliScene(Renderer renderer) {
+	public Scene(Renderer renderer) {
 		mRenderer = renderer;
 		mAlpha = 0;
 		mAnimations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
@@ -156,7 +156,7 @@ public class RajawaliScene {
         mAntiAliasingConfig = ISurface.ANTI_ALIASING_CONFIG.NONE; // Default to none
 	}
 
-	public RajawaliScene(Renderer renderer, GRAPH_TYPE type) {
+	public Scene(Renderer renderer, GRAPH_TYPE type) {
 		this(renderer);
 		mSceneGraphType = type;
 		initSceneGraph();
@@ -235,7 +235,7 @@ public class RajawaliScene {
 	* with extreme caution.
 	*
 	* @return {@link Camera} object currently used for the scene.
-	* @see {@link RajawaliScene#mCamera}
+	* @see {@link Scene#mCamera}
 	*/
 	public Camera getCamera() {
 		return this.mCamera;

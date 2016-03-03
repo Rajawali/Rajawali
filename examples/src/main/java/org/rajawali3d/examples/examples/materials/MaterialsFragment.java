@@ -30,7 +30,7 @@ public class MaterialsFragment extends AExampleFragment {
 
         @Override
 		protected void initScene() {
-			mLight = new DirectionalLight(.3f, -.3f, -1);
+			mLight = new DirectionalLight(.3f, -.3f, 1);
 			mLight.setPower(.6f);
 
 			getCurrentScene().addLight(mLight);
