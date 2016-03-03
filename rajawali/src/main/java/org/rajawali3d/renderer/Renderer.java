@@ -153,8 +153,8 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public Renderer(Context context, boolean registerForResources) {
-        RajLog.i("Rajawali | Anchor Steam | v1.0 ");
-        //RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
+        RajLog.i("Rajawali | Bombshell | v1.1 Development ");
+        RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
         mHaveRegisteredForResources = registerForResources;
         mContext = context;
         RawShaderLoader.mContext = new WeakReference<>(context);

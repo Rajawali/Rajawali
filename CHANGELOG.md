@@ -1,5 +1,17 @@
-Rajawali "Anchor Steam" Development Branch
----------------------------
+Rajawali v1.1.x "Bombshell"
+
+"Bombshell", the next Rajawali version contains some minor changes to the API.
+
+### Desmurfing
+
+The old class names that were prefixed with "Rajawali" have been removed. For example, `RajawaliRenderer` is now just `Renderer`.
+
+### Textures
+ 
+`ATexture.setUniformHandle(int)` and `ATexture.getUniformHandle()` have been removed. They were an incomplete implementation and the ownership of these handles has been moved to the `Material` level, allowing reused of identically named textures across materials as well as helping cache for vertex textures, if available on the device.
+
+Rajawali v1.0.x "Anchor Steam"
+-------------------------------------------------
 
 "Anchor Steam", the next Rajawali version contains significant changes to the API.
 Here's what's new:
