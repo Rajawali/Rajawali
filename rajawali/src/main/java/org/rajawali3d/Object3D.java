@@ -15,6 +15,7 @@ package org.rajawali3d;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
+import android.support.annotation.NonNull;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.cameras.Camera;
@@ -260,7 +261,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 					material.setNormals(mGeometry.getNormalBufferInfo());
 				if(mMaterial.usingVertexColors())
 					material.setVertexColors(mGeometry.getColorBufferInfo());
-				
+
 				material.setVertices(mGeometry.getVertexBufferInfo());
 			}
 			material.setCurrentObject(this);
@@ -458,6 +459,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		if(child.getParent() != null)
 			child.getParent().removeChild(child);
 		mChildren.add(child);
+		child.setParent(this);
 		if (mRenderChildrenAsBatch)
 			child.setPartOfBatch(true);
 	}
@@ -469,6 +471,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public Object3D getParent()
 	{
 		return mParent;
+	}
+
+	private void setParent(@NonNull Object3D parent) {
+		mParent = parent;
 	}
 
 	/**
