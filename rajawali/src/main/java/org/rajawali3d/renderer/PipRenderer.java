@@ -18,7 +18,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.renderer.pip.SubRenderer;
 import org.rajawali3d.renderer.pip.WorkaroundScreenQuad;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 /**
  * <p>
@@ -41,7 +41,7 @@ public class PipRenderer extends Renderer {
     private Material mMiniQuadMaterial;
     private Material mMainQuadMaterial;
 
-    private RajawaliScene mCompositeScene;
+    private Scene mCompositeScene;
 
     private SubRenderer mMiniRenderer;
     private SubRenderer mMainRenderer;

@@ -13,7 +13,7 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.PostProcessingManager;
 import org.rajawali3d.postprocessing.passes.RenderPass;
 import org.rajawali3d.primitives.Cube;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 import java.util.Random;
 
@@ -26,9 +26,9 @@ public class RenderToTextureFragment extends AExampleFragment {
 
 	private final class RenderToTextureRenderer extends AExampleRenderer {
 		private PostProcessingManager mEffects;
-		private RajawaliScene mOtherScene;
-		private Object3D mSphere;
-		private ATexture mCurrentTexture;
+		private Scene                 mOtherScene;
+		private Object3D              mSphere;
+		private ATexture              mCurrentTexture;
 
 		public RenderToTextureRenderer(Context context) {
 			super(context);
@@ -83,7 +83,7 @@ public class RenderToTextureFragment extends AExampleFragment {
 			//    that uses the rendered to texture
 			//
 
-			mOtherScene = new RajawaliScene(this);
+			mOtherScene = new Scene(this);
 			mOtherScene.setBackgroundColor(0xffffff);
 			mOtherScene.addLight(light);
 

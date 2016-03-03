@@ -39,7 +39,7 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 
@@ -375,7 +375,7 @@ public class LoaderAWD extends AMeshLoader {
     /**
      * This is called when all blocks have finished parsing. This is the time to modify any block
      * data as needed from the passed list before conversion to {@link BaseObject3D} or {@link
-     * RajawaliScene} occurs.
+     * Scene} occurs.
      */
     public void onBlockParsingFinished(List<IBlockParser> blockParsers) {
         Object3D temp;

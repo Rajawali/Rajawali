@@ -21,7 +21,7 @@ import org.rajawali3d.materials.textures.ATexture.WrapType;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 public class CopyToNewRenderTargetPass extends EffectPass {
 	private RenderTarget mRenderTarget;
@@ -41,7 +41,7 @@ public class CopyToNewRenderTargetPass extends EffectPass {
 		return mRenderTarget;
 	}
 
-	public void render(RajawaliScene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime) {
 		super.render(scene, renderer, screenQuad, mRenderTarget, readTarget, ellapsedTime, deltaTime);
 	}
 

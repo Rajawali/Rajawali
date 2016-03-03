@@ -23,7 +23,7 @@ import org.rajawali3d.materials.textures.ATexture.TextureException;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3.Axis;
 import org.rajawali3d.primitives.ScreenQuad;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 /**
  * <p>
@@ -112,7 +112,7 @@ public abstract class SideBySideRenderer extends Renderer {
 	 * Half the width of the viewport. The screen will be split in two.
 	 * One half for the left eye and one half for the right eye.
 	 */
-	private int mViewportWidthHalf;
+	private int          mViewportWidthHalf;
 	/**
 	 * The texture that will be used to render the scene into from the
 	 * perspective of the left eye.
@@ -126,30 +126,30 @@ public abstract class SideBySideRenderer extends Renderer {
 	/**
 	 * Used to store a reference to the user's scene.
 	 */
-	private RajawaliScene mUserScene;
+	private Scene        mUserScene;
 	/**
 	 * The side by side scene is what will finally be shown onto the screen.
 	 * This scene contains two quads. The left quad is the scene as viewed
 	 * from the left eye. The right quad is the scene as viewed from the
 	 * right eye.
 	 */
-	private RajawaliScene mSideBySideScene;
+	private Scene        mSideBySideScene;
 	/**
 	 * This screen quad will contain the scene as viewed from the left eye.
 	 */
-	private ScreenQuad mLeftQuad;
+	private ScreenQuad   mLeftQuad;
 	/**
 	 * This screen quad will contain the scene as viewed from the right eye.
 	 */
-	private ScreenQuad mRightQuad;
+	private ScreenQuad   mRightQuad;
 	/**
 	 * The material for the left quad
 	 */
-	private Material mLeftQuadMaterial;
+	private Material     mLeftQuadMaterial;
 	/**
 	 * The material for the right quad
 	 */
-	private Material mRightQuadMaterial;
+	private Material     mRightQuadMaterial;
 	/**
 	 * The distance between the pupils. This is used to offset the cameras.
 	 */
@@ -187,7 +187,7 @@ public abstract class SideBySideRenderer extends Renderer {
 		mRightQuadMaterial = new Material();
 		mRightQuadMaterial.setColorInfluence(0);
 
-		mSideBySideScene = new RajawaliScene(this);
+		mSideBySideScene = new Scene(this);
 
 		mLeftQuad = new ScreenQuad();
 		mLeftQuad.setScaleX(.5);

@@ -25,7 +25,7 @@ import org.rajawali3d.postprocessing.passes.EffectPass;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
 
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class PostProcessingManager {
 	protected EffectPass mCopyPass;
 
 	protected ScreenQuad mScreenQuad;
-	protected RajawaliScene mScene;
+	protected Scene      mScene;
 
 	public PostProcessingManager(Renderer renderer) {
 		this(renderer, -1, -1);
@@ -68,7 +68,7 @@ public class PostProcessingManager {
 		mHeight = height;
 
 		mScreenQuad = new ScreenQuad();
-		mScene = new RajawaliScene(mRenderer, GRAPH_TYPE.NONE);
+		mScene = new Scene(mRenderer, GRAPH_TYPE.NONE);
 
 		mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
 				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
@@ -223,7 +223,7 @@ public class PostProcessingManager {
 		return mComponents.isEmpty();
 	}
 
-	public RajawaliScene getScene() {
+	public Scene getScene() {
 		return mScene;
 	}
 

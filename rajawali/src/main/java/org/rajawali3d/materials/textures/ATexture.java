@@ -12,14 +12,15 @@
  */
 package org.rajawali3d.materials.textures;
 
+import android.graphics.Bitmap.Config;
+import android.opengl.GLES20;
+import android.support.annotation.NonNull;
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.renderer.Renderer;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.renderer.Renderer;
-import android.graphics.Bitmap.Config;
-import android.opengl.GLES20;
 
 public abstract class ATexture {
 	/**
@@ -63,10 +64,6 @@ public abstract class ATexture {
 	 */
 	protected int mTextureId = -1;
 	/**
-	 * The uniform handle represents the sampler location in the shader program
-	 */
-	protected int mUniformHandle = -1;
-	/**
 	 * Texture width
 	 */
 	protected int mWidth;
@@ -92,28 +89,28 @@ public abstract class ATexture {
 	 * OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically needs to
 	 * be restored when the application is re-activated or when a live wallpaper is rotated.
 	 */
-	protected boolean mShouldRecycle;
+	protected          boolean     mShouldRecycle;
 	/**
 	 * The texture name that will be used in the shader.
 	 */
-	protected String mTextureName;
+	@NonNull protected String      mTextureName;
 	/**
 	 * The type of texture {link {@link TextureType}
 	 */
-	protected TextureType mTextureType;
+	protected          TextureType mTextureType;
 	/**
 	 * Texture wrap type. See {@link WrapType}.
 	 */
-	protected WrapType mWrapType;
+	protected          WrapType    mWrapType;
 	/**
 	 * Texture filtering type. See {@link FilterType}.
 	 */
-	protected FilterType mFilterType;
+	protected          FilterType  mFilterType;
 	/**
 	 * Possible bitmap configurations. A bitmap configuration describes how pixels are stored. This affects the quality
 	 * (color depth) as well as the ability to display transparent/translucent colors. See {@link Config}.
 	 */
-	protected Config mBitmapConfig;
+	protected          Config      mBitmapConfig;
 	/**
 	 * A list of materials that use this texture.
 	 */
@@ -141,7 +138,7 @@ public abstract class ATexture {
 	 *
 	 * @param textureType
 	 */
-	public ATexture(TextureType textureType, String textureName)
+	public ATexture(TextureType textureType, @NonNull String textureName)
 	{
 		this();
 		mTextureType = textureType;
@@ -152,7 +149,7 @@ public abstract class ATexture {
 		mFilterType = FilterType.LINEAR;
 	}
 
-	public ATexture(TextureType textureType, String textureName, ACompressedTexture compressedTexture)
+	public ATexture(TextureType textureType, @NonNull String textureName, ACompressedTexture compressedTexture)
 	{
 		this(textureType, textureName);
 		setCompressedTexture(compressedTexture);
@@ -186,7 +183,6 @@ public abstract class ATexture {
 	public void setFrom(ATexture other)
 	{
 		mTextureId = other.getTextureId();
-		mUniformHandle = other.getUniformHandle();
 		mWidth = other.getWidth();
 		mHeight = other.getHeight();
 		mBitmapFormat = other.getBitmapFormat();
@@ -215,21 +211,6 @@ public abstract class ATexture {
 	 */
 	public void setTextureId(int textureId) {
 		mTextureId = textureId;
-	}
-
-	/**
-	 * @return The uniform handle represents the sampler location in the shader program
-	 */
-	public int getUniformHandle() {
-		return mUniformHandle;
-	}
-
-	/**
-	 * @param mUniformHandle
-	 *            The uniform handle represents the sampler location in the shader program
-	 */
-	public void setUniformHandle(int uniformHandle) {
-		this.mUniformHandle = uniformHandle;
 	}
 
 	/**

@@ -17,9 +17,9 @@ import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
 import org.rajawali3d.postprocessing.APass;
 import org.rajawali3d.primitives.ScreenQuad;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.scene.Scene;
 
 
 public class EffectPass extends APass {
@@ -64,7 +64,7 @@ public class EffectPass extends APass {
 		mMaterial.bindTextureByName(PARAM_TEXTURE, 0, mReadTarget.getTexture());
 	}
 
-	public void render(RajawaliScene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime) {
 		mReadTarget = readTarget;
 		mWriteTarget = writeTarget;
 		screenQuad.setMaterial(mMaterial);

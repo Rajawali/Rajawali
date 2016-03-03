@@ -21,15 +21,15 @@ import org.rajawali3d.postprocessing.passes.ColorThresholdPass;
 import org.rajawali3d.postprocessing.passes.CopyToNewRenderTargetPass;
 import org.rajawali3d.postprocessing.passes.RenderPass;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.scene.RajawaliScene;
+import org.rajawali3d.scene.Scene;
 
 public class BloomEffect extends APostProcessingEffect {
-	private RajawaliScene mScene;
-	private Camera mCamera;
-	private int mWidth;
-	private int mHeight;
-	private int mLowerThreshold;
-	private int mUpperThreshold;
+	private Scene     mScene;
+	private Camera    mCamera;
+	private int       mWidth;
+	private int       mHeight;
+	private int       mLowerThreshold;
+	private int       mUpperThreshold;
 	private BlendMode mBlendMode;
 
 	/**
@@ -45,7 +45,7 @@ public class BloomEffect extends APostProcessingEffect {
 	 * @param upperThreshold
 	 * @param blendMode
 	 */
-	public BloomEffect(RajawaliScene scene, Camera camera, int width, int height, int lowerThreshold, int upperThreshold, BlendMode blendMode) {
+	public BloomEffect(Scene scene, Camera camera, int width, int height, int lowerThreshold, int upperThreshold, BlendMode blendMode) {
 		super();
 		mScene = scene;
 		mCamera = camera;

@@ -1,18 +1,16 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package org.rajawali3d.materials.textures;
-
-import java.nio.ByteBuffer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,13 +19,15 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
+import java.nio.ByteBuffer;
+
 /**
  * This class is used to specify texture options.
- * 
+ *
  * @author dennis.ippel
- * 
+ *
  */
-public abstract class ASingleTexture extends ATexture 
+public abstract class ASingleTexture extends ATexture
 {
 	protected Bitmap mBitmap;
 	protected ByteBuffer mByteBuffer;
@@ -54,12 +54,12 @@ public abstract class ASingleTexture extends ATexture
 		this(textureType, textureName);
 		setBitmap(bitmap);
 	}
-	
+
 	public ASingleTexture(TextureType textureType, String textureName, ACompressedTexture compressedTexture)
 	{
 		super(textureType, textureName, compressedTexture);
 	}
-	
+
 	public ASingleTexture(ASingleTexture other)
 	{
 		super(other);
@@ -73,7 +73,7 @@ public abstract class ASingleTexture extends ATexture
 
 	/**
 	 * Copies every property from another ATexture object
-	 * 
+	 *
 	 * @param other
 	 *            another ATexture object to copy from
 	 */
@@ -125,10 +125,9 @@ public abstract class ASingleTexture extends ATexture
 			setWidth(mCompressedTexture.getWidth());
 			setHeight(mCompressedTexture.getHeight());
 			setTextureId(mCompressedTexture.getTextureId());
-			setUniformHandle(mCompressedTexture.getUniformHandle());
 			return;
 		}
-		
+
 		if (mBitmap == null && (mByteBuffer == null || mByteBuffer.limit() == 0))
 			throw new TextureException("Texture could not be added because there is no Bitmap or ByteBuffer set.");
 
@@ -192,7 +191,7 @@ public abstract class ASingleTexture extends ATexture
 		} else {
 			throw new TextureException("Couldn't generate a texture name.");
 		}
-		
+
 		if (mShouldRecycle)
 		{
 			if (mBitmap != null)
@@ -225,10 +224,9 @@ public abstract class ASingleTexture extends ATexture
 			setWidth(mCompressedTexture.getWidth());
 			setHeight(mCompressedTexture.getHeight());
 			setTextureId(mCompressedTexture.getTextureId());
-			setUniformHandle(mCompressedTexture.getUniformHandle());
 			return;
 		}
-		
+
 		if (mBitmap == null && (mByteBuffer == null || mByteBuffer.limit() == 0))
 			throw new TextureException("Texture could not be replaced because there is no Bitmap or ByteBuffer set.");
 
@@ -241,7 +239,7 @@ public abstract class ASingleTexture extends ATexture
 				throw new TextureException("Texture could not be updated because the texture size is different from the original.");
 			if(bitmapFormat != mBitmapFormat)
 				throw new TextureException("Texture could not be updated because the bitmap format is different from the original");
-			
+
 			GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, mBitmap, mBitmapFormat, GLES20.GL_UNSIGNED_BYTE);
 		} else if(mByteBuffer != null) {
 			if (mWidth == 0 || mHeight == 0 || mBitmapFormat == 0)
@@ -255,7 +253,7 @@ public abstract class ASingleTexture extends ATexture
 
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
-	
+
 	void reset() throws TextureException
 	{
 		if(mCompressedTexture != null)
@@ -263,7 +261,7 @@ public abstract class ASingleTexture extends ATexture
 			mCompressedTexture.reset();
 			return;
 		}
-		
+
 		if(mBitmap != null)
 		{
 			mBitmap.recycle();
@@ -275,7 +273,7 @@ public abstract class ASingleTexture extends ATexture
 			mByteBuffer = null;
 		}
 	}
-	
+
 	/**
 	 * @param wrapType
 	 *            the texture wrap type. See {@link WrapType}.
