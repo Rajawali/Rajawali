@@ -931,11 +931,6 @@ public class RajawaliScene {
 		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}
 
-	@Deprecated
-	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
-		requestObjectPicking(pickerInfo);
-	}
-
 	public void requestObjectPicking(ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
