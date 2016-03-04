@@ -34,7 +34,7 @@ public class AnimatedTextureViewFragment extends AExampleFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((View) mRajawaliSurface).animate().rotation(360.0f).setDuration(20000).setInterpolator(new BounceInterpolator());
+        ((View) mRenderSurface).animate().rotation(360.0f).setDuration(20000).setInterpolator(new BounceInterpolator());
     }
 
 	private final class BasicRenderer extends AExampleRenderer {

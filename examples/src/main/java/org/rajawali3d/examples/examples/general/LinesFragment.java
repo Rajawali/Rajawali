@@ -23,8 +23,8 @@ public class LinesFragment extends AExampleFragment {
 
     @Override
     protected void onBeforeApplyRenderer() {
-        mRajawaliSurface.setAntiAliasingMode(ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING);
-        mRajawaliSurface.setSampleCount(2);
+        mRenderSurface.setAntiAliasingMode(ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING);
+        mRenderSurface.setSampleCount(2);
         super.onBeforeApplyRenderer();
     }
 

@@ -30,14 +30,14 @@ public class TransparentSurfaceFragment extends AExampleFragment {
 		iv.setImageResource(R.drawable.flickrpics);
 
 		mLayout.addView(iv, 0);
-        ((View) mRajawaliSurface).bringToFront();
+        ((View) mRenderSurface).bringToFront();
 
 		return mLayout;
 	}
 
     @Override
     protected void onBeforeApplyRenderer() {
-        ((SurfaceView) mRajawaliSurface).setTransparent(true);
+        ((SurfaceView) mRenderSurface).setTransparent(true);
         super.onBeforeApplyRenderer();
     }
 

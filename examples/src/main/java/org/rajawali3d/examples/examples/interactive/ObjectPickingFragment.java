@@ -22,8 +22,8 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        ((View) mRajawaliSurface).setOnTouchListener(this);
         inflater.inflate(R.layout.object_picking_overlay, mLayout, true);
+        ((View) mRenderSurface).setOnTouchListener(this);
         return mLayout;
     }
 

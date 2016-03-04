@@ -1,0 +1,1 @@
+Please download the sample apps at https://developer.vuforia.com/resources/sample-apps and unpack them in this folder

@@ -9,6 +9,7 @@ jdk:
 android:
   components:
   - tools
+  - ndk
   - build-tools-23.0.2
   - android-23
   - extra-android-m2repository
@@ -19,9 +20,14 @@ script:
 - echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
 - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
-- gradle clean lint assemble uploadArchives --continue
+- gradle clean lint assemble uploadArchives --stacktrace --continue
 install:
-- true
+# Get Android NDK
+- wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
+- chmod a+x ndk.bin
+- ./ndk.bin 1> /dev/null 2>&1
+- chmod a+x ./android-ndk-r10d/ndk-build
+- export PATH=$PATH:$PWD/android-ndk-r10d/
 notifications:
   email:
   - info@rozengain.com

@@ -32,7 +32,7 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
 	protected String           mExampleUrl;
 	protected String           mExampleTitle;
     protected FrameLayout      mLayout;
-    protected ISurface         mRajawaliSurface;
+    protected ISurface         mRenderSurface;
     protected ISurfaceRenderer mRenderer;
 
 	@Override
@@ -60,7 +60,7 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
 		mLayout.findViewById(R.id.relative_layout_loader_container).bringToFront();
 
         // Find the TextureView
-        mRajawaliSurface = (ISurface) mLayout.findViewById(R.id.rajwali_surface);
+		mRenderSurface = (ISurface) mLayout.findViewById(R.id.rajwali_surface);
 
 		// Create the loader
 		mProgressBarLoader = (ProgressBar) mLayout.findViewById(R.id.progress_bar_loader);
@@ -84,7 +84,7 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
     }
 
     protected void applyRenderer() {
-        mRajawaliSurface.setSurfaceRenderer(mRenderer);
+        mRenderSurface.setSurfaceRenderer(mRenderer);
     }
 
     @Override
@@ -104,7 +104,7 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
 		super.onDestroyView();
 
 		if (mLayout != null)
-			mLayout.removeView((View) mRajawaliSurface);
+			mLayout.removeView((View) mRenderSurface);
 	}
 
     @Override

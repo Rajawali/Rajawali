@@ -28,7 +28,7 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 
-        ((View) mRajawaliSurface).setOnTouchListener(this);
+        ((View) mRenderSurface).setOnTouchListener(this);
 
 		Display display = getActivity().getWindowManager().getDefaultDisplay();
 		mScreenSize = new Point();
@@ -57,7 +57,7 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 			((TouchRipplesRenderer) mRenderer).setTouch(event.getX()
 					/ mScreenSize.x, 1.0f - (event.getY() / mScreenSize.y));
 		}
-		return ((View) mRajawaliSurface).onTouchEvent(event);
+		return ((View) mRenderSurface).onTouchEvent(event);
 	}
 
 	private final class TouchRipplesRenderer extends AExampleRenderer {

@@ -74,6 +74,7 @@ import org.rajawali3d.examples.examples.ui.TransparentSurfaceFragment;
 import org.rajawali3d.examples.examples.ui.TwoDimensionalFragment;
 import org.rajawali3d.examples.examples.ui.UIElementsFragment;
 import org.rajawali3d.examples.examples.ui.ViewToTextureFragment;
+import org.rajawali3d.examples.examples.vr_ar.VuforiaExampleFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,6 +96,7 @@ public class ExamplesApplication extends Application {
 		, MATERIALS("Materials")
 		, POSTPROCESSING("Post Processing")
         , SCENE("Scenes")
+		, VR_AR("VR and AR")
 		, ABOUT("About");
 		// @formatter:on
 
@@ -218,6 +220,9 @@ public class ExamplesApplication extends Application {
         ITEMS.put(Category.SCENE, new ExampleItem[] {
                 new ExampleItem("Frame Callbacks", SceneFrameCallbackFragment.class)
         });
+		ITEMS.put(Category.VR_AR, new ExampleItem[] {
+				new ExampleItem("Vuforia Integration", VuforiaExampleFragment.class)
+		});
 		ITEMS.put(Category.ABOUT, new ExampleItem[] {
 			new ExampleItem("Community Stream", CommunityFeedFragment.class)
 			, new ExampleItem("Meet The Team", MeetTheTeamFragment.class)
@@ -256,7 +261,7 @@ public class ExamplesApplication extends Application {
 		TEAM_MEMBERS.add(new TeamMember(
 				R.drawable.photo_jaredwoolston
 				, "Jared Woolston"
-				, "Guinness, Smithwicks, Batch 19, Hoegaarden"
+				, "Guinness, Smithwicks, Batch 19, Boston Lager"
 				, "https://plus.google.com/111355740389558136627/posts"
 			));
 		TEAM_MEMBERS.add(new TeamMember(
