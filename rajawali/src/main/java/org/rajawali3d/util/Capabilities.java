@@ -72,28 +72,48 @@ public class Capabilities {
         final EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
 
         final int[] version = new int[2];
-        if (!egl.eglInitialize(display, version)) throw new IllegalStateException("Failed to initialize and EGL context while getting device capabilities.");
+        if (!egl.eglInitialize(display, version))
+            throw new IllegalStateException(
+                    "Failed to initialize an EGL context while getting device capabilities.");
         mEGLMajorVersion = version[0];
         mEGLMinorVersion = version[1];
         // RajLog.d("Device EGL Version: " + version[0] + "." + version[1]);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            // The API for GLES3 doesnt exist on this device
-            // RajLog.d("Device is API level cannot support OpenGL ES 3.");
-            mGLESMajorVersion = 2;
-        } else {
+        // Assume GLES 2 by default
+        mGLESMajorVersion = 2;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             // The API for GLES3 might exist, we need to check
             // RajLog.d("Attempting to get an OpenGL ES 3 config.");
-            final int[] configAttribs = {EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
-                EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE};
 
-            final EGLConfig[] configs = new EGLConfig[10];
+            // Find out how many EGLConfigs exist
             final int[] num_config = new int[1];
-            egl.eglChooseConfig(display, configAttribs, configs, 10, num_config);
-            egl.eglTerminate(display);
-            mGLESMajorVersion = num_config[0] > 0 ? 3 : 2;
-        }
+            egl.eglGetConfigs(display, null, 0, num_config);
 
+            // Allocate and retrieve the EGLConfigs/handles
+            int configCount = num_config[0];
+            final EGLConfig[] configs = new EGLConfig[configCount];
+            egl.eglGetConfigs(display, configs, configCount, num_config);
+
+            // Check for a config that supports GLES 3 with at least 4 bits per color
+            final int value[] = new int[1];
+            for (EGLConfig config : configs) {
+                egl.eglGetConfigAttrib(display, config, EGL10.EGL_RENDERABLE_TYPE, value);
+                if ((value[0] & EGLExt.EGL_OPENGL_ES3_BIT_KHR) != 0) {
+                    // TODO is this secondary check for color sizes necessary?
+                    // Got at least one GLES 3 config, eglChooseConfig() should now be
+                    // reliable enough to see if one of them has at least 4 bits per color
+                    final int[] configAttribs = {
+                            EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
+                            EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE};
+                    value[0] = 0;
+                    egl.eglChooseConfig(display, configAttribs, configs, 1, value);
+                    mGLESMajorVersion = value[0] > 0 ? 3 : 2;
+                    break;
+                }
+            }
+        }
+        egl.eglTerminate(display);
         // RajLog.d("Determined GLES Major version to be: " + mGLESMajorVersion);
         sGLChecked = true;
     }
