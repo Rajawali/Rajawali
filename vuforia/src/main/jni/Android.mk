@@ -58,7 +58,7 @@ OPENGLES_DEF  := -DUSE_OPENGL_ES_2_0
 # The flag "-Wno-psabi" removes warning about "mangling of 'va_list' has
 #   changed in GCC 4.4" when compiled with certain Android NDK versions.
 
-LOCAL_CFLAGS := -v -Wno-write-strings -Wno-psabi $(OPENGLES_DEF)
+LOCAL_CFLAGS := -fpic -Wno-write-strings -Wno-psabi $(OPENGLES_DEF)
 
 # The list of additional linker flags to be used when building your
 # module. Use the "-l" prefix in front of the name of libraries you want to
