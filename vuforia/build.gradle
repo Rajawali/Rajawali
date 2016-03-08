@@ -15,6 +15,8 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 def ndkDir = properties.getProperty('ndk.dir')
 
+println "NDK Directory: " + ndkDir
+
 if (isReleaseBuild()) {
     status = 'release'
 } else {
