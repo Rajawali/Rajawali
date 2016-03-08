@@ -20,7 +20,7 @@ script:
 - echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
 - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
-- echo -e "./android-ndk-r10d" >> "local.properties"
+- echo -e $(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
 - gradle clean lint assemble uploadArchives --stacktrace --continue
 install:
 # Get Android NDK
