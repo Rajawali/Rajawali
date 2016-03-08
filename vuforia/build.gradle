@@ -11,6 +11,9 @@ String getVersionString() {
 group = GROUP
 version = getVersionString()
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def ndkDir = properties.getProperty('ndk.dir')
 
 if (isReleaseBuild()) {
     status = 'release'
@@ -53,9 +56,9 @@ android {
     // call regular ndk-build(.cmd) script from app directory
     task ndkBuild(type: Exec) {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine 'ndk-build.cmd', '-C', file('src/main').absolutePath
+            commandLine ndkDir + '\\ndk-build.cmd', '-C', file('src/main').absolutePath
         } else {
-            commandLine 'ndk-build', 'V=1', '-C', file('src/main').absolutePath
+            commandLine ndkDir + '/ndk-build', '-C', file('src/main').absolutePath
         }
     }
 

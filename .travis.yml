@@ -20,6 +20,7 @@ script:
 - echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
 - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
+- echo -e "./android-ndk-r10d" >> "local.properties"
 - gradle clean lint assemble uploadArchives --stacktrace --continue
 install:
 # Get Android NDK
@@ -27,7 +28,6 @@ install:
 - chmod a+x ndk.bin
 - ./ndk.bin 1> /dev/null 2>&1
 - chmod a+x ./android-ndk-r10d/ndk-build
-- export PATH=$PATH:$PWD/android-ndk-r10d/
 notifications:
   email:
   - info@rozengain.com
