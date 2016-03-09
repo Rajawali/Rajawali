@@ -1,6 +1,7 @@
 package org.rajawali3d.wear;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.renderer.Renderer;
@@ -30,5 +31,17 @@ public abstract class WatchRenderer extends Renderer {
         mMaterialManager = MaterialManager.getInstance();
         mMaterialManager.setContext(getContext());
         mMaterialManager.registerRenderer(this);
+    }
+
+    @Override
+    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep,
+                                 int xPixelOffset,
+                                 int yPixelOffset) {
+        // This method is unused
+    }
+
+    @Override
+    public void onTouchEvent(MotionEvent event) {
+        // This method is unused
     }
 }

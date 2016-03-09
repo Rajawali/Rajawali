@@ -8,6 +8,7 @@ import org.rajawali3d.view.ISurface.ANTI_ALIASING_CONFIG;
 import org.rajawali3d.view.SurfaceView;
 
 /**
+ * @author Ian Thomas (toxicbakery@gmail.com)
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public abstract class WearActivity extends WearableActivity {
