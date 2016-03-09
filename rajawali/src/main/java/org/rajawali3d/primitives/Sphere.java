@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -26,23 +26,22 @@ import org.rajawali3d.Object3D;
  * <p>
  * When creating a sphere without a texture but with different colors per texture <code>createTextureCoordinates</code>
  * should be set to <code>false</code> and <code>createVertexColorBuffer</code> should be set to <code>true</code>.
- * 
+ *
  * @author dennis.ippel
- * 
+ *
  */
 public class Sphere extends Object3D {
 
-	private final float PI = (float) Math.PI;
-	private float mRadius;
-	private int mSegmentsW;
-	private int mSegmentsH;
-	private boolean mCreateTextureCoords;
-	private boolean mCreateVertexColorBuffer;
-    private boolean mMirrorTextureCoords;
+	private final float mRadius;
+	private final int mSegmentsW;
+	private final int mSegmentsH;
+	private final boolean mCreateTextureCoords;
+	private final boolean mCreateVertexColorBuffer;
+    private final boolean mMirrorTextureCoords;
 
 	/**
 	 * Creates a sphere primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * 
+	 *
 	 * @param radius
 	 *            The radius of the sphere
 	 * @param segmentsW
@@ -134,12 +133,12 @@ public class Sphere extends Object3D {
 		final float normLen = 1.0f / mRadius;
 
 		for (j = 0; j <= mSegmentsH; ++j) {
-			float horAngle = PI * j / mSegmentsH;
+			float horAngle = (float) (Math.PI * j / mSegmentsH);
 			float z = mRadius * (float) Math.cos(horAngle);
 			float ringRadius = mRadius * (float) Math.sin(horAngle);
 
 			for (i = 0; i <= mSegmentsW; ++i) {
-				float verAngle = 2.0f * PI * i / mSegmentsW;
+				float verAngle = (float) (2.0f * Math.PI * i / mSegmentsW);
 				float x = ringRadius * (float) Math.cos(verAngle);
 				float y = ringRadius * (float) Math.sin(verAngle);
 
@@ -207,10 +206,5 @@ public class Sphere extends Object3D {
 		}
 
 		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
-
-		vertices = null;
-		normals = null;
-		textureCoords = null;
-		indices = null;
 	}
 }
