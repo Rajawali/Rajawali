@@ -18,6 +18,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    dexOptions {
+        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
+        preDexLibraries = !isTravis()
+    }
+    
     buildTypes {
         release {
             minifyEnabled false
