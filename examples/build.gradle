@@ -40,4 +40,5 @@ dependencies {
 
     compile project(':rajawali')
     compile project(':vuforia')
+    //compile project(':wear')
 }

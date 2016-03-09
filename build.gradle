@@ -20,6 +20,10 @@ allprojects {
     }
 }
 
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
 def isReleaseBuild() {
     return isTag() && !isSnapshot()
 }
