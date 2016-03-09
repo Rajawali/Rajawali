@@ -16,8 +16,13 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         jcenter()
     }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
 
 def isReleaseBuild() {

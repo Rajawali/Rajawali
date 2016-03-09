@@ -1,1 +1,1 @@
-include ':rajawali', ':examples', ':vuforia'
+include ':rajawali', ':examples', ':vuforia', ':wear', ':wear-example'
