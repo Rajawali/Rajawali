@@ -7,7 +7,7 @@ wear/build/
 build/
 
 vuforia/src/main/obj/
-vuforia/src/main/libs/armeabi-v7a/libRajawaliVuforia.so
+vuforia/src/main/libs/
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
