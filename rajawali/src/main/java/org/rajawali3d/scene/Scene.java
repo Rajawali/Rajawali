@@ -1025,7 +1025,7 @@ public class Scene {
 
 		GLES20.glClear(clearMask);
 
-        // Execute pre-frame callbacks
+        // Execute onPreFrame callbacks
         // We explicitly break out the steps here to help the compiler optimize
         final int preCount = mPreCallbacks.size();
         if (preCount > 0) {
@@ -1064,12 +1064,12 @@ public class Scene {
             }
         }
 
-        // Execute pre-frame callbacks
+        // Execute onPreDraw callbacks
         // We explicitly break out the steps here to help the compiler optimize
-        final int preRenderCount = mPreDrawCallbacks.size();
-        if (preRenderCount > 0) {
+        final int preDrawCount = mPreDrawCallbacks.size();
+        if (preDrawCount > 0) {
             synchronized (mPreDrawCallbacks) {
-                for (int i = 0; i < preCount; ++i) {
+                for (int i = 0; i < preDrawCount; ++i) {
                     mPreDrawCallbacks.get(i).onPreDraw(ellapsedTime, deltaTime);
                 }
             }
@@ -1136,7 +1136,7 @@ public class Scene {
 			renderTarget.unbind();
 		}
 
-        // Execute post-render callbacks
+        // Execute onPostFrame callbacks
         // We explicitly break out the steps here to help the compiler optimize
         final int postCount = mPostCallbacks.size();
         if (postCount > 0) {
