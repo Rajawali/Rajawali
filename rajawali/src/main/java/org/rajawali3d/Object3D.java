@@ -371,13 +371,18 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	/**
-	 * Maps screen coordinates to object coordinates
+	 * Positions the object in the plane of the screen/viewport (z = 0), with
+	 * x and y specified in GL screen coordinates (origin at bottom left);
+	 * Assumes:
+	 *  - the object is a direct child of the current scene (not in a container)
+	 *  - the current viewport is centered on the Z-axis, and has the given dimensions
+	 *  - the current camera is positioned at the given eyeZ
 	 *
-	 * @param x
-	 * @param y
-	 * @param viewportWidth
-	 * @param viewportHeight
-	 * @param eyeZ
+	 * @param x object x coordinate in pixels [0 = viewport left]
+	 * @param y object y coordinate in pixels [0 = viewport bottom]
+	 * @param viewportWidth width of current viewport in pixels
+	 * @param viewportHeight height of current viewport in pixels
+	 * @param eyeZ location of current camera on Z-axis
 	 */
 	public void setScreenCoordinates(double x, double y, int viewportWidth, int viewportHeight, double eyeZ) {
 		double[] r1 = new double[16];
