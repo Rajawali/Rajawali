@@ -72,7 +72,7 @@ public class AccelerometerFragment extends AExampleFragment implements
         @Override
         protected void initScene() {
             try {
-                mLight = new DirectionalLight(0.1f, 0.2f, -1.0f);
+                mLight = new DirectionalLight(0.1f, -1.0f, -1.0f);
                 mLight.setColor(1.0f, 1.0f, 1.0f);
                 mLight.setPower(1);
                 getCurrentScene().addLight(mLight);
@@ -108,7 +108,7 @@ public class AccelerometerFragment extends AExampleFragment implements
         @Override
         protected void onRender(long ellapsedRealtime, double deltaTime) {
             super.onRender(ellapsedRealtime, deltaTime);
-            mMonkey.setRotation(mAccValues.x, mAccValues.y + 180, mAccValues.z);
+            mMonkey.setRotation(mAccValues.x, mAccValues.y, mAccValues.z);
         }
 
         public void setAccelerometerValues(float x, float y, float z) {
