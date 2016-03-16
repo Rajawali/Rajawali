@@ -15,6 +15,12 @@
         android:name="android.hardware.camera"
         android:required="true"/>
     <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.sensor.gyroscope"
+        android:required="true"/>
+    <uses-feature
         android:name="android.software.live_wallpaper"
         android:required="false"/>
 
@@ -26,6 +32,11 @@
     <!-- Watch faces require the PROVIDE_BACKGROUND and WAKE_LOCK permissions. -->
     <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- Required for Cardboard Integration -->
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".ExamplesApplication"
@@ -34,13 +45,25 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".RajawaliExamplesActivity"
+            android:name=".ExamplesActivity"
             android:hardwareAccelerated="true"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".examples.vr_ar.RajawaliVRExampleActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="com.google.intent.category.CARDBOARD" />
             </intent-filter>
         </activity>
 
