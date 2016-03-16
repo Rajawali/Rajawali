@@ -24,7 +24,7 @@ script:
 - echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
 - cat local.properties
 - if $TRAVIS_PULL_REQUEST; then gradle clean lint assemble --stacktrace --continue; else gradle clean lint assemble
-uploadArchives --stacktrace --continue; fi
+- uploadArchives --stacktrace --continue; fi
 install:
 # Get Android NDK
 - wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
