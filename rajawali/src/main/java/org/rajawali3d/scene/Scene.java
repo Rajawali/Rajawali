@@ -931,7 +931,7 @@ public class Scene {
 		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}
 
-	public void requestColorPickingTexture(ColorPickerInfo pickerInfo) {
+	public void requestColorPicking(ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
 
@@ -972,6 +972,14 @@ public class Scene {
 	}
 
 	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
+		// Scene color-picking requests are relative to the prior frame's render
+		// state, so handle any pending request before applying this frame's updates...
+		if (mPickerInfo != null) {
+			doColorPicking(mPickerInfo);
+			// One-shot, once per frame at most
+			mPickerInfo = null;
+		}
+
 		performFrameTasks(); //Handle the task queue
 
         synchronized (mFrameTaskQueue) {
@@ -999,14 +1007,9 @@ public class Scene {
 
 		int clearMask = mAlwaysClearColorBuffer? GLES20.GL_COLOR_BUFFER_BIT : 0;
 
-		ColorPickerInfo pickerInfo = mPickerInfo;
-
 		if (renderTarget != null) {
 			renderTarget.bind();
 			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
-		} else if (pickerInfo != null) {
-			pickerInfo.getPicker().getRenderTarget().bind();
-			GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		} else {
 //			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 			GLES20.glClearColor(mRed, mGreen, mBlue, mAlpha);
@@ -1090,24 +1093,15 @@ public class Scene {
 			}
 		}
 
-		Material sceneMat = pickerInfo == null ? sceneMaterial : pickerInfo.getPicker().getMaterial();
-
-		if(sceneMat != null) {
-			sceneMat.useProgram();
-			sceneMat.bindTextures();
+		if(sceneMaterial != null) {
+			sceneMaterial.useProgram();
+			sceneMaterial.bindTextures();
 		}
 
         synchronized (mChildren) {
 			for (int i = 0, j = mChildren.size(); i < j; ++i) {
-				Object3D child = mChildren.get(i);
-				boolean blendingEnabled = child.isBlendingEnabled();
-				if(pickerInfo != null && child.isPickingEnabled()) {
-					child.setBlendingEnabled(false);
-					pickerInfo.getPicker().getMaterial().setColor(child.getPickingColor());
-				}
                 // Model matrix updates are deferred to the render method due to parent matrix needs
-				child.render(mCamera, mVPMatrix, mPMatrix, mVMatrix, sceneMat);
-				child.setBlendingEnabled(blendingEnabled);
+				mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, sceneMaterial);
 			}
 		}
 
@@ -1115,16 +1109,8 @@ public class Scene {
 			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
         }
 
-		if(sceneMat != null) {
-			sceneMat.unbindTextures();
-		}
-
-		if (pickerInfo != null) {
-			ObjectColorPicker.createColorPickingTexture(pickerInfo);
-			pickerInfo.getPicker().getRenderTarget().unbind();
-			pickerInfo = null;
-			mPickerInfo = null;
-			render(ellapsedTime, deltaTime, renderTarget, sceneMaterial); //TODO Possible timing error here
+		if(sceneMaterial != null) {
+			sceneMaterial.unbindTextures();
 		}
 
 		synchronized (mPlugins) {
@@ -1146,6 +1132,48 @@ public class Scene {
                 }
             }
         }
+	}
+
+	protected void doColorPicking(ColorPickerInfo pickerInfo) {
+
+		ObjectColorPicker picker = pickerInfo.getPicker();
+		picker.getRenderTarget().bind();
+
+		// Set background color (to Object3D.UNPICKABLE to prevent any conflicts)
+		GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+		// Clear buffers needed for color-picking
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
+		// Get the picking material
+		Material pickingMaterial = picker.getMaterial();
+
+		// Can't blend picking colors
+		GLES20.glDisable(GLES20.GL_BLEND);
+
+		// Render the Skybox first (no need for depth testing)
+		if (mSkybox != null && mSkybox.isPickingEnabled()) {
+			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			GLES20.glDepthMask(false);
+			mSkybox.renderColorPicking(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickingMaterial);
+		}
+
+		// Configure depth testing for child renders
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LESS);
+		GLES20.glDepthMask(true);
+		GLES20.glClearDepthf(1.0f);
+
+		// Render all children using their picking colors
+		synchronized (mChildren) {
+			for (int i = 0, j = mChildren.size(); i < j; ++i) {
+				mChildren.get(i).renderColorPicking(
+						mCamera, mVPMatrix, mPMatrix, mVMatrix, pickingMaterial);
+			}
+		}
+
+		// pickObject() unbinds the renderTarget's framebuffer...
+		ObjectColorPicker.pickObject(pickerInfo);
 	}
 
 	/**
