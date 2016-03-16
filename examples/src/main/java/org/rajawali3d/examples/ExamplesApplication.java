@@ -1,7 +1,6 @@
 package org.rajawali3d.examples;
 
 import android.app.Application;
-import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.about.CommunityFeedFragment;
 import org.rajawali3d.examples.examples.about.MeetTheTeamFragment;
 import org.rajawali3d.examples.examples.animation.AnimationFragment;
@@ -74,6 +73,7 @@ import org.rajawali3d.examples.examples.ui.TransparentSurfaceFragment;
 import org.rajawali3d.examples.examples.ui.TwoDimensionalFragment;
 import org.rajawali3d.examples.examples.ui.UIElementsFragment;
 import org.rajawali3d.examples.examples.ui.ViewToTextureFragment;
+import org.rajawali3d.examples.examples.vr_ar.RajawaliVRExampleActivity;
 import org.rajawali3d.examples.examples.vr_ar.VuforiaExampleFragment;
 
 import java.util.ArrayList;
@@ -221,7 +221,8 @@ public class ExamplesApplication extends Application {
                 new ExampleItem("Frame Callbacks", SceneFrameCallbackFragment.class)
         });
 		ITEMS.put(Category.VR_AR, new ExampleItem[] {
-				new ExampleItem("Vuforia Integration", VuforiaExampleFragment.class)
+				new ExampleItem("Cardboard Integration", RajawaliVRExampleActivity.class)
+				,new ExampleItem("Vuforia Integration", VuforiaExampleFragment.class)
 		});
 		ITEMS.put(Category.ABOUT, new ExampleItem[] {
 			new ExampleItem("Community Stream", CommunityFeedFragment.class)
@@ -275,11 +276,11 @@ public class ExamplesApplication extends Application {
 
 	public static final class ExampleItem {
 
-		public final Class<? extends AExampleFragment> exampleClass;
+		public final Class<?> exampleClass;
 		public final String                            title;
 		public final String                            url;
 
-		public ExampleItem(String title, Class<? extends AExampleFragment> exampleClass) {
+		public ExampleItem(String title, Class<?> exampleClass) {
 			this.title = title;
 			this.exampleClass = exampleClass;
 			this.url = exampleClass.getSimpleName() + ".java";

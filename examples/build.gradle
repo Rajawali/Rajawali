@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.rajawali3d.examples"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
     }
 
@@ -41,4 +41,5 @@ dependencies {
     compile project(':rajawali')
     compile project(':vuforia')
     //compile project(':wear')
+    compile project(':vr')
 }

@@ -1,0 +1,55 @@
+apply plugin: 'com.android.library'
+
+String getVersionString() {
+    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
+    v = isTag() ? v : v + "-SNAPSHOT"
+    return v
+}
+
+group = GROUP
+version = getVersionString()
+
+if (isReleaseBuild()) {
+    status = 'release'
+} else {
+    status = 'integration'
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile project.depAndroidSupport
+    compile project.depSupportAnnotations
+
+    compile project(':rajawali')
+}
+
+apply from: '../maven_push.gradle'

@@ -22,17 +22,18 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.google.vrtoolkit.cardboard.CardboardActivity;
 import org.rajawali3d.examples.ExamplesApplication.ExampleItem;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.wallpaper.WallpaperPreferenceActivity;
 
 import java.util.Map;
 
-public class RajawaliExamplesActivity extends AppCompatActivity implements OnChildClickListener {
+public class ExamplesActivity extends AppCompatActivity implements OnChildClickListener {
 
 	private static final String FRAGMENT_TAG = "rajawali";
-	private static final String PREF_FIRST_RUN = "RajawaliExamplesActivity.PREF_FIRST_RUN";
-	private static final String KEY_TITLE = RajawaliExamplesActivity.class.getSimpleName() + ".KEY_TITLE";
+	private static final String PREF_FIRST_RUN = "ExamplesActivity.PREF_FIRST_RUN";
+	private static final String KEY_TITLE = ExamplesActivity.class.getSimpleName() + ".KEY_TITLE";
 
 	private DrawerLayout mDrawerLayout;
 	private ExpandableListView mDrawerList;
@@ -119,11 +120,11 @@ public class RajawaliExamplesActivity extends AppCompatActivity implements OnChi
                 return true;
             case R.id.menu_item_community_stream:
                 exampleItem = ExamplesApplication.ITEMS.get(ExamplesApplication.Category.ABOUT)[0];
-                launchFragment(ExamplesApplication.Category.ABOUT, exampleItem);
+                launchExample(ExamplesApplication.Category.ABOUT, exampleItem);
                 return true;
             case R.id.menu_item_meet_the_team:
                 exampleItem = ExamplesApplication.ITEMS.get(ExamplesApplication.Category.ABOUT)[1];
-                launchFragment(ExamplesApplication.Category.ABOUT, exampleItem);
+                launchExample(ExamplesApplication.Category.ABOUT, exampleItem);
                 return true;
             case android.R.id.home:
                 if (mDrawerToggle.onOptionsItemSelected(item))
@@ -167,7 +168,7 @@ public class RajawaliExamplesActivity extends AppCompatActivity implements OnChi
 			int groupPosition, int childPosition, long id) {
 		final ExamplesApplication.Category category = ExamplesApplication.Category.values()[groupPosition];
 		final ExampleItem exampleItem = ExamplesApplication.ITEMS.get(category)[childPosition];
-		launchFragment(category, exampleItem);
+		launchExample(category, exampleItem);
 
 		return true;
 	}
@@ -182,7 +183,7 @@ public class RajawaliExamplesActivity extends AppCompatActivity implements OnChi
 	/**
 	 * Launch a fragment selected from the drawer or at application start.
 	 */
-	private void launchFragment(ExamplesApplication.Category category, ExampleItem exampleItem) {
+	private void launchExample(ExamplesApplication.Category category, ExampleItem exampleItem) {
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 
 		// Close the drawer
@@ -190,18 +191,25 @@ public class RajawaliExamplesActivity extends AppCompatActivity implements OnChi
 
 		final FragmentTransaction transaction = fragmentManager.beginTransaction();
 		try {
-			final Fragment fragment = (Fragment) exampleItem.exampleClass.getConstructors()[0].newInstance();
+			if (AExampleFragment.class.isAssignableFrom(exampleItem.exampleClass)) {
+				final Fragment fragment = (Fragment) exampleItem.exampleClass.getConstructors()[0].newInstance();
 
-			final Bundle bundle = new Bundle();
-			bundle.putString(AExampleFragment.BUNDLE_EXAMPLE_URL, exampleItem.getUrl(category));
-			bundle.putString(AExampleFragment.BUNDLE_EXAMPLE_TITLE, exampleItem.title);
-			fragment.setArguments(bundle);
+				final Bundle bundle = new Bundle();
+				bundle.putString(AExampleFragment.BUNDLE_EXAMPLE_URL, exampleItem.getUrl(category));
+				bundle.putString(AExampleFragment.BUNDLE_EXAMPLE_TITLE, exampleItem.title);
+				fragment.setArguments(bundle);
 
-			if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null)
-				transaction.addToBackStack(null);
+				if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null)
+					transaction.addToBackStack(null);
 
-			transaction.replace(R.id.content_frame, fragment, FRAGMENT_TAG);
-			transaction.commit();
+				transaction.replace(R.id.content_frame, fragment, FRAGMENT_TAG);
+				transaction.commit();
+			} else if (CardboardActivity.class.isAssignableFrom(exampleItem.exampleClass)) {
+				final Intent intent = new Intent(getApplicationContext(), exampleItem.exampleClass);
+				startActivity(intent);
+			} else {
+				throw new IllegalArgumentException("Unknown example type. Cannot launch.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
