@@ -116,7 +116,7 @@ public class TouchAndDragFragment extends AExampleFragment implements
 					sphere.setX(-4 + (Math.random() * 8));
 					sphere.setY(-4 + (Math.random() * 8));
 					sphere.setZ(-2 + (Math.random() * -6));
-					sphere.setDrawingMode(GLES20.GL_LINE_LOOP);
+					sphere.setDrawingMode(GLES20.GL_TRIANGLES);
 					mPicker.registerObject(sphere);
 					getCurrentScene().addChild(sphere);
 				}
