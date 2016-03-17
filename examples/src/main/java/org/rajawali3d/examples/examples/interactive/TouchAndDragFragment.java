@@ -14,7 +14,9 @@ import android.widget.TextView;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
+import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
+import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
@@ -107,7 +109,14 @@ public class TouchAndDragFragment extends AExampleFragment implements
 			mPicker.setOnObjectPickedListener(this);
 
 			try {
+				DirectionalLight light= new DirectionalLight(-1, 0, -1);
+				light.setPower(1.5f);
+				getCurrentScene().addLight(light);
+				getCurrentCamera().setPosition(0, 0, 4);
+
 				Material material = new Material();
+				material.enableLighting(true);
+				material.setDiffuseMethod(new DiffuseMethod.Lambert());
 
 				for (int i = 0; i < 20; i++) {
 					Sphere sphere = new Sphere(.3f, 12, 12);
