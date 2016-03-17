@@ -32,6 +32,7 @@ import org.rajawali3d.examples.examples.general.UsingGeometryDataFragment;
 import org.rajawali3d.examples.examples.interactive.AccelerometerFragment;
 import org.rajawali3d.examples.examples.interactive.FirstPersonCameraFragment;
 import org.rajawali3d.examples.examples.interactive.ObjectPickingFragment;
+import org.rajawali3d.examples.examples.interactive.ObjectPickingWithGreyscaleFragment;
 import org.rajawali3d.examples.examples.interactive.TouchAndDragFragment;
 import org.rajawali3d.examples.examples.lights.DirectionalLightFragment;
 import org.rajawali3d.examples.examples.lights.MultipleLightsFragment;
@@ -158,6 +159,7 @@ public class ExamplesApplication extends Application {
 				, new ExampleItem("Object Picking", ObjectPickingFragment.class)
 				, new ExampleItem("Touch & Drag", TouchAndDragFragment.class)
                 , new ExampleItem("First Person Camera", FirstPersonCameraFragment.class)
+				, new ExampleItem("Object Picking Greyscale", ObjectPickingWithGreyscaleFragment.class)
 			});
 		ITEMS.put(Category.UI, new ExampleItem[] {
 				new ExampleItem("UI Elements", UIElementsFragment.class)
