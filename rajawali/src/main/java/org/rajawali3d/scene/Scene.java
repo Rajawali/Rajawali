@@ -15,6 +15,7 @@ package org.rajawali3d.scene;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.support.annotation.NonNull;
 
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
@@ -90,7 +91,7 @@ public class Scene {
      * Guarded by {@link #mFrameTaskQueue}.
      */
 	private volatile boolean                mLightsDirty;
-	protected ColorPickerInfo               mPickerInfo;
+	protected volatile ColorPickerInfo      mPickerInfo;
 	protected boolean                       mReloadPickerInfo;
 	protected ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 	protected boolean mEnableDepthBuffer = true;
@@ -931,7 +932,7 @@ public class Scene {
 		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}
 
-	public void requestColorPicking(ColorPickerInfo pickerInfo) {
+	public void requestColorPicking(@NonNull ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
 

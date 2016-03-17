@@ -109,10 +109,9 @@ public class ObjectColorPicker implements IObjectPicker {
 
 	public class ColorPickerInfo {
 
-		private int mX;
-		private int mY;
-		private ObjectColorPicker mPicker;
-		private ByteBuffer mColorPickerBuffer;
+		private final int mX;
+		private final int mY;
+		private final ObjectColorPicker mPicker;
 
 		public ColorPickerInfo(float x, float y, ObjectColorPicker picker) {
 			mX = (int) x;
@@ -130,14 +129,6 @@ public class ObjectColorPicker implements IObjectPicker {
 
 		public int getY() {
 			return mY;
-		}
-
-		public void setColorPickerBuffer(ByteBuffer buffer) {
-			mColorPickerBuffer = buffer;
-		}
-
-		public ByteBuffer getColorPickerBuffer() {
-			return mColorPickerBuffer;
 		}
 	}
 
