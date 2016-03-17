@@ -71,24 +71,25 @@ public class ObjectColorPicker implements IObjectPicker {
 		if (mObjectLookup.contains(object)) {
 			mObjectLookup.remove(object);
 		}
+		object.setPickingColor(Object3D.UNPICKABLE);
 	}
 
 	public void getObjectAt(float x, float y) {
-		mRenderer.getCurrentScene().requestColorPickingTexture(new ColorPickerInfo(x, y, this));
+		mRenderer.getCurrentScene().requestColorPicking(new ColorPickerInfo(x, y, this));
 	}
 
 	public RenderTarget getRenderTarget() {
 		return mRenderTarget;
 	}
 
-	public static void createColorPickingTexture(ColorPickerInfo pickerInfo) {
+	public static void pickObject(ColorPickerInfo pickerInfo) {
 		final ObjectColorPicker picker = pickerInfo.getPicker();
 		final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
 		pixelBuffer.order(ByteOrder.nativeOrder());
 
-		GLES20.glReadPixels(pickerInfo.getX(), picker.mRenderer.getDefaultViewportHeight()
-				- pickerInfo.getY(), 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
-				pixelBuffer);
+		GLES20.glReadPixels(pickerInfo.getX(),
+				picker.mRenderer.getViewportHeight() - pickerInfo.getY(),
+				1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		pixelBuffer.rewind();
 
@@ -108,10 +109,9 @@ public class ObjectColorPicker implements IObjectPicker {
 
 	public class ColorPickerInfo {
 
-		private int mX;
-		private int mY;
-		private ObjectColorPicker mPicker;
-		private ByteBuffer mColorPickerBuffer;
+		private final int mX;
+		private final int mY;
+		private final ObjectColorPicker mPicker;
 
 		public ColorPickerInfo(float x, float y, ObjectColorPicker picker) {
 			mX = (int) x;
@@ -129,14 +129,6 @@ public class ObjectColorPicker implements IObjectPicker {
 
 		public int getY() {
 			return mY;
-		}
-
-		public void setColorPickerBuffer(ByteBuffer buffer) {
-			mColorPickerBuffer = buffer;
-		}
-
-		public ByteBuffer getColorPickerBuffer() {
-			return mColorPickerBuffer;
 		}
 	}
 

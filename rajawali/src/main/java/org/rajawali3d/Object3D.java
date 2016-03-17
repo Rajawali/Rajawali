@@ -49,6 +49,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
     public static final int BLUE = 2;
     public static final int ALPHA = 3;
 
+    public static final int UNPICKABLE = -1;
+
 	protected final Matrix4 mMVPMatrix = new Matrix4();
 
 	protected final Matrix4 mMVMatrix = new Matrix4();
@@ -77,9 +79,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	protected int mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 
 	protected boolean mIsContainerOnly = true;
-	protected int mPickingColor;
-	protected boolean mIsPickingEnabled = false;
-	protected float[] mPickingColorArray;
+	protected int mPickingIndex;
+	protected float[] mPickingColor;
 
 	protected boolean mFrustumTest = false;
 	protected boolean mIsInFrustum;
@@ -99,6 +100,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mGeometry = new Geometry3D();
 		mColor = new float[] { 0, 1, 0, 1.0f};
+		mPickingColor = new float[4];
+		setPickingColor(UNPICKABLE);
 	}
 
 	public Object3D(String name) {
@@ -175,7 +178,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param vpMatrix {@link Matrix4} The view-projection matrix
 	 * @param projMatrix {@link Matrix4} The projection matrix
 	 * @param vMatrix {@link Matrix4} The view matrix
-	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
+	 * @param sceneMaterial The scene-wide Material to use, if any.
 	 */
 	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
 			final Matrix4 vMatrix, Material sceneMaterial) {
@@ -190,7 +193,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param projMatrix {@link Matrix4} The projection matrix
 	 * @param vMatrix {@link Matrix4} The view matrix
 	 * @param parentMatrix {@link Matrix4} This object's parent matrix
-	 * @param pickerInfo The current color picker info. This is only used when an object is touched.
+	 * @param sceneMaterial The scene-wide Material to use, if any.
 	 */
 	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix,
 			final Matrix4 parentMatrix, Material sceneMaterial) {
@@ -325,6 +328,92 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	/**
+	 * Renders the object for color-picking
+	 *
+	 * @param camera The camera
+	 * @param vpMatrix {@link Matrix4} The view-projection matrix
+	 * @param projMatrix {@link Matrix4} The projection matrix
+	 * @param vMatrix {@link Matrix4} The view matrix
+	 * @param pickingMaterial The color-picking Material
+	 */
+	public void renderColorPicking(final Camera camera, final Matrix4 vpMatrix,
+								   final Matrix4 projMatrix, final Matrix4 vMatrix,
+								   final Material pickingMaterial) {
+		if (!mIsVisible && !mRenderChildrenAsBatch)
+			// Neither the object nor any of its children are visible
+			return;
+
+		// Color-picking assumes much of the object state set in the prior frame is intact:
+		//   No need to prerender (color-picking always runs before any children changes)
+		//   All matrices already updated during prior frame
+		//   Bounding box already transformed
+
+		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
+		if (mFrustumTest && mGeometry.hasBoundingBox()) {
+			BoundingBox bbox = mGeometry.getBoundingBox();
+			if (!camera.getFrustum().boundsInFrustum(bbox)) {
+				mIsInFrustum = false;
+			}
+		}
+
+		// Render this object only if it has visible geometry and didn't fail frustum test
+		if (!mIsContainerOnly && mIsInFrustum && mIsVisible) {
+			// Render same faces as visible render
+			if (mDoubleSided) {
+				GLES20.glDisable(GLES20.GL_CULL_FACE);
+			} else {
+				GLES20.glEnable(GLES20.GL_CULL_FACE);
+				if (mBackSided) {
+					GLES20.glCullFace(GLES20.GL_FRONT);
+				} else {
+					GLES20.glCullFace(GLES20.GL_BACK);
+					GLES20.glFrontFace(GLES20.GL_CCW);
+				}
+			}
+
+			// Blending and depth testing are set up globally in Scene.doColorPicking()
+
+			// Material setup is independent of batching, and has no need for
+			// shader params, textures, normals, vertex colors, or current object...
+			pickingMaterial.useProgram();
+			pickingMaterial.setVertices(mGeometry.getVertexBufferInfo());
+			pickingMaterial.setColor(mPickingColor);
+			pickingMaterial.applyParams();
+
+			// Free up the array buffer, just in case
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+			// Apply this object's matrices to the pickingMaterial
+			pickingMaterial.setMVPMatrix(mMVPMatrix);
+			pickingMaterial.setModelMatrix(mMMatrix);
+			pickingMaterial.setModelViewMatrix(mMVMatrix);
+
+			// draw the object using its picking color
+			int bufferType = mGeometry.getIndexBufferInfo().bufferType == Geometry3D.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
+			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
+			GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
+			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+			// Only need to undo face culling
+			if (mDoubleSided) {
+				GLES20.glEnable(GLES20.GL_CULL_FACE);
+			} else if (mBackSided) {
+				GLES20.glCullFace(GLES20.GL_BACK);
+			}
+		}
+
+		// No need to draw bounding volumes..
+
+		// Draw children without frustum test
+		for (int i = 0, j = mChildren.size(); i < j; i++) {
+			// Child rendering is independent of batching, and matrices already updated
+			mChildren.get(i).render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, pickingMaterial);
+		}
+
+		// No need to unbind textures, all done
+	}
+
+	/**
 	 * This is where the parameters for the shaders are set. It is called every frame.
 	 *
 	 * @param camera
@@ -422,7 +511,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * Use this together with the alpha channel when calling BaseObject3D.setColor(): 0xaarrggbb. So for 50% transparent
 	 * red, set transparent to true and call: * <code>setColor(0x7fff0000);</code>
 	 *
-	 * @param transparent
+	 * @param value
 	 */
 	public void setTransparent(boolean value) {
 		mTransparent = value;
@@ -632,23 +721,16 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		setColor(Color.rgb((int) (color.x * 255), (int) (color.y * 255), (int) (color.z * 255)));
 	}
 
-	public int getPickingColor() {
-		return mPickingColor;
-	}
-
-	public void setPickingColor(int pickingColor) {
-		if (mPickingColorArray == null)
-			mPickingColorArray = new float[4];
-		this.mPickingColor = pickingColor;
-		mPickingColorArray[0] = Color.red(pickingColor) / 255f;
-		mPickingColorArray[1] = Color.green(pickingColor) / 255f;
-		mPickingColorArray[2] = Color.blue(pickingColor) / 255f;
-		mPickingColorArray[3] = Color.alpha(pickingColor) / 255f;
-		mIsPickingEnabled = true;
+	public void setPickingColor(int colorIndex) {
+		mPickingIndex = colorIndex;
+		mPickingColor[RED] = Color.red(colorIndex) / 255f;
+		mPickingColor[GREEN] = Color.green(colorIndex) / 255f;
+		mPickingColor[BLUE] = Color.blue(colorIndex) / 255f;
+		mPickingColor[ALPHA] = Color.alpha(colorIndex) / 255f;
 	}
 
 	public boolean isPickingEnabled() {
-		return mIsPickingEnabled;
+		return mPickingIndex != UNPICKABLE;
 	}
 
 	public void setShowBoundingVolume(boolean showBoundingVolume) {
