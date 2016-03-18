@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.animation.LinearInterpolator;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.CoalesceAnimation3D;
@@ -16,13 +17,13 @@ public class CoalesceAnimationFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new CoalesceAnimationRenderer(getActivity());
+		return new CoalesceAnimationRenderer(getActivity(), this);
 	}
 
 	public class CoalesceAnimationRenderer extends AExampleRenderer {
 
-		public CoalesceAnimationRenderer(Context context) {
-			super(context);
+		public CoalesceAnimationRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

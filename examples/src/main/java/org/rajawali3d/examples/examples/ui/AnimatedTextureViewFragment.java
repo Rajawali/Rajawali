@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.ui;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import org.rajawali3d.Object3D;
@@ -23,7 +24,7 @@ public class AnimatedTextureViewFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new BasicRenderer(getActivity());
+		return new BasicRenderer(getActivity(), this);
 	}
 
     @Override
@@ -41,8 +42,8 @@ public class AnimatedTextureViewFragment extends AExampleFragment {
 
 		private Object3D mSphere;
 
-		public BasicRenderer(Context context) {
-			super(context);
+		public BasicRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.loaders;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,12 +22,12 @@ public class LoaderGCodeFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new GCodeRenderer(getActivity());
+		return new GCodeRenderer(getActivity(), this);
 	}
 
 	private final class GCodeRenderer extends AExampleRenderer {
-		public GCodeRenderer(Context context) {
-			super(context);
+		public GCodeRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

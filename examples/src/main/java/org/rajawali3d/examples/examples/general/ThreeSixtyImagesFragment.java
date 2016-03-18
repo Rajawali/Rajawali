@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.general;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.Nullable;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
@@ -13,7 +14,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new ThreeSixtyImagesRenderer(getActivity());
+		return new ThreeSixtyImagesRenderer(getActivity(), this);
 	}
 
 	private final class ThreeSixtyImagesRenderer extends AExampleRenderer {
@@ -23,8 +24,8 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 		private Material mMaterial;
 		private final static int NUM_TEXTURES = 80;
 
-		public ThreeSixtyImagesRenderer(Context context) {
-			super(context);
+		public ThreeSixtyImagesRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

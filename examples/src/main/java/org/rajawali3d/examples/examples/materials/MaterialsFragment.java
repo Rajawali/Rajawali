@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -17,15 +18,15 @@ public class MaterialsFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new MaterialsRenderer(getActivity());
+		return new MaterialsRenderer(getActivity(), this);
 	}
 
 	private final class MaterialsRenderer extends AExampleRenderer {
 		private DirectionalLight mLight;
 		private Object3D mMonkey1, mMonkey2, mMonkey3, mMonkey4;
 
-		public MaterialsRenderer(Context context) {
-			super(context);
+		public MaterialsRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

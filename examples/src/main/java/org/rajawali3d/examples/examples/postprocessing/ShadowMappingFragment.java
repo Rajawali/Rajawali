@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.postprocessing;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
@@ -16,15 +17,15 @@ public class ShadowMappingFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new ShadowMappingRenderer(getActivity());
+		return new ShadowMappingRenderer(getActivity(), this);
 	}
 
 	private final class ShadowMappingRenderer extends AExampleRenderer {
 		private PostProcessingManager mPostProcessingManager;
 		private DirectionalLight mLight;
 
-		public ShadowMappingRenderer(Context context) {
-			super(context);
+		public ShadowMappingRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

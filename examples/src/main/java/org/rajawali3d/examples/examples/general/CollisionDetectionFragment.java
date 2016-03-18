@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
@@ -18,10 +19,10 @@ public class CollisionDetectionFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new CollisionDetectionRenderer(getActivity());
+		return new CollisionDetectionRenderer(getActivity(), this);
 	}
 
-	private final class CollisionDetectionRenderer extends AExampleRenderer {
+	public static final class CollisionDetectionRenderer extends AExampleRenderer {
 
 		private DirectionalLight mLight;
 		private Object3D mCubeBox, mBoxesBox;
@@ -29,8 +30,8 @@ public class CollisionDetectionFragment extends AExampleFragment {
 		private boolean mBoxIntersect = false;
 		private boolean mSphereIntersect = false;
 
-		public CollisionDetectionRenderer(Context context) {
-			super(context);
+		public CollisionDetectionRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

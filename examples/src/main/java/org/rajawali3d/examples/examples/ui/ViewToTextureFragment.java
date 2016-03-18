@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -49,7 +50,7 @@ public class ViewToTextureFragment extends AExampleFragment {
 
     @Override
     public AExampleRenderer createRenderer() {
-        return new ViewTextureRenderer(getActivity());
+        return new ViewTextureRenderer(getActivity(), this);
     }
 
     @Override
@@ -67,8 +68,8 @@ public class ViewToTextureFragment extends AExampleFragment {
 
         private Object3D mObject3D;
 
-        public ViewTextureRenderer(Context context) {
-            super(context);
+        public ViewTextureRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override

@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.general;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.cameras.ArcballCamera;
 import org.rajawali3d.debug.DebugVisualizer;
@@ -19,12 +20,12 @@ import org.rajawali3d.materials.methods.DiffuseMethod;
 public class ArcballCameraFragment extends AExampleFragment {
     @Override
     public AExampleRenderer createRenderer() {
-        return new ArcballCameraRenderer(getActivity());
+        return new ArcballCameraRenderer(getActivity(), this);
     }
 
     private final class ArcballCameraRenderer extends AExampleRenderer {
-        public ArcballCameraRenderer(Context context) {
-            super(context);
+        public ArcballCameraRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override

@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
+import android.support.annotation.Nullable;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -26,7 +27,7 @@ public class CanvasTextFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new CanvasTextRenderer(getActivity());
+		return new CanvasTextRenderer(getActivity(), this);
 	}
 
 	private final class CanvasTextRenderer extends AExampleRenderer {
@@ -38,8 +39,8 @@ public class CanvasTextFragment extends AExampleFragment {
 		private int mFrameCount;
 		private boolean mShouldUpdateTexture;
 
-		public CanvasTextRenderer(Context context) {
-			super(context);
+		public CanvasTextRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

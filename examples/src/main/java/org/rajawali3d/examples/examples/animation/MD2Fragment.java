@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,15 +91,15 @@ public class MD2Fragment extends AExampleFragment implements OnClickListener {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new MD2Renderer(getActivity());
+		return new MD2Renderer(getActivity(), this);
 	}
 
 	private final class MD2Renderer extends AExampleRenderer {
 		private DirectionalLight mLight;
 		private VertexAnimationObject3D mOgre;
 
-		public MD2Renderer(Context context) {
-			super(context);
+		public MD2Renderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
 		public void playAnimation(String name) {

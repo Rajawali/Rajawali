@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.optimizations;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -14,15 +15,15 @@ public class ETC1TextureCompressionFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new ETC1TextureCompression(getActivity());
+		return new ETC1TextureCompression(getActivity(), this);
 	}
 
 	private final class ETC1TextureCompression extends AExampleRenderer {
 		private Object3D mMipmappedPlane;
 		private Object3D mPlane;
 
-		public ETC1TextureCompression(Context context) {
-			super(context);
+		public ETC1TextureCompression(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

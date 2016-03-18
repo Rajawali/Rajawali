@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.postprocessing;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
@@ -19,15 +20,15 @@ public class FogFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new FogRenderer(getActivity());
+		return new FogRenderer(getActivity(), this);
 	}
 
 	private final class FogRenderer extends AExampleRenderer {
 		private DirectionalLight mLight;
 		private Object3D mRoad;
 
-		public FogRenderer(Context context) {
-			super(context);
+		public FogRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

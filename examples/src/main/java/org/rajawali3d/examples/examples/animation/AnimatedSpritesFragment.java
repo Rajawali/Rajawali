@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.animation.particles.ExampleParticleSystem2;
 
@@ -8,7 +9,7 @@ public class AnimatedSpritesFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new AnimatedSpritesRenderer(getActivity());
+		return new AnimatedSpritesRenderer(getActivity(), this);
 	}
 
 	private final class AnimatedSpritesRenderer extends AExampleRenderer {
@@ -16,8 +17,8 @@ public class AnimatedSpritesFragment extends AExampleFragment {
 		private int mFrameCount;
 		private ExampleParticleSystem2 mParticleSystem;
 
-		public AnimatedSpritesRenderer(Context context) {
-			super(context);
+		public AnimatedSpritesRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

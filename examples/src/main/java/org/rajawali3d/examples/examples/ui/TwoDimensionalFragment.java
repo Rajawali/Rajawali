@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.ui;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.materials.materials.CustomMaterialPlugin;
 import org.rajawali3d.materials.Material;
@@ -10,7 +11,7 @@ public class TwoDimensionalFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new TwoDimensionalRenderer(getActivity());
+		return new TwoDimensionalRenderer(getActivity(), this);
 	}
 
 	private final class TwoDimensionalRenderer extends AExampleRenderer {
@@ -18,8 +19,8 @@ public class TwoDimensionalFragment extends AExampleFragment {
 		private float mTime;
 		private Material mCustomMaterial;
 
-		public TwoDimensionalRenderer(Context context) {
-			super(context);
+		public TwoDimensionalRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

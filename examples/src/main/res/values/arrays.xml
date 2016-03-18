@@ -6,8 +6,8 @@
         <item>Collision Detection</item>
     </string-array>
     <string-array name="rendererListValues">
-        <item>com.monyetmabuk.rajawali.tutorials.examples.general.BasicFragment.BasicRenderer</item>
-        <item>com.monyetmabuk.rajawali.tutorials.examples.general.SkyboxFragment.SkyboxRenderer</item>
-        <item>com.monyetmabuk.rajawali.tutorials.examples.general.CollisionDetectionFragment.CollisionDetectionRenderer</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 </resources>

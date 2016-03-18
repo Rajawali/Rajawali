@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.general;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +53,7 @@ public class UniformDistributionFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new UniformDistributionRenderer(getActivity());
+		return new UniformDistributionRenderer(getActivity(), this);
 	}
 
 	private final class UniformDistributionRenderer extends AExampleRenderer {
@@ -61,8 +62,8 @@ public class UniformDistributionFragment extends AExampleFragment {
 		private final int CURVE1_COLOR = 0xffffee;
 		private final int CURVE2_COLOR = 0xff0000;
 
-		public UniformDistributionRenderer(Context context) {
-			super(context);
+		public UniformDistributionRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

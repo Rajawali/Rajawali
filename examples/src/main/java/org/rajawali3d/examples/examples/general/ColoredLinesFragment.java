@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.animation.TranslateAnimation3D;
@@ -16,13 +17,13 @@ public class ColoredLinesFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new ColoredLinesRenderer(getActivity());
+		return new ColoredLinesRenderer(getActivity(), this);
 	}
 
 	private final class ColoredLinesRenderer extends AExampleRenderer {
 
-		public ColoredLinesRenderer(Context context) {
-			super(context);
+		public ColoredLinesRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

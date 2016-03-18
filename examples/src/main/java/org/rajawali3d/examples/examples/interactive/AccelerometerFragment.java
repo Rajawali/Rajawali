@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -39,7 +40,7 @@ public class AccelerometerFragment extends AExampleFragment implements
 
     @Override
     public AExampleRenderer createRenderer() {
-        return new AccelerometerRenderer(getActivity());
+        return new AccelerometerRenderer(getActivity(), this);
     }
 
     @Override
@@ -64,8 +65,8 @@ public class AccelerometerFragment extends AExampleFragment implements
         private Object3D mMonkey;
         private Vector3 mAccValues;
 
-        public AccelerometerRenderer(Context context) {
-            super(context);
+        public AccelerometerRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
             mAccValues = new Vector3();
         }
 

@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.general;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.SplineTranslateAnimation3D;
@@ -26,7 +27,7 @@ public class TerrainFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new TerrainRenderer(getActivity());
+		return new TerrainRenderer(getActivity(), this);
 	}
 
 	private final class TerrainRenderer extends AExampleRenderer {
@@ -34,8 +35,8 @@ public class TerrainFragment extends AExampleFragment {
 		private SquareTerrain mTerrain;
 		private double mLastY = 0;
 
-		public TerrainRenderer(Context context) {
-			super(context);
+		public TerrainRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

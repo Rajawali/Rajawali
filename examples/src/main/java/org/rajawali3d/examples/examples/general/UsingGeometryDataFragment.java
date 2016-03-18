@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
@@ -22,14 +23,14 @@ public class UsingGeometryDataFragment extends AExampleFragment {
 
     @Override
     public AExampleRenderer createRenderer() {
-        return new UsingGeometryDataRenderer(getActivity());
+        return new UsingGeometryDataRenderer(getActivity(), this);
     }
 
     private final class UsingGeometryDataRenderer extends AExampleRenderer {
         private Object3D mRootSpike;
 
-        public UsingGeometryDataRenderer(Context context) {
-            super(context);
+        public UsingGeometryDataRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override

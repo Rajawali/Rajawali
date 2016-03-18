@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
@@ -25,7 +26,7 @@ public class BumpMappingFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new BumpMappingRenderer(getActivity());
+		return new BumpMappingRenderer(getActivity(), this);
 	}
 
 	private final class BumpMappingRenderer extends AExampleRenderer {
@@ -33,8 +34,8 @@ public class BumpMappingFragment extends AExampleFragment {
 		private Object3D mEarth;
 		private Animation3D mLightAnim;
 
-		public BumpMappingRenderer(Context context) {
-			super(context);
+		public BumpMappingRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.postprocessing;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
@@ -21,7 +22,7 @@ public class RenderToTextureFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new RenderToTextureRenderer(getActivity());
+		return new RenderToTextureRenderer(getActivity(), this);
 	}
 
 	private final class RenderToTextureRenderer extends AExampleRenderer {
@@ -30,8 +31,8 @@ public class RenderToTextureFragment extends AExampleFragment {
 		private Object3D              mSphere;
 		private ATexture              mCurrentTexture;
 
-		public RenderToTextureRenderer(Context context) {
-			super(context);
+		public RenderToTextureRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

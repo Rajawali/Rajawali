@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +54,7 @@ public class SkeletalAnimationBlendingFragment extends AExampleFragment implemen
 
     @Override
     public AExampleRenderer createRenderer() {
-        return new SkeletalAnimationBlendingRenderer(getActivity());
+        return new SkeletalAnimationBlendingRenderer(getActivity(), this);
     }
 
     @Override
@@ -83,8 +84,8 @@ public class SkeletalAnimationBlendingFragment extends AExampleFragment implemen
         private SkeletalAnimationSequence mSequenceArmStretch;
         private SkeletalAnimationSequence mSequenceBend;
 
-        public SkeletalAnimationBlendingRenderer(Context context) {
-            super(context);
+        public SkeletalAnimationBlendingRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override

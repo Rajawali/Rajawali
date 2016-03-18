@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.optimizations;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Geometry3D;
 import org.rajawali3d.Object3D;
@@ -21,7 +22,7 @@ public class UpdateVertexBufferFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new UpdateVertexBufferRenderer(getActivity());
+		return new UpdateVertexBufferRenderer(getActivity(), this);
 	}
 
 	private final class UpdateVertexBufferRenderer extends AExampleRenderer {
@@ -77,8 +78,8 @@ public class UpdateVertexBufferFragment extends AExampleFragment {
 		 */
 		private Vector3 mPrevVec2;
 
-		public UpdateVertexBufferRenderer(Context context) {
-			super(context);
+		public UpdateVertexBufferRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 			mTmpVec = new Vector3();
 		}
 

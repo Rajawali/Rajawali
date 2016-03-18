@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,13 +49,13 @@ public class TransparentSurfaceFragment extends AExampleFragment {
 
     @Override
     public AExampleRenderer createRenderer() {
-		return new TransparentSurfaceRenderer(getActivity());
+		return new TransparentSurfaceRenderer(getActivity(), this);
 	}
 
 	private final class TransparentSurfaceRenderer extends AExampleRenderer {
 
-		public TransparentSurfaceRenderer(Context context) {
-			super(context);
+		public TransparentSurfaceRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

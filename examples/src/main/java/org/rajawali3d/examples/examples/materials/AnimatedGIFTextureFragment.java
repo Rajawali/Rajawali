@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
 import org.rajawali3d.examples.R;
@@ -15,15 +16,15 @@ public class AnimatedGIFTextureFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new AnimatedGIFTextureRenderer(getActivity());
+		return new AnimatedGIFTextureRenderer(getActivity(), this);
 	}
 
 	private final class AnimatedGIFTextureRenderer extends AExampleRenderer {
 
 		private AnimatedGIFTexture mGifTexture;
 
-		public AnimatedGIFTextureRenderer(Context context) {
-			super(context);
+		public AnimatedGIFTextureRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

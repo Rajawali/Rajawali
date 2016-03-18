@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -130,10 +131,13 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
 		});
 	}
 
-	protected abstract class AExampleRenderer extends Renderer {
+	protected static abstract class AExampleRenderer extends Renderer {
 
-		public AExampleRenderer(Context context) {
+		final AExampleFragment exampleFragment;
+
+		public AExampleRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context);
+			exampleFragment = fragment;
 		}
 
         @Override
@@ -148,9 +152,9 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
 
         @Override
 		public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
-			showLoader();
+			if (exampleFragment != null) exampleFragment.showLoader();
 			super.onRenderSurfaceCreated(config, gl, width, height);
-			hideLoader();
+			if (exampleFragment != null) exampleFragment.hideLoader();
 		}
 
         @Override

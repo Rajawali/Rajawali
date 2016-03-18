@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.optimizations;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
@@ -23,7 +24,7 @@ public class Optimized2000PlanesFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new Optimized2000PlanesRenderer(getActivity());
+		return new Optimized2000PlanesRenderer(getActivity(), this);
 	}
 
 	public class Optimized2000PlanesRenderer extends AExampleRenderer {
@@ -32,8 +33,8 @@ public class Optimized2000PlanesFragment extends AExampleFragment {
 		private Material mMaterial;
 		private PlanesGaloreMaterialPlugin mMaterialPlugin;
 
-		public Optimized2000PlanesRenderer(Context context) {
-			super(context);
+		public Optimized2000PlanesRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

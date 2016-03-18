@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.lights;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
@@ -18,13 +19,13 @@ public class SpotLightFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new SpotLightRenderer(getActivity());
+		return new SpotLightRenderer(getActivity(), this);
 	}
 
 	private final class SpotLightRenderer extends AExampleRenderer {
 
-		public SpotLightRenderer(Context context) {
-			super(context);
+		public SpotLightRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

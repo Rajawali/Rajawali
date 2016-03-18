@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
 import org.rajawali3d.animation.ColorAnimation3D;
@@ -17,13 +18,13 @@ public class ColorAnimationFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new ColorAnimationRenderer(getActivity());
+		return new ColorAnimationRenderer(getActivity(), this);
 	}
 
 	private final class ColorAnimationRenderer extends AExampleRenderer {
 
-		public ColorAnimationRenderer(Context context) {
-			super(context);
+		public ColorAnimationRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
 		@Override

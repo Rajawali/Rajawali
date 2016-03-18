@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 
     @Override
     public AExampleRenderer createRenderer() {
-		return new ETC2TextureCompression(getActivity());
+		return new ETC2TextureCompression(getActivity(), this);
 	}
 
     @Override
@@ -60,8 +61,8 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
         private Object3D mETC1Plane;
         private Object3D mETC2Plane;
 
-		public ETC2TextureCompression(Context context) {
-			super(context);
+		public ETC2TextureCompression(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

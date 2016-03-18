@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.interactive;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -57,7 +58,7 @@ public class TouchAndDragFragment extends AExampleFragment implements
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new TouchAndDragRenderer(getActivity());
+		return new TouchAndDragRenderer(getActivity(), this);
 	}
 
 	@Override
@@ -90,8 +91,8 @@ public class TouchAndDragFragment extends AExampleFragment implements
 		private Matrix4 mViewMatrix;
 		private Matrix4 mProjectionMatrix;
 
-		public TouchAndDragRenderer(Context context) {
-			super(context);
+		public TouchAndDragRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

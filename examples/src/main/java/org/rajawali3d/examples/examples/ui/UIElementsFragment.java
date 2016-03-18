@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,15 +48,15 @@ public class UIElementsFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new UIElementsRenderer(getActivity());
+		return new UIElementsRenderer(getActivity(), this);
 	}
 
 	private final class UIElementsRenderer extends AExampleRenderer {
 		private DirectionalLight mLight;
 		private Object3D mMonkey;
 
-		public UIElementsRenderer(Context context) {
-			super(context);
+		public UIElementsRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

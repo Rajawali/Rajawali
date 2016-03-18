@@ -5,7 +5,7 @@
             android:title="@string/renderer_picker_title"
             android:summary="@string/renderer_picker_summary"
             android:key="renderer_class"
-            android:defaultValue="com.monyetmabuk.rajawali.tutorials.examples.general.BasicFragment.BasicRenderer"
+            android:defaultValue="0"
             android:entries="@array/rendererListArray"
             android:entryValues="@array/rendererListValues"
             />

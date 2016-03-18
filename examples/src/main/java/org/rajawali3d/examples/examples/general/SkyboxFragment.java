@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,16 +39,16 @@ public class SkyboxFragment extends AExampleFragment {
 
     @Override
     public AExampleRenderer createRenderer() {
-        mRenderer = new SkyboxRenderer(getActivity());
+        mRenderer = new SkyboxRenderer(getActivity(), this);
         return ((SkyboxRenderer) mRenderer);
     }
 
-    private final class SkyboxRenderer extends AExampleRenderer implements View.OnClickListener {
+    public static final class SkyboxRenderer extends AExampleRenderer implements View.OnClickListener {
 
         boolean odd = true;
 
-        public SkyboxRenderer(Context context) {
-            super(context);
+        public SkyboxRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override

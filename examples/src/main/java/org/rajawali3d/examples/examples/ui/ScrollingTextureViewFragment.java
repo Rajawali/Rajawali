@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,7 @@ public class ScrollingTextureViewFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new BasicRenderer(getActivity());
+		return new BasicRenderer(getActivity(), this);
 	}
 
     @Override
@@ -47,8 +48,8 @@ public class ScrollingTextureViewFragment extends AExampleFragment {
 
 		private Object3D mSphere;
 
-		public BasicRenderer(Context context) {
-			super(context);
+		public BasicRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.animation.BounceInterpolator;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.TranslateAnimation3D;
@@ -20,13 +21,13 @@ public class SVGPathFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new SVGPathRenderer(getActivity());
+		return new SVGPathRenderer(getActivity(), this);
 	}
 
 	private final class SVGPathRenderer extends AExampleRenderer {
 
-		public SVGPathRenderer(Context context) {
-			super(context);
+		public SVGPathRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

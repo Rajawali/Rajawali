@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.materials.materials.CustomMaterialPlugin;
@@ -11,7 +12,7 @@ import org.rajawali3d.primitives.Cube;
 public class CustomMaterialShaderFragment extends AExampleFragment {
 	@Override
     public AExampleRenderer createRenderer() {
-		return new CustomShaderRenderer(getActivity());
+		return new CustomShaderRenderer(getActivity(), this);
 	}
 
 	private final class CustomShaderRenderer extends AExampleRenderer {
@@ -20,8 +21,8 @@ public class CustomMaterialShaderFragment extends AExampleFragment {
 		private float mTime;
 		private Material mMaterial;
 
-		public CustomShaderRenderer(Context context) {
-			super(context);
+		public CustomShaderRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

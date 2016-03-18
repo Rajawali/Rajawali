@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import org.rajawali3d.Object3D;
@@ -18,7 +19,7 @@ public class CustomVertexShaderFragment extends AExampleFragment implements
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new VertexShaderRenderer(getActivity());
+		return new VertexShaderRenderer(getActivity(), this);
 	}
 
 	@Override
@@ -32,8 +33,8 @@ public class CustomVertexShaderFragment extends AExampleFragment implements
 		private Material mMaterial;
 		private Object3D mSphere;
 
-		public VertexShaderRenderer(Context context) {
-			super(context);
+		public VertexShaderRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
 		@Override

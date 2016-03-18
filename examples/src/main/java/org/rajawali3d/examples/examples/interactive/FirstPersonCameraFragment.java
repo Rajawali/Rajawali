@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.interactive;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,7 +66,7 @@ public class FirstPersonCameraFragment extends AExampleFragment {
 
     @Override
     public ISurfaceRenderer createRenderer() {
-        mRenderer = new FPSRenderer(getActivity());
+        mRenderer = new FPSRenderer(getActivity(), this);
         return mRenderer;
     }
 
@@ -76,8 +77,8 @@ public class FirstPersonCameraFragment extends AExampleFragment {
 
         private SkeletalAnimationObject3D mPerson;
 
-        public FPSRenderer(Context context) {
-            super(context);
+        public FPSRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override

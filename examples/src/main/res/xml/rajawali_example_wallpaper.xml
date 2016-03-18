@@ -4,5 +4,5 @@
     android:thumbnail="@drawable/ic_launcher"
     android:author="@string/lwp_author"
     android:description="@string/lwp_desc"
-    android:settingsActivity="com.monyetmabuk.rajawali.tutorials.wallpaper.WallpaperPreferenceActivity"
+    android:settingsActivity="org.rajawali3d.examples.wallpaper.WallpaperPreferenceActivity"
     />

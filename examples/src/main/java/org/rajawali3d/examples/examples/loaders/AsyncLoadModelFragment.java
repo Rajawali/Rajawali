@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.loaders;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
@@ -23,7 +24,7 @@ public class AsyncLoadModelFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new LoadModelRenderer(getActivity());
+		return new LoadModelRenderer(getActivity(), this);
 	}
 
 	private final class LoadModelRenderer extends AExampleRenderer implements IAsyncLoaderCallback {
@@ -31,8 +32,8 @@ public class AsyncLoadModelFragment extends AExampleFragment {
         private Cube mBaseObject;
 		private Animation3D mCameraAnim, mLightAnim;
 
-		public LoadModelRenderer(Context context) {
-			super(context);
+		public LoadModelRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
 		protected void initScene() {

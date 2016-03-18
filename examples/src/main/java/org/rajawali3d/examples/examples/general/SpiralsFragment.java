@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,14 +46,14 @@ public class SpiralsFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new SpiralsRenderer(getActivity());
+		return new SpiralsRenderer(getActivity(), this);
 	}
 
 	private final class SpiralsRenderer extends AExampleRenderer {
 		private final int NUM_POINTS = 200;
 
-		public SpiralsRenderer(Context context) {
-			super(context);
+		public SpiralsRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

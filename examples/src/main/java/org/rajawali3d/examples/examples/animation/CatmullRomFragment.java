@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
@@ -23,13 +24,13 @@ public class CatmullRomFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new CatmullRomRenderer(getActivity());
+		return new CatmullRomRenderer(getActivity(), this);
 	}
 
 	private final class CatmullRomRenderer extends AExampleRenderer {
 
-		public CatmullRomRenderer(Context context) {
-			super(context);
+		public CatmullRomRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

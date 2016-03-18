@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.loaders;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
@@ -14,13 +15,13 @@ public class AwdFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new AwdRenderer(getActivity());
+		return new AwdRenderer(getActivity(), this);
 	}
 
 	private final class AwdRenderer extends AExampleRenderer {
 
-		public AwdRenderer(Context context) {
-			super(context);
+		public AwdRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
 		@Override

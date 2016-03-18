@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.scene;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +41,7 @@ public class SceneFrameCallbackFragment extends AExampleFragment {
 
     @Override
     public AExampleRenderer createRenderer() {
-		return new BasicRenderer(getActivity());
+		return new BasicRenderer(getActivity(), this);
 	}
 
 	private final class BasicRenderer extends AExampleRenderer {
@@ -48,8 +49,8 @@ public class SceneFrameCallbackFragment extends AExampleFragment {
 		private DirectionalLight mLight;
 		private Object3D mSphere;
 
-		public BasicRenderer(Context context) {
-			super(context);
+		public BasicRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

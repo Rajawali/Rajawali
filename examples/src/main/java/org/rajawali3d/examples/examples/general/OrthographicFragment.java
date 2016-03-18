@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.animation.BounceInterpolator;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
@@ -24,13 +25,13 @@ public class OrthographicFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new OrthographicRenderer(getActivity());
+		return new OrthographicRenderer(getActivity(), this);
 	}
 
 	private final class OrthographicRenderer extends AExampleRenderer {
 
-		public OrthographicRenderer(Context context) {
-			super(context);
+		public OrthographicRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

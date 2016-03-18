@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -16,7 +17,7 @@ public class RawShaderFilesFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new RawShaderFilesRenderer(getActivity());
+		return new RawShaderFilesRenderer(getActivity(), this);
 	}
 
 	public class RawShaderFilesRenderer extends AExampleRenderer {
@@ -25,8 +26,8 @@ public class RawShaderFilesFragment extends AExampleFragment {
 		private float mTime;
 		private Material mMaterial;
 
-		public RawShaderFilesRenderer(Context context) {
-			super(context);
+		public RawShaderFilesRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

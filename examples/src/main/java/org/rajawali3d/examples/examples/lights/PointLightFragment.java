@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.lights;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
@@ -17,13 +18,13 @@ public class PointLightFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new PointLightRenderer(getActivity());
+		return new PointLightRenderer(getActivity(), this);
 	}
 
 	private final class PointLightRenderer extends AExampleRenderer {
 
-		public PointLightRenderer(Context context) {
-			super(context);
+		public PointLightRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

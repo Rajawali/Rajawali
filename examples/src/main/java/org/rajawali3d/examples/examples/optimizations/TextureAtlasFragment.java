@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.optimizations;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
@@ -16,7 +17,7 @@ public class TextureAtlasFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new TextureAtlasRenderer(getActivity());
+		return new TextureAtlasRenderer(getActivity(), this);
 	}
 
 	private final class TextureAtlasRenderer extends AExampleRenderer {
@@ -26,8 +27,8 @@ public class TextureAtlasFragment extends AExampleFragment {
 		private Cube mTileCube;
 		private Sphere mTileSphere;
 
-		public TextureAtlasRenderer(Context context) {
-			super(context);
+		public TextureAtlasRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		    getCurrentScene().setBackgroundColor(0x666666);
 		}
 

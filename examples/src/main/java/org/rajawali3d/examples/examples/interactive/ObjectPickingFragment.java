@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.interactive;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +30,7 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
 
     @Override
     public AExampleRenderer createRenderer() {
-        return new ObjectPickingRenderer(getActivity());
+        return new ObjectPickingRenderer(getActivity(), this);
     }
 
     @Override
@@ -50,8 +51,8 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
         private Object3D          mMonkey4;
         private ObjectColorPicker mPicker;
 
-        public ObjectPickingRenderer(Context context) {
-            super(context);
+        public ObjectPickingRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override

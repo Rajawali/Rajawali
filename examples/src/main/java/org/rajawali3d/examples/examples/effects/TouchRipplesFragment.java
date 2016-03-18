@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.effects;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -48,7 +49,7 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new TouchRipplesRenderer(getActivity());
+		return new TouchRipplesRenderer(getActivity(), this);
 	}
 
 	@Override
@@ -68,8 +69,8 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 		//private TouchRippleFilter mFilter;
 		private long frameCount;
 
-		public TouchRipplesRenderer(Context context) {
-			super(context);
+		public TouchRipplesRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
 		protected void initScene() {

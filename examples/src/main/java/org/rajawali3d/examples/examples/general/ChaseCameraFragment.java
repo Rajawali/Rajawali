@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,7 +79,7 @@ public class ChaseCameraFragment extends AExampleFragment implements
 
     @Override
     public AExampleRenderer createRenderer() {
-        return new ChaseCameraRenderer(getActivity());
+        return new ChaseCameraRenderer(getActivity(), this);
     }
 
     public void onProgressChanged(SeekBar seekBar, int progress,
@@ -102,8 +103,8 @@ public class ChaseCameraFragment extends AExampleFragment implements
         private double mTime;
         private PointLight mPointLight;
 
-        public ChaseCameraRenderer(Context context) {
-            super(context);
+        public ChaseCameraRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override

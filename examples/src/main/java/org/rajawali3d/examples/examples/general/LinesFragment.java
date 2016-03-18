@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -30,13 +31,13 @@ public class LinesFragment extends AExampleFragment {
 
     @Override
     public AExampleRenderer createRenderer() {
-		return new LinesRenderer(getActivity());
+		return new LinesRenderer(getActivity(), this);
 	}
 
 	private final class LinesRenderer extends AExampleRenderer {
 
-		public LinesRenderer(Context context) {
-			super(context);
+		public LinesRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.postprocessing;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -19,14 +20,14 @@ import java.util.Random;
 public class GreyScaleFilterFragment extends AExampleFragment {
 	@Override
     public AExampleRenderer createRenderer() {
-		return new GreyScaleFilterRenderer(getActivity());
+		return new GreyScaleFilterRenderer(getActivity(), this);
 	}
 
 	private final class GreyScaleFilterRenderer extends AExampleRenderer {
 		private PostProcessingManager mEffects;
 
-		public GreyScaleFilterRenderer(Context context) {
-			super(context);
+		public GreyScaleFilterRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

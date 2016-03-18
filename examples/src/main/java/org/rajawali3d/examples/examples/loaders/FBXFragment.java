@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.loaders;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,14 +44,14 @@ public class FBXFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new FBXRenderer(getActivity());
+		return new FBXRenderer(getActivity(), this);
 	}
 
 	private final class FBXRenderer extends AExampleRenderer {
 		private Animation3D mAnim;
 
-		public FBXRenderer(Context context) {
-			super(context);
+		public FBXRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

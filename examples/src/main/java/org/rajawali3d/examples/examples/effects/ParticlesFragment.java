@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.effects;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.effects.particles.ExampleParticleSystem;
 
@@ -8,7 +9,7 @@ public class ParticlesFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new ParticlesRenderer(getActivity());
+		return new ParticlesRenderer(getActivity(), this);
 	}
 
 	private final class ParticlesRenderer extends AExampleRenderer {
@@ -16,8 +17,8 @@ public class ParticlesFragment extends AExampleFragment {
 		private int mFrameCount;
 		private ExampleParticleSystem mParticleSystem;
 
-		public ParticlesRenderer(Context context) {
-			super(context);
+		public ParticlesRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

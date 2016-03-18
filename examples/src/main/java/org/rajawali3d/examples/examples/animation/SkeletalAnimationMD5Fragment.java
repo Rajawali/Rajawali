@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationSequence;
 import org.rajawali3d.examples.R;
@@ -14,15 +15,15 @@ public class SkeletalAnimationMD5Fragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new SkeletalAnimationMD5Renderer(getActivity());
+		return new SkeletalAnimationMD5Renderer(getActivity(), this);
 	}
 
 	private final class SkeletalAnimationMD5Renderer extends AExampleRenderer {
 		private DirectionalLight mLight;
 		private SkeletalAnimationObject3D mObject;
 
-		public SkeletalAnimationMD5Renderer(Context context) {
-			super(context);
+		public SkeletalAnimationMD5Renderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

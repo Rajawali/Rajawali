@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
@@ -23,13 +24,13 @@ public class SpecularAndAlphaFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new SpecularAndAlphaRenderer(getActivity());
+		return new SpecularAndAlphaRenderer(getActivity(), this);
 	}
 
 	private final class SpecularAndAlphaRenderer extends AExampleRenderer {
 
-		public SpecularAndAlphaRenderer(Context context) {
-			super(context);
+		public SpecularAndAlphaRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override

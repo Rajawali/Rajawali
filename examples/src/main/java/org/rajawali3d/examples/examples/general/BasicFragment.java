@@ -1,6 +1,7 @@
 package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -14,15 +15,15 @@ public class BasicFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
-		return new BasicRenderer(getActivity());
+		return new BasicRenderer(getActivity(), this);
 	}
 
-	private final class BasicRenderer extends AExampleRenderer {
+	public static final class BasicRenderer extends AExampleRenderer {
 
 		private Object3D mSphere;
 
-		public BasicRenderer(Context context) {
-			super(context);
+		public BasicRenderer(Context context, @Nullable AExampleFragment fragment) {
+			super(context, fragment);
 		}
 
         @Override
