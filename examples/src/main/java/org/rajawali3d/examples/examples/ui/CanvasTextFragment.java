@@ -30,7 +30,7 @@ public class CanvasTextFragment extends AExampleFragment {
 		return new CanvasTextRenderer(getActivity(), this);
 	}
 
-	private final class CanvasTextRenderer extends AExampleRenderer {
+	public static final class CanvasTextRenderer extends AExampleRenderer {
 		private AlphaMapTexture mTimeTexture;
 		private Bitmap mTimeBitmap;
 		private Canvas mTimeCanvas;

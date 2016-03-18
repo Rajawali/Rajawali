@@ -112,8 +112,8 @@ public class ExamplesApplication extends Application {
 
 	}
 
-	public static final Map<Category, ExampleItem[]> ITEMS = new HashMap<Category, ExamplesApplication.ExampleItem[]>();
-	public static final ArrayList<TeamMember> TEAM_MEMBERS = new ArrayList<ExamplesApplication.TeamMember>();
+	public static final Map<Category, ExampleItem[]> ITEMS = new HashMap<>();
+	public static final ArrayList<TeamMember> TEAM_MEMBERS = new ArrayList<>();
 	public static final String BASE_EXAMPLES_URL = "https://github.com/MasDennis/RajawaliExamples/blob/master/src/com/monyetmabuk/rajawali/tutorials/examples";
 
 	@Override
@@ -151,7 +151,6 @@ public class ExamplesApplication extends Application {
 				new ExampleItem("Particles", ParticlesFragment.class)
 				// Post processing is broken, removed until fixed.
 				//, new ExampleItem("Touch Ripples", TouchRipplesFragment.class)
-				, new ExampleItem("Fog", FogFragment.class)
 			});
 			*/
 		ITEMS.put(Category.INTERACTIVE, new ExampleItem[] {

@@ -32,13 +32,13 @@ import java.util.Random;
 public class GaussianBlurFilterFragment extends AExampleFragment {
 	@Override
     public AExampleRenderer createRenderer() {
-		return new SepiaFilterRenderer(getActivity(), this);
+		return new GaussianBlurFilterRenderer(getActivity(), this);
 	}
 
-	private final class SepiaFilterRenderer extends AExampleRenderer {
+	public static final class GaussianBlurFilterRenderer extends AExampleRenderer {
 		private PostProcessingManager mEffects;
 
-		public SepiaFilterRenderer(Context context, @Nullable AExampleFragment fragment) {
+		public GaussianBlurFilterRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

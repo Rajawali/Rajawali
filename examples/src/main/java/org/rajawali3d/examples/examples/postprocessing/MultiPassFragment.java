@@ -21,13 +21,13 @@ import java.util.Random;
 public class MultiPassFragment extends AExampleFragment {
 	@Override
     public AExampleRenderer createRenderer() {
-		return new SepiaFilterRenderer(getActivity(), this);
+		return new MultiPassRenderer(getActivity(), this);
 	}
 
-	private final class SepiaFilterRenderer extends AExampleRenderer {
+	public static final class MultiPassRenderer extends AExampleRenderer {
 		private PostProcessingManager mEffects;
 
-		public SepiaFilterRenderer(Context context, @Nullable AExampleFragment fragment) {
+		public MultiPassRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

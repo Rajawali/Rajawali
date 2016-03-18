@@ -26,7 +26,7 @@ public class BloomEffectFragment extends AExampleFragment {
 		return new BloomEffectRenderer(getActivity(), this);
 	}
 
-	private final class BloomEffectRenderer extends AExampleRenderer {
+	public static final class BloomEffectRenderer extends AExampleRenderer {
 		private PostProcessingManager mEffects;
 
 		public BloomEffectRenderer(Context context, @Nullable AExampleFragment fragment) {

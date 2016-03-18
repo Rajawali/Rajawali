@@ -4,10 +4,23 @@
         <item>Getting Started</item>
         <item>Skybox</item>
         <item>Collision Detection</item>
+        <item>Terrain</item>
+        <item>Vertex Buffer Update</item>
+        <item>Bloom Effect</item>
+        <item>Gaussian Blur Effect</item>
+        <item>MultiPass Render</item>
+        <item>Canvas Text</item>
+
     </string-array>
     <string-array name="rendererListValues">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
     </string-array>
 </resources>

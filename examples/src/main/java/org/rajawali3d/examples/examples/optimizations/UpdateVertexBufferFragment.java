@@ -25,7 +25,7 @@ public class UpdateVertexBufferFragment extends AExampleFragment {
 		return new UpdateVertexBufferRenderer(getActivity(), this);
 	}
 
-	private final class UpdateVertexBufferRenderer extends AExampleRenderer {
+	public static final class UpdateVertexBufferRenderer extends AExampleRenderer {
 
 		/**
 		 * The size of the vertex buffer for the dynamic object

@@ -4,7 +4,7 @@
         <ListPreference
             android:title="@string/renderer_picker_title"
             android:summary="@string/renderer_picker_summary"
-            android:key="renderer_class"
+            android:key="org.rajawali3d.examples.Preferences.wallpaper_renderer"
             android:defaultValue="0"
             android:entries="@array/rendererListArray"
             android:entryValues="@array/rendererListValues"

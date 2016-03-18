@@ -30,7 +30,7 @@ public class TerrainFragment extends AExampleFragment {
 		return new TerrainRenderer(getActivity(), this);
 	}
 
-	private final class TerrainRenderer extends AExampleRenderer {
+	public static final class TerrainRenderer extends AExampleRenderer {
 
 		private SquareTerrain mTerrain;
 		private double mLastY = 0;
