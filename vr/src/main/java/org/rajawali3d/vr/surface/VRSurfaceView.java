@@ -143,7 +143,9 @@ public class VRSurfaceView extends CardboardView implements ISurface {
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+        if (mRendererDelegate.mRenderer != null) {
+            mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+        }
     }
 
     @Override

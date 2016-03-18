@@ -130,7 +130,9 @@ public class SurfaceView extends GLSurfaceView implements ISurface {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+        if (mRendererDelegate != null) {
+            mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+        }
     }
 
     @Override
