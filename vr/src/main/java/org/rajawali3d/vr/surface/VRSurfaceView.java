@@ -35,16 +35,16 @@ public class VRSurfaceView extends CardboardView implements ISurface {
 
     protected RendererDelegate mRendererDelegate;
 
-    protected double mFrameRate = 60.0;
-    protected int mRenderMode = ISurface.RENDERMODE_WHEN_DIRTY;
+    protected double               mFrameRate          = 60.0;
+    protected int                  mRenderMode         = ISurface.RENDERMODE_WHEN_DIRTY;
     protected ANTI_ALIASING_CONFIG mAntiAliasingConfig = ANTI_ALIASING_CONFIG.NONE;
-    protected boolean mIsTransparent = false;
-    protected int mBitsRed = 5;
-    protected int mBitsGreen = 6;
-    protected int mBitsBlue = 5;
-    protected int mBitsAlpha = 0;
-    protected int mBitsDepth = 16;
-    protected int mMultiSampleCount = 0;
+    protected boolean              mIsTransparent      = false;
+    protected int                  mBitsRed            = 5;
+    protected int                  mBitsGreen          = 6;
+    protected int                  mBitsBlue           = 5;
+    protected int                  mBitsAlpha          = 0;
+    protected int                  mBitsDepth          = 16;
+    protected int                  mMultiSampleCount   = 0;
 
     public VRSurfaceView(Context context) {
         super(context);
@@ -111,15 +111,17 @@ public class VRSurfaceView extends CardboardView implements ISurface {
     @Override
     public void onPause() {
         super.onPause();
-        if(mRendererDelegate != null)
+        if (mRendererDelegate != null) {
             mRendererDelegate.mRenderer.onPause();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(mRendererDelegate != null)
+        if (mRendererDelegate != null) {
             mRendererDelegate.mRenderer.onResume();
+        }
     }
 
     @Override
@@ -143,8 +145,10 @@ public class VRSurfaceView extends CardboardView implements ISurface {
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mRendererDelegate.mRenderer != null) {
+        try {
             mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+        } catch (NullPointerException ignored) {
+            // Don't care, activity is terminating.
         }
     }
 
@@ -195,7 +199,9 @@ public class VRSurfaceView extends CardboardView implements ISurface {
 
     @Override
     public void setSurfaceRenderer(ISurfaceRenderer renderer) throws IllegalStateException {
-        if (mRendererDelegate != null) throw new IllegalStateException("A renderer has already been set for this view.");
+        if (mRendererDelegate != null) {
+            throw new IllegalStateException("A renderer has already been set for this view.");
+        }
         initialize();
         final RendererDelegate delegate = new VRSurfaceView.RendererDelegate(renderer, this);
         super.setRenderer(delegate);
@@ -217,7 +223,7 @@ public class VRSurfaceView extends CardboardView implements ISurface {
      */
     private static class RendererDelegate implements GLSurfaceView.Renderer {
 
-        final VRSurfaceView      mRajawaliSurfaceView; // The surface view to render on
+        final VRSurfaceView    mRajawaliSurfaceView; // The surface view to render on
         final ISurfaceRenderer mRenderer; // The renderer
 
         public RendererDelegate(ISurfaceRenderer renderer, VRSurfaceView surfaceView) {

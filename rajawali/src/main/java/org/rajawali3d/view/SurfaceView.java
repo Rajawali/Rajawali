@@ -130,8 +130,10 @@ public class SurfaceView extends GLSurfaceView implements ISurface {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mRendererDelegate != null) {
+        try {
             mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+        } catch (NullPointerException ignored) {
+            // Don't care, activity is terminating.
         }
     }
 
