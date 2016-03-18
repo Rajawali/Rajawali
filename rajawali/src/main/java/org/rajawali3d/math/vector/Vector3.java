@@ -723,9 +723,9 @@ public class Vector3 {
     /**
      * Computes the Euclidean length of this {@link Vector3} to the specified point.
      *
-     * @param double x The point x coordinate.
-     * @param double y The point y coordinate.
-     * @param double z The point z coordinate.
+     * @param x double The point x coordinate.
+     * @param y double The point y coordinate.
+     * @param z double The point z coordinate.
      *
      * @return double The Euclidean distance.
      */
@@ -780,9 +780,9 @@ public class Vector3 {
     /**
      * Computes the squared Euclidean length of this {@link Vector3} to the specified point.
      *
-     * @param double x The point x coordinate.
-     * @param double y The point y coordinate.
-     * @param double z The point z coordinate.
+     * @param x double The point x coordinate.
+     * @param y double The point y coordinate.
+     * @param z double The point z coordinate.
      *
      * @return double The squared Euclidean distance.
      */
@@ -983,9 +983,9 @@ public class Vector3 {
     public Vector3 cross(Vector3 v) {
         if (mTemp == null) mTemp = new Vector3();
         mTemp.setAll(this);
-        x = v.y * mTemp.z - v.z * mTemp.y;
-        y = v.z * mTemp.x - v.x * mTemp.z;
-        z = v.x * mTemp.y - v.y * mTemp.x;
+        x = mTemp.y * v.z - mTemp.z * v.y;
+        y = mTemp.z * v.x - mTemp.x * v.z;
+        z = mTemp.x * v.y - mTemp.y * v.x;
         return this;
     }
 
@@ -1002,9 +1002,9 @@ public class Vector3 {
     public Vector3 cross(double x, double y, double z) {
         if (mTemp == null) mTemp = new Vector3();
         mTemp.setAll(this);
-        this.x = y * mTemp.z - z * mTemp.y;
-        this.y = z * mTemp.x - x * mTemp.z;
-        this.z = x * mTemp.y - y * mTemp.x;
+        this.x = mTemp.y * z - mTemp.z * y;
+        this.y = mTemp.z * x - mTemp.x * z;
+        this.z = mTemp.x * y - mTemp.y * x;
         return this;
     }
 
@@ -1018,7 +1018,7 @@ public class Vector3 {
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
     public Vector3 crossAndSet(Vector3 v1, Vector3 v2) {
-        return setAll(v2.y * v1.z - v2.z * v1.y, v2.z * v1.x - v2.x * v1.z, v2.x * v1.y - v2.y * v1.x);
+        return setAll(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
     }
 
     /**
@@ -1031,7 +1031,7 @@ public class Vector3 {
      * @return {@link Vector3} The computed cross product.
      */
     public static Vector3 crossAndCreate(Vector3 v1, Vector3 v2) {
-        return new Vector3(v2.y * v1.z - v2.z * v1.y, v2.z * v1.x - v2.x * v1.z, v2.x * v1.y - v2.y * v1.x);
+        return new Vector3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
     }
 
     /**
@@ -1041,7 +1041,8 @@ public class Vector3 {
      * @param direction {@link Vector3} The direction to rotate to.
      *
      * @return {@link Quaternion} The {@link Quaternion} representing the rotation.
-     * @see http://ogre.sourcearchive.com/documentation/1.4.5/classOgre_1_1Vector3_eeef4472ad0c4d5f34a038a9f2faa819.html#eeef4472ad0c4d5f34a038a9f2faa819
+     * @see <a href="http://ogre.sourcearchive.com/documentation/1.4
+     * .5/classOgre_1_1Vector3_eeef4472ad0c4d5f34a038a9f2faa819.html#eeef4472ad0c4d5f34a038a9f2faa819">Ogre3d</a>
      */
     public Quaternion getRotationTo(Vector3 direction) {
         // Based on Stan Melax's article in Game Programming Gems
@@ -1237,9 +1238,9 @@ public class Vector3 {
      * Fills x, y, z values into first three positions in the
      * supplied array, if it is large enough to accommodate
      * them.
-     * 
+     *
      * @param array The array to be populated
-     * 
+     *
      * @return The passed array with the xyz values inserted
      */
     public double[] toArray(double[] array)
@@ -1256,7 +1257,7 @@ public class Vector3 {
 
     /**
      * Returns an array representation of this Vector3.
-     * 
+     *
      * @return An array containing this Vector3's xyz values.
      */
     public double[] toArray()
