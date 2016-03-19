@@ -11,12 +11,6 @@ String getVersionString() {
 group = GROUP
 version = getVersionString()
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def ndkDir = properties.getProperty('ndk.dir')
-
-println "NDK Directory: " + ndkDir
-
 if (isReleaseBuild()) {
     status = 'release'
 } else {
@@ -57,11 +51,7 @@ android {
 
     // call regular ndk-build(.cmd) script from app directory
     task ndkBuild(type: Exec) {
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine ndkDir + '\\ndk-build.cmd', '-C', file('src/main').absolutePath
-        } else {
-            commandLine ndkDir + '/ndk-build', '-C', file('src/main').absolutePath
-        }
+        commandLine getNdkBuildFile().absolutePath, '-C', file('src/main').absolutePath
     }
 
     tasks.withType(JavaCompile) {
@@ -76,6 +66,12 @@ dependencies {
     compile project.depSupportAnnotations
 
     compile project(':rajawali')
+}
+
+File getNdkBuildFile() {
+    String name = Os.isFamily(Os.FAMILY_WINDOWS) ? 'ndk-build.cmd' : 'ndk-build'
+    File ndkDir = android.getNdkDirectory()
+    return new File(ndkDir, name)
 }
 
 apply from: '../maven_push.gradle'
