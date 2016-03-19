@@ -13,13 +13,14 @@
 package org.rajawali3d.scene;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.os.Debug;
 import android.support.annotation.NonNull;
-
-import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin;
@@ -34,18 +35,20 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.AFrameTask;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.plugins.IRendererPlugin;
 import org.rajawali3d.renderer.plugins.Plugin;
 import org.rajawali3d.scenegraph.IGraphNode;
 import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
 import org.rajawali3d.scenegraph.Octree;
-import org.rajawali3d.view.ISurface;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
 import org.rajawali3d.util.RajLog;
+import org.rajawali3d.view.ISurface;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1136,7 +1139,7 @@ public class Scene {
 	}
 
 	protected void doColorPicking(ColorPickerInfo pickerInfo) {
-
+		RajLog.i("Doing color picking");
 		ObjectColorPicker picker = pickerInfo.getPicker();
 		picker.getRenderTarget().bind();
 
@@ -1170,6 +1173,20 @@ public class Scene {
 			for (int i = 0, j = mChildren.size(); i < j; ++i) {
 				mChildren.get(i).renderColorPicking(
 						mCamera, mVPMatrix, mPMatrix, mVMatrix, pickingMaterial);
+				Bitmap bitmap = null;
+				if (Debug.isDebuggerConnected()) {
+					final ByteBuffer pixelBufferDebug = ByteBuffer
+							.allocateDirect(4 * mRenderer.getViewportHeight() * mRenderer.getViewportWidth());
+					GLES20.glReadPixels(0, 0, mRenderer.getViewportWidth(), mRenderer.getViewportHeight(),
+										GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBufferDebug);
+					pixelBufferDebug.order(ByteOrder.nativeOrder());
+					pixelBufferDebug.rewind();
+
+					bitmap = Bitmap.createBitmap(mRenderer.getViewportWidth(), mRenderer.getViewportHeight()
+							, Config.ARGB_8888);
+					bitmap.copyPixelsFromBuffer(pixelBufferDebug);
+					RajLog.i("Pause here.");
+				}
 			}
 		}
 

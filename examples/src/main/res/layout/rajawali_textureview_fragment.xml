@@ -14,7 +14,7 @@
         android:id="@+id/rajwali_surface"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        textureview:frameRate="60.0"
+        textureview:frameRate="1.0"
         textureview:renderMode="RENDER_WHEN_DIRTY"/>
 
 </FrameLayout>

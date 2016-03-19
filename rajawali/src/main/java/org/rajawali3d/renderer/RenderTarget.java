@@ -247,6 +247,7 @@ public class RenderTarget {
 		int[] bufferHandles = new int[1];
 		GLES20.glGenFramebuffers(1, bufferHandles, 0);
 		mFrameBufferHandle = bufferHandles[0];
+		RajLog.v("Created framebuffer: " + mFrameBufferHandle + "/ " + mName);
 
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 
@@ -284,6 +285,7 @@ public class RenderTarget {
 	}
 
 	public void bind() {
+		RajLog.v("Binding render target: " + mFrameBufferHandle + "/ " + mName);
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
 		GLES20.glFramebufferTexture2D(
 			      GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTexture.getTextureId(), 0);

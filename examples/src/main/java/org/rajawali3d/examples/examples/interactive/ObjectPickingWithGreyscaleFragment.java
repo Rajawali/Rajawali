@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.interactive;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,7 +34,7 @@ public class ObjectPickingWithGreyscaleFragment extends AExampleFragment impleme
 
     @Override
     public AExampleRenderer createRenderer() {
-        return new ObjectPickingRenderer(getActivity());
+        return new ObjectPickingRenderer(getActivity(), this);
     }
 
     @Override
@@ -56,8 +57,8 @@ public class ObjectPickingWithGreyscaleFragment extends AExampleFragment impleme
 
         private PostProcessingManager mEffects;
 
-        public ObjectPickingRenderer(Context context) {
-            super(context);
+        public ObjectPickingRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
         }
 
         @Override
@@ -151,8 +152,11 @@ public class ObjectPickingWithGreyscaleFragment extends AExampleFragment impleme
             mMonkey2.setRotY(mMonkey2.getRotY() + 1f);
             mMonkey3.setRotY(mMonkey3.getRotY() - 1f);
             mMonkey4.setRotY(mMonkey4.getRotY() + 1f);
-            super.onRender(ellapsedRealtime, deltaTime);
+
+            // When using color picking with a post processing chain that is based on an initial render of the scene,
+            // calling the base render method is unnecessary as it will be handled automatically.
             mEffects.render(ellapsedRealtime, deltaTime);
+            //super.render(ellapsedRealtime, deltaTime);
         }
 
         public void getObjectAt(float x, float y) {

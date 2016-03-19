@@ -12,19 +12,16 @@
  */
 package org.rajawali3d.util;
 
-import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.opengl.GLES20;
-
-import android.os.Debug;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.materials.textures.ATexture.FilterType;
 import org.rajawali3d.materials.textures.ATexture.WrapType;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
+import org.rajawali3d.renderer.Renderer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -85,28 +82,15 @@ public class ObjectColorPicker implements IObjectPicker {
 	}
 
 	public static void pickObject(ColorPickerInfo pickerInfo) {
+		RajLog.i("Picking object...");
 		final ObjectColorPicker picker = pickerInfo.getPicker();
 		final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
 		pixelBuffer.order(ByteOrder.nativeOrder());
 
-		Bitmap bitmap = null;
-		if (Debug.isDebuggerConnected()) {
-			final ByteBuffer pixelBufferDebug = ByteBuffer
-					.allocateDirect(4 * picker.mRenderer.getViewportHeight() * picker
-							.mRenderer.getViewportWidth());
-			GLES20.glReadPixels(0, 0, picker.mRenderer.getViewportWidth(), picker.mRenderer.getViewportHeight(),
-								GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBufferDebug);
-			pixelBufferDebug.order(ByteOrder.nativeOrder());
-			pixelBufferDebug.rewind();
-
-			bitmap = Bitmap.createBitmap(picker.mRenderer.getViewportWidth(), picker.mRenderer.getViewportHeight()
-					, Config.ARGB_8888);
-			bitmap.copyPixelsFromBuffer(pixelBufferDebug);
-		}
-
 		GLES20.glReadPixels(pickerInfo.getX(),
 							picker.mRenderer.getViewportHeight() - pickerInfo.getY(),
 							1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
+		RajLog.i("Done picking object.");
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 		pixelBuffer.rewind();
 
