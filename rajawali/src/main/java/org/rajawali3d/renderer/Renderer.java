@@ -20,6 +20,7 @@ import android.opengl.GLES20;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import android.view.WindowManager;
 
@@ -29,6 +30,7 @@ import org.rajawali3d.loader.async.IAsyncLoaderCallback;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.RenderTargetTexture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
@@ -492,10 +494,12 @@ public abstract class Renderer implements ISurfaceRenderer {
      * @param height {@code int} The viewport height in pixels.
      */
     public void setViewPort(int width, int height) {
-        mCurrentViewportWidth = width;
-        mCurrentViewportHeight = height;
-        mCurrentScene.updateProjectionMatrix(width, height);
-        GLES20.glViewport(0, 0, width, height);
+        if (width != mCurrentViewportWidth || height != mCurrentViewportHeight) {
+            mCurrentViewportWidth = width;
+            mCurrentViewportHeight = height;
+            mCurrentScene.updateProjectionMatrix(width, height);
+            GLES20.glViewport(0, 0, width, height);
+        }
     }
 
     public int getDefaultViewportWidth() {
@@ -515,6 +519,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     public void setOverrideViewportDimensions(int width, int height) {
         mOverrideViewportWidth = width;
         mOverrideViewportHeight = height;
+        setViewPort(mOverrideViewportWidth, mOverrideViewportHeight);
     }
 
     public int getOverrideViewportWidth() {
@@ -910,6 +915,16 @@ public abstract class Renderer implements ISurfaceRenderer {
             @Override
             protected void doTask() {
                 mTextureManager.taskReset();
+            }
+        };
+        return internalOfferTask(task);
+    }
+
+    public boolean resizeRenderTarget(@NonNull final RenderTargetTexture renderTargetTexture) {
+        final AFrameTask task = new AFrameTask() {
+            @Override
+            protected void doTask() {
+                mTextureManager.taskResizeRenderTarget(renderTargetTexture);
             }
         };
         return internalOfferTask(task);

@@ -133,10 +133,8 @@ public class PostProcessingManager {
 	}
 
 	public void setSize(int width, int height) {
-		mRenderTarget1.setWidth(width);
-		mRenderTarget1.setHeight(height);
-		mRenderTarget2.setWidth(width);
-		mRenderTarget2.setHeight(height);
+		mRenderTarget1.resize(width, height);
+		mRenderTarget2.resize(width, height);
 
 		for(IPass pass : mPasses) {
 			pass.setSize(width, height);
@@ -156,6 +154,9 @@ public class PostProcessingManager {
 			updatePassesList();
 			mComponentsDirty = false;
 		}
+
+		// Set the viewport to the correct dimensions
+		mRenderer.setOverrideViewportDimensions(mWidth, mHeight);
 
 		mWriteBuffer = mRenderTarget1;
 		mReadBuffer = mRenderTarget2;
@@ -192,6 +193,9 @@ public class PostProcessingManager {
 			else if (type == PassType.CLEAR)
 				maskActive = false;
 		}
+
+		// Restore the viewport dimensions
+		mRenderer.clearOverrideViewportDimensions();
 	}
 
 	public ATexture getTexture() {

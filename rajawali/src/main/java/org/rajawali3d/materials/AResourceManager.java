@@ -13,7 +13,6 @@
 package org.rajawali3d.materials;
 
 import android.content.Context;
-
 import org.rajawali3d.renderer.Renderer;
 
 import java.util.List;

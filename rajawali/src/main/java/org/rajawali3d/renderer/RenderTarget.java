@@ -172,6 +172,19 @@ public class RenderTarget {
 	}
 
 	/**
+	 * Resizes this render target. This method should be preferred over {@link #setWidth(int)} and {@link #setHeight(int)}
+	 * if both dimensions will be changing as it is more efficient than calling both seperately.
+	 *
+	 * @param width
+	 * @param height
+	 */
+	public void resize(int width, int height) {
+		mWidth = width;
+		mHeight = height;
+		mTexture.resize(width, height);
+	}
+
+	/**
 	 * Returns the horizontal value of the current texture offset coordinate.
 	 *
 	 * @return The x component of the offset coordinate.
