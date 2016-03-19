@@ -263,6 +263,10 @@ public final class TextureManager extends AResourceManager {
 		}
 	}
 
+	public void taskResizeRenderTarget(RenderTargetTexture renderTargetTexture) {
+		renderTargetTexture.resize();
+	}
+
 	/**
 	 * Returns the number of textures currently managed.
 	 *

@@ -128,13 +128,6 @@ public class RenderToTextureFragment extends AExampleFragment {
 			//
 			// -- Off screen rendering first. Render to texture.
 			//
-
-			//
-			// -- Change the viewport to the required texture size
-			//
-
-            setOverrideViewportDimensions(400, 400);
-
 			mEffects.render(ellapsedTime, deltaTime);
 			try {
 				if (mCurrentTexture != null)
@@ -150,12 +143,6 @@ public class RenderToTextureFragment extends AExampleFragment {
 			} catch (ATexture.TextureException e) {
 				e.printStackTrace();
 			}
-
-			//
-			// -- Change the viewport back to full screen
-			//
-
-			clearOverrideViewportDimensions();
 			super.onRender(ellapsedTime, deltaTime);
 		}
 	}
