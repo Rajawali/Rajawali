@@ -13,12 +13,16 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import org.rajawali3d.examples.ExamplesApplication;
 import org.rajawali3d.examples.ExamplesApplication.TeamMember;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 
 import java.util.ArrayList;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class MeetTheTeamFragment extends AExampleFragment {
 
@@ -80,19 +84,17 @@ public class MeetTheTeamFragment extends AExampleFragment {
 			final ViewHolder holder;
 
 			if (convertView == null) {
-				convertView = mInflater.inflate(
-						R.layout.meet_the_team_list_item, null, false);
+				convertView = mInflater.inflate(R.layout.meet_the_team_list_item, container, false);
 				holder = new ViewHolder(convertView);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.imageViewPhoto.setImageResource(member.photo);
-			holder.textViewFavoriteBeer.setText(member.favoriteBeer);
-			holder.textViewFavoriteBeerTitle
-					.setVisibility(member.favoriteBeer == null ? View.GONE
-							: View.VISIBLE);
-			holder.textViewName.setText(member.name);
+			String favoriteBeer = member.getFavoriteBeer();
+			holder.imageViewPhoto.setImageResource(member.getPhoto());
+			holder.textViewFavoriteBeer.setText(favoriteBeer);
+			holder.textViewFavoriteBeerTitle.setVisibility(favoriteBeer == null ? GONE : VISIBLE);
+			holder.textViewName.setText(member.getName());
 
 			return convertView;
 		}
@@ -106,8 +108,7 @@ public class MeetTheTeamFragment extends AExampleFragment {
 		public void onItemClick(AdapterView<?> adapter, View view,
 				int position, long itemID) {
 			final TeamMember member = getItem(position);
-			final Intent intent = new Intent(Intent.ACTION_VIEW,
-					Uri.parse(member.link));
+			final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(member.getLink()));
 
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

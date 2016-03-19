@@ -1,6 +1,7 @@
 package org.rajawali3d.examples;
 
 import android.app.Application;
+
 import org.rajawali3d.examples.examples.about.CommunityFeedFragment;
 import org.rajawali3d.examples.examples.about.MeetTheTeamFragment;
 import org.rajawali3d.examples.examples.animation.AnimationFragment;
@@ -83,38 +84,45 @@ import java.util.Map;
 
 public class ExamplesApplication extends Application {
 
-	static enum Category {
+	enum Category {
 
-		// @formatter:off
-		GENERAL("General")
-		, LIGHTS("Lights")
-		, INTERACTIVE("Interactive")
-		, UI("UI")
-		, OPTIMIZATIONS("Optimizations")
-		, LOADERS("Loaders")
-		, ANIMATION("Animation")
-		, MATERIALS("Materials")
-		, POSTPROCESSING("Post Processing")
-        , SCENE("Scenes")
-		, VR_AR("VR and AR")
-		, ABOUT("About");
-		// @formatter:on
+		GENERAL("General"),
+		LIGHTS("Lights"),
+		INTERACTIVE("Interactive"),
+		UI("UI"),
+		OPTIMIZATIONS("Optimizations"),
+		LOADERS("Loaders"),
+		ANIMATION("Animation"),
+		MATERIALS("Materials"),
+		POSTPROCESSING("Post Processing", "postprocessing"),
+		SCENE("Scenes", "scene"),
+		VR_AR("VR and AR", "vr_ar"),
+		ABOUT("About");
 
-		private String name;
+		private final String name;
+		private final String packageName;
 
 		Category(String name) {
+			this(name, name);
+		}
+
+		Category(String name, String packageName) {
 			this.name = name;
+			this.packageName = packageName.toLowerCase(Locale.US);
 		}
 
 		public String getName() {
 			return name;
 		}
 
+		public String getPackageName() {
+			return packageName;
+		}
 	}
 
 	public static final Map<Category, ExampleItem[]> ITEMS = new HashMap<>();
 	public static final ArrayList<TeamMember> TEAM_MEMBERS = new ArrayList<>();
-	public static final String BASE_EXAMPLES_URL = "https://github.com/MasDennis/RajawaliExamples/blob/master/src/com/monyetmabuk/rajawali/tutorials/examples";
+	public static final String BASE_EXAMPLES_URL = "https://github.com/Rajawali/Rajawali/tree/master/examples/src/main/java/org/rajawali3d/examples/examples";
 
 	@Override
 	public void onCreate() {
@@ -275,9 +283,9 @@ public class ExamplesApplication extends Application {
 
 	public static final class ExampleItem {
 
-		public final Class<?> exampleClass;
-		public final String                            title;
-		public final String                            url;
+		private final Class<?> exampleClass;
+		private final String title;
+		private final String url;
 
 		public ExampleItem(String title, Class<?> exampleClass) {
 			this.title = title;
@@ -291,17 +299,29 @@ public class ExamplesApplication extends Application {
 				// About category has no example links
 				return null;
 			default:
-				return BASE_EXAMPLES_URL + "/"
-						+ category.name.toLowerCase(Locale.US) + "/" + url;
+			return String.format(Locale.ENGLISH, "%s/%s/%s",
+					BASE_EXAMPLES_URL,
+					category.getPackageName(),
+					url);
 			}
 		}
+
+		public Class<?> getExampleClass() {
+			return exampleClass;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
 	}
 
 	public static final class TeamMember {
-		public int photo;
-		public String name;
-		public String favoriteBeer;
-		public String link;
+
+		private final int photo;
+		private final String name;
+		private final String favoriteBeer;
+		private final String link;
 
 		protected TeamMember(int photo, String name, String about, String link) {
 			this.photo = photo;
@@ -309,6 +329,23 @@ public class ExamplesApplication extends Application {
 			this.favoriteBeer = about;
 			this.link = link;
 		}
+
+		public String getFavoriteBeer() {
+			return favoriteBeer;
+		}
+
+		public String getLink() {
+			return link;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getPhoto() {
+			return photo;
+		}
+
 	}
 
 }
