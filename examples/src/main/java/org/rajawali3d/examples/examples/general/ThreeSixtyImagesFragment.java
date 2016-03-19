@@ -57,7 +57,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 				// -- load all the textures from the drawable folder
 				int resourceId = mContext.getResources().getIdentifier(
 						i < 10 ? "m0" + i : "m" + i, "drawable",
-						"com.monyetmabuk.rajawali.tutorials");
+						"org.rajawali3d.examples");
 
 				Bitmap bitmap = BitmapFactory.decodeResource(
 						mContext.getResources(), resourceId, options);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -27,9 +27,9 @@ import org.rajawali3d.math.vector.Vector3.Axis;
  * <p>
  * When creating a plane without a texture but with different colors per texture <code>createTextureCoordinates</code>
  * should be set to <code>false</code> and <code>createVertexColorBuffer</code> should be set to <code>true</code>.
- * 
+ *
  * @author dennis.ippel
- * 
+ *
  */
 public class Plane extends Object3D {
 
@@ -49,7 +49,7 @@ public class Plane extends Object3D {
 	public Plane() {
 		this(1f, 1f, 1, 1, Axis.Z, true, false, 1);
 	}
-	
+
 	/**
 	 * Create a plane primitive. Calling this constructor will create a plane facing the specified axis.
 	 * @param upAxis
@@ -58,11 +58,11 @@ public class Plane extends Object3D {
 	{
 		this(1f, 1f, 1, 1, upAxis, true, false, 1);
 	}
-	
+
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 * The plane will be facing the camera ({@link Axis.Z}) by default.
-	 * 
+	 *
 	 * @param width
 	 *            The plane width
 	 * @param height
@@ -76,11 +76,11 @@ public class Plane extends Object3D {
 	{
 		this(width, height, segmentsW, segmentsH, Axis.Z, true, false, 1);
 	}
-	
+
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 * The plane will be facing the camera ({@link Axis.Z}) by default.
-	 * 
+	 *
 	 * @param width
 	 *            The plane width
 	 * @param height
@@ -99,7 +99,7 @@ public class Plane extends Object3D {
 
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * 
+	 *
 	 * @param width
 	 *            The plane width
 	 * @param height
@@ -118,7 +118,7 @@ public class Plane extends Object3D {
 
 	/**
 	 * Creates a plane primitive.
-	 * 
+	 *
 	 * @param width
 	 *            The plane width
 	 * @param height
@@ -158,7 +158,7 @@ public class Plane extends Object3D {
 
 	/**
 	 * Creates a plane primitive.
-	 * 
+	 *
 	 * @param width
 	 *            The plane width
 	 * @param height
@@ -232,7 +232,7 @@ public class Plane extends Object3D {
 
 				if (mCreateTextureCoords) {
 					float u = (float) i / (float) mSegmentsW;
-					textureCoords[texCoordCount++] = (1.0f - u) * mNumTextureTiles;
+					textureCoords[texCoordCount++] = u * mNumTextureTiles;
 					float v = (float) j / (float) mSegmentsH;
 					textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
 				}
@@ -288,7 +288,7 @@ public class Plane extends Object3D {
 		}
 
 		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
-		
+
 		vertices = null;
 		normals = null;
 		textureCoords = null;
