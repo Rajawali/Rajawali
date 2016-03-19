@@ -24,7 +24,6 @@ public class GithubLogoView extends View {
 	protected Bitmap mMask;
 	protected Paint mPaint;
 	protected Rect mDrawingRect;
-	protected Shader mShader;
 	protected boolean mDirection;
 	protected long mLastChange;
 	protected int mDuration;

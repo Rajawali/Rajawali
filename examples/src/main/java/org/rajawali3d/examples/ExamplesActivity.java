@@ -191,12 +191,13 @@ public class ExamplesActivity extends AppCompatActivity implements OnChildClickL
 
 		final FragmentTransaction transaction = fragmentManager.beginTransaction();
 		try {
-			if (AExampleFragment.class.isAssignableFrom(exampleItem.exampleClass)) {
-				final Fragment fragment = (Fragment) exampleItem.exampleClass.getConstructors()[0].newInstance();
+			Class<?> exampleClass = exampleItem.getExampleClass();
+			if (AExampleFragment.class.isAssignableFrom(exampleClass)) {
+				final Fragment fragment = (Fragment) exampleClass.getConstructors()[0].newInstance();
 
 				final Bundle bundle = new Bundle();
 				bundle.putString(AExampleFragment.BUNDLE_EXAMPLE_URL, exampleItem.getUrl(category));
-				bundle.putString(AExampleFragment.BUNDLE_EXAMPLE_TITLE, exampleItem.title);
+				bundle.putString(AExampleFragment.BUNDLE_EXAMPLE_TITLE, exampleItem.getTitle());
 				fragment.setArguments(bundle);
 
 				if (fragmentManager.findFragmentByTag(FRAGMENT_TAG) != null)
@@ -204,8 +205,8 @@ public class ExamplesActivity extends AppCompatActivity implements OnChildClickL
 
 				transaction.replace(R.id.content_frame, fragment, FRAGMENT_TAG);
 				transaction.commit();
-			} else if (CardboardActivity.class.isAssignableFrom(exampleItem.exampleClass)) {
-				final Intent intent = new Intent(getApplicationContext(), exampleItem.exampleClass);
+			} else if (CardboardActivity.class.isAssignableFrom(exampleClass)) {
+				final Intent intent = new Intent(getApplicationContext(), exampleClass);
 				startActivity(intent);
 			} else {
 				throw new IllegalArgumentException("Unknown example type. Cannot launch.");
@@ -256,7 +257,7 @@ public class ExamplesActivity extends AppCompatActivity implements OnChildClickL
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.textViewItemTitle.setText(item.title);
+			holder.textViewItemTitle.setText(item.getTitle());
 
 			return convertView;
 		}
@@ -289,7 +290,7 @@ public class ExamplesActivity extends AppCompatActivity implements OnChildClickL
 
 			if (convertView == null) {
 				convertView = mInflater.inflate(
-						R.layout.drawer_list_group_item, null);
+						R.layout.drawer_list_group_item, parent, false);
 				holder = new ViewHolder(convertView);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
