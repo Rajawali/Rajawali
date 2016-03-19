@@ -83,7 +83,7 @@ import java.util.Map;
 
 public class ExamplesApplication extends Application {
 
-	static enum Category {
+	enum Category {
 
 		// @formatter:off
 		GENERAL("General")
@@ -114,7 +114,7 @@ public class ExamplesApplication extends Application {
 
 	public static final Map<Category, ExampleItem[]> ITEMS = new HashMap<>();
 	public static final ArrayList<TeamMember> TEAM_MEMBERS = new ArrayList<>();
-	public static final String BASE_EXAMPLES_URL = "https://github.com/MasDennis/RajawaliExamples/blob/master/src/com/monyetmabuk/rajawali/tutorials/examples";
+	public static final String BASE_EXAMPLES_URL = "https://github.com/Rajawali/Rajawali/tree/master/examples/src/main/java/org/rajawali3d/examples/examples";
 
 	@Override
 	public void onCreate() {
