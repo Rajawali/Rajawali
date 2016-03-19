@@ -50,3 +50,4 @@ local.properties~
 .idea/
 rajawali_secret.gpg
 secring.gpg
+*.alloc
