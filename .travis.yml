@@ -22,7 +22,22 @@ script:
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
 - echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
 - cat local.properties
-- if $TRAVIS_PULL_REQUEST; then ./gradlew clean lint assemble --stacktrace --continue; else ./gradlew clean lint assemble uploadArchives --stacktrace --continue; fi
+- ./gradlew clean --stacktrace --continue
+- ./gradlew :rajawali:check --stacktrace --continue
+- ./gradlew :vuforia:check --stacktrace --continue
+- ./gradlew :vr:check --stacktrace --continue
+- ./gradlew :wear:check --stacktrace --continue
+- ./gradlew :wear-example:check --stacktrace --continue
+- ./gradlew :examples:check --stacktrace --continue
+- if $TRAVIS_PULL_REQUEST;
+  then
+    "Skipping uploadArchives on Pull Request";
+  else
+    ./gradlew :rajawali:uploadArchives --stacktrace --continue;
+    ./gradlew :vuforia:uploadArchives --stacktrace --continue;
+    ./gradlew :vr:uploadArchives --stacktrace --continue;
+    ./gradlew :wear:uploadArchives --stacktrace --continue;
+  fi
 install:
 # Get Android NDK
 - wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
