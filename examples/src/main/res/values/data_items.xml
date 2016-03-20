@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_general">General</string>
+    <string name="category_lights">Lights</string>
+    <string name="category_interactive">Interactive</string>
+    <string name="category_ui">UI</string>
+    <string name="category_optimizations">Optimizations</string>
+    <string name="category_loaders">Loaders</string>
+    <string name="category_animation">Animation</string>
+    <string name="category_materials">Materials</string>
+    <string name="category_post_processing">Post Processing</string>
+    <string name="category_scenes">Scenes</string>
+    <string name="category_vr_ar">VR &amp; AR</string>
+
+    <string name="example_general_getting_started">Getting Started</string>
+    <string name="example_general_skybox">Skybox</string>
+    <string name="example_general_collision_detection">Collision Detection</string>
+    <string name="example_general_lines">Lines</string>
+    <string name="example_general_colored_lines">Colored Lines</string>
+    <string name="example_general_chase_camera">Chase Camera</string>
+    <string name="example_general_using_geometry_data">Using Geometry Data</string>
+    <string name="example_general_360_images">360 Images</string>
+    <string name="example_general_terrain">Terrain</string>
+    <string name="example_general_curves">Curves</string>
+    <string name="example_general_spirals">Spirals</string>
+    <string name="example_general_svg_path">SVG Path</string>
+    <string name="example_general_uniform_distribution">Uniform Distribution</string>
+    <string name="example_general_orthographic_camera">Orthographic Camera</string>
+    <string name="example_general_arcball_camera">Arcball Camera</string>
+    <string name="example_general_debug_renderer">Debug Renderer</string>
+    <string name="example_general_debug_visualizer">Debug Visualizer</string>
+
+    <string name="example_lights_directional_light">Directional Light</string>
+    <string name="example_lights_point_light">Point Light</string>
+    <string name="example_lights_spot_light">Spot Light</string>
+    <string name="example_lights_multiple_light">Multiple Lights</string>
+
+    <string name="example_interactive_using_accelerometer">Using The Accelerometer</string>
+    <string name="example_interactive_object_picking">Object Picking</string>
+    <string name="example_interactive_touch_drag">Touch &amp; Drag</string>
+    <string name="example_interactive_first_person_camera">First Person Camera</string>
+
+    <string name="example_ui_elements">UI Elements</string>
+    <string name="example_ui_2d_render">2D Renderer</string>
+    <string name="example_ui_transparent_surface_view">Transparent SurfaceView</string>
+    <string name="example_ui_texture_view_xml">TextureView XML</string>
+    <string name="example_ui_scrolling_texture_view">Scrolling TextureView</string>
+    <string name="example_ui_view_to_texture">View To Texture</string>
+
+    <string name="example_optimizations_2000_planes">2000 Textured Planes</string>
+    <string name="example_optimizations_update_vertex_buffer">Update Vertex Buffer</string>
+    <string name="example_optimizations_etc1_compression">ETC1 Texture Compression</string>
+    <string name="example_optimizations_texture_atlas">Texture Atlas</string>
+    <string name="example_optimizations_etc2_compression">ETC2 Texture Compression</string>
+
+    <string name="example_loaders_load_awd">Load AWD Model</string>
+    <string name="example_loaders_load_async">Async Load Model</string>
+    <string name="example_loaders_load_obj">Load OBJ Model</string>
+    <string name="example_loaders_load_fbx">FBX Scene Importer</string>
+    <string name="example_loaders_load_gcode">GCode Tool Paths</string>
+
+    <string name="example_animation_basic">Basic</string>
+    <string name="example_animation_bezier">Bezier Path Animation</string>
+    <string name="example_animation_coalesce">Coalesce Animation</string>
+    <string name="example_animation_md2">MD2 Animation</string>
+    <string name="example_animation_catmul_rom">Catmul-Rom Splines</string>
+    <string name="example_animation_sprites">Animated Sprites</string>
+    <string name="example_animation_skeletal_md5">Skeletal Animation (MD5)</string>
+    <string name="example_animation_skeletal_awd">Skeletal Animation (AWD)</string>
+    <string name="example_animation_skeletal_blending">Skeletal Animation Blending</string>
+    <string name="example_animation_color">Color Animation</string>
+
+    <string name="example_materials_basic">Materials</string>
+    <string name="example_materials_custom">Custom Material</string>
+    <string name="example_materials_normal">Normal Mapping</string>
+    <string name="example_materials_toon">Toon Shading</string>
+    <string name="example_materials_vertex">Custom Vertex Shader</string>
+    <string name="example_materials_sphere">Sphere Mapping</string>
+    <string name="example_materials_canvas">Canvas Text to Material</string>
+    <string name="example_materials_specular_alpha">Specular Alpha</string>
+    <string name="example_materials_video">Video Texture</string>
+    <string name="example_materials_from_files">Shader Text Files</string>
+    <string name="example_materials_animated_gif">Animated GIF Texture</string>
+
+    <string name="example_post_processing_fog">Fog</string>
+    <string name="example_post_processing_sepia_filter">Sepia Filter</string>
+    <string name="example_post_processing_greyscale_filter">Greyscale Filter</string>
+    <string name="example_post_processing_gaussian_blur_filter">Gaussian Blur Filter</string>
+    <string name="example_post_processing_5th_element_multi_pass">Multi Pass</string>
+    <string name="example_post_processing_render_to_texture">Render to Texture</string>
+    <string name="example_post_processing_bloom_effect">Bloom Effect</string>
+    <string name="example_post_processing_shadow_mapping">Shadow Mapping</string>
+
+    <string name="example_scene_frame_callbacks">Frame Callbacks</string>
+
+    <string name="example_vr_ar_cardboard_integration">Cardboard Integration</string>
+    <string name="example_vr_ar_vuforia_integration">Vuforia Integration</string>
+</resources>

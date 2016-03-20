@@ -43,11 +43,6 @@ public class TransparentSurfaceFragment extends AExampleFragment {
     }
 
     @Override
-    public int getLayoutID() {
-        return R.layout.rajawali_surfaceview_fragment;
-    }
-
-    @Override
     public AExampleRenderer createRenderer() {
 		return new TransparentSurfaceRenderer(getActivity(), this);
 	}

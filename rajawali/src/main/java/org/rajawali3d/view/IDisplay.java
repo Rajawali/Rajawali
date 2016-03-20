@@ -19,14 +19,6 @@ public interface IDisplay {
      *
      * @return {@link ISurfaceRenderer} The renderer which will be assigned to the {@link GLSurfaceView} in this display, or null.
      */
-    public ISurfaceRenderer createRenderer();
+    ISurfaceRenderer createRenderer();
 
-    /**
-     * Retrieves the layout resource ID to inflate when creating the display's view. If you handle creating the view
-     * yourself (such as with a DayDream), this method can return any integer. If you allow this display to create the
-     * view, the resource is expected to have a {@link FrameLayout} as its root layout.
-     *
-     * @return {@code int} The layout resource ID to use.
-     */
-    public int getLayoutID();
 }

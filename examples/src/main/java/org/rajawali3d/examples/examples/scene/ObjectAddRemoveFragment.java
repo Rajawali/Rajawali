@@ -6,19 +6,23 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
+import org.rajawali3d.examples.views.GitHubLogoView;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.ISurfaceRenderer;
+import org.rajawali3d.view.ISurface;
 
 import java.util.Random;
 
@@ -29,30 +33,45 @@ public class ObjectAddRemoveFragment extends AExampleFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = super.onCreateView(inflater, container, savedInstanceState);
-        if (view != null) {
-            ((Button) view.findViewById(R.id.add_cube)).setOnClickListener(new OnClickListener() {
-                @Override public void onClick(View v) {
-                    ((ObjectAddRemoveRenderer) mRenderer).addNewCube();
-                }
-            });
-            ((Button) view.findViewById(R.id.remove_cube)).setOnClickListener(new OnClickListener() {
-                @Override public void onClick(View v) {
-                    ((ObjectAddRemoveRenderer) mRenderer).removeRandomCube();
-                }
-            });
-        }
-        return view;
+        // Inflate the view
+        mLayout = (FrameLayout) inflater.inflate(R.layout.rajawali_object_add_remove_fragment, container, false);
+
+        mLayout.findViewById(R.id.relative_layout_loader_container).bringToFront();
+
+        ((Button) mLayout.findViewById(R.id.add_cube)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ObjectAddRemoveRenderer) mRenderer).addNewCube();
+            }
+        });
+        ((Button) mLayout.findViewById(R.id.remove_cube)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ObjectAddRemoveRenderer) mRenderer).removeRandomCube();
+            }
+        });
+
+        // Find the TextureView
+        mRenderSurface = (ISurface) mLayout.findViewById(R.id.rajwali_surface);
+
+        // Create the loader
+        mProgressBarLoader = (ProgressBar) mLayout.findViewById(R.id.progress_bar_loader);
+        mProgressBarLoader.setVisibility(View.GONE);
+
+        // Set the example link
+        mImageViewExampleLink = (GitHubLogoView) mLayout.findViewById(R.id.image_view_example_link);
+        mImageViewExampleLink.setOnClickListener(this);
+
+        // Create the renderer
+        mRenderer = createRenderer();
+        onBeforeApplyRenderer();
+        applyRenderer();
+        return mLayout;
     }
 
     @Override
     public ISurfaceRenderer createRenderer() {
         return new ObjectAddRemoveRenderer(getActivity(), this);
-    }
-
-    @Override
-    public int getLayoutID() {
-        return R.layout.rajawali_object_add_remove_fragment;
     }
 
     public static final class ObjectAddRemoveRenderer extends AExampleRenderer {
