@@ -28,11 +28,6 @@ public class AnimatedTextureViewFragment extends AExampleFragment {
 	}
 
     @Override
-    public int getLayoutID() {
-        return R.layout.rajawali_textureview_fragment;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         ((View) mRenderSurface).animate().rotation(360.0f).setDuration(20000).setInterpolator(new BounceInterpolator());

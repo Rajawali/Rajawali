@@ -1,18 +1,16 @@
 package org.rajawali3d.examples.examples.optimizations;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.examples.examples.about.dialogs.ExceptionDialog;
+import org.rajawali3d.examples.examples.ExceptionDialog;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Etc1Texture;
@@ -37,23 +35,8 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
     }
 
     private void showExceptionDialog(String title, String message) {
-        FragmentManager fragmentManager = getActivity().getFragmentManager();
-        Fragment existingDialog = fragmentManager
-            .findFragmentByTag(ExceptionDialog.TAG);
-
-        if (existingDialog != null)
-            fragmentManager.beginTransaction().remove(existingDialog).commit();
-
-        Bundle bundle = new Bundle();
-        bundle.putString(ExceptionDialog.BUNDLE_KEY_TITLE, title);
-        bundle.putString(ExceptionDialog.BUNDLE_KEY_MESSAGE, message);
-
-        ExceptionDialog exceptionDialog = new ExceptionDialog();
-        exceptionDialog.setArguments(bundle);
-
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.add(exceptionDialog, ExceptionDialog.TAG);
-        ft.commit();
+        ExceptionDialog exceptionDialog = ExceptionDialog.newInstance(title, message);
+        exceptionDialog.show(getFragmentManager(), ExceptionDialog.TAG);
     }
 
 	private final class ETC2TextureCompression extends AExampleRenderer {
@@ -118,5 +101,6 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 				e.printStackTrace();
 			}
 		}
-	}
+
+    }
 }

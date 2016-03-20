@@ -22,6 +22,13 @@ android {
         }
     }
 
+    productFlavors {
+        withVuforia {
+        }
+        withoutVuforia {
+        }
+    }
+
     dexOptions {
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
         preDexLibraries = !isTravis()
@@ -35,11 +42,12 @@ android {
 dependencies {
     compile project.depAndroidSupport
     compile project.depAppCompat
+    compile project.depRecycler
     compile project.depGSON
     compile project.depIon
 
     compile project(':rajawali')
-    compile project(':vuforia')
+    withVuforiaCompile project(':vuforia')
+    withVuforiaCompile project(':vr')
     //compile project(':wear')
-    compile project(':vr')
 }

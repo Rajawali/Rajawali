@@ -3,7 +3,6 @@
 
     <!-- App Base -->
     <string name="app_name">Rajawali Examples</string>
-    <string name="empty"></string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="placeholder">Placeholder</string>
@@ -45,8 +44,13 @@
     <!-- GCode Fragment -->
     <string name="gcode_fragment_by">Model by Terawatt Industries</string>
     <!-- ExceptionDialog -->
-    <string name="exception_dialog_title">Exception Occurred</string>
-    <string name="exception_dialog_message_unknown">Unknown error!</string>
+    <string name="exception_dialog_title">Error</string>
+    <string name="exception_dialog_message_unknown">Internal exception occurred.</string>
+    <string name="exception_dialog_message_no_browser">No web browser is installed. Unable to open link.</string>
+    <!-- ETC2 -->
+    <string name="etc2_compression_png">PNG</string>
+    <string name="etc2_compression_etc1">ETC1</string>
+    <string name="etc2_compression_etc2">ETC2</string>
 
     <!-- Wallpaper -->
     <!-- Name in Live Wallpaper Picker list -->

@@ -1,6 +1,7 @@
 // Support
 project.ext.set('depAndroidSupport', 'com.android.support:support-v13:23.2.0')
 project.ext.set('depSupportAnnotations', 'com.android.support:support-annotations:23.2.0')
+project.ext.set('depRecycler', 'com.android.support:recyclerview-v7:23.2.0')
 project.ext.set('depAppCompat', 'com.android.support:appcompat-v7:23.2.0')
 
 // Examples dependencies
