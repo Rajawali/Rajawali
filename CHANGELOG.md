@@ -2,27 +2,28 @@ Rajawali v1.1.x "Bombshell"
 
 "Bombshell", the next Rajawali version contains some minor changes to the API.
 
+### Examples and Support Modules
+
+The examples application and all support modules such as Android Wear, Vuforia and Cardboard support have been moved to this repository. 
+
 ### Color Picking
 
 * `Scene.java`
  * Added `doColorPicking()` to isolate color-picking render from normal render() control flow
  * Renamed `requestColorPickingTexture()` to `requestColorPicking()` 
-* Object3D.java
+* `Object3D.java`
  * Introduced `UNPICKABLE` color/index, made it a default value
  * Updated `setPickingColor()`, removed `getPickingColor()`
  * Eliminated `mIsPickingEnabled`, now check for `UNPICKABLE`
  * Added `renderColorPicking()` for optimized/independent color-picking rendering of the `Object3D` and its children (per #1387)
-* ObjectColorPicker.java
+* `ObjectColorPicker.java`
  * Updated `unregisterObject()` to reset picking color to `UNPICKABLE`
  * Renamed `createColorPickingTexture()` to `pickObject()`
  * In `pickObject()` call to `GLES20.glReadPixels()`, replaced `getDefaultViewportHieght()` with `getViewportHeight()`
 
-### Examples and Modules
+### Textures
 
-The examples application and all modules which build on Rajawali such as Android Wear support and Vuforia have been relocated into this repository. The old repositories will exist for historical reference until such a time that we decide to remove them.
-
-### Texture Names
-
+Stores texture handles in a hashmap keyed by texture name. This allows reusing textures between materials if the same names are used. An initial attempt to find the locations is made on first compiling a material but if the texture name is not known there (such as for post processing) then it will be cached on the first use.
 
 ### Desmurfing
 
@@ -30,7 +31,7 @@ The old class names that were prefixed with "Rajawali" have been removed. For ex
 
 ### Textures
  
-`ATexture.setUniformHandle(int)` and `ATexture.getUniformHandle()` have been removed. They were an incomplete implementation and the ownership of these handles has been moved to the `Material` level, allowing reuse of identically named textures across materials as well as helping cache for vertex textures, if available on the device.
+`ATexture.setUniformHandle(int)` and `ATexture.getUniformHandle()` have been removed. They were an incomplete implementation and the ownership of these handles has been moved to the `Material` level, allowing reused of identically named textures across materials as well as helping cache for vertex textures, if available on the device.
 
 Rajawali v1.0.x "Anchor Steam"
 -------------------------------------------------
