@@ -11,10 +11,9 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-
+import org.rajawali3d.R;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
-import org.rajawali3d.R;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
 import java.lang.ref.WeakReference;
@@ -68,7 +67,6 @@ public class TextureView extends android.view.TextureView implements ISurface {
     private int mEGLContextClientVersion;
 
     private boolean mPreserveEGLContextOnPause;
-    private SurfaceTexture mCleanupTexture;
 
     protected RendererDelegate mRendererDelegate;
 
@@ -131,10 +129,6 @@ public class TextureView extends android.view.TextureView implements ISurface {
         if (mGLThread != null) {
             throw new IllegalStateException("setRenderer has already been called for this instance.");
         }
-    }
-
-    private void setCleanupTexture(SurfaceTexture surface) {
-        mCleanupTexture = surface;
     }
 
     /**
@@ -218,8 +212,6 @@ public class TextureView extends android.view.TextureView implements ISurface {
                 mGLThread.requestExitAndWait();
             }
         } finally {
-            if (mCleanupTexture != null) mCleanupTexture.release();
-            mCleanupTexture = null;
             super.finalize();
         }
     }
@@ -512,7 +504,7 @@ public class TextureView extends android.view.TextureView implements ISurface {
 
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-            mRajawaliTextureView.setCleanupTexture(surface);
+            surface.release();
             mRajawaliTextureView.surfaceDestroyed();
             return false;
         }
