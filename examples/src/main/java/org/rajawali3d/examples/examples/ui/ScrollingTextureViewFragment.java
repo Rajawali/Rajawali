@@ -39,11 +39,6 @@ public class ScrollingTextureViewFragment extends AExampleFragment {
 		return new BasicRenderer(getActivity(), this);
 	}
 
-    @Override
-    public int getLayoutID() {
-        return R.layout.rajawali_scroll_textureview_fragment;
-    }
-
 	private final class BasicRenderer extends AExampleRenderer {
 
 		private Object3D mSphere;

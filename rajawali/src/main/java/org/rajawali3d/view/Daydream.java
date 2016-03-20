@@ -73,12 +73,6 @@ public abstract class Daydream extends DreamService implements IDisplay {
 		System.gc();
 	}
 
-    @Override
-    public int getLayoutID() {
-        // We dont need this for daydreams, just return 0;
-        return 0;
-    }
-
     protected void setAntiAliasingConfig(ANTI_ALIASING_CONFIG config) {
 		mSurfaceView.setAntiAliasingMode(config);
 	}

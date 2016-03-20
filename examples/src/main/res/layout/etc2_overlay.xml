@@ -12,7 +12,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:text="PNG"/>
+        android:text="@string/etc2_compression_png"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -21,7 +21,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:text="ETC1"/>
+        android:text="@string/etc2_compression_etc1"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,6 +30,6 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:text="ETC2"/>
+        android:text="@string/etc2_compression_etc2"/>
 
 </LinearLayout>
