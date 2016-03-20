@@ -66,6 +66,7 @@ import org.rajawali3d.examples.examples.postprocessing.MultiPassFragment;
 import org.rajawali3d.examples.examples.postprocessing.RenderToTextureFragment;
 import org.rajawali3d.examples.examples.postprocessing.SepiaFilterFragment;
 import org.rajawali3d.examples.examples.postprocessing.ShadowMappingFragment;
+import org.rajawali3d.examples.examples.scene.ObjectAddRemoveFragment;
 import org.rajawali3d.examples.examples.scene.SceneFrameCallbackFragment;
 import org.rajawali3d.examples.examples.ui.AnimatedTextureViewFragment;
 import org.rajawali3d.examples.examples.ui.CanvasTextFragment;
@@ -194,6 +195,7 @@ public final class DataSet {
         }));
         categories.add(new Category(R.string.category_scenes, new Example[]{
                 new Example(R.string.example_scene_frame_callbacks, SceneFrameCallbackFragment.class),
+                new Example(R.string.example_scene_add_remove_objects, ObjectAddRemoveFragment.class)
         }));
 
         return categories;
