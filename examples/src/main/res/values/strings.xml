@@ -9,6 +9,7 @@
     <!-- Menu -->
     <string name="menu_main_community_stream">Community Stream</string>
     <string name="menu_main_meet_the_team">Meet The Team</string>
+    <string name="menu_action_search">Search</string>
     <!-- Curves Fragment -->
     <string name="curves_fragment_text_view_curve_types">Cubic Bezier, Linear Bezier, Quadratic Bezier, Catmull Rom, Compound Curve</string>
     <!-- Spirals Fragment -->
