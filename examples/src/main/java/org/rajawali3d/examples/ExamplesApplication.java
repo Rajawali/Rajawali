@@ -66,6 +66,7 @@ import org.rajawali3d.examples.examples.postprocessing.MultiPassFragment;
 import org.rajawali3d.examples.examples.postprocessing.RenderToTextureFragment;
 import org.rajawali3d.examples.examples.postprocessing.SepiaFilterFragment;
 import org.rajawali3d.examples.examples.postprocessing.ShadowMappingFragment;
+import org.rajawali3d.examples.examples.scene.ObjectAddRemoveFragment;
 import org.rajawali3d.examples.examples.scene.SceneFrameCallbackFragment;
 import org.rajawali3d.examples.examples.ui.AnimatedTextureViewFragment;
 import org.rajawali3d.examples.examples.ui.CanvasTextFragment;
@@ -226,6 +227,7 @@ public class ExamplesApplication extends Application {
 		});
         ITEMS.put(Category.SCENE, new ExampleItem[] {
                 new ExampleItem("Frame Callbacks", SceneFrameCallbackFragment.class)
+				, new ExampleItem("Add/Remove Children", ObjectAddRemoveFragment.class)
         });
 		ITEMS.put(Category.VR_AR, new ExampleItem[] {
 				new ExampleItem("Cardboard Integration", RajawaliVRExampleActivity.class)

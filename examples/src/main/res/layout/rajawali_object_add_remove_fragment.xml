@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:textureview="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent">
+
+    <org.rajawali3d.view.TextureView
+        android:id="@+id/rajwali_surface"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        textureview:frameRate="60.0"
+        textureview:renderMode="RENDER_WHEN_DIRTY"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center|bottom">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_cube"
+            android:text="@string/add_cube"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/remove_cube"
+            android:text="@string/remove_cube"/>
+    </LinearLayout>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/relative_layout_loader_container"/>
+
+</FrameLayout>

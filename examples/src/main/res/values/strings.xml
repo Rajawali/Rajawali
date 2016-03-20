@@ -69,5 +69,7 @@
     <string name="renderer_picker_title">Renderer</string>
     <string name="renderer_picker_summary">Choose the renderer class to use for the wallpaper demo.</string>
     <string name="touch_a_monkey">Touch a monkey :)</string>
+    <string name="add_cube">Add Cube</string>
+    <string name="remove_cube">Remove Random Cube</string>
 
 </resources>
