@@ -1056,7 +1056,7 @@ public class Scene {
 		mVMatrix = mCamera.getViewMatrix();
 		mPMatrix = mCamera.getProjectionMatrix();
 		// Pre-multiply View and Projection matrices once for speed
-		mVPMatrix = mPMatrix.clone().multiply(mVMatrix);
+		mVPMatrix.setAll(mPMatrix).multiply(mVMatrix);
 		mInvVPMatrix.setAll(mVPMatrix).inverse();
         mCamera.updateFrustum(mInvVPMatrix); // Update frustum plane
 

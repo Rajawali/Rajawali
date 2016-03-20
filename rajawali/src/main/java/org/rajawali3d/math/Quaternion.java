@@ -999,8 +999,9 @@ public final class Quaternion {
 	/**
 	 * Sets the provided {@link Matrix4} to represent this {@link Quaternion}.
 	 */
-	public void toRotationMatrix(Matrix4 matrix) {
+	public Matrix4 toRotationMatrix(Matrix4 matrix) {
 		toRotationMatrix(matrix.getDoubleValues());
+		return matrix;
 	}
 
 	/**

@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -18,7 +18,6 @@ import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.util.RajLog;
 
 public class Camera extends ATransformable3D {
 
@@ -29,6 +28,7 @@ public class Camera extends ATransformable3D {
 	 */
 	protected final Matrix4 mViewMatrix = new Matrix4();
 	protected final Matrix4 mProjMatrix = new Matrix4();
+	protected final Matrix4 mScratchMatrix = new Matrix4();
 	protected double mNearPlane = 1.0;
 	protected double mFarPlane = 120.0;
 	protected double mFieldOfView = 45.0;
@@ -43,7 +43,7 @@ public class Camera extends ATransformable3D {
 	/**
 	 * End guarded members
 	 */
-		
+
 	public Camera() {
 		super();
 		mLocalOrientation = Quaternion.getIdentity();
@@ -126,9 +126,7 @@ public class Camera extends ATransformable3D {
             matrix[Matrix4.M33] = 1;
 
             mTmpOrientation.setAll(mLocalOrientation).inverse();
-            mViewMatrix.leftMultiply(mTmpOrientation.toRotationMatrix());
-            //mViewMatrix.rotate(mTmpOrientation);
-
+            mViewMatrix.leftMultiply(mTmpOrientation.toRotationMatrix(mScratchMatrix));
 			return mViewMatrix;
 		}
 	}
@@ -146,10 +144,10 @@ public class Camera extends ATransformable3D {
 			double aspect = mLastWidth / (double)mLastHeight;
 			double nearHeight = 2.0 * Math.tan(mFieldOfView / 2.0) * mNearPlane;
 			double nearWidth = nearHeight * aspect;
-			
+
 			double farHeight = 2.0 * Math.tan(mFieldOfView / 2.0) * mFarPlane;
 			double farWidth = farHeight * aspect;
-			
+
 			// near plane, top left
 			mFrustumCorners[0].setAll(nearWidth / -2, nearHeight / 2, mNearPlane);
 			// near plane, top right
@@ -183,13 +181,13 @@ public class Camera extends ATransformable3D {
             }
         }
 	}
-	
+
 	public void updateFrustum(Matrix4 invVPMatrix) {
 		synchronized (mFrustumLock) {
 			mFrustum.update(invVPMatrix);
 		}
 	}
-	
+
 	public Frustum getFrustum() {
         synchronized (mFrustumLock) {
             return mFrustum;
@@ -299,7 +297,7 @@ public class Camera extends ATransformable3D {
 			return mBoundingBox;
 		}
 	}
-	
+
 	public Camera clone() {
 		Camera cam = new Camera();
 		cam.setFarPlane(mFarPlane);
