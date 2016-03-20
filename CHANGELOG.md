@@ -1,4 +1,5 @@
 Rajawali v1.1.x "Bombshell"
+-------------------------------------------------
 
 "Bombshell", the next Rajawali version contains some minor changes to the API.
 
