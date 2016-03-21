@@ -67,7 +67,8 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Adds a new {@link ATexture} to the TextureManager.
+	 * Adds a new {@link ATexture} to the TextureManager. If a texture by the same name already exists that is not
+	 * this same texture object, the provided texture will be updated to point to the previously added texture.
 	 *
 	 * @param texture
 	 * @return
