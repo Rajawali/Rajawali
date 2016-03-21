@@ -2,7 +2,9 @@ package org.rajawali3d.examples.wear;
 
 import android.content.Context;
 import android.support.wearable.watchface.WatchFaceStyle;
+
 import org.rajawali3d.Object3D;
+import org.rajawali3d.examples.R;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
