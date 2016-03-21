@@ -39,7 +39,7 @@ allprojects {
 }
 ```
 
-Notice the addition of  `mavenCentral()` and `maven { url �https://oss.sonatype.org/content/repositories/snapshots/� }`. This will allow Android Studio to connect to this Maven Server to retrieve a library. If you plan on doing local development on the Rajawali library itself and want your changes to be picked up without them being in the main repository, you will also need to add `mavenLocal()`. Gradle will check the repositories in the order listed, so make sure you take this into account.
+Notice the addition of  `mavenCentral()` and `maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }`. This will allow Android Studio to connect to this Maven Server to retrieve a library. If you plan on doing local development on the Rajawali library itself and want your changes to be picked up without them being in the main repository, you will also need to add `mavenLocal()`. Gradle will check the repositories in the order listed, so make sure you take this into account.
 
 Now we need to add a line to **build.gradle (Module: app)**.
 
@@ -51,6 +51,6 @@ dependencies {
 }
 ```
 
-This is where the note from earlier about retrieving the build version might come in handy. We added the line `compile �org.rajawali3d:rajawali:1.0.186-SNAPSHOT@aar�`. Snapshots increment the build number each time and if you plan to use one, you will need to check for the latest. The build history can be seen [on Travis CI](https://travis-ci.org/Rajawali/Rajawali/builds). Note that only `master` branch builds are published as snapshots. Release builds will obviously only change with each release. To find the the latest, simply check the [README](https://github.com/Rajawali/Rajawali/blob/master/README.md).
+This is where the note from earlier about retrieving the build version might come in handy. We added the line `compile 'org.rajawali3d:rajawali:1.0.186-SNAPSHOT@aar`. Snapshots increment the build number each time and if you plan to use one, you will need to check for the latest. The build history can be seen [on Travis CI](https://travis-ci.org/Rajawali/Rajawali/builds). Note that only `master` branch builds are published as snapshots. Release builds will obviously only change with each release. To find the the latest, simply check the [README](https://github.com/Rajawali/Rajawali/blob/master/README.md).
 
 Now we should see a note at the top asking you the sync the gradle. Click Sync Now and it should build. If it does not, you might want to recheck your code.
