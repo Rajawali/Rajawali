@@ -25,7 +25,7 @@ We do our best to add tutorials
 4. [Animation Classes](./animations.md)
 
 ### Advanced Features
-1. [Choosing an IRajawaliSurface](./choosing_isurface.md)
+1. [Choosing an ISurface](./choosing_isurface.md)
 2. [Scene Frame Callbacks](./scene_frame_callbacks.md)
 3. [Async Loaders](./async_loaders.md)
 4. [Using a Texture Atlas](./texture_atlas.md)
