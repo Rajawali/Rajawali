@@ -51,6 +51,6 @@ dependencies {
 }
 ```
 
-This is where the note from earlier about retrieving the build version might come in handy. We added the line `compile 'org.rajawali3d:rajawali:1.0.186-SNAPSHOT@aar`. Snapshots increment the build number each time and if you plan to use one, you will need to check for the latest. The build history can be seen [on Travis CI](https://travis-ci.org/Rajawali/Rajawali/builds). Note that only `master` branch builds are published as snapshots. Release builds will obviously only change with each release. To find the the latest, simply check the [README](https://github.com/Rajawali/Rajawali/blob/master/README.md).
+This is where the note from earlier about retrieving the build version might come in handy. We added the line `compile 'org.rajawali3d:rajawali:1.1.337@aar` which is the last release. If you want the latest build, you need to use a snapshot. Snapshots increment the build number each time and if you plan to use one, you will need to check for the latest. The build history can be seen [on Travis CI](https://travis-ci.org/Rajawali/Rajawali/builds). Note that only `master` branch builds are published as snapshots. Release builds will obviously only change with each release. To find the the latest, simply check the [README](https://github.com/Rajawali/Rajawali/blob/master/README.md).
 
 Now we should see a note at the top asking you the sync the gradle. Click Sync Now and it should build. If it does not, you might want to recheck your code.
