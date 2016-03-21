@@ -6,7 +6,7 @@ This tutorial will help you setup a basic 3D scene in Android using the Rajawali
 
 ## Setting Up Our Scene
 
-We are going to make a simple scene of the Earth rotating. First, we need to extend the `Renderer` class. Let�s create a new class in the same package as our `MainActivity` and name it **Renderer**.
+We are going to make a simple scene of the Earth rotating. First, we need to extend the `Renderer` class. Let's create a new class in the same package as our `MainActivity` and name it **Renderer**.
 
 ![](http://i1.wp.com/www.clintonmedbery.com/wp-content/uploads/2015/04/Screen-Shot-2015-04-06-at-12.41.33-PM.png)
 
@@ -136,7 +136,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
 The main thing to focus on here is the `SurfaceView`. This class extends `GLSurfaceView` and let's you add our `Renderer` to it, making it appear in our activity. We are able to set up some variables for our surface, and instantiate our `Renderer` scene and add it to the surface.
 
-That�s it! Let�s run the program and see what we get.
+That's it! Let's run the program and see what we get.
 
 ![](http://i1.wp.com/www.clintonmedbery.com/wp-content/uploads/2015/04/Screenshot_2015-04-06-14-03-561.png)
 
