@@ -2,7 +2,10 @@
 <resources>
 
     <!-- App Base -->
-    <string name="app_name">Rajawali Examples</string>
+    <string name="app_name_main">Rajawali Examples</string>
+    <string name="app_name_wallpaper_settings">Rajawali Wallpaper Settings</string>
+    <string name="app_name_wallpaper_preview">Rajawali Wallpaper Preview</string>
+    <string name="app_name_wallpaper">Rajawali Wallpaper</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="placeholder">Placeholder</string>
