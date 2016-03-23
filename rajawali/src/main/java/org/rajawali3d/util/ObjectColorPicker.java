@@ -99,8 +99,13 @@ public class ObjectColorPicker implements IObjectPicker {
 		final int a = pixelBuffer.get(3) & 0xff;
 		final int index = Color.argb(a, r, g, b);
 
-		if (0 <= index && index < picker.mObjectLookup.size() && picker.mObjectPickedListener != null)
-			picker.mObjectPickedListener.onObjectPicked(picker.mObjectLookup.get(index));
+		if (picker.mObjectPickedListener != null) {
+			if (0 <= index && index < picker.mObjectLookup.size()) {
+				picker.mObjectPickedListener.onObjectPicked(picker.mObjectLookup.get(index));
+			} else {
+				picker.mObjectPickedListener.onNoObjectPicked();
+			}
+		}
 	}
 
 	public Material getMaterial() {

@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.interactive;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.util.GLU;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnObjectPickedListener;
+import org.rajawali3d.util.RajLog;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -147,8 +149,13 @@ public class TouchAndDragFragment extends AExampleFragment implements
 			mPicker.getObjectAt(x, y);
 		}
 
-		public void onObjectPicked(Object3D object) {
+		public void onObjectPicked(@NonNull Object3D object) {
 			mSelectedObject = object;
+		}
+
+		@Override
+		public void onNoObjectPicked() {
+			RajLog.w("No object picked!");
 		}
 
 		public void moveSelectedObject(float x, float y) {
