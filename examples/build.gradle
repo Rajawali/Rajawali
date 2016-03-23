@@ -8,6 +8,8 @@ android {
         applicationId "org.rajawali3d.examples"
         minSdkVersion 16
         targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
     }
 
     compileOptions {
@@ -46,8 +48,10 @@ dependencies {
     compile project.depGSON
     compile project.depIon
 
+
     compile project(':rajawali')
     withVuforiaCompile project(':vuforia')
     withVuforiaCompile project(':vr')
-    //compile project(':wear')
+
+    wearApp project(':wear-example')
 }
