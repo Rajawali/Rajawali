@@ -40,7 +40,7 @@ public class TextureView extends android.view.TextureView implements ISurface {
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;
     private final static boolean LOG_PAUSE_RESUME = false;
-    private final static boolean LOG_SURFACE = false;
+    private final static boolean LOG_SURFACE = true;
     private final static boolean LOG_RENDERER = false;
     private final static boolean LOG_RENDERER_DRAW_FRAME = false;
     private final static boolean LOG_EGL = false;
@@ -193,13 +193,13 @@ public class TextureView extends android.view.TextureView implements ISurface {
     @Override
     protected void onDetachedFromWindow() {
         if (LOG_ATTACH_DETACH) {
-            Log.d(TAG, "onDetachedFromWindow");
+            Log.v(TAG, "onDetachedFromWindow");
         }
+        mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
         if (mGLThread != null) {
             mGLThread.requestExitAndWait();
         }
         mDetached = true;
-        mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
         super.onDetachedFromWindow();
     }
 
