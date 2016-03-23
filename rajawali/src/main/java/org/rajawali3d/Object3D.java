@@ -407,7 +407,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		// Draw children without frustum test
 		for (int i = 0, j = mChildren.size(); i < j; i++) {
 			// Child rendering is independent of batching, and matrices already updated
-			mChildren.get(i).render(camera, vpMatrix, projMatrix, vMatrix, mMMatrix, pickingMaterial);
+			mChildren.get(i).renderColorPicking(camera, vpMatrix, projMatrix, vMatrix, pickingMaterial);
 		}
 
 		// No need to unbind textures, all done

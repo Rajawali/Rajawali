@@ -75,14 +75,22 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
                 final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
                 parser.parse();
 
+                // Inserting a couple nested containers to test child picking;
+                // should appear/behave the same
+                Object3D container = new Object3D();
+                getCurrentScene().addChild(container);
+
+                Object3D container1 = new Object3D();
+                container1.setScale(.7f);
+                container1.setPosition(-1, 1, 0);
+                container.addChild(container1);
+
                 mMonkey1 = parser.getParsedObject();
 
-                mMonkey1.setScale(.7f);
-                mMonkey1.setPosition(-1, 1, 0);
                 mMonkey1.setRotY(0);
                 mMonkey1.setMaterial(material);
                 mMonkey1.setColor(0x0000ff);
-                getCurrentScene().addChild(mMonkey1);
+                container1.addChild(mMonkey1);
 
                 mMonkey2 = mMonkey1.clone();
                 mMonkey2.setScale(.7f);
@@ -90,7 +98,7 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
                 mMonkey2.setRotY(45);
                 mMonkey2.setMaterial(material);
                 mMonkey2.setColor(0x00ff00);
-                getCurrentScene().addChild(mMonkey2);
+                container.addChild(mMonkey2);
 
                 mMonkey3 = mMonkey1.clone();
                 mMonkey3.setScale(.7f);
