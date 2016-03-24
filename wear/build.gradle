@@ -17,14 +17,14 @@ if (isReleaseBuild()) {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion rootProject.compileSdk
+    buildToolsVersion rootProject.buildTools
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion rootProject.targetSdk
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
     }
 
     compileOptions {
