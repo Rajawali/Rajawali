@@ -8,6 +8,7 @@ import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
 import org.rajawali3d.animation.RotateAroundAnimation3D;
 import org.rajawali3d.cameras.Camera;
+import org.rajawali3d.debug.CoordinateTrident;
 import org.rajawali3d.debug.DebugCamera;
 import org.rajawali3d.debug.DebugLight;
 import org.rajawali3d.debug.DebugVisualizer;
@@ -56,6 +57,7 @@ public class DebugVisualizerFragment extends AExampleFragment {
             debugViz.addChild(new GridFloor(20, 0x555555, 1, 20));
             debugViz.addChild(new DebugLight(mDirectionalLight, 0x999900, 1));
             debugViz.addChild(new DebugCamera(mOtherCamera, 0x000000, 1));
+            debugViz.addChild(new CoordinateTrident());
             getCurrentScene().addChild(debugViz);
         }
 
