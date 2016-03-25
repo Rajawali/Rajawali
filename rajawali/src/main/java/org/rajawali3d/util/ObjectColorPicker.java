@@ -16,6 +16,9 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
@@ -26,11 +29,11 @@ import org.rajawali3d.renderer.RenderTarget;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 
 public class ObjectColorPicker implements IObjectPicker {
 
-	private final ArrayList<Object3D> mObjectLookup = new ArrayList<>();
+	private final List<Object3D> mObjectLookup =
+			Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 	private final Renderer mRenderer;
 
 	private int mColorIndex = 0;
@@ -75,7 +78,9 @@ public class ObjectColorPicker implements IObjectPicker {
 	}
 
 	public void getObjectAt(float x, float y) {
-		mRenderer.getCurrentScene().requestColorPicking(new ColorPickerInfo(x, y, this));
+		if (mObjectPickedListener != null) {
+			mRenderer.getCurrentScene().requestColorPicking(new ColorPickerInfo(x, y, this));
+		}
 	}
 
 	public RenderTarget getRenderTarget() {
@@ -84,27 +89,32 @@ public class ObjectColorPicker implements IObjectPicker {
 
 	public static void pickObject(ColorPickerInfo pickerInfo) {
 		final ObjectColorPicker picker = pickerInfo.getPicker();
-		final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
-		pixelBuffer.order(ByteOrder.nativeOrder());
+		OnObjectPickedListener listener = picker.mObjectPickedListener;
+		if (listener != null) {
+			final ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4);
+			pixelBuffer.order(ByteOrder.nativeOrder());
 
-		GLES20.glReadPixels(pickerInfo.getX(),
-				picker.mRenderer.getViewportHeight() - pickerInfo.getY(),
-				1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
-		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-		pixelBuffer.rewind();
+			GLES20.glReadPixels(pickerInfo.getX(),
+					picker.mRenderer.getViewportHeight() - pickerInfo.getY(),
+					1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixelBuffer);
+			GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+			pixelBuffer.rewind();
 
-		final int r = pixelBuffer.get(0) & 0xff;
-		final int g = pixelBuffer.get(1) & 0xff;
-		final int b = pixelBuffer.get(2) & 0xff;
-		final int a = pixelBuffer.get(3) & 0xff;
-		final int index = Color.argb(a, r, g, b);
+			final int r = pixelBuffer.get(0) & 0xff;
+			final int g = pixelBuffer.get(1) & 0xff;
+			final int b = pixelBuffer.get(2) & 0xff;
+			final int a = pixelBuffer.get(3) & 0xff;
+			final int index = Color.argb(a, r, g, b);
 
-		if (picker.mObjectPickedListener != null) {
 			if (0 <= index && index < picker.mObjectLookup.size()) {
-				picker.mObjectPickedListener.onObjectPicked(picker.mObjectLookup.get(index));
-			} else {
-				picker.mObjectPickedListener.onNoObjectPicked();
+				// Index may have holes due to unregistered objects
+				Object3D pickedObject = picker.mObjectLookup.get(index);
+				if (pickedObject != null) {
+					listener.onObjectPicked(pickedObject);
+					return;
+				}
 			}
+			listener.onNoObjectPicked();
 		}
 	}
 

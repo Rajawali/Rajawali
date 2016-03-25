@@ -1143,7 +1143,10 @@ public class Scene {
 		// Set background color (to Object3D.UNPICKABLE to prevent any conflicts)
 		GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-		// Clear buffers needed for color-picking
+		// Use the full depth range
+		GLES20.glClearDepthf(1.0f);
+
+		// Clear buffers used for color-picking
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
 		// Get the picking material
@@ -1156,20 +1159,18 @@ public class Scene {
 		if (mSkybox != null && mSkybox.isPickingEnabled()) {
 			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 			GLES20.glDepthMask(false);
-			mSkybox.renderColorPicking(mCamera, mVPMatrix, mPMatrix, mVMatrix, pickingMaterial);
+			mSkybox.renderColorPicking(mCamera, pickingMaterial);
 		}
 
 		// Configure depth testing for child renders
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDepthFunc(GLES20.GL_LESS);
 		GLES20.glDepthMask(true);
-		GLES20.glClearDepthf(1.0f);
 
 		// Render all children using their picking colors
 		synchronized (mChildren) {
 			for (int i = 0, j = mChildren.size(); i < j; ++i) {
-				mChildren.get(i).renderColorPicking(
-						mCamera, mVPMatrix, mPMatrix, mVMatrix, pickingMaterial);
+				mChildren.get(i).renderColorPicking(mCamera, pickingMaterial);
 			}
 		}
 
