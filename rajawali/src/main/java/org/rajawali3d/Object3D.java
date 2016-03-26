@@ -331,14 +331,9 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * Renders the object for color-picking
 	 *
 	 * @param camera The camera
-	 * @param vpMatrix {@link Matrix4} The view-projection matrix
-	 * @param projMatrix {@link Matrix4} The projection matrix
-	 * @param vMatrix {@link Matrix4} The view matrix
 	 * @param pickingMaterial The color-picking Material
 	 */
-	public void renderColorPicking(final Camera camera, final Matrix4 vpMatrix,
-								   final Matrix4 projMatrix, final Matrix4 vMatrix,
-								   final Material pickingMaterial) {
+	public void renderColorPicking(final Camera camera, final Material pickingMaterial) {
 		if (!mIsVisible && !mRenderChildrenAsBatch)
 			// Neither the object nor any of its children are visible
 			return;
@@ -380,7 +375,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			pickingMaterial.setColor(mPickingColor);
 			pickingMaterial.applyParams();
 
-			// Free up the array buffer, just in case
+			// Unbind the array buffer
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
 			// Apply this object's matrices to the pickingMaterial
@@ -388,7 +383,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			pickingMaterial.setModelMatrix(mMMatrix);
 			pickingMaterial.setModelViewMatrix(mMVMatrix);
 
-			// draw the object using its picking color
+			// Draw the object using its picking color
 			int bufferType = mGeometry.getIndexBufferInfo().bufferType == Geometry3D.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
 			GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
@@ -407,10 +402,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		// Draw children without frustum test
 		for (int i = 0, j = mChildren.size(); i < j; i++) {
 			// Child rendering is independent of batching, and matrices already updated
-			mChildren.get(i).renderColorPicking(camera, vpMatrix, projMatrix, vMatrix, pickingMaterial);
+			mChildren.get(i).renderColorPicking(camera, pickingMaterial);
 		}
 
-		// No need to unbind textures, all done
+		// No textures to unbind, all done
 	}
 
 	/**
