@@ -94,8 +94,12 @@ public class LoaderOBJ extends AMeshLoader {
     protected final String DIFFUSE_COLOR = "Kd";
     protected final String DIFFUSE_TEX_MAP = "map_Kd";
 
+    private boolean mNeedToRenameMtl = true;
+
     public LoaderOBJ(Renderer renderer, String fileOnSDCard) {
     	super(renderer, fileOnSDCard);
+
+        mNeedToRenameMtl = false;
     }
 
     public LoaderOBJ(Renderer renderer, int resourceId) {
@@ -265,7 +269,8 @@ public class LoaderOBJ extends AMeshLoader {
 					currObjIndexData.targetObj.setName(objName);
 				} else if(type.equals(MATERIAL_LIB)) {
 					if(!parts.hasMoreTokens()) continue;
-					String materialLibPath = parts.nextToken().replace(".", "_");
+                    String materialLibPath = mNeedToRenameMtl ? parts.nextToken().replace(".", "_") : parts.nextToken();
+
 					RajLog.d("Found Material Lib: " + materialLibPath);
 					if(mFile != null)
 						matLib.parse(materialLibPath, null, null);
