@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -35,7 +35,7 @@ import org.rajawali3d.postprocessing.passes.EffectPass;
  *
  * If you want to show square images without distortion you'll need to resize the quad
  * when the surface changes:
- * 
+ *
  * <pre><code>
  * public void onSurfaceChanged(GL10 gl, int width, int height) {
  * 	super.onSurfaceChanged(gl, width, height);
@@ -45,7 +45,7 @@ import org.rajawali3d.postprocessing.passes.EffectPass;
  * 		screenQuad.setScale(1, width / height, 0);
  * }
  * </code></pre>
- * 
+ *
  * @author dennis.ippel
  *
  */
@@ -83,7 +83,7 @@ public class ScreenQuad extends Object3D {
 	{
 		this(segmentsW, segmentsH, true, false, 1, true);
 	}
-	
+
 	/**
 	 * Create a ScreenQuad. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 *
@@ -101,7 +101,7 @@ public class ScreenQuad extends Object3D {
 
 	/**
 	 * Create a ScreenQuad. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * 
+	 *
 	 * @param segmentsW
 	 *            The number of vertical segments
 	 * @param segmentsH
@@ -114,7 +114,7 @@ public class ScreenQuad extends Object3D {
 
 	/**
 	 * Creates a ScreenQuad.
-	 * 
+	 *
 	 * @param segmentsW
 	 *            The number of vertical segments
 	 * @param segmentsH
@@ -131,7 +131,7 @@ public class ScreenQuad extends Object3D {
 
 	/**
 	 * Creates a ScreenQuad.
-	 * 
+	 *
 	 * @param segmentsW
 	 *            The number of vertical segments
 	 * @param segmentsH
@@ -187,7 +187,7 @@ public class ScreenQuad extends Object3D {
 					float u = (float) mSegmentsW - ((float) i / (float) mSegmentsW);
 					textureCoords[texCoordCount++] = (1.0f - u) * mNumTextureTiles;
 					float v = (float) j / (float) mSegmentsH;
-					textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
+					textureCoords[texCoordCount++] = v * mNumTextureTiles;
 				}
 
 				normals[vertexCount] = 0;
@@ -231,32 +231,32 @@ public class ScreenQuad extends Object3D {
 		}
 
 		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
-		
+
 		vertices = null;
 		normals = null;
 		textureCoords = null;
 		colors = null;
 		indices = null;
-		
+
 		mEnableDepthTest = false;
 		mEnableDepthMask = false;
 	}
-	
-	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, 
+
+	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
 			final Matrix4 vMatrix, final Matrix4 parentMatrix, Material sceneMaterial) {
 		final Matrix4 pMatrix = mCamera.getProjectionMatrix();
 		final Matrix4 viewMatrix = mCamera.getViewMatrix();
 		mVPMatrix.setAll(pMatrix).multiply(viewMatrix);
 		super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, sceneMaterial);
 	}
-	
+
 	@Override
 	protected void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
 		if(mEffectPass != null)
 			mEffectPass.setShaderParams();
 	}
-	
+
 	public void setEffectPass(EffectPass effectPass) {
 		mEffectPass = effectPass;
 	}
