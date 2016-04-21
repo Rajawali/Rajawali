@@ -71,6 +71,9 @@ dependencies {
 File getNdkBuildFile() {
     String name = Os.isFamily(Os.FAMILY_WINDOWS) ? 'ndk-build.cmd' : 'ndk-build'
     File ndkDir = android.getNdkDirectory()
+    if(ndkDir == null) throw new GradleException('NDK location not found. '
+                          + 'Define location with ndk.dir in the local.properties file '
+                          + 'or with an ANDROID_NDK_HOME environment variable.')
     return new File(ndkDir, name)
 }
 
