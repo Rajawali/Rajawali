@@ -77,6 +77,8 @@ public class Geometry3D {
 	 * FloatBuffer containing texture coordinates (u, v)
 	 */
 	protected FloatBuffer mTextureCoords;
+	// FloatBuffer containing right eye texture coordinates
+	protected FloatBuffer mTextureCoords2;
 	/**
 	 * FloatBuffer containing color data (r, g, b, a)
 	 */
@@ -120,7 +122,12 @@ public class Geometry3D {
 	/**
 	 * Texture coordinate buffer info object.
 	 */
-	protected BufferInfo mTexCoordBufferInfo;
+	protected BufferInfo mTexCoordBufferInfo;//left eye
+	
+	// 2016.3.31 
+	// Texture right eye coordinate buffer into object
+	protected BufferInfo mTexCoordBufferInfo2;
+	
 	/**
 	 * Color buffer info object.
 	 */
@@ -158,6 +165,7 @@ public class Geometry3D {
 	 * Indicates whether this geometry contains texture coordinates or not.
 	 */
 	protected boolean mHasTextureCoordinates;
+	
 
 	public enum BufferType {
 		FLOAT_BUFFER,
@@ -171,6 +179,8 @@ public class Geometry3D {
         mVertexBufferInfo = new BufferInfo();
         mIndexBufferInfo = new BufferInfo();
         mTexCoordBufferInfo = new BufferInfo();
+        mTexCoordBufferInfo2 = new BufferInfo();
+        
         mColorBufferInfo = new BufferInfo();
         mNormalBufferInfo = new BufferInfo();
 	}
@@ -266,6 +276,7 @@ public class Geometry3D {
 		this.mVertexBufferInfo = geom.getVertexBufferInfo();
 		this.mIndexBufferInfo = geom.getIndexBufferInfo();
 		this.mTexCoordBufferInfo = geom.getTexCoordBufferInfo();
+		this.mTexCoordBufferInfo2 = geom.getTexCoordBufferInfo2();
 		this.mOnlyShortBufferSupported = geom.areOnlyShortBuffersSupported();
 		if(mColors == null) this.mColorBufferInfo = geom.getColorBufferInfo();
 		this.mNormalBufferInfo = geom.getNormalBufferInfo();
@@ -282,6 +293,8 @@ public class Geometry3D {
 	 * @param geometry {@link Geometry3D} to be added.
      * @param createVBOs {@code boolean} If true, create the VBOs immediately.
 	 */
+	// 2016.3.31
+	// note: this method is not for textures for two eyes.
 	public void addFromGeometry3D(Vector3 offset, Geometry3D geometry, boolean createVBOs) {
 		float[] newVertices = null;
 		float[] newNormals = null;
@@ -476,6 +489,36 @@ public class Geometry3D {
             createBuffers();
         }
 	}
+	
+	public void setDataForTwoEyes(float[] vertices, int verticesUsage, float[] normals, int normalsUsage,
+			float[] textureCoordsLeft, float[] textureCoordsRight, int textureCoordsUsage, float[] colors, int colorsUsage,
+			int[] indices, int indicesUsage, boolean createVBOs) {
+		mVertexBufferInfo.usage = verticesUsage;
+		mNormalBufferInfo.usage = normalsUsage;
+		mTexCoordBufferInfo.usage = textureCoordsUsage;
+		mTexCoordBufferInfo2.usage = textureCoordsUsage;
+		mColorBufferInfo.usage = colorsUsage;
+		mIndexBufferInfo.usage = indicesUsage;
+		setVertices(vertices);
+		if(normals != null)
+			setNormals(normals);
+		if(textureCoordsLeft == null || textureCoordsLeft.length == 0)
+			textureCoordsLeft = new float[(vertices.length / 3) * 2];
+		
+		if(textureCoordsRight == null || textureCoordsRight.length == 0)
+			textureCoordsRight = new float[(vertices.length / 3) * 2];
+
+		setTextureCoords(textureCoordsLeft);
+		setTextureCoords2(textureCoordsRight);
+		
+		if(colors != null && colors.length > 0)
+			setColors(colors);
+		setIndices(indices);
+
+        if (createVBOs) {
+            createBuffers();
+        }
+	}
 
 	/**
 	 * Creates the actual Buffer objects.
@@ -494,6 +537,10 @@ public class Geometry3D {
 		if(mTextureCoords != null) {
 			mTextureCoords.compact().position(0);
 			createBuffer(mTexCoordBufferInfo, BufferType.FLOAT_BUFFER, mTextureCoords, GLES20.GL_ARRAY_BUFFER);
+		}
+		if (mTextureCoords2 != null) {
+			mTextureCoords2.compact().position(0);
+			createBuffer(mTexCoordBufferInfo2, BufferType.FLOAT_BUFFER, mTextureCoords2, GLES20.GL_ARRAY_BUFFER);
 		}
 		if(mColors != null) {
 			mColors.compact().position(0);
@@ -649,9 +696,16 @@ public class Geometry3D {
 		if(mIndexBufferInfo != null && mIndexBufferInfo.bufferHandle == 0) {
             createBuffer(mIndexBufferInfo);
         }
+		//create two texcoords buffer, one for left eye texture, another for right
 		if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.bufferHandle == 0) {
             createBuffer(mTexCoordBufferInfo);
         }
+		
+		if(mTexCoordBufferInfo2 != null && mTexCoordBufferInfo2.bufferHandle == 0) {
+            createBuffer(mTexCoordBufferInfo2);
+        }
+		
+		
 		if(mColorBufferInfo != null && mColorBufferInfo.bufferHandle == 0) {
             createBuffer(mColorBufferInfo);
         }
@@ -849,6 +903,7 @@ public class Geometry3D {
 
 	public void setTextureCoords(float[] textureCoords) {
 		if(textureCoords == null) return;
+		
 		if(mTextureCoords == null) {
 			mTextureCoords = ByteBuffer
 					.allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
@@ -860,11 +915,34 @@ public class Geometry3D {
 		}
 		mHasTextureCoordinates = true;
 	}
+	
+	public void setTextureCoords2(float[] textureCoords2) {
+		if(textureCoords2 == null) return;
+		
+		if(mTextureCoords2 == null) {
+			mTextureCoords2 = ByteBuffer
+					.allocateDirect(textureCoords2.length * FLOAT_SIZE_BYTES)
+					.order(ByteOrder.nativeOrder()).asFloatBuffer();
+			mTextureCoords2.put(textureCoords2);
+			mTextureCoords2.position(0);
+		} else {
+			mTextureCoords2.put(textureCoords2);
+		}
+		mHasTextureCoordinates = true;
+	}
 
 	public FloatBuffer getTextureCoords() {
 		if(mTextureCoords == null && mOriginalGeometry != null)
 			return mOriginalGeometry.getTextureCoords();
 		return mTextureCoords;
+	}
+	
+	//2016.3.31
+	//not sure if the modification is appropriate here,
+	public FloatBuffer getTextureCoords2() {
+		if(mTextureCoords2 == null && mOriginalGeometry != null)
+			return mOriginalGeometry.getTextureCoords2();
+		return mTextureCoords2;
 	}
 
 	public boolean hasTextureCoordinates() {
@@ -948,11 +1026,13 @@ public class Geometry3D {
 		if(mVertices != null) buff.append(", vertices: ").append(mVertices.capacity());
 		if(mNormals != null) buff.append(", normals: ").append(mNormals.capacity());
 		if(mTextureCoords != null) buff.append(", uvs: ").append(mTextureCoords.capacity()).append("\n");
+		if (mTextureCoords2 != null) buff.append(", uvs2: ").append(mTextureCoords2.capacity()).append("\n");
 
 		if(mVertexBufferInfo != null) buff.append("vertex buffer handle: ").append(mVertexBufferInfo.bufferHandle).append("\n");
 	    if(mIndexBufferInfo != null) buff.append("index buffer handle: ").append(mIndexBufferInfo.bufferHandle).append("\n");
 	    if(mNormalBufferInfo != null) buff.append("normal buffer handle: ").append(mNormalBufferInfo.bufferHandle).append("\n");
 	    if(mTexCoordBufferInfo != null) buff.append("texcoord buffer handle: ").append(mTexCoordBufferInfo.bufferHandle).append("\n");
+	    if(mTexCoordBufferInfo2 != null) buff.append("texcoord buffer 2 (for right eye) handle: ").append(mTexCoordBufferInfo2.bufferHandle).append("\n");
 	    if(mColorBufferInfo != null) buff.append("color buffer handle: ").append(mColorBufferInfo.bufferHandle).append("\n");
 
 		return buff.toString();
@@ -964,12 +1044,14 @@ public class Geometry3D {
 	    if(mVertexBufferInfo != null) buffers[1] = mVertexBufferInfo.bufferHandle;
 	    if(mNormalBufferInfo != null) buffers[2] = mNormalBufferInfo.bufferHandle;
 	    if(mTexCoordBufferInfo != null) buffers[3] = mTexCoordBufferInfo.bufferHandle;
+	    if(mTexCoordBufferInfo2 != null) buffers[3] = mTexCoordBufferInfo2.bufferHandle;
 	    if(mColorBufferInfo != null) buffers[4] = mColorBufferInfo.bufferHandle;
 	    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
 
 	    if(mVertices != null) mVertices.clear();
 	    if(mNormals != null) mNormals.clear();
 	    if(mTextureCoords != null) mTextureCoords.clear();
+	    if(mTextureCoords2 != null) mTextureCoords2.clear();
 	    if(mColors != null) mColors.clear();
 	    if(mIndicesInt != null) mIndicesInt.clear();
 	    if(mIndicesShort != null) mIndicesShort.clear();
@@ -978,6 +1060,7 @@ public class Geometry3D {
 	    mVertices=null;
 	    mNormals=null;
 	    mTextureCoords=null;
+	    mTextureCoords2=null;
 	    mColors=null;
 	    mIndicesInt=null;
 	    mIndicesShort=null;
@@ -988,12 +1071,15 @@ public class Geometry3D {
 	    if(mColorBufferInfo != null && mColorBufferInfo.buffer != null)  { mColorBufferInfo.buffer.clear(); mColorBufferInfo.buffer=null; }
 	    if(mNormalBufferInfo != null && mNormalBufferInfo.buffer != null) { mNormalBufferInfo.buffer.clear(); mNormalBufferInfo.buffer=null; }
 	    if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.buffer != null) { mTexCoordBufferInfo.buffer.clear(); mTexCoordBufferInfo.buffer=null; }
-
+	    if(mTexCoordBufferInfo2 != null && mTexCoordBufferInfo2.buffer != null) { mTexCoordBufferInfo2.buffer.clear(); mTexCoordBufferInfo2.buffer=null; }
+	    
 	    mVertexBufferInfo=null;
-	    mTexCoordBufferInfo=null;
+//	    mTexCoordBufferInfo=null;
+	    mIndexBufferInfo = null;
 	    mColorBufferInfo=null;
 	    mNormalBufferInfo=null;
 	    mTexCoordBufferInfo=null;
+	    mTexCoordBufferInfo2=null;
 	}
 
 	public boolean hasBoundingBox() {
@@ -1046,9 +1132,17 @@ public class Geometry3D {
 	public BufferInfo getTexCoordBufferInfo() {
 		return mTexCoordBufferInfo;
 	}
+	public BufferInfo getTexCoordBufferInfo2() {
+		return mTexCoordBufferInfo2;
+	}
 
 	public void setTexCoordBufferInfo(BufferInfo texCoordBufferInfo) {
 		this.mTexCoordBufferInfo = texCoordBufferInfo;
+        this.mHasTextureCoordinates = true;
+	}
+	
+	public void setTexCoordBufferInfo2(BufferInfo texCoordBufferInfo2) {
+		this.mTexCoordBufferInfo2 = texCoordBufferInfo2;
         this.mHasTextureCoordinates = true;
 	}
 
@@ -1085,4 +1179,6 @@ public class Geometry3D {
     public void setBuffersCreated(boolean created) {
         mHaveCreatedBuffers = created;//
     }
+    
+    
 }

@@ -38,6 +38,7 @@ public class Sphere extends Object3D {
 	private final boolean mCreateTextureCoords;
 	private final boolean mCreateVertexColorBuffer;
     private final boolean mMirrorTextureCoords;
+    private boolean mCreateDoubleTexCoords;
 
 	/**
 	 * Creates a sphere primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
@@ -50,7 +51,23 @@ public class Sphere extends Object3D {
 	 *            The number of horizontal segments
 	 */
 	public Sphere(float radius, int segmentsW, int segmentsH) {
-		this(radius, segmentsW, segmentsH, true, false, true);
+		this(radius, segmentsW, segmentsH, true, false, true, 2f);//2 means non-stereo video by default
+	}
+	
+	/**
+	 * Creates a sphere primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
+	 *
+	 * @param radius
+	 *            The radius of the sphere
+	 * @param segmentsW
+	 *            The number of vertical segments
+	 * @param segmentsH
+	 *            The number of horizontal segments
+	 * @param videoSizeRatio
+	 * 			  The ratio of video size (width / height) used to determine the type of 360 videos
+	 */
+	public Sphere(float radius, int segmentsW, int segmentsH, float videoSizeRatio) {
+		this(radius, segmentsW, segmentsH, true, false, true, videoSizeRatio);	
 	}
 
     /**
@@ -66,8 +83,8 @@ public class Sphere extends Object3D {
      *            A boolean that indicates if the texture coords should be mirrored horizontally.
      */
     public Sphere(float radius, int segmentsW, int segmentsH, boolean mirrorTextureCoords) {
-        this(radius, segmentsW, segmentsH, true, false, true, mirrorTextureCoords);
-    }
+        this(radius, segmentsW, segmentsH, true, false, true, mirrorTextureCoords, 2f);//2 means non-stereo video by default
+    }  
 
     /**
      * Creates a sphere primitive.
@@ -84,10 +101,12 @@ public class Sphere extends Object3D {
      *            A boolean that indicates if a vertex color buffer should be created or not.
      * @param createVBOs
      *            A boolean that indicates if the VBOs should be created immediately.
+     * @param videoSizeRatio
+     * 			  An float that indicates if the ratio of video size.
      */
     public Sphere(float radius, int segmentsW, int segmentsH, boolean createTextureCoordinates,
-                  boolean createVertexColorBuffer, boolean createVBOs) {
-        this(radius, segmentsW, segmentsH, createTextureCoordinates, createVertexColorBuffer, createVBOs, false);
+                  boolean createVertexColorBuffer, boolean createVBOs, float videoSizeRatio) {
+        this(radius, segmentsW, segmentsH, createTextureCoordinates, createVertexColorBuffer, createVBOs, false, videoSizeRatio);
     }
 
     /**
@@ -107,9 +126,13 @@ public class Sphere extends Object3D {
      *            A boolean that indicates if the VBOs should be created immediately.
      * @param mirrorTextureCoords
      *            A boolean that indicates if the texture coords should be mirrored horizontally.
+     * @param videoSizeRatio
+     * 			  An float that indicates if the ratio of video size.           
+     *            
      */
 	public Sphere(float radius, int segmentsW, int segmentsH, boolean createTextureCoordinates,
-			boolean createVertexColorBuffer, boolean createVBOs, boolean mirrorTextureCoords) {
+				boolean createVertexColorBuffer, boolean createVBOs, boolean mirrorTextureCoords, 
+				float videoSizeRatio) {
 		super();
 		mRadius = radius;
 		mSegmentsW = segmentsW;
@@ -117,9 +140,20 @@ public class Sphere extends Object3D {
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
         mMirrorTextureCoords = mirrorTextureCoords;
+        
+        //determine the type of panoramic video from video size
+        if (videoSizeRatio == 1f) {
+        	mCreateDoubleTexCoords = true;//create another textureCoords for right eye's texCoords
+        } else if (videoSizeRatio == 2f) {
+        	mCreateDoubleTexCoords = false;
+        } else {//video size not matched, play it like normal pano (create one texture coordinates)
+        	mCreateDoubleTexCoords = false;
+        }
+        setStereoPano(mCreateDoubleTexCoords);//used for different strategies when rendering.
+        
 		init(createVBOs);
 	}
-
+	
 	protected void init(boolean createVBOs) {
 		int numVertices = (mSegmentsW + 1) * (mSegmentsH + 1);
 		int numIndices = 2 * mSegmentsW * (mSegmentsH - 1) * 3;
@@ -175,19 +209,44 @@ public class Sphere extends Object3D {
 			}
 		}
 
-		float[] textureCoords = null;
+		float[] textureCoords = null;//left eye
+		float[] textureCoords2 = null;//right eye
 		if (mCreateTextureCoords) {
 			int numUvs = (mSegmentsH + 1) * (mSegmentsW + 1) * 2;
 			textureCoords = new float[numUvs];
+			
+			if (mCreateDoubleTexCoords) {
+				textureCoords2 = new float[numUvs];
+			}		
 
 			numUvs = 0;
-			for (j = 0; j <= mSegmentsH; ++j) {
-				for (i = mSegmentsW; i >= 0; --i) {
-                    float u = (float) i / mSegmentsW;
-					textureCoords[numUvs++] = mMirrorTextureCoords ? 1.0f - u : u;
-					textureCoords[numUvs++] = (float) j / mSegmentsH;
+			int numUvs2 = 0;
+			
+			if (mCreateDoubleTexCoords) {
+				for (j = 0; j <= mSegmentsH; ++j) {
+					for (i = mSegmentsW; i >= 0; --i) {
+	                    float u = (float) i / mSegmentsW;
+	                    
+	                    /* texture coordinates for left eye */
+						textureCoords[numUvs++] = mMirrorTextureCoords ? 1.0f - u : u;
+						textureCoords[numUvs++] = (float) j / (mSegmentsH * 2);
+						
+						/* texture coordinate for right eye */
+						textureCoords2[numUvs2++] = mMirrorTextureCoords ? 1.0f - u : u;
+						textureCoords2[numUvs2++] = (float) j / (mSegmentsH * 2) + 0.5f;
+						
+					}
+				}
+			} else {//texCoords are the same for two eyes
+				for (j = 0; j <= mSegmentsH; ++j) {
+					for (i = mSegmentsW; i >= 0; --i) {
+	                    float u = (float) i / mSegmentsW;
+						textureCoords[numUvs++] = mMirrorTextureCoords ? 1.0f - u : u;
+						textureCoords[numUvs++] = (float) j / mSegmentsH;			
+					}
 				}
 			}
+			
 		}
 
 		float[] colors = null;
@@ -205,6 +264,21 @@ public class Sphere extends Object3D {
 			}
 		}
 
-		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
+		if (mCreateDoubleTexCoords) {
+			//use texture with different textureCoords in different eyes.
+			setDataForTwoEyes(vertices, normals, textureCoords, textureCoords2, colors, indices, createVBOs);
+		} else {
+			setData(vertices, normals, textureCoords, colors, indices, createVBOs);
+		}
+	
 	}
+	
+	public void setDoubleEyeTexCoords() {
+		mCreateDoubleTexCoords = true;
+	}
+	
+	public void unSetDoubleEyeTexCoords() {
+		mCreateDoubleTexCoords = false;
+	}	
+
 }

@@ -94,6 +94,9 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	protected int mBlendFuncDFactor;
 	protected boolean mEnableDepthTest = true;
 	protected boolean mEnableDepthMask = true;
+	
+	protected boolean mRenderingLeftEye = true;
+	protected boolean mIsStereoVideo = false;
 
 	public Object3D() {
 		super();
@@ -153,12 +156,28 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords, GLES20.GL_STATIC_DRAW,
 				colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
 	}
+	
+	public void setDataForTwoEyes(float[] vertices, float[] normals, 
+			float[] textureCoordsLeft, float[] textureCoordsRight, float[] colors, int[] indices, boolean createVBOs) {
+		setDataForTwoEyes(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoordsLeft, textureCoordsRight, 
+				GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
+	}
 
 	public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage, float[] textureCoords,
 			int textureCoordsUsage,
 			float[] colors, int colorsUsage, int[] indices, int indicesUsage, boolean createVBOs) {
 		mGeometry.setData(vertices, verticesUsage, normals, normalsUsage, textureCoords, textureCoordsUsage, colors,
 				colorsUsage, indices, indicesUsage, createVBOs);
+		mIsContainerOnly = false;
+		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
+				: GLES20.GL_UNSIGNED_INT;
+	}
+	
+	public void setDataForTwoEyes(float[] vertices, int verticesUsage, float[] normals, int normalsUsage, 
+			float[] textureCoordsLeft, float[] textureCoordsRight, int textureCoordsUsage,
+			float[] colors, int colorsUsage, int[] indices, int indicesUsage, boolean createVBOs) {
+		mGeometry.setDataForTwoEyes(vertices, verticesUsage, normals, normalsUsage, textureCoordsLeft, textureCoordsRight, 
+				textureCoordsUsage, colors, colorsUsage, indices, indicesUsage, createVBOs);
 		mIsContainerOnly = false;
 		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
 				: GLES20.GL_UNSIGNED_INT;
@@ -259,7 +278,19 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				setShaderParams(camera);
 				material.bindTextures();
 				if(mGeometry.hasTextureCoordinates())
-					material.setTextureCoords(mGeometry.getTexCoordBufferInfo());
+					if (mIsStereoVideo) {
+						if (isRenderingLeftEye()) {
+							material.setTextureCoords(mGeometry.getTexCoordBufferInfo());
+						} else {
+							material.setTextureCoords(mGeometry.getTexCoordBufferInfo2());
+						}
+					} else {
+						material.setTextureCoords(mGeometry.getTexCoordBufferInfo());
+					}
+					
+				
+					
+					
 				if(mGeometry.hasNormals())
 					material.setNormals(mGeometry.getNormalBufferInfo());
 				if(mMaterial.usingVertexColors())
@@ -854,5 +885,19 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		calculateModelMatrix(null);
 		volume.transform(mMMatrix);
 		return volume;
+	}
+	
+	public void setLeftEyeTexture() {
+		mRenderingLeftEye = true;
+	}
+	public void setRightEyeTexture() {
+		mRenderingLeftEye = false;
+	}
+	public boolean isRenderingLeftEye() {
+		return mRenderingLeftEye;
+	}
+	
+	public void setStereoPano(boolean flag) {
+		mIsStereoVideo = flag;
 	}
 }
