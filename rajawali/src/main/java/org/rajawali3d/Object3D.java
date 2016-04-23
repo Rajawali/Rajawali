@@ -102,7 +102,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		super();
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
 		mGeometry = new Geometry3D();
-		mColor = new float[] { 0, 1, 0, 0.0f};
+		mColor = new float[] { 0, 1, 0, 1.0f};
 		mPickingColor = new float[4];
 		setPickingColor(UNPICKABLE);
 	}
@@ -130,7 +130,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 */
 	public void setData(BufferInfo vertexBufferInfo, BufferInfo normalBufferInfo, float[] textureCoords,
 			float[] colors, int[] indices, boolean createVBOs) {
-		RajLog.i("Object3D:  setData2");
 		mGeometry.setData(vertexBufferInfo, normalBufferInfo, textureCoords, colors, indices, createVBOs);
 		mIsContainerOnly = false;
 		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
@@ -154,7 +153,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
      *            A boolean controlling if the VBOs are create immediately.
 	 */
 	public void setData(float[] vertices, float[] normals, float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
-		RajLog.i("Object3D: setData");
 		setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords, GLES20.GL_STATIC_DRAW,
 				colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
 	}
@@ -280,14 +278,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				setShaderParams(camera);
 				material.bindTextures();
 				if(mGeometry.hasTextureCoordinates())
-					RajLog.i("set texture coordinate buffer handle");
-				
 					if (mIsStereoVideo) {
 						if (isRenderingLeftEye()) {
-							RajLog.i("Object3D: rendering left eye");
 							material.setTextureCoords(mGeometry.getTexCoordBufferInfo());
 						} else {
-							RajLog.i("Object3D: rendering right eye");
 							material.setTextureCoords(mGeometry.getTexCoordBufferInfo2());
 						}
 					} else {
