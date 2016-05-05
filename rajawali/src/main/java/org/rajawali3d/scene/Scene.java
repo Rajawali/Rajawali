@@ -932,6 +932,22 @@ public class Scene {
 		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}
 
+	/**
+	 * Updates the sky box textures with a bitmap array of length 6. 
+	 * @param bitmaps {@link Bitmap} array containing the cube map textures.
+         * The sequence of the bitmaps in array should be 
+         * front, right, back, left, up, down, the same as in setSkybox(Bitmap[] bitmaps)
+	 * @throws Exception
+	 */
+        public void updateSkybox(Bitmap[] bitmaps) throws Exception {
+            if(mSkyboxTexture.getClass() != CubeMapTexture.class)
+                throw new Exception("The skybox texture cannot be updated. It is not a cube map texture.");
+
+            CubeMapTexture cubemap = (CubeMapTexture)mSkyboxTexture;
+            cubemap.setBitmaps(bitmaps);
+            mRenderer.getTextureManager().replaceTexture(cubemap);
+        }
+
 	public void requestColorPicking(@NonNull ColorPickerInfo pickerInfo) {
 		mPickerInfo = pickerInfo;
 	}
