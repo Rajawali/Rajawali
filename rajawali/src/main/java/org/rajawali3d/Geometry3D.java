@@ -990,7 +990,7 @@ public class Geometry3D {
 	    if(mTexCoordBufferInfo != null && mTexCoordBufferInfo.buffer != null) { mTexCoordBufferInfo.buffer.clear(); mTexCoordBufferInfo.buffer=null; }
 
 	    mVertexBufferInfo=null;
-	    mTexCoordBufferInfo=null;
+		mIndexBufferInfo = null;
 	    mColorBufferInfo=null;
 	    mNormalBufferInfo=null;
 	    mTexCoordBufferInfo=null;
