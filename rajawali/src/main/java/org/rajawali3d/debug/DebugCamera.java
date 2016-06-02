@@ -7,6 +7,7 @@ import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.primitives.Sphere;
 
 import java.nio.FloatBuffer;
 import java.util.Stack;
@@ -15,7 +16,11 @@ import java.util.Stack;
  * @author dennis.ippel
  */
 public class DebugCamera extends DebugObject3D {
+
     private Camera mCamera;
+    private Sphere mPositionBall;
+    private Material mMaterial;
+
     protected Vector3[] mFrustumCornersTransformed;
 
     public DebugCamera(Camera camera) {
@@ -24,18 +29,24 @@ public class DebugCamera extends DebugObject3D {
 
     public DebugCamera(Camera camera, int color, int lineThickness) {
         super(color, lineThickness);
+        mMaterial = new Material();
         mCamera = camera;
+        mPositionBall = new Sphere(0.25f, 8, 8);
+        mPositionBall.setColor(color);
+        mPositionBall.setMaterial(mMaterial);
     }
 
     public void updateFrustum() {
         mCamera.setProjectionMatrix(mRenderer.getOverrideViewportWidth(), mRenderer.getOverrideViewportHeight());
         if (mPoints == null) {
-            if(!mCamera.isInitialized()) return;
+            if (!mCamera.isInitialized()) {
+                return;
+            }
 
             mPoints = new Stack<>();
             mFrustumCornersTransformed = new Vector3[8];
-            for(int i=0; i<16; i++) {
-                if(i < 8)
+            for (int i = 0; i < 16; i++) {
+                if (i < 8)
                     mFrustumCornersTransformed[i] = new Vector3();
                 mPoints.push(new Vector3());
             }
@@ -44,7 +55,7 @@ public class DebugCamera extends DebugObject3D {
 
             getGeometry().changeBufferUsage(mGeometry.getVertexBufferInfo(), GLES20.GL_DYNAMIC_DRAW);
 
-            setMaterial(new Material());
+            setMaterial(mMaterial);
         }
 
         mCamera.getFrustumCorners(mFrustumCornersTransformed, true, true);
@@ -70,8 +81,8 @@ public class DebugCamera extends DebugObject3D {
         addVertexToBuffer(b, index++, mFrustumCornersTransformed[4]);
 
         mGeometry.changeBufferData(
-                mGeometry.getVertexBufferInfo(),
-                mGeometry.getVertices(), 0);
+            mGeometry.getVertexBufferInfo(),
+            mGeometry.getVertices(), 0);
     }
 
     private void addVertexToBuffer(FloatBuffer b, int index, Vector3 vertex) {
@@ -85,7 +96,8 @@ public class DebugCamera extends DebugObject3D {
     public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
                        final Matrix4 vMatrix, final Matrix4 parentMatrix, Material sceneMaterial) {
         updateFrustum();
-
+        mPositionBall.setPosition(mCamera.getPosition());
+        mPositionBall.render(camera, vpMatrix, projMatrix, vMatrix, parentMatrix, sceneMaterial);
         super.render(camera, vpMatrix, projMatrix, vMatrix, parentMatrix, sceneMaterial);
     }
 }
