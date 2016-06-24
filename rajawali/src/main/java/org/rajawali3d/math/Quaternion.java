@@ -878,21 +878,6 @@ public final class Quaternion {
     }
 
 	/**
-	 * Performs spherical linear interpolation between the provided {@link Quaternion}s and
-	 * creates a new {@link Quaternion} for the result.
-	 *
-	 * @param q1 {@link Quaternion} The starting point.
-	 * @param q2 {@link Quaternion} The destination point.
-	 * @param t double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
-	 * @return A reference to this {@link Quaternion} to facilitate chaining.
-	 */
-	public static Quaternion slerpAndCreate(Quaternion q1, Quaternion q2, double t) {
-		Quaternion q = new Quaternion();
-		q.slerp(q1, q2, t);
-		return q;
-	}
-
-	/**
 	 * Performs linear interpolation between two {@link Quaternion}s and creates a new one
 	 * for the result.
 	 *
