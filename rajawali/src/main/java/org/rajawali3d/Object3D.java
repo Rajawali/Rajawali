@@ -129,8 +129,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			float[] colors, int[] indices, boolean createVBOs) {
 		mGeometry.setData(vertexBufferInfo, normalBufferInfo, textureCoords, colors, indices, createVBOs);
 		mIsContainerOnly = false;
-		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
-				: GLES20.GL_UNSIGNED_INT;
+		mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 	}
 
 	/**
@@ -160,8 +159,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mGeometry.setData(vertices, verticesUsage, normals, normalsUsage, textureCoords, textureCoordsUsage, colors,
 				colorsUsage, indices, indicesUsage, createVBOs);
 		mIsContainerOnly = false;
-		mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
-				: GLES20.GL_UNSIGNED_INT;
+		mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 	}
 
 	/**
@@ -656,8 +654,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		if (copyMaterial) clone.setMaterial(mMaterial);
-		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
-				: GLES20.GL_UNSIGNED_INT;
+		clone.mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 		clone.mTransparent = this.mTransparent;
 		clone.mEnableBlending = this.mEnableBlending;
 		clone.mBlendFuncSFactor = this.mBlendFuncSFactor;
@@ -827,7 +824,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				uvOut = (uvIn * (tile.height/atlas.getHeight())) + tile.y/atlas.getHeight();
 			fb.put(i, (float) uvOut);
 		}
-		mGeometry.changeBufferData(mGeometry.mTexCoordBufferInfo, fb, 0);
+		mGeometry.changeBufferData(mGeometry.getTexCoordBufferInfo(), fb, 0);
 
 	}
 

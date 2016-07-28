@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -19,8 +19,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 
 @Deprecated
 public class ObjExporter extends AExporter {
@@ -81,13 +79,10 @@ public class ObjExporter extends AExporter {
 
 		sb.append("\n");
 
-		boolean isIntBuffer = g.getIndices() instanceof IntBuffer;
-
 		for (int i = 0; i < g.getIndices().capacity(); i++) {
 			if (i % 3 == 0)
 				sb.append("\nf ");
-			int index = isIntBuffer ? ((IntBuffer) g.getIndices()).get(i) + 1
-					: ((ShortBuffer) g.getIndices()).get(i) + 1;
+			int index = g.getIndices().get(i) + 1;
 			sb.append(index);
 			sb.append("/");
 			sb.append(index);
@@ -108,7 +103,7 @@ public class ObjExporter extends AExporter {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public String getExtension() {
 		return new String("obj");
@@ -117,7 +112,7 @@ public class ObjExporter extends AExporter {
 	/**
 	 * Helper method for writing chunks of data to the given writer. If data is written the passed StringBuffer will be
 	 * emptied.
-	 * 
+	 *
 	 * @param stringBuilder
 	 * @param writer
 	 */

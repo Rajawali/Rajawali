@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -36,6 +36,10 @@ import java.nio.FloatBuffer;
  */
 public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	public static final int MAX_WEIGHTS_PER_VERTEX = 8;
+	private static final String BONE_INDEX_1_KEY   = "BONE_INDEX_1";
+	private static final String BONE_WEIGHTS_1_KEY = "BONE_WEIGHTS_1";
+	private static final String BONE_INDEX_2_KEY   = "BONE_INDEX_2";
+	private static final String BONE_WEIGHTS_2_KEY = "BONE_WEGHTS_2";
 
 	public SkeletalAnimationObject3D mSkeleton;
 	private SkeletalAnimationSequence mSequence;
@@ -89,7 +93,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 
 	public void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
-		
+
 		if(mMaterialPlugin == null)
 			mMaterialPlugin = (SkeletalAnimationMaterialPlugin) mMaterial.getPlugin(SkeletalAnimationMaterialPlugin.class);
 		mMaterialPlugin.setBone1Indices(mboneIndexes1BufferInfo.bufferHandle);
@@ -128,14 +132,19 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		prepareBoneWeightsAndIndices();
 		mboneIndexes1 = alocateBuffer(mboneIndexes1, boneIndexes1);
 		mboneWeights1 = alocateBuffer(mboneWeights1, boneWeights1);
-		mGeometry.createBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes1, GLES20.GL_ARRAY_BUFFER);
-		mGeometry.createBuffer(mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights1, GLES20.GL_ARRAY_BUFFER);
+		mboneIndexes1BufferInfo.buffer = mboneIndexes1;
+		mboneWeights1BufferInfo.buffer = mboneWeights1;
+		mGeometry.addBuffer(BONE_INDEX_1_KEY, mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(BONE_WEIGHTS_1_KEY, mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, GLES20
+				.GL_ARRAY_BUFFER);
 		if (mMaxBoneWeightsPerVertex > 4) {
 			mboneIndexes2 = alocateBuffer(mboneIndexes2, boneIndexes2);
 			mboneWeights2 = alocateBuffer(mboneWeights2, boneWeights2);
-			mGeometry.createBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes2,
+			mboneIndexes2BufferInfo.buffer = mboneIndexes2;
+			mboneWeights2BufferInfo.buffer = mboneWeights2;
+			mGeometry.addBuffer(BONE_INDEX_2_KEY, mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER,
 					GLES20.GL_ARRAY_BUFFER);
-			mGeometry.createBuffer(mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights2,
+			mGeometry.addBuffer(BONE_WEIGHTS_2_KEY, mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER,
 					GLES20.GL_ARRAY_BUFFER);
 		}
 	}
@@ -209,65 +218,6 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		}
 	}
 
-	public void reload() {
-		super.reload();
-		mGeometry.createBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes1, GLES20.GL_ARRAY_BUFFER);
-		mGeometry.createBuffer(mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights1, GLES20.GL_ARRAY_BUFFER);
-		if (mMaxBoneWeightsPerVertex > 4) {
-			mGeometry.createBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, mboneIndexes2,
-					GLES20.GL_ARRAY_BUFFER);
-			mGeometry.createBuffer(mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER, mboneWeights2,
-					GLES20.GL_ARRAY_BUFFER);
-		}
-	}
-
-	@Override
-	public void destroy() {
-		int[] buffers = new int[4];
-		if (mboneIndexes1BufferInfo != null)
-			buffers[0] = mboneIndexes1BufferInfo.bufferHandle;
-		if (mboneWeights1BufferInfo != null)
-			buffers[1] = mboneIndexes1BufferInfo.bufferHandle;
-		if (mboneIndexes2BufferInfo != null)
-			buffers[0] = mboneIndexes2BufferInfo.bufferHandle;
-		if (mboneWeights2BufferInfo != null)
-			buffers[1] = mboneIndexes2BufferInfo.bufferHandle;
-		GLES20.glDeleteBuffers(buffers.length, buffers, 0);
-
-		if (mboneIndexes1 != null)
-			mboneIndexes1.clear();
-		if (mboneWeights1 != null)
-			mboneWeights1.clear();
-		if (mboneIndexes2 != null)
-			mboneIndexes2.clear();
-		if (mboneWeights2 != null)
-			mboneWeights2.clear();
-
-		mboneIndexes1 = null;
-		mboneWeights1 = null;
-		mboneIndexes2 = null;
-		mboneWeights2 = null;
-
-		if (mboneIndexes1BufferInfo != null && mboneIndexes1BufferInfo.buffer != null) {
-			mboneIndexes1BufferInfo.buffer.clear();
-			mboneIndexes1BufferInfo.buffer = null;
-		}
-		if (mboneWeights1BufferInfo != null && mboneWeights1BufferInfo.buffer != null) {
-			mboneWeights1BufferInfo.buffer.clear();
-			mboneWeights1BufferInfo.buffer = null;
-		}
-		if (mboneIndexes2BufferInfo != null && mboneIndexes2BufferInfo.buffer != null) {
-			mboneIndexes2BufferInfo.buffer.clear();
-			mboneIndexes2BufferInfo.buffer = null;
-		}
-		if (mboneWeights2BufferInfo != null && mboneWeights2BufferInfo.buffer != null) {
-			mboneWeights2BufferInfo.buffer.clear();
-			mboneWeights2BufferInfo.buffer = null;
-		}
-
-		super.destroy();
-	}
-
 	public void setMaxBoneWeightsPerVertex(int maxBoneWeightsPerVertex) throws SkeletalAnimationException
 	{
 		mMaxBoneWeightsPerVertex = maxBoneWeightsPerVertex;
@@ -295,7 +245,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		public float weightValue;
 		public Vector3 position = new Vector3();
 	}
-	
+
 	public void setInverseZScale(boolean value) {
 		mInverseZScale = value;
 	}
@@ -325,8 +275,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
-		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
-				: GLES20.GL_UNSIGNED_INT;
+		clone.mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 		clone.mTransparent = this.mTransparent;
 		clone.mEnableBlending = this.mEnableBlending;
 		clone.mBlendFuncSFactor = this.mBlendFuncSFactor;
