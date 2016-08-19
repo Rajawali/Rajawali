@@ -310,6 +310,15 @@ public abstract class AShader extends AShaderBase {
 	}
 
 	/**
+	 * Returns all preprocessor directives.
+	 *
+	 * @return
+     */
+	public List<String> getPreprocessorDirectives() {
+		return mPreprocessorDirectives;
+	}
+
+	/**
 	 * Returns all uniforms
 	 *
 	 * @return
@@ -635,7 +644,7 @@ public abstract class AShader extends AShaderBase {
 		}
         for (IShaderFragment frag : mShaderFragments) {
             if (frag instanceof AShader) {
-                final List<String> preprocessorDirectives = ((AShader) frag).mPreprocessorDirectives;
+                final List<String> preprocessorDirectives = frag.getPreprocessorDirectives();
                 if (preprocessorDirectives != null) {
                     for (String directive : preprocessorDirectives) {
                         s.append(directive).append("\n");

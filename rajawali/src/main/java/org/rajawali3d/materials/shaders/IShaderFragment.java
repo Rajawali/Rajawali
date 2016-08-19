@@ -17,7 +17,7 @@ import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShaderBase.ShaderVar;
 
 import java.util.Hashtable;
-
+import java.util.List;
 
 
 public interface IShaderFragment {
@@ -31,6 +31,7 @@ public interface IShaderFragment {
 	PluginInsertLocation getInsertLocation();
 	String getShaderId();
 
+	List<String> getPreprocessorDirectives();
 	Hashtable<String, ShaderVar> getUniforms();
 	Hashtable<String, ShaderVar> getAttributes();
 	Hashtable<String, ShaderVar> getVaryings();
