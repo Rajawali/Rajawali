@@ -42,8 +42,6 @@ import java.nio.DoubleBuffer;
 import java.util.Arrays;
 
 public class SkeletalAnimationObject3D extends AAnimationObject3D {
-    private static final String BONE_MATRICES_KEY = "BONE_MATRICES";
-
     private SkeletonJoint[] mJoints;
 	private SkeletonJoint mTmpJoint1;
 	private SkeletonJoint mTmpJoint2;
@@ -161,8 +159,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		mBoneMatrices.position(0);
 
         mBoneMatricesBufferInfo.buffer = mBoneMatrices;
-		mGeometry.addBuffer(BONE_MATRICES_KEY, mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, GLES20
-                .GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 	}
 
 	public SkeletonJoint getJoint(int index) {

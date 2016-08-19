@@ -28,9 +28,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored.
@@ -63,13 +62,13 @@ public class Geometry3D {
     public static final int SHORT_SIZE_BYTES = 2;
     public static final int BYTE_SIZE_BYTES  = 1;
 
-    public static final String VERTEX_BUFFER_KEY  = "Vertex";
-    public static final String NORMAL_BUFFER_KEY  = "Normal";
-    public static final String TEXTURE_BUFFER_KEY = "Texture";
-    public static final String COLOR_BUFFER_KEY   = "Color";
-    public static final String INDEX_BUFFER_KEY   = "Index";
+    public static final int VERTEX_BUFFER_KEY  = 0;
+    public static final int NORMAL_BUFFER_KEY  = 1;
+    public static final int TEXTURE_BUFFER_KEY = 2;
+    public static final int COLOR_BUFFER_KEY   = 3;
+    public static final int INDEX_BUFFER_KEY   = 4;
 
-    protected final Map<String, BufferInfo> mBuffers;
+    protected final ArrayList<BufferInfo> mBuffers;
 
     /**
      * The number of indices currently stored in the index buffer.
@@ -117,25 +116,30 @@ public class Geometry3D {
 
     public Geometry3D() {
         mHaveCreatedBuffers = false;
-        mBuffers = new HashMap<>();
-        mBuffers.put(VERTEX_BUFFER_KEY, new BufferInfo());
-        mBuffers.put(NORMAL_BUFFER_KEY, new BufferInfo());
-        mBuffers.put(TEXTURE_BUFFER_KEY, new BufferInfo());
-        mBuffers.put(COLOR_BUFFER_KEY, new BufferInfo());
-        mBuffers.put(INDEX_BUFFER_KEY, new BufferInfo());
+        mBuffers = new ArrayList<>(8);
+        mBuffers.add(new BufferInfo());
+        mBuffers.add(new BufferInfo());
+        mBuffers.add(new BufferInfo());
+        mBuffers.add(new BufferInfo());
+        mBuffers.add(new BufferInfo());
 
+        mBuffers.get(VERTEX_BUFFER_KEY).rajawaliHandle = VERTEX_BUFFER_KEY;
         mBuffers.get(VERTEX_BUFFER_KEY).bufferType = BufferType.FLOAT_BUFFER;
         mBuffers.get(VERTEX_BUFFER_KEY).target = GLES20.GL_ARRAY_BUFFER;
 
+        mBuffers.get(NORMAL_BUFFER_KEY).rajawaliHandle = NORMAL_BUFFER_KEY;
         mBuffers.get(NORMAL_BUFFER_KEY).bufferType = BufferType.FLOAT_BUFFER;
         mBuffers.get(NORMAL_BUFFER_KEY).target = GLES20.GL_ARRAY_BUFFER;
 
+        mBuffers.get(TEXTURE_BUFFER_KEY).rajawaliHandle = TEXTURE_BUFFER_KEY;
         mBuffers.get(TEXTURE_BUFFER_KEY).bufferType = BufferType.FLOAT_BUFFER;
         mBuffers.get(TEXTURE_BUFFER_KEY).target = GLES20.GL_ARRAY_BUFFER;
 
+        mBuffers.get(COLOR_BUFFER_KEY).rajawaliHandle = COLOR_BUFFER_KEY;
         mBuffers.get(COLOR_BUFFER_KEY).bufferType = BufferType.FLOAT_BUFFER;
         mBuffers.get(COLOR_BUFFER_KEY).target = GLES20.GL_ARRAY_BUFFER;
 
+        mBuffers.get(INDEX_BUFFER_KEY).rajawaliHandle = INDEX_BUFFER_KEY;
         mBuffers.get(INDEX_BUFFER_KEY).bufferType = BufferType.INT_BUFFER;
         mBuffers.get(INDEX_BUFFER_KEY).target = GLES20.GL_ELEMENT_ARRAY_BUFFER;
     }
@@ -232,13 +236,14 @@ public class Geometry3D {
     public void copyFromGeometry3D(Geometry3D geom) {
         this.mNumIndices = geom.getNumIndices();
         this.mNumVertices = geom.getNumVertices();
-        mBuffers.put(VERTEX_BUFFER_KEY, geom.getVertexBufferInfo());
-        mBuffers.put(INDEX_BUFFER_KEY, geom.getIndexBufferInfo());
-        mBuffers.put(TEXTURE_BUFFER_KEY, geom.getTexCoordBufferInfo());
+
+        mBuffers.add(VERTEX_BUFFER_KEY, geom.getVertexBufferInfo());
+        mBuffers.add(NORMAL_BUFFER_KEY, geom.getNormalBufferInfo());
+        mBuffers.add(TEXTURE_BUFFER_KEY, geom.getTexCoordBufferInfo());
         if (mBuffers.get(COLOR_BUFFER_KEY).buffer == null) {
-            mBuffers.put(COLOR_BUFFER_KEY, geom.getColorBufferInfo());
+            mBuffers.add(COLOR_BUFFER_KEY, geom.getColorBufferInfo());
         }
-        mBuffers.put(NORMAL_BUFFER_KEY, geom.getNormalBufferInfo());
+        mBuffers.add(INDEX_BUFFER_KEY, geom.getIndexBufferInfo());
         this.mOriginalGeometry = geom;
         this.mHasNormals = geom.hasNormals();
         this.mHasTextureCoordinates = geom.hasTextureCoordinates();
@@ -351,8 +356,8 @@ public class Geometry3D {
         }
         setIndices(indices);
 
-        mBuffers.put(VERTEX_BUFFER_KEY, vertexBufferInfo);
-        mBuffers.put(NORMAL_BUFFER_KEY, normalBufferInfo);
+        mBuffers.add(VERTEX_BUFFER_KEY, vertexBufferInfo);
+        mBuffers.add(NORMAL_BUFFER_KEY, normalBufferInfo);
 
         mOriginalGeometry = null;
 
@@ -457,7 +462,7 @@ public class Geometry3D {
      */
     public void createBuffers() {
 
-        for (BufferInfo info : mBuffers.values()) {
+        for (BufferInfo info : mBuffers) {
             if (info.buffer != null) {
                 if (info.buffer instanceof FloatBuffer) {
                     ((FloatBuffer) info.buffer).compact().position(0);
@@ -583,13 +588,16 @@ public class Geometry3D {
         createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.target, bufferInfo.usage);
     }
 
-    public void addBuffer(String key, BufferInfo bufferInfo, BufferType type, int target, int usage) {
+    public int addBuffer(BufferInfo bufferInfo, BufferType type, int target, int usage) {
         createBuffer(bufferInfo, type, target, usage);
-        mBuffers.put(key, bufferInfo);
+        final int key = mBuffers.size();
+        bufferInfo.rajawaliHandle = key;
+        mBuffers.add(bufferInfo);
+        return key;
     }
 
-    public void addBuffer(String key, BufferInfo bufferInfo, BufferType type, int target) {
-        addBuffer(key, bufferInfo, type, target, bufferInfo.usage);
+    public int addBuffer(BufferInfo bufferInfo, BufferType type, int target) {
+        return addBuffer(bufferInfo, type, target, bufferInfo.usage);
     }
 
     public void validateBuffers() {
@@ -601,7 +609,8 @@ public class Geometry3D {
             return;
         }
 
-        for (BufferInfo info : mBuffers.values()) {
+        for (int i = 0, j = mBuffers.size(); i < j; ++i) {
+            final BufferInfo info = mBuffers.get(i);
             if (info != null && info.bufferHandle == 0) {
                 createBuffer(info);
             }
@@ -879,7 +888,7 @@ public class Geometry3D {
             colorInfo.buffer = ByteBuffer.allocateDirect(mNumVertices * 4 * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
             createNewBuffer = true;
-            mBuffers.put(COLOR_BUFFER_KEY, colorInfo);
+            mBuffers.add(COLOR_BUFFER_KEY, colorInfo);
         }
 
         colorInfo.buffer.position(0);
@@ -942,7 +951,7 @@ public class Geometry3D {
     public void destroy() {
         int[] buffers = new int[mBuffers.size()];
         int index = 0;
-        for (BufferInfo info : mBuffers.values()) {
+        for (BufferInfo info : mBuffers) {
             buffers[index++] = info.bufferHandle;
             if (info.buffer != null) {
                 info.buffer.clear();
@@ -999,7 +1008,7 @@ public class Geometry3D {
     }
 
     public void setVertexBufferInfo(BufferInfo vertexBufferInfo) {
-        mBuffers.put(VERTEX_BUFFER_KEY, vertexBufferInfo);
+        mBuffers.add(VERTEX_BUFFER_KEY, vertexBufferInfo);
     }
 
     public BufferInfo getIndexBufferInfo() {
@@ -1007,7 +1016,7 @@ public class Geometry3D {
     }
 
     public void setIndexBufferInfo(BufferInfo indexBufferInfo) {
-        mBuffers.put(INDEX_BUFFER_KEY, indexBufferInfo);
+        mBuffers.add(INDEX_BUFFER_KEY, indexBufferInfo);
     }
 
     public BufferInfo getTexCoordBufferInfo() {
@@ -1015,7 +1024,7 @@ public class Geometry3D {
     }
 
     public void setTexCoordBufferInfo(BufferInfo texCoordBufferInfo) {
-        mBuffers.put(TEXTURE_BUFFER_KEY, texCoordBufferInfo);
+        mBuffers.add(TEXTURE_BUFFER_KEY, texCoordBufferInfo);
         this.mHasTextureCoordinates = true;
     }
 
@@ -1024,7 +1033,7 @@ public class Geometry3D {
     }
 
     public void setColorBufferInfo(BufferInfo colorBufferInfo) {
-        mBuffers.put(COLOR_BUFFER_KEY, colorBufferInfo);
+        mBuffers.add(COLOR_BUFFER_KEY, colorBufferInfo);
     }
 
     public BufferInfo getNormalBufferInfo() {
@@ -1032,7 +1041,7 @@ public class Geometry3D {
     }
 
     public void setNormalBufferInfo(BufferInfo normalBufferInfo) {
-        mBuffers.put(NORMAL_BUFFER_KEY, normalBufferInfo);
+        mBuffers.add(NORMAL_BUFFER_KEY, normalBufferInfo);
         this.mHasNormals = true;
     }
 

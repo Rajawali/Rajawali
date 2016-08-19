@@ -36,10 +36,6 @@ import java.nio.FloatBuffer;
  */
 public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	public static final int MAX_WEIGHTS_PER_VERTEX = 8;
-	private static final String BONE_INDEX_1_KEY   = "BONE_INDEX_1";
-	private static final String BONE_WEIGHTS_1_KEY = "BONE_WEIGHTS_1";
-	private static final String BONE_INDEX_2_KEY   = "BONE_INDEX_2";
-	private static final String BONE_WEIGHTS_2_KEY = "BONE_WEGHTS_2";
 
 	public SkeletalAnimationObject3D mSkeleton;
 	private SkeletalAnimationSequence mSequence;
@@ -134,18 +130,15 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		mboneWeights1 = alocateBuffer(mboneWeights1, boneWeights1);
 		mboneIndexes1BufferInfo.buffer = mboneIndexes1;
 		mboneWeights1BufferInfo.buffer = mboneWeights1;
-		mGeometry.addBuffer(BONE_INDEX_1_KEY, mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
-		mGeometry.addBuffer(BONE_WEIGHTS_1_KEY, mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, GLES20
-				.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 		if (mMaxBoneWeightsPerVertex > 4) {
 			mboneIndexes2 = alocateBuffer(mboneIndexes2, boneIndexes2);
 			mboneWeights2 = alocateBuffer(mboneWeights2, boneWeights2);
 			mboneIndexes2BufferInfo.buffer = mboneIndexes2;
 			mboneWeights2BufferInfo.buffer = mboneWeights2;
-			mGeometry.addBuffer(BONE_INDEX_2_KEY, mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER,
-					GLES20.GL_ARRAY_BUFFER);
-			mGeometry.addBuffer(BONE_WEIGHTS_2_KEY, mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER,
-					GLES20.GL_ARRAY_BUFFER);
+			mGeometry.addBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+			mGeometry.addBuffer(mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 		}
 	}
 

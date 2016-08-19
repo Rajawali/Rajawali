@@ -31,8 +31,6 @@ import java.nio.FloatBuffer;
  *
  */
 public class PlanesGalore extends Object3D {
-	private static final String PLANE_POSITION_KEY  = "PLANE_POSITION";
-	private static final String ROTATION_SPEEDS_KEY = "ROTATION_SPEEDS";
 
 	protected FloatBuffer mPlanePositions;
 	protected FloatBuffer mRotationSpeeds;
@@ -151,10 +149,8 @@ public class PlanesGalore extends Object3D {
 	private void createBuffers() {
 		mPlanePositionsBufferInfo.buffer = mPlanePositions;
 		mRotationSpeedsBufferInfo.buffer = mRotationSpeeds;
-		mGeometry.addBuffer(PLANE_POSITION_KEY, mPlanePositionsBufferInfo, Geometry3D.BufferType.FLOAT_BUFFER, GLES20
-				.GL_ARRAY_BUFFER);
-		mGeometry.addBuffer(ROTATION_SPEEDS_KEY, mRotationSpeedsBufferInfo, Geometry3D.BufferType.FLOAT_BUFFER, GLES20
-				.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mPlanePositionsBufferInfo, Geometry3D.BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mRotationSpeedsBufferInfo, Geometry3D.BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 
 		mMaterialPlugin.setPlanePositions(mPlanePositionsBufferInfo.bufferHandle);
 		mMaterialPlugin.setRotationSpeeds(mRotationSpeedsBufferInfo.bufferHandle);
