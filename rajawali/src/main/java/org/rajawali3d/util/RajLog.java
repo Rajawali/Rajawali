@@ -85,9 +85,9 @@ public final class RajLog {
         int extLength = ext.length;
 
         if (extLength > 0) {
-            sb.append("Extensions : ").append(ext[0]).append("\n");
+            sb.append("Extensions : ").append('\n').append(ext[0]).append('\n');
             for (int i = 1; i < extLength; i++) {
-                sb.append(" : ").append(ext[i]).append("\n");
+                sb.append(" : ").append(ext[i]).append('\n');
             }
         }
         sb.append("-=-=-=- /OpenGL Information -=-=-=-\n");

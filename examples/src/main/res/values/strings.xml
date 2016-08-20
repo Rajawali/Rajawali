@@ -80,5 +80,8 @@
     <string name="add_cube">Add Cube</string>
     <string name="remove_cube">Remove Random Cube</string>
     <string name="example_scene_add_remove_objects">Add/Remove Children</string>
+    <string name="example_post_processing_fxaa">FXAA Anti Aliasing</string>
+    <string name="fxaa_fragment_button_disable_fxaa">Disable FXAA</string>
+    <string name="fxaa_fragment_button_enable_fxaa">Enable FXAA</string>
 
 </resources>

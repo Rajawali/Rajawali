@@ -59,6 +59,7 @@ import org.rajawali3d.examples.examples.optimizations.Optimized2000PlanesFragmen
 import org.rajawali3d.examples.examples.optimizations.TextureAtlasFragment;
 import org.rajawali3d.examples.examples.optimizations.UpdateVertexBufferFragment;
 import org.rajawali3d.examples.examples.postprocessing.BloomEffectFragment;
+import org.rajawali3d.examples.examples.postprocessing.FXAAFragment;
 import org.rajawali3d.examples.examples.postprocessing.FogFragment;
 import org.rajawali3d.examples.examples.postprocessing.GaussianBlurFilterFragment;
 import org.rajawali3d.examples.examples.postprocessing.GreyScaleFilterFragment;
@@ -80,16 +81,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 public final class DataSet {
-    
+
     private static volatile DataSet instance;
-    
+
     private final List<Category> categories;
-    
+
     DataSet() {
         categories = createCategories();
         categories.addAll(DataSetImpl.getInstance().getCategories());
     }
-    
+
     public static synchronized DataSet getInstance() {
         if (instance == null) {
             synchronized (DataSet.class) {
@@ -98,7 +99,7 @@ public final class DataSet {
                 }
             }
         }
-        
+
         return instance;
     }
 
@@ -192,6 +193,7 @@ public final class DataSet {
                 new Example(R.string.example_post_processing_render_to_texture, RenderToTextureFragment.class),
                 new Example(R.string.example_post_processing_bloom_effect, BloomEffectFragment.class),
                 new Example(R.string.example_post_processing_shadow_mapping, ShadowMappingFragment.class),
+                new Example(R.string.example_post_processing_fxaa, FXAAFragment.class),
         }));
         categories.add(new Category(R.string.category_scenes, new Example[]{
                 new Example(R.string.example_scene_frame_callbacks, SceneFrameCallbackFragment.class),
@@ -204,5 +206,5 @@ public final class DataSet {
     public List<Category> getCategories() {
         return categories;
     }
-    
+
 }

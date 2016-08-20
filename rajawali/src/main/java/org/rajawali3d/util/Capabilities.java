@@ -15,6 +15,7 @@ package org.rajawali3d.util;
 import android.opengl.EGLExt;
 import android.opengl.GLES20;
 import android.os.Build;
+import android.support.annotation.NonNull;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -54,6 +55,8 @@ public class Capabilities {
     private int mMaxAliasedPointSize;
 
     private int[] mParam;
+
+    private String[] mExtensions;
 
     private Capabilities() {
         initialize();
@@ -140,6 +143,9 @@ public class Capabilities {
         mMaxAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 1);
         mMinAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 0);
         mMaxAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 1);
+
+        String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+        mExtensions = extensions.split(" ");
     }
 
     private int getInt(int pname) {
@@ -181,6 +187,30 @@ public class Capabilities {
     public static int getGLESMajorVersion() {
         if (!sGLChecked) checkGLVersion();
         return mGLESMajorVersion;
+    }
+
+    /**
+     * Fetch the list of extension strings this device supports.
+     *
+     * @return
+     */
+    public String[] getExtensions() {
+        return mExtensions;
+    }
+
+    /**
+     * Checks if a particular extension is supported by this device.
+     *
+     * @param extension {@link String} Non-null string of the extension to check for. This is case sensitive.
+     * @throws {@link UnsupportedCapabilityException} if the extension is not available.
+     */
+    public void verifyExtension(@NonNull String extension) throws UnsupportedCapabilityException {
+        for (String ext : mExtensions) {
+            if (extension.equals(ext)) {
+                return;
+            }
+        }
+        throw new UnsupportedCapabilityException("Extension (" + extension + ") is not supported!");
     }
 
     /**
@@ -352,5 +382,49 @@ public class Capabilities {
         sb.append("Max Aliased Point Width            : ").append(mMaxAliasedPointSize).append("\n");
         sb.append("-=-=-=- /OpenGL Capabilities -=-=-=-\n");
         return sb.toString();
+    }
+
+    public static class UnsupportedCapabilityException extends Exception {
+
+        /**
+         * Constructs a new {@code UnsupportedCapabilityException} that includes the current stack trace.
+         */
+        public UnsupportedCapabilityException() {
+        }
+
+        /**
+         * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace and the
+         * specified detail message.
+         *
+         * @param detailMessage
+         *            the detail message for this exception.
+         */
+        public UnsupportedCapabilityException(String detailMessage) {
+            super(detailMessage);
+        }
+
+        /**
+         * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace, the
+         * specified detail message and the specified cause.
+         *
+         * @param detailMessage
+         *            the detail message for this exception.
+         * @param throwable
+         *            the cause of this exception.
+         */
+        public UnsupportedCapabilityException(String detailMessage, Throwable throwable) {
+            super(detailMessage, throwable);
+        }
+
+        /**
+         * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace and the
+         * specified cause.
+         *
+         * @param throwable
+         *            the cause of this exception.
+         */
+        public UnsupportedCapabilityException(Throwable throwable) {
+            super(throwable);
+        }
     }
 }
