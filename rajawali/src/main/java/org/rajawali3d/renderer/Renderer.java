@@ -69,7 +69,6 @@ public abstract class Renderer implements ISurfaceRenderer {
 
     protected static boolean mFogEnabled; // Is camera fog enabled?
     protected static int sMaxLights = 1; // How many lights max?
-    public static boolean supportsUIntBuffers = false;
 
     protected Context mContext; // Context the renderer is running in
 
@@ -308,8 +307,6 @@ public abstract class Renderer implements ISurfaceRenderer {
             }
         }
         RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
-
-        supportsUIntBuffers = GLES20.glGetString(GLES20.GL_EXTENSIONS).contains("GL_OES_element_index_uint");
 
         if (!mHaveRegisteredForResources) {
             mTextureManager.registerRenderer(this);

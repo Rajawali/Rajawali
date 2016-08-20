@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -23,7 +23,7 @@ import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin;
 
 public class VertexAnimationObject3D extends AAnimationObject3D {
 	private VertexAnimationMaterialPlugin mMaterialPlugin;
-	
+
 	public VertexAnimationObject3D() {
 		super();
 	}
@@ -84,13 +84,13 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		}
 		super.reload();
 	}
-	
+
 	@Override
 	public void setMaterial(Material material) {
 		super.setMaterial(material);
-		
+
 		IMaterialPlugin plugin = material.getPlugin(VertexAnimationMaterialPlugin.class);
-		
+
 		if(plugin == null)
 		{
 			mMaterialPlugin = new VertexAnimationMaterialPlugin();
@@ -114,7 +114,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		clone.setRotation(getOrientation());
 		clone.setScale(getScale());
 		clone.setFps(mFps);
-		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
+		clone.mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 		return clone;
 	}
 

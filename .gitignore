@@ -51,3 +51,4 @@ local.properties~
 rajawali_secret.gpg
 secring.gpg
 *.alloc
+*.properties

@@ -22,7 +22,6 @@ public abstract class WatchRenderer extends Renderer {
 
         mGLES_Major_Version = 2;
         mGLES_Minor_Version = 1;
-        supportsUIntBuffers = false;
 
         mTextureManager = TextureManager.getInstance();
         mTextureManager.setContext(getContext());

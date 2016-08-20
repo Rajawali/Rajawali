@@ -13,7 +13,6 @@
 package org.rajawali3d.materials.shaders;
 
 import android.opengl.GLES20;
-
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.util.RawShaderLoader;
 
@@ -308,6 +307,15 @@ public abstract class AShader extends AShaderBase {
 	{
 		int handle = getUniformLocation(mProgramHandle, name);
 		GLES20.glUniform1i(handle, value);
+	}
+
+	/**
+	 * Returns all preprocessor directives.
+	 *
+	 * @return
+     */
+	public List<String> getPreprocessorDirectives() {
+		return mPreprocessorDirectives;
 	}
 
 	/**
@@ -634,6 +642,16 @@ public abstract class AShader extends AShaderBase {
 				s.append(directive).append("\n");
 			}
 		}
+        for (IShaderFragment frag : mShaderFragments) {
+            if (frag instanceof AShader) {
+                final List<String> preprocessorDirectives = frag.getPreprocessorDirectives();
+                if (preprocessorDirectives != null) {
+                    for (String directive : preprocessorDirectives) {
+                        s.append(directive).append("\n");
+                    }
+                }
+            }
+        }
 
 		//
 		// -- Precision statements

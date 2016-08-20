@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -14,13 +14,11 @@ package org.rajawali3d.materials.shaders;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin.SkeletalAnimationShaderVar;
 import org.rajawali3d.materials.shaders.fragments.animation.SkeletalAnimationVertexShaderFragment;
 import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.util.RajLog;
 
 import java.util.List;
 
@@ -76,12 +74,12 @@ public class VertexShader extends AShader {
 	{
 		super(ShaderType.VERTEX);
 	}
-	
+
 	public VertexShader(int resourceId)
 	{
 		super(ShaderType.VERTEX, resourceId);
 	}
-	
+
 	public VertexShader(String shaderString)
 	{
 		super(ShaderType.VERTEX, shaderString);
@@ -163,7 +161,7 @@ public class VertexShader extends AShader {
 			GL_POSITION.assign(muMVPMatrix.multiply(mgPosition));
 			mvNormal.assign(normalize(muNormalMatrix.multiply(mgNormal)));
 		}
-		
+
 		mvTextureCoord.assign(mgTextureCoord);
 		if (mHasCubeMaps) {
             mvCubeTextureCoord.assign(castVec3(maPosition));
@@ -173,7 +171,7 @@ public class VertexShader extends AShader {
         }
 		mvColor.assign(mgColor);
 		mvEyeDir.assign(castVec3(muModelViewMatrix.multiply(mgPosition)));
-		
+
 		for (int i = 0; i < mShaderFragments.size(); i++)
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
@@ -291,7 +289,7 @@ public class VertexShader extends AShader {
 	{
 		mLights = lights;
 	}
-	
+
 	public void hasCubeMaps(boolean value)
 	{
 		mHasCubeMaps = value;
@@ -301,17 +299,17 @@ public class VertexShader extends AShader {
     {
         mHasSkyTexture = value;
     }
-	
+
 	public void useVertexColors(boolean value)
 	{
 		mUseVertexColors = value;
 	}
-	
+
 	public void enableTime(boolean value)
 	{
 		mTimeEnabled = value;
 	}
-	
+
 	public void setTime(float time)
 	{
 		mTime = time;

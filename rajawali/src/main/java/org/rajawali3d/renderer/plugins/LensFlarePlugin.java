@@ -13,9 +13,6 @@
 package org.rajawali3d.renderer.plugins;
 
 import android.opengl.GLES20;
-
-import java.util.Stack;
-
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.extras.LensFlare;
 import org.rajawali3d.extras.LensFlare.FlareInfo;
@@ -24,6 +21,8 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector2;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
+
+import java.util.Stack;
 
 
 /**
@@ -381,9 +380,7 @@ public final class LensFlarePlugin extends Plugin {
 					GLES20.glDisable(GLES20.GL_BLEND);
 					GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
-					GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6,
-							mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT,
-							0);
+					GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_INT, 0);
 
 					// Copy result to occlusion map.
 					GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -397,9 +394,7 @@ public final class LensFlarePlugin extends Plugin {
 
 					GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 					GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mMapTexture.getTextureId());
-					GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6,
-							mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT,
-							0);
+					GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_INT, 0);
 
 					// Update the flare's screen positions.
 					lensFlare.setPositionScreen(screenPosition);
@@ -462,7 +457,7 @@ public final class LensFlarePlugin extends Plugin {
 
 							// Draw the elements.
 							GLES20.glDrawElements(GLES20.GL_TRIANGLES, mGeometry.getNumIndices(),
-									mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT, 0);
+												  GLES20.GL_UNSIGNED_INT, 0);
 
 							// Unbind texture.
 							GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);

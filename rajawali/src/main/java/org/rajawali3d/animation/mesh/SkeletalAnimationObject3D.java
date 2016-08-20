@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -42,7 +42,7 @@ import java.nio.DoubleBuffer;
 import java.util.Arrays;
 
 public class SkeletalAnimationObject3D extends AAnimationObject3D {
-	private SkeletonJoint[] mJoints;
+    private SkeletonJoint[] mJoints;
 	private SkeletonJoint mTmpJoint1;
 	private SkeletonJoint mTmpJoint2;
 	private SkeletalAnimationSequence[] mSequences;
@@ -54,14 +54,14 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	private int mCurrentTransitionFrameIndex;
 	public double[][] mInverseBindPoseMatrix;
 	public double[] uBoneMatrix;
-	
+
 	private double[] mBoneTranslation = new double[16];
 	private double[] mBoneRotation = new double[16];
 	private double[] mBoneMatrix = new double[16];
 	private double[] mResultMatrix = new double[16];
 
 	public BufferInfo mBoneMatricesBufferInfo = new BufferInfo();
-	
+
 	private static final int DOUBLE_SIZE_BYTES = 8;
 
 	/**
@@ -158,7 +158,8 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		mBoneMatrices.put(uBoneMatrix);
 		mBoneMatrices.position(0);
 
-		mGeometry.createBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, mBoneMatrices, GLES20.GL_ARRAY_BUFFER);
+        mBoneMatricesBufferInfo.buffer = mBoneMatrices;
+		mGeometry.addBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 	}
 
 	public SkeletonJoint getJoint(int index) {
@@ -177,7 +178,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	/**
 	 * Sets a new {@link SkeletalAnimationSequence}. It will use this one immediately no
 	 * blending will be done.
-	 * 
+	 *
 	 * @param sequence			The new {@link SkeletalAnimationSequence} to use.
 	 */
 	public void setAnimationSequence(SkeletalAnimationSequence sequence)
@@ -187,7 +188,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		if (sequence != null && sequence.getFrames() != null)
 		{
 			mNumFrames = sequence.getFrames().length;
-			
+
 			for (Object3D child : mChildren)
 			{
 				if (child instanceof SkeletalAnimationChildObject3D)
@@ -224,7 +225,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	 * Transition to a new {@link SkeletalAnimationSequence} with the specified duration in milliseconds.
 	 * This method will use a {@link LinearInterpolator} for interpolation. To use a different type of
 	 * interpolator use the method that takes three arguments.
-	 * 
+	 *
 	 * @param sequence			The new {@link SkeletalAnimationSequence} to transition to.
 	 * @param duration			The transition duration in milliseconds.
 	 */
@@ -236,11 +237,11 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	/**
 	 * Transition to a new {@link SkeletalAnimationSequence} with the specified duration in milliseconds.
 	 * The {@link Interpolator} is an Android SDK {@link Interpolator} and can be one of {@link AccelerateDecelerateInterpolator},
-	 * {@link AccelerateInterpolator}, {@link AnticipateInterpolator}, {@link AnticipateOvershootInterpolator}, 
+	 * {@link AccelerateInterpolator}, {@link AnticipateInterpolator}, {@link AnticipateOvershootInterpolator},
 	 * {@link BounceInterpolator}, {@link CycleInterpolator}, {@link DecelerateInterpolator}, {@link LinearInterpolator},
 	 * {@link OvershootInterpolator}.
-	 * 
-	 * @param sequence			The new {@link SkeletalAnimationSequence} to transition to.	
+	 *
+	 * @param sequence			The new {@link SkeletalAnimationSequence} to transition to.
 	 * @param duration			The transition duration in milliseconds.
 	 * @param interpolator		The {@link Interpolator}
 	 */
@@ -316,7 +317,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 
 	/**
 	 * Returns the current playing {@link SkeletalAnimationSequence}.
-	 * 
+	 *
 	 * @return
 	 */
 	public SkeletalAnimationSequence getAnimationSequence()
@@ -336,12 +337,12 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		SkeletalAnimationFrame nextFrame = (SkeletalAnimationFrame) mSequence.getFrame((mCurrentFrameIndex + 1) % mSequence.getNumFrames());
 
 		mInterpolation += mFps * (currentTime - mStartTime) / 1000.0;
-		
+
 		boolean isTransitioning = mNextSequence != null;
 		double transitionInterpolation = 0;
 		if(isTransitioning)
 			transitionInterpolation = mTransitionInterpolator.getInterpolation((float) ((currentTime - mTransitionStartTime) / mTransitionDuration));
-		
+
 		for (int i = 0; i < mJoints.length; ++i) {
 			SkeletonJoint joint = getJoint(i);
 			SkeletonJoint fromJoint = currentFrame.getSkeleton().getJoint(i);
@@ -349,12 +350,12 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			joint.setParentIndex(fromJoint.getParentIndex());
 			joint.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
 			joint.getOrientation().slerp(fromJoint.getOrientation(), toJoint.getOrientation(), mInterpolation);
-			
+
 			if(isTransitioning)
 			{
 				SkeletalAnimationFrame currentTransFrame = mNextSequence.getFrame(mCurrentTransitionFrameIndex % mNextSequence.getNumFrames());
 				SkeletalAnimationFrame nextTransFrame = mNextSequence.getFrame((mCurrentTransitionFrameIndex + 1) % mNextSequence.getNumFrames());
-				
+
 				fromJoint = currentTransFrame.getSkeleton().getJoint(i);
 				toJoint = nextTransFrame.getSkeleton().getJoint(i);
 				mTmpJoint1.getPosition().lerpAndSet(fromJoint.getPosition(), toJoint.getPosition(), mInterpolation);
@@ -363,7 +364,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				// blend the two animations
 				mTmpJoint2.getPosition().lerpAndSet(joint.getPosition(), mTmpJoint1.getPosition(), transitionInterpolation);
 				mTmpJoint2.getOrientation().slerp(joint.getOrientation(), mTmpJoint1.getOrientation(), transitionInterpolation);
-				
+
 				joint.getPosition().setAll(mTmpJoint2.getPosition());
 				joint.getOrientation().setAll(mTmpJoint2.getOrientation());
 			}
@@ -374,7 +375,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 			Matrix.setIdentityM(mResultMatrix, 0);
 
 			Vector3 jointPos = joint.getPosition();
-			Matrix.translateM(mBoneTranslation, 0, jointPos.x, jointPos.y, jointPos.z);			
+			Matrix.translateM(mBoneTranslation, 0, jointPos.x, jointPos.y, jointPos.z);
 			joint.getOrientation().toRotationMatrix(mBoneRotation);
 			Matrix.multiplyMM(mBoneMatrix, 0, mBoneTranslation, 0, mBoneRotation, 0);
 			Matrix.multiplyMM(mResultMatrix, 0, mBoneMatrix, 0, mInverseBindPoseMatrix[i], 0);
@@ -386,7 +387,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 				mBoneMatrices.put(mResultMatrix[j]);
 			}
 		}
-		
+
 		if(isTransitioning && transitionInterpolation >= .99f)
 		{
 			isTransitioning = false;
@@ -403,7 +404,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 
 			if (mCurrentFrameIndex >= mSequence.getNumFrames())
 				mCurrentFrameIndex = 0;
-			
+
 			if(isTransitioning)
 			{
 				mCurrentTransitionFrameIndex++;
@@ -433,13 +434,12 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		setShaderParams(camera);
 		super.render(camera, projMatrix, vMatrix, parentMatrix, sceneMaterial);
 	}
-	
+
 	@Override
 	public void reload() {
 		super.reload();
-		mGeometry.createBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, mBoneMatrices, GLES20.GL_ARRAY_BUFFER);
 	}
-	
+
 	@Override
 	public void destroy() {
 	    int[] buffers  = new int[1];
@@ -447,13 +447,13 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
 
 	    if(mBoneMatrices != null) mBoneMatrices.clear();
-	    
+
 	    mBoneMatrices=null;
 
 	    if(mBoneMatricesBufferInfo != null && mBoneMatricesBufferInfo.buffer != null) { mBoneMatricesBufferInfo.buffer.clear(); mBoneMatricesBufferInfo.buffer=null; }
 	    super.destroy();
 	}
-	
+
 	public static class SkeletalAnimationException extends Exception
 	{
 		private static final long serialVersionUID = -5569720011630317581L;
@@ -461,15 +461,15 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		public SkeletalAnimationException() {
 			super();
 		}
-		
+
 		public SkeletalAnimationException(final String msg) {
 			super(msg);
 		}
-		
+
 		public SkeletalAnimationException(final Throwable throwable) {
 			super(throwable);
 		}
-		
+
 		public SkeletalAnimationException(final String msg, final Throwable throwable) {
 			super(msg, throwable);
 		}
@@ -488,8 +488,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		clone.getGeometry().copyFromGeometry3D(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
-		clone.mElementsBufferType = mGeometry.areOnlyShortBuffersSupported() ? GLES20.GL_UNSIGNED_SHORT
-				: GLES20.GL_UNSIGNED_INT;
+		clone.mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 		clone.mTransparent = this.mTransparent;
 		clone.mEnableBlending = this.mEnableBlending;
 		clone.mBlendFuncSFactor = this.mBlendFuncSFactor;
