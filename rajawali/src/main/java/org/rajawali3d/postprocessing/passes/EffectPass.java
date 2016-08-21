@@ -12,6 +12,7 @@
  */
 package org.rajawali3d.postprocessing.passes;
 
+import android.support.annotation.NonNull;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
@@ -48,13 +49,18 @@ public class EffectPass extends APass {
 		setMaterial(material);
 	}
 
-	protected void createMaterial(int vertexShaderResourceId, int fragmentShaderResourceId)
+	protected void createMaterial(@NonNull VertexShader vertexShader, @NonNull FragmentShader fragmentShader)
 	{
-		mVertexShader = new VertexShader(vertexShaderResourceId);
-		mFragmentShader = new FragmentShader(fragmentShaderResourceId);
+		mVertexShader = vertexShader;
+		mFragmentShader = fragmentShader;
 		mVertexShader.setNeedsBuild(false);
 		mFragmentShader.setNeedsBuild(false);
 		setMaterial(new Material(mVertexShader, mFragmentShader));
+	}
+
+	protected void createMaterial(int vertexShaderResourceId, int fragmentShaderResourceId)
+	{
+		createMaterial(new VertexShader(vertexShaderResourceId), new FragmentShader(fragmentShaderResourceId));
 	}
 
 

@@ -3,14 +3,11 @@ package org.rajawali3d.examples.examples.animation;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationSequence;
 import org.rajawali3d.examples.R;
@@ -25,29 +22,22 @@ public class SkeletalAnimationBlendingFragment extends AExampleFragment implemen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.skeletal_blending_button_bar, mLayout, true);
+        super.onCreateView(inflater, container, savedInstanceState);
+        inflater.inflate(R.layout.skeletal_blending_button_bar, mLayout, true);
 
-        Button button1 = (Button) ll.findViewById(R.id.button1);
+        Button button1 = (Button) mLayout.findViewById(R.id.button1);
         button1.setOnClickListener(this);
 
-        Button button2 = (Button) ll.findViewById(R.id.button2);
+        Button button2 = (Button) mLayout.findViewById(R.id.button2);
         button2.setOnClickListener(this);
 
-        Button button3 = (Button) ll.findViewById(R.id.button3);
+        Button button3 = (Button) mLayout.findViewById(R.id.button3);
         button3.setOnClickListener(this);
 
-        Button button4 = (Button) ll.findViewById(R.id.button4);
+        Button button4 = (Button) mLayout.findViewById(R.id.button4);
         button4.setOnClickListener(this);
 
-        ll = new LinearLayout(getActivity());
-        ll.setOrientation(LinearLayout.HORIZONTAL);
-        ll.setGravity(Gravity.TOP);
-
-        TextView creatorText = new TextView(getActivity());
-        creatorText.setText(R.string.skeletal_animation_blending_button_arm_stretch);
-        ll.addView(creatorText);
-
-        mLayout.addView(ll);
+        inflater.inflate(R.layout.skeletal_blending_creator_bar, mLayout, true);
 
         return mLayout;
     }
