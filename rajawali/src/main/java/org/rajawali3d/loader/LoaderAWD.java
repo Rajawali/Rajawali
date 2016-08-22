@@ -374,7 +374,7 @@ public class LoaderAWD extends AMeshLoader {
 
     /**
      * This is called when all blocks have finished parsing. This is the time to modify any block
-     * data as needed from the passed list before conversion to {@link BaseObject3D} or {@link
+     * data as needed from the passed list before conversion to {@link Object3D} or {@link
      * Scene} occurs.
      */
     public void onBlockParsingFinished(List<IBlockParser> blockParsers) {

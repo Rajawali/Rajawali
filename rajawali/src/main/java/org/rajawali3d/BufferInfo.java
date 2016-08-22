@@ -42,7 +42,7 @@ public class BufferInfo {
 		StringBuffer sb = new StringBuffer();
 		sb
 				.append("Key: ").append(rajawaliHandle)
-			.append("Handle: ").append(bufferHandle)
+			.append(" Handle: ").append(bufferHandle)
 			.append(" type: ").append(bufferType)
 			.append(" target: ").append(target)
 			.append(" byteSize: ").append(byteSize)
