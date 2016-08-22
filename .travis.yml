@@ -49,3 +49,5 @@ notifications:
   - info@rozengain.com
   - rajawali.framework@gmail.com
   - jwoolston@tenkiv.com
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

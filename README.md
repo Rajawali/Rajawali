@@ -6,9 +6,14 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.rajawali3d/rajawali.svg)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rajawali%22)
 
 ### Build Status
-**Master Branch Status**  [![master](https://travis-ci.org/Rajawali/Rajawali.svg?branch=master)](https://travis-ci.org/Rajawali/Rajawali)
+**Master Branch Status**  
+[![master](https://travis-ci.org/Rajawali/Rajawali.svg?branch=master)](https://travis-ci.org/Rajawali/Rajawali)
+[![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/master/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
 
-**Development Branch Status**  [![development](https://travis-ci.org/Rajawali/Rajawali.svg?branch=development)](https://travis-ci.org/Rajawali/Rajawali)
+
+**Development Branch Status**  
+[![development](https://travis-ci.org/Rajawali/Rajawali.svg?branch=development)](https://travis-ci.org/Rajawali/Rajawali)
+[![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/development/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
 
 ### News
 

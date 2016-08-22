@@ -472,8 +472,8 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotX(double rotX) {
-        mOrientation.fromEuler(MathUtil.PRE_180_DIV_PI * mOrientation.getYaw(),
-                               MathUtil.PRE_180_DIV_PI * mOrientation.getPitch(),
+        mOrientation.fromEuler(MathUtil.PRE_180_DIV_PI * mOrientation.getRotationY(),
+                               MathUtil.PRE_180_DIV_PI * mOrientation.getRotationX(),
                                rotX);
         mLookAtValid = false;
         markModelMatrixDirty();
@@ -491,8 +491,8 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      */
     public ATransformable3D setRotY(double rotY) {
         mOrientation.fromEuler(rotY,
-                               MathUtil.PRE_180_DIV_PI * mOrientation.getPitch(),
-                               MathUtil.PRE_180_DIV_PI * mOrientation.getRoll());
+                               MathUtil.PRE_180_DIV_PI * mOrientation.getRotationX(),
+                               MathUtil.PRE_180_DIV_PI * mOrientation.getRotationZ());
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -508,9 +508,9 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return A reference to this {@link ATransformable3D} to facilitate chaining.
      */
     public ATransformable3D setRotZ(double rotZ) {
-        mOrientation.fromEuler(MathUtil.PRE_180_DIV_PI * mOrientation.getYaw(),
+        mOrientation.fromEuler(MathUtil.PRE_180_DIV_PI * mOrientation.getRotationY(),
                                rotZ,
-                               MathUtil.PRE_180_DIV_PI * mOrientation.getRoll());
+                               MathUtil.PRE_180_DIV_PI * mOrientation.getRotationZ());
         mLookAtValid = false;
         markModelMatrixDirty();
         return this;
@@ -522,7 +522,7 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return double The roll Euler angle.
      */
     public double getRotX() {
-        return mOrientation.getPitch();
+        return mOrientation.getRotationX();
     }
 
     /**
@@ -531,7 +531,7 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return double The yaw Euler angle.
      */
     public double getRotY() {
-        return mOrientation.getYaw();
+        return mOrientation.getRotationY();
     }
 
     /**
@@ -540,7 +540,7 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @return double The pitch Euler angle.
      */
     public double getRotZ() {
-        return mOrientation.getRoll();
+        return mOrientation.getRotationZ();
     }
 
     /**

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'jacoco'
 
 String getVersionString() {
     String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
@@ -14,6 +15,26 @@ if (isReleaseBuild()) {
     status = 'release'
 } else {
     status = 'integration'
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    jacocoClasspath = configurations['androidJacocoAnt']
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = files(["${buildDir}/jacoco/testDebugUnitTest.exec",
+                           "${buildDir}/outputs/code-coverage/connected/coverage.ec"
+            ])
 }
 
 android {
@@ -33,6 +54,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            testCoverageEnabled true
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -46,6 +71,7 @@ android {
 
 dependencies {
     compile project.depSupportAnnotations
+    testCompile 'junit:junit:4.12'
 }
 
 apply from: '../maven_push.gradle'
