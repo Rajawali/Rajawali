@@ -24,66 +24,63 @@ import org.rajawali3d.scene.Scene;
 
 
 public class EffectPass extends APass {
-	protected final String PARAM_OPACITY = "uOpacity";
-	protected final String PARAM_TEXTURE = "uTexture";
-	protected final String PARAM_DEPTH_TEXTURE = "uDepthTexture";
-	protected final String PARAM_BLEND_TEXTURE = "uBlendTexture";
+    protected final String PARAM_OPACITY       = "uOpacity";
+    protected final String PARAM_TEXTURE       = "uTexture";
+    protected final String PARAM_DEPTH_TEXTURE = "uDepthTexture";
+    protected final String PARAM_BLEND_TEXTURE = "uBlendTexture";
 
-	protected VertexShader mVertexShader;
-	protected FragmentShader mFragmentShader;
-	protected RenderTarget mReadTarget;
-	protected RenderTarget mWriteTarget;
-	protected float mOpacity = 1.0f;
+    protected VertexShader   mVertexShader;
+    protected FragmentShader mFragmentShader;
+    protected RenderTarget   mReadTarget;
+    protected RenderTarget   mWriteTarget;
+    protected float mOpacity = 1.0f;
 
-	public EffectPass()
-	{
-		mPassType = PassType.EFFECT;
-		mNeedsSwap = true;
-		mClear = false;
-		mEnabled = true;
-		mRenderToScreen = false;
-	}
+    public EffectPass() {
+        mPassType = PassType.EFFECT;
+        mNeedsSwap = true;
+        mClear = false;
+        mEnabled = true;
+        mRenderToScreen = false;
+    }
 
-	public EffectPass(Material material) {
-		this();
-		setMaterial(material);
-	}
+    public EffectPass(Material material) {
+        this();
+        setMaterial(material);
+    }
 
-	protected void createMaterial(@NonNull VertexShader vertexShader, @NonNull FragmentShader fragmentShader)
-	{
-		mVertexShader = vertexShader;
-		mFragmentShader = fragmentShader;
-		mVertexShader.setNeedsBuild(false);
-		mFragmentShader.setNeedsBuild(false);
-		setMaterial(new Material(mVertexShader, mFragmentShader));
-	}
+    protected void createMaterial(@NonNull VertexShader vertexShader, @NonNull FragmentShader fragmentShader) {
+        mVertexShader = vertexShader;
+        mFragmentShader = fragmentShader;
+        mVertexShader.setNeedsBuild(false);
+        mFragmentShader.setNeedsBuild(false);
+        setMaterial(new Material(mVertexShader, mFragmentShader));
+    }
 
-	protected void createMaterial(int vertexShaderResourceId, int fragmentShaderResourceId)
-	{
-		createMaterial(new VertexShader(vertexShaderResourceId), new FragmentShader(fragmentShaderResourceId));
-	}
+    protected void createMaterial(int vertexShaderResourceId, int fragmentShaderResourceId) {
+        createMaterial(new VertexShader(vertexShaderResourceId), new FragmentShader(fragmentShaderResourceId));
+    }
 
 
-	public void setShaderParams()
-	{
-		mFragmentShader.setUniform1f(PARAM_OPACITY, mOpacity);
-		mMaterial.bindTextureByName(PARAM_TEXTURE, 0, mReadTarget.getTexture());
-	}
+    public void setShaderParams() {
+        mFragmentShader.setUniform1f(PARAM_OPACITY, mOpacity);
+        mMaterial.bindTextureByName(PARAM_TEXTURE, 0, mReadTarget.getTexture());
+    }
 
-	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime) {
-		mReadTarget = readTarget;
-		mWriteTarget = writeTarget;
-		screenQuad.setMaterial(mMaterial);
-		screenQuad.setEffectPass(this);
+    public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget,
+                       RenderTarget readTarget, long ellapsedTime, double deltaTime) {
+        mReadTarget = readTarget;
+        mWriteTarget = writeTarget;
+        screenQuad.setMaterial(mMaterial);
+        screenQuad.setEffectPass(this);
 
-		if(mRenderToScreen)
-			scene.render(ellapsedTime, deltaTime, null);
-		else
-			scene.render(ellapsedTime, deltaTime, writeTarget);
-	}
+        if (mRenderToScreen) {
+            scene.render(ellapsedTime, deltaTime, null);
+        } else {
+            scene.render(ellapsedTime, deltaTime, writeTarget);
+        }
+    }
 
-	public void setOpacity(float value)
-	{
-		mOpacity = value;
-	}
+    public void setOpacity(float value) {
+        mOpacity = value;
+    }
 }
