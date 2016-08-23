@@ -53,7 +53,8 @@ public class RotateAnimation3D extends Animation3D {
 
 	@Override
 	protected void applyTransformation() {
-		mTransformable3D.setOrientation(Quaternion.slerpAndCreate(mQuatFrom, mQuat, mInterpolatedTime));
+		Quaternion orientation = new Quaternion().slerp(mQuatFrom, mQuat, mInterpolatedTime, false);
+		mTransformable3D.setOrientation(orientation);
 	}
 
 }

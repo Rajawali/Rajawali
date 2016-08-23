@@ -843,6 +843,20 @@ public final class Quaternion {
 	 * @return A reference to this {@link Quaternion} to facilitate chaining.
 	 */
 	public Quaternion slerp(Quaternion q1, Quaternion q2, double t) {
+		return slerp(q1, q2, t, true);
+	}
+
+	/**
+	 * Performs spherical linear interpolation between the provided {@link Quaternion}s and
+	 * sets this {@link Quaternion} to the result.
+	 *
+	 * @param q1 {@link Quaternion} The starting point.
+	 * @param q2 {@link Quaternion} The destination point.
+	 * @param t double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
+	 * @param forceShortestPath boolean always return the shortest path.
+	 * @return A reference to this {@link Quaternion} to facilitate chaining.
+	 */
+	public Quaternion slerp(Quaternion q1, Quaternion q2, double t, boolean forceShortestPath) {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             setAll(q1);
             return this;
@@ -851,7 +865,7 @@ public final class Quaternion {
         double result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z)
                 + (q1.w * q2.w);
 
-        if (result < 0.0f) {
+        if (forceShortestPath && (result < 0.0f)) {
             q2.x = -q2.x;
             q2.y = -q2.y;
             q2.z = -q2.z;
@@ -862,7 +876,7 @@ public final class Quaternion {
         double scale0 = 1 - t;
         double scale1 = t;
 
-        if ((1 - result) > 0.1) {
+        if (!forceShortestPath || (1 - result) > 0.1) {
             double theta = Math.acos(result);
             double invSinTheta = 1 / Math.sin(theta);
 
@@ -876,21 +890,6 @@ public final class Quaternion {
         w = (scale0 * q1.w) + (scale1 * q2.w);
         return this;
     }
-
-	/**
-	 * Performs spherical linear interpolation between the provided {@link Quaternion}s and
-	 * creates a new {@link Quaternion} for the result.
-	 *
-	 * @param q1 {@link Quaternion} The starting point.
-	 * @param q2 {@link Quaternion} The destination point.
-	 * @param t double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
-	 * @return A reference to this {@link Quaternion} to facilitate chaining.
-	 */
-	public static Quaternion slerpAndCreate(Quaternion q1, Quaternion q2, double t) {
-		Quaternion q = new Quaternion();
-		q.slerp(q1, q2, t);
-		return q;
-	}
 
 	/**
 	 * Performs linear interpolation between two {@link Quaternion}s and creates a new one
