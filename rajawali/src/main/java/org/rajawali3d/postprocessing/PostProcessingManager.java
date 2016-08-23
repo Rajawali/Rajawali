@@ -15,6 +15,9 @@ package org.rajawali3d.postprocessing;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.ATexture.FilterType;
 import org.rajawali3d.materials.textures.ATexture.WrapType;
@@ -52,17 +55,20 @@ public class PostProcessingManager {
     protected ScreenQuad mScreenQuad;
     protected Scene      mScene;
 
-    public PostProcessingManager(Renderer renderer) {
+    public PostProcessingManager(@NonNull Renderer renderer) {
         this(renderer, -1, -1);
     }
 
-    public PostProcessingManager(Renderer renderer, double sampleFactor) {
+    public PostProcessingManager(@NonNull Renderer renderer,
+                                 @FloatRange(from = 0d) double sampleFactor) {
         this(renderer,
              (int) (sampleFactor * renderer.getViewportWidth()),
              (int) (sampleFactor * renderer.getViewportHeight()));
     }
 
-    public PostProcessingManager(Renderer renderer, int width, int height) {
+    public PostProcessingManager(@NonNull Renderer renderer,
+                                 @IntRange(from = -1) int width,
+                                 @IntRange(from = -1) int height) {
         mRenderer = renderer;
 
         if (width == -1 && height == -1) {
@@ -107,39 +113,39 @@ public class PostProcessingManager {
         mWriteBuffer = tmp;
     }
 
-    public void addPass(IPass pass) {
+    public void addPass(@NonNull IPass pass) {
         mComponents.add(pass);
         setComponentsDirty();
     }
 
-    public void addEffect(IPostProcessingEffect multiPass) {
+    public void addEffect(@NonNull IPostProcessingEffect multiPass) {
         multiPass.initialize(mRenderer);
        mComponents.addAll(multiPass.getPasses());
         setComponentsDirty();
     }
 
-    public void insertPass(int index, IPass pass) {
+    public void insertPass(@IntRange(from = 0) int index, @NonNull IPass pass) {
         mComponents.add(index, pass);
         setComponentsDirty();
     }
 
-    public void insertEffect(int index, IPostProcessingEffect multiPass) {
+    public void insertEffect(@IntRange(from = 0) int index, @NonNull IPostProcessingEffect multiPass) {
         multiPass.initialize(mRenderer);
         mComponents.addAll(index, multiPass.getPasses());
         setComponentsDirty();
     }
 
-    public void removePass(IPass pass) {
+    public void removePass(@NonNull IPass pass) {
         mComponents.remove(pass);
         setComponentsDirty();
     }
 
-    public void removeEffect(IPostProcessingEffect multiPass) {
+    public void removeEffect(@NonNull IPostProcessingEffect multiPass) {
         mComponents.removeAll(multiPass.getPasses());
         setComponentsDirty();
     }
 
-    public void setSize(int width, int height) {
+    public void setSize(@IntRange(from = 0) int width, @IntRange(from = 0) int height) {
         mRenderTarget1.resize(width, height);
         mRenderTarget2.resize(width, height);
 
@@ -155,10 +161,11 @@ public class PostProcessingManager {
         setComponentsDirty();
     }
 
-    public void reset(RenderTarget renderTarget) {
+    public void reset(@NonNull RenderTarget renderTarget) {
+        // This method is currently intentionally empty.
     }
 
-    public void render(long ellapsedTime, double deltaTime) {
+    public void render(@IntRange(from = 0) long ellapsedTime, @FloatRange(from = 0d) double deltaTime) {
         if (mComponentsDirty) {
             updatePassesList();
             mComponentsDirty = false;
@@ -184,9 +191,9 @@ public class PostProcessingManager {
             } else {
                 mRenderer.setOverrideViewportDimensions(pass.getWidth(), pass.getHeight());
             }
-            pass.render(type == PassType.RENDER || type == PassType.DEPTH ? mRenderer.getCurrentScene() : mScene,
-                        mRenderer,
-                        mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
+            final boolean depthOrRenderPass = type == PassType.RENDER || type == PassType.DEPTH;
+            final Scene renderScene = depthOrRenderPass ? mRenderer.getCurrentScene() : mScene;
+            pass.render(renderScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
 
             if (pass.needsSwap() && i < mNumPasses - 1) {
                 if (maskActive) {
@@ -213,6 +220,7 @@ public class PostProcessingManager {
         mRenderer.clearOverrideViewportDimensions();
     }
 
+    @NonNull
     public ATexture getTexture() {
         return mWriteBuffer.getTexture();
     }
@@ -241,6 +249,7 @@ public class PostProcessingManager {
         return mComponents.isEmpty();
     }
 
+    @NonNull
     public Scene getScene() {
         return mScene;
     }

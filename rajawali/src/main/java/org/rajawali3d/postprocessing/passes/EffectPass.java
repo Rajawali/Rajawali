@@ -12,7 +12,10 @@
  */
 package org.rajawali3d.postprocessing.passes;
 
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.RawRes;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
@@ -21,7 +24,6 @@ import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-
 
 public class EffectPass extends APass {
     protected final String PARAM_OPACITY       = "uOpacity";
@@ -33,7 +35,8 @@ public class EffectPass extends APass {
     protected FragmentShader mFragmentShader;
     protected RenderTarget   mReadTarget;
     protected RenderTarget   mWriteTarget;
-    protected float mOpacity = 1.0f;
+
+    @FloatRange(from = 0d, to = 1d) protected float mOpacity = 1.0f;
 
     public EffectPass() {
         mPassType = PassType.EFFECT;
@@ -43,7 +46,7 @@ public class EffectPass extends APass {
         mRenderToScreen = false;
     }
 
-    public EffectPass(Material material) {
+    public EffectPass(@NonNull Material material) {
         this();
         setMaterial(material);
     }
@@ -56,7 +59,7 @@ public class EffectPass extends APass {
         setMaterial(new Material(mVertexShader, mFragmentShader));
     }
 
-    protected void createMaterial(int vertexShaderResourceId, int fragmentShaderResourceId) {
+    protected void createMaterial(@RawRes int vertexShaderResourceId, @RawRes int fragmentShaderResourceId) {
         createMaterial(new VertexShader(vertexShaderResourceId), new FragmentShader(fragmentShaderResourceId));
     }
 
@@ -66,8 +69,9 @@ public class EffectPass extends APass {
         mMaterial.bindTextureByName(PARAM_TEXTURE, 0, mReadTarget.getTexture());
     }
 
-    public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget,
-                       RenderTarget readTarget, long ellapsedTime, double deltaTime) {
+    public void render(@NonNull Scene scene, @NonNull Renderer renderer, @NonNull ScreenQuad screenQuad,
+                       @NonNull RenderTarget writeTarget, @NonNull RenderTarget readTarget,
+                       @IntRange(from = 0) long ellapsedTime, @FloatRange(from = 0d) double deltaTime) {
         mReadTarget = readTarget;
         mWriteTarget = writeTarget;
         screenQuad.setMaterial(mMaterial);
@@ -80,7 +84,7 @@ public class EffectPass extends APass {
         }
     }
 
-    public void setOpacity(float value) {
+    public void setOpacity(@FloatRange(from = 0d, to = 1d) float value) {
         mOpacity = value;
     }
 }
