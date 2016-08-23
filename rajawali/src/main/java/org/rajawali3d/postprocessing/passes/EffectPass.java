@@ -12,7 +12,10 @@
  */
 package org.rajawali3d.postprocessing.passes;
 
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.RawRes;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
@@ -22,68 +25,66 @@ import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
 
-
 public class EffectPass extends APass {
-	protected final String PARAM_OPACITY = "uOpacity";
-	protected final String PARAM_TEXTURE = "uTexture";
-	protected final String PARAM_DEPTH_TEXTURE = "uDepthTexture";
-	protected final String PARAM_BLEND_TEXTURE = "uBlendTexture";
+    protected final String PARAM_OPACITY       = "uOpacity";
+    protected final String PARAM_TEXTURE       = "uTexture";
+    protected final String PARAM_DEPTH_TEXTURE = "uDepthTexture";
+    protected final String PARAM_BLEND_TEXTURE = "uBlendTexture";
 
-	protected VertexShader mVertexShader;
-	protected FragmentShader mFragmentShader;
-	protected RenderTarget mReadTarget;
-	protected RenderTarget mWriteTarget;
-	protected float mOpacity = 1.0f;
+    protected VertexShader   mVertexShader;
+    protected FragmentShader mFragmentShader;
+    protected RenderTarget   mReadTarget;
+    protected RenderTarget   mWriteTarget;
 
-	public EffectPass()
-	{
-		mPassType = PassType.EFFECT;
-		mNeedsSwap = true;
-		mClear = false;
-		mEnabled = true;
-		mRenderToScreen = false;
-	}
+    @FloatRange(from = 0d, to = 1d) protected float mOpacity = 1.0f;
 
-	public EffectPass(Material material) {
-		this();
-		setMaterial(material);
-	}
+    public EffectPass() {
+        mPassType = PassType.EFFECT;
+        mNeedsSwap = true;
+        mClear = false;
+        mEnabled = true;
+        mRenderToScreen = false;
+    }
 
-	protected void createMaterial(@NonNull VertexShader vertexShader, @NonNull FragmentShader fragmentShader)
-	{
-		mVertexShader = vertexShader;
-		mFragmentShader = fragmentShader;
-		mVertexShader.setNeedsBuild(false);
-		mFragmentShader.setNeedsBuild(false);
-		setMaterial(new Material(mVertexShader, mFragmentShader));
-	}
+    public EffectPass(@NonNull Material material) {
+        this();
+        setMaterial(material);
+    }
 
-	protected void createMaterial(int vertexShaderResourceId, int fragmentShaderResourceId)
-	{
-		createMaterial(new VertexShader(vertexShaderResourceId), new FragmentShader(fragmentShaderResourceId));
-	}
+    protected void createMaterial(@NonNull VertexShader vertexShader, @NonNull FragmentShader fragmentShader) {
+        mVertexShader = vertexShader;
+        mFragmentShader = fragmentShader;
+        mVertexShader.setNeedsBuild(false);
+        mFragmentShader.setNeedsBuild(false);
+        setMaterial(new Material(mVertexShader, mFragmentShader));
+    }
+
+    protected void createMaterial(@RawRes int vertexShaderResourceId, @RawRes int fragmentShaderResourceId) {
+        createMaterial(new VertexShader(vertexShaderResourceId), new FragmentShader(fragmentShaderResourceId));
+    }
 
 
-	public void setShaderParams()
-	{
-		mFragmentShader.setUniform1f(PARAM_OPACITY, mOpacity);
-		mMaterial.bindTextureByName(PARAM_TEXTURE, 0, mReadTarget.getTexture());
-	}
+    public void setShaderParams() {
+        mFragmentShader.setUniform1f(PARAM_OPACITY, mOpacity);
+        mMaterial.bindTextureByName(PARAM_TEXTURE, 0, mReadTarget.getTexture());
+    }
 
-	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime) {
-		mReadTarget = readTarget;
-		mWriteTarget = writeTarget;
-		screenQuad.setMaterial(mMaterial);
-		screenQuad.setEffectPass(this);
+    public void render(@NonNull Scene scene, @NonNull Renderer renderer, @NonNull ScreenQuad screenQuad,
+                       @NonNull RenderTarget writeTarget, @NonNull RenderTarget readTarget,
+                       @IntRange(from = 0) long ellapsedTime, @FloatRange(from = 0d) double deltaTime) {
+        mReadTarget = readTarget;
+        mWriteTarget = writeTarget;
+        screenQuad.setMaterial(mMaterial);
+        screenQuad.setEffectPass(this);
 
-		if(mRenderToScreen)
-			scene.render(ellapsedTime, deltaTime, null);
-		else
-			scene.render(ellapsedTime, deltaTime, writeTarget);
-	}
+        if (mRenderToScreen) {
+            scene.render(ellapsedTime, deltaTime, null);
+        } else {
+            scene.render(ellapsedTime, deltaTime, writeTarget);
+        }
+    }
 
-	public void setOpacity(float value)
-	{
-		mOpacity = value;
-	}
+    public void setOpacity(@FloatRange(from = 0d, to = 1d) float value) {
+        mOpacity = value;
+    }
 }

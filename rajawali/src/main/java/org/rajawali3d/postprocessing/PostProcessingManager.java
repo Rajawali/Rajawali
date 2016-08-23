@@ -15,6 +15,9 @@ package org.rajawali3d.postprocessing;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.ATexture.FilterType;
 import org.rajawali3d.materials.textures.ATexture.WrapType;
@@ -34,205 +37,234 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PostProcessingManager {
 
-	protected Renderer     mRenderer;
-	protected RenderTarget mRenderTarget1;
-	protected RenderTarget mRenderTarget2;
-	public    RenderTarget mReadBuffer;
-	public    RenderTarget mWriteBuffer;
+    protected Renderer     mRenderer;
+    protected RenderTarget mRenderTarget1;
+    protected RenderTarget mRenderTarget2;
+    public    RenderTarget mReadBuffer;
+    public    RenderTarget mWriteBuffer;
 
-	protected List<IPostProcessingComponent> mComponents;
-	protected List<IPass> mPasses;
-	protected boolean mComponentsDirty = false;
-	protected int mNumPasses;
-	protected int mWidth;
-	protected int mHeight;
+    protected List<IPostProcessingComponent> mComponents;
+    protected List<IPass>                    mPasses;
+    protected boolean mComponentsDirty = false;
+    protected int mNumPasses;
+    protected int mWidth;
+    protected int mHeight;
 
-	protected EffectPass mCopyPass;
+    protected EffectPass mCopyPass;
 
-	protected ScreenQuad mScreenQuad;
-	protected Scene      mScene;
+    protected ScreenQuad mScreenQuad;
+    protected Scene      mScene;
 
-	public PostProcessingManager(Renderer renderer) {
-		this(renderer, -1, -1);
-	}
+    public PostProcessingManager(@NonNull Renderer renderer) {
+        this(renderer, -1, -1);
+    }
 
-	public PostProcessingManager(Renderer renderer, int width, int height) {
-		mRenderer = renderer;
+    public PostProcessingManager(@NonNull Renderer renderer,
+                                 @FloatRange(from = 0d) double sampleFactor) {
+        this(renderer,
+             (int) (sampleFactor * renderer.getViewportWidth()),
+             (int) (sampleFactor * renderer.getViewportHeight()));
+    }
 
-		if(width == -1 && height == -1) {
-			width = mRenderer.getViewportWidth();
-    		height = mRenderer.getViewportHeight();
-		}
+    public PostProcessingManager(@NonNull Renderer renderer,
+                                 @IntRange(from = -1) int width,
+                                 @IntRange(from = -1) int height) {
+        mRenderer = renderer;
 
-		mWidth = width;
-		mHeight = height;
+        if (width == -1 && height == -1) {
+            width = mRenderer.getViewportWidth();
+            height = mRenderer.getViewportHeight();
+        }
 
-		mScreenQuad = new ScreenQuad();
-		mScene = new Scene(mRenderer, GRAPH_TYPE.NONE);
+        mWidth = width;
+        mHeight = height;
 
-		mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
-				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-				FilterType.LINEAR, WrapType.CLAMP);
-		mRenderTarget2 = new RenderTarget("rt2" + hashCode(), width, height, 0, 0,
-				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-				FilterType.LINEAR, WrapType.CLAMP);
+        mScreenQuad = new ScreenQuad();
+        mScene = new Scene(mRenderer, GRAPH_TYPE.NONE);
 
-		mWriteBuffer = mRenderTarget1;
-		mReadBuffer = mRenderTarget2;
+        mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
+                                          false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
+                                          FilterType.LINEAR, WrapType.CLAMP);
+        mRenderTarget2 = new RenderTarget("rt2" + hashCode(), width, height, 0, 0,
+                                          false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
+                                          FilterType.LINEAR, WrapType.CLAMP);
 
-		mCopyPass = new EffectPass(new CopyPass());
-		mComponents = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingComponent>());
-		mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<IPass>());
+        mWriteBuffer = mRenderTarget1;
+        mReadBuffer = mRenderTarget2;
 
-		mRenderer.addRenderTarget(mWriteBuffer);
-		mRenderer.addRenderTarget(mReadBuffer);
+        mCopyPass = new EffectPass(new CopyPass());
+        mCopyPass.setSize(mWidth, mHeight);
+        mComponents = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingComponent>());
+        mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<IPass>());
 
-		mScene.addChild(mScreenQuad);
-		mRenderer.addScene(mScene);
-	}
+        mRenderer.addRenderTarget(mWriteBuffer);
+        mRenderer.addRenderTarget(mReadBuffer);
 
-	/**
-	 * Swaps read and write buffers.
-	 */
-	public void swapBuffers() {
-		RenderTarget tmp = mReadBuffer;
-		mReadBuffer = mWriteBuffer;
-		mWriteBuffer = tmp;
-	}
+        mScene.addChild(mScreenQuad);
+        mRenderer.addScene(mScene);
+    }
 
-	public void addPass(IPass pass) {
-		mComponents.add(pass);
-		mComponentsDirty = true;
-	}
+    /**
+     * Swaps read and write buffers.
+     */
+    public void swapBuffers() {
+        RenderTarget tmp = mReadBuffer;
+        mReadBuffer = mWriteBuffer;
+        mWriteBuffer = tmp;
+    }
 
-	public void addEffect(IPostProcessingEffect multiPass) {
-		multiPass.initialize(mRenderer);
-		mComponents.addAll(multiPass.getPasses());
-		mComponentsDirty = true;
-	}
+    public void addPass(@NonNull IPass pass) {
+        mComponents.add(pass);
+        setComponentsDirty();
+    }
 
-	public void insertPass(int index, IPass pass) {
-		mComponents.add(index, pass);
-		mComponentsDirty = true;
-	}
+    public void addEffect(@NonNull IPostProcessingEffect multiPass) {
+        multiPass.initialize(mRenderer);
+       mComponents.addAll(multiPass.getPasses());
+        setComponentsDirty();
+    }
 
-	public void insertEffect(int index, IPostProcessingEffect multiPass) {
-		multiPass.initialize(mRenderer);
-		mComponents.addAll(index, multiPass.getPasses());
-		mComponentsDirty = true;
-	}
+    public void insertPass(@IntRange(from = 0) int index, @NonNull IPass pass) {
+        mComponents.add(index, pass);
+        setComponentsDirty();
+    }
 
-	public void removePass(IPass pass) {
-		mComponents.remove(pass);
-		mComponentsDirty = true;
-	}
+    public void insertEffect(@IntRange(from = 0) int index, @NonNull IPostProcessingEffect multiPass) {
+        multiPass.initialize(mRenderer);
+        mComponents.addAll(index, multiPass.getPasses());
+        setComponentsDirty();
+    }
 
-	public void removeEffect(IPostProcessingEffect multiPass) {
-		mComponents.removeAll(multiPass.getPasses());
-		mComponentsDirty = true;
-	}
+    public void removePass(@NonNull IPass pass) {
+        mComponents.remove(pass);
+        setComponentsDirty();
+    }
 
-	public void setSize(int width, int height) {
-		mRenderTarget1.resize(width, height);
-		mRenderTarget2.resize(width, height);
+    public void removeEffect(@NonNull IPostProcessingEffect multiPass) {
+        mComponents.removeAll(multiPass.getPasses());
+        setComponentsDirty();
+    }
 
-		for(IPass pass : mPasses) {
-			pass.setSize(width, height);
-		}
+    public void setSize(@IntRange(from = 0) int width, @IntRange(from = 0) int height) {
+        mRenderTarget1.resize(width, height);
+        mRenderTarget2.resize(width, height);
 
-		//reset(renderTarget);
-		mWidth = width;
-		mHeight = height;
-	}
+        mWidth = width;
+        mHeight = height;
 
-	public void reset(RenderTarget renderTarget) {
-	}
+        for (IPass pass : mPasses) {
+            if (!pass.getRenderToScreen()) {
+                checkAndUpdatePassDimensions(pass);
+            }
+        }
 
-	public void render(long ellapsedTime, double deltaTime) {
-		if(mComponentsDirty)
-		{
-			updatePassesList();
-			mComponentsDirty = false;
-		}
+        setComponentsDirty();
+    }
 
-		// Set the viewport to the correct dimensions
-		mRenderer.setOverrideViewportDimensions(mWidth, mHeight);
+    public void reset(@NonNull RenderTarget renderTarget) {
+        // This method is currently intentionally empty.
+    }
 
-		mWriteBuffer = mRenderTarget1;
-		mReadBuffer = mRenderTarget2;
+    public void render(@IntRange(from = 0) long ellapsedTime, @FloatRange(from = 0d) double deltaTime) {
+        if (mComponentsDirty) {
+            updatePassesList();
+            mComponentsDirty = false;
+        }
 
-		boolean maskActive = false;
+        mWriteBuffer = mRenderTarget1;
+        mReadBuffer = mRenderTarget2;
 
-		IPass pass;
+        boolean maskActive = false;
 
-		for (int i = 0; i < mNumPasses; i++) {
-			pass = mPasses.get(i);
-			if (!pass.isEnabled())
-				continue;
+        IPass pass;
 
-			PassType type = pass.getPassType();
+        for (int i = 0; i < mNumPasses; i++) {
+            pass = mPasses.get(i);
+            if (!pass.isEnabled()) {
+                continue;
+            }
 
-			pass.render(type == PassType.RENDER || type == PassType.DEPTH ? mRenderer.getCurrentScene() : mScene, mRenderer,
-					mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
+            PassType type = pass.getPassType();
 
-			if (pass.needsSwap() && i < mNumPasses - 1) {
-				if (maskActive) {
-					GLES20.glStencilFunc(GLES20.GL_NOTEQUAL, 1, 0xffffffff);
+            if (pass.getRenderToScreen()) {
+                mRenderer.clearOverrideViewportDimensions();
+            } else {
+                mRenderer.setOverrideViewportDimensions(pass.getWidth(), pass.getHeight());
+            }
+            final boolean depthOrRenderPass = type == PassType.RENDER || type == PassType.DEPTH;
+            final Scene renderScene = depthOrRenderPass ? mRenderer.getCurrentScene() : mScene;
+            pass.render(renderScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
 
-					mCopyPass.render(mScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
+            if (pass.needsSwap() && i < mNumPasses - 1) {
+                if (maskActive) {
+                    GLES20.glStencilFunc(GLES20.GL_NOTEQUAL, 1, 0xffffffff);
 
-					GLES20.glStencilFunc(GLES20.GL_EQUAL, 1, 0xffffffff);
-				}
+                    mCopyPass
+                            .render(mScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
 
-				swapBuffers();
-			}
+                    GLES20.glStencilFunc(GLES20.GL_EQUAL, 1, 0xffffffff);
+                }
 
-			// If the current pass is a mask pass, notify the next pass that mask is active.
-			if (type == PassType.MASK)
-				maskActive = true;
-			else if (type == PassType.CLEAR)
-				maskActive = false;
-		}
+                swapBuffers();
+            }
 
-		// Restore the viewport dimensions
-		mRenderer.clearOverrideViewportDimensions();
-	}
+            // If the current pass is a mask pass, notify the next pass that mask is active.
+            if (type == PassType.MASK) {
+                maskActive = true;
+            } else if (type == PassType.CLEAR) {
+                maskActive = false;
+            }
+        }
 
-	public ATexture getTexture() {
-		return mWriteBuffer.getTexture();
-	}
+        // Restore the viewport dimensions
+        mRenderer.clearOverrideViewportDimensions();
+    }
 
-	private void updatePassesList()
-	{
-		mPasses.clear();
+    @NonNull
+    public ATexture getTexture() {
+        return mWriteBuffer.getTexture();
+    }
 
-		for(int i=0; i<mComponents.size(); i++)
-		{
-			IPostProcessingComponent component = mComponents.get(i);
-			if(component.getType() == PostProcessingComponentType.PASS)
-			{
-				mPasses.add((IPass)component);
-			}
-			else if(component.getType() == PostProcessingComponentType.EFFECT)
-			{
-				IPostProcessingEffect effect = (IPostProcessingEffect)component;
-				mPasses.addAll(effect.getPasses());
-			}
-		}
+    private void updatePassesList() {
+        mPasses.clear();
 
-		mNumPasses = mPasses.size();
-	}
+        for (int i = 0; i < mComponents.size(); ++i) {
+            IPostProcessingComponent component = mComponents.get(i);
+            if (component.getType() == PostProcessingComponentType.PASS) {
+                checkAndUpdatePassDimensions((IPass) component);
+                mPasses.add((IPass) component);
+            } else if (component.getType() == PostProcessingComponentType.EFFECT) {
+                IPostProcessingEffect effect = (IPostProcessingEffect) component;
+                for (IPass pass : effect.getPasses()) {
+                    checkAndUpdatePassDimensions(pass);
+                }
+                mPasses.addAll(effect.getPasses());
+            }
+        }
 
-	public boolean isEmpty() {
-		return mComponents.isEmpty();
-	}
+        mNumPasses = mPasses.size();
+    }
 
-	public Scene getScene() {
-		return mScene;
-	}
+    public boolean isEmpty() {
+        return mComponents.isEmpty();
+    }
 
-	protected void setComponentsDirty()
-	{
-		mComponentsDirty = true;
-	}
+    @NonNull
+    public Scene getScene() {
+        return mScene;
+    }
+
+    protected void setComponentsDirty() {
+        mComponentsDirty = true;
+    }
+
+    protected void checkAndUpdatePassDimensions(IPass pass) {
+        if (pass.getWidth() == -1 && pass.getHeight() == -1) {
+            if (pass.getRenderToScreen()) {
+                pass.setSize(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
+            } else {
+                pass.setSize(mWidth, mHeight);
+            }
+        }
+    }
 }

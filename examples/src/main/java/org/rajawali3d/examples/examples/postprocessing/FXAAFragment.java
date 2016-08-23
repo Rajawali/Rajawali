@@ -90,14 +90,13 @@ public class FXAAFragment extends AExampleFragment {
 				// -- Create a post processing manager. We can add multiple passes to this.
 				//
 
-				mEffects = new PostProcessingManager(this);
+				mEffects = new PostProcessingManager(this, 1.3333);
 				mRenderPass = new RenderPass(getCurrentScene(), getCurrentCamera(), 0);
 				mEffects.addPass(mRenderPass);
 
                 mFXAAPass = new FXAAPass();
                 mFXAAPass.setRenderToScreen(true);
                 mEffects.addPass(mFXAAPass);
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -116,9 +115,9 @@ public class FXAAFragment extends AExampleFragment {
         }
 
         public void disableFXAA() {
-            mEffects.removePass(mFXAAPass);
             mFXAAPass.setRenderToScreen(false);
             mRenderPass.setRenderToScreen(true);
+            mEffects.removePass(mFXAAPass);
         }
 	}
 

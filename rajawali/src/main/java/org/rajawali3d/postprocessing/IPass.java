@@ -30,6 +30,7 @@ public interface IPass extends IPostProcessingComponent {
 	PassType getPassType();
 	void setMaterial(Material material);
 	void setRenderToScreen(boolean renderToScreen);
+	boolean getRenderToScreen();
 	public void setWidth(int width);
 	public int getWidth();
 	public void setHeight(int height);
