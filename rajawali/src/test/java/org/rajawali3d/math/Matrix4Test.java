@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.test.suitebuilder.annotation.SmallTest;
@@ -97,10 +98,23 @@ public class Matrix4Test {
         }
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testConstructorFromQuaternion() throws Exception {
-        // TODO: Implement
+        final double[] expected = new double[] {
+                0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
+                -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
+                0.5027570093457944, -0.1488785046728972, 0.8515732087227414, 0d,
+                0d, 0d, 0d, 1d
+        };
+        final Quaternion q = new Quaternion(0.8958236433584459, -0.16744367165578425,
+                                            -0.2148860452915898, -0.3516317104771469);
+        final Matrix4 m = new Matrix4(q);
+        assertNotNull(m);
+        final double[] result = m.getDoubleValues();
+        assertNotNull(result);
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);
+        }
     }
 
     @Test
@@ -644,23 +658,58 @@ public class Matrix4Test {
         }
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testRotateWithQuaternion() throws Exception {
-        // TODO: Implement
+        final Matrix4 e = new Matrix4();
+        double[] expected;
+        final Matrix4 m = new Matrix4();
+        double[] result;
+        // Test X Axis
+        m.rotate(new Quaternion(Vector3.X, 20d));
+        result = m.getDoubleValues();
+        assertNotNull(result);
+        e.setAll(new Quaternion(Vector3.X, 20d));
+        expected = e.getDoubleValues();
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals("X - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
+                         expected[i], result[i], 1e-14);
+        }
+        // Test Y
+        m.identity();
+        m.rotate(new Quaternion(Vector3.Y, 30d));
+        result = m.getDoubleValues();
+        assertNotNull(result);
+        e.setAll(new Quaternion(Vector3.Y, 30d));
+        expected = e.getDoubleValues();
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals("Y - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
+                         expected[i], result[i], 1e-14);
+        }
+        // Test Z
+        m.identity();
+        m.rotate(new Quaternion(Vector3.Z, 40d));
+        result = m.getDoubleValues();
+        assertNotNull(result);
+        e.setAll(new Quaternion(Vector3.Z, 40d));
+        expected = e.getDoubleValues();
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals("Z - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
+                         expected[i], result[i], 1e-14);
+        }
     }
 
     @Test
     public void testRotateWithAxisAngle() throws Exception {
-        final double[] expected = new double[16];
+        final Matrix4 e = new Matrix4();
+        double[] expected;
         final Matrix4 m = new Matrix4();
         double[] result;
         // Test X Axis
         m.rotate(Axis.X, 20);
         result = m.getDoubleValues();
         assertNotNull(result);
-        Matrix.setIdentityM(expected, 0);
-        Matrix.setRotateEulerM(expected, 0, 20, 0, 0);
+        e.setAll(new Quaternion(Vector3.X, 20d));
+        expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("X - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
                          expected[i], result[i], 1e-14);
@@ -670,8 +719,8 @@ public class Matrix4Test {
         m.rotate(Axis.Y, 30);
         result = m.getDoubleValues();
         assertNotNull(result);
-        Matrix.setIdentityM(expected, 0);
-        Matrix.setRotateEulerM(expected, 0, 0, 30, 0);
+        e.setAll(new Quaternion(Vector3.Y, 30d));
+        expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Y - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
                          expected[i], result[i], 1e-14);
@@ -681,8 +730,8 @@ public class Matrix4Test {
         m.rotate(Axis.Z, 40);
         result = m.getDoubleValues();
         assertNotNull(result);
-        Matrix.setIdentityM(expected, 0);
-        Matrix.setRotateEulerM(expected, 0, 0, 0, 40);
+        e.setAll(new Quaternion(Vector3.Z, 40d));
+        expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Z - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
                          expected[i], result[i], 1e-14);
@@ -773,16 +822,40 @@ public class Matrix4Test {
         // TODO: Implement
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testProjectVector() throws Exception {
-        // TODO: Implement
+        final double[] m = new double[] {
+                1d, 0d, 0d, 0d,
+                0d, 1d, 0d, 0d,
+                0d, 0d, 1d, 1d,
+                0d, 0d, 0d, 0d
+        };
+        Vector3 v = new Vector3(2d, 3d, 4d);
+        final Matrix4 matrix = new Matrix4(m);
+        final Vector3 out = matrix.projectVector(v);
+        assertNotNull(out);
+        assertSame(out, v);
+        assertEquals(0.5, out.x, 1e-14);
+        assertEquals(0.75, out.y, 1e-14);
+        assertEquals(1d, out.z, 1e-14);
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testProjectAndCreateVector() throws Exception {
-        // TODO: Implement
+        final double[] m = new double[] {
+                1d, 0d, 0d, 0d,
+                0d, 1d, 0d, 0d,
+                0d, 0d, 1d, 1d,
+                0d, 0d, 0d, 0d
+        };
+        Vector3 v = new Vector3(2d, 3d, 4d);
+        final Matrix4 matrix = new Matrix4(m);
+        final Vector3 out = matrix.projectAndCreateVector(v);
+        assertNotNull(out);
+        assertTrue(out != v);
+        assertEquals(0.5, out.x, 1e-14);
+        assertEquals(0.75, out.y, 1e-14);
+        assertEquals(1d, out.z, 1e-14);
     }
 
     @Ignore("Not implemented")
@@ -1055,15 +1128,28 @@ public class Matrix4Test {
         assertTrue(expected.equals(out, 1e-14));
     }
 
-    @Ignore("Not implemented")
     @Test
-    public void testCreateRotationMatrix() throws Exception {
-
+    public void testCreateRotationMatrixFromQuaternion() throws Exception {
+        final double[] expected = new double[] {
+                0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
+                -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
+                0.5027570093457944, -0.1488785046728972, 0.8515732087227414, 0d,
+                0d, 0d, 0d, 1d
+        };
+        final Quaternion q = new Quaternion(0.8958236433584459, -0.16744367165578425,
+                                            -0.2148860452915898, -0.3516317104771469);
+        final Matrix4 out = Matrix4.createRotationMatrix(q);
+        assertNotNull(out);
+        final double[] result = out.getDoubleValues();
+        assertNotNull(result);
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);
+        }
     }
 
     @Ignore("Not implemented")
     @Test
-    public void testCreateRotationMatrix1() throws Exception {
+    public void testCreateRotationMatrixVector3AxisAngle() throws Exception {
 
     }
 

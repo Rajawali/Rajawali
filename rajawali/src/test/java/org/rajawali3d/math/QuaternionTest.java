@@ -6,7 +6,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.test.suitebuilder.annotation.SmallTest;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
@@ -241,6 +240,24 @@ public class QuaternionTest {
         final Matrix4 matrix = new Matrix4(doubles);
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = q.fromMatrix(matrix);
+        assertNotNull(out);
+        assertSame(q, out);
+        assertEquals(0.8956236623427759, q.w, 1e-14);
+        assertEquals(-0.1674810596312623, q.x, 1e-14);
+        assertEquals(-0.21493402652678664, q.y, 1e-14);
+        assertEquals(-0.35171022522565076, q.z, 1e-14);
+    }
+
+    @Test
+    public void testFromMatrixDoubles() throws Exception {
+        final double[] doubles = new double[] {
+                0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
+                -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
+                0.5027570093457944, -0.1488785046728972, 0.8515732087227414, 0d,
+                2d, 3d, -1d, 1d
+        };
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion out = q.fromMatrix(doubles);
         assertNotNull(out);
         assertSame(q, out);
         assertEquals(0.8956236623427759, q.w, 1e-14);
@@ -696,7 +713,7 @@ public class QuaternionTest {
     public void testSlerpQuaternion() throws Exception {
         final Quaternion start = new Quaternion(Vector3.X, 0d);
         final Quaternion end = new Quaternion(Vector3.X, 90d);
-        final Quaternion middle = new Quaternion(0.9140178268715137, 0.3728217267253166, 0.0, 0.0);
+        final Quaternion middle = new Quaternion(0.9238795325112868, 0.3826834323650898, 0.0, 0.0);
         Quaternion out = start.slerp(end, 0d);
         assertNotNull(out);
         assertSame(out, start);
@@ -707,43 +724,159 @@ public class QuaternionTest {
         out = start.slerp(end, 0.5);
         assertNotNull(out);
         assertSame(out, start);
-        assertEquals(Double.doubleToRawLongBits(middle.w), Double.doubleToRawLongBits(out.w));
-        assertEquals(Double.doubleToRawLongBits(middle.x), Double.doubleToRawLongBits(out.x));
-        assertEquals(Double.doubleToRawLongBits(middle.y), Double.doubleToRawLongBits(out.y));
-        assertEquals(Double.doubleToRawLongBits(middle.z), Double.doubleToRawLongBits(out.z));
+        assertEquals(middle.w, out.w, 1e-14);
+        assertEquals(middle.x, out.x, 1e-14);
+        assertEquals(middle.y, out.y, 1e-14);
+        assertEquals(middle.z, out.z, 1e-14);
         start.fromAngleAxis(Vector3.X, 0d);
         out = start.slerp(end, 1d);
         assertNotNull(out);
         assertSame(out, start);
-        assertEquals("End: " + end + " Result: " + out, Double.doubleToRawLongBits(end.w), Double
-                .doubleToRawLongBits(out.w));
-        assertEquals(Double.doubleToRawLongBits(end.x), Double.doubleToRawLongBits(out.x));
-        assertEquals(Double.doubleToRawLongBits(end.y), Double.doubleToRawLongBits(out.y));
-        assertEquals(Double.doubleToRawLongBits(end.z), Double.doubleToRawLongBits(out.z));
+        assertEquals(end.w, out.w, 1e-14);
+        assertEquals(end.x, out.x, 1e-14);
+        assertEquals(end.y, out.y, 1e-14);
+        assertEquals(end.z, out.z, 1e-14);
     }
 
-    @Ignore("Not Implemented")
     @Test
-    public void testSlerp1() throws Exception {
-
+    public void testSlerpTwoQuaternions() throws Exception {
+        final Quaternion q = new Quaternion();
+        final Quaternion start = new Quaternion(Vector3.X, 0d);
+        final Quaternion end = new Quaternion(Vector3.X, 90d);
+        final Quaternion middle = new Quaternion(0.9238795325112868, 0.3826834323650898, 0.0, 0.0);
+        Quaternion out = q.slerp(start, start, 0d);
+        assertEquals(Double.doubleToRawLongBits(start.w), Double.doubleToRawLongBits(out.w));
+        assertEquals(Double.doubleToRawLongBits(start.x), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(start.y), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(start.z), Double.doubleToRawLongBits(out.z));
+        out = q.slerp(start, end, 0d);
+        assertNotNull(out);
+        assertSame(out, q);
+        assertEquals(Double.doubleToRawLongBits(start.w), Double.doubleToRawLongBits(out.w));
+        assertEquals(Double.doubleToRawLongBits(start.x), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(start.y), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(start.z), Double.doubleToRawLongBits(out.z));
+        q.identity();
+        out = q.slerp(start, end, 0.5);
+        assertNotNull(out);
+        assertSame(out, q);
+        assertEquals(middle.w, out.w, 1e-14);
+        assertEquals(middle.x, out.x, 1e-14);
+        assertEquals(middle.y, out.y, 1e-14);
+        assertEquals(middle.z, out.z, 1e-14);
+        q.identity();
+        out = q.slerp(start, end, 1d);
+        assertNotNull(out);
+        assertSame(out, q);
+        assertEquals(end.w, out.w, 1e-14);
+        assertEquals(end.x, out.x, 1e-14);
+        assertEquals(end.y, out.y, 1e-14);
+        assertEquals(end.z, out.z, 1e-14);
     }
 
-    @Ignore("Not Implemented")
     @Test
-    public void testSlerp2() throws Exception {
-
+    public void testSlerpTwoQuaternionsShortestPath() throws Exception {
+        final Quaternion q = new Quaternion();
+        final Quaternion start = new Quaternion(Vector3.X, 0d);
+        final Quaternion end = new Quaternion(Vector3.X, 90d);
+        final Quaternion middle = new Quaternion(0.9238795325112868, 0.3826834323650898, 0.0, 0.0);
+        Quaternion out = q.slerp(start, start, 0d, true);
+        assertEquals(Double.doubleToRawLongBits(start.w), Double.doubleToRawLongBits(out.w));
+        assertEquals(Double.doubleToRawLongBits(start.x), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(start.y), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(start.z), Double.doubleToRawLongBits(out.z));
+        out = q.slerp(start, end, 0d, true);
+        assertNotNull(out);
+        assertSame(out, q);
+        assertEquals(Double.doubleToRawLongBits(start.w), Double.doubleToRawLongBits(out.w));
+        assertEquals(Double.doubleToRawLongBits(start.x), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(start.y), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(start.z), Double.doubleToRawLongBits(out.z));
+        q.identity();
+        out = q.slerp(start, end, 0.5, true);
+        assertNotNull(out);
+        assertSame(out, q);
+        assertEquals(middle.w, out.w, 1e-14);
+        assertEquals(middle.x, out.x, 1e-14);
+        assertEquals(middle.y, out.y, 1e-14);
+        assertEquals(middle.z, out.z, 1e-14);
+        q.identity();
+        out = q.slerp(start, end, 1d, true);
+        assertNotNull(out);
+        assertSame(out, q);
+        assertEquals(end.w, out.w, 1e-14);
+        assertEquals(end.x, out.x, 1e-14);
+        assertEquals(end.y, out.y, 1e-14);
+        assertEquals(end.z, out.z, 1e-14);
     }
 
-    @Ignore("Not Implemented")
     @Test
     public void testLerp() throws Exception {
-
+        final Quaternion start = new Quaternion(Vector3.X, 0d);
+        final Quaternion end = new Quaternion(Vector3.X, 90d);
+        final Quaternion middle = new Quaternion(0.8535533905932737, 0.35355339059327373, 0.0, 0.0);
+        Quaternion out = Quaternion.lerp(start, start, 0d, true);
+        assertEquals(Double.doubleToRawLongBits(start.w), Double.doubleToRawLongBits(out.w));
+        assertEquals(Double.doubleToRawLongBits(start.x), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(start.y), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(start.z), Double.doubleToRawLongBits(out.z));
+        out = Quaternion.lerp(start, end, 0d, true);
+        assertNotNull(out);
+        assertEquals(Double.doubleToRawLongBits(start.w), Double.doubleToRawLongBits(out.w));
+        assertEquals(Double.doubleToRawLongBits(start.x), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(start.y), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(start.z), Double.doubleToRawLongBits(out.z));
+        out = Quaternion.lerp(start, end, 0.5, true);
+        assertNotNull(out);
+        assertEquals(middle.w, out.w, 1e-14);
+        assertEquals(middle.x, out.x, 1e-14);
+        assertEquals(middle.y, out.y, 1e-14);
+        assertEquals(middle.z, out.z, 1e-14);
+        out = Quaternion.lerp(start, end, 1d, true);
+        assertNotNull(out);
+        assertEquals(end.w, out.w, 1e-14);
+        assertEquals(end.x, out.x, 1e-14);
+        assertEquals(end.y, out.y, 1e-14);
+        assertEquals(end.z, out.z, 1e-14);
     }
 
-    @Ignore("Not Implemented")
     @Test
     public void testNlerp() throws Exception {
-
+        final Quaternion start = new Quaternion(Vector3.X, 0d);
+        start.multiply(2.0);
+        final Quaternion nStart = start.clone();
+        nStart.normalize();
+        final Quaternion end = new Quaternion(Vector3.X, 90d);
+        end.multiply(2.0);
+        final Quaternion nEnd = end.clone();
+        nEnd.normalize();
+        final Quaternion middle = new Quaternion(0.8535533905932737, 0.35355339059327373, 0.0, 0.0);
+        middle.multiply(2.0);
+        final Quaternion nMiddle = middle.clone();
+        nMiddle.normalize();
+        Quaternion out = Quaternion.nlerp(start, start, 0d, true);
+        assertEquals(Double.doubleToRawLongBits(nStart.w), Double.doubleToRawLongBits(out.w));
+        assertEquals(Double.doubleToRawLongBits(nStart.x), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(nStart.y), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(nStart.z), Double.doubleToRawLongBits(out.z));
+        out = Quaternion.nlerp(start, end, 0d, true);
+        assertNotNull(out);
+        assertEquals(Double.doubleToRawLongBits(nStart.w), Double.doubleToRawLongBits(out.w));
+        assertEquals(Double.doubleToRawLongBits(nStart.x), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(nStart.y), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(nStart.z), Double.doubleToRawLongBits(out.z));
+        out = Quaternion.nlerp(start, end, 0.5, true);
+        assertNotNull(out);
+        assertEquals("" + out, nMiddle.w, out.w, 1e-14);
+        assertEquals(nMiddle.x, out.x, 1e-14);
+        assertEquals(nMiddle.y, out.y, 1e-14);
+        assertEquals(nMiddle.z, out.z, 1e-14);
+        out = Quaternion.nlerp(start, end, 1d, true);
+        assertNotNull(out);
+        assertEquals(nEnd.w, out.w, 1e-14);
+        assertEquals(nEnd.x, out.x, 1e-14);
+        assertEquals(nEnd.y, out.y, 1e-14);
+        assertEquals(nEnd.z, out.z, 1e-14);
     }
 
     @Test
@@ -835,16 +968,81 @@ public class QuaternionTest {
         }
     }
 
-    @Ignore("Not Implemented")
     @Test
     public void testLookAt() throws Exception {
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+        final Vector3 lookAt = Vector3.subtractAndCreate(new Vector3(0, 10d, 10d), Vector3.ZERO);
+        final Vector3 up = Vector3.Y;
+        Quaternion out = q.lookAt(lookAt, up);
+        assertNotNull(out);
+        assertSame(q, out);
+        assertEquals(0.9238795325112867, out.w, 1e-14);
+        assertEquals(0.3826834323650898, out.x, 1e-14);
+        assertEquals(0d, out.y, 1e-14);
+        assertEquals(0d, out.z, 1e-14);
 
+        lookAt.subtractAndSet(new Vector3(10d, 0, 10d), Vector3.ZERO);
+        out = q.lookAt(lookAt, up);
+        assertNotNull(out);
+        assertSame(q, out);
+        assertEquals(0.9238795325112867, out.w, 1e-14);
+        assertEquals(0d, out.x, 1e-14);
+        assertEquals(-0.3826834323650898, out.y, 1e-14);
+        assertEquals(0d, out.z, 1e-14);
+
+        lookAt.subtractAndSet(new Vector3(0d, 10d, 0d), Vector3.ZERO);
+        out = q.lookAt(lookAt, Vector3.Y);
+        assertNotNull(out);
+        assertSame(q, out);
+        assertEquals(0.7071067811865475, out.w, 1e-14);
+        assertEquals(-0.7071067811865475, out.x, 1e-14);
+        assertEquals(0d, out.y, 1e-14);
+        assertEquals(0d, out.z, 1e-14);
+
+        lookAt.subtractAndSet(new Vector3(0d, 10d, 0d), Vector3.ZERO);
+        out = q.lookAt(lookAt, Vector3.NEG_Y);
+        assertNotNull(out);
+        assertSame(q, out);
+        assertEquals(0.7071067811865475, out.w, 1e-14);
+        assertEquals(0.7071067811865475, out.x, 1e-14);
+        assertEquals(0d, out.y, 1e-14);
+        assertEquals(0d, out.z, 1e-14);
     }
 
-    @Ignore("Not Implemented")
     @Test
     public void testLookAtAndCreate() throws Exception {
+        final Vector3 lookAt = Vector3.subtractAndCreate(new Vector3(0, 10d, 10d), Vector3.ZERO);
+        final Vector3 up = Vector3.Y;
+        Quaternion out = Quaternion.lookAtAndCreate(lookAt, up);
+        assertNotNull(out);
+        assertEquals(0.9238795325112867, out.w, 1e-14);
+        assertEquals(0.3826834323650898, out.x, 1e-14);
+        assertEquals(0d, out.y, 1e-14);
+        assertEquals(0d, out.z, 1e-14);
 
+        lookAt.subtractAndSet(new Vector3(10d, 0, 10d), Vector3.ZERO);
+        out = Quaternion.lookAtAndCreate(lookAt, up);
+        assertNotNull(out);
+        assertEquals(0.9238795325112867, out.w, 1e-14);
+        assertEquals(0d, out.x, 1e-14);
+        assertEquals(-0.3826834323650898, out.y, 1e-14);
+        assertEquals(0d, out.z, 1e-14);
+
+        lookAt.subtractAndSet(new Vector3(0d, 10d, 0d), Vector3.ZERO);
+        out = Quaternion.lookAtAndCreate(lookAt, Vector3.Y);
+        assertNotNull(out);
+        assertEquals(0.7071067811865475, out.w, 1e-14);
+        assertEquals(-0.7071067811865475, out.x, 1e-14);
+        assertEquals(0d, out.y, 1e-14);
+        assertEquals(0d, out.z, 1e-14);
+
+        lookAt.subtractAndSet(new Vector3(0d, 10d, 0d), Vector3.ZERO);
+        out = Quaternion.lookAtAndCreate(lookAt, Vector3.NEG_Y);
+        assertNotNull(out);
+        assertEquals(0.7071067811865475, out.w, 1e-14);
+        assertEquals(0.7071067811865475, out.x, 1e-14);
+        assertEquals(0d, out.y, 1e-14);
+        assertEquals(0d, out.z, 1e-14);
     }
 
     @Test

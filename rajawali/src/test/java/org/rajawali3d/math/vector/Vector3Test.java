@@ -3,14 +3,16 @@ package org.rajawali3d.math.vector;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.test.suitebuilder.annotation.SmallTest;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;
+import org.rajawali3d.math.Quaternion;
+import org.rajawali3d.math.vector.Vector3.Axis;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
@@ -413,10 +415,32 @@ public class Vector3Test {
         assertEquals(1.5d, v.z, 0);
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testRotateBy() throws Exception {
-        // TODO
+        final Quaternion q = new Quaternion();
+        final Vector3 v = new Vector3(Vector3.X);
+        v.multiply(2.0);
+        final Vector3 out = q.multiply(v);
+        assertNotNull(out);
+        assertTrue(out != v);
+        assertEquals(Double.doubleToRawLongBits(2d), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out.y));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out.z));
+        q.fromAngleAxis(Axis.Z, 45.0);
+        final Vector3 out1 = q.multiply(v);
+        assertNotNull(out1);
+        assertTrue(out1 != v);
+        assertEquals(1.4142135623730951, out1.x, 1e-14);
+        assertEquals(1.4142135623730951, out1.y, 1e-14);
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out1.z));
+        q.fromAngleAxis(1d, 0d, 1d, 45d);
+        q.normalize();
+        final Vector3 out2 = q.multiply(v);
+        assertNotNull(out2);
+        assertTrue(out2 != v);
+        assertEquals(1.7071067811865477, out2.x, 1e-14);
+        assertEquals(0.9999999999999998, out2.y, 1e-14);
+        assertEquals(0.29289321881345237, out2.z, 1e-14);
     }
 
     @Test
@@ -517,12 +541,42 @@ public class Vector3Test {
         assertEquals(0d, v3.x, 0);
         assertEquals(0d, v3.y, 0);
         assertEquals(1d, v3.z, 0);
+        v1.setAll(1, 1, 0);
+        v2.setAll(0, 1, 1);
+        v3.setAll(1, 0, 1);
+        Vector3.orthoNormalize(new Vector3[]{ v1, v2, v3 });
+        assertEquals(0.7071067811865475, v1.x, 1e-14);
+        assertEquals(0.7071067811865475, v1.y, 1e-14);
+        assertEquals(0d, v1.z, 1e-14);
+        assertEquals(-0.4082482904638631, v2.x, 1e-14);
+        assertEquals(0.4082482904638631, v2.y, 1e-14);
+        assertEquals(0.8164965809277261, v2.z, 1e-14);
+        assertEquals(0.5773502691896256, v3.x, 1e-14);
+        assertEquals(-0.5773502691896256, v3.y, 1e-14);
+        assertEquals(0.5773502691896257, v3.z, 1e-14);
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testOrthoNormalizeFromTwoVector3() throws Exception {
-        //TODO
+        final Vector3 v1 = new Vector3(Vector3.X);
+        final Vector3 v2 = new Vector3(Vector3.Y);
+        v2.multiply(2d);
+        Vector3.orthoNormalize(v1, v2);
+        assertEquals(1d, v1.x, 0);
+        assertEquals(0d, v1.y, 0);
+        assertEquals(0d, v1.z, 0);
+        assertEquals(0d, v2.x, 0);
+        assertEquals(1d, v2.y, 0);
+        assertEquals(0d, v2.z, 0);
+        v1.setAll(1, 1, 0);
+        v2.setAll(0, 1, 1);
+        Vector3.orthoNormalize(v1, v2);
+        assertEquals("v1: " + v1 + " v2: " + v2, 0.7071067811865475, v1.x, 1e-14);
+        assertEquals(0.7071067811865475, v1.y, 1e-14);
+        assertEquals(0d, v1.z, 1e-14);
+        assertEquals(-0.4082482904638631, v2.x, 1e-14);
+        assertEquals(0.4082482904638631, v2.y, 1e-14);
+        assertEquals(0.8164965809277261, v2.z, 1e-14);
     }
 
     @Test
@@ -685,16 +739,38 @@ public class Vector3Test {
         assertEquals(0d, v.z, 0);
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testProjectFromDoubleArrayMatrix() throws Exception {
-        // TODO
+        final double[] m = new double[] {
+                1d, 0d, 0d, 0d,
+                0d, 1d, 0d, 0d,
+                0d, 0d, 1d, 1d,
+                0d, 0d, 0d, 0d
+        };
+        Vector3 v = new Vector3(2d, 3d, 4d);
+        final Vector3 out = v.project(m);
+        assertNotNull(out);
+        assertSame(out, v);
+        assertEquals(0.5, out.x, 1e-14);
+        assertEquals(0.75, out.y, 1e-14);
+        assertEquals(1d, out.z, 1e-14);
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testProjectFromMatrix4() throws Exception {
-        // TODO
+        final double[] m = new double[] {
+                1d, 0d, 0d, 0d,
+                0d, 1d, 0d, 0d,
+                0d, 0d, 1d, 1d,
+                0d, 0d, 0d, 0d
+        };
+        Vector3 v = new Vector3(2d, 3d, 4d);
+        final Vector3 out = v.project(new Matrix4(m));
+        assertNotNull(out);
+        assertSame(out, v);
+        assertEquals(0.5, out.x, 1e-14);
+        assertEquals(0.75, out.y, 1e-14);
+        assertEquals(1d, out.z, 1e-14);
     }
 
     @Test
@@ -708,12 +784,6 @@ public class Vector3Test {
         assertEquals(1d, v.x, 0);
         assertEquals(0d, v.y, 0);
         assertEquals(0d, v.z, 0);
-    }
-
-    @Ignore("Not implemented")
-    @Test
-    public void testTransform() throws Exception {
-        // TODO
     }
 
     @Test
@@ -806,10 +876,38 @@ public class Vector3Test {
         assertEquals(-3d, t.z, 0);
     }
 
-    @Ignore("Not implemented")
     @Test
     public void testGetRotationTo() throws Exception {
-        // TODO
+        final Quaternion out = Vector3.X.getRotationTo(Vector3.Y);
+        assertNotNull(out);
+        assertEquals(0.7071067811865475, out.w, 1e-14);
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out.x));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out.y));
+        assertEquals(0.7071067811865475, out.z, 1e-14);
+        final Quaternion out1 = Vector3.Y.getRotationTo(Vector3.Z);
+        assertNotNull(out1);
+        assertEquals(0.7071067811865475, out1.w, 1e-14);
+        assertEquals(0.7071067811865475, out1.x, 1e-14);
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out1.y));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out1.z));
+        final Quaternion out2 = Vector3.X.getRotationTo(Vector3.Z);
+        assertNotNull(out2);
+        assertEquals(0.7071067811865475, out2.w, 1e-14);
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out2.x));
+        assertEquals(-0.7071067811865475, out2.y, 1e-14);
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out2.z));
+        final Quaternion out3 = Vector3.X.getRotationTo(Vector3.X);
+        assertNotNull(out3);
+        assertEquals(Double.doubleToRawLongBits(1d), Double.doubleToRawLongBits(out3.w));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out3.x));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out3.y));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out3.z));
+        final Quaternion out4 = Vector3.X.getRotationTo(Vector3.NEG_X);
+        assertNotNull(out4);
+        assertEquals(0d, out4.w, 1e-14);
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out4.x));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out4.y));
+        assertEquals(Double.doubleToRawLongBits(-1d), Double.doubleToRawLongBits(out4.z));
     }
 
     @Test

@@ -12,6 +12,10 @@
  */
 package org.rajawali3d.math;
 
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
+import android.support.annotation.Size;
 import org.rajawali3d.WorldParameters;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
@@ -33,19 +37,18 @@ import org.rajawali3d.math.vector.Vector3.Axis;
 public final class Quaternion implements Cloneable {
     //Tolerances
     //public static final double F_EPSILON               = .001;
-    public static final double NORMALIZATION_TOLERANCE = 1e-6
-            ;
-    public static final double PARALLEL_TOLERANCE     = 1e-6;
+    public static final double NORMALIZATION_TOLERANCE = 1e-6;
+    public static final double PARALLEL_TOLERANCE      = 1e-6;
 
     //The Quaternion components
     public double w, x, y, z;
 
     //Scratch members
-    private              Vector3    mTmpVec1 = new Vector3();
-    private              Vector3    mTmpVec2 = new Vector3();
-    private              Vector3    mTmpVec3 = new Vector3();
-    private static final Quaternion sTmp1    = new Quaternion(0, 0, 0, 0);
-    private static final Quaternion sTmp2    = new Quaternion(0, 0, 0, 0);
+    @NonNull private              Vector3    mTmpVec1 = new Vector3();
+    @NonNull private              Vector3    mTmpVec2 = new Vector3();
+    @NonNull private              Vector3    mTmpVec3 = new Vector3();
+    @NonNull private static final Quaternion sTmp1    = new Quaternion(0, 0, 0, 0);
+    @NonNull private static final Quaternion sTmp2    = new Quaternion(0, 0, 0, 0);
 
     /**
      * Default constructor. Creates an identity {@link Quaternion}.
@@ -72,7 +75,7 @@ public final class Quaternion implements Cloneable {
      *
      * @param quat {@link Quaternion} to take values from.
      */
-    public Quaternion(Quaternion quat) {
+    public Quaternion(@NonNull Quaternion quat) {
         setAll(quat);
     }
 
@@ -83,7 +86,7 @@ public final class Quaternion implements Cloneable {
      * @param axis  {@link Vector3} The axis of rotation.
      * @param angle double The angle of rotation in degrees.
      */
-    public Quaternion(Vector3 axis, double angle) {
+    public Quaternion(@NonNull Vector3 axis, double angle) {
         fromAngleAxis(axis, angle);
     }
 
@@ -97,6 +100,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion setAll(double w, double x, double y, double z) {
         this.w = w;
         this.x = x;
@@ -113,6 +117,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion setAll(Quaternion quat) {
         return setAll(quat.w, quat.x, quat.y, quat.z);
     }
@@ -125,7 +130,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion fromAngleAxis(final Axis axis, final double angle) {
+    @NonNull
+    public Quaternion fromAngleAxis(@NonNull Axis axis, double angle) {
         fromAngleAxis(Vector3.getAxisVector(axis), angle);
         return this;
     }
@@ -138,7 +144,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion fromAngleAxis(final Vector3 axis, final double angle) {
+    @NonNull
+    public Quaternion fromAngleAxis(@NonNull Vector3 axis, double angle) {
         if (axis.isZero()) {
             return identity();
         } else {
@@ -167,6 +174,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion fromAngleAxis(double x, double y, double z, double angle) {
         return this.fromAngleAxis(new Vector3(x, y, z), angle);
     }
@@ -181,7 +189,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion fromAxes(final Vector3 xAxis, final Vector3 yAxis, final Vector3 zAxis) {
+    @NonNull
+    public Quaternion fromAxes(@NonNull Vector3 xAxis, @NonNull Vector3 yAxis, @NonNull Vector3 zAxis) {
         return fromAxes(xAxis.x, xAxis.y, xAxis.z, yAxis.x, yAxis.y, yAxis.z, zAxis.x, zAxis.y, zAxis.z);
     }
 
@@ -209,6 +218,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion fromAxes(double xx, double xy, double xz, double yx, double yy, double yz,
                                double zx, double zy, double zz) {
         // The trace is the sum of the diagonal elements; see
@@ -259,12 +269,28 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion fromMatrix(Matrix4 matrix) {
+    @NonNull
+    public Quaternion fromMatrix(@NonNull Matrix4 matrix) {
         double[] value = new double[16];
         matrix.toArray(value);
         fromAxes(value[Matrix4.M00], value[Matrix4.M10], value[Matrix4.M20],
                  value[Matrix4.M01], value[Matrix4.M11], value[Matrix4.M21],
                  value[Matrix4.M02], value[Matrix4.M12], value[Matrix4.M22]);
+        return this;
+    }
+
+    /**
+     * Sets this {@link Quaternion}'s components from the given matrix.
+     *
+     * @param matrix {@link Matrix4} The rotation matrix.
+     *
+     * @return A reference to this {@link Quaternion} to facilitate chaining.
+     */
+    @NonNull
+    public Quaternion fromMatrix(@NonNull @Size(min = 16) double[] matrix) {
+        fromAxes(matrix[Matrix4.M00], matrix[Matrix4.M10], matrix[Matrix4.M20],
+                 matrix[Matrix4.M01], matrix[Matrix4.M11], matrix[Matrix4.M21],
+                 matrix[Matrix4.M02], matrix[Matrix4.M12], matrix[Matrix4.M22]);
         return this;
     }
 
@@ -277,8 +303,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Quaternion fromEuler(double yaw, double pitch, double roll) {
-        // TODO: Verify
         yaw = Math.toRadians(yaw);
         pitch = Math.toRadians(pitch);
         roll = Math.toRadians(roll);
@@ -307,22 +333,23 @@ public final class Quaternion implements Cloneable {
      * Set this {@link Quaternion}'s components to the rotation between the given
      * two {@link Vector3}s. This will fail if the two vectors are parallel.
      *
-     * @param v1 {@link Vector3} The base vector, should be normalized.
-     * @param v2 {@link Vector3} The target vector, should be normalized.
+     * @param u {@link Vector3} The base vector, should be normalized.
+     * @param v {@link Vector3} The target vector, should be normalized.
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion fromRotationBetween(final Vector3 v1, final Vector3 v2) {
-        final double dot = v1.dot(v2);
+    @NonNull
+    public Quaternion fromRotationBetween(@NonNull Vector3 u, @NonNull Vector3 v) {
+        final double dot = u.dot(v);
         final double dotError = 1.0 - Math.abs(MathUtil.clamp(dot, -1f, 1f));
         if (dotError <= PARALLEL_TOLERANCE) {
             // The look and up vectors are parallel/anti-parallel
             if (dot < 0) {
                 // The look and up vectors are parallel but opposite direction
-                mTmpVec3.crossAndSet(WorldParameters.RIGHT_AXIS, v1);
+                mTmpVec3.crossAndSet(WorldParameters.RIGHT_AXIS, u);
                 if (mTmpVec3.length() < 1e-6) {
                     // Vectors were co-linear, pick another
-                    mTmpVec3.crossAndSet(WorldParameters.UP_AXIS, v1);
+                    mTmpVec3.crossAndSet(WorldParameters.UP_AXIS, u);
                 }
                 mTmpVec3.normalize();
                 return fromAngleAxis(mTmpVec3, 180.0);
@@ -331,7 +358,7 @@ public final class Quaternion implements Cloneable {
                 return identity();
             }
         }
-        mTmpVec3.crossAndSet(v1, v2).normalize();
+        mTmpVec3.crossAndSet(u, v).normalize();
         x = mTmpVec3.x;
         y = mTmpVec3.y;
         z = mTmpVec3.z;
@@ -354,8 +381,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion fromRotationBetween(final double x1, final double y1, final double z1, final double x2,
-                                          final double y2, final double z2) {
+    @NonNull
+    public Quaternion fromRotationBetween(double x1, double y1, double z1, double x2, double y2, double z2) {
         mTmpVec1.setAll(x1, y1, z1).normalize();
         mTmpVec2.setAll(x2, y2, z2).normalize();
         return fromRotationBetween(mTmpVec1, mTmpVec2);
@@ -365,14 +392,15 @@ public final class Quaternion implements Cloneable {
      * Creates a new {@link Quaternion} and sets its components to the rotation between the given
      * two vectors. The incoming vectors should be normalized.
      *
-     * @param v1 {@link Vector3} The source vector.
-     * @param v2 {@link Vector3} The destination vector.
+     * @param u {@link Vector3} The source vector.
+     * @param v {@link Vector3} The destination vector.
      *
      * @return {@link Quaternion} The new {@link Quaternion}.
      */
-    public static Quaternion createFromRotationBetween(final Vector3 v1, final Vector3 v2) {
+    @NonNull
+    public static Quaternion createFromRotationBetween(@NonNull Vector3 u, @NonNull Vector3 v) {
         Quaternion q = new Quaternion();
-        q.fromRotationBetween(v1, v2);
+        q.fromRotationBetween(u, v);
         return q;
     }
 
@@ -383,7 +411,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion add(Quaternion quat) {
+    @NonNull
+    public Quaternion add(@NonNull Quaternion quat) {
         w += quat.w;
         x += quat.x;
         y += quat.y;
@@ -398,7 +427,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion subtract(Quaternion quat) {
+    @NonNull
+    public Quaternion subtract(@NonNull Quaternion quat) {
         w -= quat.w;
         x -= quat.x;
         y -= quat.y;
@@ -414,6 +444,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion multiply(double scalar) {
         w *= scalar;
         x *= scalar;
@@ -429,7 +460,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion multiply(Quaternion quat) {
+    @NonNull
+    public Quaternion multiply(@NonNull Quaternion quat) {
         final double tW = w;
         final double tX = x;
         final double tY = y;
@@ -454,7 +486,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Vector3} The result of the multiplication.
      */
-    public Vector3 multiply(final Vector3 vector) {
+    @NonNull
+    public Vector3 multiply(@NonNull Vector3 vector) {
         mTmpVec3.setAll(x, y, z);
         mTmpVec1.crossAndSet(mTmpVec3, vector);
         mTmpVec2.crossAndSet(mTmpVec3, mTmpVec1);
@@ -474,7 +507,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion multiplyLeft(Quaternion quat) {
+    @NonNull
+    public Quaternion multiplyLeft(@NonNull Quaternion quat) {
         final double newW = quat.w * w - quat.x * x - quat.y * y - quat.z * z;
         final double newX = quat.w * x + quat.x * w + quat.y * z - quat.z * y;
         final double newY = quat.w * y + quat.y * w + quat.z * x - quat.x * z;
@@ -501,6 +535,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion conjugate() {
         x = -x;
         y = -y;
@@ -513,6 +548,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion inverse() {
         final double norm = length2();
         if (norm > 0) {
@@ -527,6 +563,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Quaternion} The new inverted {@link Quaternion}.
      */
+    @NonNull
     public Quaternion invertAndCreate() {
         double norm = length2();
         if (norm > 0) {
@@ -543,6 +580,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion computeW() {
         double t = 1.0 - (x * x) - (y * y) - (z * z);
         if (t < 0.0) {
@@ -559,6 +597,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Vector3} The x axis of this {@link Quaternion}.
      */
+    @NonNull
     public Vector3 getXAxis() {
         double fTy = 2.0 * y;
         double fTz = 2.0 * z;
@@ -577,6 +616,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Vector3} The y axis of this {@link Quaternion}.
      */
+    @NonNull
     public Vector3 getYAxis() {
         double fTx = 2.0 * x;
         double fTy = 2.0 * y;
@@ -596,6 +636,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Vector3} The z axis of this {@link Quaternion}.
      */
+    @NonNull
     public Vector3 getZAxis() {
         double fTx = 2.0 * x;
         double fTy = 2.0 * y;
@@ -617,7 +658,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Vector3} The z axis of this {@link Quaternion}.
      */
-    public Vector3 getAxis(Axis axis) {
+    @NonNull
+    public Vector3 getAxis(@NonNull Axis axis) {
         if (axis == Axis.X) {
             return getXAxis();
         } else if (axis == Axis.Y) {
@@ -650,7 +692,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return double The dot product.
      */
-    public double dot(Quaternion other) {
+    public double dot(@NonNull Quaternion other) {
         return w * other.w + x * other.x + y * other.y + z * other.z;
     }
 
@@ -659,6 +701,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion identity() {
         w = 1;
         x = 0;
@@ -672,6 +715,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A new identity {@link Quaternion}.
      */
+    @NonNull
     public static Quaternion getIdentity() {
         return new Quaternion(1, 0, 0, 0);
     }
@@ -681,6 +725,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion exp() {
         double vNorm = Math.sqrt(x * x + y * y + z * z);
         double sin = Math.sin(vNorm);
@@ -700,6 +745,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Quaternion} The new {@link Quaternion} set to e^this.
      */
+    @NonNull
     public Quaternion expAndCreate() {
         Quaternion result = new Quaternion(this);
         result.exp();
@@ -711,6 +757,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion log() {
         final double qNorm = length();
         if (qNorm > 0) {
@@ -729,6 +776,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Quaternion} The new {@link Quaternion} set to log(q).
      */
+    @NonNull
     public Quaternion logAndCreate() {
         Quaternion result = new Quaternion(this);
         result.log();
@@ -740,6 +788,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
+    @NonNull
     public Quaternion pow(double p) {
         return log().multiply(p).exp();
     }
@@ -749,7 +798,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion pow(Quaternion p) {
+    @NonNull
+    public Quaternion pow(@NonNull Quaternion p) {
         return log().multiply(p).exp();
     }
 
@@ -758,6 +808,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Quaternion} The new {@link Quaternion}.
      */
+    @NonNull
     public Quaternion powAndCreate(double p) {
         return (new Quaternion(this)).pow(p);
     }
@@ -767,7 +818,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Quaternion} The new {@link Quaternion}.
      */
-    public Quaternion powAndCreate(Quaternion p) {
+    @NonNull
+    public Quaternion powAndCreate(@NonNull Quaternion p) {
         return (new Quaternion(this)).pow(p);
     }
 
@@ -780,40 +832,9 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion slerp(Quaternion end, double t) {
-        // Check for equality and skip operation.
-        if (equals(end)) {
-            return this;
-        }
-
-        final double dot = dot(end);
-        double absDot = dot < 0 ? -dot : dot;
-
-        // Set the first and second scale for the interpolation
-        double scale0 = 1d - t;
-        double scale1 = t;
-
-        // Check if the angle between the 2 quaternions was big enough to warrant calculations
-        if ((1 - absDot) > 0.1) {
-            final double angle = Math.acos(absDot);
-            final double invSinTheta = 1d / Math.sin(angle);
-            // Calculate the scale for q1 and q2 according to the angle and its sine value
-            scale0 = Math.sin((1 - t) * angle) * invSinTheta;
-            scale1 = Math.sin((t * angle) * invSinTheta);
-        }
-
-        if (dot < 0) {
-            scale1 = -scale1;
-        }
-
-        // Calculate the x,y,z and w values for the quaternion by using a special form of linear interpolation for
-        // quaternions.
-        x = (scale0 * x) + (scale1 * end.x);
-        y = (scale0 * y) + (scale1 * end.y);
-        z = (scale0 * z) + (scale1 * end.z);
-        w = (scale0 * w) + (scale1 * end.w);
-        normalize();
-        return this;
+    @NonNull
+    public Quaternion slerp(@NonNull Quaternion end, @FloatRange(from = 0, to = 1) double t) {
+        return slerp(this, end, t, true);
     }
 
     /**
@@ -826,8 +847,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion slerp(Quaternion q1, Quaternion q2, double t) {
-        // TODO: Validate
+    @NonNull
+    public Quaternion slerp(@NonNull Quaternion q1, @NonNull Quaternion q2, @FloatRange(from = 0, to = 1) double t) {
         return slerp(q1, q2, t, true);
     }
 
@@ -835,35 +856,35 @@ public final class Quaternion implements Cloneable {
      * Performs spherical linear interpolation between the provided {@link Quaternion}s and
      * sets this {@link Quaternion} to the normalized result.
      *
-     * @param q1                {@link Quaternion} The starting point.
-     * @param q2                {@link Quaternion} The destination point.
-     * @param t                 double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
-     * @param forceShortestPath boolean always return the shortest path.
+     * @param start        {@link Quaternion} The starting point.
+     * @param end          {@link Quaternion} The destination point.
+     * @param t            {@code double} The interpolation value. [0-1] Where 0 represents start and 1 represents end.
+     * @param shortestPath {@code boolean} always return the shortest path.
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion slerp(Quaternion q1, Quaternion q2, double t, boolean forceShortestPath) {
-        // TODO: Validate
-        if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
-            setAll(q1);
+    @NonNull
+    public Quaternion slerp(@NonNull Quaternion start, @NonNull Quaternion end, @FloatRange(from = 0, to = 1) double t,
+                            boolean shortestPath) {
+        // Check for equality and skip operation.
+        if (equals(end)) {
             return this;
         }
 
-        double result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z)
-                        + (q1.w * q2.w);
+        double result = start.dot(end);
 
-        if (forceShortestPath && (result < 0.0f)) {
-            q2.x = -q2.x;
-            q2.y = -q2.y;
-            q2.z = -q2.z;
-            q2.w = -q2.w;
+        if (shortestPath && result < 0.0f) {
+            end.x = -end.x;
+            end.y = -end.y;
+            end.z = -end.z;
+            end.w = -end.w;
             result = -result;
         }
 
         double scale0 = 1 - t;
         double scale1 = t;
 
-        if (!forceShortestPath || (1 - result) > 0.1) {
+        if (!shortestPath || (1 - result) > 0.1) {
             double theta = Math.acos(result);
             double invSinTheta = 1 / Math.sin(theta);
 
@@ -871,10 +892,11 @@ public final class Quaternion implements Cloneable {
             scale1 = Math.sin((t * theta)) * invSinTheta;
         }
 
-        x = (scale0 * q1.x) + (scale1 * q2.x);
-        y = (scale0 * q1.y) + (scale1 * q2.y);
-        z = (scale0 * q1.z) + (scale1 * q2.z);
-        w = (scale0 * q1.w) + (scale1 * q2.w);
+        x = (scale0 * start.x) + (scale1 * end.x);
+        y = (scale0 * start.y) + (scale1 * end.y);
+        z = (scale0 * start.z) + (scale1 * end.z);
+        w = (scale0 * start.w) + (scale1 * end.w);
+        normalize();
         return this;
     }
 
@@ -882,18 +904,23 @@ public final class Quaternion implements Cloneable {
      * Performs linear interpolation between two {@link Quaternion}s and creates a new one
      * for the result.
      *
-     * @param rkP          {@link Quaternion} The starting point.
-     * @param rkQ          {@link Quaternion} The destination point.
+     * @param start        {@link Quaternion} The starting point.
+     * @param end          {@link Quaternion} The destination point.
      * @param t            double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
      * @param shortestPath boolean indicating if the shortest path should be used.
      *
      * @return {@link Quaternion} The interpolated {@link Quaternion}.
      */
-    public static Quaternion lerp(final Quaternion rkP, final Quaternion rkQ, double t, boolean shortestPath) {
-        // TODO: Validate
+    @NonNull
+    public static Quaternion lerp(@NonNull Quaternion start, @NonNull Quaternion end,
+                                  @FloatRange(from = 0, to = 1) double t, boolean shortestPath) {
+        // Check for equality and skip operation.
+        if (start.equals(end)) {
+            return sTmp1.setAll(end);
+        }
         // TODO: Thread safety issue here
-        sTmp1.setAll(rkP);
-        sTmp2.setAll(rkQ);
+        sTmp1.setAll(start);
+        sTmp2.setAll(end);
         double fCos = sTmp1.dot(sTmp2);
         if (fCos < 0.0f && shortestPath) {
             sTmp2.inverse();
@@ -912,16 +939,17 @@ public final class Quaternion implements Cloneable {
      * Performs normalized linear interpolation between two {@link Quaternion}s and creates a new one
      * for the result.
      *
-     * @param rkP          {@link Quaternion} The starting point.
-     * @param rkQ          {@link Quaternion} The destination point.
+     * @param q1           {@link Quaternion} The starting point.
+     * @param q2           {@link Quaternion} The destination point.
      * @param t            double The interpolation value. [0-1] Where 0 represents q1 and 1 represents q2.
      * @param shortestPath boolean indicating if the shortest path should be used.
      *
      * @return {@link Quaternion} The normalized interpolated {@link Quaternion}.
      */
-    public static Quaternion nlerp(final Quaternion rkP, final Quaternion rkQ, double t, boolean shortestPath) {
-        // TODO: Validate
-        Quaternion result = lerp(rkP, rkQ, t, shortestPath);
+    @NonNull
+    public static Quaternion nlerp(@NonNull Quaternion q1, @NonNull Quaternion q2,
+                                   @FloatRange(from = 0, to = 1) double t, boolean shortestPath) {
+        Quaternion result = lerp(q1, q2, t, shortestPath);
         result.normalize();
         return result;
     }
@@ -934,6 +962,7 @@ public final class Quaternion implements Cloneable {
      * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java">
      * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
      */
+    @IntRange(from = -1, to = 1)
     public int getGimbalPole() {
         final double t = y * x + z * w;
         return t > 0.499 ? 1 : (t < -0.499 ? -1 : 0);
@@ -986,6 +1015,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Matrix4} representing this {@link Quaternion}.
      */
+    @NonNull
     public Matrix4 toRotationMatrix() {
         Matrix4 matrix = new Matrix4();
         toRotationMatrix(matrix);
@@ -996,7 +1026,8 @@ public final class Quaternion implements Cloneable {
      * Sets the provided {@link Matrix4} to represent this {@link Quaternion}. This {@link Quaternion} must be
      * normalized.
      */
-    public Matrix4 toRotationMatrix(Matrix4 matrix) {
+    @NonNull
+    public Matrix4 toRotationMatrix(@NonNull Matrix4 matrix) {
         toRotationMatrix(matrix.getDoubleValues());
         return matrix;
     }
@@ -1007,7 +1038,7 @@ public final class Quaternion implements Cloneable {
      *
      * @param matrix double[] representing a 4x4 rotation matrix in column major order.
      */
-    public void toRotationMatrix(double[] matrix) {
+    public void toRotationMatrix(@NonNull @Size(min = 16)double[] matrix) {
         final double x2 = x * x;
         final double y2 = y * y;
         final double z2 = z * z;
@@ -1048,14 +1079,14 @@ public final class Quaternion implements Cloneable {
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
-    public Quaternion lookAt(Vector3 lookAt, Vector3 upDirection) {
-        // TODO: Validate
+    @NonNull
+    public Quaternion lookAt(@NonNull Vector3 lookAt, @NonNull Vector3 upDirection) {
         mTmpVec1.setAll(lookAt);
         mTmpVec2.setAll(upDirection);
         // Vectors are parallel/anti-parallel if their dot product magnitude and length product are equal
         final double dotProduct = Vector3.dot(lookAt, upDirection);
         final double dotError = Math.abs(Math.abs(dotProduct) - (lookAt.length() * upDirection.length()));
-        if (dotError <= 1e-6) {
+        if (dotError <= PARALLEL_TOLERANCE) {
             // The look and up vectors are parallel
             mTmpVec2.normalize();
             if (dotProduct < 0) {
@@ -1079,8 +1110,8 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Quaternion} The new {@link Quaternion} representing the requested orientation.
      */
-    public static Quaternion lookAtAndCreate(Vector3 lookAt, Vector3 upDirection) {
-        // TODO: Validate
+    @NonNull
+    public static Quaternion lookAtAndCreate(@NonNull Vector3 lookAt, @NonNull Vector3 upDirection) {
         final Quaternion ret = new Quaternion();
         return ret.lookAt(lookAt, upDirection);
     }
@@ -1090,15 +1121,7 @@ public final class Quaternion implements Cloneable {
      *
      * @param other {@link Quaternion} The other {@link Quaternion}.
      */
-    public double angleBetween(final Quaternion other) {
-        /*double fCos = dot(other);
-        fCos = Math.max(-1.0, Math.min(1.0, fCos));
-        double angle = Math.acos(fCos);
-        if (angle > MathUtil.PI / 2) {
-            return Math.abs(MathUtil.PI - angle);
-        } else {
-            return Math.abs(angle);
-        }*/
+    public double angleBetween(@NonNull Quaternion other) {
         final Quaternion inv = clone().inverse();
         final Quaternion res = inv.multiplyLeft(other);
         return 2.0 * Math.acos(res.w);
@@ -1109,6 +1132,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return {@link Quaternion} A copy of this {@link Quaternion}.
      */
+    @NonNull
     @Override
     public Quaternion clone() {
         return new Quaternion(w, x, y, z);
@@ -1134,7 +1158,7 @@ public final class Quaternion implements Cloneable {
      *
      * @return boolean True if the two {@link Quaternion}s equate within the specified tolerance.
      */
-    public boolean equals(final Quaternion other, final double tolerance) {
+    public boolean equals(@NonNull Quaternion other, final double tolerance) {
         double fCos = dot(other);
         if (fCos > 1.0 && (fCos - 1.0) < tolerance) {
             return true;
