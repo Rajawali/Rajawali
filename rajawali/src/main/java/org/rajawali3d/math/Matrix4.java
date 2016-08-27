@@ -12,6 +12,9 @@
  */
 package org.rajawali3d.math;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
 import org.rajawali3d.util.ArrayUtils;
@@ -35,7 +38,7 @@ public final class Matrix4 implements Cloneable {
 
     //Matrix indices as column major notation (Row x Column)
     /*
-	M00 M01 M02 M03
+    M00 M01 M02 M03
 	M10 M11 M12 M13
 	M20 M21 M22 M23
 	M30 M31 M32 M33
@@ -57,19 +60,21 @@ public final class Matrix4 implements Cloneable {
     public static final int M32 = 11;
     public static final int M33 = 15;
 
+    @NonNull
+    @Size(16)
     private double[] m = new double[16]; //The matrix values
 
     //The following scratch variables are intentionally left as members
     //and not static to ensure that this class can be utilized by multiple threads
     //in a safe manner without the overhead of synchronization. This is a tradeoff of
     //speed for memory and it is considered a small enough memory increase to be acceptable.
-    private       double[]   mTmp   = new double[16]; //A scratch matrix
-    private       float[]    mFloat = new float[16]; //A float copy of the values, used for sending to GL.
-    private final Quaternion mQuat  = new Quaternion(); //A scratch quaternion.
-    private final Vector3    mVec1  = new Vector3(); //A scratch Vector3
-    private final Vector3    mVec2  = new Vector3(); //A scratch Vector3
-    private final Vector3    mVec3  = new Vector3(); //A scratch Vector3
-    private Matrix4 mMatrix; //A scratch Matrix4
+    @NonNull @Size(16) private double[]   mTmp   = new double[16]; //A scratch matrix
+    @NonNull @Size(16) private float[]    mFloat = new float[16]; //A float copy of the values, used for sending to GL.
+    @NonNull private final     Quaternion mQuat  = new Quaternion(); //A scratch quaternion.
+    @NonNull private final     Vector3    mVec1  = new Vector3(); //A scratch Vector3
+    @NonNull private final     Vector3    mVec2  = new Vector3(); //A scratch Vector3
+    @NonNull private final     Vector3    mVec3  = new Vector3(); //A scratch Vector3
+    @Nullable private Matrix4 mMatrix; //A scratch Matrix4
 
     /**
      * Constructs a default identity {@link Matrix4}.
@@ -83,7 +88,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @param matrix {@link Matrix4} The matrix to clone.
      */
-    public Matrix4(final Matrix4 matrix) {
+    public Matrix4(@NonNull Matrix4 matrix) {
         setAll(matrix);
     }
 
@@ -92,9 +97,9 @@ public final class Matrix4 implements Cloneable {
      * must be greater than or equal to 16 and the array will be copied from the 0 index.
      *
      * @param matrix double array containing the values for the matrix in column major order.
-     * The array is not modified or referenced after this constructor completes.
+     *               The array is not modified or referenced after this constructor completes.
      */
-    public Matrix4(final double[] matrix) {
+    public Matrix4(@NonNull @Size(min = 16) double[] matrix) {
         setAll(matrix);
     }
 
@@ -103,9 +108,9 @@ public final class Matrix4 implements Cloneable {
      * must be greater than or equal to 16 and the array will be copied from the 0 index.
      *
      * @param matrix float array containing the values for the matrix in column major order.
-     * The array is not modified or referenced after this constructor completes.
+     *               The array is not modified or referenced after this constructor completes.
      */
-    public Matrix4(final float[] matrix) {
+    public Matrix4(@NonNull @Size(min = 16) float[] matrix) {
         this(ArrayUtils.convertFloatsToDoubles(matrix));
     }
 
@@ -114,7 +119,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @param quat {@link Quaternion} The {@link Quaternion} to be copied.
      */
-    public Matrix4(final Quaternion quat) {
+    public Matrix4(@NonNull Quaternion quat) {
         setAll(quat);
     }
 
@@ -122,9 +127,11 @@ public final class Matrix4 implements Cloneable {
      * Sets the elements of this {@link Matrix4} based on the elements of the provided {@link Matrix4}.
      *
      * @param matrix {@link Matrix4} to copy.
+     *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setAll(final Matrix4 matrix) {
+    @NonNull
+    public Matrix4 setAll(@NonNull Matrix4 matrix) {
         matrix.toArray(m);
         return this;
     }
@@ -135,15 +142,18 @@ public final class Matrix4 implements Cloneable {
      * from the 0 index.
      *
      * @param matrix double array containing the values for the matrix in column major order.
-     * The array is not modified or referenced after this constructor completes.
+     *               The array is not modified or referenced after this constructor completes.
+     *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setAll(final double[] matrix) {
+    @NonNull
+    public Matrix4 setAll(@NonNull @Size(min = 16) double[] matrix) {
         System.arraycopy(matrix, 0, m, 0, 16);
         return this;
     }
 
-    public Matrix4 setAll(final float[] matrix) {
+    @NonNull
+    public Matrix4 setAll(@NonNull @Size(min = 16) float[] matrix) {
         // @formatter:off
 		m[0] = matrix[0];	m[1] = matrix[1];	m[2] = matrix[2];	m[3] = matrix[3];
 		m[4] = matrix[4];	m[5] = matrix[5];	m[6] = matrix[6];	m[7] = matrix[7];
@@ -161,7 +171,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setAll(final Quaternion quat) {
+    @NonNull
+    public Matrix4 setAll(@NonNull Quaternion quat) {
         quat.toRotationMatrix(m);
         return this;
     }
@@ -177,7 +188,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setAll(final double w, final double x, final double y, final double z) {
+    @NonNull
+    public Matrix4 setAll(double w, double x, double y, double z) {
         return setAll(mQuat.setAll(w, x, y, z));
     }
 
@@ -193,7 +205,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setAll(final Vector3 xAxis, final Vector3 yAxis, final Vector3 zAxis, final Vector3 pos) {
+    @NonNull
+    public Matrix4 setAll(@NonNull Vector3 xAxis, @NonNull Vector3 yAxis, @NonNull Vector3 zAxis, @NonNull Vector3 pos) {
         // @formatter:off
 		m[M00] = xAxis.x;	m[M01] = yAxis.x;	m[M02] = zAxis.x;	m[M03] = pos.x;
 		m[M10] = xAxis.y; 	m[M11] = yAxis.y;	m[M12] = zAxis.y;	m[M13] = pos.y;
@@ -213,8 +226,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setAll(final Vector3 position, final Vector3 scale, final Quaternion rotation) {
-        // TODO: Verify
+    @NonNull
+    public Matrix4 setAll(@NonNull Vector3 position, @NonNull Vector3 scale, @NonNull Quaternion rotation) {
         // Precompute these factors for speed
         final double x2 = rotation.x * rotation.x;
         final double y2 = rotation.y * rotation.y;
@@ -257,6 +270,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 identity() {
         // @formatter:off
 		m[M00] = 1;	m[M10] = 0;	m[M20] = 0;	m[M30] = 0;
@@ -272,6 +286,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 zero() {
         for (int i = 0; i < 16; ++i) {
             m[i] = 0;
@@ -326,6 +341,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @throws IllegalStateException if this matrix is singular and cannot be in
      */
+    @NonNull
     public Matrix4 inverse() throws IllegalStateException {
         boolean success = Matrix.invertM(mTmp, 0, m, 0);
         if (!success) {
@@ -340,6 +356,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 transpose() {
         Matrix.transposeM(mTmp, 0, m, 0);
         System.arraycopy(mTmp, 0, m, 0, 16);
@@ -353,7 +370,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 add(final Matrix4 matrix) {
+    @NonNull
+    public Matrix4 add(@NonNull Matrix4 matrix) {
         // @formatter:off
 		matrix.toArray(mTmp);
 	    m[0] += mTmp[0]; m[1] += mTmp[1]; m[2] += mTmp[2]; m[3] += mTmp[3];
@@ -371,7 +389,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 subtract(final Matrix4 matrix) {
+    @NonNull
+    public Matrix4 subtract(@NonNull Matrix4 matrix) {
         // @formatter:off
 		matrix.toArray(mTmp);
 	    m[0] -= mTmp[0]; m[1] -= mTmp[1]; m[2] -= mTmp[2]; m[3] -= mTmp[3];
@@ -392,7 +411,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 multiply(final Matrix4 matrix) {
+    @NonNull
+    public Matrix4 multiply(@NonNull Matrix4 matrix) {
         System.arraycopy(m, 0, mTmp, 0, 16);
         Matrix.multiplyMM(m, 0, matrix.getDoubleValues(), 0, mTmp, 0);
         return this;
@@ -408,7 +428,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 leftMultiply(final Matrix4 matrix) {
+    @NonNull
+    public Matrix4 leftMultiply(@NonNull Matrix4 matrix) {
         System.arraycopy(m, 0, mTmp, 0, 16);
         Matrix.multiplyMM(m, 0, mTmp, 0, matrix.getDoubleValues(), 0);
         return this;
@@ -421,7 +442,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 multiply(final double value) {
+    @NonNull
+    public Matrix4 multiply(double value) {
         for (int i = 0; i < m.length; ++i) {
             m[i] *= value;
         }
@@ -435,7 +457,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 translate(final Vector3 vec) {
+    @NonNull
+    public Matrix4 translate(@NonNull Vector3 vec) {
         m[M03] += vec.x;
         m[M13] += vec.y;
         m[M23] += vec.z;
@@ -451,6 +474,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 translate(double x, double y, double z) {
         m[M03] += x;
         m[M13] += y;
@@ -465,7 +489,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 negTranslate(final Vector3 vec) {
+    @NonNull
+    public Matrix4 negTranslate(@NonNull Vector3 vec) {
         return translate(-vec.x, -vec.y, -vec.z);
     }
 
@@ -476,7 +501,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 scale(final Vector3 vec) {
+    @NonNull
+    public Matrix4 scale(@NonNull Vector3 vec) {
         return scale(vec.x, vec.y, vec.z);
     }
 
@@ -489,6 +515,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 scale(double x, double y, double z) {
         Matrix.scaleM(m, 0, x, y, z);
         return this;
@@ -501,6 +528,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 scale(double s) {
         return scale(s, s, s);
     }
@@ -512,8 +540,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 rotate(final Quaternion quat) {
-        // TODO: Verify
+    @NonNull
+    public Matrix4 rotate(@NonNull Quaternion quat) {
         if (mMatrix == null) {
             mMatrix = quat.toRotationMatrix();
         } else {
@@ -531,7 +559,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 rotate(final Vector3 axis, double angle) {
+    @NonNull
+    public Matrix4 rotate(@NonNull Vector3 axis, double angle) {
         return angle == 0 ? this : rotate(mQuat.fromAngleAxis(axis, angle));
     }
 
@@ -544,7 +573,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 rotate(final Axis axis, double angle) {
+    @NonNull
+    public Matrix4 rotate(@NonNull Axis axis, double angle) {
         return angle == 0 ? this : rotate(mQuat.fromAngleAxis(axis, angle));
     }
 
@@ -559,8 +589,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 rotate(double x, double y, double z, double angle) {
-        // TODO: Verify
         return angle == 0 ? this : rotate(mQuat.fromAngleAxis(x, y, z, angle));
     }
 
@@ -573,8 +603,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 rotate(final Vector3 v1, final Vector3 v2) {
-        // TODO: Verify
+    @NonNull
+    public Matrix4 rotate(@NonNull Vector3 v1, @NonNull Vector3 v2) {
         return rotate(mQuat.fromRotationBetween(v1, v2));
     }
 
@@ -585,7 +615,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setTranslation(final Vector3 vec) {
+    @NonNull
+    public Matrix4 setTranslation(@NonNull Vector3 vec) {
         m[M03] = vec.x;
         m[M13] = vec.y;
         m[M23] = vec.z;
@@ -599,6 +630,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setCoordinateZoom(double zoom) {
         m[M33] = zoom;
         return this;
@@ -609,8 +641,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @param vec {@link Vector3} The vector to rotate.
      */
-    public void rotateVector(final Vector3 vec) {
-        // TODO: Verify
+    public void rotateVector(@NonNull Vector3 vec) {
         double x = vec.x * m[M00] + vec.y * m[M01] + vec.z * m[M02];
         double y = vec.x * m[M10] + vec.y * m[M11] + vec.z * m[M12];
         double z = vec.x * m[M20] + vec.y * m[M21] + vec.z * m[M22];
@@ -625,7 +656,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Vector3} The resulting vector.
      */
-    public Vector3 projectVector(final Vector3 vec) {
+    @NonNull
+    public Vector3 projectVector(@NonNull Vector3 vec) {
         double inv = 1.0 / (m[M30] * vec.x + m[M31] * vec.y + m[M32] * vec.z + m[M33]);
         vec.multiply(m);
         return vec.multiply(inv);
@@ -639,7 +671,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Vector3} The resulting vector.
      */
-    public Vector3 projectAndCreateVector(final Vector3 vec) {
+    @NonNull
+    public Vector3 projectAndCreateVector(@NonNull Vector3 vec) {
         Vector3 r = new Vector3(vec);
         return projectVector(r);
     }
@@ -653,6 +686,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setTranslation(double x, double y, double z) {
         m[M03] = x;
         m[M13] = y;
@@ -666,12 +700,12 @@ public final class Matrix4 implements Cloneable {
      *
      * @param matrix {@link Matrix4} The other matrix.
      * @param t      {@code double} The interpolation ratio. The result is weighted to this value on the
-     * {@link Matrix4}.
+     *               {@link Matrix4}.
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 lerp(Matrix4 matrix, double t) {
-        // TODO: Verify
+    @NonNull
+    public Matrix4 lerp(@NonNull Matrix4 matrix, double t) {
         matrix.toArray(mTmp);
         for (int i = 0; i < 16; ++i) {
             m[i] = m[i] * (1.0 - t) + t * mTmp[i];
@@ -680,12 +714,12 @@ public final class Matrix4 implements Cloneable {
     }
 
     /**
-     * Sets this {@link Matrix4} to a Normal matrix.
+     * Removes the translational component, inverts and transposes the matrix.
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToNormalMatrix() {
-        // TODO: Verify
         m[M03] = 0;
         m[M13] = 0;
         m[M23] = 0;
@@ -702,6 +736,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToPerspective(double near, double far, double fov, double aspect) {
         identity();
         Matrix.perspectiveM(m, 0, fov, aspect, near, far);
@@ -719,8 +754,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToOrthographic2D(double x, double y, double width, double height) {
-        // TODO: Verify
         return setToOrthographic(x, x + width, y, y + height, 0, 1);
     }
 
@@ -737,8 +772,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToOrthographic2D(double x, double y, double width, double height, double near, double far) {
-        // TODO: Verify
         return setToOrthographic(x, x + width, y, y + height, near, far);
     }
 
@@ -752,8 +787,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToOrthographic(double left, double right, double bottom, double top, double near, double far) {
-        // TODO: Verify
         Matrix.orthoM(m, 0, left, right, bottom, top, near, far);
         return this;
     }
@@ -765,7 +800,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToTranslation(final Vector3 vec) {
+    @NonNull
+    public Matrix4 setToTranslation(@NonNull Vector3 vec) {
         identity();
         m[M03] = vec.x;
         m[M13] = vec.y;
@@ -782,6 +818,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToTranslation(double x, double y, double z) {
         identity();
         m[M03] = x;
@@ -797,7 +834,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToScale(final Vector3 vec) {
+    @NonNull
+    public Matrix4 setToScale(@NonNull Vector3 vec) {
         identity();
         m[M00] = vec.x;
         m[M11] = vec.y;
@@ -814,6 +852,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToScale(double x, double y, double z) {
         identity();
         m[M00] = x;
@@ -830,7 +869,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToTranslationAndScaling(final Vector3 translation, final Vector3 scaling) {
+    @NonNull
+    public Matrix4 setToTranslationAndScaling(@NonNull Vector3 translation, @NonNull Vector3 scaling) {
         identity();
         m[M03] = translation.x;
         m[M13] = translation.y;
@@ -853,6 +893,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToTranslationAndScaling(double tx, double ty, double tz, double sx, double sy, double sz) {
         identity();
         m[M03] = tx;
@@ -872,8 +913,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToRotation(final Vector3 axis, double angle) {
-        // TODO: Verify
+    @NonNull
+    public Matrix4 setToRotation(@NonNull Vector3 axis, double angle) {
         return angle == 0 ? identity() : setAll(mQuat.fromAngleAxis(axis, angle));
     }
 
@@ -885,8 +926,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToRotation(final Axis axis, double angle) {
-        // TODO: Verify
+    @NonNull
+    public Matrix4 setToRotation(@NonNull Axis axis, double angle) {
         return angle == 0 ? identity() : setAll(mQuat.fromAngleAxis(axis, angle));
     }
 
@@ -900,8 +941,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToRotation(double x, double y, double z, double angle) {
-        // TODO: Verify
         return angle == 0 ? identity() : setAll(mQuat.fromAngleAxis(x, y, z, angle));
     }
 
@@ -913,8 +954,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToRotation(final Vector3 v1, final Vector3 v2) {
-        // TODO: Verify
+    @NonNull
+    public Matrix4 setToRotation(@NonNull Vector3 v1, @NonNull Vector3 v2) {
         return setAll(mQuat.fromRotationBetween(v1, v2));
     }
 
@@ -931,8 +972,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToRotation(double x1, double y1, double z1, double x2, double y2, double z2) {
-        // TODO: Verify
         return setAll(mQuat.fromRotationBetween(x1, y1, z1, x2, y2, z2));
     }
 
@@ -945,8 +986,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
+    @NonNull
     public Matrix4 setToRotation(double yaw, double pitch, double roll) {
-        // TODO: Verify
         return setAll(mQuat.fromEuler(yaw, pitch, roll));
     }
 
@@ -959,19 +1000,10 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToLookAt(final Vector3 direction, final Vector3 up) {
-        // TODO: Verify
-        mVec3.setAll(direction).normalize();
-        mVec1.setAll(direction).normalize();
-        mVec1.cross(up).normalize();
-        mVec2.setAll(mVec1).cross(mVec3).normalize();
-        identity();
-        // @formatter:off
-		m[M00] = mVec1.x; m[M01] = mVec1.y; m[M02] = mVec1.z;
-		m[M10] = mVec2.x; m[M11] = mVec2.y; m[M12] = mVec2.z;
-		m[M20] = mVec3.x; m[M21] = mVec3.y; m[M22] = mVec3.z;
-        // @formatter:on
-        return this;
+    @NonNull
+    public Matrix4 setToLookAt(@NonNull Vector3 direction, @NonNull Vector3 up) {
+        mQuat.lookAt(direction, up);
+        return setAll(mQuat);
     }
 
     /**
@@ -983,11 +1015,10 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToLookAt(final Vector3 position, final Vector3 target, final Vector3 up) {
-        // TODO: Verify
-        Matrix.setLookAtM(m, 0, position.x, position.y, position.z,
-                          target.x, target.y, target.z, up.x, up.y, up.z);
-        return this;
+    @NonNull
+    public Matrix4 setToLookAt(@NonNull Vector3 position, @NonNull Vector3 target, @NonNull Vector3 up) {
+        mVec1.subtractAndSet(target, position);
+        return setToLookAt(mVec1, up);
     }
 
     /**
@@ -1000,12 +1031,12 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
-    public Matrix4 setToWorld(final Vector3 position, final Vector3 forward, final Vector3 up) {
-        // TODO: Verify
-        mVec1.setAll(forward).normalize();
-        mVec2.setAll(mVec1).cross(up).normalize();
-        mVec3.setAll(mVec2).cross(mVec1).normalize();
-        return setAll(mVec2, mVec3, mVec1, position);
+    @NonNull
+    public Matrix4 setToWorld(@NonNull Vector3 position, @NonNull Vector3 forward, @NonNull Vector3 up) {
+        mVec1.setAll(forward).normalize(); // Forward
+        mVec2.setAll(mVec1).cross(up).normalize(); // Right
+        mVec3.setAll(mVec2).cross(mVec1).normalize(); // Up
+        return setAll(mVec2, mVec3, mVec1.multiply(-1d), position);
     }
 
     /**
@@ -1014,10 +1045,12 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Vector3} representing the translation.
      */
+    @NonNull
     public Vector3 getTranslation() {
         return getTranslation(new Vector3());
     }
 
+    @NonNull
     public Vector3 getTranslation(Vector3 vec) {
         return vec.setAll(m[M03], m[M13], m[M23]);
     }
@@ -1028,6 +1061,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Vector3} representing the scaling.
      */
+    @NonNull
     public Vector3 getScaling() {
         final double x = Math.sqrt(m[M00] * m[M00] + m[M01] * m[M01] + m[M02] * m[M02]);
         final double y = Math.sqrt(m[M10] * m[M10] + m[M11] * m[M11] + m[M12] * m[M12]);
@@ -1043,7 +1077,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Vector3} representing the scaling.
      */
-    public Vector3 getScaling(final Vector3 vec) {
+    @NonNull
+    public Vector3 getScaling(@NonNull Vector3 vec) {
         final double x = Math.sqrt(m[M00] * m[M00] + m[M01] * m[M01] + m[M02] * m[M02]);
         final double y = Math.sqrt(m[M10] * m[M10] + m[M11] * m[M11] + m[M12] * m[M12]);
         final double z = Math.sqrt(m[M20] * m[M20] + m[M21] * m[M21] + m[M22] * m[M22]);
@@ -1057,7 +1092,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Matrix4} The new matrix.
      */
-    public static Matrix4 createRotationMatrix(final Quaternion quat) {
+    @NonNull
+    public static Matrix4 createRotationMatrix(@NonNull Quaternion quat) {
         return new Matrix4(quat);
     }
 
@@ -1069,7 +1105,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Matrix4} The new matrix.
      */
-    public static Matrix4 createRotationMatrix(final Vector3 axis, double angle) {
+    @NonNull
+    public static Matrix4 createRotationMatrix(@NonNull Vector3 axis, double angle) {
         return new Matrix4().setToRotation(axis, angle);
     }
 
@@ -1081,7 +1118,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Matrix4} The new matrix.
      */
-    public static Matrix4 createRotationMatrix(final Axis axis, double angle) {
+    @NonNull
+    public static Matrix4 createRotationMatrix(@NonNull Axis axis, double angle) {
         return new Matrix4().setToRotation(axis, angle);
     }
 
@@ -1095,6 +1133,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Matrix4} The new matrix.
      */
+    @NonNull
     public static Matrix4 createRotationMatrix(double x, double y, double z, double angle) {
         return new Matrix4().setToRotation(x, y, z, angle);
     }
@@ -1108,6 +1147,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Matrix4} The new matrix.
      */
+    @NonNull
     public static Matrix4 createRotationMatrix(double yaw, double pitch, double roll) {
         return new Matrix4().setToRotation(yaw, pitch, roll);
     }
@@ -1119,7 +1159,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A new {@link Matrix4} representing the translation only.
      */
-    public static Matrix4 createTranslationMatrix(final Vector3 vec) {
+    @NonNull
+    public static Matrix4 createTranslationMatrix(@NonNull Vector3 vec) {
         return new Matrix4().translate(vec);
     }
 
@@ -1132,6 +1173,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A new {@link Matrix4} representing the translation only.
      */
+    @NonNull
     public static Matrix4 createTranslationMatrix(double x, double y, double z) {
         return new Matrix4().translate(x, y, z);
     }
@@ -1143,7 +1185,8 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A new {@link Matrix4} representing the scaling only.
      */
-    public static Matrix4 createScaleMatrix(final Vector3 vec) {
+    @NonNull
+    public static Matrix4 createScaleMatrix(@NonNull Vector3 vec) {
         return new Matrix4().setToScale(vec);
     }
 
@@ -1156,6 +1199,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return A new {@link Matrix4} representing the scaling only.
      */
+    @NonNull
     public static Matrix4 createScaleMatrix(double x, double y, double z) {
         return new Matrix4().setToScale(x, y, z);
     }
@@ -1166,6 +1210,8 @@ public final class Matrix4 implements Cloneable {
      * @return float array containing a copy of the backing array. The returned array is owned
      * by this {@link Matrix4} and is subject to change as the implementation sees fit.
      */
+    @NonNull
+    @Size(16)
     public float[] getFloatValues() {
         ArrayUtils.convertDoublesToFloats(m, mFloat);
         return mFloat;
@@ -1177,6 +1223,8 @@ public final class Matrix4 implements Cloneable {
      * @return double array containing the backing array. The returned array is owned
      * by this {@link Matrix4} and is subject to change as the implementation sees fit.
      */
+    @NonNull
+    @Size(16)
     public double[] getDoubleValues() {
         return m;
     }
@@ -1186,6 +1234,7 @@ public final class Matrix4 implements Cloneable {
      *
      * @return {@link Matrix4} The copy.
      */
+    @NonNull
     @Override
     public Matrix4 clone() {
         return new Matrix4(this);
@@ -1197,7 +1246,7 @@ public final class Matrix4 implements Cloneable {
      * @param doubleArray double array to store the copy in. Must be at least 16 elements long.
      *                    Entries will be placed starting at the 0 index.
      */
-    public void toArray(double[] doubleArray) {
+    public void toArray(@NonNull @Size(min = 16) double[] doubleArray) {
         System.arraycopy(m, 0, doubleArray, 0, 16);
     }
 
@@ -1205,14 +1254,18 @@ public final class Matrix4 implements Cloneable {
      * Copies the backing array of this {@link Matrix4} into the provided float array.
      *
      * @param floatArray float array to store the copy in. Must be at least 16 elements long.
-     *                    Entries will be placed starting at the 0 index.
+     *                   Entries will be placed starting at the 0 index.
      */
-    public void toFloatArray(float[] floatArray) {
+    public void toFloatArray(@NonNull @Size(min = 16) float[] floatArray) {
         // @formatter:off
-		floatArray[0] = (float)m[0];	floatArray[1] = (float)m[1];	floatArray[2] = (float)m[2];	floatArray[3] = (float)m[3];
-		floatArray[4] = (float)m[4];	floatArray[5] = (float)m[5];	floatArray[6] = (float)m[6];	floatArray[7] = (float)m[7];
-		floatArray[8] = (float)m[8];	floatArray[9] = (float)m[9];	floatArray[10] = (float)m[10];	floatArray[11] = (float)m[11];
-		floatArray[12] = (float)m[12];	floatArray[13] = (float)m[13];	floatArray[14] = (float)m[14];	floatArray[15] = (float)m[15];
+		floatArray[0] = (float)m[0];	floatArray[1] = (float)m[1];	floatArray[2] = (float)m[2];	floatArray[3]
+                = (float)m[3];
+		floatArray[4] = (float)m[4];	floatArray[5] = (float)m[5];	floatArray[6] = (float)m[6];	floatArray[7]
+                = (float)m[7];
+		floatArray[8] = (float)m[8];	floatArray[9] = (float)m[9];	floatArray[10] = (float)m[10];	floatArray[11]
+                = (float)m[11];
+		floatArray[12] = (float)m[12];	floatArray[13] = (float)m[13];	floatArray[14] = (float)m[14];	floatArray[15]
+                = (float)m[15];
         // @formatter:on
     }
 
@@ -1233,6 +1286,7 @@ public final class Matrix4 implements Cloneable {
         return Arrays.hashCode(m);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "["
