@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -12,6 +13,8 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 
 public class BasicFragment extends AExampleFragment {
+
+	private static final String TAG = "BasicFragment";
 
 	@Override
     public AExampleRenderer createRenderer() {
@@ -40,9 +43,11 @@ public class BasicFragment extends AExampleFragment {
 				e.printStackTrace();
 			}
 
+			Log.d(TAG, "Camera initial orientation: " + getCurrentCamera().getOrientation());
             getCurrentCamera().enableLookAt();
             getCurrentCamera().setLookAt(0, 0, 0);
             getCurrentCamera().setZ(6);
+			getCurrentCamera().setOrientation(getCurrentCamera().getOrientation().inverse());
         }
 
         @Override

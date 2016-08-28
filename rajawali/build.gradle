@@ -46,6 +46,7 @@ android {
         targetSdkVersion rootProject.targetSdk
         versionCode rootProject.versionCode
         versionName rootProject.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -71,7 +72,11 @@ android {
 
 dependencies {
     compile project.depSupportAnnotations
-    testCompile 'junit:junit:4.12'
+    androidTestCompile 'junit:junit:4.12'
+
+    androidTestCompile 'com.android.support.test:runner:0.4'
+    // Set this dependency to use JUnit 4 rules
+    androidTestCompile 'com.android.support.test:rules:0.4'
 }
 
 apply from: '../maven_push.gradle'

@@ -995,18 +995,18 @@ public class QuaternionTest {
         assertNotNull(out);
         assertSame(q, out);
         assertEquals(0.7071067811865475, out.w, 1e-14);
-        assertEquals(-0.7071067811865475, out.x, 1e-14);
+        assertEquals(0d, out.x, 1e-14);
         assertEquals(0d, out.y, 1e-14);
-        assertEquals(0d, out.z, 1e-14);
+        assertEquals(0.7071067811865475, out.z, 1e-14);
 
         lookAt.subtractAndSet(new Vector3(0d, 10d, 0d), Vector3.ZERO);
         out = q.lookAt(lookAt, Vector3.NEG_Y);
         assertNotNull(out);
         assertSame(q, out);
         assertEquals(0.7071067811865475, out.w, 1e-14);
-        assertEquals(0.7071067811865475, out.x, 1e-14);
+        assertEquals(0d, out.x, 1e-14);
         assertEquals(0d, out.y, 1e-14);
-        assertEquals(0d, out.z, 1e-14);
+        assertEquals(-0.7071067811865475, out.z, 1e-14);
     }
 
     @Test
@@ -1032,17 +1032,17 @@ public class QuaternionTest {
         out = Quaternion.lookAtAndCreate(lookAt, Vector3.Y);
         assertNotNull(out);
         assertEquals(0.7071067811865475, out.w, 1e-14);
-        assertEquals(-0.7071067811865475, out.x, 1e-14);
+        assertEquals(0d, out.x, 1e-14);
         assertEquals(0d, out.y, 1e-14);
-        assertEquals(0d, out.z, 1e-14);
+        assertEquals(0.7071067811865475, out.z, 1e-14);
 
         lookAt.subtractAndSet(new Vector3(0d, 10d, 0d), Vector3.ZERO);
         out = Quaternion.lookAtAndCreate(lookAt, Vector3.NEG_Y);
         assertNotNull(out);
         assertEquals(0.7071067811865475, out.w, 1e-14);
-        assertEquals(0.7071067811865475, out.x, 1e-14);
+        assertEquals(0d, out.x, 1e-14);
         assertEquals(0d, out.y, 1e-14);
-        assertEquals(0d, out.z, 1e-14);
+        assertEquals(-0.7071067811865475, out.z, 1e-14);
     }
 
     @Test

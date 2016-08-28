@@ -1697,6 +1697,8 @@ public class Matrix4Test {
         assertEquals(a, b);
         assertNotEquals(a, c);
         assertNotEquals(b, c);
+        assertNotEquals(null, a);
+        assertNotEquals("not a matrix", a);
     }
 
     @Test

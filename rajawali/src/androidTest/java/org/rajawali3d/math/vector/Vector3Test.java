@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
 
 /**

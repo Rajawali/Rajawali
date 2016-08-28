@@ -1289,7 +1289,7 @@ public final class Matrix4 implements Cloneable {
     @NonNull
     @Override
     public String toString() {
-        return "["
+        return "[\n"
                // @formatter:off
                + m[M00] + "|" + m[M01] + "|" + m[M02] + "|" + m[M03] + "]\n["
                + m[M10] + "|" + m[M11] + "|" + m[M12] + "|" + m[M13] + "]\n["

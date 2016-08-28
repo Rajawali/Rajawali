@@ -551,11 +551,8 @@ public final class Quaternion implements Cloneable {
     @NonNull
     public Quaternion inverse() {
         final double norm = length2();
-        if (norm > 0) {
-            final double invNorm = 1.0 / norm;
-            setAll(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
-        }
-        return this;
+        final double invNorm = 1.0 / norm;
+        return setAll(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
     }
 
     /**
@@ -566,12 +563,8 @@ public final class Quaternion implements Cloneable {
     @NonNull
     public Quaternion invertAndCreate() {
         double norm = length2();
-        if (norm > 0) {
-            double invNorm = 1.0 / norm;
-            return new Quaternion(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
-        } else {
-            return null;
-        }
+        double invNorm = 1.0 / norm;
+        return new Quaternion(w * invNorm, -x * invNorm, -y * invNorm, -z * invNorm);
     }
 
     /**
@@ -1038,7 +1031,7 @@ public final class Quaternion implements Cloneable {
      *
      * @param matrix double[] representing a 4x4 rotation matrix in column major order.
      */
-    public void toRotationMatrix(@NonNull @Size(min = 16)double[] matrix) {
+    public void toRotationMatrix(@NonNull @Size(min = 16) double[] matrix) {
         final double x2 = x * x;
         final double y2 = y * y;
         final double z2 = z * z;
