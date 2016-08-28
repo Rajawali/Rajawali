@@ -414,7 +414,7 @@ public final class Matrix4 implements Cloneable {
     @NonNull
     public Matrix4 multiply(@NonNull Matrix4 matrix) {
         System.arraycopy(m, 0, mTmp, 0, 16);
-        Matrix.multiplyMM(m, 0, matrix.getDoubleValues(), 0, mTmp, 0);
+        Matrix.multiplyMM(m, 0, mTmp, 0, matrix.getDoubleValues(), 0);
         return this;
     }
 
@@ -431,7 +431,7 @@ public final class Matrix4 implements Cloneable {
     @NonNull
     public Matrix4 leftMultiply(@NonNull Matrix4 matrix) {
         System.arraycopy(m, 0, mTmp, 0, 16);
-        Matrix.multiplyMM(m, 0, mTmp, 0, matrix.getDoubleValues(), 0);
+        Matrix.multiplyMM(m, 0, matrix.getDoubleValues(), 0, mTmp, 0);
         return this;
     }
 

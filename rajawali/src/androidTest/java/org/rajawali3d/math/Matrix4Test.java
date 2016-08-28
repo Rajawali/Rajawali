@@ -495,10 +495,10 @@ public class Matrix4Test {
                 3d, 2d, 1d, 0d
         };
         final double[] expected = new double[]{
-                70d, 60d, 50d, 40d,
-                214d, 188d, 162d, 136d,
-                358d, 316d, 274d, 232d,
-                502d, 444d, 386d, 328d
+                358d, 412d, 466d, 520d,
+                246d, 284d, 322d, 360d,
+                134d, 156d, 178d, 200d,
+                22d, 28d, 34d, 40d
         };
         final Matrix4 fromM = new Matrix4(from);
         final Matrix4 multiplyM = new Matrix4(multiply);
@@ -527,10 +527,10 @@ public class Matrix4Test {
                 3d, 2d, 1d, 0d
         };
         final double[] expected = new double[]{
-                358d, 412d, 466d, 520d,
-                246d, 284d, 322d, 360d,
-                134d, 156d, 178d, 200d,
-                22d, 28d, 34d, 40d
+                70d, 60d, 50d, 40d,
+                214d, 188d, 162d, 136d,
+                358d, 316d, 274d, 232d,
+                502d, 444d, 386d, 328d
         };
         final Matrix4 fromM = new Matrix4(from);
         final Matrix4 multiplyM = new Matrix4(multiply);
