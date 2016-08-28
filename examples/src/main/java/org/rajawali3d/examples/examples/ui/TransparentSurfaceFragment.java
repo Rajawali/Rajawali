@@ -47,6 +47,11 @@ public class TransparentSurfaceFragment extends AExampleFragment {
 		return new TransparentSurfaceRenderer(getActivity(), this);
 	}
 
+	@Override
+	protected int getLayoutId() {
+		return R.layout.rajawali_surfaceview_fragment;
+	}
+
 	private final class TransparentSurfaceRenderer extends AExampleRenderer {
 
 		public TransparentSurfaceRenderer(Context context, @Nullable AExampleFragment fragment) {
