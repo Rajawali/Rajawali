@@ -1,12 +1,10 @@
 package org.rajawali3d.util.egl;
 
 import android.annotation.TargetApi;
-import android.opengl.EGL14;
 import android.opengl.EGLExt;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.support.annotation.NonNull;
-
 import org.rajawali3d.view.ISurface;
 
 import javax.microedition.khronos.egl.EGL10;
@@ -20,6 +18,8 @@ public class RajawaliEGLConfigChooser implements GLSurfaceView.EGLConfigChooser 
 
     private static final int EGL_COVERAGE_BUFFERS_NV = 0x30E0; // For nVidia Tegra
     private static final int EGL_COVERAGE_SAMPLES_NV = 0x30E1; // For nVidia Tegra
+    public static final int EGL_OPENGL_ES2_BIT                 = 0x0004;
+    public static final int EGL_OPENGL_ES3_BIT_KHR          = 0x0040;
 
     private final int[] mConfigSpec;
 
@@ -36,7 +36,7 @@ public class RajawaliEGLConfigChooser implements GLSurfaceView.EGLConfigChooser 
                     EGL10.EGL_BLUE_SIZE, bitsBlue,
                     EGL10.EGL_ALPHA_SIZE, bitsAlpha,
                     EGL10.EGL_DEPTH_SIZE, bitsDepth,
-                    EGL10.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+                    EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
                     EGL10.EGL_SAMPLE_BUFFERS,
                     antiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) ? 1 : 0, /* Do we use sample buffers */
                 EGL10.EGL_SAMPLES,
@@ -50,20 +50,20 @@ public class RajawaliEGLConfigChooser implements GLSurfaceView.EGLConfigChooser 
                 EGL10.EGL_BLUE_SIZE, bitsBlue,
                 EGL10.EGL_ALPHA_SIZE, bitsAlpha,
                 EGL10.EGL_DEPTH_SIZE, bitsDepth,
-                EGL10.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+                EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
                 EGL_COVERAGE_BUFFERS_NV, 1,
                 EGL_COVERAGE_SAMPLES_NV, 2,
                 EGL10.EGL_NONE
             };
         } else {
             mConfigSpec = new int[]{
-                EGL10.EGL_RED_SIZE, bitsRed,
-                EGL10.EGL_GREEN_SIZE, bitsGreen,
-                EGL10.EGL_BLUE_SIZE, bitsBlue,
-                EGL10.EGL_ALPHA_SIZE, bitsAlpha,
-                EGL10.EGL_DEPTH_SIZE, bitsDepth,
-                EGL10.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
-                EGL10.EGL_NONE
+                    EGL10.EGL_RED_SIZE, bitsRed,
+                    EGL10.EGL_GREEN_SIZE, bitsGreen,
+                    EGL10.EGL_BLUE_SIZE, bitsBlue,
+                    EGL10.EGL_ALPHA_SIZE, bitsAlpha,
+                    EGL10.EGL_DEPTH_SIZE, bitsDepth,
+                    EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+                    EGL10.EGL_NONE
             };
         }
 
