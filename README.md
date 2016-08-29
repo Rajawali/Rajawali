@@ -12,6 +12,9 @@
 
 ### News
 
+**8/29/2016**
+An initial effort for adding unit testing to Rajawali has been made. This initial focus has been on the core math classes and will ideally expand as bug fixes progress. Pull requests for unit tests are welcome and any "bug fix" PRs which include unit tests  or issues which include unit tests to demonstrate a failure will be given the highest priority. 
+
 **2/23/2016**
 Following the `1.0.325` release, I have also created a `1.1.x` release. This release is functionally identical though it represents an API change to deal with the class names being smurf like. Additionally, some class locations were altered. For users of the `master` branch prior to release, support will continue, though all bugfixes will occur in `1.1.x` releases unless we receive PRs for hotfixes.
 
