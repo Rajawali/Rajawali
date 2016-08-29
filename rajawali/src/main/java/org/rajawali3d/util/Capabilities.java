@@ -58,12 +58,16 @@ public class Capabilities {
 
     private int[] mParam;
 
-    private String[] mExtensions;
+    private String mVendor = "";
+    private String mRenderer = "";
+    private String mVersion = "";
+    private String[] mExtensions = new String[] {};
 
     private Capabilities() {
         initialize();
     }
 
+    @NonNull
     public static Capabilities getInstance() {
         if (instance == null) {
             instance = new Capabilities();
@@ -133,6 +137,10 @@ public class Capabilities {
 
         mParam = new int[1];
 
+        mVendor = GLES20.glGetString(GLES20.GL_VENDOR);
+        mRenderer = GLES20.glGetString(GLES20.GL_RENDERER);
+        mVersion = GLES20.glGetString(GLES20.GL_VERSION);
+
         mMaxCombinedTextureImageUnits = getInt(GLES20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
         mMaxCubeMapTextureSize = getInt(GLES20.GL_MAX_CUBE_MAP_TEXTURE_SIZE);
         mMaxFragmentUniformVectors = getInt(GLES20.GL_MAX_FRAGMENT_UNIFORM_VECTORS);
@@ -195,11 +203,27 @@ public class Capabilities {
         return mGLESMajorVersion;
     }
 
+    @NonNull
+    public String getVendor() {
+        return mVendor;
+    }
+
+    @NonNull
+    public String getRenderer() {
+        return mRenderer;
+    }
+
+    @NonNull
+    public String getVersion() {
+        return mVersion;
+    }
+
     /**
      * Fetch the list of extension strings this device supports.
      *
      * @return
      */
+    @NonNull
     public String[] getExtensions() {
         return mExtensions;
     }
@@ -367,6 +391,7 @@ public class Capabilities {
         return mMaxAliasedPointSize;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("-=-=-=- OpenGL Capabilities -=-=-=-\n");
