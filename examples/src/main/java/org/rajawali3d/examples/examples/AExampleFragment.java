@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -55,7 +56,7 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
         super.onCreateView(inflater, container, savedInstanceState);
 
         // Inflate the view
-        mLayout = (FrameLayout) inflater.inflate(R.layout.rajawali_textureview_fragment, container, false);
+        mLayout = (FrameLayout) inflater.inflate(getLayoutId(), container, false);
 
         mLayout.findViewById(R.id.relative_layout_loader_container).bringToFront();
 
@@ -132,6 +133,11 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
                 mProgressBarLoader.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    @LayoutRes
+    protected int getLayoutId() {
+        return R.layout.rajawali_textureview_fragment;
     }
 
     protected static abstract class AExampleRenderer extends Renderer {

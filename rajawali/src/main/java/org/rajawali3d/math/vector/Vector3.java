@@ -12,7 +12,8 @@
  */
 package org.rajawali3d.math.vector;
 
-import org.rajawali3d.math.MathUtil;
+import android.support.annotation.NonNull;
+import android.support.annotation.Size;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 
@@ -29,7 +30,7 @@ import org.rajawali3d.math.Quaternion;
  * This class is not thread safe and must be confined to a single thread or protected by
  * some external locking mechanism if necessary. All static methods are thread safe.
  */
-public class Vector3 {
+public class Vector3 implements Cloneable {
     //The vector components
     public double x;
     public double y;
@@ -40,38 +41,49 @@ public class Vector3 {
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    @NonNull
     public static final Vector3 X = new Vector3(1, 0, 0);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    @NonNull
     public static final Vector3 Y = new Vector3(0, 1, 0);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    @NonNull
     public static final Vector3 Z = new Vector3(0, 0, 1);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    @NonNull
     public static final Vector3 NEG_X = new Vector3(-1, 0, 0);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    @NonNull
     public static final Vector3 NEG_Y = new Vector3(0, -1, 0);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    @NonNull
     public static final Vector3 NEG_Z = new Vector3(0, 0, -1);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    @NonNull
     public static final Vector3 ZERO = new Vector3(0, 0, 0);
     /**
      * DO NOT EVER MODIFY THE VALUES OF THIS VECTOR
      */
+    @NonNull
     public static final Vector3 ONE = new Vector3(1.0, 1.0, 1.0);
 
-    //Scratch vector. We use lazy loading here.
-    private Vector3 mTemp = null;
+    // Scratch Vector3. We use lazy loading here to prevent memory explosion.
+    private Vector3 mTmpVector3 = null;
+
+    // Scratch Matrix4. We use lazy loading here to prevent memory explosion.
+    private Matrix4 mTmpMatrix4 = null;
 
     /**
      * Enumeration for the 3 component axes.
@@ -80,15 +92,11 @@ public class Vector3 {
         X, Y, Z
     }
 
-    //--------------------------------------------------
-    // Constructors
-    //--------------------------------------------------
-
     /**
      * Constructs a new {@link Vector3} at (0, 0, 0).
      */
     public Vector3() {
-        //They are technically zero, but we wont rely on the uninitialized state here.
+        // They are technically zero, but we wont rely on the uninitialized state here.
         x = 0;
         y = 0;
         z = 0;
@@ -110,7 +118,7 @@ public class Vector3 {
      *
      * @param from {@link Vector3} to initialize the components with.
      */
-    public Vector3(final Vector3 from) {
+    public Vector3(@NonNull Vector3 from) {
         x = from.x;
         y = from.y;
         z = from.z;
@@ -121,10 +129,10 @@ public class Vector3 {
      *
      * @param values A {@link String} array of values to be parsed for each component.
      *
-     * @throws {@link IllegalArgumentException} if there are fewer than 3 values in the array.
-     * @throws {@link NumberFormatException} if there is a problem parsing the {@link String} values into doubles.
+     * @throws IllegalArgumentException if there are fewer than 3 values in the array.
+     * @throws NumberFormatException if there is a problem parsing the {@link String} values into doubles.
      */
-    public Vector3(final String[] values) throws IllegalArgumentException, NumberFormatException {
+    public Vector3(@NonNull @Size(min = 3) String[] values) throws IllegalArgumentException, NumberFormatException {
         this(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]));
     }
 
@@ -133,9 +141,9 @@ public class Vector3 {
      *
      * @param values A double array of values to be parsed for each component.
      *
-     * @throws {@link IllegalArgumentException} if there are fewer than 3 values in the array.
+     * @throws IllegalArgumentException if there are fewer than 3 values in the array.
      */
-    public Vector3(final double[] values) throws IllegalArgumentException {
+    public Vector3(@NonNull @Size(min = 3) double[] values) throws IllegalArgumentException {
         if (values.length < 3) throw new IllegalArgumentException("Vector3 must be initialized with an array length of at least 3.");
         x = values[0];
         y = values[1];
@@ -154,11 +162,6 @@ public class Vector3 {
         this.y = y;
         this.z = z;
     }
-
-
-    //--------------------------------------------------
-    // Modification methods
-    //--------------------------------------------------
 
     /**
      * Sets all components of this {@link Vector3} to the specified values.
@@ -184,7 +187,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 setAll(Vector3 other) {
+    @NonNull
+    public Vector3 setAll(@NonNull Vector3 other) {
         x = other.x;
         y = other.y;
         z = other.z;
@@ -199,7 +203,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 setAll(Axis axis) {
+    @NonNull
+    public Vector3 setAll(@NonNull Axis axis) {
         return setAll(getAxisVector(axis));
     }
 
@@ -210,7 +215,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 add(final Vector3 v) {
+    @NonNull
+    public Vector3 add(@NonNull Vector3 v) {
         x += v.x;
         y += v.y;
         z += v.z;
@@ -226,6 +232,7 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 add(double x, double y, double z) {
         this.x += x;
         this.y += y;
@@ -240,6 +247,7 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 add(double value) {
         x += value;
         y += value;
@@ -250,28 +258,30 @@ public class Vector3 {
     /**
      * Adds two input {@link Vector3} objects and sets this one to the result.
      *
-     * @param a {@link Vector3} The first vector.
-     * @param b {@link Vector3} The second vector.
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 addAndSet(Vector3 a, Vector3 b) {
-        x = a.x + b.x;
-        y = a.y + b.y;
-        z = a.z + b.z;
+    @NonNull
+    public Vector3 addAndSet(@NonNull Vector3 u, @NonNull Vector3 v) {
+        x = u.x + v.x;
+        y = u.y + v.y;
+        z = u.z + v.z;
         return this;
     }
 
     /**
      * Adds two input {@link Vector3} objects and creates a new one to hold the result.
      *
-     * @param a {@link Vector3} The first vector.
-     * @param b {@link Vector3} The second vector.
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector.
      *
      * @return {@link Vector3} The resulting {@link Vector3}.
      */
-    public static Vector3 addAndCreate(Vector3 a, Vector3 b) {
-        return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+    @NonNull
+    public static Vector3 addAndCreate(@NonNull Vector3 u, @NonNull Vector3 v) {
+        return new Vector3(u.x + v.x, u.y + v.y, u.z + v.z);
     }
 
     /**
@@ -281,7 +291,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 subtract(final Vector3 v) {
+    @NonNull
+    public Vector3 subtract(@NonNull Vector3 v) {
         x -= v.x;
         y -= v.y;
         z -= v.z;
@@ -297,6 +308,7 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 subtract(double x, double y, double z) {
         this.x -= x;
         this.y -= y;
@@ -311,6 +323,7 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 subtract(double value) {
         x -= value;
         y -= value;
@@ -321,28 +334,30 @@ public class Vector3 {
     /**
      * Subtracts two input {@link Vector3} objects and sets this one to the result.
      *
-     * @param a {@link Vector3} The first vector.
-     * @param b {@link Vector3} The second vector.
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 subtractAndSet(Vector3 a, Vector3 b) {
-        x = a.x - b.x;
-        y = a.y - b.y;
-        z = a.z - b.z;
+    @NonNull
+    public Vector3 subtractAndSet(@NonNull Vector3 u, @NonNull Vector3 v) {
+        x = u.x - v.x;
+        y = u.y - v.y;
+        z = u.z - v.z;
         return this;
     }
 
     /**
-     * Subtracts two input {@link Vector3} objects and creates a new one to hold the result.
+     * Subtracts two input {@link Vector3} objects and creates u new one to hold the result.
      *
-     * @param a {@link Vector3} The first vector.
-     * @param b {@link Vector3} The second vector
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector
      *
      * @return {@link Vector3} The resulting {@link Vector3}.
      */
-    public static Vector3 subtractAndCreate(Vector3 a, Vector3 b) {
-        return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+    @NonNull
+    public static Vector3 subtractAndCreate(@NonNull Vector3 u, @NonNull Vector3 v) {
+        return new Vector3(u.x - v.x, u.y - v.y, u.z - v.z);
     }
 
     /**
@@ -352,6 +367,7 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 multiply(double value) {
         x *= value;
         y *= value;
@@ -367,7 +383,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 multiply(final Vector3 v) {
+    @NonNull
+    public Vector3 multiply(@NonNull Vector3 v) {
         x *= v.x;
         y *= v.y;
         z *= v.z;
@@ -381,7 +398,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 multiply(final double[] matrix) {
+    @NonNull
+    public Vector3 multiply(@NonNull @Size(min = 16) double[] matrix) {
         double vx = x, vy = y, vz = z;
         x = vx * matrix[Matrix4.M00] + vy * matrix[Matrix4.M01] + vz * matrix[Matrix4.M02] + matrix[Matrix4.M03];
         y = vx * matrix[Matrix4.M10] + vy * matrix[Matrix4.M11] + vz * matrix[Matrix4.M12] + matrix[Matrix4.M13];
@@ -396,47 +414,51 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 multiply(final Matrix4 matrix) {
+    @NonNull
+    public Vector3 multiply(@NonNull Matrix4 matrix) {
         return multiply(matrix.getDoubleValues());
     }
 
     /**
      * Multiplies two input {@link Vector3} objects and sets this one to the result.
      *
-     * @param a {@link Vector3} The first vector.
-     * @param b {@link Vector3} The second vector.
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 multiplyAndSet(Vector3 a, Vector3 b) {
-        x = a.x * b.x;
-        y = a.y * b.y;
-        z = a.z * b.z;
+    @NonNull
+    public Vector3 multiplyAndSet(@NonNull Vector3 u, @NonNull Vector3 v) {
+        x = u.x * v.x;
+        y = u.y * v.y;
+        z = u.z * v.z;
         return this;
     }
 
     /**
      * Multiplies two input {@link Vector3} objects and creates a new one to hold the result.
      *
-     * @param a {@link Vector3} The first vector.
-     * @param b {@link Vector3} The second vector
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector
      *
      * @return {@link Vector3} The resulting {@link Vector3}.
      */
-    public static Vector3 multiplyAndCreate(Vector3 a, Vector3 b) {
-        return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+    @NonNull
+    public static Vector3 multiplyAndCreate(@NonNull Vector3 u, @NonNull Vector3 v) {
+        return new Vector3(u.x * v.x, u.y * v.y, u.z * v.z);
     }
 
     /**
      * Scales each component of this {@link Vector3} by the specified value and creates a new one to hold the result.
      *
-     * @param a     {@link Vector3} The first vector.
+     * @param v     {@link Vector3} The first vector.
      * @param value double The value to scale each component by.
      *
      * @return {@link Vector3} The resulting {@link Vector3}.
      */
-    public static Vector3 multiplyAndCreate(Vector3 a, double value) {
-        return new Vector3(a.x * value, a.y * value, a.z * value);
+    @NonNull
+    public static Vector3 multiplyAndCreate(@NonNull Vector3 v, double value) {
+        return new Vector3(v.x * value, v.y * value, v.z * value);
     }
 
     /**
@@ -446,6 +468,7 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 divide(double value) {
         x /= value;
         y /= value;
@@ -461,7 +484,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 divide(final Vector3 v) {
+    @NonNull
+    public Vector3 divide(@NonNull Vector3 v) {
         x /= v.x;
         y /= v.y;
         z /= v.z;
@@ -471,43 +495,46 @@ public class Vector3 {
     /**
      * Divides two input {@link Vector3} objects and sets this one to the result.
      *
-     * @param a {@link Vector3} The first vector.
-     * @param b {@link Vector3} The second vector.
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 divideAndSet(Vector3 a, Vector3 b) {
-        x = a.x / b.x;
-        y = a.y / b.y;
-        z = a.z / b.z;
+    @NonNull
+    public Vector3 divideAndSet(@NonNull Vector3 u, @NonNull Vector3 v) {
+        x = u.x / v.x;
+        y = u.y / v.y;
+        z = u.z / v.z;
         return this;
     }
 
     /**
      * Scales an input {@link Vector3} by a value and sets this one to the result.
      *
-     * @param a {@link Vector3} The {@link Vector3} to scale.
+     * @param v {@link Vector3} The {@link Vector3} to scale.
      * @param b {@link Vector3} The scaling factor.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 scaleAndSet(Vector3 a, double b) {
-        x = a.x * b;
-        y = a.y * b;
-        z = a.z * b;
+    @NonNull
+    public Vector3 scaleAndSet(@NonNull Vector3 v, double b) {
+        x = v.x * b;
+        y = v.y * b;
+        z = v.z * b;
         return this;
     }
 
     /**
      * Scales an input {@link Vector3} by a value and creates a new one to hold the result.
      *
-     * @param a {@link Vector3} The {@link Vector3} to scale.
-     * @param b {@link Vector3} The scaling factor.
+     * @param u {@link Vector3} The {@link Vector3} to scale.
+     * @param v {@link Vector3} The scaling factor.
      *
      * @return {@link Vector3} The resulting {@link Vector3}.
      */
-    public static Vector3 scaleAndCreate(Vector3 a, double b) {
-        return new Vector3(a.x * b, a.y * b, a.z * b);
+    @NonNull
+    public static Vector3 scaleAndCreate(@NonNull Vector3 u, double v) {
+        return new Vector3(u.x * v, u.y * v, u.z * v);
     }
 
     /**
@@ -517,58 +544,71 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 rotateBy(Quaternion quaternion) {
-        return this.setAll(quaternion.multiply(this));
+    @NonNull
+    public Vector3 rotateBy(@NonNull Quaternion quaternion) {
+        return setAll(quaternion.multiply(this));
     }
 
     /**
-     * Rotates this {@link Vector3} about the X axis by the angle specified.
+     * Sets this {@link Vector3} to a rotation about the X axis by the angle specified.
      *
      * @param angle double The angle to rotate by in radians.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 rotateX(double angle) {
         double cosRY = Math.cos(angle);
         double sinRY = Math.sin(angle);
-        if (mTemp == null) mTemp = new Vector3();
-        mTemp.setAll(x, y, z);
-        y = mTemp.y * cosRY - mTemp.z * sinRY;
-        z = mTemp.y * sinRY + mTemp.z * cosRY;
+        if (mTmpVector3 == null) {
+            mTmpVector3 = new Vector3(this);
+        } else {
+            mTmpVector3.setAll(x, y, z);
+        }
+        y = mTmpVector3.y * cosRY - mTmpVector3.z * sinRY;
+        z = mTmpVector3.y * sinRY + mTmpVector3.z * cosRY;
         return this;
     }
 
     /**
-     * Rotates this {@link Vector3} about the Y axis by the angle specified.
+     * Sets this {@link Vector3} to a rotation about the Y axis by the angle specified.
      *
      * @param angle double The angle to rotate by in radians.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 rotateY(double angle) {
         double cosRY = Math.cos(angle);
         double sinRY = Math.sin(angle);
-        if (mTemp == null) mTemp = new Vector3();
-        mTemp.setAll(x, y, z);
-        x = mTemp.x * cosRY + mTemp.z * sinRY;
-        z = mTemp.x * -sinRY + mTemp.z * cosRY;
+        if (mTmpVector3 == null) {
+            mTmpVector3 = new Vector3(this);
+        } else {
+            mTmpVector3.setAll(x, y, z);
+        }
+        x = mTmpVector3.x * cosRY + mTmpVector3.z * sinRY;
+        z = mTmpVector3.x * -sinRY + mTmpVector3.z * cosRY;
         return this;
     }
 
     /**
-     * Rotates this {@link Vector3} about the Z axis by the angle specified.
+     * Sets this {@link Vector3} to a rotation about the Z axis by the angle specified.
      *
      * @param angle double The angle to rotate by in radians.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 rotateZ(double angle) {
         double cosRY = Math.cos(angle);
         double sinRY = Math.sin(angle);
-        if (mTemp == null) mTemp = new Vector3();
-        mTemp.setAll(x, y, z);
-        x = mTemp.x * cosRY - mTemp.y * sinRY;
-        y = mTemp.x * sinRY + mTemp.y * cosRY;
+        if (mTmpVector3 == null) {
+            mTmpVector3 = new Vector3(this);
+        } else {
+            mTmpVector3.setAll(x, y, z);
+        }
+        x = mTmpVector3.x * cosRY - mTmpVector3.y * sinRY;
+        y = mTmpVector3.x * sinRY + mTmpVector3.y * cosRY;
         return this;
     }
 
@@ -593,7 +633,7 @@ public class Vector3 {
      *
      * @param vecs Array of {@link Vector3} objects to be ortho-normalized.
      */
-    public static void orthoNormalize(Vector3[] vecs) {
+    public static void orthoNormalize(@NonNull @Size(min = 2) Vector3[] vecs) {
         for (int i = 0; i < vecs.length; ++i) {
             vecs[i].normalize();
             for (int j = i + 1; j < vecs.length; ++j) {
@@ -608,7 +648,7 @@ public class Vector3 {
      * @param v1 The first {@link Vector3} object to be ortho-normalized.
      * @param v2 The second {@link Vector3}. {@link Vector3} object to be ortho-normalized.
      */
-    public static void orthoNormalize(Vector3 v1, Vector3 v2) {
+    public static void orthoNormalize(@NonNull Vector3 v1, @NonNull Vector3 v2) {
         v1.normalize();
         v2.subtract(Vector3.projectAndCreate(v2, v1));
         v2.normalize();
@@ -619,6 +659,7 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 inverse() {
         x = -x;
         y = -y;
@@ -631,14 +672,10 @@ public class Vector3 {
      *
      * @return {@link Vector3} The resulting {@link Vector3}.
      */
+    @NonNull
     public Vector3 invertAndCreate() {
         return new Vector3(-x, -y, -z);
     }
-
-
-    //--------------------------------------------------
-    // Vector operation methods
-    //--------------------------------------------------
 
     /**
      * Computes the Euclidean length of the arbitrary vector components passed in.
@@ -660,7 +697,7 @@ public class Vector3 {
      *
      * @return double The Euclidean length.
      */
-    public static double length(Vector3 v) {
+    public static double length(@NonNull Vector3 v) {
         return length(v.x, v.y, v.z);
     }
 
@@ -671,7 +708,7 @@ public class Vector3 {
      *
      * @return double The squared Euclidean length.
      */
-    public static double length2(Vector3 v) {
+    public static double length2(@NonNull Vector3 v) {
         return length2(v.x, v.y, v.z);
     }
 
@@ -709,14 +746,14 @@ public class Vector3 {
     /**
      * Computes the Euclidean length of this {@link Vector3} to the specified {@link Vector3}.
      *
-     * @param other {@link Vector3} The {@link Vector3} to compute the distance to.
+     * @param v {@link Vector3} The {@link Vector3} to compute the distance to.
      *
      * @return double The Euclidean distance.
      */
-    public double distanceTo(Vector3 other) {
-        final double a = x - other.x;
-        final double b = y - other.y;
-        final double c = z - other.z;
+    public double distanceTo(@NonNull Vector3 v) {
+        final double a = x - v.x;
+        final double b = y - v.y;
+        final double c = z - v.z;
         return Math.sqrt(a * a + b * b + c * c);
     }
 
@@ -739,15 +776,15 @@ public class Vector3 {
     /**
      * Computes the Euclidean length between two {@link Vector3} objects.
      *
-     * @param v1 {@link Vector3} The first vector.
-     * @param v2 {@link Vector3} The second vector.
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector.
      *
      * @return double The Euclidean distance.
      */
-    public static double distanceTo(Vector3 v1, Vector3 v2) {
-        final double a = v1.x - v2.x;
-        final double b = v1.y - v2.y;
-        final double c = v1.z - v2.z;
+    public static double distanceTo(@NonNull Vector3 u, @NonNull Vector3 v) {
+        final double a = u.x - v.x;
+        final double b = u.y - v.y;
+        final double c = u.z - v.z;
         return Math.sqrt(a * a + b * b + c * c);
     }
 
@@ -766,14 +803,14 @@ public class Vector3 {
     /**
      * Computes the squared Euclidean length of this {@link Vector3} to the specified {@link Vector3}.
      *
-     * @param other {@link Vector3} The {@link Vector3} to compute the distance to.
+     * @param v {@link Vector3} The {@link Vector3} to compute the distance to.
      *
      * @return double The squared Euclidean distance.
      */
-    public double distanceTo2(Vector3 other) {
-        final double a = x - other.x;
-        final double b = y - other.y;
-        final double c = z - other.z;
+    public double distanceTo2(@NonNull Vector3 v) {
+        final double a = x - v.x;
+        final double b = y - v.y;
+        final double c = z - v.z;
         return (a * a + b * b + c * c);
     }
 
@@ -796,15 +833,15 @@ public class Vector3 {
     /**
      * Computes the squared Euclidean length between two {@link Vector3} objects.
      *
-     * @param v1 {@link Vector3} The first vector.
-     * @param v2 {@link Vector3} The second vector.
+     * @param u {@link Vector3} The first vector.
+     * @param v {@link Vector3} The second vector.
      *
      * @return double The squared Euclidean distance.
      */
-    public static double distanceTo2(Vector3 v1, Vector3 v2) {
-        final double a = v1.x - v2.x;
-        final double b = v1.y - v2.y;
-        final double c = v1.z - v2.z;
+    public static double distanceTo2(@NonNull Vector3 u, @NonNull Vector3 v) {
+        final double a = u.x - v.x;
+        final double b = u.y - v.y;
+        final double c = u.z - v.z;
         return (a * a + b * b + c * c);
     }
 
@@ -825,6 +862,7 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 absoluteValue() {
         x = Math.abs(x);
         y = Math.abs(y);
@@ -840,7 +878,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 project(Vector3 v) {
+    @NonNull
+    public Vector3 project(@NonNull Vector3 v) {
         double d = dot(v);
         double d_div = d / length2();
         return multiply(d_div);
@@ -854,13 +893,14 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 project(final double[] matrix) {
-        double l_w = x * matrix[Matrix4.M30] + y * matrix[Matrix4.M31] + z * matrix[Matrix4.M32] + matrix[Matrix4.M33];
-
-        return setAll(
-            (x * matrix[Matrix4.M00] + y * matrix[Matrix4.M01] + z * matrix[Matrix4.M02] + matrix[Matrix4.M03]) / l_w,
-            (x * matrix[Matrix4.M10] + y * matrix[Matrix4.M11] + z * matrix[Matrix4.M12] + matrix[Matrix4.M13]) / l_w,
-            (x * matrix[Matrix4.M20] + y * matrix[Matrix4.M21] + z * matrix[Matrix4.M22] + matrix[Matrix4.M23]) / l_w);
+    @NonNull
+    public Vector3 project(@NonNull @Size(min = 16) double[] matrix) {
+        if (mTmpMatrix4 == null) {
+            mTmpMatrix4 = new Matrix4(matrix);
+        } else {
+            mTmpMatrix4.setAll(matrix);
+        }
+        return project(mTmpMatrix4);
     }
 
     /**
@@ -871,39 +911,25 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 project(final Matrix4 matrix) {
-        return setAll(matrix.projectVector(this));
+    @NonNull
+    public Vector3 project(@NonNull Matrix4 matrix) {
+        return matrix.projectVector(this);
     }
 
     /**
-     * Projects {@link Vector3} v1 onto {@link Vector3} v2 and creates a new
+     * Projects {@link Vector3} u onto {@link Vector3} v and creates a new
      * {@link Vector3} for the result.
      *
-     * @param v1 {@link Vector3} to be projected.
-     * @param v2 {@link Vector3} the {@link Vector3} to be projected on.
+     * @param u {@link Vector3} to be projected.
+     * @param v {@link Vector3} the {@link Vector3} to be projected on.
      *
      * @return {@link Vector3} The result of the projection.
      */
-    public static Vector3 projectAndCreate(Vector3 v1, Vector3 v2) {
-        double d = v1.dot(v2);
-        double d_div = d / v2.length2();
-        return v2.clone().multiply(d_div);
-    }
-
-    /**
-     * Transforms this {@link Vector3} using the given {@link Quaternion}.
-     *
-     * @param quat {@link Vector3} The {@link Vector3} to transform.
-     *
-     * @return {@link Vector3} The transformed {@link Vector3}. This is the same as the parameter quat.
-     */
-    public Vector3 transform(Quaternion quat) {
-        Quaternion tmp = new Quaternion(quat);
-        Quaternion tmp2 = new Quaternion(0, x, y, z);
-        tmp.conjugate();
-        tmp.multiplyLeft(tmp2.multiplyLeft(quat));
-
-        return setAll(tmp.x, tmp.y, tmp.z);
+    @NonNull
+    public static Vector3 projectAndCreate(@NonNull Vector3 u, @NonNull Vector3 v) {
+        double d = u.dot(v);
+        double d_div = d / v.length2();
+        return v.clone().multiply(d_div);
     }
 
     /**
@@ -913,7 +939,7 @@ public class Vector3 {
      *
      * @return {@code double} The calculated angle, in degrees.
      */
-    public double angle(final Vector3 v) {
+    public double angle(@NonNull Vector3 v) {
         double dot = dot(v);
         dot /= (length() * v.length());
         return Math.toDegrees(Math.acos(dot));
@@ -922,13 +948,13 @@ public class Vector3 {
     /**
      * Computes the vector dot product between the two specified {@link Vector3} objects.
      *
-     * @param v1 The first {@link Vector3}.
-     * @param v2 The second {@link Vector3}.
+     * @param u The first {@link Vector3}.
+     * @param v The second {@link Vector3}.
      *
      * @return double The dot product.
      */
-    public static double dot(Vector3 v1, Vector3 v2) {
-        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    public static double dot(@NonNull Vector3 u, @NonNull Vector3 v) {
+        return u.x * v.x + u.y * v.y + u.z * v.z;
     }
 
     /**
@@ -938,7 +964,7 @@ public class Vector3 {
      *
      * @return double The dot product.
      */
-    public double dot(final Vector3 v) {
+    public double dot(@NonNull Vector3 v) {
         return x * v.x + y * v.y + z * v.z;
     }
 
@@ -980,12 +1006,16 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 cross(Vector3 v) {
-        if (mTemp == null) mTemp = new Vector3();
-        mTemp.setAll(this);
-        x = mTemp.y * v.z - mTemp.z * v.y;
-        y = mTemp.z * v.x - mTemp.x * v.z;
-        z = mTemp.x * v.y - mTemp.y * v.x;
+    @NonNull
+    public Vector3 cross(@NonNull Vector3 v) {
+        if (mTmpVector3 == null) {
+            mTmpVector3 = new Vector3(this);
+        } else {
+            mTmpVector3.setAll(this);
+        }
+        x = mTmpVector3.y * v.z - mTmpVector3.z * v.y;
+        y = mTmpVector3.z * v.x - mTmpVector3.x * v.z;
+        z = mTmpVector3.x * v.y - mTmpVector3.y * v.x;
         return this;
     }
 
@@ -999,12 +1029,16 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
+    @NonNull
     public Vector3 cross(double x, double y, double z) {
-        if (mTemp == null) mTemp = new Vector3();
-        mTemp.setAll(this);
-        this.x = mTemp.y * z - mTemp.z * y;
-        this.y = mTemp.z * x - mTemp.x * z;
-        this.z = mTemp.x * y - mTemp.y * x;
+        if (mTmpVector3 == null) {
+            mTmpVector3 = new Vector3(this);
+        } else {
+            mTmpVector3.setAll(this);
+        }
+        this.x = mTmpVector3.y * z - mTmpVector3.z * y;
+        this.y = mTmpVector3.z * x - mTmpVector3.x * z;
+        this.z = mTmpVector3.x * y - mTmpVector3.y * x;
         return this;
     }
 
@@ -1012,26 +1046,28 @@ public class Vector3 {
      * Computes the cross product between two {@link Vector3} objects and and sets
      * a this to the result.
      *
-     * @param v1 {@link Vector3} The first {@link Vector3} to cross.
-     * @param v2 {@link Vector3} The second {@link Vector3} to cross.
+     * @param u {@link Vector3} The first {@link Vector3} to cross.
+     * @param v {@link Vector3} The second {@link Vector3} to cross.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 crossAndSet(Vector3 v1, Vector3 v2) {
-        return setAll(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
+    @NonNull
+    public Vector3 crossAndSet(@NonNull Vector3 u, @NonNull Vector3 v) {
+        return setAll(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
     }
 
     /**
      * Computes the cross product between two {@link Vector3} objects and and sets
      * a new {@link Vector3} to the result.
      *
-     * @param v1 {@link Vector3} The first {@link Vector3} to cross.
-     * @param v2 {@link Vector3} The second {@link Vector3} to cross.
+     * @param u {@link Vector3} The first {@link Vector3} to cross.
+     * @param v {@link Vector3} The second {@link Vector3} to cross.
      *
      * @return {@link Vector3} The computed cross product.
      */
-    public static Vector3 crossAndCreate(Vector3 v1, Vector3 v2) {
-        return new Vector3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
+    @NonNull
+    public static Vector3 crossAndCreate(@NonNull Vector3 u, @NonNull Vector3 v) {
+        return new Vector3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
     }
 
     /**
@@ -1041,43 +1077,10 @@ public class Vector3 {
      * @param direction {@link Vector3} The direction to rotate to.
      *
      * @return {@link Quaternion} The {@link Quaternion} representing the rotation.
-     * @see <a href="http://ogre.sourcearchive.com/documentation/1.4
-     * .5/classOgre_1_1Vector3_eeef4472ad0c4d5f34a038a9f2faa819.html#eeef4472ad0c4d5f34a038a9f2faa819">Ogre3d</a>
      */
-    public Quaternion getRotationTo(Vector3 direction) {
-        // Based on Stan Melax's article in Game Programming Gems
-        Quaternion q = new Quaternion();
-        // Copy, since cannot modify local
-        Vector3 v0 = this;
-        Vector3 v1 = direction;
-        v0.normalize();
-        v1.normalize();
-
-        double d = Vector3.dot(v0, v1);
-        // If dot == 1, vectors are the same
-        if (d >= 1.0f) {
-            q.identity();
-        }
-        if (d < 0.000001 - 1.0) {
-            // Generate an axis
-            Vector3 axis = Vector3.crossAndCreate(Vector3.getAxisVector(Axis.X), this);
-            if (axis.length() == 0) // pick another if colinear
-                axis = Vector3.crossAndCreate(Vector3.getAxisVector(Axis.Y), this);
-            axis.normalize();
-            q.fromAngleAxis(axis, MathUtil.radiansToDegrees(MathUtil.PI));
-        } else {
-            double s = Math.sqrt((1 + d) * 2);
-            double invs = 1 / s;
-
-            Vector3 c = Vector3.crossAndCreate(v0, v1);
-
-            q.x = c.x * invs;
-            q.y = c.y * invs;
-            q.z = c.z * invs;
-            q.w = s * 0.5;
-            q.normalize();
-        }
-        return q;
+    @NonNull
+    public Quaternion getRotationTo(@NonNull Vector3 direction) {
+        return Quaternion.createFromRotationBetween(this, direction);
     }
 
     /**
@@ -1085,13 +1088,14 @@ public class Vector3 {
      * The result will be stored in the current object which means that the current
      * x, y, z values will be overridden.
      *
-     * @param to     {@link Vector3} Ending point.
-     * @param amount double [0-1] interpolation value.
+     * @param target     {@link Vector3} Ending point.
+     * @param t double [0-1] interpolation value.
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 lerp(Vector3 to, double amount) {
-        return multiply(1.0 - amount).add(to.x * amount, to.y * amount, to.z * amount);
+    @NonNull
+    public Vector3 lerp(@NonNull Vector3 target, double t) {
+        return multiply(1.0 - t).add(target.x * t, target.y * t, target.z * t);
     }
 
     /**
@@ -1105,7 +1109,8 @@ public class Vector3 {
      *
      * @return A reference to this {@link Vector3} to facilitate chaining.
      */
-    public Vector3 lerpAndSet(Vector3 from, Vector3 to, double amount) {
+    @NonNull
+    public Vector3 lerpAndSet(@NonNull Vector3 from, @NonNull Vector3 to, double amount) {
         x = from.x + (to.x - from.x) * amount;
         y = from.y + (to.y - from.y) * amount;
         z = from.z + (to.z - from.z) * amount;
@@ -1122,7 +1127,8 @@ public class Vector3 {
      *
      * @return {@link Vector3} The interpolated value.
      */
-    public static Vector3 lerpAndCreate(Vector3 from, Vector3 to, double amount) {
+    @NonNull
+    public static Vector3 lerpAndCreate(@NonNull Vector3 from, @NonNull Vector3 to, double amount) {
         Vector3 out = new Vector3();
         out.x = from.x + (to.x - from.x) * amount;
         out.y = from.y + (to.y - from.y) * amount;
@@ -1130,16 +1136,13 @@ public class Vector3 {
         return out;
     }
 
-
-    //--------------------------------------------------
-    // Utility methods
-    //--------------------------------------------------
-
     /**
      * Clones this {@link Vector3}.
      *
      * @return {@link Vector3} A copy of this {@link Vector3}.
      */
+    @NonNull
+    @Override
     public Vector3 clone() {
         return new Vector3(x, y, z);
     }
@@ -1162,7 +1165,7 @@ public class Vector3 {
      *
      * @return boolean True if this {@link Vector3} is of unit length.
      */
-    public boolean isUnit(final double margin) {
+    public boolean isUnit(double margin) {
         return Math.abs(length2() - 1) < margin * margin;
     }
 
@@ -1182,8 +1185,8 @@ public class Vector3 {
      *
      * @return boolean True if this {@link Vector3}'s length is smaller than the margin specified.
      */
-    public boolean isZero(final double margin) {
-        return (length2() < margin * margin);
+    public boolean isZero(double margin) {
+        return (length2() <= margin * margin);
     }
 
     /**
@@ -1196,7 +1199,8 @@ public class Vector3 {
      *
      * @return {@link Vector3} the {@link Vector3} representing the requested axis.
      */
-    public static Vector3 getAxisVector(Axis axis) {
+    @NonNull
+    public static Vector3 getAxisVector(@NonNull Axis axis) {
         switch (axis) {
             case X:
                 return X;
@@ -1213,12 +1217,22 @@ public class Vector3 {
      * Does a component by component comparison of this {@link Vector3} and the specified {@link Vector3}
      * and returns the result.
      *
-     * @param obj {@link Vector3} to compare with this one.
+     * @param o {@link Object} to compare with this one.
      *
      * @return boolean True if this {@link Vector3}'s components match with the components of the input.
      */
-    public boolean equals(final Vector3 obj) {
-        return obj.x == x && obj.y == y && obj.z == z;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Vector3 vector3 = (Vector3) o;
+        return vector3.x == x
+               && vector3.y == y
+               && vector3.z == z;
     }
 
     /**
@@ -1230,7 +1244,7 @@ public class Vector3 {
      *
      * @return boolean True if this {@link Vector3}'s components match with the components of the input.
      */
-    public boolean equals(final Vector3 obj, double error) {
+    public boolean equals(@NonNull Vector3 obj, double error) {
         return (Math.abs(obj.x - x) <= error) && (Math.abs(obj.y - y) <= error) && (Math.abs(obj.z - z) <= error);
     }
 
@@ -1243,8 +1257,9 @@ public class Vector3 {
      *
      * @return The passed array with the xyz values inserted
      */
-    public double[] toArray(double[] array)
-    {
+    @NonNull
+    @Size(min = 3)
+    public double[] toArray(@Size(min = 3) double[] array) {
     	if(array != null && array.length >= 3)
     	{
     		array[0] = x;
@@ -1260,15 +1275,13 @@ public class Vector3 {
      *
      * @return An array containing this Vector3's xyz values.
      */
-    public double[] toArray()
-    {
+    @NonNull
+    @Size(3)
+    public double[] toArray() {
     	return toArray(new double[3]);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+    @NonNull
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();

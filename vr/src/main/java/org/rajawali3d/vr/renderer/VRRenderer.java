@@ -106,7 +106,7 @@ public abstract class VRRenderer extends Renderer implements CardboardView.Stere
         mHeadViewQuaternion.fromMatrix(mHeadViewMatrix);
         mHeadViewQuaternion.inverse();
         mForwardVec.setAll(0, 0, 1);
-        mForwardVec.transform(mHeadViewQuaternion);
+        mForwardVec.rotateBy(mHeadViewQuaternion);
 
         mHeadTranslation.setAll(mHeadViewMatrix.getTranslation());
         mHeadTranslation.subtract(target.getPosition());

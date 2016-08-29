@@ -95,7 +95,7 @@ public abstract class VuforiaRenderer extends Renderer {
 		mPosition.setAll(modelViewMatrix[12], -modelViewMatrix[13],
 				-modelViewMatrix[14]);
 		copyFloatToDoubleMatrix(modelViewMatrix, mModelViewMatrix);
-		mOrientation.fromRotationMatrix(mModelViewMatrix);
+		mOrientation.fromMatrix(mModelViewMatrix);
 
 		if(mVuforiaManager.getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
 		{

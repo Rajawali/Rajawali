@@ -67,15 +67,15 @@ public class Camera extends ATransformable3D {
     }
 
     public void setCameraYaw(double angle) {
-        mLocalOrientation.fromEuler(angle, mLocalOrientation.getPitch(), mLocalOrientation.getRoll());
+        mLocalOrientation.fromEuler(angle, mLocalOrientation.getRotationX(), mLocalOrientation.getRotationZ());
     }
 
     public void setCameraPitch(double angle) {
-        mLocalOrientation.fromEuler(mLocalOrientation.getYaw(), angle, mLocalOrientation.getRoll());
+        mLocalOrientation.fromEuler(mLocalOrientation.getRotationY(), angle, mLocalOrientation.getRotationZ());
     }
 
     public void setCameraRoll(double angle) {
-        mLocalOrientation.fromEuler(mLocalOrientation.getYaw(), mLocalOrientation.getPitch(), angle);
+        mLocalOrientation.fromEuler(mLocalOrientation.getRotationY(), mLocalOrientation.getRotationX(), angle);
     }
 
     public void resetCameraOrientation() {
