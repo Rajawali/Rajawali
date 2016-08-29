@@ -1,6 +1,6 @@
 package org.rajawali3d.postprocessing.passes;
 
-import android.opengl.GLES30;
+import android.opengl.GLES20;
 import org.rajawali3d.R;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
@@ -67,8 +67,8 @@ public class FXAAPass extends EffectPass {
         @Override
         public void applyParams() {
             super.applyParams();
-            GLES30.glUniform1f(rtWHandle, mReadTarget.getWidth());
-            GLES30.glUniform1f(rtHHandle, mReadTarget.getHeight());
+            GLES20.glUniform1f(rtWHandle, mReadTarget.getWidth());
+            GLES20.glUniform1f(rtHHandle, mReadTarget.getHeight());
         }
     }
 
@@ -91,8 +91,8 @@ public class FXAAPass extends EffectPass {
         @Override
         public void applyParams() {
             super.applyParams();
-            GLES30.glUniform1f(rtWHandle, mReadTarget.getWidth());
-            GLES30.glUniform1f(rtHHandle, mReadTarget.getHeight());
+            GLES20.glUniform1f(rtWHandle, mReadTarget.getWidth());
+            GLES20.glUniform1f(rtHHandle, mReadTarget.getHeight());
         }
     }
 }

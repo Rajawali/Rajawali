@@ -1,19 +1,20 @@
 package org.rajawali3d.materials.textures;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.opengl.ETC1;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
+import android.os.Build.VERSION_CODES;
+import org.rajawali3d.materials.textures.utils.ETC2Util;
+import org.rajawali3d.util.RajLog;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import org.rajawali3d.materials.textures.utils.ETC2Util;
-import org.rajawali3d.util.RajLog;
 
 /**
  * Rajawali container for an ETC2 texture. Due to the nature of ETC2 textures, you may also use this to load
@@ -37,6 +38,7 @@ import org.rajawali3d.util.RajLog;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
+@TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
 public class Etc2Texture extends ACompressedTexture {
 
     protected int mResourceId;

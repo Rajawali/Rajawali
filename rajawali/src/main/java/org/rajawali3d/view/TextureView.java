@@ -4,8 +4,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.SurfaceTexture;
-import android.opengl.EGL14;
-import android.opengl.EGLExt;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -613,9 +611,9 @@ public class TextureView extends android.view.TextureView implements ISurface {
             System.arraycopy(configSpec, 0, newConfigSpec, 0, len - 1);
             newConfigSpec[len - 1] = EGL10.EGL_RENDERABLE_TYPE;
             if (mEGLContextClientVersion == 2) {
-                newConfigSpec[len] = EGL14.EGL_OPENGL_ES2_BIT;  /* EGL_OPENGL_ES2_BIT */
+                newConfigSpec[len] = RajawaliEGLConfigChooser.EGL_OPENGL_ES2_BIT;  /* EGL_OPENGL_ES2_BIT */
             } else {
-                newConfigSpec[len] = EGLExt.EGL_OPENGL_ES3_BIT_KHR; /* EGL_OPENGL_ES3_BIT_KHR */
+                newConfigSpec[len] = RajawaliEGLConfigChooser.EGL_OPENGL_ES3_BIT_KHR; /* EGL_OPENGL_ES3_BIT_KHR */
             }
             newConfigSpec[len + 1] = EGL10.EGL_NONE;
             return newConfigSpec;
