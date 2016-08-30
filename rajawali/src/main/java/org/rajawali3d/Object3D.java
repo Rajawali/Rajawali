@@ -14,7 +14,6 @@ package org.rajawali3d;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-
 import android.support.annotation.NonNull;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
@@ -94,6 +93,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	protected int mBlendFuncDFactor;
 	protected boolean mEnableDepthTest = true;
 	protected boolean mEnableDepthMask = true;
+
+    protected volatile boolean mIsDestroyed = false;
 
 	public Object3D() {
 		super();
@@ -195,8 +196,9 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 */
 	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix,
 			final Matrix4 parentMatrix, Material sceneMaterial) {
-		if (!mIsVisible && !mRenderChildrenAsBatch)
-			return;
+		if (isDestroyed() || (!mIsVisible && !mRenderChildrenAsBatch)) {
+            return;
+        }
 
 		Material material = sceneMaterial == null ? mMaterial : sceneMaterial;
 		preRender();
@@ -527,6 +529,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mEnableDepthMask = !value;
 	}
 
+    public boolean isDestroyed() {
+        return mIsDestroyed;
+    }
+
 	public int getDrawingMode() {
 		return mDrawingMode;
 	}
@@ -843,6 +849,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	public void destroy() {
+        mIsDestroyed = true;
 		if (mGeometry != null)
 			mGeometry.destroy();
 		if (mMaterial != null)
