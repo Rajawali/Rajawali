@@ -618,7 +618,8 @@ public class LoaderOBJ extends AMeshLoader {
 						FileInputStream fis = null;
 						try {
 							fis = new FileInputStream(filePath);
-							mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), new Etc1Texture(getOnlyFileName(matDef.diffuseTexture)+"etc1", fis, null)));
+							mat.addTexture(new Texture(getFileNameWithoutExtension(matDef.diffuseTexture),
+													   new Etc1Texture(getFileNameWithoutExtension(matDef.diffuseTexture)+"etc1", fis, null)));
 						} catch (FileNotFoundException e) {
 							RajLog.e("File decode error");
 						} finally {
@@ -627,7 +628,7 @@ public class LoaderOBJ extends AMeshLoader {
 							} catch (IOException e) {}
 						}
 					} else {
-						mat.addTexture(new Texture(getOnlyFileName(matDef.diffuseTexture), BitmapFactory.decodeFile(filePath)));
+						mat.addTexture(new Texture(getFileNameWithoutExtension(matDef.diffuseTexture), BitmapFactory.decodeFile(filePath)));
 					}
 				}
 				mat.setColorInfluence(0);
