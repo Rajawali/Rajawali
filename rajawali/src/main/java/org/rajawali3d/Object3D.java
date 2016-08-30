@@ -850,10 +850,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	public void destroy() {
         mIsDestroyed = true;
-		if (mGeometry != null)
 			mGeometry.destroy();
-		if (mMaterial != null)
-			MaterialManager.getInstance().removeMaterial(mMaterial);
 		mMaterial = null;
 		mGeometry = null;
 		for (int i = 0, j = mChildren.size(); i < j; i++)

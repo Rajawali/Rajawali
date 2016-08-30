@@ -960,10 +960,6 @@ public class Geometry3D {
         }
         GLES20.glDeleteBuffers(buffers.length, buffers, 0);
 
-        if (mOriginalGeometry != null) {
-            mOriginalGeometry.destroy();
-        }
-
         mOriginalGeometry = null;
 
         mBuffers.clear();
