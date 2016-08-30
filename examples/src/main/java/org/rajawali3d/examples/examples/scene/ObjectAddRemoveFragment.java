@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.R;
@@ -127,7 +128,9 @@ public class ObjectAddRemoveFragment extends AExampleFragment {
             final int count = getCurrentScene().getNumChildren();
             if (count > 0) {
                 final int index = random.nextInt(count);
-                getCurrentScene().removeChild(getCurrentScene().getChildrenCopy().get(index));
+                final Object3D child = getCurrentScene().getChildrenCopy().get(index);
+                getCurrentScene().removeChild(child);
+                child.destroy();
             }
         }
     }
