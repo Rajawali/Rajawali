@@ -968,6 +968,6 @@ public abstract class ATransformable3D implements IGraphNodeMember {
      * @see rajawali.scenegraph.IGraphNodeMember#getScenePosition()
      */
     public Vector3 getScenePosition() {
-        return mPosition;
+        return mMMatrix.getTranslation(mTempVec);
     }
 }
