@@ -640,7 +640,9 @@ public abstract class Renderer implements ISurfaceRenderer {
         mCurrentScene = nextScene;
         mCurrentScene.markLightingDirty(); // Make sure the lighting is updated for the new scene
         mCurrentScene.resetGLState(); // Ensure that the GL state is what this scene expects
-        mCurrentScene.getCamera().setProjectionMatrix(mOverrideViewportWidth, mOverrideViewportHeight);
+        final int wViewport = mOverrideViewportWidth > -1 ? mOverrideViewportWidth : mDefaultViewportWidth;
+        final int hViewport = mOverrideViewportHeight > -1 ? mOverrideViewportHeight : mDefaultViewportHeight;
+        mCurrentScene.getCamera().setProjectionMatrix(wViewport, hViewport);
     }
 
     /**
