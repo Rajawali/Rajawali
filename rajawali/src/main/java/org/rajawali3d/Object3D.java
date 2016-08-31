@@ -200,6 +200,13 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
             return;
         }
 
+        if (parentMatrix != null) {
+            if (mParentMatrix == null) {
+                mParentMatrix = new Matrix4();
+            }
+            mParentMatrix.setAll(parentMatrix);
+        }
+
 		Material material = sceneMaterial == null ? mMaterial : sceneMaterial;
 		preRender();
 
