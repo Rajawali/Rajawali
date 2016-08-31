@@ -3,6 +3,10 @@ Rajawali v1.1.x "Bombshell"
 
 "Bombshell", the next Rajawali version contains some minor changes to the API.
 
+### Anti-Aliasing
+
+FXAA and Super-sample anti aliasing have been added as post processing options. See the FXAA Post Processing example to see how.
+
 ### Examples and Support Modules
 
 The examples application and all support modules such as Android Wear, Vuforia and Cardboard support have been moved to this repository. 
