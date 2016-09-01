@@ -73,6 +73,8 @@ android {
 
 dependencies {
     compile project.depSupportAnnotations
+    compile project.depJCIP
+
     androidTestCompile 'junit:junit:4.12'
 
     androidTestCompile 'com.android.support.test:runner:0.4'

@@ -4,6 +4,9 @@ project.ext.set('depSupportAnnotations', 'com.android.support:support-annotation
 project.ext.set('depRecycler', 'com.android.support:recyclerview-v7:23.2.0')
 project.ext.set('depAppCompat', 'com.android.support:appcompat-v7:23.2.0')
 
+// External dependencies
+project.ext.set('depJCIP', 'net.jcip:jcip-annotations:1.0')
+
 // Examples dependencies
 project.ext.set('depGSON', 'com.google.code.gson:gson:2.6.2')
 project.ext.set('depIon', 'com.koushikdutta.ion:ion:2.1.7')
