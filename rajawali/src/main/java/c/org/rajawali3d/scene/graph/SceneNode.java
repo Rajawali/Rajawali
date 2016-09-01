@@ -2,8 +2,6 @@ package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.scene.graph.SceneNode.NodeMember;
 import c.org.rajawali3d.transform.Transformable;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
@@ -221,20 +219,5 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      */
     protected void recalculateBounds() {
 
-    }
-
-    /**
-     * Interface to be implemented by classes which will be attached to {@link SceneNode}s. These could be 3D render
-     * objects, cameras, lights, etc.
-     */
-    public interface NodeMember extends AABB {
-
-        /**
-         * Sets the {@link NodeParent} of this {@link NodeMember}.
-         *
-         * @param parent {@link NodeParent} implementation. Can be null.
-         * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
-         */
-        void setParent(@Nullable NodeParent parent) throws InterruptedException;
     }
 }

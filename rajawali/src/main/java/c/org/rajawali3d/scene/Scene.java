@@ -40,6 +40,6 @@ public class Scene {
     }
 
     protected void internalRender() {
-        
+
     }
 }
