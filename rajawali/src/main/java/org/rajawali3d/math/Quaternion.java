@@ -1065,10 +1065,11 @@ public final class Quaternion implements Cloneable {
 
     /**
      * Sets this {@link Quaternion} to be oriented to a target {@link Vector3}. It is safe to use the input vectors
-     * for other things as they are cloned internally.
+     * for other things as they are cloned internally. If look and up are parallel/anti-parallel, this
+     * {@link Quaternion} is unmodified.
      *
-     * @param look      {@link Vector3} The direction to look in. This is the forward axis.
-     * @param up {@link Vector3} to use as the up direction.
+     * @param look {@link Vector3} The direction to look in. This is the forward axis.
+     * @param up   {@link Vector3} to use as the up direction.
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
@@ -1078,34 +1079,25 @@ public final class Quaternion implements Cloneable {
         mTmpVec2.setAll(up).normalize(); // The world up vector (y)
         // TODO: Make this handle changing world axes
         // Vectors are parallel/anti-parallel if their dot product magnitude and length product are equal
-        /*final double dotProduct = Vector3.dot(look, up);
+        final double dotProduct = Vector3.dot(look, up);
         final double dotError = Math.abs(Math.abs(dotProduct) - (look.length() * up.length()));
-        if (dotError <= PARALLEL_TOLERANCE) {
-            // The look and up vectors are parallel
-            mTmpVec2.normalize();
-            if (dotProduct < 0) {
-                mTmpVec1.inverse();
-            }
-            fromRotationBetween(WorldParameters.FORWARD_AXIS, mTmpVec1);
-            return this;
+        if (dotError > PARALLEL_TOLERANCE) {
+            // The look and up vectors are not parallel
+            Vector3.orthoNormalize(mTmpVec1, mTmpVec2); // Find the forward and up vectors
+            mTmpVec3.crossAndSet(mTmpVec2, mTmpVec1); // Create the right vector
+            fromAxes(mTmpVec3, mTmpVec2, mTmpVec1);
+            inverse();
         }
-        Vector3.orthoNormalize(mTmpVec1, mTmpVec2); // Find the forward and up vectors
-        mTmpVec3.crossAndSet(mTmpVec2, mTmpVec1); // Create the right vector
-        fromAxes(mTmpVec3, mTmpVec2, mTmpVec1);*/
-        mTmpVec3.crossAndSet(look, up).normalize(); // The local right vector (x)
-        mTmpVec2.crossAndSet(mTmpVec1, mTmpVec3).normalize(); // The local up vector (y)
-
-        fromAxes(mTmpVec3, mTmpVec2, mTmpVec1);
-        normalize();
         return this;
     }
 
     /**
      * Creates a new {@link Quaternion} which is oriented to a target {@link Vector3}. It is safe to use the input
-     * vectors for other things as they are cloned internally.
+     * vectors for other things as they are cloned internally. If look and up are parallel/anti-parallel, an identity
+     * {@link Quaternion} is returned.
      *
-     * @param look      {@link Vector3} The direction to look in. This is the forward axis.
-     * @param up {@link Vector3} to use as the up direction.
+     * @param look {@link Vector3} The direction to look in. This is the forward axis.
+     * @param up   {@link Vector3} to use as the up direction.
      *
      * @return {@link Quaternion} The new {@link Quaternion} representing the requested orientation.
      */

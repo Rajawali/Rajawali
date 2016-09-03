@@ -786,6 +786,26 @@ public class TransformationTest {
         assertEquals("" + out, 0d, out.x, 1e-14);
         assertEquals("" + out, -0.7071067811865476, out.y, 1e-14);
         assertEquals("" + out, 0d, out.z, 1e-14);
-        assertFalse("" + transformation.orientation, true);
+
+        transformation.orientation.identity();
+        transformation.setPosition(0, 10, 0);
+        transformation.setLookAt(0, 0, 0);
+        transformation.resetToLookAtIfEnabled();
+        out = transformation.getOrientation();
+        assertEquals("" + out, 1d, out.w, 1e-14);
+        assertEquals("" + out, 0d, out.x, 1e-14);
+        assertEquals("" + out, 0d, out.y, 1e-14);
+        assertEquals("" + out, 0d, out.z, 1e-14);
+
+        transformation.orientation.identity();
+        transformation.setPosition(0, 10, 0);
+        transformation.setLookAt(0, 0, 0);
+        transformation.setUpAxis(Vector3.X);
+        transformation.resetToLookAtIfEnabled();
+        out = transformation.getOrientation();
+        assertEquals("" + out, 0.5, out.w, 1e-14);
+        assertEquals("" + out, 0.5, out.x, 1e-14);
+        assertEquals("" + out, 0.5, out.y, 1e-14);
+        assertEquals("" + out, -0.5, out.z, 1e-14);
     }
 }
