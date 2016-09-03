@@ -9,6 +9,7 @@ import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 
@@ -48,6 +49,12 @@ public class BasicFragment extends AExampleFragment {
             getCurrentCamera().setLookAt(0, 0, 0);
             getCurrentCamera().setZ(6);
 			getCurrentCamera().setOrientation(getCurrentCamera().getOrientation().inverse());
+
+            final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+            final Vector3 lookAt = Vector3.subtractAndCreate(Vector3.ZERO, new Vector3(10d, 0d, 0d));
+            lookAt.normalize();
+            final Vector3 up = Vector3.Y;
+            Quaternion out = q.lookAt(lookAt, up);
         }
 
         @Override

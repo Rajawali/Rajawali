@@ -971,7 +971,7 @@ public class QuaternionTest {
     @Test
     public void testLookAt() throws Exception {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
-        final Vector3 lookAt = Vector3.subtractAndCreate(new Vector3(0, 10d, 10d), Vector3.ZERO);
+        final Vector3 lookAt = Vector3.subtractAndCreate(new Vector3(0, 0d, 10d), Vector3.ZERO);
         final Vector3 up = Vector3.Y;
         Quaternion out = q.lookAt(lookAt, up);
         assertNotNull(out);

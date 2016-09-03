@@ -1064,21 +1064,22 @@ public final class Quaternion implements Cloneable {
     }
 
     /**
-     * Sets this {@link Quaternion} to be oriented to a target {@link Vector3}.
-     * It is safe to use the input vectors for other things as they are cloned internally.
+     * Sets this {@link Quaternion} to be oriented to a target {@link Vector3}. It is safe to use the input vectors
+     * for other things as they are cloned internally.
      *
-     * @param lookAt      {@link Vector3} The point to look at.
-     * @param upDirection {@link Vector3} to use as the up direction.
+     * @param look      {@link Vector3} The direction to look in. This is the forward axis.
+     * @param up {@link Vector3} to use as the up direction.
      *
      * @return A reference to this {@link Quaternion} to facilitate chaining.
      */
     @NonNull
-    public Quaternion lookAt(@NonNull Vector3 lookAt, @NonNull Vector3 upDirection) {
-        mTmpVec1.setAll(lookAt);
-        mTmpVec2.setAll(upDirection);
+    public Quaternion lookAt(@NonNull Vector3 look, @NonNull Vector3 up) {
+        mTmpVec1.setAll(look).normalize(); // The local forward vector (z)
+        mTmpVec2.setAll(up).normalize(); // The world up vector (y)
+        // TODO: Make this handle changing world axes
         // Vectors are parallel/anti-parallel if their dot product magnitude and length product are equal
-        final double dotProduct = Vector3.dot(lookAt, upDirection);
-        final double dotError = Math.abs(Math.abs(dotProduct) - (lookAt.length() * upDirection.length()));
+        /*final double dotProduct = Vector3.dot(look, up);
+        final double dotError = Math.abs(Math.abs(dotProduct) - (look.length() * up.length()));
         if (dotError <= PARALLEL_TOLERANCE) {
             // The look and up vectors are parallel
             mTmpVec2.normalize();
@@ -1090,23 +1091,28 @@ public final class Quaternion implements Cloneable {
         }
         Vector3.orthoNormalize(mTmpVec1, mTmpVec2); // Find the forward and up vectors
         mTmpVec3.crossAndSet(mTmpVec2, mTmpVec1); // Create the right vector
+        fromAxes(mTmpVec3, mTmpVec2, mTmpVec1);*/
+        mTmpVec3.crossAndSet(look, up).normalize(); // The local right vector (x)
+        mTmpVec2.crossAndSet(mTmpVec1, mTmpVec3).normalize(); // The local up vector (y)
+
         fromAxes(mTmpVec3, mTmpVec2, mTmpVec1);
+        normalize();
         return this;
     }
 
     /**
-     * Creates a new {@link Quaternion} which is oriented to a target {@link Vector3}.
-     * It is safe to use the input vectors for other things as they are cloned internally.
+     * Creates a new {@link Quaternion} which is oriented to a target {@link Vector3}. It is safe to use the input
+     * vectors for other things as they are cloned internally.
      *
-     * @param lookAt      {@link Vector3} The point to look at.
-     * @param upDirection {@link Vector3} to use as the up direction.
+     * @param look      {@link Vector3} The direction to look in. This is the forward axis.
+     * @param up {@link Vector3} to use as the up direction.
      *
      * @return {@link Quaternion} The new {@link Quaternion} representing the requested orientation.
      */
     @NonNull
-    public static Quaternion lookAtAndCreate(@NonNull Vector3 lookAt, @NonNull Vector3 upDirection) {
+    public static Quaternion lookAtAndCreate(@NonNull Vector3 look, @NonNull Vector3 up) {
         final Quaternion ret = new Quaternion();
-        return ret.lookAt(lookAt, upDirection);
+        return ret.lookAt(look, up);
     }
 
     /**

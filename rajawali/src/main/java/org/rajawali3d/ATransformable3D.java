@@ -343,14 +343,14 @@ public abstract class ATransformable3D implements IGraphNodeMember {
     }
 
     /**
-     * Sets the rotation of this {@link ATransformable3D} by the rotation described by
-     * the provided {@link Quaternion}. If this is part of a scene graph, the graph will
-     * be notified of the change.
-     *
-     * @param quat {@link Quaternion} describing the additional rotation.
-     *
-     * @return A reference to this {@link ATransformable3D} to facilitate chaining.
-     */
+         * Sets the rotation of this {@link ATransformable3D} by the rotation described by
+         * the provided {@link Quaternion}. If this is part of a scene graph, the graph will
+         * be notified of the change.
+         *
+         * @param quat {@link Quaternion} describing the additional rotation.
+         *
+         * @return A reference to this {@link ATransformable3D} to facilitate chaining.
+         */
     public ATransformable3D setRotation(final Quaternion quat) {
         mOrientation.setAll(quat);
         mLookAtValid = false;

@@ -7,7 +7,6 @@ import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
-import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.loader.LoaderOBJ;
@@ -39,8 +38,9 @@ public class LoadModelFragment extends AExampleFragment {
 			getCurrentScene().addLight(mLight);
 			getCurrentCamera().setZ(16);
 
-			LoaderOBJ objParser = new LoaderOBJ(mContext.getResources(),
-												mTextureManager, R.raw.multiobjects_obj);
+			/*LoaderOBJ objParser = new LoaderOBJ(mContext.getResources(),
+												mTextureManager, R.raw.multiobjects_obj);*/
+			LoaderOBJ objParser = new LoaderOBJ(this, "/theCabin_blend.obj");
 			try {
 				objParser.parse();
 				mObjectGroup = objParser.getParsedObject();
