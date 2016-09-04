@@ -593,6 +593,18 @@ public class TransformationTest {
     }
 
     @Test
+    public void testSetScaleDouble() throws Exception {
+        final TestableTransformation transformation = new TestableTransformation();
+        final Transformation out = transformation.setScale(4d);
+        assertNotNull(out);
+        assertSame(transformation, out);
+        assertEquals(Double.doubleToRawLongBits(4d), Double.doubleToRawLongBits(transformation.scale.x));
+        assertEquals(Double.doubleToRawLongBits(4d), Double.doubleToRawLongBits(transformation.scale.y));
+        assertEquals(Double.doubleToRawLongBits(4d), Double.doubleToRawLongBits(transformation.scale.z));
+        assertFalse(transformation.didCallResetToLookAt);
+    }
+
+    @Test
     public void testSetScaleX() throws Exception {
         final TestableTransformation transformation = new TestableTransformation();
         final Transformation out = transformation.setScaleX(2d);
@@ -681,6 +693,18 @@ public class TransformationTest {
         assertEquals(Double.doubleToRawLongBits(1d), Double.doubleToRawLongBits(transformation.upAxis.x));
         assertEquals(Double.doubleToRawLongBits(2d), Double.doubleToRawLongBits(transformation.upAxis.y));
         assertEquals(Double.doubleToRawLongBits(3d), Double.doubleToRawLongBits(transformation.upAxis.z));
+        assertTrue(transformation.didCallResetToLookAt);
+    }
+
+    @Test
+    public void testSetUpAxisAxis() throws Exception {
+        final TestableTransformation transformation = new TestableTransformation();
+        final Transformation out = transformation.setUpAxis(Axis.Z);
+        assertNotNull(out);
+        assertSame(transformation, out);
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(transformation.upAxis.x));
+        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(transformation.upAxis.y));
+        assertEquals(Double.doubleToRawLongBits(1d), Double.doubleToRawLongBits(transformation.upAxis.z));
         assertTrue(transformation.didCallResetToLookAt);
     }
 

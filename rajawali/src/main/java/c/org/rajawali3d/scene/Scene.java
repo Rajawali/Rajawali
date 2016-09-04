@@ -39,6 +39,10 @@ public class Scene {
         }
     }
 
+    public void requestModifyScene(@NonNull SceneModifier modifier) {
+
+    }
+
     protected void internalRender() {
 
     }

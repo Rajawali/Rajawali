@@ -2,6 +2,7 @@ package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.bounds.AABB;
 import org.rajawali3d.math.vector.Vector3.Axis;
 
 import java.util.Collection;
@@ -41,6 +42,16 @@ public class QuadTree extends ASceneGraph {
     @Override
     protected QuadTree createChildNode() {
         return new QuadTree(ignoredAxis);
+    }
+
+    @Override
+    public void recalculateBounds(boolean recursive) {
+
+    }
+
+    @Override
+    public void recalculateBoundsForAdd(@NonNull AABB added) {
+
     }
 
     @Override

@@ -15,14 +15,27 @@ public interface AABB {
      *
      * @return {@link Vector3} the +X/+Y/+Z corner coordinates.
      */
-    @NonNull
-    Vector3 getMaxBound();
+    @NonNull Vector3 getMaxBound();
 
     /**
      * Retrieves the position of the -X/-Y/-Z coordinates of this box.
      *
      * @return {@link Vector3} the -X/-Y/-Z corner coordinates.
      */
-    @NonNull
-    Vector3 getMinBound();
+    @NonNull Vector3 getMinBound();
+
+    /**
+     * Causes a recalculation of the min/max coordinates.
+     *
+     * @param recursive If {@code boolean}, the calculation will be made recursively across all children. If {@code
+     *                  false} the child bounds will be assumed to be unchanged.
+     */
+    void recalculateBounds(boolean recursive);
+
+    /**
+     * Causes a recalculation of the min/max coordinates, optimized for the case of a single expansion data point.
+     *
+     * @param added {@link AABB} implementation which was added.
+     */
+    void recalculateBoundsForAdd(@NonNull AABB added);
 }

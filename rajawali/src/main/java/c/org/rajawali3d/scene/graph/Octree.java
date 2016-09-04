@@ -2,6 +2,7 @@ package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.bounds.AABB;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,6 +20,16 @@ public class Octree extends ASceneGraph {
     @Override
     protected Octree createChildNode() {
         return new Octree();
+    }
+
+    @Override
+    public void recalculateBounds(boolean recursive) {
+
+    }
+
+    @Override
+    public void recalculateBoundsForAdd(@NonNull AABB added) {
+
     }
 
     @Override

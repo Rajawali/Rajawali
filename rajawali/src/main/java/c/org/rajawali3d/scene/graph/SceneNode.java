@@ -2,6 +2,7 @@ package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.transform.Transformable;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
@@ -36,10 +37,13 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     private final List<NodeMember> members = new ArrayList<>();
 
     @NonNull
-    private final Vector3 maxBound = new Vector3();
+    protected final Vector3 maxBound = new Vector3();
 
     @NonNull
-    private final Vector3 minBound = new Vector3();
+    protected final Vector3 minBound = new Vector3();
+
+    @NonNull
+    protected final Vector3 scratchVector3 = new Vector3();
 
     /**
      * This is volatile and guarded by {@link #parentLock} because multiple threads can touch it and we always need
@@ -55,13 +59,23 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @NonNull
     @Override
     public Vector3 getMaxBound() {
-        return maxBound;
+        return scratchVector3.setAll(maxBound);
     }
 
     @NonNull
     @Override
     public Vector3 getMinBound() {
-        return minBound;
+        return scratchVector3.setAll(minBound);
+    }
+
+    @Override
+    public void recalculateBounds(boolean recursive) {
+
+    }
+
+    @Override
+    public void recalculateBoundsForAdd(@NonNull AABB added) {
+
     }
 
     @Override
@@ -206,18 +220,11 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      * {@link #acquireWriteLock()} method. Client code should avoid using this method or risk thread safety problems.
      */
     protected void updateGraph() {
-        recalculateBounds();
+        recalculateBounds(true);
         synchronized (parentLock) {
             if (parent != null) {
                 // Instruct the graph to rebuild.
             }
         }
-    }
-
-    /**
-     * Recalculates the bounds of this {@link SceneNode}, taking into account the bounds of any children.
-     */
-    protected void recalculateBounds() {
-
     }
 }
