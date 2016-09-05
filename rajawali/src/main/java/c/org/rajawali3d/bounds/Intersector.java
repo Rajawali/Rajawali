@@ -10,9 +10,8 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.util;
+package c.org.rajawali3d.bounds;
 
-import android.support.annotation.IntDef;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -25,16 +24,6 @@ import org.rajawali3d.math.vector.Vector3;
  * @author andrewjo@gmail.com
  */
 public final class Intersector {
-
-	/**
-	 * @author Jared Woolston (Jared.Woolston@gmail.com)
-	 */
-	@IntDef({ INSIDE, OUTSIDE, INTERSECT })
-	public @interface Bounded {}
-	public static final int INSIDE    = -1;
-	public static final int OUTSIDE   = 1;
-	public static final int INTERSECT = 0;
-
 	private final static Vector3 v0 = new Vector3();
 	private final static Vector3 v1 = new Vector3();
 	private final static Vector3 v2 = new Vector3();

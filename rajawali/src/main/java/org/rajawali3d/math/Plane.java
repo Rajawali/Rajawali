@@ -21,7 +21,7 @@ import org.rajawali3d.math.vector.Vector3;
  */
 public class Plane {
 
-	@IntDef({ FRONT_OF_PLANE, ON_PLANE, BACK_OF_PLANE })
+    @IntDef({ FRONT_OF_PLANE, ON_PLANE, BACK_OF_PLANE })
     public @interface PlaneSide {}
     public static final int FRONT_OF_PLANE = 1;
     public static final int ON_PLANE       = 0;
@@ -80,7 +80,7 @@ public class Plane {
 	}
 
     /**
-     * Computes the normal distance from this {@link Plane} to the provided point.
+     * Computes the signed normal distance from this {@link Plane} to the provided point.
      *
      * @param point {@link Vector3} The point to compute the distance to.
      * @return {@code double} The computed normal distance.
@@ -146,4 +146,12 @@ public class Plane {
 		double inverseNormalLength = 1.0 / normal.normalize();
         distanceToOrigin *= inverseNormalLength;
 	}
+
+    @Override
+    public String toString() {
+        return "Plane{" +
+               "normal=" + normal +
+               ", distanceToOrigin=" + distanceToOrigin +
+               '}';
+    }
 }
