@@ -263,22 +263,28 @@ public class Geometry3D {
         float[] newColors = null;
         float[] newTextureCoords = null;
         int[] newIntIndices = null;
-        float[] mVerticesArray = null;
-        float[] mNormalsArray = null;
-        float[] mColorsArray = null;
-        float[] mTextureCoordsArray = null;
-        int[] mIndicesArray = null;
+        float[] mVerticesArray = new float[0];
+        float[] mNormalsArray = new float[0];
+        float[] mColorsArray = new float[0];
+        float[] mTextureCoordsArray = new float[0];
+        int[] mIndicesArray = new int[0];
 
         //Get the old data
-        mVerticesArray = getFloatArrayFromBuffer((FloatBuffer) mBuffers.get(VERTEX_BUFFER_KEY).buffer);
-        mNormalsArray = getFloatArrayFromBuffer((FloatBuffer) mBuffers.get(NORMAL_BUFFER_KEY).buffer);
-        mColorsArray = getFloatArrayFromBuffer((FloatBuffer) mBuffers.get(COLOR_BUFFER_KEY).buffer);
-        mTextureCoordsArray = getFloatArrayFromBuffer((FloatBuffer) mBuffers.get(TEXTURE_BUFFER_KEY).buffer);
-        mIndicesArray = getIntArrayFromBuffer(mBuffers.get(INDEX_BUFFER_KEY).buffer);
+        FloatBuffer verticesBuffer = (FloatBuffer) mBuffers.get(VERTEX_BUFFER_KEY).buffer;
+        FloatBuffer normalsBuffer = (FloatBuffer) mBuffers.get(NORMAL_BUFFER_KEY).buffer;
+        FloatBuffer colorsBuffer = (FloatBuffer) mBuffers.get(COLOR_BUFFER_KEY).buffer;
+        FloatBuffer textureCoordsBuffer = (FloatBuffer) mBuffers.get(TEXTURE_BUFFER_KEY).buffer;
+        Buffer      indicesBuffer = mBuffers.get(INDEX_BUFFER_KEY).buffer;
+        if(verticesBuffer != null) mVerticesArray = getFloatArrayFromBuffer(verticesBuffer);
+        if(normalsBuffer != null) mNormalsArray = getFloatArrayFromBuffer(normalsBuffer);
+        if(colorsBuffer != null) mColorsArray = getFloatArrayFromBuffer(colorsBuffer);
+        if(textureCoordsBuffer != null) mTextureCoordsArray = getFloatArrayFromBuffer(textureCoordsBuffer);
+        if(indicesBuffer != null) mIndicesArray = getIntArrayFromBuffer(indicesBuffer);
 
         //Get the new data, offset the vertices
         int axis = 0;
-        float[] addVertices = getFloatArrayFromBuffer(geometry.getVertices());
+        float[] addVertices = null;
+        if(geometry.getVertices() != null) addVertices = getFloatArrayFromBuffer(geometry.getVertices());
         if (offset != null) {
             for (int i = 0, j = addVertices.length; i < j; ++i) {
                 switch (axis) {
@@ -298,11 +304,19 @@ public class Geometry3D {
                 }
             }
         }
-        float[] addNormals = getFloatArrayFromBuffer(geometry.getNormals());
-        float[] addColors = getFloatArrayFromBuffer(geometry.getColors());
-        float[] addTextureCoords = getFloatArrayFromBuffer(geometry.getTextureCoords());
-        int[] addIndices = getIntArrayFromBuffer(geometry.getIndices());
-        int index_offset = (mVerticesArray.length / 3);
+        float[] addNormals = new float[0];
+        float[] addColors = new float[0];
+        float[] addTextureCoords = new float[0];
+        int[] addIndices = new int[0];
+        if(geometry.getNormals() != null) addNormals = getFloatArrayFromBuffer(geometry.getNormals());
+        if(geometry.getColors() != null) addColors = getFloatArrayFromBuffer(geometry.getColors());
+        if(geometry.getTextureCoords() != null) addTextureCoords = getFloatArrayFromBuffer(geometry.getTextureCoords());
+        if(geometry.getIndices() != null) addIndices = getIntArrayFromBuffer(geometry.getIndices());
+
+        int index_offset = 0;
+        if(mVerticesArray != null) {
+            index_offset = (mVerticesArray.length / 3);
+        }
         for (int i = 0, j = addIndices.length; i < j; ++i) {
             addIndices[i] += index_offset;
         }
