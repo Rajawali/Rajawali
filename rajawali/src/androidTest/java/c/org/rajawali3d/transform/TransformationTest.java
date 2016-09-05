@@ -8,6 +8,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.support.annotation.NonNull;
+import android.test.suitebuilder.annotation.SmallTest;
 import org.junit.Test;
 import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;
@@ -16,8 +17,9 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SmallTest
 public class TransformationTest {
 
     private final class TestableTransformation extends Transformation {

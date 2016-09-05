@@ -2,21 +2,21 @@ package c.org.rajawali3d.scene.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.support.annotation.NonNull;
+import android.test.suitebuilder.annotation.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SmallTest
 public class FlatTreeTest {
 
     private final class TestableFlatTree extends FlatTree {
@@ -63,24 +63,6 @@ public class FlatTreeTest {
     public void testCreateChildNode() throws Exception {
         final FlatTree tree = new FlatTree();
         final Object out = tree.createChildNode();
-    }
-
-    @Test
-    public void testCheckAndAdjustMinBounds() throws Exception {
-        final FlatTree tree = new FlatTree();
-        tree.checkAndAdjustMinBounds(testBox);
-        assertEquals(-1d, tree.minBound.x, 1e-14);
-        assertEquals(-2d, tree.minBound.y, 1e-14);
-        assertEquals(-3d, tree.minBound.z, 1e-14);
-    }
-
-    @Test
-    public void testCheckAndAdjustMaxBounds() throws Exception {
-        final FlatTree tree = new FlatTree();
-        tree.checkAndAdjustMaxBounds(testBox);
-        assertEquals(1d, tree.maxBound.x, 1e-14);
-        assertEquals(2d, tree.maxBound.y, 1e-14);
-        assertEquals(3d, tree.maxBound.z, 1e-14);
     }
 
     @Test
@@ -204,15 +186,6 @@ public class FlatTreeTest {
         assertTrue(tree.isEmpty());
         tree.add(new SceneNode());
         assertFalse(tree.isEmpty());
-    }
-
-    @Test
-    public void testIterator() throws Exception {
-        FlatTree tree = new FlatTree();
-        final Collection<SceneNode> goodList = Arrays.asList(new SceneNode(), new SceneNode(), new SceneNode());
-        tree.addAll(goodList);
-        final Iterator<SceneNode> iterator = tree.iterator();
-        assertNotNull(iterator);
     }
 
     @Test
@@ -341,47 +314,5 @@ public class FlatTreeTest {
         final Collection<SceneNode> goodList = Arrays.asList(new SceneNode(), new SceneNode(), new SceneNode());
         tree.addAll(goodList);
         assertEquals(3, tree.size());
-    }
-
-    @Test
-    public void testToArray() throws Exception {
-        FlatTree tree = new FlatTree();
-        final SceneNode node1 = new SceneNode();
-        final SceneNode node2 = new SceneNode();
-        final SceneNode node3 = new SceneNode();
-        final SceneNode node4 = new SceneNode();
-        final SceneNode node5 = new SceneNode();
-        final SceneNode node6 = new SceneNode();
-        final SceneNode[] list = new SceneNode[] {node1, node2, node3, node4, node5, node6};
-        final Collection<SceneNode> goodList = Arrays.asList(list);
-        tree.addAll(goodList);
-        final Object[] out = tree.toArray();
-        assertNotNull(out);
-        assertEquals(6, out.length);
-        for (int i = 0; i < out.length; ++i) {
-            assertTrue(out[i] instanceof SceneNode);
-            assertEquals(list[i], out[i]);
-        }
-    }
-
-    @Test
-    public void testToArray1() throws Exception {
-        FlatTree tree = new FlatTree();
-        final SceneNode node1 = new SceneNode();
-        final SceneNode node2 = new SceneNode();
-        final SceneNode node3 = new SceneNode();
-        final SceneNode node4 = new SceneNode();
-        final SceneNode node5 = new SceneNode();
-        final SceneNode node6 = new SceneNode();
-        final SceneNode[] list = new SceneNode[] {node1, node2, node3, node4, node5, node6};
-        final Collection<SceneNode> goodList = Arrays.asList(list);
-        tree.addAll(goodList);
-        final SceneNode[] array = new SceneNode[6];
-        final SceneNode[] out = tree.toArray(array);
-        assertNotNull(out);
-        assertEquals(6, out.length);
-        for (int i = 0; i < out.length; ++i) {
-            assertEquals(list[i], out[i]);
-        }
     }
 }

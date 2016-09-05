@@ -3,13 +3,14 @@ package org.rajawali3d;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import android.test.suitebuilder.annotation.SmallTest;
 import org.junit.Test;
-import org.rajawali3d.WorldParameters;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
+@SmallTest
 public class WorldParametersTest {
 
     @Test

@@ -2,13 +2,14 @@ package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * A {@link SceneGraph} implementation which stores all children in a single flat structure.
@@ -27,22 +28,15 @@ public class FlatTree extends ASceneGraph {
         throw new UnsupportedOperationException("FlatTree scene graphs do not have child nodes.");
     }
 
-    protected void checkAndAdjustMinBounds(@NonNull AABB child) {
-        // Pick the lesser value of each component between our bounds and the added bounds.
-        final Vector3 addMin = child.getMinBound();
-        minBound.setAll(Math.min(minBound.x, addMin.x),
-                        Math.min(minBound.y, addMin.y),
-                        Math.min(minBound.z, addMin.z));
+    @RequiresWriteLock
+    @Override
+    public void updateGraph() {
+        // For a FlatTree, the only thing we need to worry about is updating our scene bounds and we can assume all
+        // nodes currently have valid bounds.
+        recalculateBounds(false);
     }
 
-    protected void checkAndAdjustMaxBounds(@NonNull AABB child) {
-        // Pick the larger value of each component between our bounds and the added bounds.
-        final Vector3 addMax = child.getMaxBound();
-        maxBound.setAll(Math.max(maxBound.x, addMax.x),
-                        Math.max(maxBound.y, addMax.y),
-                        Math.max(maxBound.z, addMax.z));
-    }
-
+    @RequiresWriteLock
     @Override
     public void recalculateBounds(boolean recursive) {
         // Reset the bounds to 0 to ensure we get accurate results.
@@ -63,6 +57,7 @@ public class FlatTree extends ASceneGraph {
         }
     }
 
+    @RequiresWriteLock
     @Override
     public void recalculateBoundsForAdd(@NonNull AABB added) {
         // Have the added node determine its bounds
@@ -71,8 +66,9 @@ public class FlatTree extends ASceneGraph {
         checkAndAdjustMaxBounds(added);
     }
 
+    @RequiresWriteLock
     @Override
-    public boolean add(SceneNode node) {
+    public boolean add(@NonNull SceneNode node) {
         try {
             final boolean retval = children.add(node);
             // Do a bounds recalculation with just this added node
@@ -84,6 +80,7 @@ public class FlatTree extends ASceneGraph {
         }
     }
 
+    @RequiresWriteLock
     @Override
     public boolean addAll(@NonNull Collection<? extends SceneNode> nodes) {
         final boolean retval = children.addAll(nodes);
@@ -95,6 +92,7 @@ public class FlatTree extends ASceneGraph {
         return retval;
     }
 
+    @RequiresWriteLock
     @Override
     public void clear() {
         children.clear();
@@ -103,37 +101,34 @@ public class FlatTree extends ASceneGraph {
         maxBound.setAll(0d, 0d, 0d);
     }
 
+    @RequiresReadLock
     @Override
-    public boolean contains(@Nullable Object object) {
-        return children.contains(object);
+    public boolean contains(@Nullable SceneNode node) {
+        return children.contains(node);
     }
 
+    @RequiresReadLock
     @Override
-    public boolean containsAll(@NonNull Collection<?> collection) {
+    public boolean containsAll(@NonNull Collection<? extends SceneNode> collection) {
         return children.containsAll(collection);
     }
 
+    @RequiresReadLock
     @Override
     public boolean isEmpty() {
         return children.isEmpty();
     }
 
-    @NonNull
+    @RequiresWriteLock
     @Override
-    public Iterator<SceneNode> iterator() {
-        return children.iterator();
-    }
-
-    @Override
-    public boolean remove(@Nullable Object object) {
-        final boolean retval = children.remove(object);
-        if (object != null && retval) {
+    public boolean remove(@NonNull SceneNode node) {
+        final boolean retval = children.remove(node);
+        if (retval) {
             // Check if we can skip bounds recalculation
-            final SceneNode child = (SceneNode) object;
-            final Vector3 removedMin = child.getMinBound();
+            final Vector3 removedMin = node.getMinBound();
             if (minBound.x < removedMin.y && minBound.y < removedMin.y && minBound.z < removedMin.z) {
                 // The parent min bounds exceed the removed min bounds for other reasons
-                final Vector3 removedMax = child.getMaxBound();
+                final Vector3 removedMax = node.getMaxBound();
                 if (maxBound.x > removedMax.x) {
                     if (maxBound.y > removedMax.y) {
                         if (maxBound.z > removedMax.z) {
@@ -144,46 +139,37 @@ public class FlatTree extends ASceneGraph {
                     }
                 }
             }
-            // At least one component of the min/max bounds might be determined by the removed object, do a full
+            // At least one component of the min/max bounds might be determined by the removed node, do a full
             // bounds check, but skip recursively calling children.
             recalculateBounds(false);
         }
         return retval;
     }
 
+    @RequiresWriteLock
     @Override
-    public boolean removeAll(@NonNull Collection<?> collection) {
+    public boolean removeAll(@NonNull Collection<? extends SceneNode> collection) {
         boolean retval = false;
-        for (Object object : collection) {
-            retval |= remove(object);
+        for (SceneNode node : collection) {
+            retval |= remove(node);
         }
         return retval;
     }
 
+    @RequiresWriteLock
     @Override
-    public boolean retainAll(@NonNull Collection<?> collection) {
+    public boolean retainAll(@NonNull Collection<? extends SceneNode> collection) {
         clear();
         boolean retval = false;
-        for (Object object : collection) {
-            retval |= add((SceneNode) object);
+        for (SceneNode node : collection) {
+            retval |= add(node);
         }
         return retval;
     }
 
+    @RequiresReadLock
     @Override
     public int size() {
         return children.size();
-    }
-
-    @NonNull
-    @Override
-    public Object[] toArray() {
-        return children.toArray();
-    }
-
-    @NonNull
-    @Override
-    public <T> T[] toArray(@NonNull T[] array) {
-        return children.toArray(array);
     }
 }

@@ -2,6 +2,8 @@ package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.transform.Transformable;
 import c.org.rajawali3d.transform.Transformation;
@@ -56,26 +58,60 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @Nullable
     protected Lock currentlyHeldWriteLock;
 
+    @RequiresReadLock
     @NonNull
     @Override
     public Vector3 getMaxBound() {
         return scratchVector3.setAll(maxBound);
     }
 
+    @RequiresReadLock
     @NonNull
     @Override
     public Vector3 getMinBound() {
         return scratchVector3.setAll(minBound);
     }
 
+    @RequiresWriteLock
     @Override
     public void recalculateBounds(boolean recursive) {
-
+        // Reset the bounds to 0 to ensure we get accurate results.
+        minBound.setAll(0d, 0d, 0d);
+        maxBound.setAll(0d, 0d, 0d);
+        NodeMember child;
+        // For each child node, recalculate the bounds as if it was an addition one at a time.
+        for (int i = 0, j = children.size(); i < j; ++i) {
+            child = children.get(i);
+            if (recursive) {
+                // Recursively check all the children
+                recalculateBoundsForAdd(child);
+            } else {
+                // Assume the child bounds are valid
+                checkAndAdjustMinBounds(child);
+                checkAndAdjustMaxBounds(child);
+            }
+        }
+        // For each child, recalculate the bounds as if it was an addition one at a time.
+        for (int i = 0, j = members.size(); i < j; ++i) {
+            child = members.get(i);
+            if (recursive) {
+                // Recursively check all the children
+                recalculateBoundsForAdd(child);
+            } else {
+                // Assume the child bounds are valid
+                checkAndAdjustMinBounds(child);
+                checkAndAdjustMaxBounds(child);
+            }
+        }
     }
 
+    @RequiresWriteLock
     @Override
     public void recalculateBoundsForAdd(@NonNull AABB added) {
-
+        // Have the added node or child determine its bounds
+        added.recalculateBounds(true);
+        checkAndAdjustMinBounds(added);
+        checkAndAdjustMaxBounds(added);
     }
 
     @Override
@@ -215,15 +251,43 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     }
 
     /**
-     * Initiates a restructure of the scene graph to accommodate any changes made due to transformations. It
-     * is assumed that a write lock on the scene graph is held at this point acquired via the
-     * {@link #acquireWriteLock()} method. Client code should avoid using this method or risk thread safety problems.
+     * Compares the minimum axis aligned bounds of this {@link SceneNode} with those of the child and adjusts these
+     * bounds to be the lesser of the two on each axis.
+     *
+     * @param child {@link AABB} The child who should be compared against.
      */
-    protected void updateGraph() {
+    @RequiresWriteLock
+    protected void checkAndAdjustMinBounds(@NonNull AABB child) {
+        // Pick the lesser value of each component between our bounds and the added bounds.
+        final Vector3 addMin = child.getMinBound();
+        minBound.setAll(Math.min(minBound.x, addMin.x),
+                        Math.min(minBound.y, addMin.y),
+                        Math.min(minBound.z, addMin.z));
+    }
+
+    /**
+     * Compares the maximum axis aligned bounds of this {@link SceneNode} with those of the child and adjusts these
+     * bounds to be the greater of the two on each axis.
+     *
+     * @param child {@link AABB} The child who should be compared against.
+     */
+    @RequiresWriteLock
+    protected void checkAndAdjustMaxBounds(@NonNull AABB child) {
+        // Pick the larger value of each component between our bounds and the added bounds.
+        final Vector3 addMax = child.getMaxBound();
+        maxBound.setAll(Math.max(maxBound.x, addMax.x),
+                        Math.max(maxBound.y, addMax.y),
+                        Math.max(maxBound.z, addMax.z));
+    }
+
+    @RequiresWriteLock
+    public void updateGraph() {
+        // Recursively recalculate our bounds so that the graph update does not need to do any extra work
         recalculateBounds(true);
         synchronized (parentLock) {
             if (parent != null) {
-                // Instruct the graph to rebuild.
+                // Propagate the call up the chain of parents until we reach the graph
+                parent.updateGraph();
             }
         }
     }

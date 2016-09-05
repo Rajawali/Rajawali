@@ -2,6 +2,7 @@ package c.org.rajawali3d.scene;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.scene.graph.FlatTree;
 import c.org.rajawali3d.scene.graph.SceneGraph;
 import net.jcip.annotations.ThreadSafe;
@@ -22,10 +23,15 @@ public class Scene {
     @NonNull
     private SceneGraph sceneGraph;
 
+    @Nullable Lock currentlyHeldWriteLock;
     @Nullable Lock currentlyHeldReadLock;
 
     public Scene() {
         sceneGraph = new FlatTree();
+    }
+
+    public Scene(@NonNull SceneGraph graph) {
+        sceneGraph = graph;
     }
 
     public void render() throws InterruptedException {
@@ -39,10 +45,18 @@ public class Scene {
         }
     }
 
-    public void requestModifyScene(@NonNull SceneModifier modifier) {
-
+    public void requestModifyScene(@NonNull SceneModifier modifier) throws InterruptedException {
+        currentlyHeldWriteLock = sceneGraph.acquireWriteLock();
+        try {
+            modifier.doModifications(sceneGraph);
+        } finally {
+            if (currentlyHeldWriteLock != null) {
+                currentlyHeldWriteLock.unlock();
+            }
+        }
     }
 
+    @RequiresReadLock
     protected void internalRender() {
 
     }

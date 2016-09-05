@@ -1,5 +1,7 @@
 package org.rajawali3d.util;
 
+import android.support.annotation.NonNull;
+
 import java.nio.Buffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
@@ -9,65 +11,64 @@ import java.util.Arrays;
 
 /**
  * A collection of methods for working with primitive arrays.
- * 
- * @author Jared Woolston (jwoolston@tenkiv.com)
  *
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class ArrayUtils {
 
 	/**
 	 * Converts an array of doubles to an array of floats, using the provided output array.
-	 * 
+	 *
 	 * @param input double[] array to be converted.
 	 * @param output float[] array to store the result in.
 	 * @return float[] a reference to output. Returned for convenience.
 	 */
-	public static float[] convertDoublesToFloats(double[] input, float[] output) {
-		if (input == null || output == null) return output;
+	@NonNull
+	public static float[] convertDoublesToFloats(@NonNull double[] input, @NonNull float[] output) {
 		for (int i = 0; i < input.length; ++i) {
 			output[i] = (float) input[i];
 		}
 		return output;
 	}
-	
+
 	/**
 	 * Converts an array of doubles to an array of floats, allocating a new array.
-	 * 
+	 *
 	 * @param input double[] array to be converted.
 	 * @return float[] array with the result. Will be null if input was null.
 	 */
-	public static float[] convertDoublesToFloats(double[] input) {
-		if (input == null) return null;
+	@NonNull
+	public static float[] convertDoublesToFloats(@NonNull double[] input) {
 		float[] output = new float[input.length];
 		for (int i = 0; i < input.length; ++i) {
 			output[i] = (float) input[i];
 		}
 		return output;
 	}
-	
+
 	/**
 	 * Converts an array of floats to an array of doubles, using the provided output array.
-	 * 
+	 *
 	 * @param input float[] array to be converted.
 	 * @param output double[] array to store the result in.
 	 * @return float[] a reference to output. Returned for convenience.
 	 */
-	public static double[] convertFloatsToDoubles(float[] input, double[] output) {
-		if (input == null || output == null) return output;
+	@NonNull
+	public static double[] convertFloatsToDoubles(@NonNull float[] input, @NonNull double[] output) {
 		for (int i = 0; i < input.length; ++i) {
 			output[i] = (double) input[i];
 		}
 		return output;
 	}
-	
+
 	/**
 	 * Converts an array of floats to an array of doubles, allocating a new array.
-	 * 
+	 *
 	 * @param input double[] array to be converted.
 	 * @return float[] array with the result. Will be null if input was null.
 	 */
-	public static double[] convertFloatsToDoubles(float[] input) {
-		if (input == null) return null;
+	@NonNull
+	public static double[] convertFloatsToDoubles(@NonNull float[] input) {
 		double[] output = new double[input.length];
 		for (int i = 0; i < input.length; ++i) {
 			output[i] = (double) input[i];
@@ -77,13 +78,12 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenates a list of double arrays into a single array.
-	 * 
+	 *
 	 * @param arrays The arrays.
 	 * @return The concatenated array.
-	 * 
-	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
 	 */
-	public static double[] concatAllDouble(double[] ... arrays) {
+	@NonNull
+	public static double[] concatAllDouble(@NonNull double[] ... arrays) {
 		int totalLength = 0;
 		final int subArrayCount = arrays.length;
 		for (int i = 0; i < subArrayCount; ++i) {
@@ -100,13 +100,12 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenates a list of float arrays into a single array.
-	 * 
+	 *
 	 * @param arrays The arrays.
 	 * @return The concatenated array.
-	 * 
-	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
 	 */
-	public static float[] concatAllFloat(float[] ... arrays) {
+	@NonNull
+	public static float[] concatAllFloat(@NonNull float[] ... arrays) {
 		int totalLength = 0;
 		final int subArrayCount = arrays.length;
 		for (int i = 0; i < subArrayCount; ++i) {
@@ -123,13 +122,12 @@ public class ArrayUtils {
 
 	/**
 	 * Concatenates a list of int arrays into a single array.
-	 * 
+	 *
 	 * @param arrays The arrays.
 	 * @return The concatenated array.
-	 * 
-	 * @see {@link http://stackoverflow.com/questions/80476/how-to-concatenate-two-arrays-in-java}
 	 */
-	public static int[] concatAllInt(int[] ... arrays) {
+	@NonNull
+	public static int[] concatAllInt(@NonNull int[] ... arrays) {
 		int totalLength = 0;
 		final int subArrayCount = arrays.length;
 		for (int i = 0; i < subArrayCount; ++i) {
@@ -146,49 +144,51 @@ public class ArrayUtils {
 
 	/**
 	 * Creates a double array from the provided {@link DoubleBuffer}.
-	 * 
+	 *
 	 * @param buffer {@link DoubleBuffer} the data source.
 	 * @return double array containing the data of the buffer.
 	 */
-	public static double[] getDoubleArrayFromBuffer(DoubleBuffer buffer) {
-		double[] array = null;
+	@NonNull
+	public static double[] getDoubleArrayFromBuffer(@NonNull DoubleBuffer buffer) {
+		double[] array;
 		if (buffer.hasArray()) {
 			array = buffer.array();
 		} else {
 			buffer.rewind();
 			array = new double[buffer.capacity()];
-			buffer.get(array);		
+			buffer.get(array);
 		}
 		return array;
 	}
 
 	/**
 	 * Creates a float array from the provided {@link FloatBuffer}.
-	 * 
+	 *
 	 * @param buffer {@link FloatBuffer} the data source.
 	 * @return float array containing the data of the buffer.
 	 */
-	public static float[] getFloatArrayFromBuffer(FloatBuffer buffer) {
-		float[] array = null;
+	@NonNull
+	public static float[] getFloatArrayFromBuffer(@NonNull FloatBuffer buffer) {
+		float[] array;
 		if (buffer.hasArray()) {
 			array = buffer.array();
 		} else {
 			buffer.rewind();
 			array = new float[buffer.capacity()];
-			buffer.get(array);		
+			buffer.get(array);
 		}
 		return array;
 	}
 
 	/**
 	 * Creates an int array from the provided {@link IntBuffer} or {@link ShortBuffer}.
-	 * 
-	 * @param buffer {@link Buffer} the data source. Should be either a {@link IntBuffer} 
-	 * or {@link ShortBuffer}.
+	 *
+	 * @param buffer {@link Buffer} the data source. Should be either a {@link IntBuffer} or {@link ShortBuffer}.
 	 * @return int array containing the data of the buffer.
 	 */
-	public static int[] getIntArrayFromBuffer(Buffer buffer) {
-		int[] array = null;
+	@NonNull
+	public static int[] getIntArrayFromBuffer(@NonNull Buffer buffer) {
+		int[] array;
 		if (buffer.hasArray()) {
 			array = (int[]) buffer.array();
 		} else {

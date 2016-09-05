@@ -1,6 +1,9 @@
 package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.annotations.RequiresWriteLock;
+import c.org.rajawali3d.bounds.AABB;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.concurrent.locks.Lock;
@@ -49,15 +52,47 @@ public abstract class ASceneGraph implements SceneGraph {
         return readLock;
     }
 
+    @RequiresReadLock
     @NonNull
     @Override
     public Vector3 getMaxBound() {
         return scratchVector3.setAll(maxBound);
     }
 
+    @RequiresReadLock
     @NonNull
     @Override
     public Vector3 getMinBound() {
         return scratchVector3.setAll(minBound);
+    }
+
+    /**
+     * Compares the minimum axis aligned bounds of this {@link SceneGraph} with those of the child and adjusts these
+     * bounds to be the lesser of the two on each axis.
+     *
+     * @param child {@link AABB} The child who should be compared against.
+     */
+    @RequiresWriteLock
+    protected void checkAndAdjustMinBounds(@NonNull AABB child) {
+        // Pick the lesser value of each component between our bounds and the added bounds.
+        final Vector3 addMin = child.getMinBound();
+        minBound.setAll(Math.min(minBound.x, addMin.x),
+                        Math.min(minBound.y, addMin.y),
+                        Math.min(minBound.z, addMin.z));
+    }
+
+    /**
+     * Compares the maximum axis aligned bounds of this {@link SceneGraph} with those of the child and adjusts these
+     * bounds to be the greater of the two on each axis.
+     *
+     * @param child {@link AABB} The child who should be compared against.
+     */
+    @RequiresWriteLock
+    protected void checkAndAdjustMaxBounds(@NonNull AABB child) {
+        // Pick the larger value of each component between our bounds and the added bounds.
+        final Vector3 addMax = child.getMaxBound();
+        maxBound.setAll(Math.max(maxBound.x, addMax.x),
+                        Math.max(maxBound.y, addMax.y),
+                        Math.max(maxBound.z, addMax.z));
     }
 }

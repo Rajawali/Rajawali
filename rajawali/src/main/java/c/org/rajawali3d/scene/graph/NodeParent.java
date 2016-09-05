@@ -1,6 +1,7 @@
 package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.annotations.RequiresWriteLock;
 
 import java.util.concurrent.locks.Lock;
 
@@ -28,4 +29,11 @@ interface NodeParent {
      * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
      */
     @Nullable Lock acquireReadLock() throws InterruptedException;
+
+    /**
+     * Initiates a restructure of the scene graph to accommodate any changes made due to transformations. It is
+     * assumed that a write lock on the scene graph is held at this point acquired via the
+     * {@link #acquireWriteLock()} method. Client code should avoid using this method or risk thread safety problems.
+     */
+    @RequiresWriteLock void updateGraph();
 }

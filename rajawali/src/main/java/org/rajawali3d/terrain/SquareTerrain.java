@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -23,8 +23,8 @@ import org.rajawali3d.primitives.Sphere;
 
 /**
  * This is a generic Terrain class for Rajawali.
- * 
- * 
+ *
+ *
  * @author Ivan Battistella (info@fenicesoftware.com)
  */
 public class SquareTerrain extends Terrain {
@@ -55,7 +55,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * Create Parameters object for calling TerrainGenerator Note: Bitmap can be recycled after calling TerrainGenerator
-	 * 
+	 *
 	 * @param hMapBitmap
 	 */
 	public static Parameters createParameters(Bitmap hMapBitmap) {
@@ -64,9 +64,9 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * Terrain Parameters for TerrainGenerator
-	 * 
+	 *
 	 * @author Ivan Battistella (info@fenicesoftware.com)
-	 * 
+	 *
 	 */
 	public static class Parameters {
 
@@ -86,7 +86,7 @@ public class SquareTerrain extends Terrain {
 		/**
 		 * Create SquareTerrain Parameters object for calling TerrainGenerator Note: Bitmap can be recycled after
 		 * calling TerrainGenerator
-		 * 
+		 *
 		 * @param hMapBitmap
 		 */
 		protected Parameters(Bitmap hMapBitmap) {
@@ -95,7 +95,7 @@ public class SquareTerrain extends Terrain {
 
 		/**
 		 * Square grid dimension
-		 * 
+		 *
 		 * @param value
 		 */
 		public void setDivisions(int value) {
@@ -108,7 +108,7 @@ public class SquareTerrain extends Terrain {
 
 		/**
 		 * Set the scale of Terrain Note: sy is multiplied by the height map (0:1)
-		 * 
+		 *
 		 * @param sx
 		 * @param sy
 		 * @param sz
@@ -119,7 +119,7 @@ public class SquareTerrain extends Terrain {
 
 		/**
 		 * Set the minimum range of Temperature
-		 * 
+		 *
 		 * @param value
 		 */
 		public void setMinTemp(double value) {
@@ -128,7 +128,7 @@ public class SquareTerrain extends Terrain {
 
 		/**
 		 * Set the maximum range of Temperature
-		 * 
+		 *
 		 * @param value
 		 */
 		public void setMaxTemp(double value) {
@@ -138,7 +138,7 @@ public class SquareTerrain extends Terrain {
 		/**
 		 * set the color Map Bitmap used for interpolate Height Color for example for draw static shadow or stains on
 		 * the ground (use Alpha) Note: Bitmap can be recycled after calling TerrainGenerator
-		 * 
+		 *
 		 * @param value
 		 */
 		public void setColorMapBitmap(Bitmap value) {
@@ -147,7 +147,7 @@ public class SquareTerrain extends Terrain {
 
 		/**
 		 * The Texture concentraction
-		 * 
+		 *
 		 * @param value
 		 */
 		public void setTextureMult(double value) {
@@ -156,7 +156,7 @@ public class SquareTerrain extends Terrain {
 
 		/**
 		 * The base color for Height Color computing (See setUpcolor or setMiddleColor)
-		 * 
+		 *
 		 * @param value
 		 */
 		public void setBasecolor(int value) {
@@ -165,7 +165,7 @@ public class SquareTerrain extends Terrain {
 
 		/**
 		 * The middle color for Height Color computing (See setBasecolor or setUpColor)
-		 * 
+		 *
 		 * @param value
 		 */
 		public void setMiddleColor(int value) {
@@ -174,7 +174,7 @@ public class SquareTerrain extends Terrain {
 
 		/**
 		 * The up color for Height Color computing (See setBasecolor or setMiddleColor)
-		 * 
+		 *
 		 * @param value
 		 */
 		public void setUpColor(int value) {
@@ -224,7 +224,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * Represents a Square Terrain centered at the center
-	 * 
+	 *
 	 * @param divisions
 	 *            Matrix dimension
 	 * @param terrain
@@ -294,7 +294,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * Terrain matrix dimension (Square)
-	 * 
+	 *
 	 * @return terrain matrix dimension
 	 */
 	public int getDivisions() {
@@ -310,7 +310,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * returns the maximum extension in Z
-	 * 
+	 *
 	 * @return
 	 */
 	public double getExtensionZ() {
@@ -319,7 +319,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * the minimum Altitude
-	 * 
+	 *
 	 * @return the minimum Altitude
 	 */
 	public double getMinAltitude() {
@@ -328,16 +328,16 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * the maximum Altitude
-	 * 
+	 *
 	 * @return the maximum Altitude
 	 */
 	public double getMaxAltitude() {
 		return mMaxH;
 	}
-	
+
 	/**
      	 * Retrive the Terrain Heights Matrix
-     	 * 
+     	 *
      	 */
     	public double[][] getHeights(){
         	return mTerrain;
@@ -345,7 +345,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * the minimum Temperature
-	 * 
+	 *
 	 * @return the minimum Temperature
 	 */
 	public double getMinTemperature() {
@@ -354,7 +354,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * the maximum Temperature
-	 * 
+	 *
 	 * @return the maximum Temperature
 	 */
 	public double getMaxTemperature() {
@@ -363,7 +363,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * Terrain contains point
-	 * 
+	 *
 	 * @return Terrain contains point
 	 */
 	public boolean contains(double x, double z) {
@@ -380,7 +380,7 @@ public class SquareTerrain extends Terrain {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the percentage Altitude of Terrain matrix
 	 */
 	public double getPercAltitude(int i, int j) {
@@ -426,7 +426,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * the Altitude
-	 * 
+	 *
 	 * @return the Altitude at point
 	 */
 	public double getAltitude(double x, double z) {
@@ -435,7 +435,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * the Altitude
-	 * 
+	 *
 	 * @return the Altitude at point
 	 */
 	private synchronized double getInterpolateValue(double[][] matrix, double x, double z) {
@@ -560,7 +560,7 @@ public class SquareTerrain extends Terrain {
 			alt = Math.min(alt, mTmpV2.y);
 		}
 		else {
-			alt = (-mTmpPlane.getNormal().x * xx - mTmpPlane.getNormal().z * zz - mTmpPlane.getD()) / mTmpPlane.getNormal().y;
+			alt = (-mTmpPlane.getNormal().x * xx - mTmpPlane.getNormal().z * zz - mTmpPlane.getDistanceToOrigin()) / mTmpPlane.getNormal().y;
 		}
 
 		if (debug) {
@@ -596,7 +596,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * the Normal at position
-	 * 
+	 *
 	 * @return the point
 	 */
 	public synchronized void getNormalAt(double x, double z, Vector3 normal) {
@@ -741,7 +741,7 @@ public class SquareTerrain extends Terrain {
 
 	/**
 	 * the Temperature at point
-	 * 
+	 *
 	 * @return the Temperature
 	 */
 	public double getTemperature(double x, double z) {
