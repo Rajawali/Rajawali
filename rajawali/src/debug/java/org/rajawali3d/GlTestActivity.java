@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class GlTestActivity extends Activity {
 

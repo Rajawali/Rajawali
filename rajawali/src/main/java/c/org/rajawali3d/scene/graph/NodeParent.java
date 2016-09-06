@@ -6,9 +6,12 @@ import c.org.rajawali3d.annotations.RequiresWriteLock;
 import java.util.concurrent.locks.Lock;
 
 /**
+ * Interface which must be implemented by any container object in a scene such as {@link SceneNode} or
+ * {@link SceneGraph}.
+ *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-interface NodeParent {
+public interface NodeParent {
 
     /**
      * Acquires a write lock for the scene graph. This method will block until a lock is acquired. Code using this

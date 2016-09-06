@@ -1,6 +1,10 @@
 package c.org.rajawali3d.transform;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.scene.graph.SceneNode;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.ATransformable3D;
@@ -27,15 +31,19 @@ import org.rajawali3d.math.vector.Vector3.Axis;
 @NotThreadSafe
 public class Transformation {
 
+    @VisibleForTesting
     @NonNull
     protected final Vector3 position;
 
+    @VisibleForTesting
     @NonNull
     protected final Vector3 scale;
 
+    @VisibleForTesting
     @NonNull
     protected final Vector3 upAxis;
 
+    @VisibleForTesting
     @NonNull
     protected final Quaternion orientation;
 
@@ -45,9 +53,15 @@ public class Transformation {
     @NonNull
     protected final Vector3 scratchVector;
 
+    @VisibleForTesting
+    @NonNull
+    protected final Matrix4 modelMatrix;
+
+    @VisibleForTesting
     @NonNull
     protected Vector3 lookAt = new Vector3(); // The look at target
 
+    @VisibleForTesting
     protected boolean lookAtEnabled = false; // Should we auto enforce look at target?
 
     public Transformation() {
@@ -57,6 +71,7 @@ public class Transformation {
         orientation = new Quaternion();
         scratchQuaternion = new Quaternion();
         scratchVector = new Vector3();
+        modelMatrix = new Matrix4();
     }
 
     /**
@@ -714,6 +729,31 @@ public class Transformation {
         if (isLookAtEnabled()) {
             scratchVector.subtractAndSet(lookAt, position).normalize();
             orientation.lookAt(scratchVector, upAxis);
+        }
+    }
+
+    /**
+     * Retrieves this {@link Transformation} object's model matrix. You should not modify the returned matrix.
+     *
+     * @return {@link Matrix4} The internal model matrix. Modification of this will directly affect this object.
+     */
+    @RequiresReadLock
+    @NonNull
+    public Matrix4 getModelMatrix() {
+        // We avoid copies here in the interest of efficiency
+        return modelMatrix;
+    }
+
+    /**
+     * Calculates the model matrix for this {@link ATransformable3D} object.
+     *
+     * @param parentMatrix {@link Matrix4} The parent matrix, if any, to apply to this object.
+     */
+    @RequiresWriteLock
+    public void calculateModelMatrix(@Nullable Matrix4 parentMatrix) {
+        modelMatrix.setAll(position, scale, orientation);
+        if (parentMatrix != null) {
+            modelMatrix.leftMultiply(parentMatrix);
         }
     }
 }

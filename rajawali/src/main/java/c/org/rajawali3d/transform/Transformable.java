@@ -1,12 +1,14 @@
 package c.org.rajawali3d.transform;
 
 import android.support.annotation.NonNull;
+import net.jcip.annotations.ThreadSafe;
 
 /**
  * Interface which a scene member capable of being transformed must implement.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@ThreadSafe
 public interface Transformable {
 
     /**

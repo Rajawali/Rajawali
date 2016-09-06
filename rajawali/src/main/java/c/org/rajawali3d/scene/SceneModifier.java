@@ -1,6 +1,7 @@
 package c.org.rajawali3d.scene;
 
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.scene.graph.SceneGraph;
 
 /**
@@ -16,5 +17,6 @@ public interface SceneModifier {
      *
      * @param graph {@link SceneGraph} The current scene graph object which is to be modified.
      */
+    @RequiresWriteLock
     void doModifications(@NonNull SceneGraph graph);
 }

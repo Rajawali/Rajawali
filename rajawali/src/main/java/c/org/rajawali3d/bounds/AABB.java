@@ -13,14 +13,18 @@ import org.rajawali3d.math.vector.Vector3;
 public interface AABB {
 
     /**
-     * Retrieves the position of the +X/+Y/+Z coordinates of this box.
+     * Retrieves the position of the +X/+Y/+Z coordinates of this box. Note that in the interests of efficiency,
+     * implementations are not required to protect the the internal state of the returned {@link Vector3}, meaning by
+     * contract the user is expected to not modify the returned object in any way, to include normalization.
      *
      * @return {@link Vector3} the +X/+Y/+Z corner coordinates.
      */
     @RequiresReadLock @NonNull Vector3 getMaxBound();
 
     /**
-     * Retrieves the position of the -X/-Y/-Z coordinates of this box.
+     * Retrieves the position of the -X/-Y/-Z coordinates of this box. Note that in the interests of efficiency,
+     * implementations are not required to protect the the internal state of the returned {@link Vector3}, meaning by
+     * contract the user is expected to not modify the returned object in any way, to include normalization.
      *
      * @return {@link Vector3} the -X/-Y/-Z corner coordinates.
      */

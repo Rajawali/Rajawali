@@ -8,7 +8,6 @@ import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.transform.Transformable;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
-import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -27,9 +26,6 @@ import java.util.concurrent.locks.Lock;
 public class SceneNode implements NodeParent, NodeMember, Transformable {
 
     @NonNull
-    private final Object parentLock = new Object();
-
-    @NonNull
     private final Transformation transformation = new Transformation();
 
     @NonNull
@@ -39,19 +35,11 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     private final List<NodeMember> members = new ArrayList<>();
 
     @NonNull
-    protected final Vector3 maxBound = new Vector3();
+    private final Vector3 maxBound = new Vector3();
 
     @NonNull
-    protected final Vector3 minBound = new Vector3();
+    private final Vector3 minBound = new Vector3();
 
-    @NonNull
-    protected final Vector3 scratchVector3 = new Vector3();
-
-    /**
-     * This is volatile and guarded by {@link #parentLock} because multiple threads can touch it and we always need
-     * to be sure of what the most up to date parent is.
-     */
-    @GuardedBy("parentLock")
     @Nullable
     protected volatile NodeParent parent;
 
@@ -62,14 +50,14 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @NonNull
     @Override
     public Vector3 getMaxBound() {
-        return scratchVector3.setAll(maxBound);
+        return maxBound;
     }
 
     @RequiresReadLock
     @NonNull
     @Override
     public Vector3 getMinBound() {
-        return scratchVector3.setAll(minBound);
+        return minBound;
     }
 
     @RequiresWriteLock
@@ -91,7 +79,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
                 checkAndAdjustMaxBounds(child);
             }
         }
-        // For each child, recalculate the bounds as if it was an addition one at a time.
+        // For each child member, recalculate the bounds as if it was an addition one at a time.
         for (int i = 0, j = members.size(); i < j; ++i) {
             child = members.get(i);
             if (recursive) {
@@ -133,13 +121,11 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @Override
     public Lock acquireWriteLock() throws InterruptedException {
         // If this node has been added to a graph, we need to ask for a lock, otherwise we can continue.
-        synchronized (parentLock) {
-            if (parent != null) {
-                //noinspection ConstantConditions
-                return parent.acquireWriteLock();
-            } else {
-                return null;
-            }
+        if (parent != null) {
+            //noinspection ConstantConditions
+            return parent.acquireWriteLock();
+        } else {
+            return null;
         }
     }
 
@@ -153,9 +139,8 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     public void setParent(@Nullable NodeParent parent) throws InterruptedException {
         acquireWriteLock();
         try {
-            synchronized (parentLock) {
-                this.parent = parent;
-            }
+            this.parent = parent;
+            // We don't update the graph here because it will happen during the add process.
         } finally {
             releaseWriteLock();
         }
@@ -166,6 +151,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      * {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
      *
      * @param node The child {@link SceneNode} to add.
+     *
      * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
      */
     public void addChildNode(@NonNull SceneNode node) throws InterruptedException {
@@ -184,7 +170,9 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      * of a {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
      *
      * @param node The child {@link SceneNode} to remove.
+     *
      * @return {@code true} if the data structure was modified by this operation.
+     *
      * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
      */
     public boolean removeChildNode(@NonNull SceneNode node) throws InterruptedException {
@@ -205,6 +193,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      * {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
      *
      * @param member The {@link NodeMember} to add.
+     *
      * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
      */
     public void addNodeMember(@NonNull NodeMember member) throws InterruptedException {
@@ -223,7 +212,9 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      * of a {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
      *
      * @param member The {@link NodeMember} to remove.
+     *
      * @return {@code true} if the data structure was modified by this operation.
+     *
      * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
      */
     public boolean removeNodeMember(@NonNull NodeMember member) throws InterruptedException {
@@ -240,7 +231,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     }
 
     /**
-     *  Releases any write lock this node might be holding.
+     * Releases any write lock this node might be holding.
      */
     protected void releaseWriteLock() {
         // We do this from the lock directly because our parent may have become null and we need to be sure we
@@ -284,11 +275,9 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     public void updateGraph() {
         // Recursively recalculate our bounds so that the graph update does not need to do any extra work
         recalculateBounds(true);
-        synchronized (parentLock) {
-            if (parent != null) {
-                // Propagate the call up the chain of parents until we reach the graph
-                parent.updateGraph();
-            }
+        if (parent != null) {
+            // Propagate the call up the chain of parents until we reach the graph
+            parent.updateGraph();
         }
     }
 }
