@@ -36,6 +36,9 @@ public class Renderer implements ISurfaceRenderer {
     protected Context context; // Context the renderer is running in
 
     protected ISurface surface; // The rendering surface
+    protected int currentViewportWidth, currentViewportHeight; // The current width and height of the GL viewport
+    protected int defaultViewportWidth, defaultViewportHeight; // The default width and height of the GL viewport
+    protected int overrideViewportWidth, overrideViewportHeight; // The overridden width and height of the GL viewport
 
     // Frame related members
     protected ScheduledExecutorService timer; // Timer used to schedule drawing
@@ -178,11 +181,12 @@ public class Renderer implements ISurfaceRenderer {
 
     @Override
     public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
-        mDefaultViewportWidth = width;
-        mDefaultViewportHeight = height;
+        /*defaultViewportWidth = width;
+        defaultViewportHeight = height;
 
-        final int wViewport = mOverrideViewportWidth > -1 ? mOverrideViewportWidth : mDefaultViewportWidth;
-        final int hViewport = mOverrideViewportHeight > -1 ? mOverrideViewportHeight : mDefaultViewportHeight;
+        //TODO: Move override viewport size to scene
+        final int wViewport = overrideViewportWidth > -1 ? overrideViewportWidth : defaultViewportWidth;
+        final int hViewport = overrideViewportHeight > -1 ? overrideViewportHeight : defaultViewportHeight;
         setViewPort(wViewport, hViewport);
 
         if (!mSceneInitialized) {
@@ -208,12 +212,40 @@ public class Renderer implements ISurfaceRenderer {
             reloadRenderTargets();
         }
         mSceneInitialized = true;
-        startRendering();
+        startRendering();*/
     }
 
     @Override
     public void onRenderFrame(GL10 gl) {
+        /*performFrameTasks(); // Execute any pending frame tasks
+        synchronized (mNextSceneLock) {
+            // Check if we need to switch the scene, and if so, do it.
+            if (mNextScene != null) {
+                switchSceneDirect(mNextScene);
+                mNextScene = null;
+            }
+        }*/
 
+        final long currentTime = System.nanoTime();
+        final long elapsedRenderTime = currentTime - renderStartTime;
+        final double deltaTime = (currentTime - lastRender) / 1e9;
+        lastRender = currentTime;
+
+        //onRender(elapsedRenderTime, deltaTime);
+
+        ++frameCount;
+        if (frameCount % 50 == 0) {
+            long now = System.nanoTime();
+            double elapsedS = (now - startTime) / 1.0e9;
+            double msPerFrame = (1000 * elapsedS / frameCount);
+            lastMeasuredFPS = 1000 / msPerFrame;
+
+            frameCount = 0;
+            startTime = now;
+
+            if (fpsUpdateListener != null)
+                fpsUpdateListener.onFPSUpdate(lastMeasuredFPS); // Update the FPS listener
+        }
     }
 
     @Override
