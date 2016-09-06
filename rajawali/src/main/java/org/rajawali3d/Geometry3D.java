@@ -194,30 +194,34 @@ public class Geometry3D {
 
     public static float[] getFloatArrayFromBuffer(FloatBuffer buffer) {
         float[] array = null;
-        if (buffer.hasArray()) {
-            array = buffer.array();
-        } else {
-            buffer.rewind();
-            array = new float[buffer.capacity()];
-            buffer.get(array);
+        if(buffer != null) {
+            if (buffer.hasArray()) {
+                array = buffer.array();
+            } else {
+                buffer.rewind();
+                array = new float[buffer.capacity()];
+                buffer.get(array);
+            }
         }
         return array;
     }
 
     public static int[] getIntArrayFromBuffer(Buffer buffer) {
         int[] array = null;
-        if (buffer.hasArray()) {
-            array = (int[]) buffer.array();
-        } else {
-            buffer.rewind();
-            array = new int[buffer.capacity()];
-            if (buffer instanceof IntBuffer) {
-                ((IntBuffer) buffer).get(array);
-            } else if (buffer instanceof ShortBuffer) {
-                int count = 0;
-                while (buffer.hasRemaining()) {
-                    array[count] = (int) (((ShortBuffer) buffer).get());
-                    ++count;
+        if(buffer != null) {
+            if (buffer.hasArray()) {
+                array = (int[]) buffer.array();
+            } else {
+                buffer.rewind();
+                array = new int[buffer.capacity()];
+                if (buffer instanceof IntBuffer) {
+                    ((IntBuffer) buffer).get(array);
+                } else if (buffer instanceof ShortBuffer) {
+                    int count = 0;
+                    while (buffer.hasRemaining()) {
+                        array[count] = (int) (((ShortBuffer) buffer).get());
+                        ++count;
+                    }
                 }
             }
         }
@@ -302,9 +306,14 @@ public class Geometry3D {
         float[] addColors = getFloatArrayFromBuffer(geometry.getColors());
         float[] addTextureCoords = getFloatArrayFromBuffer(geometry.getTextureCoords());
         int[] addIndices = getIntArrayFromBuffer(geometry.getIndices());
-        int index_offset = (mVerticesArray.length / 3);
-        for (int i = 0, j = addIndices.length; i < j; ++i) {
-            addIndices[i] += index_offset;
+        int index_offset = 0;
+        if(mVerticesArray != null) {
+            index_offset = (mVerticesArray.length / 3);
+        }
+        if(addIndies != null) {
+            for (int i = 0, j = addIndices.length; i < j; ++i) {
+                addIndices[i] += index_offset;
+            }
         }
 
         //Concatenate the old and new data
