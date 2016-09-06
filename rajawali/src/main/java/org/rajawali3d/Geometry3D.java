@@ -194,7 +194,7 @@ public class Geometry3D {
 
     public static float[] getFloatArrayFromBuffer(FloatBuffer buffer) {
         float[] array = null;
-        if(buffer != null) {
+        if (buffer != null) {
             if (buffer.hasArray()) {
                 array = buffer.array();
             } else {
@@ -208,7 +208,7 @@ public class Geometry3D {
 
     public static int[] getIntArrayFromBuffer(Buffer buffer) {
         int[] array = null;
-        if(buffer != null) {
+        if (buffer != null) {
             if (buffer.hasArray()) {
                 array = (int[]) buffer.array();
             } else {
@@ -307,10 +307,10 @@ public class Geometry3D {
         float[] addTextureCoords = getFloatArrayFromBuffer(geometry.getTextureCoords());
         int[] addIndices = getIntArrayFromBuffer(geometry.getIndices());
         int index_offset = 0;
-        if(mVerticesArray != null) {
+        if (mVerticesArray != null) {
             index_offset = (mVerticesArray.length / 3);
         }
-        if(addIndies != null) {
+        if (addIndices != null) {
             for (int i = 0, j = addIndices.length; i < j; ++i) {
                 addIndices[i] += index_offset;
             }
