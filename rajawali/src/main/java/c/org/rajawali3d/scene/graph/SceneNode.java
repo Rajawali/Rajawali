@@ -2,6 +2,7 @@ package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
@@ -34,11 +35,13 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @NonNull
     private final List<NodeMember> members = new ArrayList<>();
 
+    @VisibleForTesting
     @NonNull
-    private final Vector3 maxBound = new Vector3();
+    final Vector3 maxBound = new Vector3();
 
+    @VisibleForTesting
     @NonNull
-    private final Vector3 minBound = new Vector3();
+    final Vector3 minBound = new Vector3();
 
     @Nullable
     protected volatile NodeParent parent;
