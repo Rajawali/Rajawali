@@ -7,7 +7,7 @@ import org.rajawali3d.renderer.Renderer;
  * Interface which all rendering surfaces must implement so that {@link Renderer} may send
  * the few control signals it needs.
  *
- * @author Jared Woolston (jwoolston@tenkiv.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public interface ISurface {
 
