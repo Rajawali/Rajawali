@@ -8,6 +8,7 @@ import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
 import org.rajawali3d.animation.RotateAroundAnimation3D;
 import org.rajawali3d.cameras.Camera;
+import org.rajawali3d.cameras.OrthographicCamera;
 import org.rajawali3d.debug.DebugCamera;
 import org.rajawali3d.debug.DebugLight;
 import org.rajawali3d.debug.DebugVisualizer;
@@ -27,6 +28,7 @@ public class DebugVisualizerFragment extends AExampleFragment {
     public class DebugVisualizerRenderer extends AExampleRenderer {
         private DirectionalLight mDirectionalLight;
         private Camera mOtherCamera;
+        private OrthographicCamera mOrthographicCamera;
         private Object3D mSphere;
 
         public DebugVisualizerRenderer(Context context, @Nullable AExampleFragment fragment) {
@@ -50,12 +52,19 @@ public class DebugVisualizerFragment extends AExampleFragment {
             mOtherCamera.setFarPlane(10);
             mOtherCamera.enableLookAt();
 
+            mOrthographicCamera = new OrthographicCamera();
+            mOrthographicCamera.setPosition(-4, 2, 10);
+            mOrthographicCamera.setFarPlane(10);
+            mOrthographicCamera.enableLookAt();
+            getCurrentScene().addCamera(mOrthographicCamera);
+
             mSphere = createAnimatedSphere();
 
             DebugVisualizer debugViz = new DebugVisualizer(this);
             debugViz.addChild(new GridFloor(20, 0x555555, 1, 20));
             debugViz.addChild(new DebugLight(mDirectionalLight, 0x999900, 1));
-            debugViz.addChild(new DebugCamera(mOtherCamera, 0x000000, 1));
+            //debugViz.addChild(new DebugCamera(mOtherCamera, 0x000000, 1));
+            debugViz.addChild(new DebugCamera(mOrthographicCamera, 0xffff0000, 1));
             getCurrentScene().addChild(debugViz);
         }
 

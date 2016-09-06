@@ -2,6 +2,7 @@ package org.rajawali3d.debug;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.Material;
@@ -10,6 +11,7 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 import java.util.Stack;
 
 /**
@@ -57,9 +59,10 @@ public class DebugCamera extends DebugObject3D {
 
             setMaterial(mMaterial);
         }
-
+        Log.d("DEBUG", "Getting frustum corners.");
         mCamera.getFrustumCorners(mFrustumCornersTransformed, true, true);
 
+        Log.d("DEBUG", mCamera + " Corners: " + Arrays.toString(mFrustumCornersTransformed));
         FloatBuffer b = mGeometry.getVertices();
         int index = 0;
 
