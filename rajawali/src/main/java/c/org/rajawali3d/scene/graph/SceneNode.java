@@ -154,13 +154,17 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @RequiresWriteLock
     @Override
     public void modelMatrixUpdated() {
-        //TODO: Do scene nodes need to be updated?
+        //TODO: Update bounds in world space
     }
 
     @RequiresWriteLock
     public void updateGraph() {
-        // Recursively recalculate our local model matrices so that the graph update does not need to do any extra work
-        recalculateModelMatrix();
+        final Matrix4 parentWorldModelMatrix = new Matrix4();
+        if (parent != null) {
+            parent.setToModelMatrix(parentWorldModelMatrix);
+        }
+        // Recursively recalculate our model matrices so that the graph update does not need to do any extra work
+        recalculateModelMatrix(parentWorldModelMatrix);
         // Recursively recalculate our bounds so that the graph update does not need to do any extra work
         recalculateBounds(true);
         if (parent != null) {
@@ -267,17 +271,24 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      * their local model matrices, and also instruct their children to do the same. This is called after scene graph
      * updates or updates to an individual node to ensure that all model matrices in the tree are kept up to date
      * after modifications.
+     *
+     * @param parentWorldMatrix {@link Matrix4} The parent world space model matrix. If no parent exists, this should
+     *                                         be an identity matrix.
      */
     @RequiresWriteLock
-    protected void recalculateModelMatrix() {
+    protected void recalculateModelMatrix(@NonNull Matrix4 parentWorldMatrix) {
+        // Recalculate the local and world model matrices
         transformation.calculateLocalModelMatrix();
+        transformation.calculateWorldModelMatrix(parentWorldMatrix);
+        // Take any actions needed for matrix update
+        modelMatrixUpdated();
         // For each child member, notify that the model matrix has been updated.
         for (int i = 0, j = members.size(); i < j; ++i) {
             members.get(i).modelMatrixUpdated();
         }
         // For each child node, recalculate the model matrix.
         for (int i = 0, j = children.size(); i < j; ++i) {
-            children.get(i).recalculateModelMatrix();
+            children.get(i).recalculateModelMatrix(transformation.getWorldModelMatrix());
         }
     }
 

@@ -737,9 +737,9 @@ public class Transformation {
     }
 
     /**
-     * Retrieves this {@link Transformation} object's model matrix. You should not modify the returned matrix.
+     * Retrieves this {@link Transformation} object's local model matrix. You should not modify the returned matrix.
      *
-     * @return {@link Matrix4} The internal model matrix. Modification of this will directly affect this object.
+     * @return {@link Matrix4} The internal local model matrix. Modification of this will directly affect this object.
      */
     @RequiresReadLock
     @NonNull
@@ -749,10 +749,32 @@ public class Transformation {
     }
 
     /**
-     * Calculates the model matrix for this {@link Transformation} object.
+     * Calculates the local model matrix for this {@link Transformation} object.
      */
     @RequiresWriteLock
     public void calculateLocalModelMatrix() {
         localModelMatrix.setAll(position, scale, orientation);
+    }
+
+    /**
+     * Retrieves this {@link Transformation} object's world model matrix. You should not modify the returned matrix.
+     *
+     * @return {@link Matrix4} The internal world model matrix. Modification of this will directly affect this object.
+     */
+    @RequiresReadLock
+    @NonNull
+    public Matrix4 getWorldModelMatrix() {
+        // We avoid copies here in the interest of efficiency
+        return worldModelMatrix;
+    }
+
+    /**
+     * Calculates the world model matrix for this {@link Transformation} object.
+     *
+     * @param parentModel {@link Matrix4} The parent model matrix.
+     */
+    @RequiresWriteLock
+    public void calculateWorldModelMatrix(@NonNull Matrix4 parentModel) {
+        localModelMatrix.leftMultiply(parentModel);
     }
 }
