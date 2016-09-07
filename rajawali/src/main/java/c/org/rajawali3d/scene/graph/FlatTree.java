@@ -6,6 +6,7 @@ import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import net.jcip.annotations.NotThreadSafe;
+import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.ArrayList;
@@ -34,6 +35,12 @@ public class FlatTree extends ASceneGraph {
         // For a FlatTree, the only thing we need to worry about is updating our scene bounds and we can assume all
         // nodes currently have valid bounds.
         recalculateBounds(false);
+    }
+
+    @RequiresReadLock
+    @Override
+    public void setToModelMatrix(@NonNull Matrix4 matrix) {
+
     }
 
     @RequiresWriteLock

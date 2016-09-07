@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
+import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.concurrent.locks.Lock;
@@ -50,6 +51,12 @@ public abstract class ASceneGraph implements SceneGraph {
         final Lock readLock = lock.readLock();
         readLock.lockInterruptibly();
         return readLock;
+    }
+
+    @RequiresReadLock
+    @Override
+    public void setToModelMatrix(@NonNull Matrix4 matrix) {
+        // TODO: Apply world axis transformation here?
     }
 
     @RequiresReadLock

@@ -45,7 +45,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     final Vector3 minBound = new Vector3();
 
     @Nullable
-    protected volatile NodeParent parent;
+    protected NodeParent parent;
 
     @Nullable
     protected Lock currentlyHeldWriteLock;
@@ -54,6 +54,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @NonNull
     @Override
     public Vector3 getMaxBound() {
+        // TODO: This needs to take into account the local transformation
         return maxBound;
     }
 
@@ -150,6 +151,75 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         }
     }
 
+    @RequiresWriteLock
+    @Override
+    public void modelMatrixUpdated() {
+        //TODO: Do scene nodes need to be updated?
+    }
+
+    @RequiresWriteLock
+    public void updateGraph() {
+        // Recursively recalculate our local model matrices so that the graph update does not need to do any extra work
+        recalculateModelMatrix();
+        // Recursively recalculate our bounds so that the graph update does not need to do any extra work
+        recalculateBounds(true);
+        if (parent != null) {
+            // Propagate the call up the chain of parents until we reach the graph
+            parent.updateGraph();
+        }
+    }
+
+    @RequiresReadLock
+    @Override
+    public void setToModelMatrix(@NonNull Matrix4 matrix) {
+        matrix.leftMultiply(transformation.getLocalModelMatrix());
+        if (parent != null) {
+            parent.setToModelMatrix(matrix);
+        }
+    }
+
+    /**
+     * Adds a {@link NodeMember} to this {@link NodeParent}. If this parent (and any parents) are not yet part of a
+     * {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
+     *
+     * @param member The {@link NodeMember} to add.
+     *
+     * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
+     */
+    public void addNodeMember(@NonNull NodeMember member) throws InterruptedException {
+        acquireWriteLock();
+        try {
+            members.add(member);
+            member.setParent(this);
+            updateGraph();
+        } finally {
+            releaseWriteLock();
+        }
+    }
+
+    /**
+     * Removes a member {@link NodeMember} from this {@link NodeParent}. If this parent (and any parents) are not yet
+     * part of a {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
+     *
+     * @param member The {@link NodeMember} to remove.
+     *
+     * @return {@code true} if the data structure was modified by this operation.
+     *
+     * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
+     */
+    public boolean removeNodeMember(@NonNull NodeMember member) throws InterruptedException {
+        acquireWriteLock();
+        boolean removed;
+        try {
+            removed = members.remove(member);
+            member.setParent(null);
+            updateGraph();
+        } finally {
+            releaseWriteLock();
+        }
+        return removed;
+    }
+
     /**
      * Adds a child {@link SceneNode} to this {@link SceneNode}. If this node (and any parents) are not yet part of a
      * {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
@@ -193,45 +263,22 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     }
 
     /**
-     * Adds a {@link NodeMember} to this {@link SceneNode}. If this node (and any parents) are not yet part of a
-     * {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
-     *
-     * @param member The {@link NodeMember} to add.
-     *
-     * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
+     * Traverses the scene graph and causes all {@link NodeParent}s which implement transformations to recalculate
+     * their local model matrices, and also instruct their children to do the same. This is called after scene graph
+     * updates or updates to an individual node to ensure that all model matrices in the tree are kept up to date
+     * after modifications.
      */
-    public void addNodeMember(@NonNull NodeMember member) throws InterruptedException {
-        acquireWriteLock();
-        try {
-            members.add(member);
-            member.setParent(this);
-            updateGraph();
-        } finally {
-            releaseWriteLock();
+    @RequiresWriteLock
+    protected void recalculateModelMatrix() {
+        transformation.calculateLocalModelMatrix();
+        // For each child member, notify that the model matrix has been updated.
+        for (int i = 0, j = members.size(); i < j; ++i) {
+            members.get(i).modelMatrixUpdated();
         }
-    }
-
-    /**
-     * Removes a member {@link NodeMember} from this {@link SceneNode}. If this node (and any parents) are not yet part
-     * of a {@link SceneGraph} no locking will be necessary and the operation will complete immediately.
-     *
-     * @param member The {@link NodeMember} to remove.
-     *
-     * @return {@code true} if the data structure was modified by this operation.
-     *
-     * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
-     */
-    public boolean removeNodeMember(@NonNull NodeMember member) throws InterruptedException {
-        acquireWriteLock();
-        boolean removed;
-        try {
-            removed = members.remove(member);
-            member.setParent(null);
-            updateGraph();
-        } finally {
-            releaseWriteLock();
+        // For each child node, recalculate the model matrix.
+        for (int i = 0, j = children.size(); i < j; ++i) {
+            children.get(i).recalculateModelMatrix();
         }
-        return removed;
     }
 
     /**
@@ -273,21 +320,5 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         maxBound.setAll(Math.max(maxBound.x, addMax.x),
                         Math.max(maxBound.y, addMax.y),
                         Math.max(maxBound.z, addMax.z));
-    }
-
-    @RequiresWriteLock
-    public void updateGraph() {
-        // Recursively recalculate our bounds so that the graph update does not need to do any extra work
-        recalculateBounds(true);
-        if (parent != null) {
-            // Propagate the call up the chain of parents until we reach the graph
-            parent.updateGraph();
-        }
-    }
-
-    @RequiresReadLock
-    @Override
-    public void setToModelMatrix(@NonNull Matrix4 matrix) {
-
     }
 }

@@ -2,15 +2,22 @@ package c.org.rajawali3d.camera;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
+import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
+ * Except where otherwise annotated, this class is thread safe and no locks are required to interact with it. Notable
+ * exceptions are {@link #getViewMatrix()}, {@link #getFrustumCorners(Vector3[], boolean)},
+ * {@link #getFrustumCorners(Vector3[])}, and {@link #updateFrustum(Matrix4)}.
+ *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@ThreadSafe
 public class Camera implements NodeMember {
 
     @NonNull
@@ -18,6 +25,9 @@ public class Camera implements NodeMember {
 
     @NonNull
     private final Vector3 minBound = new Vector3();
+
+    @NonNull
+    private final Matrix4 viewMatrix = new Matrix4();
 
     @NonNull
     protected final Frustum frustum = new Frustum();
@@ -39,15 +49,19 @@ public class Camera implements NodeMember {
     @Nullable
     protected volatile Vector3[] frustumCorners;
 
+    @RequiresReadLock
+    @NonNull
+    public Matrix4 getViewMatrix() {
+        return viewMatrix;
+    }
+
+    @RequiresReadLock
     public void getFrustumCorners(Vector3[] points) {
         getFrustumCorners(points, false);
     }
 
+    @RequiresReadLock
     public void getFrustumCorners(Vector3[] points, boolean transformed) {
-        getFrustumCorners(points, transformed, false);
-    }
-
-    public void getFrustumCorners(Vector3[] points, boolean transformed, boolean inverse) {
         if(cameraDirty) {
             final double aspect = lastWidth / (double) lastHeight;
             final double nearHeight = 2.0 * Math.tan(fieldOfView / 2.0) * nearPlane;
@@ -77,11 +91,11 @@ public class Camera implements NodeMember {
             cameraDirty = false;
         }
 
-        if(transformed) {
-            mMMatrix.identity();
-            if(inverse)
-                mMMatrix.scale(-1);
-            mMMatrix.translate(mPosition).rotate(mOrientation);
+        if (transformed) {
+            viewMatrix.identity();
+            if (parent != null) {
+                parent.setToModelMatrix(viewMatrix);
+            }
         }
 
         // Make a stack reference so it cant change half way through on us.
@@ -90,12 +104,13 @@ public class Camera implements NodeMember {
             for (int i = 0; i < 8; ++i) {
                 points[i].setAll(corners[i]);
                 if (transformed) {
-                    points[i].multiply(mMMatrix);
+                    points[i].multiply(viewMatrix);
                 }
             }
         }
     }
 
+    @RequiresReadLock
     public void updateFrustum(@NonNull Matrix4 invVPMatrix) {
         frustum.update(invVPMatrix);
     }

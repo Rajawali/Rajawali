@@ -1,7 +1,6 @@
 package c.org.rajawali3d.transform;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
@@ -55,7 +54,11 @@ public class Transformation {
 
     @VisibleForTesting
     @NonNull
-    protected final Matrix4 modelMatrix;
+    protected final Matrix4 localModelMatrix;
+
+    @VisibleForTesting
+    @NonNull
+    protected final Matrix4 worldModelMatrix;
 
     @VisibleForTesting
     @NonNull
@@ -71,7 +74,8 @@ public class Transformation {
         orientation = new Quaternion();
         scratchQuaternion = new Quaternion();
         scratchVector = new Vector3();
-        modelMatrix = new Matrix4();
+        localModelMatrix = new Matrix4();
+        worldModelMatrix = new Matrix4();
     }
 
     /**
@@ -739,21 +743,16 @@ public class Transformation {
      */
     @RequiresReadLock
     @NonNull
-    public Matrix4 getModelMatrix() {
+    public Matrix4 getLocalModelMatrix() {
         // We avoid copies here in the interest of efficiency
-        return modelMatrix;
+        return localModelMatrix;
     }
 
     /**
-     * Calculates the model matrix for this {@link ATransformable3D} object.
-     *
-     * @param parentMatrix {@link Matrix4} The parent matrix, if any, to apply to this object.
+     * Calculates the model matrix for this {@link Transformation} object.
      */
     @RequiresWriteLock
-    public void calculateModelMatrix(@Nullable Matrix4 parentMatrix) {
-        modelMatrix.setAll(position, scale, orientation);
-        if (parentMatrix != null) {
-            modelMatrix.leftMultiply(parentMatrix);
-        }
+    public void calculateLocalModelMatrix() {
+        localModelMatrix.setAll(position, scale, orientation);
     }
 }

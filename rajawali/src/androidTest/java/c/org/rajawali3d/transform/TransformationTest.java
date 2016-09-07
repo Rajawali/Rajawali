@@ -52,7 +52,8 @@ public class TransformationTest {
         assertNotNull(transformation.orientation);
         assertNotNull(transformation.scratchQuaternion);
         assertNotNull(transformation.scratchVector);
-        assertNotNull(transformation.modelMatrix);
+        assertNotNull(transformation.localModelMatrix);
+        assertNotNull(transformation.worldModelMatrix);
         assertEquals(Vector3.ZERO, transformation.position);
         assertEquals(Vector3.ONE, transformation.scale);
         assertEquals(Vector3.Y, transformation.upAxis);
@@ -841,7 +842,7 @@ public class TransformationTest {
     @Test
     public void testGetModelMatrix() {
         Transformation transformation = new Transformation();
-        assertSame(transformation.modelMatrix, transformation.getModelMatrix());
+        assertSame(transformation.localModelMatrix, transformation.getLocalModelMatrix());
     }
 
     @Test
@@ -853,31 +854,17 @@ public class TransformationTest {
                 1.0, 2.0, 3.0, 1.0
         };
 
-        final double[] expected2 = new double[]{
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                1.0, -0.7071067811865479, 3.5355339059327378, 1.0
-        };
-
         final Matrix4 parent = new Matrix4();
         parent.setToRotation(Axis.X, -45d);
 
         Transformation transformation = new Transformation();
         transformation.setPosition(1d, 2d, 3d);
         transformation.rotate(Axis.X, 45d);
-        transformation.calculateModelMatrix(null);
-        double[] result = transformation.getModelMatrix().getDoubleValues();
+        transformation.calculateLocalModelMatrix();
+        double[] result = transformation.getLocalModelMatrix().getDoubleValues();
         assertNotNull(result);
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);
-        }
-
-        transformation.calculateModelMatrix(parent);
-        result = transformation.getModelMatrix().getDoubleValues();
-        assertNotNull(result);
-        for (int i = 0; i < expected.length; ++i) {
-            assertEquals("Result: " + Arrays.toString(result), expected2[i], result[i], 1e-14);
         }
     }
 }

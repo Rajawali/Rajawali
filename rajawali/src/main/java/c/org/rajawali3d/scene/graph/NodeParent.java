@@ -47,7 +47,8 @@ public interface NodeParent {
      * Traverses the scene graph and sets the provided {@link Matrix4} to be the combination of all transformations
      * resulting in the world space position of this parent node.
      *
-     * @param matrix {@link Matrix4} instance which should be set to the world space transformation.
+     * @param matrix {@link Matrix4} instance which should be set to the world space transformation. Assumed to be
+     *                              set to identity.
      */
     @RequiresReadLock void setToModelMatrix(@NonNull Matrix4 matrix);
 }
