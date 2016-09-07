@@ -30,7 +30,7 @@ public final class Intersector {
 	 * @author Jared Woolston (Jared.Woolston@gmail.com)
 	 */
 	@IntDef({ INSIDE, OUTSIDE, INTERSECT })
-	public @interface Bounded {}
+	public @interface Intersection {}
 	public static final int INSIDE    = -1;
 	public static final int OUTSIDE   = 1;
 	public static final int INTERSECT = 0;

@@ -19,7 +19,7 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.util.Intersector;
-import org.rajawali3d.util.Intersector.Bounded;
+import org.rajawali3d.util.Intersector.Intersection;
 
 /**
  * Defines a camera viewing frustum in world space coordinates. This is used primarily for view frustum culling but
@@ -89,11 +89,11 @@ public class Frustum {
         planes[FAR].normalize();
     }
 
-    @Bounded
+    @Intersection
     public int intersectBounds(@NonNull AABB bounds) {
         scratchMin.setAll(bounds.getMinBound());
         scratchMax.setAll(bounds.getMaxBound());
-        @Bounded int result = Intersector.INSIDE;
+        @Intersection int result = Intersector.INSIDE;
         // Use scratchVector1 as negative bound, scratchVector2 as positive
         for (int i = 0; i < 6; i++) {
             Plane p = planes[i];
@@ -117,10 +117,10 @@ public class Frustum {
         return result;
     }
 
-    @Bounded
+    @Intersection
     public int intersectSphere(@NonNull Vector3 center, double radius) {
         double distance;
-        @Bounded int result = Intersector.INSIDE;
+        @Intersection int result = Intersector.INSIDE;
         for (int i = 0; i < 6; ++i) {
             distance = planes[i].getDistanceTo(center);
             if (distance < -radius) {
@@ -132,7 +132,7 @@ public class Frustum {
         return result;
     }
 
-    @Bounded
+    @Intersection
     public int intersectPoint(Vector3 point) {
         double distance;
         for (int i = 0; i < 6; ++i) {

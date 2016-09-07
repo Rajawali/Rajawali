@@ -9,7 +9,7 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.util.Intersector;
-import org.rajawali3d.util.Intersector.Bounded;
+import org.rajawali3d.util.Intersector.Intersection;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -99,7 +99,7 @@ public class FrustumTest {
         projection.setToOrthographic(1, -1, -1, 1, 0, 1);
         projection.inverse();
         frustum.update(projection);
-        @Bounded int out = frustum.intersectBounds(inBox);
+        @Intersection int out = frustum.intersectBounds(inBox);
         assertEquals(Intersector.INSIDE, out);
         out = frustum.intersectBounds(outBox);
         assertEquals(Intersector.OUTSIDE, out);
@@ -114,7 +114,7 @@ public class FrustumTest {
         projection.setToOrthographic(1, -1, -1, 1, 0, 1);
         projection.inverse();
         frustum.update(projection);
-        @Bounded int out = frustum.intersectSphere(new Vector3(0, 0, 0.5), 0.25);
+        @Intersection int out = frustum.intersectSphere(new Vector3(0, 0, 0.5), 0.25);
         assertEquals(Intersector.INSIDE, out);
         out = frustum.intersectSphere(new Vector3(0, 0, 0.5), 2.0);
         assertEquals(Intersector.INTERSECT, out);
@@ -129,7 +129,7 @@ public class FrustumTest {
         projection.setToOrthographic(1, -1, -1, 1, 0, 1);
         projection.inverse();
         frustum.update(projection);
-        @Bounded int out = frustum.intersectPoint(new Vector3(0, 0, 0.5));
+        @Intersection int out = frustum.intersectPoint(new Vector3(0, 0, 0.5));
         assertEquals(Intersector.INSIDE, out);
         out = frustum.intersectPoint(new Vector3(0, 0, 0));
         assertEquals(Intersector.INSIDE, out);

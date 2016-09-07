@@ -1,9 +1,12 @@
 package c.org.rajawali3d.scene;
 
+import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.renderer.Renderable;
+import c.org.rajawali3d.renderer.Renderer;
 import c.org.rajawali3d.scene.graph.FlatTree;
 import c.org.rajawali3d.scene.graph.SceneGraph;
 import net.jcip.annotations.ThreadSafe;
@@ -19,7 +22,10 @@ import java.util.concurrent.locks.Lock;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @ThreadSafe
-public class Scene {
+public class Scene implements Renderable {
+
+    @Nullable
+    private Renderer renderer;
 
     @NonNull
     private SceneGraph sceneGraph;
@@ -27,19 +33,78 @@ public class Scene {
     @Nullable Lock currentlyHeldWriteLock;
     @Nullable Lock currentlyHeldReadLock;
 
+    protected int currentViewportWidth;
+    protected int currentViewportHeight; // The current width and height of the GL viewport
+    protected int overrideViewportWidth;
+    protected int overrideViewportHeight; // The overridden width and height of the GL viewport
+
     public Scene() {
         sceneGraph = new FlatTree();
+        initialize();
     }
 
     public Scene(@NonNull SceneGraph graph) {
         sceneGraph = graph;
+        initialize();
     }
 
     @GLThread
-    public void render() throws InterruptedException {
+    @Override
+    public void setRenderer(@Nullable Renderer renderer) {
+        this.renderer = renderer;
+    }
+
+    @Override
+    public void onRenderSurfaceSizeChanged(int width, int height) throws IllegalStateException {
+        if (renderer == null) {
+            throw new IllegalStateException("Scene registered to an unknown renderer implementation.");
+        }
+        final int wViewport = overrideViewportWidth > -1 ? overrideViewportWidth : renderer.getDefaultViewportWidth();
+        final int hViewport = overrideViewportHeight > -1 ? overrideViewportHeight : renderer.getDefaultViewportHeight();
+        setViewPort(wViewport, hViewport);
+    }
+
+    @Override
+    public void clearOverrideViewportDimensions() {
+        overrideViewportWidth = -1;
+        overrideViewportHeight = -1;
+        if (renderer != null) {
+            setViewPort(renderer.getDefaultViewportWidth(), renderer.getDefaultViewportHeight());
+        }
+    }
+
+    @Override
+    public void setOverrideViewportDimensions(int width, int height) {
+        overrideViewportWidth = width;
+        overrideViewportHeight = height;
+        setViewPort(overrideViewportWidth, overrideViewportHeight);
+    }
+
+    @Override
+    public int getOverrideViewportWidth() {
+        return overrideViewportWidth;
+    }
+
+    public int getOverrideViewportHeight() {
+        return overrideViewportHeight;
+    }
+
+    @Override
+    public int getViewportWidth() {
+        return currentViewportWidth;
+    }
+
+    @Override
+    public int getViewportHeight() {
+        return currentViewportHeight;
+    }
+
+    @GLThread
+    @Override
+    public void render(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
         currentlyHeldReadLock = sceneGraph.acquireReadLock();
         try {
-            internalRender();
+            internalRender(ellapsedRealtime, deltaTime);
         } finally {
             if (currentlyHeldReadLock != null) {
                 currentlyHeldReadLock.unlock();
@@ -66,9 +131,32 @@ public class Scene {
         }
     }
 
+    protected void initialize() {
+        overrideViewportWidth = -1;
+        overrideViewportHeight = -1;
+    }
+
+    /**
+     * Sets the GL Viewport used. User code is free to override this method, so long as the viewport is set somewhere
+     * (and the projection matrix updated).
+     *
+     * @param width {@code int} The viewport width in pixels.
+     * @param height {@code int} The viewport height in pixels.
+     */
+    @GLThread
+    protected void setViewPort(int width, int height) {
+        if (width != currentViewportWidth || height != currentViewportHeight) {
+            currentViewportWidth = width;
+            currentViewportHeight = height;
+            // TODO: Update projection matrix
+            //updateProjectionMatrix(width, height);
+            GLES20.glViewport(0, 0, width, height);
+        }
+    }
+
     @RequiresReadLock
     @GLThread
-    protected void internalRender() {
+    protected void internalRender(final long ellapsedRealtime, final double deltaTime) {
 
         // Determine which objects we will be rendering
 
