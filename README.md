@@ -11,8 +11,8 @@
 [![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/master/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
 
 **Development Branch Status**  
-[![development](https://travis-ci.org/Rajawali/Rajawali.svg?branch=development)](https://travis-ci.org/Rajawali/Rajawali)
-[![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/development/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
+[![development](https://travis-ci.org/Rajawali/Rajawali.svg?branch=v2.0-development)](https://travis-ci.org/Rajawali/Rajawali)
+[![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/v2.0-development/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
 
 ### News
 
