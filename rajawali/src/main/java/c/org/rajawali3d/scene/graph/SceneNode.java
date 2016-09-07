@@ -10,6 +10,7 @@ import c.org.rajawali3d.transform.Transformable;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
 import net.jcip.annotations.ThreadSafe;
+import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.ArrayList;
@@ -282,5 +283,11 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
             // Propagate the call up the chain of parents until we reach the graph
             parent.updateGraph();
         }
+    }
+
+    @RequiresReadLock
+    @Override
+    public void setToModelMatrix(@NonNull Matrix4 matrix) {
+
     }
 }

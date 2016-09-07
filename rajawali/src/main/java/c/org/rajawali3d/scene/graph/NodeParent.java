@@ -1,7 +1,10 @@
 package c.org.rajawali3d.scene.graph;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
+import org.rajawali3d.math.Matrix4;
 
 import java.util.concurrent.locks.Lock;
 
@@ -39,4 +42,12 @@ public interface NodeParent {
      * {@link #acquireWriteLock()} method. Client code should avoid using this method or risk thread safety problems.
      */
     @RequiresWriteLock void updateGraph();
+
+    /**
+     * Traverses the scene graph and sets the provided {@link Matrix4} to be the combination of all transformations
+     * resulting in the world space position of this parent node.
+     *
+     * @param matrix {@link Matrix4} instance which should be set to the world space transformation.
+     */
+    @RequiresReadLock void setToModelMatrix(@NonNull Matrix4 matrix);
 }
