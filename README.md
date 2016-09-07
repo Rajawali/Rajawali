@@ -11,10 +11,13 @@
 [![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/master/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
 
 **Development Branch Status**  
-[![development](https://travis-ci.org/Rajawali/Rajawali.svg?branch=development)](https://travis-ci.org/Rajawali/Rajawali)
-[![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/development/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
+[![development](https://travis-ci.org/Rajawali/Rajawali.svg?branch=v2.0-development)](https://travis-ci.org/Rajawali/Rajawali)
+[![codecov](https://codecov.io/gh/Rajawali/Rajawali/branch/v2.0-development/graph/badge.svg)](https://codecov.io/gh/Rajawali/Rajawali)
 
 ### News
+
+**9/7/2016**
+The official release of `Bombshell 1.1.610` is out. We will continue to support this release moving forward how ever bug fixes will be minimal. The decision was made that the design of the core engine was inhibiting correcting some of the larger issues. To this end, we have begun development of a `2.0` version.
 
 **8/29/2016**
 An initial effort for adding unit testing to Rajawali has been made. This initial focus has been on the core math classes and will ideally expand as bug fixes progress. Pull requests for unit tests are welcome and any "bug fix" PRs which include unit tests  or issues which include unit tests to demonstrate a failure will be given the highest priority. 
