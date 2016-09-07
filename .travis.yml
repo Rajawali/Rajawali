@@ -45,6 +45,9 @@ script:
   - echo "Travis branch is $TRAVIS_BRANCH"
   - echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
   - echo "Travis tag $TRAVIS_TAG"
+  # Append blank line to gradle.properties to defensively prevent anyone
+  # erasing the blank line in the gradle.properties
+  - echo -e "" >> "gradle.properties"
   - echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
   - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
   - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
