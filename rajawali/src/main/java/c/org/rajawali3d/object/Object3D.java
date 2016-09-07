@@ -35,6 +35,11 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
         this.parent = parent;
     }
 
+    @Override
+    public void modelMatrixUpdated() {
+
+    }
+
     @NonNull
     @Override
     public Vector3 getMaxBound() {

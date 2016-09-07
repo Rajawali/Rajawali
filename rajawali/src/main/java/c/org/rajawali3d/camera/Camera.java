@@ -186,6 +186,11 @@ public class Camera implements NodeMember {
         this.parent = parent;
     }
 
+    @Override
+    public void modelMatrixUpdated() {
+
+    }
+
     @NonNull
     @Override
     public Vector3 getMaxBound() {
