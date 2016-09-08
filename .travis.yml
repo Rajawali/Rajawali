@@ -5,9 +5,9 @@ sudo: false
 before_install:
  # Prepare the signing keys
  - if $TRAVIS_PULL_REQUEST;
-     then
+   then
         "Skipping keyring decryption on Pull Request";
-     else
+   else
         openssl aes-256-cbc -K $encrypted_64bf13095d6f_key -iv $encrypted_64bf13095d6f_iv -in rajawali_secret.gpg.enc -out rajawali_secret.gpg -d
    fi
 - chmod +x gradlew
