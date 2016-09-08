@@ -188,7 +188,7 @@ public class Camera implements NodeMember {
 
     @Override
     public void modelMatrixUpdated() {
-
+        // TODO: Update bounds
     }
 
     @NonNull

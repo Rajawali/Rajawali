@@ -854,6 +854,32 @@ public class TransformationTest {
                 1.0, 2.0, 3.0, 1.0
         };
 
+        Transformation transformation = new Transformation();
+        transformation.setPosition(1d, 2d, 3d);
+        transformation.rotate(Axis.X, 45d);
+        transformation.calculateLocalModelMatrix();
+        double[] result = transformation.getLocalModelMatrix().getDoubleValues();
+        assertNotNull(result);
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);
+        }
+    }
+
+    @Test
+    public void testGetWorldModelMatrix() {
+        Transformation transformation = new Transformation();
+        assertSame(transformation.worldModelMatrix, transformation.getWorldModelMatrix());
+    }
+
+    @Test
+    public void testCalculateWorldModelMatrix() {
+        final double[] expected = new double[]{
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                1.0, -0.7071067811865479, 3.5355339059327378, 1.0
+        };
+
         final Matrix4 parent = new Matrix4();
         parent.setToRotation(Axis.X, -45d);
 
@@ -861,7 +887,8 @@ public class TransformationTest {
         transformation.setPosition(1d, 2d, 3d);
         transformation.rotate(Axis.X, 45d);
         transformation.calculateLocalModelMatrix();
-        double[] result = transformation.getLocalModelMatrix().getDoubleValues();
+        transformation.calculateWorldModelMatrix(parent);
+        double[] result = transformation.getWorldModelMatrix().getDoubleValues();
         assertNotNull(result);
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);

@@ -34,7 +34,7 @@ import java.util.Arrays;
  * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java">
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java</a>
  */
-public final class Matrix4 implements Cloneable {
+public class Matrix4 implements Cloneable {
 
     //Matrix indices as column major notation (Row x Column)
     /*

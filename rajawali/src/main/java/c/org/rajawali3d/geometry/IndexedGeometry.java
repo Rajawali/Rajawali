@@ -221,7 +221,7 @@ public class IndexedGeometry implements Geometry {
     }
 
     @RequiresReadLock
-    public void calculateBounds(@NonNull Vector3 min, @NonNull Vector3 max) {
+    public void calculateAABounds(@NonNull Vector3 min, @NonNull Vector3 max) {
         final FloatBuffer vertices = getVertices();
         vertices.rewind();
 

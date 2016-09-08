@@ -34,7 +34,7 @@ import org.rajawali3d.math.vector.Vector3.Axis;
  * ://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java</a>
  * @see <a href="https://users.aalto.fi/~ssarkka/pub/quat.pdf">https://users.aalto.fi/~ssarkka/pub/quat.pdf</a>
  */
-public final class Quaternion implements Cloneable {
+public class Quaternion implements Cloneable {
     //Tolerances
     //public static final double F_EPSILON               = .001;
     public static final double NORMALIZATION_TOLERANCE = 1e-6;

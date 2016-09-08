@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.test.suitebuilder.annotation.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
 import org.junit.Test;
+import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.Collection;
@@ -109,6 +110,17 @@ public class ASceneGraphTest {
         final Lock lock = graph.acquireReadLock();
         assertNotNull(lock);
         lock.unlock();
+    }
+
+    @Test
+    public void testSetToModelMatrix() throws Exception {
+        // This is a placeholder test meant to serve as a reminder to create a unit test if this method is ever made
+        // to do anything.
+        final TestableASceneGraph graph = new TestableASceneGraph();
+        final Matrix4 input = new Matrix4();
+        final Matrix4 expected = new Matrix4();
+        graph.setToModelMatrix(input);
+        assertEquals("" + input, expected, input);
     }
 
     @Test

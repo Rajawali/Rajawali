@@ -30,11 +30,13 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @NonNull
     private final Transformation transformation = new Transformation();
 
+    @VisibleForTesting
     @NonNull
-    private final List<SceneNode> children = new ArrayList<>();
+    final List<SceneNode> children = new ArrayList<>();
 
+    @VisibleForTesting
     @NonNull
-    private final List<NodeMember> members = new ArrayList<>();
+    final List<NodeMember> members = new ArrayList<>();
 
     @VisibleForTesting
     @NonNull
@@ -49,6 +51,10 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
 
     @Nullable
     protected Lock currentlyHeldWriteLock;
+
+    protected Transformation getTransformation() {
+        return transformation;
+    }
 
     @RequiresReadLock
     @NonNull
@@ -113,8 +119,8 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         currentlyHeldWriteLock = acquireWriteLock();
         try {
             // Let the transformer do what it wants
-            transformer.transform(transformation);
-            // Update the scene graph
+            transformer.transform(getTransformation());
+            // Update the scene graph to take account of any transformations we made.
             updateGraph();
         } finally {
             // Release write lock
@@ -142,7 +148,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
 
     @Override
     public void setParent(@Nullable NodeParent parent) throws InterruptedException {
-        acquireWriteLock();
+        currentlyHeldWriteLock = acquireWriteLock();
         try {
             this.parent = parent;
             // We don't update the graph here because it will happen during the add process.
@@ -176,7 +182,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @RequiresReadLock
     @Override
     public void setToModelMatrix(@NonNull Matrix4 matrix) {
-        matrix.leftMultiply(transformation.getLocalModelMatrix());
+        matrix.leftMultiply(getTransformation().getLocalModelMatrix());
         if (parent != null) {
             parent.setToModelMatrix(matrix);
         }
@@ -255,7 +261,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      */
     public boolean removeChildNode(@NonNull SceneNode node) throws InterruptedException {
         acquireWriteLock();
-        boolean removed;
+        boolean removed = false;
         try {
             removed = children.remove(node);
             node.setParent(null);
@@ -277,9 +283,10 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
      */
     @RequiresWriteLock
     protected void recalculateModelMatrix(@NonNull Matrix4 parentWorldMatrix) {
+        final Transformation localTransformation = getTransformation();
         // Recalculate the local and world model matrices
-        transformation.calculateLocalModelMatrix();
-        transformation.calculateWorldModelMatrix(parentWorldMatrix);
+        localTransformation.calculateLocalModelMatrix();
+        localTransformation.calculateWorldModelMatrix(parentWorldMatrix);
         // Take any actions needed for matrix update
         modelMatrixUpdated();
         // For each child member, notify that the model matrix has been updated.
@@ -288,7 +295,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         }
         // For each child node, recalculate the model matrix.
         for (int i = 0, j = children.size(); i < j; ++i) {
-            children.get(i).recalculateModelMatrix(transformation.getWorldModelMatrix());
+            children.get(i).recalculateModelMatrix(localTransformation.getWorldModelMatrix());
         }
     }
 
@@ -299,7 +306,12 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         // We do this from the lock directly because our parent may have become null and we need to be sure we
         // release the lock we hold.
         if (currentlyHeldWriteLock != null) {
-            currentlyHeldWriteLock.unlock();
+            try {
+                currentlyHeldWriteLock.unlock();
+            } catch (IllegalMonitorStateException e) {
+                // We did not hold a valid lock here
+                currentlyHeldWriteLock = null;
+            }
         }
     }
 

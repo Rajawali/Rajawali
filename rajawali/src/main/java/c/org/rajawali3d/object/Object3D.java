@@ -37,7 +37,7 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
 
     @Override
     public void modelMatrixUpdated() {
-
+        // TODO: Update bounds
     }
 
     @NonNull
@@ -54,7 +54,7 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
 
     @Override
     public void recalculateBounds(boolean recursive) {
-        geometry.calculateBounds(minBound, maxBound);
+        geometry.calculateAABounds(minBound, maxBound);
     }
 
     @Override

@@ -66,6 +66,14 @@ public class FlatTreeTest {
     }
 
     @Test
+    public void testUpdateGraph() throws Exception {
+        final TestableFlatTree tree = new TestableFlatTree();
+        tree.updateGraph();
+        assertTrue(tree.didCallRecalculateBounds);
+        assertFalse(tree.wasRecursive);
+    }
+
+    @Test
     public void testRecalculateBounds() throws Exception {
         final TestableFlatTree tree = new TestableFlatTree();
         final SceneNode node = new SceneNode();

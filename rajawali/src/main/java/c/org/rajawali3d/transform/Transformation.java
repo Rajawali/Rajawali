@@ -769,12 +769,13 @@ public class Transformation {
     }
 
     /**
-     * Calculates the world model matrix for this {@link Transformation} object.
+     * Calculates the world model matrix for this {@link Transformation} object. NOTE: This method assumes the
+     * current local model matrix is valid.
      *
      * @param parentModel {@link Matrix4} The parent model matrix.
      */
     @RequiresWriteLock
     public void calculateWorldModelMatrix(@NonNull Matrix4 parentModel) {
-        localModelMatrix.leftMultiply(parentModel);
+        worldModelMatrix.setAll(localModelMatrix).leftMultiply(parentModel);
     }
 }

@@ -65,5 +65,5 @@ public interface Geometry {
      * @param max {@link Vector3} To be set to the maximum bound.
      */
     @RequiresReadLock
-    void calculateBounds(@NonNull Vector3 min, @NonNull Vector3 max);
+    void calculateAABounds(@NonNull Vector3 min, @NonNull Vector3 max);
 }
