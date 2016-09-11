@@ -549,7 +549,13 @@ public abstract class Renderer implements ISurfaceRenderer {
         loader.setTag(tag);
 
         try {
-            final int id = mLoaderThreads.size();
+            int id=0;
+            ModelRunnable thread = mLoaderThreads.get(id);
+            while(thread != null){
+                id++;
+                thread = mLoaderThreads.get(id);
+            }
+            
             final ModelRunnable runnable = new ModelRunnable(loader, id);
 
             mLoaderThreads.put(id, runnable);
