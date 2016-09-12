@@ -29,6 +29,9 @@ public abstract class ASceneGraph implements SceneGraph {
     @NonNull
     protected final Vector3 scratchVector3 = new Vector3();
 
+    @NonNull
+    protected final Matrix4 worldMatrix = new Matrix4();
+
     /**
      * Creates a new child node for this graph node.
      *
@@ -57,6 +60,13 @@ public abstract class ASceneGraph implements SceneGraph {
     @Override
     public void setToModelMatrix(@NonNull Matrix4 matrix) {
         // TODO: Apply world axis transformation here?
+    }
+
+    @NonNull
+    @Override
+    public Matrix4 getWorldModelMatrix() {
+        // TODO: Apply world axis transformation here?
+        return worldMatrix;
     }
 
     @RequiresReadLock

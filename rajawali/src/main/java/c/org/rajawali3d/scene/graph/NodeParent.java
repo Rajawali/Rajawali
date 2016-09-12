@@ -51,4 +51,11 @@ public interface NodeParent {
      *                              set to identity.
      */
     @RequiresReadLock void setToModelMatrix(@NonNull Matrix4 matrix);
+
+    /**
+     * Retrieves the world space model matrix for this parent.
+     *
+     * @return {@link Matrix4} The world space model matrix.
+     */
+    @RequiresReadLock @NonNull Matrix4 getWorldModelMatrix();
 }

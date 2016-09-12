@@ -18,8 +18,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
@@ -36,116 +34,48 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  */
 public class SceneNodeTest {
 
-    private final class MockedSceneNode extends SceneNode {
-
-        boolean didCallRecalculateBoundsForAdd = false;
-        boolean didCallCalculateMaxBounds      = false;
-        boolean didCallCalculateMinBounds      = false;
-        boolean didCallRecalculateBounds       = false;
-        boolean wasRecursive                   = false;
-        boolean didAcquireWriteLock            = false;
-        boolean didReleaseWriteLock            = false;
-
-        @Override
-        public void recalculateBounds(boolean recursive) {
-            didCallRecalculateBounds = true;
-            wasRecursive = recursive;
-            super.recalculateBounds(recursive);
-        }
-
-        @Override
-        public void recalculateBoundsForAdd(@NonNull AABB added) {
-            didCallRecalculateBoundsForAdd = true;
-            super.recalculateBoundsForAdd(added);
-        }
-
-        @Override
-        protected void checkAndAdjustMaxBounds(@NonNull AABB child) {
-            didCallCalculateMaxBounds = true;
-            super.checkAndAdjustMaxBounds(child);
-        }
-
-        @Override
-        protected void checkAndAdjustMinBounds(@NonNull AABB child) {
-            didCallCalculateMinBounds = true;
-            super.checkAndAdjustMinBounds(child);
-        }
-
-        @Nullable @Override public Lock acquireWriteLock() throws InterruptedException {
-            didAcquireWriteLock = true;
-            return super.acquireWriteLock();
-        }
-
-        @Override protected void releaseWriteLock() {
-            didReleaseWriteLock = true;
-            super.releaseWriteLock();
-        }
-
-        void reset() {
-            didCallRecalculateBoundsForAdd = false;
-            didCallCalculateMaxBounds = false;
-            didCallCalculateMinBounds = false;
-            didCallRecalculateBounds = false;
-            wasRecursive = false;
-            didAcquireWriteLock = false;
-            didReleaseWriteLock = false;
-        }
-    }
-
-    @Test
-    public void testGetMaxBound() throws Exception {
-
-    }
-
-    @Test
-    public void testGetMinBound() throws Exception {
-
-    }
-
     @Test
     public void testRecalculateBoundsNonRecursive() throws Exception {
-        final MockedSceneNode node = new MockedSceneNode();
-        final MockedSceneNode child = new MockedSceneNode();
+        final SceneNode node = spy(new SceneNode());
+        final SceneNode child = spy(new SceneNode());
         final NodeMember member = mock(NodeMember.class);
         when(member.getMaxBound()).thenReturn(new Vector3());
         when(member.getMinBound()).thenReturn(new Vector3());
         node.children.add(child);
         node.members.add(member);
         node.recalculateBounds(false);
-        assertFalse(child.didCallRecalculateBounds);
-        assertTrue(node.didCallCalculateMaxBounds);
-        assertTrue(node.didCallCalculateMinBounds);
+        verify(child, never()).recalculateBounds(anyBoolean());
+        // We would check that the static methods AABB.Comparator.check... were called however they are static
+        // methods and there is no good way to do this. Instead, we leave it as an exercise for the integration tests.
         verify(member, never()).recalculateBounds(anyBoolean());
     }
 
     @Test
     public void testRecalculateBoundsRecursive() throws Exception {
-        final MockedSceneNode node = new MockedSceneNode();
-        final MockedSceneNode child = new MockedSceneNode();
+        final SceneNode node = spy(new SceneNode());
+        final SceneNode child = spy(new SceneNode());
         final NodeMember member = mock(NodeMember.class);
         when(member.getMaxBound()).thenReturn(new Vector3());
         when(member.getMinBound()).thenReturn(new Vector3());
         node.children.add(child);
         node.members.add(member);
         node.recalculateBounds(true);
-        assertTrue(child.didCallRecalculateBounds);
-        assertTrue(child.wasRecursive);
-        assertTrue(node.didCallRecalculateBoundsForAdd);
-        assertTrue(node.wasRecursive);
+        verify(child).recalculateBounds(true);
+        verify(node).recalculateBoundsForAdd(child);
         verify(member, never()).recalculateBounds(false);
         verify(member).recalculateBounds(true);
     }
 
     @Test
     public void testRecalculateBoundsForAdd() throws Exception {
-        final MockedSceneNode node = new MockedSceneNode();
+        final SceneNode node = new SceneNode();
         final AABB added = mock(AABB.class);
         when(added.getMaxBound()).thenReturn(new Vector3());
         when(added.getMinBound()).thenReturn(new Vector3());
         node.recalculateBoundsForAdd(added);
         verify(added).recalculateBounds(true);
-        assertTrue(node.didCallCalculateMaxBounds);
-        assertTrue(node.didCallCalculateMinBounds);
+        // We would check that the static methods AABB.Comparator.check... were called however they are static
+        // methods and there is no good way to do this. Instead, we leave it as an exercise for the integration tests.
     }
 
     @Test
@@ -199,20 +129,33 @@ public class SceneNodeTest {
 
     @Test
     public void testSetParent() throws Exception {
-        final MockedSceneNode node = new MockedSceneNode();
+        final SceneNode node = spy(new SceneNode());
         assertNull(node.acquireWriteLock());
         final SceneNode parent = mock(SceneNode.class);
         node.setParent(parent);
-        assertTrue(node.didAcquireWriteLock);
-        assertTrue(node.didReleaseWriteLock);
+        verify(node, times(2)).acquireWriteLock();
+        verify(node).releaseWriteLock();
         assertSame(parent, node.parent);
     }
 
     @Test
     public void testModelMatrixUpdated() throws Exception {
-        final SceneNode node = new SceneNode();
+        final SceneNode node = spy(new SceneNode());
+        final Vector3 localMax = new Vector3(1d, 2d, 3d);
+        final Vector3 localMin = new Vector3(-1d, -2d, -3d);
+        final Matrix4 world = Matrix4.createTranslationMatrix(1d, 0d, 0d);
+        doReturn(localMax).when(node).getMaxBound();
+        doReturn(localMin).when(node).getMinBound();
+        doReturn(world).when(node).getWorldModelMatrix();
         node.modelMatrixUpdated();
-        // TODO: Expand this test if any logic is ever added
+        final Vector3 max = node.getWorldSpaceMaxBound();
+        final Vector3 min = node.getWorldSpaceMinBound();
+        assertEquals(2d, max.x, 1e-14);
+        assertEquals(2d, max.y, 1e-14);
+        assertEquals(3d, max.z, 1e-14);
+        assertEquals(0d, min.x, 1e-14);
+        assertEquals(-2d, min.y, 1e-14);
+        assertEquals(-3d, min.z, 1e-14);
     }
 
     @Test
@@ -256,6 +199,17 @@ public class SceneNodeTest {
         node.setToModelMatrix(param);
         verify(param, times(2)).leftMultiply(nodeMatrix);
         verify(parent).setToModelMatrix(param);
+    }
+
+    @Test
+    public void testGetWorldModelMatrix() throws Exception {
+        final SceneNode node = spy(new SceneNode());
+        final Transformation transformation = mock(Transformation.class);
+        final Matrix4 nodeMatrix = new Matrix4();
+        doReturn(transformation).when(node).getTransformation();
+        doReturn(nodeMatrix).when(transformation).getWorldModelMatrix();
+        final Matrix4 out = node.getWorldModelMatrix();
+        assertSame(nodeMatrix, out);
     }
 
     @Test
@@ -441,27 +395,5 @@ public class SceneNodeTest {
         node.releaseWriteLock();
         node.releaseWriteLock();
         assertNull(node.currentlyHeldWriteLock);
-    }
-
-    @Test
-    public void testCheckAndAdjustMinBounds() throws Exception {
-        final SceneNode node = new SceneNode();
-        final AABB box = mock(AABB.class);
-        when(box.getMinBound()).thenReturn(new Vector3(-1d, -2d, -3d));
-        node.checkAndAdjustMinBounds(box);
-        assertEquals(-1d, node.minBound.x, 1e-14);
-        assertEquals(-2d, node.minBound.y, 1e-14);
-        assertEquals(-3d, node.minBound.z, 1e-14);
-    }
-
-    @Test
-    public void testCheckAndAdjustMaxBounds() throws Exception {
-        final SceneNode node = new SceneNode();
-        final AABB box = mock(AABB.class);
-        when(box.getMaxBound()).thenReturn(new Vector3(1d, 2d, 3d));
-        node.checkAndAdjustMaxBounds(box);
-        assertEquals(1d, node.maxBound.x, 1e-14);
-        assertEquals(2d, node.maxBound.y, 1e-14);
-        assertEquals(3d, node.maxBound.z, 1e-14);
     }
 }

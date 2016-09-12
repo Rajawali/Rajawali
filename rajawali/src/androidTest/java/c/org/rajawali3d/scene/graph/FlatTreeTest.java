@@ -79,8 +79,8 @@ public class FlatTreeTest {
         final SceneNode node = new SceneNode();
         tree.add(node);
         tree.didCallRecalculateBoundsForAdd = false;
-        node.minBound.setAll(-1d, -2d, -3d);
-        node.maxBound.setAll(1d, 2d, 3d);
+        node.getMinBound().setAll(-1d, -2d, -3d);
+        node.getMaxBound().setAll(1d, 2d, 3d);
         tree.recalculateBounds(false);
         assertEquals(-1d, tree.minBound.x, 1e-14);
         assertEquals(-2d, tree.minBound.y, 1e-14);

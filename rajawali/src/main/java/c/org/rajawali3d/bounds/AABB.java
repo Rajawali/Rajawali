@@ -31,7 +31,7 @@ public interface AABB {
     @RequiresReadLock @NonNull Vector3 getMinBound();
 
     /**
-     * Causes a recalculation of the min/max coordinates.
+     * Causes a recalculation of the min/max coordinates in local coordinate space.
      *
      * @param recursive If {@code boolean}, the calculation will be made recursively across all children. If {@code
      *                  false} the child bounds will be assumed to be unchanged.
@@ -39,9 +39,43 @@ public interface AABB {
     @RequiresWriteLock void recalculateBounds(boolean recursive);
 
     /**
-     * Causes a recalculation of the min/max coordinates, optimized for the case of a single expansion data point.
+     * Causes a recalculation of the min/max coordinates in local coordinate space, optimized for the case of a single
+     * expansion data point.
      *
      * @param added {@link AABB} implementation which was added.
      */
     @RequiresWriteLock void recalculateBoundsForAdd(@NonNull AABB added);
+
+    class Comparator {
+
+        /**
+         * Compares the minimum axis aligned bounds of the child and adjusts the value in bounds to be the lesser of the
+         * two on each axis.
+         *
+         * @param bound {@link Vector3} The bound to adjust.
+         * @param childMin {@link Vector3} The child minimum bound to be compared against.
+         */
+        @RequiresWriteLock
+        public static void checkAndAdjustMinBounds(@NonNull Vector3 bound, @NonNull Vector3 childMin) {
+            // Pick the lesser value of each component between our bounds and the added bounds.
+            bound.setAll(Math.min(bound.x, childMin.x),
+                         Math.min(bound.y, childMin.y),
+                         Math.min(bound.z, childMin.z));
+        }
+
+        /**
+         * Compares the maximum axis aligned bounds of the child and adjusts the value in bounds to be the greater of
+         * the two on each axis.
+         *
+         * @param bound {@link Vector3} The bound to adjust.
+         * @param child {@link Vector3} The child maximum bound be compared against.
+         */
+        @RequiresWriteLock
+        public static void checkAndAdjustMaxBounds(@NonNull Vector3 bound, @NonNull Vector3 childMax) {
+            // Pick the larger value of each component between our bounds and the added bounds.
+            bound.setAll(Math.max(bound.x, childMax.x),
+                         Math.max(bound.y, childMax.y),
+                         Math.max(bound.z, childMax.z));
+        }
+    }
 }

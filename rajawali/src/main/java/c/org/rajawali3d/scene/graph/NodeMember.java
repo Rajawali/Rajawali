@@ -1,11 +1,9 @@
 package c.org.rajawali3d.scene.graph;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Camera;
-import org.rajawali3d.math.Matrix4;
 
 /**
  * Interface to be implemented by classes which will be attached to {@link SceneNode}s. These could be 3D render

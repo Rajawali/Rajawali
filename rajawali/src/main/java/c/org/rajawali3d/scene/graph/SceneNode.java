@@ -30,6 +30,12 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @NonNull
     private final Transformation transformation = new Transformation();
 
+    @NonNull
+    private final Vector3 maxBound = new Vector3();
+
+    @NonNull
+    private final Vector3 minBound = new Vector3();
+
     @VisibleForTesting
     @NonNull
     final List<SceneNode> children = new ArrayList<>();
@@ -40,11 +46,11 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
 
     @VisibleForTesting
     @NonNull
-    final Vector3 maxBound = new Vector3();
+    final Vector3 worldMaxBound = new Vector3();
 
     @VisibleForTesting
     @NonNull
-    final Vector3 minBound = new Vector3();
+    final Vector3 worldMinBound = new Vector3();
 
     @Nullable
     protected NodeParent parent;
@@ -60,7 +66,6 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @NonNull
     @Override
     public Vector3 getMaxBound() {
-        // TODO: This needs to take into account the local transformation
         return maxBound;
     }
 
@@ -86,8 +91,8 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
                 recalculateBoundsForAdd(child);
             } else {
                 // Assume the child bounds are valid
-                checkAndAdjustMinBounds(child);
-                checkAndAdjustMaxBounds(child);
+                AABB.Comparator.checkAndAdjustMinBounds(minBound, child.getMinBound());
+                AABB.Comparator.checkAndAdjustMaxBounds(maxBound, child.getMaxBound());
             }
         }
         // For each child member, recalculate the bounds as if it was an addition one at a time.
@@ -98,8 +103,8 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
                 recalculateBoundsForAdd(child);
             } else {
                 // Assume the child bounds are valid
-                checkAndAdjustMinBounds(child);
-                checkAndAdjustMaxBounds(child);
+                AABB.Comparator.checkAndAdjustMinBounds(minBound, child.getMinBound());
+                AABB.Comparator.checkAndAdjustMaxBounds(maxBound, child.getMaxBound());
             }
         }
     }
@@ -109,8 +114,8 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     public void recalculateBoundsForAdd(@NonNull AABB added) {
         // Have the added node or child determine its bounds
         added.recalculateBounds(true);
-        checkAndAdjustMinBounds(added);
-        checkAndAdjustMaxBounds(added);
+        AABB.Comparator.checkAndAdjustMinBounds(minBound, added.getMinBound());
+        AABB.Comparator.checkAndAdjustMaxBounds(maxBound, added.getMaxBound());
     }
 
     @Override
@@ -160,7 +165,9 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @RequiresWriteLock
     @Override
     public void modelMatrixUpdated() {
-        //TODO: Update bounds in world space
+        final Matrix4 world = getWorldModelMatrix();
+        worldMinBound.setAll(getMinBound()).multiply(world);
+        worldMaxBound.setAll(getMaxBound()).multiply(world);
     }
 
     @RequiresWriteLock
@@ -186,6 +193,34 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         if (parent != null) {
             parent.setToModelMatrix(matrix);
         }
+    }
+
+    @NonNull
+    @Override
+    public Matrix4 getWorldModelMatrix() {
+        return getTransformation().getWorldModelMatrix();
+    }
+
+    /**
+     * Retrieves the world space position of the X/Y/Z coordinates of this box.
+     *
+     * @return {@link Vector3} the X/Y/Z corner coordinates.
+     */
+    @RequiresReadLock
+    @NonNull
+    public Vector3 getWorldSpaceMaxBound() {
+        return worldMaxBound;
+    }
+
+    /**
+     * Retrieves the world space position of the -X/-Y/-Z coordinates of this box.
+     *
+     * @return {@link Vector3} the -X/-Y/-Z corner coordinates.
+     */
+    @RequiresReadLock
+    @NonNull
+    public Vector3 getWorldSpaceMinBound() {
+        return worldMinBound;
     }
 
     /**
@@ -313,35 +348,5 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
                 currentlyHeldWriteLock = null;
             }
         }
-    }
-
-    /**
-     * Compares the minimum axis aligned bounds of this {@link SceneNode} with those of the child and adjusts these
-     * bounds to be the lesser of the two on each axis.
-     *
-     * @param child {@link AABB} The child who should be compared against.
-     */
-    @RequiresWriteLock
-    protected void checkAndAdjustMinBounds(@NonNull AABB child) {
-        // Pick the lesser value of each component between our bounds and the added bounds.
-        final Vector3 addMin = child.getMinBound();
-        minBound.setAll(Math.min(minBound.x, addMin.x),
-                        Math.min(minBound.y, addMin.y),
-                        Math.min(minBound.z, addMin.z));
-    }
-
-    /**
-     * Compares the maximum axis aligned bounds of this {@link SceneNode} with those of the child and adjusts these
-     * bounds to be the greater of the two on each axis.
-     *
-     * @param child {@link AABB} The child who should be compared against.
-     */
-    @RequiresWriteLock
-    protected void checkAndAdjustMaxBounds(@NonNull AABB child) {
-        // Pick the larger value of each component between our bounds and the added bounds.
-        final Vector3 addMax = child.getMaxBound();
-        maxBound.setAll(Math.max(maxBound.x, addMax.x),
-                        Math.max(maxBound.y, addMax.y),
-                        Math.max(maxBound.z, addMax.z));
     }
 }

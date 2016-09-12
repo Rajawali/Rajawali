@@ -27,7 +27,7 @@ public class Camera implements NodeMember {
     private final Vector3 minBound = new Vector3();
 
     @NonNull
-    private final Matrix4 viewMatrix = new Matrix4();
+    protected final Matrix4 viewMatrix = new Matrix4();
 
     @NonNull
     protected final Frustum frustum = new Frustum();
@@ -91,20 +91,13 @@ public class Camera implements NodeMember {
             cameraDirty = false;
         }
 
-        if (transformed) {
-            viewMatrix.identity();
-            if (parent != null) {
-                parent.setToModelMatrix(viewMatrix);
-            }
-        }
-
         // Make a stack reference so it cant change half way through on us.
         final Vector3[] corners = frustumCorners;
         if (corners != null) {
             for (int i = 0; i < 8; ++i) {
                 points[i].setAll(corners[i]);
-                if (transformed) {
-                    points[i].multiply(viewMatrix);
+                if (transformed && parent != null) {
+                    points[i].multiply(parent.getWorldModelMatrix());
                 }
             }
         }
@@ -188,7 +181,10 @@ public class Camera implements NodeMember {
 
     @Override
     public void modelMatrixUpdated() {
-        // TODO: Update bounds
+        if (parent != null) {
+            viewMatrix.setAll(parent.getWorldModelMatrix()).inverse();
+        }
+        // No need to update bounds because the node parent will handle this
     }
 
     @NonNull
@@ -203,13 +199,21 @@ public class Camera implements NodeMember {
         return minBound;
     }
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
     public void recalculateBounds(boolean recursive) {
-
+        minBound.setAll(0, 0, 0);
+        maxBound.setAll(0, 0, 0);
+        final Vector3[] points = new Vector3[8];
+        getFrustumCorners(points);
+        for (int i = 0, j = points.length; i < j; ++i) {
+            AABB.Comparator.checkAndAdjustMinBounds(minBound, points[i]);
+            AABB.Comparator.checkAndAdjustMaxBounds(maxBound, points[i]);
+        }
     }
 
     @Override
     public void recalculateBoundsForAdd(@NonNull AABB added) {
-
+        // This is a non-op for cameras
     }
 }
