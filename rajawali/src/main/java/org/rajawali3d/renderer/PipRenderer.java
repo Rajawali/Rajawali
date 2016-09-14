@@ -22,7 +22,7 @@ import org.rajawali3d.scene.Scene;
 
 /**
  * <p>
- * Creates a renderer that renders two scenes through separate <code>SubRenderer</code>s.
+ * Creates a renderer that renders two renderables through separate <code>SubRenderer</code>s.
  * In order to use this, first create the <code>PipRenderer</code>, then create and assign the
  * <code>SubRenderer</code>s through <code>setMainRenderer</code> (for the main content)
  * <code>setMinirenderer</code> (for the content in the mini view).

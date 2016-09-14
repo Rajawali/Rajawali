@@ -14,6 +14,7 @@ import org.rajawali3d.examples.examples.animation.MD2Fragment;
 import org.rajawali3d.examples.examples.animation.SkeletalAnimationAWDFragment;
 import org.rajawali3d.examples.examples.animation.SkeletalAnimationBlendingFragment;
 import org.rajawali3d.examples.examples.animation.SkeletalAnimationMD5Fragment;
+import org.rajawali3d.examples.examples.camdenhells.CamdenHellsBasic;
 import org.rajawali3d.examples.examples.general.ArcballCameraFragment;
 import org.rajawali3d.examples.examples.general.BasicFragment;
 import org.rajawali3d.examples.examples.general.ChaseCameraFragment;
@@ -106,6 +107,9 @@ public final class DataSet {
     @NonNull
     static List<Category> createCategories() {
         List<Category> categories = new LinkedList<>();
+        categories.add(new Category(R.string.category_camden_hells, new Example[]{
+                new Example(R.string.example_general_getting_started, CamdenHellsBasic.class)
+        }));
         categories.add(new Category(R.string.category_general, new Example[]{
                 new Example(R.string.example_general_getting_started, BasicFragment.class),
                 new Example(R.string.example_general_skybox, SkyboxFragment.class),

@@ -36,7 +36,6 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
 
     @Override
     public void modelMatrixUpdated() {
-        // TODO: Update bounds
     }
 
     @NonNull

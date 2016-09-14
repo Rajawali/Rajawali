@@ -3,6 +3,7 @@ package c.org.rajawali3d.scene;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.renderer.Renderable;
@@ -16,13 +17,15 @@ import java.util.concurrent.locks.Lock;
 /**
  * A {@link Scene} is a self contained, renderable world. {@link Scene}s are responsible for managing all aspects of
  * what is rendered - objects, cameras, lights, and materials. All draw operations are managed by a scene and objects
- * cannot be shared across scenes. Unless otherwise specified, the default behavior is to use a {@link FlatTree}
+ * cannot be shared across renderables. Unless otherwise specified, the default behavior is to use a {@link FlatTree}
  * scene graph.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @ThreadSafe
 public class Scene implements Renderable {
+
+    private static final String TAG = "Scene";
 
     @Nullable
     private Renderer renderer;
@@ -157,7 +160,7 @@ public class Scene implements Renderable {
     @RequiresReadLock
     @GLThread
     protected void internalRender(final long ellapsedRealtime, final double deltaTime) {
-
+        Log.d(TAG, "Rendering with delta time: " + deltaTime + "s");
         // Determine which objects we will be rendering
 
         // Update the model matrix of all these objects

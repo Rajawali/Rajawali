@@ -10,11 +10,10 @@ public interface Renderable {
 
     /**
      * Sets the active {@link Renderer} this {@link Renderable} is registered with, or clears it if {@code null} is
-     * provided.
+     * provided. There is no guarantee of this method being called on the GL thread.
      *
      * @param renderer The active {@link Renderer} or {@code null}.
      */
-    @GLThread
     void setRenderer(@Nullable Renderer renderer);
 
     /**

@@ -3,7 +3,7 @@ package org.rajawali3d;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
- * Collection of world global parameters. These parameters are constant across all scenes. This class is intended to be
+ * Collection of world global parameters. These parameters are constant across all renderables. This class is intended to be
  * read only after setup, and so does not include any thread safety mechanisms in the interest of speed. Extreme care
  * must be taken if you desire to modify anything in this class while other threads are actively using it.
  *

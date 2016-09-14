@@ -77,8 +77,8 @@ public abstract class Renderer implements ISurfaceRenderer {
     protected int mDefaultViewportWidth, mDefaultViewportHeight; // The default width and height of the GL viewport
     protected int mOverrideViewportWidth, mOverrideViewportHeight; // The overridden width and height of the GL viewport
 
-    protected TextureManager mTextureManager; // Texture manager for ALL textures across ALL scenes.
-    protected MaterialManager mMaterialManager; // Material manager for ALL materials across ALL scenes.
+    protected TextureManager mTextureManager; // Texture manager for ALL textures across ALL renderables.
+    protected MaterialManager mMaterialManager; // Material manager for ALL materials across ALL renderables.
 
     // Frame related members
     protected ScheduledExecutorService mTimer; // Timer used to schedule drawing
@@ -99,13 +99,13 @@ public abstract class Renderer implements ISurfaceRenderer {
      * The context typically needs to be restored when the application
      * is re-activated or when a live wallpaper is rotated.
      */
-    private boolean mSceneCachingEnabled; //This applies to all scenes
-    protected boolean mSceneInitialized; //This applies to all scenes
+    private boolean mSceneCachingEnabled; //This applies to all renderables
+    protected boolean mSceneInitialized; //This applies to all renderables
     protected boolean mEnableDepthBuffer = true; // Do we use the depth buffer?
     private RenderTarget                  mCurrentRenderTarget;
     private ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 
-    protected final List<Scene>                     mScenes; //List of all scenes this renderer is aware of.
+    protected final List<Scene>                     mScenes; //List of all renderables this renderer is aware of.
     protected final List<RenderTarget>              mRenderTargets; //List of all render targets this renderer is aware of.
     private final Queue<AFrameTask>                 mFrameTaskQueue;
     private final SparseArray<ModelRunnable>        mLoaderThreads;
@@ -740,9 +740,9 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Adds a {@link Collection} of scenes to the renderer.
+     * Adds a {@link Collection} of renderables to the renderer.
      *
-     * @param scenes {@link Collection} of scenes to be added.
+     * @param scenes {@link Collection} of renderables to be added.
      *
      * @return {@code boolean} True if the addition was successfully queued.
      */
@@ -776,7 +776,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Clears all scenes from the renderer. This should be used with
+     * Clears all renderables from the renderer. This should be used with
      * extreme care as it will also clear the current scene. If this
      * is done while still rendering, bad things will happen.
      */
@@ -983,7 +983,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
-     * Called to reload the scenes.
+     * Called to reload the renderables.
      */
     protected void reloadScenes() {
         synchronized (mScenes) {

@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.scene.Scene;
 import net.jcip.annotations.GuardedBy;
 import org.rajawali3d.renderer.ISurfaceRenderer;
@@ -16,9 +17,10 @@ import org.rajawali3d.util.RajLog;
 import org.rajawali3d.view.ISurface;
 import org.rajawali3d.view.ISurface.ANTI_ALIASING_CONFIG;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +35,8 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
     private static final String TAG = "RendererImpl";
 
-    protected final List<Renderable> scenes; // List of all renderable objects this renderer is aware of.
+    @GuardedBy("renderables")
+    protected final List<Renderable> renderables; // List of all renderable objects this renderer is aware of.
 
     @NonNull
     protected Context context; // Context the renderer is running in
@@ -74,7 +77,7 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
         this.context = context;
         frameRate = getRefreshRate();
 
-        scenes = new CopyOnWriteArrayList<>();
+        renderables = Collections.synchronizedList(new ArrayList<Renderable>());
     }
 
     public double getRefreshRate() {
@@ -84,6 +87,7 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     /**
      * Initiates frame render callbacks.
      */
+    @Override
     public void startRendering() {
         RajLog.d("startRendering()");
         renderStartTime = System.nanoTime();
@@ -98,7 +102,9 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
      *
      * @return {@code true} if rendering was stopped, {@code false} if rendering was already stopped (no action taken)
      */
+    @Override
     public boolean stopRendering() {
+        RajLog.d("stopRendering()");
         if (timer != null) {
             timer.shutdownNow();
             timer = null;
@@ -125,6 +131,22 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     @Override
     public int getDefaultViewportHeight() {
         return defaultViewportHeight;
+    }
+
+    @Override
+    public void setCurrentRenderable(@NonNull Renderable renderable) {
+        if (!renderables.contains(renderable)) {
+            addRenderable(renderable);
+        }
+        synchronized (nextRenderableLock) {
+            nextRenderable = renderable;
+        }
+    }
+
+    @Override
+    public void addRenderable(@NonNull Renderable renderable) {
+        renderable.setRenderer(this);
+        renderables.add(renderable);
     }
 
     @Override
@@ -196,8 +218,10 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
         defaultViewportWidth = width;
         defaultViewportHeight = height;
 
-        for (Renderable renderable : scenes) {
-            renderable.onRenderSurfaceSizeChanged(width, height);
+        synchronized (renderables) {
+            for (Renderable renderable : renderables) {
+                renderable.onRenderSurfaceSizeChanged(width, height);
+            }
         }
 
         startRendering();
@@ -205,11 +229,10 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
     @Override
     public void onRenderFrame(GL10 gl) {
-        //performFrameTasks(); // Execute any pending frame tasks
         synchronized (nextRenderableLock) {
             // Check if we need to switch the scene, and if so, do it.
             if (nextRenderable != null) {
-                //switchSceneDirect(nextRenderable);
+                switchRenderable(nextRenderable);
                 nextRenderable = null;
             }
         }
@@ -268,7 +291,18 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
      * @param deltaTime        {@code double} Time passed since last frame, in seconds.
      */
     protected void render(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
-        currentRenderable.render(ellapsedRealtime, deltaTime);
+        if (currentRenderable != null) {
+            currentRenderable.render(ellapsedRealtime, deltaTime);
+        } else {
+            Log.w(TAG, "No renderable has been set!");
+        }
+    }
+
+    @GLThread
+    void switchRenderable(@NonNull Renderable nextRenderable) {
+        Log.d(TAG, "Switching from renderable: " + currentRenderable + " to renderable: " + nextRenderable);
+        currentRenderable = nextRenderable;
+        currentRenderable.onRenderSurfaceSizeChanged(defaultViewportWidth, defaultViewportHeight);
     }
 
     private class RequestRenderTask implements Runnable {

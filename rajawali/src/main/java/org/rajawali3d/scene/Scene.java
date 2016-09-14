@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * This is the container class for scenes in Rajawali.
+ * This is the container class for renderables in Rajawali.
  *
  * It is intended that children, lights, cameras and animations
  * will be added to this object and this object will be added
@@ -947,9 +947,9 @@ public class Scene {
 	}
 
 	/**
-	 * Updates the sky box textures with a bitmap array of length 6. 
+	 * Updates the sky box textures with a bitmap array of length 6.
 	 * @param bitmaps {@link Bitmap} array containing the cube map textures.
-         * The sequence of the bitmaps in array should be 
+         * The sequence of the bitmaps in array should be
          * front, right, back, left, up, down, the same as in setSkybox(Bitmap[] bitmaps)
 	 * @throws Exception
 	 */
