@@ -3,10 +3,11 @@ package c.org.rajawali3d.scene.graph;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import android.support.annotation.NonNull;
 import android.test.suitebuilder.annotation.SmallTest;
-import c.org.rajawali3d.bounds.AABB;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -34,30 +35,12 @@ public class FlatTreeTest {
         }
 
         @Override
-        public void recalculateBoundsForAdd(@NonNull AABB added) {
+        public void recalculateBoundsForAdd(@NonNull SceneNode added) {
             didCallRecalculateBoundsForAdd = true;
             ++recalculateBoundsForAddCount;
             super.recalculateBoundsForAdd(added);
         }
     }
-
-    final AABB testBox = new AABB() {
-        @NonNull @Override public Vector3 getMaxBound() {
-            return new Vector3(1d, 2d, 3d);
-        }
-
-        @NonNull @Override public Vector3 getMinBound() {
-            return new Vector3(-1d, -2d, -3d);
-        }
-
-        @Override public void recalculateBounds(boolean recursive) {
-
-        }
-
-        @Override public void recalculateBoundsForAdd(@NonNull AABB added) {
-
-        }
-    };
 
     @Test(expected = UnsupportedOperationException.class)
     public void testCreateChildNode() throws Exception {
@@ -97,7 +80,10 @@ public class FlatTreeTest {
     @Test
     public void testRecalculateBoundsForAdd() throws Exception {
         final FlatTree tree = new FlatTree();
-        tree.recalculateBoundsForAdd(testBox);
+        final SceneNode parent = mock(SceneNode.class);
+        doReturn(new Vector3(-1d, -2d, -3d)).when(parent).getMinBound();
+        doReturn(new Vector3(1d, 2d, 3d)).when(parent).getMaxBound();
+        tree.recalculateBoundsForAdd(parent);
         assertEquals(-1d, tree.minBound.x, 1e-14);
         assertEquals(-2d, tree.minBound.y, 1e-14);
         assertEquals(-3d, tree.minBound.z, 1e-14);

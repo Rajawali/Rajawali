@@ -2,7 +2,6 @@ package c.org.rajawali3d.object;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.geometry.Geometry;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
@@ -53,12 +52,7 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
     }
 
     @Override
-    public void recalculateBounds(boolean recursive) {
+    public void recalculateBounds() {
         geometry.calculateAABounds(minBound, maxBound);
-    }
-
-    @Override
-    public void recalculateBoundsForAdd(@NonNull AABB added) {
-        // This is a non-op for Object3D
     }
 }

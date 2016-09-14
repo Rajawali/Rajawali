@@ -2,11 +2,13 @@ package c.org.rajawali3d.camera;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import net.jcip.annotations.ThreadSafe;
+import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -49,6 +51,53 @@ public class Camera implements NodeMember {
     @Nullable
     protected volatile Vector3[] frustumCorners;
 
+    @Override
+    public void setParent(@Nullable NodeParent parent) throws InterruptedException {
+        this.parent = parent;
+    }
+
+    @Override
+    public void modelMatrixUpdated() {
+        if (parent != null) {
+            viewMatrix.setAll(parent.getWorldModelMatrix()).inverse();
+        }
+        // No need to update bounds because the node parent will handle this
+    }
+
+    @NonNull
+    @Override
+    public Vector3 getMaxBound() {
+        return maxBound;
+    }
+
+    @NonNull
+    @Override
+    public Vector3 getMinBound() {
+        return minBound;
+    }
+
+    @SuppressWarnings("ForLoopReplaceableByForEach")
+    @Override
+    public void recalculateBounds() {
+        final Vector3[] points = new Vector3[8];
+        for (int i = 0; i < 8; ++i) {
+            points[i] = new Vector3();
+        }
+        getFrustumCorners(points);
+        minBound.setAll(points[0]);
+        maxBound.setAll(points[0]);
+        for (int i = 0, j = points.length; i < j; ++i) {
+            AABB.Comparator.checkAndAdjustMinBounds(minBound, points[i]);
+            AABB.Comparator.checkAndAdjustMaxBounds(maxBound, points[i]);
+        }
+    }
+
+    @RequiresReadLock
+    @NonNull
+    protected Frustum getFrustum() {
+        return frustum;
+    }
+
     @RequiresReadLock
     @NonNull
     public Matrix4 getViewMatrix() {
@@ -56,20 +105,23 @@ public class Camera implements NodeMember {
     }
 
     @RequiresReadLock
-    public void getFrustumCorners(Vector3[] points) {
+    public void getFrustumCorners(@NonNull @Size(8) Vector3[] points) {
         getFrustumCorners(points, false);
     }
 
     @RequiresReadLock
-    public void getFrustumCorners(Vector3[] points, boolean transformed) {
+    public void getFrustumCorners(@NonNull @Size(8) Vector3[] points, boolean transformed) {
         if(cameraDirty) {
             final double aspect = lastWidth / (double) lastHeight;
-            final double nearHeight = 2.0 * Math.tan(fieldOfView / 2.0) * nearPlane;
+            final double nearHeight = 2.0 * Math.tan(MathUtil.PRE_PI_DIV_180 * fieldOfView / 2.0) * nearPlane;
             final double nearWidth = nearHeight * aspect;
 
-            final double farHeight = 2.0 * Math.tan(fieldOfView / 2.0) * farPlane;
+            final double farHeight = 2.0 * Math.tan(MathUtil.PRE_PI_DIV_180 * fieldOfView / 2.0) * farPlane;
             final double farWidth = farHeight * aspect;
             final Vector3[] corners = new Vector3[8];
+            for (int i = 0; i < 8; ++i) {
+                corners[i] = new Vector3();
+            }
 
             // near plane, top left
             corners[0].setAll(nearWidth / -2, nearHeight / 2, nearPlane);
@@ -105,7 +157,7 @@ public class Camera implements NodeMember {
 
     @RequiresReadLock
     public void updateFrustum(@NonNull Matrix4 invVPMatrix) {
-        frustum.update(invVPMatrix);
+        getFrustum().update(invVPMatrix);
     }
 
     public void setProjectionMatrix(@NonNull Matrix4 matrix) {
@@ -172,48 +224,5 @@ public class Camera implements NodeMember {
         this.fieldOfView = fieldOfView;
         cameraDirty = true;
         setProjectionMatrix(lastWidth, lastHeight);
-    }
-
-    @Override
-    public void setParent(@Nullable NodeParent parent) throws InterruptedException {
-        this.parent = parent;
-    }
-
-    @Override
-    public void modelMatrixUpdated() {
-        if (parent != null) {
-            viewMatrix.setAll(parent.getWorldModelMatrix()).inverse();
-        }
-        // No need to update bounds because the node parent will handle this
-    }
-
-    @NonNull
-    @Override
-    public Vector3 getMaxBound() {
-        return maxBound;
-    }
-
-    @NonNull
-    @Override
-    public Vector3 getMinBound() {
-        return minBound;
-    }
-
-    @SuppressWarnings("ForLoopReplaceableByForEach")
-    @Override
-    public void recalculateBounds(boolean recursive) {
-        minBound.setAll(0, 0, 0);
-        maxBound.setAll(0, 0, 0);
-        final Vector3[] points = new Vector3[8];
-        getFrustumCorners(points);
-        for (int i = 0, j = points.length; i < j; ++i) {
-            AABB.Comparator.checkAndAdjustMinBounds(minBound, points[i]);
-            AABB.Comparator.checkAndAdjustMaxBounds(maxBound, points[i]);
-        }
-    }
-
-    @Override
-    public void recalculateBoundsForAdd(@NonNull AABB added) {
-        // This is a non-op for cameras
     }
 }

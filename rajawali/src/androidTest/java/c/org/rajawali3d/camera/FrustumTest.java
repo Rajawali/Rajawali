@@ -25,11 +25,7 @@ public class FrustumTest {
             return new Vector3(-0.5d, -0.5d, -0.5d);
         }
 
-        @Override public void recalculateBounds(boolean recursive) {
-
-        }
-
-        @Override public void recalculateBoundsForAdd(@NonNull AABB added) {
+        @Override public void recalculateBounds() {
 
         }
     };
@@ -43,11 +39,7 @@ public class FrustumTest {
             return new Vector3(2d, 2d, 2d);
         }
 
-        @Override public void recalculateBounds(boolean recursive) {
-
-        }
-
-        @Override public void recalculateBoundsForAdd(@NonNull AABB added) {
+        @Override public void recalculateBounds() {
 
         }
     };
@@ -61,11 +53,7 @@ public class FrustumTest {
             return new Vector3(-3d, -3d, -3d);
         }
 
-        @Override public void recalculateBounds(boolean recursive) {
-
-        }
-
-        @Override public void recalculateBoundsForAdd(@NonNull AABB added) {
+        @Override public void recalculateBounds() {
 
         }
     };

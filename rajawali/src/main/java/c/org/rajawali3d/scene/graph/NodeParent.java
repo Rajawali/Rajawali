@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
+import c.org.rajawali3d.bounds.AABB;
 import org.rajawali3d.math.Matrix4;
 
 import java.util.concurrent.locks.Lock;
@@ -14,7 +15,7 @@ import java.util.concurrent.locks.Lock;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public interface NodeParent {
+public interface NodeParent extends AABB {
 
     /**
      * Acquires a write lock for the scene graph. This method will block until a lock is acquired. Code using this
@@ -58,4 +59,22 @@ public interface NodeParent {
      * @return {@link Matrix4} The world space model matrix.
      */
     @RequiresReadLock @NonNull Matrix4 getWorldModelMatrix();
+
+    /**
+     * Causes a recalculation of the min/max coordinates in local coordinate space.
+     *
+     * @param recursive If {@code boolean}, the calculation will be made recursively across all children. If {@code
+     *                  false} the child bounds will be assumed to be unchanged.
+     */
+    @RequiresWriteLock
+    void recalculateBounds(boolean recursive);
+
+    /**
+     * Causes a recalculation of the min/max coordinates in local coordinate space, optimized for the case of a single
+     * child node being added.
+     *
+     * @param added {@link SceneNode} which was added.
+     */
+    @RequiresWriteLock
+    void recalculateBoundsForAdd(@NonNull SceneNode added);
 }

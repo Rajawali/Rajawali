@@ -46,6 +46,14 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
 
     @VisibleForTesting
     @NonNull
+    final Vector3 localMaxBound = new Vector3();
+
+    @VisibleForTesting
+    @NonNull
+    final Vector3 localMinBound = new Vector3();
+
+    @VisibleForTesting
+    @NonNull
     final Vector3 worldMaxBound = new Vector3();
 
     @VisibleForTesting
@@ -58,6 +66,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @Nullable
     protected Lock currentlyHeldWriteLock;
 
+    @NonNull
     protected Transformation getTransformation() {
         return transformation;
     }
@@ -77,45 +86,8 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     }
 
     @RequiresWriteLock
-    @Override
-    public void recalculateBounds(boolean recursive) {
-        // Reset the bounds to 0 to ensure we get accurate results.
-        minBound.setAll(0d, 0d, 0d);
-        maxBound.setAll(0d, 0d, 0d);
-        NodeMember child;
-        // For each child node, recalculate the bounds as if it was an addition one at a time.
-        for (int i = 0, j = children.size(); i < j; ++i) {
-            child = children.get(i);
-            if (recursive) {
-                // Recursively check all the children
-                recalculateBoundsForAdd(child);
-            } else {
-                // Assume the child bounds are valid
-                AABB.Comparator.checkAndAdjustMinBounds(minBound, child.getMinBound());
-                AABB.Comparator.checkAndAdjustMaxBounds(maxBound, child.getMaxBound());
-            }
-        }
-        // For each child member, recalculate the bounds as if it was an addition one at a time.
-        for (int i = 0, j = members.size(); i < j; ++i) {
-            child = members.get(i);
-            if (recursive) {
-                // Recursively check all the children
-                recalculateBoundsForAdd(child);
-            } else {
-                // Assume the child bounds are valid
-                AABB.Comparator.checkAndAdjustMinBounds(minBound, child.getMinBound());
-                AABB.Comparator.checkAndAdjustMaxBounds(maxBound, child.getMaxBound());
-            }
-        }
-    }
-
-    @RequiresWriteLock
-    @Override
-    public void recalculateBoundsForAdd(@NonNull AABB added) {
-        // Have the added node or child determine its bounds
-        added.recalculateBounds(true);
-        AABB.Comparator.checkAndAdjustMinBounds(minBound, added.getMinBound());
-        AABB.Comparator.checkAndAdjustMaxBounds(maxBound, added.getMaxBound());
+    public void recalculateBounds() {
+        recalculateBounds(false);
     }
 
     @Override
@@ -165,7 +137,10 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @RequiresWriteLock
     @Override
     public void modelMatrixUpdated() {
+        final Matrix4 local = getTransformation().getLocalModelMatrix();
         final Matrix4 world = getWorldModelMatrix();
+        localMinBound.setAll(getMinBound()).multiply(local);
+        localMaxBound.setAll(getMaxBound()).multiply(local);
         worldMinBound.setAll(getMinBound()).multiply(world);
         worldMaxBound.setAll(getMaxBound()).multiply(world);
     }
@@ -173,6 +148,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @RequiresWriteLock
     public void updateGraph() {
         final Matrix4 parentWorldModelMatrix = new Matrix4();
+        // Walk up the graph to get the world space model matrix
         if (parent != null) {
             parent.setToModelMatrix(parentWorldModelMatrix);
         }
@@ -202,25 +178,68 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     }
 
     /**
-     * Retrieves the world space position of the X/Y/Z coordinates of this box.
+     * Causes a recalculation of the min/max coordinates in local coordinate space. Requires that the local and world
+     * model matrices be valid.
      *
-     * @return {@link Vector3} the X/Y/Z corner coordinates.
+     * @param recursive If {@code boolean}, the calculation will be made recursively across all children. If {@code
+     *                  false} the child bounds will be assumed to be unchanged.
      */
-    @RequiresReadLock
-    @NonNull
-    public Vector3 getWorldSpaceMaxBound() {
-        return worldMaxBound;
+    @RequiresWriteLock
+    @Override
+    public void recalculateBounds(boolean recursive) {
+        SceneNode child;
+        NodeMember member;
+
+        final Matrix4 worldModelMatrix = getWorldModelMatrix();
+
+        if (members.size() > 0) {
+            // Pick the first member to get some valid start value for the bounds
+            member = members.get(0);
+            minBound.setAll(member.getMinBound().clone().multiply(worldModelMatrix));
+            maxBound.setAll(member.getMinBound().clone().multiply(worldModelMatrix));
+        } else if (children.size() > 0) {
+            // Pick the first child to get some valid start value for the bounds
+            child = children.get(0);
+            minBound.setAll(child.getMinBound());
+            maxBound.setAll(child.getMaxBound());
+        } else {
+            // Reset the bounds to 0 since this node has nothing
+            minBound.setAll(0d, 0d, 0d);
+            maxBound.setAll(0d, 0d, 0d);
+        }
+        // For each child node, recalculate the bounds as if it was an addition one at a time.
+        for (int i = 0, j = children.size(); i < j; ++i) {
+            child = children.get(i);
+            if (recursive) {
+                // Recursively check all the children
+                recalculateBoundsForAdd(child);
+            } else {
+                // Assume the child bounds are valid
+                AABB.Comparator.checkAndAdjustMinBounds(minBound, child.getMinBound());
+                AABB.Comparator.checkAndAdjustMaxBounds(maxBound, child.getMaxBound());
+            }
+        }
+        // For each child member, recalculate the bounds as if it was an addition one at a time.
+        for (int i = 0, j = members.size(); i < j; ++i) {
+            member = members.get(i);
+            if (recursive) {
+                // Recursively check all the children
+                recalculateBoundsForAdd(member);
+            } else {
+                // Assume the child bounds are valid
+                AABB.Comparator.checkAndAdjustMinBounds(minBound, member.getMinBound().clone().multiply(worldModelMatrix));
+                AABB.Comparator.checkAndAdjustMaxBounds(maxBound, member.getMaxBound().clone().multiply(worldModelMatrix));
+            }
+        }
     }
 
-    /**
-     * Retrieves the world space position of the -X/-Y/-Z coordinates of this box.
-     *
-     * @return {@link Vector3} the -X/-Y/-Z corner coordinates.
-     */
-    @RequiresReadLock
-    @NonNull
-    public Vector3 getWorldSpaceMinBound() {
-        return worldMinBound;
+    @RequiresWriteLock
+    @Override
+    public void recalculateBoundsForAdd(@NonNull SceneNode added) {
+        // Have the added node determine its bounds
+        added.recalculateBounds(true);
+        AABB.Comparator.checkAndAdjustMinBounds(getMinBound(), added.getMinBound());
+        AABB.Comparator.checkAndAdjustMaxBounds(getMaxBound(), added.getMaxBound());
     }
 
     /**
@@ -305,6 +324,23 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
             releaseWriteLock();
         }
         return removed;
+    }
+
+    /**
+     * Causes a recalculation of the min/max coordinates in local coordinate space, optimized for the case of a single
+     * node member being added.
+     *
+     * @param added {@link NodeMember} implementation which was added.
+     */
+    @RequiresWriteLock
+    protected void recalculateBoundsForAdd(@NonNull NodeMember added) {
+        // Have the added node or child determine its bounds
+        added.recalculateBounds();
+        final Matrix4 localModelMatrix = getTransformation().getLocalModelMatrix();
+        final Vector3 min = added.getMinBound().clone();
+        final Vector3 max = added.getMaxBound().clone();
+        AABB.Comparator.checkAndAdjustMinBounds(minBound, min.multiply(localModelMatrix));
+        AABB.Comparator.checkAndAdjustMaxBounds(maxBound, max.multiply(localModelMatrix));
     }
 
     /**

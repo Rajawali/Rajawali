@@ -12,13 +12,11 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
 import org.junit.Test;
@@ -35,47 +33,160 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 public class SceneNodeTest {
 
     @Test
-    public void testRecalculateBoundsNonRecursive() throws Exception {
+    public void testRecalculateBoundsNonRecursiveOnlyMembers() throws Exception {
+        final Vector3 expectedMin = new Vector3(9d, -21d, 1d);
+        final Vector3 expectedMax = new Vector3(12d, -19d, 3d);
         final SceneNode node = spy(new SceneNode());
-        final SceneNode child = spy(new SceneNode());
-        final NodeMember member = mock(NodeMember.class);
-        when(member.getMaxBound()).thenReturn(new Vector3());
-        when(member.getMinBound()).thenReturn(new Vector3());
-        node.children.add(child);
-        node.members.add(member);
+        final NodeMember member1 = mock(NodeMember.class);
+        final NodeMember member2 = mock(NodeMember.class);
+        final Transformation transformation = mock(Transformation.class);
+        doReturn(Matrix4.createTranslationMatrix(10, -20, 2)).when(transformation).getWorldModelMatrix();
+        doReturn(transformation).when(node).getTransformation();
+        doReturn(new Vector3(-1d, -1d, -1d)).when(member1).getMinBound();
+        doReturn(new Vector3(1d, 1d, 1d)).when(member1).getMaxBound();
+        doReturn(new Vector3(1d, -1d, -1d)).when(member2).getMinBound();
+        doReturn(new Vector3(2d, 1d, 1d)).when(member2).getMaxBound();
+        node.members.add(member1);
+        node.members.add(member2);
         node.recalculateBounds(false);
-        verify(child, never()).recalculateBounds(anyBoolean());
-        // We would check that the static methods AABB.Comparator.check... were called however they are static
-        // methods and there is no good way to do this. Instead, we leave it as an exercise for the integration tests.
-        verify(member, never()).recalculateBounds(anyBoolean());
+        final Vector3 min = node.getMinBound();
+        final Vector3 max = node.getMaxBound();
+        assertEquals(expectedMin, min);
+        assertEquals(expectedMax, max);
+    }
+
+    @Test
+    public void testRecalculateBoundsNonRecursiveOnlyChildren() throws Exception {
+        final Vector3 expectedMin = new Vector3(-1d, -1d, -1d);
+        final Vector3 expectedMax = new Vector3(2d, 1d, 1d);
+        final SceneNode node = spy(new SceneNode());
+        final SceneNode child1 = mock(SceneNode.class);
+        final SceneNode child2 = mock(SceneNode.class);
+        doReturn(new Vector3(-1d, -1d, -1d)).when(child1).getMinBound();
+        doReturn(new Vector3(1d, 1d, 1d)).when(child1).getMaxBound();
+        doReturn(new Vector3(1d, -1d, -1d)).when(child2).getMinBound();
+        doReturn(new Vector3(2d, 1d, 1d)).when(child2).getMaxBound();
+        node.children.add(child1);
+        node.children.add(child2);
+        node.recalculateBounds(false);
+        final Vector3 min = node.getMinBound();
+        final Vector3 max = node.getMaxBound();
+        assertEquals(expectedMin, min);
+        assertEquals(expectedMax, max);
+    }
+
+    @Test
+    public void testRecalculateBoundsNonRecursive() throws Exception {
+        final Vector3 expectedMin = new Vector3(-1d, -21d, -1d);
+        final Vector3 expectedMax = new Vector3(12d, 1d, 3d);
+        final SceneNode node = spy(new SceneNode());
+        final NodeMember member1 = mock(NodeMember.class);
+        final NodeMember member2 = mock(NodeMember.class);
+        final Transformation transformation = mock(Transformation.class);
+        doReturn(Matrix4.createTranslationMatrix(10, -20, 2)).when(transformation).getWorldModelMatrix();
+        doReturn(transformation).when(node).getTransformation();
+        doReturn(new Vector3(-1d, -1d, -1d)).when(member1).getMinBound();
+        doReturn(new Vector3(1d, 1d, 1d)).when(member1).getMaxBound();
+        doReturn(new Vector3(1d, -1d, -1d)).when(member2).getMinBound();
+        doReturn(new Vector3(2d, 1d, 1d)).when(member2).getMaxBound();
+
+        final SceneNode child1 = mock(SceneNode.class);
+        final SceneNode child2 = mock(SceneNode.class);
+        doReturn(new Vector3(-1d, -1d, -1d)).when(child1).getMinBound();
+        doReturn(new Vector3(1d, 1d, 1d)).when(child1).getMaxBound();
+        doReturn(new Vector3(1d, -1d, -1d)).when(child2).getMinBound();
+        doReturn(new Vector3(2d, 1d, 1d)).when(child2).getMaxBound();
+
+        node.members.add(member1);
+        node.members.add(member2);
+        node.children.add(child1);
+        node.children.add(child2);
+
+        node.recalculateBounds(false);
+
+        final Vector3 min = node.getMinBound();
+        final Vector3 max = node.getMaxBound();
+        assertEquals(expectedMin, min);
+        assertEquals(expectedMax, max);
+    }
+
+    @Test
+    public void testRecalculateBoundsNonRecursiveNoParam() throws Exception {
+        final Vector3 expectedMin = new Vector3(-1d, -1d, -1d);
+        final Vector3 expectedMax = new Vector3(2d, 1d, 1d);
+        final SceneNode node = spy(new SceneNode());
+        final SceneNode child1 = mock(SceneNode.class);
+        final SceneNode child2 = mock(SceneNode.class);
+        doReturn(new Vector3(-1d, -1d, -1d)).when(child1).getMinBound();
+        doReturn(new Vector3(1d, 1d, 1d)).when(child1).getMaxBound();
+        doReturn(new Vector3(1d, -1d, -1d)).when(child2).getMinBound();
+        doReturn(new Vector3(2d, 1d, 1d)).when(child2).getMaxBound();
+        node.children.add(child1);
+        node.children.add(child2);
+        node.recalculateBounds();
+        final Vector3 min = node.getMinBound();
+        final Vector3 max = node.getMaxBound();
+        assertEquals(expectedMin, min);
+        assertEquals(expectedMax, max);
     }
 
     @Test
     public void testRecalculateBoundsRecursive() throws Exception {
+        final Vector3 expectedMin = new Vector3(1d, 2d, 3d);
+        final Vector3 expectedMax = new Vector3(6d, 7d, 8d);
         final SceneNode node = spy(new SceneNode());
         final SceneNode child = spy(new SceneNode());
         final NodeMember member = mock(NodeMember.class);
-        when(member.getMaxBound()).thenReturn(new Vector3());
-        when(member.getMinBound()).thenReturn(new Vector3());
+        final Transformation transformation = mock(Transformation.class);
+        doReturn(new Matrix4()).when(transformation).getLocalModelMatrix();
+        when(child.getMinBound()).thenReturn(new Vector3(3d, 4d, 5d));
+        when(child.getMaxBound()).thenReturn(new Vector3(6d, 7d, 8d));
+        when(member.getMinBound()).thenReturn(new Vector3(1d, 2d, 3d));
+        when(member.getMaxBound()).thenReturn(new Vector3(2d, 4d, 6d));
         node.children.add(child);
         node.members.add(member);
         node.recalculateBounds(true);
         verify(child).recalculateBounds(true);
         verify(node).recalculateBoundsForAdd(child);
-        verify(member, never()).recalculateBounds(false);
-        verify(member).recalculateBounds(true);
+        verify(member).recalculateBounds();
+        final Vector3 minBounds = node.getMinBound();
+        final Vector3 maxBounds = node.getMaxBound();
+        assertEquals(expectedMin, minBounds);
+        assertEquals(expectedMax, maxBounds);
+        verify(member).recalculateBounds();
     }
 
     @Test
-    public void testRecalculateBoundsForAdd() throws Exception {
+    public void testRecalculateBoundsForAddChild() throws Exception {
+        final Vector3 expectedMin = new Vector3(-1d, -2d, -3d);
+        final Vector3 expectedMax = new Vector3(6d, 7d, 8d);
+        final SceneNode node = spy(new SceneNode());
+        final SceneNode added = mock(SceneNode.class);
+        final Transformation transformation = mock(Transformation.class);
+        doReturn(new Matrix4()).when(transformation).getLocalModelMatrix();
+        when(node.getMinBound()).thenReturn(new Vector3(-1d, -2d, -3d));
+        when(node.getMaxBound()).thenReturn(new Vector3(1d, 2d, 3d));
+        when(added.getMinBound()).thenReturn(new Vector3(3d, 4d, 5d));
+        when(added.getMaxBound()).thenReturn(new Vector3(6d, 7d, 8d));
+        node.recalculateBoundsForAdd(added);
+        verify(added).recalculateBounds(true);
+        final Vector3 minBounds = node.getMinBound();
+        final Vector3 maxBounds = node.getMaxBound();
+        assertEquals(expectedMin, minBounds);
+        assertEquals(expectedMax, maxBounds);
+    }
+
+    @Test
+    public void testRecalculateBoundsForAddMember() throws Exception {
         final SceneNode node = new SceneNode();
-        final AABB added = mock(AABB.class);
+        final NodeMember added = mock(NodeMember.class);
         when(added.getMaxBound()).thenReturn(new Vector3());
         when(added.getMinBound()).thenReturn(new Vector3());
         node.recalculateBoundsForAdd(added);
-        verify(added).recalculateBounds(true);
+        verify(added).recalculateBounds();
         // We would check that the static methods AABB.Comparator.check... were called however they are static
         // methods and there is no good way to do this. Instead, we leave it as an exercise for the integration tests.
+        // TODO: Check calculated bounds values
     }
 
     @Test
@@ -143,17 +254,15 @@ public class SceneNodeTest {
         final SceneNode node = spy(new SceneNode());
         final Vector3 localMax = new Vector3(1d, 2d, 3d);
         final Vector3 localMin = new Vector3(-1d, -2d, -3d);
-        final Matrix4 world = Matrix4.createTranslationMatrix(1d, 0d, 0d);
         doReturn(localMax).when(node).getMaxBound();
         doReturn(localMin).when(node).getMinBound();
-        doReturn(world).when(node).getWorldModelMatrix();
         node.modelMatrixUpdated();
-        final Vector3 max = node.getWorldSpaceMaxBound();
-        final Vector3 min = node.getWorldSpaceMinBound();
-        assertEquals(2d, max.x, 1e-14);
+        final Vector3 min = node.getMinBound();
+        final Vector3 max = node.getMaxBound();
+        assertEquals(1d, max.x, 1e-14);
         assertEquals(2d, max.y, 1e-14);
         assertEquals(3d, max.z, 1e-14);
-        assertEquals(0d, min.x, 1e-14);
+        assertEquals(-1d, min.x, 1e-14);
         assertEquals(-2d, min.y, 1e-14);
         assertEquals(-3d, min.z, 1e-14);
     }

@@ -2,6 +2,7 @@ package c.org.rajawali3d.scene.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 import android.support.annotation.NonNull;
 import android.test.suitebuilder.annotation.SmallTest;
@@ -29,7 +30,7 @@ public class ASceneGraphTest {
 
         }
 
-        @Override public void recalculateBoundsForAdd(@NonNull AABB added) {
+        @Override public void recalculateBoundsForAdd(@NonNull SceneNode added) {
 
         }
 
@@ -87,11 +88,7 @@ public class ASceneGraphTest {
             return new Vector3(-1d, -2d, -3d);
         }
 
-        @Override public void recalculateBounds(boolean recursive) {
-
-        }
-
-        @Override public void recalculateBoundsForAdd(@NonNull AABB added) {
+        @Override public void recalculateBounds() {
 
         }
     };
@@ -121,6 +118,12 @@ public class ASceneGraphTest {
         final Matrix4 expected = new Matrix4();
         graph.setToModelMatrix(input);
         assertEquals("" + input, expected, input);
+    }
+
+    @Test
+    public void testGetWorldModelMatrix() {
+        final TestableASceneGraph graph = new TestableASceneGraph();
+        assertSame(graph.worldMatrix, graph.getWorldModelMatrix());
     }
 
     @Test

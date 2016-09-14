@@ -15,7 +15,8 @@ public interface AABB {
     /**
      * Retrieves the position of the +X/+Y/+Z coordinates of this box. Note that in the interests of efficiency,
      * implementations are not required to protect the the internal state of the returned {@link Vector3}, meaning by
-     * contract the user is expected to not modify the returned object in any way, to include normalization.
+     * contract the user is expected to not modify the returned object in any way, to include normalization. The
+     * returned value is in world space coordinates unless otherwise noted.
      *
      * @return {@link Vector3} the +X/+Y/+Z corner coordinates.
      */
@@ -24,7 +25,8 @@ public interface AABB {
     /**
      * Retrieves the position of the -X/-Y/-Z coordinates of this box. Note that in the interests of efficiency,
      * implementations are not required to protect the the internal state of the returned {@link Vector3}, meaning by
-     * contract the user is expected to not modify the returned object in any way, to include normalization.
+     * contract the user is expected to not modify the returned object in any way, to include normalization. The
+     * returned value is in world space coordinates unless otherwise noted.
      *
      * @return {@link Vector3} the -X/-Y/-Z corner coordinates.
      */
@@ -32,19 +34,8 @@ public interface AABB {
 
     /**
      * Causes a recalculation of the min/max coordinates in local coordinate space.
-     *
-     * @param recursive If {@code boolean}, the calculation will be made recursively across all children. If {@code
-     *                  false} the child bounds will be assumed to be unchanged.
      */
-    @RequiresWriteLock void recalculateBounds(boolean recursive);
-
-    /**
-     * Causes a recalculation of the min/max coordinates in local coordinate space, optimized for the case of a single
-     * expansion data point.
-     *
-     * @param added {@link AABB} implementation which was added.
-     */
-    @RequiresWriteLock void recalculateBoundsForAdd(@NonNull AABB added);
+    @RequiresWriteLock void recalculateBounds();
 
     class Comparator {
 
@@ -68,7 +59,7 @@ public interface AABB {
          * the two on each axis.
          *
          * @param bound {@link Vector3} The bound to adjust.
-         * @param child {@link Vector3} The child maximum bound be compared against.
+         * @param childMax {@link Vector3} The child maximum bound be compared against.
          */
         @RequiresWriteLock
         public static void checkAndAdjustMaxBounds(@NonNull Vector3 bound, @NonNull Vector3 childMax) {

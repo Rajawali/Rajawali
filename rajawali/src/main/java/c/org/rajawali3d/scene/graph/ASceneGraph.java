@@ -83,6 +83,12 @@ public abstract class ASceneGraph implements SceneGraph {
         return scratchVector3.setAll(minBound);
     }
 
+    @RequiresWriteLock
+    @Override
+    public void recalculateBounds() {
+        recalculateBounds(false);
+    }
+
     /**
      * Compares the minimum axis aligned bounds of this {@link SceneGraph} with those of the child and adjusts these
      * bounds to be the lesser of the two on each axis.

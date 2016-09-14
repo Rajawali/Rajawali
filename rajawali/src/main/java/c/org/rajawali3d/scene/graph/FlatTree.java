@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
-import c.org.rajawali3d.bounds.AABB;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -59,7 +58,7 @@ public class FlatTree extends ASceneGraph {
 
     @RequiresWriteLock
     @Override
-    public void recalculateBoundsForAdd(@NonNull AABB added) {
+    public void recalculateBoundsForAdd(@NonNull SceneNode added) {
         // Have the added node determine its bounds
         added.recalculateBounds(true);
         checkAndAdjustMinBounds(added);
