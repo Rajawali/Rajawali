@@ -2,6 +2,8 @@ package c.org.rajawali3d.bounds;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import c.org.rajawali3d.scene.graph.SceneNode;
@@ -12,6 +14,12 @@ import org.rajawali3d.math.vector.Vector3;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class AABBComparatorTest {
+
+    @Test
+    public void testConstructor() throws Exception {
+        final AABB.Comparator comparator = spy(new AABB.Comparator());
+        verifyZeroInteractions(comparator);
+    }
 
     @Test
     public void testCheckAndAdjustMinBounds() throws Exception {

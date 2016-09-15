@@ -95,6 +95,7 @@ public abstract class ASingleTexture extends ATexture {
             textureData.recycle();
         }
         textureData = data;
+        textureData.holdReference();
     }
 
     @NonNull

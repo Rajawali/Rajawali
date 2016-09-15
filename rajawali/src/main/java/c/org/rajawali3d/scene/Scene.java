@@ -259,6 +259,9 @@ public class Scene implements Renderable {
         postCallbacks.clear();
     }
 
+    /**
+     * Initializes the scene.
+     */
     protected void initialize() {
         overrideViewportWidth = -1;
         overrideViewportHeight = -1;
@@ -339,6 +342,7 @@ public class Scene implements Renderable {
         if (renderer != null && renderer.isGLThread()) {
             // If we have a renderer and the calling thread is the GL thread, do the task now.
             task.run();
+            return true;
         } else {
             // This cant be run now and must be queued.
             synchronized (frameTaskQueue) {
