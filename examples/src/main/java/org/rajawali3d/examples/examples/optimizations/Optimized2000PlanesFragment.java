@@ -13,8 +13,8 @@ import org.rajawali3d.examples.examples.interactive.planes.PlanesGalore;
 import org.rajawali3d.examples.examples.interactive.planes.PlanesGaloreMaterialPlugin;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -49,7 +49,7 @@ public class Optimized2000PlanesFragment extends AExampleFragment {
 			mMaterial.setColorInfluence(0);
 			try {
 				mMaterial.addTexture(new Texture("flickrPics", R.drawable.flickrpics));
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 

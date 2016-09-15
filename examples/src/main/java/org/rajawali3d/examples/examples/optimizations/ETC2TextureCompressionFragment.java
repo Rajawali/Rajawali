@@ -12,10 +12,10 @@ import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.ExceptionDialog;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Etc1Texture;
 import org.rajawali3d.materials.textures.Etc2Texture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.primitives.Plane;
 import org.rajawali3d.util.Capabilities;
 
@@ -67,7 +67,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
                 mPNGPlane.setMaterial(material0);
                 mPNGPlane.setPosition(0, -1.75f, 0);
                 getCurrentScene().addChild(mPNGPlane);
-            } catch (ATexture.TextureException e) {
+            } catch (TextureException e) {
                 e.printStackTrace();
             }
 
@@ -81,7 +81,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 				mETC1Plane.setMaterial(material1);
 				mETC1Plane.setPosition(0, 0, 0);
 				getCurrentScene().addChild(mETC1Plane);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 
@@ -97,7 +97,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 				mETC2Plane.setMaterial(material2);
 				mETC2Plane.setPosition(0, 1.75f, 0);
 				getCurrentScene().addChild(mETC2Plane);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 		}

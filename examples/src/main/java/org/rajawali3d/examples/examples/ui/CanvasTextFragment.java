@@ -8,14 +8,15 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.AlphaMapTexture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 
@@ -53,10 +54,10 @@ public class CanvasTextFragment extends AExampleFragment {
 			timeSphereMaterial.enableLighting(true);
 			timeSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
 			mTimeBitmap = Bitmap.createBitmap(256, 256, Config.ARGB_8888);
-			mTimeTexture = new AlphaMapTexture("timeTexture", mTimeBitmap);
+			mTimeTexture = new AlphaMapTexture("timeTexture", new TextureDataReference(mTimeBitmap, null));
 			try {
 				timeSphereMaterial.addTexture(mTimeTexture);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 			timeSphereMaterial.setColorInfluence(1);
@@ -136,7 +137,6 @@ public class CanvasTextFragment extends AExampleFragment {
             // -- update the texture because it is ready
             //
             if (mShouldUpdateTexture) {
-                mTimeTexture.setBitmap(mTimeBitmap);
                 mTextureManager.replaceTexture(mTimeTexture);
                 mShouldUpdateTexture = false;
             }

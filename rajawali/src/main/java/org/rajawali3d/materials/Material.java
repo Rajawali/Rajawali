@@ -34,7 +34,7 @@ import org.rajawali3d.materials.shaders.fragments.texture.EnvironmentMapFragment
 import org.rajawali3d.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.SkyTextureFragmentShaderFragment;
 import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.materials.textures.CubeMapTexture;
 import org.rajawali3d.materials.textures.SphereMapTexture;
 import org.rajawali3d.materials.textures.TextureManager;

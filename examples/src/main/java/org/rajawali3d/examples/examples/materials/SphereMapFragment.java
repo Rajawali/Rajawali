@@ -11,9 +11,9 @@ import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.SphereMapTexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 
@@ -85,7 +85,7 @@ public class SphereMapFragment extends AExampleFragment {
 			material2.setDiffuseMethod(new DiffuseMethod.Lambert());
 			try {
 				material2.addTexture(sphereMapTexture);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 			material2.setColorInfluence(.5f);

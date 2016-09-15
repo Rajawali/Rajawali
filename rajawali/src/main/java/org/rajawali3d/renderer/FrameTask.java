@@ -3,11 +3,11 @@ package org.rajawali3d.renderer;
 import org.rajawali3d.util.RajLog;
 
 /**
- * @author Jared Woolston (jwoolston@tenkiv.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public abstract class AFrameTask implements Runnable {
+public abstract class FrameTask implements Runnable {
 
-    protected abstract void doTask();
+    protected abstract void doTask() throws Exception;
 
     @Override
     public void run() {

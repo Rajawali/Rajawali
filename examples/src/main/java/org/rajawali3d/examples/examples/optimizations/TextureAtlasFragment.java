@@ -1,19 +1,6 @@
 package org.rajawali3d.examples.examples.optimizations;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
-import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.Texture;
-import org.rajawali3d.materials.textures.TextureAtlas;
-import org.rajawali3d.materials.textures.TexturePacker;
-import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.primitives.Cube;
-import org.rajawali3d.primitives.Plane;
-import org.rajawali3d.primitives.Sphere;
-
-public class TextureAtlasFragment extends AExampleFragment {
+/*public class TextureAtlasFragment extends AExampleFragment {
 
 	@Override
     public AExampleRenderer createRenderer() {
@@ -107,4 +94,4 @@ public class TextureAtlasFragment extends AExampleFragment {
 		}
 	}
 
-}
+}*/

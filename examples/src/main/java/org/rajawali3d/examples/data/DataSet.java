@@ -1,9 +1,7 @@
 package org.rajawali3d.examples.data;
 
 import android.support.annotation.NonNull;
-
 import com.rajawali3d.examples.data.DataSetImpl;
-
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.animation.AnimationFragment;
 import org.rajawali3d.examples.examples.animation.BezierFragment;
@@ -44,7 +42,6 @@ import org.rajawali3d.examples.examples.loaders.AwdFragment;
 import org.rajawali3d.examples.examples.loaders.FBXFragment;
 import org.rajawali3d.examples.examples.loaders.LoadModelFragment;
 import org.rajawali3d.examples.examples.loaders.LoaderGCodeFragment;
-import org.rajawali3d.examples.examples.materials.AnimatedGIFTextureFragment;
 import org.rajawali3d.examples.examples.materials.BumpMappingFragment;
 import org.rajawali3d.examples.examples.materials.CustomMaterialShaderFragment;
 import org.rajawali3d.examples.examples.materials.CustomVertexShaderFragment;
@@ -57,7 +54,6 @@ import org.rajawali3d.examples.examples.materials.VideoTextureFragment;
 import org.rajawali3d.examples.examples.optimizations.ETC1TextureCompressionFragment;
 import org.rajawali3d.examples.examples.optimizations.ETC2TextureCompressionFragment;
 import org.rajawali3d.examples.examples.optimizations.Optimized2000PlanesFragment;
-import org.rajawali3d.examples.examples.optimizations.TextureAtlasFragment;
 import org.rajawali3d.examples.examples.optimizations.UpdateVertexBufferFragment;
 import org.rajawali3d.examples.examples.postprocessing.BloomEffectFragment;
 import org.rajawali3d.examples.examples.postprocessing.FXAAFragment;
@@ -153,7 +149,7 @@ public final class DataSet {
                 new Example(R.string.example_optimizations_2000_planes, Optimized2000PlanesFragment.class),
                 new Example(R.string.example_optimizations_update_vertex_buffer, UpdateVertexBufferFragment.class),
                 new Example(R.string.example_optimizations_etc1_compression, ETC1TextureCompressionFragment.class),
-                new Example(R.string.example_optimizations_texture_atlas, TextureAtlasFragment.class),
+                //new Example(R.string.example_optimizations_texture_atlas, TextureAtlasFragment.class), //TODO: FIX
                 new Example(R.string.example_optimizations_etc2_compression, ETC2TextureCompressionFragment.class),
         }));
         categories.add(new Category(R.string.category_loaders, new Example[]{
@@ -169,7 +165,7 @@ public final class DataSet {
                 new Example(R.string.example_animation_coalesce, CoalesceAnimationFragment.class),
                 new Example(R.string.example_animation_md2, MD2Fragment.class),
                 new Example(R.string.example_animation_catmul_rom, CatmullRomFragment.class),
-//                        new Example(R.string.example_animation_sprites, AnimatedSpritesFragment.class),
+//                        new Example(R.string.example_animation_sprites, AnimatedSpritesFragment.class), // TODO: FIX
                 new Example(R.string.example_animation_skeletal_md5, SkeletalAnimationMD5Fragment.class),
                 new Example(R.string.example_animation_skeletal_awd, SkeletalAnimationAWDFragment.class),
                 new Example(R.string.example_animation_skeletal_blending, SkeletalAnimationBlendingFragment.class),
@@ -186,7 +182,7 @@ public final class DataSet {
                 new Example(R.string.example_materials_specular_alpha, SpecularAndAlphaFragment.class),
                 new Example(R.string.example_materials_video, VideoTextureFragment.class),
                 new Example(R.string.example_materials_from_files, RawShaderFilesFragment.class),
-                new Example(R.string.example_materials_animated_gif, AnimatedGIFTextureFragment.class),
+                //new Example(R.string.example_materials_animated_gif, AnimatedGIFTextureFragment.class), // TODO: FIX
         }));
         categories.add(new Category(R.string.category_post_processing, new Example[]{
                 new Example(R.string.example_post_processing_fog, FogFragment.class),

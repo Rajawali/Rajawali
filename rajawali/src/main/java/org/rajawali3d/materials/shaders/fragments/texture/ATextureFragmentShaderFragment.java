@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -24,7 +24,7 @@ import android.opengl.GLES20;
 
 public abstract class ATextureFragmentShaderFragment extends AShader implements IShaderFragment {
 	protected List<ATexture> mTextures;
-	
+
 	protected RSampler2D[] muTextures;
 	protected RSamplerCube[] muCubeTextures;
 	protected RSamplerExternalOES[] muVideoTextures;
@@ -38,18 +38,18 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		mTextures = textures;
 		initialize();
 	}
-	
+
 	@Override
 	public void initialize()
 	{
 		super.initialize();
-		
+
 		if(mTextures == null) return;
-		
+
 		int numTextures = mTextures.size();
 
 		int textureCount = 0, cubeTextureCount = 0, videoTextureCount = 0;
-		
+
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
@@ -60,7 +60,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 			else
 				textureCount++;
 		}
-		
+
 		if(textureCount > 0)
 			muTextures = new RSampler2D[textureCount];
 		if(cubeTextureCount > 0)
@@ -78,7 +78,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		textureCount = 0;
 		cubeTextureCount = 0;
 		videoTextureCount = 0;
-		
+
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
@@ -87,10 +87,10 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 			else if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
 				muVideoTextures[videoTextureCount++] = (RSamplerExternalOES) addUniform(texture.getTextureName(), DataType.SAMPLER_EXTERNAL_EOS);
 			else
-				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);			
-			
+				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);
+
 			muInfluence[i] = (RFloat) addUniform(DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
-			
+
 			if(texture.getWrapType() == WrapType.REPEAT)
 				muRepeat[i] = (RVec2) addUniform(DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
@@ -116,9 +116,9 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	@Override
 	public void applyParams() {
 		super.applyParams();
-		
+
 		if(mTextures == null) return;
-		
+
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
@@ -129,7 +129,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 				GLES20.glUniform2fv(muOffsetHandles[i], 1, texture.getOffset(), 0);
 		}
 	}
-	
+
 	@Override
 	public void main() {
 	}

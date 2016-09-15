@@ -1,4 +1,4 @@
-package org.rajawali3d.examples.examples.materials;
+/*package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -68,4 +68,4 @@ public class AnimatedGIFTextureFragment extends AExampleFragment {
 
 	}
 
-}
+}*/

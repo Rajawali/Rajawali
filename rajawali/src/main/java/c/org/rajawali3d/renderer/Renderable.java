@@ -19,11 +19,9 @@ public interface Renderable {
     /**
      * Notifies this {@link Renderable} object that the render surface dimensions have changed.
      *
-     * @param width {@code int} The surface width in pixels.
-     * @param height {@code int} The surface height in pixels.
      * @throws IllegalStateException Thrown if this {@link Renderable} does not know about it's {@link Renderer}.
      */
-    void onRenderSurfaceSizeChanged(int width, int height) throws IllegalStateException;
+    void onRenderSurfaceSizeChanged() throws IllegalStateException;
 
     void clearOverrideViewportDimensions();
 

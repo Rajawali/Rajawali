@@ -3,11 +3,10 @@ package c.org.rajawali3d.scene;
 import c.org.rajawali3d.annotations.GLThread;
 
 /**
- * Interface for receiving frame callbacks from {@link org.rajawali3d.scene.Scene}. The timing of this interface
- * assumes that the rendering time does not affect the timing of operations before and after the frame. Pre- and
- * Post- operations are provided because of how these tie in with the animation system. Pre- tasks will be executed
- * prior to animation updates. Post- tasks will be executed after all drawing has occurred.
- *
+ * Interface for receiving frame callbacks from {@link Scene}. The timing of this interface assumes that the
+ * rendering time does not affect the timing of operations before and after the frame. Pre- and Post- operations are
+ * provided because of how these tie in with the animation system. Pre- tasks will be executed prior to animation
+ * updates. Post- tasks will be executed after all drawing has occurred.
  *
  * {@link #callPreFrame()} and {@link #callPostFrame()} frame exist to simplify interfacing to Rajawali's frame task
  * system. By default they both return {@code false}, signalling that the callback should be ignored by the scene.

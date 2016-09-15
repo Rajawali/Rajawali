@@ -19,7 +19,7 @@ import android.opengl.GLES20;
 
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3.Axis;
 import org.rajawali3d.primitives.ScreenQuad;

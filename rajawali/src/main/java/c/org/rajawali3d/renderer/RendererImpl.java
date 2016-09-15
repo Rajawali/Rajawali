@@ -9,7 +9,9 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.scene.Scene;
+import c.org.rajawali3d.textures.TextureManager;
 import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.OnFPSUpdateListener;
@@ -24,6 +26,7 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -31,9 +34,12 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@NotThreadSafe
 public class RendererImpl implements Renderer, ISurfaceRenderer {
 
     private static final String TAG = "RendererImpl";
+
+    private final TextureManager textureManager;
 
     @GuardedBy("renderables")
     protected final List<Renderable> renderables; // List of all renderable objects this renderer is aware of.
@@ -69,6 +75,11 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     private Renderable nextRenderable; //The scene which the renderer should switch to on the next frame.
     private final Object nextRenderableLock = new Object(); //Scene switching lock
 
+    /**
+     * The thread id of the GL thread for this {@link Renderer}. This should be set once and left untouched.
+     */
+    private AtomicLong glThread;
+
     public RendererImpl(@NonNull Context context) {
         RajLog.i("Rajawali | Camden Hells | v2.0 Development");
         RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md"
@@ -76,6 +87,8 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
         this.context = context;
         frameRate = getRefreshRate();
+
+        textureManager = new TextureManager(this);
 
         renderables = Collections.synchronizedList(new ArrayList<Renderable>());
     }
@@ -134,6 +147,11 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     }
 
     @Override
+    public boolean isGLThread() {
+        return (Thread.currentThread().getId() == glThread.get());
+    }
+
+    @Override
     public void setCurrentRenderable(@NonNull Renderable renderable) {
         if (!renderables.contains(renderable)) {
             addRenderable(renderable);
@@ -147,6 +165,18 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     public void addRenderable(@NonNull Renderable renderable) {
         renderable.setRenderer(this);
         renderables.add(renderable);
+    }
+
+    @Override
+    public void removeRenderable(@NonNull Renderable renderable) {
+        renderable.setRenderer(null);
+        renderables.remove(renderable);
+    }
+
+    @NonNull
+    @Override
+    public TextureManager getTextureManager() {
+        return textureManager;
     }
 
     @Override
@@ -190,6 +220,8 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
     @Override
     public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
+        glThread = new AtomicLong(Thread.currentThread().getId());
+
         Capabilities.getInstance();
 
         String[] versionString = (GLES20.glGetString(GLES20.GL_VERSION)).split(" ");
@@ -203,14 +235,11 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
             }
         }
         RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", glesMajorVersion, glesMinorVersion));
-
-        // TODO: Material/Texture registration
     }
 
     @Override
     public void onRenderSurfaceDestroyed(SurfaceTexture surface) {
         stopRendering();
-        // TODO: Should we destroy the renderer? Fix life cycle to reuse renderer on new surfaces
     }
 
     @Override
@@ -220,7 +249,7 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
         synchronized (renderables) {
             for (Renderable renderable : renderables) {
-                renderable.onRenderSurfaceSizeChanged(width, height);
+                renderable.onRenderSurfaceSizeChanged();
             }
         }
 
@@ -300,9 +329,8 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
     @GLThread
     void switchRenderable(@NonNull Renderable nextRenderable) {
-        Log.d(TAG, "Switching from renderable: " + currentRenderable + " to renderable: " + nextRenderable);
+        RajLog.d("Switching from renderable: " + currentRenderable + " to renderable: " + nextRenderable);
         currentRenderable = nextRenderable;
-        currentRenderable.onRenderSurfaceSizeChanged(defaultViewportWidth, defaultViewportHeight);
     }
 
     private class RequestRenderTask implements Runnable {

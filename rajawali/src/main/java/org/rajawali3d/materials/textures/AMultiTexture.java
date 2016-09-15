@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -32,13 +32,13 @@ public abstract class AMultiTexture extends ATexture {
 	public AMultiTexture(TextureType textureType, String textureName) {
 		super(textureType, textureName);
 	}
-	
+
 	public AMultiTexture(TextureType textureType, String textureName, int[] resourceIds)
 	{
 		super(textureType, textureName);
 		setResourceIds(resourceIds);
 	}
-	
+
 	public AMultiTexture(TextureType textureType, String textureName, Bitmap[] bitmaps)
 	{
 		super(textureType, textureName);
@@ -60,10 +60,10 @@ public abstract class AMultiTexture extends ATexture {
 	public AMultiTexture(ATexture other) {
 		super(other);
 	}
-	
+
 	/**
 	 * Copies every property from another AMultiTexture object
-	 * 
+	 *
 	 * @param other
 	 *            another AMultiTexture object to copy from
 	 */
@@ -74,7 +74,7 @@ public abstract class AMultiTexture extends ATexture {
 		setResourceIds(mResourceIds);
 		setByteBuffers(mByteBuffers);
 	}
-	
+
 	public void setResourceIds(int[] resourceIds)
 	{
 		mResourceIds = resourceIds;
@@ -84,30 +84,30 @@ public abstract class AMultiTexture extends ATexture {
 
 		for(int i=0; i<numResources; i++)
 		{
-			mBitmaps[i] = BitmapFactory.decodeResource(context.getResources(), resourceIds[i]); 
+			mBitmaps[i] = BitmapFactory.decodeResource(context.getResources(), resourceIds[i]);
 		}
 	}
-	
+
 	public int[] getResourceIds()
 	{
 		return mResourceIds;
 	}
-	
+
 	public void setBitmaps(Bitmap[] bitmaps)
 	{
 		mBitmaps = bitmaps;
 	}
-	
+
 	public Bitmap[] getBitmaps()
 	{
 		return mBitmaps;
 	}
-	
+
 	public void setByteBuffers(ByteBuffer[] byteBuffers)
 	{
 		mByteBuffers = byteBuffers;
 	}
-	
+
 	public ByteBuffer[] getByteBuffers()
 	{
 		return mByteBuffers;
@@ -122,7 +122,7 @@ public abstract class AMultiTexture extends ATexture {
     {
         mCompressedTextures = compressedTextures;
     }
-	
+
 	void reset() throws TextureException
 	{
 		if(mBitmaps != null)

@@ -26,14 +26,14 @@ import org.rajawali3d.materials.plugins.FogMaterialPlugin;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin.FogParams;
 import org.rajawali3d.materials.plugins.ShadowMapMaterialPlugin;
 import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.materials.textures.CubeMapTexture;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.Cube;
-import org.rajawali3d.renderer.AFrameTask;
+import org.rajawali3d.renderer.FrameTask;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.plugins.IRendererPlugin;
@@ -131,7 +131,7 @@ public class Scene {
 	 *
 	 * Guarded by itself
 	 */
-	private final LinkedList<AFrameTask> mFrameTaskQueue;
+	private final LinkedList<FrameTask> mFrameTaskQueue;
 
 	protected boolean mDisplaySceneGraph = false;
 	protected IGraphNode mSceneGraph; //The scenegraph for this scene
@@ -259,7 +259,7 @@ public class Scene {
 	* @return boolean True if the addition was successfully queued.
 	*/
 	public boolean addCamera(final Camera camera) {
-		final AFrameTask task = new AFrameTask() {
+		final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mCameras.add(camera);
@@ -278,7 +278,7 @@ public class Scene {
 	 * @return boolean True if the addition was successfully queued.
 	 */
 	public boolean addCameras(final Collection<Camera> cameras) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mCameras.addAll(cameras);
@@ -299,7 +299,7 @@ public class Scene {
 	 * @return boolean True if the removal was successfully queued.
 	 */
 	public boolean removeCamera(final Camera camera) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mCameras.remove(camera);
@@ -317,7 +317,7 @@ public class Scene {
      * @return boolean True if the task was successfully queued for removal.
      */
     public boolean clearCameras() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mCameras.clear();
@@ -339,7 +339,7 @@ public class Scene {
 	* @return  boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceCamera(final Camera camera, final int location) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 final Camera old = mCameras.set(location, camera);
@@ -363,7 +363,7 @@ public class Scene {
 	* @return  boolean True if the replacement was successfully queued.
 	*/
 	public boolean replaceCamera(final Camera oldCamera, final Camera newCamera) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mCameras.set(mCameras.indexOf(oldCamera), newCamera);
@@ -424,7 +424,7 @@ public class Scene {
 	 * @return boolean True if the replacement was successfully queued.
 	 */
 	public boolean replaceChild(final Object3D child, final int location) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 final Object3D old = mChildren.set(location, child);
@@ -445,7 +445,7 @@ public class Scene {
 	 * @return boolean True if the replacement was successfully queued.
 	 */
 	public boolean replaceChild(final Object3D oldChild, final Object3D newChild) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mChildren.set(mChildren.indexOf(oldChild), newChild);
@@ -466,7 +466,7 @@ public class Scene {
 	 * @return True if the child was successfully queued for addition.
 	 */
 	public boolean addChild(final Object3D child) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mChildren.add(child);
@@ -488,7 +488,7 @@ public class Scene {
      * @return True if the child was successfully queued for addition.
      */
 	public boolean addChildAt(final Object3D child, final int index) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mChildren.add(index, child);
@@ -507,7 +507,7 @@ public class Scene {
 	 * @return boolean True if the addition was successfully queued.
 	 */
 	public boolean addChildren(final Collection<Object3D> children) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mChildren.addAll(children);
@@ -526,7 +526,7 @@ public class Scene {
 	 * @return boolean True if the child was successfully queued for removal.
 	 */
 	public boolean removeChild(final Object3D child) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mChildren.remove(child);
@@ -544,7 +544,7 @@ public class Scene {
 	 * @return boolean True if the clear was successfully queued.
 	 */
 	public boolean clearChildren() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 /*if (mSceneGraph != null) {
@@ -564,7 +564,7 @@ public class Scene {
 	 * @return True if the light was successfully queued for addition.
 	 */
 	public boolean addLight(final ALight light) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mLights.add(light);
@@ -581,7 +581,7 @@ public class Scene {
 	 * @return boolean True if the child was successfully queued for removal.
 	 */
 	public boolean removeLight(final ALight light) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mLights.remove(light);
@@ -597,7 +597,7 @@ public class Scene {
      * @return boolean True if the light was successfully queued for removal.
      */
     public boolean clearLights() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mLights.clear();
@@ -615,7 +615,7 @@ public class Scene {
 	 * @return True if the plugin was successfully queued for addition.
 	 */
 	public boolean addPlugin(final Plugin plugin) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mPlugins.add(plugin);
@@ -631,7 +631,7 @@ public class Scene {
 	 * @return boolean True if the addition was successfully queued.
 	 */
 	public boolean addPlugins(final Collection<Plugin> plugins) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mPlugins.addAll(plugins);
@@ -647,7 +647,7 @@ public class Scene {
 	 * @return boolean True if the plugin was successfully queued for removal.
 	 */
 	public boolean removePlugin(final Plugin plugin) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mPlugins.add(plugin);
@@ -662,7 +662,7 @@ public class Scene {
 	 * @return boolean True if the clear was successfully queued.
 	 */
 	public boolean clearPlugins() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mPlugins.clear();
@@ -679,7 +679,7 @@ public class Scene {
 	 * @return boolean True if the registration was queued successfully.
 	 */
 	public boolean registerAnimation(final Animation anim) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mAnimations.add(anim);
@@ -696,7 +696,7 @@ public class Scene {
 	 * @return boolean True if the unregister was queued successfully.
 	 */
 	public boolean unregisterAnimation(final Animation anim) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mAnimations.remove(anim);
@@ -713,7 +713,7 @@ public class Scene {
 	 * @return boolean True if the replacement task was queued successfully.
 	 */
 	public boolean replaceAnimation(final Animation oldAnim, final Animation newAnim) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mAnimations.set(mAnimations.indexOf(oldAnim), newAnim);
@@ -729,7 +729,7 @@ public class Scene {
 	 * @return boolean True if the addition was queued successfully.
 	 */
 	public boolean registerAnimations(final Collection<Animation> anims) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mAnimations.addAll(anims);
@@ -744,7 +744,7 @@ public class Scene {
 	 * @return boolean True if the clear task was queued successfully.
 	 */
 	public boolean clearAnimations() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mAnimations.clear();
@@ -761,7 +761,7 @@ public class Scene {
      * @return {@code boolean} True if the registration was queued successfully.
      */
     public boolean registerFrameCallback(final ASceneFrameCallback callback) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 if (callback.callPreFrame()) mPreCallbacks.add(callback);
@@ -781,7 +781,7 @@ public class Scene {
      * @return {@code boolean} True if the unregister was queued successfully.
      */
     public boolean unregisterFrameCallback(final ASceneFrameCallback callback) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 if (callback.callPreFrame()) mPreCallbacks.remove(callback);
@@ -798,7 +798,7 @@ public class Scene {
      * @return {@code boolean} True if the clear task was queued successfully.
      */
     public boolean clearFrameCallbacks() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mPreCallbacks.clear();
@@ -827,7 +827,7 @@ public class Scene {
 	 * @return {@code boolean} True if the clear task was queued successfully.
 	 */
 	public boolean setSkybox(int resourceId) throws TextureException {
-	        final AFrameTask task = new AFrameTask() {
+	        final FrameTask task = new FrameTask() {
 	            @Override
 	            protected void doTask() {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
@@ -858,7 +858,7 @@ public class Scene {
 	 * @throws TextureException
 	 */
 	public boolean setSkybox(int posx, int negx, int posy, int negy, int posz, int negz) throws TextureException {
-	        final AFrameTask task = new AFrameTask() {
+	        final FrameTask task = new FrameTask() {
 	            @Override
 	            protected void doTask() {
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
@@ -885,7 +885,7 @@ public class Scene {
      * @param bitmaps {@link Bitmap} array containing the cube map textures.
      */
     public boolean setSkybox(Bitmap[] bitmaps) {
-	final AFrameTask task = new AFrameTask() {
+	final FrameTask task = new FrameTask() {
 	            @Override
 	            protected void doTask() {
             for (int i = 0, j = mCameras.size(); i < j; ++i)
@@ -1210,10 +1210,10 @@ public class Scene {
 	/**
 	 * Adds a task to the frame task queue.
 	 *
-	 * @param task AFrameTask to be added.
+	 * @param task FrameTask to be added.
 	 * @return boolean True on successful addition to queue.
 	 */
-	private boolean internalOfferTask(AFrameTask task) {
+	private boolean internalOfferTask(FrameTask task) {
 		synchronized (mFrameTaskQueue) {
 			return mFrameTaskQueue.offer(task);
 		}
@@ -1226,7 +1226,7 @@ public class Scene {
 	private void performFrameTasks() {
 		synchronized (mFrameTaskQueue) {
 			//Fetch the first task
-			AFrameTask task = mFrameTaskQueue.poll();
+			FrameTask task = mFrameTaskQueue.poll();
 			while (task != null) {
                 task.run();
 				//Retrieve the next task

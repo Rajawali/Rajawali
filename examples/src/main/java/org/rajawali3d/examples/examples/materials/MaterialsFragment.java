@@ -11,8 +11,8 @@ import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.CubeMapTexture;
+import org.rajawali3d.materials.textures.TextureException;
 
 public class MaterialsFragment extends AExampleFragment {
 
@@ -100,7 +100,7 @@ public class MaterialsFragment extends AExampleFragment {
 				envMap.isEnvironmentTexture(true);
 				cubeMapMaterial.addTexture(envMap);
 				cubeMapMaterial.setColorInfluence(0);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 			mMonkey4.setMaterial(cubeMapMaterial);

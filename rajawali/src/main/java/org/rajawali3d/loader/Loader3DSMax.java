@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.RajLog;

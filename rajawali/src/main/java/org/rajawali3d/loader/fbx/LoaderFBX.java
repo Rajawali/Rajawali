@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
+import c.org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
@@ -34,7 +35,7 @@ import org.rajawali3d.loader.fbx.FBXValues.Objects.Model;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.vector.Vector2;
 import org.rajawali3d.math.vector.Vector3;
@@ -462,7 +463,8 @@ public class LoaderFBX extends AMeshLoader {
 						}
 					}
 					o.getMaterial().setColorInfluence(0);
-					o.getMaterial().addTexture(new Texture(textureName.replaceAll("[\\W]|_", ""), bitmap));
+					o.getMaterial().addTexture(new Texture(textureName.replaceAll("[\\W]|_", ""),
+														   new TextureDataReference(bitmap, null)));
 					return;
 				}
 			}

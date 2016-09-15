@@ -20,8 +20,8 @@ import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.StreamingTexture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 
@@ -85,7 +85,7 @@ public class ViewToTextureFragment extends AExampleFragment {
             material.setColorInfluence(0);
             try {
                 material.addTexture(mStreamingTexture);
-            } catch (ATexture.TextureException e) {
+            } catch (TextureException e) {
                 e.printStackTrace();
             }
             mObject3D.setMaterial(material);

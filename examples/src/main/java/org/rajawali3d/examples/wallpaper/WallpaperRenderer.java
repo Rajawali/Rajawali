@@ -11,8 +11,8 @@ import org.rajawali3d.lights.ALight;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.Renderer;
@@ -66,7 +66,7 @@ public class WallpaperRenderer extends Renderer {
             getCurrentScene().registerAnimation(anim);
             anim.play();
 
-        } catch (ATexture.TextureException e) {
+        } catch (TextureException e) {
             e.printStackTrace();
         }
     }

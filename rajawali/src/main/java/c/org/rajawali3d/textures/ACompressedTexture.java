@@ -10,11 +10,13 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.materials.textures;
-
-import java.nio.ByteBuffer;
+package c.org.rajawali3d.textures;
 
 import android.opengl.GLES20;
+import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.TextureException;
+
+import java.nio.ByteBuffer;
 
 public abstract class ACompressedTexture extends ATexture {
 

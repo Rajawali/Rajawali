@@ -14,8 +14,8 @@ import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.LoaderOBJ;
 import org.rajawali3d.loader.async.IAsyncLoaderCallback;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.util.RajLog;
@@ -55,7 +55,7 @@ public class AsyncLoadModelFragment extends AExampleFragment {
                 material.setColorInfluence(0);
                 mBaseObject.setMaterial(material);
                 getCurrentScene().addChild(mBaseObject);
-            } catch (ATexture.TextureException e) {
+            } catch (TextureException e) {
                 e.printStackTrace();
             }
 

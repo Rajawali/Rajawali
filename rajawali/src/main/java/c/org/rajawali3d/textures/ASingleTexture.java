@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.materials.textures;
+package c.org.rajawali3d.textures;
 
 import android.content.Context;
 import android.graphics.Bitmap.Config;
@@ -18,7 +18,11 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.textures.TextureDataReference;
+import org.rajawali3d.materials.textures.ATexture.FilterType;
+import org.rajawali3d.materials.textures.ATexture.TextureType;
+import org.rajawali3d.materials.textures.ATexture.WrapType;
+import org.rajawali3d.materials.textures.TextureException;
+import org.rajawali3d.materials.textures.TextureManager;
 
 /**
  * This class is used to specify texture options.
@@ -190,6 +194,10 @@ public abstract class ASingleTexture extends ATexture {
         } else {
             GLES20.glDeleteTextures(1, new int[]{ mTextureId }, 0);
         }
+        if (textureData != null) {
+            // When removing a texture, release a reference count for its data if we have saved it.
+            textureData.recycle();
+        }
     }
 
     void replace() throws TextureException {
@@ -242,8 +250,10 @@ public abstract class ASingleTexture extends ATexture {
             return;
         }
 
-        textureData.recycle();
-        textureData = null;
+        if (textureData != null) {
+            textureData.recycle();
+            textureData = null;
+        }
     }
 
     /**

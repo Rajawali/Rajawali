@@ -107,7 +107,7 @@ public abstract class Renderer implements ISurfaceRenderer {
 
     protected final List<Scene>                     mScenes; //List of all renderables this renderer is aware of.
     protected final List<RenderTarget>              mRenderTargets; //List of all render targets this renderer is aware of.
-    private final Queue<AFrameTask>                 mFrameTaskQueue;
+    private final Queue<FrameTask>                  mFrameTaskQueue;
     private final SparseArray<ModelRunnable>        mLoaderThreads;
     private final SparseArray<IAsyncLoaderCallback> mLoaderCallbacks;
 
@@ -692,7 +692,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      * @return {@code boolean} True if the replace task was successfully queued.
      */
     public boolean replaceScene(final Scene scene, final int location) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mScenes.set(location, scene);
@@ -713,7 +713,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      * @return {@code boolean} True if the replace task was successfully queued.
      */
     public boolean replaceScene(final Scene oldScene, final Scene newScene) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mScenes.set(mScenes.indexOf(oldScene), newScene);
@@ -730,7 +730,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      * @return {@code boolean} True if this addition was successfully queued.
      */
     public boolean addScene(final Scene scene) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mScenes.add(scene);
@@ -747,7 +747,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      * @return {@code boolean} True if the addition was successfully queued.
      */
     public boolean addScenes(final Collection<Scene> scenes) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mScenes.addAll(scenes);
@@ -766,7 +766,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      * @return {@code boolean} True if the removal was successfully queued.
      */
     public boolean removeScene(final Scene scene) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mScenes.remove(scene);
@@ -781,7 +781,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      * is done while still rendering, bad things will happen.
      */
     protected void clearScenes() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mScenes.clear();
@@ -842,7 +842,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      * @return {@code boolean} True if the add task was successfully queued.
      */
     public boolean addRenderTarget(final RenderTarget renderTarget) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 renderTarget.create();
@@ -860,7 +860,7 @@ public abstract class Renderer implements ISurfaceRenderer {
      * @return {@code boolean} True if the remove task was successfully queued.
      */
     public boolean removeRenderTarget(final RenderTarget renderTarget) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mRenderTargets.remove(renderTarget);
@@ -870,7 +870,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean addTexture(final ATexture texture) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mTextureManager.taskAdd(texture);
@@ -880,7 +880,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean removeTexture(final ATexture texture) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mTextureManager.taskRemove(texture);
@@ -890,7 +890,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean replaceTexture(final ATexture texture) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mTextureManager.taskReplace(texture);
@@ -900,7 +900,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean reloadTextures() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mTextureManager.taskReload();
@@ -910,7 +910,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean resetTextures() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mTextureManager.taskReset();
@@ -920,7 +920,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean resizeRenderTarget(@NonNull final RenderTargetTexture renderTargetTexture) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mTextureManager.taskResizeRenderTarget(renderTargetTexture);
@@ -930,7 +930,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean addMaterial(final Material material) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mMaterialManager.taskAdd(material);
@@ -943,7 +943,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean removeMaterial(final Material material) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mMaterialManager.taskRemove(material);
@@ -953,7 +953,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean reloadMaterials() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mMaterialManager.taskReload();
@@ -963,7 +963,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean resetMaterials() {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 mMaterialManager.taskReset();
@@ -973,7 +973,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public boolean initializeColorPicker(final ObjectColorPicker picker) {
-        final AFrameTask task = new AFrameTask() {
+        final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
                 picker.initialize();
@@ -1011,7 +1011,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         return new Scene(this);
     }
 
-    protected boolean internalOfferTask(AFrameTask task) {
+    protected boolean internalOfferTask(FrameTask task) {
         synchronized (mFrameTaskQueue) {
             return mFrameTaskQueue.offer(task);
         }
@@ -1020,7 +1020,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     protected void performFrameTasks() {
         synchronized (mFrameTaskQueue) {
             //Fetch the first task
-            AFrameTask task = mFrameTaskQueue.poll();
+            FrameTask task = mFrameTaskQueue.poll();
             while (task != null) {
                 task.run();
                 //Retrieve the next task

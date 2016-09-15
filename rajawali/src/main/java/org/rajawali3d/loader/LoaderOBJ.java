@@ -16,11 +16,12 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
+import c.org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.materials.textures.Etc1Texture;
 import org.rajawali3d.materials.textures.NormalMapTexture;
 import org.rajawali3d.materials.textures.SpecularMapTexture;
@@ -628,7 +629,8 @@ public class LoaderOBJ extends AMeshLoader {
 							} catch (IOException e) {}
 						}
 					} else {
-						mat.addTexture(new Texture(getFileNameWithoutExtension(matDef.diffuseTexture), BitmapFactory.decodeFile(filePath)));
+						mat.addTexture(new Texture(getFileNameWithoutExtension(matDef.diffuseTexture),
+												   new TextureDataReference(BitmapFactory.decodeFile(filePath), null)));
 					}
 				}
 				mat.setColorInfluence(0);
@@ -639,7 +641,9 @@ public class LoaderOBJ extends AMeshLoader {
 					mat.addTexture(new NormalMapTexture(object.getName() + identifier, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
-					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture), BitmapFactory.decodeFile(filePath)));
+					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture),
+														new TextureDataReference(BitmapFactory.decodeFile(filePath),
+																				 null)));
 				}
 			}
 			if(hasSpecularTexture) {
@@ -648,7 +652,9 @@ public class LoaderOBJ extends AMeshLoader {
 					mat.addTexture(new SpecularMapTexture(object.getName() + identifier, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.specularColorTexture);
-					mat.addTexture(new SpecularMapTexture(getOnlyFileName(matDef.specularColorTexture), BitmapFactory.decodeFile(filePath)));
+					mat.addTexture(new SpecularMapTexture(getOnlyFileName(matDef.specularColorTexture),
+														  new TextureDataReference(BitmapFactory.decodeFile(filePath)
+																  , null)));
 				}
 			}
 			object.setMaterial(mat);

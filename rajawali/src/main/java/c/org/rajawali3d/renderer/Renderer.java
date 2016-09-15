@@ -1,6 +1,7 @@
 package c.org.rajawali3d.renderer;
 
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.textures.TextureManager;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -50,6 +51,13 @@ public interface Renderer {
     int getDefaultViewportHeight();
 
     /**
+     * Checks if the calling thread is the GL thread this {@link Renderer} is associated with.
+     *
+     * @return {@code true} if the calling thread is the GL thread.
+     */
+    boolean isGLThread();
+
+    /**
      * Selects the active {@link Renderable} which will be rendered. If the {@link Renderable} has not been
      * registered with this {@link Renderer} yet, it will be prior to the switch.
      *
@@ -62,7 +70,24 @@ public interface Renderer {
      * context and is expected to take any actions it needs to. There is no guarantee this notification will occur on
      * the GL thread so GL context tasks must be queued by the {@link Renderable}.
      *
-     * @param renderable The renderable object to add.
+     * @param renderable The {@link Renderable} object to add.
      */
     void addRenderable(@NonNull Renderable renderable);
+
+    /**
+     * Removes a {@link Renderable} object from this {@link Renderer}. The {@link Renderable} will be notified of the
+     * removal and is expected to take any actions it needs to. There is no guarantee this notification will occur on
+     * the GL thread so GL context tasks must be queued by the {@link Renderable}.
+     *
+     * @param renderable The {@link Renderable} object to remove.
+     */
+    void removeRenderable(@NonNull Renderable renderable);
+
+    /**
+     * Retrieves the {@link TextureManager} associated with this {@link Renderer}. Note that Renderers and GL
+     * contexts are tied together.
+     *
+     * @return The {@link TextureManager} for this {@link Renderer}.
+     */
+    @NonNull TextureManager getTextureManager();
 }

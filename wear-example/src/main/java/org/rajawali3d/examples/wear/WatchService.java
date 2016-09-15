@@ -9,8 +9,8 @@ import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.wear.WatchFaceService;
@@ -73,7 +73,7 @@ public class WatchService extends WatchFaceService {
                 animation.setRepeatMode(Animation.RepeatMode.INFINITE);
                 getCurrentScene().registerAnimation(animation);
                 animation.play();
-            } catch (ATexture.TextureException e) {
+            } catch (TextureException e) {
                 e.printStackTrace();
             }
 

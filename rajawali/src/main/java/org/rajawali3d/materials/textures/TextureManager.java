@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.rajawali3d.materials.AResourceManager;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
 import org.rajawali3d.renderer.Renderer;
 
 import android.opengl.GLES20;

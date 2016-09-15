@@ -1,8 +1,9 @@
 package org.rajawali3d.loader.awd;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.util.SparseArray;
+import c.org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
 import org.rajawali3d.loader.LoaderAWD.AwdProperties;
 import org.rajawali3d.loader.LoaderAWD.BlockHeader;
@@ -16,9 +17,8 @@ import org.rajawali3d.materials.textures.SpecularMapTexture;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.util.RajLog;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.util.SparseArray;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * FIXME Implement 'materialMode' as described by Away3D materialMode block comment
@@ -32,9 +32,9 @@ import android.util.SparseArray;
  */
 
 /**
- * 
+ *
  * @author Ian Thomas (toxicbakery@gmail.com)
- * 
+ *
  */
 public class BlockSimpleMaterial extends ATextureBlockParser {
 
@@ -173,10 +173,12 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 				throw new ParsingException("Texture ID can not be 0, document corrupt or unsupported version.");
 
 			if(diffuseTexture > 0)
-				mMaterial.addTexture(new Texture(cleanName + diffuseTexture, lookup(blockHeader, diffuseTexture)));
+				mMaterial.addTexture(new Texture(cleanName + diffuseTexture,
+												 new TextureDataReference(lookup(blockHeader, diffuseTexture), null)));
 
 			if(ambientTexture > 0)
-				mMaterial.addTexture(new Texture(cleanName + ambientTexture, lookup(blockHeader, ambientTexture)));
+				mMaterial.addTexture(new Texture(cleanName + ambientTexture,
+												 new TextureDataReference(lookup(blockHeader, ambientTexture), null)));
 
 			mMaterial.setColorInfluence(0);
 
@@ -198,10 +200,14 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 		double specularLevel = (Double) properties.get(PROP_SPECULAR_LEVEL, 1.0d);
 
 		if(specularTexture > 0)
-			mMaterial.addTexture(new SpecularMapTexture(cleanName + specularTexture, lookup(blockHeader, specularTexture)));
+			mMaterial.addTexture(new SpecularMapTexture(cleanName + specularTexture,
+														new TextureDataReference(lookup(blockHeader, specularTexture)
+																, null)));
 
 		if(normalTexture > 0)
-			mMaterial.addTexture(new NormalMapTexture(cleanName + normalTexture, lookup(blockHeader, normalTexture)));
+			mMaterial.addTexture(new NormalMapTexture(cleanName + normalTexture,
+													  new TextureDataReference(lookup(blockHeader, normalTexture),
+																			   null)));
 
 		// ambient 1.0 is default, washes-out object; assume < 1 is intended
 		ambientLevel = (ambientLevel < 1.0 ? ambientLevel : 0.0);

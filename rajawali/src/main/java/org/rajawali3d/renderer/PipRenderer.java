@@ -15,7 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.renderer.pip.SubRenderer;
 import org.rajawali3d.renderer.pip.WorkaroundScreenQuad;
 import org.rajawali3d.scene.Scene;
@@ -117,7 +117,7 @@ public class PipRenderer extends Renderer {
         try {
             mMiniQuadMaterial.addTexture(mMiniRenderTarget.getTexture());
             mMainQuadMaterial.addTexture(mMainRenderTarget.getTexture());
-        } catch (ATexture.TextureException e) {
+        } catch (TextureException e) {
             e.printStackTrace();
         }
         // Init main scene

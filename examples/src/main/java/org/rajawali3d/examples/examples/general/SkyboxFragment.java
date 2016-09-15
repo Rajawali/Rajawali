@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 
 public class SkyboxFragment extends AExampleFragment {
@@ -60,7 +60,7 @@ public class SkyboxFragment extends AExampleFragment {
             try {
                 getCurrentScene().setSkybox(R.drawable.posx, R.drawable.negx,
                                             R.drawable.posy, R.drawable.negy, R.drawable.posz, R.drawable.negz);
-            } catch (ATexture.TextureException e) {
+            } catch (TextureException e) {
                 e.printStackTrace();
             }
         }

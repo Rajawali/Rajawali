@@ -20,8 +20,8 @@ import org.rajawali3d.loader.ParsingException;
 import org.rajawali3d.loader.md5.LoaderMD5Anim;
 import org.rajawali3d.loader.md5.LoaderMD5Mesh;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.ISurfaceRenderer;
@@ -124,7 +124,7 @@ public class FirstPersonCameraFragment extends AExampleFragment {
                 mSphere.enableLookAt();
                 mSphere.setLookAt(10.0, 10.0, 10.0);
                 getCurrentScene().addChild(mSphere);
-            } catch (ATexture.TextureException e) {
+            } catch (TextureException e) {
                 e.printStackTrace();
             }
 

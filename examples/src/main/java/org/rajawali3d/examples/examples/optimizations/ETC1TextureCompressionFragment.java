@@ -6,9 +6,9 @@ import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Etc1Texture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.primitives.Plane;
 
 public class ETC1TextureCompressionFragment extends AExampleFragment {
@@ -41,7 +41,7 @@ public class ETC1TextureCompressionFragment extends AExampleFragment {
 				mPlane.setPosition(0, -1.25f, 0);
 				mPlane.setDoubleSided(true);
 				getCurrentScene().addChild(mPlane);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 
@@ -64,7 +64,7 @@ public class ETC1TextureCompressionFragment extends AExampleFragment {
 				mMipmappedPlane.setPosition(0, 1.25f, 0);
 				mMipmappedPlane.setDoubleSided(true);
 				getCurrentScene().addChild(mMipmappedPlane);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 		}

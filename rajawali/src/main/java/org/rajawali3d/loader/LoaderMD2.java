@@ -15,17 +15,7 @@ package org.rajawali3d.loader;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Locale;
-import java.util.Stack;
-
+import c.org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.animation.mesh.AAnimationObject3D;
 import org.rajawali3d.animation.mesh.IAnimationFrame;
 import org.rajawali3d.animation.mesh.VertexAnimationFrame;
@@ -39,6 +29,16 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
+import java.util.Stack;
 
 public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 
@@ -123,7 +123,7 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 			mObject.setColor(0xffffffff);
 			if (mTexture != null)
 			{
-				material.addTexture(new Texture(mCurrentTextureName, mTexture));
+				material.addTexture(new Texture(mCurrentTextureName, new TextureDataReference(mTexture, null)));
 				material.setColorInfluence(0);
 			}
 			stream.close();

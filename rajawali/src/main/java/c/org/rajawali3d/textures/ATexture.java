@@ -10,54 +10,24 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.materials.textures;
+package c.org.rajawali3d.textures;
 
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import org.rajawali3d.materials.Material;
+import org.rajawali3d.materials.textures.ATexture.FilterType;
+import org.rajawali3d.materials.textures.ATexture.TextureType;
+import org.rajawali3d.materials.textures.ATexture.WrapType;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.renderer.Renderer;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+//TODO: Remove this class during integration of new code in favor of old
 public abstract class ATexture {
-	/**
-	 * Texture types
-	 */
-	public enum TextureType {
-		DIFFUSE,
-		NORMAL,
-		SPECULAR,
-		ALPHA,
-		RENDER_TARGET,
-		DEPTH_BUFFER,
-		LOOKUP,
-		CUBE_MAP,
-		SPHERE_MAP,
-		VIDEO_TEXTURE,
-		COMPRESSED
-	};
-
-	/**
-	 * You can assign texture coordinates outside the range [0,1] and have them either clamp or repeat in the texture
-	 * map. With repeating textures, if you have a large plane with texture coordinates running from 0.0 to 10.0 in both
-	 * directions, for example, you'll get 100 copies of the texture tiled together on the screen.
-	 */
-	public enum WrapType {
-		CLAMP,
-		REPEAT
-	};
-
-	/**
-	 * Texture filtering or texture smoothing is the method used to determine the texture color for a texture mapped
-	 * pixel, using the colors of nearby texels (pixels of the texture).
-	 */
-	public enum FilterType {
-		NEAREST,
-		LINEAR
-	};
 
 	/**
 	 * The texture id that is used by Rajawali
@@ -66,59 +36,59 @@ public abstract class ATexture {
 	/**
 	 * Texture width
 	 */
-	protected int mWidth;
+	protected          int                mWidth;
 	/**
 	 * Texture height
 	 */
-	protected int mHeight;
+	protected          int                mHeight;
 	/**
 	 * Possible bitmap configurations. A bitmap configuration describes how pixels are stored. This affects the quality
 	 * (color depth) as well as the ability to display transparent/translucent colors.
 	 *
 	 * {@link Config}
 	 */
-	protected int mBitmapFormat;
+	protected          int                mBitmapFormat;
 	/**
 	 * Indicates whether mipmaps should be created or not. Mipmaps are pre-calculated, optimized collections of images
 	 * that accompany a main texture, intended to increase rendering speed and reduce aliasing artifacts.
 	 */
-	protected boolean mMipmap;
+	protected          boolean     mMipmap;
 	/**
 	 * Indicates whether the source Bitmap or Buffer should be recycled immediately after the OpenGL texture has been
 	 * created. The main reason for not recycling is Scene caching. Scene caching stores all textures and relevant
 	 * OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically needs to
 	 * be restored when the application is re-activated or when a live wallpaper is rotated.
 	 */
-	protected          boolean     mShouldRecycle;
+	protected          boolean            mShouldRecycle;
 	/**
 	 * The texture name that will be used in the shader.
 	 */
-	@NonNull protected String      mTextureName;
+	@NonNull protected String             mTextureName;
 	/**
 	 * The type of texture {link {@link TextureType}
 	 */
-	protected          TextureType mTextureType;
+	protected          TextureType        mTextureType;
 	/**
 	 * Texture wrap type. See {@link WrapType}.
 	 */
-	protected          WrapType    mWrapType;
+	protected          WrapType           mWrapType;
 	/**
 	 * Texture filtering type. See {@link FilterType}.
 	 */
-	protected FilterType         mFilterType;
+	protected          FilterType         mFilterType;
 	/**
 	 * Possible bitmap configurations. A bitmap configuration describes how pixels are stored. This affects the quality
 	 * (color depth) as well as the ability to display transparent/translucent colors. See {@link Config}.
 	 */
-	protected Config             mBitmapConfig;
+	protected          Config             mBitmapConfig;
 	/**
 	 * A list of materials that use this texture.
 	 */
-	protected List<Material>     mMaterialsUsingTexture;
+	protected          List<Material>     mMaterialsUsingTexture;
 	/**
 	 * The optional compressed texture
 	 */
-	protected ACompressedTexture mCompressedTexture;
+	protected          ACompressedTexture mCompressedTexture;
 	/**
 	 * The OpenGL texture type
 	 */
@@ -505,5 +475,4 @@ public abstract class ATexture {
 	abstract void remove() throws TextureException;
 	abstract void replace() throws TextureException;
 	abstract void reset() throws TextureException;
-
 }

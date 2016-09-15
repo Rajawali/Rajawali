@@ -32,7 +32,7 @@ import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimation
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix;

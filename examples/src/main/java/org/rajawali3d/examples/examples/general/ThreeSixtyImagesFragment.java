@@ -4,10 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.primitives.ScreenQuad;
 
 public class ThreeSixtyImagesFragment extends AExampleFragment {
@@ -62,7 +64,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 				Bitmap bitmap = BitmapFactory.decodeResource(
 						mContext.getResources(), resourceId, options);
 
-				ATexture texture = new Texture("bm" + i, bitmap);
+				ATexture texture = new Texture("bm" + i, new TextureDataReference(bitmap, null));
 				texture.setMipmap(false);
 				texture.shouldRecycle(true);
 				mTextures[i - 1] = mTextureManager.addTexture(texture);
@@ -70,7 +72,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 			try {
 				mMaterial.addTexture(mTextures[0]);
 				mMaterial.setColorInfluence(0);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 		}

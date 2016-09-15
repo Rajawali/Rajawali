@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import com.qualcomm.QCAR.QCAR;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.ScreenQuad;

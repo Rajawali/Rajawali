@@ -9,8 +9,8 @@ import org.rajawali3d.examples.examples.materials.materials.CustomRawFragmentSha
 import org.rajawali3d.examples.examples.materials.materials.CustomRawVertexShader;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.primitives.Sphere;
 
 public class RawShaderFilesFragment extends AExampleFragment {
@@ -42,7 +42,7 @@ public class RawShaderFilesFragment extends AExampleFragment {
 				Texture texture = new Texture("myTex", R.drawable.flickrpics);
 				texture.setInfluence(.5f);
 				mMaterial.addTexture(texture);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 			mMaterial.setColorInfluence(.5f);

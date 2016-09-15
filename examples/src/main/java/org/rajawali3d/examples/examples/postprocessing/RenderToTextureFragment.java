@@ -10,6 +10,7 @@ import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.PostProcessingManager;
 import org.rajawali3d.postprocessing.passes.RenderPass;
@@ -140,7 +141,7 @@ public class RenderToTextureFragment extends AExampleFragment {
 
 				mCurrentTexture = mEffects.getTexture();
 				mSphere.getMaterial().addTexture(mCurrentTexture);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 			super.onRender(ellapsedTime, deltaTime);

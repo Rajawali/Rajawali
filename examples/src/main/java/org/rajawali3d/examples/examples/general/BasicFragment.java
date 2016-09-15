@@ -6,8 +6,8 @@ import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.materials.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 
@@ -37,7 +37,7 @@ public class BasicFragment extends AExampleFragment {
 				mSphere = new Sphere(1, 24, 24);
 				mSphere.setMaterial(material);
 				getCurrentScene().addChild(mSphere);
-			} catch (ATexture.TextureException e) {
+			} catch (TextureException e) {
 				e.printStackTrace();
 			}
 
