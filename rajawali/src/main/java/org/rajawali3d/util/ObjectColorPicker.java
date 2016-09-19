@@ -72,7 +72,8 @@ public class ObjectColorPicker implements IObjectPicker {
 
 	public void unregisterObject(Object3D object) {
 		if (mObjectLookup.contains(object)) {
-			mObjectLookup.remove(object);
+			int index = mObjectLookup.indexOf(object);
+			mObjectLookup.set(index,null);
 		}
 		object.setPickingColor(Object3D.UNPICKABLE);
 	}

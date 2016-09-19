@@ -193,7 +193,7 @@ public class Geometry3D {
     }
 
     public static float[] getFloatArrayFromBuffer(FloatBuffer buffer) {
-        float[] array = null;
+        float[] array = new float[0];
         if (buffer != null) {
             if (buffer.hasArray()) {
                 array = buffer.array();
@@ -207,7 +207,7 @@ public class Geometry3D {
     }
 
     public static int[] getIntArrayFromBuffer(Buffer buffer) {
-        int[] array = null;
+        int[] array = new int[0];
         if (buffer != null) {
             if (buffer.hasArray()) {
                 array = (int[]) buffer.array();
@@ -325,10 +325,10 @@ public class Geometry3D {
 
         //Set the new data
         setVertices(newVertices, true);
-        setNormals(newNormals);
-        setTextureCoords(newTextureCoords);
-        setColors(newColors);
-        setIndices(newIntIndices);
+        setNormals(newNormals, true);
+        setTextureCoords(newTextureCoords, true);
+        setColors(newColors, true);
+        setIndices(newIntIndices, true);
 
         if (createVBOs) {
             //Create the new buffers
@@ -764,11 +764,15 @@ public class Geometry3D {
     }
 
     public void setNormals(float[] normals) {
+        setNormals(normals, false);
+    }
+
+    public void setNormals(float[] normals, boolean override) {
         if (normals == null) {
             return;
         }
         final BufferInfo normalInfo = mBuffers.get(NORMAL_BUFFER_KEY);
-        if (normalInfo.buffer == null) {
+        if (normalInfo.buffer == null || override == true) {
             normalInfo.buffer = ByteBuffer.allocateDirect(normals.length * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
             ((FloatBuffer) normalInfo.buffer).put(normals);
@@ -802,8 +806,12 @@ public class Geometry3D {
     }
 
     public void setIndices(int[] indices) {
+        setIndices(indices, false);
+    }
+
+    public void setIndices(int[] indices, boolean override) {
         final BufferInfo indexInfo = mBuffers.get(INDEX_BUFFER_KEY);
-        if (indexInfo.buffer == null) {
+        if (indexInfo.buffer == null || override == true) {
             indexInfo.buffer = ByteBuffer.allocateDirect(indices.length * INT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asIntBuffer();
             ((IntBuffer) indexInfo.buffer).put(indices).position(0);
@@ -822,11 +830,15 @@ public class Geometry3D {
     }
 
     public void setTextureCoords(float[] textureCoords) {
+        setTextureCoords(textureCoords, false);
+    }
+
+    public void setTextureCoords(float[] textureCoords, boolean override) {
         if (textureCoords == null) {
             return;
         }
         final BufferInfo textureInfo = mBuffers.get(TEXTURE_BUFFER_KEY);
-        if (textureInfo.buffer == null) {
+        if (textureInfo.buffer == null || override == true) {
             textureInfo.buffer = ByteBuffer
                     .allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -854,8 +866,12 @@ public class Geometry3D {
     }
 
     public void setColors(float[] colors) {
+        setTextureCoords(colors, false);
+    }
+
+    public void setColors(float[] colors, boolean override) {
         final BufferInfo colorInfo = mBuffers.get(COLOR_BUFFER_KEY);
-        if (colorInfo.buffer == null) {
+        if (colorInfo.buffer == null || override == true) {
             colorInfo.buffer = ByteBuffer
                     .allocateDirect(colors.length * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();

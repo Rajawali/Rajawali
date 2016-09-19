@@ -4,6 +4,7 @@
 [![AndroidLibs](https://img.shields.io/badge/AndroidLibs-Rajawali-brightgreen.svg?style=flat)](https://www.android-libs.com/lib/rajawali?utm_source=github-badge&utm_medium=github-badge&utm_campaign=github-badge)
 [![License](https://img.shields.io/badge/license-Apache%202.0%20License-blue.svg)](https://github.com/Rajawali/Rajawali/blob/master/LICENSE.txt)
 [![Maven Central](https://img.shields.io/maven-central/v/org.rajawali3d/rajawali.svg)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22rajawali%22)
+[![Trending](http://starveller.sigsev.io/api/repos/Rajawali/Rajawali/badge)](http://starveller.sigsev.io/Rajawali/Rajawali)
 
 ### Build Status
 **Master Branch Status**  

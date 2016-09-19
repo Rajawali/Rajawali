@@ -56,6 +56,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -122,6 +123,11 @@ public abstract class Renderer implements ISurfaceRenderer {
     private final Object mNextSceneLock = new Object(); //Scene switching lock
 
     private long mRenderStartTime;
+
+    /**
+     * Keep track of IDs in {@link Renderer#mLoaderThreads}
+     */
+    private AtomicInteger mLastLoaderId = new AtomicInteger();
 
     private final boolean mHaveRegisteredForResources;
 
@@ -549,7 +555,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         loader.setTag(tag);
 
         try {
-            final int id = mLoaderThreads.size();
+            final int id = mLastLoaderId.getAndIncrement();
             final ModelRunnable runnable = new ModelRunnable(loader, id);
 
             mLoaderThreads.put(id, runnable);
