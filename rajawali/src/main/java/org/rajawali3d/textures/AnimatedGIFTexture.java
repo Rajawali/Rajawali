@@ -34,8 +34,8 @@ import org.rajawali3d.materials.textures.TextureManager;
 	private Movie   mMovie;
 	private Bitmap  mGIFBitmap;
 	private int     mResourceId;
-	private int     mWidth;
-	private int     mHeight;
+	private int     width;
+	private int     height;
 	private int     mTextureSize;
 	private long    mStartTime;
 	private boolean mLoadNewGIF;
@@ -70,10 +70,10 @@ import org.rajawali3d.materials.textures.TextureManager;
 	private void loadGIF() {
 		Context context = TextureManager.getInstance().getContext();
 		mMovie = Movie.decodeStream(context.getResources().openRawResource(mResourceId));
-		mWidth = mMovie.width();
-		mHeight = mMovie.height();
+		width = mMovie.width();
+		height = mMovie.height();
 
-		mGIFBitmap = Bitmap.createBitmap(mWidth, mHeight, Config.ARGB_8888);
+		mGIFBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 		mCanvas = new Canvas(mGIFBitmap);
 		mMovie.draw(mCanvas, 0, 0);
 		mBitmap = Bitmap.createScaledBitmap(mGIFBitmap, mTextureSize, mTextureSize, false);
@@ -91,8 +91,8 @@ import org.rajawali3d.materials.textures.TextureManager;
 		mBitmap = other.getBitmap();
 		mCanvas = other.getCanvas();
 		mMovie = other.getMovie();
-		mWidth = other.getWidth();
-		mHeight = other.getHeight();
+		width = other.getWidth();
+		height = other.getHeight();
 		mTextureSize = other.getTextureSize();
 	}
 
@@ -173,11 +173,11 @@ import org.rajawali3d.materials.textures.TextureManager;
 	}
 
 	public int getWidth() {
-		return mWidth;
+		return width;
 	}
 
 	public int getHeight() {
-		return mHeight;
+		return height;
 	}
 
 	public int getTextureSize() {

@@ -1,21 +1,21 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-/** 
+/**
  * @author David Trounstine (david@evvid.com)
  */
-package org.rajawali3d.materials.textures;
+package org.rajawali3d.textures;
 
-import org.rajawali3d.materials.textures.TexturePacker.Tile;
+import org.rajawali3d.textures.TexturePacker.Tile;
 import android.graphics.Bitmap;
 
 public class TextureAtlas {
@@ -28,7 +28,7 @@ public class TextureAtlas {
 	 */
 	protected float mHeight;
 	/**
-	 * Atlas texture 
+	 * Atlas texture
 	 */
 	protected Bitmap[] mPages;
 	/**
@@ -43,7 +43,7 @@ public class TextureAtlas {
 	/**
 	 * Constructor requires a Power of Two <code>width</code> and <code>height</code>
 	 * <code>usesCompression</code> should be true if the atlas should be compressed
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 * @param atlasPages
@@ -52,14 +52,14 @@ public class TextureAtlas {
 	 */
 	public TextureAtlas(int width, int height, Boolean usesCompression) {
 		mWidth = width;
-		mHeight = height;	
+		mHeight = height;
 		mUsesCompression = usesCompression;
 		mPages = null;
 		mTiles = null;
 	}
 	/**
 	 * Get the atlas width.
-	 * 
+	 *
 	 * @return {@link float}
 	 */
 	public float getWidth() {
@@ -67,7 +67,7 @@ public class TextureAtlas {
 	}
 	/**
 	 * Set the atlas width.
-	 * 
+	 *
 	 * @param width
 	 */
 	public void setWidth(float width) {
@@ -75,7 +75,7 @@ public class TextureAtlas {
 	}
 	/**
 	 * Get the atlas height.
-	 * 
+	 *
 	 * @return {@link float}
 	 */
 	public float getHeight() {
@@ -83,7 +83,7 @@ public class TextureAtlas {
 	}
 	/**
 	 * Set the atlas height.
-	 * 
+	 *
 	 * @param height
 	 */
 	public void setHeight(int height) {
@@ -92,7 +92,7 @@ public class TextureAtlas {
 	/**
 	 * Get all atlas pages as a Bitmap.
 	 * This will return null if compression is used.
-	 * 
+	 *
 	 * @return {@link Bitmap}
 	 */
 	public Bitmap[] getPages() {
@@ -100,7 +100,7 @@ public class TextureAtlas {
 	}
 	/**
 	 * Set the atlas pages.
-	 * 
+	 *
 	 * @param bitmap
 	 */
 	protected void setPages(Bitmap[] pages) {
@@ -108,7 +108,7 @@ public class TextureAtlas {
 	}
 	/**
 	 * Returns <code>true</code> if compression is used.
-	 * 
+	 *
 	 * @return <code>True</code> if compression is used; <code>false</code> otherwise.
 	 */
 	public boolean getUsesCompression() {
@@ -116,7 +116,7 @@ public class TextureAtlas {
 	}
 	/**
 	 * Set <code>true</code> if compression is used.
-	 * 
+	 *
 	 * @param compress
 	 */
 	protected void setUsesCompression(boolean compress) {
@@ -124,23 +124,23 @@ public class TextureAtlas {
 	}
 	/**
 	 * Get an array of tiles that compose the atlas.
-	 * 
+	 *
 	 * @return {@link Tile}
 	 */
 	public Tile[] getTiles() {
-		return mTiles;	
+		return mTiles;
 	}
 	/**
 	 * Set the tile array.
-	 * 
+	 *
 	 * @param tiles
 	 */
 	protected void setTiles(Tile[] tiles) {
-		mTiles = tiles;		
+		mTiles = tiles;
 	}
 	/**
 	 * Get the tile with the requested <code>name</code>
-	 * 
+	 *
 	 * @param name
 	 * @return {@link Tile}
 	 */
@@ -150,5 +150,5 @@ public class TextureAtlas {
 				return mTiles[i];
 		}
 		return null;
-	}	
+	}
 }

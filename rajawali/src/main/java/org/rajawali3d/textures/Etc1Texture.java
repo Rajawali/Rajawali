@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.materials.textures;
+package org.rajawali3d.textures;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -38,13 +38,14 @@ public class Etc1Texture extends ACompressedTexture {
     }
 
     public Etc1Texture(int resourceId) {
-        this(TextureManager.getInstance().getContext().getResources().getResourceName(resourceId));
+        this(org.rajawali3d.materials.textures.TextureManager
+                     .getInstance().getContext().getResources().getResourceName(resourceId));
         setResourceId(resourceId);
     }
 
     public Etc1Texture(String textureName, int resourceId, Bitmap fallbackTexture) {
         this(textureName);
-        Context context = TextureManager.getInstance().getContext();
+        Context context = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext();
         setInputStream(context.getResources().openRawResource(resourceId), fallbackTexture);
     }
 
@@ -81,7 +82,7 @@ public class Etc1Texture extends ACompressedTexture {
     @Override
     void add() throws TextureException {
         if(mResourceId != -1) {
-            Resources resources = TextureManager.getInstance().getContext().getResources();
+            Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext().getResources();
             try {
                 ETC1Util.ETC1Texture texture = ETC1Util.createTexture(resources.openRawResource(mResourceId));
                 mByteBuffers = new ByteBuffer[]{texture.getData()};
@@ -94,7 +95,7 @@ public class Etc1Texture extends ACompressedTexture {
             }
         } else if(mResourceIds != null) {
             ByteBuffer[] mipmapChain = new ByteBuffer[mResourceIds.length];
-            Resources resources = TextureManager.getInstance().getContext().getResources();
+            Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext().getResources();
             int mip_0_width = 1, mip_0_height = 1;
             try {
                 for (int i = 0, length = mResourceIds.length; i < length; i++) {
@@ -116,7 +117,7 @@ public class Etc1Texture extends ACompressedTexture {
             mByteBuffers = mipmapChain;
         }
         super.add();
-        if (mShouldRecycle) {
+        if (shouldRecycle) {
             if (mBitmap != null) {
                 mBitmap.recycle();
                 mBitmap = null;

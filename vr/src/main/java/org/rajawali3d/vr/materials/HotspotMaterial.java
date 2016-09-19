@@ -32,7 +32,7 @@ public class HotspotMaterial extends Material {
     public HotspotMaterial(boolean useTexture, boolean discardAlpha) {
         super(new VertexShader(R.raw.minimal_vertex_shader),
               new HotspotFragmentShader(useTexture, discardAlpha));
-        mHotspotShader = (HotspotFragmentShader)mCustomFragmentShader;
+        mHotspotShader = (HotspotFragmentShader) customFragmentShader;
     }
 
     public void setCircleCenter(Vector2 center) {

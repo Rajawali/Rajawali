@@ -1,7 +1,6 @@
 package c.org.rajawali3d.renderer;
 
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.textures.TextureManager;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -82,12 +81,4 @@ public interface Renderer {
      * @param renderable The {@link Renderable} object to remove.
      */
     void removeRenderable(@NonNull Renderable renderable);
-
-    /**
-     * Retrieves the {@link TextureManager} associated with this {@link Renderer}. Note that Renderers and GL
-     * contexts are tied together.
-     *
-     * @return The {@link TextureManager} for this {@link Renderer}.
-     */
-    @NonNull TextureManager getTextureManager();
 }

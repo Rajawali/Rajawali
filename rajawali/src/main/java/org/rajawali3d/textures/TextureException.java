@@ -1,4 +1,4 @@
-package org.rajawali3d.materials.textures;
+package org.rajawali3d.textures;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)

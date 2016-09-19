@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.materials.textures;
+package org.rajawali3d.textures;
 
 import java.nio.ByteBuffer;
 
@@ -80,7 +80,7 @@ public abstract class AMultiTexture extends ATexture {
 		mResourceIds = resourceIds;
 		int numResources = resourceIds.length;
 		mBitmaps = new Bitmap[numResources];
-		Context context = TextureManager.getInstance().getContext();
+		Context context = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext();
 
 		for(int i=0; i<numResources; i++)
 		{

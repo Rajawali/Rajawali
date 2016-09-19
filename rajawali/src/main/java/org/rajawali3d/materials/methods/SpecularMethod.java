@@ -20,7 +20,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.AShaderBase.DataType;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.specular.PhongFragmentShaderFragment;
-import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.textures.ATexture;
 import android.graphics.Color;
 
 

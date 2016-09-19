@@ -1,4 +1,4 @@
-package org.rajawali3d.materials.textures;
+package org.rajawali3d.textures;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -50,13 +50,14 @@ public class Etc2Texture extends ACompressedTexture {
     }
 
     public Etc2Texture(int resourceId) {
-        this(TextureManager.getInstance().getContext().getResources().getResourceName(resourceId));
+        this(org.rajawali3d.materials.textures.TextureManager
+                     .getInstance().getContext().getResources().getResourceName(resourceId));
         setResourceId(resourceId);
     }
 
     public Etc2Texture(String textureName, int resourceId, Bitmap fallbackTexture) {
         this(textureName);
-        Context context = TextureManager.getInstance().getContext();
+        Context context = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext();
         setInputStream(context.getResources().openRawResource(resourceId), fallbackTexture);
     }
 
@@ -93,7 +94,7 @@ public class Etc2Texture extends ACompressedTexture {
     @Override
     void add() throws TextureException {
         super.add();
-        if (mShouldRecycle) {
+        if (shouldRecycle) {
             if (mBitmap != null) {
                 mBitmap.recycle();
                 mBitmap = null;
@@ -112,7 +113,7 @@ public class Etc2Texture extends ACompressedTexture {
 
     public void setResourceId(int resourceId) {
         mResourceId = resourceId;
-        Resources resources = TextureManager.getInstance().getContext().getResources();
+        Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext().getResources();
         try {
             ETC2Util.ETC2Texture texture = ETC2Util.createTexture(resources.openRawResource(resourceId));
             mByteBuffers = new ByteBuffer[]{texture.getData()};
@@ -131,7 +132,7 @@ public class Etc2Texture extends ACompressedTexture {
 
     public void setResourceIds(int[] resourceIds) {
         ByteBuffer[] mipmapChain = new ByteBuffer[resourceIds.length];
-        Resources resources = TextureManager.getInstance().getContext().getResources();
+        Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext().getResources();
         int mip_0_width = 1, mip_0_height = 1;
         try {
             for (int i = 0, length = resourceIds.length; i < length; i++) {

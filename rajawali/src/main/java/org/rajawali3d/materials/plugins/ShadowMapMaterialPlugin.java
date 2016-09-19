@@ -3,7 +3,7 @@ package org.rajawali3d.materials.plugins;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.textures.ATexture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import android.opengl.GLES20;

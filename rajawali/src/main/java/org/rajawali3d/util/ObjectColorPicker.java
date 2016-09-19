@@ -22,8 +22,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
-import org.rajawali3d.materials.textures.ATexture.FilterType;
-import org.rajawali3d.materials.textures.ATexture.WrapType;
+import org.rajawali3d.textures.ATexture.FilterType;
+import org.rajawali3d.textures.ATexture.WrapType;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
 

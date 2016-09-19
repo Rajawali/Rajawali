@@ -6,9 +6,9 @@ import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.Etc1Texture;
-import org.rajawali3d.materials.textures.Texture;
-import org.rajawali3d.materials.textures.TextureException;
+import org.rajawali3d.textures.Etc1Texture;
+import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.primitives.Plane;
 
 public class ETC1TextureCompressionFragment extends AExampleFragment {

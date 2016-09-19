@@ -9,8 +9,8 @@ import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.AlphaMapTexture;
-import org.rajawali3d.materials.textures.TextureException;
+import org.rajawali3d.textures.AlphaMapTexture;
+import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 

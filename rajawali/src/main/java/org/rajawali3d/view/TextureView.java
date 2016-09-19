@@ -1196,8 +1196,8 @@ public class TextureView extends android.view.TextureView implements ISurface {
                                     + " mHasSurface: " + mHasSurface
                                     + " mSurfaceIsBad: " + mSurfaceIsBad
                                     + " mWaitingForSurface: " + mWaitingForSurface
-                                    + " mWidth: " + mWidth
-                                    + " mHeight: " + mHeight
+                                    + " width: " + mWidth
+                                    + " height: " + mHeight
                                     + " mRequestRender: " + mRequestRender
                                     + " mRenderMode: " + mRenderMode);
                             }

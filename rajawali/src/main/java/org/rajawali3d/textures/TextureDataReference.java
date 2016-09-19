@@ -1,11 +1,10 @@
-package c.org.rajawali3d.textures;
+package org.rajawali3d.textures;
 
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
-import org.rajawali3d.materials.textures.TextureException;
 
 import java.nio.ByteBuffer;
 

@@ -1,16 +1,16 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.materials.textures;
+package org.rajawali3d.textures;
 
 import java.nio.ByteBuffer;
 
@@ -22,7 +22,7 @@ public class Dxt1Texture extends ACompressedTexture {
 
 	/**
 	 * DXT1 Texture compression format.
-	 * 
+	 *
 	 */
 	public enum Dxt1Format {
 		RGB,
@@ -54,7 +54,7 @@ public class Dxt1Texture extends ACompressedTexture {
 
 	/**
 	 * Copies every property from another Dxt1Texture object
-	 * 
+	 *
 	 * @param other
 	 *            another Dxt1Texture object to copy from
 	 */

@@ -15,7 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.TextureException;
+import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.renderer.pip.SubRenderer;
 import org.rajawali3d.renderer.pip.WorkaroundScreenQuad;
 import org.rajawali3d.scene.Scene;

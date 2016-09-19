@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package c.org.rajawali3d.textures;
+package org.rajawali3d.textures;
 
 import android.content.Context;
 import android.graphics.Bitmap.Config;
@@ -18,11 +18,6 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.support.annotation.NonNull;
-import org.rajawali3d.materials.textures.ATexture.FilterType;
-import org.rajawali3d.materials.textures.ATexture.TextureType;
-import org.rajawali3d.materials.textures.ATexture.WrapType;
-import org.rajawali3d.materials.textures.TextureException;
-import org.rajawali3d.materials.textures.TextureManager;
 
 /**
  * This class is used to specify texture options.
@@ -42,7 +37,8 @@ public abstract class ASingleTexture extends ATexture {
     }
 
     public ASingleTexture(TextureType textureType, int resourceId) {
-        this(textureType, TextureManager.getInstance().getContext().getResources().getResourceName(resourceId));
+        this(textureType, org.rajawali3d.materials.textures.TextureManager
+                .getInstance().getContext().getResources().getResourceName(resourceId));
         setResourceId(resourceId);
     }
 
@@ -78,7 +74,7 @@ public abstract class ASingleTexture extends ATexture {
     @NonNull
     public TextureDataReference setResourceId(int resourceId) {
         mResourceId = resourceId;
-        Context context = TextureManager.getInstance().getContext();
+        Context context = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext();
         BitmapFactory.Options bitmapScalingOptions = new BitmapFactory.Options();
         bitmapScalingOptions.inScaled = false;
         setTextureData(new TextureDataReference(
@@ -104,11 +100,11 @@ public abstract class ASingleTexture extends ATexture {
     }
 
     void add() throws TextureException {
-        if (mCompressedTexture != null) {
-            mCompressedTexture.add();
-            setWidth(mCompressedTexture.getWidth());
-            setHeight(mCompressedTexture.getHeight());
-            setTextureId(mCompressedTexture.getTextureId());
+        if (compressedTexture != null) {
+            compressedTexture.add();
+            setWidth(compressedTexture.getWidth());
+            setHeight(compressedTexture.getHeight());
+            setTextureId(compressedTexture.getTextureId());
             return;
         }
 
@@ -131,7 +127,7 @@ public abstract class ASingleTexture extends ATexture {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
             if (isMipmap()) {
-                if (mFilterType == FilterType.LINEAR) {
+                if (filterType == FilterType.LINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
                                            GLES20.GL_LINEAR_MIPMAP_LINEAR);
                 } else {
@@ -139,20 +135,20 @@ public abstract class ASingleTexture extends ATexture {
                                            GLES20.GL_NEAREST_MIPMAP_NEAREST);
                 }
             } else {
-                if (mFilterType == FilterType.LINEAR) {
+                if (filterType == FilterType.LINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
                 } else {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
                 }
             }
 
-            if (mFilterType == FilterType.LINEAR) {
+            if (filterType == FilterType.LINEAR) {
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             } else {
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
             }
 
-            if (mWrapType == WrapType.REPEAT) {
+            if (wrapType == WrapType.REPEAT) {
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
             } else {
@@ -161,15 +157,15 @@ public abstract class ASingleTexture extends ATexture {
             }
 
             if (textureData.hasBuffer()) {
-                if (mWidth == 0 || mHeight == 0 || mBitmapFormat == 0) {
+                if (width == 0 || height == 0 || bitmapFormat == 0) {
                     throw new TextureException(
                             "Could not create ByteBuffer texture. One or more of the following properties haven't "
                             + "been set: width, height or bitmap format");
                 }
-                GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmapFormat, mWidth, mHeight, 0, mBitmapFormat,
+                GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, width, height, 0, bitmapFormat,
                                     GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
             } else {
-                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmapFormat, textureData.getBitmap(), 0);
+                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, textureData.getBitmap(), 0);
             }
 
             if (isMipmap()) {
@@ -181,7 +177,7 @@ public abstract class ASingleTexture extends ATexture {
             throw new TextureException("Couldn't generate a texture name.");
         }
 
-        if (mShouldRecycle) {
+        if (shouldRecycle) {
             textureData.recycle();
             textureData = null;
         }
@@ -190,23 +186,25 @@ public abstract class ASingleTexture extends ATexture {
     }
 
     void remove() throws TextureException {
-        if (mCompressedTexture != null) {
-            mCompressedTexture.remove();
+        if (compressedTexture != null) {
+            compressedTexture.remove();
         } else {
-            GLES20.glDeleteTextures(1, new int[]{ mTextureId }, 0);
+            GLES20.glDeleteTextures(1, new int[]{ textureId }, 0);
         }
         if (textureData != null) {
             // When removing a texture, release a reference count for its data if we have saved it.
             textureData.recycle();
         }
+
+        //TODO: Notify materials that were using this texture
     }
 
     void replace() throws TextureException {
-        if (mCompressedTexture != null) {
-            mCompressedTexture.replace();
-            setWidth(mCompressedTexture.getWidth());
-            setHeight(mCompressedTexture.getHeight());
-            setTextureId(mCompressedTexture.getTextureId());
+        if (compressedTexture != null) {
+            compressedTexture.replace();
+            setWidth(compressedTexture.getWidth());
+            setHeight(compressedTexture.getHeight());
+            setTextureId(compressedTexture.getTextureId());
             return;
         }
 
@@ -215,30 +213,30 @@ public abstract class ASingleTexture extends ATexture {
             throw new TextureException("Texture could not be replaced because there is no Bitmap or ByteBuffer set.");
         }
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
         if (textureData.hasBitmap()) {
             int bitmapFormat = textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
-            if (textureData.getBitmap().getWidth() != mWidth || textureData.getBitmap().getHeight() != mHeight) {
+            if (textureData.getBitmap().getWidth() != width || textureData.getBitmap().getHeight() != height) {
                 throw new TextureException(
                         "Texture could not be updated because the texture size is different from the original.");
             }
-            if (bitmapFormat != mBitmapFormat) {
+            if (bitmapFormat != this.bitmapFormat) {
                 throw new TextureException(
                         "Texture could not be updated because the bitmap format is different from the original");
             }
 
-            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), mBitmapFormat, GLES20.GL_UNSIGNED_BYTE);
+            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), this.bitmapFormat, GLES20.GL_UNSIGNED_BYTE);
         } else if (textureData.hasBuffer()) {
-            if (mWidth == 0 || mHeight == 0 || mBitmapFormat == 0) {
+            if (width == 0 || height == 0 || bitmapFormat == 0) {
                 throw new TextureException(
                         "Could not update ByteBuffer texture. One or more of the following properties haven't been set: width, height or bitmap format");
             }
-            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, mBitmapFormat,
+            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, width, height, bitmapFormat,
                                    GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
         }
 
-        if (mMipmap) {
+        if (mipmap) {
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         }
 
@@ -246,8 +244,8 @@ public abstract class ASingleTexture extends ATexture {
     }
 
     void reset() throws TextureException {
-        if (mCompressedTexture != null) {
-            mCompressedTexture.reset();
+        if (compressedTexture != null) {
+            compressedTexture.reset();
             return;
         }
 
@@ -262,8 +260,8 @@ public abstract class ASingleTexture extends ATexture {
      */
     public void setWrapType(WrapType wrapType) {
         super.setWrapType(wrapType);
-        if (mCompressedTexture != null) {
-            mCompressedTexture.setWrapType(wrapType);
+        if (compressedTexture != null) {
+            compressedTexture.setWrapType(wrapType);
         }
     }
 
@@ -272,8 +270,8 @@ public abstract class ASingleTexture extends ATexture {
      */
     public void setFilterType(FilterType filterType) {
         super.setFilterType(filterType);
-        if (mCompressedTexture != null) {
-            mCompressedTexture.setFilterType(filterType);
+        if (compressedTexture != null) {
+            compressedTexture.setFilterType(filterType);
         }
     }
 }

@@ -21,7 +21,7 @@ import org.rajawali3d.materials.methods.SpecularMethod.SpecularShaderVar;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
 import org.rajawali3d.materials.shaders.fragments.texture.ATextureFragmentShaderFragment;
-import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.textures.ATexture;
 import android.graphics.Color;
 import android.opengl.GLES20;
 

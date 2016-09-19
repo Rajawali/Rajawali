@@ -12,8 +12,8 @@
  */
 package org.rajawali3d.renderer;
 
-import org.rajawali3d.materials.textures.ATexture.FilterType;
-import org.rajawali3d.materials.textures.ATexture.WrapType;
+import org.rajawali3d.textures.ATexture.FilterType;
+import org.rajawali3d.textures.ATexture.WrapType;
 import org.rajawali3d.materials.textures.TextureManager;
 import android.graphics.Bitmap.Config;
 

@@ -14,7 +14,7 @@ import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.textures.CubeMapTexture;
+import org.rajawali3d.textures.CubeMapTexture;
 import org.rajawali3d.math.vector.Vector3;
 
 public class AccelerometerFragment extends AExampleFragment implements

@@ -1,10 +1,10 @@
 package org.rajawali3d.loader.awd;
 
-import c.org.rajawali3d.textures.TextureDataReference;
+import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.CubeMapTexture;
-import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.CubeMapTexture;
+import org.rajawali3d.textures.Texture;
 import org.rajawali3d.loader.LoaderAWD.IBlockParser;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;

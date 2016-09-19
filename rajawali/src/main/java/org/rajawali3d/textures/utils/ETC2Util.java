@@ -1,4 +1,4 @@
-package org.rajawali3d.materials.textures.utils;
+package org.rajawali3d.textures.utils;
 
 import android.annotation.TargetApi;
 import android.opengl.ETC1;

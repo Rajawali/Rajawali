@@ -18,7 +18,6 @@ import android.support.annotation.NonNull;
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
-import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.IDiffuseMethod;
 import org.rajawali3d.materials.methods.ISpecularMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
@@ -33,10 +32,10 @@ import org.rajawali3d.materials.shaders.fragments.texture.DiffuseTextureFragment
 import org.rajawali3d.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.SkyTextureFragmentShaderFragment;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.TextureException;
-import org.rajawali3d.materials.textures.CubeMapTexture;
-import org.rajawali3d.materials.textures.SphereMapTexture;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.TextureException;
+import org.rajawali3d.textures.CubeMapTexture;
+import org.rajawali3d.textures.SphereMapTexture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.Renderer;
@@ -74,27 +73,27 @@ public class Material {
      * This tells the Material class where to insert a shader fragment into either
      * the vertex of fragment shader.
      */
-    public static enum PluginInsertLocation {
+    public enum PluginInsertLocation {
         PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_TRANSFORM, POST_TRANSFORM, IGNORE
-    };
+    }
 
-    private final boolean mCapabilitiesCheckDeferred;
+    private final boolean capabilitiesCheckDeferred;
 
     /**
      * The generic vertex shader. This can be extended by using vertex shader fragments.
      * A vertex shader is typically used to modify vertex positions, vertex colors and normals.
      */
-    private VertexShader mVertexShader;
+    private VertexShader               vertexShader;
     /**
      * The generic fragment shader. This can be extended by using fragment shader fragments.
      * A fragment shader is typically used to modify rasterized pixel colors.
      */
-    private FragmentShader mFragmentShader;
+    private FragmentShader             fragmentShader;
     /**
      * The shader fragments that are plugged into both the vertex and fragment shader. This
      * is where lighting calculations are performed.
      */
-    private LightsVertexShaderFragment mLightsVertexShaderFragment;
+    private LightsVertexShaderFragment lightsVertexShaderFragment;
     /**
      * The diffuse method specifies the reflection of light from a surface such that an incident
      * ray is reflected at many angles rather than at just one angle as in the case of specular reflection.
@@ -103,7 +102,7 @@ public class Material {
      * material.setDiffuseMethod(new DiffuseMethod.Lambert());
      * </code></pre>
      */
-    private IDiffuseMethod mDiffuseMethod;
+    private IDiffuseMethod  diffuseMethod;
     /**
      * The specular method specifies the mirror-like reflection of light (or of other kinds of wave)
      * from a surface, in which light from a single incoming direction (a ray) is reflected into a
@@ -113,64 +112,64 @@ public class Material {
      * material.setSpecularMethod(new SpecularMethod.Phong());
      * </code></pre>
      */
-    private ISpecularMethod mSpecularMethod;
+    private ISpecularMethod specularMethod;
     /**
      * Indicates that this material should use a color value for every vertex. These colors are
      * contained in a separate color buffer.
      */
-    private boolean mUseVertexColors;
+    private boolean         useVertexColors;
     /**
      * Indicates whether lighting should be used or not. This must be set to true when using a
-     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link Scene}
+     * {@link IDiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link Scene}
      * and are automatically added to the material.
      */
-    private boolean mLightingEnabled;
+    private boolean lightingEnabled;
     /**
      * Indicates that the time shader parameter should be used. This is used when creating shaders
      * that should change during the course of time. This is used to accomplish effects like animated
      * vertices, vertex colors, plasma effects, etc. The time needs to be manually updated using the
      * {@link Material#setTime(float)} method.
      */
-    private boolean mTimeEnabled;
+    private boolean timeEnabled;
     /**
      * Indicates that one of the material properties was changed and that the shader program should
      * be re-compiled.
      */
-    private boolean mIsDirty = true;
+    private boolean isDirty       = true;
     /**
      * Holds a reference to the shader program
      */
-    private int mProgramHandle = -1;
+    private int     programHandle = -1;
     /**
      * Holds a reference to the vertex shader
      */
-    private int mVShaderHandle;
+    private int     vertexShaderHandle;
     /**
      * Holds a reference to the fragment shader
      */
-    private int mFShaderHandle;
+    private int     fragmentShaderHandle;
     /**
      * The model matrix holds the object's local coordinates
      */
-    private Matrix4 mModelMatrix;
+    private Matrix4 modelMatrix;
     /**
      * The model view matrix is used to transform vertices to eye coordinates
      */
-    private float[] mModelViewMatrix;
+    private float[] modelViewMatrix;
     /**
      * The material's diffuse color. This can be overwritten by {@link Object3D#setColor(int)}.
      * This color will be applied to the whole object. For vertex colors use {@link Material#useVertexColors(boolean)}
      * and {@link Material#setVertexColors(int)}.
      */
-    private float[] mColor;
+    private float[] color;
     /**
      * This material's ambient color. Ambient color is the color of an object where it is in shadow.
      */
-    private float[] mAmbientColor;
+    private float[] ambientColor;
     /**
      * This material's ambient intensity for the r, g, b channels.
      */
-    private float[] mAmbientIntensity;
+    private float[] ambientIntensity;
     /**
      * The color influence indicates how big the influence of the color is. This should be
      * used in conjunction with {@link ATexture#setInfluence(float)}. A value of .5 indicates
@@ -181,7 +180,7 @@ public class Material {
      * myTexture.setInfluence(.5f);
      * </code></pre>
      */
-    private float mColorInfluence = 1;
+    private float colorInfluence = 1;
     /**
      * Sets the time value that is used in the shaders to create animated effects.
      * <p/>
@@ -204,47 +203,47 @@ public class Material {
      * <p/>
      * </code></pre>
      */
-    private float mTime;
+    private float                   time;
     /**
      * The lights that affect the material. Lights shouldn't be managed by any other class
      * than {@link Scene}. To add lights to a scene call {@link Scene#addLight(ALight).
      */
-    protected List<ALight> mLights;
+    protected List<ALight>          lights;
     /**
      * A list of material plugins that are used by this material. A material plugin is basically
      * a class that contains a vertex shader fragment and a fragment shader fragment. Material
      * plugins can be used for custom shader effects.
      */
-    protected List<IMaterialPlugin> mPlugins;
+    protected List<IMaterialPlugin> plugins;
 
     /**
      * This texture's unique owner identity String. This is usually the fully qualified name of the
      * {@link Renderer} instance.
      */
-    protected String mOwnerIdentity;
+    protected String              ownerIdentity;
     /**
      * The maximum number of available textures for this device. This value is returned from
      * {@link Capabilities#getMaxTextureImageUnits()}.
      */
-    private int mMaxTextures;
+    private int                   maxTextures;
     /**
      * The list of textures that are assigned by this materials.
      */
-    protected ArrayList<ATexture> mTextureList;
+    protected ArrayList<ATexture> textures;
 
-    protected Map<String, Integer> mTextureHandles;
+    protected Map<String, Integer> textureHandles;
     /**
      * Contains the normal matrix. The normal matrix is used in the shaders to transform
      * the normal into eye space.
      */
-    protected final float[] mNormalFloats = new float[9];
+    protected final float[] normalFloats = new float[9];
     /**
-     * Scratch normal amtrix. The normal matrix is used in the shaders to transform
+     * Scratch normal matrix. The normal matrix is used in the shaders to transform
      * the normal into eye space.
      */
-    protected Matrix4 mNormalMatrix = new Matrix4();
-    protected VertexShader mCustomVertexShader;
-    protected FragmentShader mCustomFragmentShader;
+    protected Matrix4       normalMatrix = new Matrix4();
+    protected VertexShader   customVertexShader;
+    protected FragmentShader customFragmentShader;
 
     /**
      * The Material class is where you define the visual characteristics of your 3D model.
@@ -270,20 +269,20 @@ public class Material {
     }
 
     public Material(boolean deferCapabilitiesCheck) {
-        mCapabilitiesCheckDeferred = deferCapabilitiesCheck;
-        mTextureList = new ArrayList<>();
-        mTextureHandles = new HashMap<>();
+        capabilitiesCheckDeferred = deferCapabilitiesCheck;
+        textures = new ArrayList<>();
+        textureHandles = new HashMap<>();
 
         // If we have deffered the capabilities check, we have no way of knowing how many textures this material
         // is capable of having. We could choose 8, the minimum required fragment shader texture unit count, but
         // that would not allow us to finish construction of this material until the EGL context is available. Instead,
         // we are choosing the maximum integer Java can handle, and we will print a warning if the number of added textures
         // exceeds the capability once known. In this event they will be used in listed order until the max is hit.
-        mMaxTextures = mCapabilitiesCheckDeferred ? Integer.MAX_VALUE : Capabilities.getInstance().getMaxTextureImageUnits();
+        maxTextures = capabilitiesCheckDeferred ? Integer.MAX_VALUE : Capabilities.getInstance().getMaxTextureImageUnits();
 
-        mColor = new float[]{1, 0, 0, 1};
-        mAmbientColor = new float[]{.2f, .2f, .2f};
-        mAmbientIntensity = new float[]{.3f, .3f, .3f};
+        color = new float[]{ 1, 0, 0, 1};
+        ambientColor = new float[]{ .2f, .2f, .2f};
+        ambientIntensity = new float[]{ .3f, .3f, .3f};
     }
 
     public Material(VertexShader customVertexShader, FragmentShader customFragmentShader) {
@@ -292,8 +291,8 @@ public class Material {
 
     public Material(VertexShader customVertexShader, FragmentShader customFragmentShader, boolean deferCapabilitiesCheck) {
         this(deferCapabilitiesCheck);
-        mCustomVertexShader = customVertexShader;
-        mCustomFragmentShader = customFragmentShader;
+        this.customVertexShader = customVertexShader;
+        this.customFragmentShader = customFragmentShader;
     }
 
     /**
@@ -303,7 +302,7 @@ public class Material {
      * @return A boolean indicating that vertex colors will be used.
      */
     public boolean usingVertexColors() {
-        return mUseVertexColors;
+        return useVertexColors;
     }
 
     /**
@@ -313,9 +312,9 @@ public class Material {
      * @param value A boolean indicating whether vertex colors should be used or not
      */
     public void useVertexColors(boolean value) {
-        if (value != mUseVertexColors) {
-            mIsDirty = true;
-            mUseVertexColors = value;
+        if (value != useVertexColors) {
+            isDirty = true;
+            useVertexColors = value;
         }
     }
 
@@ -327,12 +326,12 @@ public class Material {
      * @param color {@code int} color The color to be used. Color.RED for instance. Or 0xffff0000.
      */
     public void setColor(int color) {
-        mColor[0] = (float) Color.red(color) / 255.f;
-        mColor[1] = (float) Color.green(color) / 255.f;
-        mColor[2] = (float) Color.blue(color) / 255.f;
-        mColor[3] = (float) Color.alpha(color) / 255.f;
-        if (mVertexShader != null)
-            mVertexShader.setColor(mColor);
+        this.color[0] = (float) Color.red(color) / 255.f;
+        this.color[1] = (float) Color.green(color) / 255.f;
+        this.color[2] = (float) Color.blue(color) / 255.f;
+        this.color[3] = (float) Color.alpha(color) / 255.f;
+        if (vertexShader != null)
+            vertexShader.setColor(this.color);
     }
 
     /**
@@ -344,12 +343,12 @@ public class Material {
      *              the red, green, blue and alpha channels.
      */
     public void setColor(float[] color) {
-        mColor[0] = color[0];
-        mColor[1] = color[1];
-        mColor[2] = color[2];
-        mColor[3] = color[3];
-        if (mVertexShader != null)
-            mVertexShader.setColor(mColor);
+        this.color[0] = color[0];
+        this.color[1] = color[1];
+        this.color[2] = color[2];
+        this.color[3] = color[3];
+        if (vertexShader != null)
+            vertexShader.setColor(this.color);
     }
 
     /**
@@ -358,7 +357,7 @@ public class Material {
      * @return
      */
     public int getColor() {
-        return Color.argb((int) (mColor[3] * 255), (int) (mColor[0] * 255), (int) (mColor[1] * 255), (int) (mColor[2] * 255));
+        return Color.argb((int) (color[3] * 255), (int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255));
     }
 
     /**
@@ -375,7 +374,7 @@ public class Material {
      *                  50% color influence, .75 for 75% color influence, etc.
      */
     public void setColorInfluence(float influence) {
-        mColorInfluence = influence;
+        colorInfluence = influence;
     }
 
     /**
@@ -384,7 +383,7 @@ public class Material {
      * @return A value in the range of [0..1]
      */
     public float getColorInfluence() {
-        return mColorInfluence;
+        return colorInfluence;
     }
 
     /**
@@ -393,11 +392,11 @@ public class Material {
      * @param color The color to be used. Color.RED for instance. Or 0xffff0000.
      */
     public void setAmbientColor(int color) {
-        mAmbientColor[0] = (float) Color.red(color) / 255.f;
-        mAmbientColor[1] = (float) Color.green(color) / 255.f;
-        mAmbientColor[2] = (float) Color.blue(color) / 255.f;
-        if (mLightsVertexShaderFragment != null)
-            mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
+        ambientColor[0] = (float) Color.red(color) / 255.f;
+        ambientColor[1] = (float) Color.green(color) / 255.f;
+        ambientColor[2] = (float) Color.blue(color) / 255.f;
+        if (lightsVertexShaderFragment != null)
+            lightsVertexShaderFragment.setAmbientColor(ambientColor);
     }
 
     /**
@@ -407,11 +406,11 @@ public class Material {
      *              the red, green, blue and alpha channels.
      */
     public void setAmbientColor(float[] color) {
-        mAmbientColor[0] = color[0];
-        mAmbientColor[1] = color[1];
-        mAmbientColor[2] = color[2];
-        if (mLightsVertexShaderFragment != null)
-            mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
+        ambientColor[0] = color[0];
+        ambientColor[1] = color[1];
+        ambientColor[2] = color[2];
+        if (lightsVertexShaderFragment != null)
+            lightsVertexShaderFragment.setAmbientColor(ambientColor);
     }
 
     /**
@@ -420,7 +419,7 @@ public class Material {
      * @return
      */
     public int getAmbientColor() {
-        return Color.argb(1, (int) (mAmbientColor[0] * 255), (int) (mAmbientColor[1] * 255), (int) (mAmbientColor[2] * 255));
+        return Color.argb(1, (int) (ambientColor[0] * 255), (int) (ambientColor[1] * 255), (int) (ambientColor[2] * 255));
     }
 
     /**
@@ -442,51 +441,43 @@ public class Material {
      * @param b The value [0..1] for the blue channel
      */
     public void setAmbientIntensity(float r, float g, float b) {
-        mAmbientIntensity[0] = r;
-        mAmbientIntensity[1] = g;
-        mAmbientIntensity[2] = b;
-        if (mLightsVertexShaderFragment != null)
-            mLightsVertexShaderFragment.setAmbientIntensity(mAmbientIntensity);
+        ambientIntensity[0] = r;
+        ambientIntensity[1] = g;
+        ambientIntensity[2] = b;
+        if (lightsVertexShaderFragment != null)
+            lightsVertexShaderFragment.setAmbientIntensity(ambientIntensity);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    void add() {
+    //TODO: Remove visibility!
+    public void add() {
         RajLog.d("Material is being added.");
         // We are being added to the scene, check the capabilities now if needed since they are available.
         checkCapabilitiesIfNeeded();
 
-        if (mLightingEnabled && mLights == null)
+        if (lightingEnabled && lights == null)
             return;
 
         createShaders();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    void remove() {
-        mModelMatrix = null;
-        mModelViewMatrix = null;
+    public void remove() {
+        modelMatrix = null;
+        modelViewMatrix = null;
 
-        if (mLights != null)
-            mLights.clear();
-        if (mTextureList != null)
-            mTextureList.clear();
+        if (lights != null)
+            lights.clear();
+        if (textures != null)
+            textures.clear();
 
         if (Renderer.hasGLContext()) {
-            GLES20.glDeleteShader(mVShaderHandle);
-            GLES20.glDeleteShader(mFShaderHandle);
-            GLES20.glDeleteProgram(mProgramHandle);
+            GLES20.glDeleteShader(vertexShaderHandle);
+            GLES20.glDeleteShader(fragmentShaderHandle);
+            GLES20.glDeleteProgram(programHandle);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     void reload() {
-        mIsDirty = true;
+        isDirty = true;
         createShaders();
     }
 
@@ -513,9 +504,9 @@ public class Material {
      * This method should only be called on initialization or when parameters have changed.
      */
     protected void createShaders() {
-        if (!mIsDirty)
+        if (!isDirty)
             return;
-        if (mCustomVertexShader == null && mCustomFragmentShader == null) {
+        if (customVertexShader == null && customFragmentShader == null) {
             //
             // -- Check textures
             //
@@ -530,8 +521,8 @@ public class Material {
             boolean hasCubeMaps = false;
             boolean hasVideoTexture = false;
 
-            for (int i = 0; i < mTextureList.size(); i++) {
-                ATexture texture  = mTextureList.get(i);
+            for (int i = 0; i < textures.size(); i++) {
+                ATexture texture  = textures.get(i);
 
                 switch (texture.getTextureType()) {
                     case VIDEO_TEXTURE:
@@ -583,41 +574,41 @@ public class Material {
                 }
             }
 
-            mVertexShader = new VertexShader();
-            mVertexShader.enableTime(mTimeEnabled);
-            mVertexShader.hasCubeMaps(hasCubeMaps);
-            mVertexShader.hasSkyTexture(skyTextures != null && skyTextures.size() > 0);
-            mVertexShader.useVertexColors(mUseVertexColors);
-            onPreVertexShaderInitialize(mVertexShader);
-            mVertexShader.initialize();
-            mFragmentShader = new FragmentShader();
-            mFragmentShader.enableTime(mTimeEnabled);
-            mFragmentShader.hasCubeMaps(hasCubeMaps);
-            onPreFragmentShaderInitialize(mFragmentShader);
-            mFragmentShader.initialize();
+            vertexShader = new VertexShader();
+            vertexShader.enableTime(timeEnabled);
+            vertexShader.hasCubeMaps(hasCubeMaps);
+            vertexShader.hasSkyTexture(skyTextures != null && skyTextures.size() > 0);
+            vertexShader.useVertexColors(useVertexColors);
+            onPreVertexShaderInitialize(vertexShader);
+            vertexShader.initialize();
+            fragmentShader = new FragmentShader();
+            fragmentShader.enableTime(timeEnabled);
+            fragmentShader.hasCubeMaps(hasCubeMaps);
+            onPreFragmentShaderInitialize(fragmentShader);
+            fragmentShader.initialize();
 
             if (diffuseTextures != null && diffuseTextures.size() > 0) {
                 DiffuseTextureFragmentShaderFragment fragment = new DiffuseTextureFragmentShaderFragment(diffuseTextures);
-                mFragmentShader.addShaderFragment(fragment);
+                fragmentShader.addShaderFragment(fragment);
             }
 
             if (normalMapTextures != null && normalMapTextures.size() > 0) {
                 NormalMapFragmentShaderFragment fragment = new NormalMapFragmentShaderFragment(normalMapTextures);
-                mFragmentShader.addShaderFragment(fragment);
+                fragmentShader.addShaderFragment(fragment);
             }
 
             if (envMapTextures != null && envMapTextures.size() > 0) {
                 EnvironmentMapFragmentShaderFragment fragment = new EnvironmentMapFragmentShaderFragment(envMapTextures);
-                mFragmentShader.addShaderFragment(fragment);
+                fragmentShader.addShaderFragment(fragment);
             }
 
             if (skyTextures != null && skyTextures.size() > 0) {
                 SkyTextureFragmentShaderFragment fragment = new SkyTextureFragmentShaderFragment(skyTextures);
-                mFragmentShader.addShaderFragment(fragment);
+                fragmentShader.addShaderFragment(fragment);
             }
 
             if (hasVideoTexture)
-                mFragmentShader.addPreprocessorDirective("#extension GL_OES_EGL_image_external : require");
+                fragmentShader.addPreprocessorDirective("#extension GL_OES_EGL_image_external : require");
 
             checkForPlugins(PluginInsertLocation.PRE_LIGHTING);
 
@@ -625,15 +616,15 @@ public class Material {
             // -- Lighting
             //
 
-            if (mLightingEnabled && mLights != null && mLights.size() > 0) {
-                mVertexShader.setLights(mLights);
-                mFragmentShader.setLights(mLights);
+            if (lightingEnabled && lights != null && lights.size() > 0) {
+                vertexShader.setLights(lights);
+                fragmentShader.setLights(lights);
 
-                mLightsVertexShaderFragment = new LightsVertexShaderFragment(mLights);
-                mLightsVertexShaderFragment.setAmbientColor(mAmbientColor);
-                mLightsVertexShaderFragment.setAmbientIntensity(mAmbientIntensity);
-                mVertexShader.addShaderFragment(mLightsVertexShaderFragment);
-                mFragmentShader.addShaderFragment(new LightsFragmentShaderFragment(mLights));
+                lightsVertexShaderFragment = new LightsVertexShaderFragment(lights);
+                lightsVertexShaderFragment.setAmbientColor(ambientColor);
+                lightsVertexShaderFragment.setAmbientIntensity(ambientIntensity);
+                vertexShader.addShaderFragment(lightsVertexShaderFragment);
+                fragmentShader.addShaderFragment(new LightsFragmentShaderFragment(lights));
 
                 checkForPlugins(PluginInsertLocation.PRE_DIFFUSE);
 
@@ -641,13 +632,13 @@ public class Material {
                 // -- Diffuse method
                 //
 
-                if (mDiffuseMethod != null) {
-                    mDiffuseMethod.setLights(mLights);
-                    IShaderFragment fragment = mDiffuseMethod.getVertexShaderFragment();
+                if (diffuseMethod != null) {
+                    diffuseMethod.setLights(lights);
+                    IShaderFragment fragment = diffuseMethod.getVertexShaderFragment();
                     if (fragment != null)
-                        mVertexShader.addShaderFragment(fragment);
-                    fragment = mDiffuseMethod.getFragmentShaderFragment();
-                    mFragmentShader.addShaderFragment(fragment);
+                        vertexShader.addShaderFragment(fragment);
+                    fragment = diffuseMethod.getFragmentShaderFragment();
+                    fragmentShader.addShaderFragment(fragment);
                 }
 
                 checkForPlugins(PluginInsertLocation.PRE_SPECULAR);
@@ -656,16 +647,16 @@ public class Material {
                 // -- Specular method
                 //
 
-                if (mSpecularMethod != null) {
-                    mSpecularMethod.setLights(mLights);
-                    mSpecularMethod.setTextures(specMapTextures);
-                    IShaderFragment fragment = mSpecularMethod.getVertexShaderFragment();
+                if (specularMethod != null) {
+                    specularMethod.setLights(lights);
+                    specularMethod.setTextures(specMapTextures);
+                    IShaderFragment fragment = specularMethod.getVertexShaderFragment();
                     if (fragment != null)
-                        mVertexShader.addShaderFragment(fragment);
+                        vertexShader.addShaderFragment(fragment);
 
-                    fragment = mSpecularMethod.getFragmentShaderFragment();
+                    fragment = specularMethod.getFragmentShaderFragment();
                     if (fragment != null)
-                        mFragmentShader.addShaderFragment(fragment);
+                        fragmentShader.addShaderFragment(fragment);
                 }
             }
 
@@ -673,58 +664,58 @@ public class Material {
 
             if (alphaMapTextures != null && alphaMapTextures.size() > 0) {
                 AlphaMapFragmentShaderFragment fragment = new AlphaMapFragmentShaderFragment(alphaMapTextures);
-                mFragmentShader.addShaderFragment(fragment);
+                fragmentShader.addShaderFragment(fragment);
             }
 
             checkForPlugins(PluginInsertLocation.PRE_TRANSFORM);
             checkForPlugins(PluginInsertLocation.POST_TRANSFORM);
 
-            mVertexShader.buildShader();
-            mFragmentShader.buildShader();
+            vertexShader.buildShader();
+            fragmentShader.buildShader();
         } else {
-            mVertexShader = mCustomVertexShader;
-            mFragmentShader = mCustomFragmentShader;
+            vertexShader = customVertexShader;
+            fragmentShader = customFragmentShader;
 
-            if (mVertexShader.needsBuild()) mVertexShader.initialize();
-            if (mFragmentShader.needsBuild()) mFragmentShader.initialize();
+            if (vertexShader.needsBuild()) vertexShader.initialize();
+            if (fragmentShader.needsBuild()) fragmentShader.initialize();
 
-            if (mVertexShader.needsBuild()) mVertexShader.buildShader();
-            if (mFragmentShader.needsBuild()) mFragmentShader.buildShader();
+            if (vertexShader.needsBuild()) vertexShader.buildShader();
+            if (fragmentShader.needsBuild()) fragmentShader.buildShader();
         }
 
         if (RajLog.isDebugEnabled()) {
             RajLog.d("-=-=-=- VERTEX SHADER -=-=-=-");
-            RajLog.d(mVertexShader.getShaderString());
+            RajLog.d(vertexShader.getShaderString());
             RajLog.d("-=-=-=- FRAGMENT SHADER -=-=-=-");
-            RajLog.d(mFragmentShader.getShaderString());
+            RajLog.d(fragmentShader.getShaderString());
         }
 
-        mProgramHandle = createProgram(mVertexShader.getShaderString(), mFragmentShader.getShaderString());
-        if (mProgramHandle == 0) {
-            mIsDirty = false;
+        programHandle = createProgram(vertexShader.getShaderString(), fragmentShader.getShaderString());
+        if (programHandle == 0) {
+            isDirty = false;
             return;
         }
 
-        mVertexShader.setLocations(mProgramHandle);
-        mFragmentShader.setLocations(mProgramHandle);
+        vertexShader.setLocations(programHandle);
+        fragmentShader.setLocations(programHandle);
 
-        for (String name : mTextureHandles.keySet()) {
+        for (String name : textureHandles.keySet()) {
             setTextureHandleForName(name);
         }
 
-        for (int i = 0; i < mTextureList.size(); i++) {
-            setTextureParameters(mTextureList.get(i));
+        for (int i = 0; i < textures.size(); i++) {
+            setTextureParameters(textures.get(i));
         }
 
-        mIsDirty = false;
+        isDirty = false;
     }
 
     /**
      * Checks if the device capabilities need to be checked to update the count of available texture units.
      */
     private void checkCapabilitiesIfNeeded() {
-        if (!mCapabilitiesCheckDeferred) return;
-        mMaxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
+        if (!capabilitiesCheckDeferred) return;
+        maxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
     }
 
     /**
@@ -734,11 +725,11 @@ public class Material {
      * @param location Where to insert the vertex and/or fragment shader
      */
     private void checkForPlugins(PluginInsertLocation location) {
-        if (mPlugins == null) return;
-        for (IMaterialPlugin plugin : mPlugins) {
+        if (plugins == null) return;
+        for (IMaterialPlugin plugin : plugins) {
             if (plugin.getInsertLocation() == location) {
-                mVertexShader.addShaderFragment(plugin.getVertexShaderFragment());
-                mFragmentShader.addShaderFragment(plugin.getFragmentShaderFragment());
+                vertexShader.addShaderFragment(plugin.getVertexShaderFragment());
+                fragmentShader.addShaderFragment(plugin.getFragmentShaderFragment());
             }
         }
     }
@@ -779,20 +770,20 @@ public class Material {
      * @return
      */
     private int createProgram(String vertexSource, String fragmentSource) {
-        mVShaderHandle = loadShader(GLES20.GL_VERTEX_SHADER, vertexSource);
-        if (mVShaderHandle == 0) {
+        vertexShaderHandle = loadShader(GLES20.GL_VERTEX_SHADER, vertexSource);
+        if (vertexShaderHandle == 0) {
             return 0;
         }
 
-        mFShaderHandle = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentSource);
-        if (mFShaderHandle == 0) {
+        fragmentShaderHandle = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentSource);
+        if (fragmentShaderHandle == 0) {
             return 0;
         }
 
         int program = GLES20.glCreateProgram();
         if (program != 0) {
-            GLES20.glAttachShader(program, mVShaderHandle);
-            GLES20.glAttachShader(program, mFShaderHandle);
+            GLES20.glAttachShader(program, vertexShaderHandle);
+            GLES20.glAttachShader(program, fragmentShaderHandle);
             GLES20.glLinkProgram(program);
 
             int[] linkStatus = new int[1];
@@ -811,10 +802,10 @@ public class Material {
      * Tells the OpenGL context to use this program. This should be called every frame.
      */
     public void useProgram() {
-        if (mIsDirty) {
+        if (isDirty) {
             createShaders();
         }
-        GLES20.glUseProgram(mProgramHandle);
+        GLES20.glUseProgram(programHandle);
     }
 
     /**
@@ -822,12 +813,12 @@ public class Material {
      * like time, color, buffer handles, etc.
      */
     public void applyParams() {
-        mVertexShader.setColor(mColor);
-        mVertexShader.setTime(mTime);
-        mVertexShader.applyParams();
+        vertexShader.setColor(color);
+        vertexShader.setTime(time);
+        vertexShader.applyParams();
 
-        mFragmentShader.setColorInfluence(mColorInfluence);
-        mFragmentShader.applyParams();
+        fragmentShader.setColorInfluence(colorInfluence);
+        fragmentShader.applyParams();
     }
 
     /**
@@ -836,27 +827,27 @@ public class Material {
      * @param texture
      */
     private void setTextureParameters(ATexture texture) {
-        if (mTextureHandles.containsKey(texture.getTextureName())) return;
+        if (textureHandles.containsKey(texture.getTextureName())) return;
 
-        int textureHandle = GLES20.glGetUniformLocation(mProgramHandle, texture.getTextureName());
+        int textureHandle = GLES20.glGetUniformLocation(programHandle, texture.getTextureName());
         if (textureHandle == -1 && RajLog.isDebugEnabled()) {
             RajLog.e("Could not get uniform location for " + texture.getTextureName() + ", "
                      + texture.getTextureType());
             return;
         }
-        mTextureHandles.put(texture.getTextureName(), textureHandle);
+        textureHandles.put(texture.getTextureName(), textureHandle);
     }
 
     public void setTextureHandleForName(@NonNull String name) {
-        if (mProgramHandle < 0 || mTextureHandles.containsKey(name) && mTextureHandles.get(name) > -1) {
+        if (programHandle < 0 || textureHandles.containsKey(name) && textureHandles.get(name) > -1) {
             return;
         }
-        int textureHandle = GLES20.glGetUniformLocation(mProgramHandle, name);
+        int textureHandle = GLES20.glGetUniformLocation(programHandle, name);
         if (textureHandle == -1 && RajLog.isDebugEnabled()) {
-            RajLog.e("Could not get uniform location for " + name + " Program Handle: " + mProgramHandle);
+            RajLog.e("Could not get uniform location for " + name + " Program Handle: " + programHandle);
             return;
         }
-        mTextureHandles.put(name, textureHandle);
+        textureHandles.put(name, textureHandle);
     }
 
     /**
@@ -866,54 +857,55 @@ public class Material {
      */
     public void bindTextures() {
         // Assume its the number of textures
-        int num = mTextureList.size();
+        int num = textures.size();
         // Check if the number of applied textures is larger than the max texture count
         // - this would be due to deferred capabilities checking. If so, choose max texture count.
-        if (num > mMaxTextures) {
+        if (num > maxTextures) {
             RajLog.e(num + " textures have been added to this material but this device supports a max of "
-                + mMaxTextures + " textures in the fragment shader. Only the first " + mMaxTextures + " will be used.");
-            num = mMaxTextures;
+                     + maxTextures + " textures in the fragment shader. Only the first " + maxTextures
+                     + " will be used.");
+            num = maxTextures;
         }
 
         for (int i = 0; i < num; i++) {
-            bindTextureByName(i, mTextureList.get(i));
+            bindTextureByName(i, textures.get(i));
         }
 
-        if (mPlugins != null)
-            for (IMaterialPlugin plugin : mPlugins)
+        if (plugins != null)
+            for (IMaterialPlugin plugin : plugins)
                 plugin.bindTextures(num);
     }
 
     public void bindTextureByName(int index, ATexture texture) {
-        if (!mTextureHandles.containsKey(texture.getTextureName())) {
+        if (!textureHandles.containsKey(texture.getTextureName())) {
             setTextureParameters(texture);
         }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
         GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
-        GLES20.glUniform1i(mTextureHandles.get(texture.getTextureName()), index);
+        GLES20.glUniform1i(textureHandles.get(texture.getTextureName()), index);
     }
 
     public void bindTextureByName(String name, int index, ATexture texture) {
-        if (!mTextureHandles.containsKey(texture.getTextureName())) {
+        if (!textureHandles.containsKey(texture.getTextureName())) {
             setTextureHandleForName(name);
         }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
         GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
-        GLES20.glUniform1i(mTextureHandles.get(name), index);
+        GLES20.glUniform1i(textureHandles.get(name), index);
     }
 
     /**
      * Unbinds the texture from an OpenGL texturing target.
      */
     public void unbindTextures() {
-        int num = mTextureList.size();
+        int num = textures.size();
 
-        if (mPlugins != null)
-            for (IMaterialPlugin plugin : mPlugins)
+        if (plugins != null)
+            for (IMaterialPlugin plugin : plugins)
                 plugin.unbindTextures();
 
         for (int i = 0; i < num; i++) {
-            ATexture texture = mTextureList.get(i);
+            ATexture texture = textures.get(i);
             GLES20.glBindTexture(texture.getGLTextureType(), 0);
         }
 
@@ -928,16 +920,18 @@ public class Material {
      * @throws TextureException
      */
     public void addTexture(ATexture texture) throws TextureException {
-        if (mTextureList.indexOf(texture) > -1) return;
-        if (mTextureList.size() + 1 > mMaxTextures) {
-            throw new TextureException("Maximum number of textures for this material has been reached. Maximum number of textures is " + mMaxTextures + ".");
+        if (textures.indexOf(texture) > -1) return;
+        if (textures.size() + 1 > maxTextures) {
+            throw new TextureException("Maximum number of textures for this material has been reached. Maximum number"
+                                       + " of textures is " + maxTextures
+                                       + ".");
         }
-        mTextureList.add(texture);
+        textures.add(texture);
 
         TextureManager.getInstance().addTexture(texture);
         texture.registerMaterial(this);
 
-        mIsDirty = true;
+        isDirty = true;
     }
 
     /**
@@ -946,7 +940,7 @@ public class Material {
      * @param texture
      */
     public void removeTexture(ATexture texture) {
-        mTextureList.remove(texture);
+        textures.remove(texture);
         texture.unregisterMaterial(this);
     }
 
@@ -956,7 +950,7 @@ public class Material {
      * @return
      */
     public ArrayList<ATexture> getTextureList() {
-        return mTextureList;
+        return textures;
     }
 
     /**
@@ -967,10 +961,10 @@ public class Material {
      * @throws TextureException
      */
     public void copyTexturesTo(Material material) throws TextureException {
-        int num = mTextureList.size();
+        int num = textures.size();
 
         for (int i = 0; i < num; ++i)
-            material.addTexture(mTextureList.get(i));
+            material.addTexture(textures.get(i));
     }
 
     /**
@@ -979,7 +973,7 @@ public class Material {
      * @param vertexBufferHandle
      */
     public void setVertices(final int vertexBufferHandle) {
-        mVertexShader.setVertices(vertexBufferHandle);
+        vertexShader.setVertices(vertexBufferHandle);
     }
 
     /**
@@ -988,7 +982,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setVertices(BufferInfo bufferInfo) {
-        mVertexShader.setVertices(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        vertexShader.setVertices(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -997,7 +991,7 @@ public class Material {
      * @param textureCoordBufferHandle
      */
     public void setTextureCoords(final int textureCoordBufferHandle) {
-        mVertexShader.setTextureCoords(textureCoordBufferHandle);
+        vertexShader.setTextureCoords(textureCoordBufferHandle);
     }
 
     /**
@@ -1006,7 +1000,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setTextureCoords(BufferInfo bufferInfo) {
-        mVertexShader.setTextureCoords(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        vertexShader.setTextureCoords(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1015,7 +1009,7 @@ public class Material {
      * @param normalBufferHandle
      */
     public void setNormals(final int normalBufferHandle) {
-        mVertexShader.setNormals(normalBufferHandle);
+        vertexShader.setNormals(normalBufferHandle);
     }
 
     /**
@@ -1024,7 +1018,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setNormals(BufferInfo bufferInfo) {
-        mVertexShader.setNormals(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        vertexShader.setNormals(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1033,7 +1027,7 @@ public class Material {
      * @param vertexColorBufferHandle
      */
     public void setVertexColors(final int vertexColorBufferHandle) {
-        mVertexShader.setVertexColors(vertexColorBufferHandle);
+        vertexShader.setVertexColors(vertexColorBufferHandle);
     }
 
     /**
@@ -1042,7 +1036,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setVertexColors(BufferInfo bufferInfo) {
-        mVertexShader.setVertexColors(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        vertexShader.setVertexColors(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1051,7 +1045,7 @@ public class Material {
      * @return
      */
     public Matrix4 getModelViewMatrix() {
-        return mModelMatrix;
+        return modelMatrix;
     }
 
     /**
@@ -1061,7 +1055,7 @@ public class Material {
      * @param mvpMatrix
      */
     public void setMVPMatrix(Matrix4 mvpMatrix) {
-        mVertexShader.setMVPMatrix(mvpMatrix.getFloatValues());
+        vertexShader.setMVPMatrix(mvpMatrix.getFloatValues());
     }
 
     /**
@@ -1070,23 +1064,23 @@ public class Material {
      * @param modelMatrix
      */
     public void setModelMatrix(Matrix4 modelMatrix) {
-        mModelMatrix = modelMatrix;//.getFloatValues();
-        mVertexShader.setModelMatrix(mModelMatrix);
+        this.modelMatrix = modelMatrix;//.getFloatValues();
+        vertexShader.setModelMatrix(this.modelMatrix);
 
-        mNormalMatrix.setAll(modelMatrix).setToNormalMatrix();
-        float[] matrix = mNormalMatrix.getFloatValues();
+        normalMatrix.setAll(modelMatrix).setToNormalMatrix();
+        float[] matrix = normalMatrix.getFloatValues();
 
-        mNormalFloats[0] = matrix[0];
-        mNormalFloats[1] = matrix[1];
-        mNormalFloats[2] = matrix[2];
-        mNormalFloats[3] = matrix[4];
-        mNormalFloats[4] = matrix[5];
-        mNormalFloats[5] = matrix[6];
-        mNormalFloats[6] = matrix[8];
-        mNormalFloats[7] = matrix[9];
-        mNormalFloats[8] = matrix[10];
+        normalFloats[0] = matrix[0];
+        normalFloats[1] = matrix[1];
+        normalFloats[2] = matrix[2];
+        normalFloats[3] = matrix[4];
+        normalFloats[4] = matrix[5];
+        normalFloats[5] = matrix[6];
+        normalFloats[6] = matrix[8];
+        normalFloats[7] = matrix[9];
+        normalFloats[8] = matrix[10];
 
-        mVertexShader.setNormalMatrix(mNormalFloats);
+        vertexShader.setNormalMatrix(normalFloats);
     }
 
     /**
@@ -1095,8 +1089,8 @@ public class Material {
      * @param modelViewMatrix
      */
     public void setModelViewMatrix(Matrix4 modelViewMatrix) {
-        mModelViewMatrix = modelViewMatrix.getFloatValues();
-        mVertexShader.setModelViewMatrix(mModelViewMatrix);
+        this.modelViewMatrix = modelViewMatrix.getFloatValues();
+        vertexShader.setModelViewMatrix(this.modelViewMatrix);
     }
 
     /**
@@ -1107,7 +1101,7 @@ public class Material {
      * @param value
      */
     public void enableLighting(boolean value) {
-        mLightingEnabled = value;
+        lightingEnabled = value;
     }
 
     /**
@@ -1118,7 +1112,7 @@ public class Material {
      * @return
      */
     public boolean lightingEnabled() {
-        return mLightingEnabled;
+        return lightingEnabled;
     }
 
     /**
@@ -1130,7 +1124,7 @@ public class Material {
      * @param value
      */
     public void enableTime(boolean value) {
-        mTimeEnabled = value;
+        timeEnabled = value;
     }
 
     /**
@@ -1142,7 +1136,7 @@ public class Material {
      * @return
      */
     public boolean timeEnabled() {
-        return mTimeEnabled;
+        return timeEnabled;
     }
 
     /**
@@ -1170,7 +1164,7 @@ public class Material {
      * @param time
      */
     public void setTime(float time) {
-        mTime = time;
+        this.time = time;
     }
 
     /**
@@ -1198,7 +1192,7 @@ public class Material {
      * @return
      */
     public float getTime() {
-        return mTime;
+        return time;
     }
 
     /**
@@ -1208,15 +1202,15 @@ public class Material {
      * @param lights The lights collection
      */
     public void setLights(List<ALight> lights) {
-        if (mLights != null) {
+        if (this.lights != null) {
             for (ALight light : lights) {
-                if (!mLights.contains(light)) {
+                if (!this.lights.contains(light)) {
                     break;
                 }
             }
         } else {
-            mIsDirty = true;
-            mLights = lights;
+            isDirty = true;
+            this.lights = lights;
         }
     }
 
@@ -1231,9 +1225,9 @@ public class Material {
      * @param diffuseMethod The diffuse method
      */
     public void setDiffuseMethod(IDiffuseMethod diffuseMethod) {
-        if (mDiffuseMethod == diffuseMethod) return;
-        mDiffuseMethod = diffuseMethod;
-        mIsDirty = true;
+        if (this.diffuseMethod == diffuseMethod) return;
+        this.diffuseMethod = diffuseMethod;
+        isDirty = true;
     }
 
     /**
@@ -1247,7 +1241,7 @@ public class Material {
      * @return the currently used diffuse method
      */
     public IDiffuseMethod getDiffuseMethod() {
-        return mDiffuseMethod;
+        return diffuseMethod;
     }
 
     /**
@@ -1262,9 +1256,9 @@ public class Material {
      * @param specularMethod The specular method to use
      */
     public void setSpecularMethod(ISpecularMethod specularMethod) {
-        if (mSpecularMethod == specularMethod) return;
-        mSpecularMethod = specularMethod;
-        mIsDirty = true;
+        if (this.specularMethod == specularMethod) return;
+        this.specularMethod = specularMethod;
+        isDirty = true;
     }
 
     /**
@@ -1279,7 +1273,7 @@ public class Material {
      * @return The currently used specular method
      */
     public ISpecularMethod getSpecularMethod() {
-        return mSpecularMethod;
+        return specularMethod;
     }
 
     /**
@@ -1290,17 +1284,17 @@ public class Material {
      * @param plugin
      */
     public void addPlugin(IMaterialPlugin plugin) {
-        if (mPlugins == null) {
-            mPlugins = new ArrayList<IMaterialPlugin>();
+        if (plugins == null) {
+            plugins = new ArrayList<IMaterialPlugin>();
         } else {
-            for (IMaterialPlugin p : mPlugins) {
+            for (IMaterialPlugin p : plugins) {
                 if (plugin.getClass().getSimpleName().equals(p.getClass().getSimpleName()))
                     return;
             }
         }
 
-        mPlugins.add(plugin);
-        mIsDirty = true;
+        plugins.add(plugin);
+        isDirty = true;
     }
 
     /**
@@ -1313,9 +1307,9 @@ public class Material {
      * @return
      */
     public IMaterialPlugin getPlugin(Class<?> pluginClass) {
-        if (mPlugins == null) return null;
+        if (plugins == null) return null;
 
-        for (IMaterialPlugin plugin : mPlugins) {
+        for (IMaterialPlugin plugin : plugins) {
             if (plugin.getClass() == pluginClass)
                 return plugin;
         }
@@ -1337,9 +1331,9 @@ public class Material {
      * @param plugin
      */
     public void removePlugin(IMaterialPlugin plugin) {
-        if (mPlugins != null && mPlugins.contains(plugin)) {
-            mPlugins.remove(plugin);
-            mIsDirty = true;
+        if (plugins != null && plugins.contains(plugin)) {
+            plugins.remove(plugin);
+            isDirty = true;
         }
     }
 
@@ -1349,7 +1343,7 @@ public class Material {
      * @param identity
      */
     public void setOwnerIdentity(String identity) {
-        mOwnerIdentity = identity;
+        ownerIdentity = identity;
     }
 
     /**
@@ -1358,6 +1352,6 @@ public class Material {
      * @return
      */
     public String getOwnerIdentity() {
-        return mOwnerIdentity;
+        return ownerIdentity;
     }
 }

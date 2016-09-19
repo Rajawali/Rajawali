@@ -4,12 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.textures.TextureDataReference;
+import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.Texture;
-import org.rajawali3d.materials.textures.TextureException;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.primitives.ScreenQuad;
 
 public class ThreeSixtyImagesFragment extends AExampleFragment {

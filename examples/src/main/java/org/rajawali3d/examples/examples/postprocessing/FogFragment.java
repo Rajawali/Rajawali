@@ -13,7 +13,7 @@ import org.rajawali3d.loader.LoaderOBJ;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin;
-import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.textures.Texture;
 import org.rajawali3d.math.vector.Vector3;
 
 public class FogFragment extends AExampleFragment {

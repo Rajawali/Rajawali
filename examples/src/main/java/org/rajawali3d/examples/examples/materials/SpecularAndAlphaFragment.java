@@ -13,10 +13,10 @@ import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.textures.AlphaMapTexture;
-import org.rajawali3d.materials.textures.SpecularMapTexture;
-import org.rajawali3d.materials.textures.Texture;
-import org.rajawali3d.materials.textures.TextureException;
+import org.rajawali3d.textures.AlphaMapTexture;
+import org.rajawali3d.textures.SpecularMapTexture;
+import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 

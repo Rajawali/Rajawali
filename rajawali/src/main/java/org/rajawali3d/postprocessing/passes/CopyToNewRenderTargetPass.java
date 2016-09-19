@@ -16,8 +16,8 @@ import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 
 import org.rajawali3d.R;
-import org.rajawali3d.materials.textures.ATexture.FilterType;
-import org.rajawali3d.materials.textures.ATexture.WrapType;
+import org.rajawali3d.textures.ATexture.FilterType;
+import org.rajawali3d.textures.ATexture.WrapType;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;

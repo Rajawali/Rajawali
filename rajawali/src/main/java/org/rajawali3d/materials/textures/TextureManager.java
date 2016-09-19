@@ -20,6 +20,9 @@ import org.rajawali3d.materials.AResourceManager;
 import org.rajawali3d.renderer.Renderer;
 
 import android.opengl.GLES20;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.RenderTargetTexture;
+import org.rajawali3d.textures.TextureException;
 
 /**
  * A singleton class that keeps track of all textures used by the application. All textures will be restored when the

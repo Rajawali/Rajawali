@@ -11,8 +11,8 @@ import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.textures.CubeMapTexture;
-import org.rajawali3d.materials.textures.TextureException;
+import org.rajawali3d.textures.CubeMapTexture;
+import org.rajawali3d.textures.TextureException;
 
 public class MaterialsFragment extends AExampleFragment {
 

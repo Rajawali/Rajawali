@@ -10,13 +10,11 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package c.org.rajawali3d.textures;
-
-import android.opengl.GLES20;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.TextureException;
+package org.rajawali3d.textures;
 
 import java.nio.ByteBuffer;
+
+import android.opengl.GLES20;
 
 public abstract class ACompressedTexture extends ATexture {
 
@@ -48,8 +46,8 @@ public abstract class ACompressedTexture extends ATexture {
 
 	protected ACompressedTexture() {
 		super();
-		mTextureType = TextureType.COMPRESSED;
-		mWrapType = WrapType.REPEAT;
+		textureType = TextureType.COMPRESSED;
+		wrapType = WrapType.REPEAT;
 	}
 
 	public ACompressedTexture(ACompressedTexture other)
@@ -61,8 +59,8 @@ public abstract class ACompressedTexture extends ATexture {
 	public ACompressedTexture(String textureName)
 	{
 		this();
-		mTextureType = TextureType.COMPRESSED;
-		mTextureName = textureName;
+		textureType = TextureType.COMPRESSED;
+		this.textureName = textureName;
 	}
 
 	public ACompressedTexture(String textureName, ByteBuffer byteBuffer)
@@ -141,17 +139,17 @@ public abstract class ACompressedTexture extends ATexture {
 		{
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
-			if (mFilterType == FilterType.LINEAR)
+			if (filterType == FilterType.LINEAR)
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
 			else
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 
-			if (mFilterType == FilterType.LINEAR)
+			if (filterType == FilterType.LINEAR)
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 			else
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
-			if (mWrapType == WrapType.REPEAT) {
+			if (wrapType == WrapType.REPEAT) {
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
 			} else {
@@ -159,9 +157,9 @@ public abstract class ACompressedTexture extends ATexture {
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 			}
 			if ((mByteBuffers != null && mByteBuffers.length == 0) || mByteBuffers == null) {
-				GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, 0, mCompressionFormat, mWidth, mHeight, 0, 0, null);
+				GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, 0, mCompressionFormat, width, height, 0, 0, null);
 			} else {
-				int w = mWidth, h = mHeight;
+				int w = width, h = height;
 				for (int i = 0; i < mByteBuffers.length; i++) {
 					GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, i, mCompressionFormat, w, h, 0,
 							mByteBuffers[i].capacity(), mByteBuffers[i]);
@@ -185,7 +183,7 @@ public abstract class ACompressedTexture extends ATexture {
 
 	void remove() throws TextureException
 	{
-		GLES20.glDeleteTextures(1, new int[] { mTextureId }, 0);
+		GLES20.glDeleteTextures(1, new int[] { textureId }, 0);
 	}
 
 	void replace() throws TextureException
@@ -193,12 +191,12 @@ public abstract class ACompressedTexture extends ATexture {
 		if (mByteBuffers == null || mByteBuffers.length == 0)
 			throw new TextureException("Texture could not be replaced because there is no ByteBuffer set.");
 
-		if (mWidth == 0 || mHeight == 0)
+		if (width == 0 || height == 0)
 			throw new TextureException(
 					"Could not update ByteBuffer texture. One or more of the following properties haven't been set: width or height");
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId);
-		int w = mWidth, h = mHeight;
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+		int w = width, h = height;
 		for (int i = 0; i < mByteBuffers.length; i++) {
 			GLES20.glCompressedTexSubImage2D(GLES20.GL_TEXTURE_2D, i, 0, 0, w, h, mCompressionFormat,
 					mByteBuffers[i].capacity(), mByteBuffers[i]);

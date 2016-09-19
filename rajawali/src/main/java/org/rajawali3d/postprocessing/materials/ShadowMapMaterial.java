@@ -8,7 +8,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.ShadowMapMaterialPlugin;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
-import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.textures.ATexture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.Scene;
@@ -24,8 +24,8 @@ public class ShadowMapMaterial extends Material {
 	public ShadowMapMaterial() {
 		super();
 		mVertexShader = new ShadowMapVertexShader();
-		mCustomVertexShader = mVertexShader;
-		mCustomFragmentShader = new ShadowMapFragmentShader();
+		customVertexShader = mVertexShader;
+		customFragmentShader = new ShadowMapFragmentShader();
 		mMaterialPlugin = new ShadowMapMaterialPlugin();
 	}
 
@@ -37,11 +37,11 @@ public class ShadowMapMaterial extends Material {
 	}
 
 	public void setCamera(Camera camera) {
-		((ShadowMapVertexShader)mCustomVertexShader).setCamera(camera);
+		((ShadowMapVertexShader) customVertexShader).setCamera(camera);
 	}
 
 	public void setLight(DirectionalLight light) {
-		((ShadowMapVertexShader)mCustomVertexShader).setLight(light);
+		((ShadowMapVertexShader) customVertexShader).setLight(light);
 		mLight = light;
 	}
 

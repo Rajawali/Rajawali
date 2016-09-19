@@ -15,7 +15,7 @@ package org.rajawali3d.materials.shaders.fragments.texture;
 import java.util.List;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.textures.ATexture;
 
 
 public class AlphaMapFragmentShaderFragment extends ATextureFragmentShaderFragment {

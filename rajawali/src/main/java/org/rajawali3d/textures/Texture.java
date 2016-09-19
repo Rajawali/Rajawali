@@ -10,9 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.materials.textures;
-
-import c.org.rajawali3d.textures.TextureDataReference;
+package org.rajawali3d.textures;
 
 
 public class Texture extends ASingleTexture {

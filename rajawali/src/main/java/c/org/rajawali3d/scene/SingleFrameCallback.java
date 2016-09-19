@@ -1,6 +1,7 @@
 package c.org.rajawali3d.scene;
 
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.annotations.GLThread;
 
 /**
  * Special {@link SimpleSceneFrameCallback} implementation which will automatically remove itself after the frame
@@ -19,6 +20,7 @@ public abstract class SingleFrameCallback extends SimpleSceneFrameCallback {
         this.scene = scene;
     }
 
+    @GLThread
     @Override
     public void onPostFrame(long sceneTime, double deltaTime) {
         super.onPostFrame(sceneTime, deltaTime);

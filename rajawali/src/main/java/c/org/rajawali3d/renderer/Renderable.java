@@ -37,4 +37,7 @@ public interface Renderable {
 
     @GLThread
     void render(final long ellapsedRealtime, final double deltaTime) throws InterruptedException;
+
+    @GLThread
+    void restoreForNewContextIfNeeded();
 }

@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.scene.Scene;
-import c.org.rajawali3d.textures.TextureManager;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.renderer.ISurfaceRenderer;
@@ -38,8 +37,6 @@ import javax.microedition.khronos.opengles.GL10;
 public class RendererImpl implements Renderer, ISurfaceRenderer {
 
     private static final String TAG = "RendererImpl";
-
-    private final TextureManager textureManager;
 
     @GuardedBy("renderables")
     protected final List<Renderable> renderables; // List of all renderable objects this renderer is aware of.
@@ -87,8 +84,6 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
         this.context = context;
         frameRate = getRefreshRate();
-
-        textureManager = new TextureManager(this);
 
         renderables = Collections.synchronizedList(new ArrayList<Renderable>());
     }
@@ -171,12 +166,6 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     public void removeRenderable(@NonNull Renderable renderable) {
         renderable.setRenderer(null);
         renderables.remove(renderable);
-    }
-
-    @NonNull
-    @Override
-    public TextureManager getTextureManager() {
-        return textureManager;
     }
 
     @Override
@@ -327,10 +316,12 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
         }
     }
 
+    @GuardedBy("nextRenderableLock")
     @GLThread
     void switchRenderable(@NonNull Renderable nextRenderable) {
         RajLog.d("Switching from renderable: " + currentRenderable + " to renderable: " + nextRenderable);
         currentRenderable = nextRenderable;
+        currentRenderable.restoreForNewContextIfNeeded();
     }
 
     private class RequestRenderTask implements Runnable {

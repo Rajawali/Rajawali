@@ -13,8 +13,8 @@
 package org.rajawali3d.materials.shaders.fragments.texture;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.ATexture.TextureType;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.ATexture.TextureType;
 
 import java.util.List;
 

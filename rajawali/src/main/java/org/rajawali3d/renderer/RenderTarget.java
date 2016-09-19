@@ -15,9 +15,9 @@ package org.rajawali3d.renderer;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLU;
-import org.rajawali3d.materials.textures.ATexture.FilterType;
-import org.rajawali3d.materials.textures.ATexture.WrapType;
-import org.rajawali3d.materials.textures.RenderTargetTexture;
+import org.rajawali3d.textures.ATexture.FilterType;
+import org.rajawali3d.textures.ATexture.WrapType;
+import org.rajawali3d.textures.RenderTargetTexture;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.util.RajLog;
 
@@ -273,7 +273,7 @@ public class RenderTarget {
 			GLES20.glGenRenderbuffers(1, bufferHandles, 0);
 			mStencilBufferHandle = bufferHandles[0];
 			GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, mStencilBufferHandle);
-			GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_STENCIL_INDEX8, mWidth, mHeight);
+			GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_STENCIL_INDEX8, width, height);
 			GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_STENCIL_ATTACHMENT,
 					GLES20.GL_RENDERBUFFER, mStencilBufferHandle);
 

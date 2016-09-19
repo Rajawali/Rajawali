@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.materials.textures.ATexture;
-import org.rajawali3d.materials.textures.ATexture.TextureType;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.ATexture.TextureType;
 
 
 public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShaderFragment implements IShaderFragment {

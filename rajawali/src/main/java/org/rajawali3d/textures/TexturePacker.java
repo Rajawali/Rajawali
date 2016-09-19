@@ -1,21 +1,21 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-/* 
+/*
  * Derived from Texture Atlas Generator by Lukasz Brunn - lukasz.dk
  * See <a href="https://github.com/lukaszdk/texture-atlas-generator">https://github.com/lukaszdk/texture-atlas-generator</a>
  */
 
-package org.rajawali3d.materials.textures;
+package org.rajawali3d.textures;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public class TexturePacker{
 	/**
 	 * InputStream array for loading bitmaps
 	 */
-	private InputStream[] mInStreams; 
+	private InputStream[] mInStreams;
 	/**
 	 * Array of names of files to pack
 	 */
@@ -75,8 +75,8 @@ public class TexturePacker{
 	private Bitmap[] mAtlasBitmapPages;
 	/**
 	 * Constructor does nothing except pass in the application context
-	 * 
-	 * @param context 
+	 *
+	 * @param context
 	 */
 	public TexturePacker(Context context) {
 		mContext = context;
@@ -85,7 +85,7 @@ public class TexturePacker{
 	 * Used for loading images from assets.
 	 * If <code>subDir</code> is blank the root <code>assets</code> folder will be searched
 	 * Returns a packed <code>TextureAtlas</code>
-	 * 
+	 *
 	 * @param atlasWidth
 	 * @param altasHeight
 	 * @param padding
@@ -99,8 +99,8 @@ public class TexturePacker{
 	}
 	/**
 	 * Used for loading images from an array of resourceIDs.
-	 * Returns a packed <code>TextureAtlas</code> 
-	 * 
+	 * Returns a packed <code>TextureAtlas</code>
+	 *
 	 * @param atlasWidth
 	 * @param altasHeight
 	 * @param padding
@@ -146,7 +146,7 @@ public class TexturePacker{
 			tile.height = BFO.outHeight;
 			atlasTiles[i] = tile;
 		}
-		RajLog.i("Found " + mFileCount + " images to sort and pack.");		
+		RajLog.i("Found " + mFileCount + " images to sort and pack.");
 		/*
 		 * Sort bitmaps by size
 		 */
@@ -162,7 +162,7 @@ public class TexturePacker{
 			BFO.inSampleSize = 1;
 
 			while(tile.width > mAtlasWidth || tile.height > mAtlasHeight) {
-				RajLog.w("File: '" + tile.name + "' (" + tile.width + "x" + tile.height + ") is larger than the atlas (" 
+				RajLog.w("File: '" + tile.name + "' (" + tile.width + "x" + tile.height + ") is larger than the atlas ("
 						+ mAtlasWidth + "x" + mAtlasHeight + ")\nResizing to " + (tile.width/2) + " " + (tile.height/2));
 				BFO.inSampleSize *= 2;
 				try {
@@ -193,7 +193,7 @@ public class TexturePacker{
 	private Bitmap[] packAtlas(Tile[] atlasTiles, boolean useCompression) {
 		ArrayList<Bitmap> pageCollection = new ArrayList<Bitmap>();
 		Bitmap atlasPage = Bitmap.createBitmap(mAtlasWidth, mAtlasHeight, Bitmap.Config.ARGB_8888);
-		Canvas atlasCanvas = new Canvas(atlasPage); 
+		Canvas atlasCanvas = new Canvas(atlasPage);
 		Node root = new Node(0,0, mAtlasWidth, mAtlasHeight);
 		int pageNum = 0;
 		checkPOT(atlasPage, "Atlas Page "+pageNum);
@@ -225,7 +225,7 @@ public class TexturePacker{
 			else {
 				pageCollection.add(atlasPage);
 				atlasPage = Bitmap.createBitmap(mAtlasWidth, mAtlasHeight, Bitmap.Config.ARGB_8888);
-				atlasCanvas = new Canvas(atlasPage); 
+				atlasCanvas = new Canvas(atlasPage);
 				checkPOT(atlasPage, "Atlas Page "+pageNum);
 				root = new Node(0,0, mAtlasWidth, mAtlasHeight);
 				pageNum++;
@@ -252,7 +252,7 @@ public class TexturePacker{
 		if(mFileCount == 0)
 			RajLog.e("No assets found");
 		else {
-			mFileCount = mFileNames.length;		
+			mFileCount = mFileNames.length;
 			InputStream[] streams = new InputStream[mFileCount];
 			for( int i = 0; i < mFileCount; i++) {
 				try {
@@ -288,7 +288,7 @@ public class TexturePacker{
 	 */
 	private void setStreams(InputStream[] inStreams) {
 		mInStreams = inStreams;
-		mResourcesSet = true;		
+		mResourcesSet = true;
 	}
 	/*
 	 * Check that bitmaps are power of two sizes
@@ -321,7 +321,7 @@ public class TexturePacker{
 		}
 
 		protected Node Insert(Tile tile) {
-			if(!isLeaf()) {				
+			if(!isLeaf()) {
 				Node node = child[0].Insert(tile);
 				if(node != null)
 					return node;
@@ -354,7 +354,7 @@ public class TexturePacker{
 	}
 	/**
 	 * <code>Tile</code> is a container used to store pertinent data about each packed image.
-	 * 
+	 *
 	 * @author David Trounstine  (david@evvid.com)
 	 */
 	public class Tile {
@@ -387,7 +387,7 @@ public class TexturePacker{
 		protected int getSampling() {
 			return this.sampling;
 		}
-		
+
 		protected void setSampling(int sampling) {
 			this.sampling = sampling;
 		}
