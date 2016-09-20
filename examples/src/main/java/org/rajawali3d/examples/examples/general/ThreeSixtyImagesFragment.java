@@ -33,7 +33,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
         @Override
 		protected void initScene() {
 			if (mTextureManager != null)
-				mTextureManager.reset();
+				//mTextureManager.reset();
 			if (mMaterial != null)
 				mMaterial.getTextureList().clear();
 
@@ -67,7 +67,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 				ATexture texture = new Texture("bm" + i, new TextureDataReference(bitmap, null));
 				texture.setMipmap(false);
 				texture.shouldRecycle(true);
-				mTextures[i - 1] = mTextureManager.addTexture(texture);
+				//mTextures[i - 1] = mTextureManager.addTexture(texture);
 			}
 			try {
 				mMaterial.addTexture(mTextures[0]);

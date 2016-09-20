@@ -8,7 +8,7 @@ import android.opengl.ETC1;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
 import android.os.Build.VERSION_CODES;
-import org.rajawali3d.materials.textures.utils.ETC2Util;
+import org.rajawali3d.textures.utils.ETC2Util;
 import org.rajawali3d.util.RajLog;
 
 import java.io.IOException;

@@ -36,8 +36,7 @@ public class SkeletalAnimationAWDFragment extends AExampleFragment {
 			getCurrentCamera().setZ(6);
 
 			try {
-				final LoaderAWD parser =
-					new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.boblampclean_anim_awd);
+				final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.boblampclean_anim_awd);
 
 				parser.parse();
 

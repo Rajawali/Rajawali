@@ -68,7 +68,7 @@ public class UIElementsFragment extends AExampleFragment {
 			getCurrentCamera().setPosition(0, 0, 8);
 
 			try {
-                final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
+                final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_suzanne);
                 parser.parse();
 
                 mMonkey = parser.getParsedObject();

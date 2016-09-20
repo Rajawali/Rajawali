@@ -61,7 +61,7 @@ public class WatchService extends WatchFaceService {
 
             try {
                 Material material = new Material();
-                material.addTexture(new Texture("earthColors", R.drawable.earthtruecolor_nasa_big));
+                material.addTexture(new Texture("earthColors", mContext, R.drawable.earthtruecolor_nasa_big));
                 material.setColorInfluence(0);
                 Object3D mSphere = new Sphere(1, 24, 24);
                 mSphere.setMaterial(material);

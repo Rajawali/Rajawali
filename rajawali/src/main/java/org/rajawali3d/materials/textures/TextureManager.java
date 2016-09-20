@@ -12,17 +12,15 @@
  */
 package org.rajawali3d.materials.textures;
 
+import android.opengl.GLES20;
+import org.rajawali3d.materials.AResourceManager;
+import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.RenderTargetTexture;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.rajawali3d.materials.AResourceManager;
-import org.rajawali3d.renderer.Renderer;
-
-import android.opengl.GLES20;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.RenderTargetTexture;
-import org.rajawali3d.textures.TextureException;
 
 /**
  * A singleton class that keeps track of all textures used by the application. All textures will be restored when the
@@ -107,12 +105,12 @@ public final class TextureManager extends AResourceManager {
 						return;
 				}
 			}
-			texture.setOwnerIdentity(mRenderer.getClass().toString());
+			//texture.setOwnerIdentity(mRenderer.getClass().toString());
 		}
 
 		try {
-			texture.add();
-		} catch (TextureException e) {
+			//texture.add();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
@@ -139,8 +137,8 @@ public final class TextureManager extends AResourceManager {
 	public void taskReplace(ATexture texture)
 	{
 		try {
-			texture.replace();
-		} catch (TextureException e) {
+			//texture.replace();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -158,7 +156,6 @@ public final class TextureManager extends AResourceManager {
 	/**
 	 * Removes a list of {@link ATexture}s from the TextureManager.
 	 *
-	 * @param texture
 	 * @return
 	 */
 	public void removeTextures(List<ATexture> textures) {
@@ -177,8 +174,8 @@ public final class TextureManager extends AResourceManager {
 	 */
 	public void taskRemove(ATexture texture) {
 		try {
-			texture.remove();
-		} catch (TextureException e) {
+			//texture.remove();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		mTextureList.remove(texture);
@@ -232,13 +229,13 @@ public final class TextureManager extends AResourceManager {
 			int[] textures = new int[count];
 			for (int i = 0; i < count; i++) {
 				ATexture texture = mTextureList.get(i);
-				if (texture.getOwnerIdentity().equals(mRenderer.getClass().toString()) || texture.willRecycle()) {
-					texture.reset();
+				//if (texture.getOwnerIdentity().equals(mRenderer.getClass().toString()) || texture.willRecycle()) {
+					//texture.reset();
 					textures[i] = texture.getTextureId();
 					mTextureList.remove(i);
 					i -= 1;
 					count -= 1;
-				}
+				//}
 			}
 
 			if(Renderer.hasGLContext())
@@ -250,7 +247,7 @@ public final class TextureManager extends AResourceManager {
 			} else {
 				mTextureList.clear();
 			}
-		} catch (TextureException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -267,7 +264,7 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	public void taskResizeRenderTarget(RenderTargetTexture renderTargetTexture) {
-		renderTargetTexture.resize();
+		//renderTargetTexture.resize();
 	}
 
 	/**

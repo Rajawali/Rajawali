@@ -12,16 +12,8 @@
  */
 package org.rajawali3d.loader.md5;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.opengl.GLES20;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-
 import org.rajawali3d.animation.mesh.AAnimationObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationChildObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationChildObject3D.BoneVertex;
@@ -29,19 +21,26 @@ import org.rajawali3d.animation.mesh.SkeletalAnimationChildObject3D.BoneWeight;
 import org.rajawali3d.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin;
-import org.rajawali3d.textures.TextureException;
-import org.rajawali3d.textures.Texture;
-import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.math.Matrix;
-import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.loader.AMeshLoader;
 import org.rajawali3d.loader.IAnimatedMeshLoader;
 import org.rajawali3d.loader.ParsingException;
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.materials.methods.DiffuseMethod;
+import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin;
+import org.rajawali3d.math.Matrix;
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.TextureException;
+import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.RajLog;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 
@@ -75,12 +74,12 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 		super(renderer, fileOnSDCard);
 	}
 
-	public LoaderMD5Mesh(Renderer renderer, int resourceId) {
+	/*public LoaderMD5Mesh(Renderer renderer, int resourceId) {
 		this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
-	}
+	}*/
 
-	public LoaderMD5Mesh(Resources resources, TextureManager textureManager, int resourceId) {
-		super(resources, textureManager, resourceId);
+	public LoaderMD5Mesh(Context context, TextureManager textureManager, int resourceId) {
+		super(context, textureManager, resourceId);
 	}
 
 	public AAnimationObject3D getParsedAnimationObject() {
@@ -450,7 +449,7 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 					throw new ParsingException("Couldn't find texture " + mesh.textureName);
 				}
 				mat.setColorInfluence(0);
-				mat.addTexture(new Texture("md5tex" + i, identifier));
+				mat.addTexture(new Texture("md5tex" + i, mContext, identifier));
 			}
 			mRootObject.addChild(o);
 

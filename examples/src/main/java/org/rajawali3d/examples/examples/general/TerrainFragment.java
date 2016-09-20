@@ -106,10 +106,10 @@ public class TerrainFragment extends AExampleFragment {
 			material.useVertexColors(true);
 			material.setDiffuseMethod(new DiffuseMethod.Lambert());
 			try {
-				Texture groundTexture = new Texture("ground", R.drawable.ground);
+				Texture groundTexture = new Texture("ground", mContext, R.drawable.ground);
 				groundTexture.setInfluence(.5f);
 				material.addTexture(groundTexture);
-				material.addTexture(new NormalMapTexture("groundNormalMap", R.drawable.groundnor));
+				material.addTexture(new NormalMapTexture("groundNormalMap", mContext, R.drawable.groundnor));
 				material.setColorInfluence(0);
 			} catch (TextureException e) {
 				e.printStackTrace();

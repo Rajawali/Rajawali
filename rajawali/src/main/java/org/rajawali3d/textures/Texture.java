@@ -13,6 +13,9 @@
 package org.rajawali3d.textures;
 
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 public class Texture extends ASingleTexture {
 	public Texture(Texture other)
 	{
@@ -24,10 +27,10 @@ public class Texture extends ASingleTexture {
 		super(TextureType.DIFFUSE, textureName);
 	}
 
-	public Texture(String textureName, int resourceId)
+	public Texture(String textureName, @NonNull Context context, int resourceId)
 	{
 		super(TextureType.DIFFUSE, textureName);
-		setResourceId(resourceId);
+		setResourceId(context, resourceId);
 	}
 
 	public Texture(String textureName, TextureDataReference textureData)

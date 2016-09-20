@@ -1,9 +1,9 @@
 package org.rajawali3d.loader;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.SystemClock;
 import android.util.SparseArray;
-
 import org.rajawali3d.Object3D;
 import org.rajawali3d.loader.awd.ABlockParser;
 import org.rajawali3d.loader.awd.AExportableBlockParser;
@@ -34,12 +34,12 @@ import org.rajawali3d.loader.awd.BlockTextureProjector;
 import org.rajawali3d.loader.awd.BlockTriangleGeometry;
 import org.rajawali3d.loader.awd.BlockUVAnimation;
 import org.rajawali3d.loader.awd.exceptions.NotImplementedParsingException;
-import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
+import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 
@@ -117,8 +117,8 @@ public class LoaderAWD extends AMeshLoader {
         init();
     }
 
-    public LoaderAWD(Resources resources, TextureManager textureManager, int resourceId) {
-        super(resources, textureManager, resourceId);
+    public LoaderAWD(Context context, TextureManager textureManager, int resourceId) {
+        super(context, textureManager, resourceId);
         init();
     }
 

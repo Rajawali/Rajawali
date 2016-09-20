@@ -47,7 +47,7 @@ public class ArcballCameraFragment extends AExampleFragment {
                 debugViz.addChild(new GridFloor());
                 getCurrentScene().addChild(debugViz);
 
-                final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
+                final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_suzanne);
                 parser.parse();
 
                 final Object3D monkey = parser.getParsedObject();

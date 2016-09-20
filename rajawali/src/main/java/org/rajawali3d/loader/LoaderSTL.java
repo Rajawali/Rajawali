@@ -12,11 +12,11 @@
  */
 package org.rajawali3d.loader;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-
-import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 
@@ -54,8 +54,8 @@ public class LoaderSTL extends AMeshLoader {
 		super(renderer, file);
 	}
 
-    public LoaderSTL(Resources resources, TextureManager textureManager, int resourceId) {
-        super(resources, textureManager, resourceId);
+    public LoaderSTL(Context context, TextureManager textureManager, int resourceId) {
+        super(context, textureManager, resourceId);
     }
 
     public LoaderSTL(Renderer renderer, String fileOnSDCard) {

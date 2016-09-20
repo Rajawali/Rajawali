@@ -52,8 +52,9 @@ public class BumpMappingFragment extends AExampleFragment {
 				Material material1 = new Material();
 				material1.setDiffuseMethod(new DiffuseMethod.Lambert());
 				material1.enableLighting(true);
-				material1.addTexture(new Texture("wallDiffuseTex", R.drawable.masonry_wall_texture));
-				material1.addTexture(new NormalMapTexture("wallNormalTex", R.drawable.masonry_wall_normal_map));
+				material1.addTexture(new Texture("wallDiffuseTex", mContext, R.drawable.masonry_wall_texture));
+				material1.addTexture(new NormalMapTexture("wallNormalTex", mContext, R.drawable
+						.masonry_wall_normal_map));
 				material1.setColorInfluence(0);
 				cube.setMaterial(material1);
 				cube.setZ(-2);
@@ -74,8 +75,8 @@ public class BumpMappingFragment extends AExampleFragment {
 				material2.setDiffuseMethod(new DiffuseMethod.Lambert());
 				material2.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 150));
 				material2.enableLighting(true);
-				material2.addTexture(new Texture("earthDiffuseTex", R.drawable.earth_diffuse));
-				material2.addTexture(new NormalMapTexture("eartNormalTex", R.drawable.earth_normal));
+				material2.addTexture(new Texture("earthDiffuseTex", mContext, R.drawable.earth_diffuse));
+				material2.addTexture(new NormalMapTexture("eartNormalTex", mContext, R.drawable.earth_normal));
 				material2.setColorInfluence(0);
 				mEarth.setMaterial(material2);
 

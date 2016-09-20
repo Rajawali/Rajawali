@@ -105,7 +105,7 @@ public class LoaderFBX extends AMeshLoader {
 	}
 
 	public LoaderFBX(Renderer renderer, int resourceId) {
-		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
+		super(renderer.getContext(), renderer.getTextureManager(), resourceId);
 		mRenderer = renderer;
 		mObjStack = new Stack<Object>();
 		mFbx = new FBXValues();

@@ -43,8 +43,7 @@ public class FogFragment extends AExampleFragment {
 			getCurrentScene().setBackgroundColor(fogColor);
 			getCurrentScene().setFog(new FogMaterialPlugin.FogParams(FogMaterialPlugin.FogType.LINEAR, fogColor, 1, 15));
 
-			LoaderOBJ objParser = new LoaderOBJ(mContext.getResources(),
-												mTextureManager, R.raw.road);
+			LoaderOBJ objParser = new LoaderOBJ(mContext, mTextureManager, R.raw.road);
 			try {
 				objParser.parse();
 				mRoad = objParser.getParsedObject();
@@ -55,21 +54,21 @@ public class FogFragment extends AExampleFragment {
 				Material roadMaterial = new Material();
 				roadMaterial.enableLighting(true);
 				roadMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-				roadMaterial.addTexture(new Texture("roadTex", R.drawable.road));
+				roadMaterial.addTexture(new Texture("roadTex", mContext, R.drawable.road));
 				roadMaterial.setColorInfluence(0);
 				mRoad.getChildByName("Road").setMaterial(roadMaterial);
 
 				Material signMaterial = new Material();
 				signMaterial.enableLighting(true);
 				signMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-				signMaterial.addTexture(new Texture("rajawaliSign", R.drawable.sign));
+				signMaterial.addTexture(new Texture("rajawaliSign", mContext, R.drawable.sign));
 				signMaterial.setColorInfluence(0);
 				mRoad.getChildByName("WarningSign").setMaterial(signMaterial);
 
 				Material warningMaterial = new Material();
 				warningMaterial.enableLighting(true);
 				warningMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-				warningMaterial.addTexture(new Texture("warning", R.drawable.warning));
+				warningMaterial.addTexture(new Texture("warning", mContext, R.drawable.warning));
 				warningMaterial.setColorInfluence(0);
 				mRoad.getChildByName("Warning").setMaterial(warningMaterial);
 			} catch (Exception e) {

@@ -43,7 +43,7 @@ public class AnimationFragment extends AExampleFragment {
                 getCurrentCamera().setPosition(0, 0, -14);
                 getCurrentCamera().setLookAt(0, 0, 0);
 
-                final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
+                final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_suzanne);
                 parser.parse();
 
                 final Object3D monkey = parser.getParsedObject();

@@ -837,7 +837,7 @@ public class Scene {
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true, false);
 			mNextSkybox.setDoubleSided(true);
-			mSkyboxTexture = new Texture("skybox", resourceId);
+			mSkyboxTexture = new Texture("skybox", mRenderer.getContext(), resourceId);
 			Material material = new Material();
 			material.setColorInfluence(0);
 			material.addTexture(mSkyboxTexture);
@@ -920,7 +920,7 @@ public class Scene {
 			throw new Exception("The skybox texture cannot be updated.");
 
 		Texture texture = (Texture)mSkyboxTexture;
-		texture.setResourceId(resourceId);
+		texture.setResourceId(mRenderer.getContext(), resourceId);
 		mRenderer.getTextureManager().replaceTexture(texture);
 	}
 

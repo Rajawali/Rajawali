@@ -61,7 +61,8 @@ public class ColorAnimationFragment extends AExampleFragment {
 
 			Material material2 = new Material();
 			try {
-				AlphaMapTexture alphaTex = new AlphaMapTexture("camdenTown", R.drawable.camden_town_alpha);
+				AlphaMapTexture alphaTex = new AlphaMapTexture("camdenTown", mContext,
+															   R.drawable.camden_town_alpha);
 				alphaTex.setInfluence(.5f);
 				material2.addTexture(alphaTex);
 				material2.setColorInfluence(0);

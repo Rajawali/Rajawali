@@ -72,7 +72,7 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
                 material.enableLighting(true);
                 material.setDiffuseMethod(new DiffuseMethod.Lambert());
 
-                final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
+                final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_suzanne);
                 parser.parse();
 
                 // Inserting a couple nested containers to test child picking;

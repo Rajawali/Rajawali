@@ -78,7 +78,7 @@ public class AccelerometerFragment extends AExampleFragment implements
                 mLight.setPower(1);
                 getCurrentScene().addLight(mLight);
 
-                final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
+                final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_suzanne);
                 parser.parse();
 
                 mMonkey = parser.getParsedObject();

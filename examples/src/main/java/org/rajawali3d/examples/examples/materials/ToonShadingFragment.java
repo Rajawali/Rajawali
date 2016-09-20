@@ -42,7 +42,7 @@ public class ToonShadingFragment extends AExampleFragment {
 				toonMat.enableLighting(true);
 				toonMat.setDiffuseMethod(new DiffuseMethod.Toon());
 
-                final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
+                final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_suzanne);
                 parser.parse();
 
                 mMonkey1 = parser.getParsedObject();

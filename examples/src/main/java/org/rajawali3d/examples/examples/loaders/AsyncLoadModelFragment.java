@@ -51,7 +51,7 @@ public class AsyncLoadModelFragment extends AExampleFragment {
             mBaseObject.setPosition(-2.0, 3.0, 0.0);
             try {
                 Material material = new Material();
-                material.addTexture(new Texture("camdenTown", R.drawable.camden_town_alpha));
+                material.addTexture(new Texture("camdenTown", mContext, R.drawable.camden_town_alpha));
                 material.setColorInfluence(0);
                 mBaseObject.setMaterial(material);
                 getCurrentScene().addChild(mBaseObject);
@@ -60,8 +60,7 @@ public class AsyncLoadModelFragment extends AExampleFragment {
             }
 
             //Begin loading
-            final LoaderOBJ loaderOBJ = new LoaderOBJ(mContext.getResources(),
-                mTextureManager, R.raw.multiobjects_obj);
+            final LoaderOBJ loaderOBJ = new LoaderOBJ(mContext, mTextureManager, R.raw.multiobjects_obj);
             loadModel(loaderOBJ, this, R.raw.multiobjects_obj);
 
 			mLightAnim = new EllipticalOrbitAnimation3D(new Vector3(),

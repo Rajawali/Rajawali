@@ -12,13 +12,12 @@
  */
 package org.rajawali3d.loader;
 
-import java.io.File;
-
+import android.content.Context;
 import org.rajawali3d.Object3D;
-import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.textures.TextureManager;
 
-import android.content.res.Resources;
+import java.io.File;
 
 public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 
@@ -41,8 +40,8 @@ public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 		mRootObject = new Object3D();
 	}
 
-	public AMeshLoader(Resources resources, TextureManager textureManager, int resourceId) {
-		super(resources, resourceId);
+	public AMeshLoader(Context context, TextureManager textureManager, int resourceId) {
+		super(context, resourceId);
 		mTextureManager = textureManager;
 		mRootObject = new Object3D();
 	}

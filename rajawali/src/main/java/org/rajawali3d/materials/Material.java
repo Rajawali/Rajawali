@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
+import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.IDiffuseMethod;
 import org.rajawali3d.materials.methods.ISpecularMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
@@ -32,14 +33,13 @@ import org.rajawali3d.materials.shaders.fragments.texture.DiffuseTextureFragment
 import org.rajawali3d.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.SkyTextureFragmentShaderFragment;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.TextureException;
-import org.rajawali3d.textures.CubeMapTexture;
-import org.rajawali3d.textures.SphereMapTexture;
-import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.CubeMapTexture;
+import org.rajawali3d.textures.SphereMapTexture;
+import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.RajLog;
 
@@ -923,12 +923,10 @@ public class Material {
         if (textures.indexOf(texture) > -1) return;
         if (textures.size() + 1 > maxTextures) {
             throw new TextureException("Maximum number of textures for this material has been reached. Maximum number"
-                                       + " of textures is " + maxTextures
-                                       + ".");
+                                       + " of textures is " + maxTextures + ".");
         }
         textures.add(texture);
 
-        TextureManager.getInstance().addTexture(texture);
         texture.registerMaterial(this);
 
         isDirty = true;

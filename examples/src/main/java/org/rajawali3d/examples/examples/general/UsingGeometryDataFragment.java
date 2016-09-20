@@ -51,7 +51,7 @@ public class UsingGeometryDataFragment extends AExampleFragment {
                 spikeMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
                 spikeMaterial.setSpecularMethod(new SpecularMethod.Phong());
 
-                final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_spike);
+                final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_spike);
                 parser.parse();
 
                 mRootSpike = parser.getParsedObject();

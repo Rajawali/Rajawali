@@ -41,7 +41,7 @@ public class MultipleLightsFragment extends AExampleFragment {
 			getCurrentCamera().setLookAt(0, 0, 0);
 
 			try {
-                final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
+                final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_suzanne);
                 parser.parse();
 
                 Object3D suzanne = parser.getParsedObject();

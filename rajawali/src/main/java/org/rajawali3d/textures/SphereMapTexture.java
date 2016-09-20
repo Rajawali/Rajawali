@@ -12,6 +12,9 @@
  */
 package org.rajawali3d.textures;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 public class SphereMapTexture extends ASingleTexture {
 	private boolean mIsSkyTexture;
 	private boolean mIsEnvironmentTexture;
@@ -26,10 +29,10 @@ public class SphereMapTexture extends ASingleTexture {
 		super(TextureType.SPHERE_MAP, textureName);
 	}
 
-	public SphereMapTexture(String textureName, int resourceId)
+	public SphereMapTexture(String textureName, @NonNull Context context, int resourceId)
 	{
 		super(TextureType.SPHERE_MAP, textureName);
-		setResourceId(resourceId);
+		setResourceId(context, resourceId);
 	}
 
 	public SphereMapTexture(String textureName, TextureDataReference textureData)

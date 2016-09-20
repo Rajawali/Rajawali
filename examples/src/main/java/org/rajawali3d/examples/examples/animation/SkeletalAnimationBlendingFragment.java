@@ -13,9 +13,6 @@ import org.rajawali3d.animation.mesh.SkeletalAnimationSequence;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.DirectionalLight;
-import org.rajawali3d.loader.ParsingException;
-import org.rajawali3d.loader.md5.LoaderMD5Anim;
-import org.rajawali3d.loader.md5.LoaderMD5Mesh;
 
 public class SkeletalAnimationBlendingFragment extends AExampleFragment implements OnClickListener {
 
@@ -87,9 +84,8 @@ public class SkeletalAnimationBlendingFragment extends AExampleFragment implemen
             getCurrentScene().addLight(mLight);
             getCurrentCamera().setZ(8);
 
-            try {
-                LoaderMD5Mesh meshParser = new LoaderMD5Mesh(this,
-                                                             R.raw.ingrid_mesh);
+            /*try {
+                LoaderMD5Mesh meshParser = new LoaderMD5Mesh(this, R.raw.ingrid_mesh);
                 meshParser.parse();
 
                 LoaderMD5Anim animParser = new LoaderMD5Anim("idle", this,
@@ -128,7 +124,7 @@ public class SkeletalAnimationBlendingFragment extends AExampleFragment implemen
                 getCurrentScene().addChild(mObject);
             } catch (ParsingException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
 
         public void transitionAnimation(int id) {

@@ -12,6 +12,9 @@
  */
 package org.rajawali3d.textures;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 public class AlphaMapTexture extends ASingleTexture {
 	private float mAlphaMaskingThreshold = .5f;
 
@@ -25,10 +28,10 @@ public class AlphaMapTexture extends ASingleTexture {
 		super(TextureType.ALPHA, textureName);
 	}
 
-	public AlphaMapTexture(String textureName, int resourceId)
+	public AlphaMapTexture(String textureName, @NonNull Context context, int resourceId)
 	{
 		super(TextureType.ALPHA, textureName);
-		setResourceId(resourceId);
+		setResourceId(context, resourceId);
 	}
 
 	public AlphaMapTexture(String textureName, TextureDataReference textureData)

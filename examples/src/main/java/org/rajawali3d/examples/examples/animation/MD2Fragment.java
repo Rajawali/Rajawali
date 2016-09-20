@@ -119,8 +119,7 @@ public class MD2Fragment extends AExampleFragment implements OnClickListener {
 			getCurrentScene().addLight(mLight);
 			getCurrentCamera().setPosition(0, 0, 8);
 
-			LoaderMD2 parser = new LoaderMD2(mContext.getResources(),
-					mTextureManager, R.raw.ogro);
+			LoaderMD2 parser = new LoaderMD2(mContext, mTextureManager, R.raw.ogro);
 			try {
 				parser.parse();
 

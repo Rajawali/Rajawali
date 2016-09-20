@@ -12,10 +12,9 @@
  */
 package org.rajawali3d.loader;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.animation.mesh.AAnimationObject3D;
 import org.rajawali3d.animation.mesh.IAnimationFrame;
 import org.rajawali3d.animation.mesh.VertexAnimationFrame;
@@ -23,10 +22,11 @@ import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin;
-import org.rajawali3d.textures.Texture;
-import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.TextureDataReference;
+import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 
@@ -55,12 +55,12 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 		super(renderer, fileOnSDCard);
 	}
 
-	public LoaderMD2(Renderer renderer, int resourceId) {
+	/*public LoaderMD2(Renderer renderer, int resourceId) {
 		this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
-	}
+	}*/
 
-	public LoaderMD2(Resources resources, TextureManager textureManager, int resourceId) {
-		super(resources, textureManager, resourceId);
+	public LoaderMD2(Context context, TextureManager textureManager, int resourceId) {
+		super(context, textureManager, resourceId);
 	}
 
 	public LoaderMD2(Renderer renderer, File file) {

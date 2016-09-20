@@ -54,7 +54,7 @@ public class OrthographicFragment extends AExampleFragment {
 
 			Material material = new Material();
 			try {
-				material.addTexture(new Texture("checkerboard", R.drawable.checkerboard));
+				material.addTexture(new Texture("checkerboard", mContext, R.drawable.checkerboard));
 				material.setColorInfluence(0);
 			} catch (TextureException e) {
 				e.printStackTrace();

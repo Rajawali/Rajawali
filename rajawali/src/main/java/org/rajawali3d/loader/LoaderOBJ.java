@@ -12,22 +12,21 @@
  */
 package org.rajawali3d.loader;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-
-import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.textures.TextureException;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.textures.Etc1Texture;
 import org.rajawali3d.textures.NormalMapTexture;
 import org.rajawali3d.textures.SpecularMapTexture;
 import org.rajawali3d.textures.Texture;
-import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.textures.TextureDataReference;
+import org.rajawali3d.textures.TextureException;
+import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.RajLog;
 
 import java.io.BufferedReader;
@@ -103,12 +102,12 @@ public class LoaderOBJ extends AMeshLoader {
         mNeedToRenameMtl = false;
     }
 
-    public LoaderOBJ(Renderer renderer, int resourceId) {
+    /*public LoaderOBJ(Renderer renderer, int resourceId) {
     	this(renderer.getContext().getResources(), renderer.getTextureManager(), resourceId);
-    }
+    }*/
 
-	public LoaderOBJ(Resources resources, TextureManager textureManager, int resourceId) {
-		super(resources, textureManager, resourceId);
+	public LoaderOBJ(Context context, TextureManager textureManager, int resourceId) {
+		super(context, textureManager, resourceId);
 	}
 
 	public LoaderOBJ(Renderer renderer, File file) {
@@ -611,7 +610,7 @@ public class LoaderOBJ extends AMeshLoader {
 					if(etc1Id!=0) {
 						mat.addTexture(new Texture(object.getName()+fileNameWithoutExtension, new Etc1Texture(object.getName()+etc1Id, etc1Id, id!=0 ? BitmapFactory.decodeResource(mResources, id) : null)));
 					} else if(id!=0) {
-						mat.addTexture(new Texture(object.getName()+fileNameWithoutExtension, id));
+						mat.addTexture(new Texture(object.getName()+fileNameWithoutExtension, mContext, id));
 					}
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
@@ -638,7 +637,7 @@ public class LoaderOBJ extends AMeshLoader {
 			if(hasBump) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.bumpTexture), "drawable", mResourcePackage);
-					mat.addTexture(new NormalMapTexture(object.getName() + identifier, identifier));
+					mat.addTexture(new NormalMapTexture(object.getName() + identifier, mContext, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
 					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture),
@@ -649,7 +648,7 @@ public class LoaderOBJ extends AMeshLoader {
 			if(hasSpecularTexture) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.specularColorTexture), "drawable", mResourcePackage);
-					mat.addTexture(new SpecularMapTexture(object.getName() + identifier, identifier));
+					mat.addTexture(new SpecularMapTexture(object.getName() + identifier, mContext, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.specularColorTexture);
 					mat.addTexture(new SpecularMapTexture(getOnlyFileName(matDef.specularColorTexture),

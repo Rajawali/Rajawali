@@ -59,7 +59,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 
             try {
                 // This is a raw PNG image
-                Texture texture0 = new Texture("png", R.drawable.rectangles);
+                Texture texture0 = new Texture("png", mContext, R.drawable.rectangles);
                 Material material0 = new Material();
                 material0.addTexture(texture0);
                 material0.setColorInfluence(0);

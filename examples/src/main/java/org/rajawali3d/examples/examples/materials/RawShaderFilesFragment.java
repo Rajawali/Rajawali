@@ -39,7 +39,7 @@ public class RawShaderFilesFragment extends AExampleFragment {
 			mMaterial = new Material(new CustomRawVertexShader(), new CustomRawFragmentShader());
 			mMaterial.enableTime(true);
 			try {
-				Texture texture = new Texture("myTex", R.drawable.flickrpics);
+				Texture texture = new Texture("myTex", mContext, R.drawable.flickrpics);
 				texture.setInfluence(.5f);
 				mMaterial.addTexture(texture);
 			} catch (TextureException e) {

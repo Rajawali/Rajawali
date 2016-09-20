@@ -8,17 +8,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
 import android.support.annotation.Nullable;
-import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.textures.AlphaMapTexture;
-import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
+import org.rajawali3d.textures.AlphaMapTexture;
+import org.rajawali3d.textures.TextureDataReference;
+import org.rajawali3d.textures.TextureException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -137,8 +137,12 @@ public class CanvasTextFragment extends AExampleFragment {
             // -- update the texture because it is ready
             //
             if (mShouldUpdateTexture) {
-                mTextureManager.replaceTexture(mTimeTexture);
-                mShouldUpdateTexture = false;
+				try {
+					mTextureManager.replaceTexture(mTimeTexture);
+					mShouldUpdateTexture = false;
+				} catch (TextureException e) {
+					e.printStackTrace();
+				}
             }
             super.onRender(ellapsedRealtime, deltaTime);
 		}

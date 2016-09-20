@@ -38,8 +38,9 @@ public class SphereMapFragment extends AExampleFragment {
 
 			getCurrentScene().addLight(light);
 
-			Texture jetTexture = new Texture("jetTexture", R.drawable.jettexture);
-			SphereMapTexture sphereMapTexture = new SphereMapTexture("manilaSphereMapTex", R.drawable.manila_sphere_map);
+			Texture jetTexture = new Texture("jetTexture", mContext, R.drawable.jettexture);
+			SphereMapTexture sphereMapTexture = new SphereMapTexture("manilaSphereMapTex", mContext, R.drawable
+					.manila_sphere_map);
 
 			jetTexture.setInfluence(.8f);
 			// -- important!
@@ -75,7 +76,7 @@ public class SphereMapFragment extends AExampleFragment {
 			getCurrentScene().registerAnimation(anim1);
 			anim1.play();
 
-			sphereMapTexture = new SphereMapTexture("manilaSphereMapTex2", R.drawable.manila_sphere_map);
+			sphereMapTexture = new SphereMapTexture("manilaSphereMapTex2", mContext, R.drawable.manila_sphere_map);
 			sphereMapTexture.isEnvironmentTexture(true);
 			sphereMapTexture.setInfluence(.5f);
 

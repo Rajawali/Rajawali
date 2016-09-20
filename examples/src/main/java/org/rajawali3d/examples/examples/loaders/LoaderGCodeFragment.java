@@ -33,7 +33,8 @@ public class LoaderGCodeFragment extends AExampleFragment {
         @Override
 		protected void initScene() {
 			setFrameRate(60);
-			LoaderGCode gCodeParser = new LoaderGCode(getResources(), getTextureManager(), R.raw.calibrationcube_404020_psm_pla35);
+			LoaderGCode gCodeParser = new LoaderGCode(mContext, getTextureManager(), R.raw
+					.calibrationcube_404020_psm_pla35);
 			try {
 				Object3D gCode3D = gCodeParser.parse().getParsedObject();
 				if (null != gCode3D) {

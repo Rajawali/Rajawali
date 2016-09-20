@@ -23,25 +23,24 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import android.view.WindowManager;
-
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.async.IAsyncLoaderCallback;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.RenderTargetTexture;
-import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.RenderTargetTexture;
+import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.util.RawShaderLoader;
+import org.rajawali3d.view.ISurface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -78,7 +77,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     protected int mDefaultViewportWidth, mDefaultViewportHeight; // The default width and height of the GL viewport
     protected int mOverrideViewportWidth, mOverrideViewportHeight; // The overridden width and height of the GL viewport
 
-    protected TextureManager mTextureManager; // Texture manager for ALL textures across ALL renderables.
+    protected TextureManager  mTextureManager; // Texture manager for ALL textures across ALL renderables.
     protected MaterialManager mMaterialManager; // Material manager for ALL materials across ALL renderables.
 
     // Frame related members
@@ -184,8 +183,8 @@ public abstract class Renderer implements ISurfaceRenderer {
         clearOverrideViewportDimensions();
 
         // Make sure we have a texture manager
-        mTextureManager = TextureManager.getInstance();
-        mTextureManager.setContext(getContext());
+        //mTextureManager = TextureManager.getInstance();
+        //mTextureManager.setContext(getContext());
 
         // Make sure we have a material manager
         mMaterialManager = MaterialManager.getInstance();
@@ -193,7 +192,7 @@ public abstract class Renderer implements ISurfaceRenderer {
 
         // We are registering now
         if (registerForResources) {
-            mTextureManager.registerRenderer(this);
+            //mTextureManager.registerRenderer(this);
             mMaterialManager.registerRenderer(this);
         }
     }
@@ -315,7 +314,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", mGLES_Major_Version, mGLES_Minor_Version));
 
         if (!mHaveRegisteredForResources) {
-            mTextureManager.registerRenderer(this);
+            //mTextureManager.registerRenderer(this);
             mMaterialManager.registerRenderer(this);
         }
     }
@@ -325,8 +324,8 @@ public abstract class Renderer implements ISurfaceRenderer {
         stopRendering();
         synchronized (mScenes) {
             if (mTextureManager != null) {
-                mTextureManager.unregisterRenderer(this);
-                mTextureManager.taskReset(this);
+                //mTextureManager.unregisterRenderer(this);
+                //mTextureManager.taskReset(this);
             }
             if (mMaterialManager != null) {
                 mMaterialManager.taskReset(this);
@@ -353,7 +352,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         }
 
         if (!mSceneCachingEnabled) {
-            mTextureManager.reset();
+           // mTextureManager.reset();
             mMaterialManager.reset();
             clearScenes();
         } else if (mSceneCachingEnabled && mSceneInitialized) {
@@ -363,7 +362,7 @@ public abstract class Renderer implements ISurfaceRenderer {
                     mRenderTargets.get(i).setHeight(mDefaultViewportHeight);
                 }
             }
-            mTextureManager.taskReload();
+            //mTextureManager.taskReload();
             mMaterialManager.taskReload();
             reloadScenes();
             reloadRenderTargets();
@@ -879,7 +878,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
-                mTextureManager.taskAdd(texture);
+                //mTextureManager.taskAdd(texture);
             }
         };
         return internalOfferTask(task);
@@ -889,7 +888,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
-                mTextureManager.taskRemove(texture);
+                //mTextureManager.taskRemove(texture);
             }
         };
         return internalOfferTask(task);
@@ -899,7 +898,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
-                mTextureManager.taskReplace(texture);
+                //mTextureManager.taskReplace(texture);
             }
         };
         return internalOfferTask(task);
@@ -909,7 +908,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
-                mTextureManager.taskReload();
+                //mTextureManager.taskReload();
             }
         };
         return internalOfferTask(task);
@@ -919,7 +918,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
-                mTextureManager.taskReset();
+                //mTextureManager.taskReset();
             }
         };
         return internalOfferTask(task);
@@ -929,7 +928,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
-                mTextureManager.taskResizeRenderTarget(renderTargetTexture);
+               // mTextureManager.taskResizeRenderTarget(renderTargetTexture);
             }
         };
         return internalOfferTask(task);

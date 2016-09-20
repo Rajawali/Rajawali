@@ -51,7 +51,7 @@ public class WallpaperRenderer extends Renderer {
             Material material = new Material();
             material.enableLighting(true);
             material.setDiffuseMethod(new DiffuseMethod.Lambert());
-            material.addTexture(new Texture("rajawaliTex", R.drawable.rajawali_tex));
+            material.addTexture(new Texture("rajawaliTex", mContext, R.drawable.rajawali_tex));
             material.setColorInfluence(0);
             cube.setMaterial(material);
             getCurrentScene().addChild(cube);

@@ -3,13 +3,8 @@ package org.rajawali3d.examples.examples.animation;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
-import org.rajawali3d.animation.mesh.SkeletalAnimationSequence;
-import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.DirectionalLight;
-import org.rajawali3d.loader.ParsingException;
-import org.rajawali3d.loader.md5.LoaderMD5Anim;
-import org.rajawali3d.loader.md5.LoaderMD5Mesh;
 
 public class SkeletalAnimationMD5Fragment extends AExampleFragment {
 
@@ -36,7 +31,7 @@ public class SkeletalAnimationMD5Fragment extends AExampleFragment {
 			getCurrentCamera().setY(1);
 			getCurrentCamera().setZ(6);
 
-			try {
+			/*try {
 				LoaderMD5Mesh meshParser = new LoaderMD5Mesh(this,
 															 R.raw.boblampclean_mesh);
 				meshParser.parse();
@@ -57,7 +52,7 @@ public class SkeletalAnimationMD5Fragment extends AExampleFragment {
 				getCurrentScene().addChild(mObject);
 			} catch (ParsingException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 
 	}

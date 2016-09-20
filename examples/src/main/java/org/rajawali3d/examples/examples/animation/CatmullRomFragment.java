@@ -57,8 +57,7 @@ public class CatmullRomFragment extends AExampleFragment {
 			}
 
 			try {
-				LoaderOBJ parser = new LoaderOBJ(mContext.getResources(),
-												 mTextureManager, R.raw.arrow);
+				LoaderOBJ parser = new LoaderOBJ(mContext, mTextureManager, R.raw.arrow);
 				parser.parse();
 				Object3D arrow = parser.getParsedObject();
 				arrow.setMaterial(material);

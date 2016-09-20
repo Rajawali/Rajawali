@@ -12,20 +12,20 @@
  */
 package org.rajawali3d.loader;
 
+import org.rajawali3d.Object3D;
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.materials.methods.DiffuseMethod;
+import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.textures.TextureException;
+import org.rajawali3d.util.RajLog;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-
-import org.rajawali3d.Object3D;
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.textures.TextureException;
-import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.util.RajLog;
 
 /**
  * 3DS object parser. This is a work in progress. Materials aren't parsed yet.
@@ -62,7 +62,7 @@ public class Loader3DSMax extends AMeshLoader {
 	private int mObjects = -1;
 
 	public Loader3DSMax(Renderer renderer, int resourceID) {
-		super(renderer.getContext().getResources(), renderer.getTextureManager(), resourceID);
+		super(renderer.getContext(), renderer.getTextureManager(), resourceID);
 	}
 
 	public Loader3DSMax(Renderer renderer, File file) {

@@ -36,10 +36,9 @@ public abstract class ASingleTexture extends ATexture {
         super(textureType, textureName);
     }
 
-    public ASingleTexture(TextureType textureType, int resourceId) {
-        this(textureType, org.rajawali3d.materials.textures.TextureManager
-                .getInstance().getContext().getResources().getResourceName(resourceId));
-        setResourceId(resourceId);
+    public ASingleTexture(TextureType textureType, @NonNull Context context, int resourceId) {
+        this(textureType, context.getResources().getResourceName(resourceId));
+        setResourceId(context, resourceId);
     }
 
     public ASingleTexture(TextureType textureType, String textureName, TextureDataReference textureData) {
@@ -72,9 +71,8 @@ public abstract class ASingleTexture extends ATexture {
     }
 
     @NonNull
-    public TextureDataReference setResourceId(int resourceId) {
+    public TextureDataReference setResourceId(@NonNull Context context, int resourceId) {
         mResourceId = resourceId;
-        Context context = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext();
         BitmapFactory.Options bitmapScalingOptions = new BitmapFactory.Options();
         bitmapScalingOptions.inScaled = false;
         setTextureData(new TextureDataReference(

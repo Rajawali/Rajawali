@@ -45,8 +45,7 @@ public class AnimatedTextureViewFragment extends AExampleFragment {
 		protected void initScene() {
 			try {
 				Material material = new Material();
-				material.addTexture(new Texture("earthColors",
-						R.drawable.earthtruecolor_nasa_big));
+				material.addTexture(new Texture("earthColors", mContext, R.drawable.earthtruecolor_nasa_big));
 				material.setColorInfluence(0);
 				mSphere = new Sphere(1, 24, 24);
 				mSphere.setMaterial(material);

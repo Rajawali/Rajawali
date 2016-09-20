@@ -28,7 +28,7 @@ public class AwdFragment extends AExampleFragment {
 		protected void initScene() {
 
 			try {
-				final LoaderAWD parser = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_arrows);
+				final LoaderAWD parser = new LoaderAWD(mContext, mTextureManager, R.raw.awd_arrows);
 				parser.parse();
 
 				final Object3D obj = parser.getParsedObject();

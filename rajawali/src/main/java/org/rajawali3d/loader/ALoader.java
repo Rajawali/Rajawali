@@ -12,6 +12,7 @@
  */
 package org.rajawali3d.loader;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Environment;
 import org.rajawali3d.renderer.Renderer;
@@ -32,10 +33,11 @@ import java.util.Locale;
 public abstract class ALoader implements ILoader {
 
 	protected Resources mResources;
-	protected int mResourceId;
-	protected String mFileOnSDCard;
-	protected File mFile;
-	protected int mTag;
+	protected Context   mContext;
+	protected int       mResourceId;
+	protected String    mFileOnSDCard;
+	protected File      mFile;
+	protected int       mTag;
 
 	public ALoader(File file) {
 		this(file.getAbsolutePath());
@@ -51,23 +53,24 @@ public abstract class ALoader implements ILoader {
 
 	public ALoader(Renderer renderer, String fileOnSDCard)
 	{
-		this(renderer.getContext().getResources(), 0);
+		this(renderer.getContext(), 0);
 		mFileOnSDCard = fileOnSDCard;
 	}
 
 	public ALoader(Renderer renderer, int resourceId)
 	{
-		this(renderer.getContext().getResources(), resourceId);
+		this(renderer.getContext(), resourceId);
 	}
 
-	public ALoader(Resources resources, int resourceId)
+	public ALoader(Context context, int resourceId)
 	{
-		mResources = resources;
+		mContext = context;
+		mResources = context.getResources();
 		mResourceId = resourceId;
 	}
 
 	public ALoader(Renderer renderer, File file) {
-		this(renderer.getContext().getResources(), 0);
+		this(renderer.getContext(), 0);
 		mFile = file;
 	}
 
