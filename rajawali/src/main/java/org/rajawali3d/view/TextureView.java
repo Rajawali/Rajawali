@@ -450,7 +450,9 @@ public class TextureView extends android.view.TextureView implements ISurface {
      * Must not be called before a renderer has been set.
      */
     public void onPause() {
-        mRendererDelegate.mRenderer.onPause();
+        if (mRendererDelegate != null) {
+            mRendererDelegate.mRenderer.onPause();
+        }
         mGLThread.onPause();
     }
 
@@ -462,7 +464,9 @@ public class TextureView extends android.view.TextureView implements ISurface {
      * Must not be called before a renderer has been set.
      */
     public void onResume() {
-        mRendererDelegate.mRenderer.onResume();
+        if (mRendererDelegate != null) {
+            mRendererDelegate.mRenderer.onResume();
+        }
         mGLThread.onResume();
     }
 

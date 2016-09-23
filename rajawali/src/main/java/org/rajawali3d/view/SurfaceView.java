@@ -98,15 +98,17 @@ public class SurfaceView extends GLSurfaceView implements ISurface {
     @Override
     public void onPause() {
         super.onPause();
-        if(mRendererDelegate != null)
+        if (mRendererDelegate != null) {
             mRendererDelegate.mRenderer.onPause();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(mRendererDelegate != null)
+        if (mRendererDelegate != null) {
             mRendererDelegate.mRenderer.onResume();
+        }
     }
 
     @Override
