@@ -218,12 +218,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mMVPMatrix.setAll(vpMatrix).multiply(mMMatrix);
 
         // Transform the bounding volumes if they exist
-        if (mGeometry.hasBoundingBox()) mGeometry.getBoundingBox().transform(getModelMatrix());
+        if (mGeometry.hasBoundingBox()) getBoundingBox().transform(getModelMatrix());
         if (mGeometry.hasBoundingSphere()) mGeometry.getBoundingSphere().transform(getModelMatrix());
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
-			BoundingBox bbox = mGeometry.getBoundingBox();
+			BoundingBox bbox = getBoundingBox();
 			if (!camera.getFrustum().boundsInFrustum(bbox)) {
 				mIsInFrustum = false;
 			}
@@ -329,7 +329,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 		if (mShowBoundingVolume) {
 			if (mGeometry.hasBoundingBox())
-				mGeometry.getBoundingBox().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
+				getBoundingBox().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 			if (mGeometry.hasBoundingSphere())
 				mGeometry.getBoundingSphere().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 		}
@@ -346,6 +346,31 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		if (mRenderChildrenAsBatch && sceneMaterial == null) {
 			material.unbindTextures();
 		}
+	}
+
+	public BoundingBox getBoundingBox() {
+		if (getNumChildren() > 0 && !mGeometry.hasBoundingBox()) {
+			Vector3 min = new Vector3(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+			Vector3 max = new Vector3(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
+
+			for (int i = 0; i < getNumChildren(); i++) {
+				Object3D child = getChildAt(i);
+				Vector3 maxVertex = child.getBoundingBox().getMax();
+
+				if (maxVertex.x > max.x) max.x = maxVertex.x;
+				if (maxVertex.y > max.y) max.y = maxVertex.y;
+				if (maxVertex.z > max.z) max.z = maxVertex.z;
+
+				Vector3 minVertex = child.getBoundingBox().getMin();
+
+				if (minVertex.x < min.x) min.x = minVertex.x;
+				if (minVertex.y < min.y) min.y = minVertex.y;
+				if (minVertex.z < min.z) min.z = minVertex.z;
+			}
+
+			mGeometry.setBoundingBox(new BoundingBox(min, max));
+		}
+		return mGeometry.getBoundingBox();
 	}
 
 	/**
@@ -366,7 +391,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
 		if (mFrustumTest && mGeometry.hasBoundingBox()) {
-			BoundingBox bbox = mGeometry.getBoundingBox();
+			BoundingBox bbox = getBoundingBox();
 			if (!camera.getFrustum().boundsInFrustum(bbox)) {
 				mIsInFrustum = false;
 			}
@@ -457,8 +482,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		for (int i = 0, j = mChildren.size(); i < j; i++)
 			mChildren.get(i).reload();
 
-		if (mGeometry.hasBoundingBox() && mGeometry.getBoundingBox().getVisual() != null)
-			mGeometry.getBoundingBox().getVisual().reload();
+		if (mGeometry.hasBoundingBox() && getBoundingBox().getVisual() != null)
+			getBoundingBox().getVisual().reload();
 		if (mGeometry.hasBoundingSphere() && mGeometry.getBoundingSphere().getVisual() != null)
 			mGeometry.getBoundingSphere().getVisual().reload();
 	}
@@ -753,6 +778,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	public void setShowBoundingVolume(boolean showBoundingVolume) {
+		if(showBoundingVolume) getBoundingBox();
 		this.mShowBoundingVolume = showBoundingVolume;
 	}
 
@@ -872,7 +898,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	@Override
 	public IBoundingVolume getTransformedBoundingVolume() {
 		IBoundingVolume volume = null;
-		volume = mGeometry.getBoundingBox();
+		volume = getBoundingBox();
 		calculateModelMatrix(null);
 		volume.transform(mMMatrix);
 		return volume;

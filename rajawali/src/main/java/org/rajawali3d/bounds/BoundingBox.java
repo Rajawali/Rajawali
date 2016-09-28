@@ -40,6 +40,13 @@ public class BoundingBox implements IBoundingVolume {
 	public BoundingBox() {
 		this(new Vector3[8]);
 	}
+
+	public BoundingBox(Vector3 min, Vector3 max) {
+		this();
+		mMin.setAll(min.x, min.y, min.z);
+		mMax.setAll(max.x, max.y, max.z);
+		calculatePoints();
+	}
 	
 	public BoundingBox(Vector3[] points) {
 		mTransformedMin = new Vector3();
