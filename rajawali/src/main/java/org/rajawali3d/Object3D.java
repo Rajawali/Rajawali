@@ -348,30 +348,44 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		}
 	}
 
+	/**
+	 * Returns a {@link BoundingBox} for this Object3D and creates it if needed.
+	 * Utilizes children's bounding values to calculate its own {@link BoundingBox}.
+	 * @return
+     */
 	public BoundingBox getBoundingBox() {
 		if (getNumChildren() > 0 && !mGeometry.hasBoundingBox()) {
 			Vector3 min = new Vector3(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
 			Vector3 max = new Vector3(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 
-			for (int i = 0; i < getNumChildren(); i++) {
+ 			for (int i = 0; i < getNumChildren(); i++) {
 				Object3D child = getChildAt(i);
-				Vector3 maxVertex = child.getBoundingBox().getMax();
+				updateMaxMinCoords(min, max, child);
+			}
 
-				if (maxVertex.x > max.x) max.x = maxVertex.x;
-				if (maxVertex.y > max.y) max.y = maxVertex.y;
-				if (maxVertex.z > max.z) max.z = maxVertex.z;
-
-				Vector3 minVertex = child.getBoundingBox().getMin();
-
-				if (minVertex.x < min.x) min.x = minVertex.x;
-				if (minVertex.y < min.y) min.y = minVertex.y;
-				if (minVertex.z < min.z) min.z = minVertex.z;
+			if (mGeometry.getVertices() != null) {
+				updateMaxMinCoords(min, max, this);
 			}
 
 			mGeometry.setBoundingBox(new BoundingBox(min, max));
 		}
 		return mGeometry.getBoundingBox();
 	}
+
+	private void updateMaxMinCoords(Vector3 min, Vector3 max, Object3D child) {
+		Vector3 maxVertex = child.getBoundingBox().getMax();
+
+		if (maxVertex.x > max.x) max.x = maxVertex.x;
+		if (maxVertex.y > max.y) max.y = maxVertex.y;
+		if (maxVertex.z > max.z) max.z = maxVertex.z;
+
+		Vector3 minVertex = child.getBoundingBox().getMin();
+
+		if (minVertex.x < min.x) min.x = minVertex.x;
+		if (minVertex.y < min.y) min.y = minVertex.y;
+		if (minVertex.z < min.z) min.z = minVertex.z;
+	}
+
 
 	/**
 	 * Renders the object for color-picking
