@@ -1074,4 +1074,8 @@ public class Geometry3D {
     public void setBuffersCreated(boolean created) {
         mHaveCreatedBuffers = created;
     }
+
+    void setBoundingBox(BoundingBox boundingBox){
+        this.mBoundingBox = boundingBox;
+    }
 }
