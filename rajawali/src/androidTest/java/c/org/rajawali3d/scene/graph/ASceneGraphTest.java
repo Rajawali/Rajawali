@@ -7,11 +7,13 @@ import static org.junit.Assert.assertSame;
 import android.support.annotation.NonNull;
 import android.test.suitebuilder.annotation.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
+import c.org.rajawali3d.camera.Camera;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -32,6 +34,10 @@ public class ASceneGraphTest {
 
         @Override public void recalculateBoundsForAdd(@NonNull SceneNode added) {
 
+        }
+
+        @NonNull @Override public List<NodeMember> intersection(@NonNull Camera camera) {
+            return null;
         }
 
         @Override public boolean add(SceneNode object) {

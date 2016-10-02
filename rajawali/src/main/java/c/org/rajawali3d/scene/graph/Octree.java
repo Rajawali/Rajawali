@@ -3,8 +3,10 @@ package c.org.rajawali3d.scene.graph;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
+import c.org.rajawali3d.camera.Camera;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * {@link SceneGraph} implementation which stores children in a 3D Octree. This is useful when objects will be
@@ -36,6 +38,13 @@ public class Octree extends ASceneGraph {
     @Override
     public void updateGraph() {
 
+    }
+
+    @RequiresReadLock
+    @NonNull
+    @Override
+    public List<NodeMember> intersection(@NonNull Camera camera) {
+        return null;
     }
 
     @RequiresWriteLock

@@ -1,5 +1,6 @@
 package org.rajawali3d.examples.examples.camdenhells;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import c.org.rajawali3d.renderer.Renderer;
@@ -11,6 +12,7 @@ import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.textures.Texture;
+import org.rajawali3d.util.RajLog;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -63,8 +65,12 @@ public class CamdenHellsBasic extends AExampleFragment {
         @Override public void onPostFrame(long sceneTime, double deltaTime) {
             Log.d(TAG, "Post First Frame.");
             super.onPostFrame(sceneTime, deltaTime);
-            backgroundThread = new Thread(backgroundManager, "Background Manager");
-            backgroundThread.start();
+            /*backgroundThread = new Thread(backgroundManager, "Background Manager");
+            backgroundThread.start();*/
+            RajLog.setDebugEnabled(true);
+            Material material = new Material();
+            material.setColor(Color.GREEN);
+            scene.addMaterial(material);
         }
 
         @Override public boolean callPreFrame() {

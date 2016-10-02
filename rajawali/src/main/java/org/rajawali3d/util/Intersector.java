@@ -16,6 +16,9 @@ import android.support.annotation.IntDef;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Class offering various static methods for intersection testing between different geometric objects.
  *
  * Originally written by Badlogic Games. Ported for Rajawali by Andrew Jo.
@@ -30,6 +33,7 @@ public final class Intersector {
 	 * @author Jared Woolston (Jared.Woolston@gmail.com)
 	 */
 	@IntDef({ INSIDE, OUTSIDE, INTERSECT })
+	@Retention(RetentionPolicy.SOURCE)
 	public @interface Intersection {}
 	public static final int INSIDE    = -1;
 	public static final int OUTSIDE   = 1;

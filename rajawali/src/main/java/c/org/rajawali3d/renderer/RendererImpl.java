@@ -69,7 +69,7 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     @GuardedBy("nextRenderableLock")
     private Renderable currentRenderable;
 
-    private Renderable nextRenderable; //The scene which the renderer should switch to on the next frame.
+    private Renderable nextRenderable; //The scene the renderer should switch to on the next frame.
     private final Object nextRenderableLock = new Object(); //Scene switching lock
 
     /**

@@ -11,6 +11,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.util.Intersector.Intersection;
 
 /**
  * Except where otherwise annotated, this class is thread safe and no locks are required to interact with it. Notable
@@ -34,6 +35,9 @@ public class Camera implements NodeMember {
     @NonNull
     protected final Frustum frustum = new Frustum();
 
+    @NonNull
+    protected final Vector3[] scratchPoints;
+
     @Nullable
     protected NodeParent parent;
 
@@ -51,6 +55,13 @@ public class Camera implements NodeMember {
     @Nullable
     protected volatile Vector3[] frustumCorners;
 
+    public Camera() {
+        scratchPoints = new Vector3[8];
+        for (int i = 0; i < 8; ++i) {
+            scratchPoints[i] = new Vector3();
+        }
+    }
+
     @Override
     public void setParent(@Nullable NodeParent parent) throws InterruptedException {
         this.parent = parent;
@@ -62,6 +73,13 @@ public class Camera implements NodeMember {
             viewMatrix.setAll(parent.getWorldModelMatrix()).inverse();
         }
         // No need to update bounds because the node parent will handle this
+    }
+
+    @RequiresReadLock
+    @Intersection
+    @Override
+    public int intersectBounds(@NonNull AABB bounds) {
+        return getFrustum().intersectBounds(bounds);
     }
 
     @NonNull

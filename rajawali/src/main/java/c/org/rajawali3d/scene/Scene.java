@@ -3,12 +3,15 @@ package c.org.rajawali3d.scene;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.camera.Camera;
 import c.org.rajawali3d.materials.MaterialManager;
 import c.org.rajawali3d.renderer.Renderable;
 import c.org.rajawali3d.renderer.Renderer;
 import c.org.rajawali3d.scene.graph.FlatTree;
+import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.SceneGraph;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
@@ -17,6 +20,7 @@ import org.rajawali3d.renderer.FrameTask;
 import org.rajawali3d.textures.ATexture;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.textures.TextureManager;
+import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,6 +72,15 @@ public class Scene implements Renderable {
     protected int currentViewportHeight; // The current width and height of the GL viewport
     protected int overrideViewportWidth;
     protected int overrideViewportHeight; // The overridden width and height of the GL viewport
+
+    /**
+     * The {@link Camera} currently being used to render the scene.
+     */
+    @GuardedBy("nextCameraLock")
+    private Camera currentCamera;
+
+    private Camera nextCamera; // The camera the scene should switch to on the next frame.
+    private final Object nextCameraLock = new Object(); // Camera switching lock
 
     public Scene() {
         this(new FlatTree());
@@ -350,6 +363,14 @@ public class Scene implements Renderable {
         // Execute frame tasks
         performFrameTasks();
 
+        synchronized (nextCameraLock) {
+            // Check if we need to switch the camera, and if so, do it.
+            if (nextCamera != null) {
+                switchCamera(nextCamera);
+                nextCamera = null;
+            }
+        }
+
         // Execute onPreFrame callbacks
         // We explicitly break out the steps here to help the compiler optimize
         final int preCount = preCallbacks.size();
@@ -362,6 +383,8 @@ public class Scene implements Renderable {
         }
 
         // Determine which objects we will be rendering
+        final List<NodeMember> visible = sceneGraph.intersection(currentCamera);
+        Log.d(TAG, "Visible Count: " + visible.size());
 
         // Execute onPreDraw callbacks
         // We explicitly break out the steps here to help the compiler optimize
@@ -424,5 +447,12 @@ public class Scene implements Renderable {
                 task = frameTaskQueue.poll();
             }
         }
+    }
+
+    @GuardedBy("nextCameraLock")
+    @GLThread
+    void switchCamera(@NonNull Camera nextCamera) {
+        RajLog.d("Switching from camera: " + currentCamera + " to camera: " + nextCamera);
+        currentCamera = nextCamera;
     }
 }

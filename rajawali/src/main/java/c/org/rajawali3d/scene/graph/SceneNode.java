@@ -145,6 +145,12 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         worldMaxBound.setAll(getMaxBound()).multiply(world);
     }
 
+    @Override
+    public int intersectBounds(@NonNull AABB bounds) {
+        //TODO: Implement intersection
+        return 0;
+    }
+
     @RequiresWriteLock
     public void updateGraph() {
         final Matrix4 parentWorldModelMatrix = new Matrix4();

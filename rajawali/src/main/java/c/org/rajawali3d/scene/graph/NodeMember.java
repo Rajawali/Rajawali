@@ -1,9 +1,12 @@
 package c.org.rajawali3d.scene.graph;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Camera;
+import org.rajawali3d.util.Intersector.Intersection;
 
 /**
  * Interface to be implemented by classes which will be attached to {@link SceneNode}s. These could be 3D render
@@ -27,4 +30,12 @@ public interface NodeMember extends AABB {
      * view matrix of a {@link Camera} instance.
      */
     @RequiresWriteLock void modelMatrixUpdated();
+
+    /**
+     * Determines the intersection between these bounds and the provided {@link AABB}.
+     *
+     * @param bounds The bounds to test intersection with.
+     * @return {@link Intersection} The type of intersection.
+     */
+    @RequiresReadLock @Intersection int intersectBounds(@NonNull AABB bounds);
 }

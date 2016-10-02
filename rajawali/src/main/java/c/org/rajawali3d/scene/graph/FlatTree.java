@@ -1,14 +1,22 @@
 package c.org.rajawali3d.scene.graph;
 
+import static org.rajawali3d.util.Intersector.INSIDE;
+import static org.rajawali3d.util.Intersector.INTERSECT;
+import static org.rajawali3d.util.Intersector.OUTSIDE;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
+import c.org.rajawali3d.camera.Camera;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.util.Intersector.Intersection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A {@link SceneGraph} implementation which stores all children in a single flat structure.
@@ -63,6 +71,28 @@ public class FlatTree extends ASceneGraph {
         added.recalculateBounds(true);
         checkAndAdjustMinBounds(added);
         checkAndAdjustMaxBounds(added);
+    }
+
+    @RequiresReadLock
+    @NonNull
+    @Override
+    public List<NodeMember> intersection(@NonNull Camera camera) {
+        final LinkedList<NodeMember> list = new LinkedList<>();
+        @Intersection int intersection;
+        SceneNode child;
+        for (int i = 0, j = children.size(); i < j; ++i) {
+            child = children.get(i);
+            intersection = camera.intersectBounds(child);
+            switch (intersection) {
+                case INSIDE:
+                case INTERSECT:
+                    list.add(child);
+                    break;
+                case OUTSIDE:
+                default:
+            }
+        }
+        return list;
     }
 
     @RequiresWriteLock

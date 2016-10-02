@@ -3,9 +3,11 @@ package c.org.rajawali3d.scene.graph;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
+import c.org.rajawali3d.camera.Camera;
 import org.rajawali3d.math.vector.Vector3.Axis;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * {@link SceneGraph} implementation which stores children in a 2D Quad-Tree. This is useful for situations where
@@ -58,6 +60,13 @@ public class QuadTree extends ASceneGraph {
     @Override
     public void updateGraph() {
 
+    }
+
+    @RequiresReadLock
+    @NonNull
+    @Override
+    public List<NodeMember> intersection(@NonNull Camera camera) {
+        return null;
     }
 
     @RequiresWriteLock

@@ -4,8 +4,10 @@ import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
+import c.org.rajawali3d.camera.Camera;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface defining methods common to all {@link SceneGraph} implementations. Implementations are expected to be
@@ -14,6 +16,8 @@ import java.util.Collection;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public interface SceneGraph extends NodeParent, AABB {
+
+    @RequiresReadLock @NonNull List<NodeMember> intersection(@NonNull Camera camera);
 
     @RequiresWriteLock boolean add(@NonNull SceneNode node);
 
