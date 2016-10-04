@@ -1073,7 +1073,12 @@ public class Material {
         mModelMatrix = modelMatrix;//.getFloatValues();
         mVertexShader.setModelMatrix(mModelMatrix);
 
-        mNormalMatrix.setAll(modelMatrix).setToNormalMatrix();
+        mNormalMatrix.setAll(modelMatrix);
+        try {
+            mNormalMatrix.setToNormalMatrix();
+        } catch (IllegalStateException exception) {
+            // modelMatrix is degenerate (zero scale)
+        }
         float[] matrix = mNormalMatrix.getFloatValues();
 
         mNormalFloats[0] = matrix[0];
