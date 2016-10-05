@@ -61,7 +61,7 @@ script:
 - ./gradlew :examples:check --stacktrace --continue
 - if $TRAVIS_PULL_REQUEST;
   then
-    "Skipping uploadArchives on Pull Request";
+    echo "Skipping uploadArchives on Pull Request";
   else
     ./gradlew :rajawali:uploadArchives --stacktrace --continue;
     ./gradlew :vuforia:uploadArchives --stacktrace --continue;
