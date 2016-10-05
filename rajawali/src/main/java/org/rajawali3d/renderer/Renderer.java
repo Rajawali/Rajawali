@@ -160,8 +160,8 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public Renderer(Context context, boolean registerForResources) {
-        RajLog.i("Rajawali | Bombshell | v1.1.610 Release ");
-        RajLog.i("This is a stable release.");
+        RajLog.i("Rajawali | Camden Hells | v2.0 Development ");
+        RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md FOR MORE INFORMATION.");
         mHaveRegisteredForResources = registerForResources;
         mContext = context;
         RawShaderLoader.mContext = new WeakReference<>(context);
