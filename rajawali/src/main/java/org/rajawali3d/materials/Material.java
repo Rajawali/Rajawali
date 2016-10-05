@@ -15,6 +15,7 @@ package org.rajawali3d.materials;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
@@ -1077,7 +1078,7 @@ public class Material {
         try {
             mNormalMatrix.setToNormalMatrix();
         } catch (IllegalStateException exception) {
-            // modelMatrix is degenerate (zero scale)
+            RajLog.d("modelMatrix is degenerate (zero scale)...");
         }
         float[] matrix = mNormalMatrix.getFloatValues();
 

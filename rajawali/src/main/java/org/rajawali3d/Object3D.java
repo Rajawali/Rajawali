@@ -196,7 +196,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 */
 	public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix, final Matrix4 vMatrix,
 			final Matrix4 parentMatrix, Material sceneMaterial) {
-		if (isDestroyed() || (!mIsVisible && !mRenderChildrenAsBatch)) {
+		if (isDestroyed() || (!mIsVisible && !mRenderChildrenAsBatch) || isZeroScale()) {
             return;
         }
 
@@ -355,7 +355,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @param pickingMaterial The color-picking Material
 	 */
 	public void renderColorPicking(final Camera camera, final Material pickingMaterial) {
-		if (!mIsVisible && !mRenderChildrenAsBatch)
+		if (isDestroyed() || (!mIsVisible && !mRenderChildrenAsBatch) || isZeroScale())
 			// Neither the object nor any of its children are visible
 			return;
 
