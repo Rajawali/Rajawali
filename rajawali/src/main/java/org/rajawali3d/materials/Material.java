@@ -15,6 +15,7 @@ package org.rajawali3d.materials;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
@@ -1073,7 +1074,12 @@ public class Material {
         mModelMatrix = modelMatrix;//.getFloatValues();
         mVertexShader.setModelMatrix(mModelMatrix);
 
-        mNormalMatrix.setAll(modelMatrix).setToNormalMatrix();
+        mNormalMatrix.setAll(modelMatrix);
+        try {
+            mNormalMatrix.setToNormalMatrix();
+        } catch (IllegalStateException exception) {
+            RajLog.d("modelMatrix is degenerate (zero scale)...");
+        }
         float[] matrix = mNormalMatrix.getFloatValues();
 
         mNormalFloats[0] = matrix[0];

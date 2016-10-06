@@ -924,6 +924,15 @@ public abstract class ATransformable3D implements IGraphNodeMember {
         return mScale.z;
     }
 
+    /**
+     * Check whether the scaling factor is zero on all three axes
+     *
+     * @return true if all three factors are zero
+     */
+    public boolean isZeroScale() {
+        return (mScale.x == 0d) && (mScale.y == 0d) && (mScale.z == 0d);
+    }
+
 
 
     //--------------------------------------------------
