@@ -216,8 +216,8 @@ public class CameraTest {
     @Test
     public void testSetProjectionMatrixWithDimensions() throws Exception {
         final double[] expected = {
-                4.82842712474619, 0.0, 0.0, 0.0,
-                0.0, 2.414213562373095, 0.0, 0.0,
+                2.414213562373095, 0.0, 0.0, 0.0,
+                0.0, 1.2071067811865475, 0.0, 0.0,
                 0.0, 0.0, -1.0168067226890756, -1.0,
                 0.0, 0.0, -2.0168067226890756, 0.0
         };
@@ -235,7 +235,7 @@ public class CameraTest {
 
         camera.cameraDirty = false;
         camera.setProjectionMatrix(100, 200);
-        assertFalse(camera.cameraDirty);
+        assertTrue(camera.cameraDirty);
 
         camera.cameraDirty = false;
         camera.setProjectionMatrix(90, 200);
@@ -266,8 +266,8 @@ public class CameraTest {
     @Test
     public void testUpdatePerspectiveWithFieldsOfView() throws Exception {
         final double[] expected = {
-                1.1547005383792517, 0.0, 0.0, 0.0,
-                0.0, 1.7320508075688774, 0.0, 0.0,
+                1.7320508075688774, 0.0, 0.0, 0.0,
+                0.0, 2.598076211353316, 0.0, 0.0,
                 0.0, 0.0, -1.0168067226890756, -1.0,
                 0.0, 0.0, -2.0168067226890756, 0.0
         };

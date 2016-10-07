@@ -30,6 +30,8 @@ import org.rajawali3d.util.Intersector.Intersection;
  */
 public class Frustum {
 
+    private static final String TAG = "Frustum";
+
     @IntDef({ LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR })
     protected  @interface FrustumPlanes {}
     public static final int LEFT = 0;

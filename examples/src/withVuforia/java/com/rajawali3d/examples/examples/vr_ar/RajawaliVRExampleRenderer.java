@@ -15,13 +15,13 @@ import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.textures.ATexture.TextureException;
-import org.rajawali3d.materials.textures.NormalMapTexture;
-import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.terrain.SquareTerrain;
 import org.rajawali3d.terrain.TerrainGenerator;
+import org.rajawali3d.textures.NormalMapTexture;
+import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.vr.renderer.VRRenderer;
 
 public class RajawaliVRExampleRenderer extends VRRenderer {
@@ -55,14 +55,15 @@ public class RajawaliVRExampleRenderer extends VRRenderer {
         try {
             getCurrentScene().setSkybox(R.drawable.posx, R.drawable.negx, R.drawable.posy, R.drawable.negy, R.drawable.posz, R.drawable.negz);
 
-            LoaderAWD loader = new LoaderAWD(getContext().getResources(), getTextureManager(), R.raw.space_cruiser);
+            LoaderAWD loader = new LoaderAWD(getContext(), getTextureManager(), R.raw.space_cruiser);
             loader.parse();
 
             Material cruiserMaterial = new Material();
             cruiserMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
             cruiserMaterial.setColorInfluence(0);
             cruiserMaterial.enableLighting(true);
-            cruiserMaterial.addTexture(new Texture("spaceCruiserTex", R.drawable.space_cruiser_4_color_1));
+            cruiserMaterial.addTexture(new Texture("spaceCruiserTex", getContext(),
+                                                   R.drawable.space_cruiser_4_color_1));
 
             Object3D spaceCruiser = loader.getParsedObject();
             spaceCruiser.setMaterial(cruiserMaterial);
@@ -76,14 +77,15 @@ public class RajawaliVRExampleRenderer extends VRRenderer {
             spaceCruiser.setRotY(180);
             getCurrentScene().addChild(spaceCruiser);
 
-            loader = new LoaderAWD(getContext().getResources(), getTextureManager(), R.raw.dark_fighter);
+            loader = new LoaderAWD(getContext(), getTextureManager(), R.raw.dark_fighter);
             loader.parse();
 
             Material darkFighterMaterial = new Material();
             darkFighterMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
             darkFighterMaterial.setColorInfluence(0);
             darkFighterMaterial.enableLighting(true);
-            darkFighterMaterial.addTexture(new Texture("darkFighterTex", R.drawable.dark_fighter_6_color));
+            darkFighterMaterial.addTexture(new Texture("darkFighterTex", getContext(),
+                                                       R.drawable.dark_fighter_6_color));
 
             Object3D darkFighter = loader.getParsedObject();
             darkFighter.setMaterial(darkFighterMaterial);
@@ -106,15 +108,15 @@ public class RajawaliVRExampleRenderer extends VRRenderer {
             getCurrentScene().registerAnimation(anim);
             anim.play();
 
-            loader = new LoaderAWD(getContext().getResources(), getTextureManager(), R.raw.capital);
+            loader = new LoaderAWD(getContext(), getTextureManager(), R.raw.capital);
             loader.parse();
 
             Material capitalMaterial = new Material();
             capitalMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
             capitalMaterial.setColorInfluence(0);
             capitalMaterial.enableLighting(true);
-            capitalMaterial.addTexture(new Texture("capitalTex", R.drawable.hullw));
-            capitalMaterial.addTexture(new NormalMapTexture("capitalNormTex", R.drawable.hulln));
+            capitalMaterial.addTexture(new Texture("capitalTex", getContext(), R.drawable.hullw));
+            capitalMaterial.addTexture(new NormalMapTexture("capitalNormTex", getContext(),  R.drawable.hulln));
 
             capital = loader.getParsedObject();
             capital.setMaterial(capitalMaterial);
@@ -237,10 +239,10 @@ public class RajawaliVRExampleRenderer extends VRRenderer {
         material.useVertexColors(true);
         material.setDiffuseMethod(new DiffuseMethod.Lambert());
         try {
-            Texture groundTexture = new Texture("ground", R.drawable.ground);
+            Texture groundTexture = new Texture("ground", getContext(), R.drawable.ground);
             groundTexture.setInfluence(.5f);
             material.addTexture(groundTexture);
-            material.addTexture(new NormalMapTexture("groundNormalMap", R.drawable.groundnor));
+            material.addTexture(new NormalMapTexture("groundNormalMap", getContext(), R.drawable.groundnor));
             material.setColorInfluence(0);
         } catch (TextureException e) {
             e.printStackTrace();

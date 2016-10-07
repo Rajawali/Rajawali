@@ -1028,8 +1028,8 @@ public class Matrix4Test {
     @Test
     public void testSetToPerspective() throws Exception {
         final double[] expected = new double[]{
-                1.3323467750529825, 0.0, 0.0, 0.0,
-                0.0, 1.7320508075688774, 0.0, 0.0,
+                1.7320508075688774, 0.0, 0.0, 0.0,
+                0.0, 2.2516660498395407, 0.0, 0.0,
                 0.0, 0.0, -1.002002002002002, -1.0,
                 0.0, 0.0, -2.002002002002002, 0.0
         };

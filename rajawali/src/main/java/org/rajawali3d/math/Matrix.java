@@ -18,8 +18,8 @@ package org.rajawali3d.math;
 
 /**
  * NOTE: This class taken from Android Open Source Project source code
- * and modified to support double precision matrices. 
- * 
+ * and modified to support double precision matrices.
+ *
  * Matrix math utilities. These methods operate on OpenGL ES format
  * matrices and vectors stored in double arrays.
  *
@@ -88,7 +88,7 @@ public class Matrix {
     	if (message != null) {
     		throw new IllegalArgumentException(message);
     	}
-    	
+
     	double sum = 0;
     	for (int i = 0; i < 4; ++i) { //Row
     		for (int j = 0; j < 4; ++j) { //Column
@@ -123,7 +123,7 @@ public class Matrix {
      * or lhsMatOffset + 16 > lhsMat.length or
      * rhsVecOffset + 4 > rhsVec.length.
      */
-    public static void multiplyMV(double[] resultVec, int resultVecOffset, 
+    public static void multiplyMV(double[] resultVec, int resultVecOffset,
     		double[] lhsMat, int lhsMatOffset, double[] rhsVec, int rhsVecOffset) {
     	String message = null;
     	if (resultVec == null) {
@@ -142,7 +142,7 @@ public class Matrix {
     	if (message != null) {
     		throw new IllegalArgumentException(message);
     	}
-    	
+
     	double sum = 0;
     	for (int i = 0; i < 4; ++i) { //Row
     		sum = 0;
@@ -421,23 +421,23 @@ public class Matrix {
      * @param m the double array that holds the perspective matrix
      * @param offset the offset into double array m where the perspective
      * matrix data is written
-     * @param fovy field of view in y direction, in degrees
+     * @param fovx field of view in x direction, in degrees
      * @param aspect width to height aspect ratio of the viewport
      * @param zNear
      * @param zFar
      */
     public static void perspectiveM(double[] m, int offset,
-          double fovy, double aspect, double zNear, double zFar) {
-        double f = 1.0 / Math.tan(fovy * (Math.PI / 360.0));
+          double fovx, double aspect, double zNear, double zFar) {
+        double f = 1.0 / Math.tan(fovx * (Math.PI / 360.0));
         double rangeReciprocal = 1.0 / (zNear - zFar);
 
-        m[offset + 0] = f / aspect;
+        m[offset + 0] = f;
         m[offset + 1] = 0.0;
         m[offset + 2] = 0.0;
         m[offset + 3] = 0.0;
 
         m[offset + 4] = 0.0;
-        m[offset + 5] = f;
+        m[offset + 5] = f * aspect;
         m[offset + 6] = 0.0;
         m[offset + 7] = 0.0;
 

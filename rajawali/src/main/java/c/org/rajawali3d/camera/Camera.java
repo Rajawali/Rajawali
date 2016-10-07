@@ -184,14 +184,12 @@ public class Camera implements NodeMember {
     }
 
     public void setProjectionMatrix(int width, int height) {
-        if (lastWidth != width || lastHeight != height) {
-            cameraDirty = true;
-        }
         lastWidth = width;
         lastHeight = height;
         double ratio = ((double) width) / ((double) height);
         projectionMatrix = new Matrix4().setToPerspective(nearPlane, farPlane, fieldOfView, ratio);
         isInitialized = true;
+        cameraDirty = true;
     }
 
     public void setProjectionMatrix(double fieldOfView, int width, int height) {
