@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
+import c.org.rajawali3d.camera.Frustum.FrustumCorners;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import net.jcip.annotations.ThreadSafe;
@@ -35,9 +36,6 @@ public class Camera implements NodeMember {
     @NonNull
     protected final Frustum frustum = new Frustum();
 
-    @NonNull
-    protected final Vector3[] scratchPoints;
-
     @Nullable
     protected NodeParent parent;
 
@@ -52,13 +50,12 @@ public class Camera implements NodeMember {
     protected volatile boolean cameraDirty   = true;
     protected volatile boolean isInitialized = false;
 
-    @Nullable
-    protected volatile Vector3[] frustumCorners;
+    @NonNull
+    protected Vector3[] frustumCorners = new Vector3[8];
 
     public Camera() {
-        scratchPoints = new Vector3[8];
         for (int i = 0; i < 8; ++i) {
-            scratchPoints[i] = new Vector3();
+            frustumCorners[i] = new Vector3();
         }
     }
 
@@ -73,6 +70,7 @@ public class Camera implements NodeMember {
             viewMatrix.setAll(parent.getWorldModelMatrix()).inverse();
         }
         // No need to update bounds because the node parent will handle this
+        updateFrustum();
     }
 
     @RequiresReadLock
@@ -97,16 +95,11 @@ public class Camera implements NodeMember {
     @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
     public void recalculateBounds() {
-        final Vector3[] points = new Vector3[8];
-        for (int i = 0; i < 8; ++i) {
-            points[i] = new Vector3();
-        }
-        getFrustumCorners(points);
-        minBound.setAll(points[0]);
-        maxBound.setAll(points[0]);
-        for (int i = 0, j = points.length; i < j; ++i) {
-            AABB.Comparator.checkAndAdjustMinBounds(minBound, points[i]);
-            AABB.Comparator.checkAndAdjustMaxBounds(maxBound, points[i]);
+        minBound.setAll(frustumCorners[0]);
+        maxBound.setAll(frustumCorners[0]);
+        for (int i = 0, j = frustumCorners.length; i < j; ++i) {
+            AABB.Comparator.checkAndAdjustMinBounds(minBound, frustumCorners[i]);
+            AABB.Comparator.checkAndAdjustMaxBounds(maxBound, frustumCorners[i]);
         }
     }
 
@@ -117,6 +110,42 @@ public class Camera implements NodeMember {
     }
 
     @RequiresReadLock
+    protected void updateFrustumCorners() {
+        if (cameraDirty) {
+            final double aspect = lastWidth / (double) lastHeight;
+            final double nearHeight = 2.0 * Math.tan(MathUtil.PRE_PI_DIV_180 * fieldOfView / 2.0) * nearPlane;
+            final double nearWidth = nearHeight * aspect;
+
+            final double farHeight = 2.0 * Math.tan(MathUtil.PRE_PI_DIV_180 * fieldOfView / 2.0) * farPlane;
+            final double farWidth = farHeight * aspect;
+
+            // near plane, top left
+            frustumCorners[Frustum.NTL].setAll(nearWidth / -2, nearHeight / 2, nearPlane);
+            // near plane, top right
+            frustumCorners[Frustum.NTR].setAll(nearWidth / 2, nearHeight / 2, nearPlane);
+            // near plane, bottom right
+            frustumCorners[Frustum.NBR].setAll(nearWidth / 2, nearHeight / -2, nearPlane);
+            // near plane, bottom left
+            frustumCorners[Frustum.NBL].setAll(nearWidth / -2, nearHeight / -2, nearPlane);
+            // far plane, top left
+            frustumCorners[Frustum.FTL].setAll(farWidth / -2, farHeight / 2, farPlane);
+            // far plane, top right
+            frustumCorners[Frustum.FTR].setAll(farWidth / 2, farHeight / 2, farPlane);
+            // far plane, bottom right
+            frustumCorners[Frustum.FBR].setAll(farWidth / 2, farHeight / -2, farPlane);
+            // far plane, bottom left
+            frustumCorners[Frustum.FBL].setAll(farWidth / -2, farHeight / -2, farPlane);
+            cameraDirty = false;
+        }
+
+        if (parent != null) {
+            for (int i = 0; i < 8; ++i) {
+                frustumCorners[i].multiply(parent.getWorldModelMatrix());
+            }
+        }
+    }
+
+    @RequiresReadLock
     @NonNull
     public Matrix4 getViewMatrix() {
         return viewMatrix;
@@ -124,63 +153,26 @@ public class Camera implements NodeMember {
 
     @RequiresReadLock
     public void getFrustumCorners(@NonNull @Size(8) Vector3[] points) {
-        getFrustumCorners(points, false);
-    }
-
-    @RequiresReadLock
-    public void getFrustumCorners(@NonNull @Size(8) Vector3[] points, boolean transformed) {
-        if(cameraDirty) {
-            final double aspect = lastWidth / (double) lastHeight;
-            final double nearHeight = 2.0 * Math.tan(MathUtil.PRE_PI_DIV_180 * fieldOfView / 2.0) * nearPlane;
-            final double nearWidth = nearHeight * aspect;
-
-            final double farHeight = 2.0 * Math.tan(MathUtil.PRE_PI_DIV_180 * fieldOfView / 2.0) * farPlane;
-            final double farWidth = farHeight * aspect;
-            final Vector3[] corners = new Vector3[8];
-            for (int i = 0; i < 8; ++i) {
-                corners[i] = new Vector3();
-            }
-
-            // near plane, top left
-            corners[0].setAll(nearWidth / -2, nearHeight / 2, nearPlane);
-            // near plane, top right
-            corners[1].setAll(nearWidth / 2, nearHeight / 2, nearPlane);
-            // near plane, bottom right
-            corners[2].setAll(nearWidth / 2, nearHeight / -2, nearPlane);
-            // near plane, bottom left
-            corners[3].setAll(nearWidth / -2, nearHeight / -2, nearPlane);
-            // far plane, top left
-            corners[4].setAll(farWidth / -2, farHeight / 2, farPlane);
-            // far plane, top right
-            corners[5].setAll(farWidth / 2, farHeight / 2, farPlane);
-            // far plane, bottom right
-            corners[6].setAll(farWidth / 2, farHeight / -2, farPlane);
-            // far plane, bottom left
-            corners[7].setAll(farWidth / -2, farHeight / -2, farPlane);
-            frustumCorners = corners;
-            cameraDirty = false;
-        }
-
-        // Make a stack reference so it cant change half way through on us.
-        final Vector3[] corners = frustumCorners;
-        if (corners != null) {
-            for (int i = 0; i < 8; ++i) {
-                points[i].setAll(corners[i]);
-                if (transformed && parent != null) {
-                    points[i].multiply(parent.getWorldModelMatrix());
-                }
+        updateFrustumCorners();
+        for (int i = 0; i < 8; ++i) {
+            points[i].setAll(frustumCorners[i]);
+            if (parent != null) {
+                points[i].multiply(parent.getWorldModelMatrix());
             }
         }
     }
 
     @RequiresReadLock
-    public void updateFrustum(@NonNull Matrix4 invVPMatrix) {
-        getFrustum().update(invVPMatrix);
+    public void updateFrustum() {
+        updateFrustumCorners();
+        getFrustum().update(frustumCorners);
     }
 
     public void setProjectionMatrix(@NonNull Matrix4 matrix) {
         projectionMatrix = matrix.clone();
         isInitialized = true;
+        //TODO: Extract near/far planes
+        updateFrustum();
     }
 
     public void setProjectionMatrix(int width, int height) {
@@ -190,6 +182,7 @@ public class Camera implements NodeMember {
         projectionMatrix = new Matrix4().setToPerspective(nearPlane, farPlane, fieldOfView, ratio);
         isInitialized = true;
         cameraDirty = true;
+        updateFrustum();
     }
 
     public void setProjectionMatrix(double fieldOfView, int width, int height) {
@@ -205,6 +198,7 @@ public class Camera implements NodeMember {
         double ratio = fovX / fovY;
         fieldOfView = fovX;
         projectionMatrix = new Matrix4().setToPerspective(nearPlane, farPlane, fovX, ratio);
+        updateFrustum();
     }
 
     @Nullable
@@ -218,7 +212,6 @@ public class Camera implements NodeMember {
 
     public void setNearPlane(double nearPlane) {
         this.nearPlane = nearPlane;
-        cameraDirty = true;
         setProjectionMatrix(lastWidth, lastHeight);
     }
 
@@ -228,7 +221,6 @@ public class Camera implements NodeMember {
 
     public void setFarPlane(double farPlane) {
         this.farPlane = farPlane;
-        cameraDirty = true;
         setProjectionMatrix(lastWidth, lastHeight);
     }
 
@@ -238,7 +230,6 @@ public class Camera implements NodeMember {
 
     public void setFieldOfView(double fieldOfView) {
         this.fieldOfView = fieldOfView;
-        cameraDirty = true;
         setProjectionMatrix(lastWidth, lastHeight);
     }
 }

@@ -6,6 +6,7 @@ import static org.rajawali3d.util.Intersector.OUTSIDE;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.camera.Camera;
@@ -82,7 +83,10 @@ public class FlatTree extends ASceneGraph {
         SceneNode child;
         for (int i = 0, j = children.size(); i < j; ++i) {
             child = children.get(i);
+            Log.i("INTER", "Intersecting child with bounds: " + child.getMinBound() + "/" + child.getMaxBound()
+                           + " with camera.");
             intersection = camera.intersectBounds(child);
+            Log.i("INTER", "Result: " + intersection);
             switch (intersection) {
                 case INSIDE:
                 case INTERSECT:

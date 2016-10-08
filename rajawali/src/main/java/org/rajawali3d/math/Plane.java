@@ -14,12 +14,15 @@ package org.rajawali3d.math;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
  * Encapsulation of the concept of a mathematical plane.
  */
 public class Plane {
+
+    private static final String TAG = "Plane";
 
     @IntDef({ FRONT_OF_PLANE, ON_PLANE, BACK_OF_PLANE })
     public @interface PlaneSide {}
@@ -56,11 +59,11 @@ public class Plane {
      * @param point3 {@link Vector3} Point 3 of 3.
      */
 	public void set(@NonNull Vector3 point1, @NonNull Vector3 point2, @NonNull Vector3 point3) {
-		Vector3 v1 = new Vector3();
-		Vector3 v2 = new Vector3();
-		v1.subtractAndSet(point2, point1);
-		v2.subtractAndSet(point3, point1);
-		normal.crossAndSet(v1, v2);
+		Vector3 u = new Vector3();
+		Vector3 v = new Vector3();
+		u.subtractAndSet(point2, point1);
+		v.subtractAndSet(point3, point1);
+		normal.crossAndSet(u, v);
 		normal.normalize();
         distanceToOrigin = -point1.dot(normal);
 	}
@@ -75,8 +78,8 @@ public class Plane {
      */
 	public void setComponents(double normalX, double normalY, double normalZ, double d) {
 		normal.setAll(normalX, normalY, normalZ);
-        normalize();
         this.distanceToOrigin = d;
+		normalize();
 	}
 
     /**

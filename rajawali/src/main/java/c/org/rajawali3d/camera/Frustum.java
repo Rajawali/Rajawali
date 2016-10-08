@@ -14,12 +14,15 @@ package c.org.rajawali3d.camera;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import c.org.rajawali3d.bounds.AABB;
-import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.util.Intersector;
 import org.rajawali3d.util.Intersector.Intersection;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Defines a camera viewing frustum in world space coordinates. This is used primarily for view frustum culling but
@@ -33,13 +36,26 @@ public class Frustum {
     private static final String TAG = "Frustum";
 
     @IntDef({ LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR })
-    protected  @interface FrustumPlanes {}
+    @Retention(RetentionPolicy.SOURCE)
+    public  @interface FrustumPlanes {}
     public static final int LEFT = 0;
     public static final int RIGHT       = 1;
     public static final int BOTTOM  = 2;
     public static final int TOP = 3;
     public static final int NEAR = 4;
     public static final int FAR = 5;
+
+    @IntDef({ NTL, NTR, NBL, NBR, FTL, FTR, FBL, FBR })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface FrustumCorners {}
+    public static final int NTL = 0;
+    public static final int NTR = 1;
+    public static final int NBL = 2;
+    public static final int NBR = 3;
+    public static final int FTL = 4;
+    public static final int FTR = 5;
+    public static final int FBL = 6;
+    public static final int FBR = 7;
 
     @NonNull
     protected final Plane[] planes;
@@ -67,21 +83,13 @@ public class Frustum {
         }
     }
 
-    public void update(@NonNull Matrix4 inverseProjectionView) {
-        double[] m = inverseProjectionView.getDoubleValues();
-
-        planes[LEFT].setComponents(m[Matrix4.M30] - m[Matrix4.M00], m[Matrix4.M31] - m[Matrix4.M01],
-                                m[Matrix4.M32] - m[Matrix4.M02], m[Matrix4.M33] - m[Matrix4.M03]);
-        planes[RIGHT].setComponents(m[Matrix4.M30] + m[Matrix4.M00], m[Matrix4.M31] + m[Matrix4.M01],
-                                m[Matrix4.M32] + m[Matrix4.M02], m[Matrix4.M33] + m[Matrix4.M03]);
-        planes[BOTTOM].setComponents(m[Matrix4.M30] + m[Matrix4.M10], m[Matrix4.M31] + m[Matrix4.M11],
-                                m[Matrix4.M32] + m[Matrix4.M12], m[Matrix4.M33] + m[Matrix4.M13]);
-        planes[TOP].setComponents(m[Matrix4.M30] - m[Matrix4.M10], m[Matrix4.M31] - m[Matrix4.M11],
-                                m[Matrix4.M32] - m[Matrix4.M12], m[Matrix4.M33] - m[Matrix4.M13]);
-        planes[NEAR].setComponents(m[Matrix4.M30] - m[Matrix4.M20], m[Matrix4.M31] - m[Matrix4.M21],
-                                m[Matrix4.M32] - m[Matrix4.M22], m[Matrix4.M33] - m[Matrix4.M23]);
-        planes[FAR].setComponents(m[Matrix4.M30] + m[Matrix4.M20], m[Matrix4.M31] + m[Matrix4.M21],
-                                m[Matrix4.M32] + m[Matrix4.M22], m[Matrix4.M33] + m[Matrix4.M23]);
+    public void update(@NonNull Vector3[] corners) {
+        planes[LEFT].set(corners[NBL], corners[NTL], corners[FBL]);
+        planes[RIGHT].set(corners[NTR], corners[NBR], corners[FBR]);
+        planes[TOP].set(corners[NTL], corners[NTR], corners[FTL]);
+        planes[BOTTOM].set(corners[NBR], corners[NBL], corners[FBR]);
+        planes[NEAR].set(corners[NTR], corners[NTL], corners[NBR]);
+        planes[FAR].set(corners[FTL], corners[FTR], corners[FBL]);
 
         planes[LEFT].normalize();
         planes[RIGHT].normalize();
@@ -106,9 +114,14 @@ public class Frustum {
             scratchVector1.z = p.getNormal().z > 0 ? scratchMin.z : scratchMax.z;
             scratchVector2.z = p.getNormal().z > 0 ? scratchMax.z : scratchMin.z;
 
+            // Negative point distance
             double distance1 = p.getDistanceTo(scratchVector1);
+            // Positive point distance
             double distance2 = p.getDistanceTo(scratchVector2);
 
+            Log.i(TAG, "Plane " + i + ": " + p);
+            Log.i(TAG, "Distance 1: " + distance1);
+            Log.i(TAG, "Distance 2: " + distance2);
             // Is the positive vertex outside?
             if (distance2 < 0) {
                 return Intersector.OUTSIDE;
@@ -127,7 +140,7 @@ public class Frustum {
             distance = planes[i].getDistanceTo(center);
             if (distance < -radius) {
                 return Intersector.OUTSIDE;
-            } else if (distance == radius) {
+            } else if (distance < radius) {
                 result = Intersector.INTERSECT;
             }
         }

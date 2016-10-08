@@ -6,16 +6,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;
@@ -38,7 +36,7 @@ public class CameraTest {
 
     @Test
     public void testModelMatrixUpdated() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
                 0d, 0d, 1d, 0d,
@@ -48,16 +46,28 @@ public class CameraTest {
         final Camera camera = spy(new Camera());
         camera.modelMatrixUpdated();
         verify(camera).modelMatrixUpdated();
-        verifyNoMoreInteractions(camera);
+        verify(camera).updateFrustum();
 
         final Matrix4 model = Matrix4.createTranslationMatrix(2d, 5d, 10d);
         doReturn(model).when(parent).getWorldModelMatrix();
+        doNothing().when(camera).updateFrustum();
         camera.setParent(parent);
         camera.modelMatrixUpdated();
         final double[] result = camera.viewMatrix.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);
         }
+        verify(camera, times(2)).updateFrustum();
+    }
+
+    @Test
+    public void testIntersectBounds() throws Exception {
+        final Camera camera = spy(new Camera());
+        final Frustum frustum = mock(Frustum.class);
+        final AABB bounds = mock(AABB.class);
+        doReturn(frustum).when(camera).getFrustum();
+        camera.intersectBounds(bounds);
+        verify(frustum).intersectBounds(bounds);
     }
 
     @Test
@@ -67,6 +77,19 @@ public class CameraTest {
         final Camera camera = new Camera();
         camera.lastWidth = 200;
         camera.lastHeight = 100;
+        final Vector3[] corners = new Vector3[]{
+                new Vector3(-0.8284271247461901, 0.41421356237309503, 1.0),
+                new Vector3(0.8284271247461901, 0.41421356237309503, 1.0),
+                new Vector3(-0.8284271247461901, -0.41421356237309503, 1.0),
+                new Vector3(0.8284271247461901, -0.41421356237309503, 1.0),
+                new Vector3(-99.41125496954281, 49.705627484771405, 120.0),
+                new Vector3(99.41125496954281, 49.705627484771405, 120.0),
+                new Vector3(-99.41125496954281, -49.705627484771405, 120.0),
+                new Vector3(99.41125496954281, -49.705627484771405, 120.0)
+        };
+        for (int i = 0; i < 8; ++i) {
+            camera.frustumCorners[i].setAll(corners[i]);
+        }
         camera.recalculateBounds();
         final Vector3 minBound = camera.getMinBound();
         final Vector3 maxBound = camera.getMaxBound();
@@ -88,24 +111,15 @@ public class CameraTest {
 
     @Test
     public void testGetFrustumCorners() throws Exception {
-        final Camera camera = spy(new Camera());
-        doNothing().when(camera).getFrustumCorners(any(Vector3[].class), anyBoolean());
-        final Vector3[] points = new Vector3[8];
-        camera.getFrustumCorners(points);
-        verify(camera).getFrustumCorners(points, false);
-    }
-
-    @Test
-    public void testGetFrustumCornersWithTransformation() throws Exception {
-        final Vector3[] expected1 = new Vector3[] {
-               new Vector3(-0.8284271247461901, 0.41421356237309503, 1.0),
-               new Vector3(0.8284271247461901, 0.41421356237309503, 1.0),
-               new Vector3(0.8284271247461901, -0.41421356237309503, 1.0),
-               new Vector3(-0.8284271247461901, -0.41421356237309503, 1.0),
-               new Vector3(-99.41125496954281, 49.705627484771405, 120.0),
-               new Vector3(99.41125496954281, 49.705627484771405, 120.0),
-               new Vector3(99.41125496954281, -49.705627484771405, 120.0),
-               new Vector3(-99.41125496954281, -49.705627484771405, 120.0)
+        final Vector3[] expected1 = new Vector3[]{
+                new Vector3(-1.9999999999999998, 0.9999999999999999, 1.0),
+                new Vector3(1.9999999999999998, 0.9999999999999999, 1.0),
+                new Vector3(-1.9999999999999998, -0.9999999999999999, 1.0),
+                new Vector3(1.9999999999999998, -0.9999999999999999, 1.0),
+                new Vector3(-239.99999999999997, 119.99999999999999, 120.0),
+                new Vector3(239.99999999999997, 119.99999999999999, 120.0),
+                new Vector3(-239.99999999999997, -119.99999999999999, 120.0),
+                new Vector3(239.99999999999997, -119.99999999999999, 120.0)
         };
 
         final Vector3[] expected3 = new Vector3[8];
@@ -113,65 +127,37 @@ public class CameraTest {
             expected3[i] = new Vector3();
         }
 
-        final Vector3[] expected5 = new Vector3[] {
-                new Vector3(0.17157287525380993, 2.41421356237309503, 4.0),
-                new Vector3(1.8284271247461901, 2.41421356237309503, 4.0),
-                new Vector3(1.8284271247461901, 1.585786437626905, 4.0),
-                new Vector3(0.17157287525380993, 1.585786437626905, 4.0),
-                new Vector3(-98.41125496954281, 51.705627484771405, 123.0),
-                new Vector3(100.41125496954281, 51.705627484771405, 123.0),
-                new Vector3(100.41125496954281, -47.705627484771405, 123.0),
-                new Vector3(-98.41125496954281, -47.705627484771405, 123.0)
+        final Vector3[] expected2 = new Vector3[]{
+                new Vector3(2.220446049250313E-16, 5.0, 7.0),
+                new Vector3(4.0, 5.0, 7.0),
+                new Vector3(2.220446049250313E-16, 3.0, 7.0),
+                new Vector3(4.0, 3.0, 7.0),
+                new Vector3(-237.99999999999997, 123.99999999999999, 126.0),
+                new Vector3(241.99999999999997, 123.99999999999999, 126.0),
+                new Vector3(-237.99999999999997, -115.99999999999999, 126.0),
+                new Vector3(241.99999999999997, -115.99999999999999, 126.0)
         };
 
         final Camera camera = new Camera();
         camera.lastWidth = 200;
         camera.lastHeight = 100;
+        camera.nearPlane = 1;
+        camera.farPlane = 120;
+        camera.fieldOfView = 90.0;
         Vector3[] points = new Vector3[8];
 
-        // First test, no parent, dirty, untransformed
-        for (int i = 0; i < 8; ++i) {
-            points[i] = new Vector3();
-        }
-        camera.getFrustumCorners(points, false);
-        assertFalse(camera.cameraDirty);
-        for (int i = 0; i < 8; ++i) {
-            assertEquals(expected1[i], points[i]);
-        }
-
-        // Second test, no parent, clean, untransformed
-        for (int i = 0; i < 8; ++i) {
-            points[i] = new Vector3();
-        }
-        camera.getFrustumCorners(points, false);
-        assertFalse(camera.cameraDirty);
-        for (int i = 0; i < 8; ++i) {
-            assertEquals(expected1[i], points[i]);
-        }
-
-        // Third test, no parent, clean, no frustum, untransformed
-        for (int i = 0; i < 8; ++i) {
-            points[i] = new Vector3();
-        }
-        camera.cameraDirty = false;
-        camera.frustumCorners = null;
-        camera.getFrustumCorners(points, false);
-        for (int i = 0; i < 8; ++i) {
-            assertEquals(expected3[i], points[i]);
-        }
-
-        // Fourth test, no parent, dirty, transformed
+        // First test, no parent, dirty, transformed
         for (int i = 0; i < 8; ++i) {
             points[i] = new Vector3();
         }
         camera.cameraDirty = true;
-        camera.getFrustumCorners(points, true);
+        camera.getFrustumCorners(points);
         assertFalse(camera.cameraDirty);
         for (int i = 0; i < 8; ++i) {
             assertEquals(expected1[i], points[i]);
         }
 
-        // Fifth test, parent, clean, transformed
+        // Second test, parent, clean, transformed
         for (int i = 0; i < 8; ++i) {
             points[i] = new Vector3();
         }
@@ -179,11 +165,11 @@ public class CameraTest {
         final Matrix4 matrix = Matrix4.createTranslationMatrix(1d, 2d, 3d);
         doReturn(matrix).when(parent).getWorldModelMatrix();
         camera.parent = parent;
-        camera.getFrustumCorners(points, true);
+        camera.getFrustumCorners(points);
         assertFalse(camera.cameraDirty);
 
         for (int i = 0; i < 8; ++i) {
-            assertEquals(expected5[i], points[i]);
+            assertEquals(expected2[i], points[i]);
         }
     }
 
@@ -192,10 +178,10 @@ public class CameraTest {
         final Camera camera = spy(new Camera());
         final Frustum frustum = mock(Frustum.class);
         doReturn(frustum).when(camera).getFrustum();
-        final Matrix4 param = mock(Matrix4.class);
-        camera.updateFrustum(param);
-        verify(camera).updateFrustum(param); // Contrived I know, but necessary
-        verify(frustum).update(param);
+        doNothing().when(camera).updateFrustumCorners();
+        camera.updateFrustum();
+        verify(camera).updateFrustumCorners();
+        verify(frustum).update(camera.frustumCorners);
     }
 
     @Test
@@ -211,6 +197,7 @@ public class CameraTest {
         assertNotSame(old, camera.projectionMatrix);
         assertSame(clone, camera.projectionMatrix);
         assertTrue(camera.isInitialized);
+        verify(camera).updateFrustum();
     }
 
     @Test
@@ -223,7 +210,7 @@ public class CameraTest {
         };
         final Camera camera = spy(new Camera());
         camera.setProjectionMatrix(100, 200);
-        assertTrue(camera.cameraDirty);
+        assertFalse(camera.cameraDirty);
         assertEquals(100, camera.lastWidth);
         assertEquals(200, camera.lastHeight);
         assertNotNull(camera.projectionMatrix);
@@ -235,15 +222,16 @@ public class CameraTest {
 
         camera.cameraDirty = false;
         camera.setProjectionMatrix(100, 200);
-        assertTrue(camera.cameraDirty);
+        assertFalse(camera.cameraDirty);
 
         camera.cameraDirty = false;
         camera.setProjectionMatrix(90, 200);
-        assertTrue(camera.cameraDirty);
+        assertFalse(camera.cameraDirty);
 
         camera.cameraDirty = false;
         camera.setProjectionMatrix(90, 190);
-        assertTrue(camera.cameraDirty);
+        assertFalse(camera.cameraDirty);
+        verify(camera, times(4)).updateFrustum();
     }
 
     @Test
@@ -253,14 +241,15 @@ public class CameraTest {
         camera.setProjectionMatrix(20.0, 100, 200);
         assertEquals(20.0, camera.getFieldOfView(), 1e-14);
         verify(camera).setProjectionMatrix(100, 200);
+        verify(camera).updateFrustum();
     }
 
     @Test
     public void testUpdatePerspectiveWithSides() throws Exception {
         final Camera camera = spy(new Camera());
-        doNothing().when(camera).updatePerspective(anyDouble(), anyDouble());
         camera.updatePerspective(30, 30, 20, 20);
         verify(camera).updatePerspective(60, 40);
+        verify(camera).updateFrustum();
     }
 
     @Test
@@ -278,6 +267,7 @@ public class CameraTest {
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);
         }
+        verify(camera).updateFrustum();
     }
 
     @Test
@@ -304,8 +294,9 @@ public class CameraTest {
         camera.nearPlane = 10.0;
         camera.setNearPlane(20.0);
         assertEquals(20.0, camera.nearPlane, 1e-14);
-        assertTrue(camera.cameraDirty);
         verify(camera).setProjectionMatrix(200, 100);
+        verify(camera).updateFrustum();
+        assertFalse(camera.cameraDirty);
     }
 
     @Test
@@ -324,8 +315,9 @@ public class CameraTest {
         camera.farPlane = 10.0;
         camera.setFarPlane(20.0);
         assertEquals(20.0, camera.farPlane, 1e-14);
-        assertTrue(camera.cameraDirty);
         verify(camera).setProjectionMatrix(200, 100);
+        verify(camera).updateFrustum();
+        assertFalse(camera.cameraDirty);
     }
 
     @Test
@@ -344,7 +336,8 @@ public class CameraTest {
         camera.fieldOfView = 10.0;
         camera.setFieldOfView(20.0);
         assertEquals(20.0, camera.fieldOfView, 1e-14);
-        assertTrue(camera.cameraDirty);
         verify(camera).setProjectionMatrix(200, 100);
+        verify(camera).updateFrustum();
+        assertFalse(camera.cameraDirty);
     }
 }

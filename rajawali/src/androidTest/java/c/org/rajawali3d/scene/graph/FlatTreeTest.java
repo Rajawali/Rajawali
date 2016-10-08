@@ -5,14 +5,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 import android.support.annotation.NonNull;
 import android.test.suitebuilder.annotation.SmallTest;
+import c.org.rajawali3d.camera.Camera;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -93,6 +96,32 @@ public class FlatTreeTest {
     }
 
     @Test
+    public void testIntersection() throws Exception {
+        final Camera camera = new Camera();
+        camera.setProjectionMatrix(1024, 768);
+        camera.setNearPlane(1.0);
+        camera.setFarPlane(120.0);
+        final FlatTree tree = new FlatTree();
+        final SceneNode member1 = spy(new SceneNode());
+        final SceneNode member2 = spy(new SceneNode());
+
+        // Inside the frustum
+        doReturn(new Vector3(-1d, -1d, 110d)).when(member1).getMinBound();
+        doReturn(new Vector3(1d, 1d, 111d)).when(member1).getMaxBound();
+
+        // Outside the frustum
+        doReturn(new Vector3(-1d, -1d, -111d)).when(member2).getMinBound();
+        doReturn(new Vector3(1d, 1d, -110d)).when(member2).getMaxBound();
+        tree.add(member1);
+        tree.add(member2);
+
+        final List<NodeMember> list = tree.intersection(camera);
+
+        assertEquals(1, list.size());
+        assertEquals(member1, list.get(0));
+    }
+
+    @Test
     public void testAdd() throws Exception {
         final TestableFlatTree tree = new TestableFlatTree();
         final boolean result = tree.add(new SceneNode());
@@ -102,6 +131,7 @@ public class FlatTreeTest {
 
         boolean iaeThrown = false;
         try {
+            //noinspection ConstantConditions
             tree.add(null);
         } catch (Exception e) {
             iaeThrown = true;
