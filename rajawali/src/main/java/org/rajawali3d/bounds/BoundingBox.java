@@ -40,6 +40,13 @@ public class BoundingBox implements IBoundingVolume {
 	public BoundingBox() {
 		this(new Vector3[8]);
 	}
+
+	public BoundingBox(Vector3 min, Vector3 max) {
+		this();
+		mMin.setAll(min.x, min.y, min.z);
+		mMax.setAll(max.x, max.y, max.z);
+		calculatePoints();
+	}
 	
 	public BoundingBox(Vector3[] points) {
 		mTransformedMin = new Vector3();
@@ -137,31 +144,47 @@ public class BoundingBox implements IBoundingVolume {
 	public int getBoundingColor() {
 		return mBoundingColor.get();
 	}
-	
-	public void calculateBounds(Geometry3D geometry) {
-		FloatBuffer vertices = geometry.getVertices();
-		vertices.rewind();
-		
-		mMin.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-		mMax.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
-		
-		Vector3 vertex = new Vector3();
-		
-		while (vertices.hasRemaining()) {
-			vertex.x = vertices.get();
-			vertex.y = vertices.get();
-			vertex.z = vertices.get();
-			
-			if(vertex.x < mMin.x) mMin.x = vertex.x;
-			if(vertex.y < mMin.y) mMin.y = vertex.y;
-			if(vertex.z < mMin.z) mMin.z = vertex.z;
-			if(vertex.x > mMax.x) mMax.x = vertex.x;
-			if(vertex.y > mMax.y) mMax.y = vertex.y;
-			if(vertex.z > mMax.z) mMax.z = vertex.z;
-		}
-		calculatePoints();
-	}
-	
+
+    public void calculateBounds(Geometry3D geometry) {
+        mMin.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        mMax.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
+
+        FloatBuffer vertices = geometry.getVertices();
+        if(vertices != null){
+            calculateMinMaxVertices(vertices, mMin, mMax);
+            calculatePoints();
+        }
+
+    }
+
+    /**
+     * Traverses the vertices, to find the minimum and maximum x,y,z coordinates.
+     * If the vertices are null, the mMin and mMax remain un affected
+     *
+     * @param vertices can be null
+     * @param mMin mutable vertex that contains a point, will get updated to the minimum coordinate
+     *             of given vertices
+     * @param mMax mutable vertex that contains a point, will get updated to the maximum coordinate
+     *             of given vertices
+     */
+    private void calculateMinMaxVertices(FloatBuffer vertices, Vector3 mMin, Vector3 mMax) {
+        if(vertices == null) return;
+        vertices.rewind();
+        Vector3 vertex = new Vector3();
+
+        while (vertices.hasRemaining()) {
+            vertex.x = vertices.get();
+            vertex.y = vertices.get();
+            vertex.z = vertices.get();
+
+            if (vertex.x < mMin.x) mMin.x = vertex.x;
+            if (vertex.y < mMin.y) mMin.y = vertex.y;
+            if (vertex.z < mMin.z) mMin.z = vertex.z;
+            if (vertex.x > mMax.x) mMax.x = vertex.x;
+            if (vertex.y > mMax.y) mMax.y = vertex.y;
+            if (vertex.z > mMax.z) mMax.z = vertex.z;
+        }
+    }
 	public void calculatePoints() {
 		// -- bottom plane
 		// -- -x, -y, -z

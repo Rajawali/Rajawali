@@ -339,7 +339,7 @@ public class Matrix4 implements Cloneable {
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      *
-     * @throws IllegalStateException if this matrix is singular and cannot be in
+     * @throws IllegalStateException if this matrix is singular and cannot be inverted
      */
     @NonNull
     public Matrix4 inverse() throws IllegalStateException {
@@ -717,9 +717,11 @@ public class Matrix4 implements Cloneable {
      * Removes the translational component, inverts and transposes the matrix.
      *
      * @return A reference to this {@link Matrix4} to facilitate chaining.
+     *
+     * @throws IllegalStateException if this matrix is singular and cannot be inverted
      */
     @NonNull
-    public Matrix4 setToNormalMatrix() {
+    public Matrix4 setToNormalMatrix() throws IllegalStateException {
         m[M03] = 0;
         m[M13] = 0;
         m[M23] = 0;
