@@ -1,4 +1,4 @@
-package c.org.rajawali3d.geometry;
+package org.rajawali3d.geometry;
 
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.GLThread;

@@ -68,14 +68,14 @@ public class ExampleParticleSystem2 extends Object3D {
 		}
 
 		mVelocityBuffer = ByteBuffer
-				.allocateDirect(velocity.length * Geometry3D.FLOAT_SIZE_BYTES)
+				.allocateDirect(velocity.length * IndexedGeometry.FLOAT_SIZE_BYTES)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mVelocityBuffer.put(velocity);
 		mVelocityBuffer.position(0);
 
 		mAnimOffsetBuffer = ByteBuffer
 				.allocateDirect(
-						animOffsets.length * Geometry3D.FLOAT_SIZE_BYTES)
+						animOffsets.length * IndexedGeometry.FLOAT_SIZE_BYTES)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mAnimOffsetBuffer.put(animOffsets);
 		mAnimOffsetBuffer.position(0);
@@ -88,7 +88,7 @@ public class ExampleParticleSystem2 extends Object3D {
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mVelocityBufferHandle);
 		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVelocityBuffer.limit()
-				* Geometry3D.FLOAT_SIZE_BYTES, mVelocityBuffer,
+				* IndexedGeometry.FLOAT_SIZE_BYTES, mVelocityBuffer,
 				GLES20.GL_DYNAMIC_DRAW);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
@@ -104,7 +104,7 @@ public class ExampleParticleSystem2 extends Object3D {
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mVelocityBufferHandle);
 		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVelocityBuffer.limit()
-				* Geometry3D.FLOAT_SIZE_BYTES, mVelocityBuffer,
+				* IndexedGeometry.FLOAT_SIZE_BYTES, mVelocityBuffer,
 				GLES20.GL_DYNAMIC_DRAW);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);*/
 	}

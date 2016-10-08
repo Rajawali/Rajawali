@@ -1,4 +1,4 @@
-package c.org.rajawali3d.geometry;
+package org.rajawali3d.geometry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,7 +8,7 @@ import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.geometry.Geometry.BufferType;
+import org.rajawali3d.geometry.Geometry.BufferType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

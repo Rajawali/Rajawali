@@ -2,9 +2,8 @@ package org.rajawali3d.examples.examples.interactive.planes;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-
-import org.rajawali3d.BufferInfo;
-import org.rajawali3d.Geometry3D;
+import org.rajawali3d.geometry.BufferInfo;
+import org.rajawali3d.geometry.IndexedGeometry;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.vector.Vector3;
@@ -32,11 +31,11 @@ import java.nio.FloatBuffer;
  */
 public class PlanesGalore extends Object3D {
 
-	protected FloatBuffer mPlanePositions;
-	protected FloatBuffer mRotationSpeeds;
-	protected BufferInfo mPlanePositionsBufferInfo;
-	protected BufferInfo mRotationSpeedsBufferInfo;
-	protected Material mGaloreMat;
+	protected FloatBuffer                mPlanePositions;
+	protected FloatBuffer                mRotationSpeeds;
+	protected BufferInfo                 mPlanePositionsBufferInfo;
+	protected BufferInfo                 mRotationSpeedsBufferInfo;
+	protected Material                   mGaloreMat;
 	protected PlanesGaloreMaterialPlugin mMaterialPlugin;
 
 	public PlanesGalore() {
@@ -137,10 +136,10 @@ public class PlanesGalore extends Object3D {
 
 		setData(vertices, normals, textureCoords, colors, indices, true);
 
-		mPlanePositions = ByteBuffer.allocateDirect(planePositions.length * Geometry3D.FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		mPlanePositions = ByteBuffer.allocateDirect(planePositions.length * IndexedGeometry.FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mPlanePositions.put(planePositions);
 
-		mRotationSpeeds = ByteBuffer.allocateDirect(rotationSpeeds.length * Geometry3D.FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		mRotationSpeeds = ByteBuffer.allocateDirect(rotationSpeeds.length * IndexedGeometry.FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		mRotationSpeeds.put(rotationSpeeds);
 
 		createBuffers();
@@ -149,11 +148,11 @@ public class PlanesGalore extends Object3D {
 	private void createBuffers() {
 		mPlanePositionsBufferInfo.buffer = mPlanePositions;
 		mRotationSpeedsBufferInfo.buffer = mRotationSpeeds;
-		mGeometry.addBuffer(mPlanePositionsBufferInfo, Geometry3D.BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
-		mGeometry.addBuffer(mRotationSpeedsBufferInfo, Geometry3D.BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mPlanePositionsBufferInfo, IndexedGeometry.BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mRotationSpeedsBufferInfo, IndexedGeometry.BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 
-		mMaterialPlugin.setPlanePositions(mPlanePositionsBufferInfo.bufferHandle);
-		mMaterialPlugin.setRotationSpeeds(mRotationSpeedsBufferInfo.bufferHandle);
+		mMaterialPlugin.setPlanePositions(mPlanePositionsBufferInfo.glHandle);
+		mMaterialPlugin.setRotationSpeeds(mRotationSpeedsBufferInfo.glHandle);
 	}
 
 	public void reload() {

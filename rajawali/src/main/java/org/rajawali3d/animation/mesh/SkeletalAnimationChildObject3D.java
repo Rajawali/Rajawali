@@ -13,13 +13,12 @@
 package org.rajawali3d.animation.mesh;
 
 import android.opengl.GLES20;
-
-import org.rajawali3d.BufferInfo;
-import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.Geometry3D;
-import org.rajawali3d.Geometry3D.BufferType;
+import org.rajawali3d.geometry.BufferInfo;
+import org.rajawali3d.geometry.Geometry.BufferType;
+import org.rajawali3d.geometry.IndexedGeometry;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector2;
@@ -92,11 +91,11 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 
 		if(mMaterialPlugin == null)
 			mMaterialPlugin = (SkeletalAnimationMaterialPlugin) mMaterial.getPlugin(SkeletalAnimationMaterialPlugin.class);
-		mMaterialPlugin.setBone1Indices(mboneIndexes1BufferInfo.bufferHandle);
-		mMaterialPlugin.setBone1Weights(mboneWeights1BufferInfo.bufferHandle);
+		mMaterialPlugin.setBone1Indices(mboneIndexes1BufferInfo.glHandle);
+		mMaterialPlugin.setBone1Weights(mboneWeights1BufferInfo.glHandle);
 		if (mMaxBoneWeightsPerVertex > 4) {
-			mMaterialPlugin.setBone2Indices(mboneIndexes2BufferInfo.bufferHandle);
-			mMaterialPlugin.setBone2Weights(mboneWeights2BufferInfo.bufferHandle);
+			mMaterialPlugin.setBone2Indices(mboneIndexes2BufferInfo.glHandle);
+			mMaterialPlugin.setBone2Weights(mboneWeights2BufferInfo.glHandle);
 		}
 		mMaterialPlugin.setBoneMatrix(mSkeleton.uBoneMatrix);
 	}
@@ -145,7 +144,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private FloatBuffer alocateBuffer(FloatBuffer buffer, float[] data) {
 		if (buffer == null) {
 			buffer = ByteBuffer
-					.allocateDirect(data.length * Geometry3D.FLOAT_SIZE_BYTES * 4)
+					.allocateDirect(data.length * IndexedGeometry.FLOAT_SIZE_BYTES * 4)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
 			buffer.put(data);

@@ -15,16 +15,18 @@ package org.rajawali3d;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import org.rajawali3d.geometry.BufferInfo;
+import org.rajawali3d.geometry.IndexedGeometry;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
-import org.rajawali3d.textures.TextureAtlas;
-import org.rajawali3d.textures.TexturePacker.Tile;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.textures.TextureAtlas;
+import org.rajawali3d.textures.TexturePacker.Tile;
 import org.rajawali3d.util.GLU;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.visitors.INode;
@@ -61,10 +63,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	protected Material mMaterial;
 
-	protected Geometry3D mGeometry;
-	protected Object3D mParent;
-	protected List<Object3D> mChildren;
-	protected String mName;
+	protected IndexedGeometry mGeometry;
+	protected Object3D        mParent;
+	protected List<Object3D>  mChildren;
+	protected String          mName;
 
 	protected boolean mDoubleSided = false;
 	protected boolean mBackSided = false;
@@ -99,7 +101,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public Object3D() {
 		super();
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
-		mGeometry = new Geometry3D();
+		mGeometry = new IndexedGeometry();
 		mColor = new float[] { 0, 1, 0, 1.0f};
 		mPickingColor = new float[4];
 		setPickingColor(UNPICKABLE);
@@ -111,7 +113,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	/**
-	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
+	 * Passes the data to the IndexedGeometry instance. Vertex Buffer Objects (VBOs) will be created.
 	 *
 	 * @param vertexBufferInfo
 	 *            The handle to the vertex buffer
@@ -127,14 +129,14 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
      *            A boolean controlling if the VBOs are create immediately.
 	 */
 	public void setData(BufferInfo vertexBufferInfo, BufferInfo normalBufferInfo, float[] textureCoords,
-			float[] colors, int[] indices, boolean createVBOs) {
+						float[] colors, int[] indices, boolean createVBOs) {
 		mGeometry.setData(vertexBufferInfo, normalBufferInfo, textureCoords, colors, indices, createVBOs);
 		mIsContainerOnly = false;
 		mElementsBufferType = GLES20.GL_UNSIGNED_INT;
 	}
 
 	/**
-	 * Passes the data to the Geometry3D instance. Vertex Buffer Objects (VBOs) will be created.
+	 * Passes the data to the IndexedGeometry instance. Vertex Buffer Objects (VBOs) will be created.
 	 *
 	 * @param vertices
 	 *            A float array containing vertex data
@@ -218,16 +220,16 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		mMVPMatrix.setAll(vpMatrix).multiply(mMMatrix);
 
         // Transform the bounding volumes if they exist
-        if (mGeometry.hasBoundingBox()) getBoundingBox().transform(getModelMatrix());
-        if (mGeometry.hasBoundingSphere()) mGeometry.getBoundingSphere().transform(getModelMatrix());
+        //if (mGeometry.hasBoundingBox()) getBoundingBox().transform(getModelMatrix());
+        //if (mGeometry.hasBoundingSphere()) mGeometry.getBoundingSphere().transform(getModelMatrix());
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
-		if (mFrustumTest && mGeometry.hasBoundingBox()) {
+		//if (mFrustumTest && mGeometry.hasBoundingBox()) {
 			BoundingBox bbox = getBoundingBox();
 			if (!camera.getFrustum().boundsInFrustum(bbox)) {
 				mIsInFrustum = false;
 			}
-		}
+		//}
 
 		if (!mIsContainerOnly && mIsInFrustum) {
 			mPMatrix = projMatrix;
@@ -301,8 +303,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			material.setModelViewMatrix(mMVMatrix);
 
 			if(mIsVisible) {
-                int bufferType = mGeometry.getIndexBufferInfo().bufferType == Geometry3D.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
-				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
+                int bufferType = mGeometry.getIndexBufferInfo().bufferType == IndexedGeometry.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
+				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().glHandle);
 				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 			}
@@ -327,12 +329,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			}
 		}
 
-		if (mShowBoundingVolume) {
+		/*if (mShowBoundingVolume) {
 			if (mGeometry.hasBoundingBox())
 				getBoundingBox().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
 			if (mGeometry.hasBoundingSphere())
 				mGeometry.getBoundingSphere().drawBoundingVolume(camera, vpMatrix, projMatrix, vMatrix, mMMatrix);
-		}
+		}*/
 		// Draw children without frustum test
 		for (int i = 0, j = mChildren.size(); i < j; i++) {
 			Object3D child = mChildren.get(i);
@@ -354,7 +356,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 * @return
      */
 	public BoundingBox getBoundingBox() {
-		if (getNumChildren() > 0 && !mGeometry.hasBoundingBox()) {
+		/*if (getNumChildren() > 0 && !mGeometry.hasBoundingBox()) {
 			Vector3 min = new Vector3(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
 			Vector3 max = new Vector3(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 
@@ -369,7 +371,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 			mGeometry.setBoundingBox(new BoundingBox(min, max));
 		}
-		return mGeometry.getBoundingBox();
+		return mGeometry.getBoundingBox();*/
+		return null;
 	}
 
 	private void updateMaxMinCoords(Vector3 min, Vector3 max, Object3D child) {
@@ -404,12 +407,12 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		//   Bounding box already transformed
 
 		mIsInFrustum = true; // only if mFrustrumTest == true it check frustum
-		if (mFrustumTest && mGeometry.hasBoundingBox()) {
+		//if (mFrustumTest && mGeometry.hasBoundingBox()) {
 			BoundingBox bbox = getBoundingBox();
 			if (!camera.getFrustum().boundsInFrustum(bbox)) {
 				mIsInFrustum = false;
 			}
-		}
+		//}
 
 		// Render this object only if it has visible geometry and didn't fail frustum test
 		if (!mIsContainerOnly && mIsInFrustum && mIsVisible) {
@@ -444,8 +447,8 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			pickingMaterial.setModelViewMatrix(mMVMatrix);
 
 			// Draw the object using its picking color
-			int bufferType = mGeometry.getIndexBufferInfo().bufferType == Geometry3D.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
-			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
+			int bufferType = mGeometry.getIndexBufferInfo().bufferType == IndexedGeometry.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
+			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().glHandle);
 			GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
 			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -496,14 +499,14 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		for (int i = 0, j = mChildren.size(); i < j; i++)
 			mChildren.get(i).reload();
 
-		if (mGeometry.hasBoundingBox() && getBoundingBox().getVisual() != null)
+		/*if (mGeometry.hasBoundingBox() && getBoundingBox().getVisual() != null)
 			getBoundingBox().getVisual().reload();
 		if (mGeometry.hasBoundingSphere() && mGeometry.getBoundingSphere().getVisual() != null)
-			mGeometry.getBoundingSphere().getVisual().reload();
+			mGeometry.getBoundingSphere().getVisual().reload();*/
 	}
 
     public boolean hasBoundingVolume() {
-        return mGeometry.hasBoundingBox() || mGeometry.hasBoundingSphere();
+        return false; // mGeometry.hasBoundingBox() || mGeometry.hasBoundingSphere();
     }
 
 	public void isContainer(boolean isContainer) {
@@ -685,7 +688,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		return null;
 	}
 
-	public Geometry3D getGeometry() {
+	public IndexedGeometry getGeometry() {
 		return mGeometry;
 	}
 

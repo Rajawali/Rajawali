@@ -15,8 +15,7 @@ package org.rajawali3d.materials;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-import android.util.Log;
-import org.rajawali3d.BufferInfo;
+import org.rajawali3d.geometry.BufferInfo;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.methods.DiffuseMethod;
@@ -981,7 +980,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setVertices(BufferInfo bufferInfo) {
-        vertexShader.setVertices(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        vertexShader.setVertices(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -999,7 +998,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setTextureCoords(BufferInfo bufferInfo) {
-        vertexShader.setTextureCoords(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        vertexShader.setTextureCoords(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1017,7 +1016,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setNormals(BufferInfo bufferInfo) {
-        vertexShader.setNormals(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        vertexShader.setNormals(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1035,7 +1034,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setVertexColors(BufferInfo bufferInfo) {
-        vertexShader.setVertexColors(bufferInfo.bufferHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        vertexShader.setVertexColors(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**

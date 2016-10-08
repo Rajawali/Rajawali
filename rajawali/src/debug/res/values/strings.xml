@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="renderer_start_header">Rajawali | Camden Hells | v2.0 Development</string>
+    <string name="renderer_start_message">THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO
+        CHANGELOG.md FOR MORE INFORMATION.</string>
+</resources>

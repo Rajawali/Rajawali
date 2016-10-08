@@ -313,18 +313,18 @@ public final class LensFlarePlugin extends Plugin {
 		useProgram(mProgram);
 
 		// Push the VBOs to the GPU.
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGeometry.getVertexBufferInfo().bufferHandle);
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGeometry.getVertexBufferInfo().glHandle);
 		GLES20.glEnableVertexAttribArray(maPositionHandle);
 		GLES20.glVertexAttribPointer(maPositionHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
 		// Push texture coordinates to the GPU.
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGeometry.getTexCoordBufferInfo().bufferHandle);
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGeometry.getTexCoordBufferInfo().glHandle);
 		GLES20.glEnableVertexAttribArray(maTextureCoordHandle);
 		GLES20.glVertexAttribPointer(maTextureCoordHandle, 2, GLES20.GL_FLOAT, false, 0, 0);
 
 		// Push vertex element indices to the GPU.
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().bufferHandle);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().glHandle);
 
 		// Set up texture locations.
 		GLES20.glUniform1i(muOcclusionMapTextureHandle, 0);

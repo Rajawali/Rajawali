@@ -24,12 +24,11 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
-
-import org.rajawali3d.BufferInfo;
-import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.Geometry3D.BufferType;
+import org.rajawali3d.geometry.BufferInfo;
+import org.rajawali3d.geometry.Geometry.BufferType;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
@@ -443,7 +442,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 	@Override
 	public void destroy() {
 	    int[] buffers  = new int[1];
-	    if(mBoneMatricesBufferInfo != null) buffers[0] = mBoneMatricesBufferInfo.bufferHandle;
+	    if(mBoneMatricesBufferInfo != null) buffers[0] = mBoneMatricesBufferInfo.glHandle;
 	    GLES20.glDeleteBuffers(buffers.length, buffers, 0);
 
 	    if(mBoneMatrices != null) mBoneMatrices.clear();

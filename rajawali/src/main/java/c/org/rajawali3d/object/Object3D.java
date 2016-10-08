@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.geometry.Geometry;
+import org.rajawali3d.geometry.Geometry;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import org.rajawali3d.math.vector.Vector3;

@@ -7,7 +7,6 @@ import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.animation.TranslateAnimation3D;
-import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
@@ -123,7 +122,7 @@ public class CollisionDetectionFragment extends AExampleFragment {
         @Override
         protected void onRender(long ellapsedRealtime, double deltaTime) {
             super.onRender(ellapsedRealtime, deltaTime);
-			IBoundingVolume bbox = mBoxesBox.getGeometry().getBoundingBox();
+			/*IBoundingVolume bbox = mBoxesBox.getGeometry().getBoundingBox();
 			bbox.transform(mBoxesBox.getModelMatrix());
 
 			IBoundingVolume bbox2 = mCubeBox.getGeometry().getBoundingBox();
@@ -139,7 +138,7 @@ public class CollisionDetectionFragment extends AExampleFragment {
 					.getBoundingSphere();
 			bsphere2.transform(mCubeSphere.getModelMatrix());
 
-			mSphereIntersect = bsphere.intersectsWith(bsphere2);
+			mSphereIntersect = bsphere.intersectsWith(bsphere2);*/
 
 			if (mSphereIntersect && !mBoxIntersect)
 				getCurrentScene().setBackgroundColor(0xff00bfff);

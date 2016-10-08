@@ -11,6 +11,7 @@ import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.scene.Scene;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.NotThreadSafe;
+import org.rajawali3d.R;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.OnFPSUpdateListener;
@@ -78,9 +79,8 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     private AtomicLong glThread;
 
     public RendererImpl(@NonNull Context context) {
-        RajLog.i("Rajawali | Camden Hells | v2.0 Development");
-        RajLog.i("THIS IS A DEV BRANCH CONTAINING SIGNIFICANT CHANGES. PLEASE REFER TO CHANGELOG.md"
-                 + " FOR MORE INFORMATION.");
+        RajLog.i(context.getString(R.string.renderer_start_header));
+        RajLog.i(context.getString(R.string.renderer_start_message));
 
         this.context = context;
         frameRate = getRefreshRate();

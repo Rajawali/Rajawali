@@ -4,13 +4,13 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import org.rajawali3d.BufferInfo;
-import org.rajawali3d.Geometry3D;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateAroundAnimation3D;
 import org.rajawali3d.curves.CatmullRomCurve3D;
 import org.rajawali3d.examples.examples.AExampleFragment;
+import org.rajawali3d.geometry.BufferInfo;
+import org.rajawali3d.geometry.IndexedGeometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -39,39 +39,39 @@ public class UpdateVertexBufferFragment extends AExampleFragment {
 		 * The interpolated normalized time. This will be used to get the {@link Vector3}s from the
 		 * curve
 		 */
-		private float mInterpolation;
+		private float             mInterpolation;
 		/**
 		 * The start time will be used to calculate the delta time. This will allow us to have frame
 		 * rate independent constant animation speed.
 		 */
-		private long mStartTime;
+		private long              mStartTime;
 		/**
 		 * The dynamic object
 		 */
-		private Object3D mCurveTris;
+		private Object3D          mCurveTris;
 		/**
 		 * The dynamic object's vertex buffer info. We'll need this reference to update the vertex
 		 * buffer on each frame.
 		 */
-		private BufferInfo mVertexBufferInfo;
+		private BufferInfo        mVertexBufferInfo;
 		/**
 		 * The vertex buffer that will store the vertices that we'll generate based on the spline
 		 * and some randomness
 		 */
-		private FloatBuffer mVertexBuffer;
+		private FloatBuffer       mVertexBuffer;
 		/**
 		 * Keeps track of the vertex position in the object's vertex buffer
 		 */
-		private int mCurrentVertexIndex;
+		private int               mCurrentVertexIndex;
 		/**
 		 * This vertex will be generated on each frame
 		 */
-		private Vector3 mTmpVec;
+		private Vector3           mTmpVec;
 		/**
 		 * Stores a vertex that was used by the previous triangle. This way we can connect all
 		 * vertices and create a ribbon.
 		 */
-		private Vector3 mPrevVec1;
+		private Vector3           mPrevVec1;
 		/**
 		 * Stores a vertex that was used by the previous triangle. This way we can connect all
 		 * vertices and create a ribbon.
@@ -144,7 +144,7 @@ public class UpdateVertexBufferFragment extends AExampleFragment {
 			// We'll create a new triangle on each frame so that's why the size
 			// of this buffer is restricted to one triangle.
 			mVertexBuffer = ByteBuffer
-					.allocateDirect(9 * Geometry3D.FLOAT_SIZE_BYTES)
+					.allocateDirect(9 * IndexedGeometry.FLOAT_SIZE_BYTES)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 			// -- Indicate that we are going to update the vertex buffer very frequently
 			mCurveTris.getGeometry().changeBufferUsage(mVertexBufferInfo,

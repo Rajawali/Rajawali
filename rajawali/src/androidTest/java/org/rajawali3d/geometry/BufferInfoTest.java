@@ -1,11 +1,11 @@
-package c.org.rajawali3d.geometry;
+package org.rajawali3d.geometry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import android.opengl.GLES20;
 import android.test.suitebuilder.annotation.SmallTest;
-import c.org.rajawali3d.geometry.Geometry.BufferType;
+import org.rajawali3d.geometry.Geometry.BufferType;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
