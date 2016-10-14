@@ -6,6 +6,8 @@ import android.support.annotation.Size;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Frustum.FrustumCorners;
+import c.org.rajawali3d.object.renderers.ObjectRenderer;
+import c.org.rajawali3d.object.renderers.UnsupportedRenderTypeException;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import net.jcip.annotations.ThreadSafe;
@@ -231,5 +233,15 @@ public class Camera implements NodeMember {
     public void setFieldOfView(double fieldOfView) {
         this.fieldOfView = fieldOfView;
         setProjectionMatrix(lastWidth, lastHeight);
+    }
+
+    @Override
+    public void render(int type) throws UnsupportedRenderTypeException {
+
+    }
+
+    @Override
+    public void setObjectRenderer(int type, @NonNull ObjectRenderer renderer) {
+
     }
 }

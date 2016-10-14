@@ -3,6 +3,9 @@ package c.org.rajawali3d.renderer;
 import android.support.annotation.NonNull;
 
 /**
+ * Interface to be implemented for managing the interaction between the rendering context and all {@link Renderable}s
+ * associated with it. Rarely, if ever, should user code implement this interface.
+ *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public interface Renderer {

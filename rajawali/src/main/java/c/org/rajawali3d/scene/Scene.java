@@ -3,7 +3,6 @@ package c.org.rajawali3d.scene;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.camera.Camera;
@@ -383,8 +382,7 @@ public class Scene implements Renderable {
         }
 
         // Determine which objects we will be rendering
-        final List<NodeMember> visible = sceneGraph.intersection(currentCamera);
-        Log.d(TAG, "Visible Count: " + visible.size());
+        final List<NodeMember> intersectedNodes = sceneGraph.intersection(currentCamera);
 
         // Execute onPreDraw callbacks
         // We explicitly break out the steps here to help the compiler optimize
@@ -395,6 +393,14 @@ public class Scene implements Renderable {
                     preDrawCallbacks.get(i).onPreDraw(ellapsedRealtime, deltaTime);
                 }
             }
+        }
+
+        //TODO: This will be an interaction point with the render pass manager. We don't want to check the
+        // intersection with the camera multiple times. One possible exception would be for shadow mapping.
+
+        // Loop each node and draw
+        for (NodeMember member : intersectedNodes) {
+
         }
 
         // Execute onPostFrame callbacks

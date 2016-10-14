@@ -17,6 +17,7 @@ import java.util.List;
  */
 public interface SceneGraph extends NodeParent, AABB {
 
+    //TODO: Should intersection take a boolean parameter for an optional sort?
     @RequiresReadLock @NonNull List<NodeMember> intersection(@NonNull Camera camera);
 
     @RequiresWriteLock boolean add(@NonNull SceneNode node);

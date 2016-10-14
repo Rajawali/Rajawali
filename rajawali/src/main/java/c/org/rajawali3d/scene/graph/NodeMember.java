@@ -6,6 +6,7 @@ import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.object.RenderableObject;
 import org.rajawali3d.util.Intersector.Intersection;
 
 /**
@@ -14,7 +15,7 @@ import org.rajawali3d.util.Intersector.Intersection;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public interface NodeMember extends AABB {
+public interface NodeMember extends AABB, RenderableObject {
 
     /**
      * Sets the {@link NodeParent} of this {@link NodeMember}.

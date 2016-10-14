@@ -92,9 +92,6 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
         return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRefreshRate();
     }
 
-    /**
-     * Initiates frame render callbacks.
-     */
     @Override
     public void startRendering() {
         RajLog.d("startRendering()");
@@ -105,11 +102,6 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
         timer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / frameRate), TimeUnit.MILLISECONDS);
     }
 
-    /**
-     * Stop all rendering actions.
-     *
-     * @return {@code true} if rendering was stopped, {@code false} if rendering was already stopped (no action taken)
-     */
     @Override
     public boolean stopRendering() {
         RajLog.d("stopRendering()");
@@ -316,6 +308,11 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
         }
     }
 
+    /**
+     * Switches which {@link Renderable} is to be rendered.
+     *
+     * @param nextRenderable The {@link Renderable} to switch to.
+     */
     @GuardedBy("nextRenderableLock")
     @GLThread
     void switchRenderable(@NonNull Renderable nextRenderable) {
