@@ -20,8 +20,16 @@ void main() {
     //determine the vector length of the center position
     float len = length(position);
 
+    // derive inner and outer radii from uRadius and uSoftness
+    float inner = (uRadius > abs(uSoftness/2.)) ? uRadius - abs(uSoftness/2.) : 0.;
+    float outer = uRadius + abs(uSoftness/2.);
+    if(inner == outer) {
+      inner -= 0.00001;
+      outer += 0.00001;
+    }
+
     //use smoothstep to create a smooth vignette
-    float vignette = smoothstep(uRadius, uSoftness, len);
+    float vignette = 1. - smoothstep(inner, outer, len);
 
     //apply the vignette with 60% opacity
     texColor.rgb = mix(texColor.rgb, texColor.rgb * vignette, uOpacity);
