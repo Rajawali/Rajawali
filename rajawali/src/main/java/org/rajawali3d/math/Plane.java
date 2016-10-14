@@ -14,8 +14,10 @@ package org.rajawali3d.math;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import org.rajawali3d.math.vector.Vector3;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Encapsulation of the concept of a mathematical plane.
@@ -25,6 +27,7 @@ public class Plane {
     private static final String TAG = "Plane";
 
     @IntDef({ FRONT_OF_PLANE, ON_PLANE, BACK_OF_PLANE })
+	@Retention(RetentionPolicy.SOURCE)
     public @interface PlaneSide {}
     public static final int FRONT_OF_PLANE = 1;
     public static final int ON_PLANE       = 0;

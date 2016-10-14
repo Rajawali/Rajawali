@@ -44,22 +44,6 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @NonNull
     final List<NodeMember> members = new ArrayList<>();
 
-    @VisibleForTesting
-    @NonNull
-    final Vector3 localMaxBound = new Vector3();
-
-    @VisibleForTesting
-    @NonNull
-    final Vector3 localMinBound = new Vector3();
-
-    @VisibleForTesting
-    @NonNull
-    final Vector3 worldMaxBound = new Vector3();
-
-    @VisibleForTesting
-    @NonNull
-    final Vector3 worldMinBound = new Vector3();
-
     @Nullable
     protected NodeParent parent;
 
@@ -137,12 +121,7 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @RequiresWriteLock
     @Override
     public void modelMatrixUpdated() {
-        final Matrix4 local = getTransformation().getLocalModelMatrix();
-        final Matrix4 world = getWorldModelMatrix();
-        localMinBound.setAll(getMinBound()).multiply(local);
-        localMaxBound.setAll(getMaxBound()).multiply(local);
-        worldMinBound.setAll(getMinBound()).multiply(world);
-        worldMaxBound.setAll(getMaxBound()).multiply(world);
+
     }
 
     @Override
@@ -201,8 +180,8 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         if (members.size() > 0) {
             // Pick the first member to get some valid start value for the bounds
             member = members.get(0);
-            minBound.setAll(member.getMinBound().clone().multiply(worldModelMatrix));
-            maxBound.setAll(member.getMinBound().clone().multiply(worldModelMatrix));
+            minBound.setAll(member.getMinBound()).multiply(worldModelMatrix);
+            maxBound.setAll(member.getMinBound()).multiply(worldModelMatrix);
         } else if (children.size() > 0) {
             // Pick the first child to get some valid start value for the bounds
             child = children.get(0);
