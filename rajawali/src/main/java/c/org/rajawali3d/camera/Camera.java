@@ -235,9 +235,10 @@ public class Camera implements NodeMember {
         setProjectionMatrix(lastWidth, lastHeight);
     }
 
-    @Override
-    public void render(int type) throws UnsupportedRenderTypeException {
-
+    @NonNull @Override
+    public ObjectRenderer render(int type, @Nullable ObjectRenderer lastRenderer, @NonNull Matrix4 view,
+                                 @NonNull Matrix4 projection, @NonNull Matrix4 viewProjection) {
+        return null;
     }
 
     @Override

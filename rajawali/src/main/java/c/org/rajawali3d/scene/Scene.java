@@ -7,6 +7,7 @@ import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.camera.Camera;
 import c.org.rajawali3d.materials.MaterialManager;
+import c.org.rajawali3d.object.renderers.ObjectRenderer;
 import c.org.rajawali3d.renderer.Renderable;
 import c.org.rajawali3d.renderer.Renderer;
 import c.org.rajawali3d.scene.graph.FlatTree;
@@ -15,6 +16,7 @@ import c.org.rajawali3d.scene.graph.SceneGraph;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.materials.Material;
+import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.FrameTask;
 import org.rajawali3d.textures.ATexture;
 import org.rajawali3d.textures.TextureException;
@@ -80,6 +82,14 @@ public class Scene implements Renderable {
 
     private Camera nextCamera; // The camera the scene should switch to on the next frame.
     private final Object nextCameraLock = new Object(); // Camera switching lock
+
+    @Nullable
+    @GLThread
+    private ObjectRenderer lastUsedRenderer; // Reference to the last used object renderer
+
+    @NonNull
+    @GLThread
+    private Matrix4 viewProjectionMatrix = new Matrix4();
 
     public Scene() {
         this(new FlatTree());
@@ -358,7 +368,7 @@ public class Scene implements Renderable {
 
     @RequiresReadLock
     @GLThread
-    protected void internalRender(final long ellapsedRealtime, final double deltaTime) {
+    protected void internalRender(final long ellapsedRealtime, final double deltaTime) throws IllegalStateException {
         // Execute frame tasks
         performFrameTasks();
 
@@ -369,6 +379,16 @@ public class Scene implements Renderable {
                 nextCamera = null;
             }
         }
+
+        // Prepare the camera matrices
+        final Matrix4 viewMatrix = currentCamera.getViewMatrix();
+        final Matrix4 projectionMatrix = currentCamera.getProjectionMatrix();
+
+        if (projectionMatrix == null) {
+            throw new IllegalStateException("Cannot render while current camera has a null projection matrix.");
+        }
+
+        viewProjectionMatrix.setAll(projectionMatrix).multiply(viewMatrix);
 
         // Execute onPreFrame callbacks
         // We explicitly break out the steps here to help the compiler optimize
@@ -396,11 +416,15 @@ public class Scene implements Renderable {
         }
 
         //TODO: This will be an interaction point with the render pass manager. We don't want to check the
-        // intersection with the camera multiple times. One possible exception would be for shadow mapping.
+        // intersection with the camera multiple times. One possible exception would be for shadow mapping. Probably
+        // a loop
+
+        // Fetch the current render type
+        int type = 0;
 
         // Loop each node and draw
         for (NodeMember member : intersectedNodes) {
-
+            lastUsedRenderer = member.render(type, lastUsedRenderer, viewMatrix, projectionMatrix, viewProjectionMatrix);
         }
 
         // Execute onPostFrame callbacks

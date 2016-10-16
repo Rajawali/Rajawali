@@ -66,4 +66,10 @@ public interface Geometry {
      */
     @RequiresReadLock
     void calculateAABounds(@NonNull Vector3 min, @NonNull Vector3 max);
+
+    /**
+     * Issues the requisite draw calls for this {@link Geometry} instance. This is implementation specific.
+     */
+    @RequiresReadLock
+    void issueDrawCalls();
 }
