@@ -85,7 +85,7 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
                                  @NonNull Matrix4 projection, @NonNull Matrix4 viewProjection) {
 
         // Retrieve the object renderer
-        final ObjectRenderer renderer = renderers.get(type);
+        final ObjectRenderer renderer = getRenderer(type);
 
         // Ensure the state is as it needs to be
         renderer.ensureState(lastRenderer);

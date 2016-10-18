@@ -71,5 +71,6 @@ public interface Geometry {
      * Issues the requisite draw calls for this {@link Geometry} instance. This is implementation specific.
      */
     @RequiresReadLock
+    @GLThread
     void issueDrawCalls();
 }

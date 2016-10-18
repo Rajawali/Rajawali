@@ -207,6 +207,7 @@ public class IndexedGeometry implements Geometry {
     }
 
     @RequiresReadLock
+    @Override
     public void calculateAABounds(@NonNull Vector3 min, @NonNull Vector3 max) {
         final FloatBuffer vertices = getVertices();
         vertices.rewind();
@@ -234,6 +235,13 @@ public class IndexedGeometry implements Geometry {
             if (vertex.z > max.z)
                 max.z = vertex.z;
         }
+    }
+
+    @RequiresReadLock
+    @GLThread
+    @Override
+    public void issueDrawCalls() {
+        
     }
 
     /**

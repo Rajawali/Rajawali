@@ -6,6 +6,7 @@ import android.support.annotation.VisibleForTesting;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
+import c.org.rajawali3d.object.renderers.ObjectRenderer;
 import c.org.rajawali3d.transform.Transformable;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
@@ -372,4 +373,15 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     }
 
 
+    @NonNull
+    @Override
+    public ObjectRenderer render(int type, @Nullable ObjectRenderer lastRenderer, @NonNull Matrix4 view,
+                                 @NonNull Matrix4 projection, @NonNull Matrix4 viewProjection) {
+        return null;
+    }
+
+    @Override
+    public void setObjectRenderer(int type, @NonNull ObjectRenderer renderer) {
+
+    }
 }
