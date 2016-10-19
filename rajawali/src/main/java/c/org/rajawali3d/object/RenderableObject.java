@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.object.renderers.UnsupportedRenderTypeException;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.math.Matrix4;
 
@@ -29,9 +28,6 @@ public interface RenderableObject {
      * @param viewProjection {@link Matrix4} The view-projection matrix.
      *
      * @return The {@link ObjectRenderer} used for this object.
-     *
-     * @throws UnsupportedRenderTypeException if a {@link ObjectRenderer} has not been set for the specified render
-     *                                        type.
      */
     @RequiresReadLock
     @NonNull

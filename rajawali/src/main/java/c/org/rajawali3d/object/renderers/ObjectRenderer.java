@@ -51,4 +51,20 @@ public interface ObjectRenderer {
      * @param geometry {@link Geometry} The geometry to be rendered.
      */
     void issueDrawCalls(@NonNull Geometry geometry);
+
+    boolean isDoubleSided();
+
+    boolean isTransparent();
+
+    boolean isBackSided();
+
+    boolean isBlended();
+
+    boolean isDepthTestEnabled();
+
+    int getBlendSourceFactor();
+
+    int getBlendDestinationFactor();
+
+    int getDepthFunction();
 }
