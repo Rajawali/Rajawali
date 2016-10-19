@@ -48,11 +48,6 @@ public class NoOpObjectRenderer implements ObjectRenderer {
     }
 
     @Override
-    public boolean isTransparent() {
-        return false;
-    }
-
-    @Override
     public boolean isBackSided() {
         return false;
     }
