@@ -241,7 +241,7 @@ public class IndexedGeometry implements Geometry {
     @GLThread
     @Override
     public void issueDrawCalls() {
-        
+
     }
 
     /**

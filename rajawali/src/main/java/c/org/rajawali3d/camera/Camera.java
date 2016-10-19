@@ -5,16 +5,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.camera.Frustum.FrustumCorners;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.object.renderers.UnsupportedRenderTypeException;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.util.Intersector.Intersection;
+import c.org.rajawali3d.intersection.Intersector.Intersection;
 
 /**
  * Except where otherwise annotated, this class is thread safe and no locks are required to interact with it. Notable

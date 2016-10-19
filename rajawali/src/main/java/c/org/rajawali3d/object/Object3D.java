@@ -4,17 +4,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
+import c.org.rajawali3d.intersection.Intersector;
+import c.org.rajawali3d.intersection.Intersector.Intersection;
 import c.org.rajawali3d.object.renderers.NoOpObjectRenderer;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.object.renderers.UnsupportedRenderTypeException;
-import c.org.rajawali3d.scene.Scene;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.geometry.Geometry;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.util.Intersector.Intersection;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,7 +57,7 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
     @Intersection
     @Override
     public int intersectBounds(@NonNull AABB bounds) {
-        return 0;
+        return Intersector.intersect(this, bounds);
     }
 
     @NonNull

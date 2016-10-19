@@ -1,8 +1,8 @@
 package c.org.rajawali3d.scene.graph;
 
-import static org.rajawali3d.util.Intersector.INSIDE;
-import static org.rajawali3d.util.Intersector.INTERSECT;
-import static org.rajawali3d.util.Intersector.OUTSIDE;
+import static c.org.rajawali3d.intersection.Intersector.INSIDE;
+import static c.org.rajawali3d.intersection.Intersector.INTERSECT;
+import static c.org.rajawali3d.intersection.Intersector.OUTSIDE;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +12,7 @@ import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.camera.Camera;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.util.Intersector.Intersection;
+import c.org.rajawali3d.intersection.Intersector.Intersection;
 
 import java.util.ArrayList;
 import java.util.Collection;

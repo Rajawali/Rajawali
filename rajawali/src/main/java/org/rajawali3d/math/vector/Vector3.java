@@ -871,6 +871,46 @@ public class Vector3 implements Cloneable {
     }
 
     /**
+     * Checks if all components of this vector are greater than the provided vector.
+     *
+     * @param other {@link Vector3} The other vector.
+     * @return {@code true} if all components of this vector are greater than the components of other.
+     */
+    public boolean isGreaterThan(@NonNull Vector3 other) {
+        return (x > other.x && y > other.y && z > other.z);
+    }
+
+    /**
+     * Checks if all components of this vector are less than the provided vector.
+     *
+     * @param other {@link Vector3} The other vector.
+     * @return {@code true} if all components of this vector are less than the components of other.
+     */
+    public boolean isLessThan(@NonNull Vector3 other) {
+        return (x < other.x && y < other.y && z < other.z);
+    }
+
+    /**
+     * Checks if all components of this vector are greater than or equal to the provided vector.
+     *
+     * @param other {@link Vector3} The other vector.
+     * @return {@code true} if all components of this vector are greater than or equal to the components of other.
+     */
+    public boolean isGreaterThanEqual(@NonNull Vector3 other) {
+        return (x >= other.x && y >= other.y && z >= other.z);
+    }
+
+    /**
+     * Checks if all components of this vector are less than or equal to the provided vector.
+     *
+     * @param other {@link Vector3} The other vector.
+     * @return {@code true} if all components of this vector are less than or equal to the components of other.
+     */
+    public boolean isLessThanEqual(@NonNull Vector3 other) {
+        return (x <= other.x && y <= other.y && z <= other.z);
+    }
+
+    /**
      * Projects the specified {@link Vector3} onto this one and sets this {@link Vector3}
      * to the result.
      *

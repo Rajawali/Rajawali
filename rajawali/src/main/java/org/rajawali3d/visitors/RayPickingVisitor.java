@@ -17,7 +17,7 @@ import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.BoundingSphere;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
-import org.rajawali3d.util.Intersector;
+import c.org.rajawali3d.intersection.Intersector;
 
 public class RayPickingVisitor implements INodeVisitor {
 	private Vector3 mRayStart;

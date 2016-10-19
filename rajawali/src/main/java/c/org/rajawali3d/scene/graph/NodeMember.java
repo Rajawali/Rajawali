@@ -7,7 +7,7 @@ import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Camera;
 import c.org.rajawali3d.object.RenderableObject;
-import org.rajawali3d.util.Intersector.Intersection;
+import c.org.rajawali3d.intersection.Intersector.Intersection;
 
 /**
  * Interface to be implemented by classes which will be attached to {@link SceneNode}s. These could be 3D render

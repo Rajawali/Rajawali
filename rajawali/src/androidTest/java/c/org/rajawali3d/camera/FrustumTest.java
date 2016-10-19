@@ -8,8 +8,8 @@ import c.org.rajawali3d.bounds.AABB;
 import org.junit.Test;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.util.Intersector;
-import org.rajawali3d.util.Intersector.Intersection;
+import c.org.rajawali3d.intersection.Intersector;
+import c.org.rajawali3d.intersection.Intersector.Intersection;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)

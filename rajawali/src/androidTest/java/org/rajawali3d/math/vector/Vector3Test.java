@@ -7,12 +7,9 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.test.suitebuilder.annotation.SmallTest;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
-import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
 
 /**
@@ -20,16 +17,6 @@ import org.rajawali3d.math.vector.Vector3.Axis;
  */
 @SmallTest
 public class Vector3Test {
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
 
     @Test
     public void testZero() {
@@ -97,6 +84,7 @@ public class Vector3Test {
         assertEquals(3d, v.z, 0);
     }
 
+    @SuppressWarnings("Range")
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorFromShortDoubleArray() throws Exception {
         final double[] values = new double[]{ 1d, 2d };
@@ -726,6 +714,51 @@ public class Vector3Test {
         assertEquals(0d, v.x, 0);
         assertEquals(1d, v.y, 0);
         assertEquals(2d, v.z, 0);
+    }
+
+    @Test
+    public void testGreaterThan() throws Exception {
+        final Vector3 u = new Vector3(1, 1, 1);
+        final Vector3 v = new Vector3(0, 0, 0);
+        final Vector3 w = new Vector3(2, 0, 2);
+        assertTrue(u.isGreaterThan(v));
+        assertFalse(u.isGreaterThan(w));
+        assertFalse(w.isGreaterThan(u));
+        assertFalse(w.isGreaterThan(v));
+    }
+
+    @Test
+    public void testLessThan() throws Exception {
+        final Vector3 u = new Vector3(1, 1, 1);
+        final Vector3 v = new Vector3(0, 0, 0);
+        final Vector3 w = new Vector3(2, 0, 2);
+        assertTrue(v.isLessThan(u));
+        assertFalse(u.isLessThan(w));
+        assertFalse(w.isLessThan(u));
+        assertFalse(w.isLessThan(v));
+    }
+
+    @Test
+    public void testGreaterThanEqual() throws Exception {
+        final Vector3 u = new Vector3(1, 1, 1);
+        final Vector3 v = new Vector3(0, 0, 0);
+        final Vector3 w = new Vector3(2, 0, 2);
+        assertTrue(u.isGreaterThanEqual(v));
+        assertFalse(u.isGreaterThanEqual(w));
+        assertFalse(w.isGreaterThanEqual(u));
+        assertTrue(w.isGreaterThanEqual(v));
+    }
+
+    @Test
+    public void testLessThanEqual() throws Exception {
+        final Vector3 u = new Vector3(1, 1, 1);
+        final Vector3 v = new Vector3(0, 0, 0);
+        final Vector3 w = new Vector3(2, 0, 2);
+        assertTrue(v.isLessThanEqual(u));
+        assertFalse(u.isLessThanEqual(w));
+        assertTrue(v.isLessThanEqual(w));
+        assertFalse(w.isLessThanEqual(u));
+        assertFalse(w.isLessThanEqual(v));
     }
 
     @Test
