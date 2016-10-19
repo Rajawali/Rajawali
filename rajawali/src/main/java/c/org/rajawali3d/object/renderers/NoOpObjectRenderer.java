@@ -2,10 +2,12 @@ package c.org.rajawali3d.object.renderers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.object.RenderableObject;
+
 import org.rajawali3d.geometry.Geometry;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.util.RajLog;
+
+import c.org.rajawali3d.object.RenderableObject;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -38,5 +40,45 @@ public class NoOpObjectRenderer implements ObjectRenderer {
     @Override
     public void issueDrawCalls(@NonNull Geometry geometry) {
 
+    }
+
+    @Override
+    public boolean isDoubleSided() {
+        return false;
+    }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
+
+    @Override
+    public boolean isBackSided() {
+        return false;
+    }
+
+    @Override
+    public boolean isBlended() {
+        return false;
+    }
+
+    @Override
+    public boolean isDepthTestEnabled() {
+        return false;
+    }
+
+    @Override
+    public int getBlendSourceFactor() {
+        return 0;
+    }
+
+    @Override
+    public int getBlendDestinationFactor() {
+        return 0;
+    }
+
+    @Override
+    public int getDepthFunction() {
+        return 0;
     }
 }

@@ -2,11 +2,14 @@ package c.org.rajawali3d.object.renderers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.object.RenderableObject;
+
 import net.jcip.annotations.NotThreadSafe;
+
 import org.rajawali3d.geometry.Geometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
+
+import c.org.rajawali3d.object.RenderableObject;
 
 /**
  * Interface defining a set of operations to be performed by an object renderer delegate. These delegates are
@@ -53,8 +56,6 @@ public interface ObjectRenderer {
     void issueDrawCalls(@NonNull Geometry geometry);
 
     boolean isDoubleSided();
-
-    boolean isTransparent();
 
     boolean isBackSided();
 
