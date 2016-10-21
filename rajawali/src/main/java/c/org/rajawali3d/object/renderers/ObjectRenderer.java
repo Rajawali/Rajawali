@@ -55,6 +55,8 @@ public interface ObjectRenderer {
      */
     void issueDrawCalls(@NonNull Geometry geometry);
 
+    @NonNull Material getMaterial();
+
     boolean isDoubleSided();
 
     boolean isBackSided();

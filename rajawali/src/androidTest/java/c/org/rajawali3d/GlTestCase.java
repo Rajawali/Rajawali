@@ -91,9 +91,7 @@ public abstract class GlTestCase {
     /**
      * On the first call, set up the GL context.
      */
-    //@Override
     protected void setUp() throws Exception {
-        //super.setUp();
         if (Looper.myLooper() == null) {
             Looper.prepare();
         }
@@ -127,11 +125,9 @@ public abstract class GlTestCase {
         }
     }
 
-    //@Override
     protected void tearDown() throws Exception {
         if (glSurfaceView != null) {
             glSurfaceView.onPause();
         }
-        //super.tearDown();
     }
 }

@@ -4,11 +4,7 @@ import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.rajawali3d.geometry.Geometry;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.math.Matrix4;
-
-import c.org.rajawali3d.object.RenderableObject;
 
 /**
  * Builder for configuring and instantiating an {@link ObjectRenderer}. A {@link Material} must always be set.
@@ -51,6 +47,7 @@ public class ObjectRendererBuilder {
      * Builds an instance of {@link ObjectRenderer} based on the configuration of this {@link ObjectRendererBuilder}.
      *
      * @return {@link ObjectRenderer} instance which will render based on the configuration.
+     *
      * @throws IllegalStateException Thrown if this {@link ObjectRendererBuilder} is not in a buildable state.
      */
     @NonNull
@@ -59,163 +56,9 @@ public class ObjectRendererBuilder {
         checkState();
 
         // Return the anonymous instance
-        return new ObjectRenderer() {
-
-            RenderableObject object;
-
-            @Override
-            public void ensureState(@Nullable ObjectRenderer lastUsed) {
-                if (equals(lastUsed)) {
-                    // Fail Fast - The last renderer and this one are the same, we don't need to do anything
-                    return;
-                }
-                if (lastUsed == null) {
-                    // There was no last used renderer provided, so we must assume we need to apply the entire state
-                    applyDoubleSided();
-                    applyBlending();
-                    applyDepth();
-                } else {
-                    // There was a last used renderer and we should check what we actually need to change
-                    checkDoubleSided(lastUsed);
-                    checkBlending(lastUsed);
-                    checkDepth(lastUsed);
-                }
-            }
-
-            @Override
-            public void setCameraMatrices(@NonNull Matrix4 view, @NonNull Matrix4 projection,
-                                          @NonNull Matrix4 viewProjection) {
-                // TODO: Handle matrices for material
-            }
-
-            @Override
-            public void prepareForObject(@NonNull RenderableObject object) {
-                this.object = object;
-            }
-
-            @Override
-            public void issueDrawCalls(@NonNull Geometry geometry) {
-                geometry.issueDrawCalls();
-            }
-
-            @Override
-            public boolean isDoubleSided() {
-                return isDoubleSided;
-            }
-
-            @Override
-            public boolean isBackSided() {
-                return isBackSided;
-            }
-
-            @Override
-            public boolean isBlended() {
-                return isBlended;
-            }
-
-            @Override
-            public boolean isDepthTestEnabled() {
-                return isDepthEnabled;
-            }
-
-            @Override
-            public int getBlendSourceFactor() {
-                return blendSourceFactor;
-            }
-
-            @Override
-            public int getBlendDestinationFactor() {
-                return blendDestinationFactor;
-            }
-
-            @Override
-            public int getDepthFunction() {
-                return depthFunction;
-            }
-
-            private void applyDoubleSided() {
-                if (isDoubleSided) {
-                    GLES20.glDisable(GLES20.GL_CULL_FACE);
-                } else {
-                    GLES20.glEnable(GLES20.GL_CULL_FACE);
-                    applyBackFace();
-                }
-            }
-
-            private void applyBackFace() {
-                if (isBackSided) {
-                    GLES20.glCullFace(GLES20.GL_FRONT);
-                } else {
-                    GLES20.glCullFace(GLES20.GL_BACK);
-                    GLES20.glFrontFace(GLES20.GL_CCW);
-                }
-            }
-
-            private void applyBlending() {
-                if (isBlended) {
-                    GLES20.glEnable(GLES20.GL_BLEND);
-                    GLES20.glBlendFunc(blendSourceFactor, blendDestinationFactor);
-                } else {
-                    GLES20.glDisable(GLES20.GL_BLEND);
-                }
-            }
-
-            private void applyDepth() {
-                if (!isDepthEnabled) {
-                    GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-                } else {
-                    GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-                    GLES20.glDepthFunc(depthFunction);
-                }
-            }
-
-            private void checkDoubleSided(@NonNull ObjectRenderer lastUsed) {
-                if (isDoubleSided && !lastUsed.isDoubleSided()) {
-                    // We are double sided, the last renderer is not - disable culling
-                    GLES20.glDisable(GLES20.GL_CULL_FACE);
-                } else {
-                    // We are not double sided
-                    if (lastUsed.isDoubleSided()) {
-                        // The last renderer is - enable culling
-                        GLES20.glEnable(GLES20.GL_CULL_FACE);
-                        // We dont know the backface so set it
-                        applyBackFace();
-                    } else {
-                        // The last renderer is not - check the face
-                        if (isBackSided != lastUsed.isBackSided()) {
-                            // The backfaces differ, set
-                            applyBackFace();
-                        }
-                    }
-                }
-            }
-
-            private void checkBlending(@NonNull ObjectRenderer lastUsed) {
-                if (isBlended && !lastUsed.isBlended()) {
-                    // We are blended, the last renderer is not - enable
-                    GLES20.glEnable(GLES20.GL_BLEND);
-                    GLES20.glBlendFunc(blendSourceFactor, blendDestinationFactor);
-                } else if (lastUsed.isBlended()) {
-                    // We are not blended, the last renderer is - disable
-                    GLES20.glDisable(GLES20.GL_BLEND);
-                }
-            }
-
-            private void checkDepth(@NonNull ObjectRenderer lastUsed) {
-                if (!isDepthEnabled) {
-                    if (lastUsed.isDepthTestEnabled()) {
-                        // We are not depth tested, the last renderer is - disable
-                        GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-                    } else {
-                        // We are not depth tested, neither was last renderer
-                    }
-                } else if (!lastUsed.isDepthTestEnabled()) {
-                    // We are depth tested, the last renderer is not - enable
-                    GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-                    GLES20.glDepthFunc(depthFunction);
-                }
-            }
-        };
+        assert material != null;
+        return new ObjectRendererImpl(material, isDoubleSided, isBackSided, isBlended, isDepthEnabled,
+                                      blendSourceFactor, blendDestinationFactor, depthFunction);
     }
 
     /**
@@ -324,4 +167,5 @@ public class ObjectRendererBuilder {
         depthFunction = function;
         return this;
     }
+
 }

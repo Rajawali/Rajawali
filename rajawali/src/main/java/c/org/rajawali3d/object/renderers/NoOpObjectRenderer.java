@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.rajawali3d.geometry.Geometry;
+import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.util.RajLog;
 
@@ -40,6 +41,11 @@ public class NoOpObjectRenderer implements ObjectRenderer {
     @Override
     public void issueDrawCalls(@NonNull Geometry geometry) {
 
+    }
+
+    @NonNull
+    @Override public Material getMaterial() {
+        return new Material();
     }
 
     @Override

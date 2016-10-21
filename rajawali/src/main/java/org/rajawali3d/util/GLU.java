@@ -16,18 +16,16 @@
 
 package org.rajawali3d.util;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import org.rajawali3d.math.Matrix;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * NOTE: This class taken from Android Open Source Project source code
- * and modified to support double precision matrices. 
- * 
- * A set of GL utilities inspired by the OpenGL Utility Toolkit.
+ * and modified to support double precision matrices.
  *
+ * A set of GL utilities inspired by the OpenGL Utility Toolkit.
  */
-
 public class GLU {
 
     /**
