@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import android.opengl.GLES20;
-import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 import c.org.rajawali3d.GlTestCase;
@@ -20,7 +19,6 @@ import org.rajawali3d.materials.Material;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @RunWith(AndroidJUnit4.class)
-@RequiresDevice
 @LargeTest
 public class ObjectRendererImplTest extends GlTestCase {
 
