@@ -33,7 +33,7 @@ android:
 before_script:
 - echo no | android create avd --force -n test -t android-$EMULATOR_API_LEVEL --abi
   $ANDROID_ABI
-- emulator -avd test -no-skin -no-audio -no-window -gpu mesa &
+- emulator -avd test -no-skin -no-audio -no-window &
 - android-wait-for-emulator
 script:
 - echo "Travis branch is $TRAVIS_BRANCH"
