@@ -17,6 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
 import org.junit.Test;
@@ -30,6 +31,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SmallTest
 public class SceneNodeTest {
 
     @Test

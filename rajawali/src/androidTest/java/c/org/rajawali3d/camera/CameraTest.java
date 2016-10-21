@@ -13,6 +13,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SmallTest
 public class CameraTest {
 
     @Test

@@ -3,7 +3,7 @@ package org.rajawali3d;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.filters.SmallTest;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 

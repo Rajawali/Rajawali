@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import android.support.annotation.NonNull;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.camera.Camera;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;

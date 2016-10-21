@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
@@ -11,6 +12,7 @@ import org.rajawali3d.math.vector.Vector3;
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SmallTest
 public class IntersectorTest {
 
     @Test

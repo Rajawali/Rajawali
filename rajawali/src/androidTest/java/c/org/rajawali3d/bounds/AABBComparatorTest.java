@@ -6,6 +6,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.scene.graph.SceneNode;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
@@ -13,6 +14,7 @@ import org.rajawali3d.math.vector.Vector3;
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SmallTest
 public class AABBComparatorTest {
 
     @Test

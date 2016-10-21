@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import android.test.suitebuilder.annotation.SmallTest;
-import org.rajawali3d.geometry.Geometry.BufferType;
+import android.support.test.filters.SmallTest;
 import org.junit.Test;
+import org.rajawali3d.geometry.Geometry.BufferType;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
