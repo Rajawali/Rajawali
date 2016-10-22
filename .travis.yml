@@ -30,11 +30,11 @@ android:
   - extra-google-m2repository
   - sys-img-$ANDROID_ABI-android-$ANDROID_API_LEVEL
   - sys-img-$ANDROID_ABI-android-$EMULATOR_API_LEVEL
-before_script:
-- echo no | android create avd --force -n test -t android-$EMULATOR_API_LEVEL --abi
-  $ANDROID_ABI
-- emulator -avd test -no-skin -no-audio -no-window &
-- android-wait-for-emulator
+#before_script:
+#- echo no | android create avd --force -n test -t android-$EMULATOR_API_LEVEL --abi
+#  $ANDROID_ABI
+#- emulator -avd test -no-skin -no-audio -no-window &
+#- android-wait-for-emulator
 script:
 - echo "Travis branch is $TRAVIS_BRANCH"
 - echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
@@ -46,7 +46,7 @@ script:
 - echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
 - cat local.properties
 - "./gradlew clean --stacktrace --continue"
-- "./gradlew :rajawali:jacocoTestReport :rajawali:assembleAndroidTest --stacktrace
+- "./gradlew :rajawali:testDebugUnitTest :rajawali:assembleAndroidTest --stacktrace
   --continue"
 - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
 - "./gradlew :rajawali:connectedCheck --stacktrace --continue"

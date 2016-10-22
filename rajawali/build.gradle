@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 apply plugin: 'signing'
+apply from: '../jacoco.gradle'
 
 String getVersionString() {
     String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
@@ -90,6 +91,8 @@ dependencies {
     androidTestCompile 'com.crittercism.dexmaker:dexmaker:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-dx:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
+
+    testCompile 'com.android.support.test:rules:0.5'
 }
 
 apply from: '../maven_push.gradle'
