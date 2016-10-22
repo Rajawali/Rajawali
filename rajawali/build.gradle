@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 apply plugin: 'signing'
 apply from: '../jacoco.gradle'
+//apply from: '../quality/quality.gradle'
 
 String getVersionString() {
     String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())

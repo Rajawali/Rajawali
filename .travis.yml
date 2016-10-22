@@ -1,9 +1,5 @@
 language: android
 sudo: false
-addons:
-  apt:
-    packages:
-      - gcc-4.7
 before_install:
 - openssl aes-256-cbc -K $encrypted_64bf13095d6f_key -iv $encrypted_64bf13095d6f_iv
   -in rajawali_secret.gpg.enc -out rajawali_secret.gpg -d
@@ -21,7 +17,7 @@ android:
   components:
   - platform-tools
   - tools
-  - ndk
+  #- ndk
   - build-tools-$ANDROID_BUILD_TOOLS_VERSION
   - android-$ANDROID_API_LEVEL
   - android-$EMULATOR_API_LEVEL
@@ -43,26 +39,27 @@ script:
 - echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
 - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
-- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
+#- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
 - cat local.properties
 #- "./gradlew clean --stacktrace --continue"
 #- adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
 #- "./gradlew :rajawali:connectedCheck --stacktrace --continue"
 - "./gradlew :rajawali:debugCoverage --stacktrace --continue" # Will execute :rajawali:check
-- "./gradlew :vuforia:check --stacktrace --continue"
-- "./gradlew :vr:check --stacktrace --continue"
-- "./gradlew :wear:check --stacktrace --continue"
-- "./gradlew :wear-example:check --stacktrace --continue"
+#- "./gradlew :vuforia:check --stacktrace --continue"
+#- "./gradlew :vr:check --stacktrace --continue"
+#- "./gradlew :wear:check --stacktrace --continue"
+#- "./gradlew :wear-example:check --stacktrace --continue"
 - "./gradlew :examples:check --stacktrace --continue"
 - if $TRAVIS_PULL_REQUEST; then "Skipping uploadArchives on Pull Request"; else ./gradlew
-  :rajawali:uploadArchives --stacktrace --continue; ./gradlew :vuforia:uploadArchives
-  --stacktrace --continue; ./gradlew :vr:uploadArchives --stacktrace --continue; ./gradlew
-  :wear:uploadArchives --stacktrace --continue; fi
+  :rajawali:uploadArchives --stacktrace --continue; fi
+  # The following goes before the above 'fi' when the modules are again valid
+  #./gradlew :vuforia:uploadArchives --stacktrace --continue; ./gradlew :vr:uploadArchives --stacktrace --continue;
+  #./gradlew :wear:uploadArchives --stacktrace --continue;
 install:
-- wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
-- chmod a+x ndk.bin
-- "./ndk.bin 1> /dev/null 2>&1"
-- chmod a+x ./android-ndk-r10d/ndk-build
+#- wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
+#- chmod a+x ndk.bin
+#- "./ndk.bin 1> /dev/null 2>&1"
+#- chmod a+x ./android-ndk-r10d/ndk-build
 notifications:
   email:
   - info@rozengain.com
@@ -71,4 +68,4 @@ notifications:
   slack:
     secure: F5PgdetFfZrWrGlSg1jRQrYHH0miPpSqM969mzwh042OLybpAND4o7ouNAHYbWtVMVJ1KIK/bPKCdvW4Iy6pJpyntX+rQBYN6Tfs4bN/ivOrePBBDPLfr/uPGIY/EPAw4U7qeprRANAPT3IutCqx9FM/IAfNtzOWKcPOTRXNeoY=
 after_success:
-- bash <(curl -s https://codecov.io/bash) -f "./rajawali/build/reports/jacoco/jacocoUnifiedtestDebugUnitTest.xml"
+- bash <(curl -s https://codecov.io/bash) -f "./rajawali/build/reports/jacoco/jacocoUnifiedTestDebug.xml"

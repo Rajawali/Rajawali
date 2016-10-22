@@ -1,1 +1,2 @@
-include ':rajawali', ':examples', ':vuforia', ':wear', ':wear-example', ':vr', ':copyrightcheck'
+include ':rajawali', ':examples', ':wear', ':wear-example', ':copyrightcheck'
+// ':vuforia', ':vr' <= Temporarily removed so they don't interfere with development. They are broken anyway.

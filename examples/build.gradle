@@ -25,10 +25,10 @@ android {
     }
 
     productFlavors {
-        withVuforia {
+        /*withVuforia {
         }
         withoutVuforia {
-        }
+        }*/
     }
 
     dexOptions {
@@ -50,8 +50,8 @@ dependencies {
 
 
     compile project(':rajawali')
-    withVuforiaCompile project(':vuforia')
-    withVuforiaCompile project(':vr')
+    //withVuforiaCompile project(':vuforia')
+    //withVuforiaCompile project(':vr')
 
     wearApp project(':wear-example')
 }
