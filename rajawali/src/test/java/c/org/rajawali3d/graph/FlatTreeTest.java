@@ -1,4 +1,4 @@
-package c.org.rajawali3d.scene.graph;
+package c.org.rajawali3d.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,6 +10,9 @@ import static org.mockito.Mockito.spy;
 import android.support.annotation.NonNull;
 import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.scene.graph.FlatTree;
+import c.org.rajawali3d.scene.graph.NodeMember;
+import c.org.rajawali3d.scene.graph.SceneNode;
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -83,9 +86,9 @@ public class FlatTreeTest {
     @Test
     public void testRecalculateBoundsForAdd() throws Exception {
         final FlatTree tree = new FlatTree();
-        final SceneNode parent = mock(SceneNode.class);
-        doReturn(new Vector3(-1d, -2d, -3d)).when(parent).getMinBound();
-        doReturn(new Vector3(1d, 2d, 3d)).when(parent).getMaxBound();
+        final SceneNode parent = Mockito.mock(SceneNode.class);
+        Mockito.doReturn(new Vector3(-1d, -2d, -3d)).when(parent).getMinBound();
+        Mockito.doReturn(new Vector3(1d, 2d, 3d)).when(parent).getMaxBound();
         tree.recalculateBoundsForAdd(parent);
         assertEquals(-1d, tree.minBound.x, 1e-14);
         assertEquals(-2d, tree.minBound.y, 1e-14);
@@ -102,16 +105,16 @@ public class FlatTreeTest {
         camera.setNearPlane(1.0);
         camera.setFarPlane(120.0);
         final FlatTree tree = new FlatTree();
-        final SceneNode member1 = spy(new SceneNode());
-        final SceneNode member2 = spy(new SceneNode());
+        final SceneNode member1 = Mockito.spy(new SceneNode());
+        final SceneNode member2 = Mockito.spy(new SceneNode());
 
         // Inside the frustum
-        doReturn(new Vector3(-1d, -1d, 110d)).when(member1).getMinBound();
-        doReturn(new Vector3(1d, 1d, 111d)).when(member1).getMaxBound();
+        Mockito.doReturn(new Vector3(-1d, -1d, 110d)).when(member1).getMinBound();
+        Mockito.doReturn(new Vector3(1d, 1d, 111d)).when(member1).getMaxBound();
 
         // Outside the frustum
-        doReturn(new Vector3(-1d, -1d, -111d)).when(member2).getMinBound();
-        doReturn(new Vector3(1d, 1d, -110d)).when(member2).getMaxBound();
+        Mockito.doReturn(new Vector3(-1d, -1d, -111d)).when(member2).getMinBound();
+        Mockito.doReturn(new Vector3(1d, 1d, -110d)).when(member2).getMaxBound();
         tree.add(member1);
         tree.add(member2);
 

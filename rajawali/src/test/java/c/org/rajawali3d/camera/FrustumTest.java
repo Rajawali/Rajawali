@@ -62,17 +62,17 @@ public class FrustumTest {
         final Frustum frustum = new Frustum();
         frustum.update(corners);
 
-        final AABB inBox = mock(AABB.class);
-        doReturn(new Vector3(0.5, 0.5, 3)).when(inBox).getMaxBound();
-        doReturn(new Vector3(-0.5, -0.5, 2)).when(inBox).getMinBound();
+        final AABB inBox = Mockito.mock(AABB.class);
+        Mockito.doReturn(new Vector3(0.5, 0.5, 3)).when(inBox).getMaxBound();
+        Mockito.doReturn(new Vector3(-0.5, -0.5, 2)).when(inBox).getMinBound();
 
-        final AABB outBox = mock(AABB.class);
-        doReturn(new Vector3(0.5, 0.5, 0)).when(outBox).getMaxBound();
-        doReturn(new Vector3(-0.5, -0.5, -1)).when(outBox).getMinBound();
+        final AABB outBox = Mockito.mock(AABB.class);
+        Mockito.doReturn(new Vector3(0.5, 0.5, 0)).when(outBox).getMaxBound();
+        Mockito.doReturn(new Vector3(-0.5, -0.5, -1)).when(outBox).getMinBound();
 
-        final AABB intersectBox = mock(AABB.class);
-        doReturn(new Vector3(0.5, 0.5, 5)).when(intersectBox).getMaxBound();
-        doReturn(new Vector3(-0.5, -0.5, 0)).when(intersectBox).getMinBound();
+        final AABB intersectBox = Mockito.mock(AABB.class);
+        Mockito.doReturn(new Vector3(0.5, 0.5, 5)).when(intersectBox).getMaxBound();
+        Mockito.doReturn(new Vector3(-0.5, -0.5, 0)).when(intersectBox).getMinBound();
 
         @Intersection int out = frustum.intersectBounds(inBox);
         assertEquals(Intersector.INSIDE, out);
@@ -96,9 +96,9 @@ public class FrustumTest {
         };
         final Frustum frustum = new Frustum();
         frustum.update(corners);
-        final AABB in = mock(AABB.class);
-        doReturn(new Vector3(1, 1, 111)).when(in).getMaxBound();
-        doReturn(new Vector3(-1, -1, 110)).when(in).getMinBound();
+        final AABB in = Mockito.mock(AABB.class);
+        Mockito.doReturn(new Vector3(1, 1, 111)).when(in).getMaxBound();
+        Mockito.doReturn(new Vector3(-1, -1, 110)).when(in).getMinBound();
         @Intersection int out = frustum.intersectBounds(in);
         assertEquals(Intersector.INSIDE, out);
     }

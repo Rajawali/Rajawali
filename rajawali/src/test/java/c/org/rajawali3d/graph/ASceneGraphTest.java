@@ -1,4 +1,4 @@
-package c.org.rajawali3d.scene.graph;
+package c.org.rajawali3d.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +8,10 @@ import android.support.annotation.NonNull;
 import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.scene.graph.ASceneGraph;
+import c.org.rajawali3d.scene.graph.NodeMember;
+import c.org.rajawali3d.scene.graph.SceneGraph;
+import c.org.rajawali3d.scene.graph.SceneNode;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;

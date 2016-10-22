@@ -25,7 +25,7 @@ project.afterEvaluate {
             }
             def testTaskName = "test${sourceName.capitalize()}UnitTest"
             // Create coverage task of form 'testFlavorTypeCoverage' depending on 'testFlavorTypeUnitTest'
-            task "${testTaskName}Coverage"(type: JacocoReport, dependsOn: "$testTaskName") {
+            task "${testTaskName}Coverage"(type: JacocoReport, dependsOn: ['check', "$testTaskName"]) {
                 group = "Reporting"
                 description = "Generate Jacoco coverage reports on the ${sourceName.capitalize()} build."
                 classDirectories = fileTree(
@@ -44,13 +44,18 @@ project.afterEvaluate {
                         "src/$productFlavorName/java",
                         "src/$buildTypeName/java"
                 ]
+                FileTree tree = fileTree(dir: "${project.buildDir}",
+                        includes: [
+                                '**/*-coverage.ec',
+                                "**/*Debug*.exec"
+                        ])
                 additionalSourceDirs = files(coverageSourceDirs)
                 sourceDirectories = files(coverageSourceDirs)
-                executionData = files("${project.buildDir}/jacoco/${testTaskName}.exec")
+                executionData = tree
                 reports {
                     xml.enabled = true
                     html.enabled = true
-                    xml.destination "${project.buildDir}/reports/jacoco/${testTaskName}Coverage/jacoco${testTaskName}" +
+                    xml.destination "${project.buildDir}/reports/jacoco/jacocoUnified${testTaskName}" +
                             ".xml"
                 }
             }

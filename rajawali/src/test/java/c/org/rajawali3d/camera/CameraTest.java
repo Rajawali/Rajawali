@@ -30,7 +30,7 @@ public class CameraTest {
 
     @Test
     public void testSetParent() throws Exception {
-        final NodeParent parent = mock(NodeParent.class);
+        final NodeParent parent = Mockito.mock(NodeParent.class);
         final Camera camera = new Camera();
         camera.setParent(parent);
         assertEquals(parent, camera.parent);
@@ -44,32 +44,32 @@ public class CameraTest {
                 0d, 0d, 1d, 0d,
                 -2d, -5d, -10d, 1d
         };
-        final NodeParent parent = mock(NodeParent.class);
-        final Camera camera = spy(new Camera());
+        final NodeParent parent = Mockito.mock(NodeParent.class);
+        final Camera camera = Mockito.spy(new Camera());
         camera.modelMatrixUpdated();
-        verify(camera).modelMatrixUpdated();
-        verify(camera).updateFrustum();
+        Mockito.verify(camera).modelMatrixUpdated();
+        Mockito.verify(camera).updateFrustum();
 
         final Matrix4 model = Matrix4.createTranslationMatrix(2d, 5d, 10d);
-        doReturn(model).when(parent).getWorldModelMatrix();
-        doNothing().when(camera).updateFrustum();
+        Mockito.doReturn(model).when(parent).getWorldModelMatrix();
+        Mockito.doNothing().when(camera).updateFrustum();
         camera.setParent(parent);
         camera.modelMatrixUpdated();
         final double[] result = camera.viewMatrix.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);
         }
-        verify(camera, times(2)).updateFrustum();
+        Mockito.verify(camera, Mockito.times(2)).updateFrustum();
     }
 
     @Test
     public void testIntersectBounds() throws Exception {
-        final Camera camera = spy(new Camera());
-        final Frustum frustum = mock(Frustum.class);
-        final AABB bounds = mock(AABB.class);
-        doReturn(frustum).when(camera).getFrustum();
+        final Camera camera = Mockito.spy(new Camera());
+        final Frustum frustum = Mockito.mock(Frustum.class);
+        final AABB bounds = Mockito.mock(AABB.class);
+        Mockito.doReturn(frustum).when(camera).getFrustum();
         camera.intersectBounds(bounds);
-        verify(frustum).intersectBounds(bounds);
+        Mockito.verify(frustum).intersectBounds(bounds);
     }
 
     @Test
@@ -163,9 +163,9 @@ public class CameraTest {
         for (int i = 0; i < 8; ++i) {
             points[i] = new Vector3();
         }
-        final NodeParent parent = mock(NodeParent.class);
+        final NodeParent parent = Mockito.mock(NodeParent.class);
         final Matrix4 matrix = Matrix4.createTranslationMatrix(1d, 2d, 3d);
-        doReturn(matrix).when(parent).getWorldModelMatrix();
+        Mockito.doReturn(matrix).when(parent).getWorldModelMatrix();
         camera.parent = parent;
         camera.getFrustumCorners(points);
         assertFalse(camera.cameraDirty);
@@ -177,29 +177,29 @@ public class CameraTest {
 
     @Test
     public void testUpdateFrustum() throws Exception {
-        final Camera camera = spy(new Camera());
-        final Frustum frustum = mock(Frustum.class);
-        doReturn(frustum).when(camera).getFrustum();
-        doNothing().when(camera).updateFrustumCorners();
+        final Camera camera = Mockito.spy(new Camera());
+        final Frustum frustum = Mockito.mock(Frustum.class);
+        Mockito.doReturn(frustum).when(camera).getFrustum();
+        Mockito.doNothing().when(camera).updateFrustumCorners();
         camera.updateFrustum();
-        verify(camera).updateFrustumCorners();
-        verify(frustum).update(camera.frustumCorners);
+        Mockito.verify(camera).updateFrustumCorners();
+        Mockito.verify(frustum).update(camera.frustumCorners);
     }
 
     @Test
     public void testSetProjectionMatrixMatrix4() throws Exception {
-        final Matrix4 matrix = mock(Matrix4.class);
-        final Matrix4 clone = mock(Matrix4.class);
-        doReturn(clone).when(matrix).clone();
-        final Camera camera = spy(new Camera());
+        final Matrix4 matrix = Mockito.mock(Matrix4.class);
+        final Matrix4 clone = Mockito.mock(Matrix4.class);
+        Mockito.doReturn(clone).when(matrix).clone();
+        final Camera camera = Mockito.spy(new Camera());
         final Matrix4 old = camera.projectionMatrix;
         camera.setProjectionMatrix(matrix);
-        verify(matrix).clone();
+        Mockito.verify(matrix).clone();
         assertNotNull(camera.projectionMatrix);
         assertNotSame(old, camera.projectionMatrix);
         assertSame(clone, camera.projectionMatrix);
         assertTrue(camera.isInitialized);
-        verify(camera).updateFrustum();
+        Mockito.verify(camera).updateFrustum();
     }
 
     @Test
@@ -210,7 +210,7 @@ public class CameraTest {
                 0.0, 0.0, -1.0168067226890756, -1.0,
                 0.0, 0.0, -2.0168067226890756, 0.0
         };
-        final Camera camera = spy(new Camera());
+        final Camera camera = Mockito.spy(new Camera());
         camera.setProjectionMatrix(100, 200);
         assertFalse(camera.cameraDirty);
         assertEquals(100, camera.lastWidth);
@@ -233,25 +233,25 @@ public class CameraTest {
         camera.cameraDirty = false;
         camera.setProjectionMatrix(90, 190);
         assertFalse(camera.cameraDirty);
-        verify(camera, times(4)).updateFrustum();
+        Mockito.verify(camera, Mockito.times(4)).updateFrustum();
     }
 
     @Test
     public void testSetProjectionMatrixWithFOVAndDimensions() throws Exception {
-        final Camera camera = spy(new Camera());
+        final Camera camera = Mockito.spy(new Camera());
         camera.fieldOfView = 10.0;
         camera.setProjectionMatrix(20.0, 100, 200);
         assertEquals(20.0, camera.getFieldOfView(), 1e-14);
-        verify(camera).setProjectionMatrix(100, 200);
-        verify(camera).updateFrustum();
+        Mockito.verify(camera).setProjectionMatrix(100, 200);
+        Mockito.verify(camera).updateFrustum();
     }
 
     @Test
     public void testUpdatePerspectiveWithSides() throws Exception {
-        final Camera camera = spy(new Camera());
+        final Camera camera = Mockito.spy(new Camera());
         camera.updatePerspective(30, 30, 20, 20);
-        verify(camera).updatePerspective(60, 40);
-        verify(camera).updateFrustum();
+        Mockito.verify(camera).updatePerspective(60, 40);
+        Mockito.verify(camera).updateFrustum();
     }
 
     @Test
@@ -262,14 +262,14 @@ public class CameraTest {
                 0.0, 0.0, -1.0168067226890756, -1.0,
                 0.0, 0.0, -2.0168067226890756, 0.0
         };
-        final Camera camera = spy(new Camera());
+        final Camera camera = Mockito.spy(new Camera());
         camera.updatePerspective(60, 40);
         assertEquals(60d, camera.fieldOfView, 1e-14);
         final double[] result = camera.projectionMatrix.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result), expected[i], result[i], 1e-14);
         }
-        verify(camera).updateFrustum();
+        Mockito.verify(camera).updateFrustum();
     }
 
     @Test
@@ -289,15 +289,15 @@ public class CameraTest {
 
     @Test
     public void testSetNearPlane() throws Exception {
-        final Camera camera = spy(new Camera());
+        final Camera camera = Mockito.spy(new Camera());
         camera.lastHeight = 100;
         camera.lastWidth = 200;
         camera.cameraDirty = false;
         camera.nearPlane = 10.0;
         camera.setNearPlane(20.0);
         assertEquals(20.0, camera.nearPlane, 1e-14);
-        verify(camera).setProjectionMatrix(200, 100);
-        verify(camera).updateFrustum();
+        Mockito.verify(camera).setProjectionMatrix(200, 100);
+        Mockito.verify(camera).updateFrustum();
         assertFalse(camera.cameraDirty);
     }
 
@@ -310,15 +310,15 @@ public class CameraTest {
 
     @Test
     public void testSetFarPlane() throws Exception {
-        final Camera camera = spy(new Camera());
+        final Camera camera = Mockito.spy(new Camera());
         camera.lastHeight = 100;
         camera.lastWidth = 200;
         camera.cameraDirty = false;
         camera.farPlane = 10.0;
         camera.setFarPlane(20.0);
         assertEquals(20.0, camera.farPlane, 1e-14);
-        verify(camera).setProjectionMatrix(200, 100);
-        verify(camera).updateFrustum();
+        Mockito.verify(camera).setProjectionMatrix(200, 100);
+        Mockito.verify(camera).updateFrustum();
         assertFalse(camera.cameraDirty);
     }
 
@@ -331,15 +331,15 @@ public class CameraTest {
 
     @Test
     public void testSetFieldOfView() throws Exception {
-        final Camera camera = spy(new Camera());
+        final Camera camera = Mockito.spy(new Camera());
         camera.lastHeight = 100;
         camera.lastWidth = 200;
         camera.cameraDirty = false;
         camera.fieldOfView = 10.0;
         camera.setFieldOfView(20.0);
         assertEquals(20.0, camera.fieldOfView, 1e-14);
-        verify(camera).setProjectionMatrix(200, 100);
-        verify(camera).updateFrustum();
+        Mockito.verify(camera).setProjectionMatrix(200, 100);
+        Mockito.verify(camera).updateFrustum();
         assertFalse(camera.cameraDirty);
     }
 }

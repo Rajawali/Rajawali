@@ -19,15 +19,15 @@ public class AABBComparatorTest {
 
     @Test
     public void testConstructor() throws Exception {
-        final AABB.Comparator comparator = spy(new AABB.Comparator());
-        verifyZeroInteractions(comparator);
+        final AABB.Comparator comparator = Mockito.spy(new AABB.Comparator());
+        Mockito.verifyZeroInteractions(comparator);
     }
 
     @Test
     public void testCheckAndAdjustMinBounds() throws Exception {
         final SceneNode node = new SceneNode();
-        final AABB box = mock(AABB.class);
-        when(box.getMinBound()).thenReturn(new Vector3(-1d, -2d, -3d));
+        final AABB box = Mockito.mock(AABB.class);
+        Mockito.when(box.getMinBound()).thenReturn(new Vector3(-1d, -2d, -3d));
         AABB.Comparator.checkAndAdjustMinBounds(node.getMinBound(), box.getMinBound());
         assertEquals(-1d, node.getMinBound().x, 1e-14);
         assertEquals(-2d, node.getMinBound().y, 1e-14);
@@ -37,8 +37,8 @@ public class AABBComparatorTest {
     @Test
     public void testCheckAndAdjustMaxBounds() throws Exception {
         final SceneNode node = new SceneNode();
-        final AABB box = mock(AABB.class);
-        when(box.getMaxBound()).thenReturn(new Vector3(1d, 2d, 3d));
+        final AABB box = Mockito.mock(AABB.class);
+        Mockito.when(box.getMaxBound()).thenReturn(new Vector3(1d, 2d, 3d));
         AABB.Comparator.checkAndAdjustMaxBounds(node.getMaxBound(), box.getMaxBound());
         assertEquals(1d, node.getMaxBound().x, 1e-14);
         assertEquals(2d, node.getMaxBound().y, 1e-14);

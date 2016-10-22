@@ -45,11 +45,12 @@ script:
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
 - echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
 - cat local.properties
-- "./gradlew clean --stacktrace --continue"
-- "./gradlew :rajawali:testDebugUnitTest :rajawali:assembleAndroidTest --stacktrace
-  --continue"
+#- "./gradlew clean --stacktrace --continue"
+- "./gradlew :rajawali:testDebugUnitTest --stacktrace --continue"
 #- adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-#- "./gradlew :rajawali:check --stacktrace --continue"
+- "./gradlew :rajawali:check --stacktrace --continue"
+#- "./gradlew :rajawali:connectedCheck --stacktrace --continue"
+- "./gradlew :rajawali:testDebugUnitTestCoverage --stacktrace --continue"
 - "./gradlew :vuforia:check --stacktrace --continue"
 - "./gradlew :vr:check --stacktrace --continue"
 - "./gradlew :wear:check --stacktrace --continue"
