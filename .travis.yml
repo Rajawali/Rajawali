@@ -48,7 +48,7 @@ script:
 - "./gradlew clean --stacktrace --continue"
 - "./gradlew :rajawali:testDebugUnitTest :rajawali:assembleAndroidTest --stacktrace
   --continue"
-- adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
+#- adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
 - "./gradlew :rajawali:connectedCheck --stacktrace --continue"
 - "./gradlew :vuforia:check --stacktrace --continue"
 - "./gradlew :vr:check --stacktrace --continue"
