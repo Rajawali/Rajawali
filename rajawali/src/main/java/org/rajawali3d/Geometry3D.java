@@ -843,10 +843,10 @@ public class Geometry3D {
                     .allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
-            textureInfo.buffer.position(0);
         } else {
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
         }
+        textureInfo.buffer.position(0);
         mHasTextureCoordinates = true;
     }
 
