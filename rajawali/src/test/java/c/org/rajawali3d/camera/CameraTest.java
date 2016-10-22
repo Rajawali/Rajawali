@@ -6,17 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.scene.graph.NodeParent;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -30,7 +26,7 @@ public class CameraTest {
 
     @Test
     public void testSetParent() throws Exception {
-        final NodeParent parent = Mockito.mock(NodeParent.class);
+        final NodeParent parent = mock(NodeParent.class);
         final Camera camera = new Camera();
         camera.setParent(parent);
         assertEquals(parent, camera.parent);

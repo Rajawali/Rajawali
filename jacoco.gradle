@@ -23,9 +23,9 @@ project.afterEvaluate {
                 sourceName = "${productFlavorName}${buildTypeName.capitalize()}"
                 sourcePath = "${productFlavorName}/${buildTypeName}"
             }
-            def testTaskName = "test${sourceName.capitalize()}UnitTest"
+            def testTaskName = "test${sourceName.capitalize()}"
             // Create coverage task of form 'testFlavorTypeCoverage' depending on 'testFlavorTypeUnitTest'
-            task "${testTaskName}Coverage"(type: JacocoReport, dependsOn: ['check', "$testTaskName"]) {
+            task "${sourceName}Coverage"(type: JacocoReport, dependsOn: 'check') {
                 group = "Reporting"
                 description = "Generate Jacoco coverage reports on the ${sourceName.capitalize()} build."
                 classDirectories = fileTree(

@@ -46,11 +46,9 @@ script:
 - echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
 - cat local.properties
 #- "./gradlew clean --stacktrace --continue"
-- "./gradlew :rajawali:testDebugUnitTest --stacktrace --continue"
 #- adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-- "./gradlew :rajawali:check --stacktrace --continue"
 #- "./gradlew :rajawali:connectedCheck --stacktrace --continue"
-- "./gradlew :rajawali:testDebugUnitTestCoverage --stacktrace --continue"
+- "./gradlew :rajawali:debugCoverage --stacktrace --continue" # Will execute :rajawali:check
 - "./gradlew :vuforia:check --stacktrace --continue"
 - "./gradlew :vr:check --stacktrace --continue"
 - "./gradlew :wear:check --stacktrace --continue"
@@ -73,4 +71,4 @@ notifications:
   slack:
     secure: F5PgdetFfZrWrGlSg1jRQrYHH0miPpSqM969mzwh042OLybpAND4o7ouNAHYbWtVMVJ1KIK/bPKCdvW4Iy6pJpyntX+rQBYN6Tfs4bN/ivOrePBBDPLfr/uPGIY/EPAw4U7qeprRANAPT3IutCqx9FM/IAfNtzOWKcPOTRXNeoY=
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash) -f "./rajawali/build/reports/jacoco/jacocoUnifiedtestDebugUnitTest.xml"

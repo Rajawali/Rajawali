@@ -26,7 +26,7 @@ public class ObjectRendererImplTest extends GlTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
+        super.setUp(getClass().getSimpleName());
     }
 
     @After

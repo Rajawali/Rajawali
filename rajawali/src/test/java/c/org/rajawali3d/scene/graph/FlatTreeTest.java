@@ -1,19 +1,14 @@
-package c.org.rajawali3d.graph;
+package c.org.rajawali3d.scene.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 import android.support.annotation.NonNull;
 import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.camera.Camera;
-import c.org.rajawali3d.scene.graph.FlatTree;
-import c.org.rajawali3d.scene.graph.NodeMember;
-import c.org.rajawali3d.scene.graph.SceneNode;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.util.Arrays;

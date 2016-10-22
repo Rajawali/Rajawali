@@ -1,14 +1,12 @@
 package c.org.rajawali3d.bounds;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.scene.graph.SceneNode;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
@@ -19,7 +17,7 @@ public class AABBComparatorTest {
 
     @Test
     public void testConstructor() throws Exception {
-        final AABB.Comparator comparator = Mockito.spy(new AABB.Comparator());
+        final AABB.Comparator comparator = spy(new AABB.Comparator());
         Mockito.verifyZeroInteractions(comparator);
     }
 

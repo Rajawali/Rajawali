@@ -1,4 +1,4 @@
-package c.org.rajawali3d.graph;
+package c.org.rajawali3d.scene.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,23 +6,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.support.test.filters.SmallTest;
-import c.org.rajawali3d.scene.graph.NodeMember;
-import c.org.rajawali3d.scene.graph.SceneNode;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -41,9 +32,9 @@ public class SceneNodeTest {
         final Vector3 expectedMin = new Vector3(9d, -21d, 1d);
         final Vector3 expectedMax = new Vector3(12d, -19d, 3d);
         final SceneNode node = Mockito.spy(new SceneNode());
-        final NodeMember member1 = Mockito.mock(NodeMember.class);
-        final NodeMember member2 = Mockito.mock(NodeMember.class);
-        final Transformation transformation = Mockito.mock(Transformation.class);
+        final NodeMember member1 = mock(NodeMember.class);
+        final NodeMember member2 = mock(NodeMember.class);
+        final Transformation transformation = mock(Transformation.class);
         Mockito.doReturn(Matrix4.createTranslationMatrix(10, -20, 2)).when(transformation).getWorldModelMatrix();
         Mockito.doReturn(transformation).when(node).getTransformation();
         Mockito.doReturn(new Vector3(-1d, -1d, -1d)).when(member1).getMinBound();
@@ -64,8 +55,8 @@ public class SceneNodeTest {
         final Vector3 expectedMin = new Vector3(-1d, -1d, -1d);
         final Vector3 expectedMax = new Vector3(2d, 1d, 1d);
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode child1 = Mockito.mock(SceneNode.class);
-        final SceneNode child2 = Mockito.mock(SceneNode.class);
+        final SceneNode child1 = mock(SceneNode.class);
+        final SceneNode child2 = mock(SceneNode.class);
         Mockito.doReturn(new Vector3(-1d, -1d, -1d)).when(child1).getMinBound();
         Mockito.doReturn(new Vector3(1d, 1d, 1d)).when(child1).getMaxBound();
         Mockito.doReturn(new Vector3(1d, -1d, -1d)).when(child2).getMinBound();
@@ -84,9 +75,9 @@ public class SceneNodeTest {
         final Vector3 expectedMin = new Vector3(-1d, -21d, -1d);
         final Vector3 expectedMax = new Vector3(12d, 1d, 3d);
         final SceneNode node = Mockito.spy(new SceneNode());
-        final NodeMember member1 = Mockito.mock(NodeMember.class);
-        final NodeMember member2 = Mockito.mock(NodeMember.class);
-        final Transformation transformation = Mockito.mock(Transformation.class);
+        final NodeMember member1 = mock(NodeMember.class);
+        final NodeMember member2 = mock(NodeMember.class);
+        final Transformation transformation = mock(Transformation.class);
         Mockito.doReturn(Matrix4.createTranslationMatrix(10, -20, 2)).when(transformation).getWorldModelMatrix();
         Mockito.doReturn(transformation).when(node).getTransformation();
         Mockito.doReturn(new Vector3(-1d, -1d, -1d)).when(member1).getMinBound();
@@ -94,8 +85,8 @@ public class SceneNodeTest {
         Mockito.doReturn(new Vector3(1d, -1d, -1d)).when(member2).getMinBound();
         Mockito.doReturn(new Vector3(2d, 1d, 1d)).when(member2).getMaxBound();
 
-        final SceneNode child1 = Mockito.mock(SceneNode.class);
-        final SceneNode child2 = Mockito.mock(SceneNode.class);
+        final SceneNode child1 = mock(SceneNode.class);
+        final SceneNode child2 = mock(SceneNode.class);
         Mockito.doReturn(new Vector3(-1d, -1d, -1d)).when(child1).getMinBound();
         Mockito.doReturn(new Vector3(1d, 1d, 1d)).when(child1).getMaxBound();
         Mockito.doReturn(new Vector3(1d, -1d, -1d)).when(child2).getMinBound();
@@ -119,8 +110,8 @@ public class SceneNodeTest {
         final Vector3 expectedMin = new Vector3(-1d, -1d, -1d);
         final Vector3 expectedMax = new Vector3(2d, 1d, 1d);
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode child1 = Mockito.mock(SceneNode.class);
-        final SceneNode child2 = Mockito.mock(SceneNode.class);
+        final SceneNode child1 = mock(SceneNode.class);
+        final SceneNode child2 = mock(SceneNode.class);
         Mockito.doReturn(new Vector3(-1d, -1d, -1d)).when(child1).getMinBound();
         Mockito.doReturn(new Vector3(1d, 1d, 1d)).when(child1).getMaxBound();
         Mockito.doReturn(new Vector3(1d, -1d, -1d)).when(child2).getMinBound();
@@ -140,8 +131,8 @@ public class SceneNodeTest {
         final Vector3 expectedMax = new Vector3(6d, 7d, 8d);
         final SceneNode node = Mockito.spy(new SceneNode());
         final SceneNode child = Mockito.spy(new SceneNode());
-        final NodeMember member = Mockito.mock(NodeMember.class);
-        final Transformation transformation = Mockito.mock(Transformation.class);
+        final NodeMember member = mock(NodeMember.class);
+        final Transformation transformation = mock(Transformation.class);
         Mockito.doReturn(new Matrix4()).when(transformation).getLocalModelMatrix();
         Mockito.when(child.getMinBound()).thenReturn(new Vector3(3d, 4d, 5d));
         Mockito.when(child.getMaxBound()).thenReturn(new Vector3(6d, 7d, 8d));
@@ -165,8 +156,8 @@ public class SceneNodeTest {
         final Vector3 expectedMin = new Vector3(-1d, -2d, -3d);
         final Vector3 expectedMax = new Vector3(6d, 7d, 8d);
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode added = Mockito.mock(SceneNode.class);
-        final Transformation transformation = Mockito.mock(Transformation.class);
+        final SceneNode added = mock(SceneNode.class);
+        final Transformation transformation = mock(Transformation.class);
         Mockito.doReturn(new Matrix4()).when(transformation).getLocalModelMatrix();
         Mockito.when(node.getMinBound()).thenReturn(new Vector3(-1d, -2d, -3d));
         Mockito.when(node.getMaxBound()).thenReturn(new Vector3(1d, 2d, 3d));
@@ -183,7 +174,7 @@ public class SceneNodeTest {
     @Test
     public void testRecalculateBoundsForAddMember() throws Exception {
         final SceneNode node = new SceneNode();
-        final NodeMember added = Mockito.mock(NodeMember.class);
+        final NodeMember added = mock(NodeMember.class);
         Mockito.when(added.getMaxBound()).thenReturn(new Vector3());
         Mockito.when(added.getMinBound()).thenReturn(new Vector3());
         node.recalculateBoundsForAdd(added);
@@ -196,7 +187,7 @@ public class SceneNodeTest {
     @Test
     public void testRequestTransformations() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final Transformer transformer = Mockito.mock(Transformer.class);
+        final Transformer transformer = mock(Transformer.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doNothing().when(node).updateGraph();
@@ -210,7 +201,7 @@ public class SceneNodeTest {
     @Test
     public void testRequestTransformationsWithException() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final Transformer transformer = Mockito.mock(Transformer.class);
+        final Transformer transformer = mock(Transformer.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doThrow(IllegalArgumentException.class).when(node).updateGraph();
@@ -229,8 +220,8 @@ public class SceneNodeTest {
     public void testAcquireWriteLock() throws Exception {
         final SceneNode node = new SceneNode();
         assertNull(node.acquireWriteLock());
-        final SceneNode parent = Mockito.mock(SceneNode.class);
-        Mockito.when(parent.acquireWriteLock()).thenReturn(Mockito.mock(Lock.class));
+        final SceneNode parent = mock(SceneNode.class);
+        Mockito.when(parent.acquireWriteLock()).thenReturn(mock(Lock.class));
         node.parent = parent;
         final Lock lock = node.acquireWriteLock();
         assertNotNull(lock);
@@ -246,7 +237,7 @@ public class SceneNodeTest {
     public void testSetParent() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
         assertNull(node.acquireWriteLock());
-        final SceneNode parent = Mockito.mock(SceneNode.class);
+        final SceneNode parent = mock(SceneNode.class);
         node.setParent(parent);
         Mockito.verify(node, Mockito.times(2)).acquireWriteLock();
         Mockito.verify(node).releaseWriteLock();
@@ -274,7 +265,7 @@ public class SceneNodeTest {
     @Test
     public void testUpdateGraph() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode parent = Mockito.mock(SceneNode.class);
+        final SceneNode parent = mock(SceneNode.class);
         Mockito.doNothing().when(node).recalculateModelMatrix(Matchers.any(Matrix4.class));
         Mockito.doNothing().when(node).recalculateBounds(Matchers.anyBoolean());
         node.parent = parent;
@@ -298,10 +289,10 @@ public class SceneNodeTest {
     @Test
     public void testSetToModelMatrix() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode parent = Mockito.mock(SceneNode.class);
-        final Matrix4 param = Mockito.mock(Matrix4.class);
+        final SceneNode parent = mock(SceneNode.class);
+        final Matrix4 param = mock(Matrix4.class);
 
-        final Transformation transformation = Mockito.mock(Transformation.class);
+        final Transformation transformation = mock(Transformation.class);
         final Matrix4 nodeMatrix = new Matrix4();
         Mockito.doReturn(transformation).when(node).getTransformation();
         Mockito.doReturn(nodeMatrix).when(transformation).getLocalModelMatrix();
@@ -317,7 +308,7 @@ public class SceneNodeTest {
     @Test
     public void testGetWorldModelMatrix() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final Transformation transformation = Mockito.mock(Transformation.class);
+        final Transformation transformation = mock(Transformation.class);
         final Matrix4 nodeMatrix = new Matrix4();
         Mockito.doReturn(transformation).when(node).getTransformation();
         Mockito.doReturn(nodeMatrix).when(transformation).getWorldModelMatrix();
@@ -328,7 +319,7 @@ public class SceneNodeTest {
     @Test
     public void testAddNodeMember() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final NodeMember member = Mockito.mock(NodeMember.class);
+        final NodeMember member = mock(NodeMember.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doNothing().when(node).updateGraph();
@@ -343,7 +334,7 @@ public class SceneNodeTest {
     @Test
     public void testAddMemberWithException() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final NodeMember member = Mockito.mock(NodeMember.class);
+        final NodeMember member = mock(NodeMember.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doThrow(IllegalArgumentException.class).when(node).updateGraph();
@@ -360,7 +351,7 @@ public class SceneNodeTest {
     @Test
     public void testRemoveNodeMember() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final NodeMember member = Mockito.mock(NodeMember.class);
+        final NodeMember member = mock(NodeMember.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doNothing().when(node).updateGraph();
@@ -377,7 +368,7 @@ public class SceneNodeTest {
     @Test
     public void testRemoveMemberWithException() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final NodeMember member = Mockito.mock(NodeMember.class);
+        final NodeMember member = mock(NodeMember.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doThrow(IllegalArgumentException.class).when(node).updateGraph();
@@ -399,7 +390,7 @@ public class SceneNodeTest {
     @Test
     public void testAddChildNode() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode child = Mockito.mock(SceneNode.class);
+        final SceneNode child = mock(SceneNode.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doNothing().when(node).updateGraph();
@@ -414,7 +405,7 @@ public class SceneNodeTest {
     @Test
     public void testAddChildNodeWithException() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode child = Mockito.mock(SceneNode.class);
+        final SceneNode child = mock(SceneNode.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doThrow(IllegalArgumentException.class).when(node).updateGraph();
@@ -431,7 +422,7 @@ public class SceneNodeTest {
     @Test
     public void testRemoveChildNode() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode child = Mockito.mock(SceneNode.class);
+        final SceneNode child = mock(SceneNode.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doNothing().when(node).updateGraph();
@@ -448,7 +439,7 @@ public class SceneNodeTest {
     @Test
     public void testRemoveChildNodeWithException() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode child = Mockito.mock(SceneNode.class);
+        final SceneNode child = mock(SceneNode.class);
         Mockito.doReturn(null).when(node).acquireWriteLock();
         Mockito.doNothing().when(node).releaseWriteLock();
         Mockito.doThrow(IllegalArgumentException.class).when(node).updateGraph();
@@ -470,9 +461,9 @@ public class SceneNodeTest {
     @Test
     public void testRecalculateModelMatrix() throws Exception {
         final SceneNode node = Mockito.spy(new SceneNode());
-        final SceneNode child = Mockito.mock(SceneNode.class);
-        final NodeMember member = Mockito.mock(NodeMember.class);
-        final Transformation transformation = Mockito.mock(Transformation.class);
+        final SceneNode child = mock(SceneNode.class);
+        final NodeMember member = mock(NodeMember.class);
+        final Transformation transformation = mock(Transformation.class);
         final Matrix4 parentMatrix = new Matrix4();
         final Matrix4 nodeMatrix = new Matrix4();
         Mockito.doReturn(transformation).when(node).getTransformation();
@@ -495,7 +486,7 @@ public class SceneNodeTest {
         node.releaseWriteLock();
 
         // Test with a lock
-        Lock lock = Mockito.mock(Lock.class);
+        Lock lock = mock(Lock.class);
         node.currentlyHeldWriteLock = lock;
         node.releaseWriteLock();
         Mockito.verify(lock).unlock();

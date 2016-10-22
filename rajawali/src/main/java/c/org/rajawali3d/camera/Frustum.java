@@ -14,12 +14,11 @@ package c.org.rajawali3d.camera;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import c.org.rajawali3d.bounds.AABB;
-import org.rajawali3d.math.Plane;
-import org.rajawali3d.math.vector.Vector3;
 import c.org.rajawali3d.intersection.Intersector;
 import c.org.rajawali3d.intersection.Intersector.Intersection;
+import org.rajawali3d.math.Plane;
+import org.rajawali3d.math.vector.Vector3;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -119,9 +118,6 @@ public class Frustum {
             // Positive point distance
             double distance2 = p.getDistanceTo(scratchVector2);
 
-            Log.i(TAG, "Plane " + i + ": " + p);
-            Log.i(TAG, "Distance 1: " + distance1);
-            Log.i(TAG, "Distance 2: " + distance2);
             // Is the positive vertex outside?
             if (distance2 < 0) {
                 return Intersector.OUTSIDE;

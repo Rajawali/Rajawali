@@ -3,6 +3,7 @@ package c.org.rajawali3d;
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.support.test.rule.ActivityTestRule;
 import org.junit.Rule;
 import org.rajawali3d.GlTestActivity;
@@ -91,7 +92,7 @@ public abstract class GlTestCase {
     /**
      * On the first call, set up the GL context.
      */
-    protected void setUp() throws Exception {
+    protected void setUp(@Nullable final String title) throws Exception {
         if (Looper.myLooper() == null) {
             Looper.prepare();
         }
@@ -106,6 +107,7 @@ public abstract class GlTestCase {
 
         // New or different activity, set up for GL.
         this.activity = activity;
+
         glSurfaceView = new GLSurfaceView(activity);
         gl10 = null;
 
@@ -113,6 +115,9 @@ public abstract class GlTestCase {
         glSurfaceView.setRenderer(new MockRenderer());
         activity.runOnUiThread(new Runnable() {
             public void run() {
+                if (title != null) {
+                    activity.setTitle(title);
+                }
                 activity.setContentView(glSurfaceView);
             }
         });
