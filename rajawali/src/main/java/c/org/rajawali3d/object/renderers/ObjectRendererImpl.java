@@ -4,10 +4,12 @@ import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import c.org.rajawali3d.object.RenderableObject;
+
 import org.rajawali3d.geometry.Geometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
+
+import c.org.rajawali3d.object.RenderableObject;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -141,6 +143,7 @@ class ObjectRendererImpl implements ObjectRenderer {
     private void applyBackFace() {
         if (isBackSided) {
             GLES20.glCullFace(GLES20.GL_FRONT);
+            GLES20.glFrontFace(GLES20.GL_CCW);
         } else {
             GLES20.glCullFace(GLES20.GL_BACK);
             GLES20.glFrontFace(GLES20.GL_CCW);

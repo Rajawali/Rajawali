@@ -1,20 +1,22 @@
 package c.org.rajawali3d.object.renderers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rajawali3d.materials.Material;
+
+import c.org.rajawali3d.GlTestCase;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -38,6 +40,7 @@ public class ObjectRendererImplTest extends GlTestCase {
     public void ensureState() throws Exception {
         ensureDoubleSidedBlendingDepth();
         ensureFrontSided();
+        ensureBackSided();
     }
 
     @Test
@@ -215,6 +218,67 @@ public class ObjectRendererImplTest extends GlTestCase {
         // Check depth testing is enabled
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
+                GLES20.glGetBooleanv(GLES20.GL_DEPTH_TEST, boolOutput, 0);
+            }
+        });
+        assertFalse("Unexpected depth test state: " + boolOutput[0], boolOutput[0]);
+    }
+
+    private void ensureBackSided() throws Exception {
+        final Material material = mock(Material.class);
+        final ObjectRendererImpl renderer = new ObjectRendererImpl(material, false, true, false, false,
+            GLES20.GL_ONE, GLES20.GL_ONE_MINUS_DST_ALPHA,
+            GLES20.GL_LEQUAL);
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                renderer.ensureState(null);
+            }
+        });
+
+        final boolean[] boolOutput = new boolean[1];
+        final int[] intOutput = new int[2];
+
+        // Check double sided is disabled - face culling
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                GLES20.glGetBooleanv(GLES20.GL_CULL_FACE, boolOutput, 0);
+            }
+        });
+        assertTrue("Unexpected face culling state: " + boolOutput[0], boolOutput[0]);
+
+        // Check back face - Cull front face, Front Face is CCW
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                GLES20.glGetIntegerv(GLES20.GL_CULL_FACE_MODE, intOutput, 0);
+            }
+        });
+        assertEquals("Unexpected face culling mode: " + intOutput[0], GLES20.GL_FRONT, intOutput[0]);
+
+        // Check front face winding - Cull back face, Front Face is CCW
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                GLES20.glGetIntegerv(GLES20.GL_FRONT_FACE, intOutput, 0);
+            }
+        });
+        assertEquals("Unexpected face winding: " + intOutput[0], GLES20.GL_CCW, intOutput[0]);
+
+        // Check blending is enabled
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                GLES20.glGetBooleanv(GLES20.GL_BLEND, boolOutput, 0);
+            }
+        });
+        assertFalse("Unexpected blending state: " + boolOutput[0], boolOutput[0]);
+
+        // Check depth testing is enabled
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
                 GLES20.glGetBooleanv(GLES20.GL_DEPTH_TEST, boolOutput, 0);
             }
         });
