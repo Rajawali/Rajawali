@@ -16,28 +16,33 @@ import c.org.rajawali3d.object.RenderableObject;
  */
 class ObjectRendererImpl implements ObjectRenderer {
 
-    @NonNull final Material material;
-    final          boolean  isDoubleSided;
-    final          boolean  isBackSided;
-    final          boolean  isBlended;
-    final          boolean  isDepthEnabled;
-    final          int      blendSourceFactor;
-    final          int      blendDestinationFactor;
-    final          int      depthFunction;
+    @NonNull private final Material material;
+    private final          boolean  isDoubleSided;
+    private final          boolean  isBackSided;
+    private final          boolean  isBlended;
+    private final          boolean  isDepthEnabled;
+    private final          int      blendSourceFactor;
+    private final          int      blendDestinationFactor;
+    private final          int      depthFunction;
 
-    RenderableObject object;
+    @Nullable private RenderableObject object;
 
-    ObjectRendererImpl(@NonNull Material material, boolean isDoubleSided, boolean isBackSided, boolean isBlended,
-                       boolean isDepthEnabled, int blendSourceFactor, int blendDestinationFactor,
-                       int depthFunction) {
-        this.material = material;
-        this.isDoubleSided = isDoubleSided;
-        this.isBackSided = isBackSided;
-        this.isBlended = isBlended;
-        this.isDepthEnabled = isDepthEnabled;
-        this.blendSourceFactor = blendSourceFactor;
-        this.blendDestinationFactor = blendDestinationFactor;
-        this.depthFunction = depthFunction;
+
+    /**
+     * Constructs a new {@link ObjectRendererImpl} from the provided {@link ObjectRendererBuilder}. It is not
+     * intended that this constructor be used by anything other than {@link ObjectRendererBuilder}.
+     *
+     * @param builder The {@link ObjectRendererBuilder} configured for the desired render properties.
+     */
+    ObjectRendererImpl(@NonNull ObjectRendererBuilder builder) {
+        this.material = builder.getMaterial();
+        this.isDoubleSided = builder.isDoubleSided();
+        this.isBackSided = builder.isBackSided();
+        this.isBlended = builder.isBackSided();
+        this.isDepthEnabled = builder.isDepthEnabled();
+        this.blendSourceFactor = builder.getBlendSourceFactor();
+        this.blendDestinationFactor = builder.getBlendDestinationFactor();
+        this.depthFunction = builder.getDepthFunction();
     }
 
     @Override

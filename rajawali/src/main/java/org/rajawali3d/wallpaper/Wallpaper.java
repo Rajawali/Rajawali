@@ -19,7 +19,7 @@ import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.view.Surface;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.view.SurfaceView;
 import org.rajawali3d.util.Capabilities;
@@ -28,11 +28,11 @@ public abstract class Wallpaper extends WallpaperService {
 
     protected class WallpaperEngine extends Engine {
 
-        protected Context                       mContext;
-        protected ISurfaceRenderer              mRenderer;
-        protected WallpaperSurfaceView          mSurfaceView;
-        protected ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
-        protected float                         mDefaultPreviewOffsetX;
+        protected Context                      mContext;
+        protected ISurfaceRenderer             mRenderer;
+        protected WallpaperSurfaceView         mSurfaceView;
+        protected Surface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+        protected float                        mDefaultPreviewOffsetX;
 
         class WallpaperSurfaceView extends SurfaceView {
 
@@ -51,11 +51,11 @@ public abstract class Wallpaper extends WallpaperService {
         }
 
         public WallpaperEngine(Context context, ISurfaceRenderer renderer) {
-            this(context, renderer, ISurface.ANTI_ALIASING_CONFIG.NONE);
+            this(context, renderer, Surface.ANTI_ALIASING_CONFIG.NONE);
         }
 
         public WallpaperEngine(Context context, ISurfaceRenderer renderer,
-                               ISurface.ANTI_ALIASING_CONFIG antiAliasingConfig) {
+                               Surface.ANTI_ALIASING_CONFIG antiAliasingConfig) {
             mContext = context;
             mRenderer = renderer;
             mAntiAliasingConfig = antiAliasingConfig;
@@ -98,7 +98,7 @@ public abstract class Wallpaper extends WallpaperService {
             super.onCreate(holder);
             mSurfaceView = new WallpaperSurfaceView(mContext);
             mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
-            mSurfaceView.setRenderMode(ISurface.RENDERMODE_WHEN_DIRTY);
+            mSurfaceView.setRenderMode(Surface.RENDERMODE_WHEN_DIRTY);
             mSurfaceView.setAntiAliasingMode(mAntiAliasingConfig);
             mSurfaceView.setSurfaceRenderer(mRenderer);
             setTouchEventsEnabled(true);

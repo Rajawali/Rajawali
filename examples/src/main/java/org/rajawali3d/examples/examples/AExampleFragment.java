@@ -21,21 +21,21 @@ import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.views.GitHubLogoView;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.view.IDisplay;
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.view.Display;
+import org.rajawali3d.view.Surface;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public abstract class AExampleFragment extends Fragment implements IDisplay, OnClickListener {
+public abstract class AExampleFragment extends Fragment implements Display, OnClickListener {
 
     public static final String BUNDLE_EXAMPLE_URL = "BUNDLE_EXAMPLE_URL";
 
-    protected ProgressBar mProgressBarLoader;
-    protected GitHubLogoView mImageViewExampleLink;
-    protected String mExampleUrl;
-    protected FrameLayout mLayout;
-    protected ISurface mRenderSurface;
+    protected ProgressBar      mProgressBarLoader;
+    protected GitHubLogoView   mImageViewExampleLink;
+    protected String           mExampleUrl;
+    protected FrameLayout      mLayout;
+    protected Surface          mRenderSurface;
     protected ISurfaceRenderer mRenderer;
 
     @Override
@@ -61,7 +61,7 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
         mLayout.findViewById(R.id.relative_layout_loader_container).bringToFront();
 
         // Find the TextureView
-        mRenderSurface = (ISurface) mLayout.findViewById(R.id.rajwali_surface);
+        mRenderSurface = (Surface) mLayout.findViewById(R.id.rajwali_surface);
 
         // Create the loader
         mProgressBarLoader = (ProgressBar) mLayout.findViewById(R.id.progress_bar_loader);

@@ -16,35 +16,30 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-
-import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
+import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin.FogParams;
 import org.rajawali3d.materials.plugins.ShadowMapMaterialPlugin;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.TextureException;
-import org.rajawali3d.textures.CubeMapTexture;
-import org.rajawali3d.textures.Texture;
 import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.FrameTask;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.plugins.IRendererPlugin;
 import org.rajawali3d.renderer.plugins.Plugin;
-import org.rajawali3d.scenegraph.IGraphNode;
-import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
-import org.rajawali3d.scenegraph.Octree;
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.CubeMapTexture;
+import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
 import org.rajawali3d.util.RajLog;
+import org.rajawali3d.view.Surface;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,10 +85,10 @@ public class Scene {
     /**
      * Guarded by {@link #mFrameTaskQueue}.
      */
-	private volatile boolean                mLightsDirty;
-	protected volatile ColorPickerInfo      mPickerInfo;
-	protected boolean                       mReloadPickerInfo;
-	protected ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+	private volatile boolean               mLightsDirty;
+	protected volatile ColorPickerInfo     mPickerInfo;
+	protected boolean                      mReloadPickerInfo;
+	protected Surface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
 	private ShadowMapMaterial mShadowMapMaterial;
@@ -134,8 +129,6 @@ public class Scene {
 	private final LinkedList<FrameTask> mFrameTaskQueue;
 
 	protected boolean mDisplaySceneGraph = false;
-	protected IGraphNode mSceneGraph; //The scenegraph for this scene
-	protected GRAPH_TYPE mSceneGraphType = GRAPH_TYPE.NONE; //The type of graph type for this scene.
 
 	public Scene(Renderer renderer) {
 		mRenderer = renderer;
@@ -154,28 +147,7 @@ public class Scene {
 		mCamera.setZ(mEyeZ);
 		mCameras.add(mCamera);
 
-        mAntiAliasingConfig = ISurface.ANTI_ALIASING_CONFIG.NONE; // Default to none
-	}
-
-	public Scene(Renderer renderer, GRAPH_TYPE type) {
-		this(renderer);
-		mSceneGraphType = type;
-		initSceneGraph();
-	}
-
-	/**
-	 * Automatically creates the specified scene graph type with that graph's default
-	 * behavior. If you want to use a specific constructor you will need to override this
-	 * method.
-	 */
-	protected void initSceneGraph() {
-		switch (mSceneGraphType) { //I know its contrived with only one type. For the future!
-		case OCTREE:
-			mSceneGraph = new Octree();
-			break;
-		default:
-			break;
-		}
+        mAntiAliasingConfig = Surface.ANTI_ALIASING_CONFIG.NONE; // Default to none
 	}
 
     /**
@@ -183,32 +155,6 @@ public class Scene {
      */
     public void initScene() {
     }
-
-	/**
-	 * Fetch the minimum bounds of the scene.
-	 *
-	 * @return {@link Vector3} containing the minimum values along each axis.
-	 */
-	public Vector3 getSceneMinBound() {
-		if (mSceneGraph != null) {
-			return mSceneGraph.getSceneMinBound();
-		} else {
-			return new Vector3(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
-		}
-	}
-
-	/**
-	 * Fetch the maximum bounds of the scene.
-	 *
-	 * @return {@link Vector3} containing the maximum values along each axis.
-	 */
-	public Vector3 getSceneMaxBound() {
-		if (mSceneGraph != null) {
-			return mSceneGraph.getSceneMaxBound();
-		} else {
-			return new Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-		}
-	}
 
 	/**
 	* Switches the {@link Camera} currently being used to display the scene.
@@ -263,9 +209,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mCameras.add(camera);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.addObject(camera); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -282,9 +225,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mCameras.addAll(cameras);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.addObject(camera); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -303,9 +243,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mCameras.remove(camera);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.removeObject(camera); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -343,10 +280,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 final Camera old = mCameras.set(location, camera);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.removeObject(old);
-                    //mSceneGraph.addObject(camera); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -367,10 +300,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mCameras.set(mCameras.indexOf(oldCamera), newCamera);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.removeObject(oldCamera);
-                    //mSceneGraph.addObject(newCamera); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -428,10 +357,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 final Object3D old = mChildren.set(location, child);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.removeObject(old);
-                    //mSceneGraph.addObject(child); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -449,10 +374,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mChildren.set(mChildren.indexOf(oldChild), newChild);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.removeObject(oldChild);
-                    //mSceneGraph.addObject(newChild); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -470,9 +391,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mChildren.add(child);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.addObject(child); //TODO: Uncomment
-                }
                 addShadowMapMaterialPlugin(child, mShadowMapMaterial == null ? null : mShadowMapMaterial.getMaterialPlugin());
             }
         };
@@ -492,9 +410,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mChildren.add(index, child);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.addObject(child); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -511,9 +426,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mChildren.addAll(children);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.addObject(child); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -530,9 +442,6 @@ public class Scene {
             @Override
             protected void doTask() {
                 mChildren.remove(child);
-                if (mSceneGraph != null) {
-                    //mSceneGraph.removeObject(child); //TODO: Uncomment
-                }
             }
         };
         return internalOfferTask(task);
@@ -547,9 +456,6 @@ public class Scene {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
-                /*if (mSceneGraph != null) {
-                    mSceneGraph.removeObjects(new ArrayList<IGraphNodeMember>(mChildren));
-                }*/ //TODO: Uncomment
                 mChildren.clear();
             }
         };
@@ -1053,7 +959,7 @@ public class Scene {
 			GLES20.glDepthMask(true);
 			GLES20.glClearDepthf(1.0f);
 		}
-		if (mAntiAliasingConfig.equals(ISurface.ANTI_ALIASING_CONFIG.COVERAGE)) {
+		if (mAntiAliasingConfig.equals(Surface.ANTI_ALIASING_CONFIG.COVERAGE)) {
 			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
 
@@ -1135,10 +1041,6 @@ public class Scene {
 				mChildren.get(i).render(mCamera, mVPMatrix, mPMatrix, mVMatrix, sceneMaterial);
 			}
 		}
-
-		if (mDisplaySceneGraph) {
-			mSceneGraph.displayGraph(mCamera, mVPMatrix, mPMatrix, mVMatrix);
-        }
 
 		if(sceneMaterial != null) {
 			sceneMaterial.unbindTextures();
@@ -1479,7 +1381,7 @@ public class Scene {
 		mCamera.setProjectionMatrix(width, height);
 	}
 
-	public void setAntiAliasingConfig(ISurface.ANTI_ALIASING_CONFIG config) {
+	public void setAntiAliasingConfig(Surface.ANTI_ALIASING_CONFIG config) {
 		mAntiAliasingConfig = config;
 	}
 

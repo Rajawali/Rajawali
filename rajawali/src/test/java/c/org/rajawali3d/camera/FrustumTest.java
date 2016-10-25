@@ -33,7 +33,7 @@ public class FrustumTest {
         };
         final Frustum frustum = new Frustum();
         frustum.update(corners);
-        Plane[] planes = frustum.planes;
+        Plane[] planes = frustum.getPlanes();
         assertEquals(new Vector3(1d, 0d, 0d), planes[Frustum.LEFT].getNormal());
         assertEquals(1d, planes[Frustum.LEFT].getDistanceToOrigin(), 1e-14);
         assertEquals(new Vector3(-1d, 0d, 0d), planes[Frustum.RIGHT].getNormal());

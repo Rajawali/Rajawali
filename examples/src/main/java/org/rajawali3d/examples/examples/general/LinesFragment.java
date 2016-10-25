@@ -11,7 +11,7 @@ import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Line3D;
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.view.Surface;
 
 import java.util.Stack;
 
@@ -24,7 +24,7 @@ public class LinesFragment extends AExampleFragment {
 
     @Override
     protected void onBeforeApplyRenderer() {
-        mRenderSurface.setAntiAliasingMode(ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING);
+        mRenderSurface.setAntiAliasingMode(Surface.ANTI_ALIASING_CONFIG.MULTISAMPLING);
         mRenderSurface.setSampleCount(2);
         super.onBeforeApplyRenderer();
     }

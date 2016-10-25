@@ -29,7 +29,6 @@ import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
 
 import java.util.Collections;
 import java.util.List;
@@ -80,7 +79,7 @@ public class PostProcessingManager {
         mHeight = height;
 
         mScreenQuad = new ScreenQuad();
-        mScene = new Scene(mRenderer, GRAPH_TYPE.NONE);
+        mScene = new Scene(mRenderer);
 
         mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
                                           false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,

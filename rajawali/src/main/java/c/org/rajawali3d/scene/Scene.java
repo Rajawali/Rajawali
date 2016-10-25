@@ -43,6 +43,9 @@ public class Scene implements Renderable {
 
     private static final String TAG = "Scene";
 
+    @Nullable Lock currentlyHeldWriteLock;
+    @Nullable Lock currentlyHeldReadLock;
+
     @GuardedBy("preCallbacks")
     private final List<SceneFrameCallback> preCallbacks;
 
@@ -60,19 +63,14 @@ public class Scene implements Renderable {
 
     private volatile boolean needRestoreForNewContext = false;
 
-    @Nullable
-    private Renderer renderer;
+    @Nullable private Renderer renderer;
 
-    @NonNull
-    private SceneGraph sceneGraph;
+    @NonNull private SceneGraph sceneGraph;
 
-    @Nullable Lock currentlyHeldWriteLock;
-    @Nullable Lock currentlyHeldReadLock;
-
-    protected int currentViewportWidth;
-    protected int currentViewportHeight; // The current width and height of the GL viewport
-    protected int overrideViewportWidth;
-    protected int overrideViewportHeight; // The overridden width and height of the GL viewport
+    private int currentViewportWidth;
+    private int currentViewportHeight; // The current width and height of the GL viewport
+    private int overrideViewportWidth;
+    private int overrideViewportHeight; // The overridden width and height of the GL viewport
 
     /**
      * The {@link Camera} currently being used to render the scene.
@@ -91,10 +89,18 @@ public class Scene implements Renderable {
     @GLThread
     private Matrix4 viewProjectionMatrix = new Matrix4();
 
+    /**
+     * Constructs a new {@link Scene} using the default ({@link FlatTree}) scene graph implementation.
+     */
     public Scene() {
         this(new FlatTree());
     }
 
+    /**
+     * Constructs a new {@link Scene} using the provided {@link SceneGraph} implementation.
+     *
+     * @param graph The {@link SceneGraph} instance which should be used.
+     */
     public Scene(@NonNull SceneGraph graph) {
         sceneGraph = graph;
         preCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
@@ -296,6 +302,8 @@ public class Scene implements Renderable {
      * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
      *
      * @param texture {@link ATexture} to be replaced.
+     *
+     * @throws TextureException Thrown if an internal error occurs while trying to replace the texture.
      */
     public void replaceTexture(@NonNull final ATexture texture) throws TextureException {
         // The renderer is not null, so we can replace the texture directly now
@@ -366,9 +374,93 @@ public class Scene implements Renderable {
         }
     }
 
+    /**
+     * Called when a {@link Renderer} has been set on this scene. This is an opportunity to prepare for the frame
+     * request about to come in. Subclasses should be sure to call {@code super.onRendererSet(renderer)} to ensure
+     * proper behavior.
+     *
+     * @param renderer The {@link Renderer} this {@link Scene} is now attached to.
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected void onRendererSet(@NonNull Renderer renderer) {
+        if (renderer != this.renderer) {
+            // Set the new renderer
+            this.renderer = renderer;
+            // Mark the context dirty
+            needRestoreForNewContext = true;
+            // Adjust viewport if necessary
+            onRenderSurfaceSizeChanged();
+        }
+    }
+
+    /**
+     * Called when the {@link Renderer} has been cleared from this scene. Subclasses should be sure to call
+     * {@code super.onRendererSet(renderer)} to ensure proper behavior.
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected void onRendererCleared() {
+
+    }
+
+    /**
+     * Adds a {@link FrameTask} to the internal queue to be executed. If the calling thread is the render thread, the
+     * task will be executed now, otherwise it will be queued for execution at the next frame start.
+     *
+     * @param task {@link FrameTask} to execute.
+     * @return {@code true} If the task was successfully accepted for execution.
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected boolean internalOfferTask(FrameTask task) {
+        if (renderer != null && renderer.isGLThread()) {
+            // If we have a renderer and the calling thread is the render thread, do the task now.
+            task.run();
+            return true;
+        } else {
+            // This cant be run now and must be queued.
+            synchronized (frameTaskQueue) {
+                return frameTaskQueue.offer(task);
+            }
+        }
+    }
+
+    /**
+     * Updates which {@link Camera} will be used by this {@link Scene}.
+     *
+     * @param nextCamera The {@link Camera} to switch to.
+     */
+    @GuardedBy("nextCameraLock")
+    @GLThread
+    private void switchCamera(@NonNull Camera nextCamera) {
+        RajLog.d("Switching from camera: " + currentCamera + " to camera: " + nextCamera);
+        currentCamera = nextCamera;
+    }
+
+    /**
+     * Executes all queued {@link FrameTask}s.
+     */
+    @GLThread
+    private void performFrameTasks() {
+        synchronized (frameTaskQueue) {
+            //Fetch the first task
+            FrameTask task = frameTaskQueue.poll();
+            while (task != null) {
+                task.run();
+                //Retrieve the next task
+                task = frameTaskQueue.poll();
+            }
+        }
+    }
+
+    /**
+     * Internal render method of {@link Scene}. Automatically manages frame tasks, threading and other lifecycle
+     * related events.
+     *
+     * @param ellapsedRealtime {@code long} The elapsed rendering time, in nanoseconds.
+     * @param deltaTime {@code double} The time step from the previous frame, in seconds.
+     */
     @RequiresReadLock
     @GLThread
-    protected void internalRender(final long ellapsedRealtime, final double deltaTime) throws IllegalStateException {
+    private void internalRender(final long ellapsedRealtime, final double deltaTime) {
         // Execute frame tasks
         performFrameTasks();
 
@@ -385,7 +477,8 @@ public class Scene implements Renderable {
         final Matrix4 projectionMatrix = currentCamera.getProjectionMatrix();
 
         if (projectionMatrix == null) {
-            throw new IllegalStateException("Cannot render while current camera has a null projection matrix.");
+            // We can't render until the camera is ready
+            return;
         }
 
         viewProjectionMatrix.setAll(projectionMatrix).multiply(viewMatrix);
@@ -424,7 +517,8 @@ public class Scene implements Renderable {
 
         // Loop each node and draw
         for (NodeMember member : intersectedNodes) {
-            lastUsedRenderer = member.render(type, lastUsedRenderer, viewMatrix, projectionMatrix, viewProjectionMatrix);
+            lastUsedRenderer = member.render(type, lastUsedRenderer, viewMatrix,
+                                             projectionMatrix, viewProjectionMatrix);
         }
 
         // Execute onPostFrame callbacks
@@ -437,52 +531,5 @@ public class Scene implements Renderable {
                 }
             }
         }
-    }
-
-    protected void onRendererSet(@NonNull Renderer renderer) {
-        if (renderer != this.renderer) {
-            // Set the new renderer
-            this.renderer = renderer;
-            // Mark the context dirty
-            needRestoreForNewContext = true;
-            // Adjust viewport if necessary
-            onRenderSurfaceSizeChanged();
-        }
-    }
-
-    protected void onRendererCleared() {
-
-    }
-
-    protected boolean internalOfferTask(FrameTask task) {
-        if (renderer != null && renderer.isGLThread()) {
-            // If we have a renderer and the calling thread is the GL thread, do the task now.
-            task.run();
-            return true;
-        } else {
-            // This cant be run now and must be queued.
-            synchronized (frameTaskQueue) {
-                return frameTaskQueue.offer(task);
-            }
-        }
-    }
-
-    protected void performFrameTasks() {
-        synchronized (frameTaskQueue) {
-            //Fetch the first task
-            FrameTask task = frameTaskQueue.poll();
-            while (task != null) {
-                task.run();
-                //Retrieve the next task
-                task = frameTaskQueue.poll();
-            }
-        }
-    }
-
-    @GuardedBy("nextCameraLock")
-    @GLThread
-    void switchCamera(@NonNull Camera nextCamera) {
-        RajLog.d("Switching from camera: " + currentCamera + " to camera: " + nextCamera);
-        currentCamera = nextCamera;
     }
 }

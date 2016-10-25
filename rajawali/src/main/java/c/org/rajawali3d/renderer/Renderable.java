@@ -2,8 +2,13 @@ package c.org.rajawali3d.renderer;
 
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.scene.Scene;
+import org.rajawali3d.materials.Material;
 
 /**
+ * Defines a set of methods which allows for hooking into the render process of {@link Renderer} implementations. A
+ * typical example is {@link Scene}.
+ *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public interface Renderable {
@@ -35,9 +40,21 @@ public interface Renderable {
 
     int getViewportHeight();
 
+    /**
+     * Performs a render pass on this {@link Renderable}.
+     *
+     * @param ellapsedRealtime {@code long} The total elapsed rendering time in nanoseconds.
+     * @param deltaTime {@code double} TThe time passed since the last frame, in seconds.
+     *
+     * @throws InterruptedException Thrown if the internal threading process is interrupted.
+     */
     @GLThread
     void render(final long ellapsedRealtime, final double deltaTime) throws InterruptedException;
 
+    /**
+     * Performs render context restoration such as {@link Material} compilation and VBO pushes, if necessary for a
+     * new render context.
+     */
     @GLThread
     void restoreForNewContextIfNeeded();
 }

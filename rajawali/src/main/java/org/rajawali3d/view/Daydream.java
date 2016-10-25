@@ -21,13 +21,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
-import org.rajawali3d.view.ISurface.ANTI_ALIASING_CONFIG;
+import org.rajawali3d.view.Surface.ANTI_ALIASING_CONFIG;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-public abstract class Daydream extends DreamService implements IDisplay {
+public abstract class Daydream extends DreamService implements Display {
 
 	protected SurfaceView mSurfaceView;
 	protected FrameLayout mLayout;

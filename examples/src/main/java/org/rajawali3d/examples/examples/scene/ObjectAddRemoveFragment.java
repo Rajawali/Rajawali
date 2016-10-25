@@ -23,7 +23,7 @@ import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.view.Surface;
 
 import java.util.Random;
 
@@ -53,7 +53,7 @@ public class ObjectAddRemoveFragment extends AExampleFragment {
         });
 
         // Find the TextureView
-        mRenderSurface = (ISurface) mLayout.findViewById(R.id.rajwali_surface);
+        mRenderSurface = (Surface) mLayout.findViewById(R.id.rajwali_surface);
 
         // Create the loader
         mProgressBarLoader = (ProgressBar) mLayout.findViewById(R.id.progress_bar_loader);

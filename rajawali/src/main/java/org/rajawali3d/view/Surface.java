@@ -9,7 +9,7 @@ import org.rajawali3d.renderer.Renderer;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public interface ISurface {
+public interface Surface {
 
     /**
      * Enum of available anti-aliasing configurations.

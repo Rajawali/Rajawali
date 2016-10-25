@@ -28,4 +28,6 @@
     <suppress checks="[a-zA-Z0-9]*" files=".*_.*Factory.java" />
     <suppress checks="[a-zA-Z0-9]*" files=".*ViewInjector.java" />
     <suppress checks="[a-zA-Z0-9]*" files=".*_MembersInjector.java" />
+    <suppress checks="UnusedImports" files="Display.java" />
+    <suppress checks="UnusedImports" files="Renderable.java" />
 </suppressions>

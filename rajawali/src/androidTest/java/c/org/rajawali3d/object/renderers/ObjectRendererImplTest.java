@@ -1,5 +1,10 @@
 package c.org.rajawali3d.object.renderers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
@@ -12,11 +17,6 @@ import org.junit.runner.RunWith;
 import org.rajawali3d.materials.Material;
 
 import c.org.rajawali3d.GlTestCase;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -100,9 +100,12 @@ public class ObjectRendererImplTest extends GlTestCase {
 
     private void ensureDoubleSidedBlendingDepth() throws Exception {
         final Material material = mock(Material.class);
-        final ObjectRendererImpl renderer = new ObjectRendererImpl(material, true, false, true, true,
-                                                                   GLES20.GL_ONE, GLES20.GL_ONE_MINUS_DST_ALPHA,
-                                                                   GLES20.GL_LEQUAL);
+        final ObjectRendererBuilder builder = new ObjectRendererBuilder();
+        builder.withMaterial(material).isDoubleSided(true).isBackSided(false).isBlended(true)
+                .isDepthTestEnabled(true).setBlendSourceFactor(GLES20.GL_ONE)
+                .setBlendDestinationFactor(GLES20.GL_ONE_MINUS_DST_ALPHA).setDepthFunction(GLES20.GL_LEQUAL);
+        final ObjectRendererImpl renderer = (ObjectRendererImpl) builder.build();
+
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 renderer.ensureState(null);
@@ -171,9 +174,13 @@ public class ObjectRendererImplTest extends GlTestCase {
 
     private void ensureFrontSided() throws Exception {
         final Material material = mock(Material.class);
-        final ObjectRendererImpl renderer = new ObjectRendererImpl(material, false, false, false, false,
-                                                                   GLES20.GL_ONE, GLES20.GL_ONE_MINUS_DST_ALPHA,
-                                                                   GLES20.GL_LEQUAL);
+
+        final ObjectRendererBuilder builder = new ObjectRendererBuilder();
+        builder.withMaterial(material).isDoubleSided(false).isBackSided(false).isBlended(false)
+                .isDepthTestEnabled(true).setBlendSourceFactor(GLES20.GL_ONE)
+                .setBlendDestinationFactor(GLES20.GL_ONE_MINUS_DST_ALPHA).setDepthFunction(GLES20.GL_LEQUAL);
+        final ObjectRendererImpl renderer = (ObjectRendererImpl) builder.build();
+
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 renderer.ensureState(null);
@@ -226,9 +233,12 @@ public class ObjectRendererImplTest extends GlTestCase {
 
     private void ensureBackSided() throws Exception {
         final Material material = mock(Material.class);
-        final ObjectRendererImpl renderer = new ObjectRendererImpl(material, false, true, false, false,
-            GLES20.GL_ONE, GLES20.GL_ONE_MINUS_DST_ALPHA,
-            GLES20.GL_LEQUAL);
+        final ObjectRendererBuilder builder = new ObjectRendererBuilder();
+        builder.withMaterial(material).isDoubleSided(false).isBackSided(true).isBlended(false)
+                .isDepthTestEnabled(false).setBlendSourceFactor(GLES20.GL_ONE)
+                .setBlendDestinationFactor(GLES20.GL_ONE_MINUS_DST_ALPHA).setDepthFunction(GLES20.GL_LEQUAL);
+        final ObjectRendererImpl renderer = (ObjectRendererImpl) builder.build();
+
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {

@@ -40,7 +40,7 @@ import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.util.RawShaderLoader;
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.view.Surface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -72,8 +72,8 @@ public abstract class Renderer implements ISurfaceRenderer {
 
     protected Context mContext; // Context the renderer is running in
 
-    protected ISurface mSurface; // The rendering surface
-    protected int      mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
+    protected Surface mSurface; // The rendering surface
+    protected int     mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
     protected int mDefaultViewportWidth, mDefaultViewportHeight; // The default width and height of the GL viewport
     protected int mOverrideViewportWidth, mOverrideViewportHeight; // The overridden width and height of the GL viewport
 
@@ -102,8 +102,8 @@ public abstract class Renderer implements ISurfaceRenderer {
     private boolean mSceneCachingEnabled; //This applies to all renderables
     protected boolean mSceneInitialized; //This applies to all renderables
     protected boolean mEnableDepthBuffer = true; // Do we use the depth buffer?
-    private RenderTarget                  mCurrentRenderTarget;
-    private ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+    private RenderTarget                 mCurrentRenderTarget;
+    private Surface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 
     protected final List<Scene>                     mScenes; //List of all renderables this renderer is aware of.
     protected final List<RenderTarget>              mRenderTargets; //List of all render targets this renderer is aware of.
@@ -225,7 +225,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     @Override
-    public void setAntiAliasingMode(ISurface.ANTI_ALIASING_CONFIG config) {
+    public void setAntiAliasingMode(Surface.ANTI_ALIASING_CONFIG config) {
         mAntiAliasingConfig = config;
         synchronized (mScenes) {
             for (int i = 0, j = mScenes.size(); i < j; ++i) {
@@ -293,7 +293,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     @Override
-    public void setRenderSurface(ISurface surface) {
+    public void setRenderSurface(Surface surface) {
         mSurface = surface;
     }
 

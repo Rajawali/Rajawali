@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import c.org.rajawali3d.annotations.GLThread;
-import c.org.rajawali3d.scene.Scene;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.R;
@@ -16,8 +15,8 @@ import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
-import org.rajawali3d.view.ISurface;
-import org.rajawali3d.view.ISurface.ANTI_ALIASING_CONFIG;
+import org.rajawali3d.view.Surface;
+import org.rajawali3d.view.Surface.ANTI_ALIASING_CONFIG;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,24 +44,24 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     @NonNull
     protected Context context; // Context the renderer is running in
 
-    protected ISurface surface; // The rendering surface
+    protected Surface surface; // The rendering surface
 
-    protected int defaultViewportWidth;
-    protected int defaultViewportHeight; // The default width and height of the GL viewport
+    private int defaultViewportWidth;
+    private int defaultViewportHeight; // The default width and height of the GL viewport
 
     // Frame related members
-    protected ScheduledExecutorService timer; // Timer used to schedule drawing
-    protected double frameRate; // Target frame rate to render at
-    protected int frameCount; // Used for determining FPS
-    protected double lastMeasuredFPS; // Last measured FPS value
-    protected OnFPSUpdateListener fpsUpdateListener; // Listener to notify of new FPS values.
+    private ScheduledExecutorService timer; // Timer used to schedule drawing
+    private double                   frameRate; // Target frame rate to render at
+    private int                      frameCount; // Used for determining FPS
+    private double                   lastMeasuredFPS; // Last measured FPS value
+    private OnFPSUpdateListener      fpsUpdateListener; // Listener to notify of new FPS values.
     private long startTime = System.nanoTime(); // Used for determining FPS
     private long lastRender; // Time of last rendering. Used for animation delta time
     private long renderStartTime;
 
     // In case we cannot parse the version number, assume OpenGL ES 2.0
-    protected int glesMajorVersion = 2; // The GL ES major version of the surface
-    protected int glesMinorVersion = 0; // The GL ES minor version of the surface
+    private int glesMajorVersion = 2; // The GL ES major version of the surface
+    private int glesMinorVersion = 0; // The GL ES minor version of the surface
 
     /**
      * The scene currently being displayed.
@@ -78,6 +77,13 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
      */
     private AtomicLong glThread;
 
+    /**
+     * Constructs a new {@link Renderer} implementation. This is the default {@link RendererImpl} provided by the
+     * engine and rarely, if ever should it be replaced by a user. Doing so will require them to implement a great
+     * deal of the library on their own.
+     *
+     * @param context The Android application {@link Context}.
+     */
     public RendererImpl(@NonNull Context context) {
         RajLog.i(context.getString(R.string.renderer_start_header));
         RajLog.i(context.getString(R.string.renderer_start_message));
@@ -88,16 +94,14 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
         renderables = Collections.synchronizedList(new ArrayList<Renderable>());
     }
 
-    public double getRefreshRate() {
-        return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRefreshRate();
-    }
-
     @Override
     public void startRendering() {
         RajLog.d("startRendering()");
         renderStartTime = System.nanoTime();
         lastRender = renderStartTime;
-        if (timer != null) return;
+        if (timer != null) {
+            return;
+        }
         timer = Executors.newScheduledThreadPool(1);
         timer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / frameRate), TimeUnit.MILLISECONDS);
     }
@@ -185,7 +189,7 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     }
 
     @Override
-    public void setRenderSurface(ISurface surface) {
+    public void setRenderSurface(Surface surface) {
         this.surface = surface;
     }
 
@@ -237,6 +241,7 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
         startRendering();
     }
 
+    @GLThread
     @Override
     public void onRenderFrame(GL10 gl) {
         synchronized (nextRenderableLock) {
@@ -268,39 +273,43 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
             frameCount = 0;
             startTime = now;
 
-            if (fpsUpdateListener != null)
+            if (fpsUpdateListener != null) {
                 fpsUpdateListener.onFPSUpdate(lastMeasuredFPS); // Update the FPS listener
+            }
         }
     }
 
     @Override
-    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
-
+    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset,
+                                 int yPixelOffset) {
+        // TODO: We need to figure out how to handle wallpaper service stuff
     }
 
     @Override
     public void onTouchEvent(MotionEvent event) {
-
+        // TODO: We need to figure out how to handle wallpaper service stuff
     }
 
     /**
-     * Called by {@link #onRenderFrame(GL10)} to render the next frame. This is called prior to the current scene's
-     * {@link Scene#render(long, double)} method.
+     * Fetches the screen refresh rate for the default display.
      *
-     * @param ellapsedRealtime {@code long} The total ellapsed rendering time in milliseconds.
-     * @param deltaTime        {@code double} The time passes since the last frame, in seconds.
+     * @return {@code double} The refresh rate in Hertz (Hz).
      */
-    protected void onRender(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
-        render(ellapsedRealtime, deltaTime);
+    @SuppressWarnings("WeakerAccess")
+    public double getRefreshRate() {
+        return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRefreshRate();
     }
 
     /**
-     * Called by {@link #onRender(long, double)} to render the next frame.
+     * Called by {@link #onRenderFrame(GL10)} to render the next frame.
      *
-     * @param ellapsedRealtime {@code long} Render ellapsed time in milliseconds.
-     * @param deltaTime        {@code double} Time passed since last frame, in seconds.
+     * @param ellapsedRealtime {@code long} The total elapsed rendering time in nanoseconds.
+     * @param deltaTime        {@code double} The time passed since the last frame, in seconds.
+     *
+     * @throws InterruptedException Thrown if the internal threading process is interrupted.
      */
-    protected void render(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
+    @GLThread
+    private void onRender(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
         if (currentRenderable != null) {
             currentRenderable.render(ellapsedRealtime, deltaTime);
         } else {
@@ -315,12 +324,15 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
      */
     @GuardedBy("nextRenderableLock")
     @GLThread
-    void switchRenderable(@NonNull Renderable nextRenderable) {
+    private void switchRenderable(@NonNull Renderable nextRenderable) {
         RajLog.d("Switching from renderable: " + currentRenderable + " to renderable: " + nextRenderable);
         currentRenderable = nextRenderable;
         currentRenderable.restoreForNewContextIfNeeded();
     }
 
+    /**
+     * {@link Runnable} implementation for requesting a new render pass.
+     */
     private class RequestRenderTask implements Runnable {
         public void run() {
             if (surface != null) {

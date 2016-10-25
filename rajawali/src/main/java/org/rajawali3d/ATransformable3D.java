@@ -17,10 +17,8 @@ import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.scenegraph.IGraphNode;
-import org.rajawali3d.scenegraph.IGraphNodeMember;
 
-public abstract class ATransformable3D implements IGraphNodeMember {
+public abstract class ATransformable3D {
     protected final Matrix4 mMMatrix = new Matrix4(); //The model matrix
     protected final Vector3 mPosition; //The position
     protected final Vector3 mScale; //The scale
@@ -35,7 +33,6 @@ public abstract class ATransformable3D implements IGraphNodeMember {
     protected boolean mIsCamera; //is this a camera object?
     protected boolean mIsModelMatrixDirty = true; // If true, the model matrix needs to be recalculated.
     protected boolean mInsideGraph = false; //Default to being outside the graph
-    protected IGraphNode mGraphNode; //Which graph node are we in?
 
     /**
      * Default constructor for {@link ATransformable3D}.
@@ -66,7 +63,6 @@ public abstract class ATransformable3D implements IGraphNodeMember {
     public boolean onRecalculateModelMatrix(Matrix4 parentMatrix) {
         if (mIsModelMatrixDirty) {
             calculateModelMatrix(parentMatrix);
-            if (mGraphNode != null) mGraphNode.updateObject(this);
             mIsModelMatrixDirty = false;
             return true;
         }
@@ -938,23 +934,6 @@ public abstract class ATransformable3D implements IGraphNodeMember {
     //--------------------------------------------------
     // Scene graph methods
     //--------------------------------------------------
-
-    /*
-     * (non-Javadoc)
-     * @see rajawali.scenegraph.IGraphNodeMember#setGraphNode(rajawali.scenegraph.IGraphNode)
-     */
-    public void setGraphNode(IGraphNode node, boolean inside) {
-        mGraphNode = node;
-        mInsideGraph = inside;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see rajawali.scenegraph.IGraphNodeMember#getGraphNode()
-     */
-    public IGraphNode getGraphNode() {
-        return mGraphNode;
-    }
 
     /*
      * (non-Javadoc)

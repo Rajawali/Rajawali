@@ -33,7 +33,7 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class TextureView extends android.view.TextureView implements ISurface {
+public class TextureView extends android.view.TextureView implements Surface {
     private final static String TAG = "TextureView";
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;
@@ -489,7 +489,7 @@ public class TextureView extends android.view.TextureView implements ISurface {
         public RendererDelegate(ISurfaceRenderer renderer, TextureView textureView) {
             mRenderer = renderer;
             mRajawaliTextureView = textureView;
-            mRenderer.setFrameRate(mRajawaliTextureView.mRenderMode == ISurface.RENDERMODE_WHEN_DIRTY ?
+            mRenderer.setFrameRate(mRajawaliTextureView.mRenderMode == Surface.RENDERMODE_WHEN_DIRTY ?
                 mRajawaliTextureView.mFrameRate : 0);
             mRenderer.setAntiAliasingMode(mRajawaliTextureView.mAntiAliasingConfig);
             mRenderer.setRenderSurface(mRajawaliTextureView);
