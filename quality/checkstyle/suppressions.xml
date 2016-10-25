@@ -21,6 +21,7 @@
     "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 
 <suppressions>
+    <!-- The following suppressions are for various build files -->
     <suppress checks="[a-zA-Z0-9]*" files="R.java" />
     <suppress checks="[a-zA-Z0-9]*" files="BuildConfig.java" />
     <suppress checks="[a-zA-Z0-9]*" files="Test" />
@@ -28,6 +29,17 @@
     <suppress checks="[a-zA-Z0-9]*" files=".*_.*Factory.java" />
     <suppress checks="[a-zA-Z0-9]*" files=".*ViewInjector.java" />
     <suppress checks="[a-zA-Z0-9]*" files=".*_MembersInjector.java" />
+
+    <!-- Matrix is simply a very long file and delegation wont help -->
+    <suppress checks="FileLength" files="Matrix.java" />
+
+    <!-- Matrix4 is simply a very long file and delegation wont help -->
+    <suppress checks="FileLength" files="Matrix4.java" />
+
+    <!-- Matrix4 has some code formatted like a matrix for easier reading -->
+    <suppress checks="OneStatementPerLine" files="Matrix4.java" />
+
+    <!-- The following suppressions are for imports used in documentation but not code -->
     <suppress checks="UnusedImports" files="Display.java" />
     <suppress checks="UnusedImports" files="Renderable.java" />
 </suppressions>

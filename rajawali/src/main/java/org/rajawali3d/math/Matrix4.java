@@ -34,15 +34,15 @@ import java.util.Arrays;
  * @see <a href="https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java">
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java</a>
  */
-public class Matrix4 implements Cloneable {
+@SuppressWarnings("WeakerAccess") public class Matrix4 implements Cloneable {
 
     //Matrix indices as column major notation (Row x Column)
     /*
     M00 M01 M02 M03
-	M10 M11 M12 M13
-	M20 M21 M22 M23
-	M30 M31 M32 M33
-	 */
+    M10 M11 M12 M13
+    M20 M21 M22 M23
+    M30 M31 M32 M33
+    */
     public static final int M00 = 0;
     public static final int M01 = 4;
     public static final int M02 = 8;
@@ -155,12 +155,12 @@ public class Matrix4 implements Cloneable {
     @NonNull
     public Matrix4 setAll(@NonNull @Size(min = 16) float[] matrix) {
         // @formatter:off
-		m[0] = matrix[0];	m[1] = matrix[1];	m[2] = matrix[2];	m[3] = matrix[3];
-		m[4] = matrix[4];	m[5] = matrix[5];	m[6] = matrix[6];	m[7] = matrix[7];
-		m[8] = matrix[8];	m[9] = matrix[9];	m[10] = matrix[10];	m[11] = matrix[11];
-		m[12] = matrix[12];	m[13] = matrix[13];	m[14] = matrix[14];	m[15] = matrix[15];
-		return this;
+        m[0] = matrix[0];   m[1] = matrix[1];   m[2] = matrix[2];   m[3] = matrix[3];
+        m[4] = matrix[4];   m[5] = matrix[5];   m[6] = matrix[6];   m[7] = matrix[7];
+        m[8] = matrix[8];   m[9] = matrix[9];   m[10] = matrix[10]; m[11] = matrix[11];
+        m[12] = matrix[12]; m[13] = matrix[13]; m[14] = matrix[14]; m[15] = matrix[15];
         // @formatter:on
+        return this;
     }
 
     /**
@@ -206,14 +206,15 @@ public class Matrix4 implements Cloneable {
      * @return A reference to this {@link Matrix4} to facilitate chaining.
      */
     @NonNull
-    public Matrix4 setAll(@NonNull Vector3 xAxis, @NonNull Vector3 yAxis, @NonNull Vector3 zAxis, @NonNull Vector3 pos) {
+    public Matrix4 setAll(@NonNull Vector3 xAxis, @NonNull Vector3 yAxis, @NonNull Vector3 zAxis,
+                          @NonNull Vector3 pos) {
         // @formatter:off
-		m[M00] = xAxis.x;	m[M01] = yAxis.x;	m[M02] = zAxis.x;	m[M03] = pos.x;
-		m[M10] = xAxis.y; 	m[M11] = yAxis.y;	m[M12] = zAxis.y;	m[M13] = pos.y;
-		m[M20] = xAxis.z;	m[M21] = yAxis.z;	m[M22] = zAxis.z;	m[M23] = pos.z;
-		m[M30] = 0;			m[M31] = 0;			m[M32] = 0;			m[M33] = 1;
-		return this;
+        m[M00] = xAxis.x;   m[M01] = yAxis.x;   m[M02] = zAxis.x;   m[M03] = pos.x;
+        m[M10] = xAxis.y;   m[M11] = yAxis.y;   m[M12] = zAxis.y;   m[M13] = pos.y;
+        m[M20] = xAxis.z;   m[M21] = yAxis.z;   m[M22] = zAxis.z;   m[M23] = pos.z;
+        m[M30] = 0;         m[M31] = 0;         m[M32] = 0;         m[M33] = 1;
         // @formatter:on
+        return this;
     }
 
     /**
@@ -273,12 +274,12 @@ public class Matrix4 implements Cloneable {
     @NonNull
     public Matrix4 identity() {
         // @formatter:off
-		m[M00] = 1;	m[M10] = 0;	m[M20] = 0;	m[M30] = 0;
-		m[M01] = 0;	m[M11] = 1;	m[M21] = 0;	m[M31] = 0;
-		m[M02] = 0;	m[M12] = 0;	m[M22] = 1;	m[M32] = 0;
-		m[M03] = 0;	m[M13] = 0;	m[M23] = 0;	m[M33] = 1;
-		return this;
+        m[M00] = 1; m[M10] = 0; m[M20] = 0; m[M30] = 0;
+        m[M01] = 0; m[M11] = 1; m[M21] = 0; m[M31] = 0;
+        m[M02] = 0; m[M12] = 0; m[M22] = 1; m[M32] = 0;
+        m[M03] = 0; m[M13] = 0; m[M23] = 0; m[M33] = 1;
         // @formatter:on
+        return this;
     }
 
     /**
@@ -301,36 +302,36 @@ public class Matrix4 implements Cloneable {
      */
     public double determinant() {
         // @formatter:off
-		return
-			m[M30] * m[M21] * m[M12] * m[M03]-
-			m[M20] * m[M31] * m[M12] * m[M03]-
-			m[M30] * m[M11] * m[M22] * m[M03]+
-			m[M10] * m[M31] * m[M22] * m[M03]+
+        return
+                m[M30] * m[M21] * m[M12] * m[M03]
+                - m[M20] * m[M31] * m[M12] * m[M03]
+                - m[M30] * m[M11] * m[M22] * m[M03]
+                + m[M10] * m[M31] * m[M22] * m[M03]
 
-			m[M20] * m[M11] * m[M32] * m[M03]-
-			m[M10] * m[M21] * m[M32] * m[M03]-
-			m[M30] * m[M21] * m[M02] * m[M13]+
-			m[M20] * m[M31] * m[M02] * m[M13]+
+                + m[M20] * m[M11] * m[M32] * m[M03]
+                - m[M10] * m[M21] * m[M32] * m[M03]
+                - m[M30] * m[M21] * m[M02] * m[M13]
+                + m[M20] * m[M31] * m[M02] * m[M13]
 
-			m[M30] * m[M01] * m[M22] * m[M13]-
-			m[M00] * m[M31] * m[M22] * m[M13]-
-			m[M20] * m[M01] * m[M32] * m[M13]+
-			m[M00] * m[M21] * m[M32] * m[M13]+
+                + m[M30] * m[M01] * m[M22] * m[M13]
+                - m[M00] * m[M31] * m[M22] * m[M13]
+                - m[M20] * m[M01] * m[M32] * m[M13]
+                + m[M00] * m[M21] * m[M32] * m[M13]
 
-			m[M30] * m[M11] * m[M02] * m[M23]-
-			m[M10] * m[M31] * m[M02] * m[M23]-
-			m[M30] * m[M01] * m[M12] * m[M23]+
-			m[M00] * m[M31] * m[M12] * m[M23]+
+                + m[M30] * m[M11] * m[M02] * m[M23]
+                - m[M10] * m[M31] * m[M02] * m[M23]
+                - m[M30] * m[M01] * m[M12] * m[M23]
+                + m[M00] * m[M31] * m[M12] * m[M23]
 
-			m[M10] * m[M01] * m[M32] * m[M23]-
-			m[M00] * m[M11] * m[M32] * m[M23]-
-			m[M20] * m[M11] * m[M02] * m[M33]+
-			m[M10] * m[M21] * m[M02] * m[M33]+
+                + m[M10] * m[M01] * m[M32] * m[M23]
+                - m[M00] * m[M11] * m[M32] * m[M23]
+                - m[M20] * m[M11] * m[M02] * m[M33]
+                + m[M10] * m[M21] * m[M02] * m[M33]
 
-			m[M20] * m[M01] * m[M12] * m[M33]-
-			m[M00] * m[M21] * m[M12] * m[M33]-
-			m[M10] * m[M01] * m[M22] * m[M33]+
-			m[M00] * m[M11] * m[M22] * m[M33];
+                + m[M20] * m[M01] * m[M12] * m[M33]
+                - m[M00] * m[M21] * m[M12] * m[M33]
+                - m[M10] * m[M01] * m[M22] * m[M33]
+                + m[M00] * m[M11] * m[M22] * m[M33];
         // @formatter:on
     }
 
@@ -373,13 +374,13 @@ public class Matrix4 implements Cloneable {
     @NonNull
     public Matrix4 add(@NonNull Matrix4 matrix) {
         // @formatter:off
-		matrix.toArray(mTmp);
-	    m[0] += mTmp[0]; m[1] += mTmp[1]; m[2] += mTmp[2]; m[3] += mTmp[3];
-	    m[4] += mTmp[4]; m[5] += mTmp[5]; m[6] += mTmp[6]; m[7] += mTmp[7];
-	    m[8] += mTmp[8]; m[9] += mTmp[9]; m[10] += mTmp[10]; m[11] += mTmp[11];
-	    m[12] += mTmp[12]; m[13] += mTmp[13]; m[14] += mTmp[14]; m[15] += mTmp[15];
-	    return this;
+        matrix.toArray(mTmp);
+        m[0] += mTmp[0];    m[1] += mTmp[1];    m[2] += mTmp[2];    m[3] += mTmp[3];
+        m[4] += mTmp[4];    m[5] += mTmp[5];    m[6] += mTmp[6];    m[7] += mTmp[7];
+        m[8] += mTmp[8];    m[9] += mTmp[9];    m[10] += mTmp[10];  m[11] += mTmp[11];
+        m[12] += mTmp[12];  m[13] += mTmp[13];  m[14] += mTmp[14];  m[15] += mTmp[15];
         // @formatter:on
+        return this;
     }
 
     /**
@@ -392,13 +393,13 @@ public class Matrix4 implements Cloneable {
     @NonNull
     public Matrix4 subtract(@NonNull Matrix4 matrix) {
         // @formatter:off
-		matrix.toArray(mTmp);
-	    m[0] -= mTmp[0]; m[1] -= mTmp[1]; m[2] -= mTmp[2]; m[3] -= mTmp[3];
-	    m[4] -= mTmp[4]; m[5] -= mTmp[5]; m[6] -= mTmp[6]; m[7] -= mTmp[7];
-	    m[8] -= mTmp[8]; m[9] -= mTmp[9]; m[10] -= mTmp[10]; m[11] -= mTmp[11];
-	    m[12] -= mTmp[12]; m[13] -= mTmp[13]; m[14] -= mTmp[14]; m[15] -= mTmp[15];
-	    return this;
+        matrix.toArray(mTmp);
+        m[0] -= mTmp[0];    m[1] -= mTmp[1];    m[2] -= mTmp[2];    m[3] -= mTmp[3];
+        m[4] -= mTmp[4];    m[5] -= mTmp[5];    m[6] -= mTmp[6];    m[7] -= mTmp[7];
+        m[8] -= mTmp[8];    m[9] -= mTmp[9];    m[10] -= mTmp[10];  m[11] -= mTmp[11];
+        m[12] -= mTmp[12];  m[13] -= mTmp[13];  m[14] -= mTmp[14];  m[15] -= mTmp[15];
         // @formatter:on
+        return this;
     }
 
     /**
@@ -1260,14 +1261,14 @@ public class Matrix4 implements Cloneable {
      */
     public void toFloatArray(@NonNull @Size(min = 16) float[] floatArray) {
         // @formatter:off
-		floatArray[0] = (float)m[0];	floatArray[1] = (float)m[1];	floatArray[2] = (float)m[2];	floatArray[3]
-                = (float)m[3];
-		floatArray[4] = (float)m[4];	floatArray[5] = (float)m[5];	floatArray[6] = (float)m[6];	floatArray[7]
-                = (float)m[7];
-		floatArray[8] = (float)m[8];	floatArray[9] = (float)m[9];	floatArray[10] = (float)m[10];	floatArray[11]
-                = (float)m[11];
-		floatArray[12] = (float)m[12];	floatArray[13] = (float)m[13];	floatArray[14] = (float)m[14];	floatArray[15]
-                = (float)m[15];
+        floatArray[0] = (float) m[0];   floatArray[1] = (float) m[1];   floatArray[2] = (float) m[2];
+            floatArray[3] = (float) m[3];
+        floatArray[4] = (float) m[4];   floatArray[5] = (float) m[5];   floatArray[6] = (float) m[6];
+            floatArray[7] = (float) m[7];
+        floatArray[8] = (float) m[8];   floatArray[9] = (float) m[9];   floatArray[10] = (float) m[10];
+            floatArray[11] = (float) m[11];
+        floatArray[12] = (float) m[12]; floatArray[13] = (float) m[13]; floatArray[14] = (float) m[14];
+            floatArray[15] = (float) m[15];
         // @formatter:on
     }
 
