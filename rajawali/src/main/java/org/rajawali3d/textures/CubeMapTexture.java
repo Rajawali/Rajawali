@@ -80,8 +80,7 @@ public class CubeMapTexture extends AMultiTexture {
             throw new TextureException("CubeMapTexture could not be added because it needs six textures instead of " + mBitmaps.length);
 
         if (mBitmaps != null) {
-            setBitmapConfig(mBitmaps[0].getConfig());
-            setTexelFormat(bitmapConfig == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
+            setTexelFormat(mBitmaps[0].getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
             setWidth(mBitmaps[0].getWidth());
             setHeight(mBitmaps[0].getHeight());
         }

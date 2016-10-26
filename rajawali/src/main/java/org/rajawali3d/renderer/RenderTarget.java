@@ -95,7 +95,6 @@ public class RenderTarget {
 		mTexture = new RenderTargetTexture(mName + "FBTex", mWidth, mHeight);
 		mTexture.setMipmap(mMipmaps);
 		mTexture.setGLTextureType(mGLType);
-		mTexture.setBitmapConfig(mBitmapConfig);
 		mTexture.setFilterType(mFilterType);
 		mTexture.setWrapType(mWrapType);
 		TextureManager.getInstance().addTexture(mTexture);
@@ -117,6 +116,7 @@ public class RenderTarget {
 
 	@Override
 	public RenderTarget clone() {
+        //TODO: This method is beyond broken
 		return new RenderTarget(
 				mName,
 				mWidth,
@@ -126,7 +126,7 @@ public class RenderTarget {
 				mStencilBuffer,
 				mTexture.isMipmap(),
 				mTexture.getGLTextureType(),
-				mTexture.getBitmapConfig(),
+				Config.ARGB_8888,
 				mTexture.getFilterType(),
 				mTexture.getWrapType());
 	}

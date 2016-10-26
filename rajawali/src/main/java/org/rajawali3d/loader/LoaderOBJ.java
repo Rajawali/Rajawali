@@ -15,6 +15,7 @@ package org.rajawali3d.loader;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.opengl.GLES20;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
@@ -629,7 +630,8 @@ public class LoaderOBJ extends AMeshLoader {
 						}
 					} else {
 						mat.addTexture(new Texture(getFileNameWithoutExtension(matDef.diffuseTexture),
-												   new TextureDataReference(BitmapFactory.decodeFile(filePath), null)));
+												   new TextureDataReference(BitmapFactory.decodeFile(filePath), null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE
+																			)));
 					}
 				}
 				mat.setColorInfluence(0);
@@ -642,7 +644,7 @@ public class LoaderOBJ extends AMeshLoader {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
 					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture),
 														new TextureDataReference(BitmapFactory.decodeFile(filePath),
-																				 null)));
+																				 null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 				}
 			}
 			if(hasSpecularTexture) {
@@ -653,7 +655,7 @@ public class LoaderOBJ extends AMeshLoader {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.specularColorTexture);
 					mat.addTexture(new SpecularMapTexture(getOnlyFileName(matDef.specularColorTexture),
 														  new TextureDataReference(BitmapFactory.decodeFile(filePath)
-																  , null)));
+																  , null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 				}
 			}
 			object.setMaterial(mat);

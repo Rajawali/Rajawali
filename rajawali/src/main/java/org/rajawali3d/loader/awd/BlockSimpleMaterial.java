@@ -2,6 +2,7 @@ package org.rajawali3d.loader.awd;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.opengl.GLES20;
 import android.util.SparseArray;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.loader.LoaderAWD.AWDLittleEndianDataInputStream;
@@ -174,11 +175,13 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 
 			if(diffuseTexture > 0)
 				mMaterial.addTexture(new Texture(cleanName + diffuseTexture,
-												 new TextureDataReference(lookup(blockHeader, diffuseTexture), null)));
+												 new TextureDataReference(lookup(blockHeader, diffuseTexture), null,
+																		  GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 
 			if(ambientTexture > 0)
 				mMaterial.addTexture(new Texture(cleanName + ambientTexture,
-												 new TextureDataReference(lookup(blockHeader, ambientTexture), null)));
+												 new TextureDataReference(lookup(blockHeader, ambientTexture), null,
+																		  GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 
 			mMaterial.setColorInfluence(0);
 
@@ -202,12 +205,12 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 		if(specularTexture > 0)
 			mMaterial.addTexture(new SpecularMapTexture(cleanName + specularTexture,
 														new TextureDataReference(lookup(blockHeader, specularTexture)
-																, null)));
+																, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 
 		if(normalTexture > 0)
 			mMaterial.addTexture(new NormalMapTexture(cleanName + normalTexture,
 													  new TextureDataReference(lookup(blockHeader, normalTexture),
-																			   null)));
+																			   null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 
 		// ambient 1.0 is default, washes-out object; assume < 1 is intended
 		ambientLevel = (ambientLevel < 1.0 ? ambientLevel : 0.0);

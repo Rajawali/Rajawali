@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
+import android.opengl.GLES20;
 import android.support.annotation.Nullable;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
@@ -54,7 +55,7 @@ public class CanvasTextFragment extends AExampleFragment {
 			timeSphereMaterial.enableLighting(true);
 			timeSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
 			mTimeBitmap = Bitmap.createBitmap(256, 256, Config.ARGB_8888);
-			mTimeTexture = new AlphaMapTexture("timeTexture", new TextureDataReference(mTimeBitmap, null));
+			mTimeTexture = new AlphaMapTexture("timeTexture", new TextureDataReference(mTimeBitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE));
 			try {
 				timeSphereMaterial.addTexture(mTimeTexture);
 			} catch (TextureException e) {

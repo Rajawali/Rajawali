@@ -12,7 +12,10 @@
  */
 package org.rajawali3d.textures;
 
+import static android.graphics.BitmapFactory.decodeResource;
+
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
@@ -75,8 +78,10 @@ public abstract class ASingleTexture extends ATexture {
         mResourceId = resourceId;
         BitmapFactory.Options bitmapScalingOptions = new BitmapFactory.Options();
         bitmapScalingOptions.inScaled = false;
-        setTextureData(new TextureDataReference(
-                BitmapFactory.decodeResource(context.getResources(), resourceId, bitmapScalingOptions), null));
+        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, bitmapScalingOptions);
+        setTextureData(new TextureDataReference(bitmap, null, bitmap.getConfig().equals(Config.RGB_565)
+                                                              ? GLES20.GL_RGB : GLES20.GL_RGBA,
+                                                GLES20.GL_UNSIGNED_BYTE));
         return textureData;
     }
 
@@ -224,11 +229,13 @@ public abstract class ASingleTexture extends ATexture {
                         "Texture could not be updated because the bitmap format is different from the original");
             }
 
-            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), this.texelFormat, GLES20.GL_UNSIGNED_BYTE);
+            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), this.texelFormat,
+                                  GLES20.GL_UNSIGNED_BYTE);
         } else if (textureData.hasBuffer()) {
             if (width == 0 || height == 0 || texelFormat == 0) {
                 throw new TextureException(
-                        "Could not update ByteBuffer texture. One or more of the following properties haven't been set: width, height or bitmap format");
+                        "Could not update ByteBuffer texture. One or more of the following properties haven't been "
+                        + "set: width, height or bitmap format");
             }
             GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, width, height, texelFormat,
                                    GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());

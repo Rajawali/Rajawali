@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
+import android.opengl.GLES20;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
@@ -464,7 +465,7 @@ public class LoaderFBX extends AMeshLoader {
 					}
 					o.getMaterial().setColorInfluence(0);
 					o.getMaterial().addTexture(new Texture(textureName.replaceAll("[\\W]|_", ""),
-														   new TextureDataReference(bitmap, null)));
+														   new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 					return;
 				}
 			}

@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.general;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.opengl.GLES20;
 import android.support.annotation.Nullable;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -64,7 +65,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 				Bitmap bitmap = BitmapFactory.decodeResource(
 						mContext.getResources(), resourceId, options);
 
-				ATexture texture = new Texture("bm" + i, new TextureDataReference(bitmap, null));
+				ATexture texture = new Texture("bm" + i, new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE));
 				texture.setMipmap(false);
 				texture.shouldRecycle(true);
 				//mTextures[i - 1] = mTextureManager.addTexture(texture);

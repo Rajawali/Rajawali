@@ -1,5 +1,6 @@
 package org.rajawali3d.loader.awd;
 
+import android.opengl.GLES20;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.ATexture;
@@ -48,6 +49,7 @@ public abstract class ABlockParser implements IBlockParser {
 	}
 
 	protected static ATexture getDefaultTexture() {
-		return new Texture("AWD_DefaultTexture", new TextureDataReference(defaultTextureBitmap, null));
+		return new Texture("AWD_DefaultTexture", new TextureDataReference(defaultTextureBitmap, null, GLES20.GL_RGBA,
+																		  GLES20.GL_UNSIGNED_BYTE));
 	}
 }
