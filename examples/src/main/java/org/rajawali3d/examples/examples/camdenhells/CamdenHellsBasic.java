@@ -70,7 +70,7 @@ public class CamdenHellsBasic extends AExampleFragment {
             RajLog.setDebugEnabled(true);
             Material material = new Material();
             material.setColor(Color.GREEN);
-            scene.addMaterial(material);
+            scene.getMaterialManager().addMaterial(material);
         }
 
         @Override public boolean callPreFrame() {
@@ -95,14 +95,14 @@ public class CamdenHellsBasic extends AExampleFragment {
                 if (add) {
                     Log.d(TAG, "Adding resources.");
                     texture = new Texture("Demo", getActivity(), R.drawable.earth_diffuse);
-                    scene.addTexture(texture);
+                    scene.getTextureManager().addTexture(texture);
 
                     material = new Material();
-                    scene.addMaterial(material);
+                    scene.getMaterialManager().addMaterial(material);
                 } else {
                     Log.d(TAG, "Removing resources.");
-                    scene.removeMaterial(material);
-                    scene.removeTexture(texture);
+                    scene.getMaterialManager().removeMaterial(material);
+                    scene.getTextureManager().removeTexture(texture);
                 }
                 add = !add;
                 try {
