@@ -15,20 +15,19 @@ package org.rajawali3d.util;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.opengl.GLES20;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
-import org.rajawali3d.textures.ATexture.FilterType;
-import org.rajawali3d.textures.ATexture.WrapType;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
+import org.rajawali3d.renderer.Renderer;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Wrap;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ObjectColorPicker implements IObjectPicker {
 
@@ -50,8 +49,8 @@ public class ObjectColorPicker implements IObjectPicker {
 		final int size = Math.max(mRenderer.getViewportWidth(), mRenderer.getViewportHeight());
 
 		mRenderTarget = new RenderTarget("colorPickerTarget", size, size,
-				0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-				FilterType.LINEAR, WrapType.CLAMP);
+										 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
+										 Filter.LINEAR, Wrap.CLAMP);
 		mRenderer.addRenderTarget(mRenderTarget);
 
 		mPickerMaterial = new Material();

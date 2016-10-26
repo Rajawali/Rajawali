@@ -12,9 +12,11 @@
  */
 package org.rajawali3d.textures;
 
-import java.nio.ByteBuffer;
-
 import android.opengl.GLES20;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Wrap;
+
+import java.nio.ByteBuffer;
 
 public abstract class ACompressedTexture extends ATexture {
 
@@ -47,7 +49,7 @@ public abstract class ACompressedTexture extends ATexture {
 	protected ACompressedTexture() {
 		super();
 		textureType = TextureType.COMPRESSED;
-		wrapType = WrapType.REPEAT;
+		wrapType = Wrap.REPEAT;
 	}
 
 	public ACompressedTexture(ACompressedTexture other)
@@ -111,7 +113,7 @@ public abstract class ACompressedTexture extends ATexture {
 	}
 
 	/**
-	 * @param internalFormat
+	 * @param compressionFormat
 	 *            the Bitmap compression format
 	 */
 	public void setCompressionFormat(int compressionFormat) {
@@ -139,17 +141,17 @@ public abstract class ACompressedTexture extends ATexture {
 		{
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
-			if (filterType == FilterType.LINEAR)
+			if (filterType == Filter.LINEAR)
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
 			else
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 
-			if (filterType == FilterType.LINEAR)
+			if (filterType == Filter.LINEAR)
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 			else
 				GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
-			if (wrapType == WrapType.REPEAT) {
+			if (wrapType == Wrap.REPEAT) {
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
 				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
 			} else {

@@ -15,8 +15,13 @@ package org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import org.rajawali3d.materials.Material;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
 import org.rajawali3d.textures.annotation.TexelFormat;
+import org.rajawali3d.textures.annotation.Wrap;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
+import java.nio.Buffer;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,7 +29,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Abstract texture class.
  */
-@SuppressWarnings("WeakerAccess") public abstract class ATexture {
+@SuppressWarnings("WeakerAccess")
+public abstract class ATexture {
 
     /**
      * Texture types
@@ -44,47 +50,26 @@ import java.util.concurrent.CopyOnWriteArrayList;
     }
 
     /**
-     * You can assign texture coordinates outside the range [0,1] and have them either clamp or repeat in the texture
-     * map. With repeating textures, if you have a large plane with texture coordinates running from 0.0 to 10.0 in
-     * both directions, for example, you'll get 100 copies of the texture tiled together on the screen.
-     */
-    public enum WrapType {
-        CLAMP,
-        REPEAT
-    }
-
-    /**
-     * Texture filtering or texture smoothing is the method used to determine the texture color for a texture mapped
-     * pixel, using the colors of nearby texels (pixels of the texture). Note that use of the {@link #ANISOTROPIC}
-     * filter type requires that the {@code GL_EXT_texture_filter_anisotropic} be present.
-     *
-     * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
-     * GL_EXT_texture_filter_anisotropic</a>
-     */
-    public enum FilterType {
-        NEAREST,
-        LINEAR,
-        ANISOTROPIC
-    }
-
-    /**
      * The GL texture id that is used by Rajawali.
      */
     protected int textureId = -1;
 
     /**
-     * Texture width, in pixels.
+     * Texture width, in texels.
      */
     protected int width;
 
     /**
-     * Texture height, in pixels.
+     * Texture height, in texels.
      */
     protected int height;
 
     /**
      * The OpenGL texel storage format. The format describes how texels are stored. This affects the
-     * quality (color depth) as well as the ability to display transparent/translucent colors.
+     * quality (color depth) as well as the ability to display transparent/translucent colors. It is vital that
+     * the provided format be in agreement with the rules of
+     * {@link GLES20#glTexImage2D(int, int, int, int, int, int, int, int, Buffer)} and related methods. These rules
+     * differ between GL ES 2.x and GL ES 3.x.
      *
      * @see <a href="https://www.khronos.org/opengles/sdk/docs/man3/html/glTexImage2D.xhtml">glTexImage2D</a>
      */
@@ -118,14 +103,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
     protected TextureType textureType;
 
     /**
-     * Texture wrap type. See {@link WrapType}.
+     * Texture wrap type.
+     *
+     * @see {@link WrapType}.
      */
-    protected WrapType wrapType;
+    @WrapType protected int wrapType;
 
     /**
-     * Texture filtering type. See {@link FilterType}.
+     * Texture filtering type.
+     *
+     * @see {@link FilterType}
      */
-    protected FilterType filterType;
+    @FilterType protected int filterType;
 
     /**
      * A list of materials that use this texture.
@@ -158,8 +147,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
         this.textureName = textureName;
         mipmap = true;
         shouldRecycle = false;
-        wrapType = WrapType.REPEAT;
-        filterType = FilterType.LINEAR;
+        wrapType = Wrap.REPEAT;
+        filterType = Filter.LINEAR;
     }
 
     public ATexture(TextureType textureType, @NonNull String textureName, ACompressedTexture compressedTexture) {
@@ -257,10 +246,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
     /**
      * @param texelFormat A bitmap configuration describes how pixels are stored. This affects the quality (color
-     *                     depth) as well
-     *                     as the ability to display transparent/translucent colors.
+     *                    depth) as well as the ability to display transparent/translucent colors. It is vital that
+     *                    the provided format be in agreement with the rules of
+     *                    {@link GLES20#glTexImage2D(int, int, int, int, int, int, int, int, Buffer)} and related
+     *                    methods. These rules differ between GL ES 2.x and GL ES 3.x.
+     *
+     * @see <a href="https://www.khronos.org/opengles/sdk/docs/man3/html/glTexImage2D.xhtml">glTexImage2D</a>
      */
-    public void setTexelFormat(int texelFormat) {
+    public void setTexelFormat(@TexelFormat int texelFormat) {
         this.texelFormat = texelFormat;
     }
 
@@ -329,30 +322,40 @@ import java.util.concurrent.CopyOnWriteArrayList;
     }
 
     /**
-     * @return the Texture wrap type. See {@link WrapType}.
+     * @return the Texture wrap type.
+     *
+     * @see {@link WrapType}.
      */
-    public WrapType getWrapType() {
+    @WrapType
+    public int getWrapType() {
         return wrapType;
     }
 
     /**
-     * @param wrapType the texture wrap type. See {@link WrapType}.
+     * @param wrapType the texture wrap type.
+     *
+     * @see {@link WrapType}.
      */
-    public void setWrapType(WrapType wrapType) {
+    public void setWrapType(@WrapType int wrapType) {
         this.wrapType = wrapType;
     }
 
     /**
-     * @return Texture filtering type. See {@link FilterType}.
+     * @return Texture filtering type.
+     *
+     * @see {@link FilterType}.
      */
-    public FilterType getFilterType() {
+    @FilterType
+    public int getFilterType() {
         return filterType;
     }
 
     /**
-     * @param filterType Texture filtering type. See {@link FilterType}.
+     * @param filterType Texture filtering type.
+     *
+     * @see {@link FilterType}.
      */
-    public void setFilterType(FilterType filterType) {
+    public void setFilterType(@FilterType int filterType) {
         this.filterType = filterType;
     }
 

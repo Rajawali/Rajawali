@@ -12,8 +12,6 @@
  */
 package org.rajawali3d.textures;
 
-import static android.graphics.BitmapFactory.decodeResource;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -21,6 +19,10 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.support.annotation.NonNull;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
+import org.rajawali3d.textures.annotation.Wrap;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 /**
  * This class is used to specify texture options.
@@ -130,7 +132,7 @@ public abstract class ASingleTexture extends ATexture {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
             if (isMipmap()) {
-                if (filterType == FilterType.LINEAR) {
+                if (filterType == Filter.LINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
                                            GLES20.GL_LINEAR_MIPMAP_LINEAR);
                 } else {
@@ -138,20 +140,20 @@ public abstract class ASingleTexture extends ATexture {
                                            GLES20.GL_NEAREST_MIPMAP_NEAREST);
                 }
             } else {
-                if (filterType == FilterType.LINEAR) {
+                if (filterType == Filter.LINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
                 } else {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
                 }
             }
 
-            if (filterType == FilterType.LINEAR) {
+            if (filterType == Filter.LINEAR) {
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             } else {
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
             }
 
-            if (wrapType == WrapType.REPEAT) {
+            if (wrapType == Wrap.REPEAT) {
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
             } else {
@@ -260,20 +262,16 @@ public abstract class ASingleTexture extends ATexture {
         }
     }
 
-    /**
-     * @param wrapType the texture wrap type. See {@link WrapType}.
-     */
-    public void setWrapType(WrapType wrapType) {
+    @Override
+    public void setWrapType(@WrapType int wrapType) {
         super.setWrapType(wrapType);
         if (compressedTexture != null) {
             compressedTexture.setWrapType(wrapType);
         }
     }
 
-    /**
-     * @param filterType Texture filtering type. See {@link FilterType}.
-     */
-    public void setFilterType(FilterType filterType) {
+    @Override
+    public void setFilterType(@FilterType int filterType) {
         super.setFilterType(filterType);
         if (compressedTexture != null) {
             compressedTexture.setFilterType(filterType);

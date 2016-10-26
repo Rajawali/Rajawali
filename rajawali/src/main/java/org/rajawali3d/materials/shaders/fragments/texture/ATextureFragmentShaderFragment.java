@@ -12,14 +12,14 @@
  */
 package org.rajawali3d.materials.shaders.fragments.texture;
 
-import java.util.List;
-
+import android.opengl.GLES20;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.textures.ATexture;
 import org.rajawali3d.textures.ATexture.TextureType;
-import org.rajawali3d.textures.ATexture.WrapType;
-import android.opengl.GLES20;
+import org.rajawali3d.textures.annotation.Wrap;
+
+import java.util.List;
 
 
 public abstract class ATextureFragmentShaderFragment extends AShader implements IShaderFragment {
@@ -91,7 +91,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 
 			muInfluence[i] = (RFloat) addUniform(DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
 
-			if(texture.getWrapType() == WrapType.REPEAT)
+			if(texture.getWrapType() == Wrap.REPEAT)
 				muRepeat[i] = (RVec2) addUniform(DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
 				muOffset[i] = (RVec2) addUniform(DefaultShaderVar.U_OFFSET, i);
@@ -106,7 +106,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 			ATexture texture = mTextures.get(i);
 			muTextureHandles[i] = getUniformLocation(programHandle, texture.getTextureName());
 			muInfluenceHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
-			if(texture.getWrapType() == WrapType.REPEAT)
+			if(texture.getWrapType() == Wrap.REPEAT)
 				muRepeatHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
 				muOffsetHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_OFFSET, i);
@@ -123,7 +123,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		{
 			ATexture texture = mTextures.get(i);
 			GLES20.glUniform1f(muInfluenceHandles[i], texture.getInfluence());
-			if(texture.getWrapType() == WrapType.REPEAT)
+			if(texture.getWrapType() == Wrap.REPEAT)
 				GLES20.glUniform2fv(muRepeatHandles[i], 1, texture.getRepeat(), 0);
 			if(texture.offsetEnabled())
 				GLES20.glUniform2fv(muOffsetHandles[i], 1, texture.getOffset(), 0);

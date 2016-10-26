@@ -1,18 +1,18 @@
 package org.rajawali3d.postprocessing.effects;
 
+import android.graphics.Bitmap.Config;
+import android.opengl.GLES20;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.lights.DirectionalLight;
-import org.rajawali3d.textures.ATexture.FilterType;
-import org.rajawali3d.textures.ATexture.WrapType;
 import org.rajawali3d.postprocessing.APostProcessingEffect;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.postprocessing.passes.ShadowPass;
 import org.rajawali3d.postprocessing.passes.ShadowPass.ShadowPassType;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import android.graphics.Bitmap.Config;
-import android.opengl.GLES20;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Wrap;
 
 
 public class ShadowEffect extends APostProcessingEffect {
@@ -41,8 +41,8 @@ public class ShadowEffect extends APostProcessingEffect {
 	@Override
 	public void initialize(Renderer renderer) {
 		mShadowRenderTarget = new RenderTarget("shadowRT" + hashCode(), mShadowMapSize, mShadowMapSize, 0, 0,
-				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-				FilterType.LINEAR, WrapType.CLAMP);
+											   false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
+											   Filter.LINEAR, Wrap.CLAMP);
 		renderer.addRenderTarget(mShadowRenderTarget);
 
 		ShadowPass pass1 = new ShadowPass(ShadowPassType.CREATE_SHADOW_MAP, mScene, mCamera, mLight, mShadowRenderTarget);

@@ -16,9 +16,11 @@ import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLU;
 import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.textures.ATexture.FilterType;
-import org.rajawali3d.textures.ATexture.WrapType;
 import org.rajawali3d.textures.RenderTargetTexture;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
+import org.rajawali3d.textures.annotation.Wrap;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
 import org.rajawali3d.util.RajLog;
 
 /**
@@ -29,16 +31,16 @@ import org.rajawali3d.util.RajLog;
  */
 public class RenderTarget {
 
-	protected int mWidth;
-	protected int mHeight;
-	protected int mOffsetX;
-	protected int mOffsetY;
-	protected String mName;
-	protected boolean mMipmaps;
-	protected int mGLType;
-	protected Config mBitmapConfig;
-	protected FilterType mFilterType;
-	protected WrapType mWrapType;
+	protected             int     mWidth;
+	protected             int     mHeight;
+	protected             int     mOffsetX;
+	protected             int     mOffsetY;
+	protected             String  mName;
+	protected             boolean mMipmaps;
+	protected             int     mGLType;
+	protected             Config  mBitmapConfig;
+	@FilterType protected int     mFilterType;
+	@WrapType protected   int     mWrapType;
 
 	protected boolean mStencilBuffer;
 	protected boolean mFullscreen = true;
@@ -78,8 +80,8 @@ public class RenderTarget {
 	 */
 	public RenderTarget(String name, int width, int height, int offsetX, int offsetY,
 			boolean stencilBuffer, boolean mipmaps,
-			int glType, Config bitmapConfig, FilterType filterType,
-			WrapType wrapType) {
+			int glType, Config bitmapConfig, @FilterType int filterType,
+			@WrapType int wrapType) {
 		mName = name;
 		mWidth = width;
 		mHeight = height;
@@ -110,8 +112,8 @@ public class RenderTarget {
 	 *            Height of the render target
 	 */
 	public RenderTarget(String name, int width, int height) {
-		this(name, width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, FilterType.LINEAR,
-				WrapType.CLAMP);
+		this(name, width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, Filter.LINEAR,
+             Wrap.CLAMP);
 	}
 
 	@Override

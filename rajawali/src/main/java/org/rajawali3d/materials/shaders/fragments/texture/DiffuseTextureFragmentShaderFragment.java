@@ -12,12 +12,12 @@
  */
 package org.rajawali3d.materials.shaders.fragments.texture;
 
-import java.util.List;
-
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.textures.ATexture;
 import org.rajawali3d.textures.ATexture.TextureType;
-import org.rajawali3d.textures.ATexture.WrapType;
+import org.rajawali3d.textures.annotation.Wrap;
+
+import java.util.List;
 
 
 public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShaderFragment {
@@ -44,7 +44,7 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 			ATexture texture = mTextures.get(i);
 			if(texture.offsetEnabled())
 				textureCoord.assignAdd(getGlobal(DefaultShaderVar.U_OFFSET, i));
-			if(texture.getWrapType() == WrapType.REPEAT)
+			if(texture.getWrapType() == Wrap.REPEAT)
 				textureCoord.assignMultiply(getGlobal(DefaultShaderVar.U_REPEAT, i));
 
 			if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)

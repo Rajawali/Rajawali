@@ -12,9 +12,9 @@
  */
 package org.rajawali3d.renderer;
 
-import org.rajawali3d.textures.ATexture.FilterType;
-import org.rajawali3d.textures.ATexture.WrapType;
 import android.graphics.Bitmap.Config;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 /**
  * Defines a render target to be mapped to a cubemap texture.
@@ -25,8 +25,8 @@ public class RenderTargetCube extends RenderTarget {
 	protected int mActiveCubeFace;
 
 	public RenderTargetCube(String name, int width, int height, int offsetX, int offsetY,
-			boolean stencilBuffer, boolean mipmaps, int glType, Config bitmapConfig, FilterType filterType,
-			WrapType wrapType) {
+							boolean stencilBuffer, boolean mipmaps, int glType, Config bitmapConfig,
+							@FilterType int filterType, @WrapType int wrapType) {
 		super(name, width, height, offsetX, offsetY, stencilBuffer, mipmaps, glType, bitmapConfig, filterType, wrapType);
 	}
 

@@ -20,7 +20,8 @@ import java.nio.ByteBuffer;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-@SuppressWarnings("WeakerAccess") @ThreadSafe
+@SuppressWarnings("WeakerAccess")
+@ThreadSafe
 public class TextureDataReference {
 
     private final Object lock = new Object();
