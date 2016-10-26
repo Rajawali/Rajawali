@@ -81,7 +81,7 @@ public class CubeMapTexture extends AMultiTexture {
 
         if (mBitmaps != null) {
             setBitmapConfig(mBitmaps[0].getConfig());
-            setBitmapFormat(bitmapConfig == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
+            setTexelFormat(bitmapConfig == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
             setWidth(mBitmaps[0].getWidth());
             setHeight(mBitmaps[0].getHeight());
         }
@@ -129,7 +129,7 @@ public class CubeMapTexture extends AMultiTexture {
                     h = h > 1 ? h / 2 : 1;
                 }
             } else {
-                GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, bitmapFormat, width, height, 0, bitmapFormat,
+                GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, texelFormat, width, height, 0, texelFormat,
                                     GLES20.GL_UNSIGNED_BYTE, mByteBuffers[i]);
             }
         }

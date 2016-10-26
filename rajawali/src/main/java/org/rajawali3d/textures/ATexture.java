@@ -12,496 +12,459 @@
  */
 package org.rajawali3d.textures;
 
-import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import org.rajawali3d.materials.Material;
+import org.rajawali3d.textures.annotation.TexelFormat;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class ATexture {
+/**
+ * Abstract texture class.
+ */
+@SuppressWarnings("WeakerAccess") public abstract class ATexture {
 
-	/**
-	 * Texture types
-	 */
-	public enum TextureType {
-		DIFFUSE,
-		NORMAL,
-		SPECULAR,
-		ALPHA,
-		RENDER_TARGET,
-		DEPTH_BUFFER,
-		LOOKUP,
-		CUBE_MAP,
-		SPHERE_MAP,
-		VIDEO_TEXTURE,
-		COMPRESSED
-	}
+    /**
+     * Texture types
+     */
+    public enum TextureType {
+        DIFFUSE,
+        NORMAL,
+        SPECULAR,
+        ALPHA,
+        RENDER_TARGET,
+        DEPTH_BUFFER,
+        LOOKUP,
+        CUBE_MAP,
+        SPHERE_MAP,
+        VIDEO_TEXTURE,
+        COMPRESSED
+    }
 
-	/**
-	 * You can assign texture coordinates outside the range [0,1] and have them either clamp or repeat in the texture
-	 * map. With repeating textures, if you have a large plane with texture coordinates running from 0.0 to 10.0 in both
-	 * directions, for example, you'll get 100 copies of the texture tiled together on the screen.
-	 */
-	public enum WrapType {
-		CLAMP,
-		REPEAT
-	}
+    /**
+     * You can assign texture coordinates outside the range [0,1] and have them either clamp or repeat in the texture
+     * map. With repeating textures, if you have a large plane with texture coordinates running from 0.0 to 10.0 in
+     * both directions, for example, you'll get 100 copies of the texture tiled together on the screen.
+     */
+    public enum WrapType {
+        CLAMP,
+        REPEAT
+    }
 
-	/**
-	 * Texture filtering or texture smoothing is the method used to determine the texture color for a texture mapped
-	 * pixel, using the colors of nearby texels (pixels of the texture).
-	 */
-	public enum FilterType {
-		NEAREST,
-		LINEAR
-	}
+    /**
+     * Texture filtering or texture smoothing is the method used to determine the texture color for a texture mapped
+     * pixel, using the colors of nearby texels (pixels of the texture). Note that use of the {@link #ANISOTROPIC}
+     * filter type requires that the {@code GL_EXT_texture_filter_anisotropic} be present.
+     *
+     * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
+     * GL_EXT_texture_filter_anisotropic</a>
+     */
+    public enum FilterType {
+        NEAREST,
+        LINEAR,
+        ANISOTROPIC
+    }
 
-	/**
-	 * The texture id that is used by Rajawali
-	 */
-	protected int textureId = -1;
+    /**
+     * The GL texture id that is used by Rajawali.
+     */
+    protected int textureId = -1;
 
-	/**
-	 * Texture width
-	 */
-	protected int              width;
+    /**
+     * Texture width, in pixels.
+     */
+    protected int width;
 
-	/**
-	 * Texture height
-	 */
-	protected int              height;
+    /**
+     * Texture height, in pixels.
+     */
+    protected int height;
 
-	/**
-	 * Possible bitmap configurations. A bitmap configuration describes how pixels are stored. This affects the quality
-	 * (color depth) as well as the ability to display transparent/translucent colors.
-	 *
-	 * {@link Config}
-	 */
-	protected int              bitmapFormat;
+    /**
+     * The OpenGL texel storage format. The format describes how texels are stored. This affects the
+     * quality (color depth) as well as the ability to display transparent/translucent colors.
+     *
+     * @see <a href="https://www.khronos.org/opengles/sdk/docs/man3/html/glTexImage2D.xhtml">glTexImage2D</a>
+     */
+    @TexelFormat
+    protected int texelFormat;
 
-	/**
-	 * Indicates whether mipmaps should be created or not. Mipmaps are pre-calculated, optimized collections of images
-	 * that accompany a main texture, intended to increase rendering speed and reduce aliasing artifacts.
-	 */
-	protected          boolean     mipmap;
+    /**
+     * Indicates whether mipmaps should be created or not. Mipmaps are pre-calculated, optimized collections of images
+     * that accompany a main texture, intended to increase rendering speed and reduce aliasing artifacts. They
+     * increase the ammount of time for an initial texture push as well as the size of the texture (in video RAM),
+     * but can dramatically improve render quality.
+     */
+    protected boolean mipmap;
 
-	/**
-	 * Indicates whether the source Bitmap or Buffer should be recycled immediately after the OpenGL texture has been
-	 * created. The main reason for not recycling is Scene caching. Scene caching stores all textures and relevant
-	 * OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically needs to
-	 * be restored when the application is re-activated or when a live wallpaper is rotated.
-	 */
-	protected          boolean                             shouldRecycle;
+    /**
+     * Indicates whether the source {@link TextureDataReference} should be recycled immediately after the OpenGL texture
+     * has been created. The main reason for not recycling is scene caching. Scene caching stores all textures and
+     * relevant OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically
+     * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
+     */
+    protected boolean shouldRecycle;
 
-	/**
-	 * The texture name that will be used in the shader.
-	 */
-	@NonNull protected String                              textureName;
+    /**
+     * The texture name that will be used in the shader.
+     */
+    @NonNull protected String textureName;
 
-	/**
-	 * The type of texture {link {@link TextureType}
-	 */
-	protected          TextureType                         textureType;
+    /**
+     * The type of texture {link {@link TextureType}.
+     */
+    protected TextureType textureType;
 
-	/**
-	 * Texture wrap type. See {@link WrapType}.
-	 */
-	protected          WrapType                            wrapType;
+    /**
+     * Texture wrap type. See {@link WrapType}.
+     */
+    protected WrapType wrapType;
 
-	/**
-	 * Texture filtering type. See {@link FilterType}.
-	 */
-	protected FilterType                                   filterType;
+    /**
+     * Texture filtering type. See {@link FilterType}.
+     */
+    protected FilterType filterType;
 
-	/**
-	 * Possible bitmap configurations. A bitmap configuration describes how pixels are stored. This affects the quality
-	 * (color depth) as well as the ability to display transparent/translucent colors. See {@link Config}.
-	 */
-	protected Config                                       bitmapConfig;
+    /**
+     * A list of materials that use this texture.
+     */
+    protected List<Material> materialsUsingTexture;
 
-	/**
-	 * A list of materials that use this texture.
-	 */
-	protected List<Material>                               materialsUsingTexture;
+    /**
+     * The optional compressed texture.
+     */
+    protected ACompressedTexture compressedTexture;
 
-	/**
-	 * The optional compressed texture
-	 */
-	protected ACompressedTexture compressedTexture;
+    /**
+     * The OpenGL texture type.
+     */
+    protected int glTextureType = GLES20.GL_TEXTURE_2D;
 
-	/**
-	 * The OpenGL texture type
-	 */
-	protected int glTextureType = GLES20.GL_TEXTURE_2D;
+    protected float   influence = 1.0f;
+    protected float[] repeat    = new float[]{ 1, 1 };
+    protected boolean enableOffset;
+    protected float[] offset = new float[]{ 0, 0 };
 
-	protected float   influence = 1.0f;
-	protected float[] repeat    = new float[] { 1, 1 };
-	protected boolean enableOffset;
-	protected float[] offset = new float[] { 0, 0 };
-
-	/**
-	 * Creates a new ATexture instance with the specified texture type
-	 *
-	 * @param textureType
-	 */
-	public ATexture(TextureType textureType, @NonNull String textureName)
-	{
-		this();
+    /**
+     * Creates a new ATexture instance with the specified texture type.
+     *
+     * @param textureType
+     */
+    public ATexture(TextureType textureType, @NonNull String textureName) {
+        this();
         this.textureType = textureType;
         this.textureName = textureName;
         mipmap = true;
         shouldRecycle = false;
         wrapType = WrapType.REPEAT;
         filterType = FilterType.LINEAR;
-	}
+    }
 
-	public ATexture(TextureType textureType, @NonNull String textureName, ACompressedTexture compressedTexture)
-	{
-		this(textureType, textureName);
-		setCompressedTexture(compressedTexture);
-	}
+    public ATexture(TextureType textureType, @NonNull String textureName, ACompressedTexture compressedTexture) {
+        this(textureType, textureName);
+        setCompressedTexture(compressedTexture);
+    }
 
-	protected ATexture() {
+    protected ATexture() {
         materialsUsingTexture = Collections.synchronizedList(new CopyOnWriteArrayList<Material>());
-	}
+    }
 
-	/**
-	 * Creates a new TextureConfig instance and copies all properties from another TextureConfig object.
-	 *
-	 * @param other
-	 */
-	public ATexture(ATexture other)
-	{
-		setFrom(other);
-	}
+    /**
+     * Creates a new TextureConfig instance and copies all properties from another TextureConfig object.
+     *
+     * @param other
+     */
+    public ATexture(ATexture other) {
+        setFrom(other);
+    }
 
-	/**
-	 * Creates a clone
-	 */
-	abstract public ATexture clone();
+    /**
+     * Creates a clone.
+     */
+    public abstract ATexture clone();
 
-	/**
-	 * Copies every property from another ATexture object
-	 *
-	 * @param other
-	 *            another ATexture object to copy from
-	 */
-	public void setFrom(ATexture other)
-	{
+    /**
+     * Copies every property from another ATexture object.
+     *
+     * @param other another ATexture object to copy from
+     */
+    public void setFrom(ATexture other) {
         textureId = other.getTextureId();
         width = other.getWidth();
         height = other.getHeight();
-        bitmapFormat = other.getBitmapFormat();
+        texelFormat = other.getTexelFormat();
         mipmap = other.isMipmap();
         shouldRecycle = other.willRecycle();
         textureName = other.getTextureName();
         textureType = other.getTextureType();
         wrapType = other.getWrapType();
         filterType = other.getFilterType();
-        bitmapConfig = other.getBitmapConfig();
         compressedTexture = other.getCompressedTexture();
         glTextureType = other.getGLTextureType();
         materialsUsingTexture = other.materialsUsingTexture;
-	}
+    }
 
-	/**
-	 * @return the texture id
-	 */
-	public int getTextureId() {
-		return textureId;
-	}
+    /**
+     * @return the texture id
+     */
+    public int getTextureId() {
+        return textureId;
+    }
 
-	/**
-	 * @param textureId
-	 *            the texture id to set
-	 */
-	public void setTextureId(int textureId) {
+    /**
+     * @param textureId the texture id to set
+     */
+    public void setTextureId(int textureId) {
         this.textureId = textureId;
-	}
+    }
 
-	/**
-	 * @return the texture's width
-	 */
-	public int getWidth() {
-		return width;
-	}
+    /**
+     * @return the texture's width
+     */
+    public int getWidth() {
+        return width;
+    }
 
-	/**
-	 * @param width
-	 *            the texture's width
-	 */
-	public void setWidth(int width) {
-		this.width = width;
-	}
+    /**
+     * @param width the texture's width
+     */
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
-	/**
-	 * @return the texture's height
-	 */
-	public int getHeight() {
-		return height;
-	}
+    /**
+     * @return the texture's height
+     */
+    public int getHeight() {
+        return height;
+    }
 
-	/**
-	 * @param height
-	 *            the texture's height
-	 */
-	public void setHeight(int height) {
-		this.height = height;
-	}
+    /**
+     * @param height the texture's height
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
-	/**
-	 * @return the bitmap format.
-	 */
-	public int getBitmapFormat() {
-		return bitmapFormat;
-	}
+    /**
+     * @return the bitmap format.
+     */
+    public int getTexelFormat() {
+        return texelFormat;
+    }
 
-	/**
-	 * @param bitmapFormat
-	 *            A bitmap configuration describes how pixels are stored. This affects the quality (color depth) as well
-	 *            as the ability to display transparent/translucent colors.
-	 */
-	public void setBitmapFormat(int bitmapFormat) {
-		this.bitmapFormat = bitmapFormat;
-	}
+    /**
+     * @param texelFormat A bitmap configuration describes how pixels are stored. This affects the quality (color
+     *                     depth) as well
+     *                     as the ability to display transparent/translucent colors.
+     */
+    public void setTexelFormat(int texelFormat) {
+        this.texelFormat = texelFormat;
+    }
 
-	/**
-	 * @return a boolean describing whether this is a mipmap or not.
-	 */
-	public boolean isMipmap() {
-		return mipmap;
-	}
+    /**
+     * @return a boolean describing whether this is a mipmap or not.
+     */
+    public boolean isMipmap() {
+        return mipmap;
+    }
 
-	/**
-	 * @param mipmap
-	 *            Indicates whether mipmaps should be created or not. Mipmaps are pre-calculated, optimized collections
-	 *            of images that accompany a main texture, intended to increase rendering speed and reduce aliasing
-	 *            artifacts.
-	 */
-	public void setMipmap(boolean mipmap) {
-		this.mipmap = mipmap;
-	}
+    /**
+     * @param mipmap Indicates whether mipmaps should be created or not. Mipmaps are pre-calculated, optimized
+     *               collections
+     *               of images that accompany a main texture, intended to increase rendering speed and reduce aliasing
+     *               artifacts.
+     */
+    public void setMipmap(boolean mipmap) {
+        this.mipmap = mipmap;
+    }
 
-	/**
-	 * @return the a boolean describin whether the source Bitmap or Buffer should be recycled immediately after the
-	 *         OpenGL texture has been created. The main reason for not recycling is Scene caching. Scene caching stores
-	 *         all textures and relevant OpenGL-specific data. This is used when the OpenGL context needs to be
-	 *         restored. The context typically needs to be restored when the application is re-activated or when a live
-	 *         wallpaper is rotated.
-	 */
-	public boolean willRecycle() {
-		return shouldRecycle;
-	}
+    /**
+     * @return the a boolean describin whether the source Bitmap or Buffer should be recycled immediately after the
+     * OpenGL texture has been created. The main reason for not recycling is Scene caching. Scene caching stores
+     * all textures and relevant OpenGL-specific data. This is used when the OpenGL context needs to be
+     * restored. The context typically needs to be restored when the application is re-activated or when a live
+     * wallpaper is rotated.
+     */
+    public boolean willRecycle() {
+        return shouldRecycle;
+    }
 
-	/**
-	 * @param shouldRecycle
-	 *            Indicates whether the source Bitmap or Buffer should be recycled immediately after the OpenGL texture
-	 *            has been created. The main reason for not recycling is Scene caching. Scene caching stores all
-	 *            textures and relevant OpenGL-specific data. This is used when the OpenGL context needs to be restored.
-	 *            The context typically needs to be restored when the application is re-activated or when a live
-	 *            wallpaper is rotated.
-	 */
-	public void shouldRecycle(boolean shouldRecycle) {
-		this.shouldRecycle = shouldRecycle;
-	}
+    /**
+     * @param shouldRecycle Indicates whether the source Bitmap or Buffer should be recycled immediately after the
+     *                      OpenGL texture
+     *                      has been created. The main reason for not recycling is Scene caching. Scene caching stores
+     *                      all
+     *                      textures and relevant OpenGL-specific data. This is used when the OpenGL context needs to
+     *                      be restored.
+     *                      The context typically needs to be restored when the application is re-activated or when a
+     *                      live
+     *                      wallpaper is rotated.
+     */
+    public void shouldRecycle(boolean shouldRecycle) {
+        this.shouldRecycle = shouldRecycle;
+    }
 
-	/**
-	 * @return The texture name that will be used in the shader.
-	 */
-	public String getTextureName() {
-		return textureName;
-	}
+    /**
+     * @return The texture name that will be used in the shader.
+     */
+    public String getTextureName() {
+        return textureName;
+    }
 
-	/**
-	 * @param textureName
-	 *            The texture name that will be used in the shader.
-	 */
-	public void setTextureName(String textureName) {
-		this.textureName = textureName;
-	}
+    /**
+     * @param textureName The texture name that will be used in the shader.
+     */
+    public void setTextureName(String textureName) {
+        this.textureName = textureName;
+    }
 
-	/**
-	 * @return The type of texture {link {@link TextureType}
-	 */
-	public TextureType getTextureType() {
-		return textureType;
-	}
+    /**
+     * @return The type of texture {link {@link TextureType}
+     */
+    public TextureType getTextureType() {
+        return textureType;
+    }
 
-	/**
-	 * @return the Texture wrap type. See {@link WrapType}.
-	 */
-	public WrapType getWrapType() {
-		return wrapType;
-	}
+    /**
+     * @return the Texture wrap type. See {@link WrapType}.
+     */
+    public WrapType getWrapType() {
+        return wrapType;
+    }
 
-	/**
-	 * @param wrapType
-	 *            the texture wrap type. See {@link WrapType}.
-	 */
-	public void setWrapType(WrapType wrapType) {
-		this.wrapType = wrapType;
-	}
+    /**
+     * @param wrapType the texture wrap type. See {@link WrapType}.
+     */
+    public void setWrapType(WrapType wrapType) {
+        this.wrapType = wrapType;
+    }
 
-	/**
-	 * @return Texture filtering type. See {@link FilterType}.
-	 */
-	public FilterType getFilterType() {
-		return filterType;
-	}
+    /**
+     * @return Texture filtering type. See {@link FilterType}.
+     */
+    public FilterType getFilterType() {
+        return filterType;
+    }
 
-	/**
-	 * @param filterType
-	 *            Texture filtering type. See {@link FilterType}.
-	 */
-	public void setFilterType(FilterType filterType) {
-		this.filterType = filterType;
-	}
+    /**
+     * @param filterType Texture filtering type. See {@link FilterType}.
+     */
+    public void setFilterType(FilterType filterType) {
+        this.filterType = filterType;
+    }
 
-	/**
-	 * @return the Bitmap configuration. A bitmap configuration describes how pixels are stored. This affects the
-	 *         quality (color depth) as well as the ability to display transparent/translucent colors. See
-	 *         {@link Config}.
-	 */
-	public Config getBitmapConfig() {
-		return bitmapConfig;
-	}
+    public int getGLTextureType() {
+        return glTextureType;
+    }
 
-	/**
-	 * @param bitmapConfig
-	 *            the Bitmap configuration. A bitmap configuration describes how pixels are stored. This affects the
-	 *            quality (color depth) as well as the ability to display transparent/translucent colors. See
-	 *            {@link Config}.
-	 */
-	public void setBitmapConfig(Config bitmapConfig) {
-		this.bitmapConfig = bitmapConfig;
-	}
-
-	public int getGLTextureType()
-	{
-		return glTextureType;
-	}
-
-	public void setGLTextureType(int glTextureType) {
+    public void setGLTextureType(int glTextureType) {
         this.glTextureType = glTextureType;
-	}
+    }
 
-	public boolean registerMaterial(Material material) {
-		if(isMaterialRegistered(material)) return false;
-		materialsUsingTexture.add(material);
-		return true;
-	}
+    public boolean registerMaterial(Material material) {
+        if (isMaterialRegistered(material)) {
+            return false;
+        }
+        materialsUsingTexture.add(material);
+        return true;
+    }
 
-	public boolean unregisterMaterial(Material material) {
-		return materialsUsingTexture.remove(material);
-	}
+    public boolean unregisterMaterial(Material material) {
+        return materialsUsingTexture.remove(material);
+    }
 
-	private boolean isMaterialRegistered(Material material) {
-		int count = materialsUsingTexture.size();
-		for(int i=0; i<count; i++)
-		{
-			if(materialsUsingTexture.get(i) == material)
-				return true;
-		}
-		return false;
-	}
+    private boolean isMaterialRegistered(Material material) {
+        int count = materialsUsingTexture.size();
+        for (int i = 0; i < count; i++) {
+            if (materialsUsingTexture.get(i) == material) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public void setInfluence(float influence)
-	{
+    public void setInfluence(float influence) {
         this.influence = influence;
-	}
+    }
 
-	public float getInfluence()
-	{
-		return influence;
-	}
+    public float getInfluence() {
+        return influence;
+    }
 
-	public void setRepeatU(float value)
-	{
+    public void setRepeatU(float value) {
         repeat[0] = value;
-	}
+    }
 
-	public float getRepeatU()
-	{
-		return repeat[0];
-	}
+    public float getRepeatU() {
+        return repeat[0];
+    }
 
-	public void setRepeatV(float value)
-	{
+    public void setRepeatV(float value) {
         repeat[1] = value;
-	}
+    }
 
-	public float getRepeatV()
-	{
-		return repeat[1];
-	}
+    public float getRepeatV() {
+        return repeat[1];
+    }
 
-	public void setRepeat(float u, float v)
-	{
+    public void setRepeat(float u, float v) {
         repeat[0] = u;
         repeat[1] = v;
-	}
+    }
 
-	public float[] getRepeat()
-	{
-		return repeat;
-	}
+    public float[] getRepeat() {
+        return repeat;
+    }
 
-	public void enableOffset(boolean value)
-	{
+    public void enableOffset(boolean value) {
         enableOffset = value;
-	}
+    }
 
-	public boolean offsetEnabled()
-	{
-		return enableOffset;
-	}
+    public boolean offsetEnabled() {
+        return enableOffset;
+    }
 
-	public void setOffsetU(float value)
-	{
+    public void setOffsetU(float value) {
         offset[0] = value;
-	}
+    }
 
-	public float getOffsetU()
-	{
-		return offset[0];
-	}
+    public float getOffsetU() {
+        return offset[0];
+    }
 
-	public float[] getOffset()
-	{
-		return offset;
-	}
+    public float[] getOffset() {
+        return offset;
+    }
 
-	public void setOffsetV(float value)
-	{
+    public void setOffsetV(float value) {
         offset[1] = value;
-	}
+    }
 
-	public float getOffsetV()
-	{
-		return offset[1];
-	}
+    public float getOffsetV() {
+        return offset[1];
+    }
 
-	public void setOffset(float u, float v)
-	{
+    public void setOffset(float u, float v) {
         offset[0] = u;
         offset[1] = v;
-	}
+    }
 
-	public void setCompressedTexture(ACompressedTexture compressedTexture)
-	{
+    public void setCompressedTexture(ACompressedTexture compressedTexture) {
         this.compressedTexture = compressedTexture;
-	}
+    }
 
-	public ACompressedTexture getCompressedTexture()
-	{
-		return compressedTexture;
-	}
+    public ACompressedTexture getCompressedTexture() {
+        return compressedTexture;
+    }
 
-	abstract void add() throws TextureException;
-	abstract void remove() throws TextureException;
-	abstract void replace() throws TextureException;
-	abstract void reset() throws TextureException;
+    abstract void add() throws TextureException;
+
+    abstract void remove() throws TextureException;
+
+    abstract void replace() throws TextureException;
+
+    abstract void reset() throws TextureException;
 }

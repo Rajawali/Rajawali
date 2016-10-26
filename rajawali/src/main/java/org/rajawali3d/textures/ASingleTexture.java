@@ -112,7 +112,7 @@ public abstract class ASingleTexture extends ATexture {
         }
 
         if (textureData.hasBitmap()) {
-            setBitmapFormat(textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
+            setTexelFormat(textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
             setWidth(textureData.getBitmap().getWidth());
             setHeight(textureData.getBitmap().getHeight());
         }
@@ -155,15 +155,15 @@ public abstract class ASingleTexture extends ATexture {
             }
 
             if (textureData.hasBuffer()) {
-                if (width == 0 || height == 0 || bitmapFormat == 0) {
+                if (width == 0 || height == 0 || texelFormat == 0) {
                     throw new TextureException(
                             "Could not create ByteBuffer texture. One or more of the following properties haven't "
                             + "been set: width, height or bitmap format");
                 }
-                GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, width, height, 0, bitmapFormat,
+                GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, texelFormat, width, height, 0, texelFormat,
                                     GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
             } else {
-                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmapFormat, textureData.getBitmap(), 0);
+                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, texelFormat, textureData.getBitmap(), 0);
             }
 
             if (isMipmap()) {
@@ -219,18 +219,18 @@ public abstract class ASingleTexture extends ATexture {
                 throw new TextureException(
                         "Texture could not be updated because the texture size is different from the original.");
             }
-            if (bitmapFormat != this.bitmapFormat) {
+            if (bitmapFormat != this.texelFormat) {
                 throw new TextureException(
                         "Texture could not be updated because the bitmap format is different from the original");
             }
 
-            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), this.bitmapFormat, GLES20.GL_UNSIGNED_BYTE);
+            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), this.texelFormat, GLES20.GL_UNSIGNED_BYTE);
         } else if (textureData.hasBuffer()) {
-            if (width == 0 || height == 0 || bitmapFormat == 0) {
+            if (width == 0 || height == 0 || texelFormat == 0) {
                 throw new TextureException(
                         "Could not update ByteBuffer texture. One or more of the following properties haven't been set: width, height or bitmap format");
             }
-            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, width, height, bitmapFormat,
+            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, width, height, texelFormat,
                                    GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
         }
 

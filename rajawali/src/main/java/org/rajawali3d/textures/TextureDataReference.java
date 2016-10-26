@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
+import org.rajawali3d.textures.annotation.DataType;
+import org.rajawali3d.textures.annotation.PixelFormat;
 
 import java.nio.ByteBuffer;
 
@@ -18,10 +20,16 @@ import java.nio.ByteBuffer;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-@ThreadSafe
+@SuppressWarnings("WeakerAccess") @ThreadSafe
 public class TextureDataReference {
 
     private final Object lock = new Object();
+
+    @PixelFormat
+    private final int pixelFormat;
+
+    @DataType
+    private final int dataType;
 
     @GuardedBy("lock")
     @Nullable
@@ -42,12 +50,17 @@ public class TextureDataReference {
      * bitmaps are always preferred if available (non-compressed textures) so generally you will only want to specify
      * one or the other.
      *
-     * @param bitmap {@link Bitmap} to hold a reference to.
-     * @param buffer {@link ByteBuffer} to hold a reference to.
+     * @param bitmap      {@link Bitmap} to hold a reference to.
+     * @param buffer      {@link ByteBuffer} to hold a reference to.
+     * @param pixelFormat {@link PixelFormat} The format of the pixel data.
+     * @param dataType    {@link DataType} The internal data type of the pixel data.
      */
-    public TextureDataReference(@Nullable Bitmap bitmap, @Nullable ByteBuffer buffer) {
+    public TextureDataReference(@Nullable Bitmap bitmap, @Nullable ByteBuffer buffer, @PixelFormat int pixelFormat,
+                                @DataType int dataType) {
         this.bitmap = bitmap;
         this.byteBuffer = buffer;
+        this.pixelFormat = pixelFormat;
+        this.dataType = dataType;
         referenceCount = 0;
         isDestroyed = false;
     }
@@ -86,6 +99,26 @@ public class TextureDataReference {
     }
 
     /**
+     * Retrieves the pixel format for the referenced data.
+     *
+     * @return {@link PixelFormat} The format of the pixel data held by this reference.
+     */
+    @PixelFormat
+    public int getPixelFormat() {
+        return pixelFormat;
+    }
+
+    /**
+     * Retrieves the data type for the referenced data.
+     *
+     * @return {@link DataType} The data type of the pixel data held by this reference.
+     */
+    @DataType
+    public int getDataType() {
+        return dataType;
+    }
+
+    /**
      * Increments the reference count for this {@link TextureDataReference} by 1.
      */
     public void holdReference() {
@@ -119,33 +152,39 @@ public class TextureDataReference {
      * Retrieves the {@link Bitmap} held by this reference or throws an exception if there is none.
      *
      * @return The {@link Bitmap}.
+     *
      * @throws TextureException thrown if there is no bitmap held by this reference or it has been destroyed.
      */
     @NonNull
     public Bitmap getBitmap() throws TextureException {
-        if (isDestroyed) {
-            throw new TextureException("Texture data has been destroyed!");
+        synchronized (lock) {
+            if (isDestroyed) {
+                throw new TextureException("Texture data has been destroyed!");
+            }
+            if (bitmap == null) {
+                throw new TextureException("Texture data not in Bitmap form.");
+            }
+            return bitmap;
         }
-        if (bitmap == null) {
-            throw new TextureException("Texture data not in Bitmap form.");
-        }
-        return bitmap;
     }
 
     /**
      * Retrieves the {@link ByteBuffer} held by this reference or throws an exception if there is none.
      *
      * @return The {@link ByteBuffer}
+     *
      * @throws TextureException thrown if there is no byte buffer held by this reference or it has been destroyed.
      */
     @NonNull
     public ByteBuffer getByteBuffer() throws TextureException {
-        if (isDestroyed) {
-            throw new TextureException("Texture data has been destroyed!");
+        synchronized (lock) {
+            if (isDestroyed) {
+                throw new TextureException("Texture data has been destroyed!");
+            }
+            if (byteBuffer == null) {
+                throw new TextureException("Texture data not in ByteBuffer form.");
+            }
+            return byteBuffer;
         }
-        if (byteBuffer == null) {
-            throw new TextureException("Texture data not in ByteBuffer form.");
-        }
-        return byteBuffer;
     }
 }

@@ -34,6 +34,8 @@ import java.lang.annotation.RetentionPolicy;
 public final class Intersector {
 
     /**
+     * Definition of possible intersection results.
+     *
      * @author Jared Woolston (Jared.Woolston@gmail.com)
      */
     @IntDef({ INSIDE, OUTSIDE, INTERSECT })
