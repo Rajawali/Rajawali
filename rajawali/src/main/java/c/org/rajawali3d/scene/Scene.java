@@ -15,11 +15,8 @@ import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.SceneGraph;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
-import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.FrameTask;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.RajLog;
 
@@ -108,8 +105,8 @@ public class Scene implements Renderable {
         postCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
         frameTaskQueue = new LinkedList<>();
 
-        textureManager = new TextureManager();
-        materialManager = new MaterialManager();
+        textureManager = new TextureManager(this);
+        materialManager = new MaterialManager(this);
 
         initialize();
     }
@@ -272,71 +269,23 @@ public class Scene implements Renderable {
     }
 
     /**
-     * Adds a texture to this scene. This can be called from any thread. If the calling thread is the GL thread, this
-     * will be executed immediately, otherwise it will be queued for execution on the GL thread.
+     * Adds a {@link FrameTask} to the internal queue to be executed. If the calling thread is the render thread, the
+     * task will be executed now, otherwise it will be queued for execution at the next frame start.
      *
-     * @param texture {@link ATexture} to be added.
+     * @param task {@link FrameTask} to execute.
+     * @return {@code true} If the task was successfully accepted for execution.
      */
-    public void addTexture(@NonNull final ATexture texture) {
-        // The renderer is not null, so we can add the texture directly now
-        final FrameTask task = getTextureManager().addTexture(texture);
-        // Now queue the GL addition task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Removes a texture from this scene. This can be called from any thread. If the calling thread is the GL thread,
-     * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
-     *
-     * @param texture {@link ATexture} to be removed.
-     */
-    public void removeTexture(@NonNull final ATexture texture) {
-        // The renderer is not null, so we can remove the texture directly now
-        final FrameTask task = getTextureManager().removeTexture(texture);
-        // Now queue the GL removal task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Replaces a texture in this scene. This can be called from any thread. If the calling thread is the GL thread,
-     * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
-     *
-     * @param texture {@link ATexture} to be replaced.
-     *
-     * @throws TextureException Thrown if an internal error occurs while trying to replace the texture.
-     */
-    public void replaceTexture(@NonNull final ATexture texture) throws TextureException {
-        // The renderer is not null, so we can replace the texture directly now
-        final FrameTask task = getTextureManager().replaceTexture(texture);
-        // Now queue the GL removal task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Adds a material to this scene. This can be called from any thread. If the calling thread is the GL thread, this
-     * will be executed immediately, otherwise it will be queued for execution on the GL thread.
-     *
-     * @param material {@link Material} to be added.
-     */
-    public void addMaterial(@NonNull final Material material) {
-
-        // The renderer is not null, so we can add the material directly now
-        final FrameTask task = getMaterialManager().addMaterial(material);
-        // Now queue the GL addition task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Removes a material from this scene. This can be called from any thread. If the calling thread is the GL thread,
-     * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
-     *
-     * @param material {@link ATexture} to be removed.
-     */
-    public void removeMaterial(@NonNull final Material material) {
-        // The renderer is not null, so we can remove the material directly now
-        final FrameTask task = getMaterialManager().removeMaterial(material);
-        // Now queue the GL removal task
-        internalOfferTask(task);
+    public boolean offerTask(FrameTask task) {
+        if (renderer != null && renderer.isGLThread()) {
+            // If we have a renderer and the calling thread is the render thread, do the task now.
+            task.run();
+            return true;
+        } else {
+            // This cant be run now and must be queued.
+            synchronized (frameTaskQueue) {
+                return frameTaskQueue.offer(task);
+            }
+        }
     }
 
     /**
@@ -400,27 +349,6 @@ public class Scene implements Renderable {
     @SuppressWarnings("WeakerAccess")
     protected void onRendererCleared() {
 
-    }
-
-    /**
-     * Adds a {@link FrameTask} to the internal queue to be executed. If the calling thread is the render thread, the
-     * task will be executed now, otherwise it will be queued for execution at the next frame start.
-     *
-     * @param task {@link FrameTask} to execute.
-     * @return {@code true} If the task was successfully accepted for execution.
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected boolean internalOfferTask(FrameTask task) {
-        if (renderer != null && renderer.isGLThread()) {
-            // If we have a renderer and the calling thread is the render thread, do the task now.
-            task.run();
-            return true;
-        } else {
-            // This cant be run now and must be queued.
-            synchronized (frameTaskQueue) {
-                return frameTaskQueue.offer(task);
-            }
-        }
     }
 
     /**
