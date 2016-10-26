@@ -18,6 +18,7 @@ import android.media.MediaPlayer;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.view.Surface;
+import org.rajawali3d.textures.annotation.Type;
 
 import java.io.IOException;
 
@@ -37,20 +38,20 @@ public class StreamingTexture extends ATexture {
     SurfaceTexture.OnFrameAvailableListener mOnFrameAvailableListener;
 
     public StreamingTexture(String textureName, MediaPlayer mediaPlayer) {
-        super(TextureType.VIDEO_TEXTURE, textureName);
+        super(Type.VIDEO_TEXTURE, textureName);
         mMediaPlayer = mediaPlayer;
         setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
     }
 
     public StreamingTexture(String textureName, Camera camera, SurfaceTexture.OnFrameAvailableListener onFrameAvailableListener) {
-        super(TextureType.VIDEO_TEXTURE, textureName);
+        super(Type.VIDEO_TEXTURE, textureName);
         mCamera = camera;
         mOnFrameAvailableListener = onFrameAvailableListener;
         setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
     }
 
     public StreamingTexture(String textureName, ISurfaceListener listener) {
-        super(TextureType.VIDEO_TEXTURE, textureName);
+        super(Type.VIDEO_TEXTURE, textureName);
         mSurfaceListener = listener;
         setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
     }

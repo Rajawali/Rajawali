@@ -14,6 +14,7 @@ package org.rajawali3d.textures;
 
 import android.opengl.GLES20;
 import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
 
 public class RenderTargetTexture extends ATexture {
@@ -70,7 +71,7 @@ public class RenderTargetTexture extends ATexture {
 
     public RenderTargetTexture(String textureName, int width, int height, RenderTargetTextureFormat internalFormat,
                                RenderTargetTextureFormat format, RenderTargetTextureType type) {
-        super(TextureType.RENDER_TARGET, textureName);
+        super(Type.RENDER_TARGET, textureName);
         mInternalFormat = internalFormat;
         mFormat = format;
         mType = type;

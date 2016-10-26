@@ -18,6 +18,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
 import org.rajawali3d.textures.annotation.TexelFormat;
+import org.rajawali3d.textures.annotation.Type.TextureType;
 import org.rajawali3d.textures.annotation.Wrap;
 import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
@@ -31,23 +32,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class ATexture {
-
-    /**
-     * Texture types
-     */
-    public enum TextureType {
-        DIFFUSE,
-        NORMAL,
-        SPECULAR,
-        ALPHA,
-        RENDER_TARGET,
-        DEPTH_BUFFER,
-        LOOKUP,
-        CUBE_MAP,
-        SPHERE_MAP,
-        VIDEO_TEXTURE,
-        COMPRESSED
-    }
 
     /**
      * The GL texture id that is used by Rajawali.
@@ -98,9 +82,11 @@ public abstract class ATexture {
     @NonNull protected String textureName;
 
     /**
-     * The type of texture {link {@link TextureType}.
+     * The type of texture
+     *
+     * @see {@link TextureType}.
      */
-    protected TextureType textureType;
+    @TextureType protected int textureType;
 
     /**
      * Texture wrap type.
@@ -141,7 +127,7 @@ public abstract class ATexture {
      *
      * @param textureType
      */
-    public ATexture(TextureType textureType, @NonNull String textureName) {
+    public ATexture(@TextureType int textureType, @NonNull String textureName) {
         this();
         this.textureType = textureType;
         this.textureName = textureName;
@@ -151,7 +137,7 @@ public abstract class ATexture {
         filterType = Filter.LINEAR;
     }
 
-    public ATexture(TextureType textureType, @NonNull String textureName, ACompressedTexture compressedTexture) {
+    public ATexture(@TextureType int textureType, @NonNull String textureName, ACompressedTexture compressedTexture) {
         this(textureType, textureName);
         setCompressedTexture(compressedTexture);
     }
@@ -315,9 +301,12 @@ public abstract class ATexture {
     }
 
     /**
-     * @return The type of texture {link {@link TextureType}
+     * @return The type of texture
+     *
+     * @see {@link TextureType}
      */
-    public TextureType getTextureType() {
+    @TextureType
+    public int getTextureType() {
         return textureType;
     }
 

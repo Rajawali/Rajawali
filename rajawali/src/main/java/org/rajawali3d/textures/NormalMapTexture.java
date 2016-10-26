@@ -15,6 +15,7 @@ package org.rajawali3d.textures;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import org.rajawali3d.textures.annotation.Type;
 
 public class NormalMapTexture extends ASingleTexture {
 	public NormalMapTexture(NormalMapTexture other)
@@ -24,23 +25,23 @@ public class NormalMapTexture extends ASingleTexture {
 
 	public NormalMapTexture(String textureName)
 	{
-		super(TextureType.NORMAL, textureName);
+		super(Type.NORMAL, textureName);
 	}
 
 	public NormalMapTexture(String textureName, @NonNull Context context, int resourceId)
 	{
-		super(TextureType.NORMAL, textureName);
+		super(Type.NORMAL, textureName);
 		setResourceId(context, resourceId);
 	}
 
 	public NormalMapTexture(String textureName, TextureDataReference textureData)
 	{
-		super(TextureType.NORMAL, textureName, textureData);
+		super(Type.NORMAL, textureName, textureData);
 	}
 
 	public NormalMapTexture(String textureName, ACompressedTexture compressedTexture)
 	{
-		super(TextureType.NORMAL, textureName, compressedTexture);
+		super(Type.NORMAL, textureName, compressedTexture);
 	}
 
 	public NormalMapTexture clone() {

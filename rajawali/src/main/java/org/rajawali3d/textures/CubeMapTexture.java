@@ -17,6 +17,7 @@ import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
 
 import java.nio.ByteBuffer;
@@ -41,31 +42,31 @@ public class CubeMapTexture extends AMultiTexture {
     }
 
     public CubeMapTexture(String textureName) {
-        super(TextureType.CUBE_MAP, textureName);
+        super(Type.CUBE_MAP, textureName);
         setWrapType(Wrap.CLAMP);
         setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, int[] resourceIds) {
-        super(TextureType.CUBE_MAP, textureName, resourceIds);
+        super(Type.CUBE_MAP, textureName, resourceIds);
         setWrapType(Wrap.CLAMP);
         setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, Bitmap[] bitmaps) {
-        super(TextureType.CUBE_MAP, textureName, bitmaps);
+        super(Type.CUBE_MAP, textureName, bitmaps);
         setWrapType(Wrap.CLAMP);
         setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, ByteBuffer[] byteBuffers) {
-        super(TextureType.CUBE_MAP, textureName, byteBuffers);
+        super(Type.CUBE_MAP, textureName, byteBuffers);
         setWrapType(Wrap.CLAMP);
         setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, ACompressedTexture[] compressedTextures) {
-        super(TextureType.CUBE_MAP, textureName, compressedTextures);
+        super(Type.CUBE_MAP, textureName, compressedTextures);
         mHasCompressedTextures = true;
         setWrapType(Wrap.CLAMP);
         setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);

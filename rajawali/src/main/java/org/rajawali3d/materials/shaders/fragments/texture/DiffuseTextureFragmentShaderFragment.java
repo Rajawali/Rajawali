@@ -14,7 +14,7 @@ package org.rajawali3d.materials.shaders.fragments.texture;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.ATexture.TextureType;
+import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 			if(texture.getWrapType() == Wrap.REPEAT)
 				textureCoord.assignMultiply(getGlobal(DefaultShaderVar.U_REPEAT, i));
 
-			if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
+			if(texture.getTextureType() == Type.VIDEO_TEXTURE)
 				texColor.assign(texture2D(muVideoTextures[i], textureCoord));
 			else
 				texColor.assign(texture2D(muTextures[i], textureCoord));

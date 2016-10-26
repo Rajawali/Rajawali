@@ -12,11 +12,12 @@
  */
 package org.rajawali3d.textures;
 
-import java.nio.ByteBuffer;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import org.rajawali3d.textures.annotation.Type.TextureType;
+
+import java.nio.ByteBuffer;
 
 
 public abstract class AMultiTexture extends ATexture {
@@ -29,29 +30,29 @@ public abstract class AMultiTexture extends ATexture {
 		super();
 	}
 
-	public AMultiTexture(TextureType textureType, String textureName) {
+	public AMultiTexture(@TextureType int textureType, String textureName) {
 		super(textureType, textureName);
 	}
 
-	public AMultiTexture(TextureType textureType, String textureName, int[] resourceIds)
+	public AMultiTexture(@TextureType int textureType, String textureName, int[] resourceIds)
 	{
 		super(textureType, textureName);
 		setResourceIds(resourceIds);
 	}
 
-	public AMultiTexture(TextureType textureType, String textureName, Bitmap[] bitmaps)
+	public AMultiTexture(@TextureType int textureType, String textureName, Bitmap[] bitmaps)
 	{
 		super(textureType, textureName);
 		setBitmaps(bitmaps);
 	}
 
-	public AMultiTexture(TextureType textureType, String textureName, ByteBuffer[] byteBuffers)
+	public AMultiTexture(@TextureType int textureType, String textureName, ByteBuffer[] byteBuffers)
 	{
 		super(textureType, textureName);
 		setByteBuffers(byteBuffers);
 	}
 
-    public AMultiTexture(TextureType textureType, String textureName, ACompressedTexture[] compressedTextures)
+    public AMultiTexture(@TextureType int textureType, String textureName, ACompressedTexture[] compressedTextures)
     {
         super(textureType, textureName);
         setCompressedTextures(compressedTextures);

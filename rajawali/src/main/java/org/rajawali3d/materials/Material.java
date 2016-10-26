@@ -12,6 +12,15 @@
  */
 package org.rajawali3d.materials;
 
+import static org.rajawali3d.textures.annotation.Type.ALPHA;
+import static org.rajawali3d.textures.annotation.Type.CUBE_MAP;
+import static org.rajawali3d.textures.annotation.Type.DIFFUSE;
+import static org.rajawali3d.textures.annotation.Type.NORMAL;
+import static org.rajawali3d.textures.annotation.Type.RENDER_TARGET;
+import static org.rajawali3d.textures.annotation.Type.SPECULAR;
+import static org.rajawali3d.textures.annotation.Type.SPHERE_MAP;
+import static org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
+
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;

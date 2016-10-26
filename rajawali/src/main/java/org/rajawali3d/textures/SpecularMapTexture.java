@@ -15,6 +15,7 @@ package org.rajawali3d.textures;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import org.rajawali3d.textures.annotation.Type;
 
 public class SpecularMapTexture extends ASingleTexture {
 	public SpecularMapTexture(SpecularMapTexture other)
@@ -24,23 +25,23 @@ public class SpecularMapTexture extends ASingleTexture {
 
 	public SpecularMapTexture(String textureName)
 	{
-		super(TextureType.SPECULAR, textureName);
+		super(Type.SPECULAR, textureName);
 	}
 
 	public SpecularMapTexture(String textureName, @NonNull Context context, int resourceId)
 	{
-		super(TextureType.SPECULAR, textureName);
+		super(Type.SPECULAR, textureName);
 		setResourceId(context, resourceId);
 	}
 
 	public SpecularMapTexture(String textureName, TextureDataReference textureData)
 	{
-		super(TextureType.SPECULAR, textureName, textureData);
+		super(Type.SPECULAR, textureName, textureData);
 	}
 
 	public SpecularMapTexture(String textureName, ACompressedTexture compressedTexture)
 	{
-		super(TextureType.SPECULAR, textureName, compressedTexture);
+		super(Type.SPECULAR, textureName, compressedTexture);
 	}
 
 	public SpecularMapTexture clone() {

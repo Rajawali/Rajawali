@@ -14,6 +14,7 @@ package org.rajawali3d.textures;
 
 import android.opengl.GLES20;
 import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
 
 import java.nio.ByteBuffer;
@@ -48,7 +49,7 @@ public abstract class ACompressedTexture extends ATexture {
 
 	protected ACompressedTexture() {
 		super();
-		textureType = TextureType.COMPRESSED;
+		textureType = Type.COMPRESSED;
 		wrapType = Wrap.REPEAT;
 	}
 
@@ -61,7 +62,7 @@ public abstract class ACompressedTexture extends ATexture {
 	public ACompressedTexture(String textureName)
 	{
 		this();
-		textureType = TextureType.COMPRESSED;
+		textureType = Type.COMPRESSED;
 		this.textureName = textureName;
 	}
 

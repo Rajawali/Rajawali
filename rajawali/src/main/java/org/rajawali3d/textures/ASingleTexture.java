@@ -21,6 +21,7 @@ import android.opengl.GLUtils;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
+import org.rajawali3d.textures.annotation.Type.TextureType;
 import org.rajawali3d.textures.annotation.Wrap;
 import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
@@ -37,21 +38,21 @@ public abstract class ASingleTexture extends ATexture {
         super();
     }
 
-    public ASingleTexture(TextureType textureType, String textureName) {
+    public ASingleTexture(@TextureType int textureType, String textureName) {
         super(textureType, textureName);
     }
 
-    public ASingleTexture(TextureType textureType, @NonNull Context context, int resourceId) {
+    public ASingleTexture(@TextureType int textureType, @NonNull Context context, int resourceId) {
         this(textureType, context.getResources().getResourceName(resourceId));
         setResourceId(context, resourceId);
     }
 
-    public ASingleTexture(TextureType textureType, String textureName, TextureDataReference textureData) {
+    public ASingleTexture(@TextureType int textureType, String textureName, TextureDataReference textureData) {
         this(textureType, textureName);
         setTextureData(textureData);
     }
 
-    public ASingleTexture(TextureType textureType, String textureName, ACompressedTexture compressedTexture) {
+    public ASingleTexture(@TextureType int textureType, String textureName, ACompressedTexture compressedTexture) {
         super(textureType, textureName, compressedTexture);
     }
 

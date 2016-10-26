@@ -15,6 +15,7 @@ package org.rajawali3d.textures;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import org.rajawali3d.textures.annotation.Type;
 
 public class Texture extends ASingleTexture {
 	public Texture(Texture other)
@@ -24,18 +25,18 @@ public class Texture extends ASingleTexture {
 
 	public Texture(String textureName)
 	{
-		super(TextureType.DIFFUSE, textureName);
+		super(Type.DIFFUSE, textureName);
 	}
 
 	public Texture(String textureName, @NonNull Context context, int resourceId)
 	{
-		super(TextureType.DIFFUSE, textureName);
+		super(Type.DIFFUSE, textureName);
 		setResourceId(context, resourceId);
 	}
 
 	public Texture(String textureName, TextureDataReference textureData)
 	{
-		super(TextureType.DIFFUSE, textureName, textureData);
+		super(Type.DIFFUSE, textureName, textureData);
 	}
 
 	/*public Texture(String textureName, TextureAtlas atlas)
@@ -45,7 +46,7 @@ public class Texture extends ASingleTexture {
 
 	public Texture(String textureName, ACompressedTexture compressedTexture)
 	{
-		super(TextureType.DIFFUSE, textureName, compressedTexture);
+		super(Type.DIFFUSE, textureName, compressedTexture);
 	}
 
 	public Texture clone() {

@@ -16,7 +16,7 @@ import android.opengl.GLES20;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.ATexture.TextureType;
+import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
 
 import java.util.List;
@@ -53,9 +53,9 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
-			if(texture.getTextureType() == TextureType.CUBE_MAP)
+			if(texture.getTextureType() == Type.CUBE_MAP)
 				cubeTextureCount++;
-			else if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
+			else if(texture.getTextureType() == Type.VIDEO_TEXTURE)
 				videoTextureCount++;
 			else
 				textureCount++;
@@ -82,9 +82,9 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		for(int i=0; i<mTextures.size(); i++)
 		{
 			ATexture texture = mTextures.get(i);
-			if(texture.getTextureType() == TextureType.CUBE_MAP)
+			if(texture.getTextureType() == Type.CUBE_MAP)
 				muCubeTextures[textureCount++] = (RSamplerCube) addUniform(texture.getTextureName(), DataType.SAMPLERCUBE);
-			else if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
+			else if(texture.getTextureType() == Type.VIDEO_TEXTURE)
 				muVideoTextures[videoTextureCount++] = (RSamplerExternalOES) addUniform(texture.getTextureName(), DataType.SAMPLER_EXTERNAL_EOS);
 			else
 				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);
