@@ -2,6 +2,7 @@ package org.rajawali3d.textures.annotation;
 
 import android.support.annotation.IntDef;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -24,6 +25,7 @@ public interface Filter {
      * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
      * GL_EXT_texture_filter_anisotropic</a>
      */
+    @Documented
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({NEAREST, LINEAR, ANISOTROPIC})
     @interface FilterType {}

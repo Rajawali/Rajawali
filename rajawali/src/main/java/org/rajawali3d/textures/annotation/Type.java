@@ -2,6 +2,7 @@ package org.rajawali3d.textures.annotation;
 
 import android.support.annotation.IntDef;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -23,6 +24,7 @@ public interface Type {
     int VIDEO_TEXTURE = 9;
     int COMPRESSED = 10;
 
+    @Documented
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({})
     @interface TextureType {}

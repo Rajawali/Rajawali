@@ -2,6 +2,7 @@ package org.rajawali3d.textures.annotation;
 
 import android.support.annotation.IntDef;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -30,6 +31,7 @@ public interface Wrap {
      * configurations consist of a bitwise OR'ing of one value from each of the coordinates (S, T, R). There is no
      * compile time check on making sure each coordinate is used only once.
      */
+    @Documented
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true,
         value = {

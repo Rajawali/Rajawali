@@ -6,6 +6,7 @@ import android.opengl.GLES30;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.IntDef;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.Buffer;
@@ -17,6 +18,7 @@ import java.nio.Buffer;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  * @see <a href="https://www.khronos.org/opengles/sdk/docs/man3/html/glTexImage2D.xhtml">glTexImage2D</a>
  */
+@Documented
 @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({ GLES20.GL_RGB, GLES20.GL_RGBA, GLES20.GL_LUMINANCE_ALPHA, GLES20.GL_LUMINANCE, GLES20.GL_ALPHA,
