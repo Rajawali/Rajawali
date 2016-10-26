@@ -261,8 +261,7 @@ public abstract class ATexture {
 
     /**
      * Sets the configured height of this {@link ATexture}. Once the {@link ATexture} has been pushed, using this
-     * method
-     * require a update push to the GPU.
+     * method require a update push to the GPU.
      *
      * @param height {@code int} The height in texels.
      */
