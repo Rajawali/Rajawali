@@ -1,4 +1,4 @@
-package c.org.rajawali3d.renderer;
+package c.org.rajawali3d.engine;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
@@ -7,8 +7,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.WindowManager;
-import c.org.rajawali3d.annotations.GLThread;
-import c.org.rajawali3d.scene.Scene;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.R;
@@ -35,20 +33,29 @@ import javax.microedition.khronos.opengles.GL10;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @NotThreadSafe
-public class RendererImpl implements Renderer, ISurfaceRenderer {
+public class EngineImpl implements Engine, ISurfaceRenderer {
 
-    private static final String TAG = "RendererImpl";
+    private static final String TAG = "EngineImpl";
 
-    @GuardedBy("renderables")
-    protected final List<Renderable> renderables; // List of all renderable objects this renderer is aware of.
+    // List of all RenderModels registered with the Engine
+    @GuardedBy("renderModels")
+    protected final List<RenderModel> renderModels;
+
+    // List of all RenderViews registered with the Engine
+    @GuardedBy("renderViews")
+    protected final List<RenderView> renderViews;
+
+    // List of all SurfaceCallbacks registered with the Engine
+    @GuardedBy("surfaceCallbacks")
+    protected final List<SurfaceCallback> surfaceCallbacks;
 
     @NonNull
-    protected Context context; // Context the renderer is running in
+    protected Context context; // Android context the engine is running in
 
     protected ISurface surface; // The rendering surface
 
-    protected int defaultViewportWidth;
-    protected int defaultViewportHeight; // The default width and height of the GL viewport
+    protected int surfaceWidth;
+    protected int surfaceHeight; // The width and height of the surface
 
     // Frame related members
     protected ScheduledExecutorService timer; // Timer used to schedule drawing
@@ -56,36 +63,30 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     protected int frameCount; // Used for determining FPS
     protected double lastMeasuredFPS; // Last measured FPS value
     protected OnFPSUpdateListener fpsUpdateListener; // Listener to notify of new FPS values.
-    private long startTime = System.nanoTime(); // Used for determining FPS
-    private long lastRender; // Time of last rendering. Used for animation delta time
-    private long renderStartTime;
+    private long framesStartTime; // Time of last startFrames()
+    private long fpsStartTime = System.nanoTime(); // Used for determining FPS
+    private long lastFrameTime; // Time of last frame. Used for animation delta time
 
     // In case we cannot parse the version number, assume OpenGL ES 2.0
     protected int glesMajorVersion = 2; // The GL ES major version of the surface
     protected int glesMinorVersion = 0; // The GL ES minor version of the surface
 
     /**
-     * The scene currently being displayed.
-     */
-    @GuardedBy("nextRenderableLock")
-    private Renderable currentRenderable;
-
-    private Renderable nextRenderable; //The scene the renderer should switch to on the next frame.
-    private final Object nextRenderableLock = new Object(); //Scene switching lock
-
-    /**
-     * The thread id of the GL thread for this {@link Renderer}. This should be set once and left untouched.
+     * The thread id of the GL thread for this {@link Engine}. This should be set once and left untouched.
      */
     private AtomicLong glThread;
 
-    public RendererImpl(@NonNull Context context) {
+    public EngineImpl(@NonNull Context context) {
         RajLog.i(context.getString(R.string.renderer_start_header));
         RajLog.i(context.getString(R.string.renderer_start_message));
 
         this.context = context;
         frameRate = getRefreshRate();
 
-        renderables = Collections.synchronizedList(new ArrayList<Renderable>());
+        renderModels = Collections.synchronizedList(new ArrayList<RenderModel>());
+        renderViews = Collections.synchronizedList(new ArrayList<RenderView>());
+
+        surfaceCallbacks = Collections.synchronizedList(new ArrayList<SurfaceCallback>());
     }
 
     public double getRefreshRate() {
@@ -93,18 +94,29 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     }
 
     @Override
-    public void startRendering() {
-        RajLog.d("startRendering()");
-        renderStartTime = System.nanoTime();
-        lastRender = renderStartTime;
+    public void startFrames() {
+        RajLog.d("startFrames()");
+        framesStartTime = System.nanoTime();
+        lastFrameTime = framesStartTime;
         if (timer != null) return;
         timer = Executors.newScheduledThreadPool(1);
-        timer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / frameRate), TimeUnit.MILLISECONDS);
+        timer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / frameRate),
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public boolean stopRendering() {
-        RajLog.d("stopRendering()");
+    public long getFramesStartTime() {
+        return framesStartTime;
+    }
+
+    @Override
+    public long getFramesElapsedTime() {
+        return System.nanoTime() - framesStartTime;
+    }
+
+    @Override
+    public boolean stopFrames() {
+        RajLog.d("stopFrames()");
         if (timer != null) {
             timer.shutdownNow();
             timer = null;
@@ -124,13 +136,23 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     }
 
     @Override
-    public int getDefaultViewportWidth() {
-        return defaultViewportWidth;
+    public void addSurfaceCallback(SurfaceCallback listener) {
+        surfaceCallbacks.add(listener);
     }
 
     @Override
-    public int getDefaultViewportHeight() {
-        return defaultViewportHeight;
+    public void removeSurfaceCallback(SurfaceCallback listener) {
+        surfaceCallbacks.remove(listener);
+    }
+
+    @Override
+    public int getSurfaceWidth() {
+        return surfaceWidth;
+    }
+
+    @Override
+    public int getSurfaceHeight() {
+        return surfaceHeight;
     }
 
     @Override
@@ -139,25 +161,27 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     }
 
     @Override
-    public void setCurrentRenderable(@NonNull Renderable renderable) {
-        if (!renderables.contains(renderable)) {
-            addRenderable(renderable);
-        }
-        synchronized (nextRenderableLock) {
-            nextRenderable = renderable;
-        }
+    public void addRenderModel(@NonNull RenderModel renderModel) {
+        renderModel.setEngine(this);
+        renderModels.add(renderModel);
     }
 
     @Override
-    public void addRenderable(@NonNull Renderable renderable) {
-        renderable.setRenderer(this);
-        renderables.add(renderable);
+    public void removeRenderModel(@NonNull RenderModel renderModel) {
+        renderModel.setEngine(this);
+        renderModels.remove(renderModel);
     }
 
     @Override
-    public void removeRenderable(@NonNull Renderable renderable) {
-        renderable.setRenderer(null);
-        renderables.remove(renderable);
+    public void addRenderView(@NonNull RenderView renderView) {
+        renderView.setEngine(this);
+        renderViews.add(renderView);
+    }
+
+    @Override
+    public void removeRenderView(@NonNull RenderView renderView) {
+        renderView.setEngine(null);
+        renderViews.remove(renderView);
     }
 
     @Override
@@ -173,9 +197,9 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     @Override
     public void setFrameRate(double rate) {
         frameRate = rate;
-        if (stopRendering()) {
+        if (stopFrames()) {
             // Restart timer with new frequency
-            startRendering();
+            startFrames();
         }
     }
 
@@ -191,12 +215,12 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
     @Override
     public void onPause() {
-        stopRendering();
+        stopFrames();
     }
 
     @Override
     public void onResume() {
-        startRendering();
+        startFrames();
     }
 
     @Override
@@ -220,56 +244,93 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
 
     @Override
     public void onRenderSurfaceDestroyed(SurfaceTexture surface) {
-        stopRendering();
+        stopFrames();
     }
 
     @Override
     public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
-        defaultViewportWidth = width;
-        defaultViewportHeight = height;
+        surfaceWidth = width;
+        surfaceHeight = height;
 
-        synchronized (renderables) {
-            for (Renderable renderable : renderables) {
-                renderable.onRenderSurfaceSizeChanged();
+        synchronized (surfaceCallbacks) {
+            for (SurfaceCallback surfaceListener : surfaceCallbacks) {
+                surfaceListener.onSurfaceSizeChanged(width, height);
             }
         }
 
-        startRendering();
+        startFrames();
     }
 
+    /**
+     * TODO Override this method in a stereo renderer to call renderViews() for each Eye
+     *
+     * @param gl {@link GL10} for rendering.
+     */
     @Override
     public void onRenderFrame(GL10 gl) {
-        synchronized (nextRenderableLock) {
-            // Check if we need to switch the scene, and if so, do it.
-            if (nextRenderable != null) {
-                switchRenderable(nextRenderable);
-                nextRenderable = null;
-            }
-        }
 
         final long currentTime = System.nanoTime();
-        final long elapsedRenderTime = currentTime - renderStartTime;
-        final double deltaTime = (currentTime - lastRender) / 1e9;
-        lastRender = currentTime;
+        final double deltaTime = (currentTime - lastFrameTime) / 1e9;
+        lastFrameTime = currentTime;
 
-        try {
-            onRender(elapsedRenderTime, deltaTime);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Frame skipped due to thread interruption.");
-        }
+        startFrame(deltaTime);
+
+        renderViews();
+
+        endFrame(deltaTime);
 
         ++frameCount;
         if (frameCount % 50 == 0) {
             long now = System.nanoTime();
-            double elapsedS = (now - startTime) / 1.0e9;
+            double elapsedS = (now - fpsStartTime) / 1.0e9;
             double msPerFrame = (1000 * elapsedS / frameCount);
             lastMeasuredFPS = 1000 / msPerFrame;
 
             frameCount = 0;
-            startTime = now;
+            fpsStartTime = now;
 
             if (fpsUpdateListener != null)
                 fpsUpdateListener.onFPSUpdate(lastMeasuredFPS); // Update the FPS listener
+        }
+    }
+
+    protected void startFrame(double deltaTime) {
+
+        // TODO Any engine-level frame tasks, e.g. for adding/removing models or views?
+
+        try {
+            for (RenderModel renderModel : renderModels) {
+                renderModel.onFrameStart(deltaTime);
+            }
+            for (RenderView renderView : renderViews) {
+                renderView.onFrameStart(deltaTime);
+            }
+        } catch (InterruptedException e) {
+            Log.e(TAG, "startFrame(): Frame skipped due to thread interruption.");
+        }
+    }
+
+    protected void renderViews() {
+        try {
+            for (RenderView renderView : renderViews) {
+                renderView.onRenderView();
+            }
+        } catch (InterruptedException e) {
+            Log.e(TAG, "renderViews(): Frame skipped due to thread interruption.");
+        }
+    }
+
+    protected void endFrame(double deltaTime) {
+        try {
+            // TODO not sure if order matters here, just swapping from startFrame() on principle...
+            for (RenderView renderView : renderViews) {
+                renderView.onFrameEnd(deltaTime);
+            }
+            for (RenderModel renderModel : renderModels) {
+                renderModel.onFrameEnd(deltaTime);
+            }
+        } catch (InterruptedException e) {
+            Log.e(TAG, "endFrame(): Frame skipped due to thread interruption.");
         }
     }
 
@@ -281,44 +342,6 @@ public class RendererImpl implements Renderer, ISurfaceRenderer {
     @Override
     public void onTouchEvent(MotionEvent event) {
 
-    }
-
-    /**
-     * Called by {@link #onRenderFrame(GL10)} to render the next frame. This is called prior to the current scene's
-     * {@link Scene#render(long, double)} method.
-     *
-     * @param ellapsedRealtime {@code long} The total ellapsed rendering time in milliseconds.
-     * @param deltaTime        {@code double} The time passes since the last frame, in seconds.
-     */
-    protected void onRender(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
-        render(ellapsedRealtime, deltaTime);
-    }
-
-    /**
-     * Called by {@link #onRender(long, double)} to render the next frame.
-     *
-     * @param ellapsedRealtime {@code long} Render ellapsed time in milliseconds.
-     * @param deltaTime        {@code double} Time passed since last frame, in seconds.
-     */
-    protected void render(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
-        if (currentRenderable != null) {
-            currentRenderable.render(ellapsedRealtime, deltaTime);
-        } else {
-            Log.w(TAG, "No renderable has been set!");
-        }
-    }
-
-    /**
-     * Switches which {@link Renderable} is to be rendered.
-     *
-     * @param nextRenderable The {@link Renderable} to switch to.
-     */
-    @GuardedBy("nextRenderableLock")
-    @GLThread
-    void switchRenderable(@NonNull Renderable nextRenderable) {
-        RajLog.d("Switching from renderable: " + currentRenderable + " to renderable: " + nextRenderable);
-        currentRenderable = nextRenderable;
-        currentRenderable.restoreForNewContextIfNeeded();
     }
 
     private class RequestRenderTask implements Runnable {

@@ -1,27 +1,20 @@
 package c.org.rajawali3d.scene;
 
-import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.GLThread;
-import c.org.rajawali3d.annotations.RequiresReadLock;
-import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.engine.Engine;
+import c.org.rajawali3d.engine.RenderModel;
 import c.org.rajawali3d.materials.MaterialManager;
-import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.renderer.Renderable;
-import c.org.rajawali3d.renderer.Renderer;
 import c.org.rajawali3d.scene.graph.FlatTree;
-import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.SceneGraph;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.FrameTask;
 import org.rajawali3d.textures.ATexture;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.textures.TextureManager;
-import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,26 +24,24 @@ import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 
 /**
- * A {@link Scene} is a self contained, renderable world. {@link Scene}s are responsible for managing all aspects of
- * what is rendered - objects, cameras, lights, and materials. All draw operations are managed by a scene and objects
- * cannot be shared across renderables. Unless otherwise specified, the default behavior is to use a {@link FlatTree}
- * scene graph.
+ * A {@link Scene} is a self contained, renderable world model. {@link Scene}s are responsible for
+ * managing all aspects of what is rendered - objects, lights, and materials. Objects, lights and
+ * materials cannot be shared across models (TODO is this true?).
+ *
+ * Unless otherwise specified, the default behavior is to use a {@link FlatTree}scene graph.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @ThreadSafe
-public class Scene implements Renderable {
+public class Scene implements RenderModel {
 
     private static final String TAG = "Scene";
 
-    @GuardedBy("preCallbacks")
-    private final List<SceneFrameCallback> preCallbacks;
+    @GuardedBy("newFrameCallbacks")
+    private final List<SceneFrameCallback> newFrameCallbacks;
 
-    @GuardedBy("preDrawCallbacks")
-    private final List<SceneFrameCallback> preDrawCallbacks; //TODO: Are these necessary anymore?
-
-    @GuardedBy("postCallbacks")
-    private final List<SceneFrameCallback> postCallbacks;
+    @GuardedBy("endFrameCallbacks")
+    private final List<SceneFrameCallback> endFrameCallbacks;
 
     @GuardedBy("frameTaskQueue")
     private final Queue<FrameTask> frameTaskQueue;
@@ -61,7 +52,7 @@ public class Scene implements Renderable {
     private volatile boolean needRestoreForNewContext = false;
 
     @Nullable
-    private Renderer renderer;
+    private Engine engine;
 
     @NonNull
     private SceneGraph sceneGraph;
@@ -69,113 +60,47 @@ public class Scene implements Renderable {
     @Nullable Lock currentlyHeldWriteLock;
     @Nullable Lock currentlyHeldReadLock;
 
-    protected int currentViewportWidth;
-    protected int currentViewportHeight; // The current width and height of the GL viewport
-    protected int overrideViewportWidth;
-    protected int overrideViewportHeight; // The overridden width and height of the GL viewport
-
-    /**
-     * The {@link Camera} currently being used to render the scene.
-     */
-    @GuardedBy("nextCameraLock")
-    private Camera currentCamera;
-
-    private Camera nextCamera; // The camera the scene should switch to on the next frame.
-    private final Object nextCameraLock = new Object(); // Camera switching lock
-
-    @Nullable
-    @GLThread
-    private ObjectRenderer lastUsedRenderer; // Reference to the last used object renderer
-
-    @NonNull
-    @GLThread
-    private Matrix4 viewProjectionMatrix = new Matrix4();
-
     public Scene() {
         this(new FlatTree());
     }
 
     public Scene(@NonNull SceneGraph graph) {
         sceneGraph = graph;
-        preCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
-        preDrawCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
-        postCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
+        newFrameCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
+        endFrameCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
         frameTaskQueue = new LinkedList<>();
 
         textureManager = new TextureManager();
         materialManager = new MaterialManager();
-
-        initialize();
     }
 
+
+
+    public SceneGraph getSceneGraph() {
+        return sceneGraph;
+    }
+
+    /**
+     * Called on registration boundaries
+     * @param engine The active {@link Engine} or {@code null}.
+     */
     @GLThread
-    @Override
-    public void setRenderer(@Nullable Renderer renderer) {
-        if (renderer != null) {
-            onRendererSet(renderer);
+    public void setEngine(@Nullable Engine engine) {
+        if (engine != null) {
+            onEngineSet(engine);
         } else {
-            onRendererCleared();
+            onEngineCleared();
         }
     }
 
     @Override
-    public void onRenderSurfaceSizeChanged() throws IllegalStateException {
-        if (renderer == null) {
-            throw new IllegalStateException("Scene registered to an unknown renderer implementation.");
-        }
-        final int wViewport = overrideViewportWidth > -1 ? overrideViewportWidth : renderer.getDefaultViewportWidth();
-        final int hViewport = overrideViewportHeight > -1 ? overrideViewportHeight
-                                                          : renderer.getDefaultViewportHeight();
-        setViewPort(wViewport, hViewport);
+    public void onFrameStart(double deltaTime) throws InterruptedException {
+        // TODO Scene-level frame tasks, animations, callback propagation to client
     }
 
     @Override
-    public void clearOverrideViewportDimensions() {
-        overrideViewportWidth = -1;
-        overrideViewportHeight = -1;
-        if (renderer != null) {
-            setViewPort(renderer.getDefaultViewportWidth(), renderer.getDefaultViewportHeight());
-        }
-    }
-
-    @Override
-    public void setOverrideViewportDimensions(int width, int height) {
-        overrideViewportWidth = width;
-        overrideViewportHeight = height;
-        setViewPort(overrideViewportWidth, overrideViewportHeight);
-    }
-
-    @Override
-    public int getOverrideViewportWidth() {
-        return overrideViewportWidth;
-    }
-
-    @Override
-    public int getOverrideViewportHeight() {
-        return overrideViewportHeight;
-    }
-
-    @Override
-    public int getViewportWidth() {
-        return currentViewportWidth;
-    }
-
-    @Override
-    public int getViewportHeight() {
-        return currentViewportHeight;
-    }
-
-    @GLThread
-    @Override
-    public void render(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
-        currentlyHeldReadLock = sceneGraph.acquireReadLock();
-        try {
-            internalRender(ellapsedRealtime, deltaTime);
-        } finally {
-            if (currentlyHeldReadLock != null) {
-                currentlyHeldReadLock.unlock();
-            }
-        }
+    public void onFrameEnd(double deltaTime) throws InterruptedException {
+        // TODO callback propagation to client
     }
 
     @GLThread
@@ -193,7 +118,7 @@ public class Scene implements Renderable {
      * Retrieves the {@link TextureManager} associated with this {@link Scene}. Note that Renderers and GL
      * contexts are tied together.
      *
-     * @return The {@link TextureManager} for this {@link Renderer}.
+     * @return The {@link TextureManager} for this {@link Engine}.
      */
     @NonNull
     public TextureManager getTextureManager() {
@@ -204,7 +129,7 @@ public class Scene implements Renderable {
      * Retrieves the {@link MaterialManager} associated with this {@link Scene}. Note that Renderers and GL
      * contexts are tied together.
      *
-     * @return The {@link MaterialManager} for this {@link Renderer}.
+     * @return The {@link MaterialManager} for this {@link Engine}.
      */
     @NonNull
     public MaterialManager getMaterialManager() {
@@ -237,14 +162,11 @@ public class Scene implements Renderable {
      * @param callback {@link SceneFrameCallback} to be registered.
      */
     public void registerFrameCallback(@NonNull SceneFrameCallback callback) {
-        if (callback.callPreFrame()) {
-            preCallbacks.add(callback);
+        if (callback.callFrameStart()) {
+            newFrameCallbacks.add(callback);
         }
-        if (callback.callPreDraw()) {
-            preDrawCallbacks.add(callback);
-        }
-        if (callback.callPostFrame()) {
-            postCallbacks.add(callback);
+        if (callback.callFrameEnd()) {
+            endFrameCallbacks.add(callback);
         }
     }
 
@@ -254,14 +176,11 @@ public class Scene implements Renderable {
      * @param callback {@link SceneFrameCallback} to be unregistered.
      */
     public void unregisterFrameCallback(@NonNull SceneFrameCallback callback) {
-        if (callback.callPreFrame()) {
-            preCallbacks.remove(callback);
+        if (callback.callFrameStart()) {
+            newFrameCallbacks.remove(callback);
         }
-        if (callback.callPreDraw()) {
-            preDrawCallbacks.remove(callback);
-        }
-        if (callback.callPostFrame()) {
-            postCallbacks.remove(callback);
+        if (callback.callFrameEnd()) {
+            endFrameCallbacks.remove(callback);
         }
     }
 
@@ -272,7 +191,7 @@ public class Scene implements Renderable {
      * @param texture {@link ATexture} to be added.
      */
     public void addTexture(@NonNull final ATexture texture) {
-        // The renderer is not null, so we can add the texture directly now
+        // The engine is not null, so we can add the texture directly now
         final FrameTask task = getTextureManager().addTexture(texture);
         // Now queue the GL addition task
         internalOfferTask(task);
@@ -285,7 +204,7 @@ public class Scene implements Renderable {
      * @param texture {@link ATexture} to be removed.
      */
     public void removeTexture(@NonNull final ATexture texture) {
-        // The renderer is not null, so we can remove the texture directly now
+        // The engine is not null, so we can remove the texture directly now
         final FrameTask task = getTextureManager().removeTexture(texture);
         // Now queue the GL removal task
         internalOfferTask(task);
@@ -298,7 +217,7 @@ public class Scene implements Renderable {
      * @param texture {@link ATexture} to be replaced.
      */
     public void replaceTexture(@NonNull final ATexture texture) throws TextureException {
-        // The renderer is not null, so we can replace the texture directly now
+        // The engine is not null, so we can replace the texture directly now
         final FrameTask task = getTextureManager().replaceTexture(texture);
         // Now queue the GL removal task
         internalOfferTask(task);
@@ -312,7 +231,7 @@ public class Scene implements Renderable {
      */
     public void addMaterial(@NonNull final Material material) {
 
-        // The renderer is not null, so we can add the material directly now
+        // The engine is not null, so we can add the material directly now
         final FrameTask task = getMaterialManager().addMaterial(material);
         // Now queue the GL addition task
         internalOfferTask(task);
@@ -325,7 +244,7 @@ public class Scene implements Renderable {
      * @param material {@link ATexture} to be removed.
      */
     public void removeMaterial(@NonNull final Material material) {
-        // The renderer is not null, so we can remove the material directly now
+        // The engine is not null, so we can remove the material directly now
         final FrameTask task = getMaterialManager().removeMaterial(material);
         // Now queue the GL removal task
         internalOfferTask(task);
@@ -335,128 +254,25 @@ public class Scene implements Renderable {
      * Removes all {@link SceneFrameCallback} objects from the scene.
      */
     public void clearFrameCallbacks() {
-        preCallbacks.clear();
-        preDrawCallbacks.clear();
-        postCallbacks.clear();
+        newFrameCallbacks.clear();
+        endFrameCallbacks.clear();
     }
 
-    /**
-     * Initializes the scene.
-     */
-    protected void initialize() {
-        overrideViewportWidth = -1;
-        overrideViewportHeight = -1;
-    }
-
-    /**
-     * Sets the GL Viewport used. User code is free to override this method, so long as the viewport is set somewhere
-     * (and the projection matrix updated).
-     *
-     * @param width  {@code int} The viewport width in pixels.
-     * @param height {@code int} The viewport height in pixels.
-     */
-    @GLThread
-    protected void setViewPort(int width, int height) {
-        if (width != currentViewportWidth || height != currentViewportHeight) {
-            currentViewportWidth = width;
-            currentViewportHeight = height;
-            // TODO: Update projection matrix
-            //updateProjectionMatrix(width, height);
-            GLES20.glViewport(0, 0, width, height);
-        }
-    }
-
-    @RequiresReadLock
-    @GLThread
-    protected void internalRender(final long ellapsedRealtime, final double deltaTime) throws IllegalStateException {
-        // Execute frame tasks
-        performFrameTasks();
-
-        synchronized (nextCameraLock) {
-            // Check if we need to switch the camera, and if so, do it.
-            if (nextCamera != null) {
-                switchCamera(nextCamera);
-                nextCamera = null;
-            }
-        }
-
-        // Prepare the camera matrices
-        final Matrix4 viewMatrix = currentCamera.getViewMatrix();
-        final Matrix4 projectionMatrix = currentCamera.getProjectionMatrix();
-
-        if (projectionMatrix == null) {
-            throw new IllegalStateException("Cannot render while current camera has a null projection matrix.");
-        }
-
-        viewProjectionMatrix.setAll(projectionMatrix).multiply(viewMatrix);
-
-        // Execute onPreFrame callbacks
-        // We explicitly break out the steps here to help the compiler optimize
-        final int preCount = preCallbacks.size();
-        if (preCount > 0) {
-            synchronized (preCallbacks) {
-                for (int i = 0; i < preCount; ++i) {
-                    preCallbacks.get(i).onPreFrame(ellapsedRealtime, deltaTime);
-                }
-            }
-        }
-
-        // Determine which objects we will be rendering
-        final List<NodeMember> intersectedNodes = sceneGraph.intersection(currentCamera);
-
-        // Execute onPreDraw callbacks
-        // We explicitly break out the steps here to help the compiler optimize
-        final int preDrawCount = preDrawCallbacks.size();
-        if (preDrawCount > 0) {
-            synchronized (preDrawCallbacks) {
-                for (int i = 0; i < preDrawCount; ++i) {
-                    preDrawCallbacks.get(i).onPreDraw(ellapsedRealtime, deltaTime);
-                }
-            }
-        }
-
-        //TODO: This will be an interaction point with the render pass manager. We don't want to check the
-        // intersection with the camera multiple times. One possible exception would be for shadow mapping. Probably
-        // a loop
-
-        // Fetch the current render type
-        int type = 0;
-
-        // Loop each node and draw
-        for (NodeMember member : intersectedNodes) {
-            lastUsedRenderer = member.render(type, lastUsedRenderer, viewMatrix, projectionMatrix, viewProjectionMatrix);
-        }
-
-        // Execute onPostFrame callbacks
-        // We explicitly break out the steps here to help the compiler optimize
-        final int postCount = postCallbacks.size();
-        if (postCount > 0) {
-            synchronized (postCallbacks) {
-                for (int i = 0; i < postCount; ++i) {
-                    postCallbacks.get(i).onPostFrame(ellapsedRealtime, deltaTime);
-                }
-            }
-        }
-    }
-
-    protected void onRendererSet(@NonNull Renderer renderer) {
-        if (renderer != this.renderer) {
-            // Set the new renderer
-            this.renderer = renderer;
+    protected void onEngineSet(@NonNull Engine engine) {
+        if (engine != this.engine) {
+            // Set the new engine
+            this.engine = engine;
             // Mark the context dirty
             needRestoreForNewContext = true;
-            // Adjust viewport if necessary
-            onRenderSurfaceSizeChanged();
         }
     }
 
-    protected void onRendererCleared() {
-
+    protected void onEngineCleared() {
     }
 
     protected boolean internalOfferTask(FrameTask task) {
-        if (renderer != null && renderer.isGLThread()) {
-            // If we have a renderer and the calling thread is the GL thread, do the task now.
+        if (engine != null && engine.isGLThread()) {
+            // If we have a engine and the calling thread is the GL thread, do the task now.
             task.run();
             return true;
         } else {
@@ -477,12 +293,5 @@ public class Scene implements Renderable {
                 task = frameTaskQueue.poll();
             }
         }
-    }
-
-    @GuardedBy("nextCameraLock")
-    @GLThread
-    void switchCamera(@NonNull Camera nextCamera) {
-        RajLog.d("Switching from camera: " + currentCamera + " to camera: " + nextCamera);
-        currentCamera = nextCamera;
     }
 }

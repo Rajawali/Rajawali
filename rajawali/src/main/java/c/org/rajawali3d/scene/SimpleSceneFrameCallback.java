@@ -10,34 +10,23 @@ public class SimpleSceneFrameCallback implements SceneFrameCallback {
 
     @GLThread
     @Override
-    public void onPreFrame(long sceneTime, double deltaTime) {
+    public void onFrameStart(double deltaTime) {
 
     }
 
     @GLThread
     @Override
-    public void onPreDraw(long sceneTime, double deltaTime) {
-
-    }
-
-    @GLThread
-    @Override
-    public void onPostFrame(long sceneTime, double deltaTime) {
+    public void onFrameEnd(double deltaTime) {
 
     }
 
     @Override
-    public boolean callPreFrame() {
+    public boolean callFrameStart() {
         return false;
     }
 
     @Override
-    public boolean callPreDraw() {
-        return false;
-    }
-
-    @Override
-    public boolean callPostFrame() {
+    public boolean callFrameEnd() {
         return false;
     }
 }
