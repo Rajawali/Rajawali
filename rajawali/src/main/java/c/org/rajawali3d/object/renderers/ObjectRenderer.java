@@ -63,7 +63,7 @@ public interface ObjectRenderer {
 
     boolean isBlended();
 
-    boolean isDepthTestEnabled();
+    boolean isDepthEnabled();
 
     int getBlendSourceFactor();
 

@@ -103,7 +103,7 @@ class ObjectRendererImpl implements ObjectRenderer {
     }
 
     @Override
-    public boolean isDepthTestEnabled() {
+    public boolean isDepthEnabled() {
         return isDepthEnabled;
     }
 
@@ -204,13 +204,13 @@ class ObjectRendererImpl implements ObjectRenderer {
 
     private void checkDepth(@NonNull ObjectRenderer lastUsed) {
         if (!isDepthEnabled) {
-            if (lastUsed.isDepthTestEnabled()) {
+            if (lastUsed.isDepthEnabled()) {
                 // We are not depth tested, the last renderer is - disable
                 GLES20.glDisable(GLES20.GL_DEPTH_TEST);
             } else {
                 // We are not depth tested, neither was last renderer
             }
-        } else if (!lastUsed.isDepthTestEnabled()) {
+        } else if (!lastUsed.isDepthEnabled()) {
             // We are depth tested, the last renderer is not - enable
             GLES20.glEnable(GLES20.GL_DEPTH_TEST);
             GLES20.glDepthFunc(depthFunction);

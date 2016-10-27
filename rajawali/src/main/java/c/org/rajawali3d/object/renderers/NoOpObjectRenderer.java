@@ -74,7 +74,7 @@ public class NoOpObjectRenderer implements ObjectRenderer {
     }
 
     @Override
-    public boolean isDepthTestEnabled() {
+    public boolean isDepthEnabled() {
         return false;
     }
 

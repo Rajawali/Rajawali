@@ -177,7 +177,7 @@ public class ObjectRendererImplTest extends GlTestCase {
 
         final ObjectRendererBuilder builder = new ObjectRendererBuilder();
         builder.withMaterial(material).isDoubleSided(false).isBackSided(false).isBlended(false)
-                .isDepthTestEnabled(true).setBlendSourceFactor(GLES20.GL_ONE)
+                .isDepthTestEnabled(false).setBlendSourceFactor(GLES20.GL_ONE)
                 .setBlendDestinationFactor(GLES20.GL_ONE_MINUS_DST_ALPHA).setDepthFunction(GLES20.GL_LEQUAL);
         final ObjectRendererImpl renderer = (ObjectRendererImpl) builder.build();
 
