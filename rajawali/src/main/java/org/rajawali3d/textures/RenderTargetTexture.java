@@ -124,7 +124,7 @@ public class RenderTargetTexture extends ATexture {
         if (textureId > 0) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
-            if (isMipmap()) {
+            if (isMipmaped()) {
                 if (filterType == Filter.LINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
                                            GLES20.GL_LINEAR_MIPMAP_LINEAR);
@@ -157,7 +157,7 @@ public class RenderTargetTexture extends ATexture {
             GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, mInternalFormat.getFormat(), width, height, 0,
                                 mFormat.getFormat(),
                                 mType.getType(), null);
-            if (isMipmap()) {
+            if (isMipmaped()) {
                 GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
             }
 
@@ -178,7 +178,7 @@ public class RenderTargetTexture extends ATexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, mInternalFormat.getFormat(), width, height, 0,
                             mFormat.getFormat(), mType.getType(), null);
-        if (isMipmap()) {
+        if (isMipmaped()) {
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         }
 

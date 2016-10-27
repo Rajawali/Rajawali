@@ -69,7 +69,7 @@ public class RenderTarget {
 	 * @param stencilBuffer
 	 *            Set to true to enable stencil buffer
 	 * @param mipmaps
-	 *            Set to true to enable automatic mipmap generation
+	 *            Set to true to enable automatic mipmaped generation
 	 * @param target
 	 *            Datatype to use for the texture
 	 * @param bitmapConfig
@@ -96,7 +96,7 @@ public class RenderTarget {
 		mWrapType = wrapType;
 
 		mTexture = new RenderTargetTexture(mName + "FBTex", mWidth, mHeight);
-		mTexture.setMipmap(mMipmaps);
+		mTexture.setMipmaped(mMipmaps);
 		mTexture.setTextureTarget(mGLType);
 		mTexture.setFilterType(mFilterType);
 		mTexture.setWrapType(mWrapType);
@@ -127,7 +127,7 @@ public class RenderTarget {
 				mOffsetX,
 				mOffsetY,
 				mStencilBuffer,
-				mTexture.isMipmap(),
+				mTexture.isMipmaped(),
 				mTexture.getTextureTarget(),
 				Config.ARGB_8888,
 				mTexture.getFilterType(),

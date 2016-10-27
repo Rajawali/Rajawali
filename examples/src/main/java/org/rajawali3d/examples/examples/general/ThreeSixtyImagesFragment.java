@@ -66,7 +66,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 						mContext.getResources(), resourceId, options);
 
 				ATexture texture = new Texture("bm" + i, new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE));
-				texture.setMipmap(false);
+				texture.setMipmaped(false);
 				texture.shouldRecycle(true);
 				//mTextures[i - 1] = mTextureManager.addTexture(texture);
 			}

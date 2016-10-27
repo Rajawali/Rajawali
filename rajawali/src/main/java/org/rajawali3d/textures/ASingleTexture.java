@@ -132,7 +132,7 @@ public abstract class ASingleTexture extends ATexture {
         if (textureId > 0) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
-            if (isMipmap()) {
+            if (isMipmaped()) {
                 if (filterType == Filter.LINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
                                            GLES20.GL_LINEAR_MIPMAP_LINEAR);
@@ -174,7 +174,7 @@ public abstract class ASingleTexture extends ATexture {
                 GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, texelFormat, textureData.getBitmap(), 0);
             }
 
-            if (isMipmap()) {
+            if (isMipmaped()) {
                 GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
             }
 
@@ -244,7 +244,7 @@ public abstract class ASingleTexture extends ATexture {
                                    GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
         }
 
-        if (mipmap) {
+        if (mipmaped) {
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         }
 

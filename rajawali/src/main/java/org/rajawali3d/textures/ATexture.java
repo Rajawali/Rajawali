@@ -73,7 +73,7 @@ public abstract class ATexture {
      * increase the amount of time for an initial texture push as well as the size of the texture (in video RAM), but
      * can dramatically improve render quality.
      */
-    protected boolean mipmap;
+    protected boolean mipmaped;
 
     /**
      * Indicates whether the source {@link TextureDataReference} should be recycled immediately after the OpenGL
@@ -155,7 +155,7 @@ public abstract class ATexture {
         this();
         this.textureType = textureType;
         this.textureName = textureName;
-        mipmap = true;
+        mipmaped = true;
         shouldRecycle = false;
         wrapType = Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R;
         filterType = Filter.LINEAR;
@@ -204,7 +204,7 @@ public abstract class ATexture {
         width = other.getWidth();
         height = other.getHeight();
         texelFormat = other.getTexelFormat();
-        mipmap = other.isMipmap();
+        mipmaped = other.isMipmaped();
         shouldRecycle = other.willRecycle();
         textureName = other.getTextureName();
         textureType = other.getTextureType();
@@ -212,6 +212,7 @@ public abstract class ATexture {
         filterType = other.getFilterType();
         compressedTexture = other.getCompressedTexture();
         textureTarget = other.getTextureTarget();
+        influence = other.getInfluence();
         materialsUsingTexture = other.getRegisteredMaterials();
     }
 
@@ -303,8 +304,8 @@ public abstract class ATexture {
      *
      * @return {@code true} if mipmaps should be auto-generated.
      */
-    public boolean isMipmap() {
-        return mipmap;
+    public boolean isMipmaped() {
+        return mipmaped;
     }
 
     /**
@@ -314,8 +315,8 @@ public abstract class ATexture {
      *
      * @param mipmap {@code true} if mipmaps should be auto-generated.
      */
-    public void setMipmap(boolean mipmap) {
-        this.mipmap = mipmap;
+    public void setMipmaped(boolean mipmap) {
+        this.mipmaped = mipmap;
     }
 
     /**

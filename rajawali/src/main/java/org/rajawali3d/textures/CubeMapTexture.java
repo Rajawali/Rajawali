@@ -90,7 +90,7 @@ public class CubeMapTexture extends AMultiTexture {
     }
 
     private void setTextureData() {
-        if (isMipmap()) {
+        if (isMipmaped()) {
             if (filterType == Filter.LINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
                     GLES20.GL_LINEAR_MIPMAP_LINEAR);
@@ -136,7 +136,7 @@ public class CubeMapTexture extends AMultiTexture {
             }
         }
 
-        if (isMipmap())
+        if (isMipmaped())
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
 
         if (shouldRecycle) {

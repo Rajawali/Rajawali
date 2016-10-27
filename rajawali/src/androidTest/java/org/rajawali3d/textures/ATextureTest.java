@@ -50,7 +50,7 @@ public class ATextureTest {
         when(from.getWidth()).thenReturn(256);
         when(from.getHeight()).thenReturn(512);
         when(from.getTexelFormat()).thenReturn(GLES20.GL_RGBA);
-        when(from.isMipmap()).thenReturn(false);
+        when(from.isMipmaped()).thenReturn(false);
         when(from.willRecycle()).thenReturn(true);
         when(from.getTextureName()).thenReturn("TEST");
         when(from.getTextureType()).thenReturn(Type.LOOKUP);
@@ -58,6 +58,7 @@ public class ATextureTest {
         when(from.getFilterType()).thenReturn(Filter.NEAREST);
         when(from.getCompressedTexture()).thenReturn(null);
         when(from.getTextureTarget()).thenReturn(GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X);
+        when(from.getInfluence()).thenReturn(0.654321f);
         when(from.getRegisteredMaterials()).thenReturn(new ArrayList<Material>());
 
         to.setFrom(from);
@@ -65,7 +66,7 @@ public class ATextureTest {
         assertEquals(256, to.getWidth());
         assertEquals(512, to.getHeight());
         assertEquals(GLES20.GL_RGBA, to.getTexelFormat());
-        assertEquals(false, to.isMipmap());
+        assertEquals(false, to.isMipmaped());
         assertEquals(true, to.willRecycle());
         assertEquals("TEST", to.getTextureName());
         assertEquals(Type.LOOKUP, to.getTextureType());
@@ -73,113 +74,79 @@ public class ATextureTest {
         assertEquals(Filter.NEAREST, to.getFilterType());
         assertEquals(null, to.getCompressedTexture());
         assertEquals(GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X, to.getTextureTarget());
+        assertEquals(0.654321f, to.getInfluence());
         assertNotNull(to.getRegisteredMaterials());
         assertEquals(0, to.getRegisteredMaterials().size());
     }
 
     @Test
-    public void getTextureId() throws Exception {
-
-    }
-
-    @Test
     public void setTextureId() throws Exception {
-
-    }
-
-    @Test
-    public void getWidth() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setTextureId(10);
+        assertEquals(10, texture.getTextureId());
     }
 
     @Test
     public void setWidth() throws Exception {
-
-    }
-
-    @Test
-    public void getHeight() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setWidth(10);
+        assertEquals(10, texture.getWidth());
     }
 
     @Test
     public void setHeight() throws Exception {
-
-    }
-
-    @Test
-    public void getTexelFormat() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setHeight(10);
+        assertEquals(10, texture.getHeight());
     }
 
     @Test
     public void setTexelFormat() throws Exception {
-
-    }
-
-    @Test
-    public void isMipmap() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setTexelFormat(GLES20.GL_RGB565);
+        assertEquals(GLES20.GL_RGB565, texture.getTexelFormat());
     }
 
     @Test
     public void setMipmap() throws Exception {
-
-    }
-
-    @Test
-    public void willRecycle() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setMipmaped(true);
+        assertEquals(true, texture.isMipmaped());
     }
 
     @Test
     public void shouldRecycle() throws Exception {
-
-    }
-
-    @Test
-    public void getTextureName() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.shouldRecycle(true);
+        assertEquals(true, texture.willRecycle());
     }
 
     @Test
     public void setTextureName() throws Exception {
-
-    }
-
-    @Test
-    public void getTextureType() throws Exception {
-
-    }
-
-    @Test
-    public void getWrapType() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setTextureName("TEST");
+        assertEquals("TEST", texture.getTextureName());
     }
 
     @Test
     public void setWrapType() throws Exception {
-
-    }
-
-    @Test
-    public void getFilterType() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setWrapType(Wrap.CLAMP_S | Wrap.MIRRORED_REPEAT_T | Wrap.REPEAT_R);
+        assertEquals(Wrap.CLAMP_S | Wrap.MIRRORED_REPEAT_T | Wrap.REPEAT_R, texture.getWrapType());
     }
 
     @Test
     public void setFilterType() throws Exception {
-
-    }
-
-    @Test
-    public void getTextureTarget() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setFilterType(Filter.ANISOTROPIC);
+        assertEquals(Filter.ANISOTROPIC, texture.getFilterType());
     }
 
     @Test
     public void setTextureTarget() throws Exception {
-
+        final TestableATexture texture = new TestableATexture();
+        texture.setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
+        assertEquals(GLES20.GL_TEXTURE_CUBE_MAP, texture.getTextureTarget());
     }
 
     @Test
@@ -201,5 +168,4 @@ public class ATextureTest {
     public void getInfluence() throws Exception {
 
     }
-
 }

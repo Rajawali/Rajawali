@@ -103,7 +103,7 @@ public class PalettedTexture extends ACompressedTexture {
 	}
 
 	/**
-	 * Adds and binds paletted texture. Pass in multiple buffer corresponding to different mipmap levels.
+	 * Adds and binds paletted texture. Pass in multiple buffer corresponding to different mipmaped levels.
 	 */
 	private void checkPaletteFormat()
 	{
