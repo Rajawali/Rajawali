@@ -139,7 +139,10 @@ public abstract class ATexture {
     protected float[] repeat = new float[]{1, 1};
     protected boolean enableOffset;
     protected float[] offset = new float[]{0, 0};
-    private List<Material> registeredMaterials;
+
+    // TODO: Is the synchronized list necessary with copy on write list?
+    private final List<Material> registeredMaterials = Collections.synchronizedList(
+            new CopyOnWriteArrayList<Material>());
 
     /**
      * Creates a new texture instance with the specified texture type with {@link GLES20#GL_REPEAT} texture wrapping on
@@ -175,7 +178,6 @@ public abstract class ATexture {
     protected ATexture() {
         // TODO: Can we remove this constructor?
         textureName = "noName";
-        materialsUsingTexture = Collections.synchronizedList(new CopyOnWriteArrayList<Material>());
     }
 
     /**
