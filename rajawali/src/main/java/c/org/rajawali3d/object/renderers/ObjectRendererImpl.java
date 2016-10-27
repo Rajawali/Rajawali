@@ -3,13 +3,10 @@ package c.org.rajawali3d.object.renderers;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
+import c.org.rajawali3d.object.RenderableObject;
 import org.rajawali3d.geometry.Geometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
-
-import c.org.rajawali3d.object.RenderableObject;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -38,7 +35,7 @@ class ObjectRendererImpl implements ObjectRenderer {
         this.material = builder.getMaterial();
         this.isDoubleSided = builder.isDoubleSided();
         this.isBackSided = builder.isBackSided();
-        this.isBlended = builder.isBackSided();
+        this.isBlended = builder.isBlended();
         this.isDepthEnabled = builder.isDepthEnabled();
         this.blendSourceFactor = builder.getBlendSourceFactor();
         this.blendDestinationFactor = builder.getBlendDestinationFactor();
@@ -157,7 +154,6 @@ class ObjectRendererImpl implements ObjectRenderer {
 
     private void applyBlending() {
         if (isBlended) {
-            Log.v("BLENDING", "Enabling blending");
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(blendSourceFactor, blendDestinationFactor);
         } else {
