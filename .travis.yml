@@ -50,9 +50,9 @@ script:
 #- "./gradlew :vr:check --stacktrace --continue"
 #- "./gradlew :wear:check --stacktrace --continue"
 #- "./gradlew :wear-example:check --stacktrace --continue"
-- "./gradlew :examples:check --stacktrace --continue"
+- "./gradlew :examples:check -x extractReleaseAnnotations -x extractDebugAnnotations --stacktrace --continue"
 - if $TRAVIS_PULL_REQUEST; then "Skipping uploadArchives on Pull Request"; else ./gradlew
-  :rajawali:uploadArchives --stacktrace --continue; fi
+  :rajawali:uploadArchives -x extractReleaseAnnotations -x extractDebugAnnotations --stacktrace --continue; fi
   # The following goes before the above 'fi' when the modules are again valid
   #./gradlew :vuforia:uploadArchives --stacktrace --continue; ./gradlew :vr:uploadArchives --stacktrace --continue;
   #./gradlew :wear:uploadArchives --stacktrace --continue;

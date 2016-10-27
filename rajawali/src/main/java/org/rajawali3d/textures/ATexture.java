@@ -15,12 +15,11 @@ package org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
-
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
-import org.rajawali3d.textures.annotation.TextureTarget;
 import org.rajawali3d.textures.annotation.TexelFormat;
+import org.rajawali3d.textures.annotation.TextureTarget;
 import org.rajawali3d.textures.annotation.Type.TextureType;
 import org.rajawali3d.textures.annotation.Wrap;
 import org.rajawali3d.textures.annotation.Wrap.WrapType;
@@ -140,6 +139,7 @@ public abstract class ATexture {
     protected float[] repeat = new float[]{1, 1};
     protected boolean enableOffset;
     protected float[] offset = new float[]{0, 0};
+    private List<Material> registeredMaterials;
 
     /**
      * Creates a new texture instance with the specified texture type with {@link GLES20#GL_REPEAT} texture wrapping on
@@ -210,7 +210,7 @@ public abstract class ATexture {
         filterType = other.getFilterType();
         compressedTexture = other.getCompressedTexture();
         textureTarget = other.getTextureTarget();
-        materialsUsingTexture = other.materialsUsingTexture;
+        materialsUsingTexture = other.getRegisteredMaterials();
     }
 
     /**
@@ -464,6 +464,16 @@ public abstract class ATexture {
      */
     public boolean unregisterMaterial(@NonNull Material material) {
         return materialsUsingTexture.remove(material);
+    }
+
+    /**
+     * Retrieves the list of {@link Material}s registered with this {@link ATexture}.
+     *
+     * @return The list of registered {@link Material}s.
+     */
+    @NonNull
+    public List<Material> getRegisteredMaterials() {
+        return registeredMaterials;
     }
 
     /**
