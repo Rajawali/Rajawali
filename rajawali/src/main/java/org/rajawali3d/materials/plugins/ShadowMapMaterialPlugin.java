@@ -232,14 +232,14 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
 		public void bindTextures(int nextIndex) {
 			if(mShadowMapTexture != null) {
 				GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + nextIndex);
-				GLES20.glBindTexture(mShadowMapTexture.getGLTextureType(), mShadowMapTexture.getTextureId());
+				GLES20.glBindTexture(mShadowMapTexture.getTextureTarget(), mShadowMapTexture.getTextureId());
 				GLES20.glUniform1i(muShadowMapTextureHandle, nextIndex);
 			}
 		}
 
 		public void unbindTextures() {
 			if(mShadowMapTexture != null)
-				GLES20.glBindTexture(mShadowMapTexture.getGLTextureType(), 0);
+				GLES20.glBindTexture(mShadowMapTexture.getTextureTarget(), 0);
 		}
 	}
 }

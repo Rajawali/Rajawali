@@ -40,20 +40,20 @@ public class StreamingTexture extends ATexture {
     public StreamingTexture(String textureName, MediaPlayer mediaPlayer) {
         super(Type.VIDEO_TEXTURE, textureName);
         mMediaPlayer = mediaPlayer;
-        setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
+        setTextureTarget(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
     }
 
     public StreamingTexture(String textureName, Camera camera, SurfaceTexture.OnFrameAvailableListener onFrameAvailableListener) {
         super(Type.VIDEO_TEXTURE, textureName);
         mCamera = camera;
         mOnFrameAvailableListener = onFrameAvailableListener;
-        setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
+        setTextureTarget(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
     }
 
     public StreamingTexture(String textureName, ISurfaceListener listener) {
         super(Type.VIDEO_TEXTURE, textureName);
         mSurfaceListener = listener;
-        setGLTextureType(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
+        setTextureTarget(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
     }
 
     public StreamingTexture(StreamingTexture other) {

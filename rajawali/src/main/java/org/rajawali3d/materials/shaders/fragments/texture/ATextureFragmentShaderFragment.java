@@ -91,7 +91,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 
 			muInfluence[i] = (RFloat) addUniform(DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
 
-			if(texture.getWrapType() == Wrap.REPEAT)
+			if(texture.getWrapType() == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R))
 				muRepeat[i] = (RVec2) addUniform(DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
 				muOffset[i] = (RVec2) addUniform(DefaultShaderVar.U_OFFSET, i);
@@ -106,7 +106,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 			ATexture texture = mTextures.get(i);
 			muTextureHandles[i] = getUniformLocation(programHandle, texture.getTextureName());
 			muInfluenceHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
-			if(texture.getWrapType() == Wrap.REPEAT)
+			if(texture.getWrapType() == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R))
 				muRepeatHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
 				muOffsetHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_OFFSET, i);
@@ -123,7 +123,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		{
 			ATexture texture = mTextures.get(i);
 			GLES20.glUniform1f(muInfluenceHandles[i], texture.getInfluence());
-			if(texture.getWrapType() == Wrap.REPEAT)
+			if(texture.getWrapType() == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R))
 				GLES20.glUniform2fv(muRepeatHandles[i], 1, texture.getRepeat(), 0);
 			if(texture.offsetEnabled())
 				GLES20.glUniform2fv(muOffsetHandles[i], 1, texture.getOffset(), 0);

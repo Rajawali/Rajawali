@@ -890,7 +890,7 @@ public class Material {
             setTextureParameters(texture);
         }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
-        GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+        GLES20.glBindTexture(texture.getTextureTarget(), texture.getTextureId());
         GLES20.glUniform1i(textureHandles.get(texture.getTextureName()), index);
     }
 
@@ -899,7 +899,7 @@ public class Material {
             setTextureHandleForName(name);
         }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
-        GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+        GLES20.glBindTexture(texture.getTextureTarget(), texture.getTextureId());
         GLES20.glUniform1i(textureHandles.get(name), index);
     }
 
@@ -915,7 +915,7 @@ public class Material {
 
         for (int i = 0; i < num; i++) {
             ATexture texture = textures.get(i);
-            GLES20.glBindTexture(texture.getGLTextureType(), 0);
+            GLES20.glBindTexture(texture.getTextureTarget(), 0);
         }
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);

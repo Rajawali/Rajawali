@@ -44,7 +44,7 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 			ATexture texture = mTextures.get(i);
 			if(texture.offsetEnabled())
 				textureCoord.assignAdd(getGlobal(DefaultShaderVar.U_OFFSET, i));
-			if(texture.getWrapType() == Wrap.REPEAT)
+			if(texture.getWrapType() == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R))
 				textureCoord.assignMultiply(getGlobal(DefaultShaderVar.U_REPEAT, i));
 
 			if(texture.getTextureType() == Type.VIDEO_TEXTURE)

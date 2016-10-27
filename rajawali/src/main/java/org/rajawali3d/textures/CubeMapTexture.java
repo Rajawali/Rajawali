@@ -43,33 +43,33 @@ public class CubeMapTexture extends AMultiTexture {
 
     public CubeMapTexture(String textureName) {
         super(Type.CUBE_MAP, textureName);
-        setWrapType(Wrap.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, int[] resourceIds) {
         super(Type.CUBE_MAP, textureName, resourceIds);
-        setWrapType(Wrap.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, Bitmap[] bitmaps) {
         super(Type.CUBE_MAP, textureName, bitmaps);
-        setWrapType(Wrap.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, ByteBuffer[] byteBuffers) {
         super(Type.CUBE_MAP, textureName, byteBuffers);
-        setWrapType(Wrap.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, ACompressedTexture[] compressedTextures) {
         super(Type.CUBE_MAP, textureName, compressedTextures);
         mHasCompressedTextures = true;
-        setWrapType(Wrap.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        setWrapType(Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture clone() {
@@ -109,7 +109,7 @@ public class CubeMapTexture extends AMultiTexture {
         else
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
-        if (wrapType == Wrap.REPEAT) {
+        if (wrapType == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R)) {
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
         } else {
