@@ -25,7 +25,7 @@ import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Wrap;
 
@@ -219,7 +219,7 @@ public class PostProcessingManager {
     }
 
     @NonNull
-    public ATexture getTexture() {
+    public BaseTexture getTexture() {
         return mWriteBuffer.getTexture();
     }
 

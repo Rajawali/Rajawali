@@ -20,7 +20,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.AShaderBase.DataType;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.specular.PhongFragmentShaderFragment;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import android.graphics.Color;
 
 
@@ -90,7 +90,7 @@ public abstract class SpecularMethod {
 		private float mShininess;
 		private float mIntensity = 1;
 		private List<ALight> mLights;
-		private List<ATexture> mTextures;
+		private List<BaseTexture> mTextures;
 		private PhongFragmentShaderFragment mFragmentShader;
 
 		public Phong()
@@ -176,7 +176,7 @@ public abstract class SpecularMethod {
 			return mIntensity;
 		}
 
-		public void setTextures(List<ATexture> textures) {
+		public void setTextures(List<BaseTexture> textures) {
 			mTextures = textures;
 		}
 	}

@@ -17,7 +17,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
 
-public class SpecularMapTexture extends ASingleTexture {
+public class SpecularMapTexture extends SingleTexture {
 	public SpecularMapTexture(SpecularMapTexture other)
 	{
 		super(other);
@@ -39,7 +39,7 @@ public class SpecularMapTexture extends ASingleTexture {
 		super(Type.SPECULAR, textureName, textureData);
 	}
 
-	public SpecularMapTexture(String textureName, ACompressedTexture compressedTexture)
+	public SpecularMapTexture(String textureName, CompressedTexture compressedTexture)
 	{
 		super(Type.SPECULAR, textureName, compressedTexture);
 	}

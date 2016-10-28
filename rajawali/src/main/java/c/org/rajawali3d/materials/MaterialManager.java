@@ -5,7 +5,7 @@ import c.org.rajawali3d.scene.Scene;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.renderer.FrameTask;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -51,7 +51,7 @@ public class MaterialManager {
      * Removes a material from this manager. This can be called from any thread. If the calling thread is the GL thread,
      * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
      *
-     * @param material {@link ATexture} to be removed.
+     * @param material {@link BaseTexture} to be removed.
      */
     public void removeMaterial(@NonNull final Material material) {
         // Update the tracking structures first

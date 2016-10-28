@@ -45,7 +45,7 @@ import org.rajawali3d.materials.shaders.fragments.texture.SkyTextureFragmentShad
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.CubeMapTexture;
 import org.rajawali3d.textures.SphereMapTexture;
 import org.rajawali3d.textures.TextureException;
@@ -181,7 +181,7 @@ public class Material {
     private float[] ambientIntensity;
     /**
      * The color influence indicates how big the influence of the color is. This should be
-     * used in conjunction with {@link ATexture#setInfluence(float)}. A value of .5 indicates
+     * used in conjunction with {@link BaseTexture#setInfluence(float)}. A value of .5 indicates
      * an influence of 50%. This examples shows how to use 50% color and 50% texture:
      * <p/>
      * <pre><code>
@@ -238,7 +238,7 @@ public class Material {
     /**
      * The list of textures that are assigned by this materials.
      */
-    protected ArrayList<ATexture> textures;
+    protected ArrayList<BaseTexture> textures;
 
     protected Map<String, Integer> textureHandles;
     /**
@@ -371,7 +371,7 @@ public class Material {
 
     /**
      * The color influence indicates how big the influence of the color is. This should be
-     * used in conjunction with {@link ATexture#setInfluence(float)}. A value of .5 indicates
+     * used in conjunction with {@link BaseTexture#setInfluence(float)}. A value of .5 indicates
      * an influence of 50%. This examples shows how to use 50% color and 50% texture:
      * <p/>
      * <pre><code>
@@ -520,18 +520,18 @@ public class Material {
             // -- Check textures
             //
 
-            List<ATexture> diffuseTextures = null;
-            List<ATexture> normalMapTextures = null;
-            List<ATexture> envMapTextures = null;
-            List<ATexture> skyTextures = null;
-            List<ATexture> specMapTextures = null;
-            List<ATexture> alphaMapTextures = null;
+            List<BaseTexture> diffuseTextures = null;
+            List<BaseTexture> normalMapTextures = null;
+            List<BaseTexture> envMapTextures = null;
+            List<BaseTexture> skyTextures = null;
+            List<BaseTexture> specMapTextures = null;
+            List<BaseTexture> alphaMapTextures = null;
 
             boolean hasCubeMaps = false;
             boolean hasVideoTexture = false;
 
             for (int i = 0; i < textures.size(); i++) {
-                ATexture texture  = textures.get(i);
+                BaseTexture texture  = textures.get(i);
 
                 switch (texture.getTextureType()) {
                     case VIDEO_TEXTURE:
@@ -835,7 +835,7 @@ public class Material {
      *
      * @param texture
      */
-    private void setTextureParameters(ATexture texture) {
+    private void setTextureParameters(BaseTexture texture) {
         if (textureHandles.containsKey(texture.getTextureName())) return;
 
         int textureHandle = GLES20.glGetUniformLocation(programHandle, texture.getTextureName());
@@ -885,7 +885,7 @@ public class Material {
                 plugin.bindTextures(num);
     }
 
-    public void bindTextureByName(int index, ATexture texture) {
+    public void bindTextureByName(int index, BaseTexture texture) {
         if (!textureHandles.containsKey(texture.getTextureName())) {
             setTextureParameters(texture);
         }
@@ -894,7 +894,7 @@ public class Material {
         GLES20.glUniform1i(textureHandles.get(texture.getTextureName()), index);
     }
 
-    public void bindTextureByName(String name, int index, ATexture texture) {
+    public void bindTextureByName(String name, int index, BaseTexture texture) {
         if (!textureHandles.containsKey(texture.getTextureName())) {
             setTextureHandleForName(name);
         }
@@ -914,7 +914,7 @@ public class Material {
                 plugin.unbindTextures();
 
         for (int i = 0; i < num; i++) {
-            ATexture texture = textures.get(i);
+            BaseTexture texture = textures.get(i);
             GLES20.glBindTexture(texture.getTextureTarget(), 0);
         }
 
@@ -928,7 +928,7 @@ public class Material {
      *
      * @throws TextureException
      */
-    public void addTexture(ATexture texture) throws TextureException {
+    public void addTexture(BaseTexture texture) throws TextureException {
         if (textures.indexOf(texture) > -1) return;
         if (textures.size() + 1 > maxTextures) {
             throw new TextureException("Maximum number of textures for this material has been reached. Maximum number"
@@ -946,7 +946,7 @@ public class Material {
      *
      * @param texture
      */
-    public void removeTexture(ATexture texture) {
+    public void removeTexture(BaseTexture texture) {
         textures.remove(texture);
         texture.unregisterMaterial(this);
     }
@@ -956,7 +956,7 @@ public class Material {
      *
      * @return
      */
-    public ArrayList<ATexture> getTextureList() {
+    public ArrayList<BaseTexture> getTextureList() {
         return textures;
     }
 

@@ -16,7 +16,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
 
-public class SphereMapTexture extends ASingleTexture {
+public class SphereMapTexture extends SingleTexture {
 	private boolean mIsSkyTexture;
 	private boolean mIsEnvironmentTexture;
 
@@ -41,7 +41,7 @@ public class SphereMapTexture extends ASingleTexture {
 		super(Type.SPHERE_MAP, textureName, textureData);
 	}
 
-	public SphereMapTexture(String textureName, ACompressedTexture compressedTexture)
+	public SphereMapTexture(String textureName, CompressedTexture compressedTexture)
 	{
 		super(Type.SPHERE_MAP, textureName, compressedTexture);
 	}

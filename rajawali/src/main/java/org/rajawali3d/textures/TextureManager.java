@@ -23,11 +23,11 @@ public final class TextureManager {
 
     private static final String TAG = "TextureManager";
 
-    private final Set<ATexture> textures;
+    private final Set<BaseTexture> textures;
     private final Scene scene;
 
     public TextureManager(@NonNull Scene scene) {
-        textures = Collections.synchronizedSet(new HashSet<ATexture>());
+        textures = Collections.synchronizedSet(new HashSet<BaseTexture>());
         this.scene = scene;
     }
 
@@ -35,9 +35,9 @@ public final class TextureManager {
      * Adds a texture to this manager. This can be called from any thread. If the calling thread is the GL thread, this
      * will be executed immediately, otherwise it will be queued for execution on the GL thread.
      *
-     * @param texture {@link ATexture} to be added.
+     * @param texture {@link BaseTexture} to be added.
      */
-    public void addTexture(@NonNull final ATexture texture) {
+    public void addTexture(@NonNull final BaseTexture texture) {
         // Update the tracking structures first
         // Add the texture to the collection
         textures.add(texture);
@@ -53,9 +53,9 @@ public final class TextureManager {
      * Removes a texture from this manager. This can be called from any thread. If the calling thread is the GL thread,
      * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
      *
-     * @param texture {@link ATexture} to be removed.
+     * @param texture {@link BaseTexture} to be removed.
      */
-    public void removeTexture(@NonNull final ATexture texture) {
+    public void removeTexture(@NonNull final BaseTexture texture) {
         // Update the tracking structures first
         // Remove the texture from the collection
         textures.remove(texture);
@@ -71,11 +71,11 @@ public final class TextureManager {
      * Replaces a texture in this manager. This can be called from any thread. If the calling thread is the GL thread,
      * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
      *
-     * @param texture {@link ATexture} to be replaced.
+     * @param texture {@link BaseTexture} to be replaced.
      *
      * @throws TextureException Thrown if an internal error occurs while trying to replace the texture.
      */
-    public void replaceTexture(@NonNull final ATexture texture) throws TextureException {
+    public void replaceTexture(@NonNull final BaseTexture texture) throws TextureException {
         // Check the tracking structure first
         if (!textures.contains(texture)) {
             throw new TextureException("Tried replacing texture " + texture + " but it was not previously added.");
@@ -92,9 +92,9 @@ public final class TextureManager {
     public void reloadTextures() {
         if (textures.size() != 0) {
             synchronized (textures) {
-                final Iterator<ATexture> iterator = textures.iterator();
+                final Iterator<BaseTexture> iterator = textures.iterator();
                 while (iterator.hasNext()) {
-                    final ATexture texture = iterator.next();
+                    final BaseTexture texture = iterator.next();
                     try {
                         if (texture.willRecycle()) {
                             // Remove this texture...we weren't tracking its data and cant restore it automatically

@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class Etc1Texture extends ACompressedTexture {
+public class Etc1Texture extends CompressedTexture {
 
     protected int mResourceId = -1;
     protected int[] mResourceIds;

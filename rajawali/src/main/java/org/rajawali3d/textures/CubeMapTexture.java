@@ -65,7 +65,7 @@ public class CubeMapTexture extends AMultiTexture {
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, ACompressedTexture[] compressedTextures) {
+    public CubeMapTexture(String textureName, CompressedTexture[] compressedTextures) {
         super(Type.CUBE_MAP, textureName, compressedTextures);
         mHasCompressedTextures = true;
         setWrapType(Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
@@ -122,7 +122,7 @@ public class CubeMapTexture extends AMultiTexture {
             if (mBitmaps != null) {
                 GLUtils.texImage2D(CUBE_FACES[i], 0, mBitmaps[i], 0);
             } else if(mHasCompressedTextures) {
-                ACompressedTexture tex = mCompressedTextures[i];
+                CompressedTexture tex = mCompressedTextures[i];
                 int w = tex.getWidth(), h = tex.getHeight();
                 for (int j = 0; j < tex.getByteBuffers().length; j++) {
                     GLES20.glCompressedTexImage2D(CUBE_FACES[i], j, tex.getCompressionFormat(), w, h, 0,
@@ -192,7 +192,7 @@ public class CubeMapTexture extends AMultiTexture {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
             if(mHasCompressedTextures) {
                 for (int i = 0; i < 6; i++) {
-                    ACompressedTexture tex = mCompressedTextures[i];
+                    CompressedTexture tex = mCompressedTextures[i];
                     tex.add();
                     int w = tex.getWidth(), h = tex.getHeight();
                     for (int j = 0; j < tex.getByteBuffers().length; j++) {

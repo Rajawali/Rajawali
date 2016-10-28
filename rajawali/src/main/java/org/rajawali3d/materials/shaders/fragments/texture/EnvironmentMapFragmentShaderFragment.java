@@ -14,7 +14,7 @@ package org.rajawali3d.materials.shaders.fragments.texture;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.annotation.Type;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShaderFragment implements IShaderFragment {
 	public final static String SHADER_ID = "ENVIRONMENT_MAP_TEXTURE_FRAGMENT";
 
-	public EnvironmentMapFragmentShaderFragment(List<ATexture> textures)
+	public EnvironmentMapFragmentShaderFragment(List<BaseTexture> textures)
 	{
 		super(textures);
 	}

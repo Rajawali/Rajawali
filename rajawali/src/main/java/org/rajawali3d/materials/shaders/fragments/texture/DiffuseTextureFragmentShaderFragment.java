@@ -13,7 +13,7 @@
 package org.rajawali3d.materials.shaders.fragments.texture;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
 
@@ -23,7 +23,7 @@ import java.util.List;
 public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShaderFragment {
 	public final static String SHADER_ID = "DIFFUSE_TEXTURE_FRAGMENT";
 
-	public DiffuseTextureFragmentShaderFragment(List<ATexture> textures)
+	public DiffuseTextureFragmentShaderFragment(List<BaseTexture> textures)
 	{
 		super(textures);
 	}
@@ -41,7 +41,7 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 
 		for(int i=0; i<mTextures.size(); i++)
 		{
-			ATexture texture = mTextures.get(i);
+			BaseTexture texture = mTextures.get(i);
 			if(texture.offsetEnabled())
 				textureCoord.assignAdd(getGlobal(DefaultShaderVar.U_OFFSET, i));
 			if(texture.getWrapType() == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R))

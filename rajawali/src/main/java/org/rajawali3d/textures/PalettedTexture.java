@@ -14,7 +14,7 @@ package org.rajawali3d.textures;
 
 import java.nio.ByteBuffer;
 
-public class PalettedTexture extends ACompressedTexture {
+public class PalettedTexture extends CompressedTexture {
 
 	// Paletted texture constants
 	// Referenced from OpenGL ES 2.0 extension C header from Khronos Group

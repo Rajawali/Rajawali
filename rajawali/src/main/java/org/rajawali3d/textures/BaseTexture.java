@@ -38,7 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 //TODO: Build interface that allows textures to notify materials of relevant changes.
 //TODO: Handle repeaat/offset functions
 @SuppressWarnings("WeakerAccess")
-public abstract class ATexture {
+public abstract class BaseTexture {
 
     /**
      * The GL texture id that is used by Rajawali.
@@ -122,7 +122,7 @@ public abstract class ATexture {
     /**
      * The optional compressed texture.
      */
-    protected ACompressedTexture compressedTexture;
+    protected CompressedTexture compressedTexture;
 
     /**
      * The OpenGL texture type.
@@ -151,8 +151,7 @@ public abstract class ATexture {
      * @param textureType {@link TextureType} The Rajawali texture type.
      * @param textureName The name of the texture. This name will be used in the shader code to reference this texture.
      */
-    public ATexture(@TextureType int textureType, @NonNull String textureName) {
-        this();
+    public BaseTexture(@TextureType int textureType, @NonNull String textureName) {
         this.textureType = textureType;
         this.textureName = textureName;
         mipmaped = true;
@@ -168,38 +167,41 @@ public abstract class ATexture {
      * @param textureType       {@link TextureType} The Rajawali texture type.
      * @param textureName       The name of the texture. This name will be used in the shader code to reference this
      *                          texture.
-     * @param compressedTexture {@link ACompressedTexture} The compressed texture this texture is built from.
+     * @param compressedTexture {@link CompressedTexture} The compressed texture this texture is built from.
      */
-    public ATexture(@TextureType int textureType, @NonNull String textureName, ACompressedTexture compressedTexture) {
+    public BaseTexture(@TextureType int textureType, @NonNull String textureName, CompressedTexture compressedTexture) {
         this(textureType, textureName);
         setCompressedTexture(compressedTexture);
     }
 
-    protected ATexture() {
-        // TODO: Can we remove this constructor?
-        textureName = "noName";
+    /**
+     * Basic no-args constructor used by some subclasses. No initialization is performed.
+     */
+    protected BaseTexture() {
+        textureName = "";
     }
 
     /**
      * Creates a new texture instance and copies all properties from another texture object.
      *
-     * @param other The {@link ATexture} to copy from.
+     * @param other The {@link BaseTexture} to copy from.
      */
-    public ATexture(ATexture other) {
+    public BaseTexture(BaseTexture other) {
+        textureName = ""; // This is a dummy assignment to cover @NonNull rules
         setFrom(other);
     }
 
     /**
      * Creates a clone of this texture.
      */
-    public abstract ATexture clone();
+    public abstract BaseTexture clone();
 
     /**
-     * Copies every property from another {@link ATexture} object.
+     * Copies every property from another {@link BaseTexture} object.
      *
-     * @param other The {@link ATexture} to copy from.
+     * @param other The {@link BaseTexture} to copy from.
      */
-    public void setFrom(ATexture other) {
+    public void setFrom(BaseTexture other) {
         textureId = other.getTextureId();
         width = other.getWidth();
         height = other.getHeight();
@@ -217,7 +219,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Retrieves the id assigned to this {@link ATexture} by the render context.
+     * Retrieves the id assigned to this {@link BaseTexture} by the render context.
      *
      * @return {@code int} The texture id.
      */
@@ -226,7 +228,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the id assigned to this {@link ATexture} by the render context.
+     * Sets the id assigned to this {@link BaseTexture} by the render context.
      *
      * @param textureId {@code int} The texture id.
      */
@@ -235,7 +237,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the configured width of this {@link ATexture}.
+     * Fetches the configured width of this {@link BaseTexture}.
      *
      * @return {@code int} The width in texels.
      */
@@ -244,7 +246,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the configured width of this {@link ATexture}. Once the {@link ATexture} has been pushed, using this method
+     * Sets the configured width of this {@link BaseTexture}. Once the {@link BaseTexture} has been pushed, using this method
      * require a update push to the GPU.
      *
      * @param width {@code int} The width in texels.
@@ -254,7 +256,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the configured height of this {@link ATexture}.
+     * Fetches the configured height of this {@link BaseTexture}.
      *
      * @return {@code int} The height in texels.
      */
@@ -263,7 +265,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the configured height of this {@link ATexture}. Once the {@link ATexture} has been pushed, using this
+     * Sets the configured height of this {@link BaseTexture}. Once the {@link BaseTexture} has been pushed, using this
      * method require a update push to the GPU.
      *
      * @param height {@code int} The height in texels.
@@ -273,7 +275,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the internal texel format of this {@link ATexture}.
+     * Fetches the internal texel format of this {@link BaseTexture}.
      *
      * @return {@link TexelFormat} The internal texel format.
      * @see <a href="https://www.khronos.org/opengles/sdk/docs/man3/html/glTexImage2D.xhtml">glTexImage2D</a>
@@ -284,7 +286,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the internal texel format of this {@link ATexture}. This affects the quality (color depth) as well as the
+     * Sets the internal texel format of this {@link BaseTexture}. This affects the quality (color depth) as well as the
      * ability to display transparent/translucent colors. It is vital that the provided format be in agreement with the
      * rules of {@link GLES20#glTexImage2D(int, int, int, int, int, int, int, int, Buffer)} and related methods. These
      * rules differ between GL ES 2.x and GL ES 3.x.
@@ -298,7 +300,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches whether or not this {@link ATexture} is configured to auto-generate mipmaps. Mipmaps are pre-calculated,
+     * Fetches whether or not this {@link BaseTexture} is configured to auto-generate mipmaps. Mipmaps are pre-calculated,
      * optimized collections of images that accompany a main texture, intended to increase rendering speed and reduce
      * aliasing artifacts.
      *
@@ -309,7 +311,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets whether or not this {@link ATexture} is configured to auto-generate mipmaps. Mipmaps are pre-calculated,
+     * Sets whether or not this {@link BaseTexture} is configured to auto-generate mipmaps. Mipmaps are pre-calculated,
      * optimized collections of images that accompany a main texture, intended to increase rendering speed and reduce
      * aliasing artifacts.
      *
@@ -345,7 +347,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the name of this {@link ATexture}. This name will be used in the shader code to reference this texture.
+     * Fetches the name of this {@link BaseTexture}. This name will be used in the shader code to reference this texture.
      *
      * @return {@link String} The texture name.
      */
@@ -354,7 +356,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the name of this {@link ATexture}. This name will be used in the shader code to reference this texture.
+     * Sets the name of this {@link BaseTexture}. This name will be used in the shader code to reference this texture.
      *
      * @param textureName {@link String} The texture name.
      */
@@ -363,7 +365,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the Rajawali texture type of this {@link ATexture}. These types determine how the engine treats the
+     * Fetches the Rajawali texture type of this {@link BaseTexture}. These types determine how the engine treats the
      * texture internally. For example, as a diffuse color texture, a normal map, or a data lookup.
      *
      * @return {@link TextureType} The texture type.
@@ -375,7 +377,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the wrapping configuration for this {@link ATexture}. Wrapping determines how the GPU will handle
+     * Fetches the wrapping configuration for this {@link BaseTexture}. Wrapping determines how the GPU will handle
      * texture
      * coordinates outside the range of [0, 1].
      *
@@ -388,7 +390,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the wrapping configuration for this {@link ATexture}. Wrapping determines how the GPU will handle texture
+     * Sets the wrapping configuration for this {@link BaseTexture}. Wrapping determines how the GPU will handle texture
      * coordinates outside the range of [0, 1].
      *
      * @param wrapType {@link WrapType} The wrapping configuration.
@@ -400,7 +402,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the filtering configuration for this {@link ATexture}. Filtering determines how the GPU will interpolate
+     * Fetches the filtering configuration for this {@link BaseTexture}. Filtering determines how the GPU will interpolate
      * texel data when looking up for an individual pixel.
      *
      * @return {@link FilterType} The filtering configuration.
@@ -412,7 +414,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the filtering configuration for this {@link ATexture}. Filtering determines how the GPU will interpolate
+     * Sets the filtering configuration for this {@link BaseTexture}. Filtering determines how the GPU will interpolate
      * texel data when looking up for an individual pixel.
      *
      * @param filterType {@link FilterType} The filtering configuration.
@@ -424,7 +426,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the render context texture target for this {@link ATexture}.
+     * Fetches the render context texture target for this {@link BaseTexture}.
      *
      * @return {@link TextureTarget} The target of this texture in the render context.
      */
@@ -434,7 +436,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the render context texture target for this {@link ATexture}.
+     * Sets the render context texture target for this {@link BaseTexture}.
      *
      * @param target {@link TextureTarget} The render context texture target.
      */
@@ -443,10 +445,10 @@ public abstract class ATexture {
     }
 
     /**
-     * Registers a {@link Material} with this {@link ATexture}. This is used to track which materials might need to be
+     * Registers a {@link Material} with this {@link BaseTexture}. This is used to track which materials might need to be
      * updated if changes are made to this texture.
      *
-     * @param material {@link Material} The material utilizing this {@link ATexture}.
+     * @param material {@link Material} The material utilizing this {@link BaseTexture}.
      *
      * @return {@code true} If the material was registered. {@code false} If the material was already registered.
      */
@@ -459,18 +461,18 @@ public abstract class ATexture {
     }
 
     /**
-     * Unregisters a {@link Material} with this {@link ATexture}.
+     * Unregisters a {@link Material} with this {@link BaseTexture}.
      *
      * @param material The {@link Material} to unregister.
      *
-     * @return {@code true} if the {@link Material} was registered.
+     * @return {@code true} if the {@link Material} was unregistered.
      */
     public boolean unregisterMaterial(@NonNull Material material) {
         return materialsUsingTexture.remove(material);
     }
 
     /**
-     * Retrieves the list of {@link Material}s registered with this {@link ATexture}.
+     * Retrieves the list of {@link Material}s registered with this {@link BaseTexture}.
      *
      * @return The list of registered {@link Material}s.
      */
@@ -480,7 +482,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Checks is a {@link Material} is registered with this {@link ATexture}.
+     * Checks is a {@link Material} is registered with this {@link BaseTexture}.
      *
      * @param material The {@link Material} to check.
      *
@@ -497,7 +499,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Sets the influence of this {@link ATexture} on the final color. If this {@link ATexture} is not used for
+     * Sets the influence of this {@link BaseTexture} on the final color. If this {@link BaseTexture} is not used for
      * coloring
      * a pixel, this will have no effect.
      *
@@ -510,7 +512,7 @@ public abstract class ATexture {
     }
 
     /**
-     * Fetches the influence of this {@link ATexture} on the final color. If this {@link ATexture} is not used for
+     * Fetches the influence of this {@link BaseTexture} on the final color. If this {@link BaseTexture} is not used for
      * coloring a pixel, this has no effect.
      *
      * @return {@code float} The influence.
@@ -578,11 +580,11 @@ public abstract class ATexture {
         offset[1] = v;
     }
 
-    public void setCompressedTexture(ACompressedTexture compressedTexture) {
+    public void setCompressedTexture(CompressedTexture compressedTexture) {
         this.compressedTexture = compressedTexture;
     }
 
-    public ACompressedTexture getCompressedTexture() {
+    public CompressedTexture getCompressedTexture() {
         return compressedTexture;
     }
 

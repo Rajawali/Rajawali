@@ -22,7 +22,7 @@ import org.rajawali3d.textures.annotation.Type;
 
 import java.io.IOException;
 
-public class StreamingTexture extends ATexture {
+public class StreamingTexture extends BaseTexture {
 
     public interface ISurfaceListener {
 

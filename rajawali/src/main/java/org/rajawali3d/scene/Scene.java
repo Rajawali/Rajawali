@@ -32,7 +32,7 @@ import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.plugins.IRendererPlugin;
 import org.rajawali3d.renderer.plugins.Plugin;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.CubeMapTexture;
 import org.rajawali3d.textures.Texture;
 import org.rajawali3d.textures.TextureException;
@@ -80,7 +80,7 @@ public class Scene {
 	*/
 	private Cube mNextSkybox;
 	private final Object mNextSkyboxLock = new Object();
-	protected ATexture mSkyboxTexture;
+	protected BaseTexture mSkyboxTexture;
 
     /**
      * Guarded by {@link #mFrameTaskQueue}.

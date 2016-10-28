@@ -14,7 +14,7 @@ package org.rajawali3d.textures;
 
 import java.nio.ByteBuffer;
 
-public class PvrtcTexture extends ACompressedTexture {
+public class PvrtcTexture extends CompressedTexture {
 
 	// PowerVR Texture compression constants
 	private static final int GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 0x8C00;

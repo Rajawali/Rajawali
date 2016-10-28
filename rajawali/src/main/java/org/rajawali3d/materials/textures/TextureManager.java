@@ -15,7 +15,7 @@ package org.rajawali3d.materials.textures;
 import android.opengl.GLES20;
 import org.rajawali3d.materials.AResourceManager;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.RenderTargetTexture;
 
 import java.util.Collections;
@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * A singleton class that keeps track of all textures used by the application. All textures will be restored when the
  * OpenGL context is being recreated. This however needs to be indicated by setting
- * {@link ATexture#shouldRecycle(boolean)} to true (which is the default). It will then keep a reference to the Bitmap
+ * {@link BaseTexture#shouldRecycle(boolean)} to true (which is the default). It will then keep a reference to the Bitmap
  * which means the application will take up more memory.
  * <p>
  * The advantage of storing the Bitmap in memory is that it the texture can quickly be recovered when the context is
@@ -42,14 +42,14 @@ public final class TextureManager extends AResourceManager {
 	/**
 	 * A list of managed textures
 	 */
-	private List<ATexture> mTextureList;
+	private List<BaseTexture> mTextureList;
 
 	/**
 	 * The constructor can only be instantiated by the TextureManager class itself.
 	 */
 	private TextureManager()
 	{
-		mTextureList = Collections.synchronizedList(new CopyOnWriteArrayList<ATexture>());
+		mTextureList = Collections.synchronizedList(new CopyOnWriteArrayList<BaseTexture>());
 		mRenderers = Collections.synchronizedList(new CopyOnWriteArrayList<Renderer>());
 	}
 
@@ -67,33 +67,33 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Adds a new {@link ATexture} to the TextureManager. If a texture by the same name already exists that is not
+	 * Adds a new {@link BaseTexture} to the TextureManager. If a texture by the same name already exists that is not
 	 * this same texture object, the provided texture will be updated to point to the previously added texture.
 	 *
 	 * @param texture
 	 * @return
 	 */
-	public ATexture addTexture(ATexture texture) {
+	public BaseTexture addTexture(BaseTexture texture) {
 		mRenderer.addTexture(texture);
 		return texture;
 	}
 
 	/**
-	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link Renderer}.
+	 * Adds a {@link BaseTexture} to the TextureManager. This should only be called by {@link Renderer}.
 	 *
 	 * @param texture
 	 */
-	public void taskAdd(ATexture texture) {
+	public void taskAdd(BaseTexture texture) {
 		taskAdd(texture, false);
 	}
 
 	/**
-	 * Adds a {@link ATexture} to the TextureManager. This should only be called by {@link Renderer}.
+	 * Adds a {@link BaseTexture} to the TextureManager. This should only be called by {@link Renderer}.
 	 *
 	 * @param texture
 	 * @param isUpdatingAfterContextWasLost
 	 */
-	private void taskAdd(ATexture texture, boolean isUpdatingAfterContextWasLost) {
+	private void taskAdd(BaseTexture texture, boolean isUpdatingAfterContextWasLost) {
 		if (!isUpdatingAfterContextWasLost) {
 			// -- check if texture exists already
 			int count = mTextureList.size();
@@ -119,22 +119,22 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Replaces an existing {@link ATexture}.
+	 * Replaces an existing {@link BaseTexture}.
 	 *
 	 * @param texture
 	 * @return
 	 */
-	public void replaceTexture(ATexture texture) {
+	public void replaceTexture(BaseTexture texture) {
 		mRenderer.replaceTexture(texture);
 	}
 
 	/**
-	 * Replaces an existing {@link ATexture}. This should only be called by {@link Renderer}.
+	 * Replaces an existing {@link BaseTexture}. This should only be called by {@link Renderer}.
 	 *
 	 * @param texture
 	 * @return
 	 */
-	public void taskReplace(ATexture texture)
+	public void taskReplace(BaseTexture texture)
 	{
 		try {
 			//texture.replace();
@@ -144,21 +144,21 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Removes a {@link ATexture} from the TextureManager.
+	 * Removes a {@link BaseTexture} from the TextureManager.
 	 *
 	 * @param texture
 	 * @return
 	 */
-	public void removeTexture(ATexture texture) {
+	public void removeTexture(BaseTexture texture) {
 		mRenderer.removeTexture(texture);
 	}
 
 	/**
-	 * Removes a list of {@link ATexture}s from the TextureManager.
+	 * Removes a list of {@link BaseTexture}s from the TextureManager.
 	 *
 	 * @return
 	 */
-	public void removeTextures(List<ATexture> textures) {
+	public void removeTextures(List<BaseTexture> textures) {
 		int numTextures = textures.size();
 
 		for (int i = 0; i < numTextures; i++) {
@@ -167,12 +167,12 @@ public final class TextureManager extends AResourceManager {
 	}
 
 	/**
-	 * Removes a {@link ATexture} from the TextureManager. This should only be called by {@link Renderer}.
+	 * Removes a {@link BaseTexture} from the TextureManager. This should only be called by {@link Renderer}.
 	 *
 	 * @param texture
 	 * @return
 	 */
-	public void taskRemove(ATexture texture) {
+	public void taskRemove(BaseTexture texture) {
 		try {
 			//texture.remove();
 		} catch (Exception e) {
@@ -183,7 +183,7 @@ public final class TextureManager extends AResourceManager {
 
 	/**
 	 * Restores all textures that are managed by the TextureManager. All textures will be restored when the OpenGL
-	 * context is being recreated. This however needs to be indicated by setting {@link ATexture#shouldRecycle(boolean)}
+	 * context is being recreated. This however needs to be indicated by setting {@link BaseTexture#shouldRecycle(boolean)}
 	 * to true (which is the default). It will then keep a reference to the Bitmap which means the application will take
 	 * up more memory.
 	 * <p>
@@ -201,7 +201,7 @@ public final class TextureManager extends AResourceManager {
 	public void taskReload() {
 		int len = mTextureList.size();
 		for (int i = 0; i < len; i++) {
-			ATexture texture = mTextureList.get(i);
+			BaseTexture texture = mTextureList.get(i);
 			if (texture.willRecycle()) {
 				mTextureList.remove(i);
 				i -= 1;
@@ -228,7 +228,7 @@ public final class TextureManager extends AResourceManager {
 
 			int[] textures = new int[count];
 			for (int i = 0; i < count; i++) {
-				ATexture texture = mTextureList.get(i);
+				BaseTexture texture = mTextureList.get(i);
 				//if (texture.getOwnerIdentity().equals(mRenderer.getClass().toString()) || texture.willRecycle()) {
 					//texture.reset();
 					textures[i] = texture.getTextureId();

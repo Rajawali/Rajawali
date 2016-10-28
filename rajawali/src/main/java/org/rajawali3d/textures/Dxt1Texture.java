@@ -14,7 +14,7 @@ package org.rajawali3d.textures;
 
 import java.nio.ByteBuffer;
 
-public class Dxt1Texture extends ACompressedTexture {
+public class Dxt1Texture extends CompressedTexture {
 
 	// S3 texture compression constants
 	private static final int GL_COMPRESSED_RGB_S3TC_DXT1_EXT = 0x83F0;

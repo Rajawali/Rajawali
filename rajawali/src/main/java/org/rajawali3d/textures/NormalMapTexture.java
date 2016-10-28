@@ -17,7 +17,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
 
-public class NormalMapTexture extends ASingleTexture {
+public class NormalMapTexture extends SingleTexture {
 	public NormalMapTexture(NormalMapTexture other)
 	{
 		super(other);
@@ -39,7 +39,7 @@ public class NormalMapTexture extends ASingleTexture {
 		super(Type.NORMAL, textureName, textureData);
 	}
 
-	public NormalMapTexture(String textureName, ACompressedTexture compressedTexture)
+	public NormalMapTexture(String textureName, CompressedTexture compressedTexture)
 	{
 		super(Type.NORMAL, textureName, compressedTexture);
 	}

@@ -8,7 +8,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.ShadowMapMaterialPlugin;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.Scene;
@@ -54,7 +54,7 @@ public class ShadowMapMaterial extends Material {
 		mMaterialPlugin.setShadowInfluence(influence);
 	}
 
-	public void setShadowMapTexture(ATexture shadowMapTexture) {
+	public void setShadowMapTexture(BaseTexture shadowMapTexture) {
 		mMaterialPlugin.setShadowMapTexture(shadowMapTexture);
 	}
 

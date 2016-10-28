@@ -13,7 +13,7 @@
 package org.rajawali3d.materials.shaders.fragments.texture;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.annotation.Type;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
 public class SkyTextureFragmentShaderFragment extends ATextureFragmentShaderFragment {
 	public final static String SHADER_ID = "SKY_TEXTURE_FRAGMENT";
 
-	public SkyTextureFragmentShaderFragment(List<ATexture> textures) {
+	public SkyTextureFragmentShaderFragment(List<BaseTexture> textures) {
 		super(textures);
 	}
 

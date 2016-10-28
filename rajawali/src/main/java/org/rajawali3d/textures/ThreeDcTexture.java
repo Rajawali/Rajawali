@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 
 import android.opengl.GLES11Ext;
 
-public class ThreeDcTexture extends ACompressedTexture {
+public class ThreeDcTexture extends CompressedTexture {
 
 	/**
 	 * 3DC Texture compression format.

@@ -17,7 +17,7 @@ import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
 
-public class RenderTargetTexture extends ATexture {
+public class RenderTargetTexture extends BaseTexture {
 
     public static enum RenderTargetTextureFormat {
         RGBA(GLES20.GL_RGBA), RGB(GLES20.GL_RGB), DEPTH(GLES20.GL_DEPTH_COMPONENT),

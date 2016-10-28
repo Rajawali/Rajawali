@@ -1,11 +1,7 @@
 package org.rajawali3d.textures;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import android.opengl.GLES20;
+
 import org.junit.Test;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.annotation.Filter;
@@ -14,14 +10,21 @@ import org.rajawali3d.textures.annotation.Wrap;
 
 import java.util.ArrayList;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public class ATextureTest {
+public class BaseTextureTest {
 
-    private static final class TestableATexture extends ATexture {
+    private static final class TestableBaseTexture extends BaseTexture {
 
-        @Override public ATexture clone() {
+        @Override public BaseTexture clone() {
             return null;
         }
 
@@ -44,8 +47,8 @@ public class ATextureTest {
 
     @Test
     public void setFrom() throws Exception {
-        final ATexture from = mock(ATexture.class);
-        final ATexture to = new TestableATexture();
+        final BaseTexture from = mock(BaseTexture.class);
+        final BaseTexture to = new TestableBaseTexture();
         when(from.getTextureId()).thenReturn(1);
         when(from.getWidth()).thenReturn(256);
         when(from.getHeight()).thenReturn(512);
@@ -74,98 +77,109 @@ public class ATextureTest {
         assertEquals(Filter.NEAREST, to.getFilterType());
         assertEquals(null, to.getCompressedTexture());
         assertEquals(GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X, to.getTextureTarget());
-        assertEquals(0.654321f, to.getInfluence());
+        assertEquals(Double.doubleToLongBits(0.654321f), Double.doubleToLongBits(to.getInfluence()));
         assertNotNull(to.getRegisteredMaterials());
         assertEquals(0, to.getRegisteredMaterials().size());
     }
 
     @Test
     public void setTextureId() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setTextureId(10);
         assertEquals(10, texture.getTextureId());
     }
 
     @Test
     public void setWidth() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setWidth(10);
         assertEquals(10, texture.getWidth());
     }
 
     @Test
     public void setHeight() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setHeight(10);
         assertEquals(10, texture.getHeight());
     }
 
     @Test
     public void setTexelFormat() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setTexelFormat(GLES20.GL_RGB565);
         assertEquals(GLES20.GL_RGB565, texture.getTexelFormat());
     }
 
     @Test
     public void setMipmap() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setMipmaped(true);
         assertEquals(true, texture.isMipmaped());
     }
 
     @Test
     public void shouldRecycle() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.shouldRecycle(true);
         assertEquals(true, texture.willRecycle());
     }
 
     @Test
     public void setTextureName() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setTextureName("TEST");
         assertEquals("TEST", texture.getTextureName());
     }
 
     @Test
     public void setWrapType() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setWrapType(Wrap.CLAMP_S | Wrap.MIRRORED_REPEAT_T | Wrap.REPEAT_R);
         assertEquals(Wrap.CLAMP_S | Wrap.MIRRORED_REPEAT_T | Wrap.REPEAT_R, texture.getWrapType());
     }
 
     @Test
     public void setFilterType() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setFilterType(Filter.ANISOTROPIC);
         assertEquals(Filter.ANISOTROPIC, texture.getFilterType());
     }
 
     @Test
     public void setTextureTarget() throws Exception {
-        final TestableATexture texture = new TestableATexture();
+        final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
         assertEquals(GLES20.GL_TEXTURE_CUBE_MAP, texture.getTextureTarget());
     }
 
     @Test
     public void registerMaterial() throws Exception {
-
+        final Material material = mock(Material.class);
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        boolean retval = texture.registerMaterial(material);
+        assertTrue(retval);
+        assertTrue(texture.getRegisteredMaterials().contains(material));
+        retval = texture.registerMaterial(material);
+        assertFalse(retval);
     }
 
     @Test
     public void unregisterMaterial() throws Exception {
-
+        final Material material = mock(Material.class);
+        final Material material2 = mock(Material.class);
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        texture.registerMaterial(material);
+        boolean retval = texture.unregisterMaterial(material);
+        assertTrue(retval);
+        assertTrue(texture.getRegisteredMaterials().contains(material));
+        retval = texture.unregisterMaterial(material2);
+        assertFalse(retval);
     }
 
     @Test
     public void setInfluence() throws Exception {
-
-    }
-
-    @Test
-    public void getInfluence() throws Exception {
-
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        texture.setInfluence(0.5f);
+        assertEquals(Float.floatToIntBits(0.5f), Float.floatToIntBits(texture.getInfluence()));
     }
 }

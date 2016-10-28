@@ -39,7 +39,7 @@ import java.nio.ByteOrder;
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
-public class Etc2Texture extends ACompressedTexture {
+public class Etc2Texture extends CompressedTexture {
 
     protected int mResourceId;
     protected Bitmap mBitmap;
@@ -87,7 +87,7 @@ public class Etc2Texture extends ACompressedTexture {
     }
 
     @Override
-    public ATexture clone() {
+    public BaseTexture clone() {
         return null;
     }
 

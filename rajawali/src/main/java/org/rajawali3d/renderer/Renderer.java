@@ -32,7 +32,7 @@ import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.RenderTargetTexture;
 import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.Capabilities;
@@ -874,7 +874,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         return internalOfferTask(task);
     }
 
-    public boolean addTexture(final ATexture texture) {
+    public boolean addTexture(final BaseTexture texture) {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
@@ -884,7 +884,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         return internalOfferTask(task);
     }
 
-    public boolean removeTexture(final ATexture texture) {
+    public boolean removeTexture(final BaseTexture texture) {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
@@ -894,7 +894,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         return internalOfferTask(task);
     }
 
-    public boolean replaceTexture(final ATexture texture) {
+    public boolean replaceTexture(final BaseTexture texture) {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {

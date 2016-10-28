@@ -17,7 +17,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
 
-public class Texture extends ASingleTexture {
+public class Texture extends SingleTexture {
 	public Texture(Texture other)
 	{
 		super(other);
@@ -44,7 +44,7 @@ public class Texture extends ASingleTexture {
 		super(TextureType.DIFFUSE, textureName, atlas.getTileNamed(textureName).getPage());
 	}*/
 
-	public Texture(String textureName, ACompressedTexture compressedTexture)
+	public Texture(String textureName, CompressedTexture compressedTexture)
 	{
 		super(Type.DIFFUSE, textureName, compressedTexture);
 	}

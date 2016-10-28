@@ -16,7 +16,7 @@ import android.opengl.GLES11Ext;
 
 import java.nio.ByteBuffer;
 
-public class AtcTexture extends ACompressedTexture {
+public class AtcTexture extends CompressedTexture {
 
 	/**
 	 * ATC Texture compression format.

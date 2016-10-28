@@ -3,7 +3,7 @@ package org.rajawali3d.loader.awd;
 import android.opengl.GLES20;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.CubeMapTexture;
 import org.rajawali3d.textures.Texture;
 import org.rajawali3d.loader.LoaderAWD.IBlockParser;
@@ -39,7 +39,7 @@ public abstract class ABlockParser implements IBlockParser {
 		}
 	}
 
-	protected static ATexture getDefaultCubeMapTexture() {
+	protected static BaseTexture getDefaultCubeMapTexture() {
 		return new CubeMapTexture("DefaultCubeMapTexture", new Bitmap[] { defaultTextureBitmap, defaultTextureBitmap,
 				defaultTextureBitmap, defaultTextureBitmap, defaultTextureBitmap, defaultTextureBitmap });
 	}
@@ -48,7 +48,7 @@ public abstract class ABlockParser implements IBlockParser {
 		return new Material();
 	}
 
-	protected static ATexture getDefaultTexture() {
+	protected static BaseTexture getDefaultTexture() {
 		return new Texture("AWD_DefaultTexture", new TextureDataReference(defaultTextureBitmap, null, GLES20.GL_RGBA,
 																		  GLES20.GL_UNSIGNED_BYTE));
 	}

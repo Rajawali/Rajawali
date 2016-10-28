@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -18,7 +18,9 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
 import org.rajawali3d.textures.annotation.Type.TextureType;
@@ -26,37 +28,76 @@ import org.rajawali3d.textures.annotation.Wrap;
 import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 /**
- * This class is used to specify texture options.
+ * This class is used to specify common functions of a single texture.
  *
  * @author dennis.ippel
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public abstract class ASingleTexture extends ATexture {
-    protected TextureDataReference textureData;
-    protected int                  mResourceId;
+@SuppressWarnings("WeakerAccess")
+public abstract class SingleTexture extends BaseTexture {
 
-    protected ASingleTexture() {
-        super();
+    /**
+     * The texture data.
+     */
+    private TextureDataReference textureData;
+
+    /**
+     * The Android resource ID of the data for this texture, if it was provided. Otherwise, 0.
+     */
+    protected int resourceId;
+
+    /**
+     * Constructs a new {@link SingleTexture} with the specified name and type.
+     *
+     * @param type {@link TextureType} The texture usage type.
+     * @param name {@link String} The texture name.
+     */
+    public SingleTexture(@TextureType int type, @NonNull String name) {
+        super(type, name);
     }
 
-    public ASingleTexture(@TextureType int textureType, String textureName) {
-        super(textureType, textureName);
-    }
-
-    public ASingleTexture(@TextureType int textureType, @NonNull Context context, int resourceId) {
-        this(textureType, context.getResources().getResourceName(resourceId));
+    /**
+     * Constructs a new {@link SingleTexture} with data provided by the Android resource id. The texture name is set by
+     * querying Android for the resource name.
+     *
+     * @param context {@link Context} The application context.
+     * @param type {@link TextureType} The texture usage type.
+     * @param resourceId {@code int} The Android resource id to load from.
+     */
+    public SingleTexture(@NonNull Context context, @TextureType int type, @DrawableRes int resourceId) {
+        this(type, context.getResources().getResourceName(resourceId));
         setResourceId(context, resourceId);
     }
 
-    public ASingleTexture(@TextureType int textureType, String textureName, TextureDataReference textureData) {
-        this(textureType, textureName);
-        setTextureData(textureData);
+    /**
+     * Constructs a new {@link SingleTexture} with the provided data.
+     *
+     * @param type {@link TextureType} The texture usage type.
+     * @param name {@link String} The texture name.
+     * @param data {@link TextureDataReference} The texture data.
+     */
+    public SingleTexture(@TextureType int type, @NonNull String name, @NonNull TextureDataReference data) {
+        this(type, name);
+        setTextureData(data);
     }
 
-    public ASingleTexture(@TextureType int textureType, String textureName, ACompressedTexture compressedTexture) {
-        super(textureType, textureName, compressedTexture);
+    /**
+     * Constructs a new {@link SingleTexture} with data provided by a {@link CompressedTexture}.
+     *
+     * @param type {@link TextureType} The texture usage type.
+     * @param name {@link String} The texture name.
+     * @param compressedTexture {@link CompressedTexture} The compressed texture data.
+     */
+    public SingleTexture(@TextureType int type, @NonNull String name, @NonNull CompressedTexture compressedTexture) {
+        super(type, name, compressedTexture);
     }
 
-    public ASingleTexture(ASingleTexture other) {
+    /**
+     * Constructs a new {@link SingleTexture} with data and settings from the provided {@link SingleTexture}.
+     *
+     * @param other The other {@link SingleTexture}.
+     */
+    public SingleTexture(@NonNull SingleTexture other) {
         super(other);
         setFrom(other);
     }
@@ -64,32 +105,42 @@ public abstract class ASingleTexture extends ATexture {
     /**
      * Creates a clone
      */
-    public abstract ASingleTexture clone();
+    public abstract SingleTexture clone();
 
     /**
-     * Copies every property from another ATexture object
+     * Copies all properties and data from another {@link SingleTexture}.
      *
-     * @param other another ATexture object to copy from
+     * @param other The other {@link SingleTexture}.
      */
-    public void setFrom(ASingleTexture other) {
+    public void setFrom(@NonNull SingleTexture other) {
         super.setFrom(other);
         setTextureData(other.getTextureData());
     }
 
+    /**
+     * Sets the resource id used by this {@link SingleTexture} for a data source. This will create a new
+     * {@link TextureDataReference}.
+     *
+     * @param context {@link Context}
+     * @param resourceId
+     * @return
+     */
     @NonNull
-    public TextureDataReference setResourceId(@NonNull Context context, int resourceId) {
-        mResourceId = resourceId;
-        BitmapFactory.Options bitmapScalingOptions = new BitmapFactory.Options();
-        bitmapScalingOptions.inScaled = false;
-        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, bitmapScalingOptions);
+    public TextureDataReference setResourceId(@NonNull Context context, @DrawableRes int resourceId) {
+        this.resourceId = resourceId;
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+
+        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
         setTextureData(new TextureDataReference(bitmap, null, bitmap.getConfig().equals(Config.RGB_565)
-                                                              ? GLES20.GL_RGB : GLES20.GL_RGBA,
-                                                GLES20.GL_UNSIGNED_BYTE));
+            ? GLES20.GL_RGB : GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE));
         return textureData;
     }
 
     public int getResourceId() {
-        return mResourceId;
+        return resourceId;
     }
 
     public void setTextureData(@NonNull TextureDataReference data) {
@@ -115,7 +166,7 @@ public abstract class ASingleTexture extends ATexture {
         }
 
         if (textureData == null || textureData.isDestroyed() || (textureData.hasBuffer()
-                                                                 && textureData.getByteBuffer().limit() == 0)) {
+            && textureData.getByteBuffer().limit() == 0)) {
             throw new TextureException("Texture could not be added because there is no valid data set.");
         }
 
@@ -135,10 +186,10 @@ public abstract class ASingleTexture extends ATexture {
             if (isMipmaped()) {
                 if (filterType == Filter.LINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                                           GLES20.GL_LINEAR_MIPMAP_LINEAR);
+                        GLES20.GL_LINEAR_MIPMAP_LINEAR);
                 } else {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                                           GLES20.GL_NEAREST_MIPMAP_NEAREST);
+                        GLES20.GL_NEAREST_MIPMAP_NEAREST);
                 }
             } else {
                 if (filterType == Filter.LINEAR) {
@@ -165,11 +216,11 @@ public abstract class ASingleTexture extends ATexture {
             if (textureData.hasBuffer()) {
                 if (width == 0 || height == 0 || texelFormat == 0) {
                     throw new TextureException(
-                            "Could not create ByteBuffer texture. One or more of the following properties haven't "
+                        "Could not create ByteBuffer texture. One or more of the following properties haven't "
                             + "been set: width, height or bitmap format");
                 }
                 GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, texelFormat, width, height, 0, texelFormat,
-                                    GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
+                    GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
             } else {
                 GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, texelFormat, textureData.getBitmap(), 0);
             }
@@ -195,7 +246,7 @@ public abstract class ASingleTexture extends ATexture {
         if (compressedTexture != null) {
             compressedTexture.remove();
         } else {
-            GLES20.glDeleteTextures(1, new int[]{ textureId }, 0);
+            GLES20.glDeleteTextures(1, new int[]{textureId}, 0);
         }
         if (textureData != null) {
             // When removing a texture, release a reference count for its data if we have saved it.
@@ -215,7 +266,7 @@ public abstract class ASingleTexture extends ATexture {
         }
 
         if (textureData == null || textureData.isDestroyed() || (textureData.hasBuffer()
-                                                                 && textureData.getByteBuffer().limit() == 0)) {
+            && textureData.getByteBuffer().limit() == 0)) {
             throw new TextureException("Texture could not be replaced because there is no Bitmap or ByteBuffer set.");
         }
 
@@ -225,23 +276,23 @@ public abstract class ASingleTexture extends ATexture {
             int bitmapFormat = textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
             if (textureData.getBitmap().getWidth() != width || textureData.getBitmap().getHeight() != height) {
                 throw new TextureException(
-                        "Texture could not be updated because the texture size is different from the original.");
+                    "Texture could not be updated because the texture size is different from the original.");
             }
             if (bitmapFormat != this.texelFormat) {
                 throw new TextureException(
-                        "Texture could not be updated because the bitmap format is different from the original");
+                    "Texture could not be updated because the bitmap format is different from the original");
             }
 
             GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), this.texelFormat,
-                                  GLES20.GL_UNSIGNED_BYTE);
+                GLES20.GL_UNSIGNED_BYTE);
         } else if (textureData.hasBuffer()) {
             if (width == 0 || height == 0 || texelFormat == 0) {
                 throw new TextureException(
-                        "Could not update ByteBuffer texture. One or more of the following properties haven't been "
+                    "Could not update ByteBuffer texture. One or more of the following properties haven't been "
                         + "set: width, height or bitmap format");
             }
             GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, width, height, texelFormat,
-                                   GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
+                GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
         }
 
         if (mipmaped) {

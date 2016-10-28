@@ -21,7 +21,7 @@ import org.rajawali3d.materials.methods.SpecularMethod.SpecularShaderVar;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
 import org.rajawali3d.materials.shaders.fragments.texture.ATextureFragmentShaderFragment;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
@@ -47,7 +47,7 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 		this(lights, specularColor, shininess, 1, null);
 	}
 
-	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess, float specularIntensity, List<ATexture> textures) {
+	public PhongFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess, float specularIntensity, List<BaseTexture> textures) {
 		super(textures);
 		mSpecularColor = new float[] { 1, 1, 1 };
 		mSpecularColor[0] = (float)Color.red(specularColor) / 255.f;
