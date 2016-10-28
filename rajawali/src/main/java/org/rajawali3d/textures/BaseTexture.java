@@ -115,11 +115,6 @@ public abstract class BaseTexture {
     protected int filterType;
 
     /**
-     * A list of materials that use this texture.
-     */
-    protected List<Material> materialsUsingTexture;
-
-    /**
      * The optional compressed texture.
      */
     protected CompressedTexture compressedTexture;
@@ -141,6 +136,9 @@ public abstract class BaseTexture {
     protected float[] offset = new float[]{0, 0};
 
     // TODO: Is the synchronized list necessary with copy on write list?
+    /**
+     * A list of materials that use this texture.
+     */
     private final List<Material> registeredMaterials = Collections.synchronizedList(
             new CopyOnWriteArrayList<Material>());
 
@@ -215,7 +213,8 @@ public abstract class BaseTexture {
         compressedTexture = other.getCompressedTexture();
         textureTarget = other.getTextureTarget();
         influence = other.getInfluence();
-        materialsUsingTexture = other.getRegisteredMaterials();
+        clearRegisteredMaterials();
+        registeredMaterials.addAll(other.getRegisteredMaterials());
     }
 
     /**
@@ -456,7 +455,7 @@ public abstract class BaseTexture {
         if (isMaterialRegistered(material)) {
             return false;
         }
-        materialsUsingTexture.add(material);
+        registeredMaterials.add(material);
         return true;
     }
 
@@ -468,7 +467,14 @@ public abstract class BaseTexture {
      * @return {@code true} if the {@link Material} was unregistered.
      */
     public boolean unregisterMaterial(@NonNull Material material) {
-        return materialsUsingTexture.remove(material);
+        return registeredMaterials.remove(material);
+    }
+
+    /**
+     * Unregisters all {@link Material}s with this {@link BaseTexture}.
+     */
+    public void clearRegisteredMaterials() {
+
     }
 
     /**
@@ -489,9 +495,9 @@ public abstract class BaseTexture {
      * @return {@code true} if the {@link Material} is registered.
      */
     private boolean isMaterialRegistered(@NonNull Material material) {
-        int count = materialsUsingTexture.size();
+        int count = registeredMaterials.size();
         for (int i = 0; i < count; i++) {
-            if (materialsUsingTexture.get(i) == material) {
+            if (registeredMaterials.get(i) == material) {
                 return true;
             }
         }

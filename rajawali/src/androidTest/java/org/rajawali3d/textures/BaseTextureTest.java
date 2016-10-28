@@ -1,7 +1,14 @@
 package org.rajawali3d.textures;
 
-import android.opengl.GLES20;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import android.opengl.GLES20;
+import android.support.test.filters.SmallTest;
 import org.junit.Test;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.annotation.Filter;
@@ -10,16 +17,10 @@ import org.rajawali3d.textures.annotation.Wrap;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SmallTest
 public class BaseTextureTest {
 
     private static final class TestableBaseTexture extends BaseTexture {
@@ -164,6 +165,11 @@ public class BaseTextureTest {
     }
 
     @Test
+    public void clearRegisteredMaterials() {
+
+    }
+
+    @Test
     public void unregisterMaterial() throws Exception {
         final Material material = mock(Material.class);
         final Material material2 = mock(Material.class);
@@ -171,7 +177,7 @@ public class BaseTextureTest {
         texture.registerMaterial(material);
         boolean retval = texture.unregisterMaterial(material);
         assertTrue(retval);
-        assertTrue(texture.getRegisteredMaterials().contains(material));
+        assertFalse(texture.getRegisteredMaterials().contains(material));
         retval = texture.unregisterMaterial(material2);
         assertFalse(retval);
     }
