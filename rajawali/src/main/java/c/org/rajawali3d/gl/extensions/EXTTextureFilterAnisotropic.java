@@ -1,8 +1,11 @@
 package c.org.rajawali3d.gl.extensions;
 
 import android.opengl.GLES20;
+import android.opengl.GLException;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import org.rajawali3d.util.RajLog;
 
 /**
  * This extension permits the OpenGL application to specify on a per-texture object basis the maximum degree of
@@ -34,13 +37,18 @@ public class EXTTextureFilterAnisotropic implements GLExtension {
     private float maxSupportedAnisotropy = 1.0f;
 
     @NonNull
-    public static EXTTextureFilterAnisotropic load() {
+    public static EXTTextureFilterAnisotropic load() throws UnsupportedCapabilityException {
         return new EXTTextureFilterAnisotropic();
     }
 
-    private EXTTextureFilterAnisotropic() {
+    private EXTTextureFilterAnisotropic() throws UnsupportedCapabilityException {
         final float[] params = new float[1];
         GLES20.glGetFloatv(MAX_TEXTURE_MAX_ANISOTROPY_EXT, params, 0);
+        try {
+            RajLog.checkGLError(name);
+        } catch (GLException e) {
+            throw new UnsupportedCapabilityException(e);
+        }
         maxSupportedAnisotropy = params[1];
     }
 

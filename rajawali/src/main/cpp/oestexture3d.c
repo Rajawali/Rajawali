@@ -15,7 +15,7 @@ void (*glTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoff
 void (*glCopyTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x,
                                GLint y, GLsizei width, GLsizei height);
 
-JNIEXPORT void JNICALL
+JNIEXPORT jboolean JNICALL
 Java_c_org_rajawali3d_gl_extensions_OESTexture3D_loadFunctions(JNIEnv *env, jclass type) {
     glTexImage3DOES = (void (*)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *))
             eglGetProcAddress(TEX_IMAGE_3D_OES_NAME);
@@ -27,6 +27,12 @@ Java_c_org_rajawali3d_gl_extensions_OESTexture3D_loadFunctions(JNIEnv *env, jcla
     glCopyTexSubImage3DOES = (void (*)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x,
                                        GLint y, GLsizei width, GLsizei height))
             eglGetProcAddress(COPY_TEX_SUBIMAGE_3D_OES_NAME);
+
+    if (glTexImage3DOES == NULL || glTexSubImage3DOES == NULL || glCopyTexSubImage3DOES == NULL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }
 
 JNIEXPORT void JNICALL

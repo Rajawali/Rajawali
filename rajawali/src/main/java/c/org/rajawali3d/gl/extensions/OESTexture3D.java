@@ -1,6 +1,7 @@
 package c.org.rajawali3d.gl.extensions;
 
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import org.rajawali3d.textures.annotation.DataType;
 import org.rajawali3d.textures.annotation.PixelFormat;
 import org.rajawali3d.textures.annotation.TexelFormat;
@@ -37,7 +38,7 @@ public class OESTexture3D implements GLExtension {
     public static final int MAX_3D_TEXTURE_SIZE_OES = 0x8073;
     public static final int TEXTURE_BINDING_3D_OES = 0x806A;
 
-    private static native void loadFunctions();
+    private static native boolean loadFunctions();
 
     public static native void texImage3DOES(@TextureTarget int target, int level, @TexelFormat int internalFormat,
                                             int width, int height, int depth, int border,
@@ -51,12 +52,15 @@ public class OESTexture3D implements GLExtension {
                                                    int zoffset, int x, int y, int width, int height);
 
     @NonNull
-    public static OESTexture3D load() {
+    public static OESTexture3D load() throws UnsupportedCapabilityException {
         return new OESTexture3D();
     }
 
-    private OESTexture3D() {
-
+    private OESTexture3D() throws UnsupportedCapabilityException {
+        final boolean success = loadFunctions();
+        if (!success) {
+            throw new UnsupportedCapabilityException("Failed to find native methods for extension: " + name);
+        }
     }
 
     @NonNull
