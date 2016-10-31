@@ -166,7 +166,14 @@ public class BaseTextureTest {
 
     @Test
     public void clearRegisteredMaterials() {
-
+        final Material material = mock(Material.class);
+        final Material material2 = mock(Material.class);
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        texture.registerMaterial(material);
+        texture.registerMaterial(material2);
+        texture.clearRegisteredMaterials();
+        assertFalse(texture.getRegisteredMaterials().contains(material));
+        assertFalse(texture.getRegisteredMaterials().contains(material2));
     }
 
     @Test

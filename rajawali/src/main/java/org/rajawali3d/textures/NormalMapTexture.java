@@ -31,7 +31,7 @@ public class NormalMapTexture extends SingleTexture {
 	public NormalMapTexture(String textureName, @NonNull Context context, int resourceId)
 	{
 		super(Type.NORMAL, textureName);
-		setResourceId(context, resourceId);
+		setTextureDataFromResourceId(context, resourceId);
 	}
 
 	public NormalMapTexture(String textureName, TextureDataReference textureData)

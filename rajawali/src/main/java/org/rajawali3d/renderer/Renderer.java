@@ -35,7 +35,7 @@ import org.rajawali3d.scene.Scene;
 import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.RenderTargetTexture;
 import org.rajawali3d.textures.TextureManager;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;

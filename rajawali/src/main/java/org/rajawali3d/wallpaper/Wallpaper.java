@@ -22,7 +22,7 @@ import android.view.SurfaceHolder;
 import org.rajawali3d.view.Surface;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.view.SurfaceView;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 
 public abstract class Wallpaper extends WallpaperService {
 

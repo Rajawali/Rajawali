@@ -31,7 +31,7 @@ public class Texture extends SingleTexture {
 	public Texture(String textureName, @NonNull Context context, int resourceId)
 	{
 		super(Type.DIFFUSE, textureName);
-		setResourceId(context, resourceId);
+		setTextureDataFromResourceId(context, resourceId);
 	}
 
 	public Texture(String textureName, TextureDataReference textureData)

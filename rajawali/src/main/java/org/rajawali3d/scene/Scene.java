@@ -826,7 +826,7 @@ public class Scene {
 			throw new Exception("The skybox texture cannot be updated.");
 
 		Texture texture = (Texture)mSkyboxTexture;
-		texture.setResourceId(mRenderer.getContext(), resourceId);
+		texture.setTextureDataFromResourceId(mRenderer.getContext(), resourceId);
 		mRenderer.getTextureManager().replaceTexture(texture);
 	}
 

@@ -124,7 +124,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 		replace();
 	}
 
-	public void setResourceId(int resourceId) {
+	public void setTextureDataFromResourceId(int resourceId) {
 		if(resourceId == resourceId)
 			return;
 		resourceId = resourceId;

@@ -15,6 +15,9 @@ package org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
@@ -23,6 +26,7 @@ import org.rajawali3d.textures.annotation.TextureTarget;
 import org.rajawali3d.textures.annotation.Type.TextureType;
 import org.rajawali3d.textures.annotation.Wrap;
 import org.rajawali3d.textures.annotation.Wrap.WrapType;
+import org.rajawali3d.util.RajLog;
 
 import java.nio.Buffer;
 import java.util.Collections;
@@ -113,6 +117,15 @@ public abstract class BaseTexture {
      */
     @FilterType
     protected int filterType;
+
+    /**
+     * The maximum level of anisotropy to use for this texture.
+     *
+     * @see <a href="http://oss.sgi.com/projects/ogl-sample/registry/EXT/texture_filter_anisotropic.txt">
+     *     EXT_texture_filter_anisotropic</a>
+     */
+    @FloatRange(from = 1.0)
+    protected float maxAnisotropy = 1.0f;
 
     /**
      * The optional compressed texture.
@@ -425,6 +438,38 @@ public abstract class BaseTexture {
     }
 
     /**
+     * Sets the maximum anisotropy up to which filtering is enabled for this texture.
+     *
+     * @param maxAnisotropy {@code float} The maximum anisotropy to use. Must be greater than or equal to 1.0.
+     * @throws UnsupportedCapabilityException Thrown if the device does not support the {@code
+     * GL_EXT_texture_filter_anisotropic} extension.
+     *
+     * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
+     *     EXT_texture_filter_anisotropic</a>
+     */
+    public void setMaxAnisotropy(@FloatRange(from = 1.0) float maxAnisotropy) throws UnsupportedCapabilityException {
+        final float max = ((EXTTextureFilterAnisotropic) Capabilities.getInstance().loadExtension
+                (EXTTextureFilterAnisotropic.name)).getMaxSupportedAnisotropy();
+        if (maxAnisotropy > max) {
+            RajLog.e("The requested maximum anisotropy is outside the supported range of this device. Clamping to: "
+                     + max);
+            this.maxAnisotropy = max;
+        } else {
+            this.maxAnisotropy = maxAnisotropy;
+        }
+    }
+
+    /**
+     * Retrieves the configured maximum anisotropy up to which filtering is enabled for this texture.
+     *
+     * @return {@code float} The configured maximum anisotropy up to which filtering is enabled on this texture.
+     */
+    @FloatRange(from = 1.0)
+    public float getMaxAnisotropy() {
+        return maxAnisotropy;
+    }
+
+    /**
      * Fetches the render context texture target for this {@link BaseTexture}.
      *
      * @return {@link TextureTarget} The target of this texture in the render context.
@@ -467,6 +512,7 @@ public abstract class BaseTexture {
      * @return {@code true} if the {@link Material} was unregistered.
      */
     public boolean unregisterMaterial(@NonNull Material material) {
+        //TODO: Notify material it was unregistered
         return registeredMaterials.remove(material);
     }
 
@@ -474,7 +520,11 @@ public abstract class BaseTexture {
      * Unregisters all {@link Material}s with this {@link BaseTexture}.
      */
     public void clearRegisteredMaterials() {
-
+        final int count = registeredMaterials.size();
+        for (int i = 0; i < count; ++i) {
+            // Notify material it was unregistered
+        }
+        registeredMaterials.clear();
     }
 
     /**
@@ -526,6 +576,14 @@ public abstract class BaseTexture {
     @FloatRange(from = 0, to = 1)
     public float getInfluence() {
         return influence;
+    }
+
+    public void setCompressedTexture(@NonNull CompressedTexture compressedTexture) {
+        this.compressedTexture = compressedTexture;
+    }
+
+    public CompressedTexture getCompressedTexture() {
+        return compressedTexture;
     }
 
     public void setRepeatU(float value) {
@@ -586,18 +644,27 @@ public abstract class BaseTexture {
         offset[1] = v;
     }
 
-    public void setCompressedTexture(CompressedTexture compressedTexture) {
-        this.compressedTexture = compressedTexture;
-    }
-
-    public CompressedTexture getCompressedTexture() {
-        return compressedTexture;
-    }
-
+    /**
+     * Adds this texture to the render context. This will create the texture storage, push the texture if data is
+     * available and configure all relevant texture parameters.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
+     */
     abstract void add() throws TextureException;
 
+    /**
+     * Removes this texture from the render context. This will release all texture storage (including the texture id)
+     * back to the context. Once called, this texture is no longer usable.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture delete process.
+     */
     abstract void remove() throws TextureException;
 
+    /**
+     * Replaces any texture in the render context with the same texture id with the data provided by this texture.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of updating the texture data.
+     */
     abstract void replace() throws TextureException;
 
     abstract void reset() throws TextureException;

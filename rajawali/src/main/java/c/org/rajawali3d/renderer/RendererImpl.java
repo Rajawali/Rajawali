@@ -12,7 +12,7 @@ import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.R;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.view.Surface;

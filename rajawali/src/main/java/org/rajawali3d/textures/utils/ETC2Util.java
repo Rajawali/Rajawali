@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.RajLog;
 
 /**

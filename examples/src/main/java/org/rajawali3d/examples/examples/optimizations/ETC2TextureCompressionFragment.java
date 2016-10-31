@@ -17,7 +17,7 @@ import org.rajawali3d.textures.Etc2Texture;
 import org.rajawali3d.textures.Texture;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.primitives.Plane;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 
 public class ETC2TextureCompressionFragment extends AExampleFragment {
 

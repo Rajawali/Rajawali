@@ -18,6 +18,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.os.Build;
 import android.util.Log;
+import c.org.rajawali3d.gl.Capabilities;
 
 public final class RajLog {
 

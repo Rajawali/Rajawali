@@ -49,7 +49,7 @@ import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.CubeMapTexture;
 import org.rajawali3d.textures.SphereMapTexture;
 import org.rajawali3d.textures.TextureException;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;

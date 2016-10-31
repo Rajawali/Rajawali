@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.R;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 

@@ -31,7 +31,7 @@ public class SpecularMapTexture extends SingleTexture {
 	public SpecularMapTexture(String textureName, @NonNull Context context, int resourceId)
 	{
 		super(Type.SPECULAR, textureName);
-		setResourceId(context, resourceId);
+		setTextureDataFromResourceId(context, resourceId);
 	}
 
 	public SpecularMapTexture(String textureName, TextureDataReference textureData)

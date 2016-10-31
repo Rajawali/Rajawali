@@ -23,7 +23,7 @@ import android.widget.FrameLayout;
 
 import org.rajawali3d.view.Surface.ANTI_ALIASING_CONFIG;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

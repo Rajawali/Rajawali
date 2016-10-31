@@ -15,18 +15,16 @@ public interface Filter {
 
     int NEAREST = 0;
     int LINEAR = 1;
-    int ANISOTROPIC = 2;
 
     /**
      * Texture filtering or texture smoothing is the method used to determine the texture color for a texture mapped
-     * pixel, using the colors of nearby texels (pixels of the texture). Note that use of the {@link #ANISOTROPIC}
-     * filter type requires that the {@code GL_EXT_texture_filter_anisotropic} be present.
+     * pixel, using the colors of nearby texels (pixels of the texture).
      *
      * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
      * GL_EXT_texture_filter_anisotropic</a>
      */
     @Documented
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({NEAREST, LINEAR, ANISOTROPIC})
+    @IntDef({NEAREST, LINEAR})
     @interface FilterType {}
 }

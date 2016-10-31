@@ -32,7 +32,7 @@ public class AlphaMapTexture extends SingleTexture {
 	public AlphaMapTexture(String textureName, @NonNull Context context, int resourceId)
 	{
 		super(Type.ALPHA, textureName);
-		setResourceId(context, resourceId);
+		setTextureDataFromResourceId(context, resourceId);
 	}
 
 	public AlphaMapTexture(String textureName, TextureDataReference textureData)

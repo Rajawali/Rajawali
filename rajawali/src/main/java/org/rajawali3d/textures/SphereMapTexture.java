@@ -33,7 +33,7 @@ public class SphereMapTexture extends SingleTexture {
 	public SphereMapTexture(String textureName, @NonNull Context context, int resourceId)
 	{
 		super(Type.SPHERE_MAP, textureName);
-		setResourceId(context, resourceId);
+		setTextureDataFromResourceId(context, resourceId);
 	}
 
 	public SphereMapTexture(String textureName, TextureDataReference textureData)
