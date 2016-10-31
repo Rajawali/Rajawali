@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  */
 /*
- * Derived from Texture Atlas Generator by Lukasz Brunn - lukasz.dk
+ * Derived from Texture2D Atlas Generator by Lukasz Brunn - lukasz.dk
  * See <a href="https://github.com/lukaszdk/texture-atlas-generator">https://github.com/lukaszdk/texture-atlas-generator</a>
  */
 
@@ -297,7 +297,7 @@ public class TexturePacker{
 		final int x = bitmap.getWidth();
 		final int y = bitmap.getHeight();
 		if (!((x != 0) && (x & (x - 1)) == 0) || !((y != 0) && (y & (y - 1)) == 0))
-			RajLog.w("Loaded texture "+name+" is not a power of two! Texture may fail to render on certain devices.");
+			RajLog.w("Loaded texture "+name+" is not a power of two! Texture2D may fail to render on certain devices.");
 	}
 
 	/*

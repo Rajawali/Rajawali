@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
 import android.opengl.GLES20;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
@@ -37,7 +38,6 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
 import org.rajawali3d.textures.TextureException;
-import org.rajawali3d.textures.Texture;
 import org.rajawali3d.math.vector.Vector2;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
@@ -75,7 +75,7 @@ public class LoaderFBX extends AMeshLoader {
 	private static final String POSE = "Pose:";
 	private static final String POSE_NODE = "PoseNode:";
 	private static final String CONNECT = "Connect:";
-	private static final String TEXTURE = "Texture:";
+	private static final String TEXTURE = "Texture2D:";
 	private static final String FBX_U = "FBX";
 	private static final String FBX_L = FBX_U.toLowerCase(Locale.US);
 
@@ -464,8 +464,8 @@ public class LoaderFBX extends AMeshLoader {
 						}
 					}
 					o.getMaterial().setColorInfluence(0);
-					o.getMaterial().addTexture(new Texture(textureName.replaceAll("[\\W]|_", ""),
-														   new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
+					o.getMaterial().addTexture(new Texture2D(textureName.replaceAll("[\\W]|_", ""),
+															 new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 					return;
 				}
 			}

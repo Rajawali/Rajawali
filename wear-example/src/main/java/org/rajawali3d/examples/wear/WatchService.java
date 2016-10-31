@@ -9,7 +9,7 @@ import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
@@ -61,7 +61,7 @@ public class WatchService extends WatchFaceService {
 
             try {
                 Material material = new Material();
-                material.addTexture(new Texture("earthColors", mContext, R.drawable.earthtruecolor_nasa_big));
+                material.addTexture(new Texture2D("earthColors", mContext, R.drawable.earthtruecolor_nasa_big));
                 material.setColorInfluence(0);
                 Object3D mSphere = new Sphere(1, 24, 24);
                 mSphere.setMaterial(material);

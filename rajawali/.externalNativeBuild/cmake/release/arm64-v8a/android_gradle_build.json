@@ -1,0 +1,38 @@
+
+{
+	"buildFiles" : [ "C:/Users/jared/Documents/Rajawali/rajawali/CMakeLists.txt" ],
+	"cFileExtensions" : [ "c" ],
+	"cleanCommands" : 
+	[
+		"C:\\Users\\jared\\AppData\\Local\\Android\\sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\jared\\Documents\\Rajawali\\rajawali\\.externalNativeBuild\\cmake\\release\\arm64-v8a --target clean"
+	],
+	"libraries" : 
+	{
+		"glExtensions-Release-arm64-v8a" : 
+		{
+			"abi" : "arm64-v8a",
+			"artifactName" : "glExtensions",
+			"buildCommand" : "C:\\Users\\jared\\AppData\\Local\\Android\\sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\jared\\Documents\\Rajawali\\rajawali\\.externalNativeBuild\\cmake\\release\\arm64-v8a --target glExtensions",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  -target aarch64-none-linux-android -gcc-toolchain C:/Users/jared/AppData/Local/Android/sdk/ndk-bundle/toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/jared/AppData/Local/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64 -DglExtensions_EXPORTS -I..\\..\\..\\..\\src\\main\\cpp  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -O2 -DNDEBUG -O2 -DNDEBUG  -fPIC      -c ",
+					"src" : "C:/Users/jared/Documents/Rajawali/rajawali/src/main/cpp/oestexture3d.c",
+					"workingDirectory" : "C:/Users/jared/Documents/Rajawali/rajawali/.externalNativeBuild/cmake/release/arm64-v8a"
+				}
+			],
+			"output" : "C:/Users/jared/Documents/Rajawali/rajawali/build/intermediates/cmake/release/obj/arm64-v8a/libglExtensions.so",
+			"toolchain" : "3699639625"
+		}
+	},
+	"toolchains" : 
+	{
+		"3699639625" : 
+		{
+			"cCompilerExecutable" : "C:/Users/jared/AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "C:/Users/jared/AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

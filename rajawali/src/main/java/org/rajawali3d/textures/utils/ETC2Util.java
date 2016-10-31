@@ -313,7 +313,7 @@ public class ETC2Util {
         }
 
         /**
-         * Retrieves the particular compression format for the ETC2 Texture.
+         * Retrieves the particular compression format for the ETC2 Texture2D.
          *
          * @param header {@link ByteBuffer} The PKM file header.
          * @return {@code int} One of the GL_COMPRESSED_* types for ETC2, or -1 if unrecognized.

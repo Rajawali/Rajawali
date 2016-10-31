@@ -13,11 +13,12 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface Filter {
 
-    int NEAREST = 0;
-    int LINEAR = 1;
+    int NEAREST  = 0;
+    int BILINEAR = 1;
+    int TRILINEAR = 2;
 
     /**
-     * Texture filtering or texture smoothing is the method used to determine the texture color for a texture mapped
+     * Texture2D filtering or texture smoothing is the method used to determine the texture color for a texture mapped
      * pixel, using the colors of nearby texels (pixels of the texture).
      *
      * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
@@ -25,6 +26,6 @@ public interface Filter {
      */
     @Documented
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({NEAREST, LINEAR})
+    @IntDef({ NEAREST, BILINEAR, TRILINEAR })
     @interface FilterType {}
 }

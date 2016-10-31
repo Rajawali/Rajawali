@@ -28,7 +28,7 @@ public abstract class CompressedTexture extends BaseTexture {
     protected ByteBuffer[] mByteBuffers;
 
     /**
-     * Texture compression type. Texture compression can significantly increase the performance by reducing memory
+     * Texture2D compression type. Texture2D compression can significantly increase the performance by reducing memory
      * requirements and making more efficient use of memory bandwidth.
      */
     public enum CompressionType {
@@ -45,7 +45,7 @@ public abstract class CompressedTexture extends BaseTexture {
     ;
 
     /**
-     * Texture compression type
+     * Texture2D compression type
      */
     protected CompressionType mCompressionType;
     /**
@@ -141,12 +141,12 @@ public abstract class CompressedTexture extends BaseTexture {
         if (textureId > 0) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
-            if (filterType == Filter.LINEAR)
+            if (filterType == Filter.BILINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             else
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 
-            if (filterType == Filter.LINEAR)
+            if (filterType == Filter.BILINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             else
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
@@ -189,7 +189,7 @@ public abstract class CompressedTexture extends BaseTexture {
 
     void replace() throws TextureException {
         if (mByteBuffers == null || mByteBuffers.length == 0)
-            throw new TextureException("Texture could not be replaced because there is no ByteBuffer set.");
+            throw new TextureException("Texture2D could not be replaced because there is no ByteBuffer set.");
 
         if (width == 0 || height == 0)
             throw new TextureException(

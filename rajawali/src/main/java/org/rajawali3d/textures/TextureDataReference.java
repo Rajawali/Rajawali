@@ -47,9 +47,8 @@ public class TextureDataReference {
     private boolean isDestroyed;
 
     /**
-     * Creates a new texture data reference from either a {@link Bitmap}, a {@link ByteBuffer} or both. Note that
-     * bitmaps are always preferred if available (non-compressed textures) so generally you will only want to specify
-     * one or the other.
+     * Creates a new texture data reference from either a {@link Bitmap}, a {@link ByteBuffer} or both. Buffer data
+     * will be checked first and is the only way to provide data that wont result in a RGB or RGBA {@link PixelFormat}.
      *
      * @param bitmap      {@link Bitmap} to hold a reference to.
      * @param buffer      {@link ByteBuffer} to hold a reference to.
@@ -160,10 +159,10 @@ public class TextureDataReference {
     public Bitmap getBitmap() throws TextureException {
         synchronized (lock) {
             if (isDestroyed) {
-                throw new TextureException("Texture data has been destroyed!");
+                throw new TextureException("Texture2D data has been destroyed!");
             }
             if (bitmap == null) {
-                throw new TextureException("Texture data not in Bitmap form.");
+                throw new TextureException("Texture2D data not in Bitmap form.");
             }
             return bitmap;
         }
@@ -180,10 +179,10 @@ public class TextureDataReference {
     public ByteBuffer getByteBuffer() throws TextureException {
         synchronized (lock) {
             if (isDestroyed) {
-                throw new TextureException("Texture data has been destroyed!");
+                throw new TextureException("Texture2D data has been destroyed!");
             }
             if (byteBuffer == null) {
-                throw new TextureException("Texture data not in ByteBuffer form.");
+                throw new TextureException("Texture2D data not in ByteBuffer form.");
             }
             return byteBuffer;
         }

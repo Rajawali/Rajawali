@@ -11,7 +11,7 @@ import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.util.RajLog;
 
 /**
@@ -86,7 +86,7 @@ public class CamdenHellsBasic extends AExampleFragment {
 
         boolean add = true;
 
-        Texture texture;
+        Texture2D texture;
         Material material;
 
         @Override
@@ -94,7 +94,7 @@ public class CamdenHellsBasic extends AExampleFragment {
             while (doRun && !Thread.currentThread().isInterrupted()) {
                 if (add) {
                     Log.d(TAG, "Adding resources.");
-                    texture = new Texture("Demo", getActivity(), R.drawable.earth_diffuse);
+                    texture = new Texture2D("Demo", getActivity(), R.drawable.earth_diffuse);
                     scene.getTextureManager().addTexture(texture);
 
                     material = new Material();

@@ -146,7 +146,7 @@ public class SquareTerrain extends Terrain {
 		}
 
 		/**
-		 * The Texture concentraction
+		 * The Texture2D concentraction
 		 *
 		 * @param value
 		 */

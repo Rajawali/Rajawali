@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 
 public class PvrtcTexture extends CompressedTexture {
 
-	// PowerVR Texture compression constants
+	// PowerVR Texture2D compression constants
 	private static final int GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 0x8C00;
 	private static final int GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG = 0x8C01;
 	private static final int GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = 0x8C02;
@@ -30,7 +30,7 @@ public class PvrtcTexture extends CompressedTexture {
 	};
 
 	/**
-	 * PVRCT Texture Compression format. See {@link PvrtcFormat}.
+	 * PVRCT Texture2D Compression format. See {@link PvrtcFormat}.
 	 */
 	protected PvrtcFormat mPvrtcFormat;
 
@@ -70,7 +70,7 @@ public class PvrtcTexture extends CompressedTexture {
 	}
 
 	/**
-	 * @return the PVRCT Texture Compression format. See {@link PvrtcFormat}.
+	 * @return the PVRCT Texture2D Compression format. See {@link PvrtcFormat}.
 	 */
 	public PvrtcFormat getPvrtcFormat() {
 		return mPvrtcFormat;
@@ -78,7 +78,7 @@ public class PvrtcTexture extends CompressedTexture {
 
 	/**
 	 * @param pvrtcFormat
-	 *            the PVRCT Texture Compression format. See {@link PvrtcFormat}.
+	 *            the PVRCT Texture2D Compression format. See {@link PvrtcFormat}.
 	 */
 	public void setPvrtcFormat(PvrtcFormat pvrtcFormat) {
 		this.mPvrtcFormat = pvrtcFormat;

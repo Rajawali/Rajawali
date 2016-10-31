@@ -47,17 +47,17 @@ public abstract class BaseTexture {
     /**
      * The GL texture id that is used by Rajawali.
      */
-    protected int textureId = -1;
+    private int textureId = -1;
 
     /**
-     * Texture width, in texels.
+     * Texture2D width, in texels.
      */
-    protected int width;
+    private int width;
 
     /**
-     * Texture height, in texels.
+     * Texture2D height, in texels.
      */
-    protected int height;
+    private int height;
 
     /**
      * The OpenGL texel storage format. The format describes how texels are stored. This affects the
@@ -69,7 +69,7 @@ public abstract class BaseTexture {
      * @see <a href="https://www.khronos.org/opengles/sdk/docs/man3/html/glTexImage2D.xhtml">glTexImage2D</a>
      */
     @TexelFormat
-    protected int texelFormat;
+    private int texelFormat = GLES20.GL_RGB;
 
     /**
      * Indicates whether mipmaps should be created or not. Mipmaps are pre-calculated, optimized collections of images
@@ -77,7 +77,7 @@ public abstract class BaseTexture {
      * increase the amount of time for an initial texture push as well as the size of the texture (in video RAM), but
      * can dramatically improve render quality.
      */
-    protected boolean mipmaped;
+    private boolean mipmaped;
 
     /**
      * Indicates whether the source {@link TextureDataReference} should be recycled immediately after the OpenGL
@@ -86,13 +86,13 @@ public abstract class BaseTexture {
      * relevant OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      */
-    protected boolean shouldRecycle;
+    private boolean shouldRecycle;
 
     /**
      * The texture name that will be used in the shader.
      */
     @NonNull
-    protected String textureName;
+    private String textureName;
 
     /**
      * The type of texture
@@ -100,23 +100,23 @@ public abstract class BaseTexture {
      * @see {@link TextureType}.
      */
     @TextureType
-    protected int textureType;
+    private int textureType;
 
     /**
-     * Texture wrap type.
+     * Texture2D wrap type.
      *
      * @see {@link WrapType}.
      */
     @WrapType
-    protected int wrapType;
+    private int wrapType;
 
     /**
-     * Texture filtering type.
+     * Texture2D filtering type.
      *
      * @see {@link FilterType}
      */
     @FilterType
-    protected int filterType;
+    private int filterType;
 
     /**
      * The maximum level of anisotropy to use for this texture.
@@ -125,18 +125,18 @@ public abstract class BaseTexture {
      *     EXT_texture_filter_anisotropic</a>
      */
     @FloatRange(from = 1.0)
-    protected float maxAnisotropy = 1.0f;
+    private float maxAnisotropy = 1.0f;
 
     /**
      * The optional compressed texture.
      */
-    protected CompressedTexture compressedTexture;
+    private CompressedTexture compressedTexture;
 
     /**
      * The OpenGL texture type.
      */
     @TextureTarget
-    protected int textureTarget = GLES20.GL_TEXTURE_2D;
+    private int textureTarget = GLES20.GL_TEXTURE_2D;
 
     /**
      * Percentage influence this texture has on the final pixel color. Must be between 0 and 1. If the sum of all
@@ -168,7 +168,7 @@ public abstract class BaseTexture {
         mipmaped = true;
         shouldRecycle = false;
         wrapType = Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R;
-        filterType = Filter.LINEAR;
+        filterType = Filter.BILINEAR;
     }
 
     /**

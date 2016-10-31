@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
  * degree of anisotropy.
  *
  * Applications seeking the highest quality anisotropic filtering available are advised to request a
- * LINEAR_MIPMAP_LINEAR minification filter, a LINEAR magnification filter, and a large maximum degree of anisotropy.
+ * LINEAR_MIPMAP_LINEAR minification filter, a BILINEAR magnification filter, and a large maximum degree of anisotropy.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  *
@@ -23,8 +23,11 @@ public class EXTTextureFilterAnisotropic implements GLExtension {
 
     public static final String name = "GL_EXT_texture_filter_anisotropic";
 
+    // Tokens accepted by the <pname> parameters of GetTexParameterfv, GetTexParameteriv, TexParameterf, TexParameterfv,
+    // TexParameteri, and TexParameteriv
     public static final int TEXTURE_MAX_ANISOTROPY_EXT = 0x84FE;
 
+    // Tokens accepted by the <pname> parameters of GetBooleanv, GetDoublev, GetFloatv, and GetIntegerv
     public static final int MAX_TEXTURE_MAX_ANISOTROPY_EXT  = 0x84FF;
 
     @FloatRange(from = 1.0)

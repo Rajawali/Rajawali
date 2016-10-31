@@ -90,9 +90,9 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
 		// Read the properties
 		SparseArray<Short> properties = new SparseArray<Short>();
-		// Scale Texture U
+		// Scale Texture2D U
 		properties.put(1, geoNr);
-		// Scale Texture V
+		// Scale Texture2D V
 		properties.put(2, geoNr);
 		// TODO Apply texture scales, need example of this working.
 		dis.readProperties(properties);

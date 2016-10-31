@@ -77,7 +77,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     protected int mDefaultViewportWidth, mDefaultViewportHeight; // The default width and height of the GL viewport
     protected int mOverrideViewportWidth, mOverrideViewportHeight; // The overridden width and height of the GL viewport
 
-    protected TextureManager  mTextureManager; // Texture manager for ALL textures across ALL renderables.
+    protected TextureManager  mTextureManager; // Texture2D manager for ALL textures across ALL renderables.
     protected MaterialManager mMaterialManager; // Material manager for ALL materials across ALL renderables.
 
     // Frame related members

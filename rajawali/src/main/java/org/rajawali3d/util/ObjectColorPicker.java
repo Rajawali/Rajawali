@@ -50,7 +50,7 @@ public class ObjectColorPicker implements IObjectPicker {
 
 		mRenderTarget = new RenderTarget("colorPickerTarget", size, size,
 										 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-										 Filter.LINEAR, Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
+										 Filter.BILINEAR, Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
 		mRenderer.addRenderTarget(mRenderTarget);
 
 		mPickerMaterial = new Material();

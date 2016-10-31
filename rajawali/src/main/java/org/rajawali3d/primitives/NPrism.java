@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -20,9 +20,9 @@ import org.rajawali3d.math.vector.Vector3;
  * polygonal cone, as a frustum or to a point with a specified slant
  * angle or aspect ratio. The cone is created about the positive
  * y axis with the vanishing point at (0, height, 0).
- * 
- * NOTE: This still needs a lot of work. Texture coordinates are not correct.
- * 
+ *
+ * NOTE: This still needs a lot of work. Texture2D coordinates are not correct.
+ *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public class NPrism extends Object3D {
@@ -34,7 +34,7 @@ public class NPrism extends Object3D {
 	protected double mMinorTop;
 	protected double mHeight;
 	protected double mEccentricity;
-	
+
 	private static final Vector3 UP = new Vector3(0, 1, 0);
 	private static final Vector3 DOWN = new Vector3(0, -1, 0);
 
@@ -45,7 +45,7 @@ public class NPrism extends Object3D {
 
 	/**
 	 * Creates a terminated prism.
-	 * 
+	 *
 	 * @param sides Integer number of sides to the prism.
 	 * @param radius Double the radius of the base.
 	 * @param height Double the height of the prism.
@@ -53,10 +53,10 @@ public class NPrism extends Object3D {
 	public NPrism(int sides, double radius, double height) {
 		this(sides, 0, radius, height);
 	}
-	
+
 	/**
 	 * Creates a frustum like prism.
-	 * 
+	 *
 	 * @param sides Integer number of sides to the prism.
 	 * @param radiusTop Double the radius of the top.
 	 * @param radiusBase Double the radius of the base.
@@ -80,12 +80,12 @@ public class NPrism extends Object3D {
     public NPrism(int sides, double radiusTop, double radiusBase, double eccentricity, double height) {
         this(sides, radiusTop, radiusBase, eccentricity, height, true);
     }
-	
+
 	/**
-	 * Creates a frustum like prism with elliptical base rather than circular. 
+	 * Creates a frustum like prism with elliptical base rather than circular.
 	 * The major axis is equivalent to the radius specified and the minor axis
 	 * is computed from the eccentricity.
-	 * 
+	 *
 	 * @param sides Integer number of sides to the prism.
 	 * @param radiusTop Double the radius of the top.
 	 * @param radiusBase Double the radius of the base.
@@ -105,7 +105,7 @@ public class NPrism extends Object3D {
 		mHeight = height;
 		init(createVBOs);
 	}
-	
+
 	protected double calculateMinorAxis(double major) {
 		return Math.sqrt(Math.pow(major, 2.0)*(1 - Math.pow(mEccentricity, 2.0)));
 	}
@@ -127,7 +127,7 @@ public class NPrism extends Object3D {
 		float[] texture = new float[2*vertex_count];
 		float[] colors = new float[4*vertex_count];
 		int[] indices = new int[3*tri_count];
-		
+
 		double angle_delta = 2*Math.PI/mSideCount;
 
 		// Populate the vertices
@@ -135,7 +135,7 @@ public class NPrism extends Object3D {
 
         // If the side count is even, we want to start at half the angle or we will appear rotated.
 		final double angle0 = (mSideCount % 2 == 0) ? angle_delta/2.0 : 0;
-		
+
         final Vector3 vertex0 = new Vector3();
         final Vector3 vertex1 = new Vector3();
         final Vector3 vertex2 = new Vector3();

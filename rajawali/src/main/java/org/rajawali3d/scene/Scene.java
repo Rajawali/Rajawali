@@ -34,7 +34,7 @@ import org.rajawali3d.renderer.plugins.IRendererPlugin;
 import org.rajawali3d.renderer.plugins.Plugin;
 import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.CubeMapTexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
@@ -743,7 +743,7 @@ public class Scene {
 		synchronized (mNextSkyboxLock) {
 			mNextSkybox = new Cube(700, true, false);
 			mNextSkybox.setDoubleSided(true);
-			mSkyboxTexture = new Texture("skybox", mRenderer.getContext(), resourceId);
+			mSkyboxTexture = new Texture2D("skybox", mRenderer.getContext(), resourceId);
 			Material material = new Material();
 			material.setColorInfluence(0);
 			material.addTexture(mSkyboxTexture);
@@ -822,10 +822,10 @@ public class Scene {
 	 * @throws Exception
 	 */
 	public void updateSkybox(int resourceId) throws Exception {
-		if(mSkyboxTexture.getClass() != Texture.class)
+		if(mSkyboxTexture.getClass() != Texture2D.class)
 			throw new Exception("The skybox texture cannot be updated.");
 
-		Texture texture = (Texture)mSkyboxTexture;
+		Texture2D texture = (Texture2D)mSkyboxTexture;
 		texture.setTextureDataFromResourceId(mRenderer.getContext(), resourceId);
 		mRenderer.getTextureManager().replaceTexture(texture);
 	}

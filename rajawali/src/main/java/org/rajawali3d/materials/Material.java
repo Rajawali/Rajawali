@@ -47,7 +47,7 @@ import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
 import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.CubeMapTexture;
-import org.rajawali3d.textures.SphereMapTexture;
+import org.rajawali3d.textures.SphereMapTexture2D;
 import org.rajawali3d.textures.TextureException;
 import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.RajLog;
@@ -66,7 +66,7 @@ import java.util.Map;
  * This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights:
  * <pre><code>
  * Material material = new Material();
- * material.addTexture(new Texture("earth", R.drawable.earth_diffuse));
+ * material.addTexture(new Texture2D("earth", R.drawable.earth_diffuse));
  * material.enableLighting(true);
  * material.setDiffuseMethod(new DiffuseMethod.Lambert());
  * material.setSpecularMethod(new SpecularMethod.Phong());
@@ -263,7 +263,7 @@ public class Material {
      * This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights:
      * <pre><code>
      * Material material = new Material();
-     * material.addTexture(new Texture("earth", R.drawable.earth_diffuse));
+     * material.addTexture(new Texture2D("earth", R.drawable.earth_diffuse));
      * material.enableLighting(true);
      * material.setDiffuseMethod(new DiffuseMethod.Lambert());
      * material.setSpecularMethod(new SpecularMethod.Phong());
@@ -552,9 +552,9 @@ public class Material {
                         boolean isSkyTexture = false;
                         boolean isEnvironmentTexture = false;
 
-                        if (texture.getClass() == SphereMapTexture.class) {
-                            isSkyTexture = ((SphereMapTexture) texture).isSkyTexture();
-                            isEnvironmentTexture = ((SphereMapTexture) texture).isEnvironmentTexture();
+                        if (texture.getClass() == SphereMapTexture2D.class) {
+                            isSkyTexture = ((SphereMapTexture2D) texture).isSkyTexture();
+                            isEnvironmentTexture = ((SphereMapTexture2D) texture).isEnvironmentTexture();
                         } else if (texture.getClass() == CubeMapTexture.class) {
                             isSkyTexture = ((CubeMapTexture) texture).isSkyTexture();
                             isEnvironmentTexture = ((CubeMapTexture) texture).isEnvironmentTexture();

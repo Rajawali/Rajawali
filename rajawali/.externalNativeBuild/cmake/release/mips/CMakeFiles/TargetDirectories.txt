@@ -1,0 +1,3 @@
+C:/Users/jared/Documents/Rajawali/rajawali/.externalNativeBuild/cmake/release/mips/CMakeFiles/glExtensions.dir
+C:/Users/jared/Documents/Rajawali/rajawali/.externalNativeBuild/cmake/release/mips/CMakeFiles/edit_cache.dir
+C:/Users/jared/Documents/Rajawali/rajawali/.externalNativeBuild/cmake/release/mips/CMakeFiles/rebuild_cache.dir

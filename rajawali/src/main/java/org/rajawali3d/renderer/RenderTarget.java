@@ -75,9 +75,9 @@ public class RenderTarget {
 	 * @param bitmapConfig
 	 *            Bitmap configuration
 	 * @param filterType
-	 *            Texture filter type
+	 *            Texture2D filter type
 	 * @param wrapType
-	 *            Texture wrap type
+	 *            Texture2D wrap type
 	 */
 	public RenderTarget(String name, int width, int height, int offsetX, int offsetY,
 						boolean stencilBuffer, boolean mipmaps,
@@ -113,7 +113,7 @@ public class RenderTarget {
 	 *            Height of the render target
 	 */
 	public RenderTarget(String name, int width, int height) {
-		this(name, width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, Filter.LINEAR,
+		this(name, width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, Filter.BILINEAR,
              Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
 	}
 

@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 public class AtcTexture extends CompressedTexture {
 
 	/**
-	 * ATC Texture compression format.
+	 * ATC Texture2D compression format.
 	 *
 	 */
 	public enum AtcFormat {
@@ -29,7 +29,7 @@ public class AtcTexture extends CompressedTexture {
 	};
 
 	/**
-	 * ATC Texture Compression format. See {@link AtcFormat}.
+	 * ATC Texture2D Compression format. See {@link AtcFormat}.
 	 */
 	protected AtcFormat mAtcFormat;
 
@@ -69,7 +69,7 @@ public class AtcTexture extends CompressedTexture {
 	}
 
 	/**
-	 * @return the ATC Texture Compression format. See {@link AtcFormat}.
+	 * @return the ATC Texture2D Compression format. See {@link AtcFormat}.
 	 */
 	public AtcFormat getAtcFormat() {
 		return mAtcFormat;
@@ -77,7 +77,7 @@ public class AtcTexture extends CompressedTexture {
 
 	/**
 	 * @param atcFormat
-	 *            ATC Texture Compression format. See {@link AtcFormat}.
+	 *            ATC Texture2D Compression format. See {@link AtcFormat}.
 	 */
 	public void setAtcFormat(AtcFormat atcFormat) {
 		this.mAtcFormat = atcFormat;

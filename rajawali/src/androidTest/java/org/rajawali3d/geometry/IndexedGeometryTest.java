@@ -142,12 +142,12 @@ public class IndexedGeometryTest extends GlTestCase {
         final Buffer indexBuffer = indexInfo.buffer;
         assertEquals("Vertex buffer info set to wrong type.", BufferType.FLOAT_BUFFER, vertexInfo.bufferType);
         assertEquals("Normal buffer info set to wrong type.", BufferType.FLOAT_BUFFER, normalInfo.bufferType);
-        assertEquals("Texture buffer info set to wrong type.", BufferType.FLOAT_BUFFER, textureInfo.bufferType);
+        assertEquals("Texture2D buffer info set to wrong type.", BufferType.FLOAT_BUFFER, textureInfo.bufferType);
         assertEquals("Color buffer info set to wrong type.", BufferType.FLOAT_BUFFER, colorInfo.bufferType);
         assertEquals("Index buffer info set to wrong type.", BufferType.INT_BUFFER, indexInfo.bufferType);
         assertEquals("Vertex buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, vertexInfo.usage);
         assertEquals("Normal buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, normalInfo.usage);
-        assertEquals("Texture buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, textureInfo.usage);
+        assertEquals("Texture2D buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, textureInfo.usage);
         assertEquals("Color buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, colorInfo.usage);
         assertEquals("Index buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, indexInfo.usage);
 
@@ -165,7 +165,7 @@ public class IndexedGeometryTest extends GlTestCase {
         i = 0;
         textureBuffer.rewind();
         while (textureBuffer.hasRemaining()) {
-            assertEquals("Texture buffer contents invalid.", textureBuffer.get(), textures[i++], 0);
+            assertEquals("Texture2D buffer contents invalid.", textureBuffer.get(), textures[i++], 0);
         }
         i = 0;
         colorBuffer.rewind();
@@ -218,12 +218,12 @@ public class IndexedGeometryTest extends GlTestCase {
         assertEquals("Vertex buffer info set to wrong type.", BufferType.FLOAT_BUFFER, vertexInfo.bufferType);
         assertEquals("Normal buffer info set to wrong type.", BufferType.FLOAT_BUFFER, normalInfo.bufferType);
         assertEquals("Color buffer info set to wrong type.", BufferType.FLOAT_BUFFER, colorInfo.bufferType);
-        assertEquals("Texture buffer info set to wrong type.", BufferType.FLOAT_BUFFER, textureInfo.bufferType);
+        assertEquals("Texture2D buffer info set to wrong type.", BufferType.FLOAT_BUFFER, textureInfo.bufferType);
         assertEquals("Index buffer info set to wrong type.", BufferType.INT_BUFFER, indexInfo.bufferType);
         assertEquals("Vertex buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, vertexInfo.usage);
         assertEquals("Normal buffer info set to wrong usage.", GLES20.GL_STREAM_DRAW, normalInfo.usage);
         assertEquals("Color buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, colorInfo.usage);
-        assertEquals("Texture buffer info set to wrong usage.", GLES20.GL_DYNAMIC_DRAW, textureInfo.usage);
+        assertEquals("Texture2D buffer info set to wrong usage.", GLES20.GL_DYNAMIC_DRAW, textureInfo.usage);
         assertEquals("Index buffer info set to wrong usage.", GLES20.GL_STREAM_DRAW, indexInfo.usage);
 
         assertEquals("Number of vertices invalid.", 1, bufferObject.getNumVertices());
@@ -245,7 +245,7 @@ public class IndexedGeometryTest extends GlTestCase {
         i = 0;
         textureBuffer.rewind();
         while (textureBuffer.hasRemaining()) {
-            assertEquals("Texture buffer contents invalid.", textureBuffer.get(), textures[i++], 0);
+            assertEquals("Texture2D buffer contents invalid.", textureBuffer.get(), textures[i++], 0);
         }
         i = 0;
         indexBuffer.rewind();

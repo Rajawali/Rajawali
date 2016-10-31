@@ -9,7 +9,7 @@ import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.BaseTexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.primitives.ScreenQuad;
 
@@ -65,7 +65,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 				Bitmap bitmap = BitmapFactory.decodeResource(
 						mContext.getResources(), resourceId, options);
 
-				BaseTexture texture = new Texture("bm" + i, new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE));
+				BaseTexture texture = new Texture2D("bm" + i, new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE));
 				texture.setMipmaped(false);
 				texture.shouldRecycle(true);
 				//mTextures[i - 1] = mTextureManager.addTexture(texture);

@@ -17,7 +17,7 @@ android:
   components:
   - platform-tools
   - tools
-  #- ndk
+  - ndk
   - build-tools-$ANDROID_BUILD_TOOLS_VERSION
   - android-$ANDROID_API_LEVEL
   - android-$EMULATOR_API_LEVEL
@@ -38,8 +38,8 @@ script:
 - echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
 - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
-#- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
-#- cat local.properties
+- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
+- cat local.properties
 #- "./gradlew clean --stacktrace --continue"
 - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
 - "./gradlew :rajawali:connectedCheck -x extractReleaseAnnotations -x extractDebugAnnotations --stacktrace --continue"
@@ -56,10 +56,14 @@ script:
   #./gradlew :vuforia:uploadArchives --stacktrace --continue; ./gradlew :vr:uploadArchives --stacktrace --continue;
   #./gradlew :wear:uploadArchives --stacktrace --continue;
 install:
-#- wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
-#- chmod a+x ndk.bin
-#- "./ndk.bin 1> /dev/null 2>&1"
-#- chmod a+x ./android-ndk-r10d/ndk-build
+- wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
+- chmod a+x ndk.bin
+- "./ndk.bin 1> /dev/null 2>&1"
+- chmod a+x ./android-ndk-r10d/ndk-build
+
+- wget https://github.com/Commit451/android-cmake-installer/releases/download/1.1.0/install-cmake.sh
+- chmod +x install-cmake.sh
+- ./install-cmake.sh
 notifications:
   email:
   - info@rozengain.com

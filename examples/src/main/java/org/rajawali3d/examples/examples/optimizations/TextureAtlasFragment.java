@@ -38,17 +38,17 @@ package org.rajawali3d.examples.examples.optimizations;
 				// -- Add the entire atlas to a material so it can be shown in the example
 				// -- this is not necessary in typical use cases
 				//
-				mAtlasMaterial.addTexture(new Texture("atlasTexture", mAtlas.getPages()[0]));
+				mAtlasMaterial.addTexture(new Texture2D("atlasTexture", mAtlas.getPages()[0]));
 				mAtlasMaterial.setColorInfluence(0);
 				//
 				// -- Add each target texture to the material
 				// -- they are pulled from the atlas by their original resource name
 				//
-				mSphereMaterial.addTexture(new Texture("earthtruecolor_nasa_big", mAtlas));
+				mSphereMaterial.addTexture(new Texture2D("earthtruecolor_nasa_big", mAtlas));
 				mSphereMaterial.setColorInfluence(0);
-				mCubeMaterial.addTexture(new Texture("camden_town_alpha", mAtlas));
+				mCubeMaterial.addTexture(new Texture2D("camden_town_alpha", mAtlas));
 				mCubeMaterial.setColorInfluence(0);
-				mPlaneMaterial.addTexture(new Texture("rajawali", mAtlas));
+				mPlaneMaterial.addTexture(new Texture2D("rajawali", mAtlas));
 				mPlaneMaterial.setColorInfluence(0);
 			} catch (ATexture.TextureException e) {
 				e.printStackTrace();

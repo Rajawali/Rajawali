@@ -31,7 +31,7 @@ public class PalettedTexture extends CompressedTexture {
 	private static final int GL_PALETTE8_RGB5_A1_OES = 0x8B99;
 
 	/**
-	 * Texture palette format.
+	 * Texture2D palette format.
 	 */
 	public enum PaletteFormat {
 		PALETTE4_RGB8,
@@ -47,7 +47,7 @@ public class PalettedTexture extends CompressedTexture {
 	};
 
 	/**
-	 * Texture palette format. See {@link PaletteFormat}.
+	 * Texture2D palette format. See {@link PaletteFormat}.
 	 */
 	private PaletteFormat mPaletteFormat;
 

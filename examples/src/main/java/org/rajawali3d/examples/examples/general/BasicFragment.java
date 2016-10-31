@@ -6,7 +6,7 @@ import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
@@ -32,7 +32,7 @@ public class BasicFragment extends AExampleFragment {
 		protected void initScene() {
 			try {
 				Material material = new Material();
-				material.addTexture(new Texture("earthColors", mContext, R.drawable.earthtruecolor_nasa_big));
+				material.addTexture(new Texture2D("earthColors", mContext, R.drawable.earthtruecolor_nasa_big));
 				material.setColorInfluence(0);
 				mSphere = new Sphere(1, 24, 24);
 				mSphere.setMaterial(material);

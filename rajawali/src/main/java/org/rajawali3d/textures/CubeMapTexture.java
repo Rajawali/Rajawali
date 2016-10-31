@@ -78,7 +78,7 @@ public class CubeMapTexture extends AMultiTexture {
 
     private void checkBitmapConfiguration() throws TextureException {
         if ((mBitmaps == null || mBitmaps.length == 0) && (mByteBuffers == null || mByteBuffers.length == 0) && !mHasCompressedTextures)
-            throw new TextureException("Texture could not be added because no Bitmaps or ByteBuffers set.");
+            throw new TextureException("Texture2D could not be added because no Bitmaps or ByteBuffers set.");
         if (mBitmaps != null && mBitmaps.length != 6)
             throw new TextureException("CubeMapTexture could not be added because it needs six textures instead of " + mBitmaps.length);
 
@@ -91,20 +91,20 @@ public class CubeMapTexture extends AMultiTexture {
 
     private void setTextureData() {
         if (isMipmaped()) {
-            if (filterType == Filter.LINEAR)
+            if (filterType == Filter.BILINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
                     GLES20.GL_LINEAR_MIPMAP_LINEAR);
             else
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
                     GLES20.GL_NEAREST_MIPMAP_NEAREST);
         } else {
-            if (filterType == Filter.LINEAR)
+            if (filterType == Filter.BILINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             else
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
         }
 
-        if (filterType == Filter.LINEAR)
+        if (filterType == Filter.BILINEAR)
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         else
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);

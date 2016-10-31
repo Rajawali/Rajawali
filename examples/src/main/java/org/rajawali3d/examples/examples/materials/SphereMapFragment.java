@@ -11,8 +11,8 @@ import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.textures.SphereMapTexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.SphereMapTexture2D;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
@@ -38,8 +38,8 @@ public class SphereMapFragment extends AExampleFragment {
 
 			getCurrentScene().addLight(light);
 
-			Texture jetTexture = new Texture("jetTexture", mContext, R.drawable.jettexture);
-			SphereMapTexture sphereMapTexture = new SphereMapTexture("manilaSphereMapTex", mContext, R.drawable
+			Texture2D jetTexture = new Texture2D("jetTexture", mContext, R.drawable.jettexture);
+			SphereMapTexture2D sphereMapTexture = new SphereMapTexture2D("manilaSphereMapTex", mContext, R.drawable
 					.manila_sphere_map);
 
 			jetTexture.setInfluence(.8f);
@@ -76,7 +76,7 @@ public class SphereMapFragment extends AExampleFragment {
 			getCurrentScene().registerAnimation(anim1);
 			anim1.play();
 
-			sphereMapTexture = new SphereMapTexture("manilaSphereMapTex2", mContext, R.drawable.manila_sphere_map);
+			sphereMapTexture = new SphereMapTexture2D("manilaSphereMapTex2", mContext, R.drawable.manila_sphere_map);
 			sphereMapTexture.isEnvironmentTexture(true);
 			sphereMapTexture.setInfluence(.5f);
 

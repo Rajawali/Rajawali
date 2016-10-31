@@ -7,7 +7,7 @@ import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.Etc1Texture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.primitives.Plane;
 
@@ -31,7 +31,7 @@ public class ETC1TextureCompressionFragment extends AExampleFragment {
 			getCurrentCamera().setPosition(0, 0, 7);
 
 			try {
-				Texture texture1 = new Texture("texture1", new Etc1Texture(
+				Texture2D texture1 = new Texture2D("texture1", new Etc1Texture(
 						"etc1Tex1", R.raw.rajawali_tex_mip_0, null));
 				Material material1 = new Material();
 				material1.addTexture(texture1);
@@ -52,7 +52,7 @@ public class ETC1TextureCompressionFragment extends AExampleFragment {
 						R.raw.rajawali_tex_mip_5, R.raw.rajawali_tex_mip_6,
 						R.raw.rajawali_tex_mip_7, R.raw.rajawali_tex_mip_8,
 						R.raw.rajawali_tex_mip_9 };
-				Texture texture2 = new Texture("texture2", new Etc1Texture(
+				Texture2D texture2 = new Texture2D("texture2", new Etc1Texture(
 						"etc1Tex2", resourceIds));
 
 				Material material2 = new Material();

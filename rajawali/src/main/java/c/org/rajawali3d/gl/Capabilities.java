@@ -20,6 +20,7 @@ import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESTexture3D;
 import org.rajawali3d.util.RajLog;
 
 import java.util.HashMap;
@@ -37,15 +38,14 @@ import javax.microedition.khronos.egl.EGLDisplay;
  * @author dennis.ippel
  */
 public class Capabilities {
+
+    static {
+        System.loadLibrary("glExtensions");
+    }
+
     private static Capabilities instance = null;
 
     private static volatile boolean glChecked = false;
-
-    private static final Map<String, Class> extensionMap = new HashMap<>();
-
-    static {
-        extensionMap.put("GL_EXT_texture_filter_anisotropic", EXTTextureFilterAnisotropic.class);
-    }
 
     private static int eglMajorVersion;
     private static int eglMinorVersion;
@@ -276,6 +276,9 @@ public class Capabilities {
                 case EXTTextureFilterAnisotropic.name:
                     loadedExtensions.put(extension, EXTTextureFilterAnisotropic.load());
                     break;
+                case OESTexture3D.name:
+                    loadedExtensions.put(extension, OESTexture3D.load());
+                    break;
                 default:
                     throw new IllegalArgumentException(
                             "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
@@ -448,15 +451,15 @@ public class Capabilities {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("-=-=-=- OpenGL Capabilities -=-=-=-\n");
-        sb.append("Max Combined Texture Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
-        sb.append("Max Cube Map Texture Size          : ").append(maxCubeMapTextureSize).append("\n");
+        sb.append("Max Combined Texture2D Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
+        sb.append("Max Cube Map Texture2D Size          : ").append(maxCubeMapTextureSize).append("\n");
         sb.append("Max Fragment Uniform Vectors       : ").append(maxFragmentUniformVectors).append("\n");
         sb.append("Max Renderbuffer Size              : ").append(maxRenderbufferSize).append("\n");
-        sb.append("Max Texture Image Units            : ").append(maxTextureImageUnits).append("\n");
-        sb.append("Max Texture Size                   : ").append(maxTextureSize).append("\n");
+        sb.append("Max Texture2D Image Units            : ").append(maxTextureImageUnits).append("\n");
+        sb.append("Max Texture2D Size                   : ").append(maxTextureSize).append("\n");
         sb.append("Max Varying Vectors                : ").append(maxVaryingVectors).append("\n");
         sb.append("Max Vertex Attribs                 : ").append(maxVertexAttribs).append("\n");
-        sb.append("Max Vertex Texture Image Units     : ").append(maxVertexTextureImageUnits).append("\n");
+        sb.append("Max Vertex Texture2D Image Units     : ").append(maxVertexTextureImageUnits).append("\n");
         sb.append("Max Vertex Uniform Vectors         : ").append(maxVertexUniformVectors).append("\n");
         sb.append("Max Viewport Width                 : ").append(maxViewportWidth).append("\n");
         sb.append("Max Viewport Height                : ").append(maxViewportHeight).append("\n");

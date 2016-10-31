@@ -22,9 +22,9 @@ import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.textures.Etc1Texture;
-import org.rajawali3d.textures.NormalMapTexture;
-import org.rajawali3d.textures.SpecularMapTexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.NormalMapTexture2D;
+import org.rajawali3d.textures.SpecularMapTexture2D;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.textures.TextureManager;
@@ -609,9 +609,9 @@ public class LoaderOBJ extends AMeshLoader {
 					int id = mResources.getIdentifier(fileNameWithoutExtension, "drawable", mResourcePackage);
 					int etc1Id = mResources.getIdentifier(fileNameWithoutExtension, "raw", mResourcePackage);
 					if(etc1Id!=0) {
-						mat.addTexture(new Texture(object.getName()+fileNameWithoutExtension, new Etc1Texture(object.getName()+etc1Id, etc1Id, id!=0 ? BitmapFactory.decodeResource(mResources, id) : null)));
+						mat.addTexture(new Texture2D(object.getName() + fileNameWithoutExtension, new Etc1Texture(object.getName() + etc1Id, etc1Id, id != 0 ? BitmapFactory.decodeResource(mResources, id) : null)));
 					} else if(id!=0) {
-						mat.addTexture(new Texture(object.getName()+fileNameWithoutExtension, mContext, id));
+						mat.addTexture(new Texture2D(object.getName() + fileNameWithoutExtension, mContext, id));
 					}
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.diffuseTexture);
@@ -619,8 +619,8 @@ public class LoaderOBJ extends AMeshLoader {
 						FileInputStream fis = null;
 						try {
 							fis = new FileInputStream(filePath);
-							mat.addTexture(new Texture(getFileNameWithoutExtension(matDef.diffuseTexture),
-													   new Etc1Texture(getFileNameWithoutExtension(matDef.diffuseTexture)+"etc1", fis, null)));
+							mat.addTexture(new Texture2D(getFileNameWithoutExtension(matDef.diffuseTexture),
+														 new Etc1Texture(getFileNameWithoutExtension(matDef.diffuseTexture)+"etc1", fis, null)));
 						} catch (FileNotFoundException e) {
 							RajLog.e("File decode error");
 						} finally {
@@ -629,8 +629,8 @@ public class LoaderOBJ extends AMeshLoader {
 							} catch (IOException e) {}
 						}
 					} else {
-						mat.addTexture(new Texture(getFileNameWithoutExtension(matDef.diffuseTexture),
-												   new TextureDataReference(BitmapFactory.decodeFile(filePath), null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE
+						mat.addTexture(new Texture2D(getFileNameWithoutExtension(matDef.diffuseTexture),
+													 new TextureDataReference(BitmapFactory.decodeFile(filePath), null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE
 																			)));
 					}
 				}
@@ -639,22 +639,22 @@ public class LoaderOBJ extends AMeshLoader {
 			if(hasBump) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.bumpTexture), "drawable", mResourcePackage);
-					mat.addTexture(new NormalMapTexture(object.getName() + identifier, mContext, identifier));
+					mat.addTexture(new NormalMapTexture2D(object.getName() + identifier, mContext, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
-					mat.addTexture(new NormalMapTexture(getOnlyFileName(matDef.bumpTexture),
-														new TextureDataReference(BitmapFactory.decodeFile(filePath),
+					mat.addTexture(new NormalMapTexture2D(getOnlyFileName(matDef.bumpTexture),
+														  new TextureDataReference(BitmapFactory.decodeFile(filePath),
 																				 null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 				}
 			}
 			if(hasSpecularTexture) {
 				if(mFile == null) {
 					int identifier = mResources.getIdentifier(getFileNameWithoutExtension(matDef.specularColorTexture), "drawable", mResourcePackage);
-					mat.addTexture(new SpecularMapTexture(object.getName() + identifier, mContext, identifier));
+					mat.addTexture(new SpecularMapTexture2D(object.getName() + identifier, mContext, identifier));
 				} else {
 					String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.specularColorTexture);
-					mat.addTexture(new SpecularMapTexture(getOnlyFileName(matDef.specularColorTexture),
-														  new TextureDataReference(BitmapFactory.decodeFile(filePath)
+					mat.addTexture(new SpecularMapTexture2D(getOnlyFileName(matDef.specularColorTexture),
+															new TextureDataReference(BitmapFactory.decodeFile(filePath)
 																  , null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 				}
 			}

@@ -13,9 +13,9 @@ import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.textures.AlphaMapTexture;
-import org.rajawali3d.textures.SpecularMapTexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.AlphaMapTexture2D;
+import org.rajawali3d.textures.SpecularMapTexture2D;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
@@ -42,14 +42,14 @@ public class SpecularAndAlphaFragment extends AExampleFragment {
 			getCurrentScene().addLight(pointLight);
 
 			try {
-				Texture earthTexture = new Texture("earthDiffuseTex", mContext, R.drawable.earth_diffuse);
+				Texture2D earthTexture = new Texture2D("earthDiffuseTex", mContext, R.drawable.earth_diffuse);
 
 				Material material = new Material();
 				material.enableLighting(true);
 				material.setDiffuseMethod(new DiffuseMethod.Lambert());
 				material.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 40));
 				material.addTexture(earthTexture);
-				material.addTexture(new SpecularMapTexture("earthSpecularTex", mContext, R.drawable.earth_specular));
+				material.addTexture(new SpecularMapTexture2D("earthSpecularTex", mContext, R.drawable.earth_specular));
 				material.setColorInfluence(0);
 
 				Sphere sphere = new Sphere(1, 32, 24);
@@ -70,7 +70,7 @@ public class SpecularAndAlphaFragment extends AExampleFragment {
 				material.setDiffuseMethod(new DiffuseMethod.Lambert());
 				material.setSpecularMethod(new SpecularMethod.Phong());
 				material.addTexture(earthTexture);
-				material.addTexture(new AlphaMapTexture("alphaMapTex", mContext, R.drawable.camden_town_alpha));
+				material.addTexture(new AlphaMapTexture2D("alphaMapTex", mContext, R.drawable.camden_town_alpha));
 				material.setColorInfluence(0);
 
 				sphere = new Sphere(1, 32, 24);

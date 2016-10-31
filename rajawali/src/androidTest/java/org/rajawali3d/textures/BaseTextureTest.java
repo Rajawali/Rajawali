@@ -142,8 +142,8 @@ public class BaseTextureTest {
     @Test
     public void setFilterType() throws Exception {
         final TestableBaseTexture texture = new TestableBaseTexture();
-        texture.setFilterType(Filter.ANISOTROPIC);
-        assertEquals(Filter.ANISOTROPIC, texture.getFilterType());
+        texture.setFilterType(Filter.TRILINEAR);
+        assertEquals(Filter.TRILINEAR, texture.getFilterType());
     }
 
     @Test

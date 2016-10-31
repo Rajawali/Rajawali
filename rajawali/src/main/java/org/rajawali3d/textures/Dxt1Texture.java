@@ -21,7 +21,7 @@ public class Dxt1Texture extends CompressedTexture {
 	private static final int GL_COMPRESSED_RGBA_S3TC_DXT1_EXT = 0x83F1;
 
 	/**
-	 * DXT1 Texture compression format.
+	 * DXT1 Texture2D compression format.
 	 *
 	 */
 	public enum Dxt1Format {
@@ -30,7 +30,7 @@ public class Dxt1Texture extends CompressedTexture {
 	};
 
 	/**
-	 * DXT1 Texture Compression format. See {@link Dxt1Format}.
+	 * DXT1 Texture2D Compression format. See {@link Dxt1Format}.
 	 */
 	protected Dxt1Format mDxt1Format;
 
@@ -70,7 +70,7 @@ public class Dxt1Texture extends CompressedTexture {
 	}
 
 	/**
-	 * @return the DXT1 Texture Compression format. See {@link Dxt1Format}.
+	 * @return the DXT1 Texture2D Compression format. See {@link Dxt1Format}.
 	 */
 	public Dxt1Format getDxt1Format() {
 		return mDxt1Format;
@@ -78,7 +78,7 @@ public class Dxt1Texture extends CompressedTexture {
 
 	/**
 	 * @param dxt1Format
-	 *            the DXT1 Texture Compression format. See {@link Dxt1Format}.
+	 *            the DXT1 Texture2D Compression format. See {@link Dxt1Format}.
 	 */
 	public void setDxt1Format(Dxt1Format dxt1Format) {
 		this.mDxt1Format = dxt1Format;

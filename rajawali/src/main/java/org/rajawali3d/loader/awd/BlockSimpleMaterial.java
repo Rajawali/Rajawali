@@ -13,9 +13,9 @@ import org.rajawali3d.loader.awd.exceptions.NotParsableException;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.textures.NormalMapTexture;
-import org.rajawali3d.textures.SpecularMapTexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.NormalMapTexture2D;
+import org.rajawali3d.textures.SpecularMapTexture2D;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.util.RajLog;
 
 import java.util.HashMap;
@@ -171,16 +171,16 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 			ambientTexture = (Long) properties.get(PROP_AMBIENT_TEXTURE, 0L);
 
 			if(diffuseTexture == 0 && ambientTexture == 0)
-				throw new ParsingException("Texture ID can not be 0, document corrupt or unsupported version.");
+				throw new ParsingException("Texture2D ID can not be 0, document corrupt or unsupported version.");
 
 			if(diffuseTexture > 0)
-				mMaterial.addTexture(new Texture(cleanName + diffuseTexture,
-												 new TextureDataReference(lookup(blockHeader, diffuseTexture), null,
+				mMaterial.addTexture(new Texture2D(cleanName + diffuseTexture,
+												   new TextureDataReference(lookup(blockHeader, diffuseTexture), null,
 																		  GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 
 			if(ambientTexture > 0)
-				mMaterial.addTexture(new Texture(cleanName + ambientTexture,
-												 new TextureDataReference(lookup(blockHeader, ambientTexture), null,
+				mMaterial.addTexture(new Texture2D(cleanName + ambientTexture,
+												   new TextureDataReference(lookup(blockHeader, ambientTexture), null,
 																		  GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 
 			mMaterial.setColorInfluence(0);
@@ -203,13 +203,13 @@ public class BlockSimpleMaterial extends ATextureBlockParser {
 		double specularLevel = (Double) properties.get(PROP_SPECULAR_LEVEL, 1.0d);
 
 		if(specularTexture > 0)
-			mMaterial.addTexture(new SpecularMapTexture(cleanName + specularTexture,
-														new TextureDataReference(lookup(blockHeader, specularTexture)
+			mMaterial.addTexture(new SpecularMapTexture2D(cleanName + specularTexture,
+														  new TextureDataReference(lookup(blockHeader, specularTexture)
 																, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 
 		if(normalTexture > 0)
-			mMaterial.addTexture(new NormalMapTexture(cleanName + normalTexture,
-													  new TextureDataReference(lookup(blockHeader, normalTexture),
+			mMaterial.addTexture(new NormalMapTexture2D(cleanName + normalTexture,
+														new TextureDataReference(lookup(blockHeader, normalTexture),
 																			   null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 
 		// ambient 1.0 is default, washes-out object; assume < 1 is intended

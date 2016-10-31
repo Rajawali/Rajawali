@@ -13,7 +13,7 @@ import org.rajawali3d.loader.LoaderOBJ;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.math.vector.Vector3;
 
 public class FogFragment extends AExampleFragment {
@@ -54,21 +54,21 @@ public class FogFragment extends AExampleFragment {
 				Material roadMaterial = new Material();
 				roadMaterial.enableLighting(true);
 				roadMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-				roadMaterial.addTexture(new Texture("roadTex", mContext, R.drawable.road));
+				roadMaterial.addTexture(new Texture2D("roadTex", mContext, R.drawable.road));
 				roadMaterial.setColorInfluence(0);
 				mRoad.getChildByName("Road").setMaterial(roadMaterial);
 
 				Material signMaterial = new Material();
 				signMaterial.enableLighting(true);
 				signMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-				signMaterial.addTexture(new Texture("rajawaliSign", mContext, R.drawable.sign));
+				signMaterial.addTexture(new Texture2D("rajawaliSign", mContext, R.drawable.sign));
 				signMaterial.setColorInfluence(0);
 				mRoad.getChildByName("WarningSign").setMaterial(signMaterial);
 
 				Material warningMaterial = new Material();
 				warningMaterial.enableLighting(true);
 				warningMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-				warningMaterial.addTexture(new Texture("warning", mContext, R.drawable.warning));
+				warningMaterial.addTexture(new Texture2D("warning", mContext, R.drawable.warning));
 				warningMaterial.setColorInfluence(0);
 				mRoad.getChildByName("Warning").setMaterial(warningMaterial);
 			} catch (Exception e) {

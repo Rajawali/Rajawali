@@ -82,10 +82,10 @@ public class PostProcessingManager {
 
         mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
                                           false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-                                          Filter.LINEAR, (Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+                                          Filter.BILINEAR, (Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
         mRenderTarget2 = new RenderTarget("rt2" + hashCode(), width, height, 0, 0,
                                           false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-                                          Filter.LINEAR, (Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+                                          Filter.BILINEAR, (Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
 
         mWriteBuffer = mRenderTarget1;
         mReadBuffer = mRenderTarget2;

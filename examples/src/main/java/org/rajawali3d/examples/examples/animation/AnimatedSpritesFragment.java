@@ -32,7 +32,7 @@ public class AnimatedSpritesFragment extends AExampleFragment {
 			mParticleSystem.setPointSize(600);
 			try {
 				mParticleSystem.getMaterial().addTexture(
-						new Texture(R.drawable.explosion_3_40_128));
+						new Texture2D(R.drawable.explosion_3_40_128));
 			} catch (TextureException e) {
 				e.printStackTrace();
 			}

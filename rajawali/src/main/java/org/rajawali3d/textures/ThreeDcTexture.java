@@ -19,7 +19,7 @@ import android.opengl.GLES11Ext;
 public class ThreeDcTexture extends CompressedTexture {
 
 	/**
-	 * 3DC Texture compression format.
+	 * 3DC Texture2D compression format.
 	 *
 	 */
 	public enum ThreeDcFormat {
@@ -28,7 +28,7 @@ public class ThreeDcTexture extends CompressedTexture {
 	};
 
 	/**
-	 * 3DC Texture Compression format. See {@link ThreeDcFormat}.
+	 * 3DC Texture2D Compression format. See {@link ThreeDcFormat}.
 	 */
 	protected ThreeDcFormat mThreeDcFormat;
 
@@ -68,7 +68,7 @@ public class ThreeDcTexture extends CompressedTexture {
 	}
 
 	/**
-	 * @return the 3DC Texture Compression format. See {@link ThreeDcFormat}.
+	 * @return the 3DC Texture2D Compression format. See {@link ThreeDcFormat}.
 	 */
 	public ThreeDcFormat getThreeDcFormat() {
 		return mThreeDcFormat;
@@ -76,7 +76,7 @@ public class ThreeDcTexture extends CompressedTexture {
 
 	/**
 	 * @param threeDcFormat
-	 *            the 3DC Texture Compression format. See {@link ThreeDcFormat}.
+	 *            the 3DC Texture2D Compression format. See {@link ThreeDcFormat}.
 	 */
 	public void setThreeDcFormat(ThreeDcFormat mThreeDcFormat) {
 		this.mThreeDcFormat = mThreeDcFormat;

@@ -13,7 +13,7 @@ import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
@@ -54,7 +54,7 @@ public class OrthographicFragment extends AExampleFragment {
 
 			Material material = new Material();
 			try {
-				material.addTexture(new Texture("checkerboard", mContext, R.drawable.checkerboard));
+				material.addTexture(new Texture2D("checkerboard", mContext, R.drawable.checkerboard));
 				material.setColorInfluence(0);
 			} catch (TextureException e) {
 				e.printStackTrace();

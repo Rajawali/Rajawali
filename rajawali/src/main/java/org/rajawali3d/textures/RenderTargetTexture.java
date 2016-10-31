@@ -125,7 +125,7 @@ public class RenderTargetTexture extends BaseTexture {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
             if (isMipmaped()) {
-                if (filterType == Filter.LINEAR) {
+                if (filterType == Filter.BILINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
                                            GLES20.GL_LINEAR_MIPMAP_LINEAR);
                 } else {
@@ -133,14 +133,14 @@ public class RenderTargetTexture extends BaseTexture {
                                            GLES20.GL_NEAREST_MIPMAP_NEAREST);
                 }
             } else {
-                if (filterType == Filter.LINEAR) {
+                if (filterType == Filter.BILINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
                 } else {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
                 }
             }
 
-            if (filterType == Filter.LINEAR) {
+            if (filterType == Filter.BILINEAR) {
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             } else {
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);

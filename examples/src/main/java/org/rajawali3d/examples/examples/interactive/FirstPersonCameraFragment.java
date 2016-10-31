@@ -19,7 +19,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 
 /**
@@ -111,7 +111,7 @@ public class FirstPersonCameraFragment extends AExampleFragment {
 
             try {
                 Material material = new Material();
-                material.addTexture(new Texture("earthColors", mContext, R.drawable.earthtruecolor_nasa_big));
+                material.addTexture(new Texture2D("earthColors", mContext, R.drawable.earthtruecolor_nasa_big));
                 material.setColorInfluence(0);
                 mSphere = new Sphere(1, 24, 24);
                 mSphere.setPosition(0, 0, -5.0);

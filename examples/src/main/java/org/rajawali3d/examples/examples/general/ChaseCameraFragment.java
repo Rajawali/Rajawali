@@ -19,7 +19,7 @@ import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
@@ -122,7 +122,7 @@ public class ChaseCameraFragment extends AExampleFragment implements
             mSphere = new Sphere(400, 8, 8);
             Material sphereMaterial = new Material();
             try {
-                sphereMaterial.addTexture(new Texture("skySphere", mContext, R.drawable.skysphere));
+                sphereMaterial.addTexture(new Texture2D("skySphere", mContext, R.drawable.skysphere));
                 sphereMaterial.setColorInfluence(0);
             } catch (TextureException e1) {
                 e1.printStackTrace();
@@ -151,7 +151,7 @@ public class ChaseCameraFragment extends AExampleFragment implements
             rootCubeMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
             rootCubeMaterial.enableLighting(true);
             try {
-                rootCubeMaterial.addTexture(new Texture("camouflage", mContext, R.drawable.camouflage));
+                rootCubeMaterial.addTexture(new Texture2D("camouflage", mContext, R.drawable.camouflage));
                 rootCubeMaterial.setColorInfluence(0);
             } catch (TextureException e) {
                 e.printStackTrace();
