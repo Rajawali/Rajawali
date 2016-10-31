@@ -1,3 +1,0 @@
-C:/Users/jared/Documents/Rajawali/rajawali/.externalNativeBuild/cmake/debug/arm64-v8a/CMakeFiles/glExtensions.dir
-C:/Users/jared/Documents/Rajawali/rajawali/.externalNativeBuild/cmake/debug/arm64-v8a/CMakeFiles/edit_cache.dir
-C:/Users/jared/Documents/Rajawali/rajawali/.externalNativeBuild/cmake/debug/arm64-v8a/CMakeFiles/rebuild_cache.dir

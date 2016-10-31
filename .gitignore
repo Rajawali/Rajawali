@@ -6,6 +6,8 @@ vuforia/build/
 wear/build/
 build/
 
+rajawali/.externalNativeBuild/
+
 vuforia/src/main/obj/
 vuforia/src/main/libs/
 
