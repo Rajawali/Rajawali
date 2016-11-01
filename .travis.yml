@@ -38,7 +38,7 @@ script:
 - echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
 - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
-- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
+- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r13b") >> "local.properties"
 - cat local.properties
 #- "./gradlew clean --stacktrace --continue"
 - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
@@ -57,10 +57,8 @@ script:
   #./gradlew :wear:uploadArchives --stacktrace --continue;
 install:
 # Install the NDK
-- wget https://dl.google.com/android/repository/android-ndk-r13b-linux-x86_64.zip -O ndk.bin
-- chmod a+x ndk.bin
-- "./ndk.bin" # 1> /dev/null 2>&1"
-- chmod a+x ./android-ndk-r12d/ndk-build
+- wget --output-document=android-sdk.tgz https://dl.google.com/android/android-sdk_r13b-linux.tgz
+- tar --extract --gzip --file=android-sdk.tgz
 
 # By default, we get an older version of libstdc++6 so we need to update it
 # http://askubuntu.com/questions/575505/glibcxx-3-4-20-not-found-how-to-fix-this-error
