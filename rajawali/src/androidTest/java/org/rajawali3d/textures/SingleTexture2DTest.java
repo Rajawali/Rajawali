@@ -11,7 +11,9 @@ import static org.mockito.Mockito.when;
 
 import android.opengl.GLES20;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.rajawali3d.R;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.annotation.Filter;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@RunWith(AndroidJUnit4.class)
 @SmallTest
 public class SingleTexture2DTest {
 

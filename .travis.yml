@@ -42,14 +42,13 @@ script:
 - cat local.properties
 #- "./gradlew clean --stacktrace --continue"
 - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-- "./gradlew :rajawali:connectedCheck -x extractReleaseAnnotations -x extractDebugAnnotations --stacktrace --continue"
-- "./gradlew :rajawali:debugCoverage -x extractReleaseAnnotations -x extractDebugAnnotations --stacktrace --continue"
+- "./gradlew :rajawali:connectedCheck :rajawali:debugCoverage :examples:check -x extractReleaseAnnotations
+-x extractDebugAnnotations --stacktrace --continue"
  # Will execute :rajawali:check
 #- "./gradlew :vuforia:check --stacktrace --continue"
 #- "./gradlew :vr:check --stacktrace --continue"
 #- "./gradlew :wear:check --stacktrace --continue"
 #- "./gradlew :wear-example:check --stacktrace --continue"
-- "./gradlew :examples:check -x extractReleaseAnnotations -x extractDebugAnnotations --stacktrace --continue"
 - if $TRAVIS_PULL_REQUEST; then "Skipping uploadArchives on Pull Request"; else ./gradlew
   :rajawali:uploadArchives -x extractReleaseAnnotations -x extractDebugAnnotations --stacktrace --continue; fi
   # The following goes before the above 'fi' when the modules are again valid
