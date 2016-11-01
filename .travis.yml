@@ -57,7 +57,7 @@ script:
   #./gradlew :wear:uploadArchives --stacktrace --continue;
 install:
 # Install the NDK
-- wget http://dl.google.com/android/ndk/android-ndk-r13b-linux-x86_64.bin -O ndk.bin
+- wget https://dl.google.com/android/repository/android-ndk-r13b-linux-x86_64.zip -O ndk.bin
 - chmod a+x ndk.bin
 - "./ndk.bin 1> /dev/null 2>&1"
 - chmod a+x ./android-ndk-r12d/ndk-build
