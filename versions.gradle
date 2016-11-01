@@ -1,7 +1,8 @@
 
 // Build
-project.ext.set('targetSdk', 24)
-project.ext.set('compileSdk', 24)
+project.ext.set('minSdk', 15)
+project.ext.set('targetSdk', 25)
+project.ext.set('compileSdk', 25)
 project.ext.set('buildTools', '25.0.0')
-project.ext.set('versionCode', 1)
-project.ext.set('versionName', '1.0')
+project.ext.set('versionCode', 2)
+project.ext.set('versionName', '2.0')

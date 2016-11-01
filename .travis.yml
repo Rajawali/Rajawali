@@ -1,5 +1,5 @@
 language: android
-sudo: false
+sudo: required
 before_install:
 - openssl aes-256-cbc -K $encrypted_64bf13095d6f_key -iv $encrypted_64bf13095d6f_iv
   -in rajawali_secret.gpg.enc -out rajawali_secret.gpg -d
