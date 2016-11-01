@@ -1,20 +1,18 @@
 package org.rajawali3d.textures;
 
+import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.opengl.GLES20;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.RequiresDevice;
-import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
-import org.junit.After;
-import org.junit.Before;
+import android.support.test.filters.SmallTest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.rajawali3d.R;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Type;
@@ -25,26 +23,14 @@ import java.util.ArrayList;
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-@RunWith(AndroidJUnit4.class)
-@RequiresDevice
-@LargeTest
-public class SingleTexture2DTest extends GlTestCase {
+@SmallTest
+public class SingleTexture2DTest {
 
     private static class TestableSingleTexture2D extends SingleTexture2D {
 
         @Override public SingleTexture2D clone() {
             return null;
         }
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp(getClass().getSimpleName());
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
     @Test
@@ -96,37 +82,28 @@ public class SingleTexture2DTest extends GlTestCase {
 
     @Test
     public void setTextureDataFromResourceId() throws Exception {
-        
+        final SingleTexture2D texture = new TestableSingleTexture2D();
+        final TextureDataReference reference = texture.setTextureDataFromResourceId(getContext(), R.drawable
+                .earth_diffuse);
+        assertNotNull(reference);
+        assertEquals(reference, texture.getTextureData());
+        assertTrue(reference.hasBitmap());
+        assertFalse(reference.hasBuffer());
+        assertEquals(GLES20.GL_RGBA, reference.getPixelFormat());
+        assertEquals(GLES20.GL_UNSIGNED_BYTE, reference.getDataType());
+        reference.recycle();
     }
 
     @Test
     public void setTextureData() throws Exception {
+        final TextureDataReference reference = mock(TextureDataReference.class);
+        final TextureDataReference newReference = mock(TextureDataReference.class);
 
+        final SingleTexture2D texture = new TestableSingleTexture2D();
+        texture.setTextureData(reference);
+        verify(reference).holdReference();
+        texture.setTextureData(newReference);
+        verify(reference).recycle();
+        verify(newReference).holdReference();
     }
-
-    @Test
-    public void getTextureData() throws Exception {
-
-    }
-
-    @Test
-    public void add() throws Exception {
-
-    }
-
-    @Test
-    public void remove() throws Exception {
-
-    }
-
-    @Test
-    public void replace() throws Exception {
-
-    }
-
-    @Test
-    public void reset() throws Exception {
-
-    }
-
 }

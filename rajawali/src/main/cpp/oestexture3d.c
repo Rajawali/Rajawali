@@ -41,6 +41,7 @@ Java_c_org_rajawali3d_gl_extensions_OESTexture3D_texImage3DOES(JNIEnv *env, jcla
                                                                jint depth, jint border, jint format, jint dataType,
                                                                jobject pixels) {
 
+    // TODO: Make this handle non-direct byte buffers as well
     glTexImage3DOES((GLenum) target, level, (GLenum) internalFormat, width, height, depth, border, (GLenum) format,
                     (GLenum) dataType, (*env)->GetDirectBufferAddress(env, pixels));
 
@@ -52,6 +53,7 @@ Java_c_org_rajawali3d_gl_extensions_OESTexture3D_texSubImage3DOES(JNIEnv *env, j
                                                                   jint height, jint depth, jobject format,
                                                                   jobject dataType, jobject pixels) {
 
+    // TODO: Make this handle non-direct byte buffers as well
     glTexSubImage3DOES((GLenum) target, level, xoffset, yoffset, zoffset, width, height, depth, (GLenum) format,
                        (GLenum) dataType, (*env)->GetDirectBufferAddress(env, pixels));
 
@@ -63,5 +65,6 @@ Java_c_org_rajawali3d_gl_extensions_OESTexture3D_copyTexSubImage3DOES(JNIEnv *en
                                                                       jint zoffset, jint x, jint y, jint width,
                                                                       jint height) {
 
+    // TODO: Make this handle non-direct byte buffers as well
     glCopyTexSubImage3DOES((GLenum) target, level, xoffset, yoffset, zoffset, x, y, width, height);
 }
