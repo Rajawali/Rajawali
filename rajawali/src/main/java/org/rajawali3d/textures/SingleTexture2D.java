@@ -21,6 +21,7 @@ import android.opengl.GLUtils;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import android.support.annotation.Nullable;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
@@ -42,12 +43,15 @@ public abstract class SingleTexture2D extends BaseTexture {
     /**
      * The texture data.
      */
+    @Nullable
     private TextureDataReference textureData;
 
     /**
-     * The Android resource ID of the data for this texture, if it was provided. Otherwise, 0.
+     * Basic no-args constructor used by some subclasses. No initialization is performed.
      */
-    protected int resourceId;
+    protected SingleTexture2D() {
+        super();
+    }
 
     /**
      * Constructs a new {@link SingleTexture2D} with the specified name and type.
@@ -60,7 +64,8 @@ public abstract class SingleTexture2D extends BaseTexture {
     }
 
     /**
-     * Constructs a new {@link SingleTexture2D} with data provided by the Android resource id. The texture name is set by
+     * Constructs a new {@link SingleTexture2D} with data provided by the Android resource id. The texture name is
+     * set by
      * querying Android for the resource name.
      *
      * @param context    {@link Context} The application context.
@@ -85,54 +90,27 @@ public abstract class SingleTexture2D extends BaseTexture {
     }
 
     /**
-     * Constructs a new {@link SingleTexture2D} with data provided by a {@link CompressedTexture}.
-     *
-     * @param type              {@link TextureType} The texture usage type.
-     * @param name              {@link String} The texture name.
-     * @param compressedTexture {@link CompressedTexture} The compressed texture data.
-     */
-    public SingleTexture2D(@TextureType int type, @NonNull String name, @NonNull CompressedTexture compressedTexture) {
-        super(type, name, compressedTexture);
-    }
-
-    /**
      * Constructs a new {@link SingleTexture2D} with data and settings from the provided {@link SingleTexture2D}.
      *
      * @param other The other {@link SingleTexture2D}.
      */
-    public SingleTexture2D(@NonNull SingleTexture2D other) {
+    public SingleTexture2D(@NonNull SingleTexture2D other) throws TextureException {
         super(other);
         setFrom(other);
     }
-
-    /**
-     * Creates a clone of this {@link SingleTexture2D}.
-     */
-    public abstract SingleTexture2D clone();
 
     /**
      * Copies all properties and data from another {@link SingleTexture2D}.
      *
      * @param other The other {@link SingleTexture2D}.
      */
-    public void setFrom(@NonNull SingleTexture2D other) {
-        super.setFrom(other);
-        setTextureData(other.getTextureData());
-    }
-
-    @Override
-    public void setWrapType(@WrapType int wrapType) {
-        super.setWrapType(wrapType);
-        if (getCompressedTexture() != null) {
-            getCompressedTexture().setWrapType(wrapType);
-        }
-    }
-
-    @Override
-    public void setFilterType(@FilterType int filterType) {
-        super.setFilterType(filterType);
-        if (getCompressedTexture() != null) {
-            getCompressedTexture().setFilterType(filterType);
+    public void setFrom(@NonNull SingleTexture2D other) throws TextureException {
+        final TextureDataReference data = other.getTextureData();
+        if (data != null) {
+            super.setFrom(other);
+            setTextureData(other.getTextureData());
+        } else {
+            throw new TextureException("Texture data was null!");
         }
     }
 
@@ -155,10 +133,12 @@ public abstract class SingleTexture2D extends BaseTexture {
 
         // Decode the bitmap
         final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
-        setTextureData(new TextureDataReference(bitmap, null, bitmap.getConfig().equals(Config.RGB_565)
-                                                              ? GLES20.GL_RGB : GLES20.GL_RGBA,
-                                                GLES20.GL_UNSIGNED_BYTE));
-        return textureData;
+        final TextureDataReference reference = new TextureDataReference(bitmap, null,
+                                                                        bitmap.getConfig().equals(Config.RGB_565)
+                                                                        ? GLES20.GL_RGB : GLES20.GL_RGBA,
+                                                                        GLES20.GL_UNSIGNED_BYTE);
+        setTextureData(reference);
+        return reference;
     }
 
     /**
@@ -183,35 +163,18 @@ public abstract class SingleTexture2D extends BaseTexture {
      *
      * @return The current {@link TextureDataReference}.
      */
-    @NonNull
+    @Nullable
     public TextureDataReference getTextureData() {
         return textureData;
     }
 
     @Override
     void add() throws TextureException {
-        // If this is a compressed texture wrapper, let the compressed texture handle things
-        final CompressedTexture compressedTexture = getCompressedTexture();
-        if (compressedTexture != null) {
-            compressedTexture.add();
-            setWidth(compressedTexture.getWidth());
-            setHeight(compressedTexture.getHeight());
-            setTextureId(compressedTexture.getTextureId());
-            return;
-        }
-
         // Check if there is valid data
         if (textureData == null || textureData.isDestroyed()
             || (textureData.hasBuffer() && textureData.getByteBuffer().limit() == 0)) {
             throw new TextureException("Texture2D could not be added because there is no valid data set.");
         }
-
-        //TODO: Texel format?
-        /*if (textureData.hasBitmap()) {
-            setTexelFormat(textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
-            setWidth(textureData.getBitmap().getWidth());
-            setHeight(textureData.getBitmap().getHeight());
-        }*/
 
         // Fetch these once for efficiency. We use methods
         @FilterType final int filterType = getFilterType();
@@ -330,11 +293,7 @@ public abstract class SingleTexture2D extends BaseTexture {
 
     @Override
     void remove() throws TextureException {
-        if (getCompressedTexture() != null) {
-            getCompressedTexture().remove();
-        } else {
-            GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
-        }
+        GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
         if (textureData != null) {
             // When removing a texture, release a reference count for its data if we have saved it.
             textureData.recycle();
@@ -345,16 +304,6 @@ public abstract class SingleTexture2D extends BaseTexture {
 
     @Override
     void replace() throws TextureException {
-        // TODO: Texture resizing
-        final CompressedTexture compressedTexture = getCompressedTexture();
-        if (compressedTexture != null) {
-            compressedTexture.replace();
-            setWidth(compressedTexture.getWidth());
-            setHeight(compressedTexture.getHeight());
-            setTextureId(compressedTexture.getTextureId());
-            return;
-        }
-
         if (textureData == null || textureData.isDestroyed() || (textureData.hasBuffer()
                                                                  && textureData.getByteBuffer().limit() == 0)) {
             throw new TextureException("Texture2D could not be replaced because there is no Bitmap or ByteBuffer set.");
@@ -364,7 +313,8 @@ public abstract class SingleTexture2D extends BaseTexture {
 
         if (textureData.hasBitmap()) {
             int bitmapFormat = textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
-            if (textureData.getBitmap().getWidth() != getWidth() || textureData.getBitmap().getHeight() != getHeight()) {
+            if (textureData.getBitmap().getWidth() != getWidth()
+                || textureData.getBitmap().getHeight() != getHeight()) {
                 throw new TextureException(
                         "Texture2D could not be updated because the texture size is different from the original.");
             }
@@ -394,11 +344,6 @@ public abstract class SingleTexture2D extends BaseTexture {
 
     @Override
     void reset() throws TextureException {
-        if (getCompressedTexture() != null) {
-            getCompressedTexture().reset();
-            return;
-        }
-
         if (textureData != null) {
             textureData.recycle();
             textureData = null;

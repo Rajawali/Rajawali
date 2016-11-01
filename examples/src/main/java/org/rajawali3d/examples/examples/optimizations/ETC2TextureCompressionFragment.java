@@ -57,7 +57,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 
 			getCurrentCamera().setPosition(0, 0, 7);
 
-            try {
+            /*try {
                 // This is a raw PNG image
                 Texture2D texture0 = new Texture2D("png", mContext, R.drawable.rectangles);
                 Material material0 = new Material();
@@ -99,7 +99,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 				getCurrentScene().addChild(mETC2Plane);
 			} catch (TextureException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 
     }

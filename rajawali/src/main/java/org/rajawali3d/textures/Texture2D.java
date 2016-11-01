@@ -16,40 +16,37 @@ package org.rajawali3d.textures;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
+import org.rajawali3d.util.RajLog;
 
 public class Texture2D extends SingleTexture2D {
-	public Texture2D(Texture2D other)
-	{
-		super(other);
-	}
+    public Texture2D(Texture2D other) throws TextureException {
+        super(other);
+    }
 
-	public Texture2D(String textureName)
-	{
-		super(Type.DIFFUSE, textureName);
-	}
+    public Texture2D(String textureName) {
+        super(Type.DIFFUSE, textureName);
+    }
 
-	public Texture2D(String textureName, @NonNull Context context, int resourceId)
-	{
-		super(Type.DIFFUSE, textureName);
-		setTextureDataFromResourceId(context, resourceId);
-	}
+    public Texture2D(String textureName, @NonNull Context context, int resourceId) {
+        super(Type.DIFFUSE, textureName);
+        setTextureDataFromResourceId(context, resourceId);
+    }
 
-	public Texture2D(String textureName, TextureDataReference textureData)
-	{
-		super(Type.DIFFUSE, textureName, textureData);
-	}
+    public Texture2D(String textureName, TextureDataReference textureData) {
+        super(Type.DIFFUSE, textureName, textureData);
+    }
 
 	/*public Texture2D(String textureName, TextureAtlas atlas)
-	{
+    {
 		super(TextureType.DIFFUSE, textureName, atlas.getTileNamed(textureName).getPage());
 	}*/
 
-	public Texture2D(String textureName, CompressedTexture compressedTexture)
-	{
-		super(Type.DIFFUSE, textureName, compressedTexture);
-	}
-
-	public Texture2D clone() {
-		return new Texture2D(this);
-	}
+    public Texture2D clone() {
+        try {
+            return new Texture2D(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
+        }
+    }
 }

@@ -128,11 +128,6 @@ public abstract class BaseTexture {
     private float maxAnisotropy = 1.0f;
 
     /**
-     * The optional compressed texture.
-     */
-    private CompressedTexture compressedTexture;
-
-    /**
      * The OpenGL texture type.
      */
     @TextureTarget
@@ -169,20 +164,6 @@ public abstract class BaseTexture {
         shouldRecycle = false;
         wrapType = Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R;
         filterType = Filter.BILINEAR;
-    }
-
-    /**
-     * Creates a new texture from the provided compressed texture data for the specified texture type with
-     * {@link GLES20#GL_REPEAT} texture wrapping on all axes and {@link GLES20#GL_LINEAR} filtering.
-     *
-     * @param textureType       {@link TextureType} The Rajawali texture type.
-     * @param textureName       The name of the texture. This name will be used in the shader code to reference this
-     *                          texture.
-     * @param compressedTexture {@link CompressedTexture} The compressed texture this texture is built from.
-     */
-    public BaseTexture(@TextureType int textureType, @NonNull String textureName, CompressedTexture compressedTexture) {
-        this(textureType, textureName);
-        setCompressedTexture(compressedTexture);
     }
 
     /**
@@ -223,7 +204,6 @@ public abstract class BaseTexture {
         textureType = other.getTextureType();
         wrapType = other.getWrapType();
         filterType = other.getFilterType();
-        compressedTexture = other.getCompressedTexture();
         textureTarget = other.getTextureTarget();
         influence = other.getInfluence();
         clearRegisteredMaterials();
@@ -598,14 +578,6 @@ public abstract class BaseTexture {
     @FloatRange(from = 0, to = 1)
     public float getInfluence() {
         return influence;
-    }
-
-    public void setCompressedTexture(@NonNull CompressedTexture compressedTexture) {
-        this.compressedTexture = compressedTexture;
-    }
-
-    public CompressedTexture getCompressedTexture() {
-        return compressedTexture;
     }
 
     public void setRepeatU(float value) {

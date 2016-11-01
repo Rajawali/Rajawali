@@ -16,35 +16,32 @@ package org.rajawali3d.textures;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
+import org.rajawali3d.util.RajLog;
 
 public class NormalMapTexture2D extends SingleTexture2D {
-	public NormalMapTexture2D(NormalMapTexture2D other)
-	{
-		super(other);
-	}
+    public NormalMapTexture2D(NormalMapTexture2D other) throws TextureException {
+        super(other);
+    }
 
-	public NormalMapTexture2D(String textureName)
-	{
-		super(Type.NORMAL, textureName);
-	}
+    public NormalMapTexture2D(String textureName) {
+        super(Type.NORMAL, textureName);
+    }
 
-	public NormalMapTexture2D(String textureName, @NonNull Context context, int resourceId)
-	{
-		super(Type.NORMAL, textureName);
-		setTextureDataFromResourceId(context, resourceId);
-	}
+    public NormalMapTexture2D(String textureName, @NonNull Context context, int resourceId) {
+        super(Type.NORMAL, textureName);
+        setTextureDataFromResourceId(context, resourceId);
+    }
 
-	public NormalMapTexture2D(String textureName, TextureDataReference textureData)
-	{
-		super(Type.NORMAL, textureName, textureData);
-	}
+    public NormalMapTexture2D(String textureName, TextureDataReference textureData) {
+        super(Type.NORMAL, textureName, textureData);
+    }
 
-	public NormalMapTexture2D(String textureName, CompressedTexture compressedTexture)
-	{
-		super(Type.NORMAL, textureName, compressedTexture);
-	}
-
-	public NormalMapTexture2D clone() {
-		return new NormalMapTexture2D(this);
-	}
+    public NormalMapTexture2D clone() {
+        try {
+            return new NormalMapTexture2D(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
+        }
+    }
 }

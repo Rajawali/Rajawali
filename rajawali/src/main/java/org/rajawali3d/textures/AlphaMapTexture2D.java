@@ -15,47 +15,42 @@ package org.rajawali3d.textures;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
+import org.rajawali3d.util.RajLog;
 
 public class AlphaMapTexture2D extends SingleTexture2D {
-	private float mAlphaMaskingThreshold = .5f;
+    private float mAlphaMaskingThreshold = .5f;
 
-	public AlphaMapTexture2D(AlphaMapTexture2D other)
-	{
-		super(other);
-	}
+    public AlphaMapTexture2D(AlphaMapTexture2D other) throws TextureException {
+        super(other);
+    }
 
-	public AlphaMapTexture2D(String textureName)
-	{
-		super(Type.ALPHA, textureName);
-	}
+    public AlphaMapTexture2D(String textureName) {
+        super(Type.ALPHA, textureName);
+    }
 
-	public AlphaMapTexture2D(String textureName, @NonNull Context context, int resourceId)
-	{
-		super(Type.ALPHA, textureName);
-		setTextureDataFromResourceId(context, resourceId);
-	}
+    public AlphaMapTexture2D(String textureName, @NonNull Context context, int resourceId) {
+        super(Type.ALPHA, textureName);
+        setTextureDataFromResourceId(context, resourceId);
+    }
 
-	public AlphaMapTexture2D(String textureName, TextureDataReference textureData)
-	{
-		super(Type.ALPHA, textureName, textureData);
-	}
+    public AlphaMapTexture2D(String textureName, TextureDataReference textureData) {
+        super(Type.ALPHA, textureName, textureData);
+    }
 
-	public AlphaMapTexture2D(String textureName, CompressedTexture compressedTexture)
-	{
-		super(Type.ALPHA, textureName, compressedTexture);
-	}
+    public AlphaMapTexture2D clone() {
+        try {
+            return new AlphaMapTexture2D(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
+        }
+    }
 
-	public AlphaMapTexture2D clone() {
-		return new AlphaMapTexture2D(this);
-	}
+    public void setAlphaMaskingThreshold(float threshold) {
+        mAlphaMaskingThreshold = threshold;
+    }
 
-	public void setAlphaMaskingThreshold(float threshold)
-	{
-		mAlphaMaskingThreshold = threshold;
-	}
-
-	public float getAlphaMaskingThreshold()
-	{
-		return mAlphaMaskingThreshold;
-	}
+    public float getAlphaMaskingThreshold() {
+        return mAlphaMaskingThreshold;
+    }
 }

@@ -8,6 +8,7 @@ import android.opengl.ETC1;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
 import android.os.Build.VERSION_CODES;
+import org.rajawali3d.textures.annotation.Compression2D;
 import org.rajawali3d.textures.utils.ETC2Util;
 import org.rajawali3d.util.RajLog;
 
@@ -46,7 +47,7 @@ public class Etc2Texture extends CompressedTexture {
 
     public Etc2Texture(String textureName) {
         super(textureName);
-        mCompressionType = CompressionType.ETC2;
+        mCompressionType = Compression2D.ETC2;
     }
 
     public Etc2Texture(int resourceId) {
@@ -81,7 +82,7 @@ public class Etc2Texture extends CompressedTexture {
         setInputStream(compressedTexture, fallbackTexture);
     }
 
-    public Etc2Texture(Etc1Texture other) {
+    public Etc2Texture(Etc1Texture other) throws TextureException {
         super();
         setFrom(other);
     }

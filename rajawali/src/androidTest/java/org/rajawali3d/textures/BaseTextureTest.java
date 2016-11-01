@@ -60,7 +60,6 @@ public class BaseTextureTest {
         when(from.getTextureType()).thenReturn(Type.LOOKUP);
         when(from.getWrapType()).thenReturn(Wrap.CLAMP_S | Wrap.MIRRORED_REPEAT_T | Wrap.REPEAT_R);
         when(from.getFilterType()).thenReturn(Filter.NEAREST);
-        when(from.getCompressedTexture()).thenReturn(null);
         when(from.getTextureTarget()).thenReturn(GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X);
         when(from.getInfluence()).thenReturn(0.654321f);
         when(from.getRegisteredMaterials()).thenReturn(new ArrayList<Material>());
@@ -76,7 +75,6 @@ public class BaseTextureTest {
         assertEquals(Type.LOOKUP, to.getTextureType());
         assertEquals((Wrap.CLAMP_S | Wrap.MIRRORED_REPEAT_T | Wrap.REPEAT_R), to.getWrapType());
         assertEquals(Filter.NEAREST, to.getFilterType());
-        assertEquals(null, to.getCompressedTexture());
         assertEquals(GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X, to.getTextureTarget());
         assertEquals(Double.doubleToLongBits(0.654321f), Double.doubleToLongBits(to.getInfluence()));
         assertNotNull(to.getRegisteredMaterials());

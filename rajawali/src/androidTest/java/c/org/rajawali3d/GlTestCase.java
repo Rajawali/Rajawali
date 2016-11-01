@@ -1,6 +1,7 @@
 package c.org.rajawali3d;
 
 import android.app.Activity;
+import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -46,6 +47,10 @@ public abstract class GlTestCase {
 
     public GL10 getGl() {
         return gl10;
+    }
+
+    public Context getContext() {
+        return activity.getApplicationContext();
     }
 
     /**

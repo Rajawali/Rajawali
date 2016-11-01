@@ -17,50 +17,33 @@ import static org.rajawali3d.textures.annotation.Wrap.REPEAT_S;
 import static org.rajawali3d.textures.annotation.Wrap.REPEAT_T;
 
 import android.opengl.GLES20;
+import org.rajawali3d.textures.annotation.Compression2D.CompressionType2D;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
-import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 import java.nio.ByteBuffer;
 
-public abstract class CompressedTexture extends BaseTexture {
+public abstract class CompressedTexture extends SingleTexture2D {
 
     protected ByteBuffer[] mByteBuffers;
 
     /**
-     * Texture2D compression type. Texture2D compression can significantly increase the performance by reducing memory
-     * requirements and making more efficient use of memory bandwidth.
-     */
-    public enum CompressionType {
-        NONE,
-        ETC1,
-        ETC2,
-        PALETTED,
-        THREEDC,
-        ATC,
-        DXT1,
-        PVRTC
-    }
-
-    ;
-
-    /**
      * Texture2D compression type
      */
-    protected CompressionType mCompressionType;
+    @CompressionType2D
+    protected int mCompressionType;
     /**
-     * Bitmap compression format. Use together with {@link CompressionType}
+     * Bitmap compression format. Use together with {@link CompressionType2D}
      */
     protected int mCompressionFormat;
 
     protected CompressedTexture() {
         super();
-        setTextureType(Type.COMPRESSED);
         setWrapType(REPEAT_S | REPEAT_T | REPEAT_R);
     }
 
-    public CompressedTexture(CompressedTexture other) {
+    public CompressedTexture(CompressedTexture other) throws TextureException {
         this();
         setFrom(other);
     }
@@ -86,7 +69,7 @@ public abstract class CompressedTexture extends BaseTexture {
      * @param other
      *            another ACompressedTexture object to copy from
      */
-    public void setFrom(CompressedTexture other) {
+    public void setFrom(CompressedTexture other) throws TextureException {
         super.setFrom(other);
         mCompressionType = other.getCompressionType();
         mCompressionFormat = other.getCompressionFormat();
@@ -95,7 +78,8 @@ public abstract class CompressedTexture extends BaseTexture {
     /**
      * @return the texture compression type
      */
-    public CompressionType getCompressionType() {
+    @CompressionType2D
+    public int getCompressionType() {
         return mCompressionType;
     }
 
@@ -103,7 +87,7 @@ public abstract class CompressedTexture extends BaseTexture {
      * @param compressionType
      *            the texture compression type
      */
-    public void setCompressionType(CompressionType compressionType) {
+    public void setCompressionType(@CompressionType2D int compressionType) {
         this.mCompressionType = compressionType;
     }
 

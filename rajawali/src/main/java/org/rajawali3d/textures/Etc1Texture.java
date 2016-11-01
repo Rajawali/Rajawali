@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
 import android.opengl.ETC1;
 import android.opengl.ETC1Util;
 
+import org.rajawali3d.textures.annotation.Compression2D;
 import org.rajawali3d.util.RajLog;
 
 import java.io.IOException;
@@ -28,12 +29,12 @@ import java.nio.ByteOrder;
 public class Etc1Texture extends CompressedTexture {
 
     protected int mResourceId = -1;
-    protected int[] mResourceIds;
+    protected int[]  mResourceIds;
     protected Bitmap mBitmap;
 
     public Etc1Texture(String textureName) {
         super(textureName);
-        mCompressionType = CompressionType.ETC1;
+        mCompressionType = Compression2D.ETC1;
         mCompressionFormat = ETC1.ETC1_RGB8_OES;
     }
 
@@ -69,23 +70,29 @@ public class Etc1Texture extends CompressedTexture {
         setInputStream(compressedTexture, fallbackTexture);
     }
 
-    public Etc1Texture(Etc1Texture other) {
+    public Etc1Texture(Etc1Texture other) throws TextureException {
         super();
         setFrom(other);
     }
 
     @Override
     public Etc1Texture clone() {
-        return new Etc1Texture(this);
+        try {
+            return new Etc1Texture(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
+        }
     }
 
     @Override
     void add() throws TextureException {
-        if(mResourceId != -1) {
-            Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext().getResources();
+        if (mResourceId != -1) {
+            Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext()
+                    .getResources();
             try {
                 ETC1Util.ETC1Texture texture = ETC1Util.createTexture(resources.openRawResource(mResourceId));
-                mByteBuffers = new ByteBuffer[]{texture.getData()};
+                mByteBuffers = new ByteBuffer[]{ texture.getData() };
                 setWidth(texture.getWidth());
                 setHeight(texture.getHeight());
                 setCompressionFormat(ETC1.ETC1_RGB8_OES);
@@ -93,9 +100,10 @@ public class Etc1Texture extends CompressedTexture {
                 RajLog.e(e.getMessage());
                 e.printStackTrace();
             }
-        } else if(mResourceIds != null) {
+        } else if (mResourceIds != null) {
             ByteBuffer[] mipmapChain = new ByteBuffer[mResourceIds.length];
-            Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext().getResources();
+            Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext()
+                    .getResources();
             int mip_0_width = 1, mip_0_height = 1;
             try {
                 for (int i = 0, length = mResourceIds.length; i < length; i++) {
@@ -122,9 +130,9 @@ public class Etc1Texture extends CompressedTexture {
                 mBitmap.recycle();
                 mBitmap = null;
             }
-            if(mByteBuffers != null) {
+            if (mByteBuffers != null) {
                 int count = mByteBuffers.length;
-                for(int i=0; i <count; i++) {
+                for (int i = 0; i < count; i++) {
                     mByteBuffers[i].clear();
                     mByteBuffers[i] = null;
                 }
@@ -140,9 +148,9 @@ public class Etc1Texture extends CompressedTexture {
             mBitmap.recycle();
             mBitmap = null;
         }
-        if(mByteBuffers != null) {
+        if (mByteBuffers != null) {
             int count = mByteBuffers.length;
-            for(int i=0; i <count; i++) {
+            for (int i = 0; i < count; i++) {
                 mByteBuffers[i].clear();
                 mByteBuffers[i] = null;
             }
@@ -172,9 +180,9 @@ public class Etc1Texture extends CompressedTexture {
         ByteBuffer compressedBuffer = ByteBuffer.allocateDirect(
                 ETC1.getEncodedDataSize(bitmap.getWidth(), bitmap.getHeight())).order(ByteOrder.nativeOrder());
         ETC1.encodeImage(uncompressedBuffer, bitmap.getWidth(), bitmap.getHeight(), 2, 2 * bitmap.getWidth(),
-                compressedBuffer);
+                         compressedBuffer);
 
-        mByteBuffers = new ByteBuffer[]{compressedBuffer};
+        mByteBuffers = new ByteBuffer[]{ compressedBuffer };
         setWidth(bitmap.getWidth());
         setHeight(bitmap.getHeight());
     }
@@ -190,15 +198,17 @@ public class Etc1Texture extends CompressedTexture {
             if (texture == null) {
                 setBitmap(fallbackTexture);
 
-                if (RajLog.isDebugEnabled())
+                if (RajLog.isDebugEnabled()) {
                     RajLog.d("Falling back to uncompressed texture");
+                }
             } else {
                 setByteBuffer(texture.getData());
                 setWidth(texture.getWidth());
                 setHeight(texture.getHeight());
 
-                if (RajLog.isDebugEnabled())
+                if (RajLog.isDebugEnabled()) {
                     RajLog.d("ETC1 texture load successful");
+                }
             }
         }
     }

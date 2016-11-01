@@ -15,57 +15,54 @@ package org.rajawali3d.textures;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
+import org.rajawali3d.util.RajLog;
 
 public class SphereMapTexture2D extends SingleTexture2D {
-	private boolean mIsSkyTexture;
-	private boolean mIsEnvironmentTexture;
+    private boolean mIsSkyTexture;
+    private boolean mIsEnvironmentTexture;
 
-	public SphereMapTexture2D(SphereMapTexture2D other)
-	{
-		super(other);
-	}
+    public SphereMapTexture2D(SphereMapTexture2D other) throws TextureException {
+        super(other);
+    }
 
-	public SphereMapTexture2D(String textureName)
-	{
-		super(Type.SPHERE_MAP, textureName);
-	}
+    public SphereMapTexture2D(String textureName) {
+        super(Type.SPHERE_MAP, textureName);
+    }
 
-	public SphereMapTexture2D(String textureName, @NonNull Context context, int resourceId)
-	{
-		super(Type.SPHERE_MAP, textureName);
-		setTextureDataFromResourceId(context, resourceId);
-	}
+    public SphereMapTexture2D(String textureName, @NonNull Context context, int resourceId) {
+        super(Type.SPHERE_MAP, textureName);
+        setTextureDataFromResourceId(context, resourceId);
+    }
 
-	public SphereMapTexture2D(String textureName, TextureDataReference textureData)
-	{
-		super(Type.SPHERE_MAP, textureName, textureData);
-	}
+    public SphereMapTexture2D(String textureName, TextureDataReference textureData) {
+        super(Type.SPHERE_MAP, textureName, textureData);
+    }
 
-	public SphereMapTexture2D(String textureName, CompressedTexture compressedTexture)
-	{
-		super(Type.SPHERE_MAP, textureName, compressedTexture);
-	}
+    @Override
+    public SphereMapTexture2D clone() {
+        try {
+            return new SphereMapTexture2D(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
+        }
+    }
 
-	@Override
-	public SphereMapTexture2D clone() {
-		return new SphereMapTexture2D(this);
-	}
+    public void isSkyTexture(boolean value) {
+        mIsSkyTexture = value;
+        mIsEnvironmentTexture = !value;
+    }
 
-	public void isSkyTexture(boolean value) {
-		mIsSkyTexture = value;
-		mIsEnvironmentTexture = !value;
-	}
+    public boolean isSkyTexture() {
+        return mIsSkyTexture;
+    }
 
-	public boolean isSkyTexture() {
-		return mIsSkyTexture;
-	}
+    public void isEnvironmentTexture(boolean value) {
+        mIsEnvironmentTexture = value;
+        mIsSkyTexture = !mIsEnvironmentTexture;
+    }
 
-	public void isEnvironmentTexture(boolean value) {
-		mIsEnvironmentTexture = value;
-		mIsSkyTexture = !mIsEnvironmentTexture;
-	}
-
-	public boolean isEnvironmentTexture() {
-		return mIsEnvironmentTexture;
-	}
+    public boolean isEnvironmentTexture() {
+        return mIsEnvironmentTexture;
+    }
 }

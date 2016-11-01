@@ -16,35 +16,32 @@ package org.rajawali3d.textures;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import org.rajawali3d.textures.annotation.Type;
+import org.rajawali3d.util.RajLog;
 
 public class SpecularMapTexture2D extends SingleTexture2D {
-	public SpecularMapTexture2D(SpecularMapTexture2D other)
-	{
-		super(other);
-	}
+    public SpecularMapTexture2D(SpecularMapTexture2D other) throws TextureException {
+        super(other);
+    }
 
-	public SpecularMapTexture2D(String textureName)
-	{
-		super(Type.SPECULAR, textureName);
-	}
+    public SpecularMapTexture2D(String textureName) {
+        super(Type.SPECULAR, textureName);
+    }
 
-	public SpecularMapTexture2D(String textureName, @NonNull Context context, int resourceId)
-	{
-		super(Type.SPECULAR, textureName);
-		setTextureDataFromResourceId(context, resourceId);
-	}
+    public SpecularMapTexture2D(String textureName, @NonNull Context context, int resourceId) {
+        super(Type.SPECULAR, textureName);
+        setTextureDataFromResourceId(context, resourceId);
+    }
 
-	public SpecularMapTexture2D(String textureName, TextureDataReference textureData)
-	{
-		super(Type.SPECULAR, textureName, textureData);
-	}
+    public SpecularMapTexture2D(String textureName, TextureDataReference textureData) {
+        super(Type.SPECULAR, textureName, textureData);
+    }
 
-	public SpecularMapTexture2D(String textureName, CompressedTexture compressedTexture)
-	{
-		super(Type.SPECULAR, textureName, compressedTexture);
-	}
-
-	public SpecularMapTexture2D clone() {
-		return new SpecularMapTexture2D(this);
-	}
+    public SpecularMapTexture2D clone() {
+        try {
+            return new SpecularMapTexture2D(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
+        }
+    }
 }

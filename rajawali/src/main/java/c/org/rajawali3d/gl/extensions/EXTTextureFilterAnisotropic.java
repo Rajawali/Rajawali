@@ -49,7 +49,7 @@ public class EXTTextureFilterAnisotropic implements GLExtension {
         } catch (GLException e) {
             throw new UnsupportedCapabilityException(e);
         }
-        maxSupportedAnisotropy = params[1];
+        maxSupportedAnisotropy = params[0];
     }
 
     @NonNull

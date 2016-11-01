@@ -7,9 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-
 public interface Type {
 
     int DIFFUSE = 0;
@@ -22,7 +21,6 @@ public interface Type {
     int CUBE_MAP = 7;
     int SPHERE_MAP = 8;
     int VIDEO_TEXTURE = 9;
-    int COMPRESSED = 10;
 
     @Documented
     @Retention(RetentionPolicy.SOURCE)
