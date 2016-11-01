@@ -57,10 +57,10 @@ script:
   #./gradlew :wear:uploadArchives --stacktrace --continue;
 install:
 # Install the NDK
-- wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
+- wget http://dl.google.com/android/ndk/android-ndk-r13b-linux-x86_64.bin -O ndk.bin
 - chmod a+x ndk.bin
 - "./ndk.bin 1> /dev/null 2>&1"
-- chmod a+x ./android-ndk-r10d/ndk-build
+- chmod a+x ./android-ndk-r12d/ndk-build
 
 # By default, we get an older version of libstdc++6 so we need to update it
 # http://askubuntu.com/questions/575505/glibcxx-3-4-20-not-found-how-to-fix-this-error
