@@ -14,8 +14,10 @@ package org.rajawali3d.textures;
 
 import android.opengl.GLES20;
 import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
 import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 public class RenderTargetTexture extends BaseTexture {
 
@@ -75,8 +77,8 @@ public class RenderTargetTexture extends BaseTexture {
         mInternalFormat = internalFormat;
         mFormat = format;
         mType = type;
-        this.width = width;
-        this.height = height;
+        setWidth(width);
+        setHeight(height);
     }
 
     @Override
@@ -102,8 +104,8 @@ public class RenderTargetTexture extends BaseTexture {
      * @param height
      */
     public void resize(int width, int height) {
-        this.width = width;
-        this.height = height;
+        setWidth(width);
+        setHeight(height);
         org.rajawali3d.materials.textures.TextureManager.getInstance().getRenderer().resizeRenderTarget(this);
     }
 
@@ -112,7 +114,7 @@ public class RenderTargetTexture extends BaseTexture {
     }
 
     @Override void add() throws TextureException {
-        if (width == 0 || height == 0) {
+        if (getWidth() == 0 || getHeight() == 0) {
             throw new TextureException(
                     "FrameBufferTexture could not be added because the width and/or height weren't specified.");
         }
@@ -123,7 +125,8 @@ public class RenderTargetTexture extends BaseTexture {
 
         if (textureId > 0) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-
+            @FilterType final int filterType = getFilterType();
+            @WrapType final int wrapType = getWrapType();
             if (isMipmaped()) {
                 if (filterType == Filter.BILINEAR) {
                     GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
@@ -154,7 +157,7 @@ public class RenderTargetTexture extends BaseTexture {
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
             }
 
-            GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, mInternalFormat.getFormat(), width, height, 0,
+            GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, mInternalFormat.getFormat(), getWidth(), getHeight(), 0,
                                 mFormat.getFormat(),
                                 mType.getType(), null);
             if (isMipmaped()) {
@@ -167,7 +170,7 @@ public class RenderTargetTexture extends BaseTexture {
     }
 
     @Override void remove() throws TextureException {
-        GLES20.glDeleteTextures(1, new int[]{ textureId }, 0);
+        GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
     }
 
     @Override void replace() throws TextureException {
@@ -175,8 +178,8 @@ public class RenderTargetTexture extends BaseTexture {
     }
 
     void resize() {
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, mInternalFormat.getFormat(), width, height, 0,
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, getTextureId());
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, mInternalFormat.getFormat(), getWidth(), getHeight(), 0,
                             mFormat.getFormat(), mType.getType(), null);
         if (isMipmaped()) {
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);

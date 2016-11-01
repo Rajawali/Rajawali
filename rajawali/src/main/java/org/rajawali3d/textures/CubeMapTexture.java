@@ -17,8 +17,10 @@ import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
 import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 import java.nio.ByteBuffer;
 
@@ -90,6 +92,9 @@ public class CubeMapTexture extends AMultiTexture {
     }
 
     private void setTextureData() {
+        @FilterType final int filterType = getFilterType();
+        @WrapType final int wrapType = getWrapType();
+
         if (isMipmaped()) {
             if (filterType == Filter.BILINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
@@ -131,7 +136,7 @@ public class CubeMapTexture extends AMultiTexture {
                     h = h > 1 ? h / 2 : 1;
                 }
             } else {
-                GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, texelFormat, width, height, 0, texelFormat,
+                GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, getTexelFormat(), getWidth(), getHeight(), 0, getTexelFormat(),
                                     GLES20.GL_UNSIGNED_BYTE, mByteBuffers[i]);
             }
         }
@@ -139,7 +144,7 @@ public class CubeMapTexture extends AMultiTexture {
         if (isMipmaped())
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
 
-        if (shouldRecycle) {
+        if (willRecycle()) {
             if (mBitmaps != null) {
                 for (Bitmap bitmap : mBitmaps) {
                     bitmap.recycle();
@@ -181,15 +186,15 @@ public class CubeMapTexture extends AMultiTexture {
                 mCompressedTextures[i].remove();
             }
         }
-        GLES20.glDeleteTextures(1, new int[]{ textureId }, 0);
+        GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
     }
 
     @Override
     void replace() throws TextureException {
         checkBitmapConfiguration();
 
-        if (textureId > 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
+        if (getTextureId() > 0) {
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, getTextureId());
             if(mHasCompressedTextures) {
                 for (int i = 0; i < 6; i++) {
                     CompressedTexture tex = mCompressedTextures[i];

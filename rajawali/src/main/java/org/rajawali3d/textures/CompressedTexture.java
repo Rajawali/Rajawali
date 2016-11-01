@@ -12,16 +12,17 @@
  */
 package org.rajawali3d.textures;
 
-import android.opengl.GLES20;
-
-import org.rajawali3d.textures.annotation.Filter;
-import org.rajawali3d.textures.annotation.Type;
-
-import java.nio.ByteBuffer;
-
 import static org.rajawali3d.textures.annotation.Wrap.REPEAT_R;
 import static org.rajawali3d.textures.annotation.Wrap.REPEAT_S;
 import static org.rajawali3d.textures.annotation.Wrap.REPEAT_T;
+
+import android.opengl.GLES20;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
+import org.rajawali3d.textures.annotation.Type;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
+
+import java.nio.ByteBuffer;
 
 public abstract class CompressedTexture extends BaseTexture {
 
@@ -55,8 +56,8 @@ public abstract class CompressedTexture extends BaseTexture {
 
     protected CompressedTexture() {
         super();
-        textureType = Type.COMPRESSED;
-        wrapType = REPEAT_S | REPEAT_T | REPEAT_R;
+        setTextureType(Type.COMPRESSED);
+        setWrapType(REPEAT_S | REPEAT_T | REPEAT_R);
     }
 
     public CompressedTexture(CompressedTexture other) {
@@ -66,8 +67,7 @@ public abstract class CompressedTexture extends BaseTexture {
 
     public CompressedTexture(String textureName) {
         this();
-        textureType = Type.COMPRESSED;
-        this.textureName = textureName;
+        setTextureName(textureName);
     }
 
     public CompressedTexture(String textureName, ByteBuffer byteBuffer) {
@@ -141,6 +141,9 @@ public abstract class CompressedTexture extends BaseTexture {
         if (textureId > 0) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
+            @FilterType final int filterType = getFilterType();
+            @WrapType final int wrapType = getWrapType();
+
             if (filterType == Filter.BILINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             else
@@ -159,9 +162,9 @@ public abstract class CompressedTexture extends BaseTexture {
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
             }
             if ((mByteBuffers != null && mByteBuffers.length == 0) || mByteBuffers == null) {
-                GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, 0, mCompressionFormat, width, height, 0, 0, null);
+                GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, 0, mCompressionFormat, getWidth(), getHeight(), 0, 0, null);
             } else {
-                int w = width, h = height;
+                int w = getWidth(), h = getHeight();
                 for (int i = 0; i < mByteBuffers.length; i++) {
                     GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, i, mCompressionFormat, w, h, 0,
                         mByteBuffers[i].capacity(), mByteBuffers[i]);
@@ -184,19 +187,19 @@ public abstract class CompressedTexture extends BaseTexture {
     }
 
     void remove() throws TextureException {
-        GLES20.glDeleteTextures(1, new int[]{textureId}, 0);
+        GLES20.glDeleteTextures(1, new int[]{getTextureId()}, 0);
     }
 
     void replace() throws TextureException {
         if (mByteBuffers == null || mByteBuffers.length == 0)
             throw new TextureException("Texture2D could not be replaced because there is no ByteBuffer set.");
 
-        if (width == 0 || height == 0)
+        if (getWidth() == 0 || getHeight() == 0)
             throw new TextureException(
                 "Could not update ByteBuffer texture. One or more of the following properties haven't been set: width or height");
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-        int w = width, h = height;
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, getTextureId());
+        int w = getWidth(), h = getHeight();
         for (int i = 0; i < mByteBuffers.length; i++) {
             GLES20.glCompressedTexSubImage2D(GLES20.GL_TEXTURE_2D, i, 0, 0, w, h, mCompressionFormat,
                 mByteBuffers[i].capacity(), mByteBuffers[i]);

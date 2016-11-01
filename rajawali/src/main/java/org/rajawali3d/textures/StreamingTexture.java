@@ -95,7 +95,7 @@ public class StreamingTexture extends BaseTexture {
     }
 
     void remove() throws TextureException {
-        GLES20.glDeleteTextures(1, new int[]{ textureId }, 0);
+        GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
         mSurfaceTexture.release();
     }
 

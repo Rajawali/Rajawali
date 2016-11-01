@@ -276,15 +276,25 @@ public abstract class SingleTexture2D extends BaseTexture {
                                        getMaxAnisotropy());
             }
 
-            // TODO: Wrap handling
-            if (wrapType == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R)) {
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-            } else {
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+            // Handle s coordinate wrapping
+            int wrap = GLES20.GL_REPEAT;
+            if ((wrapType & Wrap.CLAMP_S) != 0) {
+                wrap = GLES20.GL_CLAMP_TO_EDGE;
+            } else if ((wrapType & Wrap.MIRRORED_REPEAT_S) != 0) {
+                wrap = GLES20.GL_MIRRORED_REPEAT;
             }
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, wrap);
 
+            // Handle t coordinate wrapping
+            wrap = GLES20.GL_REPEAT;
+            if ((wrapType & Wrap.CLAMP_T) != 0) {
+                wrap = GLES20.GL_CLAMP_TO_EDGE;
+            } else if ((wrapType & Wrap.MIRRORED_REPEAT_T) != 0) {
+                wrap = GLES20.GL_MIRRORED_REPEAT;
+            }
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, wrap);
+
+            // Push the texture data
             if (textureData.hasBuffer()) {
                 if (getWidth() == 0 || getHeight() == 0) {
                     throw new TextureException(
@@ -298,10 +308,12 @@ public abstract class SingleTexture2D extends BaseTexture {
                 GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, getTexelFormat(), textureData.getBitmap(), 0);
             }
 
+            // Generate mipmaps if enabled
             if (isMipmaped()) {
                 GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
             }
 
+            // Store the texture id
             setTextureId(textureId);
         } else {
             throw new TextureException("Failed to generate a new texture id.");
@@ -356,24 +368,24 @@ public abstract class SingleTexture2D extends BaseTexture {
                 throw new TextureException(
                         "Texture2D could not be updated because the texture size is different from the original.");
             }
-            if (bitmapFormat != this.texelFormat) {
+            if (bitmapFormat != getTexelFormat()) {
                 throw new TextureException(
                         "Texture2D could not be updated because the bitmap format is different from the original");
             }
 
-            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), this.texelFormat,
+            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), getTexelFormat(),
                                   GLES20.GL_UNSIGNED_BYTE);
         } else if (textureData.hasBuffer()) {
-            if (width == 0 || height == 0 || texelFormat == 0) {
+            if (getWidth() == 0 || getHeight() == 0) {
                 throw new TextureException(
                         "Could not update ByteBuffer texture. One or more of the following properties haven't been "
                         + "set: width, height or bitmap format");
             }
-            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, width, height, texelFormat,
+            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), textureData.getPixelFormat(),
                                    GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
         }
 
-        if (mipmaped) {
+        if (isMipmaped()) {
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
         }
 
@@ -382,8 +394,8 @@ public abstract class SingleTexture2D extends BaseTexture {
 
     @Override
     void reset() throws TextureException {
-        if (compressedTexture != null) {
-            compressedTexture.reset();
+        if (getCompressedTexture() != null) {
+            getCompressedTexture().reset();
             return;
         }
 

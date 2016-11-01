@@ -117,7 +117,7 @@ public class Etc1Texture extends CompressedTexture {
             mByteBuffers = mipmapChain;
         }
         super.add();
-        if (shouldRecycle) {
+        if (willRecycle()) {
             if (mBitmap != null) {
                 mBitmap.recycle();
                 mBitmap = null;

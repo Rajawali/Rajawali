@@ -94,7 +94,7 @@ public class Etc2Texture extends CompressedTexture {
     @Override
     void add() throws TextureException {
         super.add();
-        if (shouldRecycle) {
+        if (willRecycle()) {
             if (mBitmap != null) {
                 mBitmap.recycle();
                 mBitmap = null;

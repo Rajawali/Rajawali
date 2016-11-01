@@ -122,7 +122,7 @@ public abstract class BaseTexture {
      * The maximum level of anisotropy to use for this texture.
      *
      * @see <a href="http://oss.sgi.com/projects/ogl-sample/registry/EXT/texture_filter_anisotropic.txt">
-     *     EXT_texture_filter_anisotropic</a>
+     * EXT_texture_filter_anisotropic</a>
      */
     @FloatRange(from = 1.0)
     private float maxAnisotropy = 1.0f;
@@ -143,10 +143,10 @@ public abstract class BaseTexture {
      * influences does not equal 1.0, the individual influences will be normalized.
      */
     @FloatRange(from = 0, to = 1)
-    protected float influence = 1.0f;
-    protected float[] repeat = new float[]{1, 1};
+    protected float   influence = 1.0f;
+    protected float[] repeat    = new float[]{ 1, 1 };
     protected boolean enableOffset;
-    protected float[] offset = new float[]{0, 0};
+    protected float[] offset = new float[]{ 0, 0 };
 
     // TODO: Is the synchronized list necessary with copy on write list?
     /**
@@ -258,7 +258,8 @@ public abstract class BaseTexture {
     }
 
     /**
-     * Sets the configured width of this {@link BaseTexture}. Once the {@link BaseTexture} has been pushed, using this method
+     * Sets the configured width of this {@link BaseTexture}. Once the {@link BaseTexture} has been pushed, using
+     * this method
      * require a update push to the GPU.
      *
      * @param width {@code int} The width in texels.
@@ -290,6 +291,7 @@ public abstract class BaseTexture {
      * Fetches the internal texel format of this {@link BaseTexture}.
      *
      * @return {@link TexelFormat} The internal texel format.
+     *
      * @see <a href="https://www.khronos.org/opengles/sdk/docs/man3/html/glTexImage2D.xhtml">glTexImage2D</a>
      */
     @TexelFormat
@@ -312,7 +314,8 @@ public abstract class BaseTexture {
     }
 
     /**
-     * Fetches whether or not this {@link BaseTexture} is configured to auto-generate mipmaps. Mipmaps are pre-calculated,
+     * Fetches whether or not this {@link BaseTexture} is configured to auto-generate mipmaps. Mipmaps are
+     * pre-calculated,
      * optimized collections of images that accompany a main texture, intended to increase rendering speed and reduce
      * aliasing artifacts.
      *
@@ -359,10 +362,12 @@ public abstract class BaseTexture {
     }
 
     /**
-     * Fetches the name of this {@link BaseTexture}. This name will be used in the shader code to reference this texture.
+     * Fetches the name of this {@link BaseTexture}. This name will be used in the shader code to reference this
+     * texture.
      *
      * @return {@link String} The texture name.
      */
+    @NonNull
     public String getTextureName() {
         return textureName;
     }
@@ -372,15 +377,16 @@ public abstract class BaseTexture {
      *
      * @param textureName {@link String} The texture name.
      */
-    public void setTextureName(String textureName) {
+    public void setTextureName(@NonNull String textureName) {
         this.textureName = textureName;
     }
 
     /**
-     * Fetches the Rajawali texture type of this {@link BaseTexture}. These types determine how the engine treats the
-     * texture internally. For example, as a diffuse color texture, a normal map, or a data lookup.
+     * Fetches the Rajawali texture type of this texture. These types determine how the engine treats the texture
+     * internally. For example, as a diffuse color texture, a normal map, or a data lookup.
      *
      * @return {@link TextureType} The texture type.
+     *
      * @see {@link TextureType}
      */
     @TextureType
@@ -389,11 +395,24 @@ public abstract class BaseTexture {
     }
 
     /**
+     * Sets the Rajawali texture type of this texture. These types determine how the engine treats the texture
+     * internally. For example, as a diffuse color texture, a normal map, or a data lookup.
+     *
+     * @param type {@link TextureType} The texture type.
+     *
+     * @see {@link TextureType}
+     */
+    public void setTextureType(@TextureType int type) {
+        textureType = type;
+    }
+
+    /**
      * Fetches the wrapping configuration for this {@link BaseTexture}. Wrapping determines how the GPU will handle
      * texture
      * coordinates outside the range of [0, 1].
      *
      * @return {@link WrapType} The wrapping configuration.
+     *
      * @see {@link WrapType}
      */
     @WrapType
@@ -414,10 +433,12 @@ public abstract class BaseTexture {
     }
 
     /**
-     * Fetches the filtering configuration for this {@link BaseTexture}. Filtering determines how the GPU will interpolate
+     * Fetches the filtering configuration for this {@link BaseTexture}. Filtering determines how the GPU will
+     * interpolate
      * texel data when looking up for an individual pixel.
      *
      * @return {@link FilterType} The filtering configuration.
+     *
      * @see {@link FilterType}.
      */
     @FilterType
@@ -441,11 +462,11 @@ public abstract class BaseTexture {
      * Sets the maximum anisotropy up to which filtering is enabled for this texture.
      *
      * @param maxAnisotropy {@code float} The maximum anisotropy to use. Must be greater than or equal to 1.0.
-     * @throws UnsupportedCapabilityException Thrown if the device does not support the {@code
-     * GL_EXT_texture_filter_anisotropic} extension.
      *
+     * @throws UnsupportedCapabilityException Thrown if the device does not support the {@code
+     *                                        GL_EXT_texture_filter_anisotropic} extension.
      * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
-     *     EXT_texture_filter_anisotropic</a>
+     * EXT_texture_filter_anisotropic</a>
      */
     public void setMaxAnisotropy(@FloatRange(from = 1.0) float maxAnisotropy) throws UnsupportedCapabilityException {
         final float max = ((EXTTextureFilterAnisotropic) Capabilities.getInstance().loadExtension
@@ -489,7 +510,8 @@ public abstract class BaseTexture {
     }
 
     /**
-     * Registers a {@link Material} with this {@link BaseTexture}. This is used to track which materials might need to be
+     * Registers a {@link Material} with this {@link BaseTexture}. This is used to track which materials might need
+     * to be
      * updated if changes are made to this texture.
      *
      * @param material {@link Material} The material utilizing this {@link BaseTexture}.
