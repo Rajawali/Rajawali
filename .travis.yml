@@ -59,7 +59,7 @@ install:
 # Install the NDK
 - wget https://dl.google.com/android/repository/android-ndk-r13b-linux-x86_64.zip -O ndk.bin
 - chmod a+x ndk.bin
-- "./ndk.bin 1> /dev/null 2>&1"
+- "./ndk.bin" # 1> /dev/null 2>&1"
 - chmod a+x ./android-ndk-r12d/ndk-build
 
 # By default, we get an older version of libstdc++6 so we need to update it
