@@ -27,107 +27,108 @@ import java.util.Locale;
 
 public class CanvasTextFragment extends AExampleFragment {
 
-	@Override
+    @Override
     public AExampleRenderer createRenderer() {
-		return new CanvasTextRenderer(getActivity(), this);
-	}
+        return new CanvasTextRenderer(getActivity(), this);
+    }
 
-	public static final class CanvasTextRenderer extends AExampleRenderer {
-		private AlphaMapTexture2D mTimeTexture;
-		private Bitmap            mTimeBitmap;
-		private Canvas            mTimeCanvas;
-		private Paint             mTextPaint;
-		private SimpleDateFormat  mDateFormat;
-		private int               mFrameCount;
-		private boolean           mShouldUpdateTexture;
+    public static final class CanvasTextRenderer extends AExampleRenderer {
+        private AlphaMapTexture2D mTimeTexture;
+        private Bitmap            mTimeBitmap;
+        private Canvas            mTimeCanvas;
+        private Paint             mTextPaint;
+        private SimpleDateFormat  mDateFormat;
+        private int               mFrameCount;
+        private boolean           mShouldUpdateTexture;
 
-		public CanvasTextRenderer(Context context, @Nullable AExampleFragment fragment) {
-			super(context, fragment);
-		}
+        public CanvasTextRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
+        }
 
         @Override
-		public void initScene() {
-			DirectionalLight light = new DirectionalLight(.1f, .1f, -1);
-			light.setPower(2);
-			getCurrentScene().addLight(light);
+        public void initScene() {
+            DirectionalLight light = new DirectionalLight(.1f, .1f, -1);
+            light.setPower(2);
+            getCurrentScene().addLight(light);
 
-			Material timeSphereMaterial = new Material();
-			timeSphereMaterial.enableLighting(true);
-			timeSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-			mTimeBitmap = Bitmap.createBitmap(256, 256, Config.ARGB_8888);
-			mTimeTexture = new AlphaMapTexture2D("timeTexture", new TextureDataReference(mTimeBitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE));
-			try {
-				timeSphereMaterial.addTexture(mTimeTexture);
-			} catch (TextureException e) {
-				e.printStackTrace();
-			}
-			timeSphereMaterial.setColorInfluence(1);
+            Material timeSphereMaterial = new Material();
+            timeSphereMaterial.enableLighting(true);
+            timeSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
+            mTimeBitmap = Bitmap.createBitmap(256, 256, Config.ARGB_8888);
+            mTimeTexture = new AlphaMapTexture2D("timeTexture", new TextureDataReference(mTimeBitmap, null, GLES20
+                    .GL_RGBA, GLES20.GL_UNSIGNED_BYTE, mTimeBitmap.getWidth(), mTimeBitmap.getHeight()));
+            try {
+                timeSphereMaterial.addTexture(mTimeTexture);
+            } catch (TextureException e) {
+                e.printStackTrace();
+            }
+            timeSphereMaterial.setColorInfluence(1);
 
-			Sphere parentSphere = null;
+            Sphere parentSphere = null;
 
-			for (int i = 0; i < 20; i++) {
-				Sphere timeSphere = new Sphere(.6f, 12, 12);
-				timeSphere.setMaterial(timeSphereMaterial);
-				timeSphere.setDoubleSided(true);
-				timeSphere.setColor((int)(Math.random() * 0xffffff));
+            for (int i = 0; i < 20; i++) {
+                Sphere timeSphere = new Sphere(.6f, 12, 12);
+                timeSphere.setMaterial(timeSphereMaterial);
+                timeSphere.setDoubleSided(true);
+                timeSphere.setColor((int) (Math.random() * 0xffffff));
 
-				if (parentSphere == null) {
-					timeSphere.setPosition(0, 0, -3);
-					timeSphere.setRenderChildrenAsBatch(true);
-					getCurrentScene().addChild(timeSphere);
-					parentSphere = timeSphere;
-				} else {
-					timeSphere.setX(-3 + (float) (Math.random() * 6));
-					timeSphere.setY(-3 + (float) (Math.random() * 6));
-					timeSphere.setZ(-3 + (float) (Math.random() * 6));
-					parentSphere.addChild(timeSphere);
-				}
+                if (parentSphere == null) {
+                    timeSphere.setPosition(0, 0, -3);
+                    timeSphere.setRenderChildrenAsBatch(true);
+                    getCurrentScene().addChild(timeSphere);
+                    parentSphere = timeSphere;
+                } else {
+                    timeSphere.setX(-3 + (float) (Math.random() * 6));
+                    timeSphere.setY(-3 + (float) (Math.random() * 6));
+                    timeSphere.setZ(-3 + (float) (Math.random() * 6));
+                    parentSphere.addChild(timeSphere);
+                }
 
-				int direction = Math.random() < .5 ? 1 : -1;
+                int direction = Math.random() < .5 ? 1 : -1;
 
-				RotateOnAxisAnimation anim = new RotateOnAxisAnimation(Vector3.Axis.Y, 0,
-						360 * direction);
-				anim.setRepeatMode(Animation.RepeatMode.INFINITE);
-				anim.setDurationMilliseconds(i == 0 ? 12000
-						: 4000 + (int) (Math.random() * 4000));
-				anim.setTransformable3D(timeSphere);
-				getCurrentScene().registerAnimation(anim);
-				anim.play();
-			}
-		}
+                RotateOnAxisAnimation anim = new RotateOnAxisAnimation(Vector3.Axis.Y, 0,
+                                                                       360 * direction);
+                anim.setRepeatMode(Animation.RepeatMode.INFINITE);
+                anim.setDurationMilliseconds(i == 0 ? 12000
+                                                    : 4000 + (int) (Math.random() * 4000));
+                anim.setTransformable3D(timeSphere);
+                getCurrentScene().registerAnimation(anim);
+                anim.play();
+            }
+        }
 
-		public void updateTimeBitmap() {
-			new Thread(new Runnable() {
-				public void run() {
-					if (mTimeCanvas == null) {
+        public void updateTimeBitmap() {
+            new Thread(new Runnable() {
+                public void run() {
+                    if (mTimeCanvas == null) {
 
-						mTimeCanvas = new Canvas(mTimeBitmap);
-						mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-						mTextPaint.setColor(Color.WHITE);
-						mTextPaint.setTextSize(35);
-						mDateFormat = new SimpleDateFormat("HH:mm:ss",
-								Locale.ENGLISH);
-					}
-					//
-					// -- Clear the canvas, transparent
-					//
-					mTimeCanvas.drawColor(0, Mode.CLEAR);
-					//
-					// -- Draw the time on the canvas
-					//
-					mTimeCanvas.drawText(mDateFormat.format(new Date()), 75,
-							128, mTextPaint);
-					//
-					// -- Indicates that the texture should be updated on the OpenGL thread.
-					//
-					mShouldUpdateTexture = true;
-				}
-			}).start();
-		}
+                        mTimeCanvas = new Canvas(mTimeBitmap);
+                        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                        mTextPaint.setColor(Color.WHITE);
+                        mTextPaint.setTextSize(35);
+                        mDateFormat = new SimpleDateFormat("HH:mm:ss",
+                                                           Locale.ENGLISH);
+                    }
+                    //
+                    // -- Clear the canvas, transparent
+                    //
+                    mTimeCanvas.drawColor(0, Mode.CLEAR);
+                    //
+                    // -- Draw the time on the canvas
+                    //
+                    mTimeCanvas.drawText(mDateFormat.format(new Date()), 75,
+                                         128, mTextPaint);
+                    //
+                    // -- Indicates that the texture should be updated on the OpenGL thread.
+                    //
+                    mShouldUpdateTexture = true;
+                }
+            }).start();
+        }
 
         @Override
         protected void onRender(long ellapsedRealtime, double deltaTime) {
-			//
+            //
             // -- not a really accurate way of doing things but you get the point :)
             //
             if (mFrameCount++ >= mFrameRate) {
@@ -138,16 +139,16 @@ public class CanvasTextFragment extends AExampleFragment {
             // -- update the texture because it is ready
             //
             if (mShouldUpdateTexture) {
-				try {
-					mTextureManager.replaceTexture(mTimeTexture);
-					mShouldUpdateTexture = false;
-				} catch (TextureException e) {
-					e.printStackTrace();
-				}
+                try {
+                    mTextureManager.replaceTexture(mTimeTexture);
+                    mShouldUpdateTexture = false;
+                } catch (TextureException e) {
+                    e.printStackTrace();
+                }
             }
             super.onRender(ellapsedRealtime, deltaTime);
-		}
+        }
 
-	}
+    }
 
 }

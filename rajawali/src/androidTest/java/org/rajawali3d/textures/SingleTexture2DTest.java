@@ -9,6 +9,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
@@ -20,6 +22,7 @@ import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.textures.annotation.Wrap;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
@@ -41,6 +44,8 @@ public class SingleTexture2DTest {
         final SingleTexture2D from = mock(SingleTexture2D.class);
         final SingleTexture2D to = new TestableSingleTexture2D();
         final TextureDataReference data = mock(TextureDataReference.class);
+        when(data.getWidth()).thenReturn(256);
+        when(data.getHeight()).thenReturn(512);
         when(from.getTextureId()).thenReturn(1);
         when(from.getWidth()).thenReturn(256);
         when(from.getHeight()).thenReturn(512);
@@ -108,5 +113,88 @@ public class SingleTexture2DTest {
         texture.setTextureData(newReference);
         verify(reference).recycle();
         verify(newReference).holdReference();
+    }
+
+    @Test
+    public void textureAddFailNullData() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
+    }
+
+    @Test
+    public void textureAddFailDestroyedData() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final TextureDataReference reference = texture.setTextureDataFromResourceId(getContext(), R.drawable
+                .earth_diffuse);
+        reference.recycle();
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
+    }
+
+    @Test
+    public void textureAddBufferFailZeroLimit() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(0);
+        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20
+                .GL_UNSIGNED_BYTE, 256, 0);
+        texture.setTextureData(reference);
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
+    }
+
+    @Test
+    public void textureAddBufferFailWithBitmap() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final Bitmap bitmap = Bitmap.createBitmap(256, 512, Config.ARGB_8888);
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(0);
+        final TextureDataReference reference = new TextureDataReference(bitmap, buffer, GLES20.GL_RGBA, GLES20
+                .GL_UNSIGNED_BYTE, 256, 0);
+        texture.setTextureData(reference);
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
+    }
+
+    @Test
+    public void textureRemoveNotAdded() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        texture.remove();
+    }
+
+    @Test
+    public void resetNoData() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        texture.reset();
+    }
+
+    @Test
+    public void resetWithData() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        texture.reset();
     }
 }

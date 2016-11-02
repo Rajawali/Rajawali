@@ -32,6 +32,10 @@ public class TextureDataReference {
     @DataType
     private final int dataType;
 
+    private final int width;
+
+    private final int height;
+
     @GuardedBy("lock")
     @Nullable
     private Bitmap bitmap;
@@ -54,13 +58,17 @@ public class TextureDataReference {
      * @param buffer      {@link ByteBuffer} to hold a reference to.
      * @param pixelFormat {@link PixelFormat} The format of the pixel data.
      * @param dataType    {@link DataType} The internal data type of the pixel data.
+     * @param width       {@code int} The width of the texture this data holds.
+     * @param height      {@code int} The height of the texture this data holds.
      */
     public TextureDataReference(@Nullable Bitmap bitmap, @Nullable ByteBuffer buffer, @PixelFormat int pixelFormat,
-                                @DataType int dataType) {
+                                @DataType int dataType, int width, int height) {
         this.bitmap = bitmap;
         this.byteBuffer = buffer;
         this.pixelFormat = pixelFormat;
         this.dataType = dataType;
+        this.width = width;
+        this.height = height;
         referenceCount = 0;
         isDestroyed = false;
     }
@@ -116,6 +124,24 @@ public class TextureDataReference {
     @DataType
     public int getDataType() {
         return dataType;
+    }
+
+    /**
+     * Retrieves the width of the texture this data holds.
+     *
+     * @return {@code int} The width in pixels.
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * Retrieves the height of the texture this data holds.
+     *
+     * @return {@code int} The height in pixels.
+     */
+    public int getHeight() {
+        return height;
     }
 
     /**

@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
@@ -29,12 +30,11 @@ import org.rajawali3d.textures.annotation.Wrap.WrapType;
 import org.rajawali3d.util.RajLog;
 
 import java.nio.Buffer;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Abstract texture class.
+ * Thread safe abstract texture class. Subclasses are expected to be thread safe.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  * @author dennis.ippel
@@ -42,22 +42,23 @@ import java.util.concurrent.CopyOnWriteArrayList;
 //TODO: Build interface that allows textures to notify materials of relevant changes.
 //TODO: Handle repeaat/offset functions
 @SuppressWarnings("WeakerAccess")
+@ThreadSafe
 public abstract class BaseTexture {
 
     /**
      * The GL texture id that is used by Rajawali.
      */
-    private int textureId = -1;
+    private volatile int textureId = -1;
 
     /**
      * Texture2D width, in texels.
      */
-    private int width;
+    private volatile int width;
 
     /**
      * Texture2D height, in texels.
      */
-    private int height;
+    private volatile int height;
 
     /**
      * The OpenGL texel storage format. The format describes how texels are stored. This affects the
@@ -69,7 +70,7 @@ public abstract class BaseTexture {
      * @see <a href="https://www.khronos.org/opengles/sdk/docs/man3/html/glTexImage2D.xhtml">glTexImage2D</a>
      */
     @TexelFormat
-    private int texelFormat = GLES20.GL_RGB;
+    private volatile int texelFormat = GLES20.GL_RGB;
 
     /**
      * Indicates whether mipmaps should be created or not. Mipmaps are pre-calculated, optimized collections of images
@@ -77,7 +78,7 @@ public abstract class BaseTexture {
      * increase the amount of time for an initial texture push as well as the size of the texture (in video RAM), but
      * can dramatically improve render quality.
      */
-    private boolean mipmaped;
+    private volatile boolean mipmaped;
 
     /**
      * Indicates whether the source {@link TextureDataReference} should be recycled immediately after the OpenGL
@@ -86,13 +87,13 @@ public abstract class BaseTexture {
      * relevant OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      */
-    private boolean shouldRecycle;
+    private volatile boolean willRecycle = true;
 
     /**
      * The texture name that will be used in the shader.
      */
     @NonNull
-    private String textureName;
+    private volatile String textureName;
 
     /**
      * The type of texture
@@ -100,7 +101,7 @@ public abstract class BaseTexture {
      * @see {@link TextureType}.
      */
     @TextureType
-    private int textureType;
+    private volatile int textureType;
 
     /**
      * Texture2D wrap type.
@@ -108,7 +109,7 @@ public abstract class BaseTexture {
      * @see {@link WrapType}.
      */
     @WrapType
-    private int wrapType;
+    private volatile int wrapType;
 
     /**
      * Texture2D filtering type.
@@ -116,7 +117,7 @@ public abstract class BaseTexture {
      * @see {@link FilterType}
      */
     @FilterType
-    private int filterType;
+    private volatile int filterType;
 
     /**
      * The maximum level of anisotropy to use for this texture.
@@ -125,30 +126,29 @@ public abstract class BaseTexture {
      * EXT_texture_filter_anisotropic</a>
      */
     @FloatRange(from = 1.0)
-    private float maxAnisotropy = 1.0f;
+    private volatile float maxAnisotropy = 1.0f;
 
     /**
      * The OpenGL texture type.
      */
     @TextureTarget
-    private int textureTarget = GLES20.GL_TEXTURE_2D;
+    private volatile int textureTarget = GLES20.GL_TEXTURE_2D;
 
     /**
      * Percentage influence this texture has on the final pixel color. Must be between 0 and 1. If the sum of all
      * influences does not equal 1.0, the individual influences will be normalized.
      */
+    //TODO: Volatile
     @FloatRange(from = 0, to = 1)
     protected float   influence = 1.0f;
     protected float[] repeat    = new float[]{ 1, 1 };
     protected boolean enableOffset;
     protected float[] offset = new float[]{ 0, 0 };
 
-    // TODO: Is the synchronized list necessary with copy on write list?
     /**
      * A list of materials that use this texture.
      */
-    private final List<Material> registeredMaterials = Collections.synchronizedList(
-            new CopyOnWriteArrayList<Material>());
+    private final List<Material> registeredMaterials = new CopyOnWriteArrayList<>();
 
     /**
      * Creates a new texture instance with the specified texture type with {@link GLES20#GL_REPEAT} texture wrapping on
@@ -161,7 +161,7 @@ public abstract class BaseTexture {
         this.textureType = textureType;
         this.textureName = textureName;
         mipmaped = true;
-        shouldRecycle = false;
+        willRecycle = false;
         wrapType = Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R;
         filterType = Filter.BILINEAR;
     }
@@ -199,7 +199,7 @@ public abstract class BaseTexture {
         height = other.getHeight();
         texelFormat = other.getTexelFormat();
         mipmaped = other.isMipmaped();
-        shouldRecycle = other.willRecycle();
+        willRecycle = other.willRecycle();
         textureName = other.getTextureName();
         textureType = other.getTextureType();
         wrapType = other.getWrapType();
@@ -326,19 +326,19 @@ public abstract class BaseTexture {
      * @return {@code true} if the data will be recycled.
      */
     public boolean willRecycle() {
-        return shouldRecycle;
+        return willRecycle;
     }
 
     /**
-     * Fetches whether the source {@link TextureDataReference} should be recycled immediately after the texture has
-     * been created. The main reason for not recycling is Scene caching. Scene caching stores all textures and relevant
+     * Sets whether the source {@link TextureDataReference} should be recycled immediately after the texture has been
+     * created. The main reason for not recycling is Scene caching. Scene caching stores all textures and relevant
      * render context specific data. This is used when the render context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      *
      * @return {@code true} if the data will be recycled.
      */
-    public void shouldRecycle(boolean shouldRecycle) {
-        this.shouldRecycle = shouldRecycle;
+    public void willRecycle(boolean willRecycle) {
+        this.willRecycle = willRecycle;
     }
 
     /**

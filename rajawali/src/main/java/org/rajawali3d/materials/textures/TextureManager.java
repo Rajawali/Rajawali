@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * A singleton class that keeps track of all textures used by the application. All textures will be restored when the
  * OpenGL context is being recreated. This however needs to be indicated by setting
- * {@link BaseTexture#shouldRecycle(boolean)} to true (which is the default). It will then keep a reference to the Bitmap
+ * {@link BaseTexture#willRecycle(boolean)} to true (which is the default). It will then keep a reference to the Bitmap
  * which means the application will take up more memory.
  * <p>
  * The advantage of storing the Bitmap in memory is that it the texture can quickly be recovered when the context is
@@ -183,7 +183,7 @@ public final class TextureManager extends AResourceManager {
 
 	/**
 	 * Restores all textures that are managed by the TextureManager. All textures will be restored when the OpenGL
-	 * context is being recreated. This however needs to be indicated by setting {@link BaseTexture#shouldRecycle(boolean)}
+	 * context is being recreated. This however needs to be indicated by setting {@link BaseTexture#willRecycle(boolean)}
 	 * to true (which is the default). It will then keep a reference to the Bitmap which means the application will take
 	 * up more memory.
 	 * <p>

@@ -119,7 +119,7 @@ public class BaseTextureTest {
     @Test
     public void shouldRecycle() throws Exception {
         final TestableBaseTexture texture = new TestableBaseTexture();
-        texture.shouldRecycle(true);
+        texture.willRecycle(true);
         assertEquals(true, texture.willRecycle());
     }
 
@@ -128,6 +128,13 @@ public class BaseTextureTest {
         final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setTextureName("TEST");
         assertEquals("TEST", texture.getTextureName());
+    }
+
+    @Test
+    public void setTextureType() throws Exception {
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        texture.setTextureType(Type.NORMAL);
+        assertEquals(Type.NORMAL, texture.getTextureType());
     }
 
     @Test
