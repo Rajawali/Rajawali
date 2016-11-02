@@ -21,9 +21,8 @@ import android.opengl.GLUtils;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import net.jcip.annotations.ThreadSafe;
-
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
 import org.rajawali3d.textures.annotation.PixelFormat;
@@ -31,8 +30,6 @@ import org.rajawali3d.textures.annotation.Type.TextureType;
 import org.rajawali3d.textures.annotation.Wrap;
 import org.rajawali3d.textures.annotation.Wrap.WrapType;
 import org.rajawali3d.util.RajLog;
-
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 
 /**
  * This class is used to specify common functions of a single 2D texture. Subclasses are expected to be thread safe.
@@ -160,10 +157,6 @@ public abstract class SingleTexture2D extends BaseTexture {
         data.holdReference();
         this.textureData = data;
 
-        // Adjust width/height
-        setWidth(data.getWidth());
-        setHeight(data.getHeight());
-
         // Release any existing reference
         if (oldData != null) {
             oldData.recycle();
@@ -189,6 +182,10 @@ public abstract class SingleTexture2D extends BaseTexture {
             || (textureData.hasBuffer() && textureData.getByteBuffer().limit() == 0 && !textureData.hasBitmap())) {
             throw new TextureException("Texture could not be added because there is no valid data set.");
         }
+
+        // Set the dimensions
+        setWidth(textureData.getWidth());
+        setHeight(textureData.getHeight());
 
         // Fetch these once for efficiency. We use methods
         @FilterType final int filterType = getFilterType();
@@ -333,30 +330,26 @@ public abstract class SingleTexture2D extends BaseTexture {
                 "Texture2D could not be replaced because there is no Bitmap or ByteBuffer set.");
         }
 
+        if (textureData.getWidth() != getWidth() || textureData.getHeight() != getHeight()) {
+            throw new TextureException(
+                    "Texture could not be updated because the texture size is different from the original.");
+        }
+
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, getTextureId());
 
-        if (textureData.hasBitmap()) {
+        if (textureData.hasBuffer()) {
+            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), textureData.getPixelFormat(),
+                GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
+        } else {
             int bitmapFormat = textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
-            if (textureData.getBitmap().getWidth() != getWidth()
-                || textureData.getBitmap().getHeight() != getHeight()) {
-                throw new TextureException(
-                    "Texture could not be updated because the texture size is different from the original.");
-            }
+
             if (bitmapFormat != getTexelFormat()) {
                 throw new TextureException(
-                    "Texture could not be updated because the texel format is different from the original");
+                        "Texture could not be updated because the texel format is different from the original");
             }
 
             GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), getTexelFormat(),
-                GLES20.GL_UNSIGNED_BYTE);
-        } else if (textureData.hasBuffer()) {
-            if (getWidth() == 0 || getHeight() == 0) {
-                throw new TextureException(
-                    "Could not update ByteBuffer texture. One or more of the following properties haven't been "
-                        + "set: width, height or bitmap format");
-            }
-            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), textureData.getPixelFormat(),
-                GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
+                                  GLES20.GL_UNSIGNED_BYTE);
         }
 
         if (isMipmaped()) {

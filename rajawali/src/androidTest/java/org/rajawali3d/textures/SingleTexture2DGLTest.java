@@ -1,11 +1,16 @@
 package org.rajawali3d.textures;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-
+import c.org.rajawali3d.GlTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,13 +20,6 @@ import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Wrap;
 
 import java.nio.ByteBuffer;
-
-import c.org.rajawali3d.GlTestCase;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -172,9 +170,11 @@ public class SingleTexture2DGLTest extends GlTestCase {
         final TestableSingleTexture2D texture = new TestableSingleTexture2D();
         final TextureDataReference reference = texture.setTextureDataFromResourceId(getContext(),
             R.drawable.earth_diffuse);
-        final Bitmap bitmap = Bitmap.createBitmap(256, reference.getHeight(), Bitmap.Config.ARGB_8888);
+        final Bitmap bitmap = Bitmap.createBitmap(reference.getWidth() / 2, reference.getHeight(),
+                                                  Bitmap.Config.ARGB_8888);
         final TextureDataReference reference2 = new TextureDataReference(bitmap, null, GLES20.GL_RGBA,
             GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
+
         texture.setTexelFormat(GLES20.GL_RGBA);
         final boolean[] thrown = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
@@ -197,7 +197,8 @@ public class SingleTexture2DGLTest extends GlTestCase {
         final TestableSingleTexture2D texture = new TestableSingleTexture2D();
         final TextureDataReference reference = texture.setTextureDataFromResourceId(getContext(),
             R.drawable.earth_diffuse);
-        final Bitmap bitmap = Bitmap.createBitmap(reference.getWidth(), 256, Bitmap.Config.ARGB_8888);
+        final Bitmap bitmap = Bitmap.createBitmap(reference.getWidth(), reference.getHeight() / 2,
+                                                  Bitmap.Config.ARGB_8888);
         final TextureDataReference reference2 = new TextureDataReference(bitmap, null, GLES20.GL_RGBA,
             GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
         texture.setTexelFormat(GLES20.GL_RGBA);
