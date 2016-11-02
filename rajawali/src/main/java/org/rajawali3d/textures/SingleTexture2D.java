@@ -21,8 +21,9 @@ import android.opengl.GLUtils;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+
 import net.jcip.annotations.ThreadSafe;
+
 import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Filter.FilterType;
 import org.rajawali3d.textures.annotation.PixelFormat;
@@ -30,6 +31,8 @@ import org.rajawali3d.textures.annotation.Type.TextureType;
 import org.rajawali3d.textures.annotation.Wrap;
 import org.rajawali3d.textures.annotation.Wrap.WrapType;
 import org.rajawali3d.util.RajLog;
+
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 
 /**
  * This class is used to specify common functions of a single 2D texture. Subclasses are expected to be thread safe.
@@ -135,10 +138,10 @@ public abstract class SingleTexture2D extends BaseTexture {
         // Decode the bitmap
         final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
         final TextureDataReference reference = new TextureDataReference(bitmap, null,
-                                                                        bitmap.getConfig().equals(Config.RGB_565)
-                                                                        ? GLES20.GL_RGB : GLES20.GL_RGBA,
-                                                                        GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(),
-                                                                        bitmap.getHeight());
+            bitmap.getConfig().equals(Config.RGB_565)
+                ? GLES20.GL_RGB : GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(),
+            bitmap.getHeight());
         setTextureData(reference);
         return reference;
     }
@@ -205,15 +208,15 @@ public abstract class SingleTexture2D extends BaseTexture {
                 switch (filterType) {
                     case Filter.NEAREST:
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_NEAREST_MIPMAP_NEAREST);
+                            GLES20.GL_NEAREST_MIPMAP_NEAREST);
                         break;
                     case Filter.BILINEAR:
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_LINEAR_MIPMAP_NEAREST);
+                            GLES20.GL_LINEAR_MIPMAP_NEAREST);
                         break;
                     case Filter.TRILINEAR:
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_LINEAR_MIPMAP_LINEAR);
+                            GLES20.GL_LINEAR_MIPMAP_LINEAR);
                         break;
                     default:
                         throw new TextureException("Unknown texture filtering mode: " + filterType);
@@ -222,17 +225,17 @@ public abstract class SingleTexture2D extends BaseTexture {
                 switch (filterType) {
                     case Filter.NEAREST:
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_NEAREST);
+                            GLES20.GL_NEAREST);
                         break;
                     case Filter.BILINEAR:
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_LINEAR);
+                            GLES20.GL_LINEAR);
                         break;
                     case Filter.TRILINEAR:
                         RajLog.e("Trilinear filtering requires the use of mipmaps which are not enabled for this "
-                                 + "texture. Falling back to bilinear filtering.");
+                            + "texture. Falling back to bilinear filtering.");
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_LINEAR);
+                            GLES20.GL_LINEAR);
                         break;
                     default:
                         throw new TextureException("Unknown texture filtering mode: " + filterType);
@@ -250,7 +253,7 @@ public abstract class SingleTexture2D extends BaseTexture {
             // other than 1.0 would have required the check.
             if (getMaxAnisotropy() > 1.0) {
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
-                                       getMaxAnisotropy());
+                    getMaxAnisotropy());
             }
 
             // Handle s coordinate wrapping
@@ -275,12 +278,12 @@ public abstract class SingleTexture2D extends BaseTexture {
             if (textureData.hasBuffer()) {
                 if (getWidth() == 0 || getHeight() == 0) {
                     throw new TextureException(
-                            "Could not create ByteBuffer texture. One or more of the following properties haven't "
+                        "Could not create ByteBuffer texture. One or more of the following properties haven't "
                             + "been set: width, height or bitmap format");
                 }
                 GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, getTexelFormat(), getWidth(), getHeight(), 0,
-                                    textureData.getPixelFormat(), textureData.getDataType(),
-                                    textureData.getByteBuffer());
+                    textureData.getPixelFormat(), textureData.getDataType(),
+                    textureData.getByteBuffer());
             } else {
                 GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, getTexelFormat(), textureData.getBitmap(), 0);
             }
@@ -311,7 +314,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         final int id = getTextureId();
         if (id > 0) {
             // Call delete with GL only if necessary
-            GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
+            GLES20.glDeleteTextures(1, new int[]{getTextureId()}, 0);
             if (textureData != null) {
                 // When removing a texture, release a reference count for its data if we have saved it.
                 textureData.recycle();
@@ -325,37 +328,35 @@ public abstract class SingleTexture2D extends BaseTexture {
     void replace() throws TextureException {
         final TextureDataReference textureData = this.textureData;
         if (textureData == null || textureData.isDestroyed() || (textureData.hasBuffer()
-                                                                 && textureData.getByteBuffer().limit() == 0)) {
+            && textureData.getByteBuffer().limit() == 0) && !textureData.hasBitmap()) {
             throw new TextureException(
-                    "Texture2D could not be replaced because there is no Bitmap or ByteBuffer set.");
+                "Texture2D could not be replaced because there is no Bitmap or ByteBuffer set.");
         }
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, getTextureId());
 
         if (textureData.hasBitmap()) {
-            int bitmapFormat = textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA
-                                                                                       : GLES20.GL_RGB;
+            int bitmapFormat = textureData.getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
             if (textureData.getBitmap().getWidth() != getWidth()
                 || textureData.getBitmap().getHeight() != getHeight()) {
                 throw new TextureException(
-                        "Texture2D could not be updated because the texture size is different from the original.");
+                    "Texture could not be updated because the texture size is different from the original.");
             }
             if (bitmapFormat != getTexelFormat()) {
                 throw new TextureException(
-                        "Texture2D could not be updated because the bitmap format is different from the original");
+                    "Texture could not be updated because the texel format is different from the original");
             }
 
             GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), getTexelFormat(),
-                                  GLES20.GL_UNSIGNED_BYTE);
+                GLES20.GL_UNSIGNED_BYTE);
         } else if (textureData.hasBuffer()) {
             if (getWidth() == 0 || getHeight() == 0) {
                 throw new TextureException(
-                        "Could not update ByteBuffer texture. One or more of the following properties haven't been "
+                    "Could not update ByteBuffer texture. One or more of the following properties haven't been "
                         + "set: width, height or bitmap format");
             }
-            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(),
-                                   textureData.getPixelFormat(),
-                                   GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
+            GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), textureData.getPixelFormat(),
+                GLES20.GL_UNSIGNED_BYTE, textureData.getByteBuffer());
         }
 
         if (isMipmaped()) {

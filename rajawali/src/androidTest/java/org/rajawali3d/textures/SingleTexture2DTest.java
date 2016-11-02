@@ -1,19 +1,11 @@
 package org.rajawali3d.textures;
 
-import static android.support.test.InstrumentationRegistry.getContext;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rajawali3d.R;
@@ -24,6 +16,15 @@ import org.rajawali3d.textures.annotation.Wrap;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+
+import static android.support.test.InstrumentationRegistry.getContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -183,6 +184,49 @@ public class SingleTexture2DTest {
     public void textureRemoveNotAdded() throws Exception {
         final TestableSingleTexture2D texture = new TestableSingleTexture2D();
         texture.remove();
+    }
+
+    @Test
+    public void replaceNoData() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        boolean thrown = false;
+        try {
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+    }
+
+    @Test
+    public void textureReplaceDestroyed() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final TextureDataReference reference = texture.setTextureDataFromResourceId(getContext(), R.drawable
+            .earth_diffuse);
+        reference.recycle();
+        boolean thrown = false;
+        try {
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+    }
+
+    @Test
+    public void replaceBufferZeroLimit() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(0);
+        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, 256, 0);
+        texture.setTextureData(reference);
+        boolean thrown = false;
+        try {
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
     }
 
     @Test

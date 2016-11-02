@@ -1,15 +1,11 @@
 package org.rajawali3d.textures;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
+import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +15,13 @@ import org.rajawali3d.textures.annotation.Filter;
 import org.rajawali3d.textures.annotation.Wrap;
 
 import java.nio.ByteBuffer;
+
+import c.org.rajawali3d.GlTestCase;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -95,11 +98,176 @@ public class SingleTexture2DGLTest extends GlTestCase {
 
 
     @Test
-    public void replace() throws Exception {
-
+    public void replaceWithBitmap() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        texture.willRecycle(false);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertFalse(thrown[0]);
+        assertTrue(texture.getTextureId() > 0);
     }
 
+    @Test
+    public void replaceWithMipmappedBitmap() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        texture.willRecycle(false);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.setMipmaped(true);
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertFalse(thrown[0]);
+        assertTrue(texture.getTextureId() > 0);
+    }
 
+    @Test
+    public void replaceWithBuffer() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
+        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, 256, 512);
+        texture.setTextureData(reference);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        texture.willRecycle(false);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertFalse(thrown[0]);
+        assertTrue(texture.getTextureId() > 0);
+    }
+
+    @Test
+    public void replaceWithBitmapFailWidth() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final TextureDataReference reference = texture.setTextureDataFromResourceId(getContext(),
+            R.drawable.earth_diffuse);
+        final Bitmap bitmap = Bitmap.createBitmap(256, reference.getHeight(), Bitmap.Config.ARGB_8888);
+        final TextureDataReference reference2 = new TextureDataReference(bitmap, null, GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.setTextureData(reference2);
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertTrue(thrown[0]);
+    }
+
+    @Test
+    public void replaceWithBitmapFailHeight() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final TextureDataReference reference = texture.setTextureDataFromResourceId(getContext(),
+            R.drawable.earth_diffuse);
+        final Bitmap bitmap = Bitmap.createBitmap(reference.getWidth(), 256, Bitmap.Config.ARGB_8888);
+        final TextureDataReference reference2 = new TextureDataReference(bitmap, null, GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.setTextureData(reference2);
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertTrue(thrown[0]);
+    }
+
+    @Test
+    public void replaceWithBufferFailWidth() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
+        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, 256, 512);
+        final TextureDataReference reference2 = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, 512, 512);
+        texture.setTextureData(reference);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.setTextureData(reference2);
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertTrue(thrown[0]);
+    }
+
+    @Test
+    public void replaceWithBufferFailHeight() throws Exception {
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
+        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, 256, 512);
+        final TextureDataReference reference2 = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, 256, 256);
+        texture.setTextureData(reference);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.setTextureData(reference2);
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertTrue(thrown[0]);
+    }
 
     @Test
     public void textureAdd1() throws Exception {
