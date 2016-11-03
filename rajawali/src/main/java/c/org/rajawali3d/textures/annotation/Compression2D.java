@@ -14,14 +14,14 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface Compression2D {
 
-    int NONE = 0;
-    int ETC1 = 1;
-    int ETC2 = 2;
-    int PALETTED = 3;
-    int THREEDC = 4;
-    int ATC = 5;
-    int DXT1 = 6;
-    int PVRTC = 7;
+    int NONE = 1;
+    int ETC1 = 2;
+    int ETC2 = 3;
+    int PALETTED = 4;
+    int THREEDC = 5;
+    int ATC = 6;
+    int DXT1 = 7;
+    int PVRTC = 8;
 
     @Documented
     @Retention(RetentionPolicy.SOURCE)

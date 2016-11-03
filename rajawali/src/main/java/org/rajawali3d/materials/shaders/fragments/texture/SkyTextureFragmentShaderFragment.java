@@ -19,7 +19,7 @@ import c.org.rajawali3d.textures.annotation.Type;
 import java.util.List;
 
 
-public class SkyTextureFragmentShaderFragment extends ATextureFragmentShaderFragment {
+public class SkyTextureFragmentShaderFragment extends TextureFragmentShaderFragment {
 	public final static String SHADER_ID = "SKY_TEXTURE_FRAGMENT";
 
 	public SkyTextureFragmentShaderFragment(List<BaseTexture> textures) {

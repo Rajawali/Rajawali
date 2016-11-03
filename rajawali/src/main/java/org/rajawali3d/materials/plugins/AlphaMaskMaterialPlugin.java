@@ -1,7 +1,7 @@
 package org.rajawali3d.materials.plugins;
 
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.shaders.AShader;
+import org.rajawali3d.materials.shaders.Shader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 
 public class AlphaMaskMaterialPlugin implements IMaterialPlugin {
@@ -34,7 +34,7 @@ public class AlphaMaskMaterialPlugin implements IMaterialPlugin {
     @Override
     public void unbindTextures() { }
 
-    private final class AlphaMaskShaderFragment extends AShader implements IShaderFragment {
+    private final class AlphaMaskShaderFragment extends Shader implements IShaderFragment {
         public final static String SHADER_ID = "ALPHA_MASK_FRAGMENT_SHADER_FRAGMENT";
 
         @Override

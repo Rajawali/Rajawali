@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -14,18 +14,18 @@ package org.rajawali3d.materials.shaders.fragments.animation;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin.VertexAnimationShaderVar;
-import org.rajawali3d.materials.shaders.AShader;
+import org.rajawali3d.materials.shaders.Shader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 
-public class VertexAnimationVertexShaderFragment extends AShader implements IShaderFragment {
+public class VertexAnimationVertexShaderFragment extends Shader implements IShaderFragment {
 
 	public final static String SHADER_ID = "VERTEX_ANIMATION_VERTEX";
 
 	private RVec4 maNextFramePosition;
 	private RVec3 maNextFrameNormal;
 	private RFloat muInterpolation;
-	
+
 	private int maNextFramePositionHandle;
 	private int maNextFrameNormalHandle;
 	private int muInterpolationHandle;
@@ -56,12 +56,12 @@ public class VertexAnimationVertexShaderFragment extends AShader implements ISha
 		RVec3 normal = (RVec3)getGlobal(DefaultShaderVar.G_NORMAL);
 		RVec4 aPosition = (RVec4)getGlobal(DefaultShaderVar.A_POSITION);
 		RVec3 aNormal = (RVec3)getGlobal(DefaultShaderVar.A_NORMAL);
-		
+
 		//
 		// -- position = aPosition + uInterpolation * (aNextFramePosition - aPosition);
 		//
 		position.assign(aPosition.add(muInterpolation.multiply(enclose(maNextFramePosition.subtract(aPosition)))));
-		
+
 		//
 		// -- normal = aNormal + uInterpolation * (aNextFrameNormal - aNormal);
 		//
@@ -90,16 +90,16 @@ public class VertexAnimationVertexShaderFragment extends AShader implements ISha
 		GLES20.glVertexAttribPointer(maNextFrameNormalHandle, 3, GLES20.GL_FLOAT,
 				false, 0, 0);
 	}
-	
+
 	public void setInterpolation(double interpolation) {
 		GLES20.glUniform1f(muInterpolationHandle, (float) interpolation);
 	}
-	
+
 	@Override
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}
-	
+
 	@Override
 	public void bindTextures(int nextIndex) {}
 	@Override

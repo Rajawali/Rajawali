@@ -11,16 +11,16 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface Type {
 
-    int DIFFUSE = 0;
-    int NORMAL = 1;
-    int SPECULAR = 2;
-    int ALPHA = 3;
-    int RENDER_TARGET = 4;
-    int DEPTH_BUFFER = 5;
-    int LOOKUP = 6;
-    int CUBE_MAP = 7;
-    int SPHERE_MAP = 8;
-    int VIDEO_TEXTURE = 9;
+    int DIFFUSE = 1;
+    int NORMAL = 2;
+    int SPECULAR = 3;
+    int ALPHA = 4;
+    int RENDER_TARGET = 5;
+    int DEPTH_BUFFER = 6;
+    int LOOKUP = 7;
+    int CUBE_MAP = 8;
+    int SPHERE_MAP = 9;
+    int VIDEO_TEXTURE = 10;
 
     @Documented
     @Retention(RetentionPolicy.SOURCE)
