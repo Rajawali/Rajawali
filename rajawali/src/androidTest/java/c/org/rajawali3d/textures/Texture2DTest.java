@@ -3,6 +3,7 @@ package c.org.rajawali3d.textures;
 import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.opengl.GLES20;
@@ -66,5 +67,11 @@ public class Texture2DTest {
         assertNotNull(texture);
         assertEquals("FROM", texture.getTextureName());
         assertEquals(reference, texture.getTextureData());
+    }
+
+    public void testCloneFail() throws Exception {
+        final Texture2D from = new Texture2D("FROM");
+        final Texture2D texture = from.clone();
+        assertNull(texture);
     }
 }

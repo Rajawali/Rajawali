@@ -16,10 +16,8 @@ package c.org.rajawali3d.textures;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-
-import net.jcip.annotations.ThreadSafe;
-
 import c.org.rajawali3d.textures.annotation.Type;
+import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.util.RajLog;
 
 /**
@@ -44,32 +42,32 @@ public class Texture2D extends SingleTexture2D {
     /**
      * Constructs a new {@link Texture2D} with the provided name.
      *
-     * @param textureName {@link String} The texture name.
+     * @param name {@link String} The texture name.
      */
-    public Texture2D(@NonNull String textureName) {
-        super(Type.DIFFUSE, textureName);
+    public Texture2D(@NonNull String name) {
+        super(Type.DIFFUSE, name);
     }
 
     /**
      * Constructs a new {@link Texture2D} with the provided name and data provided by the specified Android resource.
      *
-     * @param textureName {@link String} The texture name.
+     * @param name {@link String} The texture name.
      * @param context {@link Context} The Android application context.
      * @param resourceId {@link DrawableRes} {@code int} The Android resource.
      */
-    public Texture2D(@NonNull String textureName, @NonNull Context context, @DrawableRes int resourceId) {
-        super(Type.DIFFUSE, textureName);
-        setTextureDataFromResourceId(context, resourceId);
+    public Texture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId) {
+        super(context, Type.DIFFUSE, resourceId);
+        setTextureName(name);
     }
 
     /**
      * Constructs a new {@link Texture2D} with the provided name and data.
      *
-     * @param textureName {@link String} The texture name.
-     * @param textureData {@link TextureDataReference} The texture data.
+     * @param name {@link String} The texture name.
+     * @param data {@link TextureDataReference} The texture data.
      */
-    public Texture2D(@NonNull String textureName, @NonNull TextureDataReference textureData) {
-        super(Type.DIFFUSE, textureName, textureData);
+    public Texture2D(@NonNull String name, @NonNull TextureDataReference data) {
+        super(Type.DIFFUSE, name, data);
     }
 
 	/*public Texture2D(String textureName, TextureAtlas atlas)
