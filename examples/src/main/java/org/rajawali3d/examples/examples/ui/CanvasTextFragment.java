@@ -17,9 +17,9 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
-import org.rajawali3d.textures.AlphaMapTexture2D;
-import org.rajawali3d.textures.TextureDataReference;
-import org.rajawali3d.textures.TextureException;
+import c.org.rajawali3d.textures.AlphaMapTexture2D;
+import c.org.rajawali3d.textures.TextureDataReference;
+import c.org.rajawali3d.textures.TextureException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

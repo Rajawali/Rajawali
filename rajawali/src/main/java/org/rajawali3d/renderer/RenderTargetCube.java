@@ -13,8 +13,8 @@
 package org.rajawali3d.renderer;
 
 import android.graphics.Bitmap.Config;
-import org.rajawali3d.textures.annotation.Filter.FilterType;
-import org.rajawali3d.textures.annotation.Wrap.WrapType;
+import c.org.rajawali3d.textures.annotation.Filter.FilterType;
+import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 /**
  * Defines a render target to be mapped to a cubemap texture.

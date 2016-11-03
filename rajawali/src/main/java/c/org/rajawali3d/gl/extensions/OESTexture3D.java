@@ -2,10 +2,10 @@ package c.org.rajawali3d.gl.extensions;
 
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
-import org.rajawali3d.textures.annotation.DataType;
-import org.rajawali3d.textures.annotation.PixelFormat;
-import org.rajawali3d.textures.annotation.TexelFormat;
-import org.rajawali3d.textures.annotation.TextureTarget;
+import c.org.rajawali3d.textures.annotation.DataType;
+import c.org.rajawali3d.textures.annotation.PixelFormat;
+import c.org.rajawali3d.textures.annotation.TexelFormat;
+import c.org.rajawali3d.textures.annotation.TextureTarget;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;

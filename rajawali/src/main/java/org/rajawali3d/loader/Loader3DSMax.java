@@ -17,7 +17,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.TextureException;
+import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.util.RajLog;
 
 import java.io.BufferedInputStream;

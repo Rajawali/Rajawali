@@ -14,8 +14,8 @@ package org.rajawali3d.materials.shaders.fragments.texture;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.textures.BaseTexture;
-import org.rajawali3d.textures.annotation.Type;
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.annotation.Type;
 
 import java.util.List;
 

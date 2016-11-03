@@ -5,7 +5,7 @@ import c.org.rajawali3d.scene.Scene;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.renderer.FrameTask;
-import org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.BaseTexture;
 
 import java.util.Collections;
 import java.util.HashSet;

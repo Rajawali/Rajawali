@@ -19,8 +19,8 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.textures.Texture2D;
-import org.rajawali3d.textures.TextureException;
+import c.org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.TextureException;
 
 /**
  * @author Jared Woolston (jwoolston@idealcorp.com)

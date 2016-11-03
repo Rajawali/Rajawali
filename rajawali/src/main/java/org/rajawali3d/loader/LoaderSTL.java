@@ -16,7 +16,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.TextureManager;
+import c.org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 

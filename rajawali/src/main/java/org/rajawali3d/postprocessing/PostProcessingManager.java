@@ -25,9 +25,9 @@ import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.BaseTexture;
-import org.rajawali3d.textures.annotation.Filter;
-import org.rajawali3d.textures.annotation.Wrap;
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.annotation.Filter;
+import c.org.rajawali3d.textures.annotation.Wrap;
 
 import java.util.Collections;
 import java.util.List;

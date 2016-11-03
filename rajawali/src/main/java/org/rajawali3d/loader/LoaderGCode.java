@@ -22,7 +22,7 @@ import org.rajawali3d.loader.LoaderSTL.StlParseException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Line3D;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.TextureManager;
+import c.org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.RajLog;
 
 import java.io.BufferedInputStream;

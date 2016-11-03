@@ -15,8 +15,8 @@ package org.rajawali3d.materials.textures;
 import android.opengl.GLES20;
 import org.rajawali3d.materials.AResourceManager;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.BaseTexture;
-import org.rajawali3d.textures.RenderTargetTexture;
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.RenderTargetTexture;
 
 import java.util.Collections;
 import java.util.List;

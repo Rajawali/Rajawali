@@ -14,7 +14,7 @@ package org.rajawali3d.extras;
 
 import java.util.ArrayList;
 
-import org.rajawali3d.textures.SingleTexture2D;
+import c.org.rajawali3d.textures.SingleTexture2D;
 import org.rajawali3d.math.vector.Vector3;
 
 /**

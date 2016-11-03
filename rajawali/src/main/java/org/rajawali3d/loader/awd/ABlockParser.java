@@ -1,11 +1,11 @@
 package org.rajawali3d.loader.awd;
 
 import android.opengl.GLES20;
-import org.rajawali3d.textures.TextureDataReference;
+import c.org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.BaseTexture;
-import org.rajawali3d.textures.CubeMapTexture;
-import org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.CubeMapTexture;
+import c.org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.loader.LoaderAWD.IBlockParser;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;

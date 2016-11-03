@@ -19,8 +19,8 @@ import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.annotation.Filter;
-import org.rajawali3d.textures.annotation.Wrap;
+import c.org.rajawali3d.textures.annotation.Filter;
+import c.org.rajawali3d.textures.annotation.Wrap;
 
 public class CopyToNewRenderTargetPass extends EffectPass {
 	private RenderTarget mRenderTarget;

@@ -18,9 +18,7 @@ import android.opengl.GLES20;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.OESTexture3D;
+
 import org.rajawali3d.util.RajLog;
 
 import java.util.HashMap;
@@ -30,6 +28,10 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
+
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESTexture3D;
 
 
 /**
@@ -68,10 +70,10 @@ public class Capabilities {
     private final int minAliasedPointSize;
     private final int maxAliasedPointSize;
 
-    private final String   vendor;
-    private final String   renderer;
-    private final String   version;
-    private final String[] extensions;
+    @NonNull private final String   vendor;
+    @NonNull private final String   renderer;
+    @NonNull private final String   version;
+    @NonNull private final String[] extensions;
 
     private final Map<String, GLExtension> loadedExtensions;
 
@@ -117,7 +119,7 @@ public class Capabilities {
         return instance;
     }
 
-    private static void checkGLVersion() {
+    static void checkGLVersion() {
         // Get an EGL context and display
         final EGL10 egl = (EGL10) EGLContext.getEGL();
         final EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
@@ -143,7 +145,7 @@ public class Capabilities {
     }
 
     @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
-    private static void checkGLVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
+    static void checkGLVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
         // Find out how many EGLConfigs exist
         final int[] num_config = new int[1];
         egl.eglGetConfigs(display, null, 0, num_config);
