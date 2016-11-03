@@ -12,10 +12,23 @@
  */
 package org.rajawali3d.materials;
 
+import static c.org.rajawali3d.textures.annotation.Type.ALPHA;
+import static c.org.rajawali3d.textures.annotation.Type.CUBE_MAP;
+import static c.org.rajawali3d.textures.annotation.Type.DIFFUSE;
+import static c.org.rajawali3d.textures.annotation.Type.NORMAL;
+import static c.org.rajawali3d.textures.annotation.Type.RENDER_TARGET;
+import static c.org.rajawali3d.textures.annotation.Type.SPECULAR;
+import static c.org.rajawali3d.textures.annotation.Type.SPHERE_MAP;
+import static c.org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
+
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.CubeMapTexture;
+import c.org.rajawali3d.textures.SphereMapTexture2D;
+import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.geometry.BufferInfo;
 import org.rajawali3d.lights.ALight;
@@ -43,21 +56,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.textures.BaseTexture;
-import c.org.rajawali3d.textures.CubeMapTexture;
-import c.org.rajawali3d.textures.SphereMapTexture2D;
-import c.org.rajawali3d.textures.TextureException;
-
-import static c.org.rajawali3d.textures.annotation.Type.ALPHA;
-import static c.org.rajawali3d.textures.annotation.Type.CUBE_MAP;
-import static c.org.rajawali3d.textures.annotation.Type.DIFFUSE;
-import static c.org.rajawali3d.textures.annotation.Type.NORMAL;
-import static c.org.rajawali3d.textures.annotation.Type.RENDER_TARGET;
-import static c.org.rajawali3d.textures.annotation.Type.SPECULAR;
-import static c.org.rajawali3d.textures.annotation.Type.SPHERE_MAP;
-import static c.org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
 
 /**
  * The Material class is where you define the visual characteristics of your 3D model. Here you can specify lighting
@@ -290,7 +288,8 @@ public class Material {
      * myObject.setMaterial(material);
      * </code></pre>
      *
-     * @see <a href="https://github.com/MasDennis/Rajawali/wiki/Materials">https://github.com/Rajawali/Rajawali/wiki/Materials</a>
+     * @see <a href="https://github.com/MasDennis/Rajawali/wiki/Materials">
+     *     https://github.com/Rajawali/Rajawali/wiki/Materials</a>
      */
     public Material() {
         this(false);

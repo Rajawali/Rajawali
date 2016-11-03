@@ -327,9 +327,14 @@ public abstract class SingleTexture2D extends BaseTexture {
     void replace() throws TextureException {
         final TextureDataReference textureData = this.textureData;
         if (textureData == null || textureData.isDestroyed() || (textureData.hasBuffer()
-            && textureData.getByteBuffer().limit() == 0) && !textureData.hasBitmap()) {
-            throw new TextureException(
-                "Texture2D could not be replaced because there is no Bitmap or ByteBuffer set.");
+            && textureData.getByteBuffer().limit() == 0 && !textureData.hasBitmap())) {
+            final String error = "Texture2D could not be replaced because there is no Bitmap or ByteBuffer set. Flags: "
+                                 + (textureData == null ? "null" : ("false || " + textureData.isDestroyed() + " || "
+                                                                   + textureData.hasBuffer() + " && "
+                                                                   + (textureData.getByteBuffer().limit() == 0) + " && "
+                                                                   + !textureData.hasBitmap()));
+            RajLog.e(error);
+            throw new TextureException(error);
         }
 
         if (textureData.getWidth() != getWidth() || textureData.getHeight() != getHeight()) {
