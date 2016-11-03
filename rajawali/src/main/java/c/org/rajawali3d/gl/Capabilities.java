@@ -18,7 +18,10 @@ import android.opengl.GLES20;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
-
+import android.support.annotation.VisibleForTesting;
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESTexture3D;
 import org.rajawali3d.util.RajLog;
 
 import java.util.HashMap;
@@ -28,10 +31,6 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
-
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.OESTexture3D;
 
 
 /**
@@ -119,6 +118,7 @@ public class Capabilities {
         return instance;
     }
 
+    @VisibleForTesting
     static void checkGLVersion() {
         // Get an EGL context and display
         final EGL10 egl = (EGL10) EGLContext.getEGL();
@@ -145,6 +145,7 @@ public class Capabilities {
     }
 
     @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
+    @VisibleForTesting
     static void checkGLVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
         // Find out how many EGLConfigs exist
         final int[] num_config = new int[1];

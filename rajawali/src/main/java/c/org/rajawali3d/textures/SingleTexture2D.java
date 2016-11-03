@@ -110,6 +110,7 @@ public abstract class SingleTexture2D extends BaseTexture {
     public void setFrom(@NonNull SingleTexture2D other) throws TextureException {
         final TextureDataReference data = other.getTextureData();
         if (data != null) {
+            super.setFrom(other);
             setTextureData(other.getTextureData());
         } else {
             throw new TextureException("Texture data was null!");

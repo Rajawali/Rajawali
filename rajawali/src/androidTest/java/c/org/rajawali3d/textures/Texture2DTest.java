@@ -1,22 +1,18 @@
 package c.org.rajawali3d.textures;
 
+import static android.support.test.InstrumentationRegistry.getContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.opengl.GLES20;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rajawali3d.R;
 
 import java.nio.ByteBuffer;
-
-import c.org.rajawali3d.textures.Texture2D;
-import c.org.rajawali3d.textures.TextureDataReference;
-
-import static android.support.test.InstrumentationRegistry.getContext;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -28,6 +24,7 @@ public class Texture2DTest {
     @Test
     public void testConstructFromOtherTexture2D() throws Exception {
         final Texture2D from = new Texture2D("FROM");
+        from.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
         final Texture2D to = new Texture2D(from);
         assertNotNull(to);
         assertEquals("FROM", to.getTextureName());

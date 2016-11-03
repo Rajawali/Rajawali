@@ -1,22 +1,20 @@
 package c.org.rajawali3d.gl;
 
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.RequiresDevice;
-import android.support.test.runner.AndroidJUnit4;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import android.support.test.filters.LargeTest;
+import android.support.test.filters.RequiresDevice;
+import android.support.test.runner.AndroidJUnit4;
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -26,28 +24,34 @@ import static org.junit.Assert.assertTrue;
 @LargeTest
 public class CapabilitiesTest extends GlTestCase {
 
-    private static final int maxTextureSize = 0;
-    private static final int maxCombinedTextureImageUnits = 0;
-    private static final int maxCubeMapTextureSize = 0;
-    private static final int maxFragmentUniformVectors = 0;
-    private static final int maxRenderbufferSize = 0;
-    private static final int maxTextureImageUnits = 0;
-    private static final int maxVaryingVectors = 0;
-    private static final int maxVertexAttribs = 0;
+    // The following values are taken from the minimum specifications of GL ES 2.0
+    // See <a href="https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml>glGet</a>
+    private static final int maxTextureSize = 64;
+    private static final int maxCombinedTextureImageUnits = 8;
+    private static final int maxCubeMapTextureSize = 16;
+    private static final int maxFragmentUniformVectors = 16;
+    private static final int maxRenderbufferSize = 1;
+    private static final int maxTextureImageUnits = 8;
+    private static final int maxVaryingVectors = 8;
+    private static final int maxVertexAttribs = 8;
     private static final int maxVertexTextureImageUnits = 0;
-    private static final int maxVertexUniformVectors = 0;
+    private static final int maxVertexUniformVectors = 128;
     private static final int maxViewportWidth = 0;
     private static final int maxViewportHeight = 0;
-    private static final int minAliasedLineWidth = 0;
-    private static final int maxAliasedLineWidth = 0;
-    private static final int minAliasedPointSize = 0;
-    private static final int maxAliasedPointSize = 0;
+    private static final int minAliasedLineWidth = 1;
+    private static final int maxAliasedLineWidth = 1;
+    private static final int minAliasedPointSize = 1;
+    private static final int maxAliasedPointSize = 1;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp("CapabilitiesTest");
-        Capabilities.getInstance();
-        Capabilities.checkGLVersion();
+        super.setUp(CapabilitiesTest.class.getSimpleName());
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                Capabilities.getInstance();
+                Capabilities.checkGLVersion();
+            }
+        });
     }
 
     @After
@@ -88,8 +92,8 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getEGLMinorVersion();
             }
         });
-        assertTrue(2 <= output[0]);
-        assertTrue(4 >= output[1]);
+        assertTrue("Received EGL Minor Version: " + output[0], 0 <= output[0]);
+        assertTrue("Received EGL Minor Version: " + output[0], 4 >= output[0]);
     }
 
     @Test
@@ -229,7 +233,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxTextureSize();
             }
         });
-        assertEquals(maxTextureSize, output[0]);
+        assertTrue(maxTextureSize <= output[0]);
     }
 
     @Test
@@ -241,7 +245,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxCombinedTextureUnits();
             }
         });
-        assertEquals(maxCombinedTextureImageUnits, output[0]);
+        assertTrue(maxCombinedTextureImageUnits <= output[0]);
     }
 
     @Test
@@ -253,7 +257,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxCubeMapTextureSize();
             }
         });
-        assertEquals(maxCubeMapTextureSize, output[0]);
+        assertTrue(maxCubeMapTextureSize <= output[0]);
     }
 
     @Test
@@ -265,7 +269,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxFragmentUniformVectors();
             }
         });
-        assertEquals(maxFragmentUniformVectors, output[0]);
+        assertTrue(maxFragmentUniformVectors <= output[0]);
     }
 
     @Test
@@ -277,7 +281,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxRenderbufferSize();
             }
         });
-        assertEquals(maxRenderbufferSize, output[0]);
+        assertTrue(maxRenderbufferSize <= output[0]);
     }
 
     @Test
@@ -289,7 +293,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxTextureImageUnits();
             }
         });
-        assertEquals(maxTextureImageUnits, output[0]);
+        assertTrue(maxTextureImageUnits <= output[0]);
     }
 
     @Test
@@ -301,7 +305,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxVaryingVectors();
             }
         });
-        assertEquals(maxVaryingVectors, output[0]);
+        assertTrue(maxVaryingVectors <= output[0]);
     }
 
     @Test
@@ -313,7 +317,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxVertexAttribs();
             }
         });
-        assertEquals(maxVertexAttribs, output[0]);
+        assertTrue(maxVertexAttribs <= output[0]);
     }
 
     @Test
@@ -325,7 +329,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxVertexTextureImageUnits();
             }
         });
-        assertEquals(maxVertexTextureImageUnits, output[0]);
+        assertTrue(maxVertexTextureImageUnits <= output[0]);
     }
 
     @Test
@@ -337,7 +341,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxVertexUniformVectors();
             }
         });
-        assertEquals(maxVertexUniformVectors, output[0]);
+        assertTrue(maxVertexUniformVectors <= output[0]);
     }
 
     @Test
@@ -349,7 +353,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxViewportWidth();
             }
         });
-        assertEquals(maxViewportWidth, output[0]);
+        assertTrue(maxViewportWidth <= output[0]);
     }
 
     @Test
@@ -361,7 +365,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxViewportHeight();
             }
         });
-        assertEquals(maxViewportHeight, output[0]);
+        assertTrue(maxViewportHeight <= output[0]);
     }
 
     @Test
@@ -373,7 +377,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMinAliasedLineWidth();
             }
         });
-        assertEquals(minAliasedLineWidth, output[0]);
+        assertTrue(minAliasedLineWidth >= output[0]);
     }
 
     @Test
@@ -385,7 +389,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxAliasedLineWidth();
             }
         });
-        assertEquals(maxAliasedLineWidth, output[0]);
+        assertTrue(maxAliasedLineWidth <= output[0]);
     }
 
     @Test
@@ -397,7 +401,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMinAliasedPointSize();
             }
         });
-        assertEquals(minAliasedPointSize, output[0]);
+        assertTrue(minAliasedPointSize >= output[0]);
     }
 
     @Test
@@ -409,7 +413,7 @@ public class CapabilitiesTest extends GlTestCase {
                 output[0] = Capabilities.getInstance().getMaxAliasedPointSize();
             }
         });
-        assertEquals(maxAliasedPointSize, output[0]);
+        assertTrue(maxAliasedPointSize <= output[0]);
     }
 
     @Test
