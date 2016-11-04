@@ -12,15 +12,17 @@
  */
 package c.org.rajawali3d.materials.shaders;
 
-
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.rajawali3d.materials.shaders.Shader;
-
+import c.org.rajawali3d.materials.shaders.ShaderVar.PrecisionShaderVar;
 import c.org.rajawali3d.materials.shaders.definitions.DataType;
+import c.org.rajawali3d.materials.shaders.definitions.Precision;
 
+import static android.os.Build.VERSION_CODES.N;
 import static c.org.rajawali3d.materials.shaders.definitions.DataType.BOOL;
+import static c.org.rajawali3d.materials.shaders.definitions.DataType.FLOAT;
 import static c.org.rajawali3d.materials.shaders.definitions.DataType.INT;
 import static c.org.rajawali3d.materials.shaders.definitions.DataType.MAT3;
 import static c.org.rajawali3d.materials.shaders.definitions.DataType.MAT4;
@@ -29,7 +31,6 @@ import static c.org.rajawali3d.materials.shaders.definitions.DataType.SAMPLER_CU
 import static c.org.rajawali3d.materials.shaders.definitions.DataType.VEC2;
 import static c.org.rajawali3d.materials.shaders.definitions.DataType.VEC3;
 import static c.org.rajawali3d.materials.shaders.definitions.DataType.VEC4;
-import static c.org.rajawali3d.textures.RenderTargetTexture.RenderTargetTextureType.FLOAT;
 
 /**
  * This abstract class defines all the data types that are used in a shader. The data types reflect the data types
@@ -47,19 +48,6 @@ import static c.org.rajawali3d.textures.RenderTargetTexture.RenderTargetTextureT
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public abstract class ShaderBase {
-
-    /**
-     * Shader variables map to variable names that will be used in shaders. They are defined in enums for consistency
-     * and re-usability.
-     *
-     * @author dennis.ippel
-     */
-    public interface GlobalShaderVar {
-
-        @NonNull String getName();
-
-        @NonNull String getType();
-    }
 
     protected int variableCount;
     protected StringBuilder shaderSB;
@@ -84,7 +72,8 @@ public abstract class ShaderBase {
      *
      * @return
      */
-    protected ShaderVar getInstanceForDataType(@Nullable String name, @NonNull String dataType) {
+    @NonNull
+    protected static ShaderVar getInstanceForDataType(@Nullable String name, @NonNull String dataType) {
         switch (dataType) {
             case INT:
                 return new RInt(name);
@@ -106,10 +95,11 @@ public abstract class ShaderBase {
                 return new RSampler2D(name);
             case SAMPLER_CUBE:
                 return new RSamplerCube(name);
-            case SAMPLER_EXTERNAL_EOS:
-                return new RSamplerExternalOES(name);
+            //case SAMPLER_EXTERNAL_EOS:
+            //    return new RSamplerExternalOES(name);
             default:
-                return null;
+                //TODO: Check extensions
+                throw new IllegalArgumentException("The specified data type (" + dataType + ") is not recognized.");
         }
     }
 
@@ -145,8 +135,8 @@ public abstract class ShaderBase {
             out = getInstanceForDataType(MAT3);
         } else if (left == DataType.MAT2 || right == DataType.MAT2) {
             out = getInstanceForDataType(DataType.MAT2);
-        } else if (left == DataType.FLOAT || right == DataType.FLOAT) {
-            out = getInstanceForDataType(DataType.FLOAT);
+        } else if (left == FLOAT || right == FLOAT) {
+            out = getInstanceForDataType(FLOAT);
         } else {
             out = getInstanceForDataType(INT);
         }
@@ -159,7 +149,7 @@ public abstract class ShaderBase {
      *
      * @author dennis.ippel
      */
-    protected class RVec2 extends ShaderVar {
+    protected static class RVec2 extends PrecisionShaderVar {
         public RVec2() {
             super(VEC2);
         }
@@ -458,37 +448,6 @@ public abstract class ShaderBase {
     }
 
     /**
-     * @author dennis.ippel
-     *
-     *         Defines a boolean. This corresponds to the bool GLSL data type.
-     */
-    protected class RBool extends ShaderVar {
-        public RBool() {
-            super(BOOL);
-        }
-
-        public RBool(String name) {
-            super(name, BOOL);
-        }
-
-        public RBool(DataType dataType) {
-            super(dataType);
-        }
-
-        public RBool(String name, DataType dataType) {
-            super(name, dataType);
-        }
-
-        public RBool(ShaderVar value) {
-            super(BOOL, value);
-        }
-
-        public RBool(DataType dataType, ShaderVar value) {
-            super(dataType, value);
-        }
-    }
-
-    /**
      * Defines a 3x3 matrix. This corresponds to the mat3 GLSL data type.
      *
      * @author dennis.ippel
@@ -620,25 +579,26 @@ public abstract class ShaderBase {
      *
      * @author dennis.ippel
      */
-    protected class RFloat extends ShaderVar {
+    protected static class RFloat extends PrecisionShaderVar {
+
         public RFloat() {
-            super(DataType.FLOAT);
+            super(FLOAT);
         }
 
-        public RFloat(String name) {
-            super(name, DataType.FLOAT);
+        public RFloat(@Nullable String name) {
+            super(name, FLOAT, (ShaderVar) null);
         }
 
-        public RFloat(String name, ShaderVar value) {
-            super(name, DataType.FLOAT, value);
+        public RFloat(@Nullable String name, @Nullable ShaderVar value) {
+            super(name, FLOAT, value);
         }
 
-        public RFloat(ShaderVar value) {
-            super(DataType.FLOAT, value);
+        public RFloat(@NonNull ShaderVar value) {
+            super(FLOAT, value);
         }
 
-        public RFloat(GlobalShaderVar var, int index) {
-            super(DataType.FLOAT, var.getName() + Integer.toString(index));
+        public RFloat(@NonNull GlobalShaderVar var, @IntRange(from = 0) int index) {
+            super(var.getName() + Integer.toString(index), FLOAT, (ShaderVar) null);
         }
 
         public RFloat(double value) {
@@ -646,7 +606,7 @@ public abstract class ShaderBase {
         }
 
         public RFloat(float value) {
-            super(Float.toString(value), DataType.FLOAT, Float.toString(value), false);
+            super(Float.toString(value), FLOAT, Float.toString(value), false);
         }
 
         public void setValue(float value) {
@@ -659,25 +619,54 @@ public abstract class ShaderBase {
      *
      * @author dennis.ippel
      */
-    protected class RInt extends ShaderVar {
+    protected static class RInt extends PrecisionShaderVar {
+
         public RInt() {
             super(INT);
         }
 
-        public RInt(String name) {
-            super(name, INT);
+        public RInt(@Nullable String name) {
+            super(name, INT, (ShaderVar) null);
         }
 
-        public RInt(String name, ShaderVar value) {
+        public RInt(@Nullable String name, @Nullable ShaderVar value) {
             super(name, INT, value);
         }
 
-        public RInt(ShaderVar value) {
+        public RInt(@NonNull ShaderVar value) {
             super(INT, value);
         }
 
-        public RInt(float value) {
-            super(INT, Float.toString(value));
+        public RInt(int value) {
+            super(INT, Integer.toString(value), false);
+        }
+    }
+
+    /**
+     * Defines a boolean. This corresponds to the bool GLSL data type.
+     *
+     * @author dennis.ippel
+     */
+    protected static class RBool extends ShaderVar {
+
+        public RBool() {
+            super(BOOL);
+        }
+
+        public RBool(@Nullable String name) {
+            super(name, BOOL, (ShaderVar) null);
+        }
+
+        public RBool(@Nullable String name, @NonNull String dataType) {
+            super(name, dataType, (ShaderVar) null);
+        }
+
+        public RBool(@NonNull ShaderVar value) {
+            super(BOOL, value);
+        }
+
+        public RBool(@Nullable String dataType, @Nullable ShaderVar value) {
+            super(null, dataType, value);
         }
     }
 }
