@@ -99,7 +99,7 @@ public class FragmentShader extends Shader {
 		for(int i=0; i<mShaderFragments.size(); i++)
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
-			fragment.setStringBuilder(mShaderSB);
+			fragment.setStringBuilder(shaderSB);
 			fragment.main();
 		}
 

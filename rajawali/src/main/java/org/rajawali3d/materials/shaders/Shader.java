@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import c.org.rajawali3d.materials.shaders.ShaderBase;
+
 
 /**
  * This class is a wrapper class for shader creation. GLSL shaders are text files that are
@@ -234,7 +236,7 @@ public abstract class Shader extends ShaderBase {
 	 */
 	protected ShaderVar addUniform(GlobalShaderVar var)
 	{
-		return addUniform(var.getVarString(), var.getDataType());
+		return addUniform(var.getName(), var.getType());
 	}
 
 	/**
@@ -249,7 +251,7 @@ public abstract class Shader extends ShaderBase {
 	 */
 	protected ShaderVar addUniform(GlobalShaderVar var, int index)
 	{
-		return addUniform(var.getVarString() + Integer.toString(index), var.getDataType());
+		return addUniform(var.getName() + Integer.toString(index), var.getType());
 	}
 
 	/**
@@ -264,7 +266,7 @@ public abstract class Shader extends ShaderBase {
 	 */
 	protected ShaderVar addUniform(GlobalShaderVar var, String suffix)
 	{
-		return addUniform(var.getVarString() + suffix, var.getDataType());
+		return addUniform(var.getName() + suffix, var.getType());
 	}
 
 	/**
@@ -342,7 +344,7 @@ public abstract class Shader extends ShaderBase {
 	 */
 	protected ShaderVar addAttribute(GlobalShaderVar var)
 	{
-		return addAttribute(var.getVarString(), var.getDataType());
+		return addAttribute(var.getName(), var.getType());
 	}
 
 	/**
@@ -385,7 +387,7 @@ public abstract class Shader extends ShaderBase {
 	 * @return
 	 */
 	protected ShaderVar addVarying(GlobalShaderVar var) {
-		return addVarying(var.getVarString(), var.getDataType());
+		return addVarying(var.getName(), var.getType());
 	}
 
 	/**
@@ -401,7 +403,7 @@ public abstract class Shader extends ShaderBase {
 	 */
 	protected ShaderVar addVarying(GlobalShaderVar var, int index)
 	{
-		return addVarying(var.getVarString() + Integer.toString(index), var.getDataType());
+		return addVarying(var.getName() + Integer.toString(index), var.getType());
 	}
 
 	/**
@@ -439,7 +441,7 @@ public abstract class Shader extends ShaderBase {
 	 * @return
 	 */
 	protected ShaderVar addGlobal(GlobalShaderVar var) {
-		return addGlobal(var.getVarString(), var.getDataType());
+		return addGlobal(var.getName(), var.getType());
 	}
 
 	/**
@@ -450,7 +452,7 @@ public abstract class Shader extends ShaderBase {
 	 * @return
 	 */
 	protected ShaderVar addGlobal(GlobalShaderVar var, int index) {
-		return addGlobal(var.getVarString() + Integer.toString(index), var.getDataType());
+		return addGlobal(var.getName() + Integer.toString(index), var.getType());
 	}
 
 	/**
@@ -485,8 +487,8 @@ public abstract class Shader extends ShaderBase {
 	 */
 	public ShaderVar getGlobal(GlobalShaderVar var)
 	{
-		ShaderVar v = getInstanceForDataType(var.getVarString(), var.getDataType());
-		v.mInitialized = true;
+		ShaderVar v = getInstanceForDataType(var.getName(), var.getType());
+		v.initialized = true;
 		return v;
 	}
 
@@ -499,8 +501,8 @@ public abstract class Shader extends ShaderBase {
 	 */
 	public ShaderVar getGlobal(GlobalShaderVar var, int index)
 	{
-		ShaderVar v = getInstanceForDataType(var.getVarString() + Integer.toString(index), var.getDataType());
-		v.mInitialized = true;
+		ShaderVar v = getInstanceForDataType(var.getName() + Integer.toString(index), var.getType());
+		v.initialized = true;
 		return v;
 	}
 
@@ -571,15 +573,15 @@ public abstract class Shader extends ShaderBase {
 	}
 
 	protected int getUniformLocation(int programHandle, GlobalShaderVar var) {
-		return getUniformLocation(programHandle, var.getVarString());
+		return getUniformLocation(programHandle, var.getName());
 	}
 
 	protected int getUniformLocation(int programHandle, GlobalShaderVar var, int index) {
-		return getUniformLocation(programHandle, var.getVarString() + Integer.toString(index));
+		return getUniformLocation(programHandle, var.getName() + Integer.toString(index));
 	}
 
 	protected int getUniformLocation(int programHandle, GlobalShaderVar var, String suffix) {
-		return getUniformLocation(programHandle, var.getVarString() + suffix);
+		return getUniformLocation(programHandle, var.getName() + suffix);
 	}
 
 	protected int getUniformLocation(int programHandle, String name) {
@@ -589,11 +591,11 @@ public abstract class Shader extends ShaderBase {
 	}
 
 	protected int getAttribLocation(int programHandle, GlobalShaderVar var) {
-		return getAttribLocation(programHandle, var.getVarString());
+		return getAttribLocation(programHandle, var.getName());
 	}
 
 	protected int getAttribLocation(int programHandle, GlobalShaderVar var, int index) {
-		return getAttribLocation(programHandle, var.getVarString() + Integer.toString(index));
+		return getAttribLocation(programHandle, var.getName() + Integer.toString(index));
 	}
 
 	protected int getAttribLocation(int programHandle, String name) {
@@ -621,7 +623,7 @@ public abstract class Shader extends ShaderBase {
 
 	public void setStringBuilder(StringBuilder stringBuilder)
 	{
-		mShaderSB = stringBuilder;
+		shaderSB = stringBuilder;
 	}
 
 	public String getShaderString() {
@@ -629,8 +631,8 @@ public abstract class Shader extends ShaderBase {
 	}
 
 	public void buildShader() {
-		mShaderSB = new StringBuilder();
-		StringBuilder s = mShaderSB;
+		shaderSB = new StringBuilder();
+		StringBuilder s = shaderSB;
 
 		//
 		// -- Preprocessor directives
@@ -689,8 +691,8 @@ public abstract class Shader extends ShaderBase {
 
 			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
 
-			s.append("const ").append(var.mDataType.getTypeString())
-					.append(" ").append(var.mName).append(arrayStr)
+			s.append("const ").append(var.dataType.getTypeString())
+					.append(" ").append(var.name).append(arrayStr)
 					.append(" = ").append(var.getValue()).append(";\n");
 		}
 
@@ -715,8 +717,8 @@ public abstract class Shader extends ShaderBase {
 
 			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
 
-			s.append("uniform ").append(var.mDataType.getTypeString())
-					.append(" ").append(var.mName).append(arrayStr).append(";\n");
+			s.append("uniform ").append(var.dataType.getTypeString())
+					.append(" ").append(var.name).append(arrayStr).append(";\n");
 		}
 
 		//
@@ -738,8 +740,8 @@ public abstract class Shader extends ShaderBase {
 		while (iter.hasNext()) {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
-			s.append("attribute ").append(var.mDataType.getTypeString())
-					.append(" ").append(var.mName).append(";\n");
+			s.append("attribute ").append(var.dataType.getTypeString())
+					.append(" ").append(var.name).append(";\n");
 		}
 
 		//
@@ -762,8 +764,8 @@ public abstract class Shader extends ShaderBase {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
 			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
-			s.append("varying ").append(var.mDataType.getTypeString())
-					.append(" ").append(var.mName).append(arrayStr).append(";\n");
+			s.append("varying ").append(var.dataType.getTypeString())
+					.append(" ").append(var.name).append(arrayStr).append(";\n");
 		}
 
 		//
@@ -786,8 +788,8 @@ public abstract class Shader extends ShaderBase {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
 			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
-			s.append(var.mDataType.getTypeString())
-					.append(" ").append(var.mName).append(arrayStr).append(";\n");
+			s.append(var.dataType.getTypeString())
+					.append(" ").append(var.name).append(arrayStr).append(";\n");
 		}
 
 		//
@@ -822,7 +824,7 @@ public abstract class Shader extends ShaderBase {
 	{
 		ShaderVar var = getInstanceForDataType(var1.getDataType());
 		var.setName(var1.getName() + " - " + var2.getName());
-		var.mInitialized = true;
+		var.initialized = true;
 		return var;
 	}
 
@@ -840,7 +842,7 @@ public abstract class Shader extends ShaderBase {
 	{
 		ShaderVar var = getInstanceForDataType(var1.getDataType());
 		var.setName(var1.getName() + " / " + var2.getName());
-		var.mInitialized = true;
+		var.initialized = true;
 		return var;
 	}
 
@@ -848,7 +850,7 @@ public abstract class Shader extends ShaderBase {
 	{
 		ShaderVar var = getInstanceForDataType(var1.getDataType());
 		var.setName(var1.getName() + " * " + var2.getName());
-		var.mInitialized = true;
+		var.initialized = true;
 		return var;
 	}
 
@@ -856,14 +858,14 @@ public abstract class Shader extends ShaderBase {
 	{
 		ShaderVar var = getInstanceForDataType(var1.getDataType());
 		var.setName("max(" + var1.getName() + ", " + var2.getName() + ")");
-		var.mInitialized = true;
+		var.initialized = true;
 		return var;
 	}
 
 	public ShaderVar max(ShaderVar var1, float value2)
 	{
 		ShaderVar s = new ShaderVar("max(" + var1.getName() + ", " + Float.toString(value2) + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
@@ -871,14 +873,14 @@ public abstract class Shader extends ShaderBase {
 	{
 		ShaderVar var = getInstanceForDataType(var1.getDataType());
 		var.setName("min(" + var1.getName() + ", " + var2.getName() + ")");
-		var.mInitialized = true;
+		var.initialized = true;
 		return var;
 	}
 
 	public ShaderVar min(ShaderVar var1, float value2)
 	{
 		ShaderVar s = new ShaderVar("min(" + var1.getName() + ", " + Float.toString(value2) + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
@@ -895,118 +897,118 @@ public abstract class Shader extends ShaderBase {
 	public ShaderVar sqrt(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("sqrt(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar inversesqrt(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("inversesqrt(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar texture1D(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("texture1D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar texture2D(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("texture2D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar texture3D(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("texture3D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar textureCube(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("textureCube(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public RVec4 texture2DProj(ShaderVar var1, ShaderVar var2)
 	{
 		RVec4 s = new RVec4("texture2DProj(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar distance(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("distance(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar clamp(ShaderVar var, float value1, float value2)
 	{
 		ShaderVar s = new ShaderVar("clamp(" + var.getName() + ", " + Float.toString(value1) + ", " + Float.toString(value2) + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar mix(ShaderVar var1, ShaderVar var2, float value)
 	{
 		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + Float.toString(value) + ")", DataType.VEC3);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar mix(ShaderVar var1, ShaderVar var2, ShaderVar var3)
 	{
 		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + var3.getName() + ")", DataType.VEC3);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar dot(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("dot(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar cos(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("cos(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar acos(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("acos(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar sin(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("sin(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar tan(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("tan(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
     public ShaderVar atan(ShaderVar y, ShaderVar x) {
         ShaderVar s = new ShaderVar("atan(" + y.getName() + ", " + x.getName() + ")", DataType.FLOAT);
-        s.mInitialized = true;
+        s.initialized = true;
         return s;
     }
 
@@ -1014,35 +1016,35 @@ public abstract class Shader extends ShaderBase {
     public ShaderVar pow(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("pow(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar mod(ShaderVar var1, ShaderVar var2)
 	{
 		ShaderVar s = new ShaderVar("mod(" + var1.getName() + ", " + var2.getName() + ")", var1.getDataType());
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar length(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("length(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar floor(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("floor(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
 	public ShaderVar radians(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("radians(" + var.getName() + ")", DataType.FLOAT);
-		s.mInitialized = true;
+		s.initialized = true;
 		return s;
 	}
 
@@ -1050,13 +1052,13 @@ public abstract class Shader extends ShaderBase {
 	{
 		ShaderVar var = getInstanceForDataType(var1.getDataType());
 		var.setName("reflect(" + var1.getName() + ", " + var2.getName() + ")");
-		var.mInitialized = true;
+		var.initialized = true;
 		return var;
 	}
 
 	public void discard()
 	{
-		mShaderSB.append("discard;\n");
+		shaderSB.append("discard;\n");
 	}
 
 	public static class Condition {
@@ -1121,58 +1123,58 @@ public abstract class Shader extends ShaderBase {
 	}
 
 	public void startif(Condition... conditions) {
-		mShaderSB.append("if(");
+		shaderSB.append("if(");
 		for(int i=0; i<conditions.length; i++) {
 			Condition condition = conditions[i];
-			if(i > 0) mShaderSB.append(condition.getJoinOperator().getOperatorString());
-			mShaderSB.append(condition.getLeftValue().getVarName());
-			mShaderSB.append(condition.getOperator().getOperatorString());
-			mShaderSB.append(condition.getRightValue());
+			if(i > 0) shaderSB.append(condition.getJoinOperator().getOperatorString());
+			shaderSB.append(condition.getLeftValue().getVarName());
+			shaderSB.append(condition.getOperator().getOperatorString());
+			shaderSB.append(condition.getRightValue());
 		}
-		mShaderSB.append(")\n{\n");
+		shaderSB.append(")\n{\n");
 	}
 
 	public void startif(Condition condition)
 	{
-		mShaderSB.append("if(");
-		mShaderSB.append(condition.getLeftValue().getVarName());
-		mShaderSB.append(condition.getOperator().getOperatorString());
-		mShaderSB.append(condition.getRightValue());
-		mShaderSB.append(")\n{\n");
+		shaderSB.append("if(");
+		shaderSB.append(condition.getLeftValue().getVarName());
+		shaderSB.append(condition.getOperator().getOperatorString());
+		shaderSB.append(condition.getRightValue());
+		shaderSB.append(")\n{\n");
 	}
 
 	public void ifelseif(Condition... conditions)
 	{
-		mShaderSB.append("} else ");
-		mShaderSB.append("if(");
+		shaderSB.append("} else ");
+		shaderSB.append("if(");
 		for(int i=0; i<conditions.length; i++) {
 			Condition condition = conditions[i];
-			if(i > 0) mShaderSB.append(condition.getJoinOperator().getOperatorString());
-			mShaderSB.append(condition.getLeftValue().getVarName());
-			mShaderSB.append(condition.getOperator().getOperatorString());
-			mShaderSB.append(condition.getRightValue());
+			if(i > 0) shaderSB.append(condition.getJoinOperator().getOperatorString());
+			shaderSB.append(condition.getLeftValue().getVarName());
+			shaderSB.append(condition.getOperator().getOperatorString());
+			shaderSB.append(condition.getRightValue());
 		}
-		mShaderSB.append(")\n{\n");
+		shaderSB.append(")\n{\n");
 	}
 
 	public void ifelseif(Condition condition)
 	{
-		mShaderSB.append("} else ");
-		mShaderSB.append("if(");
-		mShaderSB.append(condition.getLeftValue().getVarName());
-		mShaderSB.append(condition.getOperator().getOperatorString());
-		mShaderSB.append(condition.getRightValue());
-		mShaderSB.append(")\n{\n");
+		shaderSB.append("} else ");
+		shaderSB.append("if(");
+		shaderSB.append(condition.getLeftValue().getVarName());
+		shaderSB.append(condition.getOperator().getOperatorString());
+		shaderSB.append(condition.getRightValue());
+		shaderSB.append(")\n{\n");
 	}
 
 	public void ifelse()
 	{
-		mShaderSB.append("} else {\n");
+		shaderSB.append("} else {\n");
 	}
 
 	public void endif()
 	{
-		mShaderSB.append("}\n");
+		shaderSB.append("}\n");
 	}
 
 	public ShaderVar castInt(float value)
@@ -1188,7 +1190,7 @@ public abstract class Shader extends ShaderBase {
 	public ShaderVar castInt(String value)
 	{
 		ShaderVar v = new ShaderVar("int(" + value + ")", DataType.INT);
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 
@@ -1205,7 +1207,7 @@ public abstract class Shader extends ShaderBase {
 	public ShaderVar castVec2(String x, String y)
 	{
 		ShaderVar v = new ShaderVar("vec2(" + x + ", " + y + ")", DataType.VEC2);
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 
@@ -1217,7 +1219,7 @@ public abstract class Shader extends ShaderBase {
 	public ShaderVar castVec2(String x)
 	{
 		ShaderVar v = new ShaderVar("vec2(" + x + ")", DataType.VEC2);
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 
@@ -1235,14 +1237,14 @@ public abstract class Shader extends ShaderBase {
 	{
 		ShaderVar v = new ShaderVar(DataType.VEC3);
         v.setValue("vec3(" + x.getName() + ", " + y.getName() + ", " + z.getName() + ")");
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 
 	public ShaderVar castVec3(String var)
 	{
 		ShaderVar v = new ShaderVar("vec3(" + var + ")", DataType.VEC3);
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 
@@ -1264,7 +1266,7 @@ public abstract class Shader extends ShaderBase {
 	public ShaderVar castVec4(String var)
 	{
 		ShaderVar v = new ShaderVar("vec4(" + var + ")", DataType.VEC4);
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 
@@ -1276,7 +1278,7 @@ public abstract class Shader extends ShaderBase {
 	public ShaderVar castVec4(String var, float value)
 	{
 		ShaderVar v = new ShaderVar("vec4(" + var + ", " + value + ")", DataType.VEC4);
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 
@@ -1288,7 +1290,7 @@ public abstract class Shader extends ShaderBase {
 	public ShaderVar castMat3(ShaderVar var)
 	{
 		ShaderVar v = new ShaderVar("mat3(" + var.getName() + ")", DataType.MAT3);
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 
@@ -1300,7 +1302,7 @@ public abstract class Shader extends ShaderBase {
 	public ShaderVar castMat4(ShaderVar var)
 	{
 		ShaderVar v = new ShaderVar("mat4(" + var.getName() + ")", DataType.MAT3);
-		v.mInitialized = true;
+		v.initialized = true;
 		return v;
 	}
 

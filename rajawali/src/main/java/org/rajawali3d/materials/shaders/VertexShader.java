@@ -144,7 +144,7 @@ public class VertexShader extends Shader {
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
 			if(fragment.getInsertLocation() == PluginInsertLocation.POST_TRANSFORM) continue;
-			fragment.setStringBuilder(mShaderSB);
+			fragment.setStringBuilder(shaderSB);
 			fragment.main();
 			if(fragment.getShaderId().equals(SkeletalAnimationVertexShaderFragment.SHADER_ID))
 				hasSkeletalAnimation = true;
@@ -176,7 +176,7 @@ public class VertexShader extends Shader {
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
 			if(fragment.getInsertLocation() == PluginInsertLocation.POST_TRANSFORM) {
-				fragment.setStringBuilder(mShaderSB);
+				fragment.setStringBuilder(shaderSB);
 				fragment.main();
 			}
 		}
