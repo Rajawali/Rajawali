@@ -14,17 +14,17 @@ package org.rajawali3d.postprocessing.passes;
 
 import org.rajawali3d.R;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 
 
 public class BlendPass extends EffectPass {
-    protected ATexture mBlendTexture;
+    protected BaseTexture mBlendTexture;
 
     public static enum BlendMode {
         ADD, SCREEN
     }
 
-    public BlendPass(BlendMode blendMode, ATexture blendTexture) {
+    public BlendPass(BlendMode blendMode, BaseTexture blendTexture) {
         super();
         createMaterial(R.raw.minimal_vertex_shader, getFragmentShader(blendMode));
         mBlendTexture = blendTexture;

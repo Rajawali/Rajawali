@@ -12,18 +12,18 @@
  */
 package org.rajawali3d.materials.shaders.fragments.texture;
 
-import java.util.List;
-
+import android.opengl.GLES20;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.ATexture.TextureType;
-import org.rajawali3d.textures.ATexture.WrapType;
-import android.opengl.GLES20;
+import org.rajawali3d.textures.BaseTexture;
+import org.rajawali3d.textures.annotation.Type;
+import org.rajawali3d.textures.annotation.Wrap;
+
+import java.util.List;
 
 
 public abstract class ATextureFragmentShaderFragment extends AShader implements IShaderFragment {
-	protected List<ATexture> mTextures;
+	protected List<BaseTexture> mTextures;
 
 	protected RSampler2D[] muTextures;
 	protected RSamplerCube[] muCubeTextures;
@@ -32,7 +32,7 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 	protected RVec2[] muRepeat, muOffset;
 	protected int[] muTextureHandles, muInfluenceHandles, muRepeatHandles, muOffsetHandles;
 
-	public ATextureFragmentShaderFragment(List<ATexture> textures)
+	public ATextureFragmentShaderFragment(List<BaseTexture> textures)
 	{
 		super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
 		mTextures = textures;
@@ -52,10 +52,10 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 
 		for(int i=0; i<mTextures.size(); i++)
 		{
-			ATexture texture = mTextures.get(i);
-			if(texture.getTextureType() == TextureType.CUBE_MAP)
+			BaseTexture texture = mTextures.get(i);
+			if(texture.getTextureType() == Type.CUBE_MAP)
 				cubeTextureCount++;
-			else if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
+			else if(texture.getTextureType() == Type.VIDEO_TEXTURE)
 				videoTextureCount++;
 			else
 				textureCount++;
@@ -81,17 +81,17 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 
 		for(int i=0; i<mTextures.size(); i++)
 		{
-			ATexture texture = mTextures.get(i);
-			if(texture.getTextureType() == TextureType.CUBE_MAP)
+			BaseTexture texture = mTextures.get(i);
+			if(texture.getTextureType() == Type.CUBE_MAP)
 				muCubeTextures[textureCount++] = (RSamplerCube) addUniform(texture.getTextureName(), DataType.SAMPLERCUBE);
-			else if(texture.getTextureType() == TextureType.VIDEO_TEXTURE)
+			else if(texture.getTextureType() == Type.VIDEO_TEXTURE)
 				muVideoTextures[videoTextureCount++] = (RSamplerExternalOES) addUniform(texture.getTextureName(), DataType.SAMPLER_EXTERNAL_EOS);
 			else
 				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);
 
 			muInfluence[i] = (RFloat) addUniform(DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
 
-			if(texture.getWrapType() == WrapType.REPEAT)
+			if(texture.getWrapType() == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R))
 				muRepeat[i] = (RVec2) addUniform(DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
 				muOffset[i] = (RVec2) addUniform(DefaultShaderVar.U_OFFSET, i);
@@ -103,10 +103,10 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		if(mTextures == null) return;
 		for(int i=0; i<mTextures.size(); i++)
 		{
-			ATexture texture = mTextures.get(i);
+			BaseTexture texture = mTextures.get(i);
 			muTextureHandles[i] = getUniformLocation(programHandle, texture.getTextureName());
 			muInfluenceHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
-			if(texture.getWrapType() == WrapType.REPEAT)
+			if(texture.getWrapType() == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R))
 				muRepeatHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_REPEAT, i);
 			if(texture.offsetEnabled())
 				muOffsetHandles[i] = getUniformLocation(programHandle, DefaultShaderVar.U_OFFSET, i);
@@ -121,9 +121,9 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 
 		for(int i=0; i<mTextures.size(); i++)
 		{
-			ATexture texture = mTextures.get(i);
+			BaseTexture texture = mTextures.get(i);
 			GLES20.glUniform1f(muInfluenceHandles[i], texture.getInfluence());
-			if(texture.getWrapType() == WrapType.REPEAT)
+			if(texture.getWrapType() == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R))
 				GLES20.glUniform2fv(muRepeatHandles[i], 1, texture.getRepeat(), 0);
 			if(texture.offsetEnabled())
 				GLES20.glUniform2fv(muOffsetHandles[i], 1, texture.getOffset(), 0);

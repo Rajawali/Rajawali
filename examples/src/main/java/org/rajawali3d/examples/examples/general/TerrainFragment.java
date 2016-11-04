@@ -15,8 +15,8 @@ import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin;
-import org.rajawali3d.textures.NormalMapTexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.NormalMapTexture2D;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.vector.Vector3;
@@ -106,10 +106,10 @@ public class TerrainFragment extends AExampleFragment {
 			material.useVertexColors(true);
 			material.setDiffuseMethod(new DiffuseMethod.Lambert());
 			try {
-				Texture groundTexture = new Texture("ground", mContext, R.drawable.ground);
+				Texture2D groundTexture = new Texture2D("ground", mContext, R.drawable.ground);
 				groundTexture.setInfluence(.5f);
 				material.addTexture(groundTexture);
-				material.addTexture(new NormalMapTexture("groundNormalMap", mContext, R.drawable.groundnor));
+				material.addTexture(new NormalMapTexture2D("groundNormalMap", mContext, R.drawable.groundnor));
 				material.setColorInfluence(0);
 			} catch (TextureException e) {
 				e.printStackTrace();

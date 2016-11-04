@@ -10,10 +10,7 @@ import c.org.rajawali3d.scene.graph.FlatTree;
 import c.org.rajawali3d.scene.graph.SceneGraph;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
-import org.rajawali3d.materials.Material;
 import org.rajawali3d.renderer.FrameTask;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.textures.TextureManager;
 
 import java.util.ArrayList;
@@ -51,30 +48,35 @@ public class Scene implements RenderModel {
 
     private volatile boolean needRestoreForNewContext = false;
 
-    @Nullable
-    private Engine engine;
+    @Nullable private Engine engine;
 
-    @NonNull
-    private SceneGraph sceneGraph;
+    @NonNull private SceneGraph sceneGraph;
 
     @Nullable Lock currentlyHeldWriteLock;
     @Nullable Lock currentlyHeldReadLock;
 
+    /**
+     * Constructs a new {@link Scene} using the default ({@link FlatTree}) scene graph implementation.
+     */
     public Scene() {
         this(new FlatTree());
     }
 
+    /**
+     * Constructs a new {@link Scene} using the provided {@link SceneGraph} implementation.
+     *
+     * @param graph The {@link SceneGraph} instance which should be used.
+     */
     public Scene(@NonNull SceneGraph graph) {
         sceneGraph = graph;
         newFrameCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
         endFrameCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
         frameTaskQueue = new LinkedList<>();
 
-        textureManager = new TextureManager();
-        materialManager = new MaterialManager();
+        textureManager = new TextureManager(this);
+        materialManager = new MaterialManager(this);
+
     }
-
-
 
     public SceneGraph getSceneGraph() {
         return sceneGraph;
@@ -82,6 +84,7 @@ public class Scene implements RenderModel {
 
     /**
      * Called on registration boundaries
+     *
      * @param engine The active {@link Engine} or {@code null}.
      */
     @GLThread
@@ -185,94 +188,15 @@ public class Scene implements RenderModel {
     }
 
     /**
-     * Adds a texture to this scene. This can be called from any thread. If the calling thread is the GL thread, this
-     * will be executed immediately, otherwise it will be queued for execution on the GL thread.
+     * Adds a {@link FrameTask} to the internal queue to be executed. If the calling thread is the render thread, the
+     * task will be executed now, otherwise it will be queued for execution at the next frame start.
      *
-     * @param texture {@link ATexture} to be added.
+     * @param task {@link FrameTask} to execute.
+     * @return {@code true} If the task was successfully accepted for execution.
      */
-    public void addTexture(@NonNull final ATexture texture) {
-        // The engine is not null, so we can add the texture directly now
-        final FrameTask task = getTextureManager().addTexture(texture);
-        // Now queue the GL addition task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Removes a texture from this scene. This can be called from any thread. If the calling thread is the GL thread,
-     * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
-     *
-     * @param texture {@link ATexture} to be removed.
-     */
-    public void removeTexture(@NonNull final ATexture texture) {
-        // The engine is not null, so we can remove the texture directly now
-        final FrameTask task = getTextureManager().removeTexture(texture);
-        // Now queue the GL removal task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Replaces a texture in this scene. This can be called from any thread. If the calling thread is the GL thread,
-     * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
-     *
-     * @param texture {@link ATexture} to be replaced.
-     */
-    public void replaceTexture(@NonNull final ATexture texture) throws TextureException {
-        // The engine is not null, so we can replace the texture directly now
-        final FrameTask task = getTextureManager().replaceTexture(texture);
-        // Now queue the GL removal task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Adds a material to this scene. This can be called from any thread. If the calling thread is the GL thread, this
-     * will be executed immediately, otherwise it will be queued for execution on the GL thread.
-     *
-     * @param material {@link Material} to be added.
-     */
-    public void addMaterial(@NonNull final Material material) {
-
-        // The engine is not null, so we can add the material directly now
-        final FrameTask task = getMaterialManager().addMaterial(material);
-        // Now queue the GL addition task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Removes a material from this scene. This can be called from any thread. If the calling thread is the GL thread,
-     * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
-     *
-     * @param material {@link ATexture} to be removed.
-     */
-    public void removeMaterial(@NonNull final Material material) {
-        // The engine is not null, so we can remove the material directly now
-        final FrameTask task = getMaterialManager().removeMaterial(material);
-        // Now queue the GL removal task
-        internalOfferTask(task);
-    }
-
-    /**
-     * Removes all {@link SceneFrameCallback} objects from the scene.
-     */
-    public void clearFrameCallbacks() {
-        newFrameCallbacks.clear();
-        endFrameCallbacks.clear();
-    }
-
-    protected void onEngineSet(@NonNull Engine engine) {
-        if (engine != this.engine) {
-            // Set the new engine
-            this.engine = engine;
-            // Mark the context dirty
-            needRestoreForNewContext = true;
-        }
-    }
-
-    protected void onEngineCleared() {
-    }
-
-    protected boolean internalOfferTask(FrameTask task) {
-        if (engine != null && engine.isGLThread()) {
-            // If we have a engine and the calling thread is the GL thread, do the task now.
+    public boolean offerTask(FrameTask task) {
+        if (engine != null && engine.isRenderThread()) {
+            // If we have a renderer and the calling thread is the render thread, do the task now.
             task.run();
             return true;
         } else {
@@ -283,6 +207,42 @@ public class Scene implements RenderModel {
         }
     }
 
+    /**
+     * Removes all {@link SceneFrameCallback} objects from the scene.
+     */
+    public void clearFrameCallbacks() {
+        newFrameCallbacks.clear();
+        endFrameCallbacks.clear();
+    }
+
+    /**
+     * Called when a {@link Engine} has been set on this scene. This is an opportunity to prepare for the frame
+     * request about to come in. Subclasses should be sure to call {@code super.onRendererSet(renderer)} to ensure
+     * proper behavior.
+     *
+     * @param engine The {@link Engine} this {@link Scene} is now attached to.
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected void onEngineSet(@NonNull Engine engine) {
+        if (engine != this.engine) {
+            // Set the new engine
+            this.engine = engine;
+            // Mark the context dirty
+            needRestoreForNewContext = true;
+        }
+    }
+
+    /**
+     * Called when the {@link Engine} has been cleared from this scene. Subclasses should be sure to call
+     * {@code super.onRendererSet(renderer)} to ensure proper behavior.
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected void onEngineCleared() {
+    }
+
+    /**
+     * Executes all queued {@link FrameTask}s.
+     */
     protected void performFrameTasks() {
         synchronized (frameTaskQueue) {
             //Fetch the first task

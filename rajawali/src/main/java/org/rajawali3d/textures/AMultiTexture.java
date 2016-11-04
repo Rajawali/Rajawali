@@ -12,52 +12,53 @@
  */
 package org.rajawali3d.textures;
 
-import java.nio.ByteBuffer;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import org.rajawali3d.textures.annotation.Type.TextureType;
+
+import java.nio.ByteBuffer;
 
 
-public abstract class AMultiTexture extends ATexture {
+public abstract class AMultiTexture extends BaseTexture {
 	protected Bitmap[] mBitmaps;
 	protected ByteBuffer[] mByteBuffers;
-    protected ACompressedTexture[] mCompressedTextures;
+    protected CompressedTexture[] mCompressedTextures;
 	protected int[] mResourceIds;
 
 	protected AMultiTexture() {
 		super();
 	}
 
-	public AMultiTexture(TextureType textureType, String textureName) {
+	public AMultiTexture(@TextureType int textureType, String textureName) {
 		super(textureType, textureName);
 	}
 
-	public AMultiTexture(TextureType textureType, String textureName, int[] resourceIds)
+	public AMultiTexture(@TextureType int textureType, String textureName, int[] resourceIds)
 	{
 		super(textureType, textureName);
 		setResourceIds(resourceIds);
 	}
 
-	public AMultiTexture(TextureType textureType, String textureName, Bitmap[] bitmaps)
+	public AMultiTexture(@TextureType int textureType, String textureName, Bitmap[] bitmaps)
 	{
 		super(textureType, textureName);
 		setBitmaps(bitmaps);
 	}
 
-	public AMultiTexture(TextureType textureType, String textureName, ByteBuffer[] byteBuffers)
+	public AMultiTexture(@TextureType int textureType, String textureName, ByteBuffer[] byteBuffers)
 	{
 		super(textureType, textureName);
 		setByteBuffers(byteBuffers);
 	}
 
-    public AMultiTexture(TextureType textureType, String textureName, ACompressedTexture[] compressedTextures)
+    public AMultiTexture(@TextureType int textureType, String textureName, CompressedTexture[] compressedTextures)
     {
         super(textureType, textureName);
         setCompressedTextures(compressedTextures);
     }
 
-	public AMultiTexture(ATexture other) {
+	public AMultiTexture(BaseTexture other) {
 		super(other);
 	}
 
@@ -113,12 +114,12 @@ public abstract class AMultiTexture extends ATexture {
 		return mByteBuffers;
 	}
 
-    public ACompressedTexture[] getCompressedTextures()
+    public CompressedTexture[] getCompressedTextures()
     {
         return mCompressedTextures;
     }
 
-    public void setCompressedTextures(ACompressedTexture[] compressedTextures)
+    public void setCompressedTextures(CompressedTexture[] compressedTextures)
     {
         mCompressedTextures = compressedTextures;
     }
@@ -150,7 +151,7 @@ public abstract class AMultiTexture extends ATexture {
             int count = mCompressedTextures.length;
             for(int i=0; i<count; i++)
             {
-                ACompressedTexture texture = mCompressedTextures[i];
+                CompressedTexture texture = mCompressedTextures[i];
                 texture.remove();
                 mCompressedTextures[i] = null;
             }

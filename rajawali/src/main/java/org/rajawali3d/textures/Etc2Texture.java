@@ -8,6 +8,7 @@ import android.opengl.ETC1;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
 import android.os.Build.VERSION_CODES;
+import org.rajawali3d.textures.annotation.Compression2D;
 import org.rajawali3d.textures.utils.ETC2Util;
 import org.rajawali3d.util.RajLog;
 
@@ -39,14 +40,14 @@ import java.nio.ByteOrder;
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
-public class Etc2Texture extends ACompressedTexture {
+public class Etc2Texture extends CompressedTexture {
 
     protected int mResourceId;
     protected Bitmap mBitmap;
 
     public Etc2Texture(String textureName) {
         super(textureName);
-        mCompressionType = CompressionType.ETC2;
+        mCompressionType = Compression2D.ETC2;
     }
 
     public Etc2Texture(int resourceId) {
@@ -81,20 +82,20 @@ public class Etc2Texture extends ACompressedTexture {
         setInputStream(compressedTexture, fallbackTexture);
     }
 
-    public Etc2Texture(Etc1Texture other) {
+    public Etc2Texture(Etc1Texture other) throws TextureException {
         super();
         setFrom(other);
     }
 
     @Override
-    public ATexture clone() {
+    public BaseTexture clone() {
         return null;
     }
 
     @Override
     void add() throws TextureException {
         super.add();
-        if (shouldRecycle) {
+        if (willRecycle()) {
             if (mBitmap != null) {
                 mBitmap.recycle();
                 mBitmap = null;

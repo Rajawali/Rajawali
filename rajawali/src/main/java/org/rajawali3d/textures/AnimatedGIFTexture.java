@@ -33,7 +33,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 	private Canvas  mCanvas;
 	private Movie   mMovie;
 	private Bitmap  mGIFBitmap;
-	private int     mResourceId;
+	private int     resourceId;
 	private int     width;
 	private int     height;
 	private int     mTextureSize;
@@ -53,7 +53,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 	/*public AnimatedGIFTexture(String name, int resourceId, int textureSize) {
 		super(TextureType.DIFFUSE, name);
 		mTextureSize = textureSize;
-		mResourceId = resourceId;
+		resourceId = resourceId;
 		loadGIF();
 	}
 
@@ -69,7 +69,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 
 	private void loadGIF() {
 		Context context = TextureManager.getInstance().getContext();
-		mMovie = Movie.decodeStream(context.getResources().openRawResource(mResourceId));
+		mMovie = Movie.decodeStream(context.getResources().openRawResource(resourceId));
 		width = mMovie.width();
 		height = mMovie.height();
 
@@ -124,10 +124,10 @@ import org.rajawali3d.materials.textures.TextureManager;
 		replace();
 	}
 
-	public void setResourceId(int resourceId) {
-		if(mResourceId == resourceId)
+	public void setTextureDataFromResourceId(int resourceId) {
+		if(resourceId == resourceId)
 			return;
-		mResourceId = resourceId;
+		resourceId = resourceId;
 		mLoadNewGIF = true;
 	}
 
@@ -161,7 +161,7 @@ import org.rajawali3d.materials.textures.TextureManager;
 
 	public int getResourceId()
 	{
-		return mResourceId;
+		return resourceId;
 	}
 
 	public Canvas getCanvas() {

@@ -32,15 +32,15 @@ import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.RenderTargetTexture;
 import org.rajawali3d.textures.TextureManager;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.util.RawShaderLoader;
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.view.Surface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -72,12 +72,12 @@ public abstract class Renderer implements ISurfaceRenderer {
 
     protected Context mContext; // Context the renderer is running in
 
-    protected ISurface mSurface; // The rendering surface
-    protected int      mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
+    protected Surface mSurface; // The rendering surface
+    protected int     mCurrentViewportWidth, mCurrentViewportHeight; // The current width and height of the GL viewport
     protected int mDefaultViewportWidth, mDefaultViewportHeight; // The default width and height of the GL viewport
     protected int mOverrideViewportWidth, mOverrideViewportHeight; // The overridden width and height of the GL viewport
 
-    protected TextureManager  mTextureManager; // Texture manager for ALL textures across ALL renderables.
+    protected TextureManager  mTextureManager; // Texture2D manager for ALL textures across ALL renderables.
     protected MaterialManager mMaterialManager; // Material manager for ALL materials across ALL renderables.
 
     // Frame related members
@@ -102,8 +102,8 @@ public abstract class Renderer implements ISurfaceRenderer {
     private boolean mSceneCachingEnabled; //This applies to all renderables
     protected boolean mSceneInitialized; //This applies to all renderables
     protected boolean mEnableDepthBuffer = true; // Do we use the depth buffer?
-    private RenderTarget                  mCurrentRenderTarget;
-    private ISurface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
+    private RenderTarget                 mCurrentRenderTarget;
+    private Surface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 
     protected final List<Scene>                     mScenes; //List of all renderables this renderer is aware of.
     protected final List<RenderTarget>              mRenderTargets; //List of all render targets this renderer is aware of.
@@ -225,7 +225,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     @Override
-    public void setAntiAliasingMode(ISurface.ANTI_ALIASING_CONFIG config) {
+    public void setAntiAliasingMode(Surface.ANTI_ALIASING_CONFIG config) {
         mAntiAliasingConfig = config;
         synchronized (mScenes) {
             for (int i = 0, j = mScenes.size(); i < j; ++i) {
@@ -293,7 +293,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     @Override
-    public void setRenderSurface(ISurface surface) {
+    public void setRenderSurface(Surface surface) {
         mSurface = surface;
     }
 
@@ -874,7 +874,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         return internalOfferTask(task);
     }
 
-    public boolean addTexture(final ATexture texture) {
+    public boolean addTexture(final BaseTexture texture) {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
@@ -884,7 +884,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         return internalOfferTask(task);
     }
 
-    public boolean removeTexture(final ATexture texture) {
+    public boolean removeTexture(final BaseTexture texture) {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {
@@ -894,7 +894,7 @@ public abstract class Renderer implements ISurfaceRenderer {
         return internalOfferTask(task);
     }
 
-    public boolean replaceTexture(final ATexture texture) {
+    public boolean replaceTexture(final BaseTexture texture) {
         final FrameTask task = new FrameTask() {
             @Override
             protected void doTask() {

@@ -117,7 +117,7 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 
 			SimpleMaterial planeMat = new SimpleMaterial();
 			try {
-				planeMat.addTexture(new Texture(R.drawable.utrecht));
+				planeMat.addTexture(new Texture2D(R.drawable.utrecht));
 			} catch (TextureException e) {
 				e.printStackTrace();
 			}

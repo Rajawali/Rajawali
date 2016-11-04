@@ -29,7 +29,7 @@ public class ParticlesFragment extends AExampleFragment {
 			mParticleSystem = new ExampleParticleSystem();
 			ParticleMaterial material = new ParticleMaterial();
 			try {
-				material.addTexture(new Texture(R.drawable.particle));
+				material.addTexture(new Texture2D(R.drawable.particle));
 			} catch (TextureException e) {
 				e.printStackTrace();
 			}

@@ -13,8 +13,8 @@
 package org.rajawali3d.materials.shaders.fragments.texture;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.ATexture.TextureType;
+import org.rajawali3d.textures.BaseTexture;
+import org.rajawali3d.textures.annotation.Type;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class SkyTextureFragmentShaderFragment extends ATextureFragmentShaderFragment {
 	public final static String SHADER_ID = "SKY_TEXTURE_FRAGMENT";
 
-	public SkyTextureFragmentShaderFragment(List<ATexture> textures) {
+	public SkyTextureFragmentShaderFragment(List<BaseTexture> textures) {
 		super(textures);
 	}
 
@@ -46,7 +46,7 @@ public class SkyTextureFragmentShaderFragment extends ATextureFragmentShaderFrag
 		int cubeMapCount = 0;
 
 		for (int i = 0; i < mTextures.size(); ++i) {
-			if(mTextures.get(i).getTextureType() == TextureType.CUBE_MAP) {
+			if(mTextures.get(i).getTextureType() == Type.CUBE_MAP) {
 				skyColor.assign(textureCube(muCubeTextures[cubeMapCount++], texCoord));
 			}
 

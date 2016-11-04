@@ -105,7 +105,7 @@
         <module name="NoWhitespaceAfter">
             <property name="allowLineBreaks" value="true"/>
             <property name="tokens"
-                value="ARRAY_INIT, BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
+                value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
         </module>
 
         <!-- Checks that there is no whitespace before a token. !-->
@@ -275,9 +275,9 @@
             <!--
             <property name="excludeScope"        value=""/>
             !-->
-            <property name="checkFirstSentence" value="false"/>
+            <property name="checkFirstSentence" value="true"/>
             <property name="endOfSentenceFormat" value="([.?!][ \t\n\r\f&lt;])|([.?!]$)"/>
-            <property name="checkEmptyJavadoc" value="false"/>
+            <property name="checkEmptyJavadoc" value="true"/>
             <property name="checkHtml" value="true"/>
             <property name="tokens"
                 value="INTERFACE_DEF, CLASS_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
@@ -287,9 +287,7 @@
         <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocType !-->
         <module name="JavadocType">
             <property name="scope" value="package"/>
-            <!--
-            <property name="excludeScope"          value=""/>
-            !-->
+            <!--<property name="excludeScope"          value=""/>!-->
             <!--<property name="authorFormat"          value=""/>!-->
             <!--<property name="versionFormat"         value=""/>!-->
             <property name="allowMissingParamTags" value="false"/>
@@ -301,9 +299,7 @@
         <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocMethod !-->
         <module name="JavadocMethod">
             <property name="scope" value="package"/>
-            <!--
-            <property name="excludeScope"                 value=""/>
-            !-->
+            <!--<property name="excludeScope"                 value=""/>!-->
             <property name="allowUndeclaredRTE" value="false"/>
             <property name="allowThrowsTagsForSubclasses" value="false"/>
             <property name="allowMissingParamTags" value="false"/>
@@ -320,9 +316,8 @@
         <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocVariable !-->
         <module name="JavadocVariable">
             <property name="scope" value="public"/>
-            <!--
-            <property name="excludeScope" value=""/>
-            !-->
+            <!--<property name="excludeScope" value=""/>!-->
+            <property name="tokens" value="VARIABLE_DEF" />
         </module>
 
     </module>
@@ -340,7 +335,7 @@
         <!-- Checks visibility of class members. !-->
         <!-- See http://checkstyle.sf.net/config_design.html !-->
         <module name="VisibilityModifier">
-            <property name="packageAllowed" value="false"/>
+            <property name="packageAllowed" value="true"/>
             <property name="protectedAllowed" value="true"/>
             <property name="publicMemberPattern" value="^serialVersionUID$"/>
         </module>

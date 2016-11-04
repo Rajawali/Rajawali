@@ -15,74 +15,77 @@ package org.rajawali3d.textures;
 import java.nio.ByteBuffer;
 
 import android.opengl.GLES11Ext;
+import org.rajawali3d.textures.annotation.Compression2D;
+import org.rajawali3d.util.RajLog;
 
-public class ThreeDcTexture extends ACompressedTexture {
+public class ThreeDcTexture extends CompressedTexture {
 
-	/**
-	 * 3DC Texture compression format.
-	 *
-	 */
-	public enum ThreeDcFormat {
-		X,
-		XY
-	};
+    /**
+     * 3DC Texture2D compression format.
+     */
+    public enum ThreeDcFormat {
+        X,
+        XY
+    }
 
-	/**
-	 * 3DC Texture Compression format. See {@link ThreeDcFormat}.
-	 */
-	protected ThreeDcFormat mThreeDcFormat;
+    ;
 
-	public ThreeDcTexture(ThreeDcTexture other)
-	{
-		super(other);
-		setThreeDcFormat(other.getThreeDcFormat());
-	}
+    /**
+     * 3DC Texture2D Compression format. See {@link ThreeDcFormat}.
+     */
+    protected ThreeDcFormat mThreeDcFormat;
 
-	public ThreeDcTexture(String textureName, ByteBuffer byteBuffer, ThreeDcFormat threeDcFormat)
-	{
-		this(textureName, new ByteBuffer[] { byteBuffer }, threeDcFormat);
-	}
+    public ThreeDcTexture(ThreeDcTexture other) throws TextureException {
+        super(other);
+        setThreeDcFormat(other.getThreeDcFormat());
+    }
 
-	public ThreeDcTexture(String textureName, ByteBuffer[] byteBuffers, ThreeDcFormat threeDcFormat)
-	{
-		super(textureName, byteBuffers);
-		setCompressionType(CompressionType.THREEDC);
-		setThreeDcFormat(threeDcFormat);
-	}
+    public ThreeDcTexture(String textureName, ByteBuffer byteBuffer, ThreeDcFormat threeDcFormat) {
+        this(textureName, new ByteBuffer[]{ byteBuffer }, threeDcFormat);
+    }
 
-	/**
-	 * Copies every property from another ThreeDcTexture object
-	 *
-	 * @param other
-	 *            another ThreeDcTexture object to copy from
-	 */
-	public void setFrom(ThreeDcTexture other)
-	{
-		super.setFrom(other);
-		mThreeDcFormat = other.getThreeDcFormat();
-	}
+    public ThreeDcTexture(String textureName, ByteBuffer[] byteBuffers, ThreeDcFormat threeDcFormat) {
+        super(textureName, byteBuffers);
+        setCompressionType(Compression2D.THREEDC);
+        setThreeDcFormat(threeDcFormat);
+    }
 
-	public ThreeDcTexture clone() {
+    /**
+     * Copies every property from another ThreeDcTexture object
+     *
+     * @param other another ThreeDcTexture object to copy from
+     */
+    public void setFrom(ThreeDcTexture other) throws TextureException {
+        super.setFrom(other);
+        mThreeDcFormat = other.getThreeDcFormat();
+    }
 
-		return new ThreeDcTexture(this);
-	}
+    public ThreeDcTexture clone() {
 
-	/**
-	 * @return the 3DC Texture Compression format. See {@link ThreeDcFormat}.
-	 */
-	public ThreeDcFormat getThreeDcFormat() {
-		return mThreeDcFormat;
-	}
+        try {
+            return new ThreeDcTexture(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
+        }
+    }
 
-	/**
-	 * @param threeDcFormat
-	 *            the 3DC Texture Compression format. See {@link ThreeDcFormat}.
-	 */
-	public void setThreeDcFormat(ThreeDcFormat mThreeDcFormat) {
-		this.mThreeDcFormat = mThreeDcFormat;
-		if(mThreeDcFormat == ThreeDcFormat.X)
-			mCompressionFormat = GLES11Ext.GL_3DC_X_AMD;
-		else
-			mCompressionFormat = GLES11Ext.GL_3DC_XY_AMD;
-	}
+    /**
+     * @return the 3DC Texture2D Compression format. See {@link ThreeDcFormat}.
+     */
+    public ThreeDcFormat getThreeDcFormat() {
+        return mThreeDcFormat;
+    }
+
+    /**
+     * @param threeDcFormat the 3DC Texture2D Compression format. See {@link ThreeDcFormat}.
+     */
+    public void setThreeDcFormat(ThreeDcFormat mThreeDcFormat) {
+        this.mThreeDcFormat = mThreeDcFormat;
+        if (mThreeDcFormat == ThreeDcFormat.X) {
+            mCompressionFormat = GLES11Ext.GL_3DC_X_AMD;
+        } else {
+            mCompressionFormat = GLES11Ext.GL_3DC_XY_AMD;
+        }
+    }
 }

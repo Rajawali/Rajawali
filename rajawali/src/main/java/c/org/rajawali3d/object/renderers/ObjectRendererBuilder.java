@@ -57,8 +57,7 @@ public class ObjectRendererBuilder {
 
         // Return the anonymous instance
         assert material != null;
-        return new ObjectRendererImpl(material, isDoubleSided, isBackSided, isBlended, isDepthEnabled,
-                                      blendSourceFactor, blendDestinationFactor, depthFunction);
+        return new ObjectRendererImpl(this);
     }
 
     /**
@@ -119,6 +118,7 @@ public class ObjectRendererBuilder {
      * @param depthTested {@code true} to enable depth testing.
      *
      * @return {@code this} pointer for chaining.
+     * @see <a href="https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDepthFunc.xml">glDepthFunc</a>
      */
     @NonNull
     public ObjectRendererBuilder isDepthTestEnabled(boolean depthTested) {
@@ -132,6 +132,7 @@ public class ObjectRendererBuilder {
      * @param factor {@code int} One of the GL constants for blend factors.
      *
      * @return {@code this} pointer for chaining.
+     * @see <a href="https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBlendFunc.xml">glBlendFunc</a>
      */
     @NonNull
     public ObjectRendererBuilder setBlendSourceFactor(int factor) {
@@ -146,6 +147,7 @@ public class ObjectRendererBuilder {
      * @param factor {@code int} One of the GL constants for blend factors.
      *
      * @return {@code this} pointer for chaining.
+     * @see <a href="https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBlendFunc.xml">glBlendFunc</a>
      */
     @NonNull
     public ObjectRendererBuilder setBlendDestinationFactor(int factor) {
@@ -168,4 +170,78 @@ public class ObjectRendererBuilder {
         return this;
     }
 
+    /**
+     * Retrieves the {@link Material} that has been set for this builder. This method should only be called after
+     * {@link #checkState()} has passsed.
+     *
+     * @return The {@link Material}.
+     */
+    @SuppressWarnings("ConstantConditions")
+    @NonNull
+    Material getMaterial() {
+        return material;
+    }
+
+    /**
+     * Retrieves whether or not the builder has double sided polygons enabled.
+     *
+     * @return {@code true} if double sided polygons are enabled.
+     */
+    boolean isDoubleSided() {
+        return isDoubleSided;
+    }
+
+    /**
+     * Retrieves whether or not the builder has back sided polygons enabled.
+     *
+     * @return {@code true} if back sided polygons are used (vs. front sided).
+     */
+    boolean isBackSided() {
+        return isBackSided;
+    }
+
+    /**
+     * Retrieves whether or not the builder has blending enabled.
+     *
+     * @return {@code true} if blending is enabled.
+     */
+    boolean isBlended() {
+        return isBlended;
+    }
+
+    /**
+     * Retrieves whether or not the builder has depth testing enabled.
+     *
+     * @return {@code true} if depth testing is enabled.
+     */
+    boolean isDepthEnabled() {
+        return isDepthEnabled;
+    }
+
+    /**
+     * Retrieves the currently set blend source factor.
+     *
+     * @return {@code int} The blend source factor.
+     */
+    public int getBlendSourceFactor() {
+        return blendSourceFactor;
+    }
+
+    /**
+     * Retrieves the currently set blend destination factor.
+     *
+     * @return {@code int} The blend destination factor.
+     */
+    int getBlendDestinationFactor() {
+        return blendDestinationFactor;
+    }
+
+    /**
+     * Retrieves the currently set depth test function.
+     *
+     * @return {@code int} The depth test function.
+     */
+    int getDepthFunction() {
+        return depthFunction;
+    }
 }

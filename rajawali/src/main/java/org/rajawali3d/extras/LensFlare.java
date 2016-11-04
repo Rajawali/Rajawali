@@ -14,7 +14,7 @@ package org.rajawali3d.extras;
 
 import java.util.ArrayList;
 
-import org.rajawali3d.textures.ASingleTexture;
+import org.rajawali3d.textures.SingleTexture2D;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
@@ -28,22 +28,22 @@ public class LensFlare {
 	protected Vector3 mPosition;
 	protected boolean mOccluded;
 
-	public LensFlare(ASingleTexture texture, int size, double distance, Vector3 color) {
+	public LensFlare(SingleTexture2D texture, int size, double distance, Vector3 color) {
 		mLensFlares = new ArrayList<FlareInfo>();
 		mPositionScreen = new Vector3();
 		mPosition = new Vector3();
 		addLensFlare(texture, size, distance, color);
 	}
 
-	public void addLensFlare(ASingleTexture texture) {
+	public void addLensFlare(SingleTexture2D texture) {
 		addLensFlare(texture, -1, 0, new Vector3(1, 1, 1));
 	}
 
-	public void addLensFlare(ASingleTexture texture, int size, double distance, Vector3 color) {
+	public void addLensFlare(SingleTexture2D texture, int size, double distance, Vector3 color) {
 		addLensFlare(texture, size, distance, color, 1);
 	}
 
-	public void addLensFlare(ASingleTexture texture, int size, double distance, Vector3 color, double opacity) {
+	public void addLensFlare(SingleTexture2D texture, int size, double distance, Vector3 color, double opacity) {
 		distance = Math.min(distance, Math.max(0, distance));
 		mLensFlares.add(new FlareInfo(texture, size, distance, new Vector3(), color, opacity));
 	}
@@ -98,18 +98,18 @@ public class LensFlare {
 	}
 
 	public class FlareInfo {
-		protected ASingleTexture mTexture;
-		protected int mSize;
-		protected double mDistance;
-		protected Vector3 mColor;
-		protected Vector3 mScreenPosition;
-		protected double mOpacity;
-		protected double mScale;
-		protected double mRotation;
-		protected double mWantedRotation;
+		protected SingleTexture2D mTexture;
+		protected int             mSize;
+		protected double          mDistance;
+		protected Vector3         mColor;
+		protected Vector3         mScreenPosition;
+		protected double          mOpacity;
+		protected double          mScale;
+		protected double          mRotation;
+		protected double          mWantedRotation;
 
-		public FlareInfo(ASingleTexture texture, int size, double distance,
-				Vector3 screenPosition, Vector3 color, double opacity) {
+		public FlareInfo(SingleTexture2D texture, int size, double distance,
+						 Vector3 screenPosition, Vector3 color, double opacity) {
 			mTexture = texture;
 			mSize = size;
 			mDistance = distance;
@@ -149,7 +149,7 @@ public class LensFlare {
 			return mSize;
 		}
 
-		public ASingleTexture getTexture() {
+		public SingleTexture2D getTexture() {
 			return mTexture;
 		}
 
@@ -203,7 +203,7 @@ public class LensFlare {
 			mSize = size;
 		}
 
-		public void setTexture(ASingleTexture texture) {
+		public void setTexture(SingleTexture2D texture) {
 			mTexture = texture;
 		}
 

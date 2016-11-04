@@ -14,7 +14,7 @@ import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.LoaderOBJ;
 import org.rajawali3d.loader.async.IAsyncLoaderCallback;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
@@ -51,7 +51,7 @@ public class AsyncLoadModelFragment extends AExampleFragment {
             mBaseObject.setPosition(-2.0, 3.0, 0.0);
             try {
                 Material material = new Material();
-                material.addTexture(new Texture("camdenTown", mContext, R.drawable.camden_town_alpha));
+                material.addTexture(new Texture2D("camdenTown", mContext, R.drawable.camden_town_alpha));
                 material.setColorInfluence(0);
                 mBaseObject.setMaterial(material);
                 getCurrentScene().addChild(mBaseObject);

@@ -14,10 +14,10 @@ import org.rajawali3d.examples.examples.ExceptionDialog;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.textures.Etc1Texture;
 import org.rajawali3d.textures.Etc2Texture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.primitives.Plane;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 
 public class ETC2TextureCompressionFragment extends AExampleFragment {
 
@@ -57,9 +57,9 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 
 			getCurrentCamera().setPosition(0, 0, 7);
 
-            try {
+            /*try {
                 // This is a raw PNG image
-                Texture texture0 = new Texture("png", mContext, R.drawable.rectangles);
+                Texture2D texture0 = new Texture2D("png", mContext, R.drawable.rectangles);
                 Material material0 = new Material();
                 material0.addTexture(texture0);
                 material0.setColorInfluence(0);
@@ -73,7 +73,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 
 			try {
                 // This is an ETC1 image
-				Texture texture1 = new Texture("etc1", new Etc1Texture("etc1Tex", R.raw.rectangles_etc1, null));
+				Texture2D texture1 = new Texture2D("etc1", new Etc1Texture("etc1Tex", R.raw.rectangles_etc1, null));
 				Material material1 = new Material();
 				material1.addTexture(texture1);
 				material1.setColorInfluence(0);
@@ -87,7 +87,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 
 			try {
                 // This is an ETC2 image
-				Texture texture2 = new Texture("etc2", new Etc2Texture("etc2Tex", R.raw.rectangles_etc2, null));
+				Texture2D texture2 = new Texture2D("etc2", new Etc2Texture("etc2Tex", R.raw.rectangles_etc2, null));
 
 				Material material2 = new Material();
 				material2.addTexture(texture2);
@@ -99,7 +99,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 				getCurrentScene().addChild(mETC2Plane);
 			} catch (TextureException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 
     }

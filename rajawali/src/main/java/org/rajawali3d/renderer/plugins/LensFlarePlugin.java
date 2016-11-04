@@ -16,7 +16,7 @@ import android.opengl.GLES20;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.extras.LensFlare;
 import org.rajawali3d.extras.LensFlare.FlareInfo;
-import org.rajawali3d.textures.ASingleTexture;
+import org.rajawali3d.textures.SingleTexture2D;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector2;
 import org.rajawali3d.math.vector.Vector3;
@@ -203,8 +203,8 @@ public final class LensFlarePlugin extends Plugin {
 	private int muOcclusionMapTextureHandle;
 	private int muDebugModeHandle; // UNCOMMENT TO USE DEBUG MODE
 
-	private ASingleTexture mMapTexture;
-	private ASingleTexture mOcclusionMapTexture;
+	private SingleTexture2D mMapTexture;
+	private SingleTexture2D mOcclusionMapTexture;
 
 	public LensFlarePlugin(Renderer renderer) {
 		this(renderer, true);
@@ -244,7 +244,7 @@ public final class LensFlarePlugin extends Plugin {
         	normals[j+2] = 0;
         }
 
-        // Texture (UV) coordinates are at (0, 0), (1, 0), (1, 1), (0, 1).
+        // Texture2D (UV) coordinates are at (0, 0), (1, 0), (1, 1), (0, 1).
         textureCoords[texCoordCount++] = 0;	textureCoords[texCoordCount++] = 0;
         textureCoords[texCoordCount++] = 1;	textureCoords[texCoordCount++] = 0;
         textureCoords[texCoordCount++] = 1;	textureCoords[texCoordCount++] = 1;

@@ -16,6 +16,11 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
+import org.rajawali3d.textures.annotation.Type;
+import org.rajawali3d.textures.annotation.Wrap;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 import java.nio.ByteBuffer;
 
@@ -39,34 +44,34 @@ public class CubeMapTexture extends AMultiTexture {
     }
 
     public CubeMapTexture(String textureName) {
-        super(TextureType.CUBE_MAP, textureName);
-        setWrapType(WrapType.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        super(Type.CUBE_MAP, textureName);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, int[] resourceIds) {
-        super(TextureType.CUBE_MAP, textureName, resourceIds);
-        setWrapType(WrapType.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        super(Type.CUBE_MAP, textureName, resourceIds);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, Bitmap[] bitmaps) {
-        super(TextureType.CUBE_MAP, textureName, bitmaps);
-        setWrapType(WrapType.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        super(Type.CUBE_MAP, textureName, bitmaps);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture(String textureName, ByteBuffer[] byteBuffers) {
-        super(TextureType.CUBE_MAP, textureName, byteBuffers);
-        setWrapType(WrapType.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        super(Type.CUBE_MAP, textureName, byteBuffers);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, ACompressedTexture[] compressedTextures) {
-        super(TextureType.CUBE_MAP, textureName, compressedTextures);
+    public CubeMapTexture(String textureName, CompressedTexture[] compressedTextures) {
+        super(Type.CUBE_MAP, textureName, compressedTextures);
         mHasCompressedTextures = true;
-        setWrapType(WrapType.CLAMP);
-        setGLTextureType(GLES20.GL_TEXTURE_CUBE_MAP);
+        setWrapType(Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
     public CubeMapTexture clone() {
@@ -75,39 +80,41 @@ public class CubeMapTexture extends AMultiTexture {
 
     private void checkBitmapConfiguration() throws TextureException {
         if ((mBitmaps == null || mBitmaps.length == 0) && (mByteBuffers == null || mByteBuffers.length == 0) && !mHasCompressedTextures)
-            throw new TextureException("Texture could not be added because no Bitmaps or ByteBuffers set.");
+            throw new TextureException("Texture2D could not be added because no Bitmaps or ByteBuffers set.");
         if (mBitmaps != null && mBitmaps.length != 6)
             throw new TextureException("CubeMapTexture could not be added because it needs six textures instead of " + mBitmaps.length);
 
         if (mBitmaps != null) {
-            setBitmapConfig(mBitmaps[0].getConfig());
-            setBitmapFormat(bitmapConfig == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
+            setTexelFormat(mBitmaps[0].getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
             setWidth(mBitmaps[0].getWidth());
             setHeight(mBitmaps[0].getHeight());
         }
     }
 
     private void setTextureData() {
-        if (isMipmap()) {
-            if (filterType == FilterType.LINEAR)
+        @FilterType final int filterType = getFilterType();
+        @WrapType final int wrapType = getWrapType();
+
+        if (isMipmaped()) {
+            if (filterType == Filter.BILINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
                     GLES20.GL_LINEAR_MIPMAP_LINEAR);
             else
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
                     GLES20.GL_NEAREST_MIPMAP_NEAREST);
         } else {
-            if (filterType == FilterType.LINEAR)
+            if (filterType == Filter.BILINEAR)
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             else
                 GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
         }
 
-        if (filterType == FilterType.LINEAR)
+        if (filterType == Filter.BILINEAR)
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         else
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
-        if (wrapType == WrapType.REPEAT) {
+        if (wrapType == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R)) {
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
         } else {
@@ -120,7 +127,7 @@ public class CubeMapTexture extends AMultiTexture {
             if (mBitmaps != null) {
                 GLUtils.texImage2D(CUBE_FACES[i], 0, mBitmaps[i], 0);
             } else if(mHasCompressedTextures) {
-                ACompressedTexture tex = mCompressedTextures[i];
+                CompressedTexture tex = mCompressedTextures[i];
                 int w = tex.getWidth(), h = tex.getHeight();
                 for (int j = 0; j < tex.getByteBuffers().length; j++) {
                     GLES20.glCompressedTexImage2D(CUBE_FACES[i], j, tex.getCompressionFormat(), w, h, 0,
@@ -129,15 +136,15 @@ public class CubeMapTexture extends AMultiTexture {
                     h = h > 1 ? h / 2 : 1;
                 }
             } else {
-                GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, bitmapFormat, width, height, 0, bitmapFormat,
+                GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, getTexelFormat(), getWidth(), getHeight(), 0, getTexelFormat(),
                                     GLES20.GL_UNSIGNED_BYTE, mByteBuffers[i]);
             }
         }
 
-        if (isMipmap())
+        if (isMipmaped())
             GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
 
-        if (shouldRecycle) {
+        if (willRecycle()) {
             if (mBitmaps != null) {
                 for (Bitmap bitmap : mBitmaps) {
                     bitmap.recycle();
@@ -179,18 +186,18 @@ public class CubeMapTexture extends AMultiTexture {
                 mCompressedTextures[i].remove();
             }
         }
-        GLES20.glDeleteTextures(1, new int[]{ textureId }, 0);
+        GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
     }
 
     @Override
     void replace() throws TextureException {
         checkBitmapConfiguration();
 
-        if (textureId > 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
+        if (getTextureId() > 0) {
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, getTextureId());
             if(mHasCompressedTextures) {
                 for (int i = 0; i < 6; i++) {
-                    ACompressedTexture tex = mCompressedTextures[i];
+                    CompressedTexture tex = mCompressedTextures[i];
                     tex.add();
                     int w = tex.getWidth(), h = tex.getHeight();
                     for (int j = 0; j < tex.getByteBuffers().length; j++) {

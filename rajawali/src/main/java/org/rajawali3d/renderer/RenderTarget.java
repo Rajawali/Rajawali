@@ -16,9 +16,12 @@ import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLU;
 import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.textures.ATexture.FilterType;
-import org.rajawali3d.textures.ATexture.WrapType;
 import org.rajawali3d.textures.RenderTargetTexture;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Filter.FilterType;
+import org.rajawali3d.textures.annotation.TextureTarget;
+import org.rajawali3d.textures.annotation.Wrap;
+import org.rajawali3d.textures.annotation.Wrap.WrapType;
 import org.rajawali3d.util.RajLog;
 
 /**
@@ -29,16 +32,16 @@ import org.rajawali3d.util.RajLog;
  */
 public class RenderTarget {
 
-	protected int mWidth;
-	protected int mHeight;
-	protected int mOffsetX;
-	protected int mOffsetY;
-	protected String mName;
-	protected boolean mMipmaps;
-	protected int mGLType;
-	protected Config mBitmapConfig;
-	protected FilterType mFilterType;
-	protected WrapType mWrapType;
+	protected             int     mWidth;
+	protected             int     mHeight;
+	protected             int     mOffsetX;
+	protected             int     mOffsetY;
+	protected             String  mName;
+	protected             boolean mMipmaps;
+	protected             int     mGLType;
+	protected             Config  mBitmapConfig;
+	@FilterType protected int     mFilterType;
+	@WrapType protected   int     mWrapType;
 
 	protected boolean mStencilBuffer;
 	protected boolean mFullscreen = true;
@@ -66,20 +69,20 @@ public class RenderTarget {
 	 * @param stencilBuffer
 	 *            Set to true to enable stencil buffer
 	 * @param mipmaps
-	 *            Set to true to enable automatic mipmap generation
-	 * @param glType
+	 *            Set to true to enable automatic mipmaped generation
+	 * @param target
 	 *            Datatype to use for the texture
 	 * @param bitmapConfig
 	 *            Bitmap configuration
 	 * @param filterType
-	 *            Texture filter type
+	 *            Texture2D filter type
 	 * @param wrapType
-	 *            Texture wrap type
+	 *            Texture2D wrap type
 	 */
 	public RenderTarget(String name, int width, int height, int offsetX, int offsetY,
-			boolean stencilBuffer, boolean mipmaps,
-			int glType, Config bitmapConfig, FilterType filterType,
-			WrapType wrapType) {
+						boolean stencilBuffer, boolean mipmaps,
+						@TextureTarget int target, Config bitmapConfig, @FilterType int filterType,
+						@WrapType int wrapType) {
 		mName = name;
 		mWidth = width;
 		mHeight = height;
@@ -87,15 +90,14 @@ public class RenderTarget {
 		mOffsetY = offsetY;
 		mStencilBuffer = stencilBuffer;
 		mMipmaps = mipmaps;
-		mGLType = glType;
+		mGLType = target;
 		mBitmapConfig = bitmapConfig;
 		mFilterType = filterType;
 		mWrapType = wrapType;
 
 		mTexture = new RenderTargetTexture(mName + "FBTex", mWidth, mHeight);
-		mTexture.setMipmap(mMipmaps);
-		mTexture.setGLTextureType(mGLType);
-		mTexture.setBitmapConfig(mBitmapConfig);
+		mTexture.setMipmaped(mMipmaps);
+		mTexture.setTextureTarget(mGLType);
 		mTexture.setFilterType(mFilterType);
 		mTexture.setWrapType(mWrapType);
 		TextureManager.getInstance().addTexture(mTexture);
@@ -111,12 +113,13 @@ public class RenderTarget {
 	 *            Height of the render target
 	 */
 	public RenderTarget(String name, int width, int height) {
-		this(name, width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, FilterType.LINEAR,
-				WrapType.CLAMP);
+		this(name, width, height, 0, 0, false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888, Filter.BILINEAR,
+             Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
 	}
 
 	@Override
 	public RenderTarget clone() {
+        //TODO: This method is beyond broken
 		return new RenderTarget(
 				mName,
 				mWidth,
@@ -124,9 +127,9 @@ public class RenderTarget {
 				mOffsetX,
 				mOffsetY,
 				mStencilBuffer,
-				mTexture.isMipmap(),
-				mTexture.getGLTextureType(),
-				mTexture.getBitmapConfig(),
+				mTexture.isMipmaped(),
+				mTexture.getTextureTarget(),
+				Config.ARGB_8888,
 				mTexture.getFilterType(),
 				mTexture.getWrapType());
 	}

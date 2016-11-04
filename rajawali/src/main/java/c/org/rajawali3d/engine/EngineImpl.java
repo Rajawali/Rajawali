@@ -7,15 +7,16 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+import c.org.rajawali3d.annotations.GLThread;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.R;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.OnFPSUpdateListener;
 import org.rajawali3d.util.RajLog;
-import org.rajawali3d.view.ISurface;
-import org.rajawali3d.view.ISurface.ANTI_ALIASING_CONFIG;
+import org.rajawali3d.view.Surface;
+import org.rajawali3d.view.Surface.ANTI_ALIASING_CONFIG;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,30 +53,37 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
     @NonNull
     protected Context context; // Android context the engine is running in
 
-    protected ISurface surface; // The rendering surface
+    protected Surface surface; // The rendering surface
 
-    protected int surfaceWidth;
-    protected int surfaceHeight; // The width and height of the surface
+    private int surfaceWidth;
+    private int surfaceHeight; // The width and height of the surface
 
     // Frame related members
-    protected ScheduledExecutorService timer; // Timer used to schedule drawing
-    protected double frameRate; // Target frame rate to render at
-    protected int frameCount; // Used for determining FPS
-    protected double lastMeasuredFPS; // Last measured FPS value
-    protected OnFPSUpdateListener fpsUpdateListener; // Listener to notify of new FPS values.
-    private long framesStartTime; // Time of last startFrames()
+    private ScheduledExecutorService timer; // Timer used to schedule drawing
+    private double                   frameRate; // Target frame rate to render at
+    private int                      frameCount; // Used for determining FPS
+    private double                   lastMeasuredFPS; // Last measured FPS value
+    private OnFPSUpdateListener      fpsUpdateListener; // Listener to notify of new FPS values.
     private long fpsStartTime = System.nanoTime(); // Used for determining FPS
+    private long framesStartTime; // Time of last successful startFrames()
     private long lastFrameTime; // Time of last frame. Used for animation delta time
 
     // In case we cannot parse the version number, assume OpenGL ES 2.0
-    protected int glesMajorVersion = 2; // The GL ES major version of the surface
-    protected int glesMinorVersion = 0; // The GL ES minor version of the surface
+    private int glesMajorVersion = 2; // The GL ES major version of the surface
+    private int glesMinorVersion = 0; // The GL ES minor version of the surface
 
     /**
      * The thread id of the GL thread for this {@link Engine}. This should be set once and left untouched.
      */
     private AtomicLong glThread;
 
+    /**
+     * Constructs a new {@link Engine} implementation. This is the default {@link EngineImpl} provided by the
+     * engine and rarely, if ever should it be replaced by a user. Doing so will require them to implement a great
+     * deal of the library on their own.
+     *
+     * @param context The Android application {@link Context}.
+     */
     public EngineImpl(@NonNull Context context) {
         RajLog.i(context.getString(R.string.renderer_start_header));
         RajLog.i(context.getString(R.string.renderer_start_message));
@@ -89,19 +97,23 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
         surfaceCallbacks = Collections.synchronizedList(new ArrayList<SurfaceCallback>());
     }
 
-    public double getRefreshRate() {
-        return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRefreshRate();
+    @Override
+    public boolean startFrames() {
+        RajLog.d("startFrames()");
+        if (timer != null) {
+            return false;
+        }
+        framesStartTime = System.nanoTime();
+        lastFrameTime = framesStartTime;
+        timer = Executors.newScheduledThreadPool(1);
+        timer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / frameRate), TimeUnit.MILLISECONDS);
+
+        return true;
     }
 
     @Override
-    public void startFrames() {
-        RajLog.d("startFrames()");
-        framesStartTime = System.nanoTime();
-        lastFrameTime = framesStartTime;
-        if (timer != null) return;
-        timer = Executors.newScheduledThreadPool(1);
-        timer.scheduleAtFixedRate(new RequestRenderTask(), 0, (long) (1000 / frameRate),
-                TimeUnit.MILLISECONDS);
+    public boolean areFramesRunning() {
+        return timer != null;
     }
 
     @Override
@@ -126,12 +138,12 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
     }
 
     @Override
-    public int getGLMajorVersion() {
+    public int getRenderContextMajorVersion() {
         return glesMajorVersion;
     }
 
     @Override
-    public int getGLMinorVersion() {
+    public int getRenderContextMinorVersion() {
         return glesMinorVersion;
     }
 
@@ -156,7 +168,7 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
     }
 
     @Override
-    public boolean isGLThread() {
+    public boolean isRenderThread() {
         return (Thread.currentThread().getId() == glThread.get());
     }
 
@@ -209,7 +221,7 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
     }
 
     @Override
-    public void setRenderSurface(ISurface surface) {
+    public void setRenderSurface(Surface surface) {
         this.surface = surface;
     }
 
@@ -253,8 +265,8 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
         surfaceHeight = height;
 
         synchronized (surfaceCallbacks) {
-            for (SurfaceCallback surfaceListener : surfaceCallbacks) {
-                surfaceListener.onSurfaceSizeChanged(width, height);
+            for (SurfaceCallback surfaceCallback : surfaceCallbacks) {
+                surfaceCallback.onSurfaceSizeChanged(width, height);
             }
         }
 
@@ -266,6 +278,7 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
      *
      * @param gl {@link GL10} for rendering.
      */
+    @GLThread
     @Override
     public void onRenderFrame(GL10 gl) {
 
@@ -289,8 +302,9 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
             frameCount = 0;
             fpsStartTime = now;
 
-            if (fpsUpdateListener != null)
+            if (fpsUpdateListener != null) {
                 fpsUpdateListener.onFPSUpdate(lastMeasuredFPS); // Update the FPS listener
+            }
         }
     }
 
@@ -335,15 +349,29 @@ public class EngineImpl implements Engine, ISurfaceRenderer {
     }
 
     @Override
-    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
-
+    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset,
+                                 int yPixelOffset) {
+        // TODO: We need to figure out how to handle wallpaper service stuff
     }
 
     @Override
     public void onTouchEvent(MotionEvent event) {
-
+        // TODO: We need to figure out how to handle wallpaper service stuff
     }
 
+    /**
+     * Fetches the screen refresh rate for the default display.
+     *
+     * @return {@code double} The refresh rate in Hertz (Hz).
+     */
+    @SuppressWarnings("WeakerAccess")
+    public double getRefreshRate() {
+        return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRefreshRate();
+    }
+
+    /**
+     * {@link Runnable} implementation for requesting a new render pass.
+     */
     private class RequestRenderTask implements Runnable {
         public void run() {
             if (surface != null) {

@@ -3,12 +3,13 @@ package org.rajawali3d.examples.examples.general;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.opengl.GLES20;
 import android.support.annotation.Nullable;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.BaseTexture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.primitives.ScreenQuad;
 
@@ -20,7 +21,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 	}
 
 	private final class ThreeSixtyImagesRenderer extends AExampleRenderer {
-		private ATexture[] mTextures;
+		private BaseTexture[] mTextures;
 		private ScreenQuad mScreenQuad;
 		private int mFrameCount;
 		private Material mMaterial;
@@ -47,7 +48,7 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 
 			if (mTextures == null) {
 				// -- create an array that will contain all TextureInfo objects
-				mTextures = new ATexture[NUM_TEXTURES];
+				mTextures = new BaseTexture[NUM_TEXTURES];
 			}
 			mFrameCount = 0;
 
@@ -64,8 +65,8 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 				Bitmap bitmap = BitmapFactory.decodeResource(
 						mContext.getResources(), resourceId, options);
 
-				ATexture texture = new Texture("bm" + i, new TextureDataReference(bitmap, null));
-				texture.setMipmap(false);
+				BaseTexture texture = new Texture2D("bm" + i, new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE));
+				texture.setMipmaped(false);
 				texture.shouldRecycle(true);
 				//mTextures[i - 1] = mTextureManager.addTexture(texture);
 			}

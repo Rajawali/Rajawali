@@ -5,13 +5,13 @@ import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 import android.view.TextureView;
 
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.view.Surface;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Interface that a class must implement to be able to render to an {@link ISurface}. Most often you will want
+ * Interface that a class must implement to be able to render to an {@link Surface}. Most often you will want
  * to simply extend {@link Renderer} which handles much of this for you.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -42,16 +42,16 @@ public interface ISurfaceRenderer {
     /**
      * Called to inform the renderer of the multisampling configuration on this surface.
      *
-     * @param config {@link ISurface.ANTI_ALIASING_CONFIG} The desired anti aliasing configuration.
+     * @param config {@link Surface.ANTI_ALIASING_CONFIG} The desired anti aliasing configuration.
      */
-    void setAntiAliasingMode(ISurface.ANTI_ALIASING_CONFIG config);
+    void setAntiAliasingMode(Surface.ANTI_ALIASING_CONFIG config);
 
     /**
-     * Sets the {@link ISurface} which this implementation will be rendering on.
+     * Sets the {@link Surface} which this implementation will be rendering on.
      *
-     * @param surface {@link ISurface} The rendering surface.
+     * @param surface {@link Surface} The rendering surface.
      */
-    void setRenderSurface(ISurface surface);
+    void setRenderSurface(Surface surface);
 
     /**
      * Called when the renderer should pause all of its rendering activities, such as frame draw requests.

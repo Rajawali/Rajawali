@@ -14,14 +14,13 @@ package org.rajawali3d.postprocessing.passes;
 
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
-
 import org.rajawali3d.R;
-import org.rajawali3d.textures.ATexture.FilterType;
-import org.rajawali3d.textures.ATexture.WrapType;
 import org.rajawali3d.primitives.ScreenQuad;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Wrap;
 
 public class CopyToNewRenderTargetPass extends EffectPass {
 	private RenderTarget mRenderTarget;
@@ -30,8 +29,8 @@ public class CopyToNewRenderTargetPass extends EffectPass {
 		super();
 		mNeedsSwap = false;
 		mRenderTarget = new RenderTarget(name, width, height, 0, 0,
-				false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-				FilterType.LINEAR, WrapType.CLAMP);
+										 false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
+										 Filter.BILINEAR, (Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
 		renderer.addRenderTarget(mRenderTarget);
 
 		createMaterial(R.raw.minimal_vertex_shader, R.raw.copy_fragment_shader);

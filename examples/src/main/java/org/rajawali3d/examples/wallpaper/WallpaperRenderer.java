@@ -11,7 +11,7 @@ import org.rajawali3d.lights.ALight;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
@@ -51,7 +51,7 @@ public class WallpaperRenderer extends Renderer {
             Material material = new Material();
             material.enableLighting(true);
             material.setDiffuseMethod(new DiffuseMethod.Lambert());
-            material.addTexture(new Texture("rajawaliTex", mContext, R.drawable.rajawali_tex));
+            material.addTexture(new Texture2D("rajawaliTex", mContext, R.drawable.rajawali_tex));
             material.setColorInfluence(0);
             cube.setMaterial(material);
             getCurrentScene().addChild(cube);

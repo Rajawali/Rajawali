@@ -12,6 +12,15 @@
  */
 package org.rajawali3d.materials;
 
+import static org.rajawali3d.textures.annotation.Type.ALPHA;
+import static org.rajawali3d.textures.annotation.Type.CUBE_MAP;
+import static org.rajawali3d.textures.annotation.Type.DIFFUSE;
+import static org.rajawali3d.textures.annotation.Type.NORMAL;
+import static org.rajawali3d.textures.annotation.Type.RENDER_TARGET;
+import static org.rajawali3d.textures.annotation.Type.SPECULAR;
+import static org.rajawali3d.textures.annotation.Type.SPHERE_MAP;
+import static org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
+
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
@@ -36,11 +45,11 @@ import org.rajawali3d.materials.shaders.fragments.texture.SkyTextureFragmentShad
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.CubeMapTexture;
-import org.rajawali3d.textures.SphereMapTexture;
+import org.rajawali3d.textures.SphereMapTexture2D;
 import org.rajawali3d.textures.TextureException;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
@@ -57,7 +66,7 @@ import java.util.Map;
  * This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights:
  * <pre><code>
  * Material material = new Material();
- * material.addTexture(new Texture("earth", R.drawable.earth_diffuse));
+ * material.addTexture(new Texture2D("earth", R.drawable.earth_diffuse));
  * material.enableLighting(true);
  * material.setDiffuseMethod(new DiffuseMethod.Lambert());
  * material.setSpecularMethod(new SpecularMethod.Phong());
@@ -172,7 +181,7 @@ public class Material {
     private float[] ambientIntensity;
     /**
      * The color influence indicates how big the influence of the color is. This should be
-     * used in conjunction with {@link ATexture#setInfluence(float)}. A value of .5 indicates
+     * used in conjunction with {@link BaseTexture#setInfluence(float)}. A value of .5 indicates
      * an influence of 50%. This examples shows how to use 50% color and 50% texture:
      * <p/>
      * <pre><code>
@@ -229,7 +238,7 @@ public class Material {
     /**
      * The list of textures that are assigned by this materials.
      */
-    protected ArrayList<ATexture> textures;
+    protected ArrayList<BaseTexture> textures;
 
     protected Map<String, Integer> textureHandles;
     /**
@@ -254,7 +263,7 @@ public class Material {
      * This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights:
      * <pre><code>
      * Material material = new Material();
-     * material.addTexture(new Texture("earth", R.drawable.earth_diffuse));
+     * material.addTexture(new Texture2D("earth", R.drawable.earth_diffuse));
      * material.enableLighting(true);
      * material.setDiffuseMethod(new DiffuseMethod.Lambert());
      * material.setSpecularMethod(new SpecularMethod.Phong());
@@ -362,7 +371,7 @@ public class Material {
 
     /**
      * The color influence indicates how big the influence of the color is. This should be
-     * used in conjunction with {@link ATexture#setInfluence(float)}. A value of .5 indicates
+     * used in conjunction with {@link BaseTexture#setInfluence(float)}. A value of .5 indicates
      * an influence of 50%. This examples shows how to use 50% color and 50% texture:
      * <p/>
      * <pre><code>
@@ -511,18 +520,18 @@ public class Material {
             // -- Check textures
             //
 
-            List<ATexture> diffuseTextures = null;
-            List<ATexture> normalMapTextures = null;
-            List<ATexture> envMapTextures = null;
-            List<ATexture> skyTextures = null;
-            List<ATexture> specMapTextures = null;
-            List<ATexture> alphaMapTextures = null;
+            List<BaseTexture> diffuseTextures = null;
+            List<BaseTexture> normalMapTextures = null;
+            List<BaseTexture> envMapTextures = null;
+            List<BaseTexture> skyTextures = null;
+            List<BaseTexture> specMapTextures = null;
+            List<BaseTexture> alphaMapTextures = null;
 
             boolean hasCubeMaps = false;
             boolean hasVideoTexture = false;
 
             for (int i = 0; i < textures.size(); i++) {
-                ATexture texture  = textures.get(i);
+                BaseTexture texture  = textures.get(i);
 
                 switch (texture.getTextureType()) {
                     case VIDEO_TEXTURE:
@@ -543,9 +552,9 @@ public class Material {
                         boolean isSkyTexture = false;
                         boolean isEnvironmentTexture = false;
 
-                        if (texture.getClass() == SphereMapTexture.class) {
-                            isSkyTexture = ((SphereMapTexture) texture).isSkyTexture();
-                            isEnvironmentTexture = ((SphereMapTexture) texture).isEnvironmentTexture();
+                        if (texture.getClass() == SphereMapTexture2D.class) {
+                            isSkyTexture = ((SphereMapTexture2D) texture).isSkyTexture();
+                            isEnvironmentTexture = ((SphereMapTexture2D) texture).isEnvironmentTexture();
                         } else if (texture.getClass() == CubeMapTexture.class) {
                             isSkyTexture = ((CubeMapTexture) texture).isSkyTexture();
                             isEnvironmentTexture = ((CubeMapTexture) texture).isEnvironmentTexture();
@@ -826,7 +835,7 @@ public class Material {
      *
      * @param texture
      */
-    private void setTextureParameters(ATexture texture) {
+    private void setTextureParameters(BaseTexture texture) {
         if (textureHandles.containsKey(texture.getTextureName())) return;
 
         int textureHandle = GLES20.glGetUniformLocation(programHandle, texture.getTextureName());
@@ -876,21 +885,21 @@ public class Material {
                 plugin.bindTextures(num);
     }
 
-    public void bindTextureByName(int index, ATexture texture) {
+    public void bindTextureByName(int index, BaseTexture texture) {
         if (!textureHandles.containsKey(texture.getTextureName())) {
             setTextureParameters(texture);
         }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
-        GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+        GLES20.glBindTexture(texture.getTextureTarget(), texture.getTextureId());
         GLES20.glUniform1i(textureHandles.get(texture.getTextureName()), index);
     }
 
-    public void bindTextureByName(String name, int index, ATexture texture) {
+    public void bindTextureByName(String name, int index, BaseTexture texture) {
         if (!textureHandles.containsKey(texture.getTextureName())) {
             setTextureHandleForName(name);
         }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + index);
-        GLES20.glBindTexture(texture.getGLTextureType(), texture.getTextureId());
+        GLES20.glBindTexture(texture.getTextureTarget(), texture.getTextureId());
         GLES20.glUniform1i(textureHandles.get(name), index);
     }
 
@@ -905,8 +914,8 @@ public class Material {
                 plugin.unbindTextures();
 
         for (int i = 0; i < num; i++) {
-            ATexture texture = textures.get(i);
-            GLES20.glBindTexture(texture.getGLTextureType(), 0);
+            BaseTexture texture = textures.get(i);
+            GLES20.glBindTexture(texture.getTextureTarget(), 0);
         }
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -919,7 +928,7 @@ public class Material {
      *
      * @throws TextureException
      */
-    public void addTexture(ATexture texture) throws TextureException {
+    public void addTexture(BaseTexture texture) throws TextureException {
         if (textures.indexOf(texture) > -1) return;
         if (textures.size() + 1 > maxTextures) {
             throw new TextureException("Maximum number of textures for this material has been reached. Maximum number"
@@ -937,7 +946,7 @@ public class Material {
      *
      * @param texture
      */
-    public void removeTexture(ATexture texture) {
+    public void removeTexture(BaseTexture texture) {
         textures.remove(texture);
         texture.unregisterMaterial(this);
     }
@@ -947,7 +956,7 @@ public class Material {
      *
      * @return
      */
-    public ArrayList<ATexture> getTextureList() {
+    public ArrayList<BaseTexture> getTextureList() {
         return textures;
     }
 

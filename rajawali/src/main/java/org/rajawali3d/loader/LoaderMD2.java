@@ -15,6 +15,7 @@ package org.rajawali3d.loader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.opengl.GLES20;
 import org.rajawali3d.animation.mesh.AAnimationObject3D;
 import org.rajawali3d.animation.mesh.IAnimationFrame;
 import org.rajawali3d.animation.mesh.VertexAnimationFrame;
@@ -24,7 +25,7 @@ import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.LittleEndianDataInputStream;
@@ -123,7 +124,7 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
 			mObject.setColor(0xffffffff);
 			if (mTexture != null)
 			{
-				material.addTexture(new Texture(mCurrentTextureName, new TextureDataReference(mTexture, null)));
+				material.addTexture(new Texture2D(mCurrentTextureName, new TextureDataReference(mTexture, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
 				material.setColorInfluence(0);
 			}
 			stream.close();

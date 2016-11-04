@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
-import org.rajawali3d.view.ISurface.ANTI_ALIASING_CONFIG;
+import org.rajawali3d.view.Surface.ANTI_ALIASING_CONFIG;
 import org.rajawali3d.view.SurfaceView;
 
 /**

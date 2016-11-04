@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.R;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
 
@@ -21,12 +21,12 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class SurfaceView extends GLSurfaceView implements ISurface {
+public class SurfaceView extends GLSurfaceView implements Surface {
 
     protected RendererDelegate mRendererDelegate;
 
     protected double mFrameRate = 60.0;
-    protected int mRenderMode = ISurface.RENDERMODE_WHEN_DIRTY;
+    protected int mRenderMode = Surface.RENDERMODE_WHEN_DIRTY;
     protected ANTI_ALIASING_CONFIG mAntiAliasingConfig = ANTI_ALIASING_CONFIG.NONE;
     protected boolean mIsTransparent = false;
     protected int mBitsRed = 5;
@@ -54,7 +54,7 @@ public class SurfaceView extends GLSurfaceView implements ISurface {
             if (attr == R.styleable.SurfaceView_frameRate) {
                 mFrameRate = array.getFloat(attr, 60.0f);
             } else if (attr == R.styleable.SurfaceView_renderMode) {
-                mRenderMode = array.getInt(attr, ISurface.RENDERMODE_WHEN_DIRTY);
+                mRenderMode = array.getInt(attr, Surface.RENDERMODE_WHEN_DIRTY);
             } else if (attr == R.styleable.SurfaceView_antiAliasingType) {
                 mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(attr, ANTI_ALIASING_CONFIG.NONE.ordinal()));
             } else if (attr == R.styleable.SurfaceView_multiSampleCount) {
@@ -216,7 +216,7 @@ public class SurfaceView extends GLSurfaceView implements ISurface {
         public RendererDelegate(ISurfaceRenderer renderer, SurfaceView surfaceView) {
             mRenderer = renderer;
             mRajawaliSurfaceView = surfaceView;
-            mRenderer.setFrameRate(mRajawaliSurfaceView.mRenderMode == ISurface.RENDERMODE_WHEN_DIRTY ?
+            mRenderer.setFrameRate(mRajawaliSurfaceView.mRenderMode == Surface.RENDERMODE_WHEN_DIRTY ?
                 mRajawaliSurfaceView.mFrameRate : 0);
             mRenderer.setAntiAliasingMode(mRajawaliSurfaceView.mAntiAliasingConfig);
             mRenderer.setRenderSurface(mRajawaliSurfaceView);

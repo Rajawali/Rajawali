@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.util;
+package c.org.rajawali3d.gl;
 
 import android.annotation.TargetApi;
 import android.opengl.EGLExt;
@@ -18,6 +18,13 @@ import android.opengl.GLES20;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESTexture3D;
+import org.rajawali3d.util.RajLog;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -31,40 +38,75 @@ import javax.microedition.khronos.egl.EGLDisplay;
  * @author dennis.ippel
  */
 public class Capabilities {
+
+    static {
+        System.loadLibrary("glExtensions");
+    }
+
     private static Capabilities instance = null;
 
-    private static volatile boolean sGLChecked = false;
+    private static volatile boolean glChecked = false;
 
-    private static int mEGLMajorVersion;
-    private static int mEGLMinorVersion;
-    private static int mGLESMajorVersion;
+    private static int eglMajorVersion;
+    private static int eglMinorVersion;
+    private static int glesMajorVersion;
 
-    private int mMaxTextureSize;
-    private int mMaxCombinedTextureImageUnits;
-    private int mMaxCubeMapTextureSize;
-    private int mMaxFragmentUniformVectors;
-    private int mMaxRenderbufferSize;
-    private int mMaxTextureImageUnits;
-    private int mMaxVaryingVectors;
-    private int mMaxVertexAttribs;
-    private int mMaxVertexTextureImageUnits;
-    private int mMaxVertexUniformVectors;
-    private int mMaxViewportWidth;
-    private int mMaxViewportHeight;
-    private int mMinAliasedLineWidth;
-    private int mMaxAliasedLineWidth;
-    private int mMinAliasedPointSize;
-    private int mMaxAliasedPointSize;
+    private final int maxTextureSize;
+    private final int maxCombinedTextureImageUnits;
+    private final int maxCubeMapTextureSize;
+    private final int maxFragmentUniformVectors;
+    private final int maxRenderbufferSize;
+    private final int maxTextureImageUnits;
+    private final int maxVaryingVectors;
+    private final int maxVertexAttribs;
+    private final int maxVertexTextureImageUnits;
+    private final int maxVertexUniformVectors;
+    private final int maxViewportWidth;
+    private final int maxViewportHeight;
+    private final int minAliasedLineWidth;
+    private final int maxAliasedLineWidth;
+    private final int minAliasedPointSize;
+    private final int maxAliasedPointSize;
 
-    private int[] mParam;
+    private final String   vendor;
+    private final String   renderer;
+    private final String   version;
+    private final String[] extensions;
 
-    private String mVendor = "";
-    private String mRenderer = "";
-    private String mVersion = "";
-    private String[] mExtensions = new String[] {};
+    private final Map<String, GLExtension> loadedExtensions;
+
+    private int[] param;
 
     private Capabilities() {
-        initialize();
+        RajLog.d("Fetching device capabilities.");
+
+        param = new int[1];
+
+        vendor = GLES20.glGetString(GLES20.GL_VENDOR);
+        renderer = GLES20.glGetString(GLES20.GL_RENDERER);
+        version = GLES20.glGetString(GLES20.GL_VERSION);
+
+        loadedExtensions = new HashMap<>();
+
+        maxCombinedTextureImageUnits = getInt(GLES20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+        maxCubeMapTextureSize = getInt(GLES20.GL_MAX_CUBE_MAP_TEXTURE_SIZE);
+        maxFragmentUniformVectors = getInt(GLES20.GL_MAX_FRAGMENT_UNIFORM_VECTORS);
+        maxRenderbufferSize = getInt(GLES20.GL_MAX_RENDERBUFFER_SIZE);
+        maxTextureImageUnits = getInt(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS);
+        maxTextureSize = getInt(GLES20.GL_MAX_TEXTURE_SIZE);
+        maxVaryingVectors = getInt(GLES20.GL_MAX_VARYING_VECTORS);
+        maxVertexAttribs = getInt(GLES20.GL_MAX_VERTEX_ATTRIBS);
+        maxVertexTextureImageUnits = getInt(GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+        maxVertexUniformVectors = getInt(GLES20.GL_MAX_VERTEX_UNIFORM_VECTORS);
+        maxViewportWidth = getInt(GLES20.GL_MAX_VIEWPORT_DIMS, 2, 0);
+        maxViewportHeight = getInt(GLES20.GL_MAX_VIEWPORT_DIMS, 2, 1);
+        minAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 0);
+        maxAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 1);
+        minAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 0);
+        maxAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 1);
+
+        String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+        this.extensions = extensions.split(" ");
     }
 
     @NonNull
@@ -82,14 +124,13 @@ public class Capabilities {
 
         final int[] version = new int[2];
         if (!egl.eglInitialize(display, version))
-            throw new IllegalStateException(
-                    "Failed to initialize an EGL context while getting device capabilities.");
-        mEGLMajorVersion = version[0];
-        mEGLMinorVersion = version[1];
+            throw new IllegalStateException("Failed to initialize an EGL context while getting device capabilities.");
+        eglMajorVersion = version[0];
+        eglMinorVersion = version[1];
         // RajLog.d("Device EGL Version: " + version[0] + "." + version[1]);
 
         // Assume GLES 2 by default
-        mGLESMajorVersion = 2;
+        glesMajorVersion = 2;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             // The API for GLES3 might exist, we need to check
@@ -97,8 +138,8 @@ public class Capabilities {
             checkGLVersionIs3(egl, display);
         }
         egl.eglTerminate(display);
-        // RajLog.d("Determined GLES Major version to be: " + mGLESMajorVersion);
-        sGLChecked = true;
+        // RajLog.d("Determined GLES Major version to be: " + glesMajorVersion);
+        glChecked = true;
     }
 
     @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
@@ -126,45 +167,15 @@ public class Capabilities {
                         EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE};
                 value[0] = 0;
                 egl.eglChooseConfig(display, configAttribs, configs, 1, value);
-                mGLESMajorVersion = value[0] > 0 ? 3 : 2;
+                glesMajorVersion = value[0] > 0 ? 3 : 2;
                 break;
             }
         }
     }
 
-    private void initialize() {
-        RajLog.d("Fetching device capabilities.");
-
-        mParam = new int[1];
-
-        mVendor = GLES20.glGetString(GLES20.GL_VENDOR);
-        mRenderer = GLES20.glGetString(GLES20.GL_RENDERER);
-        mVersion = GLES20.glGetString(GLES20.GL_VERSION);
-
-        mMaxCombinedTextureImageUnits = getInt(GLES20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-        mMaxCubeMapTextureSize = getInt(GLES20.GL_MAX_CUBE_MAP_TEXTURE_SIZE);
-        mMaxFragmentUniformVectors = getInt(GLES20.GL_MAX_FRAGMENT_UNIFORM_VECTORS);
-        mMaxRenderbufferSize = getInt(GLES20.GL_MAX_RENDERBUFFER_SIZE);
-        mMaxTextureImageUnits = getInt(GLES20.GL_MAX_TEXTURE_IMAGE_UNITS);
-        mMaxTextureSize = getInt(GLES20.GL_MAX_TEXTURE_SIZE);
-        mMaxVaryingVectors = getInt(GLES20.GL_MAX_VARYING_VECTORS);
-        mMaxVertexAttribs = getInt(GLES20.GL_MAX_VERTEX_ATTRIBS);
-        mMaxVertexTextureImageUnits = getInt(GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS);
-        mMaxVertexUniformVectors = getInt(GLES20.GL_MAX_VERTEX_UNIFORM_VECTORS);
-        mMaxViewportWidth = getInt(GLES20.GL_MAX_VIEWPORT_DIMS, 2, 0);
-        mMaxViewportHeight = getInt(GLES20.GL_MAX_VIEWPORT_DIMS, 2, 1);
-        mMinAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 0);
-        mMaxAliasedLineWidth = getInt(GLES20.GL_ALIASED_LINE_WIDTH_RANGE, 2, 1);
-        mMinAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 0);
-        mMaxAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 1);
-
-        String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
-        mExtensions = extensions.split(" ");
-    }
-
     private int getInt(int pname) {
-        GLES20.glGetIntegerv(pname, mParam, 0);
-        return mParam[0];
+        GLES20.glGetIntegerv(pname, param, 0);
+        return param[0];
     }
 
     private int getInt(int pname, int length, int index) {
@@ -179,8 +190,8 @@ public class Capabilities {
      * @return
      */
     public static int getEGLMajorVersion() {
-        if (!sGLChecked) checkGLVersion();
-        return mEGLMajorVersion;
+        if (!glChecked) checkGLVersion();
+        return eglMajorVersion;
     }
 
     /**
@@ -189,8 +200,8 @@ public class Capabilities {
      * @return
      */
     public static int getEGLMinorVersion() {
-        if (!sGLChecked) checkGLVersion();
-        return mEGLMinorVersion;
+        if (!glChecked) checkGLVersion();
+        return eglMinorVersion;
     }
 
     /**
@@ -199,23 +210,23 @@ public class Capabilities {
      * @return
      */
     public static int getGLESMajorVersion() {
-        if (!sGLChecked) checkGLVersion();
-        return mGLESMajorVersion;
+        if (!glChecked) checkGLVersion();
+        return glesMajorVersion;
     }
 
     @NonNull
     public String getVendor() {
-        return mVendor;
+        return vendor;
     }
 
     @NonNull
     public String getRenderer() {
-        return mRenderer;
+        return renderer;
     }
 
     @NonNull
     public String getVersion() {
-        return mVersion;
+        return version;
     }
 
     /**
@@ -225,17 +236,17 @@ public class Capabilities {
      */
     @NonNull
     public String[] getExtensions() {
-        return mExtensions;
+        return extensions;
     }
 
     /**
      * Checks if a particular extension is supported by this device.
      *
      * @param extension {@link String} Non-null string of the extension to check for. This is case sensitive.
-     * @throws {@link UnsupportedCapabilityException} if the extension is not available.
+     * @throws UnsupportedCapabilityException if the extension is not supported by the device.
      */
     public void verifyExtension(@NonNull String extension) throws UnsupportedCapabilityException {
-        for (String ext : mExtensions) {
+        for (String ext : extensions) {
             if (extension.equals(ext)) {
                 return;
             }
@@ -244,12 +255,57 @@ public class Capabilities {
     }
 
     /**
+     * Requests that the engine load the specified extension and configure it with the parameters from the current
+     * device. If the extension has already been loaded, the previously configured extension is returned rather than
+     * re-reading from the device.
+     *
+     * @param extension The name of the extension to load as specified in the GL extension registry.
+     * @return The {@link GLExtension} instance which was loaded and configured.
+     * @throws UnsupportedCapabilityException if the requested extension is not supported by the device.
+     * @throws IllegalArgumentException Thrown if the requested extension is unknown to Rajawali. This does not mean
+     * it is not available, however you will have to implement {@link GLExtension} for this extension and load it
+     * manually then provide it to {@link Capabilities#usingExtension(GLExtension)} if you wish for its parameters to
+     * be available through this central repository.
+     *
+     * @see <a href="https://www.opengl.org/registry/">OpenGL Registry</a>
+     */
+    public GLExtension loadExtension(@NonNull String extension) throws UnsupportedCapabilityException,
+                                                                       IllegalArgumentException {
+        if (!loadedExtensions.containsKey(extension)) {
+            switch (extension) {
+                case EXTTextureFilterAnisotropic.name:
+                    loadedExtensions.put(extension, EXTTextureFilterAnisotropic.load());
+                    break;
+                case OESTexture3D.name:
+                    loadedExtensions.put(extension, OESTexture3D.load());
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
+                            + "providing it via Capabilities#usingExtension(GLExtension)?");
+            }
+        }
+        return loadedExtensions.get(extension);
+    }
+
+    /**
+     * Indicates that an extension is being used by providing it explicitly to the engine. This is useful for cases
+     * where the engine does not formally support an extension you are using. It is expected that the extension you
+     * provide has already been configured by reading the relevant parameters from the device.
+     *
+     * @param extension The {@link GLExtension} implementation you are using.
+     */
+    public void usingExtension(@NonNull GLExtension extension) {
+        loadedExtensions.put(extension.getName(), extension);
+    }
+
+    /**
      * A rough estimate of the largest texture that OpenGL can handle.
      *
      * @return
      */
     public int getMaxTextureSize() {
-        return mMaxTextureSize;
+        return maxTextureSize;
     }
 
     /**
@@ -260,7 +316,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxCombinedTextureUnits() {
-        return mMaxCombinedTextureImageUnits;
+        return maxCombinedTextureImageUnits;
     }
 
     /**
@@ -270,7 +326,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxCubeMapTextureSize() {
-        return mMaxCubeMapTextureSize;
+        return maxCubeMapTextureSize;
     }
 
     /**
@@ -280,7 +336,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxFragmentUniformVectors() {
-        return mMaxFragmentUniformVectors;
+        return maxFragmentUniformVectors;
     }
 
     /**
@@ -289,7 +345,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxRenderbufferSize() {
-        return mMaxRenderbufferSize;
+        return maxRenderbufferSize;
     }
 
     /**
@@ -298,7 +354,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxTextureImageUnits() {
-        return mMaxTextureImageUnits;
+        return maxTextureImageUnits;
     }
 
     /**
@@ -307,7 +363,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxVaryingVectors() {
-        return mMaxVaryingVectors;
+        return maxVaryingVectors;
     }
 
     /**
@@ -316,7 +372,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxVertexAttribs() {
-        return mMaxVertexAttribs;
+        return maxVertexAttribs;
     }
 
     /**
@@ -325,7 +381,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxVertexTextureImageUnits() {
-        return mMaxVertexTextureImageUnits;
+        return maxVertexTextureImageUnits;
     }
 
     /**
@@ -334,7 +390,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxVertexUniformVectors() {
-        return mMaxVertexUniformVectors;
+        return maxVertexUniformVectors;
     }
 
     /**
@@ -343,7 +399,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxViewportWidth() {
-        return mMaxViewportWidth;
+        return maxViewportWidth;
     }
 
     /**
@@ -352,7 +408,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxViewportHeight() {
-        return mMaxViewportHeight;
+        return maxViewportHeight;
     }
 
     /**
@@ -361,7 +417,7 @@ public class Capabilities {
      * @return
      */
     public int getMinAliasedLineWidth() {
-        return mMinAliasedLineWidth;
+        return minAliasedLineWidth;
     }
 
     /**
@@ -370,7 +426,7 @@ public class Capabilities {
      * @return
      */
     public int getMaxAliasedLineWidth() {
-        return mMaxAliasedLineWidth;
+        return maxAliasedLineWidth;
     }
 
     /**
@@ -379,7 +435,7 @@ public class Capabilities {
      * @return
      */
     public int getMinAliasedPointSize() {
-        return mMinAliasedPointSize;
+        return minAliasedPointSize;
     }
 
     /**
@@ -388,29 +444,29 @@ public class Capabilities {
      * @return
      */
     public int getMaxAliasedPointSize() {
-        return mMaxAliasedPointSize;
+        return maxAliasedPointSize;
     }
 
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("-=-=-=- OpenGL Capabilities -=-=-=-\n");
-        sb.append("Max Combined Texture Image Units   : ").append(mMaxCombinedTextureImageUnits).append("\n");
-        sb.append("Max Cube Map Texture Size          : ").append(mMaxCubeMapTextureSize).append("\n");
-        sb.append("Max Fragment Uniform Vectors       : ").append(mMaxFragmentUniformVectors).append("\n");
-        sb.append("Max Renderbuffer Size              : ").append(mMaxRenderbufferSize).append("\n");
-        sb.append("Max Texture Image Units            : ").append(mMaxTextureImageUnits).append("\n");
-        sb.append("Max Texture Size                   : ").append(mMaxTextureSize).append("\n");
-        sb.append("Max Varying Vectors                : ").append(mMaxVaryingVectors).append("\n");
-        sb.append("Max Vertex Attribs                 : ").append(mMaxVertexAttribs).append("\n");
-        sb.append("Max Vertex Texture Image Units     : ").append(mMaxVertexTextureImageUnits).append("\n");
-        sb.append("Max Vertex Uniform Vectors         : ").append(mMaxVertexUniformVectors).append("\n");
-        sb.append("Max Viewport Width                 : ").append(mMaxViewportWidth).append("\n");
-        sb.append("Max Viewport Height                : ").append(mMaxViewportHeight).append("\n");
-        sb.append("Min Aliased Line Width             : ").append(mMinAliasedLineWidth).append("\n");
-        sb.append("Max Aliased Line Width             : ").append(mMaxAliasedLineWidth).append("\n");
-        sb.append("Min Aliased Point Size             : ").append(mMinAliasedPointSize).append("\n");
-        sb.append("Max Aliased Point Width            : ").append(mMaxAliasedPointSize).append("\n");
+        sb.append("Max Combined Texture2D Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
+        sb.append("Max Cube Map Texture2D Size          : ").append(maxCubeMapTextureSize).append("\n");
+        sb.append("Max Fragment Uniform Vectors       : ").append(maxFragmentUniformVectors).append("\n");
+        sb.append("Max Renderbuffer Size              : ").append(maxRenderbufferSize).append("\n");
+        sb.append("Max Texture2D Image Units            : ").append(maxTextureImageUnits).append("\n");
+        sb.append("Max Texture2D Size                   : ").append(maxTextureSize).append("\n");
+        sb.append("Max Varying Vectors                : ").append(maxVaryingVectors).append("\n");
+        sb.append("Max Vertex Attribs                 : ").append(maxVertexAttribs).append("\n");
+        sb.append("Max Vertex Texture2D Image Units     : ").append(maxVertexTextureImageUnits).append("\n");
+        sb.append("Max Vertex Uniform Vectors         : ").append(maxVertexUniformVectors).append("\n");
+        sb.append("Max Viewport Width                 : ").append(maxViewportWidth).append("\n");
+        sb.append("Max Viewport Height                : ").append(maxViewportHeight).append("\n");
+        sb.append("Min Aliased Line Width             : ").append(minAliasedLineWidth).append("\n");
+        sb.append("Max Aliased Line Width             : ").append(maxAliasedLineWidth).append("\n");
+        sb.append("Min Aliased Point Size             : ").append(minAliasedPointSize).append("\n");
+        sb.append("Max Aliased Point Width            : ").append(maxAliasedPointSize).append("\n");
         sb.append("-=-=-=- /OpenGL Capabilities -=-=-=-\n");
         return sb.toString();
     }

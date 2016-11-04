@@ -15,8 +15,8 @@ import org.rajawali3d.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.textures.NormalMapTexture;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.NormalMapTexture2D;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Plane;
@@ -52,8 +52,8 @@ public class BumpMappingFragment extends AExampleFragment {
 				Material material1 = new Material();
 				material1.setDiffuseMethod(new DiffuseMethod.Lambert());
 				material1.enableLighting(true);
-				material1.addTexture(new Texture("wallDiffuseTex", mContext, R.drawable.masonry_wall_texture));
-				material1.addTexture(new NormalMapTexture("wallNormalTex", mContext, R.drawable
+				material1.addTexture(new Texture2D("wallDiffuseTex", mContext, R.drawable.masonry_wall_texture));
+				material1.addTexture(new NormalMapTexture2D("wallNormalTex", mContext, R.drawable
 						.masonry_wall_normal_map));
 				material1.setColorInfluence(0);
 				cube.setMaterial(material1);
@@ -75,8 +75,8 @@ public class BumpMappingFragment extends AExampleFragment {
 				material2.setDiffuseMethod(new DiffuseMethod.Lambert());
 				material2.setSpecularMethod(new SpecularMethod.Phong(Color.WHITE, 150));
 				material2.enableLighting(true);
-				material2.addTexture(new Texture("earthDiffuseTex", mContext, R.drawable.earth_diffuse));
-				material2.addTexture(new NormalMapTexture("eartNormalTex", mContext, R.drawable.earth_normal));
+				material2.addTexture(new Texture2D("earthDiffuseTex", mContext, R.drawable.earth_diffuse));
+				material2.addTexture(new NormalMapTexture2D("eartNormalTex", mContext, R.drawable.earth_normal));
 				material2.setColorInfluence(0);
 				mEarth.setMaterial(material2);
 

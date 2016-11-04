@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.MotionEvent;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.util.Capabilities;
+import c.org.rajawali3d.gl.Capabilities;
 
 /**
  * @author Ian Thomas (toxicbakery@gmail.com)

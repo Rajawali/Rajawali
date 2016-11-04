@@ -11,6 +11,11 @@ import org.rajawali3d.util.RajLog;
 import c.org.rajawali3d.object.RenderableObject;
 
 /**
+ * Implementation of {@link ObjectRenderer} which performs no rendering actions. This will be automatically created
+ * by the engine when no {@link ObjectRenderer} instance is available for a {@link RenderableObject} for a particular
+ * render pass type. It can also safely be used by end users who simply wish to have no rendering performed on an
+ * object for a specific render pass type.
+ *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class NoOpObjectRenderer implements ObjectRenderer {
@@ -18,6 +23,11 @@ public class NoOpObjectRenderer implements ObjectRenderer {
     //TODO: The type values below should use the relevant IntDef annotation when it is available
     private final int type;
 
+    /**
+     * Constructs a new {@link NoOpObjectRenderer} instance.
+     *
+     * @param type {@code int} The type of render pass this instance is being used for.
+     */
     public NoOpObjectRenderer(int type) {
         this.type = type;
     }
@@ -64,7 +74,7 @@ public class NoOpObjectRenderer implements ObjectRenderer {
     }
 
     @Override
-    public boolean isDepthTestEnabled() {
+    public boolean isDepthEnabled() {
         return false;
     }
 

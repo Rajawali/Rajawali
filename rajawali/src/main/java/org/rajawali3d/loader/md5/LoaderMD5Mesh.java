@@ -30,7 +30,7 @@ import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.Texture;
+import org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.RajLog;
@@ -449,7 +449,7 @@ public class LoaderMD5Mesh extends AMeshLoader implements IAnimatedMeshLoader {
 					throw new ParsingException("Couldn't find texture " + mesh.textureName);
 				}
 				mat.setColorInfluence(0);
-				mat.addTexture(new Texture("md5tex" + i, mContext, identifier));
+				mat.addTexture(new Texture2D("md5tex" + i, mContext, identifier));
 			}
 			mRootObject.addChild(o);
 

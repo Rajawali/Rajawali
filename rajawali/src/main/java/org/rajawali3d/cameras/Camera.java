@@ -302,7 +302,6 @@ public class Camera extends ATransformable3D {
 		Camera cam = new Camera();
 		cam.setFarPlane(mFarPlane);
 		cam.setFieldOfView(mFieldOfView);
-		cam.setGraphNode(mGraphNode, mInsideGraph);
 		cam.setLookAt(mLookAt.clone());
 		cam.setNearPlane(mNearPlane);
 		cam.setOrientation(mOrientation.clone());

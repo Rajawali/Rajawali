@@ -3,41 +3,43 @@ package c.org.rajawali3d.object.renderers;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
+import c.org.rajawali3d.object.RenderableObject;
 import org.rajawali3d.geometry.Geometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
-
-import c.org.rajawali3d.object.RenderableObject;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 class ObjectRendererImpl implements ObjectRenderer {
 
-    @NonNull final Material material;
-    final          boolean  isDoubleSided;
-    final          boolean  isBackSided;
-    final          boolean  isBlended;
-    final          boolean  isDepthEnabled;
-    final          int      blendSourceFactor;
-    final          int      blendDestinationFactor;
-    final          int      depthFunction;
+    @NonNull private final Material material;
+    private final          boolean  isDoubleSided;
+    private final          boolean  isBackSided;
+    private final          boolean  isBlended;
+    private final          boolean  isDepthEnabled;
+    private final          int      blendSourceFactor;
+    private final          int      blendDestinationFactor;
+    private final          int      depthFunction;
 
-    RenderableObject object;
+    @Nullable private RenderableObject object;
 
-    ObjectRendererImpl(@NonNull Material material, boolean isDoubleSided, boolean isBackSided, boolean isBlended,
-                       boolean isDepthEnabled, int blendSourceFactor, int blendDestinationFactor,
-                       int depthFunction) {
-        this.material = material;
-        this.isDoubleSided = isDoubleSided;
-        this.isBackSided = isBackSided;
-        this.isBlended = isBlended;
-        this.isDepthEnabled = isDepthEnabled;
-        this.blendSourceFactor = blendSourceFactor;
-        this.blendDestinationFactor = blendDestinationFactor;
-        this.depthFunction = depthFunction;
+
+    /**
+     * Constructs a new {@link ObjectRendererImpl} from the provided {@link ObjectRendererBuilder}. It is not
+     * intended that this constructor be used by anything other than {@link ObjectRendererBuilder}.
+     *
+     * @param builder The {@link ObjectRendererBuilder} configured for the desired render properties.
+     */
+    ObjectRendererImpl(@NonNull ObjectRendererBuilder builder) {
+        this.material = builder.getMaterial();
+        this.isDoubleSided = builder.isDoubleSided();
+        this.isBackSided = builder.isBackSided();
+        this.isBlended = builder.isBlended();
+        this.isDepthEnabled = builder.isDepthEnabled();
+        this.blendSourceFactor = builder.getBlendSourceFactor();
+        this.blendDestinationFactor = builder.getBlendDestinationFactor();
+        this.depthFunction = builder.getDepthFunction();
     }
 
     @Override
@@ -101,7 +103,7 @@ class ObjectRendererImpl implements ObjectRenderer {
     }
 
     @Override
-    public boolean isDepthTestEnabled() {
+    public boolean isDepthEnabled() {
         return isDepthEnabled;
     }
 
@@ -152,7 +154,6 @@ class ObjectRendererImpl implements ObjectRenderer {
 
     private void applyBlending() {
         if (isBlended) {
-            Log.v("BLENDING", "Enabling blending");
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(blendSourceFactor, blendDestinationFactor);
         } else {
@@ -203,13 +204,13 @@ class ObjectRendererImpl implements ObjectRenderer {
 
     private void checkDepth(@NonNull ObjectRenderer lastUsed) {
         if (!isDepthEnabled) {
-            if (lastUsed.isDepthTestEnabled()) {
+            if (lastUsed.isDepthEnabled()) {
                 // We are not depth tested, the last renderer is - disable
                 GLES20.glDisable(GLES20.GL_DEPTH_TEST);
             } else {
                 // We are not depth tested, neither was last renderer
             }
-        } else if (!lastUsed.isDepthTestEnabled()) {
+        } else if (!lastUsed.isDepthEnabled()) {
             // We are depth tested, the last renderer is not - enable
             GLES20.glEnable(GLES20.GL_DEPTH_TEST);
             GLES20.glDepthFunc(depthFunction);

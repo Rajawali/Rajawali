@@ -17,7 +17,7 @@ import java.util.List;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 
 
 public interface ISpecularMethod {
@@ -32,5 +32,5 @@ public interface ISpecularMethod {
 	 */
 	IShaderFragment getFragmentShaderFragment();
 	void setLights(List<ALight> lights);
-	void setTextures(List<ATexture> textures);
+	void setTextures(List<BaseTexture> textures);
 }

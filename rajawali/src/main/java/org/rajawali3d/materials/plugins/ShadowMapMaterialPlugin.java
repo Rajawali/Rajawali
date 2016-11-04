@@ -3,7 +3,7 @@ package org.rajawali3d.materials.plugins;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import android.opengl.GLES20;
@@ -53,7 +53,7 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
 		return mFragmentShader;
 	}
 
-	public void setShadowMapTexture(ATexture shadowMapTexture) {
+	public void setShadowMapTexture(BaseTexture shadowMapTexture) {
 		mFragmentShader.setShadowMapTexture(shadowMapTexture);
 	}
 
@@ -161,7 +161,7 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
 		private int muShadowInfluenceHandle;
 		private int muShadowLightDirHandle;
 
-		private ATexture mShadowMapTexture;
+		private BaseTexture mShadowMapTexture;
 
 		public ShadowMapFragmentShaderFragment() {
 			super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
@@ -178,7 +178,7 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
 			return SHADER_ID;
 		}
 
-		public void setShadowMapTexture(ATexture shadowMapTexture) {
+		public void setShadowMapTexture(BaseTexture shadowMapTexture) {
 			mShadowMapTexture = shadowMapTexture;
 		}
 
@@ -232,14 +232,14 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
 		public void bindTextures(int nextIndex) {
 			if(mShadowMapTexture != null) {
 				GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + nextIndex);
-				GLES20.glBindTexture(mShadowMapTexture.getGLTextureType(), mShadowMapTexture.getTextureId());
+				GLES20.glBindTexture(mShadowMapTexture.getTextureTarget(), mShadowMapTexture.getTextureId());
 				GLES20.glUniform1i(muShadowMapTextureHandle, nextIndex);
 			}
 		}
 
 		public void unbindTextures() {
 			if(mShadowMapTexture != null)
-				GLES20.glBindTexture(mShadowMapTexture.getGLTextureType(), 0);
+				GLES20.glBindTexture(mShadowMapTexture.getTextureTarget(), 0);
 		}
 	}
 }

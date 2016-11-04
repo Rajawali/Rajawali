@@ -9,7 +9,7 @@ import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.AlphaMapTexture;
+import org.rajawali3d.textures.AlphaMapTexture2D;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
@@ -61,8 +61,8 @@ public class ColorAnimationFragment extends AExampleFragment {
 
 			Material material2 = new Material();
 			try {
-				AlphaMapTexture alphaTex = new AlphaMapTexture("camdenTown", mContext,
-															   R.drawable.camden_town_alpha);
+				AlphaMapTexture2D alphaTex = new AlphaMapTexture2D("camdenTown", mContext,
+																   R.drawable.camden_town_alpha);
 				alphaTex.setInfluence(.5f);
 				material2.addTexture(alphaTex);
 				material2.setColorInfluence(0);

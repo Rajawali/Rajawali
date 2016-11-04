@@ -14,22 +14,20 @@ package org.rajawali3d.postprocessing;
 
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
-
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.ATexture.FilterType;
-import org.rajawali3d.textures.ATexture.WrapType;
 import org.rajawali3d.postprocessing.IPass.PassType;
 import org.rajawali3d.postprocessing.IPostProcessingComponent.PostProcessingComponentType;
 import org.rajawali3d.postprocessing.passes.CopyPass;
 import org.rajawali3d.postprocessing.passes.EffectPass;
 import org.rajawali3d.primitives.ScreenQuad;
-import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.RenderTarget;
+import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.scenegraph.IGraphNode.GRAPH_TYPE;
+import org.rajawali3d.textures.BaseTexture;
+import org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.textures.annotation.Wrap;
 
 import java.util.Collections;
 import java.util.List;
@@ -80,14 +78,14 @@ public class PostProcessingManager {
         mHeight = height;
 
         mScreenQuad = new ScreenQuad();
-        mScene = new Scene(mRenderer, GRAPH_TYPE.NONE);
+        mScene = new Scene(mRenderer);
 
         mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
                                           false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-                                          FilterType.LINEAR, WrapType.CLAMP);
+                                          Filter.BILINEAR, (Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
         mRenderTarget2 = new RenderTarget("rt2" + hashCode(), width, height, 0, 0,
                                           false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
-                                          FilterType.LINEAR, WrapType.CLAMP);
+                                          Filter.BILINEAR, (Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
 
         mWriteBuffer = mRenderTarget1;
         mReadBuffer = mRenderTarget2;
@@ -221,7 +219,7 @@ public class PostProcessingManager {
     }
 
     @NonNull
-    public ATexture getTexture() {
+    public BaseTexture getTexture() {
         return mWriteBuffer.getTexture();
     }
 

@@ -16,6 +16,11 @@ public abstract class SingleFrameCallback extends SimpleSceneFrameCallback {
     @NonNull
     protected final Scene scene;
 
+    /**
+     * Constructs a new {@link SingleFrameCallback} for the provided {@link Scene}.
+     *
+     * @param scene The {@link Scene} to automatically remove from.
+     */
     public SingleFrameCallback(@NonNull Scene scene) {
         this.scene = scene;
     }

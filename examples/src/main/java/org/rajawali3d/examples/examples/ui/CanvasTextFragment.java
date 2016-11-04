@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
+import android.opengl.GLES20;
 import android.support.annotation.Nullable;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
@@ -16,7 +17,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
-import org.rajawali3d.textures.AlphaMapTexture;
+import org.rajawali3d.textures.AlphaMapTexture2D;
 import org.rajawali3d.textures.TextureDataReference;
 import org.rajawali3d.textures.TextureException;
 
@@ -32,13 +33,13 @@ public class CanvasTextFragment extends AExampleFragment {
 	}
 
 	public static final class CanvasTextRenderer extends AExampleRenderer {
-		private AlphaMapTexture mTimeTexture;
-		private Bitmap mTimeBitmap;
-		private Canvas mTimeCanvas;
-		private Paint mTextPaint;
-		private SimpleDateFormat mDateFormat;
-		private int mFrameCount;
-		private boolean mShouldUpdateTexture;
+		private AlphaMapTexture2D mTimeTexture;
+		private Bitmap            mTimeBitmap;
+		private Canvas            mTimeCanvas;
+		private Paint             mTextPaint;
+		private SimpleDateFormat  mDateFormat;
+		private int               mFrameCount;
+		private boolean           mShouldUpdateTexture;
 
 		public CanvasTextRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
@@ -54,7 +55,7 @@ public class CanvasTextFragment extends AExampleFragment {
 			timeSphereMaterial.enableLighting(true);
 			timeSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
 			mTimeBitmap = Bitmap.createBitmap(256, 256, Config.ARGB_8888);
-			mTimeTexture = new AlphaMapTexture("timeTexture", new TextureDataReference(mTimeBitmap, null));
+			mTimeTexture = new AlphaMapTexture2D("timeTexture", new TextureDataReference(mTimeBitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE));
 			try {
 				timeSphereMaterial.addTexture(mTimeTexture);
 			} catch (TextureException e) {

@@ -12,18 +12,18 @@
  */
 package org.rajawali3d.materials.shaders.fragments.texture;
 
-import java.util.List;
-
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.textures.ATexture;
-import org.rajawali3d.textures.ATexture.TextureType;
+import org.rajawali3d.textures.BaseTexture;
+import org.rajawali3d.textures.annotation.Type;
+
+import java.util.List;
 
 
 public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShaderFragment implements IShaderFragment {
 	public final static String SHADER_ID = "ENVIRONMENT_MAP_TEXTURE_FRAGMENT";
 
-	public EnvironmentMapFragmentShaderFragment(List<ATexture> textures)
+	public EnvironmentMapFragmentShaderFragment(List<BaseTexture> textures)
 	{
 		super(textures);
 	}
@@ -49,7 +49,7 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 
 		for(int i=0; i<mTextures.size(); i++)
 		{
-			if(mTextures.get(i).getTextureType() == TextureType.SPHERE_MAP)
+			if(mTextures.get(i).getTextureType() == Type.SPHERE_MAP)
 			{
 				reflected.z().assignAdd(1.0f);
 				RFloat m = new RFloat("m");
@@ -58,7 +58,7 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 				cmColor.assign(texture2D(muTextures[sphereMapCount++],
 						reflected.xy().multiply(m).add(castVec2(.5f))));
 			}
-			else if(mTextures.get(i).getTextureType() == TextureType.CUBE_MAP)
+			else if(mTextures.get(i).getTextureType() == Type.CUBE_MAP)
 			{
 				cmColor.assign(textureCube(muCubeTextures[cubeMapCount++], reflected));
 			}

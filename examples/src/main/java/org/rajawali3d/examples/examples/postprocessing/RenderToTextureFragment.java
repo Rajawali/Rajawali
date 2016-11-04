@@ -9,7 +9,7 @@ import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.textures.ATexture;
+import org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.postprocessing.PostProcessingManager;
@@ -30,7 +30,7 @@ public class RenderToTextureFragment extends AExampleFragment {
 		private PostProcessingManager mEffects;
 		private Scene                 mOtherScene;
 		private Object3D              mSphere;
-		private ATexture              mCurrentTexture;
+		private BaseTexture mCurrentTexture;
 
 		public RenderToTextureRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);

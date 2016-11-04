@@ -18,9 +18,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public abstract class ASceneGraph implements SceneGraph {
 
     @NonNull
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
-    @NonNull
     protected final Vector3 minBound = new Vector3();
 
     @NonNull
@@ -31,6 +28,9 @@ public abstract class ASceneGraph implements SceneGraph {
 
     @NonNull
     protected final Matrix4 worldMatrix = new Matrix4();
+
+    @NonNull
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * Creates a new child node for this graph node.

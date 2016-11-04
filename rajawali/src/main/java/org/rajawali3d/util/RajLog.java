@@ -16,8 +16,10 @@ import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.opengl.GLES20;
+import android.opengl.GLException;
 import android.os.Build;
 import android.util.Log;
+import c.org.rajawali3d.gl.Capabilities;
 
 public final class RajLog {
 
@@ -54,10 +56,11 @@ public final class RajLog {
         Log.w(TAG, msg);
     }
 
-    public static void checkGLError(String message) {
+    public static void checkGLError(String message) throws GLException {
         int error = GLES20.glGetError();
-        if (error > 0)
-            throw new RuntimeException("OpenGL Error: " + GLU.gluErrorString(error) + " " + error + " | " + message);
+        if (error > 0) {
+            throw new GLException(error, "OpenGL Error: " + GLU.gluErrorString(error) + " " + error + " | " + message);
+        }
     }
 
     /**

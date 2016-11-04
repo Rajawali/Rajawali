@@ -5,8 +5,8 @@ import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.GLThread;
 
 /**
- * Interface to be implemented by views that are to be managed by the Engine. A RenderView represents
- * a viewport on the render surface
+ * Interface to be implemented by views that are to be managed by the Engine. A RenderView defines
+ * a viewport on the render surface and the processsing required to render its content each frame
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
@@ -21,12 +21,17 @@ public interface RenderView {
     void setEngine(@Nullable Engine engine);
 
     /**
+     * Sets the RenderModel defining the content to be displayed by the RenderView
      *
      * @return the {@link RenderModel} instance presented in this view, if any
      */
     @Nullable
     RenderModel getRenderModel();
 
+    /**
+     * Sets the viewport relative to the render surface
+     * @param rect
+     */
     void setViewport(Rect rect);
 
     Rect getViewport();

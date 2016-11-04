@@ -12,7 +12,7 @@ import org.rajawali3d.examples.examples.postprocessing.MultiPassFragment.MultiPa
 import org.rajawali3d.examples.examples.ui.CanvasTextFragment.CanvasTextRenderer;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.RajLog;
-import org.rajawali3d.view.ISurface;
+import org.rajawali3d.view.Surface;
 import org.rajawali3d.wallpaper.Wallpaper;
 
 /**
@@ -60,6 +60,6 @@ public class RajawaliExampleWallpaper extends Wallpaper {
                     mRenderer = new WallpaperRenderer(this);
             }
         return new WallpaperEngine(getBaseContext(), mRenderer,
-                                   ISurface.ANTI_ALIASING_CONFIG.NONE);
+                                   Surface.ANTI_ALIASING_CONFIG.NONE);
     }
 }

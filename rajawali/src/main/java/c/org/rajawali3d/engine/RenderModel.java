@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.GLThread;
 
 /**
- * Interface to be implemented by models that are to be displayed in RednerViews managed by the Engine
+ * Interface to be implemented by models that are to be displayed in RenderViews managed by the Engine
  *
  * Author: Randy Picolet
  */
