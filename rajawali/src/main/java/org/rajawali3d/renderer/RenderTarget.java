@@ -16,12 +16,12 @@ import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLU;
 import org.rajawali3d.materials.textures.TextureManager;
-import org.rajawali3d.textures.RenderTargetTexture;
-import org.rajawali3d.textures.annotation.Filter;
-import org.rajawali3d.textures.annotation.Filter.FilterType;
-import org.rajawali3d.textures.annotation.TextureTarget;
-import org.rajawali3d.textures.annotation.Wrap;
-import org.rajawali3d.textures.annotation.Wrap.WrapType;
+import c.org.rajawali3d.textures.RenderTargetTexture;
+import c.org.rajawali3d.textures.annotation.Filter;
+import c.org.rajawali3d.textures.annotation.Filter.FilterType;
+import c.org.rajawali3d.textures.annotation.TextureTarget;
+import c.org.rajawali3d.textures.annotation.Wrap;
+import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
 import org.rajawali3d.util.RajLog;
 
 /**

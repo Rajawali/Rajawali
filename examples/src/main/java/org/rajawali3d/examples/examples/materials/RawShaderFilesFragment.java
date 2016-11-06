@@ -9,8 +9,8 @@ import org.rajawali3d.examples.examples.materials.materials.CustomRawFragmentSha
 import org.rajawali3d.examples.examples.materials.materials.CustomRawVertexShader;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.Texture2D;
-import org.rajawali3d.textures.TextureException;
+import c.org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.primitives.Sphere;
 
 public class RawShaderFilesFragment extends AExampleFragment {

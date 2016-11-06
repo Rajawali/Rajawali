@@ -12,20 +12,25 @@
  */
 package org.rajawali3d.materials;
 
-import static org.rajawali3d.textures.annotation.Type.ALPHA;
-import static org.rajawali3d.textures.annotation.Type.CUBE_MAP;
-import static org.rajawali3d.textures.annotation.Type.DIFFUSE;
-import static org.rajawali3d.textures.annotation.Type.NORMAL;
-import static org.rajawali3d.textures.annotation.Type.RENDER_TARGET;
-import static org.rajawali3d.textures.annotation.Type.SPECULAR;
-import static org.rajawali3d.textures.annotation.Type.SPHERE_MAP;
-import static org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
+import static c.org.rajawali3d.textures.annotation.Type.ALPHA;
+import static c.org.rajawali3d.textures.annotation.Type.CUBE_MAP;
+import static c.org.rajawali3d.textures.annotation.Type.DIFFUSE;
+import static c.org.rajawali3d.textures.annotation.Type.NORMAL;
+import static c.org.rajawali3d.textures.annotation.Type.RENDER_TARGET;
+import static c.org.rajawali3d.textures.annotation.Type.SPECULAR;
+import static c.org.rajawali3d.textures.annotation.Type.SPHERE_MAP;
+import static c.org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-import org.rajawali3d.geometry.BufferInfo;
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.CubeMapTexture;
+import c.org.rajawali3d.textures.SphereMapTexture2D;
+import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.Object3D;
+import org.rajawali3d.geometry.BufferInfo;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.IDiffuseMethod;
@@ -45,11 +50,6 @@ import org.rajawali3d.materials.shaders.fragments.texture.SkyTextureFragmentShad
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.BaseTexture;
-import org.rajawali3d.textures.CubeMapTexture;
-import org.rajawali3d.textures.SphereMapTexture2D;
-import org.rajawali3d.textures.TextureException;
-import c.org.rajawali3d.gl.Capabilities;
 import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
@@ -58,11 +58,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The Material class is where you define the visual characteristics of your 3D model.
- * Here you can specify lighting parameters, specular highlights, ambient colors and much more.
- * This is the place where you add textures as well. For an overview of the different types
- * of materials and parameters visit the Rajawali Wiki.
- * <p/>
+ * The Material class is where you define the visual characteristics of your 3D model. Here you can specify lighting
+ * parameters, specular highlights, ambient colors and much more. This is the place where you add textures as well. For
+ * an overview of the different types of materials and parameters visit the Rajawali Wiki.
+ *
  * This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights:
  * <pre><code>
  * Material material = new Material();
@@ -70,17 +69,18 @@ import java.util.Map;
  * material.enableLighting(true);
  * material.setDiffuseMethod(new DiffuseMethod.Lambert());
  * material.setSpecularMethod(new SpecularMethod.Phong());
- * <p/>
+ *
  * myObject.setMaterial(material);
  * </code></pre>
  *
  * @author dennis.ippel
- * @see <a href="https://github.com/MasDennis/Rajawali/wiki/Materials">https://github.com/MasDennis/Rajawali/wiki/Materials</a>
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
+ * @see <a href="https://github.com/MasDennis/Rajawali/wiki/Materials">https://github.com/Rajawali/Rajawali/wiki/Materials</a>
  */
 public class Material {
+
     /**
-     * This tells the Material class where to insert a shader fragment into either
-     * the vertex of fragment shader.
+     * This tells the Material class where to insert a shader fragment into either the vertex of fragment shader.
      */
     public enum PluginInsertLocation {
         PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_TRANSFORM, POST_TRANSFORM, IGNORE
@@ -89,110 +89,124 @@ public class Material {
     private final boolean capabilitiesCheckDeferred;
 
     /**
-     * The generic vertex shader. This can be extended by using vertex shader fragments.
-     * A vertex shader is typically used to modify vertex positions, vertex colors and normals.
+     * The generic vertex shader. This can be extended by using vertex shader fragments. A vertex shader is typically
+     * used to modify vertex positions, vertex colors and normals.
      */
     private VertexShader               vertexShader;
+
     /**
-     * The generic fragment shader. This can be extended by using fragment shader fragments.
-     * A fragment shader is typically used to modify rasterized pixel colors.
+     * The generic fragment shader. This can be extended by using fragment shader fragments. A fragment shader is
+     * typically used to modify rasterized pixel colors.
      */
     private FragmentShader             fragmentShader;
+
     /**
-     * The shader fragments that are plugged into both the vertex and fragment shader. This
-     * is where lighting calculations are performed.
+     * The shader fragments that are plugged into both the vertex and fragment shader. This is where lighting
+     * calculations are performed.
      */
     private LightsVertexShaderFragment lightsVertexShaderFragment;
+
     /**
-     * The diffuse method specifies the reflection of light from a surface such that an incident
-     * ray is reflected at many angles rather than at just one angle as in the case of specular reflection.
+     * The diffuse method specifies the reflection of light from a surface such that an incident ray is reflected at
+     * many angles rather than at just one angle as in the case of specular reflection.
      * This can be set using the setDiffuseMethod() method:
      * <pre><code>
      * material.setDiffuseMethod(new DiffuseMethod.Lambert());
      * </code></pre>
      */
     private IDiffuseMethod  diffuseMethod;
+
     /**
-     * The specular method specifies the mirror-like reflection of light (or of other kinds of wave)
-     * from a surface, in which light from a single incoming direction (a ray) is reflected into a
-     * single outgoing direction.
+     * The specular method specifies the mirror-like reflection of light (or of other kinds of wave) from a surface, in
+     * which light from a single incoming direction (a ray) is reflected into a single outgoing direction.
      * This can be set using the setSpecularMethod() method:
      * <pre><code>
      * material.setSpecularMethod(new SpecularMethod.Phong());
      * </code></pre>
      */
     private ISpecularMethod specularMethod;
+
     /**
-     * Indicates that this material should use a color value for every vertex. These colors are
-     * contained in a separate color buffer.
+     * Indicates that this material should use a color value for every vertex. These colors are contained in a separate
+     * color buffer.
      */
     private boolean         useVertexColors;
+
     /**
-     * Indicates whether lighting should be used or not. This must be set to true when using a
-     * {@link IDiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link Scene}
-     * and are automatically added to the material.
+     * Indicates whether lighting should be used or not. This must be set to true when using a {@link IDiffuseMethod} or
+     * a {@link SpecularMethod}. Lights are added to a scene {@link Scene} and are automatically added to the material.
      */
     private boolean lightingEnabled;
+
     /**
-     * Indicates that the time shader parameter should be used. This is used when creating shaders
-     * that should change during the course of time. This is used to accomplish effects like animated
-     * vertices, vertex colors, plasma effects, etc. The time needs to be manually updated using the
-     * {@link Material#setTime(float)} method.
+     * Indicates that the time shader parameter should be used. This is used when creating shaders that should change
+     * during the course of time. This is used to accomplish effects like animated vertices, vertex colors, plasma
+     * effects, etc. The time needs to be manually updated using the {@link Material#setTime(float)} method.
      */
     private boolean timeEnabled;
+
     /**
-     * Indicates that one of the material properties was changed and that the shader program should
-     * be re-compiled.
+     * Indicates that one of the material properties was changed and that the shader program should be re-compiled.
      */
     private boolean isDirty       = true;
+
     /**
      * Holds a reference to the shader program
      */
     private int     programHandle = -1;
+
     /**
      * Holds a reference to the vertex shader
      */
     private int     vertexShaderHandle;
+
     /**
      * Holds a reference to the fragment shader
      */
     private int     fragmentShaderHandle;
+
     /**
      * The model matrix holds the object's local coordinates
      */
     private Matrix4 modelMatrix;
+
     /**
      * The model view matrix is used to transform vertices to eye coordinates
      */
     private float[] modelViewMatrix;
+
     /**
-     * The material's diffuse color. This can be overwritten by {@link Object3D#setColor(int)}.
-     * This color will be applied to the whole object. For vertex colors use {@link Material#useVertexColors(boolean)}
-     * and {@link Material#setVertexColors(int)}.
+     * The material's diffuse color. This can be overwritten by {@link Object3D#setColor(int)}. This color will be
+     * applied to the whole object. For vertex colors use {@link Material#useVertexColors(boolean)} and
+     * {@link Material#setVertexColors(int)}.
      */
     private float[] color;
+
     /**
      * This material's ambient color. Ambient color is the color of an object where it is in shadow.
      */
     private float[] ambientColor;
+
     /**
      * This material's ambient intensity for the r, g, b channels.
      */
     private float[] ambientIntensity;
+
     /**
-     * The color influence indicates how big the influence of the color is. This should be
-     * used in conjunction with {@link BaseTexture#setInfluence(float)}. A value of .5 indicates
-     * an influence of 50%. This examples shows how to use 50% color and 50% texture:
-     * <p/>
+     * The color influence indicates how big the influence of the color is. This should be used in conjunction with
+     * {@link BaseTexture#setInfluence(float)}. A value of .5 indicates an influence of 50%. This examples shows how to
+     * use 50% color and 50% texture:
+     *
      * <pre><code>
      * material.setColorInfluence(.5f);
      * myTexture.setInfluence(.5f);
      * </code></pre>
      */
     private float colorInfluence = 1;
+
     /**
      * Sets the time value that is used in the shaders to create animated effects.
-     * <p/>
+     *
      * <pre><code>
      * public class MyRenderer extends Renderer
      * {
@@ -213,53 +227,56 @@ public class Material {
      * </code></pre>
      */
     private float                   time;
+
     /**
-     * The lights that affect the material. Lights shouldn't be managed by any other class
-     * than {@link Scene}. To add lights to a scene call {@link Scene#addLight(ALight).
+     * The lights that affect the material. Lights shouldn't be managed by any other class than {@link Scene}. To add
+     * lights to a scene call {@link Scene#addLight(ALight).
      */
     protected List<ALight>          lights;
+
     /**
-     * A list of material plugins that are used by this material. A material plugin is basically
-     * a class that contains a vertex shader fragment and a fragment shader fragment. Material
-     * plugins can be used for custom shader effects.
+     * A list of material plugins that are used by this material. A material plugin is basically a class that contains a
+     * vertex shader fragment and a fragment shader fragment. Material plugins can be used for custom shader effects.
      */
     protected List<IMaterialPlugin> plugins;
 
     /**
-     * This texture's unique owner identity String. This is usually the fully qualified name of the
-     * {@link Renderer} instance.
+     * This texture's unique owner identity String. This is usually the fully qualified name of the {@link Renderer}
+     * instance.
      */
     protected String              ownerIdentity;
+
     /**
      * The maximum number of available textures for this device. This value is returned from
      * {@link Capabilities#getMaxTextureImageUnits()}.
      */
     private int                   maxTextures;
+
     /**
      * The list of textures that are assigned by this materials.
      */
     protected ArrayList<BaseTexture> textures;
 
     protected Map<String, Integer> textureHandles;
+
     /**
-     * Contains the normal matrix. The normal matrix is used in the shaders to transform
-     * the normal into eye space.
+     * Contains the normal matrix. The normal matrix is used in the shaders to transform the normal into eye space.
      */
     protected final float[] normalFloats = new float[9];
+
     /**
-     * Scratch normal matrix. The normal matrix is used in the shaders to transform
-     * the normal into eye space.
+     * Scratch normal matrix. The normal matrix is used in the shaders to transform the normal into eye space.
      */
     protected Matrix4       normalMatrix = new Matrix4();
+
     protected VertexShader   customVertexShader;
     protected FragmentShader customFragmentShader;
 
     /**
-     * The Material class is where you define the visual characteristics of your 3D model.
-     * Here you can specify lighting parameters, specular highlights, ambient colors and much more.
-     * This is the place where you add textures as well. For an overview of the different types
-     * of materials and parameters visit the Rajawali Wiki.
-     * <p/>
+     * The Material class is where you define the visual characteristics of your 3D model. Here you can specify lighting
+     * parameters, specular highlights, ambient colors and much more. This is the place where you add textures as well.
+     * For an overview of the different types of materials and parameters visit the Rajawali Wiki.
+     *
      * This is a basic example using lighting, a texture, Lambertian diffuse model and Phong specular highlights:
      * <pre><code>
      * Material material = new Material();
@@ -271,7 +288,8 @@ public class Material {
      * myObject.setMaterial(material);
      * </code></pre>
      *
-     * @see <a href="https://github.com/MasDennis/Rajawali/wiki/Materials">https://github.com/MasDennis/Rajawali/wiki/Materials</a>
+     * @see <a href="https://github.com/MasDennis/Rajawali/wiki/Materials">
+     *     https://github.com/Rajawali/Rajawali/wiki/Materials</a>
      */
     public Material() {
         this(false);
@@ -305,8 +323,8 @@ public class Material {
     }
 
     /**
-     * Indicates that this material should use a color value for every vertex. These colors are
-     * contained in a separate color buffer.
+     * Indicates that this material should use a color value for every vertex. These colors are contained in a separate
+     * color buffer.
      *
      * @return A boolean indicating that vertex colors will be used.
      */
@@ -315,8 +333,8 @@ public class Material {
     }
 
     /**
-     * Indicates that this material should use a color value for every vertex. These colors are
-     * contained in a separate color buffer.
+     * Indicates that this material should use a color value for every vertex. These colors are contained in a separate
+     * color buffer.
      *
      * @param value A boolean indicating whether vertex colors should be used or not
      */
@@ -328,9 +346,9 @@ public class Material {
     }
 
     /**
-     * The material's diffuse color. This can be overwritten by {@link Object3D#setColor(int)}.
-     * This color will be applied to the whole object. For vertex colors use {@link Material#useVertexColors(boolean)}
-     * and {@link Material#setVertexColors(int)}.
+     * The material's diffuse color. This can be overwritten by {@link Object3D#setColor(int)}. This color will be
+     * applied to the whole object. For vertex colors use {@link Material#useVertexColors(boolean)} and
+     * {@link Material#setVertexColors(int)}.
      *
      * @param color {@code int} color The color to be used. Color.RED for instance. Or 0xffff0000.
      */
@@ -344,9 +362,9 @@ public class Material {
     }
 
     /**
-     * The material's diffuse color. This can be overwritten by {@link Object3D#setColor(int)}.
-     * This color will be applied to the whole object. For vertex colors use {@link Material#useVertexColors(boolean)}
-     * and {@link Material#setVertexColors(int)}.
+     * The material's diffuse color. This can be overwritten by {@link Object3D#setColor(int)}. This color will be
+     * applied to the whole object. For vertex colors use {@link Material#useVertexColors(boolean)} and
+     * {@link Material#setVertexColors(int)}.
      *
      * @param color A float array containing the colors to be used. These are normalized values containing values for
      *              the red, green, blue and alpha channels.
@@ -370,17 +388,17 @@ public class Material {
     }
 
     /**
-     * The color influence indicates how big the influence of the color is. This should be
-     * used in conjunction with {@link BaseTexture#setInfluence(float)}. A value of .5 indicates
-     * an influence of 50%. This examples shows how to use 50% color and 50% texture:
-     * <p/>
+     * The color influence indicates how big the influence of the color is. This should be used in conjunction with
+     * {@link BaseTexture#setInfluence(float)}. A value of .5 indicates an influence of 50%. This examples shows how to
+     * use 50% color and 50% texture:
+     *
      * <pre><code>
      * material.setColorInfluence(.5f);
      * myTexture.setInfluence(.5f);
      * </code></pre>
      *
-     * @param influence A value in the range of [0..1] indicating the color influence. Use .5 for
-     *                  50% color influence, .75 for 75% color influence, etc.
+     * @param influence A value in the range of [0..1] indicating the color influence. Use .5 for 50% color influence,
+     *                  .75 for 75% color influence, etc.
      */
     public void setColorInfluence(float influence) {
         colorInfluence = influence;
@@ -728,8 +746,8 @@ public class Material {
     }
 
     /**
-     * Checks if any {@link IMaterialPlugin}s have been added. If so they will be added
-     * to the vertex and/or fragment shader.
+     * Checks if any {@link IMaterialPlugin}s have been added. If so they will be added to the vertex and/or fragment
+     * shader.
      *
      * @param location Where to insert the vertex and/or fragment shader
      */
@@ -770,8 +788,7 @@ public class Material {
     }
 
     /**
-     * Creates a shader program by compiling the vertex and fragment shaders
-     * from a string.
+     * Creates a shader program by compiling the vertex and fragment shaders from a string.
      *
      * @param vertexSource
      * @param fragmentSource
@@ -818,8 +835,7 @@ public class Material {
     }
 
     /**
-     * Applies parameters that should be set on the shaders. These are parameters
-     * like time, color, buffer handles, etc.
+     * Applies parameters that should be set on the shaders. These are parameters like time, color, buffer handles, etc.
      */
     public void applyParams() {
         vertexShader.setColor(color);
@@ -861,8 +877,7 @@ public class Material {
 
     /**
      * Binds the textures to an OpenGL texturing target. Called every frame by
-     * {@link Scene#render(long, double, org.rajawali3d.renderer.RenderTarget)}. Shouldn't
-     * be called manually.
+     * {@link Scene#render(long, double, org.rajawali3d.renderer.RenderTarget)}. Shouldn't be called manually.
      */
     public void bindTextures() {
         // Assume its the number of textures
@@ -1106,9 +1121,9 @@ public class Material {
     }
 
     /**
-     * Indicates whether lighting should be used or not. This must be set to true when using a
-     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link Scene}
-     * and are automatically added to the material.
+     * Indicates whether lighting should be used or not. This must be set to true when using a {@link DiffuseMethod}
+     * or a {@link SpecularMethod}. Lights are added to a scene {@link Scene} and are automatically added to the
+     * material.
      *
      * @param value
      */
@@ -1117,9 +1132,8 @@ public class Material {
     }
 
     /**
-     * Indicates whether lighting should be used or not. This must be set to true when using a
-     * {@link DiffuseMethod} or a {@link SpecularMethod}. Lights are added to a scene {@link Scene}
-     * and are automatically added to the material.
+     * Indicates whether lighting should be used or not. This must be set to true when using a {@link DiffuseMethod} or
+     * a {@link SpecularMethod}. Lights are added to a scene {@link Scene} and are automatically added to the material.
      *
      * @return
      */
@@ -1128,10 +1142,9 @@ public class Material {
     }
 
     /**
-     * Indicates that the time shader parameter should be used. This is used when creating shaders
-     * that should change during the course of time. This is used to accomplish effects like animated
-     * vertices, vertex colors, plasma effects, etc. The time needs to be manually updated using the
-     * {@link Material#setTime(float)} method.
+     * Indicates that the time shader parameter should be used. This is used when creating shaders that should change
+     * during the course of time. This is used to accomplish effects like animated vertices, vertex colors, plasma
+     * effects, etc. The time needs to be manually updated using the {@link Material#setTime(float)} method.
      *
      * @param value
      */

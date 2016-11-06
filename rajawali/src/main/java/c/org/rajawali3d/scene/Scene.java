@@ -12,6 +12,8 @@ import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.renderer.FrameTask;
 import org.rajawali3d.textures.TextureManager;
+import c.org.rajawali3d.textures.TextureManager;
+import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
 import java.util.Collections;

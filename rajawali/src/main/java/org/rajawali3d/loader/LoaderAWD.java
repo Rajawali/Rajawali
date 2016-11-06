@@ -1,7 +1,6 @@
 package org.rajawali3d.loader;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.SystemClock;
 import android.util.SparseArray;
 import org.rajawali3d.Object3D;
@@ -39,7 +38,7 @@ import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import org.rajawali3d.textures.TextureManager;
+import c.org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.LittleEndianDataInputStream;
 import org.rajawali3d.util.RajLog;
 

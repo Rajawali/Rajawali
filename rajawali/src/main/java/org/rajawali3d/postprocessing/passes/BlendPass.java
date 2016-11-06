@@ -14,7 +14,7 @@ package org.rajawali3d.postprocessing.passes;
 
 import org.rajawali3d.R;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.BaseTexture;
 
 
 public class BlendPass extends EffectPass {

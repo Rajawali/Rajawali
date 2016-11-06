@@ -11,7 +11,7 @@ import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.util.RajLog;
 
 /**

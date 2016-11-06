@@ -20,8 +20,8 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.annotation.Filter;
-import org.rajawali3d.textures.annotation.Wrap;
+import c.org.rajawali3d.textures.annotation.Filter;
+import c.org.rajawali3d.textures.annotation.Wrap;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

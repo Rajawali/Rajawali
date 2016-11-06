@@ -15,7 +15,7 @@ package org.rajawali3d.loader;
 import android.content.Context;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.TextureManager;
+import c.org.rajawali3d.textures.TextureManager;
 
 import java.io.File;
 

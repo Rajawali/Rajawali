@@ -13,8 +13,8 @@ import org.rajawali3d.examples.examples.interactive.planes.PlanesGalore;
 import org.rajawali3d.examples.examples.interactive.planes.PlanesGaloreMaterialPlugin;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.textures.Texture2D;
-import org.rajawali3d.textures.TextureException;
+import c.org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.math.vector.Vector3;
 
 import javax.microedition.khronos.egl.EGLConfig;

@@ -15,10 +15,10 @@ package org.rajawali3d.materials.shaders.fragments.texture;
 import java.util.List;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.BaseTexture;
 
 
-public class AlphaMapFragmentShaderFragment extends ATextureFragmentShaderFragment {
+public class AlphaMapFragmentShaderFragment extends TextureFragmentShaderFragment {
 	public final static String SHADER_ID = "ALPHA_MAP_FRAGMENT";
 
 	public AlphaMapFragmentShaderFragment(List<BaseTexture> textures)

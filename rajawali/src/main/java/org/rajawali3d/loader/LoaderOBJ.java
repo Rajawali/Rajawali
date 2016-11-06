@@ -13,6 +13,7 @@
 package org.rajawali3d.loader;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -21,12 +22,12 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
 import org.rajawali3d.renderer.Renderer;
-import org.rajawali3d.textures.NormalMapTexture2D;
-import org.rajawali3d.textures.SpecularMapTexture2D;
-import org.rajawali3d.textures.Texture2D;
-import org.rajawali3d.textures.TextureDataReference;
-import org.rajawali3d.textures.TextureException;
-import org.rajawali3d.textures.TextureManager;
+import c.org.rajawali3d.textures.NormalMapTexture2D;
+import c.org.rajawali3d.textures.SpecularMapTexture2D;
+import c.org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.TextureDataReference;
+import c.org.rajawali3d.textures.TextureException;
+import c.org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.RajLog;
 
 import java.io.BufferedReader;
@@ -674,9 +675,12 @@ public class LoaderOBJ extends AMeshLoader {
                             }
                         }
                     } else {
+                        final Bitmap bitmap = BitmapFactory.decodeFile(filePath);
                         mat.addTexture(new Texture2D(getFileNameWithoutExtension(matDef.diffuseTexture),
-                                                     new TextureDataReference(BitmapFactory.decodeFile(filePath), null,
-                                                                              GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE
+                                                     new TextureDataReference(bitmap, null,
+                                                                              GLES20.GL_RGBA, GLES20
+                                                                                      .GL_UNSIGNED_BYTE, bitmap
+                                                                                      .getWidth(), bitmap.getHeight()
                                                      )));
                     }
                 }
@@ -690,10 +694,13 @@ public class LoaderOBJ extends AMeshLoader {
                     mat.addTexture(new NormalMapTexture2D(object.getName() + identifier, mContext, identifier));
                 } else {
                     String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(matDef.bumpTexture);
+                    final Bitmap bitmap = BitmapFactory.decodeFile(filePath);
                     mat.addTexture(new NormalMapTexture2D(getOnlyFileName(matDef.bumpTexture),
-                                                          new TextureDataReference(BitmapFactory.decodeFile(filePath),
+                                                          new TextureDataReference(bitmap,
                                                                                    null, GLES20.GL_RGBA,
-                                                                                   GLES20.GL_UNSIGNED_BYTE)));
+                                                                                   GLES20.GL_UNSIGNED_BYTE, bitmap
+                                                                                           .getWidth(),
+                                                                                   bitmap.getHeight())));
                 }
             }
             if (hasSpecularTexture) {
@@ -705,9 +712,13 @@ public class LoaderOBJ extends AMeshLoader {
                 } else {
                     String filePath = mFile.getParent() + File.separatorChar + getOnlyFileName(
                             matDef.specularColorTexture);
+                    final Bitmap bitmap = BitmapFactory.decodeFile(filePath);
                     mat.addTexture(new SpecularMapTexture2D(getOnlyFileName(matDef.specularColorTexture),
-                                                            new TextureDataReference(BitmapFactory.decodeFile(filePath)
-                                                                    , null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE)));
+                                                            new TextureDataReference(bitmap
+                                                                    , null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
+                                                                                     bitmap.getWidth(),
+                                                                                     bitmap.getHeight()
+                                                            )));
                 }
             }
             object.setMaterial(mat);

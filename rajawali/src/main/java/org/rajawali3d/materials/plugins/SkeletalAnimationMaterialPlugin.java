@@ -13,8 +13,8 @@
 package org.rajawali3d.materials.plugins;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import org.rajawali3d.materials.shaders.AShaderBase.DataType;
-import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
+import org.rajawali3d.materials.shaders.ShaderBase.DataType;
+import org.rajawali3d.materials.shaders.ShaderBase.GlobalShaderVar;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.animation.SkeletalAnimationVertexShaderFragment;
 
@@ -54,7 +54,7 @@ import org.rajawali3d.materials.shaders.fragments.animation.SkeletalAnimationVer
  *
  */
 public class SkeletalAnimationMaterialPlugin implements IMaterialPlugin {
-	public static enum SkeletalAnimationShaderVar implements IGlobalShaderVar {
+	public static enum SkeletalAnimationShaderVar implements GlobalShaderVar {
 		U_BONE_MATRIX("uBoneMatrix", DataType.MAT4),
 		A_BONE_INDEX1("aBoneIndex1", DataType.VEC4),
 		A_BONE_INDEX2("aBoneIndex2", DataType.VEC4),
