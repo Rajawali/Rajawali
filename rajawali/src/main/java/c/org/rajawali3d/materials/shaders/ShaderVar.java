@@ -1,5 +1,7 @@
 package c.org.rajawali3d.materials.shaders;
 
+import static android.os.Build.VERSION_CODES.N;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.materials.shaders.definitions.DataType;
@@ -16,66 +18,73 @@ import org.rajawali3d.materials.shaders.Shader;
  */
 public abstract class ShaderVar {
 
-    protected String  name;
-    protected String  dataType;
-    protected String  value;
-    protected boolean isGlobal;
-    protected boolean initialized;
-    protected boolean isArray;
-    protected int     arraySize;
+    @NonNull protected final DataType  dataType;
+    @NonNull protected String  name;
+    @Nullable protected String  value;
 
-    public ShaderVar() {
+    private boolean isGlobal;
+    private boolean initialized;
+    private boolean isArray;
+    private int     arraySize;
+
+    protected abstract int getNextNameIndex();
+
+    public ShaderVar(@NonNull DataType dataType) {
+        this(null, dataType);
     }
 
-    public ShaderVar(@NonNull String dataType) {
-        this(null, dataType, null, true);
+    public ShaderVar(@Nullable String name, @NonNull DataType dataType) {
+        this(name, dataType, null, true);
     }
 
-    public ShaderVar(@NonNull String dataType, @NonNull ShaderVar value) {
-        this(null, dataType, value.getName());
+    public ShaderVar(@NonNull DataType dataType, @Nullable String value) {
+        this(null, dataType, value, true);
     }
 
-    public ShaderVar(@Nullable String name, @NonNull String dataType, @Nullable ShaderVar value) {
-        this(name, dataType, value != null ? value.getName() : null);
+    public ShaderVar(@NonNull DataType dataType, @NonNull ShaderVar value) {
+        this(dataType, value.getName());
     }
 
-    public ShaderVar(@Nullable String name, @NonNull String dataType, @Nullable String value) {
+    public ShaderVar(@Nullable String name, @NonNull DataType dataType, @NonNull ShaderVar value) {
+        this(name, dataType, value.getName(), true);
+    }
+
+    public ShaderVar(@Nullable String name, @NonNull DataType dataType, @Nullable String value) {
         this(name, dataType, value, true);
     }
 
-    public ShaderVar(@NonNull String dataType, @Nullable String value, boolean write) {
+    public ShaderVar(@NonNull DataType dataType, @Nullable String value, boolean write) {
         this(null, dataType, value, write);
     }
 
-    public ShaderVar(@Nullable String name, @NonNull String dataType, @Nullable String value, boolean write) {
-        this.name = name;
+    public ShaderVar(@Nullable String name, @NonNull DataType dataType, @Nullable String value, boolean write) {
+        this.name = name != null ? name : generateName();
         this.dataType = dataType;
-        if (name == null) {
-            this.name = generateName();
-        }
         this.value = value;
         if (write && value != null) {
             writeInitialize(value);
         }
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
+    @NonNull
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public String getDataType() {
-        return this.dataType;
+    @NonNull
+    public DataType getDataType() {
+        return dataType;
     }
 
     public String getValue() {
         return this.value;
     }
 
-    public void setValue(String value) {
+    public void setValue(@Nullable String value) {
         this.value = value;
     }
 
@@ -83,19 +92,21 @@ public abstract class ShaderVar {
         writeInitialize(value);
     }
 
-    protected void writeInitialize(String value) {
+    protected void writeInitialize(@NonNull String value) {
         shaderSB.append(dataType.getTypeString());
         shaderSB.append(" ");
         initialized = true;
         writeAssign(value);
     }
 
+    @NonNull
     public String getVarName() {
         return name;
     }
 
+    @NonNull
     protected String generateName() {
-        return "v_" + dataType + "_" + variableCount++;
+        return "v_" + dataType + "_" + getNextNameIndex();
     }
 
     /**
