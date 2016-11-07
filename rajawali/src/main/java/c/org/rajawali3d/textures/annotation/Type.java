@@ -24,6 +24,7 @@ public interface Type {
 
     @Documented
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({})
+    @IntDef({DIFFUSE, NORMAL, SPECULAR, ALPHA, RENDER_TARGET, DEPTH_BUFFER, LOOKUP, CUBE_MAP, SPHERE_MAP,
+             VIDEO_TEXTURE})
     @interface TextureType {}
 }
