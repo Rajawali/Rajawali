@@ -3,16 +3,17 @@ package org.rajawali3d.examples.examples.camdenhells;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import c.org.rajawali3d.camera.Camera;
 import c.org.rajawali3d.renderer.Renderer;
 import c.org.rajawali3d.renderer.RendererImpl;
 import c.org.rajawali3d.scene.Scene;
 import c.org.rajawali3d.scene.SingleFrameCallback;
+import c.org.rajawali3d.textures.Texture2D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
+import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import c.org.rajawali3d.textures.Texture2D;
-import org.rajawali3d.util.RajLog;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -39,6 +40,10 @@ public class CamdenHellsBasic extends AExampleFragment {
         scene.registerFrameCallback(new FirstFrameCallback(scene));
         // Add it to the renderer
         ((Renderer) mRenderer).setCurrentRenderable(scene);
+
+        final Camera camera = new Camera();
+        camera.setProjectionMatrix(new Matrix4());
+        scene.switchCamera(camera);
         super.onBeforeApplyRenderer();
     }
 
@@ -65,9 +70,9 @@ public class CamdenHellsBasic extends AExampleFragment {
         @Override public void onPostFrame(long sceneTime, double deltaTime) {
             Log.d(TAG, "Post First Frame.");
             super.onPostFrame(sceneTime, deltaTime);
-            /*backgroundThread = new Thread(backgroundManager, "Background Manager");
-            backgroundThread.start();*/
-            RajLog.setDebugEnabled(true);
+            backgroundThread = new Thread(backgroundManager, "Background Manager");
+            backgroundThread.start();
+            //RajLog.setDebugEnabled(true);
             Material material = new Material();
             material.setColor(Color.GREEN);
             scene.getMaterialManager().addMaterial(material);
@@ -95,6 +100,7 @@ public class CamdenHellsBasic extends AExampleFragment {
                 if (add) {
                     Log.d(TAG, "Adding resources.");
                     texture = new Texture2D("Demo", getActivity(), R.drawable.earth_diffuse);
+                    texture.willRecycle(false);
                     scene.getTextureManager().addTexture(texture);
 
                     material = new Material();

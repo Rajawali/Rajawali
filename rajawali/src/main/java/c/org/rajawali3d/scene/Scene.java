@@ -13,11 +13,11 @@ import c.org.rajawali3d.renderer.Renderer;
 import c.org.rajawali3d.scene.graph.FlatTree;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.SceneGraph;
+import c.org.rajawali3d.textures.TextureManager;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.FrameTask;
-import c.org.rajawali3d.textures.TextureManager;
 import org.rajawali3d.util.RajLog;
 
 import java.util.ArrayList;
@@ -297,6 +297,12 @@ public class Scene implements Renderable {
         postCallbacks.clear();
     }
 
+    public void switchCamera(@NonNull Camera camera) {
+        synchronized (nextCameraLock) {
+            nextCamera = camera;
+        }
+    }
+
     /**
      * Initializes the scene.
      */
@@ -358,7 +364,7 @@ public class Scene implements Renderable {
      */
     @GuardedBy("nextCameraLock")
     @GLThread
-    private void switchCamera(@NonNull Camera nextCamera) {
+    private void internalSwitchCamera(@NonNull Camera nextCamera) {
         RajLog.d("Switching from camera: " + currentCamera + " to camera: " + nextCamera);
         currentCamera = nextCamera;
     }
@@ -395,9 +401,14 @@ public class Scene implements Renderable {
         synchronized (nextCameraLock) {
             // Check if we need to switch the camera, and if so, do it.
             if (nextCamera != null) {
-                switchCamera(nextCamera);
+                internalSwitchCamera(nextCamera);
                 nextCamera = null;
             }
+        }
+
+        if (currentCamera == null) {
+            // We can't render until the camera is ready
+            return;
         }
 
         // Prepare the camera matrices
