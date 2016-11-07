@@ -44,11 +44,12 @@ public class PvrtcTexture2D extends CompressedTexture2D {
         setPvrtcFormat(other.getPvrtcFormat());
     }
 
-    public PvrtcTexture2D(String textureName, ByteBuffer byteBuffer, PvrtcFormat pvrtcFormat) {
+    public PvrtcTexture2D(String textureName, ByteBuffer byteBuffer, PvrtcFormat pvrtcFormat) throws TextureException {
         this(textureName, new ByteBuffer[]{ byteBuffer }, pvrtcFormat);
     }
 
-    public PvrtcTexture2D(String textureName, ByteBuffer[] byteBuffers, PvrtcFormat pvrtcFormat) {
+    public PvrtcTexture2D(String textureName, ByteBuffer[] byteBuffers, PvrtcFormat pvrtcFormat) throws
+                                                                                                 TextureException {
         super(textureName, byteBuffers);
         setCompressionType(Compression2D.PVRTC);
         setPvrtcFormat(pvrtcFormat);

@@ -35,6 +35,9 @@ public class SingleTexture2DGLTest extends GlTestCase {
 
     private static class TestableSingleTexture2D extends SingleTexture2D {
 
+        protected TestableSingleTexture2D() throws TextureException {
+        }
+
         @Override public SingleTexture2D clone() {
             return null;
         }

@@ -61,11 +61,13 @@ public class PalettedTexture2D extends CompressedTexture2D {
         setPaletteFormat(other.getPaletteFormat());
     }
 
-    public PalettedTexture2D(String textureName, ByteBuffer byteBuffer, PaletteFormat paletteFormat) {
+    public PalettedTexture2D(String textureName, ByteBuffer byteBuffer, PaletteFormat paletteFormat) throws
+                                                                                                     TextureException {
         this(textureName, new ByteBuffer[]{ byteBuffer }, paletteFormat);
     }
 
-    public PalettedTexture2D(String textureName, ByteBuffer[] byteBuffers, PaletteFormat paletteFormat) {
+    public PalettedTexture2D(String textureName, ByteBuffer[] byteBuffers, PaletteFormat paletteFormat) throws
+                                                                                                        TextureException {
         super(textureName, byteBuffers);
         setPaletteFormat(paletteFormat);
         setCompressionType(Compression2D.PALETTED);

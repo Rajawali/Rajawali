@@ -13,12 +13,10 @@
 package c.org.rajawali3d.textures;
 
 import android.opengl.GLES11Ext;
-
+import c.org.rajawali3d.textures.annotation.Compression2D;
 import org.rajawali3d.util.RajLog;
 
 import java.nio.ByteBuffer;
-
-import c.org.rajawali3d.textures.annotation.Compression2D;
 
 public class AtcTexture2D extends CompressedTexture2D {
 
@@ -43,11 +41,11 @@ public class AtcTexture2D extends CompressedTexture2D {
         setAtcFormat(other.getAtcFormat());
     }
 
-    public AtcTexture2D(String textureName, ByteBuffer byteBuffer, AtcFormat atcFormat) {
+    public AtcTexture2D(String textureName, ByteBuffer byteBuffer, AtcFormat atcFormat) throws TextureException {
         this(textureName, new ByteBuffer[]{ byteBuffer }, atcFormat);
     }
 
-    public AtcTexture2D(String textureName, ByteBuffer[] byteBuffers, AtcFormat atcFormat) {
+    public AtcTexture2D(String textureName, ByteBuffer[] byteBuffers, AtcFormat atcFormat) throws TextureException {
         super(textureName, byteBuffers);
         setCompressionType(Compression2D.ATC);
         setAtcFormat(atcFormat);

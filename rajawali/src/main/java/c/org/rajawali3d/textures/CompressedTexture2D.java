@@ -13,12 +13,11 @@
 package c.org.rajawali3d.textures;
 
 import android.opengl.GLES20;
-
-import java.nio.ByteBuffer;
-
 import c.org.rajawali3d.textures.annotation.Compression2D.CompressionType2D;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Wrap;
+
+import java.nio.ByteBuffer;
 
 /**
  * Abstract implementation of 2D compressed texture.
@@ -39,7 +38,7 @@ public abstract class CompressedTexture2D extends SingleTexture2D {
      */
     protected int mCompressionFormat;
 
-    protected CompressedTexture2D() {
+    protected CompressedTexture2D() throws TextureException {
         super();
         setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R);
     }
@@ -49,17 +48,17 @@ public abstract class CompressedTexture2D extends SingleTexture2D {
         setFrom(other);
     }
 
-    public CompressedTexture2D(String textureName) {
+    public CompressedTexture2D(String textureName) throws TextureException {
         this();
         setTextureName(textureName);
     }
 
-    public CompressedTexture2D(String textureName, ByteBuffer byteBuffer) {
+    public CompressedTexture2D(String textureName, ByteBuffer byteBuffer) throws TextureException {
         this(textureName);
         setByteBuffer(byteBuffer);
     }
 
-    public CompressedTexture2D(String textureName, ByteBuffer[] byteBuffers) {
+    public CompressedTexture2D(String textureName, ByteBuffer[] byteBuffers) throws TextureException {
         this(textureName);
         setByteBuffers(byteBuffers);
     }

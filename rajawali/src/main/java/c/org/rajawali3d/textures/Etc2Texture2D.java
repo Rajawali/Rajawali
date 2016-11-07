@@ -45,39 +45,40 @@ public class Etc2Texture2D extends CompressedTexture2D {
     protected int mResourceId;
     protected Bitmap mBitmap;
 
-    public Etc2Texture2D(String textureName) {
+    public Etc2Texture2D(String textureName) throws TextureException {
         super(textureName);
         mCompressionType = Compression2D.ETC2;
     }
 
-    public Etc2Texture2D(int resourceId) {
+    public Etc2Texture2D(int resourceId) throws TextureException {
         this(org.rajawali3d.materials.textures.TextureManager
                      .getInstance().getContext().getResources().getResourceName(resourceId));
         setResourceId(resourceId);
     }
 
-    public Etc2Texture2D(String textureName, int resourceId, Bitmap fallbackTexture) {
+    public Etc2Texture2D(String textureName, int resourceId, Bitmap fallbackTexture) throws TextureException {
         this(textureName);
         Context context = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext();
         setInputStream(context.getResources().openRawResource(resourceId), fallbackTexture);
     }
 
-    public Etc2Texture2D(String textureName, int[] resourceIds) {
+    public Etc2Texture2D(String textureName, int[] resourceIds) throws TextureException {
         this(textureName);
         setResourceIds(resourceIds);
     }
 
-    public Etc2Texture2D(String textureName, ByteBuffer byteBuffer) {
+    public Etc2Texture2D(String textureName, ByteBuffer byteBuffer) throws TextureException {
         this(textureName);
         setByteBuffer(byteBuffer);
     }
 
-    public Etc2Texture2D(String textureName, ByteBuffer[] byteBuffers) {
+    public Etc2Texture2D(String textureName, ByteBuffer[] byteBuffers) throws TextureException {
         this(textureName);
         setByteBuffers(byteBuffers);
     }
 
-    public Etc2Texture2D(String textureName, InputStream compressedTexture, Bitmap fallbackTexture) {
+    public Etc2Texture2D(String textureName, InputStream compressedTexture, Bitmap fallbackTexture) throws
+                                                                                                    TextureException {
         this(textureName);
         setInputStream(compressedTexture, fallbackTexture);
     }
