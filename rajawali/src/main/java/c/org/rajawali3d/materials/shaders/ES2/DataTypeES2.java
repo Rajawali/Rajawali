@@ -98,10 +98,35 @@ public interface DataTypeES2 extends DataType {
         }
     }
 
+    class MAT2 implements DataTypeES2 {
 
-    String MAT2         = "mat2";
-    String MAT3         = "mat3";
-    String MAT4         = "mat4";
-    String SAMPLER2D    = "sampler2D";
-    String SAMPLER_CUBE = "samplerCube";
+        @Override public String toString() {
+            return DataType.MAT2;
+        }
+    }
+    class MAT3 implements DataTypeES2 {
+
+        @Override public String toString() {
+            return DataType.MAT3;
+        }
+    }
+    class MAT4 implements DataTypeES2 {
+
+        @Override public String toString() {
+            return DataType.MAT4;
+        }
+    }
+
+    class SAMPLER2D implements DataTypeES2 {
+
+        @Override public String toString() {
+            return DataType.SAMPLER2D;
+        }
+    }
+    class SAMPLER_CUBE implements DataTypeES2 {
+
+        @Override public String toString() {
+            return DataType.SAMPLER_CUBE;
+        }
+    }
 }
