@@ -141,7 +141,7 @@ public class ObjectRendererImplTest extends GlTestCase {
             }
         });
         assertEquals("Unexpected blend source RGB function: " + intOutput[0], GLES20.GL_ONE, intOutput[0]);
-        assertEquals("Unexpected blend source ALPHA function: " + intOutput[1], GLES20.GL_ONE, intOutput[1]);
+        assertEquals("Unexpected blend source ALPHA_MASK function: " + intOutput[1], GLES20.GL_ONE, intOutput[1]);
 
         // Check blend destination factor
         runOnGlThreadAndWait(new Runnable() {
@@ -152,7 +152,7 @@ public class ObjectRendererImplTest extends GlTestCase {
         });
         assertEquals("Unexpected blend destination RGB function: " + intOutput[0], GLES20.GL_ONE_MINUS_DST_ALPHA,
                      intOutput[0]);
-        assertEquals("Unexpected blend destination ALPHA function: " + intOutput[1], GLES20.GL_ONE_MINUS_DST_ALPHA,
+        assertEquals("Unexpected blend destination ALPHA_MASK function: " + intOutput[1], GLES20.GL_ONE_MINUS_DST_ALPHA,
                      intOutput[1]);
 
         // Check depth testing is enabled

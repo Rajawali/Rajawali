@@ -15,13 +15,13 @@ package c.org.rajawali3d.textures;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import c.org.rajawali3d.textures.annotation.Type.TextureType;
 
 import java.nio.ByteBuffer;
 
-import c.org.rajawali3d.textures.annotation.Type.TextureType;
-
 
 public abstract class AMultiTexture extends BaseTexture {
+
 	protected Bitmap[] mBitmaps;
 	protected ByteBuffer[] mByteBuffers;
     protected CompressedTexture2D[] mCompressedTextures;

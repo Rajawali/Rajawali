@@ -52,7 +52,7 @@ public abstract class SingleTexture2D extends BaseTexture {
     /**
      * Basic no-args constructor used by some subclasses. No initialization is performed.
      */
-    protected SingleTexture2D() {
+    protected SingleTexture2D() throws TextureException {
         super();
     }
 

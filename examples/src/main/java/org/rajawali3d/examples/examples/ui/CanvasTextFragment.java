@@ -17,7 +17,7 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
-import c.org.rajawali3d.textures.AlphaMapTexture2D;
+import c.org.rajawali3d.textures.AlphaMaskTexture2D;
 import c.org.rajawali3d.textures.TextureDataReference;
 import c.org.rajawali3d.textures.TextureException;
 
@@ -33,13 +33,13 @@ public class CanvasTextFragment extends AExampleFragment {
     }
 
     public static final class CanvasTextRenderer extends AExampleRenderer {
-        private AlphaMapTexture2D mTimeTexture;
-        private Bitmap            mTimeBitmap;
-        private Canvas            mTimeCanvas;
-        private Paint             mTextPaint;
-        private SimpleDateFormat  mDateFormat;
-        private int               mFrameCount;
-        private boolean           mShouldUpdateTexture;
+        private AlphaMaskTexture2D mTimeTexture;
+        private Bitmap             mTimeBitmap;
+        private Canvas             mTimeCanvas;
+        private Paint              mTextPaint;
+        private SimpleDateFormat   mDateFormat;
+        private int                mFrameCount;
+        private boolean            mShouldUpdateTexture;
 
         public CanvasTextRenderer(Context context, @Nullable AExampleFragment fragment) {
             super(context, fragment);
@@ -55,7 +55,7 @@ public class CanvasTextFragment extends AExampleFragment {
             timeSphereMaterial.enableLighting(true);
             timeSphereMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
             mTimeBitmap = Bitmap.createBitmap(256, 256, Config.ARGB_8888);
-            mTimeTexture = new AlphaMapTexture2D("timeTexture", new TextureDataReference(mTimeBitmap, null, GLES20
+            mTimeTexture = new AlphaMaskTexture2D("timeTexture", new TextureDataReference(mTimeBitmap, null, GLES20
                     .GL_RGBA, GLES20.GL_UNSIGNED_BYTE, mTimeBitmap.getWidth(), mTimeBitmap.getHeight()));
             try {
                 timeSphereMaterial.addTexture(mTimeTexture);

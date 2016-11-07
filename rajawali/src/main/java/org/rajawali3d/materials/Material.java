@@ -12,7 +12,7 @@
  */
 package org.rajawali3d.materials;
 
-import static c.org.rajawali3d.textures.annotation.Type.ALPHA;
+import static c.org.rajawali3d.textures.annotation.Type.ALPHA_MASK;
 import static c.org.rajawali3d.textures.annotation.Type.CUBE_MAP;
 import static c.org.rajawali3d.textures.annotation.Type.DIFFUSE;
 import static c.org.rajawali3d.textures.annotation.Type.NORMAL;
@@ -42,7 +42,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.VertexShader;
 import org.rajawali3d.materials.shaders.fragments.LightsFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.texture.AlphaMapFragmentShaderFragment;
+import org.rajawali3d.materials.shaders.fragments.texture.AlphaMaskFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.DiffuseTextureFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
@@ -592,7 +592,7 @@ public class Material {
                         if (specMapTextures == null) specMapTextures = new ArrayList<>();
                         specMapTextures.add(texture);
                         break;
-                    case ALPHA:
+                    case ALPHA_MASK:
                         if (alphaMapTextures == null) alphaMapTextures = new ArrayList<>();
                         alphaMapTextures.add(texture);
                         break;
@@ -690,7 +690,7 @@ public class Material {
             checkForPlugins(PluginInsertLocation.PRE_ALPHA);
 
             if (alphaMapTextures != null && alphaMapTextures.size() > 0) {
-                AlphaMapFragmentShaderFragment fragment = new AlphaMapFragmentShaderFragment(alphaMapTextures);
+                AlphaMaskFragmentShaderFragment fragment = new AlphaMaskFragmentShaderFragment(alphaMapTextures);
                 fragmentShader.addShaderFragment(fragment);
             }
 

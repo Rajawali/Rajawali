@@ -75,6 +75,7 @@ public class Texture2D extends SingleTexture2D {
 		super(TextureType.DIFFUSE, textureName, atlas.getTileNamed(textureName).getPage());
 	}*/
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public Texture2D clone() {
         try {

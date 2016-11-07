@@ -168,13 +168,6 @@ public abstract class BaseTexture {
     }
 
     /**
-     * Basic no-args constructor used by some subclasses. No initialization is performed.
-     */
-    protected BaseTexture() {
-        textureName = "";
-    }
-
-    /**
      * Creates a new texture instance and copies all properties from another texture object.
      *
      * @param other The {@link BaseTexture} to copy from.
@@ -182,6 +175,13 @@ public abstract class BaseTexture {
     public BaseTexture(BaseTexture other) {
         textureName = ""; // This is a dummy assignment to cover @NonNull rules
         setFrom(other);
+    }
+
+    /**
+     * Basic no-args constructor used by some subclasses. No initialization is performed.
+     */
+    protected BaseTexture() {
+        textureName = "";
     }
 
     /**
