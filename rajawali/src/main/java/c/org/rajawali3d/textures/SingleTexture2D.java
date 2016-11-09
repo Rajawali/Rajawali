@@ -111,7 +111,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         final TextureDataReference data = other.getTextureData();
         if (data != null) {
             super.setFrom(other);
-            setTextureData(other.getTextureData());
+            setTextureData(data);
         } else {
             throw new TextureException("Texture data was null!");
         }
