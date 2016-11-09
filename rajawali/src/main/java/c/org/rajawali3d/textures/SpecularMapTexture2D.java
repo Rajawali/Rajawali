@@ -14,28 +14,64 @@ package c.org.rajawali3d.textures;
 
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.util.RajLog;
 
+/**
+ * A 2D specular mapping texture, in essence, how "shinny" the object is for each color component. Specular maps
+ * allow for detailed, localized reflectance without requiring excessively refined geometries and are an extremely
+ * useful tool for simulating realistic lighting on complex surfaces.
+ *
+ * @author dennis.ippel
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
+ */
 public class SpecularMapTexture2D extends SingleTexture2D {
-    public SpecularMapTexture2D(SpecularMapTexture2D other) throws TextureException {
+
+    /**
+     * Constructs a new {@link SpecularMapTexture2D} with data and settings from the provided {@link SpecularMapTexture2D}.
+     *
+     * @param other The other {@link SpecularMapTexture2D}.
+     */
+    public SpecularMapTexture2D(@NonNull SpecularMapTexture2D other) throws TextureException {
         super(other);
     }
 
-    public SpecularMapTexture2D(String textureName) {
-        super(Type.SPECULAR, textureName);
+    /**
+     * Constructs a new {@link SpecularMapTexture2D} with the provided name and no data.
+     *
+     * @param name {@link String} The texture name.
+     */
+    public SpecularMapTexture2D(@NonNull String name) {
+        super(Type.SPECULAR, name);
     }
 
-    public SpecularMapTexture2D(String textureName, @NonNull Context context, int resourceId) {
-        super(Type.SPECULAR, textureName);
+    /**
+     * Constructs a new {@link SpecularMapTexture2D} with data provided by the Android resource id. The texture name is
+     * set by querying Android for the resource name.
+     *
+     * @param name {@link String} The texture name.
+     * @param context    {@link Context} The application context.
+     * @param resourceId {@code int} The Android resource id to load from.
+     */
+    public SpecularMapTexture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId) {
+        super(Type.SPECULAR, name);
         setTextureDataFromResourceId(context, resourceId);
     }
 
-    public SpecularMapTexture2D(String textureName, TextureDataReference textureData) {
-        super(Type.SPECULAR, textureName, textureData);
+    /**
+     * Constructs a new {@link SpecularMapTexture2D} with the provided data.
+     *
+     * @param name {@link String} The texture name.
+     * @param data {@link TextureDataReference} The texture data.
+     */
+    public SpecularMapTexture2D(@NonNull String name, @NonNull TextureDataReference data) {
+        super(Type.SPECULAR, name, data);
     }
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override
     public SpecularMapTexture2D clone() {
         try {
             return new SpecularMapTexture2D(this);

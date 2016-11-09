@@ -97,7 +97,6 @@ public class AccelerometerFragment extends AExampleFragment implements
 
                 CubeMapTexture envMap = new CubeMapTexture("environmentMap",
                     resourceIds);
-                envMap.isEnvironmentTexture(true);
                 material.addTexture(envMap);
                 material.setColorInfluence(0);
                 mMonkey.setMaterial(material);

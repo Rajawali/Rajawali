@@ -38,7 +38,7 @@ public class AlphaMaskTexture2D extends SingleTexture2D {
     /**
      * Constructs a new {@link AlphaMaskTexture2D} with data and settings from the provided {@link AlphaMaskTexture2D}.
      *
-     * @param other The other {@link SingleTexture2D}.
+     * @param other The other {@link AlphaMaskTexture2D}.
      */
     public AlphaMaskTexture2D(@NonNull AlphaMaskTexture2D other) throws TextureException {
         super(other);

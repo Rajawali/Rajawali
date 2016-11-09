@@ -16,16 +16,27 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
-
-import java.nio.ByteBuffer;
-
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
 import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
 
+import java.nio.ByteBuffer;
 
+/**
+ * A 2D cube mapped environmental texture. These textures are typically used to simulate highly reflective
+ * surfaces by providing what the reflected environment would look like. For static or basic reflective appearances,
+ * a single texture can be used. For more advanced reflections, the scene can be rendered to a FBO with cube
+ * mapping which is used as a {@link Type#SPHERE_MAP} texture. They are also commonly used for sky boxes, simulating
+ * the appearance of a far off sky.
+ *
+ * @author dennis.ippel
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
+ */
 public class CubeMapTexture extends AMultiTexture {
+
     public final int[] CUBE_FACES = new int[]{
         GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
         GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -35,51 +46,76 @@ public class CubeMapTexture extends AMultiTexture {
         GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
     };
 
-    private boolean mIsSkyTexture;
-    private boolean mIsEnvironmentTexture;
-    private boolean mHasCompressedTextures;
+    private boolean isSkyTexture = false;
+    private boolean hasCompressedTextures;
 
-    public CubeMapTexture(CubeMapTexture other) {
+    /**
+     * Constructs a new {@link CubeMapTexture} with data and settings from the provided {@link CubeMapTexture}.
+     *
+     * @param other The other {@link CubeMapTexture}.
+     */
+    public CubeMapTexture(@NonNull CubeMapTexture other) {
         super(other);
     }
 
-    public CubeMapTexture(String textureName) {
-        super(Type.CUBE_MAP, textureName);
+    /**
+     * Constructs a new {@link CubeMapTexture} with the provided name and no data.
+     *
+     * @param name {@link String} The texture name.
+     */
+    public CubeMapTexture(@NonNull String name) {
+        super(Type.CUBE_MAP, name);
         setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, int[] resourceIds) {
-        super(Type.CUBE_MAP, textureName, resourceIds);
+    public CubeMapTexture(@NonNull String name, @NonNull @DrawableRes int[] resourceIds) {
+        super(Type.CUBE_MAP, name, resourceIds);
         setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, Bitmap[] bitmaps) {
-        super(Type.CUBE_MAP, textureName, bitmaps);
+    public CubeMapTexture(@NonNull String name, @NonNull Bitmap[] bitmaps) {
+        super(Type.CUBE_MAP, name, bitmaps);
         setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, ByteBuffer[] byteBuffers) {
-        super(Type.CUBE_MAP, textureName, byteBuffers);
+    public CubeMapTexture(@NonNull String name, @NonNull ByteBuffer[] byteBuffers) {
+        super(Type.CUBE_MAP, name, byteBuffers);
         setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, CompressedTexture2D[] compressedTexture2Ds) {
-        super(Type.CUBE_MAP, textureName, compressedTexture2Ds);
-        mHasCompressedTextures = true;
+    public CubeMapTexture(@NonNull String name, @NonNull CompressedTexture2D[] compressedTexture2Ds) {
+        super(Type.CUBE_MAP, name, compressedTexture2Ds);
+        hasCompressedTextures = true;
         setWrapType(Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture clone() {
-        return new CubeMapTexture(this);
+    /**
+     * Sets whether or not this texture is treated a sky sphere or environmental map. By default,
+     * {@link SphereMapTexture2D}s are treated as environmental maps.
+     *
+     * @param value {@code true} if this texture should be treated as a sky sphere.
+     */
+    public void isSkyTexture(boolean value) {
+        isSkyTexture = value;
+    }
+
+    /**
+     * Returns whether or not this texture is treated as a sky sphere or environmental map. By default,
+     * {@link SphereMapTexture2D}s are treated as environmental maps.
+     *
+     * @return {@code true} if this texture is treated as a sky sphere.
+     */
+    public boolean isSkyTexture() {
+        return isSkyTexture;
     }
 
     private void checkBitmapConfiguration() throws TextureException {
-        if ((mBitmaps == null || mBitmaps.length == 0) && (mByteBuffers == null || mByteBuffers.length == 0) && !mHasCompressedTextures)
+        if ((mBitmaps == null || mBitmaps.length == 0) && (mByteBuffers == null || mByteBuffers.length == 0) && !hasCompressedTextures)
             throw new TextureException("Texture2D could not be added because no Bitmaps or ByteBuffers set.");
         if (mBitmaps != null && mBitmaps.length != 6)
             throw new TextureException("CubeMapTexture could not be added because it needs six textures instead of " + mBitmaps.length);
@@ -126,7 +162,7 @@ public class CubeMapTexture extends AMultiTexture {
             GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
             if (mBitmaps != null) {
                 GLUtils.texImage2D(CUBE_FACES[i], 0, mBitmaps[i], 0);
-            } else if(mHasCompressedTextures) {
+            } else if(hasCompressedTextures) {
                 CompressedTexture2D tex = mCompressedTextures[i];
                 int w = tex.getWidth(), h = tex.getHeight();
                 for (int j = 0; j < tex.getByteBuffers().length; j++) {
@@ -158,9 +194,15 @@ public class CubeMapTexture extends AMultiTexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, 0);
     }
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override
+    public CubeMapTexture clone() {
+        return new CubeMapTexture(this);
+    }
+
     @Override
     void add() throws TextureException {
-        if(mHasCompressedTextures) {
+        if(hasCompressedTextures) {
             for(int i=0; i<mCompressedTextures.length; i++) {
                 mCompressedTextures[i].add();
             }
@@ -181,7 +223,7 @@ public class CubeMapTexture extends AMultiTexture {
 
     @Override
     void remove() throws TextureException {
-        if(mHasCompressedTextures) {
+        if(hasCompressedTextures) {
             for(int i=0; i<mCompressedTextures.length; i++) {
                 mCompressedTextures[i].remove();
             }
@@ -195,7 +237,7 @@ public class CubeMapTexture extends AMultiTexture {
 
         if (getTextureId() > 0) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, getTextureId());
-            if(mHasCompressedTextures) {
+            if(hasCompressedTextures) {
                 for (int i = 0; i < 6; i++) {
                     CompressedTexture2D tex = mCompressedTextures[i];
                     tex.add();
@@ -214,23 +256,5 @@ public class CubeMapTexture extends AMultiTexture {
         } else {
             throw new TextureException("Couldn't generate a texture name.");
         }
-    }
-
-    public void isSkyTexture(boolean value) {
-        mIsSkyTexture = value;
-        mIsEnvironmentTexture = !value;
-    }
-
-    public boolean isSkyTexture() {
-        return mIsSkyTexture;
-    }
-
-    public void isEnvironmentTexture(boolean value) {
-        mIsEnvironmentTexture = value;
-        mIsSkyTexture = !mIsEnvironmentTexture;
-    }
-
-    public boolean isEnvironmentTexture() {
-        return mIsEnvironmentTexture;
     }
 }

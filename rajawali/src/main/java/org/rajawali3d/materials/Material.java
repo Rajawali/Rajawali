@@ -568,21 +568,18 @@ public class Material {
                         hasCubeMaps = true;
                     case SPHERE_MAP:
                         boolean isSkyTexture = false;
-                        boolean isEnvironmentTexture = false;
 
                         if (texture.getClass() == SphereMapTexture2D.class) {
                             isSkyTexture = ((SphereMapTexture2D) texture).isSkyTexture();
-                            isEnvironmentTexture = ((SphereMapTexture2D) texture).isEnvironmentTexture();
                         } else if (texture.getClass() == CubeMapTexture.class) {
                             isSkyTexture = ((CubeMapTexture) texture).isSkyTexture();
-                            isEnvironmentTexture = ((CubeMapTexture) texture).isEnvironmentTexture();
                         }
 
                         if (isSkyTexture) {
                             if (skyTextures == null)
                                 skyTextures = new ArrayList<>();
                             skyTextures.add(texture);
-                        } else if (isEnvironmentTexture) {
+                        } else {
                             if (envMapTextures == null)
                                 envMapTextures = new ArrayList<>();
                             envMapTextures.add(texture);

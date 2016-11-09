@@ -12,30 +12,65 @@
  */
 package c.org.rajawali3d.textures;
 
-
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.textures.annotation.Type;
 import org.rajawali3d.util.RajLog;
 
+/**
+ * A 2D normal mapping texture. Each texel's RGB components represent a normalized Normal Vector XYZ coordinates in
+ * object space. Normal maps provide a computationally efficient way to simulate high resolution surfaces without
+ * requiring a high resolution mesh.
+ *
+ * @author dennis.ippel
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
+ */
 public class NormalMapTexture2D extends SingleTexture2D {
-    public NormalMapTexture2D(NormalMapTexture2D other) throws TextureException {
+
+    /**
+     * Constructs a new {@link NormalMapTexture2D} with data and settings from the provided {@link NormalMapTexture2D}.
+     *
+     * @param other The other {@link NormalMapTexture2D}.
+     */
+    public NormalMapTexture2D(@NonNull NormalMapTexture2D other) throws TextureException {
         super(other);
     }
 
-    public NormalMapTexture2D(String textureName) {
-        super(Type.NORMAL, textureName);
+    /**
+     * Constructs a new {@link NormalMapTexture2D} with the provided name and no data.
+     *
+     * @param name {@link String} The texture name.
+     */
+    public NormalMapTexture2D(@NonNull String name) {
+        super(Type.NORMAL, name);
     }
 
-    public NormalMapTexture2D(String textureName, @NonNull Context context, int resourceId) {
-        super(Type.NORMAL, textureName);
+    /**
+     * Constructs a new {@link AlphaMaskTexture2D} with data provided by the Android resource id. The texture name is
+     * set by querying Android for the resource name.
+     *
+     * @param name {@link String} The texture name.
+     * @param context    {@link Context} The application context.
+     * @param resourceId {@code int} The Android resource id to load from.
+     */
+    public NormalMapTexture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId) {
+        super(Type.NORMAL, name);
         setTextureDataFromResourceId(context, resourceId);
     }
 
-    public NormalMapTexture2D(String textureName, TextureDataReference textureData) {
-        super(Type.NORMAL, textureName, textureData);
+    /**
+     * Constructs a new {@link AlphaMaskTexture2D} with the provided data.
+     *
+     * @param name {@link String} The texture name.
+     * @param data {@link TextureDataReference} The texture data.
+     */
+    public NormalMapTexture2D(@NonNull String name, @NonNull TextureDataReference data) {
+        super(Type.NORMAL, name, data);
     }
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override
     public NormalMapTexture2D clone() {
         try {
             return new NormalMapTexture2D(this);
