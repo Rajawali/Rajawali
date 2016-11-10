@@ -24,14 +24,13 @@ import android.support.annotation.Nullable;
 
 import net.jcip.annotations.ThreadSafe;
 
+import org.rajawali3d.util.RajLog;
+
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.PixelFormat;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 import c.org.rajawali3d.textures.annotation.Wrap;
-
-import org.rajawali3d.util.RajLog;
-
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 
 /**
  * This class is used to specify common functions of a single 2D texture. Subclasses are expected to be thread safe.
@@ -137,10 +136,8 @@ public abstract class SingleTexture2D extends BaseTexture {
         // Decode the bitmap
         final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
         final TextureDataReference reference = new TextureDataReference(bitmap, null,
-            bitmap.getConfig().equals(Config.RGB_565)
-                ? GLES20.GL_RGB : GLES20.GL_RGBA,
-            GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(),
-            bitmap.getHeight());
+            bitmap.getConfig().equals(Config.RGB_565) ? GLES20.GL_RGB : GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
         setTextureData(reference);
         return reference;
     }
@@ -157,7 +154,7 @@ public abstract class SingleTexture2D extends BaseTexture {
 
         // Save and increment reference count of new data
         data.holdReference();
-        this.textureData = data;
+        textureData = data;
 
         // Release any existing reference
         if (oldData != null) {
@@ -278,7 +275,7 @@ public abstract class SingleTexture2D extends BaseTexture {
                 if (getWidth() == 0 || getHeight() == 0) {
                     throw new TextureException(
                         "Could not create ByteBuffer texture. One or more of the following properties haven't "
-                            + "been set: width, height or bitmap format");
+                            + "been set: width or height format");
                 }
                 GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, getTexelFormat(), getWidth(), getHeight(), 0,
                     textureData.getPixelFormat(), textureData.getDataType(),
@@ -328,18 +325,14 @@ public abstract class SingleTexture2D extends BaseTexture {
         final TextureDataReference textureData = this.textureData;
         if (textureData == null || textureData.isDestroyed() || (textureData.hasBuffer()
             && textureData.getByteBuffer().limit() == 0 && !textureData.hasBitmap())) {
-            final String error = "Texture2D could not be replaced because there is no Bitmap or ByteBuffer set. Flags: "
-                                 + (textureData == null ? "null" : ("false || " + textureData.isDestroyed() + " || "
-                                                                   + textureData.hasBuffer() + " && "
-                                                                   + (textureData.getByteBuffer().limit() == 0) + " && "
-                                                                   + !textureData.hasBitmap()));
+            final String error = "Texture2D could not be replaced because there is no Bitmap or ByteBuffer set.";
             RajLog.e(error);
             throw new TextureException(error);
         }
 
         if (textureData.getWidth() != getWidth() || textureData.getHeight() != getHeight()) {
             throw new TextureException(
-                    "Texture could not be updated because the texture size is different from the original.");
+                "Texture could not be updated because the texture size is different from the original.");
         }
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, getTextureId());
@@ -352,11 +345,11 @@ public abstract class SingleTexture2D extends BaseTexture {
 
             if (bitmapFormat != getTexelFormat()) {
                 throw new TextureException(
-                        "Texture could not be updated because the texel format is different from the original");
+                    "Texture could not be updated because the texel format is different from the original");
             }
 
             GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), getTexelFormat(),
-                                  GLES20.GL_UNSIGNED_BYTE);
+                GLES20.GL_UNSIGNED_BYTE);
         }
 
         if (isMipmaped()) {

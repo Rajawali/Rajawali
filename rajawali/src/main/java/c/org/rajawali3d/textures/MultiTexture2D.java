@@ -20,9 +20,11 @@ import android.opengl.GLES20;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import net.jcip.annotations.ThreadSafe;
+
 import c.org.rajawali3d.textures.annotation.PixelFormat;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
-import net.jcip.annotations.ThreadSafe;
 
 /**
  * This class is used to specify common functions of a multi-2D texture. Subclasses are expected to be thread safe.
@@ -170,7 +172,7 @@ public abstract class MultiTexture2D extends BaseTexture {
      * @return The current {@link TextureDataReference}.
      */
     @Nullable
-    private TextureDataReference[] getTextureData() {
+    protected TextureDataReference[] getTextureData() {
         return textureData;
     }
 
