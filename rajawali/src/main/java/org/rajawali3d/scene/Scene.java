@@ -16,6 +16,10 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.CubeMapTexture;
+import c.org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.cameras.Camera;
@@ -32,13 +36,8 @@ import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.renderer.plugins.IRendererPlugin;
 import org.rajawali3d.renderer.plugins.Plugin;
-import c.org.rajawali3d.textures.BaseTexture;
-import c.org.rajawali3d.textures.CubeMapTexture;
-import c.org.rajawali3d.textures.Texture2D;
-import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.ObjectColorPicker.ColorPickerInfo;
-import org.rajawali3d.util.RajLog;
 import org.rajawali3d.view.Surface;
 
 import java.util.ArrayList;
@@ -775,7 +774,7 @@ public class Scene {
 			mNextSkybox = new Cube(700, true);
 			int[] resourceIds = new int[] { posx, negx, posy, negy, posz, negz };
 
-			mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
+			//mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
 			((CubeMapTexture)mSkyboxTexture).isSkyTexture(true);
 			Material mat = new Material();
 			mat.setColorInfluence(0);
@@ -799,7 +798,7 @@ public class Scene {
         	}
         };
         final Cube skybox = new Cube(700, true);
-        final CubeMapTexture texture = new CubeMapTexture("bitmap_skybox", bitmaps);
+        /*final CubeMapTexture texture = new CubeMapTexture("bitmap_skybox", bitmaps);
         texture.isSkyTexture(true);
         final Material material = new Material();
         material.setColorInfluence(0);
@@ -811,7 +810,7 @@ public class Scene {
         skybox.setMaterial(material);
         synchronized (mNextCameraLock) {
             mNextSkybox = skybox;
-        }
+        }*/
         return internalOfferTask(task);
     }
 
@@ -848,7 +847,7 @@ public class Scene {
 		int[] resourceIds = new int[] { front, right, back, left, up, down };
 
 		CubeMapTexture cubemap = (CubeMapTexture)mSkyboxTexture;
-		cubemap.setResourceIds(resourceIds);
+		//cubemap.setResourceIds(resourceIds);
 		mRenderer.getTextureManager().replaceTexture(cubemap);
 	}
 
@@ -864,7 +863,7 @@ public class Scene {
                 throw new Exception("The skybox texture cannot be updated. It is not a cube map texture.");
 
             CubeMapTexture cubemap = (CubeMapTexture)mSkyboxTexture;
-            cubemap.setBitmaps(bitmaps);
+            //cubemap.setBitmaps(bitmaps);
             mRenderer.getTextureManager().replaceTexture(cubemap);
         }
 

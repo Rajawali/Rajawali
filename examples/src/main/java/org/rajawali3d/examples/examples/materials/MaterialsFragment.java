@@ -11,8 +11,6 @@ import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
-import c.org.rajawali3d.textures.CubeMapTexture;
-import c.org.rajawali3d.textures.TextureException;
 
 public class MaterialsFragment extends AExampleFragment {
 
@@ -94,14 +92,14 @@ public class MaterialsFragment extends AExampleFragment {
 			Material cubeMapMaterial = new Material();
 			cubeMapMaterial.enableLighting(true);
 			cubeMapMaterial.setDiffuseMethod(new DiffuseMethod.Lambert());
-			try {
-				CubeMapTexture envMap = new CubeMapTexture("monkeyCubeMap",
-						resourceIds);
-				cubeMapMaterial.addTexture(envMap);
+			//try {
+				//CubeMapTexture envMap = new CubeMapTexture("monkeyCubeMap",
+				//		resourceIds);
+				//cubeMapMaterial.addTexture(envMap);
 				cubeMapMaterial.setColorInfluence(0);
-			} catch (TextureException e) {
-				e.printStackTrace();
-			}
+			//} catch (TextureException e) {
+			//	e.printStackTrace();
+			//}
 			mMonkey4.setMaterial(cubeMapMaterial);
 		}
 
