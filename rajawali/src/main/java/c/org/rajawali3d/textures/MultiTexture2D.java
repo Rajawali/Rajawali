@@ -21,6 +21,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import android.support.annotation.VisibleForTesting;
 import net.jcip.annotations.ThreadSafe;
 
 import c.org.rajawali3d.textures.annotation.PixelFormat;
@@ -147,21 +148,28 @@ public abstract class MultiTexture2D extends BaseTexture {
      * @param data The new {@link TextureDataReference} array to use.
      */
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    private void setTextureData(@Nullable TextureDataReference[] data) {
+    @VisibleForTesting
+    void setTextureData(@Nullable TextureDataReference[] data) {
         // Save a stack reference to the old data
         final TextureDataReference[] oldData = this.textureData;
 
-        for (int i = 0, j = data.length; i < j; ++i) {
-            // Save and increment reference count of new data
-            data[i].holdReference();
+        if (data != null) {
+            for (int i = 0, j = data.length; i < j; ++i) {
+                // Save and increment reference count of new data
+                if (data[i] != null) {
+                    data[i].holdReference();
+                }
+            }
         }
 
         this.textureData = data;
 
-        for (int i = 0, j = oldData.length; i < j; ++i) {
-            // Release any existing reference
-            if (oldData != null) {
-                oldData[i].recycle();
+        if (oldData != null) {
+            for (int i = 0, j = oldData.length; i < j; ++i) {
+                // Release any existing reference
+                if (oldData[i] != null) {
+                    oldData[i].recycle();
+                }
             }
         }
     }
