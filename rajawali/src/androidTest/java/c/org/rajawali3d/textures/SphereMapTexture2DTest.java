@@ -1,5 +1,17 @@
 package c.org.rajawali3d.textures;
 
+import android.opengl.GLES20;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.rajawali3d.R;
+
+import java.nio.ByteBuffer;
+
+import c.org.rajawali3d.textures.annotation.Type;
+
 import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -7,16 +19,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.opengl.GLES20;
-import c.org.rajawali3d.textures.annotation.Type;
-import org.junit.Test;
-import org.rajawali3d.R;
-
-import java.nio.ByteBuffer;
-
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@RunWith(AndroidJUnit4.class)
+@SmallTest
 public class SphereMapTexture2DTest {
 
     @Test

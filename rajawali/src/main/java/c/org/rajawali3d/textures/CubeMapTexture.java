@@ -17,6 +17,7 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import org.rajawali3d.util.RajLog;
 
@@ -127,7 +128,8 @@ public class CubeMapTexture extends MultiTexture2D {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    private void pushTextureData() throws TextureException {
+    @VisibleForTesting
+    void pushTextureData() throws TextureException {
         final TextureDataReference[] dataReferences = getTextureData();
 
         if (dataReferences == null) {

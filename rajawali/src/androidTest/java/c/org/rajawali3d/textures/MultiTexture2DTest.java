@@ -11,13 +11,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
+
 import c.org.rajawali3d.textures.annotation.Type;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.rajawali3d.R;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@RunWith(AndroidJUnit4.class)
+@SmallTest
 public class MultiTexture2DTest {
 
     private static class TestableMultiTexture2D extends MultiTexture2D {
