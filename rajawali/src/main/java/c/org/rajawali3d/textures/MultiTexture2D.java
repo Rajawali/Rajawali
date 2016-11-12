@@ -159,6 +159,10 @@ public abstract class MultiTexture2D extends BaseTexture {
                 // Save and increment reference count of new data
                 if (data[i] != null) {
                     data[i].holdReference();
+                    if (getWidth() == 0 && getHeight() == 0) {
+                        setWidth(data[i].getWidth());
+                        setHeight(data[i].getHeight());
+                    }
                 }
             }
         }

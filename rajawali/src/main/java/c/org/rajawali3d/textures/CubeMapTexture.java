@@ -13,6 +13,8 @@
 package c.org.rajawali3d.textures;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.support.annotation.DrawableRes;
@@ -239,7 +241,13 @@ public class CubeMapTexture extends MultiTexture2D {
                         dataReferences[i].getPixelFormat(), dataReferences[i].getDataType(),
                         dataReferences[i].getByteBuffer());
                 } else {
-                    GLUtils.texImage2D(CUBE_FACES[i], 0, dataReferences[i].getBitmap(), 0);
+                    final Bitmap bitmap = dataReferences[i].getBitmap();
+                    int bitmapFormat = bitmap.getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB;
+                    if (bitmapFormat != getTexelFormat()) {
+                        throw new TextureException(
+                                "Texture could not be updated because the texel format is different from the original");
+                    }
+                    GLUtils.texImage2D(CUBE_FACES[i], 0, bitmap, 0);
                 }
             }
 
