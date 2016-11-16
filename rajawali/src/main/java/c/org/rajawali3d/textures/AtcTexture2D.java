@@ -46,7 +46,7 @@ public class AtcTexture2D extends CompressedTexture2D {
     }
 
     public AtcTexture2D(String textureName, ByteBuffer[] byteBuffers, AtcFormat atcFormat) throws TextureException {
-        super(textureName, byteBuffers);
+        //super(textureName, byteBuffers);
         setCompressionType(Compression2D.ATC);
         setAtcFormat(atcFormat);
     }

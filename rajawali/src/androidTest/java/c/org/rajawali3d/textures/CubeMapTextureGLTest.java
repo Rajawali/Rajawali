@@ -1,24 +1,5 @@
 package c.org.rajawali3d.textures;
 
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.opengl.GLES20;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.RequiresDevice;
-import android.support.test.runner.AndroidJUnit4;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.rajawali3d.R;
-
-import java.nio.ByteBuffer;
-
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.textures.annotation.Filter;
-import c.org.rajawali3d.textures.annotation.Wrap;
-
 import static c.org.rajawali3d.textures.annotation.Wrap.MIRRORED_REPEAT_T;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +7,26 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
+import android.opengl.GLES20;
+import android.support.test.filters.LargeTest;
+import android.support.test.filters.RequiresDevice;
+import android.support.test.runner.AndroidJUnit4;
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.textures.annotation.Filter;
+import c.org.rajawali3d.textures.annotation.Wrap;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.rajawali3d.R;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -99,6 +100,88 @@ public class CubeMapTextureGLTest extends GlTestCase {
         assertTrue(texture.getTextureId() > 0);
     }
 
+    @Test
+    public void removeNoData() throws Exception {
+        final int[] ids = new int[]{
+                R.drawable.posx, R.drawable.posy, R.drawable.posz,
+                R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        final TextureDataReference[] references = new TextureDataReference[6];
+        for (int i = 0; i < 6; ++i) {
+            final Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), ids[i]);
+            references[i] = spy(new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
+                                                         bitmap.getWidth(), bitmap.getHeight()));
+        }
+        texture.setTextureData(references);
+        assertNotNull(references);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        texture.setWrapType(Wrap.CLAMP_S | MIRRORED_REPEAT_T);
+        texture.setFilterType(Filter.NEAREST);
+        texture.setMipmaped(false);
+        texture.willRecycle(true);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.remove();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertFalse(thrown[0]);
+        assertTrue(texture.getTextureId() > 0);
+        assertNull(texture.getTextureData());
+        for (TextureDataReference reference : references) {
+            assertTrue(reference.isDestroyed());
+            verify(reference).recycle();
+        }
+    }
+
+    @Test
+    public void removeNullData() throws Exception {
+        final int[] ids = new int[]{
+                R.drawable.posx, R.drawable.posy, R.drawable.posz,
+                R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        final TextureDataReference[] references = new TextureDataReference[6];
+        for (int i = 0; i < 6; ++i) {
+            final Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), ids[i]);
+            references[i] = spy(new TextureDataReference(bitmap, null, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
+                                                         bitmap.getWidth(), bitmap.getHeight()));
+        }
+        texture.setTextureData(references);
+        assertNotNull(references);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        texture.setWrapType(Wrap.CLAMP_S | MIRRORED_REPEAT_T);
+        texture.setFilterType(Filter.NEAREST);
+        texture.setMipmaped(false);
+        texture.willRecycle(true);
+        final boolean[] thrown = new boolean[]{false};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.setTextureData(new TextureDataReference[]{null, null, null, null, null, null});
+                    texture.remove();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertFalse(thrown[0]);
+        assertTrue(texture.getTextureId() > 0);
+        assertNull(texture.getTextureData());
+        for (TextureDataReference reference : references) {
+            assertTrue(reference.isDestroyed());
+            verify(reference).recycle();
+        }
+    }
 
     @Test
     public void replaceWithBitmap() throws Exception {
@@ -399,10 +482,13 @@ public class CubeMapTextureGLTest extends GlTestCase {
             R.drawable.negx, R.drawable.negy, R.drawable.negz
         };
         final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
+        final TextureDataReference[] references = texture.getTextureData();
+        assertNotNull(references);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.CLAMP_S | MIRRORED_REPEAT_T);
         texture.setFilterType(Filter.NEAREST);
         texture.setMipmaped(false);
+        texture.willRecycle(true);
         final boolean[] thrown = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -416,6 +502,9 @@ public class CubeMapTextureGLTest extends GlTestCase {
         });
         assertFalse(thrown[0]);
         assertTrue(texture.getTextureId() > 0);
+        for (TextureDataReference reference : references) {
+            assertTrue(reference.isDestroyed());
+        }
         assertNull(texture.getTextureData());
     }
 

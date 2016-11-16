@@ -48,7 +48,7 @@ public class Dxt1Texture2D extends CompressedTexture2D {
     }
 
     public Dxt1Texture2D(String textureName, ByteBuffer[] byteBuffers, Dxt1Format dxt1Format) throws TextureException {
-        super(textureName, byteBuffers);
+        //super(textureName, byteBuffers);
         setCompressionType(Compression2D.DXT1);
         setDxt1Format(dxt1Format);
     }

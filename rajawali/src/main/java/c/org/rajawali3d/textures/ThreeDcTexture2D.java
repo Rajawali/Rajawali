@@ -47,7 +47,7 @@ public class ThreeDcTexture2D extends CompressedTexture2D {
 
     public ThreeDcTexture2D(String textureName, ByteBuffer[] byteBuffers, ThreeDcFormat threeDcFormat) throws
                                                                                                        TextureException {
-        super(textureName, byteBuffers);
+        //super(textureName, byteBuffers);
         setCompressionType(Compression2D.THREEDC);
         setThreeDcFormat(threeDcFormat);
     }

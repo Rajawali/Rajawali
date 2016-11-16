@@ -50,7 +50,7 @@ public class PvrtcTexture2D extends CompressedTexture2D {
 
     public PvrtcTexture2D(String textureName, ByteBuffer[] byteBuffers, PvrtcFormat pvrtcFormat) throws
                                                                                                  TextureException {
-        super(textureName, byteBuffers);
+        //super(textureName, byteBuffers);
         setCompressionType(Compression2D.PVRTC);
         setPvrtcFormat(pvrtcFormat);
     }

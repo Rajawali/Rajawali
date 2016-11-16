@@ -1,25 +1,26 @@
 package c.org.rajawali3d.textures;
 
-import android.opengl.GLES20;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.rajawali3d.R;
-
-import c.org.rajawali3d.textures.annotation.Type;
-import c.org.rajawali3d.textures.annotation.Wrap;
-
 import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import android.opengl.GLES20;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
+import c.org.rajawali3d.textures.annotation.Type;
+import c.org.rajawali3d.textures.annotation.Wrap;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.rajawali3d.R;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -129,22 +130,93 @@ public class CubeMapTextureTest {
     }
 
     @Test
-    public void pushTextureData() throws Exception {
-
+    public void testCloneFail() throws Exception {
+        final Texture2D from = new Texture2D("FROM");
+        final Texture2D texture = from.clone();
+        assertNull(texture);
     }
 
     @Test
-    public void add() throws Exception {
+    public void textureAddFailNullData() throws Exception {
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
+    }
 
+    @SuppressWarnings("Range")
+    @Test
+    public void textureAddFailBadLengthData() throws Exception {
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        final TextureDataReference reference = mock(TextureDataReference.class);
+        texture.setTextureData(new TextureDataReference[]{reference});
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
     }
 
     @Test
-    public void remove() throws Exception {
-
+    public void textureRemoveNotAdded() throws Exception {
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        texture.remove();
     }
 
     @Test
-    public void replace() throws Exception {
+    public void replaceNoData() throws Exception {
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        boolean thrown = false;
+        try {
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+    }
 
+    @Test
+    public void textureReplaceDestroyed() throws Exception {
+        final int[] ids = new int[]{
+                R.drawable.posx, R.drawable.posy, R.drawable.posz,
+                R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        final TextureDataReference[] references = texture.setTextureDataFromResourceIds(getContext(), ids);
+        for (TextureDataReference reference : references) {
+            reference.recycle();
+        }
+        boolean thrown = false;
+        try {
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+    }
+
+    @Test
+    public void replaceBufferZeroLimit() throws Exception {
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(0);
+        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
+                                                                        GLES20.GL_UNSIGNED_BYTE, 256, 0);
+        texture.setTextureData(new TextureDataReference[]{reference, reference, reference,
+                                                          reference, reference, reference});
+        boolean thrown = false;
+        try {
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
     }
 }

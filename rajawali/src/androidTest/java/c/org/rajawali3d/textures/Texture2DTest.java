@@ -69,6 +69,7 @@ public class Texture2DTest {
         assertEquals(reference, texture.getTextureData());
     }
 
+    @Test
     public void testCloneFail() throws Exception {
         final Texture2D from = new Texture2D("FROM");
         final Texture2D texture = from.clone();
