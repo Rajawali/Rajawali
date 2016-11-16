@@ -17,6 +17,9 @@
 
 ### News
 
+**11/16/2016**
+`Bombshell 1.1.777` has been released. It fixes a small number of bugs and adds a Scan Line post processing effect (thanks @contriteobserver). 
+
 **11/15/2016**
 One of the developers (@jwoolston) is now offering consulting/development services, particularly related to Rajawali. Details will be handled on a case by case basis but everything from paid assistance debugging to development of specific modifications or full apps using Rajawali are possible. To be clear, support on the Issues page is always free, however it is handled on a lower priority basis. Any development which happens under a paid contract is subject to whatever copyright terms the client specifies to the extent they are compatible with the licensing terms of Rajawali (see [LICENSE.txt](./LICENSE.txt))
 
@@ -25,12 +28,6 @@ The official release of `Bombshell 1.1.610` is out. We will continue to support 
 
 **8/29/2016**
 An initial effort for adding unit testing to Rajawali has been made. This initial focus has been on the core math classes and will ideally expand as bug fixes progress. Pull requests for unit tests are welcome and any "bug fix" PRs which include unit tests  or issues which include unit tests to demonstrate a failure will be given the highest priority. 
-
-**2/23/2016**
-Following the `1.0.325` release, I have also created a `1.1.x` release. This release is functionally identical though it represents an API change to deal with the class names being smurf like. Additionally, some class locations were altered. For users of the `master` branch prior to release, support will continue, though all bugfixes will occur in `1.1.x` releases unless we receive PRs for hotfixes.
-
-**2/23/2016**
-Rajawali recently made its first major release `1.0.325`. We had already deprecated support for the `v0.9` tag, but with this release we will not make any attempts at supporting usage of `v0.9`. Efforts will be made to bring all documentation up to date and support requests for the `1.0.x` builds will be handled on a best effort basis. Issues against `v0.9` will be closed immediately. Please do not take it personally, its simply a resource issue.
 
 ### General
 
