@@ -866,7 +866,7 @@ public class Geometry3D {
     }
 
     public void setColors(float[] colors) {
-        setTextureCoords(colors, false);
+        setColors(colors, false);
     }
 
     public void setColors(float[] colors, boolean override) {
