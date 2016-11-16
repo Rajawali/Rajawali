@@ -131,8 +131,8 @@ public class CubeMapTextureTest {
 
     @Test
     public void testCloneFail() throws Exception {
-        final Texture2D from = new Texture2D("FROM");
-        final Texture2D texture = from.clone();
+        final CubeMapTexture other = new CubeMapTexture("TEST");
+        final CubeMapTexture texture = other.clone();
         assertNull(texture);
     }
 

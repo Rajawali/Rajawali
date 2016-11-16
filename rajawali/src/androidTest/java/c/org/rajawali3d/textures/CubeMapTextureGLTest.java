@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rajawali3d.R;
+import org.rajawali3d.util.RajLog;
 
 import java.nio.ByteBuffer;
 
@@ -176,7 +177,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         });
         assertFalse(thrown[0]);
         assertTrue(texture.getTextureId() > 0);
-        assertNull(texture.getTextureData());
+        assertNotNull(texture.getTextureData());
         for (TextureDataReference reference : references) {
             assertTrue(reference.isDestroyed());
             verify(reference).recycle();
@@ -192,6 +193,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.willRecycle(false);
+        texture.setMipmaped(false);
         final boolean[] thrown = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -301,6 +303,34 @@ public class CubeMapTextureGLTest extends GlTestCase {
         final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         boolean thrown = false;
         try {
+            RajLog.i("textureReplaceBufferFailZeroLimit");
+            texture.add();
+            texture.setTextureData(badReferences);
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+    }
+
+    @Test
+    public void textureReplaceBufferFailZeroLimitWithBitmap() throws Exception {
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
+        final ByteBuffer badBuffer = ByteBuffer.allocate(0);
+        final TextureDataReference[] references = new TextureDataReference[6];
+        final Bitmap bitmap = Bitmap.createBitmap(256, 256, Config.ARGB_8888);
+        for (int i = 0; i < 6; ++i) {
+            references[i] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 512);
+        }
+        final TextureDataReference[] badReferences = new TextureDataReference[6];
+        for (int i = 0; i < 6; ++i) {
+            badReferences[i] = new TextureDataReference(bitmap, badBuffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
+                                                        256, 512);
+        }
+        final CubeMapTexture texture = new CubeMapTexture("TEST", references);
+        boolean thrown = false;
+        try {
+            RajLog.i("textureReplaceBufferFailZeroLimitWithBitmap");
             texture.add();
             texture.setTextureData(badReferences);
             texture.replace();
