@@ -1,18 +1,12 @@
 package c.org.rajawali3d.textures;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.textures.annotation.Filter;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +14,18 @@ import org.junit.runner.RunWith;
 import org.rajawali3d.R;
 
 import java.nio.ByteBuffer;
+
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.textures.annotation.Filter;
+import c.org.rajawali3d.textures.annotation.Wrap;
+
+import static c.org.rajawali3d.textures.annotation.Wrap.MIRRORED_REPEAT_T;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -386,12 +392,15 @@ public class CubeMapTextureGLTest extends GlTestCase {
         assertTrue(thrown[0]);
     }
 
-    /*@Test
+    @Test
     public void textureAdd1() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.CLAMP_S | Wrap.MIRRORED_REPEAT_T);
+        texture.setWrapType(Wrap.CLAMP_S | MIRRORED_REPEAT_T);
         texture.setFilterType(Filter.NEAREST);
         texture.setMipmaped(false);
         final boolean[] thrown = new boolean[]{false};
@@ -412,8 +421,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAdd2() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.MIRRORED_REPEAT_S | Wrap.CLAMP_T);
         texture.setFilterType(Filter.BILINEAR);
@@ -435,8 +447,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAdd3() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
@@ -458,8 +473,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAdd4() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.NEAREST);
@@ -481,8 +499,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAdd5() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.BILINEAR);
@@ -504,8 +525,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAdd6() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
@@ -527,8 +551,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAdd7() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
@@ -551,8 +578,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAdd8() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
@@ -576,8 +606,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
     @SuppressWarnings("WrongConstant")
     @Test
     public void textureAddFailFilter1() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(-1);
@@ -600,8 +633,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
     @SuppressWarnings("WrongConstant")
     @Test
     public void textureAddFailFilter2() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
+        final int[] ids = new int[]{
+            R.drawable.posx, R.drawable.posy, R.drawable.posz,
+            R.drawable.negx, R.drawable.negy, R.drawable.negz
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(-1);
@@ -623,11 +659,12 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAddBufferWithoutRecycle() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
         final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
-        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
-            GLES20.GL_UNSIGNED_BYTE, 256, 512);
-        texture.setTextureData(reference);
+        final TextureDataReference[] references = new TextureDataReference[6];
+        for (int i = 0; i < 6; ++i) {
+            references[i] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 512);
+        }
+        final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
@@ -651,11 +688,12 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAddBufferFailWidth() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
         final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
-        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
-            GLES20.GL_UNSIGNED_BYTE, 0, 512);
-        texture.setTextureData(reference);
+        final TextureDataReference[] references = new TextureDataReference[6];
+        for (int i = 0; i < 6; ++i) {
+            references[i] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 0, 512);
+        }
+        final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
@@ -678,11 +716,12 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void textureAddBufferFailHeight() throws Exception {
-        final CubeMapTexture texture = new CubeMapTexture();
         final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
-        final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
-            GLES20.GL_UNSIGNED_BYTE, 256, 0);
-        texture.setTextureData(reference);
+        final TextureDataReference[] references = new TextureDataReference[6];
+        for (int i = 0; i < 6; ++i) {
+            references[i] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 0);
+        }
+        final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
@@ -701,5 +740,5 @@ public class CubeMapTextureGLTest extends GlTestCase {
         });
         assertTrue(thrown[0]);
         assertTrue(texture.getTextureId() == -1);
-    }*/
+    }
 }

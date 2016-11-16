@@ -87,11 +87,11 @@ public class Dxt1Texture2D extends CompressedTexture2D {
         this.mDxt1Format = dxt1Format;
         switch (dxt1Format) {
             case RGB:
-                mCompressionFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+                compressionFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
                 break;
             case RGBA:
             default:
-                mCompressionFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+                compressionFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
                 break;
         }
     }

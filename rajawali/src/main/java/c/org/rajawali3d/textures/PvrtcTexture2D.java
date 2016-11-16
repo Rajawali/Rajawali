@@ -89,17 +89,17 @@ public class PvrtcTexture2D extends CompressedTexture2D {
         this.mPvrtcFormat = pvrtcFormat;
         switch (pvrtcFormat) {
             case RGB_2BPP:
-                mCompressionFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+                compressionFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
                 break;
             case RGB_4BPP:
-                mCompressionFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+                compressionFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
                 break;
             case RGBA_2BPP:
-                mCompressionFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+                compressionFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
                 break;
             case RGBA_4BPP:
             default:
-                mCompressionFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+                compressionFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
                 break;
         }
     }

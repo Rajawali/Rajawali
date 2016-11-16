@@ -47,7 +47,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
 
     public Etc2Texture2D(String textureName) throws TextureException {
         super(textureName);
-        mCompressionType = Compression2D.ETC2;
+        compressionType = Compression2D.ETC2;
     }
 
     public Etc2Texture2D(int resourceId) throws TextureException {
@@ -74,7 +74,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
 
     public Etc2Texture2D(String textureName, ByteBuffer[] byteBuffers) throws TextureException {
         this(textureName);
-        setByteBuffers(byteBuffers);
+        setData(byteBuffers);
     }
 
     public Etc2Texture2D(String textureName, InputStream compressedTexture, Bitmap fallbackTexture) throws
@@ -118,7 +118,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
         Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext().getResources();
         try {
             ETC2Util.ETC2Texture texture = ETC2Util.createTexture(resources.openRawResource(resourceId));
-            mByteBuffers = new ByteBuffer[]{texture.getData()};
+            data = new ByteBuffer[]{texture.getData()};
             setWidth(texture.getWidth());
             setHeight(texture.getHeight());
             setCompressionFormat(texture.getCompressionFormat());
@@ -159,7 +159,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
             e.printStackTrace();
         }
 
-        mByteBuffers = mipmapChain;
+        data = mipmapChain;
     }
 
     public void setInputStream(InputStream compressedTexture, Bitmap fallbackTexture) {
@@ -200,7 +200,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
             compressedBuffer);
         setCompressionFormat(ETC1.ETC1_RGB8_OES);
 
-        mByteBuffers = new ByteBuffer[]{compressedBuffer};
+        data = new ByteBuffer[]{compressedBuffer};
         setWidth(bitmap.getWidth());
         setHeight(bitmap.getHeight());
     }

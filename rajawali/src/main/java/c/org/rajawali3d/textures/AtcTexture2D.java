@@ -85,14 +85,14 @@ public class AtcTexture2D extends CompressedTexture2D {
         this.mAtcFormat = atcFormat;
         switch (atcFormat) {
             case RGB:
-                mCompressionFormat = GLES11Ext.GL_ATC_RGB_AMD;
+                compressionFormat = GLES11Ext.GL_ATC_RGB_AMD;
                 break;
             case RGBA_EXPLICIT:
             default:
-                mCompressionFormat = GLES11Ext.GL_ATC_RGBA_EXPLICIT_ALPHA_AMD;
+                compressionFormat = GLES11Ext.GL_ATC_RGBA_EXPLICIT_ALPHA_AMD;
                 break;
             case RGBA_INTERPOLATED:
-                mCompressionFormat = GLES11Ext.GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD;
+                compressionFormat = GLES11Ext.GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD;
                 break;
         }
     }

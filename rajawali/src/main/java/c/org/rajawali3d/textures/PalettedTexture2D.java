@@ -113,35 +113,35 @@ public class PalettedTexture2D extends CompressedTexture2D {
     private void checkPaletteFormat() {
         switch (mPaletteFormat) {
             case PALETTE4_RGB8:
-                mCompressionFormat = GL_PALETTE4_RGB8_OES;
+                compressionFormat = GL_PALETTE4_RGB8_OES;
                 break;
             case PALETTE4_RGBA8:
-                mCompressionFormat = GL_PALETTE4_RGBA8_OES;
+                compressionFormat = GL_PALETTE4_RGBA8_OES;
                 break;
             case PALETTE4_R5_G6_B5:
-                mCompressionFormat = GL_PALETTE4_R5_G6_B5_OES;
+                compressionFormat = GL_PALETTE4_R5_G6_B5_OES;
                 break;
             case PALETTE4_RGBA4:
-                mCompressionFormat = GL_PALETTE4_RGBA4_OES;
+                compressionFormat = GL_PALETTE4_RGBA4_OES;
                 break;
             case PALETTE4_RGB5_A1:
-                mCompressionFormat = GL_PALETTE4_RGB5_A1_OES;
+                compressionFormat = GL_PALETTE4_RGB5_A1_OES;
                 break;
             case PALETTE8_RGB8:
-                mCompressionFormat = GL_PALETTE8_RGB8_OES;
+                compressionFormat = GL_PALETTE8_RGB8_OES;
                 break;
             case PALETTE8_RGBA8:
             default:
-                mCompressionFormat = GL_PALETTE8_RGBA8_OES;
+                compressionFormat = GL_PALETTE8_RGBA8_OES;
                 break;
             case PALETTE8_R5_G6_B5:
-                mCompressionFormat = GL_PALETTE8_R5_G6_B5_OES;
+                compressionFormat = GL_PALETTE8_R5_G6_B5_OES;
                 break;
             case PALETTE8_RGBA4:
-                mCompressionFormat = GL_PALETTE8_RGBA4_OES;
+                compressionFormat = GL_PALETTE8_RGBA4_OES;
                 break;
             case PALETTE8_RGB5_A1:
-                mCompressionFormat = GL_PALETTE8_RGB5_A1_OES;
+                compressionFormat = GL_PALETTE8_RGB5_A1_OES;
                 break;
         }
     }
