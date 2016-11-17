@@ -188,13 +188,34 @@ public abstract class MultiTexture2D extends BaseTexture {
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
+    void remove() throws TextureException {
+        final TextureDataReference[] textureData = getTextureData();
+        final int id = getTextureId();
+        if (id > 0) {
+            // Call delete with GL only if necessary
+            GLES20.glDeleteTextures(1, new int[]{getTextureId()}, 0);
+            if (textureData != null) {
+                // When removing a texture, release a reference count for its data if we have saved it.
+                for (int i = 0, j = textureData.length; i < j; ++i) {
+                    if (textureData[i] != null) {
+                        textureData[i].recycle();
+                    }
+                }
+            }
+        }
+
+        //TODO: Notify materials that were using this texture
+    }
+
+    @SuppressWarnings("ForLoopReplaceableByForEach")
+    @Override
     void reset() throws TextureException {
-        final TextureDataReference[] textureData = this.textureData;
+        final TextureDataReference[] textureData = getTextureData();
         if (textureData != null) {
             for (int i = 0, j = textureData.length; i < j; ++i) {
                 textureData[i].recycle();
             }
-            this.textureData = null;
+            setTextureData(null);
         }
     }
 }

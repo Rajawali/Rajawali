@@ -20,13 +20,16 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Size;
+
+import net.jcip.annotations.ThreadSafe;
+
+import org.rajawali3d.util.RajLog;
+
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
 import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
-import net.jcip.annotations.ThreadSafe;
-import org.rajawali3d.util.RajLog;
 
 /**
  * A 2D cube mapped environmental texture. These textures are typically used to simulate highly reflective
@@ -282,33 +285,11 @@ public class CubeMapTexture extends MultiTexture2D {
         }
 
         if (willRecycle()) {
-            RajLog.e("Recycling CubeMap Data");
             setTextureData(null);
         }
 
         // Rebind the null texture
         GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, 0);
-    }
-
-    @SuppressWarnings("ForLoopReplaceableByForEach")
-    @Override
-    void remove() throws TextureException {
-        final TextureDataReference[] textureData = getTextureData();
-        final int id = getTextureId();
-        if (id > 0) {
-            // Call delete with GL only if necessary
-            GLES20.glDeleteTextures(1, new int[]{getTextureId()}, 0);
-            if (textureData != null) {
-                // When removing a texture, release a reference count for its data if we have saved it.
-                for (int i = 0, j = textureData.length; i < j; ++i) {
-                    if (textureData[i] != null) {
-                        textureData[i].recycle();
-                    }
-                }
-            }
-        }
-
-        //TODO: Notify materials that were using this texture
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")

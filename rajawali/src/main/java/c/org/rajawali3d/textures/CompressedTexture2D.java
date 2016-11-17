@@ -16,14 +16,18 @@ import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import net.jcip.annotations.ThreadSafe;
+
+import org.rajawali3d.util.RajLog;
+
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Compression2D.CompressionType2D;
 import c.org.rajawali3d.textures.annotation.Filter;
-import c.org.rajawali3d.textures.annotation.Filter.FilterType;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 import c.org.rajawali3d.textures.annotation.Wrap;
 import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
-import net.jcip.annotations.ThreadSafe;
 
 /**
  * This class is used to specify common functions of a compressed 2D texture. Subclasses are expected to be thread
@@ -34,7 +38,7 @@ import net.jcip.annotations.ThreadSafe;
  */
 @ThreadSafe
 @SuppressWarnings("WeakerAccess")
-public abstract class CompressedTexture2D extends SingleTexture2D {
+public abstract class CompressedTexture2D extends MultiTexture2D {
 
     /**
      * The texture data.
@@ -80,7 +84,7 @@ public abstract class CompressedTexture2D extends SingleTexture2D {
     public CompressedTexture2D(@TextureType int type, @NonNull String name, @NonNull TextureDataReference data)
         throws TextureException {
         this(type, name);
-        setTextureData(data);
+        setTextureData(new TextureDataReference[]{data});
     }
 
     /**
@@ -113,7 +117,7 @@ public abstract class CompressedTexture2D extends SingleTexture2D {
      * @param other The other {@link CompressedTexture2D}.
      */
     public void setFrom(@NonNull CompressedTexture2D other) throws TextureException {
-        final TextureDataReference[] data = other.getTextureDataArray();
+        final TextureDataReference[] data = other.getTextureData();
         if (data != null) {
             super.setFrom(other);
             setTextureData(data);
@@ -122,63 +126,6 @@ public abstract class CompressedTexture2D extends SingleTexture2D {
         } else {
             throw new TextureException("Texture data was null!");
         }
-    }
-
-    @Override
-    public void setTextureData(@Nullable TextureDataReference data) {
-        setTextureData(data != null ? new TextureDataReference[]{data} : null);
-    }
-
-    /**
-     * Sets the data used by this {@link CompressedTexture2D} from the provided {@link TextureDataReference} array.
-     * The data references will have their reference count incremented and any existing data reference will be released.
-     *
-     * @param data The new {@link TextureDataReference} array to use.
-     */
-    @SuppressWarnings("ForLoopReplaceableByForEach")
-    public void setTextureData(@Nullable TextureDataReference[] data) {
-        // Save a stack reference to the old data
-        final TextureDataReference[] oldData = textureData;
-
-        if (data != null) {
-            for (int i = 0, j = data.length; i < j; ++i) {
-                // Save and increment reference count of new data
-                if (data[i] != null) {
-                    data[i].holdReference();
-                    if (getWidth() == 0 && getHeight() == 0) {
-                        setWidth(data[i].getWidth());
-                        setHeight(data[i].getHeight());
-                    }
-                }
-            }
-        }
-
-        textureData = data;
-
-        if (oldData != null) {
-            for (int i = 0, j = oldData.length; i < j; ++i) {
-                // Release any existing reference
-                if (oldData[i] != null) {
-                    oldData[i].recycle();
-                }
-            }
-        }
-    }
-
-    @Override
-    @Nullable
-    public TextureDataReference getTextureData() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Compressed texture data must be retrieved as an array.");
-    }
-
-    /**
-     * Retrieves the current {@link TextureDataReference} array used by this {@link CompressedTexture2D}.
-     *
-     * @return The current {@link TextureDataReference} array.
-     */
-    @Nullable
-    public TextureDataReference[] getTextureDataArray() {
-        return textureData;
     }
 
     /**
@@ -218,40 +165,115 @@ public abstract class CompressedTexture2D extends SingleTexture2D {
         this.compressionFormat = compressionFormat;
     }
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
+    @Override
     void add() throws TextureException {
-        int[] textures = new int[1];
-        GLES20.glGenTextures(1, textures, 0);
-        int textureId = textures[0];
-        if (textureId > 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+        final TextureDataReference[] dataReferences = getTextureData();
 
-            @FilterType final int filterType = getFilterType();
-            @WrapType final int wrapType = getWrapType();
+        if (dataReferences == null) {
+            throw new TextureException("Texture data was null!");
+        }
 
-            if (filterType == Filter.BILINEAR)
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-            else
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-
-            if (filterType == Filter.BILINEAR)
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-            else
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
-            if (wrapType == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R)) {
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-            } else {
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        for (int i = 0; i < dataReferences.length; ++i) {
+            if (dataReferences[i] == null || dataReferences[i].isDestroyed()
+                || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
+                && !dataReferences[i].hasBitmap())) {
+                throw new TextureException("Texture could not be added because there is no valid data set.");
             }
-            if ((textureData != null && textureData.length == 0) || textureData == null) {
-                GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, 0, compressionFormat, getWidth(), getHeight(), 0, 0, null);
+        }
+
+        @Filter.FilterType final int filterType = getFilterType();
+        @WrapType final int wrapType = getWrapType();
+
+        // Generate a texture id
+        int[] genTextureNames = new int[1];
+        GLES20.glGenTextures(1, genTextureNames, 0);
+        int textureId = genTextureNames[0];
+
+        if (textureId > 0) {
+
+            // Handle minification filtering
+            if (isMipmaped()) {
+                switch (filterType) {
+                    case Filter.NEAREST:
+                        GLES20.glTexParameterf(getTextureTarget(), GLES20.GL_TEXTURE_MIN_FILTER,
+                            GLES20.GL_NEAREST_MIPMAP_NEAREST);
+                        break;
+                    case Filter.BILINEAR:
+                        GLES20.glTexParameterf(getTextureTarget(), GLES20.GL_TEXTURE_MIN_FILTER,
+                            GLES20.GL_LINEAR_MIPMAP_NEAREST);
+                        break;
+                    case Filter.TRILINEAR:
+                        GLES20.glTexParameterf(getTextureTarget(), GLES20.GL_TEXTURE_MIN_FILTER,
+                            GLES20.GL_LINEAR_MIPMAP_LINEAR);
+                        break;
+                    default:
+                        throw new TextureException("Unknown texture filtering mode: " + filterType);
+                }
             } else {
-                int w = getWidth(), h = getHeight();
-                for (int i = 0; i < textureData.length; i++) {
-                    GLES20.glCompressedTexImage2D(GLES20.GL_TEXTURE_2D, i, compressionFormat, w, h, 0,
-                        textureData[i].getByteBuffer().capacity(), textureData[i].getByteBuffer());
+                switch (filterType) {
+                    case Filter.NEAREST:
+                        GLES20.glTexParameterf(getTextureTarget(), GLES20.GL_TEXTURE_MIN_FILTER,
+                            GLES20.GL_NEAREST);
+                        break;
+                    case Filter.BILINEAR:
+                        GLES20.glTexParameterf(getTextureTarget(), GLES20.GL_TEXTURE_MIN_FILTER,
+                            GLES20.GL_LINEAR);
+                        break;
+                    case Filter.TRILINEAR:
+                        RajLog.e("Trilinear filtering requires the use of mipmaps which are not enabled for this "
+                            + "texture. Falling back to bilinear filtering.");
+                        GLES20.glTexParameterf(getTextureTarget(), GLES20.GL_TEXTURE_MIN_FILTER,
+                            GLES20.GL_LINEAR);
+                        break;
+                    default:
+                        throw new TextureException("Unknown texture filtering mode: " + filterType);
+                }
+            }
+
+            // Handle magnification filtering
+            if (filterType == Filter.BILINEAR || filterType == Filter.TRILINEAR) {
+                GLES20.glTexParameterf(getTextureTarget(), GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+            } else {
+                GLES20.glTexParameterf(getTextureTarget(), GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+            }
+
+            // Handle anisotropy if needed. We don't check if it is supported here because setting it to anything
+            // other than 1.0 would have required the check.
+            if (getMaxAnisotropy() > 1.0) {
+                GLES20.glTexParameterf(getTextureTarget(), EXTTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
+                    getMaxAnisotropy());
+            }
+
+            // Handle s coordinate wrapping
+            int wrap = GLES20.GL_REPEAT;
+            if ((wrapType & Wrap.CLAMP_S) != 0) {
+                wrap = GLES20.GL_CLAMP_TO_EDGE;
+            } else if ((wrapType & Wrap.MIRRORED_REPEAT_S) != 0) {
+                wrap = GLES20.GL_MIRRORED_REPEAT;
+            }
+            GLES20.glTexParameteri(getTextureTarget(), GLES20.GL_TEXTURE_WRAP_S, wrap);
+
+            // Handle t coordinate wrapping
+            wrap = GLES20.GL_REPEAT;
+            if ((wrapType & Wrap.CLAMP_T) != 0) {
+                wrap = GLES20.GL_CLAMP_TO_EDGE;
+            } else if ((wrapType & Wrap.MIRRORED_REPEAT_T) != 0) {
+                wrap = GLES20.GL_MIRRORED_REPEAT;
+            }
+            GLES20.glTexParameteri(getTextureTarget(), GLES20.GL_TEXTURE_WRAP_T, wrap);
+
+            int w = getWidth();
+            int h = getHeight();
+            for (int i = 0; i < dataReferences.length; i++) {
+                if (dataReferences[i].hasBuffer()) {
+                    if (getWidth() == 0 || getHeight() == 0) {
+                        throw new TextureException(
+                            "Could not create ByteBuffer texture. One or more of the following properties haven't "
+                                + "been set: width or height format");
+                    }
+                    GLES20.glCompressedTexImage2D(getTextureTarget(), i, compressionFormat, w, h, 0,
+                        dataReferences[i].getByteBuffer().capacity(), dataReferences[i].getByteBuffer());
                     w = w > 1 ? w / 2 : 1;
                     h = h > 1 ? h / 2 : 1;
                 }
@@ -261,17 +283,11 @@ public abstract class CompressedTexture2D extends SingleTexture2D {
             throw new TextureException("Couldn't generate a texture name.");
         }
 
-        for (int i = 0; i < textureData.length; i++) {
-            if (textureData[i] != null) {
-                textureData[i].getByteBuffer().limit(0);
-            }
+        if (willRecycle()) {
+            setTextureData((TextureDataReference[]) null);
         }
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-    }
-
-    void remove() throws TextureException {
-        GLES20.glDeleteTextures(1, new int[]{getTextureId()}, 0);
+        GLES20.glBindTexture(getTextureTarget(), 0);
     }
 
     void replace() throws TextureException {

@@ -63,6 +63,7 @@ public abstract class SingleTexture2D extends BaseTexture {
      */
     public SingleTexture2D(@TextureType int type, @NonNull String name) {
         super(type, name);
+        setTextureTarget(GLES20.GL_TEXTURE_2D);
     }
 
     /**
