@@ -63,9 +63,9 @@ install:
 - sudo apt-get update --yes
 - sudo apt-get install libstdc++6 --yes
 # Install CMake
-#- wget https://github.com/Commit451/android-cmake-installer/releases/download/1.1.0/install-cmake.sh
-#- chmod +x install-cmake.sh
-#- ./install-cmake.sh
+- wget https://github.com/Commit451/android-cmake-installer/releases/download/1.1.0/install-cmake.sh
+- chmod +x install-cmake.sh
+- ./install-cmake.sh
 notifications:
   email:
   - info@rozengain.com
