@@ -7,6 +7,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -137,7 +138,7 @@ public class CubeMapTextureTest {
     }
 
     @Test
-    public void textureAddFailNullData() throws Exception {
+    public void addFailNullData() throws Exception {
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         boolean thrown = false;
         try {
@@ -151,7 +152,7 @@ public class CubeMapTextureTest {
 
     @SuppressWarnings("Range")
     @Test
-    public void textureAddFailBadLengthData() throws Exception {
+    public void addFailBadLengthData() throws Exception {
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         final TextureDataReference reference = mock(TextureDataReference.class);
         texture.setTextureData(new TextureDataReference[]{reference});
@@ -166,9 +167,72 @@ public class CubeMapTextureTest {
     }
 
     @Test
-    public void textureRemoveNotAdded() throws Exception {
+    public void addFailZeroLimitBufferWithoutBitmap() throws Exception {
         final CubeMapTexture texture = new CubeMapTexture("TEST");
-        texture.remove();
+        final TextureDataReference reference = mock(TextureDataReference.class);
+        doReturn(ByteBuffer.allocateDirect(0)).when(reference).getByteBuffer();
+        doReturn(true).when(reference).hasBuffer();
+        doReturn(false).when(reference).hasBitmap();
+        texture.setTextureData(new TextureDataReference[]{reference, reference, reference,
+                                                          reference, reference, reference});
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
+    }
+
+    @Test
+    public void addFailZeroLimitBufferWithBitmap() throws Exception {
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        final TextureDataReference reference = mock(TextureDataReference.class);
+        doReturn(ByteBuffer.allocateDirect(0)).when(reference).getByteBuffer();
+        doReturn(true).when(reference).hasBuffer();
+        doReturn(true).when(reference).hasBitmap();
+        texture.setTextureData(new TextureDataReference[]{reference, reference, reference,
+                                                          reference, reference, reference});
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
+    }
+
+    @Test
+    public void addFailNullReferences() throws Exception {
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        texture.setTextureData(new TextureDataReference[]{null, null, null, null, null, null});
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
+    }
+
+    @Test
+    public void addFailDestroyedData() throws Exception {
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        final TextureDataReference reference = mock(TextureDataReference.class);
+        doReturn(true).when(reference).isDestroyed();
+        texture.setTextureData(new TextureDataReference[]{reference, reference, reference,
+                                                          reference, reference, reference});
+        boolean thrown = false;
+        try {
+            texture.add();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        assertTrue(texture.getTextureId() == -1);
     }
 
     @Test

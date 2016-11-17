@@ -56,10 +56,6 @@ public class MultiTexture2DTest {
 
         }
 
-        @Override void remove() throws TextureException {
-
-        }
-
         @Override void replace() throws TextureException {
 
         }
@@ -216,6 +212,12 @@ public class MultiTexture2DTest {
         // Test setting data with an old non-null array with null references
         texture.setTextureData(null);
         assertNull(texture.getTextureData());
+    }
+
+    @Test
+    public void removeNotAdded() throws Exception {
+        final MultiTexture2D texture = new TestableMultiTexture2D();
+        texture.remove();
     }
 
     @Test

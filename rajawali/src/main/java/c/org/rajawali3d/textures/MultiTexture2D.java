@@ -62,9 +62,9 @@ public abstract class MultiTexture2D extends BaseTexture {
     /**
      * Constructs a new {@link MultiTexture2D} with data provided by the Android resource id.
      *
-     * @param type       {@link TextureType} The texture usage type.
-     * @param name {@link String} The texture name.
-     * @param context    {@link Context} The application context.
+     * @param type        {@link TextureType} The texture usage type.
+     * @param name        {@link String} The texture name.
+     * @param context     {@link Context} The application context.
      * @param resourceIds {@code int[]} The Android resource id to load from.
      */
     public MultiTexture2D(@TextureType int type, @NonNull String name, @NonNull Context context,
@@ -116,7 +116,7 @@ public abstract class MultiTexture2D extends BaseTexture {
      * texture as a Luminance texture as it will assume a {@link GLES20#GL_RGB} or {@link GLES20#GL_RGBA}
      * {@link PixelFormat}.
      *
-     * @param context    {@link Context} The Android application context.
+     * @param context     {@link Context} The Android application context.
      * @param resourceIds {@code int[]} The Android resource id to load from.
      *
      * @return The new {@link TextureDataReference} array which was created.
@@ -133,8 +133,8 @@ public abstract class MultiTexture2D extends BaseTexture {
             // Decode the bitmap
             final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceIds[i], options);
             references[i] = new TextureDataReference(bitmap, null, bitmap.getConfig().equals(Config.RGB_565)
-                ? GLES20.GL_RGB : GLES20.GL_RGBA,
-                GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
+                                                                   ? GLES20.GL_RGB : GLES20.GL_RGBA,
+                                                     GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
         }
         setTextureData(references);
         return references;
@@ -193,7 +193,7 @@ public abstract class MultiTexture2D extends BaseTexture {
         final int id = getTextureId();
         if (id > 0) {
             // Call delete with GL only if necessary
-            GLES20.glDeleteTextures(1, new int[]{getTextureId()}, 0);
+            GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
             if (textureData != null) {
                 // When removing a texture, release a reference count for its data if we have saved it.
                 for (int i = 0, j = textureData.length; i < j; ++i) {
@@ -210,12 +210,6 @@ public abstract class MultiTexture2D extends BaseTexture {
     @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
     void reset() throws TextureException {
-        final TextureDataReference[] textureData = getTextureData();
-        if (textureData != null) {
-            for (int i = 0, j = textureData.length; i < j; ++i) {
-                textureData[i].recycle();
-            }
-            setTextureData(null);
-        }
+        setTextureData(null);
     }
 }

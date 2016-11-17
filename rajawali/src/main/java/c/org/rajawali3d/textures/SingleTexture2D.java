@@ -149,12 +149,14 @@ public abstract class SingleTexture2D extends BaseTexture {
      *
      * @param data The new {@link TextureDataReference} to use.
      */
-    public void setTextureData(@NonNull TextureDataReference data) {
+    public void setTextureData(@Nullable TextureDataReference data) {
         // Save a stack reference to the old data
         final TextureDataReference oldData = this.textureData;
 
         // Save and increment reference count of new data
-        data.holdReference();
+        if (data != null) {
+            data.holdReference();
+        }
         textureData = data;
 
         // Release any existing reference
@@ -297,8 +299,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         }
 
         if (willRecycle()) {
-            textureData.recycle();
-            this.textureData = null;
+            setTextureData(null);
         }
 
         // Rebind the null texture
@@ -362,11 +363,7 @@ public abstract class SingleTexture2D extends BaseTexture {
 
     @Override
     void reset() throws TextureException {
-        final TextureDataReference textureData = this.textureData;
-        if (textureData != null) {
-            textureData.recycle();
-            this.textureData = null;
-        }
+        setTextureData(null);
     }
 
     //TODO: Update method
