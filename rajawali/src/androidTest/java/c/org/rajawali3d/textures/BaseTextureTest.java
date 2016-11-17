@@ -9,14 +9,11 @@ import static org.mockito.Mockito.when;
 
 import android.opengl.GLES20;
 import android.support.test.filters.SmallTest;
-import org.junit.Test;
-import org.rajawali3d.materials.Material;
-
-import c.org.rajawali3d.textures.BaseTexture;
-import c.org.rajawali3d.textures.TextureException;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
+import org.junit.Test;
+import org.rajawali3d.materials.Material;
 
 import java.util.ArrayList;
 

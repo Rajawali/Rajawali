@@ -295,23 +295,24 @@ public class CubeMapTexture extends MultiTexture2D {
     @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
     void replace() throws TextureException {
-        final TextureDataReference[] textureData = getTextureData();
+        final TextureDataReference[] dataReferences = getTextureData();
 
-        if (textureData == null) {
-            final String error = "CubeMapTexture could not be replaced because the data is null.";
-            RajLog.e(error);
-            throw new TextureException(error);
+        if (dataReferences == null) {
+            throw new TextureException("Texture data was null!");
         }
 
-        for (int i = 0, j = textureData.length; i < j; ++i) {
-            if (textureData[i].isDestroyed() || (textureData[i].hasBuffer()
-                                                 && textureData[i].getByteBuffer().limit() == 0
-                                                 && !textureData[i].hasBitmap())) {
-                final String error = "CubeMapTexture could not be replaced because the data is empty.";
-                RajLog.e(error);
-                throw new TextureException(error);
+        if (dataReferences.length < 6) {
+            throw new TextureException("Texture data was of insufficient length. Was: " + dataReferences.length
+                                       + " Expected: 6");
+        }
+
+        for (int i = 0; i < 6; ++i) {
+            if (dataReferences[i] == null || dataReferences[i].isDestroyed()
+                || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
+                    && !dataReferences[i].hasBitmap())) {
+                throw new TextureException("Texture could not be added because there is no valid data set.");
             }
-            if (textureData[i].getWidth() != getWidth() || textureData[i].getHeight() != getHeight()) {
+            if (dataReferences[i].getWidth() != getWidth() || dataReferences[i].getHeight() != getHeight()) {
                 throw new TextureException(
                         "Texture could not be updated because the texture size is different from the original.");
             }
@@ -319,13 +320,13 @@ public class CubeMapTexture extends MultiTexture2D {
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, getTextureId());
 
-        for (int i = 0, j = textureData.length; i < j; ++i) {
-            if (textureData[i].hasBuffer()) {
+        for (int i = 0, j = dataReferences.length; i < j; ++i) {
+            if (dataReferences[i].hasBuffer()) {
                 GLES20.glTexSubImage2D(CUBE_FACES[i], 0, 0, 0, getWidth(), getHeight(),
-                                       textureData[i].getPixelFormat(),
-                                       GLES20.GL_UNSIGNED_BYTE, textureData[i].getByteBuffer());
+                                       dataReferences[i].getPixelFormat(),
+                                       GLES20.GL_UNSIGNED_BYTE, dataReferences[i].getByteBuffer());
             } else {
-                int bitmapFormat = textureData[i].getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA
+                int bitmapFormat = dataReferences[i].getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA
                                                                                            : GLES20.GL_RGB;
 
                 if (bitmapFormat != getTexelFormat()) {
@@ -333,7 +334,7 @@ public class CubeMapTexture extends MultiTexture2D {
                             "Texture could not be updated because the texel format is different from the original");
                 }
 
-                GLUtils.texSubImage2D(CUBE_FACES[i], 0, 0, 0, textureData[i].getBitmap(), getTexelFormat(),
+                GLUtils.texSubImage2D(CUBE_FACES[i], 0, 0, 0, dataReferences[i].getBitmap(), getTexelFormat(),
                                       GLES20.GL_UNSIGNED_BYTE);
             }
         }

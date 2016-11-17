@@ -66,8 +66,8 @@ public class CubeMapTextureTest {
     @Test
     public void constructorResourceIds() throws Exception {
         final int[] ids = new int[]{
-            R.drawable.posx, R.drawable.posy, R.drawable.posz,
-            R.drawable.negx, R.drawable.negy, R.drawable.negz
+                R.drawable.posx, R.drawable.posy, R.drawable.posz,
+                R.drawable.negx, R.drawable.negy, R.drawable.negz
         };
         final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         assertEquals(Type.CUBE_MAP, texture.getTextureType());
