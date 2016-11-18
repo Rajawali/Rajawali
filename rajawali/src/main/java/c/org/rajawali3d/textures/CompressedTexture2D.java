@@ -14,14 +14,12 @@ package c.org.rajawali3d.textures;
 
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-
-import net.jcip.annotations.ThreadSafe;
-
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Compression2D.CompressionType2D;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
+import net.jcip.annotations.ThreadSafe;
 
 /**
  * This class is used to specify common functions of a compressed 2D texture. Subclasses are expected to be thread
@@ -74,9 +72,9 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public CompressedTexture2D(@TextureType int type, @NonNull String name, @NonNull TextureDataReference data)
-        throws TextureException {
+            throws TextureException {
         this(type, name);
-        setTextureData(new TextureDataReference[]{data});
+        setTextureData(new TextureDataReference[]{ data });
     }
 
     /**
@@ -89,7 +87,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public CompressedTexture2D(@TextureType int type, @NonNull String name, @NonNull TextureDataReference[] data)
-        throws TextureException {
+            throws TextureException {
         this(type, name);
         setTextureData(data);
     }
@@ -115,15 +113,9 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
     public void setFrom(@NonNull CompressedTexture2D other) throws TextureException {
-        final TextureDataReference[] data = other.getTextureData();
-        if (data != null) {
-            super.setFrom(other);
-            setTextureData(data);
-            setCompressionType(other.getCompressionType());
-            //setCompressionFormat(other.getCompressionFormat());
-        } else {
-            throw new TextureException("Texture data was null!");
-        }
+        super.setFrom(other);
+        setCompressionType(other.getCompressionType());
+        //setCompressionFormat(other.getCompressionFormat());
     }
 
     /**
@@ -177,7 +169,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
         for (int i = 0; i < dataReferences.length; ++i) {
             if (dataReferences[i] == null || dataReferences[i].isDestroyed()
                 || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
-                && !dataReferences[i].hasBitmap())) {
+                    && !dataReferences[i].hasBitmap())) {
                 throw new TextureException("Texture could not be added because there is no valid data set.");
             }
         }
@@ -211,11 +203,12 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
                 if (dataReferences[i].hasBuffer()) {
                     if (getWidth() == 0 || getHeight() == 0) {
                         throw new TextureException(
-                            "Could not create ByteBuffer texture. One or more of the following properties haven't "
+                                "Could not create ByteBuffer texture. One or more of the following properties haven't "
                                 + "been set: width or height format");
                     }
                     GLES20.glCompressedTexImage2D(getTextureTarget(), i, getTexelFormat(), w, h, 0,
-                        dataReferences[i].getByteBuffer().capacity(), dataReferences[i].getByteBuffer());
+                                                  dataReferences[i].getByteBuffer().capacity(),
+                                                  dataReferences[i].getByteBuffer());
                     w = w > 1 ? w / 2 : 1;
                     h = h > 1 ? h / 2 : 1;
                 }
@@ -242,12 +235,12 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
         for (int i = 0; i < dataReferences.length; ++i) {
             if (dataReferences[i] == null || dataReferences[i].isDestroyed()
                 || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
-                && !dataReferences[i].hasBitmap())) {
+                    && !dataReferences[i].hasBitmap())) {
                 throw new TextureException("Texture could not be added because there is no valid data set.");
             }
             if (dataReferences[i].getWidth() != getWidth() || dataReferences[i].getHeight() != getHeight()) {
                 throw new TextureException(
-                    "Texture could not be updated because the texture size is different from the original.");
+                        "Texture could not be updated because the texture size is different from the original.");
             }
         }
 
@@ -259,11 +252,13 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
             if (dataReferences[i].hasBuffer()) {
                 if (getWidth() == 0 || getHeight() == 0) {
                     throw new TextureException(
-                        "Could not create compressed texture. One or more of the following properties haven't been " +
+                            "Could not create compressed texture. One or more of the following properties haven't been "
+                            +
                             "set: width or height format");
                 }
                 GLES20.glCompressedTexImage2D(getTextureTarget(), i, compressionFormat, w, h, 0,
-                    dataReferences[i].getByteBuffer().capacity(), dataReferences[i].getByteBuffer());
+                                              dataReferences[i].getByteBuffer().capacity(),
+                                              dataReferences[i].getByteBuffer());
                 w = w > 1 ? w / 2 : 1;
                 h = h > 1 ? h / 2 : 1;
             }
