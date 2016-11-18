@@ -13,7 +13,6 @@
 package c.org.rajawali3d.textures;
 
 import android.opengl.GLES20;
-import android.opengl.GLES30;
 import android.support.annotation.NonNull;
 
 import net.jcip.annotations.ThreadSafe;
@@ -49,7 +48,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
     /**
      * Basic no-args constructor used by some subclasses. No initialization is performed.
      */
-    protected CompressedTexture2D() throws TextureException {
+    protected CompressedTexture2D() {
         super();
     }
 
@@ -58,6 +57,8 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      *
      * @param type {@link TextureType} The texture usage type.
      * @param name {@link String} The texture name.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public CompressedTexture2D(@TextureType int type, @NonNull String name) throws TextureException {
         super(type, name);
@@ -69,6 +70,8 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      * @param type {@link TextureType} The texture usage type.
      * @param name {@link String} The texture name.
      * @param data {@link TextureDataReference} The texture data.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public CompressedTexture2D(@TextureType int type, @NonNull String name, @NonNull TextureDataReference data)
         throws TextureException {
@@ -82,6 +85,8 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      * @param type {@link TextureType} The texture usage type.
      * @param name {@link String} The texture name.
      * @param data {@link TextureDataReference} The texture data.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public CompressedTexture2D(@TextureType int type, @NonNull String name, @NonNull TextureDataReference[] data)
         throws TextureException {
@@ -94,6 +99,8 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      * {@link CompressedTexture2D}.
      *
      * @param other The other {@link CompressedTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
     public CompressedTexture2D(@NonNull CompressedTexture2D other) throws TextureException {
         this();
@@ -104,6 +111,8 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      * Copies all properties and data from another {@link CompressedTexture2D}.
      *
      * @param other The other {@link CompressedTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
     public void setFrom(@NonNull CompressedTexture2D other) throws TextureException {
         final TextureDataReference[] data = other.getTextureData();
@@ -111,7 +120,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
             super.setFrom(other);
             setTextureData(data);
             setCompressionType(other.getCompressionType());
-            setCompressionFormat(other.getCompressionFormat());
+            //setCompressionFormat(other.getCompressionFormat());
         } else {
             throw new TextureException("Texture data was null!");
         }
@@ -136,23 +145,25 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
         this.compressionType = compressionType;
     }
 
+    /*
     /**
      * Retrieves the compression format.
      *
      * @return {@code int} The compression format, such as {@link GLES30#GL_COMPRESSED_RGB8_ETC2}.
      */
-    public int getCompressionFormat() {
+    /*public int getCompressionFormat() {
         return compressionFormat;
-    }
+    }*/
 
+    /*
     /**
      * Sets the compression format.
      *
      * @param compressionFormat {@code int} The compression format, such as {@link GLES30#GL_COMPRESSED_RGB8_ETC2}.
      */
-    public void setCompressionFormat(int compressionFormat) {
+    /*public void setCompressionFormat(int compressionFormat) {
         this.compressionFormat = compressionFormat;
-    }
+    }*/
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
@@ -203,7 +214,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
                             "Could not create ByteBuffer texture. One or more of the following properties haven't "
                                 + "been set: width or height format");
                     }
-                    GLES20.glCompressedTexImage2D(getTextureTarget(), i, compressionFormat, w, h, 0,
+                    GLES20.glCompressedTexImage2D(getTextureTarget(), i, getTexelFormat(), w, h, 0,
                         dataReferences[i].getByteBuffer().capacity(), dataReferences[i].getByteBuffer());
                     w = w > 1 ? w / 2 : 1;
                     h = h > 1 ? h / 2 : 1;

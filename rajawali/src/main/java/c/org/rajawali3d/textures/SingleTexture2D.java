@@ -50,6 +50,7 @@ public abstract class SingleTexture2D extends BaseTexture {
      */
     protected SingleTexture2D() throws TextureException {
         super();
+        setTextureTarget(GLES20.GL_TEXTURE_2D);
     }
 
     /**
@@ -93,6 +94,8 @@ public abstract class SingleTexture2D extends BaseTexture {
      * Constructs a new {@link SingleTexture2D} with data and settings from the provided {@link SingleTexture2D}.
      *
      * @param other The other {@link SingleTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
     public SingleTexture2D(@NonNull SingleTexture2D other) throws TextureException {
         super(other);
@@ -103,6 +106,8 @@ public abstract class SingleTexture2D extends BaseTexture {
      * Copies all properties and data from another {@link SingleTexture2D}.
      *
      * @param other The other {@link SingleTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
     public void setFrom(@NonNull SingleTexture2D other) throws TextureException {
         final TextureDataReference data = other.getTextureData();

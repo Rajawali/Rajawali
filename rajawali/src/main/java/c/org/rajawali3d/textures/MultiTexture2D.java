@@ -89,6 +89,8 @@ public abstract class MultiTexture2D extends BaseTexture {
      * Constructs a new {@link MultiTexture2D} with data and settings from the provided {@link MultiTexture2D}.
      *
      * @param other The other {@link MultiTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public MultiTexture2D(@NonNull MultiTexture2D other) throws TextureException {
         super(other);
@@ -99,6 +101,8 @@ public abstract class MultiTexture2D extends BaseTexture {
      * Copies all properties and data from another {@link MultiTexture2D}.
      *
      * @param other The other {@link MultiTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public void setFrom(@NonNull MultiTexture2D other) throws TextureException {
         final TextureDataReference[] data = other.getTextureData();
@@ -133,8 +137,8 @@ public abstract class MultiTexture2D extends BaseTexture {
             // Decode the bitmap
             final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceIds[i], options);
             references[i] = new TextureDataReference(bitmap, null, bitmap.getConfig().equals(Config.RGB_565)
-                                                                   ? GLES20.GL_RGB : GLES20.GL_RGBA,
-                                                     GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
+                ? GLES20.GL_RGB : GLES20.GL_RGBA,
+                GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
         }
         setTextureData(references);
         return references;
@@ -193,7 +197,7 @@ public abstract class MultiTexture2D extends BaseTexture {
         final int id = getTextureId();
         if (id > 0) {
             // Call delete with GL only if necessary
-            GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
+            GLES20.glDeleteTextures(1, new int[]{getTextureId()}, 0);
             if (textureData != null) {
                 // When removing a texture, release a reference count for its data if we have saved it.
                 for (int i = 0, j = textureData.length; i < j; ++i) {

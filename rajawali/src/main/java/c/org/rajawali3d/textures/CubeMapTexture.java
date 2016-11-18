@@ -57,6 +57,8 @@ public class CubeMapTexture extends MultiTexture2D {
      * Constructs a new {@link CubeMapTexture} with data and settings from the provided {@link CubeMapTexture}.
      *
      * @param other The other {@link CubeMapTexture}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public CubeMapTexture(@NonNull CubeMapTexture other) throws TextureException {
         super(other);
@@ -98,6 +100,19 @@ public class CubeMapTexture extends MultiTexture2D {
         super(Type.CUBE_MAP, name, data);
         setWrapType(Wrap.CLAMP_S | Wrap.CLAMP_T);
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
+    }
+
+    /**
+     * Copies all properties and data from another {@link CubeMapTexture}.
+     *
+     * @param other The other {@link CubeMapTexture}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
+     */
+    public void setFrom(@NonNull CubeMapTexture other) throws TextureException {
+        super.setFrom(other);
+        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
+        isSkyTexture(other.isSkyTexture());
     }
 
     /**
@@ -161,13 +176,13 @@ public class CubeMapTexture extends MultiTexture2D {
 
         if (dataReferences.length < 6) {
             throw new TextureException("Texture data was of insufficient length. Was: " + dataReferences.length
-                                       + " Expected: 6");
+                + " Expected: 6");
         }
 
         for (int i = 0; i < 6; ++i) {
             if (dataReferences[i] == null || dataReferences[i].isDestroyed()
                 || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
-                    && !dataReferences[i].hasBitmap())) {
+                && !dataReferences[i].hasBitmap())) {
                 throw new TextureException("Texture could not be added because there is no valid data set.");
             }
         }
@@ -199,12 +214,12 @@ public class CubeMapTexture extends MultiTexture2D {
                 if (dataReferences[i].hasBuffer()) {
                     if (getWidth() == 0 || getHeight() == 0) {
                         throw new TextureException(
-                                "Could not create ByteBuffer texture. One or more of the following properties haven't "
+                            "Could not create ByteBuffer texture. One or more of the following properties haven't "
                                 + "been set: width or height format");
                     }
                     GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, getTexelFormat(), getWidth(), getHeight(), 0,
-                                        dataReferences[i].getPixelFormat(), dataReferences[i].getDataType(),
-                                        dataReferences[i].getByteBuffer());
+                        dataReferences[i].getPixelFormat(), dataReferences[i].getDataType(),
+                        dataReferences[i].getByteBuffer());
                 } else {
                     GLUtils.texImage2D(CUBE_FACES[i], 0, dataReferences[i].getBitmap(), 0);
                 }
@@ -239,18 +254,18 @@ public class CubeMapTexture extends MultiTexture2D {
 
         if (dataReferences.length < 6) {
             throw new TextureException("Texture data was of insufficient length. Was: " + dataReferences.length
-                                       + " Expected: 6");
+                + " Expected: 6");
         }
 
         for (int i = 0; i < 6; ++i) {
             if (dataReferences[i] == null || dataReferences[i].isDestroyed()
                 || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
-                    && !dataReferences[i].hasBitmap())) {
+                && !dataReferences[i].hasBitmap())) {
                 throw new TextureException("Texture could not be added because there is no valid data set.");
             }
             if (dataReferences[i].getWidth() != getWidth() || dataReferences[i].getHeight() != getHeight()) {
                 throw new TextureException(
-                        "Texture could not be updated because the texture size is different from the original.");
+                    "Texture could not be updated because the texture size is different from the original.");
             }
         }
 
@@ -259,19 +274,19 @@ public class CubeMapTexture extends MultiTexture2D {
         for (int i = 0, j = dataReferences.length; i < j; ++i) {
             if (dataReferences[i].hasBuffer()) {
                 GLES20.glTexSubImage2D(CUBE_FACES[i], 0, 0, 0, getWidth(), getHeight(),
-                                       dataReferences[i].getPixelFormat(),
-                                       GLES20.GL_UNSIGNED_BYTE, dataReferences[i].getByteBuffer());
+                    dataReferences[i].getPixelFormat(),
+                    GLES20.GL_UNSIGNED_BYTE, dataReferences[i].getByteBuffer());
             } else {
                 int bitmapFormat = dataReferences[i].getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA
-                                                                                           : GLES20.GL_RGB;
+                    : GLES20.GL_RGB;
 
                 if (bitmapFormat != getTexelFormat()) {
                     throw new TextureException(
-                            "Texture could not be updated because the texel format is different from the original");
+                        "Texture could not be updated because the texel format is different from the original");
                 }
 
                 GLUtils.texSubImage2D(CUBE_FACES[i], 0, 0, 0, dataReferences[i].getBitmap(), getTexelFormat(),
-                                      GLES20.GL_UNSIGNED_BYTE);
+                    GLES20.GL_UNSIGNED_BYTE);
             }
         }
 

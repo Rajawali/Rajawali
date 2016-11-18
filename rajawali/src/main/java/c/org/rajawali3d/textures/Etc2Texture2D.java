@@ -83,7 +83,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
         setInputStream(compressedTexture, fallbackTexture);
     }
 
-    public Etc2Texture2D(Etc1Texture2D other) throws TextureException {
+    public Etc2Texture2D(ETC1Texture other) throws TextureException {
         super();
         setFrom(other);
     }
