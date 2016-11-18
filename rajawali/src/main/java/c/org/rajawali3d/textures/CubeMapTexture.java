@@ -25,11 +25,8 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.rajawali3d.util.RajLog;
 
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
-import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
 
 /**
  * A 2D cube mapped environmental texture. These textures are typically used to simulate highly reflective
@@ -175,88 +172,27 @@ public class CubeMapTexture extends MultiTexture2D {
             }
         }
 
-        @Filter.FilterType final int filterType = getFilterType();
-        @WrapType final int wrapType = getWrapType();
-
         // Generate a texture id
-        int[] genTextureNames = new int[1];
-        GLES20.glGenTextures(1, genTextureNames, 0);
-        int textureId = genTextureNames[0];
+        int textureId = generateTextureId();
 
         if (textureId > 0) {
             // If a valid id was generated...
             GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
 
             // Handle minification filtering
-            if (isMipmaped()) {
-                switch (filterType) {
-                    case Filter.NEAREST:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_NEAREST_MIPMAP_NEAREST);
-                        break;
-                    case Filter.BILINEAR:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_LINEAR_MIPMAP_NEAREST);
-                        break;
-                    case Filter.TRILINEAR:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_LINEAR_MIPMAP_LINEAR);
-                        break;
-                    default:
-                        throw new TextureException("Unknown texture filtering mode: " + filterType);
-                }
-            } else {
-                switch (filterType) {
-                    case Filter.NEAREST:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_NEAREST);
-                        break;
-                    case Filter.BILINEAR:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_LINEAR);
-                        break;
-                    case Filter.TRILINEAR:
-                        RajLog.e("Trilinear filtering requires the use of mipmaps which are not enabled for this "
-                                 + "texture. Falling back to bilinear filtering.");
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
-                                               GLES20.GL_LINEAR);
-                        break;
-                    default:
-                        throw new TextureException("Unknown texture filtering mode: " + filterType);
-                }
-            }
+            applyMinificationFilter();
 
             // Handle magnification filtering
-            if (filterType == Filter.BILINEAR || filterType == Filter.TRILINEAR) {
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-            } else {
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            }
+            applyMagnificationFilter();
 
-            // Handle anisotropy if needed. We don't check if it is supported here because setting it to anything
-            // other than 1.0 would have required the check.
-            if (getMaxAnisotropy() > 1.0) {
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, EXTTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
-                                       getMaxAnisotropy());
-            }
+            // Handle anisotropy if needed.
+            applyAnisotropy();
 
             // Handle s coordinate wrapping
-            int wrap = GLES20.GL_REPEAT;
-            if ((wrapType & Wrap.CLAMP_S) != 0) {
-                wrap = GLES20.GL_CLAMP_TO_EDGE;
-            } else if ((wrapType & Wrap.MIRRORED_REPEAT_S) != 0) {
-                wrap = GLES20.GL_MIRRORED_REPEAT;
-            }
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, wrap);
+            applySWrapping();
 
             // Handle t coordinate wrapping
-            wrap = GLES20.GL_REPEAT;
-            if ((wrapType & Wrap.CLAMP_T) != 0) {
-                wrap = GLES20.GL_CLAMP_TO_EDGE;
-            } else if ((wrapType & Wrap.MIRRORED_REPEAT_T) != 0) {
-                wrap = GLES20.GL_MIRRORED_REPEAT;
-            }
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, wrap);
+            applyTWrapping();
 
             for (int i = 0; i < 6; i++) {
                 GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);

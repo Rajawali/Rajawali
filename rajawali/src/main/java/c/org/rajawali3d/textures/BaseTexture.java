@@ -15,24 +15,24 @@ package c.org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+
+import net.jcip.annotations.ThreadSafe;
+
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.util.RajLog;
+
+import java.nio.Buffer;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.TexelFormat;
 import c.org.rajawali3d.textures.annotation.TextureTarget;
-import c.org.rajawali3d.textures.annotation.Wrap;
-
-import net.jcip.annotations.ThreadSafe;
-import org.rajawali3d.materials.Material;
-
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
-
-import org.rajawali3d.util.RajLog;
-
-import java.nio.Buffer;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import c.org.rajawali3d.textures.annotation.Wrap;
 
 /**
  * Thread safe abstract texture class. Subclasses are expected to be thread safe.
@@ -637,6 +637,99 @@ public abstract class BaseTexture {
     public void setOffset(float u, float v) {
         offset[0] = u;
         offset[1] = v;
+    }
+
+    /**
+     * Generates a new texture id in the GL driver.
+     *
+     * @return {@code int} The new texture id returned from the GL driver.
+     */
+    protected static int generateTextureId() {
+        // Generate a texture id
+        final int[] genTextureNames = new int[1];
+        GLES20.glGenTextures(1, genTextureNames, 0);
+        return genTextureNames[0];
+    }
+
+    protected void applyMinificationFilter() throws TextureException {
+        @TextureTarget final int target = getTextureTarget();
+        if (isMipmaped()) {
+            switch (filterType) {
+                case Filter.NEAREST:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                        GLES20.GL_NEAREST_MIPMAP_NEAREST);
+                    break;
+                case Filter.BILINEAR:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                        GLES20.GL_LINEAR_MIPMAP_NEAREST);
+                    break;
+                case Filter.TRILINEAR:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                        GLES20.GL_LINEAR_MIPMAP_LINEAR);
+                    break;
+                default:
+                    throw new TextureException("Unknown texture filtering mode: " + filterType);
+            }
+        } else {
+            switch (filterType) {
+                case Filter.NEAREST:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                        GLES20.GL_NEAREST);
+                    break;
+                case Filter.BILINEAR:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                        GLES20.GL_LINEAR);
+                    break;
+                case Filter.TRILINEAR:
+                    RajLog.e("Trilinear filtering requires the use of mipmaps which are not enabled for this "
+                        + "texture. Falling back to bilinear filtering.");
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                        GLES20.GL_LINEAR);
+                    break;
+                default:
+                    throw new TextureException("Unknown texture filtering mode: " + filterType);
+            }
+        }
+    }
+
+    protected void applyMagnificationFilter() {
+        @TextureTarget final int target = getTextureTarget();
+        if (filterType == Filter.BILINEAR || filterType == Filter.TRILINEAR) {
+            GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        } else {
+            GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+        }
+    }
+
+    protected void applyAnisotropy() {
+        // Handle anisotropy if needed. We don't check if it is supported here because setting it to anything
+        // other than 1.0 would have required the check.
+        if (getMaxAnisotropy() > 1.0) {
+            GLES20.glTexParameterf(getTextureTarget(), EXTTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
+                getMaxAnisotropy());
+        }
+    }
+
+    protected void applySWrapping() {
+        // Handle s coordinate wrapping
+        int wrap = GLES20.GL_REPEAT;
+        if ((wrapType & Wrap.CLAMP_S) != 0) {
+            wrap = GLES20.GL_CLAMP_TO_EDGE;
+        } else if ((wrapType & Wrap.MIRRORED_REPEAT_S) != 0) {
+            wrap = GLES20.GL_MIRRORED_REPEAT;
+        }
+        GLES20.glTexParameteri(getTextureTarget(), GLES20.GL_TEXTURE_WRAP_S, wrap);
+    }
+
+    protected void applyTWrapping() {
+        // Handle t coordinate wrapping
+        int wrap = GLES20.GL_REPEAT;
+        if ((wrapType & Wrap.CLAMP_T) != 0) {
+            wrap = GLES20.GL_CLAMP_TO_EDGE;
+        } else if ((wrapType & Wrap.MIRRORED_REPEAT_T) != 0) {
+            wrap = GLES20.GL_MIRRORED_REPEAT;
+        }
+        GLES20.glTexParameteri(getTextureTarget(), GLES20.GL_TEXTURE_WRAP_T, wrap);
     }
 
     /**
