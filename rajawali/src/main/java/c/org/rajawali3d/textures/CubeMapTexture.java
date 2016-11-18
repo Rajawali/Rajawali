@@ -111,7 +111,6 @@ public class CubeMapTexture extends MultiTexture2D {
      */
     public void setFrom(@NonNull CubeMapTexture other) throws TextureException {
         super.setFrom(other);
-        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
         isSkyTexture(other.isSkyTexture());
     }
 

@@ -2,6 +2,7 @@ package c.org.rajawali3d.textures;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
@@ -89,5 +90,16 @@ public class BaseTextureGLTest extends GlTestCase {
 
         assertFalse(thrown[0]);
         assertEquals(Float.floatToIntBits(max[0]), Float.floatToIntBits(texture.getMaxAnisotropy()));
+    }
+
+    @Test
+    public void generateTextureId() throws Exception {
+        final int[] id = new int[]{0};
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                id[0] = BaseTexture.generateTextureId();
+            }
+        });
+        assertTrue(id[0] > 0);
     }
 }

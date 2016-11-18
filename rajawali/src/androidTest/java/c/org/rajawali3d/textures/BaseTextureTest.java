@@ -200,4 +200,22 @@ public class BaseTextureTest {
         texture.setInfluence(0.5f);
         assertEquals(Float.floatToIntBits(0.5f), Float.floatToIntBits(texture.getInfluence()));
     }
+
+    @SuppressWarnings("WrongConstant")
+    @Test(expected = TextureException.class)
+    public void applyMinificationFilterFailFilterMipmapped() throws Exception {
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        texture.setFilterType(-1);
+        texture.setMipmaped(true);
+        texture.applyMinificationFilter();
+    }
+
+    @SuppressWarnings("WrongConstant")
+    @Test(expected = TextureException.class)
+    public void applyMinificationFilterFailFilterNotMipmapped() throws Exception {
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        texture.setFilterType(-1);
+        texture.setMipmaped(false);
+        texture.applyMinificationFilter();
+    }
 }

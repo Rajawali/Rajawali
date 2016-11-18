@@ -234,68 +234,6 @@ public class CubeMapTextureGLTest extends GlTestCase {
     }
 
     @Test
-    public void replaceBufferFailZeroLimit() throws Exception {
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
-        final TextureDataReference[] references = new TextureDataReference[6];
-        for (int i = 0; i < 6; ++i) {
-            references[i] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 512);
-        }
-        final TextureDataReference reference = mock(TextureDataReference.class);
-        doReturn(ByteBuffer.allocateDirect(0)).when(reference).getByteBuffer();
-        doReturn(true).when(reference).hasBuffer();
-        doReturn(false).when(reference).hasBitmap();
-        final TextureDataReference[] badReferences = new TextureDataReference[]{ reference, reference, reference,
-                                                                                 reference, reference, reference
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", references);
-        final boolean[] thrown = new boolean[]{ false };
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                    texture.setTextureData(badReferences);
-                    texture.replace();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertTrue(thrown[0]);
-    }
-
-    @Test
-    public void replaceBufferFailZeroLimitWithBitmap() throws Exception {
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
-        final TextureDataReference[] references = new TextureDataReference[6];
-        for (int i = 0; i < 6; ++i) {
-            references[i] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 512);
-        }
-        final TextureDataReference reference = mock(TextureDataReference.class);
-        doReturn(ByteBuffer.allocateDirect(0)).when(reference).getByteBuffer();
-        doReturn(true).when(reference).hasBuffer();
-        doReturn(true).when(reference).hasBitmap();
-        final TextureDataReference[] badReferences = new TextureDataReference[]{ reference, reference, reference,
-                                                                                 reference, reference, reference
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", references);
-        final boolean[] thrown = new boolean[]{ false };
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                    texture.setTextureData(badReferences);
-                    texture.replace();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertTrue(thrown[0]);
-    }
-
-    @Test
     public void replaceWithBitmapFailWidth() throws Exception {
         final int[] ids = new int[]{
                 R.drawable.posx, R.drawable.posy, R.drawable.posz,

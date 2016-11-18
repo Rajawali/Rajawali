@@ -103,6 +103,19 @@ public class CubeMapTextureTest {
     }
 
     @Test
+    public void setFrom() throws Exception {
+        final TextureDataReference[] references = new TextureDataReference[6];
+        for (int i = 0; i < 6; ++i) {
+            references[i] = mock(TextureDataReference.class);
+        }
+        final CubeMapTexture other = new CubeMapTexture("TEST", references);
+        other.isSkyTexture(true);
+        final CubeMapTexture texture = new CubeMapTexture("TEST2");
+        texture.setFrom(other);
+        assertTrue(texture.isSkyTexture());
+    }
+
+    @Test
     public void setIsSkyTexture() throws Exception {
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         texture.isSkyTexture(true);
@@ -155,7 +168,7 @@ public class CubeMapTextureTest {
     public void addFailBadLengthData() throws Exception {
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         final TextureDataReference reference = mock(TextureDataReference.class);
-        texture.setTextureData(new TextureDataReference[]{reference});
+        texture.setTextureData(new TextureDataReference[]{ reference });
         boolean thrown = false;
         try {
             texture.add();
@@ -173,8 +186,9 @@ public class CubeMapTextureTest {
         doReturn(ByteBuffer.allocateDirect(0)).when(reference).getByteBuffer();
         doReturn(true).when(reference).hasBuffer();
         doReturn(false).when(reference).hasBitmap();
-        texture.setTextureData(new TextureDataReference[]{reference, reference, reference,
-                                                          reference, reference, reference});
+        texture.setTextureData(new TextureDataReference[]{ reference, reference, reference,
+                                                           reference, reference, reference
+        });
         boolean thrown = false;
         try {
             texture.add();
@@ -192,8 +206,9 @@ public class CubeMapTextureTest {
         doReturn(ByteBuffer.allocateDirect(0)).when(reference).getByteBuffer();
         doReturn(true).when(reference).hasBuffer();
         doReturn(true).when(reference).hasBitmap();
-        texture.setTextureData(new TextureDataReference[]{reference, reference, reference,
-                                                          reference, reference, reference});
+        texture.setTextureData(new TextureDataReference[]{ reference, reference, reference,
+                                                           reference, reference, reference
+        });
         boolean thrown = false;
         try {
             texture.add();
@@ -207,7 +222,7 @@ public class CubeMapTextureTest {
     @Test
     public void addFailNullReferences() throws Exception {
         final CubeMapTexture texture = new CubeMapTexture("TEST");
-        texture.setTextureData(new TextureDataReference[]{null, null, null, null, null, null});
+        texture.setTextureData(new TextureDataReference[]{ null, null, null, null, null, null });
         boolean thrown = false;
         try {
             texture.add();
@@ -223,8 +238,9 @@ public class CubeMapTextureTest {
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         final TextureDataReference reference = mock(TextureDataReference.class);
         doReturn(true).when(reference).isDestroyed();
-        texture.setTextureData(new TextureDataReference[]{reference, reference, reference,
-                                                          reference, reference, reference});
+        texture.setTextureData(new TextureDataReference[]{ reference, reference, reference,
+                                                           reference, reference, reference
+        });
         boolean thrown = false;
         try {
             texture.add();
@@ -248,7 +264,7 @@ public class CubeMapTextureTest {
     }
 
     @Test
-    public void textureReplaceDestroyed() throws Exception {
+    public void replaceDestroyed() throws Exception {
         final int[] ids = new int[]{
                 R.drawable.posx, R.drawable.posy, R.drawable.posz,
                 R.drawable.negx, R.drawable.negy, R.drawable.negz
@@ -268,13 +284,14 @@ public class CubeMapTextureTest {
     }
 
     @Test
-    public void replaceBufferZeroLimit() throws Exception {
+    public void replaceBufferFailZeroLimit() throws Exception {
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         final ByteBuffer buffer = ByteBuffer.allocateDirect(0);
         final TextureDataReference reference = new TextureDataReference(null, buffer, GLES20.GL_RGBA,
                                                                         GLES20.GL_UNSIGNED_BYTE, 256, 0);
-        texture.setTextureData(new TextureDataReference[]{reference, reference, reference,
-                                                          reference, reference, reference});
+        texture.setTextureData(new TextureDataReference[]{ reference, reference, reference,
+                                                           reference, reference, reference
+        });
         boolean thrown = false;
         try {
             texture.replace();
@@ -282,5 +299,25 @@ public class CubeMapTextureTest {
             thrown = true;
         }
         assertTrue(thrown);
+    }
+
+    @Test
+    public void replaceBufferFailZeroLimitWithBitmap() throws Exception {
+        final TextureDataReference reference = mock(TextureDataReference.class);
+        doReturn(ByteBuffer.allocateDirect(0)).when(reference).getByteBuffer();
+        doReturn(true).when(reference).hasBuffer();
+        doReturn(true).when(reference).hasBitmap();
+        final TextureDataReference[] badReferences = new TextureDataReference[]{ reference, reference, reference,
+                                                                                 reference, reference, reference
+        };
+        final CubeMapTexture texture = new CubeMapTexture("TEST");
+        texture.setTextureData(badReferences);
+        boolean thrown = false;
+        try {
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
     }
 }

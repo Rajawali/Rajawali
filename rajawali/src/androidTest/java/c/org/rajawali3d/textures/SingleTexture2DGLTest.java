@@ -523,52 +523,6 @@ public class SingleTexture2DGLTest extends GlTestCase {
         assertTrue(texture.getTextureId() > 0);
     }
 
-    @SuppressWarnings("WrongConstant")
-    @Test
-    public void textureAddFailFilter1() throws Exception {
-        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(-1);
-        texture.setMipmaped(true);
-        final boolean[] thrown = new boolean[]{ false };
-        runOnGlThreadAndWait(new Runnable() {
-            @Override public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertTrue(thrown[0]);
-        assertTrue(texture.getTextureId() == -1);
-    }
-
-    @SuppressWarnings("WrongConstant")
-    @Test
-    public void textureAddFailFilter2() throws Exception {
-        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(-1);
-        texture.setMipmaped(false);
-        final boolean[] thrown = new boolean[]{ false };
-        runOnGlThreadAndWait(new Runnable() {
-            @Override public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertTrue(thrown[0]);
-        assertTrue(texture.getTextureId() == -1);
-    }
-
     @Test
     public void textureAddBufferWithoutRecycle() throws Exception {
         final TestableSingleTexture2D texture = new TestableSingleTexture2D();

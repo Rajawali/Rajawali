@@ -121,7 +121,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
             //data = new ByteBuffer[]{texture.getData()};
             setWidth(texture.getWidth());
             setHeight(texture.getHeight());
-            setCompressionFormat(texture.getCompressionFormat());
+            //setCompressionFormat(texture.getCompressionFormat());
         } catch (IOException e) {
             RajLog.e(e.getMessage());
             e.printStackTrace();
@@ -140,11 +140,12 @@ public class Etc2Texture2D extends CompressedTexture2D {
             for (int i = 0, length = resourceIds.length; i < length; i++) {
                 ETC2Util.ETC2Texture texture = ETC2Util.createTexture(resources.openRawResource(resourceIds[i]));
                 if (i == 0) {
-                    setCompressionFormat(texture.getCompressionFormat());
+                    //setCompressionFormat(texture.getCompressionFormat());
                 } else {
-                    if (getCompressionFormat() != texture.getCompressionFormat()) {
-                        throw new IllegalArgumentException("The ETC2 compression formats of all textures in the chain much match");
-                    }
+                    //if (getCompressionFormat() != texture.getCompressionFormat()) {
+                    //    throw new IllegalArgumentException("The ETC2 compression formats of all textures in the "
+                    //                                        + "chain much match");
+                    //}
                 }
                 mipmapChain[i] = texture.getData();
                 if (i == 0) {
@@ -176,7 +177,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
                 if (RajLog.isDebugEnabled())
                     RajLog.d("Falling back to ETC1 texture from fallback texture.");
             } else {
-                setCompressionFormat(texture.getCompressionFormat());
+                //setCompressionFormat(texture.getCompressionFormat());
                 //setByteBuffer(texture.getData());
                 setWidth(texture.getWidth());
                 setHeight(texture.getHeight());
@@ -198,7 +199,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
             ETC1.getEncodedDataSize(bitmap.getWidth(), bitmap.getHeight())).order(ByteOrder.nativeOrder());
         ETC1.encodeImage(uncompressedBuffer, bitmap.getWidth(), bitmap.getHeight(), 2, 2 * bitmap.getWidth(),
             compressedBuffer);
-        setCompressionFormat(ETC1.ETC1_RGB8_OES);
+        //setCompressionFormat(ETC1.ETC1_RGB8_OES);
 
         //data = new ByteBuffer[]{compressedBuffer};
         setWidth(bitmap.getWidth());
