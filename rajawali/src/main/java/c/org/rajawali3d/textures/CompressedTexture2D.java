@@ -16,9 +16,7 @@ import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Compression2D.CompressionType2D;
-import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
-import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
 import net.jcip.annotations.ThreadSafe;
 
 /**
@@ -33,15 +31,12 @@ import net.jcip.annotations.ThreadSafe;
 public abstract class CompressedTexture2D extends MultiTexture2D {
 
     /**
-     * Texture2D compression type
+     * 2D Texture compression type
      */
     @CompressionType2D
     protected volatile int compressionType;
 
-    /**
-     * Bitmap compression format. Use together with {@link CompressionType2D}
-     */
-    protected volatile int compressionFormat;
+
 
     /**
      * Basic no-args constructor used by some subclasses. No initialization is performed.
@@ -115,7 +110,6 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
     public void setFrom(@NonNull CompressedTexture2D other) throws TextureException {
         super.setFrom(other);
         setCompressionType(other.getCompressionType());
-        //setCompressionFormat(other.getCompressionFormat());
     }
 
     /**
@@ -137,26 +131,6 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
         this.compressionType = compressionType;
     }
 
-    /*
-    /**
-     * Retrieves the compression format.
-     *
-     * @return {@code int} The compression format, such as {@link GLES30#GL_COMPRESSED_RGB8_ETC2}.
-     */
-    /*public int getCompressionFormat() {
-        return compressionFormat;
-    }*/
-
-    /*
-    /**
-     * Sets the compression format.
-     *
-     * @param compressionFormat {@code int} The compression format, such as {@link GLES30#GL_COMPRESSED_RGB8_ETC2}.
-     */
-    /*public void setCompressionFormat(int compressionFormat) {
-        this.compressionFormat = compressionFormat;
-    }*/
-
     @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
     void add() throws TextureException {
@@ -173,9 +147,6 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
                 throw new TextureException("Texture could not be added because there is no valid data set.");
             }
         }
-
-        @Filter.FilterType final int filterType = getFilterType();
-        @WrapType final int wrapType = getWrapType();
 
         // Generate a texture id
         int textureId = generateTextureId();
@@ -197,21 +168,30 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
             // Handle t coordinate wrapping
             applyTWrapping();
 
-            int w = getWidth();
-            int h = getHeight();
-            for (int i = 0; i < dataReferences.length; i++) {
+            int width;
+            int height;
+            int lastWidth = 0;
+            int lastHeight = 0;
+
+            for (int i = 0, j = isMipmaped() ? dataReferences.length : 1; i < j; i++) {
+                width = dataReferences[i].getWidth();
+                height = dataReferences[i].getHeight();
+                if ((lastWidth > 0 && (lastWidth / 2 != width)) || (lastHeight > 0 && (lastHeight / 2 != height))) {
+                    throw new TextureException("mipmap chain must be sized as multiples of two in each direction.");
+                }
                 if (dataReferences[i].hasBuffer()) {
-                    if (getWidth() == 0 || getHeight() == 0) {
+                    if (width == 0 || height == 0) {
                         throw new TextureException(
                                 "Could not create ByteBuffer texture. One or more of the following properties haven't "
                                 + "been set: width or height format");
                     }
-                    GLES20.glCompressedTexImage2D(getTextureTarget(), i, getTexelFormat(), w, h, 0,
+                    GLES20.glCompressedTexImage2D(getTextureTarget(), i, getTexelFormat(), width, height, 0,
                                                   dataReferences[i].getByteBuffer().capacity(),
                                                   dataReferences[i].getByteBuffer());
-                    w = w > 1 ? w / 2 : 1;
-                    h = h > 1 ? h / 2 : 1;
+                    lastWidth = width;
+                    lastHeight = height;
                 }
+                // TODO: Check if fallback texture is necessary
             }
             setTextureId(textureId);
         } else {
@@ -219,7 +199,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
         }
 
         if (willRecycle()) {
-            setTextureData((TextureDataReference[]) null);
+            setTextureData(null);
         }
 
         GLES20.glBindTexture(getTextureTarget(), 0);
@@ -233,12 +213,13 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
         }
 
         for (int i = 0; i < dataReferences.length; ++i) {
-            if (dataReferences[i] == null || dataReferences[i].isDestroyed()
-                || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
-                    && !dataReferences[i].hasBitmap())) {
+            // NOTE: Unlike other textures, replacing with a bitmap here is not allowed
+            if (dataReferences[i] == null || dataReferences[i].isDestroyed() || !dataReferences[i].hasBuffer()
+                || (dataReferences[i].getByteBuffer().limit() == 0)) {
                 throw new TextureException("Texture could not be added because there is no valid data set.");
             }
-            if (dataReferences[i].getWidth() != getWidth() || dataReferences[i].getHeight() != getHeight()) {
+            // TODO: This needs to take into account mipmap dimensions
+            if (dataReferences[0].getWidth() != getWidth() || dataReferences[0].getHeight() != getHeight()) {
                 throw new TextureException(
                         "Texture could not be updated because the texture size is different from the original.");
             }
@@ -246,21 +227,30 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
 
         GLES20.glBindTexture(getTextureTarget(), getTextureId());
 
-        int w = getWidth();
-        int h = getHeight();
-        for (int i = 0; i < dataReferences.length; i++) {
+        int width;
+        int height;
+        int lastWidth = 0;
+        int lastHeight = 0;
+
+        for (int i = 0, j = isMipmaped() ? dataReferences.length : 1; i < j; i++) {
+            width = dataReferences[i].getWidth();
+            height = dataReferences[i].getHeight();
+            if ((lastWidth > 0 && (lastWidth / 2 != width)) || (lastHeight > 0 && (lastHeight / 2 != height))) {
+                throw new TextureException("mipmap chain must be sized as multiples of two in each direction.");
+            }
             if (dataReferences[i].hasBuffer()) {
-                if (getWidth() == 0 || getHeight() == 0) {
+                if (width == 0 || height == 0) {
                     throw new TextureException(
                             "Could not create compressed texture. One or more of the following properties haven't been "
-                            +
-                            "set: width or height format");
+                            + "set: width or height");
                 }
-                GLES20.glCompressedTexImage2D(getTextureTarget(), i, compressionFormat, w, h, 0,
+                GLES20.glCompressedTexImage2D(getTextureTarget(), i, getTexelFormat(), width, height, 0,
                                               dataReferences[i].getByteBuffer().capacity(),
                                               dataReferences[i].getByteBuffer());
-                w = w > 1 ? w / 2 : 1;
-                h = h > 1 ? h / 2 : 1;
+                lastWidth = width;
+                lastHeight = height;
+            } else {
+                throw new TextureException("Replacing a compressed texture requires data to be stored in a buffer.");
             }
         }
         GLES20.glBindTexture(getTextureTarget(), 0);

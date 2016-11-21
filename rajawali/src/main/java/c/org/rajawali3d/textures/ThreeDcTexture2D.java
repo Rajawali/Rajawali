@@ -85,9 +85,9 @@ public class ThreeDcTexture2D extends CompressedTexture2D {
     public void setThreeDcFormat(ThreeDcFormat mThreeDcFormat) {
         this.mThreeDcFormat = mThreeDcFormat;
         if (mThreeDcFormat == ThreeDcFormat.X) {
-            compressionFormat = GLES11Ext.GL_3DC_X_AMD;
+            setTexelFormat(GLES11Ext.GL_3DC_X_AMD);
         } else {
-            compressionFormat = GLES11Ext.GL_3DC_XY_AMD;
+            setTexelFormat(GLES11Ext.GL_3DC_XY_AMD);
         }
     }
 }

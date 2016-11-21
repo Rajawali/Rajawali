@@ -155,22 +155,6 @@ public class CompressedTexture2DTest {
         assertTrue(texture.getTextureId() == -1);
     }
 
-    @SuppressWarnings("Range")
-    @Test
-    public void addFailBadLengthData() throws Exception {
-        final CompressedTexture2D texture = new Testable(Type.DIFFUSE, "TEST");
-        final TextureDataReference reference = mock(TextureDataReference.class);
-        texture.setTextureData(new TextureDataReference[]{ reference });
-        boolean thrown = false;
-        try {
-            texture.add();
-        } catch (TextureException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
-        assertTrue(texture.getTextureId() == -1);
-    }
-
     @Test
     public void addFailZeroLimitBufferWithoutBitmap() throws Exception {
         final CompressedTexture2D texture = new Testable(Type.DIFFUSE, "TEST");

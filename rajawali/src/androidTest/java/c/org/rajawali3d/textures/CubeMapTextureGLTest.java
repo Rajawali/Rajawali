@@ -1,6 +1,5 @@
 package c.org.rajawali3d.textures;
 
-import static c.org.rajawali3d.textures.annotation.Wrap.MIRRORED_REPEAT_T;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -15,14 +14,11 @@ import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.textures.annotation.Filter;
-import c.org.rajawali3d.textures.annotation.Wrap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rajawali3d.R;
-import org.rajawali3d.util.RajLog;
 
 import java.nio.ByteBuffer;
 
@@ -60,7 +56,6 @@ public class CubeMapTextureGLTest extends GlTestCase {
             @Override
             public void run() {
                 try {
-                    RajLog.i("Replace: with bitmap");
                     texture.add();
                     texture.replace();
                 } catch (TextureException e) {
@@ -86,7 +81,6 @@ public class CubeMapTextureGLTest extends GlTestCase {
             @Override
             public void run() {
                 try {
-                    RajLog.i("Replace: with mipmapped buffer");
                     texture.add();
                     texture.setMipmaped(true);
                     texture.replace();
@@ -114,7 +108,6 @@ public class CubeMapTextureGLTest extends GlTestCase {
             @Override
             public void run() {
                 try {
-                    RajLog.i("Replace: with buffer");
                     texture.add();
                     texture.replace();
                 } catch (TextureException e) {
@@ -399,7 +392,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
     }
 
     @Test
-    public void textureAdd1() throws Exception {
+    public void add() throws Exception {
         final int[] ids = new int[]{
             R.drawable.posx, R.drawable.posy, R.drawable.posz,
             R.drawable.negx, R.drawable.negy, R.drawable.negz
@@ -408,8 +401,6 @@ public class CubeMapTextureGLTest extends GlTestCase {
         final TextureDataReference[] references = texture.getTextureData();
         assertNotNull(references);
         texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.CLAMP_S | MIRRORED_REPEAT_T);
-        texture.setFilterType(Filter.NEAREST);
         texture.setMipmaped(false);
         texture.willRecycle(true);
         final boolean[] thrown = new boolean[]{false};
@@ -431,200 +422,15 @@ public class CubeMapTextureGLTest extends GlTestCase {
         assertNull(texture.getTextureData());
     }
 
-    @Test
-    public void textureAdd2() throws Exception {
-        final int[] ids = new int[]{
-            R.drawable.posx, R.drawable.posy, R.drawable.posz,
-            R.drawable.negx, R.drawable.negy, R.drawable.negz
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.MIRRORED_REPEAT_S | Wrap.CLAMP_T);
-        texture.setFilterType(Filter.BILINEAR);
-        texture.setMipmaped(false);
-        final boolean[] thrown = new boolean[]{false};
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertFalse(thrown[0]);
-        assertTrue(texture.getTextureId() > 0);
-    }
-
-    @Test
-    public void textureAdd3() throws Exception {
-        final int[] ids = new int[]{
-            R.drawable.posx, R.drawable.posy, R.drawable.posz,
-            R.drawable.negx, R.drawable.negy, R.drawable.negz
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.TRILINEAR);
-        texture.setMipmaped(false);
-        final boolean[] thrown = new boolean[]{false};
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertFalse(thrown[0]);
-        assertTrue(texture.getTextureId() > 0);
-    }
-
-    @Test
-    public void textureAdd4() throws Exception {
-        final int[] ids = new int[]{
-            R.drawable.posx, R.drawable.posy, R.drawable.posz,
-            R.drawable.negx, R.drawable.negy, R.drawable.negz
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.NEAREST);
-        texture.setMipmaped(true);
-        final boolean[] thrown = new boolean[]{false};
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertFalse(thrown[0]);
-        assertTrue(texture.getTextureId() > 0);
-    }
-
-    @Test
-    public void textureAdd5() throws Exception {
-        final int[] ids = new int[]{
-            R.drawable.posx, R.drawable.posy, R.drawable.posz,
-            R.drawable.negx, R.drawable.negy, R.drawable.negz
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.BILINEAR);
-        texture.setMipmaped(true);
-        final boolean[] thrown = new boolean[]{false};
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertFalse(thrown[0]);
-        assertTrue(texture.getTextureId() > 0);
-    }
-
-    @Test
-    public void textureAdd6() throws Exception {
-        final int[] ids = new int[]{
-            R.drawable.posx, R.drawable.posy, R.drawable.posz,
-            R.drawable.negx, R.drawable.negy, R.drawable.negz
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.TRILINEAR);
-        texture.setMipmaped(true);
-        final boolean[] thrown = new boolean[]{false};
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertFalse(thrown[0]);
-        assertTrue(texture.getTextureId() > 0);
-    }
-
-    @Test
-    public void textureAdd7() throws Exception {
-        final int[] ids = new int[]{
-            R.drawable.posx, R.drawable.posy, R.drawable.posz,
-            R.drawable.negx, R.drawable.negy, R.drawable.negz
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.TRILINEAR);
-        texture.setMaxAnisotropy(2.0f);
-        texture.setMipmaped(true);
-        final boolean[] thrown = new boolean[]{false};
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                } catch (Exception e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertFalse(thrown[0]);
-        assertTrue(texture.getTextureId() > 0);
-    }
-
-    @Test
-    public void textureAdd8() throws Exception {
-        final int[] ids = new int[]{
-            R.drawable.posx, R.drawable.posy, R.drawable.posz,
-            R.drawable.negx, R.drawable.negy, R.drawable.negz
-        };
-        final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.TRILINEAR);
-        texture.willRecycle(false);
-        texture.setMipmaped(true);
-        final boolean[] thrown = new boolean[]{false};
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertFalse(thrown[0]);
-        assertTrue(texture.getTextureId() > 0);
-    }
-
     @SuppressWarnings("WrongConstant")
     @Test
-    public void textureAddFailFilter1() throws Exception {
+    public void addFailFilter1() throws Exception {
         final int[] ids = new int[]{
             R.drawable.posx, R.drawable.posy, R.drawable.posz,
             R.drawable.negx, R.drawable.negy, R.drawable.negz
         };
         final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(-1);
         texture.setMipmaped(true);
         final boolean[] thrown = new boolean[]{false};
@@ -644,14 +450,13 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @SuppressWarnings("WrongConstant")
     @Test
-    public void textureAddFailFilter2() throws Exception {
+    public void addFailFilter2() throws Exception {
         final int[] ids = new int[]{
             R.drawable.posx, R.drawable.posy, R.drawable.posz,
             R.drawable.negx, R.drawable.negy, R.drawable.negz
         };
         final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
         texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(-1);
         texture.setMipmaped(false);
         final boolean[] thrown = new boolean[]{false};
@@ -670,7 +475,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
     }
 
     @Test
-    public void textureAddBufferWithoutRecycle() throws Exception {
+    public void addBufferWithoutRecycle() throws Exception {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
         final TextureDataReference[] references = new TextureDataReference[6];
         for (int i = 0; i < 6; ++i) {
@@ -678,8 +483,6 @@ public class CubeMapTextureGLTest extends GlTestCase {
         }
         final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.TRILINEAR);
         texture.willRecycle(false);
         texture.setMipmaped(true);
         final boolean[] thrown = new boolean[]{false};
@@ -699,7 +502,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
     }
 
     @Test
-    public void textureAddBufferFailWidth() throws Exception {
+    public void addBufferFailWidth() throws Exception {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
         final TextureDataReference[] references = new TextureDataReference[6];
         for (int i = 0; i < 6; ++i) {
@@ -707,8 +510,6 @@ public class CubeMapTextureGLTest extends GlTestCase {
         }
         final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.TRILINEAR);
         texture.willRecycle(false);
         texture.setMipmaped(true);
         final boolean[] thrown = new boolean[]{false};
@@ -727,7 +528,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
     }
 
     @Test
-    public void textureAddBufferFailHeight() throws Exception {
+    public void addBufferFailHeight() throws Exception {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
         final TextureDataReference[] references = new TextureDataReference[6];
         for (int i = 0; i < 6; ++i) {
@@ -735,8 +536,6 @@ public class CubeMapTextureGLTest extends GlTestCase {
         }
         final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(Filter.TRILINEAR);
         texture.willRecycle(false);
         texture.setMipmaped(true);
         final boolean[] thrown = new boolean[]{false};

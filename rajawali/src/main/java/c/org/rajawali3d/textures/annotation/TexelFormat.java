@@ -2,6 +2,7 @@ package c.org.rajawali3d.textures.annotation;
 
 import android.annotation.TargetApi;
 import android.opengl.ETC1;
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.os.Build.VERSION_CODES;
@@ -33,7 +34,9 @@ import java.nio.Buffer;
           GLES30.GL_RGBA16F, GLES30.GL_RGBA32F, GLES30.GL_RGBA8UI, GLES30.GL_RGBA8I, GLES30.GL_RGB10_A2UI,
           GLES30.GL_RGBA16UI, GLES30.GL_RGBA16I, GLES30.GL_RGBA32I, GLES30.GL_RGBA32UI, GLES30.GL_DEPTH_COMPONENT16,
           GLES30.GL_DEPTH_COMPONENT24, GLES30.GL_DEPTH_COMPONENT32F, GLES30.GL_DEPTH24_STENCIL8,
-          GLES30.GL_DEPTH32F_STENCIL8, ETC1.ETC1_RGB8_OES
+          GLES30.GL_DEPTH32F_STENCIL8, GLES11Ext.GL_3DC_X_AMD, GLES11Ext.GL_3DC_XY_AMD, ETC1.ETC1_RGB8_OES,
+          GLES11Ext.GL_ATC_RGB_AMD, GLES11Ext.GL_ATC_RGBA_EXPLICIT_ALPHA_AMD,
+          GLES11Ext.GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD
         })
 public @interface TexelFormat {
 }
