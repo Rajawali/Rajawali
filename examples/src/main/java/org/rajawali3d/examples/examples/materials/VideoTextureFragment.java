@@ -54,7 +54,7 @@ public class VideoTextureFragment extends AExampleFragment {
 				material.setSpecularMethod(new SpecularMethod.Phong());
 				android.setMaterial(material);
 				android.setColor(0xff99C224);
-				getCurrentScene().addChild(android);
+				//getCurrentScene().addChild(android);
 			} catch (NotFoundException e) {
 				e.printStackTrace();
 			}
@@ -74,7 +74,6 @@ public class VideoTextureFragment extends AExampleFragment {
 
 			Plane screen = new Plane(3, 2, 2, 2, Vector3.Axis.Z);
 			screen.setMaterial(material);
-            screen.setRotY(180);
 			screen.setX(.1f);
 			screen.setY(-.2f);
 			screen.setZ(1.5f);
