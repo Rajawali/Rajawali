@@ -453,7 +453,9 @@ public class TextureView extends android.view.TextureView implements ISurface {
         if (mRendererDelegate != null) {
             mRendererDelegate.mRenderer.onPause();
         }
-        mGLThread.onPause();
+        if (mGLThread != null) {
+            mGLThread.onPause();
+        }
     }
 
     /**
