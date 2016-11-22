@@ -274,6 +274,7 @@ public class Capabilities {
      */
     public GLExtension loadExtension(@NonNull String extension) throws UnsupportedCapabilityException,
                                                                        IllegalArgumentException {
+        // TODO: Switch this to reflection based
         if (!loadedExtensions.containsKey(extension)) {
             switch (extension) {
                 case EXTTextureFilterAnisotropic.name:

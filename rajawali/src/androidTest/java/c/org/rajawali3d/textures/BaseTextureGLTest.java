@@ -61,6 +61,7 @@ public class BaseTextureGLTest extends GlTestCase {
     public void setMaxAnisotropy() throws Exception {
         final TestableBaseTexture texture = new TestableBaseTexture();
         final boolean[] thrown = new boolean[]{ false };
+        final StringBuilder error = new StringBuilder();
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 try {
@@ -68,10 +69,16 @@ public class BaseTextureGLTest extends GlTestCase {
                 } catch (UnsupportedCapabilityException e) {
                     e.printStackTrace();
                     thrown[0] = true;
+                    error.append(e.getMessage());
                 }
             }
         });
-        assertFalse(thrown[0]);
+        try {
+            Capabilities.getInstance().verifyExtension(EXTTextureFilterAnisotropic.name);
+            assertFalse(error.toString(), thrown[0]);
+        } catch (UnsupportedCapabilityException e) {
+            assertTrue(error.toString(), thrown[0]);
+        }
         assertEquals(Float.floatToIntBits(5.0f), Float.floatToIntBits(texture.getMaxAnisotropy()));
 
         final float[] max = new float[]{1.0f};
