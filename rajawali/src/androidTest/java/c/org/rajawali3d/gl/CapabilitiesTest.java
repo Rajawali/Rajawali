@@ -5,12 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.GlTestCase;
 import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.gl.extensions.GLExtension;
 import org.junit.After;
 import org.junit.Before;
@@ -193,6 +193,7 @@ public class CapabilitiesTest extends GlTestCase {
     @Test
     public void loadExtension() throws Exception {
         final boolean[] thrown = new boolean[]{false};
+        final StringBuilder builder = new StringBuilder();
         final GLExtension[] output = new GLExtension[]{null};
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -201,12 +202,13 @@ public class CapabilitiesTest extends GlTestCase {
                     output[0] = Capabilities.getInstance().loadExtension(EXTDebugMarker.name);
                 } catch (Capabilities.UnsupportedCapabilityException e) {
                     thrown[0] = true;
+                    builder.append(e.getMessage());
                 }
             }
         });
-        assertFalse(thrown[0]);
+        assertFalse(builder.toString(), thrown[0]);
         assertNotNull(output[0]);
-        assertTrue(output[0] instanceof EXTTextureFilterAnisotropic);
+        assertTrue(output[0] instanceof EXTDebugMarker);
     }
 
     @Test
