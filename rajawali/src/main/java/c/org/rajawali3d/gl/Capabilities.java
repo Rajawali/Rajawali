@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.gl.extensions.GLExtension;
 import c.org.rajawali3d.gl.extensions.OESTexture3D;
@@ -277,6 +278,9 @@ public class Capabilities {
         // TODO: Switch this to reflection based
         if (!loadedExtensions.containsKey(extension)) {
             switch (extension) {
+                case EXTDebugMarker.name:
+                    loadedExtensions.put(extension, EXTDebugMarker.load());
+                    break;
                 case EXTTextureFilterAnisotropic.name:
                     loadedExtensions.put(extension, EXTTextureFilterAnisotropic.load());
                     break;

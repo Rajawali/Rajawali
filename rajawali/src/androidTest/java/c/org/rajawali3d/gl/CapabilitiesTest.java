@@ -9,6 +9,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.gl.extensions.GLExtension;
 import org.junit.After;
@@ -197,7 +198,7 @@ public class CapabilitiesTest extends GlTestCase {
             @Override
             public void run() {
                 try {
-                    output[0] = Capabilities.getInstance().loadExtension(EXTTextureFilterAnisotropic.name);
+                    output[0] = Capabilities.getInstance().loadExtension(EXTDebugMarker.name);
                 } catch (Capabilities.UnsupportedCapabilityException e) {
                     thrown[0] = true;
                 }
@@ -215,7 +216,7 @@ public class CapabilitiesTest extends GlTestCase {
             @Override
             public void run() {
                 try {
-                    Capabilities.getInstance().usingExtension(EXTTextureFilterAnisotropic.load());
+                    Capabilities.getInstance().usingExtension(EXTDebugMarker.load());
                 } catch (Capabilities.UnsupportedCapabilityException e) {
                     thrown[0] = true;
                 }
