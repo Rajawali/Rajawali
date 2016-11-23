@@ -4,10 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.test.rule.ActivityTestRule;
+import android.view.View;
+import c.org.rajawali3d.renderer.RendererImpl;
 import org.junit.Rule;
 import org.rajawali3d.GlTestActivity;
+import org.rajawali3d.renderer.ISurfaceRenderer;
+import org.rajawali3d.view.Surface;
+import org.rajawali3d.view.SurfaceView;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -33,16 +39,17 @@ public abstract class GlTestCase {
 
     private final Object lock = new Object();
 
-    private Activity      activity      = null;
-    private GLSurfaceView glSurfaceView = null;
-    private GL10          gl10          = null;
+    private Activity activity  = null;
+    private Surface  glSurface = null;
+    private ISurfaceRenderer renderer = null;
+    private GL10     gl10      = null;
 
     // ------------------------------------------------------------
     // Expose GL context and GL thread.
     // ------------------------------------------------------------
 
-    public GLSurfaceView getGlSurfaceView() {
-        return glSurfaceView;
+    public Surface getGlSurface() {
+        return glSurface;
     }
 
     public GL10 getGl() {
@@ -58,7 +65,7 @@ public abstract class GlTestCase {
      */
     public void runOnGlThreadAndWait(final Runnable runnable) throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        glSurfaceView.queueEvent(new Runnable() {
+        ((GLSurfaceView) glSurface).queueEvent(new Runnable() {
             public void run() {
                 runnable.run();
                 latch.countDown();
@@ -74,23 +81,19 @@ public abstract class GlTestCase {
     /**
      * Dummy renderer, exposes the GL context for {@link #getGl()}.
      */
-    private class MockRenderer implements GLSurfaceView.Renderer {
-        @Override
-        public void onDrawFrame(GL10 gl) {
-            ;
+    private class MockRenderer extends RendererImpl {
+
+        MockRenderer(@NonNull Context context) {
+            super(context);
         }
 
         @Override
-        public void onSurfaceChanged(GL10 gl, int width, int height) {
-            ;
-        }
-
-        @Override
-        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
             synchronized (lock) {
                 gl10 = gl;
                 lock.notifyAll();
             }
+            super.onRenderSurfaceCreated(config, gl, width, height);
         }
     }
 
@@ -106,24 +109,25 @@ public abstract class GlTestCase {
         // surface is still there.
         final Activity activity = activityRule.getActivity(); // launches activity
         if (activity == this.activity) {
-            glSurfaceView.onResume();
+            renderer.onResume();
             return;  // same activity, assume surface is still there
         }
 
         // New or different activity, set up for GL.
         this.activity = activity;
 
-        glSurfaceView = new GLSurfaceView(activity);
+        glSurface = new SurfaceView(activity);
         gl10 = null;
 
         // Attach the renderer to the view, and the view to the activity.
-        glSurfaceView.setRenderer(new MockRenderer());
+        renderer = new MockRenderer(activity);
+        glSurface.setSurfaceRenderer(renderer);
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (title != null) {
                     activity.setTitle(title);
                 }
-                activity.setContentView(glSurfaceView);
+                activity.setContentView((View) glSurface);
             }
         });
 
@@ -136,8 +140,8 @@ public abstract class GlTestCase {
     }
 
     protected void tearDown() throws Exception {
-        if (glSurfaceView != null) {
-            glSurfaceView.onPause();
+        if (renderer != null) {
+            renderer.onPause();
         }
     }
 }

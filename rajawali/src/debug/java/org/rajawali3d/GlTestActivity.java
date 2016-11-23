@@ -17,7 +17,8 @@ public class GlTestActivity extends Activity {
         Log.d(TAG, "Creating GlTestActivity.");
     }
 
-    @Override protected void onPause() {
+    @Override
+    protected void onPause() {
         overridePendingTransition(0, 0);
         super.onPause();
     }
