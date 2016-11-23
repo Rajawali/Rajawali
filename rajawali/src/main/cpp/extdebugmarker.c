@@ -10,17 +10,17 @@ const char *INSERT_EVENT_MARKER_EXT_NAME = "InsertEventMarkerEXT";
 const char *PUSH_GROUP_MARKER_EXT_NAME = "PushGroupMarkerEXT";
 const char *POP_GROUP_MARKER_EXT_NAME = "PopGroupMarkerEXT";
 
-void (*InsertEventMarkerEXT)(sizei length, const char *marker);
+void (*InsertEventMarkerEXT)(GLint length, const char *marker);
 
-void (*PushGroupMarkerEXT)(sizei length, const char *marker);
+void (*PushGroupMarkerEXT)(GLint length, const char *marker);
 
 void (*PopGroupMarkerEXT)(void);
 
 JNIEXPORT jboolean JNICALL
 Java_c_org_rajawali3d_gl_extensions_EXTDebugMarker_loadFunctions(JNIEnv *env, jclass type) {
-    InsertEventMarkerEXT = (void (*)(sizei length, const char *marker)) eglGetProcAddress(INSERT_EVENT_MARKER_EXT_NAME);
+    InsertEventMarkerEXT = (void (*)(GLint length, const char *marker)) eglGetProcAddress(INSERT_EVENT_MARKER_EXT_NAME);
 
-    PushGroupMarkerEXT = (void (*)(sizei length, const char *marker)) eglGetProcAddress(PUSH_GROUP_MARKER_EXT_NAME);
+    PushGroupMarkerEXT = (void (*)(GLint length, const char *marker)) eglGetProcAddress(PUSH_GROUP_MARKER_EXT_NAME);
 
     PopGroupMarkerEXT = (void (*)(void)) eglGetProcAddress(POP_GROUP_MARKER_EXT_NAME);
 

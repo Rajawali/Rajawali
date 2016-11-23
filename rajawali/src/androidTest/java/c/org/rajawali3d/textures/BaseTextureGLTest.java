@@ -61,6 +61,7 @@ public class BaseTextureGLTest extends GlTestCase {
     public void setMaxAnisotropy() throws Exception {
         final TestableBaseTexture texture = new TestableBaseTexture();
         final boolean[] thrown = new boolean[]{ false };
+        final boolean[] available = new boolean[]{ true };
         final StringBuilder error = new StringBuilder();
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
@@ -73,35 +74,38 @@ public class BaseTextureGLTest extends GlTestCase {
                 }
             }
         });
-        try {
-            Capabilities.getInstance().verifyExtension(EXTTextureFilterAnisotropic.name);
-            assertFalse(error.toString(), thrown[0]);
-        } catch (UnsupportedCapabilityException e) {
-            assertTrue(error.toString(), thrown[0]);
-        }
-        assertEquals(Float.floatToIntBits(5.0f), Float.floatToIntBits(texture.getMaxAnisotropy()));
-
-        final float[] max = new float[]{1.0f};
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 try {
-                    max[0] = ((EXTTextureFilterAnisotropic) Capabilities.getInstance().loadExtension
-                            (EXTTextureFilterAnisotropic.name)).getMaxSupportedAnisotropy();
-                    texture.setMaxAnisotropy(20.0f);
-                } catch (UnsupportedCapabilityException e) {
-                    e.printStackTrace();
-                    thrown[0] = true;
+                    Capabilities.getInstance().verifyExtension(EXTTextureFilterAnisotropic.name);
+                } catch (UnsupportedCapabilityException ignored) {
+                    available[0] = false;
                 }
             }
         });
 
-        assertFalse(thrown[0]);
-        assertEquals(Float.floatToIntBits(max[0]), Float.floatToIntBits(texture.getMaxAnisotropy()));
+        if (available[0]) {
+            assertFalse(error.toString(), thrown[0]);
+            assertEquals(Float.floatToIntBits(5.0f), Float.floatToIntBits(texture.getMaxAnisotropy()));
+
+            final float[] max = new float[]{ 1.0f };
+            try {
+                max[0] = ((EXTTextureFilterAnisotropic) Capabilities.getInstance().loadExtension
+                        (EXTTextureFilterAnisotropic.name)).getMaxSupportedAnisotropy();
+                texture.setMaxAnisotropy(20.0f);
+            } catch (UnsupportedCapabilityException e) {
+                e.printStackTrace();
+                thrown[0] = true;
+            }
+
+            assertFalse(thrown[0]);
+            assertEquals(Float.floatToIntBits(max[0]), Float.floatToIntBits(texture.getMaxAnisotropy()));
+        }
     }
 
     @Test
     public void generateTextureId() throws Exception {
-        final int[] id = new int[]{0};
+        final int[] id = new int[]{ 0 };
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 id[0] = BaseTexture.generateTextureId();
