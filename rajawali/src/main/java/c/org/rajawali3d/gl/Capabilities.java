@@ -83,7 +83,6 @@ public class Capabilities {
         RajLog.d("Fetching device capabilities.");
 
         param = new int[1];
-
         vendor = GLES20.glGetString(GLES20.GL_VENDOR);
         renderer = GLES20.glGetString(GLES20.GL_RENDERER);
         version = GLES20.glGetString(GLES20.GL_VERSION);
@@ -146,6 +145,7 @@ public class Capabilities {
     }
 
     @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
+    @SuppressWarnings("WeakerAccess")
     @VisibleForTesting
     static void checkGLVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
         // Find out how many EGLConfigs exist
@@ -194,7 +194,9 @@ public class Capabilities {
      * @return
      */
     public static int getEGLMajorVersion() {
-        if (!glChecked) checkGLVersion();
+        if (!glChecked) {
+            checkGLVersion();
+        }
         return eglMajorVersion;
     }
 
@@ -204,7 +206,9 @@ public class Capabilities {
      * @return
      */
     public static int getEGLMinorVersion() {
-        if (!glChecked) checkGLVersion();
+        if (!glChecked) {
+            checkGLVersion();
+        }
         return eglMinorVersion;
     }
 
@@ -214,7 +218,9 @@ public class Capabilities {
      * @return
      */
     public static int getGLESMajorVersion() {
-        if (!glChecked) checkGLVersion();
+        if (!glChecked) {
+            checkGLVersion();
+        }
         return glesMajorVersion;
     }
 
