@@ -2,6 +2,7 @@ package c.org.rajawali3d.gl.extensions;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 
 /**
@@ -22,6 +23,7 @@ public class EXTDebugMarker implements GLExtension {
 
     public static final String name = "GL_EXT_debug_marker";
 
+    @GLThread
     @NonNull
     public static EXTDebugMarker load() throws UnsupportedCapabilityException {
         return new EXTDebugMarker();
@@ -29,10 +31,10 @@ public class EXTDebugMarker implements GLExtension {
 
     private EXTDebugMarker() throws UnsupportedCapabilityException {
         //TODO: Figure out why functions arent found.
-        /*final boolean success = loadFunctions();
+        final boolean success = loadFunctions();
         if (!success) {
             throw new UnsupportedCapabilityException("Failed to find native methods for extension: " + name);
-        }*/
+        }
     }
 
     @NonNull
@@ -41,6 +43,7 @@ public class EXTDebugMarker implements GLExtension {
         return name;
     }
 
+    @GLThread
     private static native boolean loadFunctions();
 
     /**
@@ -48,6 +51,7 @@ public class EXTDebugMarker implements GLExtension {
      *
      * @param marker {@link String} The marker to be inserted.
      */
+    @GLThread
     public native void insertEventMarkerEXT(@NonNull String marker);
 
     /**
@@ -58,6 +62,7 @@ public class EXTDebugMarker implements GLExtension {
      * can not overlap.
      * @param marker {@link String} The group marker to be pushed.
      */
+    @GLThread
     public native void pushGroupMarkerEXT(@Nullable String marker);
 
     /**
@@ -67,5 +72,6 @@ public class EXTDebugMarker implements GLExtension {
      * Group markers are strictly hierarchical. Group marker sequences may be nested within other group markers but
      * can not overlap.
      */
+    @GLThread
     public native void popGroupMarkerEXT();
 }

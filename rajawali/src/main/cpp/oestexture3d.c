@@ -2,18 +2,20 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
-const char *TEX_IMAGE_3D_OES_NAME = "TexImage3DOES";
-const char *TEX_SUBIMAGE_3D_OES_NAME = "TexSubImage3DOES";
-const char *COPY_TEX_SUBIMAGE_3D_OES_NAME = "CopyTexSubImage3DOES";
+const char *TEX_IMAGE_3D_OES_NAME = "glTexImage3DOES";
+const char *TEX_SUBIMAGE_3D_OES_NAME = "glTexSubImage3DOES";
+const char *COPY_TEX_SUBIMAGE_3D_OES_NAME = "glCopyTexSubImage3DOES";
 
-void (*glTexImage3DOES)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height,
-                        GLsizei depth, GLint border, GLenum format, GLenum type, const void *pixels);
+GL_APICALL void GL_APIENTRY (*glTexImage3DOES)(GLenum target, GLint level, GLenum internalformat, GLsizei width,
+                                               GLsizei height, GLsizei depth, GLint border, GLenum format,
+                                               GLenum type, const void *pixels);
 
-void (*glTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width,
-                           GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels);
+GL_APICALL void GL_APIENTRY (*glTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset,
+                                                  GLint zoffset, GLsizei width, GLsizei height, GLsizei depth,
+                                                  GLenum format, GLenum type, const void *pixels);
 
-void (*glCopyTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x,
-                               GLint y, GLsizei width, GLsizei height);
+GL_APICALL void GL_APIENTRY (*glCopyTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset,
+                                                      GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
 
 JNIEXPORT jboolean JNICALL
 Java_c_org_rajawali3d_gl_extensions_OESTexture3D_loadFunctions(JNIEnv *env, jclass type) {

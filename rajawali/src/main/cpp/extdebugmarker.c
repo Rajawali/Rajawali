@@ -6,25 +6,28 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
-const char *INSERT_EVENT_MARKER_EXT_NAME = "InsertEventMarkerEXT";
-const char *PUSH_GROUP_MARKER_EXT_NAME = "PushGroupMarkerEXT";
-const char *POP_GROUP_MARKER_EXT_NAME = "PopGroupMarkerEXT";
+#define TAG "GL_EXT_debug_marker"
 
-void (*InsertEventMarkerEXT)(GLint length, const char *marker);
+const char *INSERT_EVENT_MARKER_EXT_NAME = "glInsertEventMarkerEXT";
+const char *PUSH_GROUP_MARKER_EXT_NAME = "glPushGroupMarkerEXT";
+const char *POP_GROUP_MARKER_EXT_NAME = "glPopGroupMarkerEXT";
 
-void (*PushGroupMarkerEXT)(GLint length, const char *marker);
+GL_APICALL void GL_APIENTRY (*glInsertEventMarkerEXT)(GLint length, const GLchar *marker);
 
-void (*PopGroupMarkerEXT)(void);
+GL_APICALL void GL_APIENTRY (*glPushGroupMarkerEXT)(GLint length, const GLchar *marker);
+
+GL_APICALL void GL_APIENTRY (*glPopGroupMarkerEXT)(void);
 
 JNIEXPORT jboolean JNICALL
 Java_c_org_rajawali3d_gl_extensions_EXTDebugMarker_loadFunctions(JNIEnv *env, jclass type) {
-    InsertEventMarkerEXT = (void (*)(GLint length, const char *marker)) eglGetProcAddress(INSERT_EVENT_MARKER_EXT_NAME);
+    glInsertEventMarkerEXT = (void (*)(GLint length, const GLchar *marker))
+            eglGetProcAddress(INSERT_EVENT_MARKER_EXT_NAME);
 
-    PushGroupMarkerEXT = (void (*)(GLint length, const char *marker)) eglGetProcAddress(PUSH_GROUP_MARKER_EXT_NAME);
+    glPushGroupMarkerEXT = (void (*)(GLint length, const GLchar *marker)) eglGetProcAddress(PUSH_GROUP_MARKER_EXT_NAME);
 
-    PopGroupMarkerEXT = (void (*)(void)) eglGetProcAddress(POP_GROUP_MARKER_EXT_NAME);
+    glPopGroupMarkerEXT = (void (*)(void)) eglGetProcAddress(POP_GROUP_MARKER_EXT_NAME);
 
-    if (InsertEventMarkerEXT == NULL || PushGroupMarkerEXT == NULL || PopGroupMarkerEXT == NULL) {
+    if (glInsertEventMarkerEXT == NULL || glPushGroupMarkerEXT == NULL || glPopGroupMarkerEXT == NULL) {
         return JNI_FALSE;
     } else {
         return JNI_TRUE;
@@ -35,18 +38,18 @@ JNIEXPORT void JNICALL
 Java_c_org_rajawali3d_gl_extensions_EXTDebugMarker_insertEventMarkerEXT(JNIEnv *env, jobject instance,
         jstring marker_) {
     const char *marker = (*env)->GetStringUTFChars(env, marker_, 0);
-    InsertEventMarkerEXT(0, marker);
+    glInsertEventMarkerEXT(0, marker);
     (*env)->ReleaseStringUTFChars(env, marker_, marker);
 }
 
 JNIEXPORT void JNICALL
 Java_c_org_rajawali3d_gl_extensions_EXTDebugMarker_pushGroupMarkerEXT(JNIEnv *env, jobject instance, jstring marker_) {
     const char *marker = (*env)->GetStringUTFChars(env, marker_, 0);
-    PushGroupMarkerEXT(0, marker);
+    glPushGroupMarkerEXT(0, marker);
     (*env)->ReleaseStringUTFChars(env, marker_, marker);
 }
 
 JNIEXPORT void JNICALL
 Java_c_org_rajawali3d_gl_extensions_EXTDebugMarker_popGroupMarkerEXT(JNIEnv *env, jobject instance) {
-    PopGroupMarkerEXT();
+    glPopGroupMarkerEXT();
 }
