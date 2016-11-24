@@ -195,20 +195,26 @@ public class CapabilitiesTest extends GlTestCase {
         final boolean[] thrown = new boolean[]{false};
         final StringBuilder builder = new StringBuilder();
         final GLExtension[] output = new GLExtension[]{null};
+        final boolean[] check = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                try {
-                    output[0] = Capabilities.getInstance().loadExtension(EXTDebugMarker.name);
-                } catch (Capabilities.UnsupportedCapabilityException e) {
-                    thrown[0] = true;
-                    builder.append(e.getMessage());
+                if (GLES20.glGetString(GLES20.GL_EXTENSIONS).contains(EXTDebugMarker.name)) {
+                    check[0] = true;
+                    try {
+                        output[0] = Capabilities.getInstance().loadExtension(EXTDebugMarker.name);
+                    } catch (Capabilities.UnsupportedCapabilityException e) {
+                        thrown[0] = true;
+                        builder.append(e.getMessage());
+                    }
                 }
             }
         });
         assertFalse(builder.toString(), thrown[0]);
-        assertNotNull(output[0]);
-        assertTrue(output[0] instanceof EXTDebugMarker);
+        if (check[0]) {
+            assertNotNull(output[0]);
+            assertTrue(output[0] instanceof EXTDebugMarker);
+        }
     }
 
     @Test
