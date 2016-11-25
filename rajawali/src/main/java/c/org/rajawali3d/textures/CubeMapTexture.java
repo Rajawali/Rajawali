@@ -208,6 +208,9 @@ public class CubeMapTexture extends MultiTexture2D {
             // Handle t coordinate wrapping
             applyTWrapping();
 
+            // Handle r coordinate wrapping
+            // TODO: R wrapping
+
             for (int i = 0; i < 6; i++) {
                 GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
                 if (dataReferences[i].hasBuffer()) {

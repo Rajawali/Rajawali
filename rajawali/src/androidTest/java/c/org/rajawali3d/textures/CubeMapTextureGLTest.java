@@ -103,6 +103,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.willRecycle(false);
+        texture.setMipmaped(false);
         final boolean[] thrown = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -129,6 +130,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         }
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         texture.setTextureData(references);
+        texture.setMipmaped(false);
         final TextureDataReference reference = mock(TextureDataReference.class);
         doReturn(true).when(reference).isDestroyed();
         final boolean[] thrown = new boolean[]{ false };
@@ -155,6 +157,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
                 R.drawable.negx, R.drawable.negy, R.drawable.negz
         };
         final CubeMapTexture texture = new CubeMapTexture("TEST", getContext(), ids);
+        texture.setMipmaped(false);
         final TextureDataReference reference = mock(TextureDataReference.class);
         final boolean[] thrown = new boolean[]{ false };
         runOnGlThreadAndWait(new Runnable() {
@@ -181,6 +184,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         }
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         texture.setTextureData(references);
+        texture.setMipmaped(false);
         final boolean[] thrown = new boolean[]{ false };
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -206,6 +210,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         }
         final CubeMapTexture texture = new CubeMapTexture("TEST");
         texture.setTextureData(references);
+        texture.setMipmaped(false);
         final TextureDataReference reference = mock(TextureDataReference.class);
         doReturn(true).when(reference).isDestroyed();
         final boolean[] thrown = new boolean[]{ false };
@@ -309,6 +314,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         }
         texture.setTextureData(references);
         texture.setTexelFormat(GLES20.GL_RGBA);
+        texture.setMipmaped(false);
         final boolean[] thrown = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -340,6 +346,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         }
         texture.setTextureData(references);
         texture.setTexelFormat(GLES20.GL_RGBA);
+        texture.setMipmaped(false);
         final boolean[] thrown = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -401,7 +408,7 @@ public class CubeMapTextureGLTest extends GlTestCase {
         final TextureDataReference[] references = texture.getTextureData();
         assertNotNull(references);
         texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setMipmaped(false);
+        texture.setMipmaped(true);
         texture.willRecycle(true);
         final boolean[] thrown = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
@@ -476,22 +483,22 @@ public class CubeMapTextureGLTest extends GlTestCase {
 
     @Test
     public void addBufferWithoutRecycle() throws Exception {
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 512);
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 64 * 64);
         final TextureDataReference[] references = new TextureDataReference[6];
         for (int i = 0; i < 6; ++i) {
-            references[i] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 512);
+            references[i] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 64, 64);
         }
         final CubeMapTexture texture = new CubeMapTexture("TEST", references);
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.willRecycle(false);
-        texture.setMipmaped(true);
+        texture.setMipmaped(false);
         final boolean[] thrown = new boolean[]{false};
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
                 try {
                     texture.add();
-                } catch (TextureException e) {
+                } catch (Exception e) {
                     thrown[0] = true;
                 }
             }

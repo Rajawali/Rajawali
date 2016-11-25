@@ -15,16 +15,6 @@ package c.org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
-
-import net.jcip.annotations.ThreadSafe;
-
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.util.RajLog;
-
-import java.nio.Buffer;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
@@ -33,6 +23,13 @@ import c.org.rajawali3d.textures.annotation.TexelFormat;
 import c.org.rajawali3d.textures.annotation.TextureTarget;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 import c.org.rajawali3d.textures.annotation.Wrap;
+import net.jcip.annotations.ThreadSafe;
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.util.RajLog;
+
+import java.nio.Buffer;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Thread safe abstract texture class. Subclasses are expected to be thread safe.
