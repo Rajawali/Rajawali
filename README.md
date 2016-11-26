@@ -45,12 +45,17 @@ Rajawali includes a number of unit, integration and GL specific integration test
 
 |Device Name|Model Number|Android Version|API Level|CPU|GPU|GL Version|EGL Version|
 |:----------|:----------:|:-------------:|:-------:|:---:|:---:|:--------:|:---------:|
-|Samsung Galaxy Tab 2 7.0+|SGH-T869|4.0.4|15|ARMv7r1|Mali-400MP|2.0|1.4|
-|Samasung Galaxy Nexus|Galaxy Nexus|4.3|18|ARMv7r10|PowerVR SGX 540|2.0|1.4|
-|Samsung Nexus 10|Nexus 10|5.0.2|21|ARMv7r4|Mali-T604|3.1|1.4|
-|Asus Nexus 7 (Gen 1)|Nexus 7|5.1.1|22|ARMv7r9|nVidia Tegra 3|2.0|1.4|
-|LG Nexus 5|Nexus 5|5.1.1|22|ARMv7r0|Adreno 330|3.0|1.4|
-|Samsung Galaxy Tab S2|SM-T710|6.0.1|23|ARM Samsung Universal 5433|Mali-T760|3.1|1.4|
+|Samsung Galaxy Tab 2 7.0+|SGH-T869|4.0.4|15|ARMv7|Mali-400MP|2.0|1.4|
+|Samasung Galaxy Nexus|Galaxy Nexus|4.3|18|ARMv7|PowerVR SGX 540|2.0|1.4|
+|Samsung Nexus 10|Nexus 10|5.0.2|21|ARMv7|Mali-T604|3.1|1.4|
+|Asus Nexus 7 (Gen 1)|Nexus 7|5.1.1|22|ARMv7|nVidia Tegra 3|2.0|1.4|
+|LG Nexus 4|Nexus 4|5.1.1|22|ARMv7 (Krait 300)|Adreno 320|3.0|1.4|
+|LG Nexus 5|Nexus 5|5.1.1|22|ARMv7 (Krait 400)|Adreno 330|3.0|1.4|
+|OnePlus One|A0001|6.0.1|23|ARMv7 (Krait 400)|Adreno 330|3.0|1.4|
+|Samsung Galaxy Tab S2|SM-T710|6.0.1|23|ARMv7 (Samsung Exynos 5433)|Mali-T760|3.1|1.4|
+|Huawei Nexus 6P|Nexus 6P|6.0.1|23|ARMv8|Adreno 430|3.1|1.4|
+|HTC Nexus 9|Nexus 9|7.0|24|ARMv7|nVidia Tegra K1 Kepler DX1|3.1|1.4|
+|Google Pixel XL|Pixel XL|7.1|25|ARMv8|Adreno 530|3.2 (3.1 + AEP)|1.4|
 
 As we acquire more devices, this list will grow. Of course, not every capability can be tested against every device, however the engine is written so that devices not supporting a capability should not crash, and the tests look to ensure this is the case.
 
