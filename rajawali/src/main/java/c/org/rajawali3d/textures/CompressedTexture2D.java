@@ -14,6 +14,7 @@ package c.org.rajawali3d.textures;
 
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Compression2D.CompressionType2D;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
@@ -35,7 +36,6 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
      */
     @CompressionType2D
     protected volatile int compressionType;
-
 
 
     /**
@@ -237,21 +237,17 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
             height = dataReferences[i].getHeight();
             if ((lastWidth > 0 && (lastWidth / 2 != width)) || (lastHeight > 0 && (lastHeight / 2 != height))) {
                 throw new TextureException("mipmap chain must be sized as multiples of two in each direction.");
-            }
-            if (dataReferences[i].hasBuffer()) {
-                if (width == 0 || height == 0) {
-                    throw new TextureException(
-                            "Could not create compressed texture. One or more of the following properties haven't been "
-                            + "set: width or height");
-                }
-                GLES20.glCompressedTexImage2D(getTextureTarget(), i, getTexelFormat(), width, height, 0,
-                                              dataReferences[i].getByteBuffer().capacity(),
-                                              dataReferences[i].getByteBuffer());
-                lastWidth = width;
-                lastHeight = height;
             } else {
-                throw new TextureException("Replacing a compressed texture requires data to be stored in a buffer.");
+                Log.d("DIMENSIONS", "Passing with condition width conditions: " + (lastWidth > 0) + "/"
+                                    + (lastWidth / 2 != width));
+                Log.d("DIMENSIONS", "Passing with condition height conditions: " + (lastHeight > 0) + "/"
+                                    + (lastHeight / 2 != height));
             }
+            GLES20.glCompressedTexImage2D(getTextureTarget(), i, getTexelFormat(), width, height, 0,
+                                          dataReferences[i].getByteBuffer().capacity(),
+                                          dataReferences[i].getByteBuffer());
+            lastWidth = width;
+            lastHeight = height;
         }
         GLES20.glBindTexture(getTextureTarget(), 0);
     }

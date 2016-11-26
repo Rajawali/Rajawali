@@ -238,7 +238,7 @@ public class CompressedTexture2DGLTest extends GlTestCase {
         assertTrue(thrown[0]);
     }
 
-    /*@Test
+    @Test
     public void replaceFailWithBitmap() throws Exception {
         final TextureDataReference[] data = new TextureDataReference[1];
         final Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.earth_diffuse);
@@ -262,7 +262,7 @@ public class CompressedTexture2DGLTest extends GlTestCase {
         });
         assertTrue(thrown[0]);
         assertTrue(texture.getTextureId() > 0);
-    }*/
+    }
 
     @Test
     public void replaceFailWithMipmappedBitmap() throws Exception {
@@ -323,7 +323,7 @@ public class CompressedTexture2DGLTest extends GlTestCase {
         references[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 512);
         final CompressedTexture2D texture = new Testable(Type.DIFFUSE, "TEST", references);
         final TextureDataReference[] newReferences = new TextureDataReference[1];
-        newReferences[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 512, 512);
+        newReferences[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 256);
         texture.setTextureData(references);
         texture.setTexelFormat(GLES20.GL_RGBA);
         final boolean[] thrown = new boolean[]{ false };
@@ -349,7 +349,71 @@ public class CompressedTexture2DGLTest extends GlTestCase {
         references[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 512);
         final CompressedTexture2D texture = new Testable(Type.DIFFUSE, "TEST", references);
         final TextureDataReference[] newReferences = new TextureDataReference[1];
-        newReferences[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 512, 512);
+        newReferences[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 512, 256);
+        texture.setTextureData(references);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        final boolean[] thrown = new boolean[]{ false };
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.setTextureData(newReferences);
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertTrue(thrown[0]);
+    }
+
+    @Test
+    public void replaceWithBufferFailMipmapWidth() throws Exception {
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 256);
+        final TextureDataReference[] references = new TextureDataReference[4];
+        references[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 256);
+        references[1] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 128, 128);
+        references[2] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 64, 64);
+        references[3] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 32, 32);
+        final CompressedTexture2D texture = new Testable(Type.DIFFUSE, "TEST", references);
+        final TextureDataReference[] newReferences = new TextureDataReference[4];
+        newReferences[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 256);
+        newReferences[1] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 128);
+        newReferences[2] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 64, 64);
+        newReferences[3] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 32, 32);
+        texture.setTextureData(references);
+        texture.setTexelFormat(GLES20.GL_RGBA);
+        final boolean[] thrown = new boolean[]{ false };
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    texture.add();
+                    texture.setTextureData(newReferences);
+                    texture.replace();
+                } catch (TextureException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertTrue(thrown[0]);
+    }
+
+    @Test
+    public void replaceWithBufferFailMipmapHeight() throws Exception {
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 256 * 256);
+        final TextureDataReference[] references = new TextureDataReference[4];
+        references[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 256);
+        references[1] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 128, 128);
+        references[2] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 64, 64);
+        references[3] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 32, 32);
+        final CompressedTexture2D texture = new Testable(Type.DIFFUSE, "TEST", references);
+        final TextureDataReference[] newReferences = new TextureDataReference[4];
+        newReferences[0] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 256, 256);
+        newReferences[1] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 128, 256);
+        newReferences[2] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 64, 64);
+        newReferences[3] = new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, 32, 32);
         texture.setTextureData(references);
         texture.setTexelFormat(GLES20.GL_RGBA);
         final boolean[] thrown = new boolean[]{ false };
