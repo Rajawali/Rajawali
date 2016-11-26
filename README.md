@@ -37,7 +37,22 @@ The [RajawaliExamples](https://github.com/MasDennis/RajawaliExamples) project is
 
 ## Made With Rajawali
 
-Numerous apps and live wallpapers have been made with Rajawali. [Check them out!](https://plus.google.com/u/0/communities/116529974266844528013/stream/526227da-cf2d-46f9-8ad6-beaca7b8ddd5)
+Numerous apps and live wallpapers have been made with Rajawali. [Check them out!](https://plus.google.com/u/0/communities/116529974266844528013/stream/526227da-cf2d-46f9-8ad6-beaca7b8ddd5)https://youtu.be/ch0v4mNhHoc
+
+## Rajawali Testing
+
+Rajawali includes a number of unit, integration and GL specific integration tests. The unit and integration tests run on each build via Android Emulator. The GL integration tests require a physical device and cannot currently be run as part of our Travis CI build. A few of the developers have their own small device labs and we run the GL integration tests manually as part of our development and checking pull requests. At present, the device testing matrix is as follows:
+
+|Device Name|Model Number|Android Version|API Level|CPU|GPU|GL Version|EGL Version|
+|:----------|:----------:|:-------------:|:-------:|:---:|:---:|:--------:|:---------:|
+|Samsung Galaxy Tab 2 7.0+|SGH-T869|4.0.4|15|ARMv7r1|Mali-400MP|2.0|1.4|
+|Samasung Galaxy Nexus|Galaxy Nexus|4.3|18|ARMv7r10|PowerVR SGX 540|2.0|1.4|
+|Samsung Nexus 10|Nexus 10|5.0.2|21|ARMv7r4|Mali-T604|3.1|1.4|
+|Asus Nexus 7 (Gen 1)|Nexus 7|5.1.1|22|ARMv7r9|nVidia Tegra 3|2.0|1.4|
+|LG Nexus 5|Nexus 5|5.1.1|22|ARMv7r0|Adreno 330|3.0|1.4|
+|Samsung Galaxy Tab S2|SM-T710|6.0.1|23|ARM Samsung Universal 5433|Mali-T760|3.1|1.4|
+
+As we acquire more devices, this list will grow. Of course, not every capability can be tested against every device, however the engine is written so that devices not supporting a capability should not crash, and the tests look to ensure this is the case.
 
 ## Using Rajawali
 
