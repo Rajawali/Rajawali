@@ -45,7 +45,9 @@ public class Capabilities {
         System.loadLibrary("glExtensions");
     }
 
-    private static Capabilities instance = null;
+    private static final String TAG = "Capabilities";
+
+    private static final ThreadLocal<Capabilities> instance = new ThreadLocal<>();
 
     private static volatile boolean glChecked = false;
 
@@ -106,16 +108,22 @@ public class Capabilities {
         minAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 0);
         maxAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 1);
 
-        String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+        final String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
         this.extensions = extensions.split(" ");
     }
 
     @NonNull
     public static Capabilities getInstance() {
-        if (instance == null) {
-            instance = new Capabilities();
+        if (instance.get() == null) {
+            instance.set(new Capabilities());
         }
-        return instance;
+        return instance.get();
+    }
+
+    @VisibleForTesting
+    public static void clearInstance() {
+        instance.set(null);
+        glChecked = false;
     }
 
     @VisibleForTesting
@@ -125,8 +133,9 @@ public class Capabilities {
         final EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
 
         final int[] version = new int[2];
-        if (!egl.eglInitialize(display, version))
+        if (!egl.eglInitialize(display, version)) {
             throw new IllegalStateException("Failed to initialize an EGL context while getting device capabilities.");
+        }
         eglMajorVersion = version[0];
         eglMinorVersion = version[1];
         // RajLog.d("Device EGL Version: " + version[0] + "." + version[1]);
@@ -168,7 +177,8 @@ public class Capabilities {
                 // to see if one of them has at least 4 bits per color
                 final int[] configAttribs = {
                         EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
-                        EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE};
+                        EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE
+                };
                 value[0] = 0;
                 egl.eglChooseConfig(display, configAttribs, configs, 1, value);
                 glesMajorVersion = value[0] > 0 ? 3 : 2;
@@ -242,7 +252,7 @@ public class Capabilities {
     /**
      * Fetch the list of extension strings this device supports.
      *
-     * @return
+     * @return {@code String[]} The list of extensions.
      */
     @NonNull
     public String[] getExtensions() {
@@ -253,6 +263,7 @@ public class Capabilities {
      * Checks if a particular extension is supported by this device.
      *
      * @param extension {@link String} Non-null string of the extension to check for. This is case sensitive.
+     *
      * @throws UnsupportedCapabilityException if the extension is not supported by the device.
      */
     public void verifyExtension(@NonNull String extension) throws UnsupportedCapabilityException {
@@ -281,7 +292,6 @@ public class Capabilities {
      */
     public GLExtension loadExtension(@NonNull String extension) throws UnsupportedCapabilityException,
                                                                        IllegalArgumentException {
-        // TODO: Switch this to reflection based
         if (!loadedExtensions.containsKey(extension)) {
             switch (extension) {
                 case EXTDebugMarker.name:
@@ -497,8 +507,7 @@ public class Capabilities {
          * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace and the
          * specified detail message.
          *
-         * @param detailMessage
-         *            the detail message for this exception.
+         * @param detailMessage The detail message for this exception.
          */
         public UnsupportedCapabilityException(String detailMessage) {
             super(detailMessage);
@@ -508,10 +517,8 @@ public class Capabilities {
          * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace, the
          * specified detail message and the specified cause.
          *
-         * @param detailMessage
-         *            the detail message for this exception.
-         * @param throwable
-         *            the cause of this exception.
+         * @param detailMessage The detail message for this exception.
+         * @param throwable     Tthe cause of this exception.
          */
         public UnsupportedCapabilityException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);
@@ -521,8 +528,7 @@ public class Capabilities {
          * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace and the
          * specified cause.
          *
-         * @param throwable
-         *            the cause of this exception.
+         * @param throwable The cause of this exception.
          */
         public UnsupportedCapabilityException(Throwable throwable) {
             super(throwable);

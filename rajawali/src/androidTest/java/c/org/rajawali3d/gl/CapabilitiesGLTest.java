@@ -10,8 +10,11 @@ import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESTexture3D;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +26,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 @RequiresDevice
 @LargeTest
-public class CapabilitiesTest extends GlTestCase {
+public class CapabilitiesGLTest extends GlTestCase {
 
     // The following values are taken from the minimum specifications of GL ES 2.0
     // See <a href="https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml>glGet</a>
@@ -46,7 +49,7 @@ public class CapabilitiesTest extends GlTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(CapabilitiesTest.class.getSimpleName());
+        super.setUp(CapabilitiesGLTest.class.getSimpleName());
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 Capabilities.getInstance();
@@ -82,6 +85,15 @@ public class CapabilitiesTest extends GlTestCase {
             }
         });
         assertEquals(1, output[0]);
+        output[0] = -1;
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                Capabilities.clearInstance();
+                output[0] = Capabilities.getEGLMajorVersion();
+            }
+        });
+        assertEquals(1, output[0]);
     }
 
     @Test
@@ -95,6 +107,16 @@ public class CapabilitiesTest extends GlTestCase {
         });
         assertTrue("Received EGL Minor Version: " + output[0], 0 <= output[0]);
         assertTrue("Received EGL Minor Version: " + output[0], 4 >= output[0]);
+        output[0] = -1;
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                Capabilities.clearInstance();
+                output[0] = Capabilities.getEGLMinorVersion();
+            }
+        });
+        assertTrue("Received EGL Minor Version: " + output[0], 0 <= output[0]);
+        assertTrue("Received EGL Minor Version: " + output[0], 4 >= output[0]);
     }
 
     @Test
@@ -103,6 +125,15 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
+                output[0] = Capabilities.getGLESMajorVersion();
+            }
+        });
+        assertTrue(2 == output[0] || 3 == output[0]);
+        output[0] = -1;
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                Capabilities.clearInstance();
                 output[0] = Capabilities.getGLESMajorVersion();
             }
         });
@@ -215,6 +246,34 @@ public class CapabilitiesTest extends GlTestCase {
             assertNotNull(output[0]);
             assertTrue(output[0] instanceof EXTDebugMarker);
         }
+    }
+
+    @Test
+    public void loadAllExtensions() throws Exception {
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                try {
+                    Capabilities.getInstance().loadExtension(EXTDebugMarker.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(EXTTextureFilterAnisotropic.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(OESTexture3D.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void loadBadExtension() throws Exception {
+        Capabilities.getInstance().loadExtension("NON_EXISTENT_EXTENSION");
     }
 
     @Test

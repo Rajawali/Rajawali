@@ -14,6 +14,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Wrap;
 import org.junit.After;
@@ -46,6 +47,11 @@ public class SingleTexture2DGLTest extends GlTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp(getClass().getSimpleName());
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                Capabilities.getInstance();
+            }
+        });
     }
 
     @After

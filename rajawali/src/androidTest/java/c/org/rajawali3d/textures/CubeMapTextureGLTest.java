@@ -14,6 +14,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.Capabilities;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,11 @@ public class CubeMapTextureGLTest extends GlTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp(getClass().getSimpleName());
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                Capabilities.getInstance();
+            }
+        });
     }
 
     @After

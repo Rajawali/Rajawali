@@ -50,6 +50,11 @@ public class BaseTextureGLTest extends GlTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp(getClass().getSimpleName());
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                Capabilities.getInstance();
+            }
+        });
     }
 
     @After
