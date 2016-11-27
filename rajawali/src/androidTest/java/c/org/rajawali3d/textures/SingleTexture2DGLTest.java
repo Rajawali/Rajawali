@@ -14,7 +14,6 @@ import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Wrap;
 import org.junit.After;
@@ -47,11 +46,6 @@ public class SingleTexture2DGLTest extends GlTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp(getClass().getSimpleName());
-        runOnGlThreadAndWait(new Runnable() {
-            @Override public void run() {
-                Capabilities.getInstance();
-            }
-        });
     }
 
     @After
@@ -490,19 +484,21 @@ public class SingleTexture2DGLTest extends GlTestCase {
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
-        texture.setMaxAnisotropy(2.0f);
         texture.setMipmaped(true);
         final boolean[] thrown = new boolean[]{ false };
+        final StringBuilder builder = new StringBuilder();
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 try {
+                    texture.setMaxAnisotropy(2.0f);
                     texture.add();
                 } catch (Exception e) {
                     thrown[0] = true;
+                    builder.append(e.toString());
                 }
             }
         });
-        assertFalse(thrown[0]);
+        assertFalse(builder.toString(), thrown[0]);
         assertTrue(texture.getTextureId() > 0);
     }
 

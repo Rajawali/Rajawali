@@ -15,6 +15,7 @@ package c.org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
@@ -441,21 +442,11 @@ public abstract class BaseTexture {
      *
      * @param maxAnisotropy {@code float} The maximum anisotropy to use. Must be greater than or equal to 1.0.
      *
-     * @throws UnsupportedCapabilityException Thrown if the device does not support the {@code
-     *                                        GL_EXT_texture_filter_anisotropic} extension.
      * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
      * EXT_texture_filter_anisotropic</a>
      */
-    public void setMaxAnisotropy(@FloatRange(from = 1.0) float maxAnisotropy) throws UnsupportedCapabilityException {
-        final float max = ((EXTTextureFilterAnisotropic) Capabilities.getInstance().loadExtension
-                (EXTTextureFilterAnisotropic.name)).getMaxSupportedAnisotropy();
-        if (maxAnisotropy > max) {
-            RajLog.e("The requested maximum anisotropy is outside the supported range of this device. Clamping to: "
-                     + max);
-            this.maxAnisotropy = max;
-        } else {
-            this.maxAnisotropy = maxAnisotropy;
-        }
+    public void setMaxAnisotropy(@FloatRange(from = 1.0) float maxAnisotropy) {
+        this.maxAnisotropy = maxAnisotropy;
     }
 
     /**
@@ -641,6 +632,7 @@ public abstract class BaseTexture {
      *
      * @return {@code int} The new texture id returned from the GL driver.
      */
+    @GLThread
     protected static int generateTextureId() {
         // Generate a texture id
         final int[] genTextureNames = new int[1];
@@ -648,21 +640,22 @@ public abstract class BaseTexture {
         return genTextureNames[0];
     }
 
+    @GLThread
     protected void applyMinificationFilter() throws TextureException {
         @TextureTarget final int target = getTextureTarget();
         if (isMipmaped()) {
             switch (filterType) {
                 case Filter.NEAREST:
                     GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
-                        GLES20.GL_NEAREST_MIPMAP_NEAREST);
+                                           GLES20.GL_NEAREST_MIPMAP_NEAREST);
                     break;
                 case Filter.BILINEAR:
                     GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
-                        GLES20.GL_LINEAR_MIPMAP_NEAREST);
+                                           GLES20.GL_LINEAR_MIPMAP_NEAREST);
                     break;
                 case Filter.TRILINEAR:
                     GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
-                        GLES20.GL_LINEAR_MIPMAP_LINEAR);
+                                           GLES20.GL_LINEAR_MIPMAP_LINEAR);
                     break;
                 default:
                     throw new TextureException("Unknown texture filtering mode: " + filterType);
@@ -671,17 +664,17 @@ public abstract class BaseTexture {
             switch (filterType) {
                 case Filter.NEAREST:
                     GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
-                        GLES20.GL_NEAREST);
+                                           GLES20.GL_NEAREST);
                     break;
                 case Filter.BILINEAR:
                     GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
-                        GLES20.GL_LINEAR);
+                                           GLES20.GL_LINEAR);
                     break;
                 case Filter.TRILINEAR:
                     RajLog.e("Trilinear filtering requires the use of mipmaps which are not enabled for this "
-                        + "texture. Falling back to bilinear filtering.");
+                             + "texture. Falling back to bilinear filtering.");
                     GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
-                        GLES20.GL_LINEAR);
+                                           GLES20.GL_LINEAR);
                     break;
                 default:
                     throw new TextureException("Unknown texture filtering mode: " + filterType);
@@ -689,6 +682,7 @@ public abstract class BaseTexture {
         }
     }
 
+    @GLThread
     protected void applyMagnificationFilter() {
         @TextureTarget final int target = getTextureTarget();
         if (filterType == Filter.BILINEAR || filterType == Filter.TRILINEAR) {
@@ -698,15 +692,31 @@ public abstract class BaseTexture {
         }
     }
 
+    @GLThread
     protected void applyAnisotropy() {
         // Handle anisotropy if needed. We don't check if it is supported here because setting it to anything
         // other than 1.0 would have required the check.
-        if (getMaxAnisotropy() > 1.0) {
-            GLES20.glTexParameterf(getTextureTarget(), EXTTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
-                getMaxAnisotropy());
+        try {
+            final EXTTextureFilterAnisotropic extension = (EXTTextureFilterAnisotropic) Capabilities.getInstance()
+                    .loadExtension(EXTTextureFilterAnisotropic.name);
+            if (getMaxAnisotropy() > 1.0) {
+                final float max = extension.getMaxSupportedAnisotropy();
+                float applied = getMaxAnisotropy();
+                if (applied > max) {
+                    RajLog.w("The requested maximum anisotropy is outside the supported range of this device. Clamping "
+                             + "to: " + max);
+                    applied = max;
+                }
+                GLES20.glTexParameterf(getTextureTarget(), EXTTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
+                                       applied);
+            }
+        } catch (UnsupportedCapabilityException e) {
+            RajLog.w("Not applying anisotropy settings to texture " + this + " as it is not supported on the current "
+                     + "device.");
         }
     }
 
+    @GLThread
     protected void applySWrapping() {
         // Handle s coordinate wrapping
         int wrap = GLES20.GL_REPEAT;
@@ -718,6 +728,7 @@ public abstract class BaseTexture {
         GLES20.glTexParameteri(getTextureTarget(), GLES20.GL_TEXTURE_WRAP_S, wrap);
     }
 
+    @GLThread
     protected void applyTWrapping() {
         // Handle t coordinate wrapping
         int wrap = GLES20.GL_REPEAT;
@@ -735,6 +746,7 @@ public abstract class BaseTexture {
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
+    @GLThread
     abstract void add() throws TextureException;
 
     /**
@@ -743,6 +755,7 @@ public abstract class BaseTexture {
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture delete process.
      */
+    @GLThread
     abstract void remove() throws TextureException;
 
     /**
@@ -750,7 +763,9 @@ public abstract class BaseTexture {
      *
      * @throws TextureException Thrown if an error occurs during any part of updating the texture data.
      */
+    @GLThread
     abstract void replace() throws TextureException;
 
+    @GLThread
     abstract void reset() throws TextureException;
 }

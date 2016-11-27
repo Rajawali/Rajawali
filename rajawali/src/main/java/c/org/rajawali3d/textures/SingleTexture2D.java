@@ -22,6 +22,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import c.org.rajawali3d.annotations.GLThread;
 import net.jcip.annotations.ThreadSafe;
 
 import org.rajawali3d.util.RajLog;
@@ -177,6 +178,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         return textureData;
     }
 
+    @GLThread
     @Override
     void add() throws TextureException {
         // Check if there is valid data
@@ -246,6 +248,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
+    @GLThread
     @Override
     void remove() throws TextureException {
         final TextureDataReference textureData = this.textureData;
@@ -262,6 +265,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         //TODO: Notify materials that were using this texture
     }
 
+    @GLThread
     @Override
     void replace() throws TextureException {
         final TextureDataReference textureData = this.textureData;
@@ -301,6 +305,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
+    @GLThread
     @Override
     void reset() throws TextureException {
         setTextureData(null);

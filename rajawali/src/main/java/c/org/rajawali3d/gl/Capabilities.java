@@ -19,7 +19,13 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-
+import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.OESTexture3D;
+import c.org.rajawali3d.gl.extensions.OESTextureCompressionASTC;
 import org.rajawali3d.util.RajLog;
 
 import java.util.HashMap;
@@ -29,14 +35,6 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
-
-import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
-import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
-import c.org.rajawali3d.gl.extensions.OESTexture3D;
-import c.org.rajawali3d.gl.extensions.OESTextureCompressionASTC;
 
 
 /**
@@ -52,7 +50,7 @@ public class Capabilities {
 
     private static final String TAG = "Capabilities";
 
-    private static final ThreadLocal<Capabilities> instance = new ThreadLocal<>();
+    private static volatile Capabilities instance;
 
     private static volatile boolean glChecked = false;
 
@@ -118,16 +116,16 @@ public class Capabilities {
     }
 
     @NonNull
-    public static Capabilities getInstance() {
-        if (instance.get() == null) {
-            instance.set(new Capabilities());
+    public static synchronized Capabilities getInstance() {
+        if (instance == null) {
+            instance = new Capabilities();
         }
-        return instance.get();
+        return instance;
     }
 
     @VisibleForTesting
-    public static void clearInstance() {
-        instance.set(null);
+    public static synchronized void clearInstance() {
+        instance = null;
         glChecked = false;
     }
 
@@ -492,15 +490,15 @@ public class Capabilities {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("-=-=-=- OpenGL Capabilities -=-=-=-\n");
-        sb.append("Max Combined Texture2D Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
-        sb.append("Max Cube Map Texture2D Size          : ").append(maxCubeMapTextureSize).append("\n");
+        sb.append("Max Combined Texture Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
+        sb.append("Max Cube Map Texture Size          : ").append(maxCubeMapTextureSize).append("\n");
         sb.append("Max Fragment Uniform Vectors       : ").append(maxFragmentUniformVectors).append("\n");
         sb.append("Max Renderbuffer Size              : ").append(maxRenderbufferSize).append("\n");
-        sb.append("Max Texture2D Image Units            : ").append(maxTextureImageUnits).append("\n");
-        sb.append("Max Texture2D Size                   : ").append(maxTextureSize).append("\n");
+        sb.append("Max Texture Image Units            : ").append(maxTextureImageUnits).append("\n");
+        sb.append("Max Texture Size                   : ").append(maxTextureSize).append("\n");
         sb.append("Max Varying Vectors                : ").append(maxVaryingVectors).append("\n");
         sb.append("Max Vertex Attribs                 : ").append(maxVertexAttribs).append("\n");
-        sb.append("Max Vertex Texture2D Image Units     : ").append(maxVertexTextureImageUnits).append("\n");
+        sb.append("Max Vertex Texture Image Units     : ").append(maxVertexTextureImageUnits).append("\n");
         sb.append("Max Vertex Uniform Vectors         : ").append(maxVertexUniformVectors).append("\n");
         sb.append("Max Viewport Width                 : ").append(maxViewportWidth).append("\n");
         sb.append("Max Viewport Height                : ").append(maxViewportHeight).append("\n");

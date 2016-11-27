@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 import c.org.rajawali3d.GlTestCase;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
@@ -51,11 +50,6 @@ public class BaseTextureGLTest extends GlTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp(getClass().getSimpleName());
-        runOnGlThreadAndWait(new Runnable() {
-            @Override public void run() {
-                Capabilities.getInstance();
-            }
-        });
     }
 
     @After
@@ -69,23 +63,10 @@ public class BaseTextureGLTest extends GlTestCase {
         final boolean[] thrown = new boolean[]{ false };
         final boolean[] available = new boolean[]{ true };
         final StringBuilder error = new StringBuilder();
+
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 try {
-                    Log.i("BaseTextureGLTest", "Setting max anisotropy.");
-                    texture.setMaxAnisotropy(5.0f);
-                    Log.i("BaseTextureGLTest", "Max anisotropy was set.");
-                } catch (UnsupportedCapabilityException e) {
-                    e.printStackTrace();
-                    thrown[0] = true;
-                    error.append(e.getMessage());
-                }
-            }
-        });
-        runOnGlThreadAndWait(new Runnable() {
-            @Override public void run() {
-                try {
-                    Log.i("BaseTextureGLTest", "Verifying anisotropy supported.");
                     Capabilities.getInstance().verifyExtension(EXTTextureFilterAnisotropic.name);
                 } catch (UnsupportedCapabilityException ignored) {
                     available[0] = false;
@@ -93,11 +74,11 @@ public class BaseTextureGLTest extends GlTestCase {
             }
         });
 
-        if (available[0]) {
-            Log.i("BaseTextureGLTest", "Anisotropy supported.");
-            assertFalse(error.toString(), thrown[0]);
-            assertEquals(Float.floatToIntBits(5.0f), Float.floatToIntBits(texture.getMaxAnisotropy()));
+        texture.setMaxAnisotropy(5.0f);
+        assertFalse(error.toString(), thrown[0]);
+        assertEquals(Float.floatToIntBits(5.0f), Float.floatToIntBits(texture.getMaxAnisotropy()));
 
+        if (available[0]) {
             final float[] max = new float[]{ 1.0f };
             runOnGlThreadAndWait(new Runnable() {
                 @Override public void run() {
@@ -113,7 +94,6 @@ public class BaseTextureGLTest extends GlTestCase {
             });
 
             assertFalse(thrown[0]);
-            assertEquals(Float.floatToIntBits(max[0]), Float.floatToIntBits(texture.getMaxAnisotropy()));
         }
     }
 
