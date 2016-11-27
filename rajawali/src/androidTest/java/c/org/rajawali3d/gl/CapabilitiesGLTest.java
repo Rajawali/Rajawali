@@ -1,24 +1,29 @@
 package c.org.rajawali3d.gl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
-import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.OESTexture3D;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.OESTexture3D;
+import c.org.rajawali3d.gl.extensions.OESTextureCompressionASTC;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -252,6 +257,21 @@ public class CapabilitiesGLTest extends GlTestCase {
     public void loadAllExtensions() throws Exception {
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
+                try {
+                    Capabilities.getInstance().loadExtension(AMDCompressedATCTexture.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(OESCompressedETC1RGB8.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(OESTextureCompressionASTC.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
                 try {
                     Capabilities.getInstance().loadExtension(EXTDebugMarker.name);
                 } catch (UnsupportedCapabilityException e) {
