@@ -1,15 +1,14 @@
 package c.org.rajawali3d.gl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import c.org.rajawali3d.GlTestCase;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
@@ -19,11 +18,10 @@ import c.org.rajawali3d.gl.extensions.GLExtension;
 import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
 import c.org.rajawali3d.gl.extensions.OESTexture3D;
 import c.org.rajawali3d.gl.extensions.OESTextureCompressionASTC;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -35,22 +33,22 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     // The following values are taken from the minimum specifications of GL ES 2.0
     // See <a href="https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGet.xml>glGet</a>
-    private static final int maxTextureSize = 64;
+    private static final int maxTextureSize               = 64;
     private static final int maxCombinedTextureImageUnits = 8;
-    private static final int maxCubeMapTextureSize = 16;
-    private static final int maxFragmentUniformVectors = 16;
-    private static final int maxRenderbufferSize = 1;
-    private static final int maxTextureImageUnits = 8;
-    private static final int maxVaryingVectors = 8;
-    private static final int maxVertexAttribs = 8;
-    private static final int maxVertexTextureImageUnits = 0;
-    private static final int maxVertexUniformVectors = 128;
-    private static final int maxViewportWidth = 0;
-    private static final int maxViewportHeight = 0;
-    private static final int minAliasedLineWidth = 1;
-    private static final int maxAliasedLineWidth = 1;
-    private static final int minAliasedPointSize = 1;
-    private static final int maxAliasedPointSize = 1;
+    private static final int maxCubeMapTextureSize        = 16;
+    private static final int maxFragmentUniformVectors    = 16;
+    private static final int maxRenderbufferSize          = 1;
+    private static final int maxTextureImageUnits         = 8;
+    private static final int maxVaryingVectors            = 8;
+    private static final int maxVertexAttribs             = 8;
+    private static final int maxVertexTextureImageUnits   = 0;
+    private static final int maxVertexUniformVectors      = 128;
+    private static final int maxViewportWidth             = 0;
+    private static final int maxViewportHeight            = 0;
+    private static final int minAliasedLineWidth          = 1;
+    private static final int maxAliasedLineWidth          = 1;
+    private static final int minAliasedPointSize          = 1;
+    private static final int maxAliasedPointSize          = 1;
 
     @Before
     public void setUp() throws Exception {
@@ -70,7 +68,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getInstance() throws Exception {
-        final Capabilities[] output = new Capabilities[]{null};
+        final Capabilities[] output = new Capabilities[]{ null };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -82,7 +80,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getEGLMajorVersion() throws Exception {
-        final int[] output = new int[]{-1};
+        final int[] output = new int[]{ -1 };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -103,7 +101,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getEGLMinorVersion() throws Exception {
-        final int[] output = new int[]{-1};
+        final int[] output = new int[]{ -1 };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -126,7 +124,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getGLESMajorVersion() throws Exception {
-        final int[] output = new int[]{-1};
+        final int[] output = new int[]{ -1 };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -147,7 +145,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getVendor() throws Exception {
-        final String[] output = new String[]{null};
+        final String[] output = new String[]{ null };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -159,7 +157,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getRenderer() throws Exception {
-        final String[] output = new String[]{null};
+        final String[] output = new String[]{ null };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -171,7 +169,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getVersion() throws Exception {
-        final String[] output = new String[]{null};
+        final String[] output = new String[]{ null };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -183,7 +181,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getExtensions() throws Exception {
-        final String[][] output = new String[][]{null};
+        final String[][] output = new String[][]{ null };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -195,7 +193,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void verifyExtension() throws Exception {
-        final boolean[] thrown = new boolean[]{false};
+        final boolean[] thrown = new boolean[]{ false };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -228,10 +226,10 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void loadExtension() throws Exception {
-        final boolean[] thrown = new boolean[]{false};
+        final boolean[] thrown = new boolean[]{ false };
         final StringBuilder builder = new StringBuilder();
-        final GLExtension[] output = new GLExtension[]{null};
-        final boolean[] check = new boolean[]{false};
+        final GLExtension[] output = new GLExtension[]{ null };
+        final boolean[] check = new boolean[]{ false };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -291,14 +289,27 @@ public class CapabilitiesGLTest extends GlTestCase {
         });
     }
 
-    @Test(expected = IllegalArgumentException.class)
     public void loadBadExtension() throws Exception {
-        Capabilities.getInstance().loadExtension("NON_EXISTENT_EXTENSION");
+        final boolean[] thrown = new boolean[]{ false, false };
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                try {
+                    Capabilities.getInstance().loadExtension("NON_EXISTENT_EXTENSION");
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                    thrown[0] = true;
+                } catch (IllegalArgumentException e) {
+                    thrown[1] = true;
+                }
+            }
+        });
+        assertFalse(thrown[0]);
+        assertTrue(thrown[1]);
     }
 
     @Test
     public void usingExtension() throws Exception {
-        final boolean[] thrown = new boolean[]{false};
+        final boolean[] thrown = new boolean[]{ false };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -314,7 +325,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxTextureSize() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -326,7 +337,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxCombinedTextureUnits() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -338,7 +349,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxCubeMapTextureSize() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -350,7 +361,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxFragmentUniformVectors() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -362,7 +373,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxRenderbufferSize() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -374,7 +385,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxTextureImageUnits() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -386,7 +397,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxVaryingVectors() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -398,7 +409,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxVertexAttribs() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -410,7 +421,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxVertexTextureImageUnits() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -422,7 +433,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxVertexUniformVectors() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -434,7 +445,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxViewportWidth() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -446,7 +457,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxViewportHeight() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -458,7 +469,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMinAliasedLineWidth() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -470,7 +481,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxAliasedLineWidth() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -482,7 +493,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMinAliasedPointSize() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -494,7 +505,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void getMaxAliasedPointSize() throws Exception {
-        final int[] output = new int[]{Integer.MIN_VALUE};
+        final int[] output = new int[]{ Integer.MIN_VALUE };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
@@ -506,7 +517,7 @@ public class CapabilitiesGLTest extends GlTestCase {
 
     @Test
     public void testToString() throws Exception {
-        final String[] output = new String[]{null};
+        final String[] output = new String[]{ null };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
