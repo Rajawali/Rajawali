@@ -19,10 +19,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.OESTexture3D;
+
 import org.rajawali3d.util.RajLog;
 
 import java.util.HashMap;
@@ -32,6 +29,14 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
+
+import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
+import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.OESTexture3D;
+import c.org.rajawali3d.gl.extensions.OESTextureCompressionASTC;
 
 
 /**
@@ -293,21 +298,33 @@ public class Capabilities {
     public GLExtension loadExtension(@NonNull String extension) throws UnsupportedCapabilityException,
                                                                        IllegalArgumentException {
         if (!loadedExtensions.containsKey(extension)) {
+            GLExtension glExtension;
             switch (extension) {
+                // Compressed Texture Extensions
+                case OESCompressedETC1RGB8.name:
+                    glExtension = OESCompressedETC1RGB8.load();
+                    break;
+                case AMDCompressedATCTexture.name:
+                    glExtension = AMDCompressedATCTexture.load();
+                    break;
+                case OESTextureCompressionASTC.name:
+                    glExtension = OESTextureCompressionASTC.load();
+                    break;
                 case EXTDebugMarker.name:
-                    loadedExtensions.put(extension, EXTDebugMarker.load());
+                    glExtension = EXTDebugMarker.load();
                     break;
                 case EXTTextureFilterAnisotropic.name:
-                    loadedExtensions.put(extension, EXTTextureFilterAnisotropic.load());
+                    glExtension = EXTTextureFilterAnisotropic.load();
                     break;
                 case OESTexture3D.name:
-                    loadedExtensions.put(extension, OESTexture3D.load());
+                    glExtension = OESTexture3D.load();
                     break;
                 default:
                     throw new IllegalArgumentException(
                             "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
                             + "providing it via Capabilities#usingExtension(GLExtension)?");
             }
+            loadedExtensions.put(extension, glExtension);
         }
         return loadedExtensions.get(extension);
     }
