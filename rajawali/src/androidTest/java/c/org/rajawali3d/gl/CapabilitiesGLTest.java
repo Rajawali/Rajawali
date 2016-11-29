@@ -267,6 +267,7 @@ public class CapabilitiesGLTest extends GlTestCase {
         });
     }
 
+    @Test
     public void loadBadExtension() throws Exception {
         final boolean[] thrown = new boolean[]{ false, false };
         runOnGlThreadAndWait(new Runnable() {

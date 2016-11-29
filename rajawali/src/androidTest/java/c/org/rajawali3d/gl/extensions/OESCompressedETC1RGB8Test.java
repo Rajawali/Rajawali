@@ -61,7 +61,7 @@ public class OESCompressedETC1RGB8Test extends GlTestCase {
         if (runTest[0]) {
             assertFalse(thrown[0]);
             assertNotNull(extension[0]);
-            assertTrue("Loaded extension: " + extension[0], extension[0] instanceof OESTexture3D);
+            assertTrue("Loaded extension: " + extension[0], extension[0] instanceof OESCompressedETC1RGB8);
         }
     }
 

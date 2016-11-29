@@ -7,14 +7,13 @@ import android.opengl.GLES20;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.textures.TextureDataReference;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-
-import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
-import c.org.rajawali3d.textures.TextureDataReference;
 
 /**
  * This extension permits the OpenGL application to utilize ETC1 textures.
@@ -25,7 +24,7 @@ import c.org.rajawali3d.textures.TextureDataReference;
  */
 public class OESCompressedETC1RGB8 implements GLExtension {
 
-    public static final String name = "GL_OES_compressed_ETC1_RGB8";
+    public static final String name = "GL_OES_compressed_ETC1_RGB8_texture";
 
     // Tokens accepted by the <internalformat> parameter of CompressedTexImage2D
     public static final int ETC1_RGB8_OES = 0x8D64;
