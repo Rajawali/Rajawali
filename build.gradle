@@ -7,9 +7,11 @@ if (file('local.gradle').exists()) {
 buildscript {
     repositories {
         jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath "jp.classmethod.aws:gradle-aws-plugin:0.31"
     }
 }
 
