@@ -1,25 +1,31 @@
 package c.org.rajawali3d.gl.extensions;
 
-import android.opengl.GLES20;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.rajawali3d.R;
-
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.textures.TextureDataReference;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.opengl.GLES20;
+import android.support.test.filters.LargeTest;
+import android.support.test.filters.RequiresDevice;
+import android.support.test.runner.AndroidJUnit4;
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.textures.TextureDataReference;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.rajawali3d.R;
+
 /**
- * @author Jared Woolston (jwoolston@idealcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@RunWith(AndroidJUnit4.class)
+@RequiresDevice
+@LargeTest
 public class OESCompressedETC1RGB8Test extends GlTestCase {
+
     @Before
     public void setUp() throws Exception {
         super.setUp(OESCompressedETC1RGB8Test.class.getName());
@@ -55,7 +61,7 @@ public class OESCompressedETC1RGB8Test extends GlTestCase {
         if (runTest[0]) {
             assertFalse(thrown[0]);
             assertNotNull(extension[0]);
-            assertTrue(extension[0] instanceof OESCompressedETC1RGB8);
+            assertTrue("Loaded extension: " + extension[0], extension[0] instanceof OESTexture3D);
         }
     }
 

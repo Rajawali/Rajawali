@@ -107,4 +107,30 @@ public class BaseTextureGLTest extends GlTestCase {
         });
         assertTrue(id[0] > 0);
     }
+
+    @Test
+    public void applyAnisotropy() throws Exception {
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        final boolean[] available = new boolean[]{ true };
+
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                try {
+                    Capabilities.getInstance().verifyExtension(EXTTextureFilterAnisotropic.name);
+                } catch (UnsupportedCapabilityException ignored) {
+                    available[0] = false;
+                }
+            }
+        });
+
+        texture.setMaxAnisotropy(500.0f);
+
+        if (available[0]) {
+            runOnGlThreadAndWait(new Runnable() {
+                @Override public void run() {
+                    texture.applyAnisotropy();
+                }
+            });
+        }
+    }
 }

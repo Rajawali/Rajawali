@@ -94,15 +94,6 @@ public class CapabilitiesGLTest extends GlTestCase {
             }
         });
         assertEquals(1, output[0]);
-        /*output[0] = -1;
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                Capabilities.clearInstance();
-                output[0] = Capabilities.getEGLMajorVersion();
-            }
-        });
-        assertEquals(1, output[0]);*/
     }
 
     @Test
@@ -116,16 +107,6 @@ public class CapabilitiesGLTest extends GlTestCase {
         });
         assertTrue("Received EGL Minor Version: " + output[0], 0 <= output[0]);
         assertTrue("Received EGL Minor Version: " + output[0], 4 >= output[0]);
-        /*output[0] = -1;
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                Capabilities.clearInstance();
-                output[0] = Capabilities.getEGLMinorVersion();
-            }
-        });
-        assertTrue("Received EGL Minor Version: " + output[0], 0 <= output[0]);
-        assertTrue("Received EGL Minor Version: " + output[0], 4 >= output[0]);*/
     }
 
     @Test
@@ -138,15 +119,6 @@ public class CapabilitiesGLTest extends GlTestCase {
             }
         });
         assertTrue(2 == output[0] || 3 == output[0]);
-        /*output[0] = -1;
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                Capabilities.clearInstance();
-                output[0] = Capabilities.getGLESMajorVersion();
-            }
-        });
-        assertTrue(2 == output[0] || 3 == output[0]);*/
     }
 
     @Test
