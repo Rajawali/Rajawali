@@ -48,8 +48,7 @@ task uploadTestsToS3(type: AmazonS3FileUploadTask, dependsOn: zipTestsForS3) {
     bucketName "rajawali-testing-data"
     key "${version}.zip"
     file new File("${buildDir}/s3/${version}.zip")
-    enabled = (new File(rootDir, ".aws-credentials").exists()
-            || new File("~/.aws/credentials").exists())
+    enabled = new File(System.getProperty("user.home"), ".aws/credentials").exists()
 }
 
 if (isReleaseBuild()) {

@@ -39,10 +39,11 @@ script:
 - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
 - echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r13b") >> "local.properties"
-- echo -e "" >> ".aws-credentials"
-- echo -e "[default]" >> ".aws-credentials"
-- echo -e "aws_access_key_id=${AWS_ACCESS_KEY}" >> ".aws-credentials"
-- echo -e "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" >> ".aws-credentials"
+- mkdir ~/.aws
+- echo -e "" >> ~/.aws/credentials
+- echo -e "[default]" >> ~/.aws/credentials
+- echo -e "aws_access_key_id=${AWS_ACCESS_KEY}" >> ~/.aws/credentials
+- echo -e "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
 - cat local.properties
 - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
 - "./gradlew :rajawali:uploadTestsToS3 :examples:check --stacktrace --continue"
