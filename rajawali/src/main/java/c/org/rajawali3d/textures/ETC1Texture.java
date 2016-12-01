@@ -19,6 +19,8 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.rajawali3d.util.RajLog;
 
+import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
@@ -115,15 +117,17 @@ public class ETC1Texture extends CompressedTexture2D {
         }
     }
 
+    @GLThread
     @Override
     void add() throws TextureException {
         // Verify ETC1 is supported
-
-        // If unsupported and fallbacks exist, use them
-
-        // Else throw exception
+        try {
+            Capabilities.getInstance().loadExtension(OESCompressedETC1RGB8.name);
+        } catch (Capabilities.UnsupportedCapabilityException e) {
+            throw new TextureException("ETC1 Textures are not supported on this device.");
+        }
 
         // Call super.add()
-
+        super.add();
     }
 }

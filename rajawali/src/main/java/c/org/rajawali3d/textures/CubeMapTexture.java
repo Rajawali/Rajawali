@@ -25,6 +25,7 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.rajawali3d.util.RajLog;
 
+import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
 
@@ -165,6 +166,7 @@ public class CubeMapTexture extends MultiTexture2D {
         return super.getTextureData();
     }
 
+    @GLThread
     @Override
     void add() throws TextureException {
         final TextureDataReference[] dataReferences = getTextureData();
@@ -212,6 +214,7 @@ public class CubeMapTexture extends MultiTexture2D {
             // TODO: R wrapping
 
             for (int i = 0; i < 6; i++) {
+                //TODO: Look into hints
                 GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
                 if (dataReferences[i].hasBuffer()) {
                     if (getWidth() == 0 || getHeight() == 0) {
@@ -246,6 +249,7 @@ public class CubeMapTexture extends MultiTexture2D {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
+    @GLThread
     @Override
     void replace() throws TextureException {
         final TextureDataReference[] dataReferences = getTextureData();

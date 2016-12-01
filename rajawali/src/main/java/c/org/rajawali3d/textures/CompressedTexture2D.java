@@ -15,10 +15,13 @@ package c.org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import net.jcip.annotations.ThreadSafe;
+
+import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Compression2D.CompressionType2D;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
-import net.jcip.annotations.ThreadSafe;
 
 /**
  * This class is used to specify common functions of a compressed 2D texture. Subclasses are expected to be thread
@@ -132,6 +135,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
+    @GLThread
     @Override
     void add() throws TextureException {
         final TextureDataReference[] dataReferences = getTextureData();
@@ -205,6 +209,8 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
         GLES20.glBindTexture(getTextureTarget(), 0);
     }
 
+    @GLThread
+    @Override
     void replace() throws TextureException {
         final TextureDataReference[] dataReferences = getTextureData();
 
