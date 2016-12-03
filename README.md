@@ -58,10 +58,11 @@ Rajawali includes a number of unit, integration and GL specific integration test
 |LG Nexus 4|Nexus 4|5.1.1|22|ARMv7 (Krait 300)|Adreno 320|3.0|1.4|
 |LG Nexus 5|Nexus 5|5.1.1|22|ARMv7 (Krait 400)|Adreno 330|3.0|1.4|
 |OnePlus One|A0001|6.0.1|23|ARMv7 (Krait 400)|Adreno 330|3.0|1.4|
-|Samsung Galaxy Tab S2|SM-T710|6.0.1|23|ARMv7 (Samsung Exynos 5433)|Mali-T760|3.1|1.4|
+|Barns & Noble Nook 7" (2016)|BNTV450|ARM64v8|Mali-T720|3.1 + AEP|1.4|
+|Samsung Galaxy Tab S2|SM-T710|6.0.1|23|ARMv7 (Samsung Exynos 5433)|Mali-T760|3.1 + AEP|1.4|
 |HTC Nexus 9|Nexus 9|7.0|24|ARMv7|nVidia Tegra K1 Kepler DX1|3.1|1.4|
-|Huawei Nexus 6P|Nexus 6P|7.1.1|25|ARMv8|Adreno 430|3.1|1.4|
-|Google Pixel XL|Pixel XL|7.1|25|ARMv8|Adreno 530|3.2 (3.1 + AEP)|1.4|
+|Huawei Nexus 6P|Nexus 6P|7.1.1|25|ARM64v8|Adreno 430|3.1|1.4|
+|Google Pixel XL|Pixel XL|7.1|25|ARM64v8|Adreno 530|3.2 (3.1 + AEP)|1.4|
 
 As we acquire more devices, this list will grow. Of course, not every capability can be tested against every device, however the engine is written so that devices not supporting a capability should not crash, and the tests look to ensure this is the case.
 
