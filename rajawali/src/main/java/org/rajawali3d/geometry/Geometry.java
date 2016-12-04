@@ -1,10 +1,13 @@
 package org.rajawali3d.geometry;
 
 import android.support.annotation.NonNull;
+
+import net.jcip.annotations.NotThreadSafe;
+
+import org.rajawali3d.math.vector.Vector3;
+
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
-import net.jcip.annotations.NotThreadSafe;
-import org.rajawali3d.math.vector.Vector3;
 
 /**
  * Interface to be implemented by geometry objects. These could be VBO only objects, Indexed VBO objects or even
@@ -15,13 +18,6 @@ import org.rajawali3d.math.vector.Vector3;
  */
 @NotThreadSafe
 public interface Geometry {
-
-    enum BufferType {
-        FLOAT_BUFFER,
-        INT_BUFFER,
-        SHORT_BUFFER,
-        BYTE_BUFFER
-    }
 
     /**
      * Creates the actual Buffer object(s).

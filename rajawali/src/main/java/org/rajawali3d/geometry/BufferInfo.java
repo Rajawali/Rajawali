@@ -13,15 +13,41 @@
 package org.rajawali3d.geometry;
 
 import android.opengl.GLES20;
-import org.rajawali3d.geometry.Geometry.BufferType;
+import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 
+import net.jcip.annotations.NotThreadSafe;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.Buffer;
 
+/**
+ * Wrapper for Vertex Buffer Object data. This class is not thread safe.
+ *
+ * @author dennis.ippel
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
+ */
+@SuppressWarnings("WeakerAccess")
+@NotThreadSafe
+// TODO: These should probably be private with accessors instead
 public class BufferInfo {
+
+    public static final int FLOAT_BUFFER = 0;
+    public static final int INT_BUFFER = 1;
+    public static final int SHORT_BUFFER = 2;
+    public static final int BYTE_BUFFER = 3;
+
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({FLOAT_BUFFER, INT_BUFFER, SHORT_BUFFER, BYTE_BUFFER})
+    @interface BufferType {
+    }
 
     public int rajawaliHandle = -1;
     public int glHandle       = -1;
-    public BufferType bufferType;
+    public @BufferType int bufferType;
     public Buffer     buffer;
     public int        target;
     public int        byteSize;
@@ -31,14 +57,15 @@ public class BufferInfo {
     public int type   = GLES20.GL_FLOAT;
 
     public BufferInfo() {
-        this.usage = GLES20.GL_STATIC_DRAW;
+        usage = GLES20.GL_STATIC_DRAW;
     }
 
-    public BufferInfo(BufferType bufferType, Buffer buffer) {
+    public BufferInfo(@NonNull @BufferType int bufferType, @NonNull Buffer buffer) {
         this.bufferType = bufferType;
         this.buffer = buffer;
     }
 
+    @NonNull
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Key: ").append(rajawaliHandle)
