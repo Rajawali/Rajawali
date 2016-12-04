@@ -12,8 +12,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.Buffer;
 
-import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
-import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
 
 /**
  * Allowable texel format types for both GL ES 2.x and GL ES 3.x. Corresponds to the {@code internalFormat} parameter

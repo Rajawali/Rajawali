@@ -21,7 +21,7 @@ import org.rajawali3d.util.RajLog;
 
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 

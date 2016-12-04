@@ -18,8 +18,8 @@ import org.rajawali3d.util.RajLog;
 
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
-import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture.ATCFormat;
+import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture.ATCFormat;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 

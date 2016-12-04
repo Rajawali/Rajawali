@@ -1,4 +1,4 @@
-package c.org.rajawali3d.gl.extensions;
+package c.org.rajawali3d.gl.extensions.texture;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -10,6 +10,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.gl.extensions.GLExtension;
 
 /**
  * This extension enables support for ATC compressed texture formats.  ATC is AMD's proprietary compression algorithm

@@ -19,13 +19,13 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
 import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
 import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
-import c.org.rajawali3d.gl.extensions.OESTexture3D;
-import c.org.rajawali3d.gl.extensions.OESTextureCompressionASTC;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.texture.OESTexture3D;
+import c.org.rajawali3d.gl.extensions.texture.OESTextureCompressionASTC;
 import org.rajawali3d.util.RajLog;
 
 import java.util.HashMap;

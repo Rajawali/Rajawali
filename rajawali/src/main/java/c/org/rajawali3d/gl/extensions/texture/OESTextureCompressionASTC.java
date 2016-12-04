@@ -1,8 +1,9 @@
-package c.org.rajawali3d.gl.extensions;
+package c.org.rajawali3d.gl.extensions.texture;
 
 import android.support.annotation.NonNull;
 
 import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.gl.extensions.GLExtension;
 
 /**
  * Adaptive Scalable Texture Compression (ASTC) is a new texture compression technology that offers unprecendented

@@ -1,22 +1,25 @@
-package c.org.rajawali3d.gl.extensions;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+package c.org.rajawali3d.gl.extensions.texture;
 
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.textures.TextureDataReference;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rajawali3d.R;
+
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.textures.TextureDataReference;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)

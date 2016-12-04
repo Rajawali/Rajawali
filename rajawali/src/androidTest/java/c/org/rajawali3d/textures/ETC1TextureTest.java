@@ -12,7 +12,7 @@ import org.rajawali3d.R;
 
 import c.org.rajawali3d.GlTestCase;
 import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
 import c.org.rajawali3d.textures.annotation.Type;
 
 import static org.junit.Assert.assertArrayEquals;
