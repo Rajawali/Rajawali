@@ -33,7 +33,7 @@ public class AMDCompressedATCTexture implements GLExtension {
     @Documented
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({GL_ATC_RGB_AMD, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD})
+    @IntDef({ATC_RGB_AMD, ATC_RGBA_EXPLICIT_ALPHA_AMD, ATC_RGBA_INTERPOLATED_ALPHA_AMD})
     public @interface ATCFormat {
     }
 
@@ -43,21 +43,21 @@ public class AMDCompressedATCTexture implements GLExtension {
      * This format compresses blocks of source texels down to 4 bits per texel. Assuming 8-bit component source texels,
      * this represents a 8:1 compression ratio.  This is the best format to use when no alpha channel is needed.
      */
-    public static final int GL_ATC_RGB_AMD = 0x8C92;
+    public static final int ATC_RGB_AMD = 0x8C92;
 
     /**
      * This format compresses blocks of source texels down to 8 bits per texel. Assuming 8-bit component source texels,
      * this represents a 4:1 compression ratio.  This is generally the best format to use when alpha transitions are
      * sharp.
      */
-    public static final int GL_ATC_RGBA_EXPLICIT_ALPHA_AMD = 0x8C93;
+    public static final int ATC_RGBA_EXPLICIT_ALPHA_AMD = 0x8C93;
 
     /**
      * This format compresses blocks of source texels down to 8 bits per texel. Assuming 8-bit component source texels,
      * this represents a 4:1 compression ratio.  This is generally the best format to use when alpha transitions are
      * gradient.
      */
-    public static final int GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD = 0x87EE;
+    public static final int ATC_RGBA_INTERPOLATED_ALPHA_AMD = 0x87EE;
 
     @NonNull
     public static AMDCompressedATCTexture load() throws Capabilities.UnsupportedCapabilityException {

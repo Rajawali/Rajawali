@@ -12,6 +12,7 @@
  */
 package c.org.rajawali3d.textures;
 
+import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 
 import org.rajawali3d.util.RajLog;
@@ -65,6 +66,14 @@ public class ATCTexture2D extends CompressedTexture2D {
     public ATCTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name,
                         @NonNull TextureDataReference data) throws TextureException {
         super(type, name, data);
+        if (format == AMDCompressedATCTexture.ATC_RGB_AMD && data.getPixelFormat() != GLES20.GL_RGB) {
+            throw new TextureException("When using ATC_RGB_AMD texel format, the pixel format must be GL_RGB.");
+        } else if ((format == AMDCompressedATCTexture.ATC_RGBA_EXPLICIT_ALPHA_AMD
+            || format == AMDCompressedATCTexture.ATC_RGBA_INTERPOLATED_ALPHA_AMD)
+            && data.getPixelFormat() != GLES20.GL_RGBA) {
+            throw new TextureException("When using ATC_RGBA_EXPLICIT_ALPHA_AMD or ATC_RGBA_INTERPOLATED_ALPHA_AMD "
+                + "texel format, the pixel format must be GL_RGBA.");
+        }
         setCompressionType(Compression2D.ATC);
         setTexelFormat(format);
     }
@@ -80,6 +89,16 @@ public class ATCTexture2D extends CompressedTexture2D {
     public ATCTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name,
                         @NonNull TextureDataReference[] data) throws TextureException {
         super(type, name, data);
+        for (int i = 0; i < data.length; ++i) {
+            if (format == AMDCompressedATCTexture.ATC_RGB_AMD && data[i].getPixelFormat() != GLES20.GL_RGB) {
+                throw new TextureException("When using ATC_RGB_AMD texel format, the pixel format must be GL_RGB.");
+            } else if ((format == AMDCompressedATCTexture.ATC_RGBA_EXPLICIT_ALPHA_AMD
+                || format == AMDCompressedATCTexture.ATC_RGBA_INTERPOLATED_ALPHA_AMD)
+                && data[i].getPixelFormat() != GLES20.GL_RGBA) {
+                throw new TextureException("When using ATC_RGBA_EXPLICIT_ALPHA_AMD or ATC_RGBA_INTERPOLATED_ALPHA_AMD "
+                    + "texel format, the pixel format must be GL_RGBA.");
+            }
+        }
         setCompressionType(Compression2D.ATC);
         setTexelFormat(format);
     }

@@ -13,6 +13,7 @@
 package c.org.rajawali3d.textures;
 
 import android.graphics.Bitmap;
+import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 
 import net.jcip.annotations.ThreadSafe;
@@ -64,6 +65,9 @@ public class ETC1Texture extends CompressedTexture2D {
     public ETC1Texture(@TextureType int type, @NonNull String name, @NonNull TextureDataReference data)
         throws TextureException {
         super(type, name, data);
+        if (data.getPixelFormat() != GLES20.GL_RGB) {
+            throw new TextureException("ETC1 texture data requires the pixel format to be GL_RGB.");
+        }
         setCompressionType(Compression2D.ETC1);
         setTexelFormat(OESCompressedETC1RGB8.ETC1_RGB8_OES);
     }
@@ -75,9 +79,15 @@ public class ETC1Texture extends CompressedTexture2D {
      * @param name {@link String} The texture name.
      * @param data {@link TextureDataReference} The texture data.
      */
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     public ETC1Texture(@TextureType int type, @NonNull String name, @NonNull TextureDataReference[] data)
         throws TextureException {
         super(type, name, data);
+        for (int i = 0; i < data.length; ++i) {
+            if (data[i].getPixelFormat() != GLES20.GL_RGB) {
+                throw new TextureException("ETC1 texture data requires the pixel format to be GL_RGB.");
+            }
+        }
         setCompressionType(Compression2D.ETC1);
         setTexelFormat(OESCompressedETC1RGB8.ETC1_RGB8_OES);
     }
