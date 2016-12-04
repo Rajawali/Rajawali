@@ -103,7 +103,6 @@ public class ETC1Texture extends CompressedTexture2D {
      */
     public void setFrom(@NonNull ETC1Texture other) throws TextureException {
         super.setFrom(other);
-        setCompressionType(other.getCompressionType());
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")

@@ -12,6 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.Buffer;
 
+import c.org.rajawali3d.gl.extensions.AMDCompressedATCTexture;
 import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
 
 /**
@@ -36,8 +37,8 @@ import c.org.rajawali3d.gl.extensions.OESCompressedETC1RGB8;
           GLES30.GL_RGBA16UI, GLES30.GL_RGBA16I, GLES30.GL_RGBA32I, GLES30.GL_RGBA32UI, GLES30.GL_DEPTH_COMPONENT16,
           GLES30.GL_DEPTH_COMPONENT24, GLES30.GL_DEPTH_COMPONENT32F, GLES30.GL_DEPTH24_STENCIL8,
           GLES30.GL_DEPTH32F_STENCIL8, GLES11Ext.GL_3DC_X_AMD, GLES11Ext.GL_3DC_XY_AMD,
-          OESCompressedETC1RGB8.ETC1_RGB8_OES, GLES11Ext.GL_ATC_RGB_AMD, GLES11Ext.GL_ATC_RGBA_EXPLICIT_ALPHA_AMD,
-          GLES11Ext.GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD
+          OESCompressedETC1RGB8.ETC1_RGB8_OES, AMDCompressedATCTexture.GL_ATC_RGB_AMD,
+          AMDCompressedATCTexture.GL_ATC_RGBA_EXPLICIT_ALPHA_AMD, AMDCompressedATCTexture.GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD
         })
 public @interface TexelFormat {
 }
