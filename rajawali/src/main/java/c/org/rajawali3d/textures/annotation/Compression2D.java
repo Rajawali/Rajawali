@@ -23,10 +23,11 @@ public interface Compression2D {
     int ASTC = 6;
     int S3TC = 7;
     int PVRTC = 8;
+    int LATC = 9;
 
     @Documented
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({NONE, ETC1, ETC2, PALETTED, THREEDC, ATC, ASTC, S3TC, PVRTC})
+    @IntDef({NONE, ETC1, ETC2, PALETTED, THREEDC, ATC, ASTC, S3TC, PVRTC, LATC})
     @interface CompressionType2D {
     }
 }

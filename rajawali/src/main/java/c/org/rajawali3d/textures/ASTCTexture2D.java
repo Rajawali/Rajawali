@@ -40,7 +40,7 @@ public class ASTCTexture2D extends CompressedTexture2D {
      * Constructs a new {@link ASTCTexture2D} with the specified name and type.
      *
      * @param type   {@link Type.TextureType} The texture usage type.
-     * @param format {@link OESTextureCompressionASTC.ASTCFormat} The ATC compression format.
+     * @param format {@link OESTextureCompressionASTC.ASTCFormat} The ASTC compression format.
      * @param name   {@link String} The texture name.
      */
     public ASTCTexture2D(@Type.TextureType int type, @OESTextureCompressionASTC.ASTCFormat int format,
@@ -54,7 +54,7 @@ public class ASTCTexture2D extends CompressedTexture2D {
      * Constructs a new {@link ASTCTexture2D} with the provided data.
      *
      * @param type   {@link Type.TextureType} The texture usage type.
-     * @param format {@link OESTextureCompressionASTC.ASTCFormat} The ATC compression format.
+     * @param format {@link OESTextureCompressionASTC.ASTCFormat} The ASTC compression format.
      * @param name   {@link String} The texture name.
      * @param data   {@link TextureDataReference} The texture data.
      */
@@ -64,7 +64,7 @@ public class ASTCTexture2D extends CompressedTexture2D {
         if (data.getPixelFormat() != GLES20.GL_RGB) {
             throw new TextureException("When using ASTC textures, the pixel format must be GL_RGBA.");
         }
-        setCompressionType(Compression2D.ATC);
+        setCompressionType(Compression2D.ASTC);
         setTexelFormat(format);
     }
 
@@ -72,7 +72,7 @@ public class ASTCTexture2D extends CompressedTexture2D {
      * Constructs a new {@link ASTCTexture2D} with the provided data.
      *
      * @param type   {@link Type.TextureType} The texture usage type.
-     * @param format {@link EXTTextureCompressionS3TC.S3TCFormat} The ATC compression format.
+     * @param format {@link EXTTextureCompressionS3TC.S3TCFormat} The ASTC compression format.
      * @param name   {@link String} The texture name.
      * @param data   {@link TextureDataReference} The texture data.
      */
@@ -84,7 +84,7 @@ public class ASTCTexture2D extends CompressedTexture2D {
                 throw new TextureException("When using ASTC textures, the pixel format must be GL_RGBA.");
             }
         }
-        setCompressionType(Compression2D.ATC);
+        setCompressionType(Compression2D.ASTC);
         setTexelFormat(format);
     }
 

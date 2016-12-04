@@ -50,7 +50,7 @@ public class S3DCTexture2D extends CompressedTexture2D {
      * Constructs a new {@link S3DCTexture2D} with the specified name and type.
      *
      * @param type   {@link Type.TextureType} The texture usage type.
-     * @param format {@link EXTTextureCompressionS3TC.S3TCFormat} The ATC compression format.
+     * @param format {@link EXTTextureCompressionS3TC.S3TCFormat} The S3TC compression format.
      * @param name   {@link String} The texture name.
      */
     public S3DCTexture2D(@Type.TextureType int type, @EXTTextureCompressionS3TC.S3TCFormat int format,
@@ -64,7 +64,7 @@ public class S3DCTexture2D extends CompressedTexture2D {
      * Constructs a new {@link S3DCTexture2D} with the provided data.
      *
      * @param type   {@link Type.TextureType} The texture usage type.
-     * @param format {@link EXTTextureCompressionS3TC.S3TCFormat} The ATC compression format.
+     * @param format {@link EXTTextureCompressionS3TC.S3TCFormat} The S3TC compression format.
      * @param name   {@link String} The texture name.
      * @param data   {@link TextureDataReference} The texture data.
      */
@@ -90,7 +90,7 @@ public class S3DCTexture2D extends CompressedTexture2D {
      * Constructs a new {@link S3DCTexture2D} with the provided data.
      *
      * @param type   {@link Type.TextureType} The texture usage type.
-     * @param format {@link EXTTextureCompressionS3TC.S3TCFormat} The ATC compression format.
+     * @param format {@link EXTTextureCompressionS3TC.S3TCFormat} The S3TC compression format.
      * @param name   {@link String} The texture name.
      * @param data   {@link TextureDataReference} The texture data.
      */

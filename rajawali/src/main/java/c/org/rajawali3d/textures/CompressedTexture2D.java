@@ -212,6 +212,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
     @GLThread
     @Override
     void replace() throws TextureException {
+        //TODO: block based compression formats support per block updating in most cases
         final TextureDataReference[] dataReferences = getTextureData();
 
         if (dataReferences == null) {
