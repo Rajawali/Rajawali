@@ -1,7 +1,5 @@
 package c.org.rajawali3d.gl.extensions.texture;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
@@ -17,7 +15,7 @@ import c.org.rajawali3d.gl.extensions.GLExtension;
  * Microsoft's DirectX API), subject to all the requirements and limitations described by the extension
  * GL_ARB_texture_compression.
  *
- * This extension supports DXT1, DXT3, and DXT5 texture compression formats. For the DXT1 image format, this
+ * This extension supports S3TC, DXT3, and DXT5 texture compression formats. For the S3TC image format, this
  * specification supports an RGB-only mode and a special RGBA mode with single-bit "transparent" alpha.
  *
  * If NV_texture_array is supported, the S3TC compressed formats may also be used as the internal formats given to
@@ -29,12 +27,11 @@ import c.org.rajawali3d.gl.extensions.GLExtension;
  * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_compression_s3tc.txt">
  * EXT_texture_compression_s3tc</a>
  */
-public class EXTTextureCompressionS3TC implements GLExtension {
+public class EXTTextureCompressionS3TC extends GLExtension {
 
     public static final String name = "GL_EXT_texture_compression_s3tc";
 
     @Documented
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({COMPRESSED_RGB_S3TC_DXT1_EXT, COMPRESSED_RGBA_S3TC_DXT1_EXT, COMPRESSED_RGBA_S3TC_DXT3_EXT,
         COMPRESSED_RGBA_S3TC_DXT5_EXT})

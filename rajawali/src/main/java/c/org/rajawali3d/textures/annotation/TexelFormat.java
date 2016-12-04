@@ -15,6 +15,7 @@ import java.nio.Buffer;
 import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
 import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionS3TC;
 import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.texture.OESTextureCompressionASTC;
 
 /**
  * Allowable texel format types for both GL ES 2.x and GL ES 3.x. Corresponds to the {@code internalFormat} parameter
@@ -41,7 +42,28 @@ import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
     OESCompressedETC1RGB8.ETC1_RGB8_OES, AMDCompressedATCTexture.ATC_RGB_AMD,
     AMDCompressedATCTexture.ATC_RGBA_EXPLICIT_ALPHA_AMD, AMDCompressedATCTexture.ATC_RGBA_INTERPOLATED_ALPHA_AMD,
     EXTTextureCompressionS3TC.COMPRESSED_RGB_S3TC_DXT1_EXT, EXTTextureCompressionS3TC.COMPRESSED_RGBA_S3TC_DXT1_EXT,
-    EXTTextureCompressionS3TC.COMPRESSED_RGBA_S3TC_DXT3_EXT, EXTTextureCompressionS3TC.COMPRESSED_RGBA_S3TC_DXT5_EXT
+    EXTTextureCompressionS3TC.COMPRESSED_RGBA_S3TC_DXT3_EXT, EXTTextureCompressionS3TC.COMPRESSED_RGBA_S3TC_DXT5_EXT,
+    OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_4x4_KHR, OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_5x4_KHR,
+    OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_5x5_KHR, OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_6x5_KHR,
+    OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_6x6_KHR, OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_8x5_KHR,
+    OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_8x6_KHR, OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_8x8_KHR,
+    OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_10x5_KHR, OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_10x6_KHR,
+    OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_10x8_KHR, OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_10x10_KHR,
+    OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_12x10_KHR, OESTextureCompressionASTC.COMPRESSED_RGBA_ASTC_12x12_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR,
+    OESTextureCompressionASTC.COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR
 })
 public @interface TexelFormat {
 }

@@ -25,6 +25,25 @@ import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionS3TC;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Type;
 
+/**
+ * S3 Texture Compression is a lossy, fixed-rate, texture compression format. This style of compression makes S3TC an
+ * ideal texture compression format for textures used in hardware-accelerated 3D computer graphics. There are at least 5
+ * different variations of the S3TC format (including DXT1 through DXT5), though DXT2 and DXT4 are not typically
+ * supported on mobile devices.
+ *
+ * DXT1 is the smallest mode of S3TC compression; it converts each block of 16 pixels into 64 bits. Additionally, it is
+ * composed of two different 16-bit RGB 5:8:5 color values and a 4x4 2-bit lookup table. DXT1 does not support alpha
+ * channels.
+ *
+ * DXT3 converts each block of 16 pixels into 128 bits and is composed of 64 bits of alpha channel data and 64 bits of
+ * color data. DXT3 is a good format choice for images or textures with sharp alpha transitions (opaque versus
+ * translucent).
+ *
+ * DXT5 converts each block of 16 pixels into 128 bits and is composed of 64 bits of alpha channel data and 64 bits of
+ * color data. DXT5 is a good format choice for images or textures with gradient alpha transitions.
+ *
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
+ */
 public class S3DCTexture2D extends CompressedTexture2D {
 
     /**
@@ -37,7 +56,7 @@ public class S3DCTexture2D extends CompressedTexture2D {
     public S3DCTexture2D(@Type.TextureType int type, @EXTTextureCompressionS3TC.S3TCFormat int format,
                          @NonNull String name) throws TextureException {
         super(type, name);
-        setCompressionType(Compression2D.ATC);
+        setCompressionType(Compression2D.S3TC);
         setTexelFormat(format);
     }
 
@@ -63,7 +82,7 @@ public class S3DCTexture2D extends CompressedTexture2D {
             throw new TextureException("When using COMPRESSED_RGBA_S3TC_DXT1_EXT or COMPRESSED_RGBA_S3TC_DXT3_EXT "
                 + "COMPRESSED_RGBA_S3TC_DXT5_EXT texel format, the pixel format must be GL_RGBA.");
         }
-        setCompressionType(Compression2D.ATC);
+        setCompressionType(Compression2D.S3TC);
         setTexelFormat(format);
     }
 
@@ -91,7 +110,7 @@ public class S3DCTexture2D extends CompressedTexture2D {
                     + "COMPRESSED_RGBA_S3TC_DXT5_EXT texel format, the pixel format must be GL_RGBA.");
             }
         }
-        setCompressionType(Compression2D.ATC);
+        setCompressionType(Compression2D.S3TC);
         setTexelFormat(format);
     }
 
@@ -132,16 +151,19 @@ public class S3DCTexture2D extends CompressedTexture2D {
     @GLThread
     @Override
     void add() throws TextureException {
-        // Verify ATC is supported
+        // Verify S3TC is supported
         try {
+            // First we check the broad EXT S3TC extension
             Capabilities.getInstance().loadExtension(EXTTextureCompressionS3TC.name);
         } catch (Capabilities.UnsupportedCapabilityException e) {
             try {
+                // Next we check for nVidia's version of S3TC
                 Capabilities.getInstance().loadExtension(NVTextureCompressionS3TC.name);
             } catch (Capabilities.UnsupportedCapabilityException e1) {
                 if (getTexelFormat() == EXTTextureCompressionS3TC.COMPRESSED_RGB_S3TC_DXT1_EXT
                     || getTexelFormat() == EXTTextureCompressionS3TC.COMPRESSED_RGBA_S3TC_DXT1_EXT) {
                     try {
+                        // Finally, if this texture uses DXT1, we check if only DXT1 is supported
                         Capabilities.getInstance().loadExtension(EXTTextureCompressionDXT1.name);
                     } catch (Capabilities.UnsupportedCapabilityException e2) {
                         throw new TextureException("ATC Textures are not supported on this device.");

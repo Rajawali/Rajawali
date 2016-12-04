@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.GLExtension;
 import c.org.rajawali3d.textures.TextureDataReference;
@@ -24,7 +23,7 @@ import c.org.rajawali3d.textures.TextureDataReference;
  * @see <a href="https://www.khronos.org/registry/gles/extensions/OES/OES_compressed_ETC1_RGB8_texture.txt">
  * OES_compressed_ETC1_RGB8_texture</a>
  */
-public class OESCompressedETC1RGB8 implements GLExtension {
+public class OESCompressedETC1RGB8 extends GLExtension {
 
     public static final String name = "GL_OES_compressed_ETC1_RGB8_texture";
 

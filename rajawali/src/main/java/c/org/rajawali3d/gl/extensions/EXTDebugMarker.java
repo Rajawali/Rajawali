@@ -19,7 +19,7 @@ import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
  *
  * @see <a href="https://www.khronos.org/registry/gles/extensions/EXT/EXT_debug_marker.txt">EXT_debug_marker</a>
  */
-public class EXTDebugMarker implements GLExtension {
+public class EXTDebugMarker extends GLExtension {
 
     public static final String name = "GL_EXT_debug_marker";
 

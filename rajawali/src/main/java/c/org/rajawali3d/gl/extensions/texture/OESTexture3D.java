@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
  *
  * @see <a href="https://www.khronos.org/registry/gles/extensions/OES/OES_texture_3D.txt">OES_texture_3D</a>
  */
-public class OESTexture3D implements GLExtension {
+public class OESTexture3D extends GLExtension {
 
     public static final String name = "GL_OES_texture_3D";
 

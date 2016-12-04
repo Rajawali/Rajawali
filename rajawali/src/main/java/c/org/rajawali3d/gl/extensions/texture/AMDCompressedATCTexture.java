@@ -1,7 +1,5 @@
 package c.org.rajawali3d.gl.extensions.texture;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
@@ -31,7 +29,6 @@ public class AMDCompressedATCTexture extends GLExtension {
     public static final String name = "GL_AMD_compressed_ATC_texture";
 
     @Documented
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ATC_RGB_AMD, ATC_RGBA_EXPLICIT_ALPHA_AMD, ATC_RGBA_INTERPOLATED_ALPHA_AMD})
     public @interface ATCFormat {
