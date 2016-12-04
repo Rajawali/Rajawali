@@ -18,7 +18,7 @@ import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.TexelFormat;
 import c.org.rajawali3d.textures.annotation.TextureTarget;

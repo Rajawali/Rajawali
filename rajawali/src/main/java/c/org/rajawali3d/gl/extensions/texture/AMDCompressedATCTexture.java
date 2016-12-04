@@ -26,7 +26,7 @@ import c.org.rajawali3d.gl.extensions.GLExtension;
  * @see <a href="https://www.khronos.org/registry/gles/extensions/AMD/AMD_compressed_ATC_texture.txt">
  * AMD_compressed_ATC_texture</a>
  */
-public class AMDCompressedATCTexture implements GLExtension {
+public class AMDCompressedATCTexture extends GLExtension {
 
     public static final String name = "GL_AMD_compressed_ATC_texture";
 
@@ -65,7 +65,7 @@ public class AMDCompressedATCTexture implements GLExtension {
     }
 
     private AMDCompressedATCTexture() throws Capabilities.UnsupportedCapabilityException {
-        Capabilities.getInstance().verifyExtension(name);
+        verifySupport(name);
     }
 
     @NonNull

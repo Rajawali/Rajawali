@@ -69,7 +69,7 @@ public class OESTextureCompressionASTC implements GLExtension {
     }
 
     private OESTextureCompressionASTC() throws Capabilities.UnsupportedCapabilityException {
-        Capabilities.getInstance().verifyExtension(name);
+        verifySupport(name);
     }
 
     @NonNull

@@ -42,7 +42,7 @@ import c.org.rajawali3d.textures.annotation.Type.TextureType;
 public class ATCTexture2D extends CompressedTexture2D {
 
     /**
-     * Constructs a new {@link ETC1Texture} with the specified name and type.
+     * Constructs a new {@link ATCTexture2D} with the specified name and type.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link ATCFormat} The ATC compression format.
@@ -56,7 +56,7 @@ public class ATCTexture2D extends CompressedTexture2D {
     }
 
     /**
-     * Constructs a new {@link ETC1Texture} with the provided data.
+     * Constructs a new {@link ATCTexture2D} with the provided data.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link ATCFormat} The ATC compression format.
@@ -79,7 +79,7 @@ public class ATCTexture2D extends CompressedTexture2D {
     }
 
     /**
-     * Constructs a new {@link ETC1Texture} with the provided data.
+     * Constructs a new {@link ATCTexture2D} with the provided data.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link ATCFormat} The ATC compression format.
@@ -110,7 +110,7 @@ public class ATCTexture2D extends CompressedTexture2D {
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
-    public ATCTexture2D(ATCTexture2D other) throws TextureException {
+    public ATCTexture2D(@NonNull ATCTexture2D other) throws TextureException {
         super(other);
         setFrom(other);
     }

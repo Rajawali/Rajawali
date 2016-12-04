@@ -13,7 +13,7 @@ import c.org.rajawali3d.GlTestCase;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
 import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.gl.extensions.GLExtension;
 import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
 import c.org.rajawali3d.gl.extensions.texture.OESTexture3D;

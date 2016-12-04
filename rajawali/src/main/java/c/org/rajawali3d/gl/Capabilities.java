@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
 import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.gl.extensions.GLExtension;
 import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
 import c.org.rajawali3d.gl.extensions.texture.OESTexture3D;

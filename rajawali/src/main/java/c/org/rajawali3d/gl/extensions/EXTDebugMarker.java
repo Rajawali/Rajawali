@@ -30,7 +30,7 @@ public class EXTDebugMarker implements GLExtension {
     }
 
     private EXTDebugMarker() throws UnsupportedCapabilityException {
-        //TODO: Figure out why functions arent found.
+        verifySupport(name);
         final boolean success = loadFunctions();
         if (!success) {
             throw new UnsupportedCapabilityException("Failed to find native methods for extension: " + name);

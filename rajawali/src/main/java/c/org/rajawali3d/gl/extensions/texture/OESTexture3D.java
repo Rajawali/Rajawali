@@ -58,6 +58,7 @@ public class OESTexture3D implements GLExtension {
     }
 
     private OESTexture3D() throws UnsupportedCapabilityException {
+        verifySupport(name);
         final boolean success = loadFunctions();
         if (!success) {
             throw new UnsupportedCapabilityException("Failed to find native methods for extension: " + name);

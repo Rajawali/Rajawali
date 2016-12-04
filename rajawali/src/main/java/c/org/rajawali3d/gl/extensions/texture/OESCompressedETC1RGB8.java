@@ -37,7 +37,7 @@ public class OESCompressedETC1RGB8 implements GLExtension {
     }
 
     private OESCompressedETC1RGB8() throws UnsupportedCapabilityException {
-        Capabilities.getInstance().verifyExtension(name);
+        verifySupport(name);
     }
 
     @NonNull
