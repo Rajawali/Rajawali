@@ -86,6 +86,7 @@ public class ATCTexture2D extends CompressedTexture2D {
      * @param name   {@link String} The texture name.
      * @param data   {@link TextureDataReference} The texture data.
      */
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     public ATCTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name,
                         @NonNull TextureDataReference[] data) throws TextureException {
         super(type, name, data);
