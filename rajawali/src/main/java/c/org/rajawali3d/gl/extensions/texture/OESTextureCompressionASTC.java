@@ -49,7 +49,15 @@ public class OESTextureCompressionASTC extends GLExtension {
         COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR, COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR,
         COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR, COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR,
         COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR, COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR,
-        COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR
+        COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR, COMPRESSED_RGBA_ASTC_3x3x3_OES, COMPRESSED_RGBA_ASTC_4x3x3_OES,
+        COMPRESSED_RGBA_ASTC_4x4x3_OES, COMPRESSED_RGBA_ASTC_4x4x4_OES, COMPRESSED_RGBA_ASTC_5x4x4_OES,
+        COMPRESSED_RGBA_ASTC_5x5x4_OES, COMPRESSED_RGBA_ASTC_5x5x5_OES, COMPRESSED_RGBA_ASTC_6x5x5_OES,
+        COMPRESSED_RGBA_ASTC_6x6x5_OES, COMPRESSED_RGBA_ASTC_6x6x6_OES, COMPRESSED_SRGB8_ALPHA8_ASTC_3x3x3_OES,
+        COMPRESSED_SRGB8_ALPHA8_ASTC_4x3x3_OES, COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x3_OES,
+        COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x4_OES, COMPRESSED_SRGB8_ALPHA8_ASTC_5x4x4_OES,
+        COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x4_OES, COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x5_OES,
+        COMPRESSED_SRGB8_ALPHA8_ASTC_6x5x5_OES, COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x5_OES,
+        COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x6_OES
     })
     public @interface ASTCFormat {
     }
@@ -87,6 +95,32 @@ public class OESTextureCompressionASTC extends GLExtension {
     public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR = 0x93DB;
     public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR = 0x93DC;
     public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR = 0x93DD;
+
+    // Accepted by the<internalformat> parameter of CompressedTexImage3D, CompressedTexSubImage3D, TexStorage3D,
+    // and TextureStorage3D. If extension "EXT_texture_storage" is supported, these tokens are also accepted by
+    // TexStorage3DEXT and TextureStorage3DEXT.
+
+    public static final int COMPRESSED_RGBA_ASTC_3x3x3_OES = 0x93C0;
+    public static final int COMPRESSED_RGBA_ASTC_4x3x3_OES = 0x93C1;
+    public static final int COMPRESSED_RGBA_ASTC_4x4x3_OES = 0x93C2;
+    public static final int COMPRESSED_RGBA_ASTC_4x4x4_OES = 0x93C3;
+    public static final int COMPRESSED_RGBA_ASTC_5x4x4_OES = 0x93C4;
+    public static final int COMPRESSED_RGBA_ASTC_5x5x4_OES = 0x93C5;
+    public static final int COMPRESSED_RGBA_ASTC_5x5x5_OES = 0x93C6;
+    public static final int COMPRESSED_RGBA_ASTC_6x5x5_OES = 0x93C7;
+    public static final int COMPRESSED_RGBA_ASTC_6x6x5_OES = 0x93C8;
+    public static final int COMPRESSED_RGBA_ASTC_6x6x6_OES = 0x93C9;
+
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_3x3x3_OES = 0x93E0;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_4x3x3_OES = 0x93E1;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x3_OES = 0x93E2;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x4_OES = 0x93E3;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_5x4x4_OES = 0x93E4;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x4_OES = 0x93E5;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x5_OES = 0x93E6;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_6x5x5_OES = 0x93E7;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x5_OES = 0x93E8;
+    public static final int COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x6_OES = 0x93E9;
 
     @NonNull
     public static OESTextureCompressionASTC load() throws Capabilities.UnsupportedCapabilityException {
