@@ -15,6 +15,7 @@ package org.rajawali3d.geometry;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -49,6 +50,7 @@ import static org.rajawali3d.util.ArrayUtils.getIntArrayFromBuffer;
  * @author dennis.ippel
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SuppressWarnings("WeakerAccess")
 @NotThreadSafe
 public class IndexedGeometry implements Geometry {
 
@@ -63,6 +65,7 @@ public class IndexedGeometry implements Geometry {
     public static final int COLOR_BUFFER_KEY = 3;
     public static final int INDEX_BUFFER_KEY = 4;
 
+    // TODO: We probably want this to be a sparse array
     protected final ArrayList<BufferInfo> buffers;
 
     /**
@@ -218,25 +221,31 @@ public class IndexedGeometry implements Geometry {
         min.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         max.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 
-        Vector3 vertex = new Vector3();
+        final Vector3 vertex = new Vector3();
 
         while (vertices.hasRemaining()) {
             vertex.x = vertices.get();
             vertex.y = vertices.get();
             vertex.z = vertices.get();
 
-            if (vertex.x < min.x)
+            if (vertex.x < min.x) {
                 min.x = vertex.x;
-            if (vertex.y < min.y)
+            }
+            if (vertex.y < min.y) {
                 min.y = vertex.y;
-            if (vertex.z < min.z)
+            }
+            if (vertex.z < min.z) {
                 min.z = vertex.z;
-            if (vertex.x > max.x)
+            }
+            if (vertex.x > max.x) {
                 max.x = vertex.x;
-            if (vertex.y > max.y)
+            }
+            if (vertex.y > max.y) {
                 max.y = vertex.y;
-            if (vertex.z > max.z)
+            }
+            if (vertex.z > max.z) {
                 max.z = vertex.z;
+            }
         }
     }
 
@@ -278,7 +287,8 @@ public class IndexedGeometry implements Geometry {
      *
      * @param offset     {@link Vector3} containing the offset in each direction. Can be null.
      * @param geometry   {@link IndexedGeometry} to be added.
-     * @param createVBOs {@code boolean} If true, create the VBOs immediately.
+     * @param createVBOs {@code true} if the VBOs should be constructed immediately. This requires calling on the GL
+     *                               thread.
      */
     public void addFromOther(@NonNull Vector3 offset, @NonNull IndexedGeometry geometry, boolean createVBOs) {
         float[] newVertices;
@@ -336,23 +346,26 @@ public class IndexedGeometry implements Geometry {
     }
 
     /**
-     * Sets the data. This methods takes two BufferInfo objects which means it'll use another
-     * IndexedGeometry instance's data (vertices and normals). The remaining parameters are arrays
-     * which will be used to create buffers that are unique to this instance.
+     * Sets the geometry data. This methods takes two {@link BufferInfo} objects which means it will use another
+     * IndexedGeometry instance's data (vertices and normals). The remaining parameters are arrays which will be used
+     * to create buffers that are unique to this instance.
      * <p>
-     * This is typically used with VertexAnimationObject3D instances.
+     * This is typically used with {@link VertexAnimationObject3D} instances.
      *
-     * @param vertexBufferInfo
-     * @param normalBufferInfo
-     * @param textureCoords
-     * @param colors
-     * @param indices
-     * @param createVBOs
+     * @param vertexBufferInfo {@link BufferInfo} providing the vertex data.
+     * @param normalBufferInfo {@link BufferInfo} providing the normal data.
+     * @param textureCoords {@code float} array containing the texture coordinate data.
+     * @param colors {@code float} array containing the vertex color data.
+     * @param indices {@code int} array containing the vertex index data.
+     * @param createVBOs {@code true} if the VBOs should be constructed immediately. This requires calling on the GL
+     *                               thread.
      *
      * @see VertexAnimationObject3D
      */
-    public void setData(@NonNull BufferInfo vertexBufferInfo, @NonNull BufferInfo normalBufferInfo,
-                        float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
+    public void setData(@NonNull BufferInfo vertexBufferInfo, @Nullable BufferInfo normalBufferInfo,
+                        @Nullable float[] textureCoords, @Nullable float[] colors, @NonNull int[] indices,
+                        boolean createVBOs) {
+        // TODO: Why are we synthesizing texture and color data?
         if (textureCoords == null || textureCoords.length == 0) {
             textureCoords = new float[(numVertices / 3) * 2];
         }
@@ -375,20 +388,21 @@ public class IndexedGeometry implements Geometry {
     }
 
     /**
-     * Sets the data. Assumes that the data will never be changed and passes GLES20.GL_STATIC_DRAW
-     * to the OpenGL context when the buffers are created.
+     * Sets the geometry data. Assumes that the data will never be changed and passes @link GLES20.GL_STATIC_DRAW} to
+     * the OpenGL context when the buffers are created.
      *
-     * @param vertices
-     * @param normals
-     * @param textureCoords
-     * @param colors
-     * @param indices
-     * @param createVBOs
+     * @param vertices {@code float} array containing the vertex position data.
+     * @param normals {@code float} array containing the vertex normal data.
+     * @param textureCoords {@code float} array containing the the vertex texture coordinate data.
+     * @param colors {@code float} array containing the vertex color data.
+     * @param indices {@code int} array containing the geometry index data.
+     * @param createVBOs {@code true} if the VBOs should be constructed immediately. This requires calling on the GL
+     *                               thread.
      *
-     * @see GLES20#GL_STATIC_DRAW
+     * @see {@link GLES20#GL_STATIC_DRAW}.
      */
-    public void setData(float[] vertices, float[] normals,
-                        float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
+    public void setData(@NonNull float[] vertices, @Nullable float[] normals, @Nullable float[] textureCoords,
+                        @Nullable float[] colors, @NonNull int[] indices, boolean createVBOs) {
         setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords,
             GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
     }
@@ -426,21 +440,23 @@ public class IndexedGeometry implements Geometry {
      * The data store contents are modified by reading data from the GL, and used as the source for GL drawing and
      * image specification commands.
      *
-     * @param vertices
-     * @param verticesUsage
-     * @param normals
-     * @param normalsUsage
-     * @param textureCoords
-     * @param textureCoordsUsage
-     * @param colors
-     * @param colorsUsage
-     * @param indices
-     * @param indicesUsage
-     * @param createVBOs
+     * @param vertices {@code float} array containing the vertex position data.
+     * @param verticesUsage {@code int} Vertex buffer usage hint.
+     * @param normals {@code float} array containing the vertex normal data.
+     * @param normalsUsage {@code int} Normal buffer usage hint.
+     * @param textureCoords {@code float} array containing the the vertex texture coordinate data.
+     * @param textureCoordsUsage {@code int} Texture coordinate buffer usage hint.
+     * @param colors {@code float} array containing the vertex color data.
+     * @param colorsUsage {@code int} Color buffer usage hint.
+     * @param indices {@code int} array containing the geometry index data.
+     * @param indicesUsage {@code int} Index buffer usage hint.
+     * @param createVBOs {@code true} if the VBOs should be constructed immediately. This requires calling on the GL
+     *                               thread.
      */
-    public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage,
-                        float[] textureCoords, int textureCoordsUsage, float[] colors, int colorsUsage,
-                        int[] indices, int indicesUsage, boolean createVBOs) {
+    public void setData(@NonNull float[] vertices, @VBOUsage int verticesUsage, @Nullable float[] normals,
+                        @VBOUsage int normalsUsage, @Nullable float[] textureCoords, @VBOUsage int textureCoordsUsage,
+                        @Nullable float[] colors, @VBOUsage int colorsUsage, @NonNull int[] indices,
+                        @VBOUsage int indicesUsage, boolean createVBOs) {
         buffers.get(VERTEX_BUFFER_KEY).usage = verticesUsage;
         buffers.get(NORMAL_BUFFER_KEY).usage = normalsUsage;
         buffers.get(TEXTURE_BUFFER_KEY).usage = textureCoordsUsage;
