@@ -12,92 +12,129 @@
  */
 package c.org.rajawali3d.textures;
 
-import c.org.rajawali3d.textures.annotation.Compression2D;
+import android.opengl.GLES20;
+import android.support.annotation.NonNull;
+
 import org.rajawali3d.util.RajLog;
 
-import java.nio.ByteBuffer;
+import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedPalettedTexture;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedPalettedTexture.PalettedFormat;
+import c.org.rajawali3d.textures.annotation.Compression2D;
+import c.org.rajawali3d.textures.annotation.Type;
 
+@SuppressWarnings("WeakerAccess")
 public class PalettedTexture2D extends CompressedTexture2D {
 
-    // Paletted texture constants
-    // Referenced from OpenGL ES 2.0 extension C header from Khronos Group
-    // http://www.khronos.org/registry/gles/api/2.0/gl2ext.h
-    private static final int GL_PALETTE4_RGB8_OES     = 0x8B90;
-    private static final int GL_PALETTE4_RGBA8_OES    = 0x8B91;
-    private static final int GL_PALETTE4_R5_G6_B5_OES = 0x8B92;
-    private static final int GL_PALETTE4_RGBA4_OES    = 0x8B93;
-    private static final int GL_PALETTE4_RGB5_A1_OES  = 0x8B94;
-    private static final int GL_PALETTE8_RGB8_OES     = 0x8B95;
-    private static final int GL_PALETTE8_RGBA8_OES    = 0x8B96;
-    private static final int GL_PALETTE8_R5_G6_B5_OES = 0x8B97;
-    private static final int GL_PALETTE8_RGBA4_OES    = 0x8B98;
-    private static final int GL_PALETTE8_RGB5_A1_OES  = 0x8B99;
-
     /**
-     * Texture2D palette format.
-     */
-    public enum PaletteFormat {
-        PALETTE4_RGB8,
-        PALETTE4_RGBA8,
-        PALETTE4_R5_G6_B5,
-        PALETTE4_RGBA4,
-        PALETTE4_RGB5_A1,
-        PALETTE8_RGB8,
-        PALETTE8_RGBA8,
-        PALETTE8_R5_G6_B5,
-        PALETTE8_RGBA4,
-        PALETTE8_RGB5_A1
-    }
-
-    ;
-
-    /**
-     * Texture2D palette format. See {@link PaletteFormat}.
-     */
-    private PaletteFormat mPaletteFormat;
-
-    public PalettedTexture2D(PalettedTexture2D other) throws TextureException {
-        super(other);
-        setPaletteFormat(other.getPaletteFormat());
-    }
-
-    public PalettedTexture2D(String textureName, ByteBuffer byteBuffer, PaletteFormat paletteFormat) throws
-                                                                                                     TextureException {
-        this(textureName, new ByteBuffer[]{ byteBuffer }, paletteFormat);
-    }
-
-    public PalettedTexture2D(String textureName, ByteBuffer[] byteBuffers, PaletteFormat paletteFormat) throws
-                                                                                                        TextureException {
-        //super(textureName, byteBuffers);
-        setPaletteFormat(paletteFormat);
-        setCompressionType(Compression2D.PALETTED);
-    }
-
-    /**
-     * Copies every property from another PalettedTexture object
+     * Constructs a new {@link PalettedTexture2D} with the specified name and type.
      *
-     * @param other another PalettedTexture object to copy from
+     * @param type   {@link Type.TextureType} The texture usage type.
+     * @param format {@link PalettedFormat} The paletted compression format.
+     * @param name   {@link String} The texture name.
      */
-    public void setFrom(PalettedTexture2D other) throws TextureException {
+    public PalettedTexture2D(@Type.TextureType int type, @PalettedFormat int format, @NonNull String name)
+        throws TextureException {
+        super(type, name);
+        setCompressionType(Compression2D.PALETTED);
+        setTexelFormat(format);
+    }
+
+    /**
+     * Constructs a new {@link PalettedTexture2D} with the provided data.
+     *
+     * @param type   {@link Type.TextureType} The texture usage type.
+     * @param format {@link PalettedFormat} The paletted compression format.
+     * @param name   {@link String} The texture name.
+     * @param data   {@link TextureDataReference} The texture data.
+     */
+    public PalettedTexture2D(@Type.TextureType int type, @PalettedFormat int format, @NonNull String name,
+                        @NonNull TextureDataReference data) throws TextureException {
+        super(type, name, data);
+        if ((format == OESCompressedPalettedTexture.PALETTE4_RGB8_OES
+            || format == OESCompressedPalettedTexture.PALETTE4_R5_G6_B5_OES
+            || format == OESCompressedPalettedTexture.PALETTE8_RGB8_OES
+            || format == OESCompressedPalettedTexture.PALETTE8_R5_G6_B5_OES)
+            && data.getPixelFormat() != GLES20.GL_RGB) {
+            throw new TextureException("When using PALETTE4_RGB8_OES, PALETTE4_R5_G6_B5_OES, PALETTE8_RGB8_OES,"
+                + " or PALETTE8_R5_G6_B5_OES texel formats, the pixel format must be GL_RGB.");
+        } else if ((format == OESCompressedPalettedTexture.PALETTE4_RGBA8_OES
+            || format == OESCompressedPalettedTexture.PALETTE4_RGBA4_OES
+            || format == OESCompressedPalettedTexture.PALETTE4_RGB5_A1_OES
+            || format == OESCompressedPalettedTexture.PALETTE8_RGBA8_OES
+            || format == OESCompressedPalettedTexture.PALETTE8_RGBA4_OES
+            || format == OESCompressedPalettedTexture.PALETTE4_RGB5_A1_OES)
+            && data.getPixelFormat() != GLES20.GL_RGBA) {
+            throw new TextureException("When using PALETTE4_RGBA8_OES, PALETTE4_RGBA4_OES, PALETTE4_RGB5_A1_OES, "
+                + "PALETTE8_RGBA8_OES, PALETTE8_RGBA4_OES, PALETTE4_RGB5_A1_OES texel format, the pixel format must be"
+                + " GL_RGBA.");
+        }
+        setCompressionType(Compression2D.PALETTED);
+        setTexelFormat(format);
+    }
+
+    /**
+     * Constructs a new {@link PalettedTexture2D} with the provided data.
+     *
+     * @param type   {@link Type.TextureType} The texture usage type.
+     * @param format {@link PalettedFormat} The paletted compression format.
+     * @param name   {@link String} The texture name.
+     * @param data   {@link TextureDataReference} The texture data.
+     */
+    @SuppressWarnings("ForLoopReplaceableByForEach")
+    public PalettedTexture2D(@Type.TextureType int type, @PalettedFormat int format, @NonNull String name,
+                        @NonNull TextureDataReference[] data) throws TextureException {
+        super(type, name, data);
+        for (int i = 0; i < data.length; ++i) {
+            if ((format == OESCompressedPalettedTexture.PALETTE4_RGB8_OES
+                || format == OESCompressedPalettedTexture.PALETTE4_R5_G6_B5_OES
+                || format == OESCompressedPalettedTexture.PALETTE8_RGB8_OES
+                || format == OESCompressedPalettedTexture.PALETTE8_R5_G6_B5_OES)
+                && data[i].getPixelFormat() != GLES20.GL_RGB) {
+                throw new TextureException("When using PALETTE4_RGB8_OES, PALETTE4_R5_G6_B5_OES, PALETTE8_RGB8_OES,"
+                    + " or PALETTE8_R5_G6_B5_OES texel formats, the pixel format must be GL_RGB.");
+            } else if ((format == OESCompressedPalettedTexture.PALETTE4_RGBA8_OES
+                || format == OESCompressedPalettedTexture.PALETTE4_RGBA4_OES
+                || format == OESCompressedPalettedTexture.PALETTE4_RGB5_A1_OES
+                || format == OESCompressedPalettedTexture.PALETTE8_RGBA8_OES
+                || format == OESCompressedPalettedTexture.PALETTE8_RGBA4_OES
+                || format == OESCompressedPalettedTexture.PALETTE4_RGB5_A1_OES)
+                && data[i].getPixelFormat() != GLES20.GL_RGBA) {
+                throw new TextureException("When using PALETTE4_RGBA8_OES, PALETTE4_RGBA4_OES, PALETTE4_RGB5_A1_OES, "
+                    + "PALETTE8_RGBA8_OES, PALETTE8_RGBA4_OES, PALETTE4_RGB5_A1_OES texel format, the pixel format must"
+                    + " be GL_RGBA.");
+            }
+        }
+        setCompressionType(Compression2D.PALETTED);
+        setTexelFormat(format);
+    }
+
+    /**
+     * Constructs a new {@link PalettedTexture2D} with data and settings from the provided {@link PalettedTexture2D}.
+     *
+     * @param other The other {@link PalettedTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
+     */
+    public PalettedTexture2D(@NonNull PalettedTexture2D other) throws TextureException {
+        super(other);
+        setFrom(other);
+    }
+
+    /**
+     * Copies all properties and data from another {@link PalettedTexture2D}.
+     *
+     * @param other The other {@link PalettedTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
+     */
+    public void setFrom(@NonNull PalettedTexture2D other) throws TextureException {
         super.setFrom(other);
-        mPaletteFormat = other.getPaletteFormat();
     }
 
-    /**
-     * @return the texture palette format
-     */
-    public PaletteFormat getPaletteFormat() {
-        return mPaletteFormat;
-    }
-
-    /**
-     * @param paletteFormat the texture palette format
-     */
-    public void setPaletteFormat(PaletteFormat paletteFormat) {
-        this.mPaletteFormat = paletteFormat;
-        checkPaletteFormat();
-    }
-
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override
     public PalettedTexture2D clone() {
         try {
             return new PalettedTexture2D(this);
@@ -107,42 +144,17 @@ public class PalettedTexture2D extends CompressedTexture2D {
         }
     }
 
-    /**
-     * Adds and binds paletted texture. Pass in multiple buffer corresponding to different mipmaped levels.
-     */
-    private void checkPaletteFormat() {
-        switch (mPaletteFormat) {
-            case PALETTE4_RGB8:
-                setTexelFormat(GL_PALETTE4_RGB8_OES);
-                break;
-            case PALETTE4_RGBA8:
-                setTexelFormat(GL_PALETTE4_RGBA8_OES);
-                break;
-            case PALETTE4_R5_G6_B5:
-                setTexelFormat(GL_PALETTE4_R5_G6_B5_OES);
-                break;
-            case PALETTE4_RGBA4:
-                setTexelFormat(GL_PALETTE4_RGBA4_OES);
-                break;
-            case PALETTE4_RGB5_A1:
-                setTexelFormat(GL_PALETTE4_RGB5_A1_OES);
-                break;
-            case PALETTE8_RGB8:
-                setTexelFormat(GL_PALETTE8_RGB8_OES);
-                break;
-            case PALETTE8_RGBA8:
-            default:
-                setTexelFormat(GL_PALETTE8_RGBA8_OES);
-                break;
-            case PALETTE8_R5_G6_B5:
-                setTexelFormat(GL_PALETTE8_R5_G6_B5_OES);
-                break;
-            case PALETTE8_RGBA4:
-                setTexelFormat(GL_PALETTE8_RGBA4_OES);
-                break;
-            case PALETTE8_RGB5_A1:
-                setTexelFormat(GL_PALETTE8_RGB5_A1_OES);
-                break;
+    @GLThread
+    @Override
+    void add() throws TextureException {
+        // Verify Paletted textures are supported
+        try {
+            Capabilities.getInstance().loadExtension(OESCompressedPalettedTexture.name);
+        } catch (Capabilities.UnsupportedCapabilityException e) {
+            throw new TextureException("Paletted Textures are not supported on this device.");
         }
+
+        // Call super.add()
+        super.add();
     }
 }
