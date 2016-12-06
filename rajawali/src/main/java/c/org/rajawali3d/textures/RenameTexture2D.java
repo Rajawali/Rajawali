@@ -36,16 +36,16 @@ import c.org.rajawali3d.textures.annotation.Type.TextureType;
  * @see <a href="https://www.khronos.org/registry/gles/extensions/IMG/IMG_texture_compression_pvrtc.txt">
  * IMG_texture_compression_pvrtc</a>
  */
-public class PVRTCTexture2D extends CompressedTexture2D {
+public class RenameTexture2D extends CompressedTexture2D {
 
     /**
-     * Constructs a new {@link PVRTCTexture2D} with the specified name and type.
+     * Constructs a new {@link RenameTexture2D} with the specified name and type.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link PVRTCFormat} The PVRTC compression format.
      * @param name   {@link String} The texture name.
      */
-    public PVRTCTexture2D(@TextureType int type, @PVRTCFormat int format, @NonNull String name)
+    public RenameTexture2D(@TextureType int type, @PVRTCFormat int format, @NonNull String name)
         throws TextureException {
         super(type, name);
         setCompressionType(Compression2D.ATC);
@@ -53,15 +53,15 @@ public class PVRTCTexture2D extends CompressedTexture2D {
     }
 
     /**
-     * Constructs a new {@link PVRTCTexture2D} with the provided data.
+     * Constructs a new {@link RenameTexture2D} with the provided data.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link PVRTCFormat} The PVRTC compression format.
      * @param name   {@link String} The texture name.
      * @param data   {@link TextureDataReference} The texture data.
      */
-    public PVRTCTexture2D(@TextureType int type, @PVRTCFormat int format, @NonNull String name,
-                          @NonNull TextureDataReference data) throws TextureException {
+    public RenameTexture2D(@TextureType int type, @PVRTCFormat int format, @NonNull String name,
+                           @NonNull TextureDataReference data) throws TextureException {
         super(type, name, data);
         if ((format == IMGTextureCompressionPVRTC.COMPRESSED_RGB_PVRTC_2BPPV1_IMG
             || format == IMGTextureCompressionPVRTC.COMPRESSED_RGB_PVRTC_4BPPV1_IMG)
@@ -79,7 +79,7 @@ public class PVRTCTexture2D extends CompressedTexture2D {
     }
 
     /**
-     * Constructs a new {@link PVRTCTexture2D} with the provided data.
+     * Constructs a new {@link RenameTexture2D} with the provided data.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link PVRTCFormat} The PVRTC compression format.
@@ -87,8 +87,8 @@ public class PVRTCTexture2D extends CompressedTexture2D {
      * @param data   {@link TextureDataReference} The texture data.
      */
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    public PVRTCTexture2D(@TextureType int type, @PVRTCFormat int format, @NonNull String name,
-                          @NonNull TextureDataReference[] data) throws TextureException {
+    public RenameTexture2D(@TextureType int type, @PVRTCFormat int format, @NonNull String name,
+                           @NonNull TextureDataReference[] data) throws TextureException {
         super(type, name, data);
         for (int i = 0; i < data.length; ++i) {
             if ((format == IMGTextureCompressionPVRTC.COMPRESSED_RGB_PVRTC_2BPPV1_IMG
@@ -108,33 +108,33 @@ public class PVRTCTexture2D extends CompressedTexture2D {
     }
 
     /**
-     * Constructs a new {@link PVRTCTexture2D} with data and settings from the provided {@link PVRTCTexture2D}.
+     * Constructs a new {@link RenameTexture2D} with data and settings from the provided {@link RenameTexture2D}.
      *
-     * @param other The other {@link PVRTCTexture2D}.
+     * @param other The other {@link RenameTexture2D}.
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
-    public PVRTCTexture2D(@NonNull PVRTCTexture2D other) throws TextureException {
+    public RenameTexture2D(@NonNull RenameTexture2D other) throws TextureException {
         super(other);
         setFrom(other);
     }
 
     /**
-     * Copies all properties and data from another {@link PVRTCTexture2D}.
+     * Copies all properties and data from another {@link RenameTexture2D}.
      *
-     * @param other The other {@link PVRTCTexture2D}.
+     * @param other The other {@link RenameTexture2D}.
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
-    public void setFrom(@NonNull PVRTCTexture2D other) throws TextureException {
+    public void setFrom(@NonNull RenameTexture2D other) throws TextureException {
         super.setFrom(other);
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
-    public PVRTCTexture2D clone() {
+    public RenameTexture2D clone() {
         try {
-            return new PVRTCTexture2D(this);
+            return new RenameTexture2D(this);
         } catch (TextureException e) {
             RajLog.e(e.getMessage());
             return null;
