@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -19,13 +19,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
-import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
-import c.org.rajawali3d.gl.extensions.texture.OESTexture3D;
-import c.org.rajawali3d.gl.extensions.texture.OESTextureCompressionASTC;
+
 import org.rajawali3d.util.RajLog;
 
 import java.util.HashMap;
@@ -35,6 +29,23 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
+
+import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESElementIndexUINT;
+import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionDXT1;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionS3TC;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.texture.IMGTextureCompressionPVRTC;
+import c.org.rajawali3d.gl.extensions.texture.KHRTextureCompressionASTC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionLATC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionS3TC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionS3TCUpdate;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedPalettedTexture;
+import c.org.rajawali3d.gl.extensions.texture.OESTexture3D;
+import c.org.rajawali3d.gl.extensions.texture.OESTextureCompressionASTC;
 
 
 /**
@@ -75,10 +86,14 @@ public class Capabilities {
     private final int minAliasedPointSize;
     private final int maxAliasedPointSize;
 
-    @NonNull private final String   vendor;
-    @NonNull private final String   renderer;
-    @NonNull private final String   version;
-    @NonNull private final String[] extensions;
+    @NonNull
+    private final String vendor;
+    @NonNull
+    private final String renderer;
+    @NonNull
+    private final String version;
+    @NonNull
+    private final String[] extensions;
 
     private final Map<String, GLExtension> loadedExtensions;
 
@@ -179,8 +194,8 @@ public class Capabilities {
                 // We have at least one GLES 3 config, can now use eglChooseConfig()
                 // to see if one of them has at least 4 bits per color
                 final int[] configAttribs = {
-                        EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
-                        EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE
+                    EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
+                    EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE
                 };
                 value[0] = 0;
                 egl.eglChooseConfig(display, configAttribs, configs, 1, value);
@@ -294,32 +309,62 @@ public class Capabilities {
      * @see <a href="https://www.opengl.org/registry/">OpenGL Registry</a>
      */
     public GLExtension loadExtension(@NonNull String extension) throws UnsupportedCapabilityException,
-                                                                       IllegalArgumentException {
+        IllegalArgumentException {
         if (!loadedExtensions.containsKey(extension)) {
             GLExtension glExtension;
             switch (extension) {
                 // Compressed Texture Extensions
+                case AMDCompressedATCTexture.name:
+                    glExtension = AMDCompressedATCTexture.load();
+                    break;
+                case EXTTextureCompressionDXT1.name:
+                    glExtension = EXTTextureCompressionDXT1.load();
+                    break;
+                case EXTTextureCompressionS3TC.name:
+                    glExtension = EXTTextureCompressionS3TC.load();
+                    break;
+                case IMGTextureCompressionPVRTC.name:
+                    glExtension = IMGTextureCompressionPVRTC.load();
+                    break;
+                case KHRTextureCompressionASTC.name:
+                    glExtension = KHRTextureCompressionASTC.load();
+                    break;
+                case NVTextureCompressionLATC.name:
+                    glExtension = NVTextureCompressionLATC.load();
+                    break;
+                case NVTextureCompressionS3TC.name:
+                    glExtension = NVTextureCompressionS3TC.load();
+                    break;
                 case OESCompressedETC1RGB8.name:
                     glExtension = OESCompressedETC1RGB8.load();
                     break;
-                case AMDCompressedATCTexture.name:
-                    glExtension = AMDCompressedATCTexture.load();
+                case OESCompressedPalettedTexture.name:
+                    glExtension = OESCompressedPalettedTexture.load();
                     break;
                 case OESTextureCompressionASTC.name:
                     glExtension = OESTextureCompressionASTC.load();
                     break;
-                case EXTDebugMarker.name:
-                    glExtension = EXTDebugMarker.load();
-                    break;
+                // Texture utility extensions
                 case EXTTextureFilterAnisotropic.name:
                     glExtension = EXTTextureFilterAnisotropic.load();
+                    break;
+                case NVTextureCompressionS3TCUpdate.name:
+                    glExtension = NVTextureCompressionS3TCUpdate.load();
                     break;
                 case OESTexture3D.name:
                     glExtension = OESTexture3D.load();
                     break;
+                // Debug extensions
+                case EXTDebugMarker.name:
+                    glExtension = EXTDebugMarker.load();
+                    break;
+                // Other extensions
+                case OESElementIndexUINT.name:
+                    glExtension = OESElementIndexUINT.load();
+                    break;
                 default:
                     throw new IllegalArgumentException(
-                            "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
+                        "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
                             + "providing it via Capabilities#usingExtension(GLExtension)?");
             }
             loadedExtensions.put(extension, glExtension);

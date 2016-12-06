@@ -1,27 +1,38 @@
 package c.org.rajawali3d.gl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
-import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
-import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
-import c.org.rajawali3d.gl.extensions.texture.OESTexture3D;
-import c.org.rajawali3d.gl.extensions.texture.OESTextureCompressionASTC;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.gl.extensions.OESElementIndexUINT;
+import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionDXT1;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionS3TC;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.texture.IMGTextureCompressionPVRTC;
+import c.org.rajawali3d.gl.extensions.texture.KHRTextureCompressionASTC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionLATC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionS3TC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionS3TCUpdate;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedPalettedTexture;
+import c.org.rajawali3d.gl.extensions.texture.OESTexture3D;
+import c.org.rajawali3d.gl.extensions.texture.OESTextureCompressionASTC;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -65,7 +76,6 @@ public class CapabilitiesGLTest extends GlTestCase {
     public void tearDown() throws Exception {
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
-                Capabilities.clearInstance();
                 Capabilities.getInstance();
             }
         });
@@ -239,7 +249,57 @@ public class CapabilitiesGLTest extends GlTestCase {
                     e.printStackTrace();
                 }
                 try {
+                    Capabilities.getInstance().loadExtension(EXTTextureCompressionDXT1.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(EXTTextureCompressionS3TC.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(EXTTextureFilterAnisotropic.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(IMGTextureCompressionPVRTC.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(KHRTextureCompressionASTC.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(NVTextureCompressionLATC.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(NVTextureCompressionS3TC.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(NVTextureCompressionS3TCUpdate.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
                     Capabilities.getInstance().loadExtension(OESCompressedETC1RGB8.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(OESCompressedPalettedTexture.name);
+                } catch (UnsupportedCapabilityException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Capabilities.getInstance().loadExtension(OESTexture3D.name);
                 } catch (UnsupportedCapabilityException e) {
                     e.printStackTrace();
                 }
@@ -254,12 +314,7 @@ public class CapabilitiesGLTest extends GlTestCase {
                     e.printStackTrace();
                 }
                 try {
-                    Capabilities.getInstance().loadExtension(EXTTextureFilterAnisotropic.name);
-                } catch (UnsupportedCapabilityException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    Capabilities.getInstance().loadExtension(OESTexture3D.name);
+                    Capabilities.getInstance().loadExtension(OESElementIndexUINT.name);
                 } catch (UnsupportedCapabilityException e) {
                     e.printStackTrace();
                 }

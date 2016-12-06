@@ -18,7 +18,7 @@ GL_APICALL void GL_APIENTRY (*glCopyTexSubImage3DOES)(GLenum target, GLint level
                                                       GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
 
 JNIEXPORT jboolean JNICALL
-Java_c_org_rajawali3d_gl_extensions_OESTexture3D_loadFunctions(JNIEnv *env, jclass type) {
+Java_c_org_rajawali3d_gl_extensions_texture_OESTexture3D_loadFunctions(JNIEnv *env, jclass type) {
     glTexImage3DOES = (void (*)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *))
             eglGetProcAddress(TEX_IMAGE_3D_OES_NAME);
 
@@ -38,7 +38,7 @@ Java_c_org_rajawali3d_gl_extensions_OESTexture3D_loadFunctions(JNIEnv *env, jcla
 }
 
 JNIEXPORT void JNICALL
-Java_c_org_rajawali3d_gl_extensions_OESTexture3D_texImage3DOES(JNIEnv *env, jclass type, jint target, jint level,
+Java_c_org_rajawali3d_gl_extensions_texture_OESTexture3D_texImage3DOES(JNIEnv *env, jclass type, jint target, jint level,
                                                                jint internalFormat, jint width, jint height,
                                                                jint depth, jint border, jint format, jint dataType,
                                                                jobject pixels) {
@@ -50,7 +50,7 @@ Java_c_org_rajawali3d_gl_extensions_OESTexture3D_texImage3DOES(JNIEnv *env, jcla
 }
 
 JNIEXPORT void JNICALL
-Java_c_org_rajawali3d_gl_extensions_OESTexture3D_texSubImage3DOES(JNIEnv *env, jclass type, jobject target, jint level,
+Java_c_org_rajawali3d_gl_extensions_texture_OESTexture3D_texSubImage3DOES(JNIEnv *env, jclass type, jobject target, jint level,
                                                                   jint xoffset, jint yoffset, jint zoffset, jint width,
                                                                   jint height, jint depth, jobject format,
                                                                   jobject dataType, jobject pixels) {
@@ -62,7 +62,7 @@ Java_c_org_rajawali3d_gl_extensions_OESTexture3D_texSubImage3DOES(JNIEnv *env, j
 }
 
 JNIEXPORT void JNICALL
-Java_c_org_rajawali3d_gl_extensions_OESTexture3D_copyTexSubImage3DOES(JNIEnv *env, jclass type, jobject target,
+Java_c_org_rajawali3d_gl_extensions_texture_OESTexture3D_copyTexSubImage3DOES(JNIEnv *env, jclass type, jobject target,
                                                                       jint level, jint xoffset, jint yoffset,
                                                                       jint zoffset, jint x, jint y, jint width,
                                                                       jint height) {
