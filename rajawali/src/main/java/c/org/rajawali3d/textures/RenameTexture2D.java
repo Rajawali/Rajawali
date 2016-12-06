@@ -39,16 +39,16 @@ import c.org.rajawali3d.textures.annotation.Type.TextureType;
  * @see <a href="https://www.khronos.org/registry/gles/extensions/AMD/AMD_compressed_ATC_texture.txt">
  * AMD_compressed_ATC_texture</a>
  */
-public class ATCTexture2D extends CompressedTexture2D {
+public class RenameTexture2D extends CompressedTexture2D {
 
     /**
-     * Constructs a new {@link ATCTexture2D} with the specified name and type.
+     * Constructs a new {@link RenameTexture2D} with the specified name and type.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link ATCFormat} The ATC compression format.
      * @param name   {@link String} The texture name.
      */
-    public ATCTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name)
+    public RenameTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name)
         throws TextureException {
         super(type, name);
         setCompressionType(Compression2D.ATC);
@@ -56,15 +56,15 @@ public class ATCTexture2D extends CompressedTexture2D {
     }
 
     /**
-     * Constructs a new {@link ATCTexture2D} with the provided data.
+     * Constructs a new {@link RenameTexture2D} with the provided data.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link ATCFormat} The ATC compression format.
      * @param name   {@link String} The texture name.
      * @param data   {@link TextureDataReference} The texture data.
      */
-    public ATCTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name,
-                        @NonNull TextureDataReference data) throws TextureException {
+    public RenameTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name,
+                           @NonNull TextureDataReference data) throws TextureException {
         super(type, name, data);
         if (format == AMDCompressedATCTexture.ATC_RGB_AMD && data.getPixelFormat() != GLES20.GL_RGB) {
             throw new TextureException("When using ATC_RGB_AMD texel format, the pixel format must be GL_RGB.");
@@ -79,7 +79,7 @@ public class ATCTexture2D extends CompressedTexture2D {
     }
 
     /**
-     * Constructs a new {@link ATCTexture2D} with the provided data.
+     * Constructs a new {@link RenameTexture2D} with the provided data.
      *
      * @param type   {@link TextureType} The texture usage type.
      * @param format {@link ATCFormat} The ATC compression format.
@@ -87,8 +87,8 @@ public class ATCTexture2D extends CompressedTexture2D {
      * @param data   {@link TextureDataReference} The texture data.
      */
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    public ATCTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name,
-                        @NonNull TextureDataReference[] data) throws TextureException {
+    public RenameTexture2D(@TextureType int type, @ATCFormat int format, @NonNull String name,
+                           @NonNull TextureDataReference[] data) throws TextureException {
         super(type, name, data);
         for (int i = 0; i < data.length; ++i) {
             if (format == AMDCompressedATCTexture.ATC_RGB_AMD && data[i].getPixelFormat() != GLES20.GL_RGB) {
@@ -105,33 +105,33 @@ public class ATCTexture2D extends CompressedTexture2D {
     }
 
     /**
-     * Constructs a new {@link ATCTexture2D} with data and settings from the provided {@link ATCTexture2D}.
+     * Constructs a new {@link RenameTexture2D} with data and settings from the provided {@link RenameTexture2D}.
      *
-     * @param other The other {@link ATCTexture2D}.
+     * @param other The other {@link RenameTexture2D}.
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
-    public ATCTexture2D(@NonNull ATCTexture2D other) throws TextureException {
+    public RenameTexture2D(@NonNull RenameTexture2D other) throws TextureException {
         super(other);
         setFrom(other);
     }
 
     /**
-     * Copies all properties and data from another {@link ATCTexture2D}.
+     * Copies all properties and data from another {@link RenameTexture2D}.
      *
-     * @param other The other {@link ATCTexture2D}.
+     * @param other The other {@link RenameTexture2D}.
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
-    public void setFrom(@NonNull ATCTexture2D other) throws TextureException {
+    public void setFrom(@NonNull RenameTexture2D other) throws TextureException {
         super.setFrom(other);
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
-    public ATCTexture2D clone() {
+    public RenameTexture2D clone() {
         try {
-            return new ATCTexture2D(this);
+            return new RenameTexture2D(this);
         } catch (TextureException e) {
             RajLog.e(e.getMessage());
             return null;
