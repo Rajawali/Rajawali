@@ -15,18 +15,17 @@ package org.rajawali3d;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-import org.rajawali3d.geometry.BufferInfo;
-import org.rajawali3d.geometry.IndexedGeometry;
+
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.cameras.Camera;
+import org.rajawali3d.geometry.BufferInfo;
+import org.rajawali3d.geometry.IndexedGeometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.math.Matrix;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
-import c.org.rajawali3d.textures.TextureAtlas;
-import c.org.rajawali3d.textures.TexturePacker.Tile;
 import org.rajawali3d.util.GLU;
 import org.rajawali3d.util.RajLog;
 import org.rajawali3d.visitors.INode;
@@ -36,6 +35,9 @@ import java.nio.FloatBuffer;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import c.org.rajawali3d.textures.TextureAtlas;
+import c.org.rajawali3d.textures.TexturePacker.Tile;
 
 /**
  * This is the main object that all other 3D objects inherit from.
@@ -303,7 +305,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			material.setModelViewMatrix(mMVMatrix);
 
 			if(mIsVisible) {
-                int bufferType = mGeometry.getIndexBufferInfo().bufferType == IndexedGeometry.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
+                int bufferType = mGeometry.getIndexBufferInfo().bufferType == BufferInfo.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().glHandle);
 				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -447,7 +449,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			pickingMaterial.setModelViewMatrix(mMVMatrix);
 
 			// Draw the object using its picking color
-			int bufferType = mGeometry.getIndexBufferInfo().bufferType == IndexedGeometry.BufferType.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
+			int bufferType = mGeometry.getIndexBufferInfo().bufferType == BufferInfo.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().glHandle);
 			GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
 			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);

@@ -1,22 +1,23 @@
 package org.rajawali3d.geometry;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.rajawali3d.geometry.Geometry.BufferType;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
+import c.org.rajawali3d.GlTestCase;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -140,11 +141,11 @@ public class IndexedGeometryTest extends GlTestCase {
         final FloatBuffer colorBuffer = (FloatBuffer) colorInfo.buffer;
         final FloatBuffer textureBuffer = (FloatBuffer) textureInfo.buffer;
         final Buffer indexBuffer = indexInfo.buffer;
-        assertEquals("Vertex buffer info set to wrong type.", BufferType.FLOAT_BUFFER, vertexInfo.bufferType);
-        assertEquals("Normal buffer info set to wrong type.", BufferType.FLOAT_BUFFER, normalInfo.bufferType);
-        assertEquals("Texture2D buffer info set to wrong type.", BufferType.FLOAT_BUFFER, textureInfo.bufferType);
-        assertEquals("Color buffer info set to wrong type.", BufferType.FLOAT_BUFFER, colorInfo.bufferType);
-        assertEquals("Index buffer info set to wrong type.", BufferType.INT_BUFFER, indexInfo.bufferType);
+        assertEquals("Vertex buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, vertexInfo.bufferType);
+        assertEquals("Normal buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, normalInfo.bufferType);
+        assertEquals("Texture2D buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, textureInfo.bufferType);
+        assertEquals("Color buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, colorInfo.bufferType);
+        assertEquals("Index buffer info set to wrong type.", BufferInfo.INT_BUFFER, indexInfo.bufferType);
         assertEquals("Vertex buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, vertexInfo.usage);
         assertEquals("Normal buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, normalInfo.usage);
         assertEquals("Texture2D buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, textureInfo.usage);
@@ -215,11 +216,11 @@ public class IndexedGeometryTest extends GlTestCase {
         final FloatBuffer colorBuffer = (FloatBuffer) colorInfo.buffer;
         final FloatBuffer textureBuffer = (FloatBuffer) textureInfo.buffer;
         final Buffer indexBuffer = indexInfo.buffer;
-        assertEquals("Vertex buffer info set to wrong type.", BufferType.FLOAT_BUFFER, vertexInfo.bufferType);
-        assertEquals("Normal buffer info set to wrong type.", BufferType.FLOAT_BUFFER, normalInfo.bufferType);
-        assertEquals("Color buffer info set to wrong type.", BufferType.FLOAT_BUFFER, colorInfo.bufferType);
-        assertEquals("Texture2D buffer info set to wrong type.", BufferType.FLOAT_BUFFER, textureInfo.bufferType);
-        assertEquals("Index buffer info set to wrong type.", BufferType.INT_BUFFER, indexInfo.bufferType);
+        assertEquals("Vertex buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, vertexInfo.bufferType);
+        assertEquals("Normal buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, normalInfo.bufferType);
+        assertEquals("Color buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, colorInfo.bufferType);
+        assertEquals("Texture2D buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, textureInfo.bufferType);
+        assertEquals("Index buffer info set to wrong type.", BufferInfo.INT_BUFFER, indexInfo.bufferType);
         assertEquals("Vertex buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, vertexInfo.usage);
         assertEquals("Normal buffer info set to wrong usage.", GLES20.GL_STREAM_DRAW, normalInfo.usage);
         assertEquals("Color buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, colorInfo.usage);
