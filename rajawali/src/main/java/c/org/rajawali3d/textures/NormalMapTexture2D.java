@@ -35,7 +35,7 @@ public class NormalMapTexture2D extends SingleTexture2D {
      *
      * @param other The other {@link NormalMapTexture2D}.
      *
-     *              @throws TextureException Thrown if an error occurs during any part of the texture creation process.
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
     public NormalMapTexture2D(@NonNull NormalMapTexture2D other) throws TextureException {
         super(other);
@@ -54,11 +54,14 @@ public class NormalMapTexture2D extends SingleTexture2D {
      * Constructs a new {@link AlphaMaskTexture2D} with data provided by the Android resource id. The texture name is
      * set by querying Android for the resource name.
      *
-     * @param name {@link String} The texture name.
+     * @param name       {@link String} The texture name.
      * @param context    {@link Context} The application context.
      * @param resourceId {@code int} The Android resource id to load from.
+     *
+     * @throws TextureException if there is an error reading the resource.
      */
-    public NormalMapTexture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId) {
+    public NormalMapTexture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId)
+        throws TextureException {
         super(Type.NORMAL, name);
         setTextureDataFromResourceId(context, resourceId);
     }

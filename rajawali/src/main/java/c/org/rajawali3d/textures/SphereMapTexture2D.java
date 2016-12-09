@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -15,8 +15,10 @@ package c.org.rajawali3d.textures;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.textures.annotation.Type;
+
 import org.rajawali3d.util.RajLog;
+
+import c.org.rajawali3d.textures.annotation.Type;
 
 /**
  * A 2D spherically mapped environmental texture. These textures are typically used to simulate highly reflective
@@ -53,11 +55,14 @@ public class SphereMapTexture2D extends SingleTexture2D {
      * Constructs a new {@link AlphaMaskTexture2D} with data provided by the Android resource id. The texture name is
      * set by querying Android for the resource name.
      *
-     * @param name {@link String} The texture name.
+     * @param name       {@link String} The texture name.
      * @param context    {@link Context} The application context.
      * @param resourceId {@code int} The Android resource id to load from.
+     *
+     * @throws TextureException if there is an error reading the resource.
      */
-    public SphereMapTexture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId) {
+    public SphereMapTexture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId)
+        throws TextureException {
         super(Type.SPHERE_MAP, name);
         setTextureDataFromResourceId(context, resourceId);
     }

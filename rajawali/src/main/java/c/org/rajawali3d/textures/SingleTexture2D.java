@@ -21,12 +21,13 @@ import android.opengl.GLUtils;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 
-import c.org.rajawali3d.annotations.GLThread;
 import net.jcip.annotations.ThreadSafe;
 
 import org.rajawali3d.util.RajLog;
 
+import c.org.rajawali3d.annotations.GLThread;
 import c.org.rajawali3d.textures.annotation.PixelFormat;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 
@@ -73,8 +74,11 @@ public abstract class SingleTexture2D extends BaseTexture {
      * @param context    {@link Context} The application context.
      * @param type       {@link TextureType} The texture usage type.
      * @param resourceId {@code int} The Android resource id to load from.
+     *
+     * @throws TextureException if there is an error reading the resource.
      */
-    public SingleTexture2D(@NonNull Context context, @TextureType int type, @DrawableRes int resourceId) {
+    public SingleTexture2D(@NonNull Context context, @TextureType int type, @DrawableRes int resourceId)
+        throws TextureException {
         this(type, context.getResources().getResourceName(resourceId));
         setTextureDataFromResourceId(context, resourceId);
     }
@@ -130,9 +134,12 @@ public abstract class SingleTexture2D extends BaseTexture {
      * @param resourceId {@code int} The Android resource id to load from.
      *
      * @return The new {@link TextureDataReference} which was created.
+     * @throws TextureException if there is an error reading the resource.
      */
     @NonNull
-    public TextureDataReference setTextureDataFromResourceId(@NonNull Context context, @DrawableRes int resourceId) {
+    public TextureDataReference setTextureDataFromResourceId(@NonNull Context context,
+                                                             @RawRes @DrawableRes int resourceId)
+        throws TextureException {
         // Prevent the bitmap from being scaled as it is decoded
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;

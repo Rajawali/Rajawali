@@ -16,9 +16,12 @@ package c.org.rajawali3d.textures;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.textures.annotation.Type;
+
 import net.jcip.annotations.ThreadSafe;
+
 import org.rajawali3d.util.RajLog;
+
+import c.org.rajawali3d.textures.annotation.Type;
 
 /**
  * Diffuse 2D texture.
@@ -33,6 +36,7 @@ public class Texture2D extends SingleTexture2D {
      * Constructs a new {@link Texture2D} from the provided {@link Texture2D}.
      *
      * @param other {@link Texture2D} The source texture.
+     *
      * @throws TextureException thrown if there is an error copying the texture.
      */
     public Texture2D(@NonNull Texture2D other) throws TextureException {
@@ -51,11 +55,14 @@ public class Texture2D extends SingleTexture2D {
     /**
      * Constructs a new {@link Texture2D} with the provided name and data provided by the specified Android resource.
      *
-     * @param name {@link String} The texture name.
-     * @param context {@link Context} The Android application context.
+     * @param name       {@link String} The texture name.
+     * @param context    {@link Context} The Android application context.
      * @param resourceId {@link DrawableRes} {@code int} The Android resource.
+     *
+     * @throws TextureException if there is an error reading the resource.
      */
-    public Texture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId) {
+    public Texture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId)
+        throws TextureException {
         super(context, Type.DIFFUSE, resourceId);
         setTextureName(name);
     }
