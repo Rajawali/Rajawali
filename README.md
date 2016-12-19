@@ -47,6 +47,7 @@ Rajawali includes a number of unit, integration and GL specific integration test
 |:----------|:----------:|:-------------:|:-------:|:---:|:---:|:--------:|:---------:|
 |Samsung Galaxy Tab 2 7.0+|SGH-T869|4.0.4|15|ARMv7|Mali-400MP|2.0|1.4|
 |Samasung Galaxy Nexus|Galaxy Nexus|4.3|18|ARMv7|PowerVR SGX 540|2.0|1.4|
+|iNOVA EX1080|EX1080|4.4.4|19|ARMv7|Mali-400MP|2.0|1.4|
 |Samsung Nexus 10|Nexus 10|5.0.2|21|ARMv7|Mali-T604|3.1|1.4|
 |Asus Nexus 7 (Gen 1)|Nexus 7|5.1.1|22|ARMv7|nVidia Tegra 3|2.0|1.4|
 |LG Nexus 4|Nexus 4|5.1.1|22|ARMv7 (Krait 300)|Adreno 320|3.0|1.4|
