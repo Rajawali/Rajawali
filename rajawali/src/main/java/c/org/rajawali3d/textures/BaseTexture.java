@@ -15,9 +15,9 @@ package c.org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.surface.gles.GLESCapabilities;
+import c.org.rajawali3d.surface.gles.GLESCapabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.surface.gles.extensions.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.TexelFormat;
 import c.org.rajawali3d.textures.annotation.TextureTarget;
@@ -84,7 +84,7 @@ public abstract class BaseTexture {
     /**
      * Indicates whether the source {@link TextureDataReference} should be recycled immediately after the OpenGL
      * texture
-     * has been created. The main reason for not recycling is scene caching. Scene caching stores all textures and
+     * has been created. The main reason for not recycling is scene caching. AScene caching stores all textures and
      * relevant OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      */
@@ -320,7 +320,7 @@ public abstract class BaseTexture {
     /**
      * Fetches whether the source {@link TextureDataReference} should be recycled immediately after the texture has
      * been
-     * created. The main reason for not recycling is Scene caching. Scene caching stores all textures and relevant
+     * created. The main reason for not recycling is AScene caching. AScene caching stores all textures and relevant
      * render context specific data. This is used when the render context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      *
@@ -332,7 +332,7 @@ public abstract class BaseTexture {
 
     /**
      * Sets whether the source {@link TextureDataReference} should be recycled immediately after the texture has been
-     * created. The main reason for not recycling is Scene caching. Scene caching stores all textures and relevant
+     * created. The main reason for not recycling is AScene caching. AScene caching stores all textures and relevant
      * render context specific data. This is used when the render context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      *
@@ -450,7 +450,7 @@ public abstract class BaseTexture {
      * EXT_texture_filter_anisotropic</a>
      */
     public void setMaxAnisotropy(@FloatRange(from = 1.0) float maxAnisotropy) throws UnsupportedCapabilityException {
-        final float max = ((EXTTextureFilterAnisotropic) Capabilities.getInstance().loadExtension
+        final float max = ((EXTTextureFilterAnisotropic) GLESCapabilities.getInstance().loadExtension
                 (EXTTextureFilterAnisotropic.name)).getMaxSupportedAnisotropy();
         if (maxAnisotropy > max) {
             RajLog.e("The requested maximum anisotropy is outside the supported range of this device. Clamping to: "

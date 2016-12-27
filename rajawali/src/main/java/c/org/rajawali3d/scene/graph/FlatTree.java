@@ -10,6 +10,8 @@ import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.camera.Camera;
 import c.org.rajawali3d.intersection.Intersector.Intersection;
+import c.org.rajawali3d.object.RenderableObject;
+
 import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -87,6 +89,28 @@ public class FlatTree extends ASceneGraph {
                 case INSIDE:
                 case INTERSECT:
                     list.add(child);
+                    break;
+                case OUTSIDE:
+                default:
+            }
+        }
+        return list;
+    }
+
+    @RequiresReadLock
+    @NonNull
+    @Override
+    public List<RenderableObject> visibleObjectIntersection(@NonNull Camera camera) {
+        final LinkedList<RenderableObject> list = new LinkedList<>();
+        @Intersection int intersection;
+        SceneNode child;
+        for (int i = 0, j = children.size(); i < j; ++i) {
+            child = children.get(i);
+            intersection = camera.intersectBounds(child);
+            switch (intersection) {
+                case INSIDE:
+                case INTERSECT:
+                    list.addAll(child.getVisibleObjects());
                     break;
                 case OUTSIDE:
                 default:

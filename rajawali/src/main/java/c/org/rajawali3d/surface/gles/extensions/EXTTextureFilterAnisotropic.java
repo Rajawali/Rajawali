@@ -1,10 +1,10 @@
-package c.org.rajawali3d.gl.extensions;
+package c.org.rajawali3d.surface.gles.extensions;
 
 import android.opengl.GLES20;
 import android.opengl.GLException;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.surface.gles.GLESCapabilities.UnsupportedCapabilityException;
 import org.rajawali3d.util.RajLog;
 
 /**

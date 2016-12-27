@@ -24,7 +24,7 @@ import static c.org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.surface.gles.GLESCapabilities;
 import c.org.rajawali3d.textures.BaseTexture;
 import c.org.rajawali3d.textures.CubeMapTexture;
 import c.org.rajawali3d.textures.SphereMapTexture2D;
@@ -248,7 +248,7 @@ public class Material {
 
     /**
      * The maximum number of available textures for this device. This value is returned from
-     * {@link Capabilities#getMaxTextureImageUnits()}.
+     * {@link GLESCapabilities#getMaxTextureImageUnits()}.
      */
     private int                   maxTextures;
 
@@ -305,7 +305,7 @@ public class Material {
         // that would not allow us to finish construction of this material until the EGL context is available. Instead,
         // we are choosing the maximum integer Java can handle, and we will print a warning if the number of added textures
         // exceeds the capability once known. In this event they will be used in listed order until the max is hit.
-        maxTextures = capabilitiesCheckDeferred ? Integer.MAX_VALUE : Capabilities.getInstance().getMaxTextureImageUnits();
+        maxTextures = capabilitiesCheckDeferred ? Integer.MAX_VALUE : GLESCapabilities.getInstance().getMaxTextureImageUnits();
 
         color = new float[]{ 1, 0, 0, 1};
         ambientColor = new float[]{ .2f, .2f, .2f};
@@ -742,7 +742,7 @@ public class Material {
      */
     private void checkCapabilitiesIfNeeded() {
         if (!capabilitiesCheckDeferred) return;
-        maxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
+        maxTextures = GLESCapabilities.getInstance().getMaxTextureImageUnits();
     }
 
     /**

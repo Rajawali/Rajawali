@@ -10,7 +10,12 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package c.org.rajawali3d.gl;
+package c.org.rajawali3d.surface.gles;
+
+import c.org.rajawali3d.surface.gles.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.surface.gles.extensions.GLExtension;
+import c.org.rajawali3d.surface.gles.extensions.OESTexture3D;
+import org.rajawali3d.util.RajLog;
 
 import android.annotation.TargetApi;
 import android.opengl.EGLExt;
@@ -19,34 +24,29 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import c.org.rajawali3d.gl.extensions.OESTexture3D;
-import org.rajawali3d.util.RajLog;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Lists all OpenGL specific capabilities
  *
  * @author dennis.ippel
  */
-public class Capabilities {
+public class GLESCapabilities {
 
     static {
         System.loadLibrary("glExtensions");
     }
 
-    private static Capabilities instance = null;
+    private static GLESCapabilities instance = null;
 
-    private static volatile boolean glChecked = false;
+    private static volatile boolean glesVersionChecked = false;
 
     private static int eglMajorVersion;
     private static int eglMinorVersion;
@@ -78,7 +78,7 @@ public class Capabilities {
 
     private int[] param;
 
-    private Capabilities() {
+    private GLESCapabilities() {
         RajLog.d("Fetching device capabilities.");
 
         param = new int[1];
@@ -111,15 +111,15 @@ public class Capabilities {
     }
 
     @NonNull
-    public static Capabilities getInstance() {
+    public static GLESCapabilities getInstance() {
         if (instance == null) {
-            instance = new Capabilities();
+            instance = new GLESCapabilities();
         }
         return instance;
     }
 
     @VisibleForTesting
-    static void checkGLVersion() {
+    static void checkGLESVersion() {
         // Get an EGL context and display
         final EGL10 egl = (EGL10) EGLContext.getEGL();
         final EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
@@ -137,16 +137,16 @@ public class Capabilities {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             // The API for GLES3 might exist, we need to check
             // RajLog.d("Attempting to get an OpenGL ES 3 config.");
-            checkGLVersionIs3(egl, display);
+            checkGLESVersionIs3(egl, display);
         }
         egl.eglTerminate(display);
-        // RajLog.d("Determined GLES Major version to be: " + glesMajorVersion);
-        glChecked = true;
+        // RajLog.d("Determined GLES Major version to be: " + mGLESMajorVersion);
+        glesVersionChecked = true;
     }
 
     @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
     @VisibleForTesting
-    static void checkGLVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
+    static void checkGLESVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
         // Find out how many EGLConfigs exist
         final int[] num_config = new int[1];
         egl.eglGetConfigs(display, null, 0, num_config);
@@ -162,7 +162,7 @@ public class Capabilities {
         for (EGLConfig config : configs) {
             egl.eglGetConfigAttrib(display, config, EGL10.EGL_RENDERABLE_TYPE, value);
             if ((value[0] & EGLExt.EGL_OPENGL_ES3_BIT_KHR) != 0) {
-                // TODO is this secondary check for color sizes useful?
+                // TODO is this secondary check for color sizes necessary, correct, and useful?
                 // We have at least one GLES 3 config, can now use eglChooseConfig()
                 // to see if one of them has at least 4 bits per color
                 final int[] configAttribs = {
@@ -193,7 +193,7 @@ public class Capabilities {
      * @return
      */
     public static int getEGLMajorVersion() {
-        if (!glChecked) checkGLVersion();
+        if (!glesVersionChecked) checkGLESVersion();
         return eglMajorVersion;
     }
 
@@ -203,7 +203,7 @@ public class Capabilities {
      * @return
      */
     public static int getEGLMinorVersion() {
-        if (!glChecked) checkGLVersion();
+        if (!glesVersionChecked) checkGLESVersion();
         return eglMinorVersion;
     }
 
@@ -213,7 +213,7 @@ public class Capabilities {
      * @return
      */
     public static int getGLESMajorVersion() {
-        if (!glChecked) checkGLVersion();
+        if (!glesVersionChecked) checkGLESVersion();
         return glesMajorVersion;
     }
 
@@ -267,7 +267,7 @@ public class Capabilities {
      * @throws UnsupportedCapabilityException if the requested extension is not supported by the device.
      * @throws IllegalArgumentException Thrown if the requested extension is unknown to Rajawali. This does not mean
      * it is not available, however you will have to implement {@link GLExtension} for this extension and load it
-     * manually then provide it to {@link Capabilities#usingExtension(GLExtension)} if you wish for its parameters to
+     * manually then provide it to {@link GLESCapabilities#usingExtension(GLExtension)} if you wish for its parameters to
      * be available through this central repository.
      *
      * @see <a href="https://www.opengl.org/registry/">OpenGL Registry</a>
@@ -285,7 +285,7 @@ public class Capabilities {
                 default:
                     throw new IllegalArgumentException(
                             "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
-                            + "providing it via Capabilities#usingExtension(GLExtension)?");
+                            + "providing it via GLESCapabilities#usingExtension(GLExtension)?");
             }
         }
         return loadedExtensions.get(extension);
@@ -453,7 +453,7 @@ public class Capabilities {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("-=-=-=- OpenGL Capabilities -=-=-=-\n");
+        sb.append("-=-=-=- OpenGL ES Capabilities -=-=-=-\n");
         sb.append("Max Combined Texture2D Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
         sb.append("Max Cube Map Texture2D Size          : ").append(maxCubeMapTextureSize).append("\n");
         sb.append("Max Fragment Uniform Vectors       : ").append(maxFragmentUniformVectors).append("\n");
@@ -470,7 +470,7 @@ public class Capabilities {
         sb.append("Max Aliased Line Width             : ").append(maxAliasedLineWidth).append("\n");
         sb.append("Min Aliased Point Size             : ").append(minAliasedPointSize).append("\n");
         sb.append("Max Aliased Point Width            : ").append(maxAliasedPointSize).append("\n");
-        sb.append("-=-=-=- /OpenGL Capabilities -=-=-=-\n");
+        sb.append("-=-=-=- OpenGL ES Capabilities -=-=-=-\n");
         return sb.toString();
     }
 

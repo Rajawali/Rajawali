@@ -44,7 +44,7 @@ public class Plane extends Object3D {
 
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * The plane will be facing the camera ({@link Axis.Z}) by default.
+	 * The plane will be facing the camera ({@link Axis#Z}) by default.
 	 */
 	public Plane() {
 		this(1f, 1f, 1, 1, Axis.Z, true, false, 1);
@@ -61,7 +61,7 @@ public class Plane extends Object3D {
 
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * The plane will be facing the camera ({@link Axis.Z}) by default.
+	 * The plane will be facing the camera ({@link Axis#Z}) by default.
 	 *
 	 * @param width
 	 *            The plane width
@@ -79,7 +79,7 @@ public class Plane extends Object3D {
 
 	/**
 	 * Create a plane primitive. Calling this constructor will create texture coordinates but no vertex color buffer.
-	 * The plane will be facing the camera ({@link Axis.Z}) by default.
+	 * The plane will be facing the camera ({@link Axis#Z}) by default.
 	 *
 	 * @param width
 	 *            The plane width

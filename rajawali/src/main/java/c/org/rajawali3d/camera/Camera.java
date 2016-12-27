@@ -1,28 +1,29 @@
 package c.org.rajawali3d.camera;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.Size;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.scene.graph.NodeMember;
+import c.org.rajawali3d.intersection.Intersector.Intersection;
 import c.org.rajawali3d.scene.graph.NodeParent;
-import net.jcip.annotations.ThreadSafe;
+import c.org.rajawali3d.scene.graph.SceneNode;
 import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
-import c.org.rajawali3d.intersection.Intersector.Intersection;
+
+import net.jcip.annotations.ThreadSafe;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 
 /**
  * Except where otherwise annotated, this class is thread safe and no locks are required to interact with it. Notable
- * exceptions are {@link #getViewMatrix()}, {@link #getFrustumCorners(Vector3[], boolean)},
- * {@link #getFrustumCorners(Vector3[])}, and {@link #updateFrustum(Matrix4)}.
+ * exceptions are {@link #getViewMatrix()}, {@link #getFrustumCorners(Vector3[])},
+ * {@link #getFrustumCorners(Vector3[])}, and {@link #updateFrustum()}.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @ThreadSafe
-public class Camera implements NodeMember {
+public class Camera extends SceneNode {
 
     @NonNull
     private final Vector3 maxBound = new Vector3();
@@ -35,9 +36,6 @@ public class Camera implements NodeMember {
 
     @NonNull
     protected final Frustum frustum = new Frustum();
-
-    @Nullable
-    protected NodeParent parent;
 
     @Nullable
     protected volatile Matrix4 projectionMatrix;
@@ -66,10 +64,8 @@ public class Camera implements NodeMember {
 
     @Override
     public void modelMatrixUpdated() {
-        if (parent != null) {
-            viewMatrix.setAll(parent.getWorldModelMatrix()).inverse();
-        }
-        // No need to update bounds because the node parent will handle this
+        viewMatrix.setAll(getWorldModelMatrix()).inverse();
+        // No need to update bounds because the node parent will handle this TODO is this still true?
         updateFrustum();
     }
 
@@ -231,16 +227,5 @@ public class Camera implements NodeMember {
     public void setFieldOfView(double fieldOfView) {
         this.fieldOfView = fieldOfView;
         setProjectionMatrix(lastWidth, lastHeight);
-    }
-
-    @NonNull @Override
-    public ObjectRenderer render(int type, @Nullable ObjectRenderer lastRenderer, @NonNull Matrix4 view,
-                                 @NonNull Matrix4 projection, @NonNull Matrix4 viewProjection) {
-        return null;
-    }
-
-    @Override
-    public void setObjectRenderer(int type, @NonNull ObjectRenderer renderer) {
-
     }
 }

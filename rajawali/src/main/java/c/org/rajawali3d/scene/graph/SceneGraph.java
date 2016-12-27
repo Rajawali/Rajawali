@@ -5,6 +5,7 @@ import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.object.RenderableObject;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +20,8 @@ public interface SceneGraph extends NodeParent, AABB {
 
     //TODO: Should intersection take a boolean parameter for an optional sort?
     @RequiresReadLock @NonNull List<NodeMember> intersection(@NonNull Camera camera);
+
+    @RequiresReadLock @NonNull List<RenderableObject> visibleObjectIntersection(@NonNull Camera camera);
 
     @RequiresWriteLock boolean add(@NonNull SceneNode node);
 

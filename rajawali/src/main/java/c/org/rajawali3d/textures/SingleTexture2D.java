@@ -31,7 +31,7 @@ import c.org.rajawali3d.textures.annotation.Wrap;
 
 import org.rajawali3d.util.RajLog;
 
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.surface.gles.extensions.EXTTextureFilterAnisotropic;
 
 /**
  * This class is used to specify common functions of a single 2D texture. Subclasses are expected to be thread safe.

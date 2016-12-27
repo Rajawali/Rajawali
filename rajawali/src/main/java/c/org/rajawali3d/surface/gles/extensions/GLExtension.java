@@ -1,4 +1,4 @@
-package c.org.rajawali3d.gl.extensions;
+package c.org.rajawali3d.surface.gles.extensions;
 
 import android.support.annotation.NonNull;
 

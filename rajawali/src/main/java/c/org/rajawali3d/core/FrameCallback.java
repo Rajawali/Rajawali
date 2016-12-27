@@ -1,10 +1,13 @@
-package c.org.rajawali3d.scene;
+package c.org.rajawali3d.core;
 
-import c.org.rajawali3d.annotations.GLThread;
-import c.org.rajawali3d.engine.Engine;
+import c.org.rajawali3d.annotations.RenderThread;
+
+import android.support.annotation.FloatRange;
 
 /**
- * Interface for receiving frame event callbacks from the {@link Engine}. The timing of this
+ * TODO description needs updating
+ *
+ * Interface for receiving frame event callbacks from the {@link RenderControl}. The timing of this
  * interface assumes that view rendering does not affect the timing of operations before and after the frame. Pre- and Post- operations are
  * provided because of how these tie in with the animation system. Pre- tasks will be executed prior to animation
  * updates. Post- tasks will be executed after all drawing has occurred.
@@ -16,35 +19,36 @@ import c.org.rajawali3d.engine.Engine;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public interface SceneFrameCallback {
+
+public interface FrameCallback {
 
     /**
-     * Frame start callback. This will be called prior to any animation updates in the scene.
+     * Frame start callback. This will be called after any queued RenderTasks and prior to any animation updates
      *
      * @param deltaTime {@code double} Time passed since last frame in seconds.
      */
-    @GLThread
-    void onFrameStart(double deltaTime);
+    @RenderThread
+    void onFrameStart(@FloatRange(from = 0.0) final double deltaTime);
 
     /**
-     * Frame end callback. Called after all frame drawing has completed, including plugins.
+     * Frame end callback. Called after all frame drawing has completed.
      *
      * @param deltaTime {@code double} Time passed since last frame in seconds.
      */
-    @GLThread
-    void onFrameEnd(double deltaTime);
+    @RenderThread
+    void onFrameEnd(@FloatRange(from = 0.0) final double deltaTime);
 
     /**
-     * Should this be registered as a pre-frame callback.
+     * Should this be registered as a frame start callback.
      *
-     * @return {@code boolean} True if this is a pre-frame callback implementation.
+     * @return {@code boolean} True if this is a frame start callback implementation.
      */
     boolean callFrameStart();
 
     /**
-     * Should this be registered as a post-frame callback.
+     * Should this be registered as a frame end callback.
      *
-     * @return {@code boolean} True if this is a post-frame callback implementation.
+     * @return {@code boolean} True if this is a frame end callback implementation.
      */
     boolean callFrameEnd();
 }

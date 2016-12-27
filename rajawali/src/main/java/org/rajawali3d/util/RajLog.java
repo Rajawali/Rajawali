@@ -19,7 +19,7 @@ import android.opengl.GLES20;
 import android.opengl.GLException;
 import android.os.Build;
 import android.util.Log;
-import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.surface.gles.GLESCapabilities;
 
 public final class RajLog {
 
@@ -64,7 +64,7 @@ public final class RajLog {
     }
 
     /**
-     * Outputs System and OpenGL information. This function should be called
+     * Outputs System and OpenGL ES information. This function should be called
      * from initScene.
      */
     public static void systemInformation() {
@@ -78,7 +78,7 @@ public final class RajLog {
         sb.append("CPU ABI 2 : ").append(android.os.Build.CPU_ABI2).append("\n");
         sb.append("-=-=-=- /Device Information -=-=-=-\n\n");
 
-        sb.append("-=-=-=- OpenGL Information -=-=-=-\n");
+        sb.append("-=-=-=- OpenGL ES Information -=-=-=-\n");
         sb.append("Vendor : ").append(GLES20.glGetString(GLES20.GL_VENDOR)).append("\n");
         sb.append("Renderer : ").append(GLES20.glGetString(GLES20.GL_RENDERER)).append("\n");
         sb.append("Version : ").append(GLES20.glGetString(GLES20.GL_VERSION)).append("\n");
@@ -93,8 +93,8 @@ public final class RajLog {
                 sb.append(" : ").append(ext[i]).append('\n');
             }
         }
-        sb.append("-=-=-=- /OpenGL Information -=-=-=-\n");
-        sb.append(Capabilities.getInstance().toString());
+        sb.append("-=-=-=- /OpenGL ES Information -=-=-=-\n");
+        sb.append(GLESCapabilities.getInstance().toString());
 
         RajLog.i(sb.toString());
     }

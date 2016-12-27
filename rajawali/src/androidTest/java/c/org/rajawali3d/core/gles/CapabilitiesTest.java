@@ -1,4 +1,4 @@
-package c.org.rajawali3d.gl;
+package c.org.rajawali3d.engine.gles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,8 +9,9 @@ import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.gl.extensions.GLExtension;
+import c.org.rajawali3d.surface.gles.GLESCapabilities;
+import c.org.rajawali3d.surface.gles.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.surface.gles.extensions.GLExtension;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,8 +49,8 @@ public class CapabilitiesTest extends GlTestCase {
         super.setUp(CapabilitiesTest.class.getSimpleName());
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
-                Capabilities.getInstance();
-                Capabilities.checkGLVersion();
+                GLESCapabilities.getInstance();
+                GLESCapabilities.checkGLVersion();
             }
         });
     }
@@ -61,11 +62,11 @@ public class CapabilitiesTest extends GlTestCase {
 
     @Test
     public void getInstance() throws Exception {
-        final Capabilities[] output = new Capabilities[]{null};
+        final GLESCapabilities[] output = new GLESCapabilities[]{null};
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance();
+                output[0] = GLESCapabilities.getInstance();
             }
         });
         assertNotNull(output[0]);
@@ -77,7 +78,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getEGLMajorVersion();
+                output[0] = GLESCapabilities.getEGLMajorVersion();
             }
         });
         assertEquals(1, output[0]);
@@ -89,7 +90,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getEGLMinorVersion();
+                output[0] = GLESCapabilities.getEGLMinorVersion();
             }
         });
         assertTrue("Received EGL Minor Version: " + output[0], 0 <= output[0]);
@@ -102,7 +103,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getGLESMajorVersion();
+                output[0] = GLESCapabilities.getGLESMajorVersion();
             }
         });
         assertTrue(2 == output[0] || 3 == output[0]);
@@ -114,7 +115,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getVendor();
+                output[0] = GLESCapabilities.getInstance().getVendor();
             }
         });
         assertNotNull(output[0]);
@@ -126,7 +127,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getRenderer();
+                output[0] = GLESCapabilities.getInstance().getRenderer();
             }
         });
         assertNotNull(output[0]);
@@ -138,7 +139,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getVersion();
+                output[0] = GLESCapabilities.getInstance().getVersion();
             }
         });
         assertNotNull(output[0]);
@@ -150,7 +151,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getExtensions();
+                output[0] = GLESCapabilities.getInstance().getExtensions();
             }
         });
         assertNotNull(output[0]);
@@ -162,11 +163,11 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                final String[] extensions = Capabilities.getInstance().getExtensions();
+                final String[] extensions = GLESCapabilities.getInstance().getExtensions();
                 if (extensions.length > 0) {
                     try {
-                        Capabilities.getInstance().verifyExtension(extensions[0]);
-                    } catch (Capabilities.UnsupportedCapabilityException e) {
+                        GLESCapabilities.getInstance().verifyExtension(extensions[0]);
+                    } catch (GLESCapabilities.UnsupportedCapabilityException e) {
                         thrown[0] = true;
                     }
                 }
@@ -176,11 +177,11 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                final String[] extensions = Capabilities.getInstance().getExtensions();
+                final String[] extensions = GLESCapabilities.getInstance().getExtensions();
                 if (extensions.length > 0) {
                     try {
-                        Capabilities.getInstance().verifyExtension("SOME_NON_EXISTENT_EXTENSION");
-                    } catch (Capabilities.UnsupportedCapabilityException e) {
+                        GLESCapabilities.getInstance().verifyExtension("SOME_NON_EXISTENT_EXTENSION");
+                    } catch (GLESCapabilities.UnsupportedCapabilityException e) {
                         thrown[0] = true;
                     }
                 }
@@ -197,8 +198,8 @@ public class CapabilitiesTest extends GlTestCase {
             @Override
             public void run() {
                 try {
-                    output[0] = Capabilities.getInstance().loadExtension(EXTTextureFilterAnisotropic.name);
-                } catch (Capabilities.UnsupportedCapabilityException e) {
+                    output[0] = GLESCapabilities.getInstance().loadExtension(EXTTextureFilterAnisotropic.name);
+                } catch (GLESCapabilities.UnsupportedCapabilityException e) {
                     thrown[0] = true;
                 }
             }
@@ -215,8 +216,8 @@ public class CapabilitiesTest extends GlTestCase {
             @Override
             public void run() {
                 try {
-                    Capabilities.getInstance().usingExtension(EXTTextureFilterAnisotropic.load());
-                } catch (Capabilities.UnsupportedCapabilityException e) {
+                    GLESCapabilities.getInstance().usingExtension(EXTTextureFilterAnisotropic.load());
+                } catch (GLESCapabilities.UnsupportedCapabilityException e) {
                     thrown[0] = true;
                 }
             }
@@ -230,7 +231,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxTextureSize();
+                output[0] = GLESCapabilities.getInstance().getMaxTextureSize();
             }
         });
         assertTrue(maxTextureSize <= output[0]);
@@ -242,7 +243,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxCombinedTextureUnits();
+                output[0] = GLESCapabilities.getInstance().getMaxCombinedTextureUnits();
             }
         });
         assertTrue(maxCombinedTextureImageUnits <= output[0]);
@@ -254,7 +255,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxCubeMapTextureSize();
+                output[0] = GLESCapabilities.getInstance().getMaxCubeMapTextureSize();
             }
         });
         assertTrue(maxCubeMapTextureSize <= output[0]);
@@ -266,7 +267,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxFragmentUniformVectors();
+                output[0] = GLESCapabilities.getInstance().getMaxFragmentUniformVectors();
             }
         });
         assertTrue(maxFragmentUniformVectors <= output[0]);
@@ -278,7 +279,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxRenderbufferSize();
+                output[0] = GLESCapabilities.getInstance().getMaxRenderbufferSize();
             }
         });
         assertTrue(maxRenderbufferSize <= output[0]);
@@ -290,7 +291,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxTextureImageUnits();
+                output[0] = GLESCapabilities.getInstance().getMaxTextureImageUnits();
             }
         });
         assertTrue(maxTextureImageUnits <= output[0]);
@@ -302,7 +303,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxVaryingVectors();
+                output[0] = GLESCapabilities.getInstance().getMaxVaryingVectors();
             }
         });
         assertTrue(maxVaryingVectors <= output[0]);
@@ -314,7 +315,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxVertexAttribs();
+                output[0] = GLESCapabilities.getInstance().getMaxVertexAttribs();
             }
         });
         assertTrue(maxVertexAttribs <= output[0]);
@@ -326,7 +327,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxVertexTextureImageUnits();
+                output[0] = GLESCapabilities.getInstance().getMaxVertexTextureImageUnits();
             }
         });
         assertTrue(maxVertexTextureImageUnits <= output[0]);
@@ -338,7 +339,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxVertexUniformVectors();
+                output[0] = GLESCapabilities.getInstance().getMaxVertexUniformVectors();
             }
         });
         assertTrue(maxVertexUniformVectors <= output[0]);
@@ -350,7 +351,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxViewportWidth();
+                output[0] = GLESCapabilities.getInstance().getMaxViewportWidth();
             }
         });
         assertTrue(maxViewportWidth <= output[0]);
@@ -362,7 +363,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxViewportHeight();
+                output[0] = GLESCapabilities.getInstance().getMaxViewportHeight();
             }
         });
         assertTrue(maxViewportHeight <= output[0]);
@@ -374,7 +375,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMinAliasedLineWidth();
+                output[0] = GLESCapabilities.getInstance().getMinAliasedLineWidth();
             }
         });
         assertTrue(minAliasedLineWidth >= output[0]);
@@ -386,7 +387,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxAliasedLineWidth();
+                output[0] = GLESCapabilities.getInstance().getMaxAliasedLineWidth();
             }
         });
         assertTrue(maxAliasedLineWidth <= output[0]);
@@ -398,7 +399,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMinAliasedPointSize();
+                output[0] = GLESCapabilities.getInstance().getMinAliasedPointSize();
             }
         });
         assertTrue(minAliasedPointSize >= output[0]);
@@ -410,7 +411,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().getMaxAliasedPointSize();
+                output[0] = GLESCapabilities.getInstance().getMaxAliasedPointSize();
             }
         });
         assertTrue(maxAliasedPointSize <= output[0]);
@@ -422,7 +423,7 @@ public class CapabilitiesTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                output[0] = Capabilities.getInstance().toString();
+                output[0] = GLESCapabilities.getInstance().toString();
             }
         });
         assertNotNull(output[0]);

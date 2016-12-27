@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
-import c.org.rajawali3d.gl.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.surface.gles.GLESCapabilities;
+import c.org.rajawali3d.surface.gles.GLESCapabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.surface.gles.extensions.EXTTextureFilterAnisotropic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -79,7 +79,7 @@ public class BaseTextureGLTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 try {
-                    max[0] = ((EXTTextureFilterAnisotropic) Capabilities.getInstance().loadExtension
+                    max[0] = ((EXTTextureFilterAnisotropic) GLESCapabilities.getInstance().loadExtension
                             (EXTTextureFilterAnisotropic.name)).getMaxSupportedAnisotropy();
                     texture.setMaxAnisotropy(20.0f);
                 } catch (UnsupportedCapabilityException e) {

@@ -9,11 +9,9 @@
         android:layout_height="match_parent"
         layout="@layout/relative_layout_loader_container" />
 
-    <org.rajawali3d.view.SurfaceView
+    <c.org.rajawali3d.surface.gles.GLESSurfaceView
         android:id="@+id/rajwali_surface"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        surfaceview:frameRate="60.0"
-        surfaceview:renderMode="RENDER_WHEN_DIRTY"/>
+        android:layout_height="fill_parent"/>
 
 </FrameLayout>

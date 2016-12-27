@@ -1,18 +1,27 @@
 package org.rajawali3d.examples.examples.camdenhells;
 
-import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import c.org.rajawali3d.renderer.Renderer;
-import c.org.rajawali3d.renderer.RendererImpl;
-import c.org.rajawali3d.scene.Scene;
-import c.org.rajawali3d.scene.SingleFrameCallback;
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.object.Object3D;
+import c.org.rajawali3d.core.RenderControl;
+import c.org.rajawali3d.core.SingleFrameCallback;
+import c.org.rajawali3d.scene.AScene;
+import c.org.rajawali3d.sceneview.ASceneView;
+import c.org.rajawali3d.sceneview.SceneView;
+import c.org.rajawali3d.surface.SurfaceSize;
+import c.org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.TextureException;
+import c.org.rajawali3d.transform.Transformation;
+import c.org.rajawali3d.transform.Transformer;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.renderer.ISurfaceRenderer;
-import c.org.rajawali3d.textures.Texture2D;
+import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.util.RajLog;
+
+import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -21,25 +30,74 @@ public class CamdenHellsBasic extends AExampleFragment {
 
     private static final String TAG = "CamdenHellsBasic";
 
-    private Scene scene;
+    private class BasicScene extends AScene {
+
+        private Object3D sphere;
+        private Texture2D texture;
+        private Material material;
+
+        @RenderThread
+        @Override
+        public void initialize() {
+            try {
+                texture = new Texture2D("Demo", getContext(), R.drawable.earth_diffuse);
+                textureManager.addTexture(texture);
+
+                material = new Material();
+                materialManager.addMaterial(material);
+                material.addTexture(texture);
+                material.setColorInfluence(0);
+
+                sphere = new Sphere(1, 24, 24);
+                // TODO not sure about the new approach here...
+                //sphere.setMaterial(material);
+                sphere.setParent(sceneGraph);
+            } catch (TextureException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private BasicScene scene;
+
+    private SceneView sceneView;
 
     private Thread backgroundThread;
+
+    private Camera camera;
 
     volatile boolean doRun = true;
 
     @Override
-    public ISurfaceRenderer createRenderer() {
-        return new RendererImpl(getActivity().getApplicationContext());
-    }
+    public void onRenderControlAvailable(RenderControl renderControl, SurfaceSize surfaceSize) {
+        try {
+            RajLog.systemInformation();
+            super.onRenderControlAvailable(renderControl, surfaceSize);
+            // Create the scene
+            scene = new BasicScene();
+            // Add it to the render, invoke initialize()...
+            mRenderControl.addScene(scene);
+            // Set up the camera
+            camera = new Camera();
+            camera.requestTransformations(new Transformer() {
+                @Override
+                public void transform(final Transformation camera) {
+                    camera.enableLookAt();
+                    camera.setLookAt(0, 0, 0);
+                    camera.setZ(6);
+                    camera.setOrientation(camera.getOrientation().inverse());
+                }
+            });
+            // Create a default (whole-surface) SceneView for the scene
+            sceneView = ASceneView.create(scene, camera);
+            // Add it to the render
+            mRenderControl.addSceneView(sceneView);
 
-    @Override
-    protected void onBeforeApplyRenderer() {
-        // Create a flat tree scene
-        scene = new Scene();
-        scene.registerFrameCallback(new FirstFrameCallback(scene));
-        // Add it to the renderer
-        ((Renderer) mRenderer).setCurrentRenderable(scene);
-        super.onBeforeApplyRenderer();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+
+            // TODO guessing this is just an early test?
+            //scene.addFrameCallback(new FirstFrameCallback(scene));
+        }
     }
 
     @Override
@@ -50,21 +108,17 @@ public class CamdenHellsBasic extends AExampleFragment {
 
     private final class FirstFrameCallback extends SingleFrameCallback {
 
-        public FirstFrameCallback(@NonNull Scene scene) {
+        public FirstFrameCallback(@NonNull AScene scene) {
             super(scene);
         }
 
-        @Override public void onPreFrame(long sceneTime, double deltaTime) {
-            Log.d(TAG, "Pre First Frame. SceneTime: " + sceneTime);
+        @Override public void onFrameStart(double deltaTime) {
+            Log.d(TAG, "First onFrameStart()");
         }
 
-        @Override public void onPreDraw(long sceneTime, double deltaTime) {
-            Log.d(TAG, "Pre Draw First Frame.");
-        }
-
-        @Override public void onPostFrame(long sceneTime, double deltaTime) {
-            Log.d(TAG, "Post First Frame.");
-            super.onPostFrame(sceneTime, deltaTime);
+        @Override public void onFrameEnd(double deltaTime) {
+            Log.d(TAG, "First onFrameEnd()");
+            super.onFrameEnd(deltaTime);
             /*backgroundThread = new Thread(backgroundManager, "Background Manager");
             backgroundThread.start();*/
             RajLog.setDebugEnabled(true);
@@ -73,11 +127,7 @@ public class CamdenHellsBasic extends AExampleFragment {
             scene.getMaterialManager().addMaterial(material);
         }
 
-        @Override public boolean callPreFrame() {
-            return true;
-        }
-
-        @Override public boolean callPreDraw() {
+        @Override public boolean callFrameStart() {
             return true;
         }
     }

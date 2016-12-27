@@ -1,11 +1,14 @@
 package c.org.rajawali3d.materials;
 
-import android.support.annotation.NonNull;
+import c.org.rajawali3d.core.RenderTask;
+import c.org.rajawali3d.scene.AScene;
 import c.org.rajawali3d.scene.Scene;
-import net.jcip.annotations.ThreadSafe;
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.renderer.FrameTask;
 import c.org.rajawali3d.textures.BaseTexture;
+import org.rajawali3d.materials.Material;
+
+import android.support.annotation.NonNull;
+
+import net.jcip.annotations.ThreadSafe;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,7 +42,7 @@ public class MaterialManager {
         // Update the tracking structures first
         // Add the material to the collection
         materials.add(material);
-        scene.offerTask(new FrameTask() {
+        ((AScene) scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 material.add();
@@ -57,7 +60,7 @@ public class MaterialManager {
         // Update the tracking structures first
         // Remove the material from the collection
         materials.remove(material);
-        scene.offerTask(new FrameTask() {
+        ((AScene) scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 material.remove();

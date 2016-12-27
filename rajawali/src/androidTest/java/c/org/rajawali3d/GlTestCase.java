@@ -103,11 +103,11 @@ public abstract class GlTestCase {
         }
 
         // If the activity hasn't changed since last setUp, assume the
-        // surface is still there.
+        // renderSurfaceView is still there.
         final Activity activity = activityRule.getActivity(); // launches activity
         if (activity == this.activity) {
             glSurfaceView.onResume();
-            return;  // same activity, assume surface is still there
+            return;  // same activity, assume renderSurfaceView is still there
         }
 
         // New or different activity, set up for GL.

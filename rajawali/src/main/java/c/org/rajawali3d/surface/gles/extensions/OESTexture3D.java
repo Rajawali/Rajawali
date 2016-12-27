@@ -1,7 +1,7 @@
-package c.org.rajawali3d.gl.extensions;
+package c.org.rajawali3d.surface.gles.extensions;
 
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.surface.gles.GLESCapabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.textures.annotation.DataType;
 import c.org.rajawali3d.textures.annotation.PixelFormat;
 import c.org.rajawali3d.textures.annotation.TexelFormat;
