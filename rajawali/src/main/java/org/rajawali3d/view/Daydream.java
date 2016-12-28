@@ -23,7 +23,8 @@ import android.widget.FrameLayout;
 
 import org.rajawali3d.view.Surface.ANTI_ALIASING_CONFIG;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import c.org.rajawali3d.surface.gles.GLESCapabilities;
+
+import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.surface.gles.GLESSurfaceView;
 
 
@@ -40,7 +41,7 @@ public abstract class Daydream extends DreamService implements Display {
 		super.onAttachedToWindow();
 
 		mGLESSurfaceView = new GLESSurfaceView(this);
-		mGLESSurfaceView.setEGLContextClientVersion(GLESCapabilities.getGLESMajorVersion());
+		mGLESSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
 		setInteractive(false);
 		setFullscreen(true);

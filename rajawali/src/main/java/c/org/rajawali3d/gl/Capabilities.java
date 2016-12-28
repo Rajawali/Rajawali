@@ -1,20 +1,18 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package c.org.rajawali3d.surface.gles;
+package c.org.rajawali3d.gl;
 
-import c.org.rajawali3d.surface.gles.extensions.EXTTextureFilterAnisotropic;
-import c.org.rajawali3d.surface.gles.extensions.GLExtension;
-import c.org.rajawali3d.surface.gles.extensions.OESTexture3D;
+import c.org.rajawali3d.gl.extensions.GLExtension;
 import org.rajawali3d.util.RajLog;
 
 import android.annotation.TargetApi;
@@ -33,18 +31,35 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import java.util.HashMap;
 import java.util.Map;
 
+import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
+import c.org.rajawali3d.gl.extensions.OESElementIndexUINT;
+import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionDXT1;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionS3TC;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.gl.extensions.texture.IMGTextureCompressionPVRTC;
+import c.org.rajawali3d.gl.extensions.texture.KHRTextureCompressionASTC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionLATC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionS3TC;
+import c.org.rajawali3d.gl.extensions.texture.NVTextureCompressionS3TCUpdate;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
+import c.org.rajawali3d.gl.extensions.texture.OESCompressedPalettedTexture;
+import c.org.rajawali3d.gl.extensions.texture.OESTexture3D;
+import c.org.rajawali3d.gl.extensions.texture.OESTextureCompressionASTC;
+
+
 /**
  * Lists all OpenGL specific capabilities
  *
  * @author dennis.ippel
  */
-public class GLESCapabilities {
+public class Capabilities {
 
     static {
         System.loadLibrary("glExtensions");
     }
 
-    private static GLESCapabilities instance = null;
+    private static Capabilities instance = null;
 
     private static volatile boolean glesVersionChecked = false;
 
@@ -69,20 +84,23 @@ public class GLESCapabilities {
     private final int minAliasedPointSize;
     private final int maxAliasedPointSize;
 
-    @NonNull private final String   vendor;
-    @NonNull private final String   renderer;
-    @NonNull private final String   version;
-    @NonNull private final String[] extensions;
+    @NonNull
+    private final String vendor;
+    @NonNull
+    private final String renderer;
+    @NonNull
+    private final String version;
+    @NonNull
+    private final String[] extensions;
 
     private final Map<String, GLExtension> loadedExtensions;
 
     private int[] param;
 
-    private GLESCapabilities() {
+    private Capabilities() {
         RajLog.d("Fetching device capabilities.");
 
         param = new int[1];
-
         vendor = GLES20.glGetString(GLES20.GL_VENDOR);
         renderer = GLES20.glGetString(GLES20.GL_RENDERER);
         version = GLES20.glGetString(GLES20.GL_VERSION);
@@ -106,16 +124,22 @@ public class GLESCapabilities {
         minAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 0);
         maxAliasedPointSize = getInt(GLES20.GL_ALIASED_POINT_SIZE_RANGE, 2, 1);
 
-        String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+        final String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
         this.extensions = extensions.split(" ");
     }
 
     @NonNull
-    public static GLESCapabilities getInstance() {
+    public static synchronized Capabilities getInstance() {
         if (instance == null) {
-            instance = new GLESCapabilities();
+            instance = new Capabilities();
         }
         return instance;
+    }
+
+    @VisibleForTesting
+    public static synchronized void clearInstance() {
+        instance = null;
+        glesVersionChecked = false;
     }
 
     @VisibleForTesting
@@ -125,8 +149,9 @@ public class GLESCapabilities {
         final EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
 
         final int[] version = new int[2];
-        if (!egl.eglInitialize(display, version))
+        if (!egl.eglInitialize(display, version)) {
             throw new IllegalStateException("Failed to initialize an EGL context while getting device capabilities.");
+        }
         eglMajorVersion = version[0];
         eglMinorVersion = version[1];
         // RajLog.d("Device EGL Version: " + version[0] + "." + version[1]);
@@ -145,6 +170,7 @@ public class GLESCapabilities {
     }
 
     @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
+    @SuppressWarnings("WeakerAccess")
     @VisibleForTesting
     static void checkGLESVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
         // Find out how many EGLConfigs exist
@@ -166,8 +192,9 @@ public class GLESCapabilities {
                 // We have at least one GLES 3 config, can now use eglChooseConfig()
                 // to see if one of them has at least 4 bits per color
                 final int[] configAttribs = {
-                        EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
-                        EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE};
+                    EGL10.EGL_RED_SIZE, 4, EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
+                    EGL10.EGL_RENDERABLE_TYPE, EGLExt.EGL_OPENGL_ES3_BIT_KHR, EGL10.EGL_NONE
+                };
                 value[0] = 0;
                 egl.eglChooseConfig(display, configAttribs, configs, 1, value);
                 glesMajorVersion = value[0] > 0 ? 3 : 2;
@@ -193,7 +220,9 @@ public class GLESCapabilities {
      * @return
      */
     public static int getEGLMajorVersion() {
-        if (!glesVersionChecked) checkGLESVersion();
+        if (!glesVersionChecked) {
+            checkGLESVersion();
+        }
         return eglMajorVersion;
     }
 
@@ -203,7 +232,9 @@ public class GLESCapabilities {
      * @return
      */
     public static int getEGLMinorVersion() {
-        if (!glesVersionChecked) checkGLESVersion();
+        if (!glesVersionChecked) {
+            checkGLESVersion();
+        }
         return eglMinorVersion;
     }
 
@@ -213,7 +244,9 @@ public class GLESCapabilities {
      * @return
      */
     public static int getGLESMajorVersion() {
-        if (!glesVersionChecked) checkGLESVersion();
+        if (!glesVersionChecked) {
+            checkGLESVersion();
+        }
         return glesMajorVersion;
     }
 
@@ -235,7 +268,7 @@ public class GLESCapabilities {
     /**
      * Fetch the list of extension strings this device supports.
      *
-     * @return
+     * @return {@code String[]} The list of extensions.
      */
     @NonNull
     public String[] getExtensions() {
@@ -246,6 +279,7 @@ public class GLESCapabilities {
      * Checks if a particular extension is supported by this device.
      *
      * @param extension {@link String} Non-null string of the extension to check for. This is case sensitive.
+     *
      * @throws UnsupportedCapabilityException if the extension is not supported by the device.
      */
     public void verifyExtension(@NonNull String extension) throws UnsupportedCapabilityException {
@@ -267,26 +301,71 @@ public class GLESCapabilities {
      * @throws UnsupportedCapabilityException if the requested extension is not supported by the device.
      * @throws IllegalArgumentException Thrown if the requested extension is unknown to Rajawali. This does not mean
      * it is not available, however you will have to implement {@link GLExtension} for this extension and load it
-     * manually then provide it to {@link GLESCapabilities#usingExtension(GLExtension)} if you wish for its parameters to
+     * manually then provide it to {@link Capabilities#usingExtension(GLExtension)} if you wish for its parameters to
      * be available through this central repository.
      *
      * @see <a href="https://www.opengl.org/registry/">OpenGL Registry</a>
      */
     public GLExtension loadExtension(@NonNull String extension) throws UnsupportedCapabilityException,
-                                                                       IllegalArgumentException {
+        IllegalArgumentException {
         if (!loadedExtensions.containsKey(extension)) {
+            GLExtension glExtension;
             switch (extension) {
+                // Compressed Texture Extensions
+                case AMDCompressedATCTexture.name:
+                    glExtension = AMDCompressedATCTexture.load();
+                    break;
+                case EXTTextureCompressionDXT1.name:
+                    glExtension = EXTTextureCompressionDXT1.load();
+                    break;
+                case EXTTextureCompressionS3TC.name:
+                    glExtension = EXTTextureCompressionS3TC.load();
+                    break;
+                case IMGTextureCompressionPVRTC.name:
+                    glExtension = IMGTextureCompressionPVRTC.load();
+                    break;
+                case KHRTextureCompressionASTC.name:
+                    glExtension = KHRTextureCompressionASTC.load();
+                    break;
+                case NVTextureCompressionLATC.name:
+                    glExtension = NVTextureCompressionLATC.load();
+                    break;
+                case NVTextureCompressionS3TC.name:
+                    glExtension = NVTextureCompressionS3TC.load();
+                    break;
+                case OESCompressedETC1RGB8.name:
+                    glExtension = OESCompressedETC1RGB8.load();
+                    break;
+                case OESCompressedPalettedTexture.name:
+                    glExtension = OESCompressedPalettedTexture.load();
+                    break;
+                case OESTextureCompressionASTC.name:
+                    glExtension = OESTextureCompressionASTC.load();
+                    break;
+                // Texture utility extensions
                 case EXTTextureFilterAnisotropic.name:
-                    loadedExtensions.put(extension, EXTTextureFilterAnisotropic.load());
+                    glExtension = EXTTextureFilterAnisotropic.load();
+                    break;
+                case NVTextureCompressionS3TCUpdate.name:
+                    glExtension = NVTextureCompressionS3TCUpdate.load();
                     break;
                 case OESTexture3D.name:
-                    loadedExtensions.put(extension, OESTexture3D.load());
+                    glExtension = OESTexture3D.load();
+                    break;
+                // Debug extensions
+                case EXTDebugMarker.name:
+                    glExtension = EXTDebugMarker.load();
+                    break;
+                // Other extensions
+                case OESElementIndexUINT.name:
+                    glExtension = OESElementIndexUINT.load();
                     break;
                 default:
                     throw new IllegalArgumentException(
                             "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
-                            + "providing it via GLESCapabilities#usingExtension(GLExtension)?");
+                            + "providing it via Capabilities#usingExtension(GLExtension)?");
             }
+            loadedExtensions.put(extension, glExtension);
         }
         return loadedExtensions.get(extension);
     }
@@ -454,15 +533,15 @@ public class GLESCapabilities {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("-=-=-=- OpenGL ES Capabilities -=-=-=-\n");
-        sb.append("Max Combined Texture2D Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
-        sb.append("Max Cube Map Texture2D Size          : ").append(maxCubeMapTextureSize).append("\n");
+        sb.append("Max Combined Texture Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
+        sb.append("Max Cube Map Texture Size          : ").append(maxCubeMapTextureSize).append("\n");
         sb.append("Max Fragment Uniform Vectors       : ").append(maxFragmentUniformVectors).append("\n");
         sb.append("Max Renderbuffer Size              : ").append(maxRenderbufferSize).append("\n");
-        sb.append("Max Texture2D Image Units            : ").append(maxTextureImageUnits).append("\n");
-        sb.append("Max Texture2D Size                   : ").append(maxTextureSize).append("\n");
+        sb.append("Max Texture Image Units            : ").append(maxTextureImageUnits).append("\n");
+        sb.append("Max Texture Size                   : ").append(maxTextureSize).append("\n");
         sb.append("Max Varying Vectors                : ").append(maxVaryingVectors).append("\n");
         sb.append("Max Vertex Attribs                 : ").append(maxVertexAttribs).append("\n");
-        sb.append("Max Vertex Texture2D Image Units     : ").append(maxVertexTextureImageUnits).append("\n");
+        sb.append("Max Vertex Texture Image Units     : ").append(maxVertexTextureImageUnits).append("\n");
         sb.append("Max Vertex Uniform Vectors         : ").append(maxVertexUniformVectors).append("\n");
         sb.append("Max Viewport Width                 : ").append(maxViewportWidth).append("\n");
         sb.append("Max Viewport Height                : ").append(maxViewportHeight).append("\n");
@@ -486,8 +565,7 @@ public class GLESCapabilities {
          * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace and the
          * specified detail message.
          *
-         * @param detailMessage
-         *            the detail message for this exception.
+         * @param detailMessage The detail message for this exception.
          */
         public UnsupportedCapabilityException(String detailMessage) {
             super(detailMessage);
@@ -497,10 +575,8 @@ public class GLESCapabilities {
          * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace, the
          * specified detail message and the specified cause.
          *
-         * @param detailMessage
-         *            the detail message for this exception.
-         * @param throwable
-         *            the cause of this exception.
+         * @param detailMessage The detail message for this exception.
+         * @param throwable     Tthe cause of this exception.
          */
         public UnsupportedCapabilityException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);
@@ -510,8 +586,7 @@ public class GLESCapabilities {
          * Constructs a new {@code UnsupportedCapabilityException} with the current stack trace and the
          * specified cause.
          *
-         * @param throwable
-         *            the cause of this exception.
+         * @param throwable The cause of this exception.
          */
         public UnsupportedCapabilityException(Throwable throwable) {
             super(throwable);

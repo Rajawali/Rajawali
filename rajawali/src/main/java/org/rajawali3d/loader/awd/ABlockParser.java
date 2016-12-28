@@ -40,10 +40,12 @@ public abstract class ABlockParser implements IBlockParser {
     }
 
     protected static BaseTexture getDefaultCubeMapTexture() {
-        return new CubeMapTexture("DefaultCubeMapTexture", new Bitmap[]{ defaultTextureBitmap, defaultTextureBitmap,
+        /*return new CubeMapTexture("DefaultCubeMapTexture", new Bitmap[]{ defaultTextureBitmap, defaultTextureBitmap,
                                                                          defaultTextureBitmap, defaultTextureBitmap,
                                                                          defaultTextureBitmap, defaultTextureBitmap
-        });
+        });*/
+        //TODO: AWD Cubemap
+        return null;
     }
 
     protected static Material getDefaultMaterial() {

@@ -14,18 +14,20 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface Compression2D {
 
-    int NONE = 1;
-    int ETC1 = 2;
-    int ETC2 = 3;
-    int PALETTED = 4;
-    int THREEDC = 5;
-    int ATC = 6;
-    int DXT1 = 7;
+    int NONE = 0;
+    int ETC1 = 1;
+    int ETC2 = 2;
+    int PALETTED = 3;
+    int THREEDC = 4;
+    int ATC = 5;
+    int ASTC = 6;
+    int S3TC = 7;
     int PVRTC = 8;
+    int LATC = 9;
 
     @Documented
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({NONE, ETC1, ETC2, PALETTED, THREEDC, ATC, DXT1, PVRTC})
+    @IntDef({NONE, ETC1, ETC2, PALETTED, THREEDC, ATC, ASTC, S3TC, PVRTC, LATC})
     @interface CompressionType2D {
     }
 }

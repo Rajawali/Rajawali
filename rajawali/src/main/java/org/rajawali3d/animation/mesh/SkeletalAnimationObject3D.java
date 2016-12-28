@@ -25,7 +25,6 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import org.rajawali3d.geometry.BufferInfo;
-import org.rajawali3d.geometry.Geometry.BufferType;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import org.rajawali3d.cameras.Camera;
@@ -158,7 +157,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		mBoneMatrices.position(0);
 
         mBoneMatricesBufferInfo.buffer = mBoneMatrices;
-		mGeometry.addBuffer(mBoneMatricesBufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mBoneMatricesBufferInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 	}
 
 	public SkeletonJoint getJoint(int index) {

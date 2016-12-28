@@ -15,19 +15,18 @@ package c.org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.surface.gles.GLESCapabilities;
-import c.org.rajawali3d.surface.gles.GLESCapabilities.UnsupportedCapabilityException;
-import c.org.rajawali3d.surface.gles.extensions.EXTTextureFilterAnisotropic;
+
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.TexelFormat;
 import c.org.rajawali3d.textures.annotation.TextureTarget;
+import c.org.rajawali3d.textures.annotation.Type.TextureType;
 import c.org.rajawali3d.textures.annotation.Wrap;
-
 import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.materials.Material;
-
-import c.org.rajawali3d.textures.annotation.Type.TextureType;
-
 import org.rajawali3d.util.RajLog;
 
 import java.nio.Buffer;
@@ -84,7 +83,7 @@ public abstract class BaseTexture {
     /**
      * Indicates whether the source {@link TextureDataReference} should be recycled immediately after the OpenGL
      * texture
-     * has been created. The main reason for not recycling is scene caching. AScene caching stores all textures and
+     * has been created. The main reason for not recycling is scene caching. Scene caching stores all textures and
      * relevant OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      */
@@ -168,13 +167,6 @@ public abstract class BaseTexture {
     }
 
     /**
-     * Basic no-args constructor used by some subclasses. No initialization is performed.
-     */
-    protected BaseTexture() {
-        textureName = "";
-    }
-
-    /**
      * Creates a new texture instance and copies all properties from another texture object.
      *
      * @param other The {@link BaseTexture} to copy from.
@@ -182,6 +174,13 @@ public abstract class BaseTexture {
     public BaseTexture(BaseTexture other) {
         textureName = ""; // This is a dummy assignment to cover @NonNull rules
         setFrom(other);
+    }
+
+    /**
+     * Basic no-args constructor used by some subclasses. No initialization is performed.
+     */
+    protected BaseTexture() {
+        textureName = "";
     }
 
     /**
@@ -320,7 +319,7 @@ public abstract class BaseTexture {
     /**
      * Fetches whether the source {@link TextureDataReference} should be recycled immediately after the texture has
      * been
-     * created. The main reason for not recycling is AScene caching. AScene caching stores all textures and relevant
+     * created. The main reason for not recycling is Scene caching. Scene caching stores all textures and relevant
      * render context specific data. This is used when the render context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      *
@@ -332,7 +331,7 @@ public abstract class BaseTexture {
 
     /**
      * Sets whether the source {@link TextureDataReference} should be recycled immediately after the texture has been
-     * created. The main reason for not recycling is AScene caching. AScene caching stores all textures and relevant
+     * created. The main reason for not recycling is Scene caching. Scene caching stores all textures and relevant
      * render context specific data. This is used when the render context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      *
@@ -444,21 +443,11 @@ public abstract class BaseTexture {
      *
      * @param maxAnisotropy {@code float} The maximum anisotropy to use. Must be greater than or equal to 1.0.
      *
-     * @throws UnsupportedCapabilityException Thrown if the device does not support the {@code
-     *                                        GL_EXT_texture_filter_anisotropic} extension.
      * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
      * EXT_texture_filter_anisotropic</a>
      */
-    public void setMaxAnisotropy(@FloatRange(from = 1.0) float maxAnisotropy) throws UnsupportedCapabilityException {
-        final float max = ((EXTTextureFilterAnisotropic) GLESCapabilities.getInstance().loadExtension
-                (EXTTextureFilterAnisotropic.name)).getMaxSupportedAnisotropy();
-        if (maxAnisotropy > max) {
-            RajLog.e("The requested maximum anisotropy is outside the supported range of this device. Clamping to: "
-                     + max);
-            this.maxAnisotropy = max;
-        } else {
-            this.maxAnisotropy = maxAnisotropy;
-        }
+    public void setMaxAnisotropy(@FloatRange(from = 1.0) float maxAnisotropy) {
+        this.maxAnisotropy = maxAnisotropy;
     }
 
     /**
@@ -640,11 +629,125 @@ public abstract class BaseTexture {
     }
 
     /**
+     * Generates a new texture id in the GL driver.
+     *
+     * @return {@code int} The new texture id returned from the GL driver.
+     */
+    @RenderThread
+    protected static int generateTextureId() {
+        // Generate a texture id
+        final int[] genTextureNames = new int[1];
+        GLES20.glGenTextures(1, genTextureNames, 0);
+        return genTextureNames[0];
+    }
+
+    @RenderThread
+    protected void applyMinificationFilter() throws TextureException {
+        @TextureTarget final int target = getTextureTarget();
+        if (isMipmaped()) {
+            switch (filterType) {
+                case Filter.NEAREST:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                                           GLES20.GL_NEAREST_MIPMAP_NEAREST);
+                    break;
+                case Filter.BILINEAR:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                                           GLES20.GL_LINEAR_MIPMAP_NEAREST);
+                    break;
+                case Filter.TRILINEAR:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                                           GLES20.GL_LINEAR_MIPMAP_LINEAR);
+                    break;
+                default:
+                    throw new TextureException("Unknown texture filtering mode: " + filterType);
+            }
+        } else {
+            switch (filterType) {
+                case Filter.NEAREST:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                                           GLES20.GL_NEAREST);
+                    break;
+                case Filter.BILINEAR:
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                                           GLES20.GL_LINEAR);
+                    break;
+                case Filter.TRILINEAR:
+                    RajLog.e("Trilinear filtering requires the use of mipmaps which are not enabled for this "
+                             + "texture. Falling back to bilinear filtering.");
+                    GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER,
+                                           GLES20.GL_LINEAR);
+                    break;
+                default:
+                    throw new TextureException("Unknown texture filtering mode: " + filterType);
+            }
+        }
+    }
+
+    @RenderThread
+    protected void applyMagnificationFilter() {
+        @TextureTarget final int target = getTextureTarget();
+        if (filterType == Filter.BILINEAR || filterType == Filter.TRILINEAR) {
+            GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        } else {
+            GLES20.glTexParameterf(target, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+        }
+    }
+
+    @RenderThread
+    protected void applyAnisotropy() {
+        // Handle anisotropy if needed. We don't check if it is supported here because setting it to anything
+        // other than 1.0 would have required the check.
+        try {
+            final EXTTextureFilterAnisotropic extension = (EXTTextureFilterAnisotropic) Capabilities.getInstance()
+                    .loadExtension(EXTTextureFilterAnisotropic.name);
+            if (getMaxAnisotropy() > 1.0) {
+                final float max = extension.getMaxSupportedAnisotropy();
+                float applied = getMaxAnisotropy();
+                if (applied > max) {
+                    RajLog.w("The requested maximum anisotropy is outside the supported range of this device. Clamping "
+                             + "to: " + max);
+                    applied = max;
+                }
+                GLES20.glTexParameterf(getTextureTarget(), EXTTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
+                                       applied);
+            }
+        } catch (UnsupportedCapabilityException e) {
+            RajLog.w("Not applying anisotropy settings to texture " + this + " as it is not supported on the current "
+                     + "device.");
+        }
+    }
+
+    @RenderThread
+    protected void applySWrapping() {
+        // Handle s coordinate wrapping
+        int wrap = GLES20.GL_REPEAT;
+        if ((wrapType & Wrap.CLAMP_S) != 0) {
+            wrap = GLES20.GL_CLAMP_TO_EDGE;
+        } else if ((wrapType & Wrap.MIRRORED_REPEAT_S) != 0) {
+            wrap = GLES20.GL_MIRRORED_REPEAT;
+        }
+        GLES20.glTexParameteri(getTextureTarget(), GLES20.GL_TEXTURE_WRAP_S, wrap);
+    }
+
+    @RenderThread
+    protected void applyTWrapping() {
+        // Handle t coordinate wrapping
+        int wrap = GLES20.GL_REPEAT;
+        if ((wrapType & Wrap.CLAMP_T) != 0) {
+            wrap = GLES20.GL_CLAMP_TO_EDGE;
+        } else if ((wrapType & Wrap.MIRRORED_REPEAT_T) != 0) {
+            wrap = GLES20.GL_MIRRORED_REPEAT;
+        }
+        GLES20.glTexParameteri(getTextureTarget(), GLES20.GL_TEXTURE_WRAP_T, wrap);
+    }
+
+    /**
      * Adds this texture to the render context. This will create the texture storage, push the texture if data is
      * available and configure all relevant texture parameters.
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
+    @RenderThread
     abstract void add() throws TextureException;
 
     /**
@@ -653,6 +756,7 @@ public abstract class BaseTexture {
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture delete process.
      */
+    @RenderThread
     abstract void remove() throws TextureException;
 
     /**
@@ -660,7 +764,9 @@ public abstract class BaseTexture {
      *
      * @throws TextureException Thrown if an error occurs during any part of updating the texture data.
      */
+    @RenderThread
     abstract void replace() throws TextureException;
 
+    @RenderThread
     abstract void reset() throws TextureException;
 }

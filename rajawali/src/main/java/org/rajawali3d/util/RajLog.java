@@ -19,7 +19,8 @@ import android.opengl.GLES20;
 import android.opengl.GLException;
 import android.os.Build;
 import android.util.Log;
-import c.org.rajawali3d.surface.gles.GLESCapabilities;
+
+import c.org.rajawali3d.gl.Capabilities;
 
 public final class RajLog {
 
@@ -94,7 +95,7 @@ public final class RajLog {
             }
         }
         sb.append("-=-=-=- /OpenGL ES Information -=-=-=-\n");
-        sb.append(GLESCapabilities.getInstance().toString());
+        sb.append(Capabilities.getInstance().toString());
 
         RajLog.i(sb.toString());
     }

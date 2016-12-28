@@ -148,8 +148,8 @@ public class PlanesGalore extends Object3D {
 	private void createBuffers() {
 		mPlanePositionsBufferInfo.buffer = mPlanePositions;
 		mRotationSpeedsBufferInfo.buffer = mRotationSpeeds;
-		mGeometry.addBuffer(mPlanePositionsBufferInfo, IndexedGeometry.BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
-		mGeometry.addBuffer(mRotationSpeedsBufferInfo, IndexedGeometry.BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mPlanePositionsBufferInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mRotationSpeedsBufferInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 
 		mMaterialPlugin.setPlanePositions(mPlanePositionsBufferInfo.glHandle);
 		mMaterialPlugin.setRotationSpeeds(mRotationSpeedsBufferInfo.glHandle);

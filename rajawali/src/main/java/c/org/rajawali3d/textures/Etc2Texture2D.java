@@ -45,44 +45,45 @@ public class Etc2Texture2D extends CompressedTexture2D {
     protected int mResourceId;
     protected Bitmap mBitmap;
 
-    public Etc2Texture2D(String textureName) {
-        super(textureName);
-        mCompressionType = Compression2D.ETC2;
+    public Etc2Texture2D(String textureName) throws TextureException {
+        //super(textureName);
+        compressionType = Compression2D.ETC2;
     }
 
-    public Etc2Texture2D(int resourceId) {
+    public Etc2Texture2D(int resourceId) throws TextureException {
         this(org.rajawali3d.materials.textures.TextureManager
                      .getInstance().getContext().getResources().getResourceName(resourceId));
         setResourceId(resourceId);
     }
 
-    public Etc2Texture2D(String textureName, int resourceId, Bitmap fallbackTexture) {
+    public Etc2Texture2D(String textureName, int resourceId, Bitmap fallbackTexture) throws TextureException {
         this(textureName);
         Context context = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext();
         setInputStream(context.getResources().openRawResource(resourceId), fallbackTexture);
     }
 
-    public Etc2Texture2D(String textureName, int[] resourceIds) {
+    public Etc2Texture2D(String textureName, int[] resourceIds) throws TextureException {
         this(textureName);
         setResourceIds(resourceIds);
     }
 
-    public Etc2Texture2D(String textureName, ByteBuffer byteBuffer) {
+    public Etc2Texture2D(String textureName, ByteBuffer byteBuffer) throws TextureException {
         this(textureName);
-        setByteBuffer(byteBuffer);
+        //setByteBuffer(byteBuffer);
     }
 
-    public Etc2Texture2D(String textureName, ByteBuffer[] byteBuffers) {
+    public Etc2Texture2D(String textureName, ByteBuffer[] byteBuffers) throws TextureException {
         this(textureName);
-        setByteBuffers(byteBuffers);
+        //setData(byteBuffers);
     }
 
-    public Etc2Texture2D(String textureName, InputStream compressedTexture, Bitmap fallbackTexture) {
+    public Etc2Texture2D(String textureName, InputStream compressedTexture, Bitmap fallbackTexture) throws
+                                                                                                    TextureException {
         this(textureName);
         setInputStream(compressedTexture, fallbackTexture);
     }
 
-    public Etc2Texture2D(Etc1Texture2D other) throws TextureException {
+    public Etc2Texture2D(ETC1Texture other) throws TextureException {
         super();
         setFrom(other);
     }
@@ -117,10 +118,10 @@ public class Etc2Texture2D extends CompressedTexture2D {
         Resources resources = org.rajawali3d.materials.textures.TextureManager.getInstance().getContext().getResources();
         try {
             ETC2Util.ETC2Texture texture = ETC2Util.createTexture(resources.openRawResource(resourceId));
-            mByteBuffers = new ByteBuffer[]{texture.getData()};
+            //data = new ByteBuffer[]{texture.getData()};
             setWidth(texture.getWidth());
             setHeight(texture.getHeight());
-            setCompressionFormat(texture.getCompressionFormat());
+            //setCompressionFormat(texture.getCompressionFormat());
         } catch (IOException e) {
             RajLog.e(e.getMessage());
             e.printStackTrace();
@@ -139,11 +140,12 @@ public class Etc2Texture2D extends CompressedTexture2D {
             for (int i = 0, length = resourceIds.length; i < length; i++) {
                 ETC2Util.ETC2Texture texture = ETC2Util.createTexture(resources.openRawResource(resourceIds[i]));
                 if (i == 0) {
-                    setCompressionFormat(texture.getCompressionFormat());
+                    //setCompressionFormat(texture.getCompressionFormat());
                 } else {
-                    if (getCompressionFormat() != texture.getCompressionFormat()) {
-                        throw new IllegalArgumentException("The ETC2 compression formats of all textures in the chain much match");
-                    }
+                    //if (getCompressionFormat() != texture.getCompressionFormat()) {
+                    //    throw new IllegalArgumentException("The ETC2 compression formats of all textures in the "
+                    //                                        + "chain much match");
+                    //}
                 }
                 mipmapChain[i] = texture.getData();
                 if (i == 0) {
@@ -158,7 +160,7 @@ public class Etc2Texture2D extends CompressedTexture2D {
             e.printStackTrace();
         }
 
-        mByteBuffers = mipmapChain;
+        //data = mipmapChain;
     }
 
     public void setInputStream(InputStream compressedTexture, Bitmap fallbackTexture) {
@@ -175,8 +177,8 @@ public class Etc2Texture2D extends CompressedTexture2D {
                 if (RajLog.isDebugEnabled())
                     RajLog.d("Falling back to ETC1 texture from fallback texture.");
             } else {
-                setCompressionFormat(texture.getCompressionFormat());
-                setByteBuffer(texture.getData());
+                //setCompressionFormat(texture.getCompressionFormat());
+                //setByteBuffer(texture.getData());
                 setWidth(texture.getWidth());
                 setHeight(texture.getHeight());
 
@@ -197,9 +199,9 @@ public class Etc2Texture2D extends CompressedTexture2D {
             ETC1.getEncodedDataSize(bitmap.getWidth(), bitmap.getHeight())).order(ByteOrder.nativeOrder());
         ETC1.encodeImage(uncompressedBuffer, bitmap.getWidth(), bitmap.getHeight(), 2, 2 * bitmap.getWidth(),
             compressedBuffer);
-        setCompressionFormat(ETC1.ETC1_RGB8_OES);
+        //setCompressionFormat(ETC1.ETC1_RGB8_OES);
 
-        mByteBuffers = new ByteBuffer[]{compressedBuffer};
+        //data = new ByteBuffer[]{compressedBuffer};
         setWidth(bitmap.getWidth());
         setHeight(bitmap.getHeight());
     }

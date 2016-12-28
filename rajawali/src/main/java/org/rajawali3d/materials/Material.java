@@ -12,7 +12,7 @@
  */
 package org.rajawali3d.materials;
 
-import static c.org.rajawali3d.textures.annotation.Type.ALPHA;
+import static c.org.rajawali3d.textures.annotation.Type.ALPHA_MASK;
 import static c.org.rajawali3d.textures.annotation.Type.CUBE_MAP;
 import static c.org.rajawali3d.textures.annotation.Type.DIFFUSE;
 import static c.org.rajawali3d.textures.annotation.Type.NORMAL;
@@ -24,7 +24,8 @@ import static c.org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.surface.gles.GLESCapabilities;
+
+import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.textures.BaseTexture;
 import c.org.rajawali3d.textures.CubeMapTexture;
 import c.org.rajawali3d.textures.SphereMapTexture2D;
@@ -42,7 +43,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.VertexShader;
 import org.rajawali3d.materials.shaders.fragments.LightsFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.texture.AlphaMapFragmentShaderFragment;
+import org.rajawali3d.materials.shaders.fragments.texture.AlphaMaskFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.DiffuseTextureFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
@@ -248,7 +249,7 @@ public class Material {
 
     /**
      * The maximum number of available textures for this device. This value is returned from
-     * {@link GLESCapabilities#getMaxTextureImageUnits()}.
+     * {@link Capabilities#getMaxTextureImageUnits()}.
      */
     private int                   maxTextures;
 
@@ -305,7 +306,7 @@ public class Material {
         // that would not allow us to finish construction of this material until the EGL context is available. Instead,
         // we are choosing the maximum integer Java can handle, and we will print a warning if the number of added textures
         // exceeds the capability once known. In this event they will be used in listed order until the max is hit.
-        maxTextures = capabilitiesCheckDeferred ? Integer.MAX_VALUE : GLESCapabilities.getInstance().getMaxTextureImageUnits();
+        maxTextures = capabilitiesCheckDeferred ? Integer.MAX_VALUE : Capabilities.getInstance().getMaxTextureImageUnits();
 
         color = new float[]{ 1, 0, 0, 1};
         ambientColor = new float[]{ .2f, .2f, .2f};
@@ -568,21 +569,18 @@ public class Material {
                         hasCubeMaps = true;
                     case SPHERE_MAP:
                         boolean isSkyTexture = false;
-                        boolean isEnvironmentTexture = false;
 
                         if (texture.getClass() == SphereMapTexture2D.class) {
                             isSkyTexture = ((SphereMapTexture2D) texture).isSkyTexture();
-                            isEnvironmentTexture = ((SphereMapTexture2D) texture).isEnvironmentTexture();
                         } else if (texture.getClass() == CubeMapTexture.class) {
                             isSkyTexture = ((CubeMapTexture) texture).isSkyTexture();
-                            isEnvironmentTexture = ((CubeMapTexture) texture).isEnvironmentTexture();
                         }
 
                         if (isSkyTexture) {
                             if (skyTextures == null)
                                 skyTextures = new ArrayList<>();
                             skyTextures.add(texture);
-                        } else if (isEnvironmentTexture) {
+                        } else {
                             if (envMapTextures == null)
                                 envMapTextures = new ArrayList<>();
                             envMapTextures.add(texture);
@@ -592,7 +590,7 @@ public class Material {
                         if (specMapTextures == null) specMapTextures = new ArrayList<>();
                         specMapTextures.add(texture);
                         break;
-                    case ALPHA:
+                    case ALPHA_MASK:
                         if (alphaMapTextures == null) alphaMapTextures = new ArrayList<>();
                         alphaMapTextures.add(texture);
                         break;
@@ -690,7 +688,7 @@ public class Material {
             checkForPlugins(PluginInsertLocation.PRE_ALPHA);
 
             if (alphaMapTextures != null && alphaMapTextures.size() > 0) {
-                AlphaMapFragmentShaderFragment fragment = new AlphaMapFragmentShaderFragment(alphaMapTextures);
+                AlphaMaskFragmentShaderFragment fragment = new AlphaMaskFragmentShaderFragment(alphaMapTextures);
                 fragmentShader.addShaderFragment(fragment);
             }
 
@@ -742,7 +740,7 @@ public class Material {
      */
     private void checkCapabilitiesIfNeeded() {
         if (!capabilitiesCheckDeferred) return;
-        maxTextures = GLESCapabilities.getInstance().getMaxTextureImageUnits();
+        maxTextures = Capabilities.getInstance().getMaxTextureImageUnits();
     }
 
     /**

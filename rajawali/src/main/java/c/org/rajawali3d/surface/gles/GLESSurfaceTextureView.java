@@ -3,6 +3,8 @@ package c.org.rajawali3d.surface.gles;
 import c.org.rajawali3d.core.RenderControl;
 import c.org.rajawali3d.core.RenderControlClient;
 import c.org.rajawali3d.core.RenderSurfaceView;
+import c.org.rajawali3d.gl.Capabilities;
+
 import org.rajawali3d.R;
 
 import android.annotation.TargetApi;
@@ -170,7 +172,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
         checkRenderThreadState();
 
         // Get/set the context version
-        final int glesMajorVersion = GLESCapabilities.getGLESMajorVersion();
+        final int glesMajorVersion = Capabilities.getGLESMajorVersion();
         setEGLContextClientVersion(glesMajorVersion);
 
         // Define the surface configuration
@@ -1594,7 +1596,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
 
         private void checkGLESVersion() {
             if (!mGLESVersionCheckComplete) {
-                mGLESVersion = GLESCapabilities.getGLESMajorVersion();
+                mGLESVersion = Capabilities.getGLESMajorVersion();
                 if (mGLESVersion >= kGLES_20) {
                     mMultipleGLESContextsAllowed = true;
                 }

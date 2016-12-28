@@ -14,7 +14,6 @@ package org.rajawali3d.animation.mesh;
 
 import android.opengl.GLES20;
 import org.rajawali3d.geometry.BufferInfo;
-import org.rajawali3d.geometry.Geometry.BufferType;
 import org.rajawali3d.geometry.IndexedGeometry;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
@@ -129,15 +128,15 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		mboneWeights1 = alocateBuffer(mboneWeights1, boneWeights1);
 		mboneIndexes1BufferInfo.buffer = mboneIndexes1;
 		mboneWeights1BufferInfo.buffer = mboneWeights1;
-		mGeometry.addBuffer(mboneIndexes1BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
-		mGeometry.addBuffer(mboneWeights1BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mboneIndexes1BufferInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mGeometry.addBuffer(mboneWeights1BufferInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 		if (mMaxBoneWeightsPerVertex > 4) {
 			mboneIndexes2 = alocateBuffer(mboneIndexes2, boneIndexes2);
 			mboneWeights2 = alocateBuffer(mboneWeights2, boneWeights2);
 			mboneIndexes2BufferInfo.buffer = mboneIndexes2;
 			mboneWeights2BufferInfo.buffer = mboneWeights2;
-			mGeometry.addBuffer(mboneIndexes2BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
-			mGeometry.addBuffer(mboneWeights2BufferInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+			mGeometry.addBuffer(mboneIndexes2BufferInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+			mGeometry.addBuffer(mboneWeights2BufferInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 		}
 	}
 

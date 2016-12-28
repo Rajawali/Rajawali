@@ -128,7 +128,7 @@ public class ObjectRendererImplTest extends GlTestCase {
         // Check blending is enabled
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
-                GLES20.glGetBooleanv(GLES20.GL_BLEND, boolOutput, 0);
+                boolOutput[0] = GLES20.glIsEnabled(GLES20.GL_BLEND);
             }
         });
         assertTrue("Unexpected blending state: " + boolOutput[0], boolOutput[0]);
@@ -141,7 +141,7 @@ public class ObjectRendererImplTest extends GlTestCase {
             }
         });
         assertEquals("Unexpected blend source RGB function: " + intOutput[0], GLES20.GL_ONE, intOutput[0]);
-        assertEquals("Unexpected blend source ALPHA function: " + intOutput[1], GLES20.GL_ONE, intOutput[1]);
+        assertEquals("Unexpected blend source ALPHA_MASK function: " + intOutput[1], GLES20.GL_ONE, intOutput[1]);
 
         // Check blend destination factor
         runOnGlThreadAndWait(new Runnable() {
@@ -152,13 +152,13 @@ public class ObjectRendererImplTest extends GlTestCase {
         });
         assertEquals("Unexpected blend destination RGB function: " + intOutput[0], GLES20.GL_ONE_MINUS_DST_ALPHA,
                      intOutput[0]);
-        assertEquals("Unexpected blend destination ALPHA function: " + intOutput[1], GLES20.GL_ONE_MINUS_DST_ALPHA,
+        assertEquals("Unexpected blend destination ALPHA_MASK function: " + intOutput[1], GLES20.GL_ONE_MINUS_DST_ALPHA,
                      intOutput[1]);
 
         // Check depth testing is enabled
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
-                GLES20.glGetBooleanv(GLES20.GL_DEPTH_TEST, boolOutput, 0);
+                boolOutput[0] = GLES20.glIsEnabled(GLES20.GL_DEPTH_TEST);
             }
         });
         assertTrue("Unexpected depth test state: " + boolOutput[0], boolOutput[0]);
@@ -193,7 +193,7 @@ public class ObjectRendererImplTest extends GlTestCase {
         // Check double sided is disabled - face culling
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
-                GLES20.glGetBooleanv(GLES20.GL_CULL_FACE, boolOutput, 0);
+                boolOutput[0] = GLES20.glIsEnabled(GLES20.GL_CULL_FACE);
             }
         });
         assertTrue("Unexpected face culling state: " + boolOutput[0], boolOutput[0]);
@@ -217,7 +217,7 @@ public class ObjectRendererImplTest extends GlTestCase {
         // Check blending is enabled
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
-                GLES20.glGetBooleanv(GLES20.GL_BLEND, boolOutput, 0);
+                boolOutput[0] = GLES20.glIsEnabled(GLES20.GL_BLEND);
             }
         });
         assertFalse("Unexpected blending state: " + boolOutput[0], boolOutput[0]);
@@ -225,7 +225,7 @@ public class ObjectRendererImplTest extends GlTestCase {
         // Check depth testing is enabled
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
-                GLES20.glGetBooleanv(GLES20.GL_DEPTH_TEST, boolOutput, 0);
+                boolOutput[0] = GLES20.glIsEnabled(GLES20.GL_DEPTH_TEST);
             }
         });
         assertFalse("Unexpected depth test state: " + boolOutput[0], boolOutput[0]);
@@ -253,7 +253,7 @@ public class ObjectRendererImplTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                GLES20.glGetBooleanv(GLES20.GL_CULL_FACE, boolOutput, 0);
+                boolOutput[0] = GLES20.glIsEnabled(GLES20.GL_CULL_FACE);
             }
         });
         assertTrue("Unexpected face culling state: " + boolOutput[0], boolOutput[0]);
@@ -280,7 +280,7 @@ public class ObjectRendererImplTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                GLES20.glGetBooleanv(GLES20.GL_BLEND, boolOutput, 0);
+                boolOutput[0] = GLES20.glIsEnabled(GLES20.GL_BLEND);
             }
         });
         assertFalse("Unexpected blending state: " + boolOutput[0], boolOutput[0]);
@@ -289,7 +289,7 @@ public class ObjectRendererImplTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                GLES20.glGetBooleanv(GLES20.GL_DEPTH_TEST, boolOutput, 0);
+                boolOutput[0] = GLES20.glIsEnabled(GLES20.GL_DEPTH_TEST);
             }
         });
         assertFalse("Unexpected depth test state: " + boolOutput[0], boolOutput[0]);

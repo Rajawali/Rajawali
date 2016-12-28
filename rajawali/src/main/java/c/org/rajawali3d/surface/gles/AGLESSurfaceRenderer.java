@@ -4,6 +4,7 @@ import c.org.rajawali3d.core.ARenderControl;
 import c.org.rajawali3d.core.RenderContextType;
 import c.org.rajawali3d.core.RenderControlClient;
 import c.org.rajawali3d.core.RenderSurfaceView;
+import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.surface.SurfaceRenderer;
 
 import android.content.Context;
@@ -30,8 +31,8 @@ abstract class AGLESSurfaceRenderer extends ARenderControl {
      *
      */
     protected void onRenderContextAcquired() {
-        // Initialize device GLESCapabilities for client use
-        GLESCapabilities.getInstance();
+        // Initialize device Capabilities for client use
+        Capabilities.getInstance();
 
         // In case we cannot parse the version number, assume OpenGL ES 2.0
         int glesMajorVersion = 2;

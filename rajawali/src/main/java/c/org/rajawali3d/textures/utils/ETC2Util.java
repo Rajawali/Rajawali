@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import c.org.rajawali3d.surface.gles.GLESCapabilities;
+import c.org.rajawali3d.gl.Capabilities;
 
 import org.rajawali3d.util.RajLog;
 
@@ -104,7 +104,7 @@ public class ETC2Util {
      */
     public static boolean isETC2Supported() {
         // If this device is GL ES 3.0 or better, ETC2 is guaranteed to be supported.
-        return (GLESCapabilities.getGLESMajorVersion() >= 3);
+        return (Capabilities.getGLESMajorVersion() >= 3);
     }
 
     /**

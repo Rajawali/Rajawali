@@ -9,14 +9,11 @@ import static org.mockito.Mockito.when;
 
 import android.opengl.GLES20;
 import android.support.test.filters.SmallTest;
-import org.junit.Test;
-import org.rajawali3d.materials.Material;
-
-import c.org.rajawali3d.textures.BaseTexture;
-import c.org.rajawali3d.textures.TextureException;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
+import org.junit.Test;
+import org.rajawali3d.materials.Material;
 
 import java.util.ArrayList;
 
@@ -202,5 +199,23 @@ public class BaseTextureTest {
         final TestableBaseTexture texture = new TestableBaseTexture();
         texture.setInfluence(0.5f);
         assertEquals(Float.floatToIntBits(0.5f), Float.floatToIntBits(texture.getInfluence()));
+    }
+
+    @SuppressWarnings("WrongConstant")
+    @Test(expected = TextureException.class)
+    public void applyMinificationFilterFailFilterMipmapped() throws Exception {
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        texture.setFilterType(-1);
+        texture.setMipmaped(true);
+        texture.applyMinificationFilter();
+    }
+
+    @SuppressWarnings("WrongConstant")
+    @Test(expected = TextureException.class)
+    public void applyMinificationFilterFailFilterNotMipmapped() throws Exception {
+        final TestableBaseTexture texture = new TestableBaseTexture();
+        texture.setFilterType(-1);
+        texture.setMipmaped(false);
+        texture.applyMinificationFilter();
     }
 }

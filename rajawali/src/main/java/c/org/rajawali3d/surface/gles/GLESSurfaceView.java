@@ -3,6 +3,7 @@ package c.org.rajawali3d.surface.gles;
 import c.org.rajawali3d.core.RenderControl;
 import c.org.rajawali3d.core.RenderSurfaceView;
 import c.org.rajawali3d.core.RenderControlClient;
+import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.surface.SurfaceView;
 
 import org.rajawali3d.R;
@@ -130,7 +131,7 @@ public class GLESSurfaceView extends GLSurfaceView implements RenderSurfaceView 
             throw new IllegalStateException("This SurfaceView has already been configured.");
         }
         // Determine the GLES context version
-        final int glesMajorVersion = GLESCapabilities.getGLESMajorVersion();
+        final int glesMajorVersion = Capabilities.getGLESMajorVersion();
         //
         setEGLContextClientVersion(glesMajorVersion);
         //

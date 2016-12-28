@@ -1,31 +1,48 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package c.org.rajawali3d.textures;
 
-import android.graphics.Bitmap;
+import android.content.Context;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 
-import java.nio.ByteBuffer;
+import net.jcip.annotations.ThreadSafe;
 
-import c.org.rajawali3d.textures.annotation.Filter;
+import org.rajawali3d.util.RajLog;
+
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
-import c.org.rajawali3d.textures.annotation.Wrap.WrapType;
 
+/**
+ * A 2D cube mapped environmental texture. These textures are typically used to simulate highly reflective
+ * surfaces by providing what the reflected environment would look like. For static or basic reflective appearances,
+ * a single texture can be used. For more advanced reflections, the scene can be rendered to a FBO with cube
+ * mapping which is used as a {@link Type#CUBE_MAP} texture. They are also commonly used for sky boxes, simulating
+ * the appearance of a far off sky.
+ *
+ * @author dennis.ippel
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
+ */
+@SuppressWarnings("WeakerAccess")
+@ThreadSafe
+public class CubeMapTexture extends MultiTexture2D {
 
-public class CubeMapTexture extends AMultiTexture {
     public final int[] CUBE_FACES = new int[]{
         GLES20.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
         GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -35,202 +52,254 @@ public class CubeMapTexture extends AMultiTexture {
         GLES20.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
     };
 
-    private boolean mIsSkyTexture;
-    private boolean mIsEnvironmentTexture;
-    private boolean mHasCompressedTextures;
+    private boolean isSkyTexture = false;
 
-    public CubeMapTexture(CubeMapTexture other) {
+    /**
+     * Constructs a new {@link CubeMapTexture} with data and settings from the provided {@link CubeMapTexture}.
+     *
+     * @param other The other {@link CubeMapTexture}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
+     */
+    public CubeMapTexture(@NonNull CubeMapTexture other) throws TextureException {
         super(other);
     }
 
-    public CubeMapTexture(String textureName) {
-        super(Type.CUBE_MAP, textureName);
-        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+    /**
+     * Constructs a new {@link CubeMapTexture} with the provided name and no data.
+     *
+     * @param name {@link String} The texture name.
+     */
+    public CubeMapTexture(@NonNull String name) {
+        super(Type.CUBE_MAP, name);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T));
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, int[] resourceIds) {
-        super(Type.CUBE_MAP, textureName, resourceIds);
-        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+    /**
+     * Constructs a new {@link CubeMapTexture} with data provided by the Android resource id. The texture name is set
+     * by querying Android for the resource name.
+     *
+     * @param name        {@link String} The texture name.
+     * @param context     {@link Context} The application context.
+     * @param resourceIds {@code int} The Android resource id to load from.
+     */
+    public CubeMapTexture(@NonNull String name, @NonNull Context context,
+                          @NonNull @DrawableRes @Size(6) int[] resourceIds) {
+        super(Type.CUBE_MAP, name, context, resourceIds);
+        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T));
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, Bitmap[] bitmaps) {
-        super(Type.CUBE_MAP, textureName, bitmaps);
-        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
+    /**
+     * Constructs a new {@link CubeMapTexture} with the provided data.
+     *
+     * @param name {@link String} The texture name.
+     * @param data {@link TextureDataReference}[] The texture data.
+     */
+    public CubeMapTexture(@NonNull String name, @NonNull @Size(6) TextureDataReference[] data) {
+        super(Type.CUBE_MAP, name, data);
+        setWrapType(Wrap.CLAMP_S | Wrap.CLAMP_T);
         setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
     }
 
-    public CubeMapTexture(String textureName, ByteBuffer[] byteBuffers) {
-        super(Type.CUBE_MAP, textureName, byteBuffers);
-        setWrapType((Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R));
-        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
+    /**
+     * Copies all properties and data from another {@link CubeMapTexture}.
+     *
+     * @param other The other {@link CubeMapTexture}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
+     */
+    public void setFrom(@NonNull CubeMapTexture other) throws TextureException {
+        super.setFrom(other);
+        isSkyTexture(other.isSkyTexture());
     }
 
-    public CubeMapTexture(String textureName, CompressedTexture2D[] compressedTexture2Ds) {
-        super(Type.CUBE_MAP, textureName, compressedTexture2Ds);
-        mHasCompressedTextures = true;
-        setWrapType(Wrap.CLAMP_S | Wrap.CLAMP_T | Wrap.CLAMP_R);
-        setTextureTarget(GLES20.GL_TEXTURE_CUBE_MAP);
+    /**
+     * Sets whether or not this texture is treated a sky sphere or environmental map. By default,
+     * {@link CubeMapTexture}s are treated as environmental maps.
+     *
+     * @param value {@code true} if this texture should be treated as a sky sphere.
+     */
+    public void isSkyTexture(boolean value) {
+        isSkyTexture = value;
     }
 
+    /**
+     * Returns whether or not this texture is treated as a sky sphere or environmental map. By default,
+     * {@link CubeMapTexture}s are treated as environmental maps.
+     *
+     * @return {@code true} if this texture is treated as a sky sphere.
+     */
+    public boolean isSkyTexture() {
+        return isSkyTexture;
+    }
+
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override
     public CubeMapTexture clone() {
-        return new CubeMapTexture(this);
-    }
-
-    private void checkBitmapConfiguration() throws TextureException {
-        if ((mBitmaps == null || mBitmaps.length == 0) && (mByteBuffers == null || mByteBuffers.length == 0) && !mHasCompressedTextures)
-            throw new TextureException("Texture2D could not be added because no Bitmaps or ByteBuffers set.");
-        if (mBitmaps != null && mBitmaps.length != 6)
-            throw new TextureException("CubeMapTexture could not be added because it needs six textures instead of " + mBitmaps.length);
-
-        if (mBitmaps != null) {
-            setTexelFormat(mBitmaps[0].getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA : GLES20.GL_RGB);
-            setWidth(mBitmaps[0].getWidth());
-            setHeight(mBitmaps[0].getHeight());
+        try {
+            return new CubeMapTexture(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
         }
     }
 
-    private void setTextureData() {
-        @Filter.FilterType final int filterType = getFilterType();
-        @WrapType final int wrapType = getWrapType();
+    @Size(6)
+    @NonNull
+    @Override
+    public TextureDataReference[] setTextureDataFromResourceIds(@NonNull Context context,
+                                                                @DrawableRes @Size(6) int[] resourceIds) {
+        return super.setTextureDataFromResourceIds(context, resourceIds);
+    }
 
-        if (isMipmaped()) {
-            if (filterType == Filter.BILINEAR)
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
-                    GLES20.GL_LINEAR_MIPMAP_LINEAR);
-            else
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER,
-                    GLES20.GL_NEAREST_MIPMAP_NEAREST);
-        } else {
-            if (filterType == Filter.BILINEAR)
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-            else
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+    @Override
+    public void setTextureData(@Nullable @Size(6) TextureDataReference[] data) {
+        super.setTextureData(data);
+    }
+
+    @Size(6)
+    @Nullable
+    @Override
+    protected TextureDataReference[] getTextureData() {
+        return super.getTextureData();
+    }
+
+    @RenderThread
+    @Override
+    void add() throws TextureException {
+        final TextureDataReference[] dataReferences = getTextureData();
+
+        if (dataReferences == null) {
+            throw new TextureException("Texture data was null!");
         }
 
-        if (filterType == Filter.BILINEAR)
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        else
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
-        if (wrapType == (Wrap.REPEAT_S | Wrap.REPEAT_T | Wrap.REPEAT_R)) {
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-        } else {
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_CUBE_MAP, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        if (dataReferences.length < 6) {
+            throw new TextureException("Texture data was of insufficient length. Was: " + dataReferences.length
+                + " Expected: 6");
         }
 
-        for (int i = 0; i < 6; i++) {
-            GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
-            if (mBitmaps != null) {
-                GLUtils.texImage2D(CUBE_FACES[i], 0, mBitmaps[i], 0);
-            } else if(mHasCompressedTextures) {
-                CompressedTexture2D tex = mCompressedTextures[i];
-                int w = tex.getWidth(), h = tex.getHeight();
-                for (int j = 0; j < tex.getByteBuffers().length; j++) {
-                    GLES20.glCompressedTexImage2D(CUBE_FACES[i], j, tex.getCompressionFormat(), w, h, 0,
-                            tex.getByteBuffers()[j].capacity(), tex.getByteBuffers()[j]);
-                    w = w > 1 ? w / 2 : 1;
-                    h = h > 1 ? h / 2 : 1;
-                }
-            } else {
-                GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, getTexelFormat(), getWidth(), getHeight(), 0, getTexelFormat(),
-                                    GLES20.GL_UNSIGNED_BYTE, mByteBuffers[i]);
+        for (int i = 0; i < 6; ++i) {
+            if (dataReferences[i] == null || dataReferences[i].isDestroyed()
+                || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
+                && !dataReferences[i].hasBitmap())) {
+                throw new TextureException("Texture could not be added because there is no valid data set.");
             }
         }
 
-        if (isMipmaped())
-            GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
+        // Generate a texture id
+        int textureId = generateTextureId();
+
+        if (textureId > 0) {
+            // If a valid id was generated...
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
+
+            // Handle minification filtering
+            applyMinificationFilter();
+
+            // Handle magnification filtering
+            applyMagnificationFilter();
+
+            // Handle anisotropy if needed.
+            applyAnisotropy();
+
+            // Handle s coordinate wrapping
+            applySWrapping();
+
+            // Handle t coordinate wrapping
+            applyTWrapping();
+
+            // Handle r coordinate wrapping
+            // TODO: R wrapping
+
+            for (int i = 0; i < 6; i++) {
+                //TODO: Look into hints
+                GLES20.glHint(GLES20.GL_GENERATE_MIPMAP_HINT, GLES20.GL_NICEST);
+                if (dataReferences[i].hasBuffer()) {
+                    if (getWidth() == 0 || getHeight() == 0) {
+                        throw new TextureException(
+                            "Could not create ByteBuffer texture. One or more of the following properties haven't "
+                                + "been set: width or height format");
+                    }
+                    GLES20.glTexImage2D(GLES20.GL_TEXTURE_CUBE_MAP, 0, getTexelFormat(), getWidth(), getHeight(), 0,
+                        dataReferences[i].getPixelFormat(), dataReferences[i].getDataType(),
+                        dataReferences[i].getByteBuffer());
+                } else {
+                    GLUtils.texImage2D(CUBE_FACES[i], 0, dataReferences[i].getBitmap(), 0);
+                }
+            }
+
+            if (isMipmaped()) {
+                GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
+            }
+
+            // Store the texture id
+            setTextureId(textureId);
+        } else {
+            throw new TextureException("Failed to generate a new texture id.");
+        }
 
         if (willRecycle()) {
-            if (mBitmaps != null) {
-                for (Bitmap bitmap : mBitmaps) {
-                    bitmap.recycle();
-                    bitmap = null;
-                }
-                mBitmaps = null;
-            }
-            mByteBuffers = null;
+            setTextureData(null);
         }
 
+        // Rebind the null texture
         GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, 0);
     }
 
-    @Override
-    void add() throws TextureException {
-        if(mHasCompressedTextures) {
-            for(int i=0; i<mCompressedTextures.length; i++) {
-                mCompressedTextures[i].add();
-            }
-        }
-        checkBitmapConfiguration();
-        int[] genTextureNames = new int[1];
-        GLES20.glGenTextures(1, genTextureNames, 0);
-        int textureId = genTextureNames[0];
-
-        if (textureId > 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, textureId);
-            setTextureData();
-            setTextureId(textureId);
-        } else {
-            throw new TextureException("Couldn't generate a texture name.");
-        }
-    }
-
-    @Override
-    void remove() throws TextureException {
-        if(mHasCompressedTextures) {
-            for(int i=0; i<mCompressedTextures.length; i++) {
-                mCompressedTextures[i].remove();
-            }
-        }
-        GLES20.glDeleteTextures(1, new int[]{ getTextureId() }, 0);
-    }
-
+    @SuppressWarnings("ForLoopReplaceableByForEach")
+    @RenderThread
     @Override
     void replace() throws TextureException {
-        checkBitmapConfiguration();
+        final TextureDataReference[] dataReferences = getTextureData();
 
-        if (getTextureId() > 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, getTextureId());
-            if(mHasCompressedTextures) {
-                for (int i = 0; i < 6; i++) {
-                    CompressedTexture2D tex = mCompressedTextures[i];
-                    tex.add();
-                    int w = tex.getWidth(), h = tex.getHeight();
-                    for (int j = 0; j < tex.getByteBuffers().length; j++) {
-                        GLES20.glCompressedTexSubImage2D(CUBE_FACES[i], j, 0, 0, w, h, tex.getCompressionFormat(),
-                                tex.getByteBuffers()[j].capacity(), tex.getByteBuffers()[j]);
-                        w = w > 1 ? w / 2 : 1;
-                        h = h > 1 ? h / 2 : 1;
-                    }
-                }
-                GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, 0);
-            } else {
-                setTextureData();
-            }
-        } else {
-            throw new TextureException("Couldn't generate a texture name.");
+        if (dataReferences == null) {
+            throw new TextureException("Texture data was null!");
         }
-    }
 
-    public void isSkyTexture(boolean value) {
-        mIsSkyTexture = value;
-        mIsEnvironmentTexture = !value;
-    }
+        if (dataReferences.length < 6) {
+            throw new TextureException("Texture data was of insufficient length. Was: " + dataReferences.length
+                + " Expected: 6");
+        }
 
-    public boolean isSkyTexture() {
-        return mIsSkyTexture;
-    }
+        for (int i = 0; i < 6; ++i) {
+            if (dataReferences[i] == null || dataReferences[i].isDestroyed()
+                || (dataReferences[i].hasBuffer() && dataReferences[i].getByteBuffer().limit() == 0
+                && !dataReferences[i].hasBitmap())) {
+                throw new TextureException("Texture could not be added because there is no valid data set.");
+            }
+            if (dataReferences[i].getWidth() != getWidth() || dataReferences[i].getHeight() != getHeight()) {
+                throw new TextureException(
+                    "Texture could not be updated because the texture size is different from the original.");
+            }
+        }
 
-    public void isEnvironmentTexture(boolean value) {
-        mIsEnvironmentTexture = value;
-        mIsSkyTexture = !mIsEnvironmentTexture;
-    }
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, getTextureId());
 
-    public boolean isEnvironmentTexture() {
-        return mIsEnvironmentTexture;
+        for (int i = 0, j = dataReferences.length; i < j; ++i) {
+            if (dataReferences[i].hasBuffer()) {
+                GLES20.glTexSubImage2D(CUBE_FACES[i], 0, 0, 0, getWidth(), getHeight(),
+                    dataReferences[i].getPixelFormat(),
+                    GLES20.GL_UNSIGNED_BYTE, dataReferences[i].getByteBuffer());
+            } else {
+                int bitmapFormat = dataReferences[i].getBitmap().getConfig() == Config.ARGB_8888 ? GLES20.GL_RGBA
+                    : GLES20.GL_RGB;
+
+                if (bitmapFormat != getTexelFormat()) {
+                    throw new TextureException(
+                        "Texture could not be updated because the texel format is different from the original");
+                }
+
+                GLUtils.texSubImage2D(CUBE_FACES[i], 0, 0, 0, dataReferences[i].getBitmap(), getTexelFormat(),
+                    GLES20.GL_UNSIGNED_BYTE);
+            }
+        }
+
+        if (isMipmaped()) {
+            GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_CUBE_MAP);
+        }
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_CUBE_MAP, 0);
     }
 }

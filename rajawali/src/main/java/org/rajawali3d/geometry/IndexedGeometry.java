@@ -1,28 +1,26 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package org.rajawali3d.geometry;
 
-import static org.rajawali3d.util.ArrayUtils.concatAllFloat;
-import static org.rajawali3d.util.ArrayUtils.concatAllInt;
-import static org.rajawali3d.util.ArrayUtils.getFloatArrayFromBuffer;
-import static org.rajawali3d.util.ArrayUtils.getIntArrayFromBuffer;
-
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
+import android.support.annotation.Nullable;
+
 import net.jcip.annotations.NotThreadSafe;
+
 import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -37,6 +35,11 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
+import static org.rajawali3d.util.ArrayUtils.concatAllFloat;
+import static org.rajawali3d.util.ArrayUtils.concatAllInt;
+import static org.rajawali3d.util.ArrayUtils.getFloatArrayFromBuffer;
+import static org.rajawali3d.util.ArrayUtils.getIntArrayFromBuffer;
+
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in
  * FloatBuffers, IntBuffers and ShortBuffers. The data is uploaded to the graphics card using Vertex Buffer Objects
@@ -46,30 +49,32 @@ import java.util.ArrayList;
  * @author dennis.ippel
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@SuppressWarnings("WeakerAccess")
 @NotThreadSafe
 public class IndexedGeometry implements Geometry {
 
     public static final int FLOAT_SIZE_BYTES = 4;
-    public static final int INT_SIZE_BYTES   = 4;
+    public static final int INT_SIZE_BYTES = 4;
     public static final int SHORT_SIZE_BYTES = 2;
-    public static final int BYTE_SIZE_BYTES  = 1;
+    public static final int BYTE_SIZE_BYTES = 1;
 
-    public static final int VERTEX_BUFFER_KEY  = 0;
-    public static final int NORMAL_BUFFER_KEY  = 1;
+    public static final int VERTEX_BUFFER_KEY = 0;
+    public static final int NORMAL_BUFFER_KEY = 1;
     public static final int TEXTURE_BUFFER_KEY = 2;
-    public static final int COLOR_BUFFER_KEY   = 3;
-    public static final int INDEX_BUFFER_KEY   = 4;
+    public static final int COLOR_BUFFER_KEY = 3;
+    public static final int INDEX_BUFFER_KEY = 4;
 
+    // TODO: We probably want this to be a sparse array
     protected final ArrayList<BufferInfo> buffers;
 
     /**
      * The number of indices currently stored in the index buffer.
      */
-    protected int             numIndices;
+    protected int numIndices;
     /**
      * The number of vertices currently stored in the vertex buffer.
      */
-    protected int             numVertices;
+    protected int numVertices;
     /**
      * A pointer to the original geometry. This is not null when the object has been cloned.
      * When cloning a BaseObject3D the data isn't copied over, only the handle to the OpenGL
@@ -101,23 +106,23 @@ public class IndexedGeometry implements Geometry {
         buffers.add(new BufferInfo());
 
         buffers.get(VERTEX_BUFFER_KEY).rajawaliHandle = VERTEX_BUFFER_KEY;
-        buffers.get(VERTEX_BUFFER_KEY).bufferType = BufferType.FLOAT_BUFFER;
+        buffers.get(VERTEX_BUFFER_KEY).bufferType = BufferInfo.FLOAT_BUFFER;
         buffers.get(VERTEX_BUFFER_KEY).target = GLES20.GL_ARRAY_BUFFER;
 
         buffers.get(NORMAL_BUFFER_KEY).rajawaliHandle = NORMAL_BUFFER_KEY;
-        buffers.get(NORMAL_BUFFER_KEY).bufferType = BufferType.FLOAT_BUFFER;
+        buffers.get(NORMAL_BUFFER_KEY).bufferType = BufferInfo.FLOAT_BUFFER;
         buffers.get(NORMAL_BUFFER_KEY).target = GLES20.GL_ARRAY_BUFFER;
 
         buffers.get(TEXTURE_BUFFER_KEY).rajawaliHandle = TEXTURE_BUFFER_KEY;
-        buffers.get(TEXTURE_BUFFER_KEY).bufferType = BufferType.FLOAT_BUFFER;
+        buffers.get(TEXTURE_BUFFER_KEY).bufferType = BufferInfo.FLOAT_BUFFER;
         buffers.get(TEXTURE_BUFFER_KEY).target = GLES20.GL_ARRAY_BUFFER;
 
         buffers.get(COLOR_BUFFER_KEY).rajawaliHandle = COLOR_BUFFER_KEY;
-        buffers.get(COLOR_BUFFER_KEY).bufferType = BufferType.FLOAT_BUFFER;
+        buffers.get(COLOR_BUFFER_KEY).bufferType = BufferInfo.FLOAT_BUFFER;
         buffers.get(COLOR_BUFFER_KEY).target = GLES20.GL_ARRAY_BUFFER;
 
         buffers.get(INDEX_BUFFER_KEY).rajawaliHandle = INDEX_BUFFER_KEY;
-        buffers.get(INDEX_BUFFER_KEY).bufferType = BufferType.INT_BUFFER;
+        buffers.get(INDEX_BUFFER_KEY).bufferType = BufferInfo.INT_BUFFER;
         buffers.get(INDEX_BUFFER_KEY).target = GLES20.GL_ELEMENT_ARRAY_BUFFER;
     }
 
@@ -215,25 +220,31 @@ public class IndexedGeometry implements Geometry {
         min.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         max.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 
-        Vector3 vertex = new Vector3();
+        final Vector3 vertex = new Vector3();
 
         while (vertices.hasRemaining()) {
             vertex.x = vertices.get();
             vertex.y = vertices.get();
             vertex.z = vertices.get();
 
-            if (vertex.x < min.x)
+            if (vertex.x < min.x) {
                 min.x = vertex.x;
-            if (vertex.y < min.y)
+            }
+            if (vertex.y < min.y) {
                 min.y = vertex.y;
-            if (vertex.z < min.z)
+            }
+            if (vertex.z < min.z) {
                 min.z = vertex.z;
-            if (vertex.x > max.x)
+            }
+            if (vertex.x > max.x) {
                 max.x = vertex.x;
-            if (vertex.y > max.y)
+            }
+            if (vertex.y > max.y) {
                 max.y = vertex.y;
-            if (vertex.z > max.z)
+            }
+            if (vertex.z > max.z) {
                 max.z = vertex.z;
+            }
         }
     }
 
@@ -241,104 +252,86 @@ public class IndexedGeometry implements Geometry {
     @RenderThread
     @Override
     public void issueDrawCalls() {
-
+        // TODO: Issue draw calls
     }
 
     /**
      * Copies another IndexedGeometry's BufferInfo objects. This means that it doesn't copy or clone the actual data.
      * It will just use the pointers to the other IndexedGeometry's buffers.
      *
-     * @param geom
+     * @param geometry The {@link IndexedGeometry} to copy from.
      *
      * @see BufferInfo
      */
-    public void copyFromGeometry3D(IndexedGeometry geom) {
-        numIndices = geom.getNumIndices();
-        numVertices = geom.getNumVertices();
+    public void copyFromGeometry3D(@NonNull IndexedGeometry geometry) {
+        numIndices = geometry.getNumIndices();
+        numVertices = geometry.getNumVertices();
 
-        buffers.add(VERTEX_BUFFER_KEY, geom.getVertexBufferInfo());
-        buffers.add(NORMAL_BUFFER_KEY, geom.getNormalBufferInfo());
-        buffers.add(TEXTURE_BUFFER_KEY, geom.getTexCoordBufferInfo());
+        buffers.add(VERTEX_BUFFER_KEY, geometry.getVertexBufferInfo());
+        buffers.add(NORMAL_BUFFER_KEY, geometry.getNormalBufferInfo());
+        buffers.add(TEXTURE_BUFFER_KEY, geometry.getTexCoordBufferInfo());
         if (buffers.get(COLOR_BUFFER_KEY).buffer == null) {
-            buffers.add(COLOR_BUFFER_KEY, geom.getColorBufferInfo());
+            buffers.add(COLOR_BUFFER_KEY, geometry.getColorBufferInfo());
         }
-        buffers.add(INDEX_BUFFER_KEY, geom.getIndexBufferInfo());
-        sourceGeometry = geom;
-        hasNormals = geom.hasNormals();
-        hasTextureCoordinates = geom.hasTextureCoordinates();
+        buffers.add(INDEX_BUFFER_KEY, geometry.getIndexBufferInfo());
+        sourceGeometry = geometry;
+        hasNormals = geometry.hasNormals();
+        hasTextureCoordinates = geometry.hasTextureCoordinates();
     }
 
     /**
-     * Adds the geometry from the incoming geometry with the specified offset.
-     * Note that the offset is only applied to the vertex positions.
+     * Adds the geometry from the incoming geometry with the specified offset. Note that the offset is only applied to
+     * the vertex positions. Subsequent changes to the original data being added will not affect the data of this
+     * instance.
      *
      * @param offset     {@link Vector3} containing the offset in each direction. Can be null.
      * @param geometry   {@link IndexedGeometry} to be added.
-     * @param createVBOs {@code boolean} If true, create the VBOs immediately.
+     * @param createVBOs {@code true} if the VBOs should be constructed immediately. This requires calling on the GL
+     *                               thread.
      */
-    public void addFromGeometry3D(Vector3 offset, IndexedGeometry geometry, boolean createVBOs) {
-        float[] newVertices = null;
-        float[] newNormals = null;
-        float[] newColors = null;
-        float[] newTextureCoords = null;
-        int[] newIntIndices = null;
-        float[] mVerticesArray = null;
-        float[] mNormalsArray = null;
-        float[] mColorsArray = null;
-        float[] mTextureCoordsArray = null;
-        int[] mIndicesArray = null;
+    public void addFromOther(@NonNull Vector3 offset, @NonNull IndexedGeometry geometry, boolean createVBOs) {
+        float[] newVertices;
+        float[] newNormals;
+        float[] newColors;
+        float[] newTextureCoords;
+        int[] newIntIndices;
+        float[] verticesArray;
+        float[] normalsArray;
+        float[] colorsArray;
+        float[] textureCoordsArray;
+        int[] indicesArray;
 
         //Get the old data
-        mVerticesArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(VERTEX_BUFFER_KEY).buffer);
-        mNormalsArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(NORMAL_BUFFER_KEY).buffer);
-        mColorsArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(COLOR_BUFFER_KEY).buffer);
-        mTextureCoordsArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(TEXTURE_BUFFER_KEY).buffer);
-        mIndicesArray = getIntArrayFromBuffer(buffers.get(INDEX_BUFFER_KEY).buffer);
+        verticesArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(VERTEX_BUFFER_KEY).buffer);
+        normalsArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(NORMAL_BUFFER_KEY).buffer);
+        colorsArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(COLOR_BUFFER_KEY).buffer);
+        textureCoordsArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(TEXTURE_BUFFER_KEY).buffer);
+        indicesArray = getIntArrayFromBuffer(buffers.get(INDEX_BUFFER_KEY).buffer);
 
-        //Get the new data, offset the vertices
-        int axis = 0;
-        float[] addVertices = getFloatArrayFromBuffer(geometry.getVertices());
-        if (offset != null) {
-            for (int i = 0, j = addVertices.length; i < j; ++i) {
-                switch (axis) {
-                    case 0:
-                        addVertices[i] += offset.x;
-                        break;
-                    case 1:
-                        addVertices[i] += offset.y;
-                        break;
-                    case 2:
-                        addVertices[i] += offset.z;
-                        break;
-                }
-                ++axis;
-                if (axis > 2) {
-                    axis = 0;
-                }
-            }
+        // Get the new data, offset the vertices
+        final float[] addVertices = getFloatArrayFromBuffer(geometry.getVertices());
+        for (int i = 0, j = addVertices.length; i < j; i += 3) {
+            addVertices[i] += offset.x;
+            addVertices[i + 1] += offset.y;
+            addVertices[i + 2] += offset.z;
         }
-        float[] addNormals = getFloatArrayFromBuffer(geometry.getNormals());
-        float[] addColors = getFloatArrayFromBuffer(geometry.getColors());
-        float[] addTextureCoords = getFloatArrayFromBuffer(geometry.getTextureCoords());
-        int[] addIndices = getIntArrayFromBuffer(geometry.getIndices());
-        int index_offset = 0;
-        if (mVerticesArray != null) {
-            index_offset = (mVerticesArray.length / 3);
-        }
-        if (addIndices != null) {
-            for (int i = 0, j = addIndices.length; i < j; ++i) {
-                addIndices[i] += index_offset;
-            }
+        final float[] addNormals = getFloatArrayFromBuffer(geometry.getNormals());
+        final float[] addColors = getFloatArrayFromBuffer(geometry.getColors());
+        final float[] addTextureCoords = getFloatArrayFromBuffer(geometry.getTextureCoords());
+        final int[] addIndices = getIntArrayFromBuffer(geometry.getIndices());
+        int index_offset = verticesArray.length / 3;
+        for (int i = 0, j = addIndices.length; i < j; ++i) {
+            addIndices[i] += index_offset;
         }
 
-        //Concatenate the old and new data
-        newVertices = concatAllFloat(mVerticesArray, addVertices);
-        newNormals = concatAllFloat(mNormalsArray, addNormals);
-        newColors = concatAllFloat(mColorsArray, addColors);
-        newTextureCoords = concatAllFloat(mTextureCoordsArray, addTextureCoords);
-        newIntIndices = concatAllInt(mIndicesArray, (int[]) addIndices);
+        // Concatenate the old and new data
+        newVertices = concatAllFloat(verticesArray, addVertices);
+        newNormals = concatAllFloat(normalsArray, addNormals);
+        newColors = concatAllFloat(colorsArray, addColors);
+        newTextureCoords = concatAllFloat(textureCoordsArray, addTextureCoords);
+        newIntIndices = concatAllInt(indicesArray, addIndices);
 
-        //Set the new data
+        // Set the new data
         setVertices(newVertices, true);
         setNormals(newNormals, true);
         setTextureCoords(newTextureCoords, true);
@@ -346,29 +339,32 @@ public class IndexedGeometry implements Geometry {
         setIndices(newIntIndices, true);
 
         if (createVBOs) {
-            //Create the new buffers
+            // Create the new buffers
             createBuffers();
         }
     }
 
     /**
-     * Sets the data. This methods takes two BufferInfo objects which means it'll use another
-     * IndexedGeometry instance's data (vertices and normals). The remaining parameters are arrays
-     * which will be used to create buffers that are unique to this instance.
+     * Sets the geometry data. This methods takes two {@link BufferInfo} objects which means it will use another
+     * IndexedGeometry instance's data (vertices and normals). The remaining parameters are arrays which will be used
+     * to create buffers that are unique to this instance.
      * <p>
-     * This is typically used with VertexAnimationObject3D instances.
+     * This is typically used with {@link VertexAnimationObject3D} instances.
      *
-     * @param vertexBufferInfo
-     * @param normalBufferInfo
-     * @param textureCoords
-     * @param colors
-     * @param indices
-     * @param createVBOs
+     * @param vertexBufferInfo {@link BufferInfo} providing the vertex data.
+     * @param normalBufferInfo {@link BufferInfo} providing the normal data.
+     * @param textureCoords {@code float} array containing the texture coordinate data.
+     * @param colors {@code float} array containing the vertex color data.
+     * @param indices {@code int} array containing the vertex index data.
+     * @param createVBOs {@code true} if the VBOs should be constructed immediately. This requires calling on the GL
+     *                               thread.
      *
      * @see VertexAnimationObject3D
      */
-    public void setData(BufferInfo vertexBufferInfo, BufferInfo normalBufferInfo,
-                        float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
+    public void setData(@NonNull BufferInfo vertexBufferInfo, @Nullable BufferInfo normalBufferInfo,
+                        @Nullable float[] textureCoords, @Nullable float[] colors, @NonNull int[] indices,
+                        boolean createVBOs) {
+        // TODO: Why are we synthesizing texture and color data?
         if (textureCoords == null || textureCoords.length == 0) {
             textureCoords = new float[(numVertices / 3) * 2];
         }
@@ -391,22 +387,23 @@ public class IndexedGeometry implements Geometry {
     }
 
     /**
-     * Sets the data. Assumes that the data will never be changed and passes GLES20.GL_STATIC_DRAW
-     * to the OpenGL context when the buffers are created.
+     * Sets the geometry data. Assumes that the data will never be changed and passes @link GLES20.GL_STATIC_DRAW} to
+     * the OpenGL context when the buffers are created.
      *
-     * @param vertices
-     * @param normals
-     * @param textureCoords
-     * @param colors
-     * @param indices
-     * @param createVBOs
+     * @param vertices {@code float} array containing the vertex position data.
+     * @param normals {@code float} array containing the vertex normal data.
+     * @param textureCoords {@code float} array containing the the vertex texture coordinate data.
+     * @param colors {@code float} array containing the vertex color data.
+     * @param indices {@code int} array containing the geometry index data.
+     * @param createVBOs {@code true} if the VBOs should be constructed immediately. This requires calling on the GL
+     *                               thread.
      *
-     * @see GLES20#GL_STATIC_DRAW
+     * @see {@link GLES20#GL_STATIC_DRAW}.
      */
-    public void setData(float[] vertices, float[] normals,
-                        float[] textureCoords, float[] colors, int[] indices, boolean createVBOs) {
+    public void setData(@NonNull float[] vertices, @Nullable float[] normals, @Nullable float[] textureCoords,
+                        @Nullable float[] colors, @NonNull int[] indices, boolean createVBOs) {
         setData(vertices, GLES20.GL_STATIC_DRAW, normals, GLES20.GL_STATIC_DRAW, textureCoords,
-                GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
+            GLES20.GL_STATIC_DRAW, colors, GLES20.GL_STATIC_DRAW, indices, GLES20.GL_STATIC_DRAW, createVBOs);
     }
 
     /**
@@ -442,21 +439,23 @@ public class IndexedGeometry implements Geometry {
      * The data store contents are modified by reading data from the GL, and used as the source for GL drawing and
      * image specification commands.
      *
-     * @param vertices
-     * @param verticesUsage
-     * @param normals
-     * @param normalsUsage
-     * @param textureCoords
-     * @param textureCoordsUsage
-     * @param colors
-     * @param colorsUsage
-     * @param indices
-     * @param indicesUsage
-     * @param createVBOs
+     * @param vertices {@code float} array containing the vertex position data.
+     * @param verticesUsage {@code int} Vertex buffer usage hint.
+     * @param normals {@code float} array containing the vertex normal data.
+     * @param normalsUsage {@code int} Normal buffer usage hint.
+     * @param textureCoords {@code float} array containing the the vertex texture coordinate data.
+     * @param textureCoordsUsage {@code int} Texture coordinate buffer usage hint.
+     * @param colors {@code float} array containing the vertex color data.
+     * @param colorsUsage {@code int} Color buffer usage hint.
+     * @param indices {@code int} array containing the geometry index data.
+     * @param indicesUsage {@code int} Index buffer usage hint.
+     * @param createVBOs {@code true} if the VBOs should be constructed immediately. This requires calling on the GL
+     *                               thread.
      */
-    public void setData(float[] vertices, int verticesUsage, float[] normals, int normalsUsage,
-                        float[] textureCoords, int textureCoordsUsage, float[] colors, int colorsUsage,
-                        int[] indices, int indicesUsage, boolean createVBOs) {
+    public void setData(@NonNull float[] vertices, @VBOUsage int verticesUsage, @Nullable float[] normals,
+                        @VBOUsage int normalsUsage, @Nullable float[] textureCoords, @VBOUsage int textureCoordsUsage,
+                        @Nullable float[] colors, @VBOUsage int colorsUsage, @NonNull int[] indices,
+                        @VBOUsage int indicesUsage, boolean createVBOs) {
         buffers.get(VERTEX_BUFFER_KEY).usage = verticesUsage;
         buffers.get(NORMAL_BUFFER_KEY).usage = normalsUsage;
         buffers.get(TEXTURE_BUFFER_KEY).usage = textureCoordsUsage;
@@ -491,8 +490,8 @@ public class IndexedGeometry implements Geometry {
         ((FloatBuffer) buffers.get(VERTEX_BUFFER_KEY).buffer).compact().position(0);
         ((FloatBuffer) buffers.get(NORMAL_BUFFER_KEY).buffer).compact().position(0);
 
-        createBuffer(buffers.get(VERTEX_BUFFER_KEY), BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
-        createBuffer(buffers.get(NORMAL_BUFFER_KEY), BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+        createBuffer(buffers.get(VERTEX_BUFFER_KEY), BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+        createBuffer(buffers.get(NORMAL_BUFFER_KEY), BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
@@ -505,7 +504,7 @@ public class IndexedGeometry implements Geometry {
      * @param type
      * @param target
      */
-    public void createBuffer(BufferInfo bufferInfo, BufferType type, int target) {
+    public void createBuffer(BufferInfo bufferInfo, @BufferInfo.BufferType int type, int target) {
         createBuffer(bufferInfo, type, target, bufferInfo.usage);
     }
 
@@ -517,13 +516,13 @@ public class IndexedGeometry implements Geometry {
      * @param target
      * @param usage
      */
-    public void createBuffer(BufferInfo bufferInfo, BufferType type, int target, int usage) {
+    public void createBuffer(BufferInfo bufferInfo, @BufferInfo.BufferType int type, int target, int usage) {
         int byteSize = FLOAT_SIZE_BYTES;
-        if (type == BufferType.SHORT_BUFFER) {
+        if (type == BufferInfo.SHORT_BUFFER) {
             byteSize = SHORT_SIZE_BYTES;
-        } else if (type == BufferType.BYTE_BUFFER) {
+        } else if (type == BufferInfo.BYTE_BUFFER) {
             byteSize = BYTE_SIZE_BYTES;
-        } else if (type == BufferType.INT_BUFFER) {
+        } else if (type == BufferInfo.INT_BUFFER) {
             byteSize = INT_SIZE_BYTES;
         }
         //TODO: Other types
@@ -553,7 +552,7 @@ public class IndexedGeometry implements Geometry {
         createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.target, bufferInfo.usage);
     }
 
-    public int addBuffer(BufferInfo bufferInfo, BufferType type, int target, int usage) {
+    public int addBuffer(BufferInfo bufferInfo, @BufferInfo.BufferType int type, int target, int usage) {
         createBuffer(bufferInfo, type, target, usage);
         final int key = buffers.size();
         bufferInfo.rajawaliHandle = key;
@@ -561,7 +560,7 @@ public class IndexedGeometry implements Geometry {
         return key;
     }
 
-    public int addBuffer(BufferInfo bufferInfo, BufferType type, int target) {
+    public int addBuffer(BufferInfo bufferInfo, @BufferInfo.BufferType int type, int target) {
         return addBuffer(bufferInfo, type, target, bufferInfo.usage);
     }
 
@@ -570,7 +569,7 @@ public class IndexedGeometry implements Geometry {
      * GLES20.GL_STREAM_DRAW, GLES20.GL_STREAM_READ, GLES20.GL_STREAM_COPY, GLES20.GL_STATIC_DRAW,
      * GLES20.GL_STATIC_READ, GLES20.GL_STATIC_COPY, GLES20.GL_DYNAMIC_DRAW, GLES20.GL_DYNAMIC_READ,
      * or GLES20.GL_DYNAMIC_COPY.
-     *
+     * <p>
      * Usage is a hint to the GL implementation as to how a buffer object's data store will be
      * accessed. This enables the GL implementation to make more intelligent decisions that may
      * significantly impact buffer object performance. It does not, however, constrain the actual
@@ -606,7 +605,7 @@ public class IndexedGeometry implements Geometry {
      */
     @RenderThread
     public void changeBufferUsage(BufferInfo bufferInfo, final int usage) {
-        GLES20.glDeleteBuffers(1, new int[]{ bufferInfo.glHandle }, 0);
+        GLES20.glDeleteBuffers(1, new int[]{bufferInfo.glHandle}, 0);
         createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.target, usage);
     }
 
@@ -682,8 +681,8 @@ public class IndexedGeometry implements Geometry {
                 vertexInfo.buffer.clear();
             }
             vertexInfo.buffer = ByteBuffer
-                    .allocateDirect(vertices.length * FLOAT_SIZE_BYTES)
-                    .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                .allocateDirect(vertices.length * FLOAT_SIZE_BYTES)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
 
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
             vertexInfo.buffer.position(0);
@@ -718,7 +717,7 @@ public class IndexedGeometry implements Geometry {
         final BufferInfo normalInfo = buffers.get(NORMAL_BUFFER_KEY);
         if (normalInfo.buffer == null || override) {
             normalInfo.buffer = ByteBuffer.allocateDirect(normals.length * FLOAT_SIZE_BYTES)
-                    .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
             ((FloatBuffer) normalInfo.buffer).put(normals);
             normalInfo.buffer.position(0);
         } else {
@@ -757,7 +756,7 @@ public class IndexedGeometry implements Geometry {
         final BufferInfo indexInfo = buffers.get(INDEX_BUFFER_KEY);
         if (indexInfo.buffer == null || override) {
             indexInfo.buffer = ByteBuffer.allocateDirect(indices.length * INT_SIZE_BYTES)
-                    .order(ByteOrder.nativeOrder()).asIntBuffer();
+                .order(ByteOrder.nativeOrder()).asIntBuffer();
             ((IntBuffer) indexInfo.buffer).put(indices).position(0);
 
             numIndices = indices.length;
@@ -784,8 +783,8 @@ public class IndexedGeometry implements Geometry {
         final BufferInfo textureInfo = buffers.get(TEXTURE_BUFFER_KEY);
         if (textureInfo.buffer == null || override) {
             textureInfo.buffer = ByteBuffer
-                    .allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
-                    .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                .allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
             textureInfo.buffer.position(0);
         } else {
@@ -817,8 +816,8 @@ public class IndexedGeometry implements Geometry {
         final BufferInfo colorInfo = buffers.get(COLOR_BUFFER_KEY);
         if (colorInfo.buffer == null || override) {
             colorInfo.buffer = ByteBuffer
-                    .allocateDirect(colors.length * FLOAT_SIZE_BYTES)
-                    .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                .allocateDirect(colors.length * FLOAT_SIZE_BYTES)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
             ((FloatBuffer) colorInfo.buffer).put(colors);
             colorInfo.buffer.position(0);
         } else {
@@ -855,7 +854,7 @@ public class IndexedGeometry implements Geometry {
         if (colorInfo.buffer == null || colorInfo.buffer.limit() == 0) {
             colorInfo = new BufferInfo();
             colorInfo.buffer = ByteBuffer.allocateDirect(numVertices * 4 * FLOAT_SIZE_BYTES)
-                    .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
             createNewBuffer = true;
             buffers.add(COLOR_BUFFER_KEY, colorInfo);
         }
@@ -871,11 +870,11 @@ public class IndexedGeometry implements Geometry {
         colorInfo.buffer.position(0);
 
         if (createNewBuffer) {
-            createBuffer(colorInfo, BufferType.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+            createBuffer(colorInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
         } else {
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorInfo.glHandle);
             GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, colorInfo.buffer.limit() * FLOAT_SIZE_BYTES, colorInfo.buffer,
-                                GLES20.GL_STATIC_DRAW);
+                GLES20.GL_STATIC_DRAW);
         }
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
     }

@@ -1,16 +1,16 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-/*package org.rajawali3d.materials.textures;
+package c.org.rajawali3d.textures;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,9 +18,22 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Movie;
+import android.opengl.GLES20;
 import android.os.SystemClock;
-import org.rajawali3d.materials.textures.ASingleTexture;
-import org.rajawali3d.materials.textures.TextureManager;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.FloatRange;
+import android.support.annotation.NonNull;
+import android.support.annotation.RawRes;
+
+import org.rajawali3d.util.RajLog;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.textures.annotation.Type;
+import c.org.rajawali3d.util.ByteBufferBackedInputStream;
 
 
 /**
@@ -29,159 +42,224 @@ import org.rajawali3d.materials.textures.TextureManager;
  * @author dennis.ippel
  *
  */
-/*public class AnimatedGIFTexture extends ASingleTexture {
-	private Canvas  mCanvas;
-	private Movie   mMovie;
-	private Bitmap  mGIFBitmap;
-	private int     resourceId;
-	private int     width;
-	private int     height;
-	private int     mTextureSize;
-	private long    mStartTime;
-	private boolean mLoadNewGIF;
+@SuppressWarnings("WeakerAccess")
+public class AnimatedGIFTexture extends SingleTexture2D {
 
-	public AnimatedGIFTexture(String name, int resourceId) {
-		this(name, resourceId, 512);
-	}
+    private Canvas canvas;
+    private Movie movie;
+    private Bitmap bitmap;
+    private Bitmap gifBitmap;
+    private int width;
+    private int height;
+    private long startTime;
 
-	/**
-	 * Creates an animated GIF texture
-	 *
-	 * @param resourceId	The animated GIF resource
-	 * @param textureSize 	The power of two size
-	 */
-	/*public AnimatedGIFTexture(String name, int resourceId, int textureSize) {
-		super(TextureType.DIFFUSE, name);
-		mTextureSize = textureSize;
-		resourceId = resourceId;
-		loadGIF();
-	}
+    @FloatRange(from = 0) private float scaleFactor = 1.0f;
 
-	public AnimatedGIFTexture(AnimatedGIFTexture other) {
-		super(other);
-		setFrom(other);
-	}
+    /**
+     * Constructs a new {@link AnimatedGIFTexture} from the provided {@link AnimatedGIFTexture}.
+     *
+     * @param other {@link AnimatedGIFTexture} The source texture.
+     *
+     * @throws TextureException thrown if there is an error copying the texture.
+     */
+    public AnimatedGIFTexture(@NonNull AnimatedGIFTexture other) throws TextureException {
+        super(other);
+    }
 
-	@Override
-	public AnimatedGIFTexture clone() {
-		return new AnimatedGIFTexture(this);
-	}
+    /**
+     * Constructs a new {@link AnimatedGIFTexture} with the specified name and type.
+     *
+     * @param type {@link Type.TextureType} The texture usage type.
+     * @param name {@link String} The texture name.
+     */
+    public AnimatedGIFTexture(@Type.TextureType int type, @NonNull String name) {
+        super(type, name);
+    }
 
-	private void loadGIF() {
-		Context context = TextureManager.getInstance().getContext();
-		mMovie = Movie.decodeStream(context.getResources().openRawResource(resourceId));
-		width = mMovie.width();
-		height = mMovie.height();
+    /**
+     * Constructs a new {@link AnimatedGIFTexture} with data provided by the Android resource id. The texture name is
+     * set by querying Android for the resource name.
+     *
+     * @param context    {@link Context} The application context.
+     * @param type       {@link Type.TextureType} The texture usage type.
+     * @param resourceId {@code int} The Android resource id to load from.
+     *
+     * @throws TextureException thrown if there is an error loading the GIF texture.
+     */
+    public AnimatedGIFTexture(@NonNull Context context, @Type.TextureType int type, @DrawableRes int resourceId)
+        throws TextureException {
+        this(type, context.getResources().getResourceName(resourceId));
+        setTextureDataFromResourceId(context, resourceId);
+    }
 
-		mGIFBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
-		mCanvas = new Canvas(mGIFBitmap);
-		mMovie.draw(mCanvas, 0, 0);
-		mBitmap = Bitmap.createScaledBitmap(mGIFBitmap, mTextureSize, mTextureSize, false);
-	}
+    /**
+     * Constructs a new {@link AnimatedGIFTexture} with the provided data.
+     *
+     * @param type {@link Type.TextureType} The texture usage type.
+     * @param name {@link String} The texture name.
+     * @param data {@link TextureDataReference} The texture data.
+     *
+     * @throws TextureException thrown if there is an error loading the GIF texture.
+     */
+    public AnimatedGIFTexture(@Type.TextureType int type, @NonNull String name, @NonNull TextureDataReference data)
+        throws TextureException {
+        this(type, name);
+        setTextureData(data);
+        loadGIF();
+    }
 
-	/**
-	 * Copies every property from another AnimatedGIFTexture object
-	 *
-	 * @param other
-	 *            another AnimatedGIFTexture object to copy from
-	 */
-	/*public void setFrom(AnimatedGIFTexture other)
-	{
-		super.setFrom(other);
-		mBitmap = other.getBitmap();
-		mCanvas = other.getCanvas();
-		mMovie = other.getMovie();
-		width = other.getWidth();
-		height = other.getHeight();
-		mTextureSize = other.getTextureSize();
-	}
+    /**
+     * Copies all properties and data from another {@link AnimatedGIFTexture}.
+     *
+     * @param other The other {@link AnimatedGIFTexture}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
+     */
+    public void setFrom(@NonNull AnimatedGIFTexture other) throws TextureException {
+        super.setFrom(other);
+        gifBitmap = other.getGifBitmap();
+        canvas = other.getCanvas();
+        movie = other.getMovie();
+        width = other.getWidth();
+        height = other.getHeight();
+    }
 
-	public void rewind()
-	{
-		mStartTime = SystemClock.uptimeMillis();
-	}
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override
+    public AnimatedGIFTexture clone() {
+        try {
+            return new AnimatedGIFTexture(this);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+            return null;
+        }
+    }
 
-	void replace() throws TextureException
-	{
-		if(mLoadNewGIF)
-		{
-			loadGIF();
-			mLoadNewGIF = false;
-		}
-		super.replace();
-	}
+    @NonNull
+    @Override
+    public TextureDataReference setTextureDataFromResourceId(@NonNull Context context,
+                                                             @RawRes @DrawableRes int resourceId)
+        throws TextureException {
+        return loadGIF(context, resourceId);
+    }
 
-	public void update() throws TextureException
-	{
-		if(mMovie == null || mMovie.duration() == 0) return;
-		long now = SystemClock.uptimeMillis();
-		int relTime = (int)((now - mStartTime) % mMovie.duration());
-		mMovie.setTime(relTime);
-		mGIFBitmap.eraseColor(Color.TRANSPARENT);
-		mMovie.draw(mCanvas, 0, 0);
-		mBitmap = Bitmap.createScaledBitmap(mGIFBitmap, mTextureSize, mTextureSize, false);
-		TextureManager.getInstance().replaceTexture(this);
-		replace();
-	}
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
 
-	public void setTextureDataFromResourceId(int resourceId) {
-		if(resourceId == resourceId)
-			return;
-		resourceId = resourceId;
-		mLoadNewGIF = true;
-	}
+    public Bitmap getGifBitmap() {
+        return gifBitmap;
+    }
 
-	public void reset() throws TextureException
-	{
-		super.reset();
+    public Canvas getCanvas() {
+        return canvas;
+    }
 
-		if(mGIFBitmap != null)
-		{
-			mGIFBitmap.recycle();
-			mGIFBitmap = null;
-		}
+    public Movie getMovie() {
+        return movie;
+    }
 
-		mCanvas = null;
-		mMovie = null;
-	}
+    public int getWidth() {
+        return width;
+    }
 
-	void remove() throws TextureException
-	{
-		if(mGIFBitmap != null)
-		{
-			mGIFBitmap.recycle();
-			mGIFBitmap = null;
-		}
+    public int getHeight() {
+        return height;
+    }
 
-		mCanvas = null;
-		mMovie = null;
+    public float getScaleFactor() {
+        return scaleFactor;
+    }
 
-		super.remove();
-	}
+    public void rewind() {
+        startTime = SystemClock.uptimeMillis();
+    }
 
-	public int getResourceId()
-	{
-		return resourceId;
-	}
+    public void setScaleFactor(@FloatRange(from = 0) float scaleFactor) {
+        this.scaleFactor = scaleFactor;
+    }
 
-	public Canvas getCanvas() {
-		return mCanvas;
-	}
+    public void update() throws TextureException {
+        if (movie == null || movie.duration() == 0) return;
+        long now = SystemClock.uptimeMillis();
+        int relTime = (int) ((now - startTime) % movie.duration());
+        movie.setTime(relTime);
+        gifBitmap.eraseColor(Color.TRANSPARENT);
+        movie.draw(canvas, 0, 0);
+        bitmap = Bitmap.createScaledBitmap(gifBitmap, (int) (scaleFactor * width), (int) (scaleFactor * height), false);
+        super.replace();
+    }
 
-	public Movie getMovie() {
-		return mMovie;
-	}
+    @RenderThread
+    @Override
+    void remove() throws TextureException {
+        if (gifBitmap != null) {
+            gifBitmap.recycle();
+            gifBitmap = null;
+        }
 
-	public int getWidth() {
-		return width;
-	}
+        canvas = null;
+        movie = null;
 
-	public int getHeight() {
-		return height;
-	}
+        super.remove();
+    }
 
-	public int getTextureSize() {
-		return mTextureSize;
-	}
+    @RenderThread
+    @Override
+    void reset() throws TextureException {
+        super.reset();
+
+        if (gifBitmap != null) {
+            gifBitmap.recycle();
+            gifBitmap = null;
+        }
+
+        canvas = null;
+        movie = null;
+    }
+
+    @NonNull
+    private TextureDataReference loadGIF(@NonNull Context context, @RawRes @DrawableRes int resourceId)
+        throws TextureException {
+        ByteBuffer buffer;
+        try {
+            final byte[] read = new byte[8192];
+            final BufferedInputStream inputStream = new BufferedInputStream(context.getResources()
+                .openRawResource(resourceId), 8192);
+            buffer = ByteBuffer.allocate(inputStream.available());
+            int readCount;
+            while ((readCount = inputStream.read(read)) > 0) {
+                buffer.put(read, 0, readCount);
+            }
+            buffer.compact().rewind();
+        } catch (IOException e) {
+            throw new TextureException("Error while reading GIF resource.", e);
+        }
+        movie = Movie.decodeStream(new ByteBufferBackedInputStream(buffer));
+        width = movie.width();
+        height = movie.height();
+
+        gifBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+        canvas = new Canvas(gifBitmap);
+        movie.draw(canvas, 0, 0);
+        bitmap = Bitmap.createScaledBitmap(gifBitmap, (int) (scaleFactor * width), (int) (scaleFactor * height), false);
+        return new TextureDataReference(null, buffer, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, width, height);
+    }
+
+    private void loadGIF() throws TextureException {
+        if (getTextureData() == null) {
+            throw new TextureException("Loading GIF failed due to null texture data.");
+        }
+        if (!getTextureData().hasBuffer()) {
+            throw new TextureException("GIF Textures require a data reference backed by a byte buffer.");
+        }
+        movie = Movie.decodeStream(new ByteBufferBackedInputStream(getTextureData().getByteBuffer()));
+        width = movie.width();
+        height = movie.height();
+
+        gifBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+        canvas = new Canvas(gifBitmap);
+        movie.draw(canvas, 0, 0);
+        bitmap = Bitmap.createScaledBitmap(gifBitmap, (int) (scaleFactor * width), (int) (scaleFactor * height), false);
+    }
 }
-*/

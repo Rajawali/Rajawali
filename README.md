@@ -17,17 +17,17 @@
 
 ### News
 
+**11/16/2016**
+`Bombshell 1.1.777` has been released. It fixes a small number of bugs and adds a Scan Line post processing effect (thanks @contriteobserver). 
+
+**11/15/2016**
+One of the developers (@jwoolston) is now offering consulting/development services, particularly related to Rajawali. Details will be handled on a case by case basis but everything from paid assistance debugging to development of specific modifications or full apps using Rajawali are possible. To be clear, support on the Issues page is always free, however it is handled on a lower priority basis. Any development which happens under a paid contract is subject to whatever copyright terms the client specifies to the extent they are compatible with the licensing terms of Rajawali (see [LICENSE.txt](./LICENSE.txt))
+
 **9/7/2016**
 The official release of `Bombshell 1.1.610` is out. We will continue to support this release moving forward how ever bug fixes will be minimal. The decision was made that the design of the core engine was inhibiting correcting some of the larger issues. To this end, we have begun development of a `2.0` version - see issue [1755](https://github.com/Rajawali/Rajawali/issues/1755) for details. Development is happening in the `v2.0-development` branch [here](https://github.com/Rajawali/Rajawali/tree/v2.0-development)
 
 **8/29/2016**
 An initial effort for adding unit testing to Rajawali has been made. This initial focus has been on the core math classes and will ideally expand as bug fixes progress. Pull requests for unit tests are welcome and any "bug fix" PRs which include unit tests  or issues which include unit tests to demonstrate a failure will be given the highest priority. 
-
-**2/23/2016**
-Following the `1.0.325` release, I have also created a `1.1.x` release. This release is functionally identical though it represents an API change to deal with the class names being smurf like. Additionally, some class locations were altered. For users of the `master` branch prior to release, support will continue, though all bugfixes will occur in `1.1.x` releases unless we receive PRs for hotfixes.
-
-**2/23/2016**
-Rajawali recently made its first major release `1.0.325`. We had already deprecated support for the `v0.9` tag, but with this release we will not make any attempts at supporting usage of `v0.9`. Efforts will be made to bring all documentation up to date and support requests for the `1.0.x` builds will be handled on a best effort basis. Issues against `v0.9` will be closed immediately. Please do not take it personally, its simply a resource issue.
 
 ### General
 
@@ -41,7 +41,30 @@ The [RajawaliExamples](https://github.com/MasDennis/RajawaliExamples) project is
 
 ## Made With Rajawali
 
-Numerous apps and live wallpapers have been made with Rajawali. [Check them out!](https://plus.google.com/u/0/communities/116529974266844528013/stream/526227da-cf2d-46f9-8ad6-beaca7b8ddd5)
+Numerous apps and live wallpapers have been made with Rajawali. [Check them out!](https://plus.google.com/u/0/communities/116529974266844528013/stream/526227da-cf2d-46f9-8ad6-beaca7b8ddd5)https://youtu.be/ch0v4mNhHoc
+
+## Rajawali Testing
+
+Rajawali includes a number of unit, integration and GL specific integration tests. The unit and integration tests run on each build via Android Emulator. The GL integration tests require a physical device and cannot currently be run as part of our Travis CI build. A few of the developers have their own small device labs and we run the GL integration tests manually as part of our development and checking pull requests. At present, the device testing matrix is as follows:
+
+|Device Name|Model Number|Android Version|API Level|CPU|GPU|GL Version|EGL Version|
+|:----------|:----------:|:-------------:|:-------:|:---:|:---:|:--------:|:---------:|
+|Samsung Galaxy Tab 2 7.0+|SGH-T869|4.0.4|15|ARMv7|Mali-400MP|2.0|1.4|
+|Samsung Galaxy Nexus|Galaxy Nexus|4.3|18|ARMv7|PowerVR SGX 540|2.0|1.4|
+|Sasung Galaxy S4 Play|GT-I9505G|4.4.4|19|ARMv7|Adreno 320|3.0|1.4|
+|Sasung Galaxy S4 Play|GT-I9505G|5.0|21|ARMv7|Adreno 320|3.0|1.4|
+|Samsung Nexus 10|Nexus 10|5.0.2|21|ARMv7|Mali-T604|3.1|1.4|
+|Asus Nexus 7 (Gen 1)|Nexus 7|5.1.1|22|ARMv7|nVidia Tegra 3|2.0|1.4|
+|LG Nexus 4|Nexus 4|5.1.1|22|ARMv7 (Krait 300)|Adreno 320|3.0|1.4|
+|LG Nexus 5|Nexus 5|5.1.1|22|ARMv7 (Krait 400)|Adreno 330|3.0|1.4|
+|OnePlus One|A0001|6.0.1|23|ARMv7 (Krait 400)|Adreno 330|3.0|1.4|
+|Barns & Noble Nook 7" (2016)|BNTV450|6.0|23|ARM64v8|Mali-T720|3.1 + AEP|1.4|
+|Samsung Galaxy Tab S2|SM-T710|6.0.1|23|ARMv7 (Samsung Exynos 5433)|Mali-T760|3.1 + AEP|1.4|
+|HTC Nexus 9|Nexus 9|7.0|24|ARMv7|nVidia Tegra K1 Kepler DX1|3.1|1.4|
+|Huawei Nexus 6P|Nexus 6P|7.1.1|25|ARM64v8|Adreno 430|3.1|1.4|
+|Google Pixel XL|Pixel XL|7.1|25|ARM64v8|Adreno 530|3.2 (3.1 + AEP)|1.4|
+
+As we acquire more devices, this list will grow. Of course, not every capability can be tested against every device, however the engine is written so that devices not supporting a capability should not crash, and the tests look to ensure this is the case.
 
 ## Using Rajawali
 

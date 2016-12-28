@@ -18,10 +18,10 @@ import org.rajawali3d.materials.Material.PluginInsertLocation;
 import c.org.rajawali3d.textures.BaseTexture;
 
 
-public class AlphaMapFragmentShaderFragment extends TextureFragmentShaderFragment {
-	public final static String SHADER_ID = "ALPHA_MAP_FRAGMENT";
+public class AlphaMaskFragmentShaderFragment extends ATextureFragmentShaderFragment {
+	public final static String SHADER_ID = "ALPHA_MASK_FRAGMENT";
 
-	public AlphaMapFragmentShaderFragment(List<BaseTexture> textures)
+	public AlphaMaskFragmentShaderFragment(List<BaseTexture> textures)
 	{
 		super(textures);
 	}

@@ -21,17 +21,15 @@ import android.opengl.GLUtils;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 
 import net.jcip.annotations.ThreadSafe;
 
-import c.org.rajawali3d.textures.annotation.Filter;
-import c.org.rajawali3d.textures.annotation.PixelFormat;
-import c.org.rajawali3d.textures.annotation.Type.TextureType;
-import c.org.rajawali3d.textures.annotation.Wrap;
-
 import org.rajawali3d.util.RajLog;
 
-import c.org.rajawali3d.surface.gles.extensions.EXTTextureFilterAnisotropic;
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.textures.annotation.PixelFormat;
+import c.org.rajawali3d.textures.annotation.Type.TextureType;
 
 /**
  * This class is used to specify common functions of a single 2D texture. Subclasses are expected to be thread safe.
@@ -52,8 +50,9 @@ public abstract class SingleTexture2D extends BaseTexture {
     /**
      * Basic no-args constructor used by some subclasses. No initialization is performed.
      */
-    protected SingleTexture2D() {
+    protected SingleTexture2D() throws TextureException {
         super();
+        setTextureTarget(GLES20.GL_TEXTURE_2D);
     }
 
     /**
@@ -64,6 +63,7 @@ public abstract class SingleTexture2D extends BaseTexture {
      */
     public SingleTexture2D(@TextureType int type, @NonNull String name) {
         super(type, name);
+        setTextureTarget(GLES20.GL_TEXTURE_2D);
     }
 
     /**
@@ -74,8 +74,11 @@ public abstract class SingleTexture2D extends BaseTexture {
      * @param context    {@link Context} The application context.
      * @param type       {@link TextureType} The texture usage type.
      * @param resourceId {@code int} The Android resource id to load from.
+     *
+     * @throws TextureException if there is an error reading the resource.
      */
-    public SingleTexture2D(@NonNull Context context, @TextureType int type, @DrawableRes int resourceId) {
+    public SingleTexture2D(@NonNull Context context, @TextureType int type, @DrawableRes int resourceId)
+        throws TextureException {
         this(type, context.getResources().getResourceName(resourceId));
         setTextureDataFromResourceId(context, resourceId);
     }
@@ -96,6 +99,8 @@ public abstract class SingleTexture2D extends BaseTexture {
      * Constructs a new {@link SingleTexture2D} with data and settings from the provided {@link SingleTexture2D}.
      *
      * @param other The other {@link SingleTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
     public SingleTexture2D(@NonNull SingleTexture2D other) throws TextureException {
         super(other);
@@ -106,12 +111,14 @@ public abstract class SingleTexture2D extends BaseTexture {
      * Copies all properties and data from another {@link SingleTexture2D}.
      *
      * @param other The other {@link SingleTexture2D}.
+     *
+     * @throws TextureException Thrown if an error occurs during any part of the texture copy process.
      */
     public void setFrom(@NonNull SingleTexture2D other) throws TextureException {
         final TextureDataReference data = other.getTextureData();
         if (data != null) {
             super.setFrom(other);
-            setTextureData(other.getTextureData());
+            setTextureData(data);
         } else {
             throw new TextureException("Texture data was null!");
         }
@@ -127,9 +134,12 @@ public abstract class SingleTexture2D extends BaseTexture {
      * @param resourceId {@code int} The Android resource id to load from.
      *
      * @return The new {@link TextureDataReference} which was created.
+     * @throws TextureException if there is an error reading the resource.
      */
     @NonNull
-    public TextureDataReference setTextureDataFromResourceId(@NonNull Context context, @DrawableRes int resourceId) {
+    public TextureDataReference setTextureDataFromResourceId(@NonNull Context context,
+                                                             @RawRes @DrawableRes int resourceId)
+        throws TextureException {
         // Prevent the bitmap from being scaled as it is decoded
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
@@ -137,10 +147,8 @@ public abstract class SingleTexture2D extends BaseTexture {
         // Decode the bitmap
         final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
         final TextureDataReference reference = new TextureDataReference(bitmap, null,
-            bitmap.getConfig().equals(Config.RGB_565)
-                ? GLES20.GL_RGB : GLES20.GL_RGBA,
-            GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(),
-            bitmap.getHeight());
+            bitmap.getConfig().equals(Config.RGB_565) ? GLES20.GL_RGB : GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE, bitmap.getWidth(), bitmap.getHeight());
         setTextureData(reference);
         return reference;
     }
@@ -151,13 +159,15 @@ public abstract class SingleTexture2D extends BaseTexture {
      *
      * @param data The new {@link TextureDataReference} to use.
      */
-    public void setTextureData(@NonNull TextureDataReference data) {
+    public void setTextureData(@Nullable TextureDataReference data) {
         // Save a stack reference to the old data
         final TextureDataReference oldData = this.textureData;
 
         // Save and increment reference count of new data
-        data.holdReference();
-        this.textureData = data;
+        if (data != null) {
+            data.holdReference();
+        }
+        textureData = data;
 
         // Release any existing reference
         if (oldData != null) {
@@ -175,6 +185,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         return textureData;
     }
 
+    @RenderThread
     @Override
     void add() throws TextureException {
         // Check if there is valid data
@@ -189,96 +200,34 @@ public abstract class SingleTexture2D extends BaseTexture {
         setWidth(textureData.getWidth());
         setHeight(textureData.getHeight());
 
-        // Fetch these once for efficiency. We use methods
-        @Filter.FilterType final int filterType = getFilterType();
-        @Wrap.WrapType final int wrapType = getWrapType();
-
         // Generate a texture id
-        int[] genTextureNames = new int[1];
-        GLES20.glGenTextures(1, genTextureNames, 0);
-        int textureId = genTextureNames[0];
+        final int textureId = generateTextureId();
 
         if (textureId > 0) {
             // If a valid id was generated...
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
             // Handle minification filtering
-            if (isMipmaped()) {
-                switch (filterType) {
-                    case Filter.NEAREST:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                            GLES20.GL_NEAREST_MIPMAP_NEAREST);
-                        break;
-                    case Filter.BILINEAR:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                            GLES20.GL_LINEAR_MIPMAP_NEAREST);
-                        break;
-                    case Filter.TRILINEAR:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                            GLES20.GL_LINEAR_MIPMAP_LINEAR);
-                        break;
-                    default:
-                        throw new TextureException("Unknown texture filtering mode: " + filterType);
-                }
-            } else {
-                switch (filterType) {
-                    case Filter.NEAREST:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                            GLES20.GL_NEAREST);
-                        break;
-                    case Filter.BILINEAR:
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                            GLES20.GL_LINEAR);
-                        break;
-                    case Filter.TRILINEAR:
-                        RajLog.e("Trilinear filtering requires the use of mipmaps which are not enabled for this "
-                            + "texture. Falling back to bilinear filtering.");
-                        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                            GLES20.GL_LINEAR);
-                        break;
-                    default:
-                        throw new TextureException("Unknown texture filtering mode: " + filterType);
-                }
-            }
+            applyMinificationFilter();
 
             // Handle magnification filtering
-            if (filterType == Filter.BILINEAR || filterType == Filter.TRILINEAR) {
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-            } else {
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            }
+            applyMagnificationFilter();
 
-            // Handle anisotropy if needed. We don't check if it is supported here because setting it to anything
-            // other than 1.0 would have required the check.
-            if (getMaxAnisotropy() > 1.0) {
-                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
-                    getMaxAnisotropy());
-            }
+            // Handle anisotropy if needed.
+            applyAnisotropy();
 
             // Handle s coordinate wrapping
-            int wrap = GLES20.GL_REPEAT;
-            if ((wrapType & Wrap.CLAMP_S) != 0) {
-                wrap = GLES20.GL_CLAMP_TO_EDGE;
-            } else if ((wrapType & Wrap.MIRRORED_REPEAT_S) != 0) {
-                wrap = GLES20.GL_MIRRORED_REPEAT;
-            }
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, wrap);
+            applySWrapping();
 
             // Handle t coordinate wrapping
-            wrap = GLES20.GL_REPEAT;
-            if ((wrapType & Wrap.CLAMP_T) != 0) {
-                wrap = GLES20.GL_CLAMP_TO_EDGE;
-            } else if ((wrapType & Wrap.MIRRORED_REPEAT_T) != 0) {
-                wrap = GLES20.GL_MIRRORED_REPEAT;
-            }
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, wrap);
+            applyTWrapping();
 
             // Push the texture data
             if (textureData.hasBuffer()) {
                 if (getWidth() == 0 || getHeight() == 0) {
                     throw new TextureException(
                         "Could not create ByteBuffer texture. One or more of the following properties haven't "
-                            + "been set: width, height or bitmap format");
+                            + "been set: width or height format");
                 }
                 GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, getTexelFormat(), getWidth(), getHeight(), 0,
                     textureData.getPixelFormat(), textureData.getDataType(),
@@ -299,14 +248,14 @@ public abstract class SingleTexture2D extends BaseTexture {
         }
 
         if (willRecycle()) {
-            textureData.recycle();
-            this.textureData = null;
+            setTextureData(null);
         }
 
         // Rebind the null texture
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
+    @RenderThread
     @Override
     void remove() throws TextureException {
         final TextureDataReference textureData = this.textureData;
@@ -323,23 +272,20 @@ public abstract class SingleTexture2D extends BaseTexture {
         //TODO: Notify materials that were using this texture
     }
 
+    @RenderThread
     @Override
     void replace() throws TextureException {
         final TextureDataReference textureData = this.textureData;
         if (textureData == null || textureData.isDestroyed() || (textureData.hasBuffer()
             && textureData.getByteBuffer().limit() == 0 && !textureData.hasBitmap())) {
-            final String error = "Texture2D could not be replaced because there is no Bitmap or ByteBuffer set. Flags: "
-                                 + (textureData == null ? "null" : ("false || " + textureData.isDestroyed() + " || "
-                                                                   + textureData.hasBuffer() + " && "
-                                                                   + (textureData.getByteBuffer().limit() == 0) + " && "
-                                                                   + !textureData.hasBitmap()));
+            final String error = "Texture could not be replaced because there is no Bitmap or ByteBuffer set.";
             RajLog.e(error);
             throw new TextureException(error);
         }
 
         if (textureData.getWidth() != getWidth() || textureData.getHeight() != getHeight()) {
             throw new TextureException(
-                    "Texture could not be updated because the texture size is different from the original.");
+                "Texture could not be updated because the texture size is different from the original.");
         }
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, getTextureId());
@@ -352,11 +298,11 @@ public abstract class SingleTexture2D extends BaseTexture {
 
             if (bitmapFormat != getTexelFormat()) {
                 throw new TextureException(
-                        "Texture could not be updated because the texel format is different from the original");
+                    "Texture could not be updated because the texel format is different from the original");
             }
 
             GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, textureData.getBitmap(), getTexelFormat(),
-                                  GLES20.GL_UNSIGNED_BYTE);
+                GLES20.GL_UNSIGNED_BYTE);
         }
 
         if (isMipmaped()) {
@@ -366,13 +312,10 @@ public abstract class SingleTexture2D extends BaseTexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
+    @RenderThread
     @Override
     void reset() throws TextureException {
-        final TextureDataReference textureData = this.textureData;
-        if (textureData != null) {
-            textureData.recycle();
-            this.textureData = null;
-        }
+        setTextureData(null);
     }
 
     //TODO: Update method

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.rajawali3d">
 
-    <application>
+    <application android:largeHeap="true">
         <activity android:name="org.rajawali3d.GlTestActivity" />
     </application>
 

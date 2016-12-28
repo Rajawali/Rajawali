@@ -35,6 +35,9 @@ public class SingleTexture2DGLTest extends GlTestCase {
 
     private static class TestableSingleTexture2D extends SingleTexture2D {
 
+        protected TestableSingleTexture2D() throws TextureException {
+        }
+
         @Override public SingleTexture2D clone() {
             return null;
         }
@@ -481,19 +484,21 @@ public class SingleTexture2DGLTest extends GlTestCase {
         texture.setTexelFormat(GLES20.GL_RGBA);
         texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
         texture.setFilterType(Filter.TRILINEAR);
-        texture.setMaxAnisotropy(2.0f);
         texture.setMipmaped(true);
         final boolean[] thrown = new boolean[]{ false };
+        final StringBuilder builder = new StringBuilder();
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
                 try {
+                    texture.setMaxAnisotropy(2.0f);
                     texture.add();
                 } catch (Exception e) {
                     thrown[0] = true;
+                    builder.append(e.toString());
                 }
             }
         });
-        assertFalse(thrown[0]);
+        assertFalse(builder.toString(), thrown[0]);
         assertTrue(texture.getTextureId() > 0);
     }
 
@@ -518,52 +523,6 @@ public class SingleTexture2DGLTest extends GlTestCase {
         });
         assertFalse(thrown[0]);
         assertTrue(texture.getTextureId() > 0);
-    }
-
-    @SuppressWarnings("WrongConstant")
-    @Test
-    public void textureAddFailFilter1() throws Exception {
-        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(-1);
-        texture.setMipmaped(true);
-        final boolean[] thrown = new boolean[]{ false };
-        runOnGlThreadAndWait(new Runnable() {
-            @Override public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertTrue(thrown[0]);
-        assertTrue(texture.getTextureId() == -1);
-    }
-
-    @SuppressWarnings("WrongConstant")
-    @Test
-    public void textureAddFailFilter2() throws Exception {
-        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
-        texture.setTextureDataFromResourceId(getContext(), R.drawable.earth_diffuse);
-        texture.setTexelFormat(GLES20.GL_RGBA);
-        texture.setWrapType(Wrap.REPEAT_S | Wrap.REPEAT_T);
-        texture.setFilterType(-1);
-        texture.setMipmaped(false);
-        final boolean[] thrown = new boolean[]{ false };
-        runOnGlThreadAndWait(new Runnable() {
-            @Override public void run() {
-                try {
-                    texture.add();
-                } catch (TextureException e) {
-                    thrown[0] = true;
-                }
-            }
-        });
-        assertTrue(thrown[0]);
-        assertTrue(texture.getTextureId() == -1);
     }
 
     @Test

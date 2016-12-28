@@ -40,12 +40,14 @@ public class ThreeDcTexture2D extends CompressedTexture2D {
         setThreeDcFormat(other.getThreeDcFormat());
     }
 
-    public ThreeDcTexture2D(String textureName, ByteBuffer byteBuffer, ThreeDcFormat threeDcFormat) {
+    public ThreeDcTexture2D(String textureName, ByteBuffer byteBuffer, ThreeDcFormat threeDcFormat) throws
+                                                                                                    TextureException {
         this(textureName, new ByteBuffer[]{ byteBuffer }, threeDcFormat);
     }
 
-    public ThreeDcTexture2D(String textureName, ByteBuffer[] byteBuffers, ThreeDcFormat threeDcFormat) {
-        super(textureName, byteBuffers);
+    public ThreeDcTexture2D(String textureName, ByteBuffer[] byteBuffers, ThreeDcFormat threeDcFormat) throws
+                                                                                                       TextureException {
+        //super(textureName, byteBuffers);
         setCompressionType(Compression2D.THREEDC);
         setThreeDcFormat(threeDcFormat);
     }
@@ -83,9 +85,9 @@ public class ThreeDcTexture2D extends CompressedTexture2D {
     public void setThreeDcFormat(ThreeDcFormat mThreeDcFormat) {
         this.mThreeDcFormat = mThreeDcFormat;
         if (mThreeDcFormat == ThreeDcFormat.X) {
-            mCompressionFormat = GLES11Ext.GL_3DC_X_AMD;
+            setTexelFormat(GLES11Ext.GL_3DC_X_AMD);
         } else {
-            mCompressionFormat = GLES11Ext.GL_3DC_XY_AMD;
+            setTexelFormat(GLES11Ext.GL_3DC_XY_AMD);
         }
     }
 }

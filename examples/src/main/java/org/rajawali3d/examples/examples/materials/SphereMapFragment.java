@@ -44,7 +44,6 @@ public class SphereMapFragment extends AExampleFragment {
 
 			jetTexture.setInfluence(.8f);
 			// -- important!
-			sphereMapTexture.isEnvironmentTexture(true);
 			sphereMapTexture.setInfluence(.2f);
 
 			Object3D jet1 = null;
@@ -77,7 +76,6 @@ public class SphereMapFragment extends AExampleFragment {
 			anim1.play();
 
 			sphereMapTexture = new SphereMapTexture2D("manilaSphereMapTex2", mContext, R.drawable.manila_sphere_map);
-			sphereMapTexture.isEnvironmentTexture(true);
 			sphereMapTexture.setInfluence(.5f);
 
 			Material material2 = new Material();

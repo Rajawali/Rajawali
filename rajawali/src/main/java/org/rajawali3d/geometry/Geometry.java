@@ -16,13 +16,6 @@ import org.rajawali3d.math.vector.Vector3;
 @NotThreadSafe
 public interface Geometry {
 
-    enum BufferType {
-        FLOAT_BUFFER,
-        INT_BUFFER,
-        SHORT_BUFFER,
-        BYTE_BUFFER
-    }
-
     /**
      * Creates the actual Buffer object(s).
      */

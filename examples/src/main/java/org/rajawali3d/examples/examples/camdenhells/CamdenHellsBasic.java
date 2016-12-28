@@ -6,6 +6,7 @@ import c.org.rajawali3d.object.Object3D;
 import c.org.rajawali3d.core.RenderControl;
 import c.org.rajawali3d.core.SingleFrameCallback;
 import c.org.rajawali3d.scene.AScene;
+import c.org.rajawali3d.scene.Scene;
 import c.org.rajawali3d.sceneview.ASceneView;
 import c.org.rajawali3d.sceneview.SceneView;
 import c.org.rajawali3d.surface.SurfaceSize;
@@ -108,7 +109,7 @@ public class CamdenHellsBasic extends AExampleFragment {
 
     private final class FirstFrameCallback extends SingleFrameCallback {
 
-        public FirstFrameCallback(@NonNull AScene scene) {
+        public FirstFrameCallback(@NonNull Scene scene) {
             super(scene);
         }
 
@@ -145,6 +146,7 @@ public class CamdenHellsBasic extends AExampleFragment {
                 if (add) {
                     Log.d(TAG, "Adding resources.");
                     texture = new Texture2D("Demo", getActivity(), R.drawable.earth_diffuse);
+                    texture.willRecycle(false);
                     scene.getTextureManager().addTexture(texture);
 
                     material = new Material();

@@ -3,6 +3,9 @@ apply plugin: 'jacoco'
 apply plugin: 'signing'
 apply from: '../jacoco.gradle'
 //apply from: '../quality/quality.gradle'
+apply plugin: "jp.classmethod.aws.s3"
+
+import jp.classmethod.aws.gradle.s3.AmazonS3FileUploadTask
 
 String getVersionString() {
     String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
@@ -13,6 +16,40 @@ String getVersionString() {
 group = GROUP
 version = getVersionString()
 
+aws {
+    def awsCredentials = new File(rootDir, ".aws-credentials")
+    if (awsCredentials.exists()) {
+        profileName = awsCredentials.toString()
+    }
+    region = 'us-west-2'
+    profileName = "default"
+}
+
+task fullTest() {
+    afterEvaluate {
+        dependsOn testDebugUnitTest
+        dependsOn connectedDebugAndroidTest
+        dependsOn debugCoverage
+    }
+}
+
+task zipTestsForS3(type: Zip, dependsOn: fullTest) {
+    from("${buildDir}/reports/tests") { into "tests" }
+    from("${buildDir}/reports/androidTests") { into "androidTests" }
+    include "*"
+    include "*/*"
+    archiveName "${version}.zip"
+    destinationDir new File("${buildDir}/s3/")
+}
+
+task uploadTestsToS3(type: AmazonS3FileUploadTask, dependsOn: zipTestsForS3) {
+    inputs.file("${buildDir}/s3/${version}.zip")
+
+    bucketName "rajawali-testing-data"
+    key "${version}.zip"
+    file new File("${buildDir}/s3/${version}.zip")
+    enabled = new File(System.getProperty("user.home"), ".aws/credentials").exists()
+}
 
 if (isReleaseBuild()) {
     status = 'release'

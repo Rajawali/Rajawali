@@ -1,7 +1,8 @@
-package c.org.rajawali3d.surface.gles.extensions;
+package c.org.rajawali3d.gl.extensions.texture;
 
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.surface.gles.GLESCapabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.gl.extensions.GLExtension;
 import c.org.rajawali3d.textures.annotation.DataType;
 import c.org.rajawali3d.textures.annotation.PixelFormat;
 import c.org.rajawali3d.textures.annotation.TexelFormat;
@@ -22,7 +23,7 @@ import java.nio.ByteBuffer;
  *
  * @see <a href="https://www.khronos.org/registry/gles/extensions/OES/OES_texture_3D.txt">OES_texture_3D</a>
  */
-public class OESTexture3D implements GLExtension {
+public class OESTexture3D extends GLExtension {
 
     public static final String name = "GL_OES_texture_3D";
 
@@ -57,6 +58,7 @@ public class OESTexture3D implements GLExtension {
     }
 
     private OESTexture3D() throws UnsupportedCapabilityException {
+        verifySupport(name);
         final boolean success = loadFunctions();
         if (!success) {
             throw new UnsupportedCapabilityException("Failed to find native methods for extension: " + name);

@@ -1,34 +1,30 @@
 package c.org.rajawali3d.textures;
 
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.opengl.GLES20;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.rajawali3d.R;
-import org.rajawali3d.materials.Material;
-
-import c.org.rajawali3d.textures.SingleTexture2D;
-import c.org.rajawali3d.textures.TextureDataReference;
-import c.org.rajawali3d.textures.TextureException;
-import c.org.rajawali3d.textures.annotation.Filter;
-import c.org.rajawali3d.textures.annotation.Type;
-import c.org.rajawali3d.textures.annotation.Wrap;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-
 import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.opengl.GLES20;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
+import c.org.rajawali3d.textures.annotation.Filter;
+import c.org.rajawali3d.textures.annotation.Type;
+import c.org.rajawali3d.textures.annotation.Wrap;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.rajawali3d.R;
+import org.rajawali3d.materials.Material;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -38,6 +34,9 @@ import static org.mockito.Mockito.when;
 public class SingleTexture2DTest {
 
     private static class TestableSingleTexture2D extends SingleTexture2D {
+
+        protected TestableSingleTexture2D() throws TextureException {
+        }
 
         @Override public SingleTexture2D clone() {
             return null;
@@ -203,7 +202,7 @@ public class SingleTexture2DTest {
     }
 
     @Test
-    public void textureReplaceDestroyed() throws Exception {
+    public void replaceDestroyed() throws Exception {
         final TestableSingleTexture2D texture = new TestableSingleTexture2D();
         final TextureDataReference reference = texture.setTextureDataFromResourceId(getContext(), R.drawable
             .earth_diffuse);
@@ -231,6 +230,23 @@ public class SingleTexture2DTest {
             thrown = true;
         }
         assertTrue(thrown);
+    }
+
+    @Test
+    public void replaceBufferFailZeroLimitWithBitmap() throws Exception {
+        final TextureDataReference reference = mock(TextureDataReference.class);
+        doReturn(ByteBuffer.allocateDirect(0)).when(reference).getByteBuffer();
+        doReturn(true).when(reference).hasBuffer();
+        doReturn(true).when(reference).hasBitmap();
+        final TestableSingleTexture2D texture = new TestableSingleTexture2D();
+        texture.setTextureData(reference);
+        boolean thrown = false;
+        try {
+            texture.replace();
+        } catch (TextureException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
     }
 
     @Test

@@ -20,15 +20,14 @@ import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
-import org.rajawali3d.view.Surface;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 
 import c.org.rajawali3d.core.RenderControl;
 import c.org.rajawali3d.core.RenderControlClient;
+import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.surface.SurfaceSize;
 import c.org.rajawali3d.surface.gles.GLESSurfaceView;
 import c.org.rajawali3d.surface.gles.GLESSurfaceAntiAliasing;
-import c.org.rajawali3d.surface.gles.GLESCapabilities;
 
 import static android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY;
 
@@ -114,7 +113,7 @@ public abstract class Wallpaper extends WallpaperService {
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
             mSurfaceView = new WallpaperSurfaceView(mContext);
-            mSurfaceView.setEGLContextClientVersion(GLESCapabilities.getGLESMajorVersion());
+            mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
             mSurfaceView.setRenderMode(RENDERMODE_WHEN_DIRTY);
             mSurfaceView.setSurfaceAntiAliasing(mAntiAliasing);
             mSurfaceView.configure(this);

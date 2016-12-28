@@ -14,7 +14,6 @@ import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
-import c.org.rajawali3d.textures.CubeMapTexture;
 import org.rajawali3d.math.vector.Vector3;
 
 public class AccelerometerFragment extends AExampleFragment implements
@@ -95,10 +94,8 @@ public class AccelerometerFragment extends AExampleFragment implements
                 material.enableLighting(true);
                 material.setDiffuseMethod(new DiffuseMethod.Lambert());
 
-                CubeMapTexture envMap = new CubeMapTexture("environmentMap",
-                    resourceIds);
-                envMap.isEnvironmentTexture(true);
-                material.addTexture(envMap);
+                //CubeMapTexture envMap = new CubeMapTexture("environmentMap", resourceIds);
+                //material.addTexture(envMap);
                 material.setColorInfluence(0);
                 mMonkey.setMaterial(material);
             } catch (Exception e) {

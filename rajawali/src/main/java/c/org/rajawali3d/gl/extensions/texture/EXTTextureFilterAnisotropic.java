@@ -1,11 +1,14 @@
-package c.org.rajawali3d.surface.gles.extensions;
+package c.org.rajawali3d.gl.extensions.texture;
 
 import android.opengl.GLES20;
 import android.opengl.GLException;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.surface.gles.GLESCapabilities.UnsupportedCapabilityException;
+
 import org.rajawali3d.util.RajLog;
+
+import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
+import c.org.rajawali3d.gl.extensions.GLExtension;
 
 /**
  * This extension permits the OpenGL application to specify on a per-texture object basis the maximum degree of
@@ -22,7 +25,7 @@ import org.rajawali3d.util.RajLog;
  * @see <a href="https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt">
  *     EXT_texture_filter_anisotropic</a>
  */
-public class EXTTextureFilterAnisotropic implements GLExtension {
+public class EXTTextureFilterAnisotropic extends GLExtension {
 
     public static final String name = "GL_EXT_texture_filter_anisotropic";
 
@@ -42,6 +45,7 @@ public class EXTTextureFilterAnisotropic implements GLExtension {
     }
 
     private EXTTextureFilterAnisotropic() throws UnsupportedCapabilityException {
+        verifySupport(name);
         final float[] params = new float[1];
         GLES20.glGetFloatv(MAX_TEXTURE_MAX_ANISOTROPY_EXT, params, 0);
         try {
