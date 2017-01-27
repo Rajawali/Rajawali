@@ -87,7 +87,7 @@ Alternatively, if you checkout Rajawali via GIT, you can run `gradle assembleRel
 4. [Optimization](https://github.com/MasDennis/Rajawali/wiki/Tutorial-04-Optimization)  
 5. [Skybox] (https://github.com/MasDennis/Rajawali/wiki/Tutorial-05-Skybox)  
 6. [Screenshots] (https://github.com/MasDennis/Rajawali/wiki/Tutorial-06-Screenshots)  
-7. [Plugins] (https://github.com/MasDennis/Rajawali/wiki/Tutorial-05-Plugins)  
+7. [Plugins] (https://github.com/MasDennis/Rajawali/wiki/Tutorial-07-Plugins)  
 8. [User Interface Elements] (https://github.com/MasDennis/Rajawali/wiki/Tutorial-08-Adding-User-Interface-Elements)  
 9. [Creating a Custom Material GLSL Shader](https://github.com/MasDennis/Rajawali/wiki/Tutorial-09-Creating-a-Custom-Material---GLSL-Shader)  
 10. [2D Renderer](https://github.com/MasDennis/Rajawali/wiki/Tutorial-10-2D-Renderer)  
