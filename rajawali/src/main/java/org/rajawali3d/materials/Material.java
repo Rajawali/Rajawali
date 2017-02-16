@@ -15,6 +15,7 @@ package org.rajawali3d.materials;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Object3D;
@@ -754,7 +755,7 @@ public class Material {
      */
     private int loadShader(int shaderType, String source) {
         int shader = GLES20.glCreateShader(shaderType);
-        if (shader != 0) {
+        if (shader != 0 && !TextUtils.isEmpty(source)) {
             GLES20.glShaderSource(shader, source);
             GLES20.glCompileShader(shader);
             int[] compiled = new int[1];
