@@ -65,10 +65,7 @@ public class MaterialManager extends AResourceManager {
 	}
 
 	public void taskReload() {
-		int len = mMaterialList.size();
-		for (int i = 0; i < len; i++)
-		{
-			Material material = mMaterialList.get(i);
+		for(Material material: mMaterialList) {
 			material.reload();
 		}
 	}
