@@ -19,6 +19,8 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.view.Surface;
 
+import org.rajawali3d.util.RajLog;
+
 import java.io.IOException;
 
 public class StreamingTexture extends ATexture {
@@ -80,7 +82,11 @@ public class StreamingTexture extends ATexture {
         mSurfaceTexture = new SurfaceTexture(textureId);
         if (mMediaPlayer != null) {
             mSurface = new Surface(mSurfaceTexture);
-            mMediaPlayer.setSurface(mSurface);
+            try {
+                mMediaPlayer.setSurface(mSurface);
+            } catch (IllegalStateException e) {
+                RajLog.i("MediaPlayer setSurface failed.");
+            }
         } else if (mCamera != null) {
             try {
                 mSurfaceTexture.setOnFrameAvailableListener(mOnFrameAvailableListener);
