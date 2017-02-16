@@ -13,6 +13,7 @@
 package org.rajawali3d.materials.textures;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -200,13 +201,12 @@ public final class TextureManager extends AResourceManager {
 	 * {@link Renderer}.
 	 */
 	public void taskReload() {
-		int len = mTextureList.size();
-		for (int i = 0; i < len; i++) {
-			ATexture texture = mTextureList.get(i);
+		Iterator<ATexture> iterator = mTextureList.iterator();
+
+		while (iterator.hasNext()) {
+			ATexture texture = iterator.next();
 			if (texture.willRecycle()) {
-				mTextureList.remove(i);
-				i -= 1;
-				len -= 1;
+				iterator.remove();
 			} else {
 				taskAdd(texture, true);
 			}
