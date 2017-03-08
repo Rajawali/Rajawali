@@ -60,7 +60,7 @@ public interface SceneView extends FrameDelegate {
     /**
      * Sets the viewport depth order of this {@link SceneView} relative to that of other {@link SceneView}s via a
      * RenderTask. This is applied using a simple back-to-front painter's algorithm; viewports with larger depth
-     * order values are placed in front of/above those with smaller valuss. There is no culling; even if a viewport is
+     * order values are placed in front of/above those with smaller values. There is no culling; even if a viewport is
      * completely obscured behind another, it is still rendered as if fully visible. Viewports at the same depth order
      * are rendered in the order their {@link SceneView}s were added to the {@link RenderControl}.
      *

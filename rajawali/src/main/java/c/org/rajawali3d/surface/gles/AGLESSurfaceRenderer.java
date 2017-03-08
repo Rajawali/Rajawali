@@ -19,7 +19,6 @@ import java.util.Locale;
  *
  * @author Randy Picolet
  */
-
 abstract class AGLESSurfaceRenderer extends ARenderControl {
 
     AGLESSurfaceRenderer(Context context, RenderSurfaceView renderSurfaceView,

@@ -6,11 +6,10 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 /**
- * Globally publish key properties of the rendering context
+ * Globally published key properties of the rendering context.
  *
  * @author Randy Picolet
  */
-
 public class RenderContext {
 
     private static RenderContextType type;
@@ -46,7 +45,8 @@ public class RenderContext {
     };
 
     /**
-     * Intialize the render context; called from {@link ARenderControl#onRenderContextAcquired(RenderContextType, int, int)}
+     * Intialize the render context. Called from
+     * {@link ARenderControl#onRenderContextAcquired(RenderContextType, int, int)}.
      *
      * @param type
      * @param majorVersion

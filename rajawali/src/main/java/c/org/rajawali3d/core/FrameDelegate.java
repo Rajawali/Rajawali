@@ -12,19 +12,18 @@ import java.util.Collection;
 
 /**
  * Client interface extensions for {@link CoreComponent}s responsible for receipt and handling of frame events from
- * a {@link RenderControl} implementation; shared interface of {@link Scene} and {@link SceneView}
+ * a {@link RenderControl} implementation; shared interface of {@link Scene} and {@link SceneView}.
  *
  * @author Randy Picolet
  */
-
 public interface FrameDelegate extends CoreComponent {
 
     /**
-     * Called when this FrameDelegate is added to the {@link RenderControl}. This is an opportunity for the
+     * Called when this {@link FrameDelegate} is added to the {@link RenderControl}. This is an opportunity for the
      * implementation to prepare for the next frame by allocating and initializing the needed resources.
      *
      * NOTE: if a large amount of work (e.g. loading and parsing large model files) is entailed, consider doing
-     * so asynchronously on a different thread to avoid noticeable delay of the next frame
+     * so asynchronously on a different thread to avoid noticeable delay of the next frame.
      *
      * @param renderStatus a handle to the current {@link RenderStatus} for the {@link RenderControl}
      */
@@ -32,36 +31,36 @@ public interface FrameDelegate extends CoreComponent {
     void onAddToRenderControl(RenderStatus renderStatus);
 
     /**
-     * Called when this FrameDelegate is removed trom the {@link RenderControl}; the implementation should deallocate
-     * all render context-specific resources (such as buffers) previously allocated for this{@link Scene}.
+     * Called when this {@link FrameDelegate} is removed from the {@link RenderControl}; the implementation should
+     * deallocate all render context-specific resources (such as buffers) previously allocated for this {@link Scene}.
      */
     @RenderThread
     void onRemoveFromRenderControl();
 
     /**
-     * Indicates whether this FrameDelegate has been added to - and not yet removed from - the {@link RenderControl},
-     * and so receives the delegated render events.
+     * Indicates whether this {@link FrameDelegate} has been added to - and not yet removed from - the
+     * {@link RenderControl}, and so receives the delegated render events.
      *
      * @return {@code true} if attached to the {@link RenderControl}, and receives render events
      */
     boolean isAttachedToRenderControl();
 
     /**
-     * Sets whether this FrameDelegate responds to events delegated from the {@link RenderControl}
+     * Sets whether this {@link FrameDelegate} responds to events delegated from the {@link RenderControl}.
      *
      * @param enabled
      */
     void setEnabled(boolean enabled);
 
     /**
-     * Indicates whether this FrameDelegate responds to events delegated from the {@link RenderControl}
+     * Indicates whether this {@link FrameDelegate} responds to events delegated from the {@link RenderControl}.
      *
      * @return
      */
     boolean isEnabled();
 
     /**
-     * Adds a client {@link FrameCallback} for propagation from this FrameDelegate using a
+     * Adds a client {@link FrameCallback} for propagation from this {@link FrameDelegate} using a
      * {@link RenderTask}. Duplicates are not filtered.
      *
      * @param callback {@link FrameCallback} to be added.
@@ -71,7 +70,7 @@ public interface FrameDelegate extends CoreComponent {
 
     /**
      * Removes (the first occurrence of) a client {@link FrameCallback} from propagation by this
-     * FrameDelegate using a {@link RenderTask}. If the callback has bot been added, nothing will happen.
+     * {@link FrameDelegate} using a {@link RenderTask}. If the callback has bot been added, nothing will happen.
      *
      * @param callback {@link FrameCallback} to be removed.
      * @return boolean True if the remove task was run or queued successfully.
@@ -79,7 +78,7 @@ public interface FrameDelegate extends CoreComponent {
     boolean removeFrameCallback(@NonNull FrameCallback callback);
 
     /**
-     * Removes all client {@link FrameCallback}s from propagation by this FrameDelegate using a
+     * Removes all client {@link FrameCallback}s from propagation by this {@link FrameDelegate} using a
      * {@link RenderTask}.
      *
      * @return boolean True if the clear task was run or queued successfully.
@@ -87,7 +86,7 @@ public interface FrameDelegate extends CoreComponent {
     boolean clearFrameCallbacks();
 
     /**
-     * Adds an animation to be updated each frame by this FrameDelegate, using a {@link RenderTask}.
+     * Adds an animation to be updated each frame by this {@link FrameDelegate} using a {@link RenderTask}.
      * Duplicates are not filtered.
      *
      * @param animation {@link Animation} to be added.
@@ -96,7 +95,7 @@ public interface FrameDelegate extends CoreComponent {
     boolean addAnimation(@NonNull Animation animation);
 
     /**
-     * Removes (the first occurrence of) an animation from frame updates by this FrameDelegate, using a
+     * Removes (the first occurrence of) an animation from frame updates by this {@link FrameDelegate} using a
      * {@link RenderTask}. If the animation has not been added, nothing will happen.
      *
      * @param animation {@link Animation} to be removed.
@@ -105,7 +104,7 @@ public interface FrameDelegate extends CoreComponent {
     boolean removeAnimation(@NonNull Animation animation);
 
     /**
-     * Replaces an {@link Animation} previously added to this FrameDelegate with a new one, using a
+     * Replaces an {@link Animation} previously added to this {@link FrameDelegate} with a new one using a
      * {@link RenderTask}.
      *
      * @param oldAnim {@link Animation} the old animation.
@@ -115,7 +114,7 @@ public interface FrameDelegate extends CoreComponent {
     boolean replaceAnimation(@NonNull final Animation oldAnim, @NonNull final Animation newAnim);
 
     /**
-     * Adds a {@link Collection} of {@link Animation} objects to this FrameDelegate, using a {@link RenderTask}.
+     * Adds a {@link Collection} of {@link Animation} objects to this {@link FrameDelegate} using a {@link RenderTask}.
      * Duplicates are not filtered.
      *
      * @param animations {@link Collection} containing the {@link Animation} objects to be added.
@@ -124,7 +123,8 @@ public interface FrameDelegate extends CoreComponent {
     boolean addAnimations(@NonNull final Collection<Animation> animations);
 
     /**
-     * Removes all {@link Animation} objects from frame updates by this FrameDelegate, using a {@link RenderTask}.
+     * Removes all {@link Animation} objects from frame updates by this {@link FrameDelegate} using a
+     * {@link RenderTask}.
      *
      * @return boolean True if the clear task was run or queued successfully.
      */

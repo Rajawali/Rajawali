@@ -19,7 +19,6 @@ import android.support.annotation.FloatRange;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-
 public interface FrameCallback {
 
     /**

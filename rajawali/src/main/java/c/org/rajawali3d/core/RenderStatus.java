@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
  *
  * @author Randy Picolet
  */
-
 public interface RenderStatus extends CoreComponent {
 
     /**
@@ -36,26 +35,26 @@ public interface RenderStatus extends CoreComponent {
     double getFrameRate();
 
     /**
-     * Checks whether frames processing is active (started but not yet stopped). This tracks the (paused/resumed)
+     * Checks whether frame processing is active (started but not yet stopped). This tracks the (paused/resumed)
      * state of the underlying render thread.
      *
-     * @return {@code true} if frames processing is active, {@code false} if frames processing is inactive
+     * @return {@code true} if frame processing is active, {@code false} if frame processing is inactive
      */
     boolean areFramesEnabled();
 
     /**
-     * Gets the system time of the most recent start of frames processing (render thread resume);
+     * Gets the system time of the most recent start of frame processing (render thread resume);
      * 0 if frames are stopped (render thread paused)
      *
-     * @return {@code long} System time in nanoseconds of most recent start of frames processing
+     * @return {@code long} System time in nanoseconds of most recent start of frame processing
      */
     long getFramesStartTime();
 
     /**
-     * Gets the time elapsed since the most recent start of frames processing (render thread resume);
-     * 0 if frames are stopped (render thread paused)
+     * Gets the time elapsed since the most recent start of frame processing (render thread resume);
+     * 0 if frame are stopped (render thread paused)
      *
-     * @return {code long} nanoseconds elapsed since most recent start of frames processing
+     * @return {code long} nanoseconds elapsed since most recent start of frame processing
      */
     long getFramesElapsedTime();
 }

@@ -11,11 +11,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * Base class for all core components; enables common render thread tasking
+ * Base class for all core components; enables common render thread tasking.
  *
  * @author Randy Picolet
  */
-
 abstract class ACoreComponent implements CoreComponent {
 
     private Thread renderThread;

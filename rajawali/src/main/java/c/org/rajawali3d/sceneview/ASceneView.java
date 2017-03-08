@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 
 /**
- * Abstract base for all SceneView implementations; adds the actual onRender() callback
+ * Abstract base for all SceneView implementations.
  *
  * TODO remove indirect dependencies here on GLES (via Camera->frustum Planes->IndexedGeometry)
  * TODO add factory methods (here? in RenderControl?) that instantiate the concrete type per the RenderContextType
@@ -32,25 +32,24 @@ import java.util.concurrent.locks.Lock;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  * @author Randy Picolet
  */
-
 public abstract class ASceneView extends AFrameDelegate implements SceneView {
 
     private static final String TAG = "ASceneView";
 
     // The Scene presented by this ASceneView
-    @NonNull protected Scene scene;
+    @NonNull protected Scene      scene;
     // The Scene's graph
     @NonNull protected SceneGraph sceneGraph;
     // The Camera for this ASceneView
-    @NonNull protected Camera camera;
+    @NonNull protected Camera     camera;
     // The viewportRect for this ASceneView
-    @NonNull protected Rect viewportRect;
+    @NonNull protected Rect       viewportRect;
     //
-    volatile boolean viewportVisible;
+    volatile           boolean    viewportVisible;
     //
-    @NonNull protected Matrix4 viewMatrix;
+    @NonNull protected Matrix4    viewMatrix;
     //
-    @NonNull protected Matrix4 projectionMatrix;
+    @NonNull protected Matrix4    projectionMatrix;
     //
     @NonNull protected Matrix4 viewProjectionMatrix = new Matrix4();
     //
@@ -69,12 +68,12 @@ public abstract class ASceneView extends AFrameDelegate implements SceneView {
     public static SceneView create(@NonNull AScene scene, Camera camera, Rect viewportRect) {
 
         ASceneView sceneView = null;
-        switch(RenderContext.getType()) {
+        switch (RenderContext.getType()) {
             case OPEN_GL_ES:
                 sceneView = new GLESSceneView();
                 break;
             default:
-                // TODO log, exeption, or both?
+                // TODO log, exception, or both?
         }
         sceneView.scene = scene;
         sceneView.camera = camera;
@@ -103,6 +102,7 @@ public abstract class ASceneView extends AFrameDelegate implements SceneView {
     }
 
     // Intentionally package private for performance
+    @SuppressWarnings("WeakerAccess")
     @RenderThread
     void syncCamera(Camera camera) {
         if (!camera.equals(this.camera)) {

@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 /**
  * API for external clients to manage the interaction between the {@link SurfaceView} rendering context and all
  * {@link Scene}s and {@link SceneView}s associated with it. This interface is available only when a viable
- * render environment (thread, surface, context, and api) is in place
+ * render environment (thread, surface, context, and api) is in place.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
@@ -28,7 +28,7 @@ public interface RenderControl extends RenderStatus {
     /**
      * Sets the current target frameRate.
      *
-     * @param frameRate {@code double} target frame frameRate; <0 flags use of window refresh rate, 0 flags
+     * @param frameRate {@code double} target frame frameRate; < 0 flags use of window refresh rate, 0 flags
      *                                continuous rendering as fast as possible, >0 sets target frames per second
      */
     void setFrameRate(double frameRate);

@@ -4,8 +4,9 @@ import c.org.rajawali3d.annotations.RenderThread;
 
 /**
  * Simple implementation of {@link FrameCallback} in which all frame methods are non-op and no methods are
- * registered. This allows user code an easy ex
- * tension if only one callback method is desired.
+ * registered. This allows user code an easy extension if only one callback method is desired.
+ *
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class SimpleFrameCallback implements FrameCallback {
 

@@ -1,21 +1,16 @@
 package c.org.rajawali3d.sceneview;
 
+import android.opengl.GLES20;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.scene.AScene;
-import c.org.rajawali3d.scene.graph.NodeMember;
-
-import android.opengl.GLES20;
-
-import org.rajawali3d.math.Matrix4;
 
 import java.util.List;
 
 /**
  * @author Randy Picolet
  */
-
 public class GLESSceneView extends ASceneView {
 
     /**

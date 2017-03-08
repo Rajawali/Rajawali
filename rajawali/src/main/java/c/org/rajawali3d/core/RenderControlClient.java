@@ -4,7 +4,7 @@ import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.surface.SurfaceSize;
 
 /**
- * API for the external client to be notified of {@link RenderControl} events
+ * API for the external client to be notified of {@link RenderControl} events.
  *
  * @author Randy Picolet
  */

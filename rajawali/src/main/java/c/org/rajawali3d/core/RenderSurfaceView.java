@@ -9,7 +9,6 @@ import c.org.rajawali3d.surface.SurfaceView;
  *
  * @author Randy Picolet
  */
-
 public interface RenderSurfaceView extends SurfaceView {
 
     /**

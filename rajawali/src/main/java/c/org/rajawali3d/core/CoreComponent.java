@@ -1,11 +1,10 @@
 package c.org.rajawali3d.core;
 
 /**
- * External client interface provided by core engine components
+ * External client interface provided by core engine components.
  *
  * @author Randy Picolet
  */
-
 public interface CoreComponent {
 
     /**
