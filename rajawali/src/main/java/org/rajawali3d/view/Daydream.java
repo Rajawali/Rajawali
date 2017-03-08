@@ -23,13 +23,15 @@ import android.widget.FrameLayout;
 
 import org.rajawali3d.view.Surface.ANTI_ALIASING_CONFIG;
 import org.rajawali3d.renderer.ISurfaceRenderer;
+
 import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.surface.gles.GLESSurfaceView;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public abstract class Daydream extends DreamService implements Display {
 
-	protected SurfaceView mSurfaceView;
+	protected GLESSurfaceView mGLESSurfaceView;
 	protected FrameLayout mLayout;
 
 	private ISurfaceRenderer mRajawaliRenderer;
@@ -38,14 +40,14 @@ public abstract class Daydream extends DreamService implements Display {
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 
-		mSurfaceView = new SurfaceView(this);
-		mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
+		mGLESSurfaceView = new GLESSurfaceView(this);
+		mGLESSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
 		setInteractive(false);
 		setFullscreen(true);
 
 		mLayout = new FrameLayout(this);
-		mLayout.addView(mSurfaceView);
+		mLayout.addView(mGLESSurfaceView);
 
 		setContentView(mLayout);
 
@@ -55,14 +57,14 @@ public abstract class Daydream extends DreamService implements Display {
 	@Override
 	public void onDreamingStarted() {
 		super.onDreamingStarted();
-		mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-		mSurfaceView.onResume();
+		mGLESSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		mGLESSurfaceView.onResume();
 	}
 
 	@Override
 	public void onDreamingStopped() {
 		super.onDreamingStopped();
-		mSurfaceView.onPause();
+		mGLESSurfaceView.onPause();
 	}
 
 	@Override
@@ -74,12 +76,12 @@ public abstract class Daydream extends DreamService implements Display {
 	}
 
     protected void setAntiAliasingConfig(ANTI_ALIASING_CONFIG config) {
-		mSurfaceView.setAntiAliasingMode(config);
+		mGLESSurfaceView.setSurfaceAntiAliasing(config);
 	}
 
 	protected void setRenderer(ISurfaceRenderer renderer) {
 		mRajawaliRenderer = renderer;
-        mSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
+        mGLESSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
 	}
 
 	private void unbindDrawables(View view) {

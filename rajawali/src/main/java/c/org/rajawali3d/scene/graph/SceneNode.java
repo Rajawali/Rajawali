@@ -6,7 +6,8 @@ import android.support.annotation.VisibleForTesting;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.object.renderers.ObjectRenderer;
+import c.org.rajawali3d.intersection.Intersector;
+import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.transform.Transformable;
 import c.org.rajawali3d.transform.Transformation;
 import c.org.rajawali3d.transform.Transformer;
@@ -50,6 +51,8 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
 
     @Nullable
     protected Lock currentlyHeldWriteLock;
+
+    protected volatile boolean visible = true;
 
     @NonNull
     protected Transformation getTransformation() {
@@ -127,8 +130,26 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
 
     @Override
     public int intersectBounds(@NonNull AABB bounds) {
-        //TODO: Implement intersection
-        return 0;
+        //TODO: Implement intersection, while accounting for visibility of parent nodes and leaf objects...
+        return Intersector.INTERSECT;
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public List<RenderableObject> getVisibleObjects() {
+        if (isVisible()) {
+            // TODO recursive accumulation for this node
+            return null;
+        }
+        return null;
     }
 
     @RequiresWriteLock
@@ -370,18 +391,5 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
                 currentlyHeldWriteLock = null;
             }
         }
-    }
-
-
-    @NonNull
-    @Override
-    public ObjectRenderer render(int type, @Nullable ObjectRenderer lastRenderer, @NonNull Matrix4 view,
-                                 @NonNull Matrix4 projection, @NonNull Matrix4 viewProjection) {
-        return null;
-    }
-
-    @Override
-    public void setObjectRenderer(int type, @NonNull ObjectRenderer renderer) {
-
     }
 }

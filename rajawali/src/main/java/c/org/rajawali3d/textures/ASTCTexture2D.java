@@ -17,7 +17,7 @@ import android.support.annotation.NonNull;
 
 import org.rajawali3d.util.RajLog;
 
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionS3TC;
 import c.org.rajawali3d.gl.extensions.texture.KHRTextureCompressionASTC;
@@ -122,7 +122,7 @@ public class ASTCTexture2D extends CompressedTexture2D {
         }
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void add() throws TextureException {
         // Verify ASTC is supported

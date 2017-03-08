@@ -22,7 +22,7 @@ import org.rajawali3d.math.Matrix4;
 
 import java.util.List;
 
-public class VertexShader extends AShader {
+public class VertexShader extends Shader {
 
 	private RMat4 muMVPMatrix;
 	private RMat3 muNormalMatrix;
@@ -144,7 +144,7 @@ public class VertexShader extends AShader {
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
 			if(fragment.getInsertLocation() == PluginInsertLocation.POST_TRANSFORM) continue;
-			fragment.setStringBuilder(mShaderSB);
+			fragment.setStringBuilder(shaderSB);
 			fragment.main();
 			if(fragment.getShaderId().equals(SkeletalAnimationVertexShaderFragment.SHADER_ID))
 				hasSkeletalAnimation = true;
@@ -176,7 +176,7 @@ public class VertexShader extends AShader {
 		{
 			IShaderFragment fragment = mShaderFragments.get(i);
 			if(fragment.getInsertLocation() == PluginInsertLocation.POST_TRANSFORM) {
-				fragment.setStringBuilder(mShaderSB);
+				fragment.setStringBuilder(shaderSB);
 				fragment.main();
 			}
 		}

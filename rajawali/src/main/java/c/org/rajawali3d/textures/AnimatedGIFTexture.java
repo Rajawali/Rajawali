@@ -31,7 +31,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.util.ByteBufferBackedInputStream;
 
@@ -190,7 +190,7 @@ public class AnimatedGIFTexture extends SingleTexture2D {
         super.replace();
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void remove() throws TextureException {
         if (gifBitmap != null) {
@@ -204,7 +204,7 @@ public class AnimatedGIFTexture extends SingleTexture2D {
         super.remove();
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void reset() throws TextureException {
         super.reset();

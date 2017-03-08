@@ -1,7 +1,7 @@
 package org.rajawali3d.materials.plugins;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import org.rajawali3d.materials.shaders.AShader;
+import org.rajawali3d.materials.shaders.Shader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import c.org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.math.Matrix4;
@@ -73,7 +73,7 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
 		mLightDir = lightDirection;
 	}
 
-	private final class ShadowMapVertexShaderFragment extends AShader implements IShaderFragment {
+	private final class ShadowMapVertexShaderFragment extends Shader implements IShaderFragment {
 		public final static String SHADER_ID = "SHADOW_MAP_VERTEX_SHADER_FRAGMENT";
 
 		private RMat4 mcBiasMatrix;
@@ -148,7 +148,7 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
 		}
 	}
 
-	private final class ShadowMapFragmentShaderFragment extends AShader implements IShaderFragment {
+	private final class ShadowMapFragmentShaderFragment extends Shader implements IShaderFragment {
 		public final static String SHADER_ID = "SHADOW_MAP_FRAGMENT_SHADER_FRAGMENT";
 
 		private RSampler2D muShadowMapTexture;

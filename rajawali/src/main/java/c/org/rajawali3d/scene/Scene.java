@@ -1,474 +1,72 @@
 package c.org.rajawali3d.scene;
 
-import android.opengl.GLES20;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import c.org.rajawali3d.annotations.GLThread;
-import c.org.rajawali3d.annotations.RequiresReadLock;
-import c.org.rajawali3d.camera.Camera;
-import c.org.rajawali3d.materials.MaterialManager;
-import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.renderer.Renderable;
-import c.org.rajawali3d.renderer.Renderer;
-import c.org.rajawali3d.scene.graph.FlatTree;
-import c.org.rajawali3d.scene.graph.NodeMember;
-import c.org.rajawali3d.scene.graph.SceneGraph;
-import c.org.rajawali3d.textures.TextureManager;
-import net.jcip.annotations.GuardedBy;
-import net.jcip.annotations.ThreadSafe;
-import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.renderer.FrameTask;
-import org.rajawali3d.util.RajLog;
+import c.org.rajawali3d.core.FrameDelegate;
+import c.org.rajawali3d.sceneview.SceneView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import android.support.annotation.NonNull;
+
 import java.util.concurrent.locks.Lock;
 
 /**
- * A {@link Scene} is a self contained, renderable world. {@link Scene}s are responsible for managing all aspects of
- * what is rendered - objects, cameras, lights, and materials. All draw operations are managed by a scene and objects
- * cannot be shared across renderables. Unless otherwise specified, the default behavior is to use a {@link FlatTree}
- * scene graph.
+ * Client interface for models that are to be presented by the RenderControl.
  *
- * @author Jared Woolston (Jared.Woolston@gmail.com)
+ * Author: Randy Picolet
  */
-@ThreadSafe
-public class Scene implements Renderable {
 
-    private static final String TAG = "Scene";
-
-    @Nullable Lock currentlyHeldWriteLock;
-    @Nullable Lock currentlyHeldReadLock;
-
-    @GuardedBy("preCallbacks")
-    private final List<SceneFrameCallback> preCallbacks;
-
-    @GuardedBy("preDrawCallbacks")
-    private final List<SceneFrameCallback> preDrawCallbacks; //TODO: Are these necessary anymore?
-
-    @GuardedBy("postCallbacks")
-    private final List<SceneFrameCallback> postCallbacks;
-
-    @GuardedBy("frameTaskQueue")
-    private final Queue<FrameTask> frameTaskQueue;
-
-    private final TextureManager  textureManager;
-    private final MaterialManager materialManager;
-
-    private volatile boolean needRestoreForNewContext = false;
-
-    @Nullable private Renderer renderer;
-
-    @NonNull private SceneGraph sceneGraph;
-
-    private int currentViewportWidth;
-    private int currentViewportHeight; // The current width and height of the GL viewport
-    private int overrideViewportWidth;
-    private int overrideViewportHeight; // The overridden width and height of the GL viewport
+public interface Scene extends FrameDelegate {
 
     /**
-     * The {@link Camera} currently being used to render the scene.
-     */
-    @GuardedBy("nextCameraLock")
-    private Camera currentCamera;
-
-    private Camera nextCamera; // The camera the scene should switch to on the next frame.
-    private final Object nextCameraLock = new Object(); // Camera switching lock
-
-    @Nullable
-    @GLThread
-    private ObjectRenderer lastUsedRenderer; // Reference to the last used object renderer
-
-    @NonNull
-    @GLThread
-    private Matrix4 viewProjectionMatrix = new Matrix4();
-
-    /**
-     * Constructs a new {@link Scene} using the default ({@link FlatTree}) scene graph implementation.
-     */
-    public Scene() {
-        this(new FlatTree());
-    }
-
-    /**
-     * Constructs a new {@link Scene} using the provided {@link SceneGraph} implementation.
+     * Acquires a read lock on the {@link Scene}. This is necessary when you need a self-consistent view of the
+     * model from one thread while allowing (locked) modifications on another.
      *
-     * @param graph The {@link SceneGraph} instance which should be used.
-     */
-    public Scene(@NonNull SceneGraph graph) {
-        sceneGraph = graph;
-        preCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
-        preDrawCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
-        postCallbacks = Collections.synchronizedList(new ArrayList<SceneFrameCallback>());
-        frameTaskQueue = new LinkedList<>();
-
-        textureManager = new TextureManager(this);
-        materialManager = new MaterialManager(this);
-
-        initialize();
-    }
-
-    @GLThread
-    @Override
-    public void setRenderer(@Nullable Renderer renderer) {
-        if (renderer != null) {
-            onRendererSet(renderer);
-        } else {
-            onRendererCleared();
-        }
-    }
-
-    @Override
-    public void onRenderSurfaceSizeChanged() throws IllegalStateException {
-        if (renderer == null) {
-            throw new IllegalStateException("Scene registered to an unknown renderer implementation.");
-        }
-        final int wViewport = overrideViewportWidth > -1 ? overrideViewportWidth : renderer.getDefaultViewportWidth();
-        final int hViewport = overrideViewportHeight > -1 ? overrideViewportHeight
-                                                          : renderer.getDefaultViewportHeight();
-        setViewPort(wViewport, hViewport);
-    }
-
-    @Override
-    public void clearOverrideViewportDimensions() {
-        overrideViewportWidth = -1;
-        overrideViewportHeight = -1;
-        if (renderer != null) {
-            setViewPort(renderer.getDefaultViewportWidth(), renderer.getDefaultViewportHeight());
-        }
-    }
-
-    @Override
-    public void setOverrideViewportDimensions(int width, int height) {
-        overrideViewportWidth = width;
-        overrideViewportHeight = height;
-        setViewPort(overrideViewportWidth, overrideViewportHeight);
-    }
-
-    @Override
-    public int getOverrideViewportWidth() {
-        return overrideViewportWidth;
-    }
-
-    @Override
-    public int getOverrideViewportHeight() {
-        return overrideViewportHeight;
-    }
-
-    @Override
-    public int getViewportWidth() {
-        return currentViewportWidth;
-    }
-
-    @Override
-    public int getViewportHeight() {
-        return currentViewportHeight;
-    }
-
-    @GLThread
-    @Override
-    public void render(final long ellapsedRealtime, final double deltaTime) throws InterruptedException {
-        currentlyHeldReadLock = sceneGraph.acquireReadLock();
-        try {
-            internalRender(ellapsedRealtime, deltaTime);
-        } finally {
-            if (currentlyHeldReadLock != null) {
-                currentlyHeldReadLock.unlock();
-            }
-        }
-    }
-
-    @GLThread
-    @Override
-    public void restoreForNewContextIfNeeded() {
-        if (needRestoreForNewContext) {
-            needRestoreForNewContext = false;
-            textureManager.reloadTextures();
-            // TODO: Restore materials
-            // TODO: Restore VBOs
-        }
-    }
-
-    /**
-     * Retrieves the {@link TextureManager} associated with this {@link Scene}. Note that Renderers and GL
-     * contexts are tied together.
+     * Note the calling thread may be blocked if a write lock is already held on another thread.
      *
-     * @return The {@link TextureManager} for this {@link Renderer}.
+     * You must call {@link Lock#unlock()} on the returned lock instance when finished, or modifications using a
+     * write lock will be blocked.
+     *
+     * TODO example code for try-finally idiom
+     *
+     * @return the read {@link Lock} instance
+     * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
      */
     @NonNull
-    public TextureManager getTextureManager() {
-        return textureManager;
-    }
+    Lock acquireReadLock() throws InterruptedException;
 
     /**
-     * Retrieves the {@link MaterialManager} associated with this {@link Scene}. Note that Renderers and GL
-     * contexts are tied together.
+     * TODO should this method be exposed to the client at all?  Do we want to wrap all the write locking in higher
+     * order functions?
      *
-     * @return The {@link MaterialManager} for this {@link Renderer}.
+     * Acquires a write lock on the {@link Scene}. This is necessary when you need to make a change and want to
+     * prevent corruption of any model observers the rendering of any dependent {@link SceneView}s, or worse.
+     *
+     * Note this could block or delay frame updates if there are any dependent {@link SceneView}s; likewise,
+     * the calling thread may be blocked while a dependent {@link SceneView} is being rendered or if you are holding
+     * a lock on another thread.
+     *
+     * You must call {@link Lock#unlock()} on the returned lock instance when finished, or rendering may halt.
+     *
+     * TODO example code for try-finally idiom
+
+     * @return the write {@link Lock} instance
+     * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
      */
     @NonNull
-    public MaterialManager getMaterialManager() {
-        return materialManager;
-    }
+    Lock acquireWriteLock() throws InterruptedException;
 
     /**
-     * Requests thread safe access to modify this {@link Scene}. This is useful if you need to make a number of
-     * changes, allowing you to batch them into a single lock acquisition rather than acquiring the lock for each
-     * modification.
+     * Requests modifications to this {@link Scene} via the provided {@link SceneModifier}. The
+     * modifications will all be performed under a single lock acquisition. This is useful when you need to make
+     * muiltiple changes and want to avoid acquiring the write lock for each.
      *
-     * @param modifier {@link SceneModifier} instance which will be called when the lock has been acquired.
+     * Note this will block rendering if any dependent {@link SceneView}s are encountered during a frame; likewise,
+     * the calling thread may be blocked while a dependent {@link SceneView} is being rendered.
      *
-     * @throws InterruptedException Thrown if the requesting thread is interrupted while waiting for lock acquisition.
-     */
-    public void requestModifyScene(@NonNull SceneModifier modifier) throws InterruptedException {
-        currentlyHeldWriteLock = sceneGraph.acquireWriteLock();
-        try {
-            modifier.doModifications(sceneGraph);
-        } finally {
-            if (currentlyHeldWriteLock != null) {
-                currentlyHeldWriteLock.unlock();
-            }
-        }
-    }
-
-    /**
-     * Register a frame callback for this scene.
+     * The lock is automatically released.
      *
-     * @param callback {@link SceneFrameCallback} to be registered.
+     * TODO example code for try-finally idiom
+
+     * @param sceneModifier {@link SceneModifier} instance which will be called when the lock has been acquired.*
+     * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
      */
-    public void registerFrameCallback(@NonNull SceneFrameCallback callback) {
-        if (callback.callPreFrame()) {
-            preCallbacks.add(callback);
-        }
-        if (callback.callPreDraw()) {
-            preDrawCallbacks.add(callback);
-        }
-        if (callback.callPostFrame()) {
-            postCallbacks.add(callback);
-        }
-    }
-
-    /**
-     * Remove a frame callback. If the callback is not a member of the scene, nothing will happen.
-     *
-     * @param callback {@link SceneFrameCallback} to be unregistered.
-     */
-    public void unregisterFrameCallback(@NonNull SceneFrameCallback callback) {
-        if (callback.callPreFrame()) {
-            preCallbacks.remove(callback);
-        }
-        if (callback.callPreDraw()) {
-            preDrawCallbacks.remove(callback);
-        }
-        if (callback.callPostFrame()) {
-            postCallbacks.remove(callback);
-        }
-    }
-
-    /**
-     * Adds a {@link FrameTask} to the internal queue to be executed. If the calling thread is the render thread, the
-     * task will be executed now, otherwise it will be queued for execution at the next frame start.
-     *
-     * @param task {@link FrameTask} to execute.
-     * @return {@code true} If the task was successfully accepted for execution.
-     */
-    public boolean offerTask(FrameTask task) {
-        if (renderer != null && renderer.isGLThread()) {
-            // If we have a renderer and the calling thread is the render thread, do the task now.
-            task.run();
-            return true;
-        } else {
-            // This cant be run now and must be queued.
-            synchronized (frameTaskQueue) {
-                return frameTaskQueue.offer(task);
-            }
-        }
-    }
-
-    /**
-     * Removes all {@link SceneFrameCallback} objects from the scene.
-     */
-    public void clearFrameCallbacks() {
-        preCallbacks.clear();
-        preDrawCallbacks.clear();
-        postCallbacks.clear();
-    }
-
-    public void switchCamera(@NonNull Camera camera) {
-        synchronized (nextCameraLock) {
-            nextCamera = camera;
-        }
-    }
-
-    /**
-     * Initializes the scene.
-     */
-    protected void initialize() {
-        overrideViewportWidth = -1;
-        overrideViewportHeight = -1;
-    }
-
-    /**
-     * Sets the GL Viewport used. User code is free to override this method, so long as the viewport is set somewhere
-     * (and the projection matrix updated).
-     *
-     * @param width  {@code int} The viewport width in pixels.
-     * @param height {@code int} The viewport height in pixels.
-     */
-    @GLThread
-    protected void setViewPort(int width, int height) {
-        if (width != currentViewportWidth || height != currentViewportHeight) {
-            currentViewportWidth = width;
-            currentViewportHeight = height;
-            // TODO: Update projection matrix
-            //updateProjectionMatrix(width, height);
-            GLES20.glViewport(0, 0, width, height);
-        }
-    }
-
-    /**
-     * Called when a {@link Renderer} has been set on this scene. This is an opportunity to prepare for the frame
-     * request about to come in. Subclasses should be sure to call {@code super.onRendererSet(renderer)} to ensure
-     * proper behavior.
-     *
-     * @param renderer The {@link Renderer} this {@link Scene} is now attached to.
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected void onRendererSet(@NonNull Renderer renderer) {
-        if (renderer != this.renderer) {
-            // Set the new renderer
-            this.renderer = renderer;
-            // Mark the context dirty
-            needRestoreForNewContext = true;
-            // Adjust viewport if necessary
-            onRenderSurfaceSizeChanged();
-        }
-    }
-
-    /**
-     * Called when the {@link Renderer} has been cleared from this scene. Subclasses should be sure to call
-     * {@code super.onRendererSet(renderer)} to ensure proper behavior.
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected void onRendererCleared() {
-
-    }
-
-    /**
-     * Updates which {@link Camera} will be used by this {@link Scene}.
-     *
-     * @param nextCamera The {@link Camera} to switch to.
-     */
-    @GuardedBy("nextCameraLock")
-    @GLThread
-    private void internalSwitchCamera(@NonNull Camera nextCamera) {
-        RajLog.d("Switching from camera: " + currentCamera + " to camera: " + nextCamera);
-        currentCamera = nextCamera;
-    }
-
-    /**
-     * Executes all queued {@link FrameTask}s.
-     */
-    @GLThread
-    private void performFrameTasks() {
-        synchronized (frameTaskQueue) {
-            //Fetch the first task
-            FrameTask task = frameTaskQueue.poll();
-            while (task != null) {
-                task.run();
-                //Retrieve the next task
-                task = frameTaskQueue.poll();
-            }
-        }
-    }
-
-    /**
-     * Internal render method of {@link Scene}. Automatically manages frame tasks, threading and other lifecycle
-     * related events.
-     *
-     * @param ellapsedRealtime {@code long} The elapsed rendering time, in nanoseconds.
-     * @param deltaTime {@code double} The time step from the previous frame, in seconds.
-     */
-    @RequiresReadLock
-    @GLThread
-    private void internalRender(final long ellapsedRealtime, final double deltaTime) {
-        // Execute frame tasks
-        performFrameTasks();
-
-        synchronized (nextCameraLock) {
-            // Check if we need to switch the camera, and if so, do it.
-            if (nextCamera != null) {
-                internalSwitchCamera(nextCamera);
-                nextCamera = null;
-            }
-        }
-
-        if (currentCamera == null) {
-            // We can't render until the camera is ready
-            return;
-        }
-
-        // Prepare the camera matrices
-        final Matrix4 viewMatrix = currentCamera.getViewMatrix();
-        final Matrix4 projectionMatrix = currentCamera.getProjectionMatrix();
-
-        if (projectionMatrix == null) {
-            // We can't render until the camera is ready
-            return;
-        }
-
-        viewProjectionMatrix.setAll(projectionMatrix).multiply(viewMatrix);
-
-        // Execute onPreFrame callbacks
-        // We explicitly break out the steps here to help the compiler optimize
-        final int preCount = preCallbacks.size();
-        if (preCount > 0) {
-            synchronized (preCallbacks) {
-                for (int i = 0; i < preCount; ++i) {
-                    preCallbacks.get(i).onPreFrame(ellapsedRealtime, deltaTime);
-                }
-            }
-        }
-
-        // Determine which objects we will be rendering
-        final List<NodeMember> intersectedNodes = sceneGraph.intersection(currentCamera);
-
-        // Execute onPreDraw callbacks
-        // We explicitly break out the steps here to help the compiler optimize
-        final int preDrawCount = preDrawCallbacks.size();
-        if (preDrawCount > 0) {
-            synchronized (preDrawCallbacks) {
-                for (int i = 0; i < preDrawCount; ++i) {
-                    preDrawCallbacks.get(i).onPreDraw(ellapsedRealtime, deltaTime);
-                }
-            }
-        }
-
-        //TODO: This will be an interaction point with the render pass manager. We don't want to check the
-        // intersection with the camera multiple times. One possible exception would be for shadow mapping. Probably
-        // a loop
-
-        // Fetch the current render type
-        int type = 0;
-
-        // Loop each node and draw
-        for (NodeMember member : intersectedNodes) {
-            lastUsedRenderer = member.render(type, lastUsedRenderer, viewMatrix,
-                                             projectionMatrix, viewProjectionMatrix);
-        }
-
-        // Execute onPostFrame callbacks
-        // We explicitly break out the steps here to help the compiler optimize
-        final int postCount = postCallbacks.size();
-        if (postCount > 0) {
-            synchronized (postCallbacks) {
-                for (int i = 0; i < postCount; ++i) {
-                    postCallbacks.get(i).onPostFrame(ellapsedRealtime, deltaTime);
-                }
-            }
-        }
-    }
+    void requestModifications(@NonNull SceneModifier sceneModifier) throws InterruptedException;
 }

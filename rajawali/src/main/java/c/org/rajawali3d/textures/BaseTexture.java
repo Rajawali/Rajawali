@@ -15,7 +15,8 @@ package c.org.rajawali3d.textures;
 import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.annotations.GLThread;
+
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.Capabilities.UnsupportedCapabilityException;
 import c.org.rajawali3d.gl.extensions.texture.EXTTextureFilterAnisotropic;
@@ -632,7 +633,7 @@ public abstract class BaseTexture {
      *
      * @return {@code int} The new texture id returned from the GL driver.
      */
-    @GLThread
+    @RenderThread
     protected static int generateTextureId() {
         // Generate a texture id
         final int[] genTextureNames = new int[1];
@@ -640,7 +641,7 @@ public abstract class BaseTexture {
         return genTextureNames[0];
     }
 
-    @GLThread
+    @RenderThread
     protected void applyMinificationFilter() throws TextureException {
         @TextureTarget final int target = getTextureTarget();
         if (isMipmaped()) {
@@ -682,7 +683,7 @@ public abstract class BaseTexture {
         }
     }
 
-    @GLThread
+    @RenderThread
     protected void applyMagnificationFilter() {
         @TextureTarget final int target = getTextureTarget();
         if (filterType == Filter.BILINEAR || filterType == Filter.TRILINEAR) {
@@ -692,7 +693,7 @@ public abstract class BaseTexture {
         }
     }
 
-    @GLThread
+    @RenderThread
     protected void applyAnisotropy() {
         // Handle anisotropy if needed. We don't check if it is supported here because setting it to anything
         // other than 1.0 would have required the check.
@@ -716,7 +717,7 @@ public abstract class BaseTexture {
         }
     }
 
-    @GLThread
+    @RenderThread
     protected void applySWrapping() {
         // Handle s coordinate wrapping
         int wrap = GLES20.GL_REPEAT;
@@ -728,7 +729,7 @@ public abstract class BaseTexture {
         GLES20.glTexParameteri(getTextureTarget(), GLES20.GL_TEXTURE_WRAP_S, wrap);
     }
 
-    @GLThread
+    @RenderThread
     protected void applyTWrapping() {
         // Handle t coordinate wrapping
         int wrap = GLES20.GL_REPEAT;
@@ -746,7 +747,7 @@ public abstract class BaseTexture {
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture creation process.
      */
-    @GLThread
+    @RenderThread
     abstract void add() throws TextureException;
 
     /**
@@ -755,7 +756,7 @@ public abstract class BaseTexture {
      *
      * @throws TextureException Thrown if an error occurs during any part of the texture delete process.
      */
-    @GLThread
+    @RenderThread
     abstract void remove() throws TextureException;
 
     /**
@@ -763,9 +764,9 @@ public abstract class BaseTexture {
      *
      * @throws TextureException Thrown if an error occurs during any part of updating the texture data.
      */
-    @GLThread
+    @RenderThread
     abstract void replace() throws TextureException;
 
-    @GLThread
+    @RenderThread
     abstract void reset() throws TextureException;
 }

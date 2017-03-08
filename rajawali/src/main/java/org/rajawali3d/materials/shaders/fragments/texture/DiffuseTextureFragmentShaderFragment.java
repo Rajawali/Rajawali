@@ -20,7 +20,7 @@ import c.org.rajawali3d.textures.annotation.Wrap;
 import java.util.List;
 
 
-public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShaderFragment {
+public class DiffuseTextureFragmentShaderFragment extends TextureFragmentShaderFragment {
 	public final static String SHADER_ID = "DIFFUSE_TEXTURE_FRAGMENT";
 
 	public DiffuseTextureFragmentShaderFragment(List<BaseTexture> textures)

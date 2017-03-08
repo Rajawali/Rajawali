@@ -1,7 +1,5 @@
 package c.org.rajawali3d.object;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.intersection.Intersector;
@@ -10,10 +8,14 @@ import c.org.rajawali3d.object.renderers.NoOpObjectRenderer;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
 import c.org.rajawali3d.scene.graph.NodeMember;
 import c.org.rajawali3d.scene.graph.NodeParent;
-import net.jcip.annotations.ThreadSafe;
 import org.rajawali3d.geometry.Geometry;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import net.jcip.annotations.ThreadSafe;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @ThreadSafe
-public class Object3D implements NodeMember, Comparable<Object3D> {
+public class Object3D implements NodeMember, RenderableObject, Comparable<Object3D> {
 
     @NonNull
     private final Vector3 maxBound = new Vector3();
@@ -38,6 +40,8 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
 
     @Nullable
     protected NodeParent parent;
+
+    volatile boolean visible = true;
 
     @Override
     public int compareTo(Object3D another) {
@@ -58,6 +62,16 @@ public class Object3D implements NodeMember, Comparable<Object3D> {
     @Override
     public int intersectBounds(@NonNull AABB bounds) {
         return Intersector.intersect(this, bounds);
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
     }
 
     @NonNull

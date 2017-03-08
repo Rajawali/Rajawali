@@ -18,7 +18,7 @@ import android.util.Log;
 
 import net.jcip.annotations.ThreadSafe;
 
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.textures.annotation.Compression2D;
 import c.org.rajawali3d.textures.annotation.Compression2D.CompressionType2D;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
@@ -135,7 +135,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    @GLThread
+    @RenderThread
     @Override
     void add() throws TextureException {
         final TextureDataReference[] dataReferences = getTextureData();
@@ -209,7 +209,7 @@ public abstract class CompressedTexture2D extends MultiTexture2D {
         GLES20.glBindTexture(getTextureTarget(), 0);
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void replace() throws TextureException {
         //TODO: block based compression formats support per block updating in most cases

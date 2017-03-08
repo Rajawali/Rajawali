@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Method level annotation to indicate that a method is expected to run on the GL thread.
+ * Method level annotation to indicate that a method is expected to run on the render thread.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.FIELD})
-public @interface GLThread {
+public @interface RenderThread {
 }

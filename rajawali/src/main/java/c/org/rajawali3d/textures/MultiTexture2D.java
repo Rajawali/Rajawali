@@ -23,7 +23,7 @@ import android.support.annotation.Nullable;
 
 import net.jcip.annotations.ThreadSafe;
 
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.textures.annotation.PixelFormat;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 
@@ -192,7 +192,7 @@ public abstract class MultiTexture2D extends BaseTexture {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    @GLThread
+    @RenderThread
     @Override
     void remove() throws TextureException {
         final TextureDataReference[] textureData = getTextureData();
@@ -214,7 +214,7 @@ public abstract class MultiTexture2D extends BaseTexture {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    @GLThread
+    @RenderThread
     @Override
     void reset() throws TextureException {
         setTextureData(null);

@@ -27,7 +27,7 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.rajawali3d.util.RajLog;
 
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.textures.annotation.PixelFormat;
 import c.org.rajawali3d.textures.annotation.Type.TextureType;
 
@@ -185,7 +185,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         return textureData;
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void add() throws TextureException {
         // Check if there is valid data
@@ -255,7 +255,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void remove() throws TextureException {
         final TextureDataReference textureData = this.textureData;
@@ -272,7 +272,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         //TODO: Notify materials that were using this texture
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void replace() throws TextureException {
         final TextureDataReference textureData = this.textureData;
@@ -312,7 +312,7 @@ public abstract class SingleTexture2D extends BaseTexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void reset() throws TextureException {
         setTextureData(null);

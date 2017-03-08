@@ -1,4 +1,11 @@
-package org.rajawali3d.view;
+package c.org.rajawali3d.surface.gles;
+
+import c.org.rajawali3d.core.RenderControl;
+import c.org.rajawali3d.core.RenderControlClient;
+import c.org.rajawali3d.core.RenderSurfaceView;
+import c.org.rajawali3d.gl.Capabilities;
+
+import org.rajawali3d.R;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -6,17 +13,12 @@ import android.content.res.TypedArray;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
-import org.rajawali3d.R;
-import org.rajawali3d.renderer.ISurfaceRenderer;
-import c.org.rajawali3d.gl.Capabilities;
-import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGL11;
@@ -27,14 +29,21 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Locale;
+
+import static android.opengl.EGL14.EGL_OPENGL_ES2_BIT;
+import static android.opengl.EGLExt.EGL_OPENGL_ES3_BIT_KHR;
+
 /**
  * Rajawali version of a {@link TextureView}. If you plan on using Rajawali with a {@link TextureView},
  * it is imperative that you extend this class or life cycle events may not function as you expect.
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class TextureView extends android.view.TextureView implements Surface {
-    private final static String TAG = "TextureView";
+public class GLESSurfaceTextureView extends TextureView implements RenderSurfaceView {
+    private final static String TAG = "GLESSurfaceTextureView";
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;
     private final static boolean LOG_PAUSE_RESUME = false;
@@ -43,19 +52,33 @@ public class TextureView extends android.view.TextureView implements Surface {
     private final static boolean LOG_RENDERER_DRAW_FRAME = false;
     private final static boolean LOG_EGL = false;
 
+    /**
+     * The renderer only renders when the surface is created, or when {@link #requestRenderFrame()} is called.
+     *
+     * @see #setRenderFramesOnRequest(boolean)
+     * @see #requestRenderFrame()
+     */
+    public final static int RENDERMODE_WHEN_DIRTY = 0;
+    /**
+     * The renderer is called continuously to re-render the scene.
+     *
+     * @see #setRenderFramesOnRequest(boolean)
+     * @see #requestRenderFrame()
+     */
+    public final static int RENDERMODE_CONTINUOUSLY = 1;
+
     private static final GLThreadManager sGLThreadManager = new GLThreadManager();
 
-    private final WeakReference<TextureView> mThisWeakRef = new WeakReference<>(this);
+    private final WeakReference<GLESSurfaceTextureView> mThisWeakRef = new WeakReference<>(this);
 
-    protected double mFrameRate = 60.0;
-    protected int mRenderMode = RENDERMODE_WHEN_DIRTY;
-    protected ANTI_ALIASING_CONFIG mAntiAliasingConfig = ANTI_ALIASING_CONFIG.NONE;
+    protected double mInitialFrameRate = RenderControl.USE_DISPLAY_REFRESH_RATE;
+    protected GLESSurfaceAntiAliasing mSurfaceAntiAliasing = GLESSurfaceAntiAliasing.NONE;
+    protected int mMultiSampleCount = 0;
     protected int mBitsRed = 5;
     protected int mBitsGreen = 6;
     protected int mBitsBlue = 5;
     protected int mBitsAlpha = 0;
     protected int mBitsDepth = 16;
-    protected int mMultiSampleCount = 0;
 
     private GLThread mGLThread;
     private boolean mDetached;
@@ -66,66 +89,125 @@ public class TextureView extends android.view.TextureView implements Surface {
 
     private boolean mPreserveEGLContextOnPause;
 
-    protected RendererDelegate mRendererDelegate;
+    protected SurfaceTextureRenderer mRenderer;
 
-    public TextureView(Context context) {
+    public GLESSurfaceTextureView(Context context) {
         super(context);
     }
 
-    public TextureView(Context context, AttributeSet attrs) {
+    public GLESSurfaceTextureView(Context context, AttributeSet attrs) {
         super(context, attrs);
         applyAttributes(context, attrs);
     }
 
-    public TextureView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public GLESSurfaceTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         applyAttributes(context, attrs);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public TextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public GLESSurfaceTextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         applyAttributes(context, attrs);
     }
 
     private void applyAttributes(Context context, AttributeSet attrs) {
         if (attrs == null) return;
-        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.TextureView);
+        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.GLESSurfaceTextureView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
-            if (attr == R.styleable.TextureView_frameRate) {
-                mFrameRate = array.getFloat(attr, 60.0f);
-            } else if (attr == R.styleable.TextureView_renderMode) {
-                mRenderMode = array.getInt(attr, RENDERMODE_WHEN_DIRTY);
-            } else if (attr == R.styleable.TextureView_antiAliasingType) {
-                mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(attr, ANTI_ALIASING_CONFIG.NONE.ordinal()));
-            } else if (attr == R.styleable.TextureView_bitsRed) {
+            if (attr == R.styleable.GLESSurfaceTextureView_frameRate) {
+                mInitialFrameRate = array.getFloat(attr, 60.0f);
+            } else if (attr == R.styleable.GLESSurfaceTextureView_antiAliasingType) {
+                mSurfaceAntiAliasing = GLESSurfaceAntiAliasing.fromInteger(
+                        array.getInteger(attr, GLESSurfaceAntiAliasing.NONE.ordinal()));
+            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsRed) {
                 mBitsRed = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.TextureView_bitsGreen) {
+            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsGreen) {
                 mBitsGreen = array.getInteger(attr, 6);
-            } else if (attr == R.styleable.TextureView_bitsBlue) {
+            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsBlue) {
                 mBitsBlue = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.TextureView_bitsAlpha) {
+            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsAlpha) {
                 mBitsAlpha = array.getInteger(attr, 0);
-            } else if (attr == R.styleable.TextureView_bitsDepth) {
+            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsDepth) {
                 mBitsDepth = array.getInteger(attr, 16);
             }
         }
         array.recycle();
     }
 
-    private void initialize() {
+    /**
+     * Sets the surface-wide anti-aliasing mode, overriding any layout attribute.
+     *
+     * Must be called before {@link #configure(RenderControlClient)}, else ignored.
+     *
+     * @param surfaceAntiAliasing {@link GLESSurfaceAntiAliasing} type to apply; default is {@link GLESSurfaceAntiAliasing#NONE}
+     * @return this {@link GLESSurfaceView} to enable chaining of set calls
+     */
+    public GLESSurfaceTextureView setSurfaceAntiAliasing(@NonNull GLESSurfaceAntiAliasing surfaceAntiAliasing) {
+        mSurfaceAntiAliasing = surfaceAntiAliasing;
+        return this;
+    }
+
+    /**
+     * Sets the sample count when using {@link GLESSurfaceAntiAliasing#MULTISAMPLING}, overriding any layout attribute.
+     *
+     * Must be called before {@link #configure(RenderControlClient)}, else ignored.
+
+     * @param count
+     * @return this {@link GLESSurfaceView} to enable chaining of set calls
+     */
+    public GLESSurfaceTextureView setMultiSampleCount(@IntRange(from = 2) int count) {
+        // TODO Just guessing on the minimum value of 2
+        mMultiSampleCount = count;
+        return this;
+    }
+
+    @Override
+    public void configure(@NonNull RenderControlClient renderControlClient) {
+        if (mRenderer != null) {
+            throw new IllegalStateException("This SurfaceView has already been configured.");
+        }
+        checkRenderThreadState();
+
+        // Get/set the context version
         final int glesMajorVersion = Capabilities.getGLESMajorVersion();
         setEGLContextClientVersion(glesMajorVersion);
 
-        setEGLConfigChooser(new RajawaliEGLConfigChooser(glesMajorVersion, mAntiAliasingConfig, mMultiSampleCount,
-            mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
+        // Define the surface configuration
+        configureSurface(glesMajorVersion);
+        if (mEGLConfigChooser == null) {
+            throw new IllegalStateException("You must set an EGL config before attempting to set a surface renderer.");
+        }
+        if (mEGLContextFactory == null) {
+            mEGLContextFactory = new DefaultContextFactory();
+        }
+        if (mEGLWindowSurfaceFactory == null) {
+            mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
+        }
+        // Create our SurfaceTextureRenderer
+        final SurfaceTextureRenderer renderer = new SurfaceTextureRenderer(getContext(), this, renderControlClient,
+                mInitialFrameRate);
+        // Create the GL thread
+        mGLThread = new GLThread(mThisWeakRef);
+        mGLThread.start();
+        // Register the renderer for callbacks
+        mRenderer = renderer; // Done to make sure we dont publish a reference before its safe.
+
+        onPause(); // No rendering yet
+
+        setSurfaceTextureListener(mRenderer);
+    }
+
+    protected void configureSurface(int glesMajorVersion) {
+        setEGLConfigChooser(new GLESConfigChooser(glesMajorVersion, mSurfaceAntiAliasing, mMultiSampleCount,
+                mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
     }
 
     private void checkRenderThreadState() {
         if (mGLThread != null) {
-            throw new IllegalStateException("setRenderer has already been called for this instance.");
+            throw new IllegalStateException("configure() has already been called for this instance.");
         }
     }
 
@@ -176,7 +258,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         if (LOG_ATTACH_DETACH) {
             Log.d(TAG, "onAttachedToWindow reattach =" + mDetached);
         }
-        if (mDetached && (mRendererDelegate != null)) {
+        if (mDetached && (mRenderer != null)) {
             int renderMode = RENDERMODE_CONTINUOUSLY;
             if (mGLThread != null) {
                 renderMode = mGLThread.getRenderMode();
@@ -195,7 +277,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         if (LOG_ATTACH_DETACH) {
             Log.v(TAG, "onDetachedFromWindow");
         }
-        mRendererDelegate.mRenderer.onRenderSurfaceDestroyed(null);
+        mRenderer.onRenderContextLost();
         if (mGLThread != null) {
             mGLThread.requestExitAndWait();
         }
@@ -217,70 +299,13 @@ public class TextureView extends android.view.TextureView implements Surface {
     }
 
     @Override
-    public void setFrameRate(double rate) {
-        mFrameRate = rate;
-        if (mRendererDelegate != null) {
-            mRendererDelegate.mRenderer.setFrameRate(rate);
-        }
+    public void setRenderFramesOnRequest(boolean onRequest) {
+        setRenderModeInternal(onRequest ? RENDERMODE_WHEN_DIRTY : RENDERMODE_CONTINUOUSLY);
+
     }
 
     @Override
-    public int getRenderMode() {
-        if (mRendererDelegate != null) {
-            return getRenderModeInternal();
-        } else {
-            return mRenderMode;
-        }
-    }
-
-    @Override
-    public void setRenderMode(int mode) {
-        mRenderMode = mode;
-        if (mRendererDelegate != null) {
-            setRenderModeInternal(mRenderMode);
-        }
-    }
-
-    @Override
-    public void setAntiAliasingMode(ANTI_ALIASING_CONFIG config) {
-        mAntiAliasingConfig = config;
-    }
-
-    @Override
-    public void setSampleCount(int count) {
-        mMultiSampleCount = count;
-    }
-
-    @Override
-    public void setSurfaceRenderer(ISurfaceRenderer renderer) throws IllegalStateException {
-        if (mRendererDelegate != null) throw new IllegalStateException("A renderer has already been set for this view.");
-        initialize();
-
-        // Configure the EGL stuff
-        checkRenderThreadState();
-        if (mEGLConfigChooser == null) {
-            throw new IllegalStateException("You must set an EGL config before attempting to set a surface renderer.");
-        }
-        if (mEGLContextFactory == null) {
-            mEGLContextFactory = new DefaultContextFactory();
-        }
-        if (mEGLWindowSurfaceFactory == null) {
-            mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
-        }
-        // Create our delegate
-        final RendererDelegate delegate = new TextureView.RendererDelegate(renderer, this);
-        // Create the GL thread
-        mGLThread = new GLThread(mThisWeakRef);
-        mGLThread.start();
-        // Render mode cant be set until the GL thread exists
-        setRenderModeInternal(mRenderMode);
-        // Register the delegate for callbacks
-        mRendererDelegate = delegate; // Done to make sure we dont publish a reference before its safe.
-        setSurfaceTextureListener(mRendererDelegate);
-    }
-
-    @Override
-    public void requestRenderUpdate() {
+    public void requestRenderFrame() {
         mGLThread.requestRender();
     }
 
@@ -316,7 +341,7 @@ public class TextureView extends android.view.TextureView implements Surface {
     /**
      * Install a custom EGLContextFactory.
      * <p>If this method is
-     * called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
+     * called, it must be called before {@link #configure(RenderControlClient)}
      * is called.
      * <p/>
      * If this method is not called, then by default
@@ -331,7 +356,7 @@ public class TextureView extends android.view.TextureView implements Surface {
     /**
      * Install a custom EGLWindowSurfaceFactory.
      * <p>If this method is
-     * called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
+     * called, it must be called before {@link #configure(RenderControlClient)}
      * is called.
      * <p/>
      * If this method is not called, then by default
@@ -345,7 +370,7 @@ public class TextureView extends android.view.TextureView implements Surface {
     /**
      * Install a custom EGLConfigChooser.
      * <p>If this method is
-     * called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
+     * called, it must be called before {@link #configure(RenderControlClient)}
      * is called.
      * <p/>
      * If no setEGLConfigChooser method is called, then by default the
@@ -365,7 +390,7 @@ public class TextureView extends android.view.TextureView implements Surface {
      * with at least the specified depthSize and stencilSize,
      * and exactly the specified redSize, greenSize, blueSize and alphaSize.
      * <p>If this method is
-     * called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
+     * called, it must be called before {@link #configure(RenderControlClient)}
      * is called.
      * <p/>
      * If no setEGLConfigChooser method is called, then by default the
@@ -393,7 +418,7 @@ public class TextureView extends android.view.TextureView implements Surface {
      * <p>Note: Activities which require OpenGL ES 2.0 should indicate this by
      * setting @lt;uses-feature android:glEsVersion="0x00020000" /> in the activity's
      * AndroidManifest.xml file.
-     * <p>If this method is called, it must be called before {@link #setSurfaceRenderer(ISurfaceRenderer)}
+     * <p>If this method is called, it must be called before {@link #configure(RenderControlClient)}
      * is called.
      * <p>This method only affects the behavior of the default EGLContexFactory and the
      * default EGLConfigChooser. If
@@ -415,12 +440,12 @@ public class TextureView extends android.view.TextureView implements Surface {
      * RENDERMODE_CONTINUOUSLY, the renderer is called
      * repeatedly to re-render the scene. When renderMode
      * is RENDERMODE_WHEN_DIRTY, the renderer only rendered when the surface
-     * is created, or when {@link #requestRenderUpdate} is called. Defaults to RENDERMODE_CONTINUOUSLY.
+     * is created, or when {@link #requestRenderFrame} is called. Defaults to RENDERMODE_CONTINUOUSLY.
      * <p/>
      * Using RENDERMODE_WHEN_DIRTY can improve battery life and overall system performance
      * by allowing the GPU and CPU to idle when the view does not need to be updated.
      * <p/>
-     * This method can only be called after {@link #setSurfaceRenderer(ISurfaceRenderer)}
+     * This method can only be called after {@link #configure(RenderControlClient)}
      *
      * @param renderMode one of the RENDERMODE_X constants
      *
@@ -444,14 +469,17 @@ public class TextureView extends android.view.TextureView implements Surface {
     }
 
     /**
+     * TODO documented GLSurfaceView semantics are tied to activity stop, not pause; is this a conflict?
+     *
      * Inform the view that the activity is paused. The owner of this view must
      * call this method when the activity is paused. Calling this method will
      * pause the rendering thread.
+     *
      * Must not be called before a renderer has been set.
      */
     public void onPause() {
-        if (mRendererDelegate != null) {
-            mRendererDelegate.mRenderer.onPause();
+        if (mRenderer != null) {
+            mRenderer.onRenderThreadPause();
         }
         if (mGLThread != null) {
             mGLThread.onPause();
@@ -459,17 +487,22 @@ public class TextureView extends android.view.TextureView implements Surface {
     }
 
     /**
+     * TODO documented GLSurfaceView semantics are tied to activity start, not resume; is this a conflict?
+     *
      * Inform the view that the activity is resumed. The owner of this view must
      * call this method when the activity is resumed. Calling this method will
      * recreate the OpenGL display and resume the rendering
      * thread.
+     *
      * Must not be called before a renderer has been set.
      */
     public void onResume() {
-        if (mRendererDelegate != null) {
-            mRendererDelegate.mRenderer.onResume();
+        if (mGLThread != null) {
+            if (mRenderer != null) {
+                mRenderer.onRenderThreadResume();
+            }
+            mGLThread.onResume();
         }
-        mGLThread.onResume();
     }
 
     /**
@@ -483,35 +516,32 @@ public class TextureView extends android.view.TextureView implements Surface {
         mGLThread.queueEvent(r);
     }
 
-    private static class RendererDelegate implements SurfaceTextureListener {
 
-        final TextureView      mRajawaliTextureView;
-        final ISurfaceRenderer mRenderer;
+    private static class SurfaceTextureRenderer extends AGLESSurfaceRenderer implements SurfaceTextureListener {
 
-        public RendererDelegate(ISurfaceRenderer renderer, TextureView textureView) {
-            mRenderer = renderer;
-            mRajawaliTextureView = textureView;
-            mRenderer.setFrameRate(mRajawaliTextureView.mRenderMode == Surface.RENDERMODE_WHEN_DIRTY ?
-                mRajawaliTextureView.mFrameRate : 0);
-            mRenderer.setAntiAliasingMode(mRajawaliTextureView.mAntiAliasingConfig);
-            mRenderer.setRenderSurface(mRajawaliTextureView);
-            mRajawaliTextureView.setSurfaceTextureListener(this);
+        final GLESSurfaceTextureView mGLESSurfaceTextureView;
+
+        SurfaceTextureRenderer(Context context, GLESSurfaceTextureView surfaceTextureView,
+                               RenderControlClient renderControlClient, double initialFrameRate) {
+            super(context, surfaceTextureView, renderControlClient, initialFrameRate);
+            mGLESSurfaceTextureView = surfaceTextureView;
+            mGLESSurfaceTextureView.setSurfaceTextureListener(this);
         }
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            mRajawaliTextureView.surfaceCreated(width, height);
+            mGLESSurfaceTextureView.surfaceCreated(width, height);
         }
 
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-            mRajawaliTextureView.surfaceChanged(width, height);
+            mGLESSurfaceTextureView.surfaceChanged(width, height);
         }
 
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
             surface.release();
-            mRajawaliTextureView.surfaceDestroyed();
+            mGLESSurfaceTextureView.surfaceDestroyed();
             return false;
         }
 
@@ -617,9 +647,9 @@ public class TextureView extends android.view.TextureView implements Surface {
             System.arraycopy(configSpec, 0, newConfigSpec, 0, len - 1);
             newConfigSpec[len - 1] = EGL10.EGL_RENDERABLE_TYPE;
             if (mEGLContextClientVersion == 2) {
-                newConfigSpec[len] = RajawaliEGLConfigChooser.EGL_OPENGL_ES2_BIT;  /* EGL_OPENGL_ES2_BIT */
+                newConfigSpec[len] = EGL_OPENGL_ES2_BIT;
             } else {
-                newConfigSpec[len] = RajawaliEGLConfigChooser.EGL_OPENGL_ES3_BIT_KHR; /* EGL_OPENGL_ES3_BIT_KHR */
+                newConfigSpec[len] = EGL_OPENGL_ES3_BIT_KHR;
             }
             newConfigSpec[len + 1] = EGL10.EGL_NONE;
             return newConfigSpec;
@@ -689,15 +719,15 @@ public class TextureView extends android.view.TextureView implements Surface {
      * An EGL helper class.
      */
     private static class EglHelper {
-        private WeakReference<TextureView> mRajawaliTextureViewWeakRef;
+        private WeakReference<GLESSurfaceTextureView> mViewWeakRef;
         EGL10 mEgl;
         EGLDisplay mEglDisplay;
         EGLSurface mEglSurface;
         EGLConfig mEglConfig;
         EGLContext mEglContext;
 
-        public EglHelper(WeakReference<TextureView> glSurfaceViewWeakRef) {
-            mRajawaliTextureViewWeakRef = glSurfaceViewWeakRef;
+        public EglHelper(WeakReference<GLESSurfaceTextureView> viewWeakRef) {
+            mViewWeakRef = viewWeakRef;
         }
 
         /**
@@ -728,7 +758,7 @@ public class TextureView extends android.view.TextureView implements Surface {
             if (!mEgl.eglInitialize(mEglDisplay, version)) {
                 throw new RuntimeException("eglInitialize failed");
             }
-            TextureView view = mRajawaliTextureViewWeakRef.get();
+            GLESSurfaceTextureView view = mViewWeakRef.get();
             if (view == null) {
                 mEglConfig = null;
                 mEglContext = null;
@@ -753,7 +783,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         }
 
         /**
-         * Create an egl surface for the current SurfaceTexture surface. If a surface
+         * Create an egl surface for the current SurfaceTexture. If a surface
          * already exists, destroy it before creating the new surface.
          *
          * @return true if the surface was created successfully.
@@ -784,7 +814,7 @@ public class TextureView extends android.view.TextureView implements Surface {
             /*
              * Create an EGL surface we can render into.
              */
-            TextureView view = mRajawaliTextureViewWeakRef.get();
+            GLESSurfaceTextureView view = mViewWeakRef.get();
             if (view != null) {
                 mEglSurface = view.mEGLWindowSurfaceFactory.createWindowSurface(mEgl,
                     mEglDisplay, mEglConfig, view.getSurfaceTexture());
@@ -849,7 +879,7 @@ public class TextureView extends android.view.TextureView implements Surface {
                 mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_CONTEXT);
-                TextureView view = mRajawaliTextureViewWeakRef.get();
+                GLESSurfaceTextureView view = mViewWeakRef.get();
                 if (view != null) {
                     view.mEGLWindowSurfaceFactory.destroySurface(mEgl, mEglDisplay, mEglSurface);
                 }
@@ -862,7 +892,7 @@ public class TextureView extends android.view.TextureView implements Surface {
                 Log.w("EglHelper", "finish() tid=" + Thread.currentThread().getId());
             }
             if (mEglContext != null) {
-                TextureView view = mRajawaliTextureViewWeakRef.get();
+                GLESSurfaceTextureView view = mViewWeakRef.get();
                 if (view != null) {
                     view.mEGLContextFactory.destroyContext(mEgl, mEglDisplay, mEglContext);
                 }
@@ -935,7 +965,7 @@ public class TextureView extends android.view.TextureView implements Surface {
 
     /**
      * A generic GL Thread. Takes care of initializing EGL and GL. Delegates
-     * to a Renderer instance to do the actual drawing. Can be configured to
+     * to aRenderer instance to do the actual drawing. Can be configured to
      * render continuously or on request.
      * <p/>
      * All potentially blocking synchronization is done through the
@@ -971,24 +1001,24 @@ public class TextureView extends android.view.TextureView implements Surface {
         /**
          * Set once at thread construction time, nulled out when the parent view is garbage
          * called. This weak reference allows the TextureView to be garbage collected while
-         * the RajawaliGLThread is still alive.
+         * the Rajawali GLThread is still alive.
          */
-        private WeakReference<TextureView> mRajawaliTextureViewWeakRef;
+        private WeakReference<GLESSurfaceTextureView> mViewWeakRef;
 
-        GLThread(WeakReference<TextureView> glSurfaceViewWeakRef) {
+        GLThread(WeakReference<GLESSurfaceTextureView> viewWeakRef) {
             super();
             mWidth = 0;
             mHeight = 0;
             mRequestRender = true;
             mRenderMode = RENDERMODE_CONTINUOUSLY;
-            mRajawaliTextureViewWeakRef = glSurfaceViewWeakRef;
+            mViewWeakRef = viewWeakRef;
         }
 
         @Override
         public void run() {
-            setName("RajawaliGLThread " + getId());
+            setName("Rajawali GLThread " + getId());
             if (LOG_THREADS) {
-                Log.i("RajawaliGLThread", "starting tid=" + getId());
+                Log.i("Rajawali GLThread", "starting tid=" + getId());
             }
 
             try {
@@ -1024,7 +1054,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         }
 
         private void guardedRun() throws InterruptedException {
-            mEglHelper = new EglHelper(mRajawaliTextureViewWeakRef);
+            mEglHelper = new EglHelper(mViewWeakRef);
             mHaveEglContext = false;
             mHaveEglSurface = false;
             try {
@@ -1060,14 +1090,14 @@ public class TextureView extends android.view.TextureView implements Surface {
                                 mPaused = mRequestPaused;
                                 sGLThreadManager.notifyAll();
                                 if (LOG_PAUSE_RESUME) {
-                                    Log.i("RajawaliGLThread", "mPaused is now " + mPaused + " tid=" + getId());
+                                    Log.i("Rajawali GLThread", "mPaused is now " + mPaused + " tid=" + getId());
                                 }
                             }
 
                             // Do we need to give up the EGL context?
                             if (mShouldReleaseEglContext) {
                                 if (LOG_SURFACE) {
-                                    Log.i("RajawaliGLThread", "releasing EGL context because asked to tid=" + getId());
+                                    Log.i("Rajawali GLThread", "releasing EGL context because asked to tid=" + getId());
                                 }
                                 stopEglSurfaceLocked();
                                 stopEglContextLocked();
@@ -1085,19 +1115,19 @@ public class TextureView extends android.view.TextureView implements Surface {
                             // When pausing, release the EGL surface:
                             if (pausing && mHaveEglSurface) {
                                 if (LOG_SURFACE) {
-                                    Log.i("RajawaliGLThread", "releasing EGL surface because paused tid=" + getId());
+                                    Log.i("Rajawali GLThread", "releasing EGL surface because paused tid=" + getId());
                                 }
                                 stopEglSurfaceLocked();
                             }
 
                             // When pausing, optionally release the EGL Context:
                             if (pausing && mHaveEglContext) {
-                                TextureView view = mRajawaliTextureViewWeakRef.get();
+                                GLESSurfaceTextureView view = mViewWeakRef.get();
                                 boolean preserveEglContextOnPause = (view != null) && view.mPreserveEGLContextOnPause;
                                 if (!preserveEglContextOnPause || sGLThreadManager.shouldReleaseEGLContextWhenPausing()) {
                                     stopEglContextLocked();
                                     if (LOG_SURFACE) {
-                                        Log.i("RajawaliGLThread", "releasing EGL context because paused tid=" + getId());
+                                        Log.i("Rajawali GLThread", "releasing EGL context because paused tid=" + getId());
                                     }
                                 }
                             }
@@ -1107,7 +1137,7 @@ public class TextureView extends android.view.TextureView implements Surface {
                                 if (sGLThreadManager.shouldTerminateEGLWhenPausing()) {
                                     mEglHelper.finish();
                                     if (LOG_SURFACE) {
-                                        Log.i("RajawaliGLThread", "terminating EGL because paused tid=" + getId());
+                                        Log.i("Rajawali GLThread", "terminating EGL because paused tid=" + getId());
                                     }
                                 }
                             }
@@ -1115,7 +1145,7 @@ public class TextureView extends android.view.TextureView implements Surface {
                             // Have we lost the SurfaceView surface?
                             if ((!mHasSurface) && (!mWaitingForSurface)) {
                                 if (LOG_SURFACE) {
-                                    Log.i("RajawaliGLThread", "noticed surfaceView surface lost tid=" + getId());
+                                    Log.i("Rajawali GLThread", "noticed surfaceView surface lost tid=" + getId());
                                 }
                                 if (mHaveEglSurface) {
                                     stopEglSurfaceLocked();
@@ -1128,7 +1158,7 @@ public class TextureView extends android.view.TextureView implements Surface {
                             // Have we acquired the surface view surface?
                             if (mHasSurface && mWaitingForSurface) {
                                 if (LOG_SURFACE) {
-                                    Log.i("RajawaliGLThread", "noticed surfaceView surface acquired tid=" + getId());
+                                    Log.i("Rajawali GLThread", "noticed surfaceView surface acquired tid=" + getId());
                                 }
                                 mWaitingForSurface = false;
                                 sGLThreadManager.notifyAll();
@@ -1136,7 +1166,7 @@ public class TextureView extends android.view.TextureView implements Surface {
 
                             if (doRenderNotification) {
                                 if (LOG_SURFACE) {
-                                    Log.i("RajawaliGLThread", "sending render notification tid=" + getId());
+                                    Log.i("Rajawali GLThread", "sending render notification tid=" + getId());
                                 }
                                 wantRenderNotification = false;
                                 doRenderNotification = false;
@@ -1178,7 +1208,8 @@ public class TextureView extends android.view.TextureView implements Surface {
                                         h = mHeight;
                                         wantRenderNotification = true;
                                         if (LOG_SURFACE) {
-                                            Log.i("RajawaliGLThread", "noticing that we want render notification tid=" + getId());
+                                            Log.i("Rajawali GLThread",
+                                                    "noticing that we want render notification tid=" + getId());
                                         }
 
                                         // Destroy and recreate the EGL surface.
@@ -1192,9 +1223,9 @@ public class TextureView extends android.view.TextureView implements Surface {
                                 }
                             }
 
-                            // By design, this is the only place in a RajawaliGLThread thread where we wait().
+                            // By design, this is the only place in a Rajawali GLThread thread where we wait().
                             if (LOG_THREADS) {
-                                Log.i("RajawaliGLThread", "waiting tid=" + getId()
+                                Log.i("Rajawali GLThread", "waiting tid=" + getId()
                                     + " mHaveEglContext: " + mHaveEglContext
                                     + " mHaveEglSurface: " + mHaveEglSurface
                                     + " mFinishedCreatingEglSurface: " + mFinishedCreatingEglSurface
@@ -1219,7 +1250,7 @@ public class TextureView extends android.view.TextureView implements Surface {
 
                     if (createEglSurface) {
                         if (LOG_SURFACE) {
-                            Log.w("RajawaliGLThread", "egl createSurface");
+                            Log.w("Rajawali GLThread", "egl createSurface");
                         }
                         if (mEglHelper.createSurface()) {
                             synchronized (sGLThreadManager) {
@@ -1246,33 +1277,33 @@ public class TextureView extends android.view.TextureView implements Surface {
 
                     if (createEglContext) {
                         if (LOG_RENDERER) {
-                            Log.w("RajawaliGLThread", "onSurfaceCreated");
+                            Log.w("RajawaliGLThread", "egl createContext");
                         }
-                        TextureView view = mRajawaliTextureViewWeakRef.get();
+                        GLESSurfaceTextureView view = mViewWeakRef.get();
                         if (view != null) {
-                            view.mRendererDelegate.mRenderer.onRenderSurfaceCreated(mEglHelper.mEglConfig, gl, -1, -1);
+                            view.mRenderer.onRenderContextAcquired();
                         }
                         createEglContext = false;
                     }
 
                     if (sizeChanged) {
                         if (LOG_RENDERER) {
-                            Log.w("RajawaliGLThread", "onSurfaceChanged(" + w + ", " + h + ")");
+                            Log.w("Rajawali GLThread", "onSurfaceChanged(" + w + ", " + h + ")");
                         }
-                        TextureView view = mRajawaliTextureViewWeakRef.get();
+                        GLESSurfaceTextureView view = mViewWeakRef.get();
                         if (view != null) {
-                            view.mRendererDelegate.mRenderer.onRenderSurfaceSizeChanged(gl, w, h);
+                            view.mRenderer.onSurfaceSizeChanged(w, h);
                         }
                         sizeChanged = false;
                     }
 
                     if (LOG_RENDERER_DRAW_FRAME) {
-                        Log.w("RajawaliGLThread", "onDrawFrame tid=" + getId());
+                        Log.w("Rajawali GLThread", "onDrawFrame tid=" + getId());
                     }
                     {
-                        TextureView view = mRajawaliTextureViewWeakRef.get();
+                        GLESSurfaceTextureView view = mViewWeakRef.get();
                         if (view != null) {
-                            view.mRendererDelegate.mRenderer.onRenderFrame(gl);
+                            view.mRenderer.onRenderFrame();
                         }
                     }
                     int swapError = mEglHelper.swap();
@@ -1281,7 +1312,7 @@ public class TextureView extends android.view.TextureView implements Surface {
                             break;
                         case EGL11.EGL_CONTEXT_LOST:
                             if (LOG_SURFACE) {
-                                Log.i("RajawaliGLThread", "egl context lost tid=" + getId());
+                                Log.i("Rajawali GLThread", "egl context lost tid=" + getId());
                             }
                             lostEglContext = true;
                             break;
@@ -1290,7 +1321,7 @@ public class TextureView extends android.view.TextureView implements Surface {
                             // probably because the SurfaceView surface has been destroyed,
                             // but we haven't been notified yet.
                             // Log the error to help developers understand why rendering stopped.
-                            EglHelper.logEglErrorAsWarning("RajawaliGLThread", "eglSwapBuffers", swapError);
+                            EglHelper.logEglErrorAsWarning("Rajawali GLThread", "eglSwapBuffers", swapError);
 
                             synchronized (sGLThreadManager) {
                                 mSurfaceIsBad = true;
@@ -1351,7 +1382,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         public void surfaceCreated(int w, int h) {
             synchronized (sGLThreadManager) {
                 if (LOG_THREADS) {
-                    Log.i("RajawaliGLThread", "surfaceCreated tid=" + getId());
+                    Log.i("Rajawali GLThread", "surfaceCreated tid=" + getId());
                 }
                 mHasSurface = true;
                 mWidth = w;
@@ -1373,7 +1404,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         public void surfaceDestroyed() {
             synchronized (sGLThreadManager) {
                 if (LOG_THREADS) {
-                    Log.i("RajawaliGLThread", "surfaceDestroyed tid=" + getId());
+                    Log.i("Rajawali GLThread", "surfaceDestroyed tid=" + getId());
                 }
                 mHasSurface = false;
                 sGLThreadManager.notifyAll();
@@ -1390,7 +1421,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         public void onPause() {
             synchronized (sGLThreadManager) {
                 if (LOG_PAUSE_RESUME) {
-                    Log.i("RajawaliGLThread", "onPause tid=" + getId());
+                    Log.i("Rajawali GLThread", "onPause tid=" + getId());
                 }
                 mRequestPaused = true;
                 sGLThreadManager.notifyAll();
@@ -1410,7 +1441,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         public void onResume() {
             synchronized (sGLThreadManager) {
                 if (LOG_PAUSE_RESUME) {
-                    Log.i("RajawaliGLThread", "onResume tid=" + getId());
+                    Log.i("Rajawali GLThread", "onResume tid=" + getId());
                 }
                 mRequestPaused = false;
                 mRequestRender = true;
@@ -1454,7 +1485,7 @@ public class TextureView extends android.view.TextureView implements Surface {
         }
 
         public void requestExitAndWait() {
-            // don't call this from RajawaliGLThread thread or it is a guaranteed
+            // don't call this from Rajawali GLThread thread or it is a guaranteed
             // deadlock!
             synchronized (sGLThreadManager) {
                 mShouldExit = true;
@@ -1504,7 +1535,7 @@ public class TextureView extends android.view.TextureView implements Surface {
 
         public synchronized void threadExiting(GLThread thread) {
             if (LOG_THREADS) {
-                Log.i("RajawaliGLThread", "exiting tid=" + thread.getId());
+                Log.i("Rajawali GLThread", "exiting tid=" + thread.getId());
             }
             thread.mExited = true;
             if (mEglOwner == thread) {

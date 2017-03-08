@@ -4,7 +4,7 @@ import android.opengl.GLES20;
 
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.IMaterialPlugin;
-import org.rajawali3d.materials.shaders.AShader;
+import org.rajawali3d.materials.shaders.Shader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -50,7 +50,7 @@ public class PlanesGaloreMaterialPlugin implements IMaterialPlugin {
 		mVertexShader.setCameraPosition(cameraPosition);
 	}
 
-	private class PlanesGaloreVertexShaderFragment extends AShader implements IShaderFragment
+	private class PlanesGaloreVertexShaderFragment extends Shader implements IShaderFragment
 	{
 		public final static String SHADER_ID = "PLANES_GALORE_VERTEX";
 
@@ -200,7 +200,7 @@ public class PlanesGaloreMaterialPlugin implements IMaterialPlugin {
 		public void unbindTextures() {}
 	}
 
-	private class PlanesGaloreFragmentShaderFragment extends AShader implements IShaderFragment
+	private class PlanesGaloreFragmentShaderFragment extends Shader implements IShaderFragment
 	{
 		public final static String SHADER_ID = "PLANES_GALORE_VERTEX";
 		private final String V_FOG = "vFog";

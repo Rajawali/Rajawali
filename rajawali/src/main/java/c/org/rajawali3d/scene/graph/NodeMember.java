@@ -10,12 +10,12 @@ import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.intersection.Intersector.Intersection;
 
 /**
- * Interface to be implemented by classes which will be attached to {@link SceneNode}s. These could be 3D render
- * objects, cameras, lights, etc.
+ * Interface to be implemented by classes which will be attached to {@link SceneNode}s. These could be either nested
+ * SceneNodes and/or 3D render objects, cameras, lights, etc.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public interface NodeMember extends AABB, RenderableObject {
+public interface NodeMember extends AABB {
 
     /**
      * Sets the {@link NodeParent} of this {@link NodeMember}.
@@ -39,4 +39,18 @@ public interface NodeMember extends AABB, RenderableObject {
      * @return {@link Intersection} The type of intersection.
      */
     @RequiresReadLock @Intersection int intersectBounds(@NonNull AABB bounds);
+
+    /**
+     * Sets whether this NodeMember and its children are visible
+     *
+     * @param visible
+     */
+    void setVisible(boolean visible);
+
+    /**
+     * Checks if this NodeMember (and its children also marked as visible) are visible
+     *
+     * @return
+     */
+    boolean isVisible();
 }

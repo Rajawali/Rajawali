@@ -19,7 +19,7 @@ import c.org.rajawali3d.textures.BaseTexture;
 
 
 public class AlphaMaskFragmentShaderFragment extends ATextureFragmentShaderFragment {
-	public final static String SHADER_ID = "ALPHA_MAP_FRAGMENT";
+	public final static String SHADER_ID = "ALPHA_MASK_FRAGMENT";
 
 	public AlphaMaskFragmentShaderFragment(List<BaseTexture> textures)
 	{

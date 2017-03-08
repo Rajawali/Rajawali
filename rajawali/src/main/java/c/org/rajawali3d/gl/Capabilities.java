@@ -12,6 +12,9 @@
  */
 package c.org.rajawali3d.gl;
 
+import c.org.rajawali3d.gl.extensions.GLExtension;
+import org.rajawali3d.util.RajLog;
+
 import android.annotation.TargetApi;
 import android.opengl.EGLExt;
 import android.opengl.GLES20;
@@ -20,18 +23,15 @@ import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
-import org.rajawali3d.util.RajLog;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
-import c.org.rajawali3d.gl.extensions.GLExtension;
 import c.org.rajawali3d.gl.extensions.OESElementIndexUINT;
 import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
 import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionDXT1;
@@ -59,11 +59,9 @@ public class Capabilities {
         System.loadLibrary("glExtensions");
     }
 
-    private static final String TAG = "Capabilities";
+    private static Capabilities instance = null;
 
-    private static volatile Capabilities instance;
-
-    private static volatile boolean glChecked = false;
+    private static volatile boolean glesVersionChecked = false;
 
     private static int eglMajorVersion;
     private static int eglMinorVersion;
@@ -141,11 +139,11 @@ public class Capabilities {
     @VisibleForTesting
     public static synchronized void clearInstance() {
         instance = null;
-        glChecked = false;
+        glesVersionChecked = false;
     }
 
     @VisibleForTesting
-    static void checkGLVersion() {
+    static void checkGLESVersion() {
         // Get an EGL context and display
         final EGL10 egl = (EGL10) EGLContext.getEGL();
         final EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
@@ -164,17 +162,17 @@ public class Capabilities {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             // The API for GLES3 might exist, we need to check
             // RajLog.d("Attempting to get an OpenGL ES 3 config.");
-            checkGLVersionIs3(egl, display);
+            checkGLESVersionIs3(egl, display);
         }
         egl.eglTerminate(display);
-        // RajLog.d("Determined GLES Major version to be: " + glesMajorVersion);
-        glChecked = true;
+        // RajLog.d("Determined GLES Major version to be: " + mGLESMajorVersion);
+        glesVersionChecked = true;
     }
 
     @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressWarnings("WeakerAccess")
     @VisibleForTesting
-    static void checkGLVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
+    static void checkGLESVersionIs3(@NonNull EGL10 egl, EGLDisplay display) {
         // Find out how many EGLConfigs exist
         final int[] num_config = new int[1];
         egl.eglGetConfigs(display, null, 0, num_config);
@@ -190,7 +188,7 @@ public class Capabilities {
         for (EGLConfig config : configs) {
             egl.eglGetConfigAttrib(display, config, EGL10.EGL_RENDERABLE_TYPE, value);
             if ((value[0] & EGLExt.EGL_OPENGL_ES3_BIT_KHR) != 0) {
-                // TODO is this secondary check for color sizes useful?
+                // TODO is this secondary check for color sizes necessary, correct, and useful?
                 // We have at least one GLES 3 config, can now use eglChooseConfig()
                 // to see if one of them has at least 4 bits per color
                 final int[] configAttribs = {
@@ -222,8 +220,8 @@ public class Capabilities {
      * @return
      */
     public static int getEGLMajorVersion() {
-        if (!glChecked) {
-            checkGLVersion();
+        if (!glesVersionChecked) {
+            checkGLESVersion();
         }
         return eglMajorVersion;
     }
@@ -234,8 +232,8 @@ public class Capabilities {
      * @return
      */
     public static int getEGLMinorVersion() {
-        if (!glChecked) {
-            checkGLVersion();
+        if (!glesVersionChecked) {
+            checkGLESVersion();
         }
         return eglMinorVersion;
     }
@@ -246,8 +244,8 @@ public class Capabilities {
      * @return
      */
     public static int getGLESMajorVersion() {
-        if (!glChecked) {
-            checkGLVersion();
+        if (!glesVersionChecked) {
+            checkGLESVersion();
         }
         return glesMajorVersion;
     }
@@ -364,7 +362,7 @@ public class Capabilities {
                     break;
                 default:
                     throw new IllegalArgumentException(
-                        "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
+                            "Rajawali does not know about extension: " + extension + ". Have you tried explicitly "
                             + "providing it via Capabilities#usingExtension(GLExtension)?");
             }
             loadedExtensions.put(extension, glExtension);
@@ -534,7 +532,7 @@ public class Capabilities {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("-=-=-=- OpenGL Capabilities -=-=-=-\n");
+        sb.append("-=-=-=- OpenGL ES Capabilities -=-=-=-\n");
         sb.append("Max Combined Texture Image Units   : ").append(maxCombinedTextureImageUnits).append("\n");
         sb.append("Max Cube Map Texture Size          : ").append(maxCubeMapTextureSize).append("\n");
         sb.append("Max Fragment Uniform Vectors       : ").append(maxFragmentUniformVectors).append("\n");
@@ -551,7 +549,7 @@ public class Capabilities {
         sb.append("Max Aliased Line Width             : ").append(maxAliasedLineWidth).append("\n");
         sb.append("Min Aliased Point Size             : ").append(minAliasedPointSize).append("\n");
         sb.append("Max Aliased Point Width            : ").append(maxAliasedPointSize).append("\n");
-        sb.append("-=-=-=- /OpenGL Capabilities -=-=-=-\n");
+        sb.append("-=-=-=- OpenGL ES Capabilities -=-=-=-\n");
         return sb.toString();
     }
 

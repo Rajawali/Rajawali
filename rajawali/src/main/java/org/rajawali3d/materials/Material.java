@@ -24,6 +24,7 @@ import static c.org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.textures.BaseTexture;
 import c.org.rajawali3d.textures.CubeMapTexture;

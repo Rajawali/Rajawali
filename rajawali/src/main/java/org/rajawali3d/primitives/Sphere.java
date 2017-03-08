@@ -12,7 +12,9 @@
  */
 package org.rajawali3d.primitives;
 
-import org.rajawali3d.Object3D;
+import c.org.rajawali3d.object.Object3D;
+
+import org.rajawali3d.geometry.IndexedGeometry;
 
 /**
  * A sphere primitive. The constructor takes two boolean arguments that indicate whether certain buffers should be
@@ -205,6 +207,7 @@ public class Sphere extends Object3D {
 			}
 		}
 
-		setData(vertices, normals, textureCoords, colors, indices, createVBOs);
+		// TODO graphics system hinge strategy
+		((IndexedGeometry)geometry).setData(vertices, normals, textureCoords, colors, indices, createVBOs);
 	}
 }

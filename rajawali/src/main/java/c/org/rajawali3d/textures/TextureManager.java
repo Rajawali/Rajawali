@@ -2,10 +2,12 @@ package c.org.rajawali3d.textures;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.scene.AScene;
 import c.org.rajawali3d.scene.Scene;
+
 import net.jcip.annotations.ThreadSafe;
-import org.rajawali3d.renderer.FrameTask;
+import c.org.rajawali3d.core.RenderTask;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,7 +43,7 @@ public final class TextureManager {
         // Update the tracking structures first
         // Add the texture to the collection
         textures.add(texture);
-        scene.offerTask(new FrameTask() {
+        ((AScene)scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 texture.add();
@@ -59,7 +61,7 @@ public final class TextureManager {
         // Update the tracking structures first
         // Remove the texture from the collection
         textures.remove(texture);
-        scene.offerTask(new FrameTask() {
+        ((AScene)scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 texture.remove();
@@ -80,7 +82,7 @@ public final class TextureManager {
         if (!textures.contains(texture)) {
             throw new TextureException("Tried replacing texture " + texture + " but it was not previously added.");
         }
-        scene.offerTask(new FrameTask() {
+        ((AScene)scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 texture.replace();
@@ -88,7 +90,7 @@ public final class TextureManager {
         });
     }
 
-    @GLThread
+    @RenderThread
     public void reloadTextures() {
         if (textures.size() != 0) {
             synchronized (textures) {

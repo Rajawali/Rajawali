@@ -16,25 +16,32 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.service.wallpaper.WallpaperService;
+import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
-import org.rajawali3d.view.Surface;
 import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.view.SurfaceView;
+
+import c.org.rajawali3d.core.RenderControl;
+import c.org.rajawali3d.core.RenderControlClient;
 import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.surface.SurfaceSize;
+import c.org.rajawali3d.surface.gles.GLESSurfaceView;
+import c.org.rajawali3d.surface.gles.GLESSurfaceAntiAliasing;
+
+import static android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY;
 
 public abstract class Wallpaper extends WallpaperService {
 
-    protected class WallpaperEngine extends Engine {
+    protected class WallpaperEngine extends Engine implements RenderControlClient{
 
-        protected Context                      mContext;
-        protected ISurfaceRenderer             mRenderer;
-        protected WallpaperSurfaceView         mSurfaceView;
-        protected Surface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
-        protected float                        mDefaultPreviewOffsetX;
+        protected Context mContext;
+        protected ISurfaceRenderer mRenderer;
+        protected WallpaperSurfaceView mSurfaceView;
+        protected GLESSurfaceAntiAliasing mAntiAliasing;
+        protected float mDefaultPreviewOffsetX;
 
-        class WallpaperSurfaceView extends SurfaceView {
+        class WallpaperSurfaceView extends GLESSurfaceView {
 
             WallpaperSurfaceView(Context context) {
                 super(context);
@@ -48,17 +55,26 @@ public abstract class Wallpaper extends WallpaperService {
             public void onDestroy() {
                 super.onDetachedFromWindow();
             }
+            /**
+             * Sets the WallpaperCallback.
+             *
+             * @param callback the {@link WallpaperCallback} instance to set, or null to unset
+             */
+            public void setWallpaperCallback(@Nullable WallpaperCallback callback) {
+                // TODO
+            };
         }
 
         public WallpaperEngine(Context context, ISurfaceRenderer renderer) {
-            this(context, renderer, Surface.ANTI_ALIASING_CONFIG.NONE);
+            this(context, renderer, GLESSurfaceAntiAliasing.NONE);
         }
 
+        // TODO need a Scene instead of a renderer?
         public WallpaperEngine(Context context, ISurfaceRenderer renderer,
-                               Surface.ANTI_ALIASING_CONFIG antiAliasingConfig) {
+                               GLESSurfaceAntiAliasing antiAliasing) {
             mContext = context;
             mRenderer = renderer;
-            mAntiAliasingConfig = antiAliasingConfig;
+            mAntiAliasing = antiAliasing;
             mDefaultPreviewOffsetX = 0.5f;
         }
 
@@ -98,9 +114,10 @@ public abstract class Wallpaper extends WallpaperService {
             super.onCreate(holder);
             mSurfaceView = new WallpaperSurfaceView(mContext);
             mSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
-            mSurfaceView.setRenderMode(Surface.RENDERMODE_WHEN_DIRTY);
-            mSurfaceView.setAntiAliasingMode(mAntiAliasingConfig);
-            mSurfaceView.setSurfaceRenderer(mRenderer);
+            mSurfaceView.setRenderMode(RENDERMODE_WHEN_DIRTY);
+            mSurfaceView.setSurfaceAntiAliasing(mAntiAliasing);
+            mSurfaceView.configure(this);
+            //mSurfaceView.setSurfaceRenderer(mRenderer);  ??
             setTouchEventsEnabled(true);
         }
 
@@ -127,5 +144,17 @@ public abstract class Wallpaper extends WallpaperService {
                 mSurfaceView.onPause();
             }
         }
+
+        @Override
+        public void onRenderControlAvailable(RenderControl renderControl, SurfaceSize surfaceSize) {
+            // TODO
+        }
+
+        @Override
+        public void onSurfaceSizeChanged(SurfaceSize surfaceSize) {
+            // TODO ?
+        }
+
+
     }
 }

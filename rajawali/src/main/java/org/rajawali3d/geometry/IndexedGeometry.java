@@ -15,6 +15,8 @@ package org.rajawali3d.geometry;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.annotations.RequiresReadLock;
 import android.support.annotation.Nullable;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -32,9 +34,6 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-
-import c.org.rajawali3d.annotations.GLThread;
-import c.org.rajawali3d.annotations.RequiresReadLock;
 
 import static org.rajawali3d.util.ArrayUtils.concatAllFloat;
 import static org.rajawali3d.util.ArrayUtils.concatAllInt;
@@ -127,7 +126,7 @@ public class IndexedGeometry implements Geometry {
         buffers.get(INDEX_BUFFER_KEY).target = GLES20.GL_ELEMENT_ARRAY_BUFFER;
     }
 
-    @GLThread
+    @RenderThread
     @Override
     public void createBuffers() {
         for (BufferInfo info : buffers) {
@@ -158,7 +157,7 @@ public class IndexedGeometry implements Geometry {
         haveCreatedBuffers = true;
     }
 
-    @GLThread
+    @RenderThread
     @Override
     public void validateBuffers() {
         if (!haveCreatedBuffers) {
@@ -177,13 +176,13 @@ public class IndexedGeometry implements Geometry {
         }
     }
 
-    @GLThread
+    @RenderThread
     @Override
     public boolean isValid() {
         return GLES20.glIsBuffer(buffers.get(VERTEX_BUFFER_KEY).glHandle);
     }
 
-    @GLThread
+    @RenderThread
     @Override
     public void reload() {
         if (sourceGeometry != null) {
@@ -195,7 +194,7 @@ public class IndexedGeometry implements Geometry {
         createBuffers();
     }
 
-    @GLThread
+    @RenderThread
     @Override
     public void destroy() {
         int[] glHandles = new int[buffers.size()];
@@ -250,7 +249,7 @@ public class IndexedGeometry implements Geometry {
     }
 
     @RequiresReadLock
-    @GLThread
+    @RenderThread
     @Override
     public void issueDrawCalls() {
         // TODO: Issue draw calls
@@ -302,7 +301,7 @@ public class IndexedGeometry implements Geometry {
         float[] textureCoordsArray;
         int[] indicesArray;
 
-        // Get the old data
+        //Get the old data
         verticesArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(VERTEX_BUFFER_KEY).buffer);
         normalsArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(NORMAL_BUFFER_KEY).buffer);
         colorsArray = getFloatArrayFromBuffer((FloatBuffer) buffers.get(COLOR_BUFFER_KEY).buffer);
@@ -604,7 +603,7 @@ public class IndexedGeometry implements Geometry {
      * @param bufferInfo
      * @param usage
      */
-    @GLThread
+    @RenderThread
     public void changeBufferUsage(BufferInfo bufferInfo, final int usage) {
         GLES20.glDeleteBuffers(1, new int[]{bufferInfo.glHandle}, 0);
         createBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.target, usage);
@@ -617,7 +616,7 @@ public class IndexedGeometry implements Geometry {
      * @param newData
      * @param index
      */
-    @GLThread
+    @RenderThread
     public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index) {
         this.changeBufferData(bufferInfo, newData, index, false);
     }
@@ -630,7 +629,7 @@ public class IndexedGeometry implements Geometry {
      * @param index
      * @param size
      */
-    @GLThread
+    @RenderThread
     public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, int size) {
         this.changeBufferData(bufferInfo, newData, index, size, false);
     }
@@ -643,7 +642,7 @@ public class IndexedGeometry implements Geometry {
      * @param index
      * @param resizeBuffer
      */
-    @GLThread
+    @RenderThread
     public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, boolean resizeBuffer) {
         changeBufferData(bufferInfo, newData, index, newData.capacity(), resizeBuffer);
     }
@@ -657,7 +656,7 @@ public class IndexedGeometry implements Geometry {
      * @param size
      * @param resizeBuffer
      */
-    @GLThread
+    @RenderThread
     public void changeBufferData(BufferInfo bufferInfo, Buffer newData, int index, int size, boolean resizeBuffer) {
         newData.rewind();
 

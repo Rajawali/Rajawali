@@ -20,7 +20,7 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.rajawali3d.util.RajLog;
 
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.extensions.texture.OESCompressedETC1RGB8;
 import c.org.rajawali3d.textures.annotation.Compression2D;
@@ -126,7 +126,7 @@ public class ETC1Texture extends CompressedTexture2D {
         }
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void add() throws TextureException {
         // Verify ETC1 is supported

@@ -25,7 +25,7 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.rajawali3d.util.RajLog;
 
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
 
@@ -166,7 +166,7 @@ public class CubeMapTexture extends MultiTexture2D {
         return super.getTextureData();
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void add() throws TextureException {
         final TextureDataReference[] dataReferences = getTextureData();
@@ -249,7 +249,7 @@ public class CubeMapTexture extends MultiTexture2D {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    @GLThread
+    @RenderThread
     @Override
     void replace() throws TextureException {
         final TextureDataReference[] dataReferences = getTextureData();

@@ -17,7 +17,7 @@ import android.support.annotation.NonNull;
 
 import org.rajawali3d.util.RajLog;
 
-import c.org.rajawali3d.annotations.GLThread;
+import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.gl.extensions.texture.OESCompressedPalettedTexture;
 import c.org.rajawali3d.gl.extensions.texture.OESCompressedPalettedTexture.PalettedFormat;
@@ -144,7 +144,7 @@ public class PalettedTexture2D extends CompressedTexture2D {
         }
     }
 
-    @GLThread
+    @RenderThread
     @Override
     void add() throws TextureException {
         // Verify Paletted textures are supported
