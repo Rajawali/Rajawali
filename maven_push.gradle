@@ -87,7 +87,9 @@ afterEvaluate { project ->
     }
 
     signing {
-        sign configurations.archives
+        if (isReleaseBuild()) {
+            sign configurations.archives
+        }
     }
 
     task androidJavadocs(type: Javadoc) {
