@@ -2,7 +2,7 @@ package org.rajawali3d.examples.examples.materials.materials;
 
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.IMaterialPlugin;
-import org.rajawali3d.materials.shaders.Shader;
+import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 
 public class CustomMaterialPlugin implements IMaterialPlugin {
@@ -33,7 +33,7 @@ public class CustomMaterialPlugin implements IMaterialPlugin {
 	@Override
 	public void unbindTextures() {}
 
-	private class CustomMaterialFragmentShaderFragment extends Shader implements IShaderFragment
+	private class CustomMaterialFragmentShaderFragment extends AShader implements IShaderFragment
 	{
 		public final static String SHADER_ID = "CUSTOM_MATERIAL_FRAGMENT";
 

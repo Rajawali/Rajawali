@@ -20,13 +20,13 @@ import org.rajawali3d.materials.methods.DiffuseMethod.DiffuseShaderVar;
 import org.rajawali3d.materials.methods.SpecularMethod.SpecularShaderVar;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
-import org.rajawali3d.materials.shaders.fragments.texture.TextureFragmentShaderFragment;
+import org.rajawali3d.materials.shaders.fragments.texture.ATextureFragmentShaderFragment;
 import c.org.rajawali3d.textures.BaseTexture;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
 
-public class PhongFragmentShaderFragment extends TextureFragmentShaderFragment implements IShaderFragment {
+public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment implements IShaderFragment {
 	public final static String SHADER_ID = "PHONG_FRAGMENT";
 
 	private RVec3 muSpecularColor;

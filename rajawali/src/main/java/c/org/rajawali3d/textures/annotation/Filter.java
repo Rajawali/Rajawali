@@ -13,9 +13,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface Filter {
 
-    int NEAREST  = 1;
-    int BILINEAR = 2;
-    int TRILINEAR = 3;
+    int NEAREST  = 0;
+    int BILINEAR = 1;
+    int TRILINEAR = 2;
 
     /**
      * Texture2D filtering or texture smoothing is the method used to determine the texture color for a texture mapped

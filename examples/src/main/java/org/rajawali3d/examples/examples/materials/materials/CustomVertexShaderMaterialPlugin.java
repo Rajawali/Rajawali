@@ -2,7 +2,7 @@ package org.rajawali3d.examples.examples.materials.materials;
 
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.IMaterialPlugin;
-import org.rajawali3d.materials.shaders.Shader;
+import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 
 public class CustomVertexShaderMaterialPlugin implements IMaterialPlugin {
@@ -33,7 +33,7 @@ public class CustomVertexShaderMaterialPlugin implements IMaterialPlugin {
 	@Override
 	public void unbindTextures() {}
 
-	private class CustomVertexShaderFragment extends Shader implements IShaderFragment
+	private class CustomVertexShaderFragment extends AShader implements IShaderFragment
 	{
 		public final static String SHADER_ID = "CUSTOM_VERTEX_SHADER_FRAGMENT";
 

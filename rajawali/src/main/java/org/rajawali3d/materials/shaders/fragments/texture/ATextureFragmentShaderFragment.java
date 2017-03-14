@@ -13,7 +13,7 @@
 package org.rajawali3d.materials.shaders.fragments.texture;
 
 import android.opengl.GLES20;
-import org.rajawali3d.materials.shaders.Shader;
+import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import c.org.rajawali3d.textures.BaseTexture;
 import c.org.rajawali3d.textures.annotation.Type;
@@ -22,7 +22,7 @@ import c.org.rajawali3d.textures.annotation.Wrap;
 import java.util.List;
 
 
-public abstract class TextureFragmentShaderFragment extends Shader implements IShaderFragment {
+public abstract class ATextureFragmentShaderFragment extends AShader implements IShaderFragment {
 	protected List<BaseTexture> mTextures;
 
 	protected RSampler2D[] muTextures;
@@ -32,7 +32,7 @@ public abstract class TextureFragmentShaderFragment extends Shader implements IS
 	protected RVec2[] muRepeat, muOffset;
 	protected int[] muTextureHandles, muInfluenceHandles, muRepeatHandles, muOffsetHandles;
 
-	public TextureFragmentShaderFragment(List<BaseTexture> textures)
+	public ATextureFragmentShaderFragment(List<BaseTexture> textures)
 	{
 		super(ShaderType.FRAGMENT_SHADER_FRAGMENT);
 		mTextures = textures;

@@ -17,8 +17,8 @@ import java.util.List;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.materials.shaders.ShaderBase.DataType;
-import org.rajawali3d.materials.shaders.ShaderBase.GlobalShaderVar;
+import org.rajawali3d.materials.shaders.AShaderBase.DataType;
+import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.specular.PhongFragmentShaderFragment;
 import c.org.rajawali3d.textures.BaseTexture;
 import android.graphics.Color;
@@ -48,7 +48,7 @@ public abstract class SpecularMethod {
 	 * @author dennis.ippel
 	 *
 	 */
-	public static enum SpecularShaderVar implements GlobalShaderVar {
+	public static enum SpecularShaderVar implements IGlobalShaderVar {
 		U_SPECULAR_COLOR("uSpecularColor", DataType.VEC3),
 		U_SPECULAR_INTENSITY("uSpecularIntensity", DataType.FLOAT),
 		U_SHININESS("uShininess", DataType.FLOAT);

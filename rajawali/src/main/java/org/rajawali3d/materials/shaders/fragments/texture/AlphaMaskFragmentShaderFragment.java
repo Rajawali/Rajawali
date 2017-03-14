@@ -12,11 +12,10 @@
  */
 package org.rajawali3d.materials.shaders.fragments.texture;
 
-import java.util.List;
-
-import org.rajawali3d.materials.Material.PluginInsertLocation;
 import c.org.rajawali3d.textures.BaseTexture;
+import org.rajawali3d.materials.Material.PluginInsertLocation;
 
+import java.util.List;
 
 public class AlphaMaskFragmentShaderFragment extends ATextureFragmentShaderFragment {
 	public final static String SHADER_ID = "ALPHA_MASK_FRAGMENT";

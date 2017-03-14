@@ -22,7 +22,7 @@ import org.rajawali3d.math.Matrix4;
 
 import java.util.List;
 
-public class VertexShader extends Shader {
+public class VertexShader extends AShader {
 
 	private RMat4 muMVPMatrix;
 	private RMat3 muNormalMatrix;

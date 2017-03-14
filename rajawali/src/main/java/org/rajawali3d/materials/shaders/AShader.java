@@ -54,7 +54,7 @@ import java.util.Set;
  * 	<li>sampler2D: {@link RSampler2D}</li>
  * </ul>
  *
- * Shader initialization should be done in the {@link Shader#initialize()} method. This is
+ * Shader initialization should be done in the {@link AShader#initialize()} method. This is
  * the place where you would create your uniforms, varyings, constanst, etc:
  *
  * <pre><code>
@@ -81,7 +81,7 @@ import java.util.Set;
  * }
  * </code></pre>
  *
- * This handle is subsequently used in {@link Shader#applyParams())} to set the attribute/uniform value:
+ * This handle is subsequently used in {@link AShader#applyParams())} to set the attribute/uniform value:
  *
  * <pre><code>
  * @Override
@@ -91,7 +91,7 @@ import java.util.Set;
  * }
  * </code></pre>
  *
- * The shader code that goes into main() in a regular shader goes into {@link Shader#main()}:
+ * The shader code that goes into main() in a regular shader goes into {@link AShader#main()}:
  *
  * <pre><code>
  * @Override
@@ -108,7 +108,7 @@ import java.util.Set;
  * @author dennis.ippel
  *
  */
-public abstract class Shader extends ShaderBase {
+public abstract class AShader extends AShaderBase {
 	public static String SHADER_ID;
 
 	public static enum ShaderType {
@@ -166,17 +166,17 @@ public abstract class Shader extends ShaderBase {
 	protected int mProgramHandle;
 	protected boolean mNeedsBuild = true;
 
-	public Shader() {}
+	public AShader() {}
 
-	public Shader(ShaderType shaderType) {
+	public AShader(ShaderType shaderType) {
 		mShaderType = shaderType;
 	}
 
-	public Shader(ShaderType shaderType, int resourceId) {
+	public AShader(ShaderType shaderType, int resourceId) {
 		this(shaderType, RawShaderLoader.fetch(resourceId));
 	}
 
-	public Shader(ShaderType shaderType, String shaderString) {
+	public AShader(ShaderType shaderType, String shaderString) {
 		mShaderType = shaderType;
 		mShaderString = shaderString;
 	}
@@ -232,7 +232,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param var	A global shader variable.
 	 * @return
 	 */
-	protected ShaderVar addUniform(GlobalShaderVar var)
+	protected ShaderVar addUniform(IGlobalShaderVar var)
 	{
 		return addUniform(var.getVarString(), var.getDataType());
 	}
@@ -247,7 +247,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param index	The index for the shader variable. This number will appear suffixed in the final shader string.
 	 * @return
 	 */
-	protected ShaderVar addUniform(GlobalShaderVar var, int index)
+	protected ShaderVar addUniform(IGlobalShaderVar var, int index)
 	{
 		return addUniform(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
@@ -262,7 +262,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param suffix	A string that will appear suffixed in the final shader string.
 	 * @return
 	 */
-	protected ShaderVar addUniform(GlobalShaderVar var, String suffix)
+	protected ShaderVar addUniform(IGlobalShaderVar var, String suffix)
 	{
 		return addUniform(var.getVarString() + suffix, var.getDataType());
 	}
@@ -340,7 +340,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param var	A global shader variable
 	 * @return
 	 */
-	protected ShaderVar addAttribute(GlobalShaderVar var)
+	protected ShaderVar addAttribute(IGlobalShaderVar var)
 	{
 		return addAttribute(var.getVarString(), var.getDataType());
 	}
@@ -384,7 +384,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param var
 	 * @return
 	 */
-	protected ShaderVar addVarying(GlobalShaderVar var) {
+	protected ShaderVar addVarying(IGlobalShaderVar var) {
 		return addVarying(var.getVarString(), var.getDataType());
 	}
 
@@ -399,7 +399,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param index	The index for the shader variable. This number will appear suffixed in the final shader string.
 	 * @return
 	 */
-	protected ShaderVar addVarying(GlobalShaderVar var, int index)
+	protected ShaderVar addVarying(IGlobalShaderVar var, int index)
 	{
 		return addVarying(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
@@ -438,7 +438,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param var	A global shader variable
 	 * @return
 	 */
-	protected ShaderVar addGlobal(GlobalShaderVar var) {
+	protected ShaderVar addGlobal(IGlobalShaderVar var) {
 		return addGlobal(var.getVarString(), var.getDataType());
 	}
 
@@ -449,7 +449,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param index	The index for the shader variable. This number will appear suffixed in the final shader string.
 	 * @return
 	 */
-	protected ShaderVar addGlobal(GlobalShaderVar var, int index) {
+	protected ShaderVar addGlobal(IGlobalShaderVar var, int index) {
 		return addGlobal(var.getVarString() + Integer.toString(index), var.getDataType());
 	}
 
@@ -483,7 +483,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param var
 	 * @return
 	 */
-	public ShaderVar getGlobal(GlobalShaderVar var)
+	public ShaderVar getGlobal(IGlobalShaderVar var)
 	{
 		ShaderVar v = getInstanceForDataType(var.getVarString(), var.getDataType());
 		v.mInitialized = true;
@@ -497,7 +497,7 @@ public abstract class Shader extends ShaderBase {
 	 * @param index
 	 * @return
 	 */
-	public ShaderVar getGlobal(GlobalShaderVar var, int index)
+	public ShaderVar getGlobal(IGlobalShaderVar var, int index)
 	{
 		ShaderVar v = getInstanceForDataType(var.getVarString() + Integer.toString(index), var.getDataType());
 		v.mInitialized = true;
@@ -570,15 +570,15 @@ public abstract class Shader extends ShaderBase {
 				mShaderFragments.get(i).setLocations(programHandle);
 	}
 
-	protected int getUniformLocation(int programHandle, GlobalShaderVar var) {
+	protected int getUniformLocation(int programHandle, IGlobalShaderVar var) {
 		return getUniformLocation(programHandle, var.getVarString());
 	}
 
-	protected int getUniformLocation(int programHandle, GlobalShaderVar var, int index) {
+	protected int getUniformLocation(int programHandle, IGlobalShaderVar var, int index) {
 		return getUniformLocation(programHandle, var.getVarString() + Integer.toString(index));
 	}
 
-	protected int getUniformLocation(int programHandle, GlobalShaderVar var, String suffix) {
+	protected int getUniformLocation(int programHandle, IGlobalShaderVar var, String suffix) {
 		return getUniformLocation(programHandle, var.getVarString() + suffix);
 	}
 
@@ -588,11 +588,11 @@ public abstract class Shader extends ShaderBase {
 		return result;
 	}
 
-	protected int getAttribLocation(int programHandle, GlobalShaderVar var) {
+	protected int getAttribLocation(int programHandle, IGlobalShaderVar var) {
 		return getAttribLocation(programHandle, var.getVarString());
 	}
 
-	protected int getAttribLocation(int programHandle, GlobalShaderVar var, int index) {
+	protected int getAttribLocation(int programHandle, IGlobalShaderVar var, int index) {
 		return getAttribLocation(programHandle, var.getVarString() + Integer.toString(index));
 	}
 
@@ -643,7 +643,7 @@ public abstract class Shader extends ShaderBase {
 			}
 		}
         for (IShaderFragment frag : mShaderFragments) {
-            if (frag instanceof Shader) {
+            if (frag instanceof AShader) {
                 final List<String> preprocessorDirectives = frag.getPreprocessorDirectives();
                 if (preprocessorDirectives != null) {
                     for (String directive : preprocessorDirectives) {

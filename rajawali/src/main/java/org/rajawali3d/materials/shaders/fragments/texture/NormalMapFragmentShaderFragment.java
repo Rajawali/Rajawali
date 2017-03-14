@@ -18,7 +18,7 @@ import org.rajawali3d.materials.Material.PluginInsertLocation;
 import c.org.rajawali3d.textures.BaseTexture;
 
 
-public class NormalMapFragmentShaderFragment extends TextureFragmentShaderFragment {
+public class NormalMapFragmentShaderFragment extends ATextureFragmentShaderFragment {
 	public final static String SHADER_ID = "NORMAL_MAP_FRAGMENT";
 
 	public NormalMapFragmentShaderFragment(List<BaseTexture> textures)

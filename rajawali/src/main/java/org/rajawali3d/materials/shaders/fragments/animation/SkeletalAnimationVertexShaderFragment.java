@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -14,33 +14,33 @@ package org.rajawali3d.materials.shaders.fragments.animation;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin.SkeletalAnimationShaderVar;
-import org.rajawali3d.materials.shaders.Shader;
+import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.util.ArrayUtils;
 import android.opengl.GLES20;
 
 
-public class SkeletalAnimationVertexShaderFragment extends Shader implements IShaderFragment {
+public class SkeletalAnimationVertexShaderFragment extends AShader implements IShaderFragment {
 	public final static String SHADER_ID = "SKELETAL_ANIMATION_VERTEX";
-
+	
 	private RMat4 muBoneMatrix;
 	private RMat4 mgBoneTransfMatrix;
 	private RVec4 maBoneIndex1;
 	private RVec4 maBoneWeight1;
 	private RVec4 maBoneIndex2;
 	private RVec4 maBoneWeight2;
-
+	
 	private int muBoneMatrixHandle;
 	private int maBoneIndex1Handle;
 	private int maBoneWeight1Handle;
 	private int maBoneIndex2Handle;
 	private int maBoneWeight2Handle;
-
+	
 	private int mNumJoints;
 	private int mVertexWeight;
-
+	
 	protected float[] mTempBoneArray = null; //We use lazy loading here because we dont know its size in advance.
-
+	
 	public SkeletalAnimationVertexShaderFragment(int numJoints, int numVertexWeights)
 	{
 		super(ShaderType.VERTEX_SHADER_FRAGMENT);
@@ -48,17 +48,17 @@ public class SkeletalAnimationVertexShaderFragment extends Shader implements ISh
 		mVertexWeight = numVertexWeights;
 		initialize();
 	}
-
+	
 	@Override
 	public void initialize()
 	{
 		super.initialize();
-
+		
 		mgBoneTransfMatrix = (RMat4) addGlobal(SkeletalAnimationShaderVar.G_BONE_TRANSF_MATRIX);
-
+		
 		muBoneMatrix = (RMat4) addUniform(SkeletalAnimationShaderVar.U_BONE_MATRIX);
 		muBoneMatrix.isArray(mNumJoints);
-
+		
 		maBoneIndex1 = (RVec4) addAttribute(SkeletalAnimationShaderVar.A_BONE_INDEX1);
 		maBoneWeight1 = (RVec4) addAttribute(SkeletalAnimationShaderVar.A_BONE_WEIGHT1);
 		if(mVertexWeight > 4)
@@ -67,7 +67,7 @@ public class SkeletalAnimationVertexShaderFragment extends Shader implements ISh
 			maBoneWeight2 = (RVec4) addAttribute(SkeletalAnimationShaderVar.A_BONE_WEIGHT2);
 		}
 	}
-
+	
 	public String getShaderId() {
 		return SHADER_ID;
 	}
@@ -75,11 +75,11 @@ public class SkeletalAnimationVertexShaderFragment extends Shader implements ISh
 	@Override
 	public void main() {
 		//
-		// -- mat4 transformedMatrix =
+		// -- mat4 transformedMatrix = 
 		//
 		mgBoneTransfMatrix.assign(
 				//
-				// -- (aBoneWeight1.x * uBoneMatrix[int(aBoneIndex1.x)]) +
+				// -- (aBoneWeight1.x * uBoneMatrix[int(aBoneIndex1.x)]) + 
 				//
 				enclose(maBoneWeight1.x().multiply(muBoneMatrix.elementAt(castInt(maBoneIndex1.x())))).add(
 						//
@@ -96,17 +96,17 @@ public class SkeletalAnimationVertexShaderFragment extends Shader implements ISh
 										enclose(maBoneWeight1.w().multiply(muBoneMatrix.elementAt(castInt(maBoneIndex1.w()))))
 										)
 								)
-						)
+						)				
 				);
-
+		
 		if(mVertexWeight > 4)
 		{
 			//
-			// -- transformedMatrix +=
+			// -- transformedMatrix += 
 			//
 			mgBoneTransfMatrix.assignAdd(
 					//
-					// -- (aBoneWeight2.x * uBoneMatrix[int(aBoneIndex2.x)]) +
+					// -- (aBoneWeight2.x * uBoneMatrix[int(aBoneIndex2.x)]) + 
 					//
 					enclose(maBoneWeight2.x().multiply(muBoneMatrix.elementAt(castInt(maBoneIndex2.x())))).add(
 							//
@@ -123,15 +123,15 @@ public class SkeletalAnimationVertexShaderFragment extends Shader implements ISh
 											enclose(maBoneWeight2.w().multiply(muBoneMatrix.elementAt(castInt(maBoneIndex2.w()))))
 											)
 									)
-							)
+							)				
 					);
 		}
 	}
-
+	
 	@Override
 	public void setLocations(final int programHandle) {
 		muBoneMatrixHandle = getUniformLocation(programHandle, SkeletalAnimationShaderVar.U_BONE_MATRIX);
-
+		
 		maBoneIndex1Handle = getAttribLocation(programHandle, SkeletalAnimationShaderVar.A_BONE_INDEX1);
 		maBoneWeight1Handle = getAttribLocation(programHandle, SkeletalAnimationShaderVar.A_BONE_WEIGHT1);
 		if(mVertexWeight > 4)
@@ -140,7 +140,7 @@ public class SkeletalAnimationVertexShaderFragment extends Shader implements ISh
 			maBoneWeight2Handle = getAttribLocation(programHandle, SkeletalAnimationShaderVar.A_BONE_WEIGHT2);
 		}
 	}
-
+	
 	public void setBone1Indices(final int boneIndex1BufferHandle) {
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boneIndex1BufferHandle);
 		GLES20.glEnableVertexAttribArray(maBoneIndex1Handle);
@@ -169,15 +169,15 @@ public class SkeletalAnimationVertexShaderFragment extends Shader implements ISh
 		if (mTempBoneArray == null) {
 			mTempBoneArray = new float[boneMatrix.length];
 		}
-		GLES20.glUniformMatrix4fv(muBoneMatrixHandle, mNumJoints, false,
+		GLES20.glUniformMatrix4fv(muBoneMatrixHandle, mNumJoints, false, 
 				ArrayUtils.convertDoublesToFloats(boneMatrix, mTempBoneArray), 0);
 	}
-
+	
 	@Override
 	public void bindTextures(int nextIndex) {}
 	@Override
 	public void unbindTextures() {}
-
+	
 	@Override
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
