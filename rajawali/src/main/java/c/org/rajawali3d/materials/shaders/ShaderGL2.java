@@ -1,25 +1,20 @@
-package c.org.rajawali3d.materials.shaders.ES2;
+package c.org.rajawali3d.materials.shaders;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
+import c.org.rajawali3d.materials.shaders.DataType.DataTypeES2;
 import org.rajawali3d.materials.shaders.Shader;
-
-import c.org.rajawali3d.materials.shaders.ShaderBase;
-import c.org.rajawali3d.materials.shaders.ShaderVar;
-import c.org.rajawali3d.materials.shaders.definitions.DataType;
-import c.org.rajawali3d.materials.shaders.definitions.DataType.DataTypeES2;
+import org.rajawali3d.materials.shaders.ShaderBase;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class ShaderGL2 extends ShaderBase {
 
-    protected interface GlobalShaderVarGL2 extends GlobalShaderVar {
+    public interface GlobalShaderVarGL2 extends GlobalShaderVar {
 
         @DataTypeES2
         @NonNull
-        String getType();
+        String getDataType();
     }
 
     /**
@@ -28,13 +23,13 @@ public class ShaderGL2 extends ShaderBase {
      * When one of these variables is required the {@link Shader#getGlobal(GlobalShaderVar)} method can be called.
      * For instance:
      * <pre><code>
-     * // (in a class that inherits from ShaderGL2):
+     * // (in a class that inherits from Shader):
      * RVec4 position = (RVec4) getGlobal(DefaultShaderVar.G_POSITION);
      * </code></pre>
      *
      * @author dennis.ippel
      */
-    protected enum DefaultShaderVar implements GlobalShaderVar {
+    public enum DefaultShaderVar implements GlobalShaderVar {
         U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3),
         U_MODEL_MATRIX("uModelMatrix", DataType.MAT4),
         U_MODEL_VIEW_MATRIX("uModelViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4),
@@ -50,53 +45,23 @@ public class ShaderGL2 extends ShaderBase {
         G_TEXTURE_COORD("gTextureCoord", DataType.VEC2), G_SHADOW_VALUE("gShadowValue", DataType.FLOAT),
         G_SPECULAR_VALUE("gSpecularValue", DataType.FLOAT);
 
-        private              String name;
-        @DataTypeES2 private String type;
+        private              String mVarString;
+        @DataTypeES2 private String mDataType;
 
         DefaultShaderVar(@NonNull String varString, @NonNull @DataTypeES2 String dataType) {
-            name = varString;
-            type = dataType;
+            mVarString = varString;
+            mDataType = dataType;
         }
 
         @NonNull
-        public String getName() {
-            return name;
+        public String getVarString() {
+            return mVarString;
         }
 
         @DataTypeES2
         @NonNull
-        public String getType() {
-            return type;
-        }
-    }
-
-    protected class ShaderVarGL2 extends ShaderVar {
-        public ShaderVarGL2() {
-            super();
-        }
-
-        public ShaderVarGL2(@NonNull @DataTypeES2 String dataType) {
-            this(null, dataType, null, true);
-        }
-
-        public ShaderVarGL2(@NonNull @DataTypeES2 String dataType, @Nullable ShaderVar value) {
-            this(null, dataType, value);
-        }
-
-        public ShaderVarGL2(@Nullable String name, @NonNull @DataTypeES2 String dataType, @Nullable ShaderVar value) {
-            this(name, dataType, value.getName());
-        }
-
-        public ShaderVarGL2(@Nullable String name, @NonNull @DataTypeES2 String dataType, @Nullable String value) {
-            this(name, dataType, value, true);
-        }
-
-        public ShaderVarGL2(@NonNull @DataTypeES2 String dataType, @Nullable String value, boolean write) {
-            this(null, dataType, value, write);
-        }
-
-        public ShaderVarGL2(@Nullable String name, @NonNull @DataTypeES2 String dataType, @Nullable String value, boolean write) {
-            super(name, dataType, value, write);
+        public String getDataType() {
+            return mDataType;
         }
     }
 }

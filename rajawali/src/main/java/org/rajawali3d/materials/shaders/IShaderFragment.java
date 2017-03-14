@@ -14,7 +14,7 @@ package org.rajawali3d.materials.shaders;
 
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import c.org.rajawali3d.materials.shaders.ShaderBase.ShaderVar;
+import org.rajawali3d.materials.shaders.ShaderBase.ShaderVar;
 
 import java.util.Hashtable;
 import java.util.List;

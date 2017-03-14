@@ -1,4 +1,4 @@
-package c.org.rajawali3d.materials.shaders.definitions;
+package c.org.rajawali3d.materials.shaders;
 
 import android.support.annotation.StringDef;
 
