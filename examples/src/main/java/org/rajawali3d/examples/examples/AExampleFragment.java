@@ -5,7 +5,7 @@ import c.org.rajawali3d.core.RenderControl;
 import c.org.rajawali3d.core.RenderControlClient;
 import c.org.rajawali3d.scene.AScene;
 import c.org.rajawali3d.surface.SurfaceSize;
-import c.org.rajawali3d.surface.gles.GLESSurfaceTextureView;
+import c.org.rajawali3d.surface.gles.GLESTextureView;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.views.GitHubLogoView;
 
@@ -28,14 +28,14 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
 
     public static final String BUNDLE_EXAMPLE_URL = "BUNDLE_EXAMPLE_URL";
 
-    protected ProgressBar mProgressBar;
-    protected GitHubLogoView mImageViewExampleLink;
-    protected String mExampleUrl;
-    protected FrameLayout mLayout;
-    protected GLESSurfaceTextureView mSurfaceView;
-    protected RenderControl mRenderControl;
-    protected AScene mScene;
-    protected SurfaceSize mSurfaceSize;
+    protected ProgressBar     mProgressBar;
+    protected GitHubLogoView  mImageViewExampleLink;
+    protected String          mExampleUrl;
+    protected FrameLayout     mLayout;
+    protected GLESTextureView mSurfaceView;
+    protected RenderControl   mRenderControl;
+    protected AScene          mScene;
+    protected SurfaceSize     mSurfaceSize;
 
     /*
      * Fragment Lifecycle callbacks
@@ -64,7 +64,7 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
         mLayout.findViewById(R.id.relative_layout_loader_container).bringToFront();
 
         // Find the GLESSurfaceTextureView
-        mSurfaceView = (GLESSurfaceTextureView) mLayout.findViewById(R.id.rajwali_surface);
+        mSurfaceView = (GLESTextureView) mLayout.findViewById(R.id.rajwali_surface);
 
         // Create the loader progress bar
         mProgressBar = (ProgressBar) mLayout.findViewById(R.id.progress_bar);

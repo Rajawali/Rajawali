@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.object.RenderableObject;
 import org.rajawali3d.math.vector.Vector3.Axis;
 
 import java.util.Collection;
@@ -66,6 +67,10 @@ public class QuadTree extends ASceneGraph {
     @NonNull
     @Override
     public List<NodeMember> intersection(@NonNull Camera camera) {
+        return null;
+    }
+
+    @NonNull @Override public List<RenderableObject> visibleObjectIntersection(@NonNull Camera camera) {
         return null;
     }
 

@@ -40,7 +40,7 @@ public class GLESSurfaceView extends GLSurfaceView implements RenderSurfaceView 
     protected int mBitsDepth = 16;
 
     // The renderer
-    protected GLESSurfaceRenderer mGLESSurfaceRenderer;
+    protected Renderer mRenderer;
 
     public GLESSurfaceView(Context context) {
         super(context);
@@ -127,7 +127,7 @@ public class GLESSurfaceView extends GLSurfaceView implements RenderSurfaceView 
      */
     @Override
     public void configure(RenderControlClient renderControlClient) {
-        if (mGLESSurfaceRenderer != null) {
+        if (mRenderer != null) {
             throw new IllegalStateException("This SurfaceView has already been configured.");
         }
         // Determine the GLES context version
@@ -137,10 +137,10 @@ public class GLESSurfaceView extends GLSurfaceView implements RenderSurfaceView 
         //
         configureSurface(glesMajorVersion);
         //
-        final GLESSurfaceRenderer renderEngine = new GLESSurfaceRenderer(getContext(), this, renderControlClient, mInitialFrameRate);
+        final Renderer renderEngine = new Renderer(getContext(), this, renderControlClient, mInitialFrameRate);
         // Setting the renderer starts the Render thread, and creates the context and the surface
         super.setRenderer(renderEngine);
-        mGLESSurfaceRenderer = renderEngine; // Don't publish a reference before its safe.
+        mRenderer = renderEngine; // Don't publish a reference before its safe.
         onPause(); // No rendering yet
     }
 
@@ -163,16 +163,16 @@ public class GLESSurfaceView extends GLSurfaceView implements RenderSurfaceView 
     @Override
     public void onPause() {
         super.onPause();
-        if (mGLESSurfaceRenderer != null) {
-            mGLESSurfaceRenderer.onRenderThreadPause();
+        if (mRenderer != null) {
+            mRenderer.onRenderThreadPause();
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mGLESSurfaceRenderer != null) {
-            mGLESSurfaceRenderer.onRenderThreadResume();
+        if (mRenderer != null) {
+            mRenderer.onRenderThreadResume();
         }
     }
 
@@ -215,12 +215,13 @@ public class GLESSurfaceView extends GLSurfaceView implements RenderSurfaceView 
      *
      * @author Jared Woolston (jwoolston@tenkiv.com)
      */
-    private static class GLESSurfaceRenderer extends AGLESSurfaceRenderer implements Renderer {
+    private static class Renderer extends GLESRenderer
+            implements GLSurfaceView.Renderer {
 
         final GLESSurfaceView mGLESSurfaceView;
 
-        GLESSurfaceRenderer(Context context, GLESSurfaceView surfaceView,
-                            RenderControlClient renderControlClient, double initialFrameRate) {
+        Renderer(Context context, GLESSurfaceView surfaceView,
+                 RenderControlClient renderControlClient, double initialFrameRate) {
             super(context, surfaceView, renderControlClient, initialFrameRate);
             mGLESSurfaceView = surfaceView;
         }

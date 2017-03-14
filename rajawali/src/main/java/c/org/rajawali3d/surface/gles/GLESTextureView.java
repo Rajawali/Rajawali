@@ -1,11 +1,7 @@
 package c.org.rajawali3d.surface.gles;
 
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.RenderControlClient;
-import c.org.rajawali3d.core.RenderSurfaceView;
-import c.org.rajawali3d.gl.Capabilities;
-
-import org.rajawali3d.R;
+import static android.opengl.EGL14.EGL_OPENGL_ES2_BIT;
+import static android.opengl.EGLExt.EGL_OPENGL_ES3_BIT_KHR;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -19,6 +15,15 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
+import c.org.rajawali3d.core.RenderControl;
+import c.org.rajawali3d.core.RenderControlClient;
+import c.org.rajawali3d.core.RenderSurfaceView;
+import c.org.rajawali3d.gl.Capabilities;
+import org.rajawali3d.R;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGL11;
@@ -29,20 +34,13 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Locale;
-
-import static android.opengl.EGL14.EGL_OPENGL_ES2_BIT;
-import static android.opengl.EGLExt.EGL_OPENGL_ES3_BIT_KHR;
-
 /**
  * Rajawali version of a {@link TextureView}. If you plan on using Rajawali with a {@link TextureView},
  * it is imperative that you extend this class or life cycle events may not function as you expect.
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class GLESSurfaceTextureView extends TextureView implements RenderSurfaceView {
+public class GLESTextureView extends TextureView implements RenderSurfaceView {
     private final static String TAG = "GLESSurfaceTextureView";
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;
@@ -69,7 +67,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
 
     private static final GLThreadManager sGLThreadManager = new GLThreadManager();
 
-    private final WeakReference<GLESSurfaceTextureView> mThisWeakRef = new WeakReference<>(this);
+    private final WeakReference<GLESTextureView> mThisWeakRef = new WeakReference<>(this);
 
     protected double mInitialFrameRate = RenderControl.USE_DISPLAY_REFRESH_RATE;
     protected GLESSurfaceAntiAliasing mSurfaceAntiAliasing = GLESSurfaceAntiAliasing.NONE;
@@ -89,48 +87,48 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
 
     private boolean mPreserveEGLContextOnPause;
 
-    protected SurfaceTextureRenderer mRenderer;
+    protected Renderer mRenderer;
 
-    public GLESSurfaceTextureView(Context context) {
+    public GLESTextureView(Context context) {
         super(context);
     }
 
-    public GLESSurfaceTextureView(Context context, AttributeSet attrs) {
+    public GLESTextureView(Context context, AttributeSet attrs) {
         super(context, attrs);
         applyAttributes(context, attrs);
     }
 
-    public GLESSurfaceTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public GLESTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         applyAttributes(context, attrs);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public GLESSurfaceTextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public GLESTextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         applyAttributes(context, attrs);
     }
 
     private void applyAttributes(Context context, AttributeSet attrs) {
         if (attrs == null) return;
-        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.GLESSurfaceTextureView);
+        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.GLESTextureView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
-            if (attr == R.styleable.GLESSurfaceTextureView_frameRate) {
+            if (attr == R.styleable.GLESTextureView_frameRate) {
                 mInitialFrameRate = array.getFloat(attr, 60.0f);
-            } else if (attr == R.styleable.GLESSurfaceTextureView_antiAliasingType) {
+            } else if (attr == R.styleable.GLESTextureView_antiAliasingType) {
                 mSurfaceAntiAliasing = GLESSurfaceAntiAliasing.fromInteger(
                         array.getInteger(attr, GLESSurfaceAntiAliasing.NONE.ordinal()));
-            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsRed) {
+            } else if (attr == R.styleable.GLESTextureView_bitsRed) {
                 mBitsRed = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsGreen) {
+            } else if (attr == R.styleable.GLESTextureView_bitsGreen) {
                 mBitsGreen = array.getInteger(attr, 6);
-            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsBlue) {
+            } else if (attr == R.styleable.GLESTextureView_bitsBlue) {
                 mBitsBlue = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsAlpha) {
+            } else if (attr == R.styleable.GLESTextureView_bitsAlpha) {
                 mBitsAlpha = array.getInteger(attr, 0);
-            } else if (attr == R.styleable.GLESSurfaceTextureView_bitsDepth) {
+            } else if (attr == R.styleable.GLESTextureView_bitsDepth) {
                 mBitsDepth = array.getInteger(attr, 16);
             }
         }
@@ -145,7 +143,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
      * @param surfaceAntiAliasing {@link GLESSurfaceAntiAliasing} type to apply; default is {@link GLESSurfaceAntiAliasing#NONE}
      * @return this {@link GLESSurfaceView} to enable chaining of set calls
      */
-    public GLESSurfaceTextureView setSurfaceAntiAliasing(@NonNull GLESSurfaceAntiAliasing surfaceAntiAliasing) {
+    public GLESTextureView setSurfaceAntiAliasing(@NonNull GLESSurfaceAntiAliasing surfaceAntiAliasing) {
         mSurfaceAntiAliasing = surfaceAntiAliasing;
         return this;
     }
@@ -158,7 +156,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
      * @param count
      * @return this {@link GLESSurfaceView} to enable chaining of set calls
      */
-    public GLESSurfaceTextureView setMultiSampleCount(@IntRange(from = 2) int count) {
+    public GLESTextureView setMultiSampleCount(@IntRange(from = 2) int count) {
         // TODO Just guessing on the minimum value of 2
         mMultiSampleCount = count;
         return this;
@@ -186,9 +184,9 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
         if (mEGLWindowSurfaceFactory == null) {
             mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
         }
-        // Create our SurfaceTextureRenderer
-        final SurfaceTextureRenderer renderer = new SurfaceTextureRenderer(getContext(), this, renderControlClient,
-                mInitialFrameRate);
+        // Create our Renderer
+        final Renderer renderer = new Renderer(getContext(), this, renderControlClient,
+                                               mInitialFrameRate);
         // Create the GL thread
         mGLThread = new GLThread(mThisWeakRef);
         mGLThread.start();
@@ -517,31 +515,31 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
     }
 
 
-    private static class SurfaceTextureRenderer extends AGLESSurfaceRenderer implements SurfaceTextureListener {
+    private static class Renderer extends GLESRenderer implements SurfaceTextureListener {
 
-        final GLESSurfaceTextureView mGLESSurfaceTextureView;
+        final GLESTextureView mGLESTextureView;
 
-        SurfaceTextureRenderer(Context context, GLESSurfaceTextureView surfaceTextureView,
-                               RenderControlClient renderControlClient, double initialFrameRate) {
+        Renderer(Context context, GLESTextureView surfaceTextureView,
+                 RenderControlClient renderControlClient, double initialFrameRate) {
             super(context, surfaceTextureView, renderControlClient, initialFrameRate);
-            mGLESSurfaceTextureView = surfaceTextureView;
-            mGLESSurfaceTextureView.setSurfaceTextureListener(this);
+            mGLESTextureView = surfaceTextureView;
+            mGLESTextureView.setSurfaceTextureListener(this);
         }
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            mGLESSurfaceTextureView.surfaceCreated(width, height);
+            mGLESTextureView.surfaceCreated(width, height);
         }
 
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-            mGLESSurfaceTextureView.surfaceChanged(width, height);
+            mGLESTextureView.surfaceChanged(width, height);
         }
 
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
             surface.release();
-            mGLESSurfaceTextureView.surfaceDestroyed();
+            mGLESTextureView.surfaceDestroyed();
             return false;
         }
 
@@ -719,14 +717,14 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
      * An EGL helper class.
      */
     private static class EglHelper {
-        private WeakReference<GLESSurfaceTextureView> mViewWeakRef;
+        private WeakReference<GLESTextureView> mViewWeakRef;
         EGL10 mEgl;
         EGLDisplay mEglDisplay;
         EGLSurface mEglSurface;
         EGLConfig mEglConfig;
         EGLContext mEglContext;
 
-        public EglHelper(WeakReference<GLESSurfaceTextureView> viewWeakRef) {
+        public EglHelper(WeakReference<GLESTextureView> viewWeakRef) {
             mViewWeakRef = viewWeakRef;
         }
 
@@ -758,7 +756,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
             if (!mEgl.eglInitialize(mEglDisplay, version)) {
                 throw new RuntimeException("eglInitialize failed");
             }
-            GLESSurfaceTextureView view = mViewWeakRef.get();
+            GLESTextureView view = mViewWeakRef.get();
             if (view == null) {
                 mEglConfig = null;
                 mEglContext = null;
@@ -814,7 +812,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
             /*
              * Create an EGL surface we can render into.
              */
-            GLESSurfaceTextureView view = mViewWeakRef.get();
+            GLESTextureView view = mViewWeakRef.get();
             if (view != null) {
                 mEglSurface = view.mEGLWindowSurfaceFactory.createWindowSurface(mEgl,
                     mEglDisplay, mEglConfig, view.getSurfaceTexture());
@@ -879,7 +877,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
                 mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_CONTEXT);
-                GLESSurfaceTextureView view = mViewWeakRef.get();
+                GLESTextureView view = mViewWeakRef.get();
                 if (view != null) {
                     view.mEGLWindowSurfaceFactory.destroySurface(mEgl, mEglDisplay, mEglSurface);
                 }
@@ -892,7 +890,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
                 Log.w("EglHelper", "finish() tid=" + Thread.currentThread().getId());
             }
             if (mEglContext != null) {
-                GLESSurfaceTextureView view = mViewWeakRef.get();
+                GLESTextureView view = mViewWeakRef.get();
                 if (view != null) {
                     view.mEGLContextFactory.destroyContext(mEgl, mEglDisplay, mEglContext);
                 }
@@ -1003,9 +1001,9 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
          * called. This weak reference allows the TextureView to be garbage collected while
          * the Rajawali GLThread is still alive.
          */
-        private WeakReference<GLESSurfaceTextureView> mViewWeakRef;
+        private WeakReference<GLESTextureView> mViewWeakRef;
 
-        GLThread(WeakReference<GLESSurfaceTextureView> viewWeakRef) {
+        GLThread(WeakReference<GLESTextureView> viewWeakRef) {
             super();
             mWidth = 0;
             mHeight = 0;
@@ -1122,7 +1120,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
 
                             // When pausing, optionally release the EGL Context:
                             if (pausing && mHaveEglContext) {
-                                GLESSurfaceTextureView view = mViewWeakRef.get();
+                                GLESTextureView view = mViewWeakRef.get();
                                 boolean preserveEglContextOnPause = (view != null) && view.mPreserveEGLContextOnPause;
                                 if (!preserveEglContextOnPause || sGLThreadManager.shouldReleaseEGLContextWhenPausing()) {
                                     stopEglContextLocked();
@@ -1279,7 +1277,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
                         if (LOG_RENDERER) {
                             Log.w("RajawaliGLThread", "egl createContext");
                         }
-                        GLESSurfaceTextureView view = mViewWeakRef.get();
+                        GLESTextureView view = mViewWeakRef.get();
                         if (view != null) {
                             view.mRenderer.onRenderContextAcquired();
                         }
@@ -1290,7 +1288,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
                         if (LOG_RENDERER) {
                             Log.w("Rajawali GLThread", "onSurfaceChanged(" + w + ", " + h + ")");
                         }
-                        GLESSurfaceTextureView view = mViewWeakRef.get();
+                        GLESTextureView view = mViewWeakRef.get();
                         if (view != null) {
                             view.mRenderer.onSurfaceSizeChanged(w, h);
                         }
@@ -1301,7 +1299,7 @@ public class GLESSurfaceTextureView extends TextureView implements RenderSurface
                         Log.w("Rajawali GLThread", "onDrawFrame tid=" + getId());
                     }
                     {
-                        GLESSurfaceTextureView view = mViewWeakRef.get();
+                        GLESTextureView view = mViewWeakRef.get();
                         if (view != null) {
                             view.mRenderer.onRenderFrame();
                         }

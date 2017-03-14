@@ -61,7 +61,8 @@ public class AlphaMaskTexture2D extends SingleTexture2D {
      * @param context    {@link Context} The application context.
      * @param resourceId {@code int} The Android resource id to load from.
      */
-    public AlphaMaskTexture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId) {
+    public AlphaMaskTexture2D(@NonNull String name, @NonNull Context context, @DrawableRes int resourceId)
+            throws TextureException {
         super(Type.ALPHA_MASK, name);
         setTextureDataFromResourceId(context, resourceId);
     }

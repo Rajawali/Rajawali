@@ -19,10 +19,10 @@ import java.util.Locale;
  *
  * @author Randy Picolet
  */
-abstract class AGLESSurfaceRenderer extends ARenderControl {
+abstract class GLESRenderer extends ARenderControl {
 
-    AGLESSurfaceRenderer(Context context, RenderSurfaceView renderSurfaceView,
-                    RenderControlClient renderControlClient, double initialFrameRate) {
+    GLESRenderer(Context context, RenderSurfaceView renderSurfaceView,
+                 RenderControlClient renderControlClient, double initialFrameRate) {
         super(context, renderSurfaceView, renderControlClient, initialFrameRate);
     }
 

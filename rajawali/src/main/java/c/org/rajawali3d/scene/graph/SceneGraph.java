@@ -15,6 +15,8 @@ import java.util.List;
  * thread safe and protected via a Reentrant Read-Write system.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
+ *
+ * //TODO: I doubt this needs to be its own interface.
  */
 public interface SceneGraph extends NodeParent, AABB {
 

@@ -12,7 +12,7 @@
         <attr name="bitsDepth" />
     </declare-styleable>
 
-    <declare-styleable name="GLESSurfaceTextureView">
+    <declare-styleable name="GLESTextureView">
         <attr name="frameRate" />
         <attr name="antiAliasingType" />
         <attr name="multiSampleCount"/>

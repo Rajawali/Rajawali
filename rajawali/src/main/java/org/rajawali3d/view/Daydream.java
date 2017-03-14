@@ -76,12 +76,12 @@ public abstract class Daydream extends DreamService implements Display {
 	}
 
     protected void setAntiAliasingConfig(ANTI_ALIASING_CONFIG config) {
-		mGLESSurfaceView.setSurfaceAntiAliasing(config);
+		//mGLESSurfaceView.setSurfaceAntiAliasing(config);
 	}
 
 	protected void setRenderer(ISurfaceRenderer renderer) {
 		mRajawaliRenderer = renderer;
-        mGLESSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
+        //mGLESSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
 	}
 
 	private void unbindDrawables(View view) {

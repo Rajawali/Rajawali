@@ -12,17 +12,14 @@
  */
 package org.rajawali3d.bounds;
 
-import android.opengl.GLES20;
-
-import java.nio.FloatBuffer;
-
-import org.rajawali3d.geometry.IndexedGeometry;
-import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
-import org.rajawali3d.materials.Material;
+import org.rajawali3d.cameras.Camera;
+import org.rajawali3d.geometry.IndexedGeometry;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
+
+import java.nio.FloatBuffer;
 
 public class BoundingSphere implements IBoundingVolume {
 	protected       IndexedGeometry mGeometry;
@@ -48,7 +45,7 @@ public class BoundingSphere implements IBoundingVolume {
 	}
 
 	public Object3D getVisual() {
-		return mVisualSphere;
+		return null; //mVisualSphere;
 	}
 
 	public void setBoundingColor(int color) {
@@ -61,7 +58,7 @@ public class BoundingSphere implements IBoundingVolume {
 
 	public void drawBoundingVolume(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
 			final Matrix4 vMatrix, final Matrix4 mMatrix) {
-		if(mVisualSphere == null) {
+		/*if(mVisualSphere == null) {
 			mVisualSphere = new Sphere(1, 8, 8);
 			Material material = new Material();
 			mVisualSphere.setMaterial(material);
@@ -72,7 +69,7 @@ public class BoundingSphere implements IBoundingVolume {
 
 		mVisualSphere.setPosition(mPosition);
 		mVisualSphere.setScale(mRadius * mScale);
-		mVisualSphere.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);
+		mVisualSphere.render(camera, vpMatrix, projMatrix, vMatrix, mTmpMatrix, null);*/
 	}
 
 	public void transform(Matrix4 matrix) {

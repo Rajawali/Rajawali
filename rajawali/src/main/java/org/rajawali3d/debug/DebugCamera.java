@@ -32,8 +32,8 @@ public class DebugCamera extends DebugObject3D {
         mMaterial = new Material();
         mCamera = camera;
         mPositionBall = new Sphere(0.25f, 8, 8);
-        mPositionBall.setColor(color);
-        mPositionBall.setMaterial(mMaterial);
+        //mPositionBall.setColor(color);
+        //mPositionBall.setMaterial(mMaterial);
     }
 
     public void updateFrustum() {
@@ -96,8 +96,8 @@ public class DebugCamera extends DebugObject3D {
     public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
                        final Matrix4 vMatrix, final Matrix4 parentMatrix, Material sceneMaterial) {
         updateFrustum();
-        mPositionBall.setPosition(mCamera.getPosition());
-        mPositionBall.render(camera, vpMatrix, projMatrix, vMatrix, parentMatrix, sceneMaterial);
+        //mPositionBall.setPosition(mCamera.getPosition());
+        //mPositionBall.render(camera, vpMatrix, projMatrix, vMatrix, parentMatrix, sceneMaterial);
         super.render(camera, vpMatrix, projMatrix, vMatrix, parentMatrix, sceneMaterial);
     }
 }

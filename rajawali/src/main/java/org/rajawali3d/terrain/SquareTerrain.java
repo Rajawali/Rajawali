@@ -14,9 +14,7 @@ package org.rajawali3d.terrain;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-
 import org.rajawali3d.ATransformable3D;
-import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
@@ -264,7 +262,7 @@ public class SquareTerrain extends Terrain {
 
 			}
 
-		if (debug) {
+		/*if (debug) {
 			Material mat = new Material();
 			// TODO mat.useSingleColor(true);
 			mV0 = new Sphere(0.2f, 8, 8);
@@ -289,7 +287,7 @@ public class SquareTerrain extends Terrain {
 			this.addChild(mNor);
 			this.addChild(mNorBase);
 
-		}
+		}*/
 	}
 
 	/**
@@ -563,7 +561,7 @@ public class SquareTerrain extends Terrain {
 			alt = (-mTmpPlane.getNormal().x * xx - mTmpPlane.getNormal().z * zz - mTmpPlane.getDistanceToOrigin()) / mTmpPlane.getNormal().y;
 		}
 
-		if (debug) {
+		/*if (debug) {
 
 			mV0.setPosition((mTmpV0.x - mDivisions * 0.5) * mXScale, mTmpV0.y,
 					(mTmpV0.z - mDivisions * 0.5) * mZScale);
@@ -572,7 +570,7 @@ public class SquareTerrain extends Terrain {
 			mV2.setPosition((mTmpV2.x - mDivisions * 0.5) * mXScale, mTmpV2.y,
 					(mTmpV2.z - mDivisions * 0.5) * mZScale);
 
-		}
+		}*/
 
 		return alt;
 
@@ -733,10 +731,10 @@ public class SquareTerrain extends Terrain {
 			}
 		}
 
-		if (debug) {
+		/*if (debug) {
 			mNorBase.setPosition(x, getAltitude(x, z), z);
 			mNor.setPosition(x + normal.x * 4, getAltitude(x, z) + normal.y * 4, z + normal.z * 4);
-		}
+		}*/
 	}
 
 	/**

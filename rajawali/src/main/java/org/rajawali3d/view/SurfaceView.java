@@ -47,29 +47,27 @@ public class SurfaceView extends GLSurfaceView implements Surface {
 
     private void applyAttributes(Context context, AttributeSet attrs) {
         if (attrs == null) return;
-        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.SurfaceView);
+        final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.GLESSurfaceView);
         final int count = array.getIndexCount();
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
-            if (attr == R.styleable.SurfaceView_frameRate) {
+            if (attr == R.styleable.GLESSurfaceView_frameRate) {
                 mFrameRate = array.getFloat(attr, 60.0f);
-            } else if (attr == R.styleable.SurfaceView_renderMode) {
-                mRenderMode = array.getInt(attr, Surface.RENDERMODE_WHEN_DIRTY);
-            } else if (attr == R.styleable.SurfaceView_antiAliasingType) {
+            } else if (attr == R.styleable.GLESSurfaceView_antiAliasingType) {
                 mAntiAliasingConfig = ANTI_ALIASING_CONFIG.fromInteger(array.getInteger(attr, ANTI_ALIASING_CONFIG.NONE.ordinal()));
-            } else if (attr == R.styleable.SurfaceView_multiSampleCount) {
+            } else if (attr == R.styleable.GLESSurfaceView_multiSampleCount) {
                 mMultiSampleCount = array.getInteger(attr, 0);
-            } else if (attr == R.styleable.SurfaceView_isTransparent) {
+            } else if (attr == R.styleable.GLESSurfaceView_isTransparent) {
                 mIsTransparent = array.getBoolean(attr, false);
-            } else if (attr == R.styleable.SurfaceView_bitsRed) {
+            } else if (attr == R.styleable.GLESSurfaceView_bitsRed) {
                 mBitsRed = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.SurfaceView_bitsGreen) {
+            } else if (attr == R.styleable.GLESSurfaceView_bitsGreen) {
                 mBitsGreen = array.getInteger(attr, 6);
-            } else if (attr == R.styleable.SurfaceView_bitsBlue) {
+            } else if (attr == R.styleable.GLESSurfaceView_bitsBlue) {
                 mBitsBlue = array.getInteger(attr, 5);
-            } else if (attr == R.styleable.SurfaceView_bitsAlpha) {
+            } else if (attr == R.styleable.GLESSurfaceView_bitsAlpha) {
                 mBitsAlpha = array.getInteger(attr, 0);
-            } else if (attr == R.styleable.SurfaceView_bitsDepth) {
+            } else if (attr == R.styleable.GLESSurfaceView_bitsDepth) {
                 mBitsDepth = array.getInteger(attr, 16);
             }
         }
