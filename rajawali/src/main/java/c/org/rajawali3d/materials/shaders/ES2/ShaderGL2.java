@@ -2,12 +2,13 @@ package c.org.rajawali3d.materials.shaders.ES2;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.materials.shaders.GlobalShaderVar;
+
+import org.rajawali3d.materials.shaders.Shader;
+
 import c.org.rajawali3d.materials.shaders.ShaderBase;
 import c.org.rajawali3d.materials.shaders.ShaderVar;
 import c.org.rajawali3d.materials.shaders.definitions.DataType;
 import c.org.rajawali3d.materials.shaders.definitions.DataType.DataTypeES2;
-import org.rajawali3d.materials.shaders.Shader;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)

@@ -2,9 +2,10 @@ package c.org.rajawali3d.materials.shaders;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.materials.shaders.definitions.DataType;
-import c.org.rajawali3d.materials.shaders.definitions.Precision;
+
 import org.rajawali3d.materials.shaders.Shader;
+
+import c.org.rajawali3d.materials.shaders.definitions.DataType;
 
 /**
  * A ShaderVar is a wrapper class for a GLSL variable. It is used to write shaders in the Java programming language.
@@ -14,15 +15,14 @@ import org.rajawali3d.materials.shaders.Shader;
  * @author dennis.ippel
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public abstract class ShaderVar {
-
-    protected String  name;
-    protected String  dataType;
-    protected String  value;
+protected abstract class ShaderVar {
+    protected String name;
+    protected String dataType;
+    protected String value;
     protected boolean isGlobal;
     protected boolean initialized;
     protected boolean isArray;
-    protected int     arraySize;
+    protected int arraySize;
 
     public ShaderVar() {
     }
@@ -35,8 +35,8 @@ public abstract class ShaderVar {
         this(null, dataType, value.getName());
     }
 
-    public ShaderVar(@Nullable String name, @NonNull String dataType, @Nullable ShaderVar value) {
-        this(name, dataType, value != null ? value.getName() : null);
+    public ShaderVar(@Nullable String name, @NonNull String dataType, @NonNull ShaderVar value) {
+        this(name, dataType, value.getName());
     }
 
     public ShaderVar(@Nullable String name, @NonNull String dataType, @Nullable String value) {
@@ -95,7 +95,7 @@ public abstract class ShaderVar {
     }
 
     protected String generateName() {
-        return "v_" + dataType + "_" + variableCount++;
+        return "v_" + dataType.mTypeString + "_" + variableCount++;
     }
 
     /**
