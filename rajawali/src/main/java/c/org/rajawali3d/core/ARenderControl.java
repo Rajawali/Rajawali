@@ -1,5 +1,6 @@
 package c.org.rajawali3d.core;
 
+import android.support.annotation.IntRange;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.scene.AScene;
 import c.org.rajawali3d.scene.Scene;
@@ -132,7 +133,6 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
 
     @Override
     public void setFrameRate(double frameRate) {
-        renderSurfaceView.setRenderFramesOnRequest(frameRate != 0d);
         this.frameRate = frameRate < 0 ? getDisplayRefreshRate() : frameRate;
         if (areFramesEnabled()) {
             if (stopFrames()) {
@@ -242,17 +242,13 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
     @RenderThread
     @Override
     public void onRenderFrame() {
-
-        if (!areFramesEnabled()) {
-            return;
-        }
-
-        final double deltaTime = getFrameDeltaTime();
+        long currentTime = System.nanoTime();
+        final double deltaTime = getFrameDeltaTime(currentTime);
 
         try {
-            onFrameStart(deltaTime);
+            onFrameStart(currentTime, deltaTime);
             renderViews();
-            onFrameEnd(deltaTime);
+            onFrameEnd(currentTime, deltaTime);
 
         } catch (InterruptedException e) {
             Log.e(TAG, "onRenderFrame(): Frame incomplete due to thread interruption.");
@@ -262,11 +258,9 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
     }
 
     @RenderThread
-    private double getFrameDeltaTime() {
-        long currentTime = System.nanoTime();
+    private double getFrameDeltaTime(@IntRange(from = 0) long currentTime) {
         double deltaTime = (currentTime - lastFrameTime) / 1e9;
         lastFrameTime = currentTime;
-
         return deltaTime;
     }
 
@@ -330,21 +324,21 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
 
     @RenderThread
     @Override
-    public void onFrameStart(double deltaTime) throws InterruptedException {
+    public void onFrameStart(long currentTime, double deltaTime) throws InterruptedException {
         // Run any queued tasks
-        super.onFrameStart(deltaTime);
+        super.onFrameStart(currentTime, deltaTime);
         // Propagate to RenderDelegates
         for (int i = 0, j = scenes.size(); i < j; i++) {
-            ((AScene) scenes.get(i)).onFrameStart(deltaTime);
+            ((AScene) scenes.get(i)).onFrameStart(currentTime, deltaTime);
         }
         for (int i = 0, j = sceneViews.size(); i < j; i++) {
-            ((AScene) sceneViews.get(i)).onFrameStart(deltaTime);
+            ((AScene) sceneViews.get(i)).onFrameStart(currentTime, deltaTime);
         }
     }
 
     @RenderThread
     @Override
-    public void onFrameEnd(double deltaTime) throws InterruptedException {
+    public void onFrameEnd(long currentTime, double deltaTime) throws InterruptedException {
         // Propagate to RenderDelegates
         for (int i = 0, j = scenes.size(); i < j; i++) {
             ((AScene) sceneViews.get(i)).onFrameEnd(deltaTime);

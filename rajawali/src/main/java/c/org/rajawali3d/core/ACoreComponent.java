@@ -1,5 +1,6 @@
 package c.org.rajawali3d.core;
 
+import android.support.annotation.IntRange;
 import c.org.rajawali3d.annotations.RenderThread;
 
 import android.support.annotation.CallSuper;
@@ -42,20 +43,16 @@ abstract class ACoreComponent implements CoreComponent {
     final void setRenderThread() {
         if (renderThread == null) {
             renderThread = Thread.currentThread();
-        } else {
-            // TODO log?
         }
     }
 
     /**
-     * Clears the render thread for this component; call at the last opportunity before thread destruction
+     * Clears the render thread for this component. Call at the last opportunity before thread destruction
      */
     @RenderThread
     final void unsetRenderThread() {
         if (isRenderThreadSet()) {
             renderThread = null;
-        } else {
-            // TODO log?
         }
     }
 
@@ -64,7 +61,7 @@ abstract class ACoreComponent implements CoreComponent {
     }
 
     /**
-     * Hook method required by all {@link CoreComponent}s, called from {@link ARenderControl#onRenderFrame()};
+     * Hook method required by all {@link ACoreComponent}s, called from {@link ARenderControl#onRenderFrame()};
      * runs any tasks queued for this component
      *
      * @param deltaTime
@@ -72,19 +69,21 @@ abstract class ACoreComponent implements CoreComponent {
      */
     @RenderThread
     @CallSuper
-    public void onFrameStart(double deltaTime) throws InterruptedException {
+    public void onFrameStart(@IntRange(from = 0) long currentTime, @FloatRange(from = 0.0) double deltaTime)
+            throws InterruptedException {
         runQueuedTasks();
     }
 
     /**
-     * Hook method required by all {@link CoreComponent}s, called from {@link ARenderControl#onRenderFrame()};
+     * Hook method required by all {@link ACoreComponent}s, called from {@link ARenderControl#onRenderFrame()};
      * no common implementation
      *
      * @param deltaTime
      * @throws InterruptedException
      */
     @RenderThread
-    abstract void onFrameEnd(@FloatRange(from = 0.0) final double deltaTime) throws InterruptedException;
+    abstract void onFrameEnd(@IntRange(from = 0) long currentTime, @FloatRange(from = 0.0) double deltaTime)
+            throws InterruptedException;
 
     /**
      * Executes a {@link RenderTask} on the render thread. If the calling thread is the render thread, the task
@@ -122,7 +121,7 @@ abstract class ACoreComponent implements CoreComponent {
      *  Runs all {@link RenderTask}s queued for this component
      */
     @RenderThread
-    private final void runQueuedTasks() {
+    private void runQueuedTasks() {
         synchronized (frameTaskQueue) {
             RenderTask task = frameTaskQueue.poll();
             while (task != null) {

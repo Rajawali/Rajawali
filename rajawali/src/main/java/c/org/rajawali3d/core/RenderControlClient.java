@@ -1,5 +1,6 @@
 package c.org.rajawali3d.core;
 
+import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.surface.SurfaceSize;
 
@@ -19,7 +20,7 @@ public interface RenderControlClient {
      * @param surfaceSize the initial {@link SurfaceSize}
      */
     @RenderThread
-    void onRenderControlAvailable(RenderControl renderControl, SurfaceSize surfaceSize);
+    void onRenderControlAvailable(@NonNull RenderControl renderControl, @NonNull SurfaceSize surfaceSize);
 
     /**
      * Notifies the client that the render surface dimensions have been changed after their initial setting.
@@ -28,5 +29,5 @@ public interface RenderControlClient {
      * @param surfaceSize - a {@link SurfaceSize} instance with the newly defined dimensions
      */
     @RenderThread
-    void onSurfaceSizeChanged(SurfaceSize surfaceSize);
+    void onSurfaceSizeChanged(@NonNull SurfaceSize surfaceSize);
 }

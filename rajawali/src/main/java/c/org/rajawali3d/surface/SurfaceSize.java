@@ -7,7 +7,6 @@ import android.view.Surface;
  *
  * @author Randy Picolet
  */
-
 public final class SurfaceSize {
 
     /**

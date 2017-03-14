@@ -37,10 +37,6 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
     protected AScene          mScene;
     protected SurfaceSize     mSurfaceSize;
 
-    /*
-     * Fragment Lifecycle callbacks
-     */
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,10 +111,6 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
     protected void setSurfaceConfigurations() {
     }
 
-    /*
-     * RenderControlClient callbacks
-     */
-
     @RenderThread
     @Override
     @CallSuper
@@ -133,10 +125,6 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
     public void onSurfaceSizeChanged(SurfaceSize surfaceSize) {
         mSurfaceSize = surfaceSize;
     }
-
-    //
-    //
-    //
 
     @Override
     public void onClick(View v) {
@@ -158,10 +146,6 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
                 break;
         }
     }
-
-    //
-    //
-    //
 
     @CallSuper
     protected void hideProgressBar() {

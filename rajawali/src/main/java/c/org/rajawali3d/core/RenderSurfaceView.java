@@ -12,13 +12,6 @@ import c.org.rajawali3d.surface.SurfaceView;
 public interface RenderSurfaceView extends SurfaceView {
 
     /**
-     * Sets whether frames are rendered only on request (and when the surface is first created), or continuously
-     *
-     * @param onRequest {@code boolean} true to render on request, false to render continuously
-     */
-    void setRenderFramesOnRequest(boolean onRequest);
-
-    /**
      * Request a render frame.
      */
     void requestRenderFrame();

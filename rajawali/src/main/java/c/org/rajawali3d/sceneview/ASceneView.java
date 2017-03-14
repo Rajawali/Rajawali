@@ -168,6 +168,7 @@ public abstract class ASceneView extends AFrameDelegate implements SceneView {
         currentlyHeldReadLock = scene.acquireReadLock();
         try {
             // Prepare the camera matrices
+            // TODO: Add inverse projection matrix and inverse view projection matrix
             viewMatrix = camera.getViewMatrix();
             projectionMatrix = camera.getProjectionMatrix();
             if (projectionMatrix == null) {
@@ -176,6 +177,7 @@ public abstract class ASceneView extends AFrameDelegate implements SceneView {
             viewProjectionMatrix.setAll(projectionMatrix).multiply(viewMatrix);
 
             // Render the visible intersected objects
+            // TODO: This should probably be a full intersection for purposes such as debug and lighting
             renderObjects(sceneGraph.visibleObjectIntersection(camera));
         } finally {
             if (currentlyHeldReadLock != null) {

@@ -196,15 +196,6 @@ public class GLESSurfaceView extends GLSurfaceView implements RenderSurfaceView 
         }
     }
 
-    //
-    // RenderSurfaceView methods
-    //
-
-    @Override
-    public void setRenderFramesOnRequest(boolean onRequest) {
-        setRenderMode(onRequest ? RENDERMODE_WHEN_DIRTY : RENDERMODE_CONTINUOUSLY);
-    }
-
     @Override
     public void requestRenderFrame() {
         requestRender();

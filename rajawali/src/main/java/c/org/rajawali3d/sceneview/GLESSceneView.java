@@ -28,7 +28,7 @@ public class GLESSceneView extends ASceneView {
         // intersection with the camera multiple times. One possible exception would be for shadow mapping. Probably
         // a loop
 
-        // TODO maybe render passes are simply the direct responsibility of SceneView implementations?
+        // TODO maybe render passes are simply the direct responsibility of SceneView implementations? < Jared Likes
 
         // Fetch the current render type
         int type = 0;
@@ -38,6 +38,4 @@ public class GLESSceneView extends ASceneView {
             lastUsedRenderer = object.render(type, lastUsedRenderer, viewMatrix, projectionMatrix, viewProjectionMatrix);
         }
     }
-
-
 }

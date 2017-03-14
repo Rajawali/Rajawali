@@ -41,7 +41,9 @@ import javax.microedition.khronos.opengles.GL10;
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
 public class GLESTextureView extends TextureView implements RenderSurfaceView {
-    private final static String TAG = "GLESSurfaceTextureView";
+
+    private final static String TAG = "GLESTextureView";
+
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;
     private final static boolean LOG_PAUSE_RESUME = false;
@@ -156,8 +158,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
      * @param count
      * @return this {@link GLESSurfaceView} to enable chaining of set calls
      */
-    public GLESTextureView setMultiSampleCount(@IntRange(from = 2) int count) {
-        // TODO Just guessing on the minimum value of 2
+    public GLESTextureView setMultiSampleCount(@IntRange(from = 0, to = 16) int count) {
         mMultiSampleCount = count;
         return this;
     }
@@ -184,18 +185,18 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
         if (mEGLWindowSurfaceFactory == null) {
             mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
         }
+        setRenderModeInternal(RENDERMODE_WHEN_DIRTY);
         // Create our Renderer
-        final Renderer renderer = new Renderer(getContext(), this, renderControlClient,
-                                               mInitialFrameRate);
+        final Renderer renderer = new Renderer(getContext(), this, renderControlClient, mInitialFrameRate);
         // Create the GL thread
         mGLThread = new GLThread(mThisWeakRef);
         mGLThread.start();
         // Register the renderer for callbacks
-        mRenderer = renderer; // Done to make sure we dont publish a reference before its safe.
+        mRenderer = renderer; // Done to make sure we don/t publish a reference before its safe.
 
-        onPause(); // No rendering yet
+        //onPause(); // No rendering yet
 
-        setSurfaceTextureListener(mRenderer);
+        //setSurfaceTextureListener(mRenderer);
     }
 
     protected void configureSurface(int glesMajorVersion) {
@@ -294,12 +295,6 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
         } finally {
             super.finalize();
         }
-    }
-
-    @Override
-    public void setRenderFramesOnRequest(boolean onRequest) {
-        setRenderModeInternal(onRequest ? RENDERMODE_WHEN_DIRTY : RENDERMODE_CONTINUOUSLY);
-
     }
 
     @Override
@@ -1164,7 +1159,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
 
                             if (doRenderNotification) {
                                 if (LOG_SURFACE) {
-                                    Log.i("Rajawali GLThread", "sending render notification tid=" + getId());
+                                    Log.i(TAG, "sending render notification tid=" + getId());
                                 }
                                 wantRenderNotification = false;
                                 doRenderNotification = false;
@@ -1206,7 +1201,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
                                         h = mHeight;
                                         wantRenderNotification = true;
                                         if (LOG_SURFACE) {
-                                            Log.i("Rajawali GLThread",
+                                            Log.i(TAG,
                                                     "noticing that we want render notification tid=" + getId());
                                         }
 
@@ -1221,7 +1216,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
                                 }
                             }
 
-                            // By design, this is the only place in a Rajawali GLThread thread where we wait().
+                            // By design, this is the only place in a GLThread thread where we wait().
                             if (LOG_THREADS) {
                                 Log.i("Rajawali GLThread", "waiting tid=" + getId()
                                     + " mHaveEglContext: " + mHaveEglContext
@@ -1248,7 +1243,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
 
                     if (createEglSurface) {
                         if (LOG_SURFACE) {
-                            Log.w("Rajawali GLThread", "egl createSurface");
+                            Log.w(TAG, "egl createSurface");
                         }
                         if (mEglHelper.createSurface()) {
                             synchronized (sGLThreadManager) {
@@ -1286,7 +1281,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
 
                     if (sizeChanged) {
                         if (LOG_RENDERER) {
-                            Log.w("Rajawali GLThread", "onSurfaceChanged(" + w + ", " + h + ")");
+                            Log.w(TAG, "onSurfaceChanged(" + w + ", " + h + ")");
                         }
                         GLESTextureView view = mViewWeakRef.get();
                         if (view != null) {
@@ -1296,7 +1291,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
                     }
 
                     if (LOG_RENDERER_DRAW_FRAME) {
-                        Log.w("Rajawali GLThread", "onDrawFrame tid=" + getId());
+                        Log.w(TAG, "onDrawFrame tid=" + getId());
                     }
                     {
                         GLESTextureView view = mViewWeakRef.get();
@@ -1310,7 +1305,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
                             break;
                         case EGL11.EGL_CONTEXT_LOST:
                             if (LOG_SURFACE) {
-                                Log.i("Rajawali GLThread", "egl context lost tid=" + getId());
+                                Log.i(TAG, "egl context lost tid=" + getId());
                             }
                             lostEglContext = true;
                             break;
@@ -1319,7 +1314,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
                             // probably because the SurfaceView surface has been destroyed,
                             // but we haven't been notified yet.
                             // Log the error to help developers understand why rendering stopped.
-                            EglHelper.logEglErrorAsWarning("Rajawali GLThread", "eglSwapBuffers", swapError);
+                            EglHelper.logEglErrorAsWarning(TAG, "eglSwapBuffers", swapError);
 
                             synchronized (sGLThreadManager) {
                                 mSurfaceIsBad = true;
@@ -1380,7 +1375,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
         public void surfaceCreated(int w, int h) {
             synchronized (sGLThreadManager) {
                 if (LOG_THREADS) {
-                    Log.i("Rajawali GLThread", "surfaceCreated tid=" + getId());
+                    Log.i(TAG, "surfaceCreated tid=" + getId());
                 }
                 mHasSurface = true;
                 mWidth = w;
@@ -1402,7 +1397,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
         public void surfaceDestroyed() {
             synchronized (sGLThreadManager) {
                 if (LOG_THREADS) {
-                    Log.i("Rajawali GLThread", "surfaceDestroyed tid=" + getId());
+                    Log.i(TAG, "surfaceDestroyed tid=" + getId());
                 }
                 mHasSurface = false;
                 sGLThreadManager.notifyAll();
@@ -1419,7 +1414,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
         public void onPause() {
             synchronized (sGLThreadManager) {
                 if (LOG_PAUSE_RESUME) {
-                    Log.i("Rajawali GLThread", "onPause tid=" + getId());
+                    Log.i(TAG, "onPause tid=" + getId());
                 }
                 mRequestPaused = true;
                 sGLThreadManager.notifyAll();
@@ -1439,7 +1434,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
         public void onResume() {
             synchronized (sGLThreadManager) {
                 if (LOG_PAUSE_RESUME) {
-                    Log.i("Rajawali GLThread", "onResume tid=" + getId());
+                    Log.i(TAG, "onResume tid=" + getId());
                 }
                 mRequestPaused = false;
                 mRequestRender = true;
@@ -1533,7 +1528,7 @@ public class GLESTextureView extends TextureView implements RenderSurfaceView {
 
         public synchronized void threadExiting(GLThread thread) {
             if (LOG_THREADS) {
-                Log.i("Rajawali GLThread", "exiting tid=" + thread.getId());
+                Log.i(TAG, "exiting tid=" + thread.getId());
             }
             thread.mExited = true;
             if (mEglOwner == thread) {
