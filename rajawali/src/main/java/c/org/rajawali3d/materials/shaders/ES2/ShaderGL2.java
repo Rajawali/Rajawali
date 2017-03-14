@@ -1,8 +1,10 @@
 package c.org.rajawali3d.materials.shaders.ES2;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import c.org.rajawali3d.materials.shaders.GlobalShaderVar;
 import c.org.rajawali3d.materials.shaders.ShaderBase;
+import c.org.rajawali3d.materials.shaders.ShaderVar;
 import c.org.rajawali3d.materials.shaders.definitions.DataType;
 import c.org.rajawali3d.materials.shaders.definitions.DataType.DataTypeES2;
 import org.rajawali3d.materials.shaders.Shader;
@@ -67,6 +69,34 @@ public class ShaderGL2 extends ShaderBase {
         }
     }
 
+    protected class ShaderVarGL2 extends ShaderVar {
+        public ShaderVarGL2() {
+            super();
+        }
 
+        public ShaderVarGL2(@NonNull @DataTypeES2 String dataType) {
+            this(null, dataType, null, true);
+        }
+
+        public ShaderVarGL2(@NonNull @DataTypeES2 String dataType, @Nullable ShaderVar value) {
+            this(null, dataType, value);
+        }
+
+        public ShaderVarGL2(@Nullable String name, @NonNull @DataTypeES2 String dataType, @Nullable ShaderVar value) {
+            this(name, dataType, value.getName());
+        }
+
+        public ShaderVarGL2(@Nullable String name, @NonNull @DataTypeES2 String dataType, @Nullable String value) {
+            this(name, dataType, value, true);
+        }
+
+        public ShaderVarGL2(@NonNull @DataTypeES2 String dataType, @Nullable String value, boolean write) {
+            this(null, dataType, value, write);
+        }
+
+        public ShaderVarGL2(@Nullable String name, @NonNull @DataTypeES2 String dataType, @Nullable String value, boolean write) {
+            super(name, dataType, value, write);
+        }
+    }
 }
 

@@ -154,16 +154,28 @@ public abstract class ShaderBase {
             super(VEC2);
         }
 
-        public RVec2(@Nullable String name) {
-            super(name, VEC2, (ShaderVar) null);
+        public RVec2(String name) {
+            super(name, VEC2);
         }
 
-        public RVec2(@NonNull String dataType) {
+        public RVec2(DefaultShaderVar var) {
+            this(var, new RVec4("vec2()"));
+        }
+
+        public RVec2(DataType dataType) {
             super(dataType);
         }
 
-        public RVec2(String name, @Nullable ShaderVar value) {
+        public RVec2(String name, DataType dataType) {
+            super(name, dataType);
+        }
+
+        public RVec2(String name, ShaderVar value) {
             super(name, VEC2, value);
+        }
+
+        public RVec2(DefaultShaderVar var, ShaderVar value) {
+            this(var.getVarString(), value);
         }
 
         public RVec2(String name, DataType dataType, ShaderVar value) {

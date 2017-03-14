@@ -1,8 +1,6 @@
 package c.org.rajawali3d.materials.shaders.definitions;
 
 import android.support.annotation.StringDef;
-import c.org.rajawali3d.materials.shaders.ES2.DataTypeES2;
-import c.org.rajawali3d.materials.shaders.ShaderVar;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -81,10 +79,41 @@ public interface DataType {
     String IMAGE_CUBE     = "imageCube";
     String IMAGE2D_ARRAY  = "image2DArray";
 
-    public class ShaderVarES2 extends ShaderVar {
+    /**
+     * The available data types for OpenGL ES 2 GLSL.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({ VOID, BOOL, INT, FLOAT, VEC2, VEC3, VEC4, BVEC2, BVEC3, BVEC4, IVEC2, IVEC3, IVEC4, MAT2, MAT3, MAT4,
+                 SAMPLER2D, SAMPLER_CUBE
+               }) @interface DataTypeES2 {
+    }
 
-        public ShaderVarES2(DataTypeES2 type) {
-            super(type);
-        }
+    /**
+     * The available data types for OpenGL ES 3.0 GLSL.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({ VOID, BOOL, INT, UINT, FLOAT, VEC2, VEC3, VEC4, BVEC2, BVEC3, BVEC4, IVEC2, IVEC3, IVEC4, MAT2, MAT3,
+                 MAT4, SAMPLER2D, SAMPLER_CUBE, UVEC2, UVEC3, UVEC4, MAT2x2, MAT2x3, MAT2x4, MAT3x2, MAT3x3, MAT3x4,
+                 MAT4x2, MAT4x3, MAT4x4, SAMPLER3D, SAMPLER_CUBE_SHADOW, SAMPLER2D_SHADOW, SAMPLER2D_ARRAY,
+                 SAMPLER2D_ARRAY_SHADOW, ISAMPLER2D, ISAMPLER3D, ISAMPLER_CUBE, ISAMPLER2D_ARRAY, USAMPLER2D,
+                 USAMPLER3D, USAMPLER_CUBE, USAMPLER2D_ARRAY
+               }) @interface DataTypeES3_0 {
+    }
+
+    /**
+     * The available data types for OpenGL ES 3.1 GLSL.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({ VOID, BOOL, INT, UINT, FLOAT, VEC2, VEC3, VEC4, BVEC2, BVEC3, BVEC4, IVEC2, IVEC3, IVEC4, MAT2, MAT3,
+                 MAT4, SAMPLER2D, SAMPLER_CUBE, UVEC2, UVEC3, UVEC4, MAT2x2, MAT2x3, MAT2x4, MAT3x2, MAT3x3, MAT3x4,
+                 MAT4x2, MAT4x3, MAT4x4, SAMPLER3D, SAMPLER_CUBE_SHADOW, SAMPLER2D_SHADOW, SAMPLER2D_ARRAY,
+                 SAMPLER2D_ARRAY_SHADOW, ISAMPLER2D, ISAMPLER3D, ISAMPLER_CUBE, ISAMPLER2D_ARRAY, USAMPLER2D,
+                 USAMPLER3D, USAMPLER_CUBE, USAMPLER2D_ARRAY, ISAMPLER2DMS, IIMAGE2D, IIMAGE3D, IIMAGE_CUBE,
+                 IIMAGE2D_ARRAY, ATOMIC_UINT, USAMPLER2DMS, UIMAGE2D, UIMAGE3D, UIMAGE_CUBE, UIMAGE2D_ARRAY,
+                 SAMPLER2DMS, IMAGE2D, IMAGE3D, IMAGE_CUBE, IMAGE2D_ARRAY
+               }) @interface DataTypeES3_1 {
     }
 }
