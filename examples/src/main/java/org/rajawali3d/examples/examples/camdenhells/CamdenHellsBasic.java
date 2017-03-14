@@ -145,9 +145,13 @@ public class CamdenHellsBasic extends AExampleFragment {
             while (doRun && !Thread.currentThread().isInterrupted()) {
                 if (add) {
                     Log.d(TAG, "Adding resources.");
-                    texture = new Texture2D("Demo", getActivity(), R.drawable.earth_diffuse);
-                    texture.willRecycle(false);
-                    scene.getTextureManager().addTexture(texture);
+                    try {
+                        texture = new Texture2D("Demo", getActivity(), R.drawable.earth_diffuse);
+                        texture.willRecycle(false);
+                        scene.getTextureManager().addTexture(texture);
+                    } catch (TextureException e) {
+                        e.printStackTrace();
+                    }
 
                     material = new Material();
                     scene.getMaterialManager().addMaterial(material);

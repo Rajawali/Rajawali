@@ -15,7 +15,7 @@ import c.org.rajawali3d.annotations.RenderThread;
 public abstract class SingleFrameCallback extends SimpleFrameCallback {
 
     @NonNull
-    protected final FrameDelegate frameDelegate;
+    private final FrameDelegate frameDelegate;
 
     /**
      * Constructs a new {@link SingleFrameCallback} for the provided {@link FrameDelegate}.

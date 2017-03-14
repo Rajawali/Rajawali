@@ -26,10 +26,6 @@ abstract class ACoreComponent implements CoreComponent {
         frameTaskQueue = new LinkedList<>();
     }
 
-    //
-    // CoreComponent implementation
-    //
-
     @Override
     public final boolean isRenderThread() {
         return Thread.currentThread() == renderThread;
@@ -38,10 +34,6 @@ abstract class ACoreComponent implements CoreComponent {
     // TODO add "engine-only/internal-only" annotations (type- and/or method-levels) for general use?
     // And/or a public/client API annotation? Maybe adopt a policy of using separate/dedicated interfaces for
     // client APIs where possible? Or some combination?
-
-    //
-    // Internal RenderThread methods
-    //
 
     /**
      * Sets the render thread for this component; call at the first opportunity after thread creation
@@ -71,10 +63,6 @@ abstract class ACoreComponent implements CoreComponent {
         return renderThread != null;
     }
 
-    //
-    // Internal RenderFrame event handlers
-    //
-
     /**
      * Hook method required by all {@link CoreComponent}s, called from {@link ARenderControl#onRenderFrame()};
      * runs any tasks queued for this component
@@ -97,10 +85,6 @@ abstract class ACoreComponent implements CoreComponent {
      */
     @RenderThread
     abstract void onFrameEnd(@FloatRange(from = 0.0) final double deltaTime) throws InterruptedException;
-
-    //
-    // Internal RenderTask methods
-    //
 
     /**
      * Executes a {@link RenderTask} on the render thread. If the calling thread is the render thread, the task

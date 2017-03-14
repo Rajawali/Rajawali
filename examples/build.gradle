@@ -42,11 +42,12 @@ android {
 }
 
 dependencies {
-    compile project.depAndroidSupport
-    compile project.depAppCompat
-    compile project.depRecycler
-    compile project.depGSON
-    compile project.depIon
+    compile 'com.android.support:support-v13:25.2.0'
+    compile 'com.android.support:support-annotations:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.koushikdutta.ion:ion:2.1.7'
 
 
     compile project(':rajawali')

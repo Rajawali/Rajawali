@@ -17,11 +17,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Abstract base class for {@link AScene} and {@link ASceneView}
+ * Abstract base class for {@link AScene} and {@link ASceneView}.
  *
  * @author Randy Picolet
  */
-
 public abstract class AFrameDelegate extends ACoreComponent implements FrameDelegate {
 
     @GuardedBy("frameStartCallbacks")
@@ -43,10 +42,6 @@ public abstract class AFrameDelegate extends ACoreComponent implements FrameDele
         frameEndCallbacks = Collections.synchronizedList(new ArrayList<FrameCallback>());
         animations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
     }
-
-    //
-    // FrameDelegate methods
-    //
 
     @RenderThread
     @Override
@@ -187,10 +182,6 @@ public abstract class AFrameDelegate extends ACoreComponent implements FrameDele
         };
         return executeRenderTask(task);
     }
-
-    //
-    // ACoreComponent method overrides
-    //
 
     @RenderThread
     @Override

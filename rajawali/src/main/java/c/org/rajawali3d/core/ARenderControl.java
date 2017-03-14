@@ -63,24 +63,24 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
     private final List<SceneView> sceneViews;
 
     // Frame related members
-    private double frameRate; // Target frame rate to render at
-    private long lastFrameTime; // Time of last frame. Used for animation delta time
-    private long framesStartTime; // Time of last successful startFrames()
+    private double                   frameRate; // Target frame rate to render at
+    private long                     lastFrameTime; // Time of last frame. Used for animation delta time
+    private long                     framesStartTime; // Time of last successful startFrames()
     private ScheduledExecutorService timer; // Timer used to schedule drawing
 
     // FPS related members
-    private int frameCount; // Used for determining FPS
-    private double lastMeasuredFPS; // Last measured FPS value
+    private int                 frameCount; // Used for determining FPS
+    private double              lastMeasuredFPS; // Last measured FPS value
     private OnFPSUpdateListener fpsUpdateListener; // Listener to notify of new FPS values.
     private long fpsStartTime = System.nanoTime(); // Used for determining FPS
 
     /**
      * Sole constructor
      *
-     * @param context the Android {@link Context}
-     * @param renderSurfaceView the {@link RenderSurfaceView}
+     * @param context             the Android {@link Context}
+     * @param renderSurfaceView   the {@link RenderSurfaceView}
      * @param renderControlClient the {@link RenderControlClient}
-     * @param initialFrameRate the initial frame rate
+     * @param initialFrameRate    the initial frame rate
      */
     protected ARenderControl(@NonNull Context context, @NonNull RenderSurfaceView renderSurfaceView,
                              @NonNull RenderControlClient renderControlClient, double initialFrameRate) {
@@ -99,10 +99,6 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
 
         frameRate = initialFrameRate;
     }
-
-    //
-    // RenderStatus methods
-    //
 
     @Override
     public @NonNull SurfaceSize getSurfaceSize() {
@@ -133,10 +129,6 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
     public long getFramesElapsedTime() {
         return framesStartTime == 0 ? 0 : System.nanoTime() - framesStartTime;
     }
-
-    //
-    // RenderControl methods
-    //
 
     @Override
     public void setFrameRate(double frameRate) {
@@ -222,19 +214,13 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
         return executeRenderTask(task);
     }
 
-    //
-    // SurfaceRenderer methods
-    //
-
     @RenderThread
     @Override
     @CallSuper
     public void onRenderContextAcquired(RenderContextType renderContextType,
                                         int renderContextMajorVersion, int renderContextMinorVersion) {
         RenderContext.init(renderContextType, renderContextMajorVersion, renderContextMinorVersion);
-
         setRenderThread();
-
         setFrameRate(frameRate);
     }
 
@@ -265,9 +251,7 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
 
         try {
             onFrameStart(deltaTime);
-
             renderViews();
-
             onFrameEnd(deltaTime);
 
         } catch (InterruptedException e) {
@@ -289,9 +273,9 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
     //TODO Override this method in a stereo renderer to render views for each Eye
     @RenderThread
     private void renderViews() throws InterruptedException {
-        // Propagate to SceneViews...//
+        // Propagate to SceneViews
         for (int i = 0, j = sceneViews.size(); i < j; i++) {
-            ((ASceneView)sceneViews.get(i)).onRender();
+            ((ASceneView) sceneViews.get(i)).onRender();
         }
     }
 
@@ -344,39 +328,31 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
         }
     }
 
-    //
-    // ACoreComponent hook method overrides
-    //
-
     @RenderThread
     @Override
     public void onFrameStart(double deltaTime) throws InterruptedException {
         // Run any queued tasks
         super.onFrameStart(deltaTime);
-        // Propagate to RenderDelegates...
+        // Propagate to RenderDelegates
         for (int i = 0, j = scenes.size(); i < j; i++) {
-            ((AScene)scenes.get(i)).onFrameStart(deltaTime);
+            ((AScene) scenes.get(i)).onFrameStart(deltaTime);
         }
         for (int i = 0, j = sceneViews.size(); i < j; i++) {
-            ((AScene)sceneViews.get(i)).onFrameStart(deltaTime);
+            ((AScene) sceneViews.get(i)).onFrameStart(deltaTime);
         }
     }
 
     @RenderThread
     @Override
     public void onFrameEnd(double deltaTime) throws InterruptedException {
-        // Propagate to RenderDelegates...
+        // Propagate to RenderDelegates
         for (int i = 0, j = scenes.size(); i < j; i++) {
-            ((AScene)sceneViews.get(i)).onFrameEnd(deltaTime);
+            ((AScene) sceneViews.get(i)).onFrameEnd(deltaTime);
         }
         for (int i = 0, j = sceneViews.size(); i < j; i++) {
-            ((AScene)sceneViews.get(i)).onFrameEnd(deltaTime);
+            ((AScene) sceneViews.get(i)).onFrameEnd(deltaTime);
         }
     }
-
-    //
-    // RenderFrame generation
-    //
 
     private boolean startFrames() {
         RajLog.d("startFrames()");
@@ -398,7 +374,8 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
         return true;
     }
 
-    // NOTE: Intentionally package private for performance...
+
+    @SuppressWarnings("WeakerAccess")
     void requestRenderFrame() {
         renderSurfaceView.requestRenderFrame();
     }
