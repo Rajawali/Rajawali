@@ -376,7 +376,7 @@ public abstract class AShader extends AShaderBase {
 
 	/**
 	 * Varying variables provide the interface between the vertex shaders, the fragment shaders, and the fixed
-	 * functionality between them. Vertex shaders will compute values per vertex (such as color, texture
+	 * functionality between them. VERTEX shaders will compute values per vertex (such as color, texture
 	 * coordinates, etc.) and write them to variables declared with the varying qualifier. A vertex shader may
 	 * also read varying variables, getting back the same values it has written. Reading a varying variable in a
 	 * vertex shader returns undefined values if it is read before being written.
@@ -390,7 +390,7 @@ public abstract class AShader extends AShaderBase {
 
 	/**
 	 * Varying variables provide the interface between the vertex shaders, the fragment shaders, and the fixed
-	 * functionality between them. Vertex shaders will compute values per vertex (such as color, texture
+	 * functionality between them. VERTEX shaders will compute values per vertex (such as color, texture
 	 * coordinates, etc.) and write them to variables declared with the varying qualifier. A vertex shader may
 	 * also read varying variables, getting back the same values it has written. Reading a varying variable in a
 	 * vertex shader returns undefined values if it is read before being written.
@@ -406,7 +406,7 @@ public abstract class AShader extends AShaderBase {
 
 	/**
 	 * Varying variables provide the interface between the vertex shaders, the fragment shaders, and the fixed
-	 * functionality between them. Vertex shaders will compute values per vertex (such as color, texture
+	 * functionality between them. VERTEX shaders will compute values per vertex (such as color, texture
 	 * coordinates, etc.) and write them to variables declared with the varying qualifier. A vertex shader may
 	 * also read varying variables, getting back the same values it has written. Reading a varying variable in a
 	 * vertex shader returns undefined values if it is read before being written.

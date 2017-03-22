@@ -15,7 +15,7 @@ public final class NullRenderer extends Renderer {
 
     public NullRenderer(Context context) {
         super(context);
-        RajLog.w(this + ": Fragment created without renderer!");
+        RajLog.w(this + ": FRAGMENT created without renderer!");
     }
 
     @Override

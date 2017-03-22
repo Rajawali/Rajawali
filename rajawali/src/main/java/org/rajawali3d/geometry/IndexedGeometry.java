@@ -42,7 +42,7 @@ import static org.rajawali3d.util.ArrayUtils.getIntArrayFromBuffer;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in
- * FloatBuffers, IntBuffers and ShortBuffers. The data is uploaded to the graphics card using Vertex Buffer Objects
+ * FloatBuffers, IntBuffers and ShortBuffers. The data is uploaded to the graphics card using VERTEX Buffer Objects
  * (VBOs). The data in the FloatBuffers is kept in memory in order to restore the VBOs when the OpenGL context needs
  * to be restored (typically when the application regains focus).
  *
@@ -440,7 +440,7 @@ public class IndexedGeometry implements Geometry {
      * image specification commands.
      *
      * @param vertices {@code float} array containing the vertex position data.
-     * @param verticesUsage {@code int} Vertex buffer usage hint.
+     * @param verticesUsage {@code int} VERTEX buffer usage hint.
      * @param normals {@code float} array containing the vertex normal data.
      * @param normalsUsage {@code int} Normal buffer usage hint.
      * @param textureCoords {@code float} array containing the the vertex texture coordinate data.

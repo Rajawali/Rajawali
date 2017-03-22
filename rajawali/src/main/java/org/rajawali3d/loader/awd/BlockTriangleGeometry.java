@@ -79,7 +79,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 		// Debug
         if (RajLog.isDebugEnabled()) {
             RajLog.d("  Lookup Name: " + mLookupName);
-            RajLog.d("  Sub Geometry Count: " + mSubGeometryCount);
+            RajLog.d("  Sub GEOMETRY Count: " + mSubGeometryCount);
         }
 
 		// Determine the precision for the block
@@ -104,7 +104,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 		for (int parsedSub = 0; parsedSub < mSubGeometryCount; ++parsedSub) {
 			long subMeshEnd = dis.getPosition() + dis.readUnsignedInt();
 
-			// Geometry
+			// GEOMETRY
 			float[] vertices = null;
 			int[] indices = null;
 			float[] uvs = null;
@@ -129,7 +129,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 
 				// Process the mesh data by type
 				switch ((int) type) {
-				case 1: // Vertex positions
+				case 1: // VERTEX positions
 					vertices = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < vertices.length) {
 						// X, Y, Z
@@ -152,7 +152,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 					while (idx < uvs.length)
 						uvs[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
-				case 4: // Vertex normals
+				case 4: // VERTEX normals
 					normals = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < normals.length) {
 						normals[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
@@ -170,7 +170,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
 					while (idx < weights.length)
 						weights[idx++] = (float) dis.readPrecisionNumber(blockHeader.globalPrecisionGeo);
 					break;
-				case 5: // Vertex tangents
+				case 5: // VERTEX tangents
 				default:
 					// Unknown mesh data, skipping
 					dis.skip(subLength);
