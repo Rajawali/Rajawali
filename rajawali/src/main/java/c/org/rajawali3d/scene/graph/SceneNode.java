@@ -52,6 +52,9 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @Nullable
     protected Lock currentlyHeldWriteLock;
 
+    @Nullable
+    protected Lock currentlyHeldReadLock;
+
     protected volatile boolean visible = true;
 
     @NonNull
@@ -108,7 +111,13 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     @Nullable
     @Override
     public Lock acquireReadLock() throws InterruptedException {
-        return null;
+        // If this node has been added to a graph, we need to ask for a lock, otherwise we can continue.
+        if (parent != null) {
+            //noinspection ConstantConditions
+            return parent.acquireReadLock();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -117,6 +126,17 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
         try {
             this.parent = parent;
             // We don't update the graph here because it will happen during the add process.
+        } finally {
+            releaseWriteLock();
+        }
+    }
+
+    @Override
+    @Nullable
+    public NodeParent getParent() throws InterruptedException {
+        currentlyHeldReadLock = acquireReadLock();
+        try {
+            return parent;
         } finally {
             releaseWriteLock();
         }
@@ -389,6 +409,22 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
             } catch (IllegalMonitorStateException e) {
                 // We did not hold a valid lock here
                 currentlyHeldWriteLock = null;
+            }
+        }
+    }
+
+    /**
+     * Releases any read lock this node might be holding.
+     */
+    protected void releaseReadLock() {
+        // We do this from the lock directly because our parent may have become null and we need to be sure we
+        // release the lock we hold.
+        if (currentlyHeldReadLock != null) {
+            try {
+                currentlyHeldReadLock.unlock();
+            } catch (IllegalMonitorStateException e) {
+                // We did not hold a valid lock here
+                currentlyHeldReadLock = null;
             }
         }
     }

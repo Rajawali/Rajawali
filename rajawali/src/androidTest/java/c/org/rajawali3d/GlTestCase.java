@@ -2,27 +2,23 @@ package c.org.rajawali3d;
 
 import android.app.Activity;
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.test.rule.ActivityTestRule;
 import android.view.View;
-import c.org.rajawali3d.renderer.RendererImpl;
+import c.org.rajawali3d.core.RenderControl;
+import c.org.rajawali3d.core.RenderControlClient;
+import c.org.rajawali3d.surface.SurfaceSize;
+import c.org.rajawali3d.surface.gles.GLESSurfaceView;
 import org.junit.Rule;
 import org.rajawali3d.GlTestActivity;
-import org.rajawali3d.renderer.ISurfaceRenderer;
-import org.rajawali3d.view.Surface;
-import org.rajawali3d.view.SurfaceView;
 
 import java.util.concurrent.CountDownLatch;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 /**
  * Extend ActivityInstrumentationTestCase2 for testing GL.  Subclasses can
- * use {@link #runOnGlThreadAndWait(Runnable)} and {@link #getGl()} to test from the
+ * use {@link #runOnGlThreadAndWait(Runnable)} to test from the
  * GL thread.</p>
  *
  * <p>Note: assumes a dummy activity, the test overrides the activity view and
@@ -39,22 +35,14 @@ public abstract class GlTestCase {
 
     private final Object lock = new Object();
 
-    private Activity activity  = null;
-    private Surface  glSurface = null;
-    private ISurfaceRenderer renderer = null;
-    private GL10     gl10      = null;
+    private Activity            activity  = null;
+    private GLESSurfaceView     glSurface = null;
+    private Object              gl10      = null;
+    private RenderControlClient renderer  = null;
 
     // ------------------------------------------------------------
     // Expose GL context and GL thread.
     // ------------------------------------------------------------
-
-    public Surface getGlSurface() {
-        return glSurface;
-    }
-
-    public GL10 getGl() {
-        return gl10;
-    }
 
     public Context getContext() {
         return activity.getApplicationContext();
@@ -65,7 +53,7 @@ public abstract class GlTestCase {
      */
     public void runOnGlThreadAndWait(final Runnable runnable) throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        ((GLSurfaceView) glSurface).queueEvent(new Runnable() {
+        glSurface.queueEvent(new Runnable() {
             public void run() {
                 runnable.run();
                 latch.countDown();
@@ -79,21 +67,24 @@ public abstract class GlTestCase {
     // ------------------------------------------------------------
 
     /**
-     * Dummy renderer, exposes the GL context for {@link #getGl()}.
+     * Dummy renderer, exposes the GL context.
      */
-    private class MockRenderer extends RendererImpl {
+    private class MockRenderer implements RenderControlClient {
 
         MockRenderer(@NonNull Context context) {
-            super(context);
         }
 
         @Override
-        public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
+        public void onRenderControlAvailable(@NonNull RenderControl renderControl, @NonNull SurfaceSize surfaceSize) {
             synchronized (lock) {
-                gl10 = gl;
+                gl10 = new Object();
                 lock.notifyAll();
             }
-            super.onRenderSurfaceCreated(config, gl, width, height);
+        }
+
+        @Override
+        public void onSurfaceSizeChanged(@NonNull SurfaceSize surfaceSize) {
+
         }
     }
 
@@ -109,19 +100,18 @@ public abstract class GlTestCase {
         // surface is still there.
         final Activity activity = activityRule.getActivity(); // launches activity
         if (activity == this.activity) {
-            renderer.onResume();
+            glSurface.onResume();
             return;  // same activity, assume surface is still there
         }
 
         // New or different activity, set up for GL.
         this.activity = activity;
 
-        glSurface = new SurfaceView(activity);
-        gl10 = null;
+        glSurface = new GLESSurfaceView(activity);
 
         // Attach the renderer to the view, and the view to the activity.
         renderer = new MockRenderer(activity);
-        glSurface.setSurfaceRenderer(renderer);
+        glSurface.configure(renderer);
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (title != null) {
@@ -141,7 +131,7 @@ public abstract class GlTestCase {
 
     protected void tearDown() throws Exception {
         if (renderer != null) {
-            renderer.onPause();
+            glSurface.onPause();
         }
     }
 }

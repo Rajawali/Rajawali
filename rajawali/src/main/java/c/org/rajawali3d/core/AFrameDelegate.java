@@ -186,12 +186,12 @@ public abstract class AFrameDelegate extends ACoreComponent implements FrameDele
     @RenderThread
     @Override
     @CallSuper
-    public void onFrameStart(double deltaTime) throws InterruptedException {
+    public void onFrameStart(long currentTime, double deltaTime) throws InterruptedException {
         if (!isEnabled) {
             return;
         }
         // Run any queued tasks
-        super.onFrameStart(deltaTime);
+        super.onFrameStart(currentTime, deltaTime);
         // Propagate to any client callbacks
         synchronized (frameStartCallbacks) {
             for (int i = 0, j = frameStartCallbacks.size(); i < j; i++) {
@@ -211,7 +211,7 @@ public abstract class AFrameDelegate extends ACoreComponent implements FrameDele
     @RenderThread
     @Override
     @CallSuper
-    public void onFrameEnd(double deltaTime) throws InterruptedException {
+    public void onFrameEnd(long currentTime, double deltaTime) throws InterruptedException {
         if (!isEnabled) {
             return;
         }

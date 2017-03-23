@@ -53,6 +53,12 @@ public class Object3D implements NodeMember, RenderableObject, Comparable<Object
         this.parent = parent;
     }
 
+    @Nullable
+    @Override
+    public NodeParent getParent() throws InterruptedException {
+        return parent;
+    }
+
     @Override
     public void modelMatrixUpdated() {
     }

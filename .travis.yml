@@ -46,7 +46,7 @@ script:
 - echo -e "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
 - cat local.properties
 - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-- "./gradlew :rajawali:uploadTestsToS3 :examples:check --stacktrace --continue"
+#- "./gradlew :rajawali:uploadTestsToS3 :examples:check --stacktrace --continue"
  # Will execute :rajawali:check
 #- "./gradlew :vuforia:check --stacktrace --continue"
 #- "./gradlew :vr:check --stacktrace --continue"

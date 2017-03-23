@@ -89,7 +89,7 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
         RajLog.i(context.getString(R.string.renderer_start_header));
         RajLog.i(context.getString(R.string.renderer_start_message));
 
-        this.context = context;
+        this.context = context.getApplicationContext();
         this.renderSurfaceView = renderSurfaceView;
         this.renderControlClient = renderControlClient;
 
@@ -341,10 +341,10 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
     public void onFrameEnd(long currentTime, double deltaTime) throws InterruptedException {
         // Propagate to RenderDelegates
         for (int i = 0, j = scenes.size(); i < j; i++) {
-            ((AScene) sceneViews.get(i)).onFrameEnd(deltaTime);
+            ((AScene) sceneViews.get(i)).onFrameEnd(currentTime, deltaTime);
         }
         for (int i = 0, j = sceneViews.size(); i < j; i++) {
-            ((AScene) sceneViews.get(i)).onFrameEnd(deltaTime);
+            ((AScene) sceneViews.get(i)).onFrameEnd(currentTime, deltaTime);
         }
     }
 

@@ -6,7 +6,6 @@ import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Camera;
-import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.intersection.Intersector.Intersection;
 
 /**
@@ -24,6 +23,14 @@ public interface NodeMember extends AABB {
      * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
      */
     void setParent(@Nullable NodeParent parent) throws InterruptedException;
+
+    /**
+     * Retrieves the {@link NodeParent} of this {@link NodeMember}.
+     *
+     * @return The {@link NodeParent} implementation. Can be null.
+     * @throws InterruptedException Thrown if the calling thread was interrupted while waiting for lock acquisition.
+     */
+    @Nullable NodeParent getParent() throws InterruptedException;
 
     /**
      * Called by a {@link NodeParent} when the model matrices (local and world) have been updated. This is an

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
 import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.object.RenderableObject;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
@@ -37,6 +38,10 @@ public class ASceneGraphTest {
         }
 
         @NonNull @Override public List<NodeMember> intersection(@NonNull Camera camera) {
+            return null;
+        }
+
+        @NonNull @Override public List<RenderableObject> visibleObjectIntersection(@NonNull Camera camera) {
             return null;
         }
 

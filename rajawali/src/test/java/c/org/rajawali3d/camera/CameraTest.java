@@ -29,7 +29,7 @@ public class CameraTest {
         final NodeParent parent = mock(NodeParent.class);
         final Camera camera = new Camera();
         camera.setParent(parent);
-        assertEquals(parent, camera.parent);
+        assertEquals(parent, camera.getParent());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class CameraTest {
         final NodeParent parent = Mockito.mock(NodeParent.class);
         final Matrix4 matrix = Matrix4.createTranslationMatrix(1d, 2d, 3d);
         Mockito.doReturn(matrix).when(parent).getWorldModelMatrix();
-        camera.parent = parent;
+        camera.setParent(parent);
         camera.getFrustumCorners(points);
         assertFalse(camera.cameraDirty);
 
