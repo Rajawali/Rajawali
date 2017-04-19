@@ -38,6 +38,7 @@ public class ArcballCamera extends Camera {
     private Matrix4 mScratchMatrix;
     private Vector3 mScratchVector;
     private double mStartFOV;
+    private float mScreenMapping = 1;
 
     public ArcballCamera(Context context, View view) {
         this(context, view, null);
@@ -73,6 +74,16 @@ public class ArcballCamera extends Camera {
         super.setProjectionMatrix(width, height);
     }
 
+    public void setScreenMappingRatio(float ratio) {
+        if(ratio > 1) ratio = 1;
+        if(ratio < -1) ratio = -1;
+        mScreenMapping = ratio;
+    }
+
+    public float getScreenMappingRatio() {
+	return mScreenMapping;
+    }
+
     private void mapToSphere(final float x, final float y, Vector3 out)
     {
         float lengthSquared = x * x + y * y;
@@ -89,8 +100,8 @@ public class ArcballCamera extends Camera {
 
     private void mapToScreen(final float x, final float y, Vector2 out)
     {
-        out.setX((2 * x - mLastWidth) / mLastWidth);
-        out.setY(-(2 * y - mLastHeight) / mLastHeight);
+        out.setX(mScreenMapping * (2 * x - mLastWidth) / mLastWidth);
+        out.setY(-mScreenMapping  * (2 * y - mLastHeight) / mLastHeight);
     }
 
     private void startRotation(final float x, final float y)
