@@ -689,8 +689,8 @@ public class Material {
             if (mVertexShader.needsBuild()) mVertexShader.initialize();
             if (mFragmentShader.needsBuild()) mFragmentShader.initialize();
 
-            if (mVertexShader.needsBuild()) mVertexShader.buildShader();
-            if (mFragmentShader.needsBuild()) mFragmentShader.buildShader();
+            // custom shaders already have a shader string,
+            // so we do not need to build one
         }
 
         if (RajLog.isDebugEnabled()) {
