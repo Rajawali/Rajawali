@@ -629,6 +629,10 @@ public abstract class AShader extends AShaderBase {
 	}
 
 	public void buildShader() {
+		// if shaderstring is already built
+		// we do not need to build it again
+		if(mShaderString != null) return; 
+
 		mShaderSB = new StringBuilder();
 		StringBuilder s = mShaderSB;
 
