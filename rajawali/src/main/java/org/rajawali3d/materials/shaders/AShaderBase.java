@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Dennis Ippel
+  Copyright 2013 Dennis Ippel
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -507,10 +507,10 @@ public abstract class AShaderBase {
 			super(name, dataType, value);
 		}
 		
-		public ShaderVar wxyz()
+		public ShaderVar xyzw()
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
-			v.setName(this.mName + ".wxyz");
+			v.setName(this.mName + ".xyzw");
 			v.mInitialized = true;
 			return v;
 		}
