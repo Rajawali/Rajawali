@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import android.support.annotation.FloatRange;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;
@@ -38,7 +40,7 @@ public class ArcballCamera extends Camera {
     private Matrix4 mScratchMatrix;
     private Vector3 mScratchVector;
     private double mStartFOV;
-    private float mScreenMapping = 1;
+    @FloatRange(from = -1, to = 1) private float mScreenMapping = 1;
 
     public ArcballCamera(Context context, View view) {
         this(context, view, null);
@@ -74,12 +76,13 @@ public class ArcballCamera extends Camera {
         super.setProjectionMatrix(width, height);
     }
 
-    public void setScreenMappingRatio(float ratio) {
+    public void setScreenMappingRatio(@FloatRange(from = -1, to = 1) float ratio) {
         if(ratio > 1) ratio = 1;
         if(ratio < -1) ratio = -1;
         mScreenMapping = ratio;
     }
 
+    @FloatRange(from=-1,to=1)
     public float getScreenMappingRatio() {
 	return mScreenMapping;
     }
