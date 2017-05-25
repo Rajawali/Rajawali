@@ -1172,12 +1172,6 @@ public class Scene {
 		// Set background color (to Object3D.UNPICKABLE to prevent any conflicts)
 		GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-		// Configure depth testing
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDepthFunc(GLES20.GL_LESS);
-		GLES20.glDepthMask(true);
-		GLES20.glClearDepthf(1.0f);
-
 		// Clear buffers used for color-picking
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 

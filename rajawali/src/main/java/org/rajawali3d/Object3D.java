@@ -426,7 +426,17 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				}
 			}
 
-			// Blending and depth testing are set up globally in Scene.doColorPicking()
+			// Blending test is set up globally in Scene.doColorPicking()
+
+			// Depth testing is set-up per-object in order to avoid ScreenQuads to overshadow other
+			// objects, see https://github.com/Rajawali/Rajawali/issues/1634
+			if (!mEnableDepthTest) GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			else {
+				GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+				GLES20.glDepthFunc(GLES20.GL_LESS);
+			}
+
+			GLES20.glDepthMask(mEnableDepthMask);
 
 			// Material setup is independent of batching, and has no need for
 			// shader params, textures, normals, vertex colors, or current object...
