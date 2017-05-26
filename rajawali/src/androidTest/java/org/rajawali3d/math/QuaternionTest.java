@@ -1102,6 +1102,24 @@ public class QuaternionTest {
     }
 
     @Test
+    public void testAdditiveIdentity() throws Exception {
+        final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion zero = new Quaternion(0d, 0d, 0d, 0d);
+
+        // p = p + 0
+        assertEquals(
+            p.toString(),
+            p.clone().add(zero).toString()
+        );
+
+        // p = 0 + p
+        assertEquals(
+            p.toString(),
+            zero.clone().add(p).toString()
+        );
+    }
+
+    @Test
     public void testAdditiveAssociativity() throws Exception {
         final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
@@ -1111,6 +1129,23 @@ public class QuaternionTest {
         assertEquals(
             p.clone().add(q).add(r).toString(),
             p.clone().add(q.clone().add(r)).toString()
+        );
+    }
+
+    @Test
+    public void testMultiplicativeIdentity() throws Exception {
+        final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion one = new Quaternion().identity();
+
+        // p = p * 1
+        assertEquals(
+            p.toString(),
+            p.clone().multiply(one).toString()
+        );
+        // p = 1 * p
+        assertEquals(
+            p.toString(),
+            one.clone().multiply(p).toString()
         );
     }
 
@@ -1140,23 +1175,22 @@ public class QuaternionTest {
         );
     }
 
-/*
     @Test
     public void testDivision() throws Exception {
         final Quaternion q = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion r = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion p = q.clone().multiply(r.clone());
 
-        // from p = q * r follows that q = p * (r ^ -1) and r = (q ^ -1) * p
-        assertEquals(
-            q.toString(),
-            p.clone().multiply(r.clone().pow(-1)).toString()
-        );
-        assertEquals(
-            r.toString(),
-            q.clone().pow(-1).multiply(p).toString()
-        );
+        // from p = q * r follows that q = p * r.inverse() and r = q.inverse() * p
+        assertEquals(q.w, p.clone().multiply(r.clone().inverse()).w, 1e-14);
+        assertEquals(q.x, p.clone().multiply(r.clone().inverse()).x, 1e-14);
+        assertEquals(q.y, p.clone().multiply(r.clone().inverse()).y, 1e-14);
+        assertEquals(q.z, p.clone().multiply(r.clone().inverse()).z, 1e-14);
+
+        assertEquals(r.w, q.clone().inverse().multiply(p).w, 1e-14);
+        assertEquals(r.x, q.clone().inverse().multiply(p).x, 1e-14);
+        assertEquals(r.y, q.clone().inverse().multiply(p).y, 1e-14);
+        assertEquals(r.z, q.clone().inverse().multiply(p).z, 1e-14);
     }
-*/
 }
 
