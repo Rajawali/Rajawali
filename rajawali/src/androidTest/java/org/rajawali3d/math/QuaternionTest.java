@@ -1088,4 +1088,75 @@ public class QuaternionTest {
         assertNotNull(s);
         assertEquals("Quaternion <w, x, y, z>: <1.0, 2.0, 3.0, 4.0>", s);
     }
+
+    @Test
+    public void testCommutativity() throws Exception {
+        final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+
+        // p + q = q + p
+        assertEquals(
+            p.clone().add(q).toString(),
+            q.clone().add(p).toString()
+        );
+    }
+
+    @Test
+    public void testAdditiveAssociativity() throws Exception {
+        final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
+
+        // (p + q) + r = p + (q + r)
+        assertEquals(
+            p.clone().add(q).add(r).toString(),
+            p.clone().add(q.clone().add(r)).toString()
+        );
+    }
+
+    @Test
+    public void testMultiplicativeAssociativity() throws Exception {
+        final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
+
+        // (p * q) * r = p * (q * r)
+        assertEquals(
+            p.clone().multiply(q).multiply(r).toString(),
+            p.clone().multiply(q.clone().multiply(r)).toString()
+        );
+    }
+
+    @Test
+    public void testDistributivity() throws Exception {
+        final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
+
+        // p * (q + r) = p * q + p * r)
+        assertEquals(
+            p.clone().multiply(q.clone().add(r)).toString(),
+            p.clone().multiply(q).add(p.clone().multiply(r)).toString()
+        );
+    }
+
+/*
+    @Test
+    public void testDivision() throws Exception {
+        final Quaternion q = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion r = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion p = q.clone().multiply(r.clone());
+
+        // from p = q * r follows that q = p * (r ^ -1) and r = (q ^ -1) * p
+        assertEquals(
+            q.toString(),
+            p.clone().multiply(r.clone().pow(-1)).toString()
+        );
+        assertEquals(
+            r.toString(),
+            q.clone().pow(-1).multiply(p).toString()
+        );
+    }
+*/
 }
+
