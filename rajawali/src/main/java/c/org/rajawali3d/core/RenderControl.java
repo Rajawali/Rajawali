@@ -1,10 +1,10 @@
 package c.org.rajawali3d.core;
 
+import android.support.annotation.NonNull;
+
 import c.org.rajawali3d.scene.Scene;
 import c.org.rajawali3d.sceneview.SceneView;
 import c.org.rajawali3d.surface.SurfaceView;
-
-import android.support.annotation.NonNull;
 
 /**
  * API for external clients to manage the interaction between the {@link SurfaceView} rendering context and all
@@ -18,7 +18,7 @@ public interface RenderControl extends RenderStatus {
     /**
      *  Convenience flag for use of the display refresh rate as the render frame rate
      */
-    double USE_DISPLAY_REFRESH_RATE = -1.0d;
+    double USE_DISPLAY_REFRESH_RATE = Double.NaN;
 
     /**
      * Convenience flag for use of continuous rendering as fast as possible, rather than a periodic frame rate

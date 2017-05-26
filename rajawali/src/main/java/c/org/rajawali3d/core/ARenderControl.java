@@ -1,6 +1,25 @@
 package c.org.rajawali3d.core;
 
+import android.content.Context;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.view.WindowManager;
+
+import net.jcip.annotations.GuardedBy;
+
+import org.rajawali3d.R;
+import org.rajawali3d.util.OnFPSUpdateListener;
+import org.rajawali3d.util.RajLog;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.scene.AScene;
 import c.org.rajawali3d.scene.Scene;
@@ -9,25 +28,6 @@ import c.org.rajawali3d.sceneview.SceneView;
 import c.org.rajawali3d.surface.SurfaceRenderer;
 import c.org.rajawali3d.surface.SurfaceSize;
 import c.org.rajawali3d.surface.SurfaceView;
-
-import org.rajawali3d.R;
-import org.rajawali3d.util.OnFPSUpdateListener;
-import org.rajawali3d.util.RajLog;
-
-import android.content.Context;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import android.view.WindowManager;
-
-import net.jcip.annotations.GuardedBy;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Base class for a {@link RenderControl} implemetation; provides most graphics system-independent functions,
@@ -64,14 +64,14 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
     private final List<SceneView> sceneViews;
 
     // Frame related members
-    private double                   frameRate; // Target frame rate to render at
-    private long                     lastFrameTime; // Time of last frame. Used for animation delta time
-    private long                     framesStartTime; // Time of last successful startFrames()
+    private double frameRate = 60.0; // Target frame rate to render at
+    private long lastFrameTime; // Time of last frame. Used for animation delta time
+    private long framesStartTime; // Time of last successful startFrames()
     private ScheduledExecutorService timer; // Timer used to schedule drawing
 
     // FPS related members
-    private int                 frameCount; // Used for determining FPS
-    private double              lastMeasuredFPS; // Last measured FPS value
+    private int frameCount; // Used for determining FPS
+    private double lastMeasuredFPS; // Last measured FPS value
     private OnFPSUpdateListener fpsUpdateListener; // Listener to notify of new FPS values.
     private long fpsStartTime = System.nanoTime(); // Used for determining FPS
 
@@ -102,7 +102,9 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
     }
 
     @Override
-    public @NonNull SurfaceSize getSurfaceSize() {
+    public
+    @NonNull
+    SurfaceSize getSurfaceSize() {
         return surfaceSize;
     }
 
@@ -133,7 +135,7 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
 
     @Override
     public void setFrameRate(double frameRate) {
-        this.frameRate = frameRate < 0 ? getDisplayRefreshRate() : frameRate;
+        this.frameRate = Double.compare(frameRate, RenderControl.USE_DISPLAY_REFRESH_RATE) == 0 ? getDisplayRefreshRate() : frameRate;
         if (areFramesEnabled()) {
             if (stopFrames()) {
                 // Restart frames using the new rate value
@@ -357,13 +359,16 @@ public abstract class ARenderControl extends ACoreComponent implements RenderCon
         lastFrameTime = framesStartTime;
         if (frameRate != 0) {
             killTimer();
+            final double rate = Double.compare(frameRate, RenderControl.USE_DISPLAY_REFRESH_RATE) == 0
+                ? getDisplayRefreshRate() : frameRate;
             timer = Executors.newScheduledThreadPool(1);
             timer.scheduleAtFixedRate(
-                    new Runnable() {
-                        public void run() {
-                            requestRenderFrame();
-                        }
-                    }, 0, (long) (1000 / frameRate), TimeUnit.MILLISECONDS);
+                new Runnable() {
+                    public void run() {
+                        requestRenderFrame();
+                    }
+                }, 0, (long) (1000 / rate),
+                TimeUnit.MILLISECONDS);
         }
         return true;
     }
