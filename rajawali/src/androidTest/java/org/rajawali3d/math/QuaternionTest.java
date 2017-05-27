@@ -1176,7 +1176,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testDivision() throws Exception {
+    public void testInverseDivision() throws Exception {
         final Quaternion q = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion r = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion p = q.clone().multiply(r.clone());
@@ -1191,6 +1191,41 @@ public class QuaternionTest {
         assertEquals(r.x, q.clone().inverse().multiply(p).x, 1e-14);
         assertEquals(r.y, q.clone().inverse().multiply(p).y, 1e-14);
         assertEquals(r.z, q.clone().inverse().multiply(p).z, 1e-14);
+    }
+
+    @Test
+    public void testPowDivision() throws Exception {
+        final Quaternion q = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion r = new Quaternion(1d, 2d, 3d, 4d);
+        q.normalize();
+        r.normalize();
+        final Quaternion p = q.clone().multiply(r.clone());
+
+        // for unit Quaternions, from p = q * r follows that q = p * r.pow(-1) and r = q.pow(-1) * p
+        assertEquals(q.w, p.clone().multiply(r.clone().pow(-1)).w, 1e-14);
+        assertEquals(q.x, p.clone().multiply(r.clone().pow(-1)).x, 1e-14);
+        assertEquals(q.y, p.clone().multiply(r.clone().pow(-1)).y, 1e-14);
+        assertEquals(q.z, p.clone().multiply(r.clone().pow(-1)).z, 1e-14);
+
+        assertEquals(r.w, q.clone().pow(-1).multiply(p).w, 1e-14);
+        assertEquals(r.x, q.clone().pow(-1).multiply(p).x, 1e-14);
+        assertEquals(r.y, q.clone().pow(-1).multiply(p).y, 1e-14);
+        assertEquals(r.z, q.clone().pow(-1).multiply(p).z, 1e-14);
+    }
+
+    @Test
+    public void testSquare() throws Exception {
+        final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
+        p.normalize();
+
+        // for unit quaternions, p * p = p.pow(2)
+        final Quaternion p2   = p.clone().multiply(p);
+        final Quaternion pow2 = p.clone().pow(2);
+
+        assertEquals(p2.w, pow2.w, 1e-14);
+        assertEquals(p2.x, pow2.x, 1e-14);
+        assertEquals(p2.y, pow2.y, 1e-14);
+        assertEquals(p2.z, pow2.z, 1e-14);
     }
 }
 
