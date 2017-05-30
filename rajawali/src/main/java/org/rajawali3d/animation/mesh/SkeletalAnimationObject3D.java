@@ -24,7 +24,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
-import org.rajawali3d.geometry.BufferInfo;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationFrame.SkeletonJoint;
 import org.rajawali3d.cameras.Camera;
@@ -483,7 +483,7 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		clone.setRotation(getOrientation());
 		clone.setPosition(getPosition());
 		clone.setScale(getScale());
-		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.getGeometry().copyFrom(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
 		clone.mElementsBufferType = GLES20.GL_UNSIGNED_INT;

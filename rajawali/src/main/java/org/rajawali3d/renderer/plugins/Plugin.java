@@ -14,7 +14,7 @@ package org.rajawali3d.renderer.plugins;
 
 import android.opengl.GLES20;
 
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.util.RajLog;
 
@@ -25,8 +25,8 @@ import org.rajawali3d.util.RajLog;
  * @author Andrew Jo
  */
 public abstract class Plugin implements IRendererPlugin {
-    protected IndexedGeometry mGeometry;
-    protected Renderer        mRenderer;
+    protected NonInterleavedGeometry mGeometry;
+    protected Renderer               mRenderer;
 
     // Field variables for shader programs.
     protected String mVertexShader;
@@ -52,7 +52,7 @@ public abstract class Plugin implements IRendererPlugin {
      * @param createVBOs {@code boolean} If true, any VBOs will be created immediately.
      */
     public Plugin(Renderer renderer, boolean createVBOs) {
-        mGeometry = new IndexedGeometry();
+        mGeometry = new NonInterleavedGeometry();
         mRenderer = renderer;
         init(createVBOs);
     }

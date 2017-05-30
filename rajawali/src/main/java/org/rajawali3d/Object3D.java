@@ -19,8 +19,8 @@ import android.support.annotation.NonNull;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.geometry.BufferInfo;
-import org.rajawali3d.geometry.IndexedGeometry;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 import org.rajawali3d.math.Matrix;
@@ -65,10 +65,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	protected Material mMaterial;
 
-	protected IndexedGeometry mGeometry;
-	protected Object3D        mParent;
-	protected List<Object3D>  mChildren;
-	protected String          mName;
+	protected NonInterleavedGeometry mGeometry;
+	protected Object3D               mParent;
+	protected List<Object3D>         mChildren;
+	protected String                 mName;
 
 	protected boolean mDoubleSided = false;
 	protected boolean mBackSided = false;
@@ -103,7 +103,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	public Object3D() {
 		super();
 		mChildren = Collections.synchronizedList(new CopyOnWriteArrayList<Object3D>());
-		mGeometry = new IndexedGeometry();
+		mGeometry = new NonInterleavedGeometry();
 		mColor = new float[] { 0, 1, 0, 1.0f};
 		mPickingColor = new float[4];
 		setPickingColor(UNPICKABLE);
@@ -115,7 +115,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	/**
-	 * Passes the data to the IndexedGeometry instance. Vertex Buffer Objects (VBOs) will be created.
+	 * Passes the data to the NonInterleavedGeometry instance. Vertex Buffer Objects (VBOs) will be created.
 	 *
 	 * @param vertexBufferInfo
 	 *            The handle to the vertex buffer
@@ -138,7 +138,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	}
 
 	/**
-	 * Passes the data to the IndexedGeometry instance. Vertex Buffer Objects (VBOs) will be created.
+	 * Passes the data to the NonInterleavedGeometry instance. Vertex Buffer Objects (VBOs) will be created.
 	 *
 	 * @param vertices
 	 *            A float array containing vertex data
@@ -307,7 +307,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			if(mIsVisible) {
                 int bufferType = mGeometry.getIndexBufferInfo().bufferType == BufferInfo.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().glHandle);
-				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
+				GLES20.glDrawElements(mDrawingMode, mGeometry.getNumberIndices(), bufferType, 0);
 				GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 			}
 			if (!mIsPartOfBatch && !mRenderChildrenAsBatch && sceneMaterial == null) {
@@ -451,7 +451,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			// Draw the object using its picking color
 			int bufferType = mGeometry.getIndexBufferInfo().bufferType == BufferInfo.SHORT_BUFFER ? GLES20.GL_UNSIGNED_SHORT : GLES20.GL_UNSIGNED_INT;
 			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mGeometry.getIndexBufferInfo().glHandle);
-			GLES20.glDrawElements(mDrawingMode, mGeometry.getNumIndices(), bufferType, 0);
+			GLES20.glDrawElements(mDrawingMode, mGeometry.getNumberIndices(), bufferType, 0);
 			GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 			// Only need to undo face culling
@@ -690,7 +690,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		return null;
 	}
 
-	public IndexedGeometry getGeometry() {
+	public NonInterleavedGeometry getGeometry() {
 		return mGeometry;
 	}
 
@@ -722,7 +722,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	protected void cloneTo(Object3D clone, boolean copyMaterial) {
         clone.setName(mName);
-		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.getGeometry().copyFrom(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		if (copyMaterial) clone.setMaterial(mMaterial);
 		clone.mElementsBufferType = GLES20.GL_UNSIGNED_INT;

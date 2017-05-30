@@ -117,7 +117,7 @@ public class LoaderMD2 extends AMeshLoader implements IAnimatedMeshLoader {
             material.enableLighting(true);
             material.setDiffuseMethod(new DiffuseMethod.Lambert());
             material.addPlugin(new VertexAnimationMaterialPlugin());
-            mObject.getGeometry().copyFromGeometry3D(firstFrame.getGeometry());
+            mObject.getGeometry().copyFrom(firstFrame.getGeometry());
             mObject.setData(firstFrame.getGeometry().getVertexBufferInfo(), firstFrame.getGeometry()
                     .getNormalBufferInfo(), mTextureCoords, null, mIndices, false);
             mObject.setMaterial(material);

@@ -3,6 +3,7 @@ package org.rajawali3d.geometry;
 import android.opengl.GLES20;
 import android.support.test.filters.SmallTest;
 
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;

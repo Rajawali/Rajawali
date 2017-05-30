@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.rajawali3d.geometry;
+package c.org.rajawali3d.gl.buffers;
 
 import android.opengl.GLES20;
 import android.support.annotation.IntDef;
@@ -34,30 +34,31 @@ import java.nio.Buffer;
 // TODO: These should probably be private with accessors instead
 public class BufferInfo {
 
-    public static final int FLOAT_BUFFER = 0;
-    public static final int INT_BUFFER = 1;
-    public static final int SHORT_BUFFER = 2;
-    public static final int BYTE_BUFFER = 3;
+    public static final int BYTE_BUFFER   = 0;
+    public static final int FLOAT_BUFFER  = 1;
+    public static final int DOUBLE_BUFFER = 2;
+    public static final int SHORT_BUFFER  = 3;
+    public static final int INT_BUFFER    = 4;
+    public static final int LONG_BUFFER   = 5;
+    public static final int CHAR_BUFFER   = 6;
 
     @Documented
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FLOAT_BUFFER, INT_BUFFER, SHORT_BUFFER, BYTE_BUFFER})
-    @interface BufferType {
-    }
+    @IntDef({ BYTE_BUFFER, FLOAT_BUFFER, DOUBLE_BUFFER, SHORT_BUFFER, INT_BUFFER, LONG_BUFFER, CHAR_BUFFER })
+    public @interface BufferType {}
 
     public int rajawaliHandle = -1;
     public int glHandle       = -1;
-    public @BufferType int bufferType;
-    public Buffer     buffer;
-    public int        target;
-    public int        byteSize;
-    public int        usage;
-    public int stride = 0;
-    public int offset = 0;
-    public int type   = GLES20.GL_FLOAT;
+    public @BufferType   int    bufferType;
+    public               Buffer buffer; //TODO: Does it make sense to let this be nullable?
+    public @BufferTarget int    target;
+    public               int    byteSize;
+    public @BufferUsage int usage  = GLES20.GL_STATIC_DRAW;
+    public              int stride = 0;
+    public              int offset = 0;
+    public              int type   = GLES20.GL_FLOAT;
 
     public BufferInfo() {
-        usage = GLES20.GL_STATIC_DRAW;
     }
 
     public BufferInfo(@NonNull @BufferType int bufferType, @NonNull Buffer buffer) {

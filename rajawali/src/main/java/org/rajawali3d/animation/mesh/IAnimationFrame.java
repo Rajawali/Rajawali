@@ -12,11 +12,11 @@
  */
 package org.rajawali3d.animation.mesh;
 
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 
 public interface IAnimationFrame {
-	public IndexedGeometry getGeometry();
-	public void setGeometry(IndexedGeometry geometry);
+	public NonInterleavedGeometry getGeometry();
+	public void setGeometry(NonInterleavedGeometry geometry);
 	public String getName();
 	public void setName(String name);
 }

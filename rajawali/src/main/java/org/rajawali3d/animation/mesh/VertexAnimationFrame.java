@@ -12,23 +12,23 @@
  */
 package org.rajawali3d.animation.mesh;
 
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.math.vector.Vector3;
 
 public class VertexAnimationFrame implements IAnimationFrame {
-	protected IndexedGeometry mGeometry;
-	protected String          mName;
-	protected float[]         mVertices;
+	protected NonInterleavedGeometry mGeometry;
+	protected String                 mName;
+	protected float[]                mVertices;
 
 	public VertexAnimationFrame() {
-		mGeometry = new IndexedGeometry();
+		mGeometry = new NonInterleavedGeometry();
 	}
 
-	public IndexedGeometry getGeometry() {
+	public NonInterleavedGeometry getGeometry() {
 		return mGeometry;
 	}
 
-	public void setGeometry(IndexedGeometry geometry) {
+	public void setGeometry(NonInterleavedGeometry geometry) {
 		mGeometry = geometry;
 	}
 

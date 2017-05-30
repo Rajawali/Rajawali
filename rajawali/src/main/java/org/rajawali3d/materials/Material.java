@@ -31,7 +31,7 @@ import c.org.rajawali3d.textures.CubeMapTexture;
 import c.org.rajawali3d.textures.SphereMapTexture2D;
 import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.Object3D;
-import org.rajawali3d.geometry.BufferInfo;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.IDiffuseMethod;

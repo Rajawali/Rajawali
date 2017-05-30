@@ -17,7 +17,7 @@ import android.opengl.GLES20;
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
@@ -26,8 +26,8 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 
 public class BoundingBox implements IBoundingVolume {
-	protected       IndexedGeometry mGeometry;
-	protected final Vector3         mMin, mTransformedMin;
+	protected       NonInterleavedGeometry mGeometry;
+	protected final Vector3                mMin, mTransformedMin;
 	protected final Vector3 mMax, mTransformedMax;
 	protected final Vector3 mTmpMin, mTmpMax;
 	protected final Vector3[] mPoints;
@@ -74,7 +74,7 @@ public class BoundingBox implements IBoundingVolume {
 		}
 	}
 
-	public BoundingBox(IndexedGeometry geometry) {
+	public BoundingBox(NonInterleavedGeometry geometry) {
 		this();
 		mGeometry = geometry;
 		calculateBounds(mGeometry);
@@ -145,7 +145,7 @@ public class BoundingBox implements IBoundingVolume {
 		return mBoundingColor.get();
 	}
 
-    public void calculateBounds(IndexedGeometry geometry) {
+    public void calculateBounds(NonInterleavedGeometry geometry) {
         mMin.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         mMax.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 

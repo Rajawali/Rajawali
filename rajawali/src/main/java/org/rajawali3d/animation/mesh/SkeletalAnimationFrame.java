@@ -12,7 +12,7 @@
  */
 package org.rajawali3d.animation.mesh;
 
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
@@ -28,11 +28,11 @@ public class SkeletalAnimationFrame implements IAnimationFrame {
 		mSkeleton = new Skeleton();
 	}
 
-	public IndexedGeometry getGeometry() {
+	public NonInterleavedGeometry getGeometry() {
 		return null;
 	}
 
-	public void setGeometry(IndexedGeometry geometry) {
+	public void setGeometry(NonInterleavedGeometry geometry) {
 	}
 
 	public String getName() {

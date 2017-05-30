@@ -14,7 +14,7 @@ package org.rajawali3d.primitives;
 
 import c.org.rajawali3d.object.Object3D;
 
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 
 /**
  * A sphere primitive. The constructor takes two boolean arguments that indicate whether certain buffers should be
@@ -208,6 +208,6 @@ public class Sphere extends Object3D {
 		}
 
 		// TODO graphics system hinge strategy
-		((IndexedGeometry)geometry).setData(vertices, normals, textureCoords, colors, indices, createVBOs);
+		((NonInterleavedGeometry)geometry).setData(vertices, normals, textureCoords, colors, indices, createVBOs);
 	}
 }

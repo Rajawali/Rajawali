@@ -13,8 +13,8 @@
 package org.rajawali3d.animation.mesh;
 
 import android.opengl.GLES20;
-import org.rajawali3d.geometry.BufferInfo;
-import org.rajawali3d.geometry.IndexedGeometry;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D.SkeletalAnimationException;
 import org.rajawali3d.cameras.Camera;
@@ -143,7 +143,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 	private FloatBuffer alocateBuffer(FloatBuffer buffer, float[] data) {
 		if (buffer == null) {
 			buffer = ByteBuffer
-					.allocateDirect(data.length * IndexedGeometry.FLOAT_SIZE_BYTES * 4)
+					.allocateDirect(data.length * NonInterleavedGeometry.FLOAT_SIZE_BYTES * 4)
 					.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
 			buffer.put(data);
@@ -263,7 +263,7 @@ public class SkeletalAnimationChildObject3D extends AAnimationObject3D {
 		clone.setRotation(getOrientation());
 		clone.setPosition(getPosition());
 		clone.setScale(getScale());
-		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.getGeometry().copyFrom(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
 		clone.mElementsBufferType = GLES20.GL_UNSIGNED_INT;

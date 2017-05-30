@@ -16,7 +16,7 @@ import android.opengl.GLES20;
 import android.os.SystemClock;
 
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.IMaterialPlugin;
 import org.rajawali3d.materials.plugins.VertexAnimationMaterialPlugin;
@@ -51,14 +51,14 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		}
 
 		// Update geometry (if current frame is different from before)
-		IndexedGeometry currentGeometry = ((VertexAnimationFrame) mFrames.get(mCurrentFrameIndex)).getGeometry();
+		NonInterleavedGeometry currentGeometry = ((VertexAnimationFrame) mFrames.get(mCurrentFrameIndex)).getGeometry();
 		if (mGeometry.getVertexBufferInfo() != currentGeometry.getVertexBufferInfo()) {
 			mGeometry.setVertexBufferInfo(currentGeometry.getVertexBufferInfo());
 			mGeometry.setNormalBufferInfo(currentGeometry.getNormalBufferInfo());
 		}
 
 		// Find geometry for next frame in sequence
-		IndexedGeometry nextGeometry = currentGeometry;
+		NonInterleavedGeometry nextGeometry = currentGeometry;
 		int nextFrame = mCurrentFrameIndex + 1;
 		if (nextFrame > mEndFrameIndex) {
 			if (mLoop) {
@@ -104,7 +104,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 
 	public VertexAnimationObject3D clone(boolean copyMaterial) {
 		VertexAnimationObject3D clone = new VertexAnimationObject3D();
-		clone.getGeometry().copyFromGeometry3D(mGeometry);
+		clone.getGeometry().copyFrom(mGeometry);
 		clone.isContainer(mIsContainerOnly);
 		clone.setMaterial(mMaterial);
 

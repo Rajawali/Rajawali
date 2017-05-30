@@ -14,7 +14,7 @@ package org.rajawali3d.bounds;
 
 import org.rajawali3d.Object3D;
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
@@ -22,10 +22,10 @@ import org.rajawali3d.primitives.Sphere;
 import java.nio.FloatBuffer;
 
 public class BoundingSphere implements IBoundingVolume {
-	protected       IndexedGeometry mGeometry;
-	protected       double          mRadius;
-	protected final Vector3         mPosition;
-	protected       Sphere          mVisualSphere;
+	protected       NonInterleavedGeometry mGeometry;
+	protected       double                 mRadius;
+	protected final Vector3                mPosition;
+	protected       Sphere                 mVisualSphere;
 	protected final Matrix4 mTmpMatrix = new Matrix4(); //Assumed to never leave identity state
 	protected final Vector3 mTmpPos;
 	protected double mDist, mMinDist, mScale;
@@ -38,7 +38,7 @@ public class BoundingSphere implements IBoundingVolume {
 		mScaleValues = new double[3];
 	}
 
-	public BoundingSphere(IndexedGeometry geometry) {
+	public BoundingSphere(NonInterleavedGeometry geometry) {
 		this();
 		mGeometry = geometry;
 		calculateBounds(mGeometry);
@@ -80,7 +80,7 @@ public class BoundingSphere implements IBoundingVolume {
 		mScale = mScale > mTmpPos.z ? mScale : mTmpPos.z;
 	}
 
-	public void calculateBounds(IndexedGeometry geometry) {
+	public void calculateBounds(NonInterleavedGeometry geometry) {
 		double radius = 0, maxRadius = 0;
 		Vector3 vertex = new Vector3();
 		FloatBuffer vertices = geometry.getVertices();

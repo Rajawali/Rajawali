@@ -1,10 +1,14 @@
 package org.rajawali3d.geometry;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import android.opengl.GLES20;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,18 +18,13 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import c.org.rajawali3d.GlTestCase;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @RunWith(AndroidJUnit4.class)
 @RequiresDevice
 @LargeTest
-public class IndexedGeometryTest extends GlTestCase {
+public class NonInterleavedGeometryTest extends GlTestCase {
 
     static float[] createVertexArray() {
         final float[] vertices = new float[4];
@@ -63,7 +62,7 @@ public class IndexedGeometryTest extends GlTestCase {
         return textures;
     }
 
-    public IndexedGeometryTest() {
+    public NonInterleavedGeometryTest() {
         super();
     }
 
@@ -79,7 +78,7 @@ public class IndexedGeometryTest extends GlTestCase {
 
     @Test
     public void testToString() throws Exception {
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
         assertNotNull(bufferObject.toString());
 
         // Create the dummy arrays
@@ -95,7 +94,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final IndexedGeometry bufferObject2 = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -122,7 +121,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -195,7 +194,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -268,7 +267,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -284,7 +283,7 @@ public class IndexedGeometryTest extends GlTestCase {
             assertEquals("Buffer contents invalid.", buffer.get(), vertices2[i++], 0);
         }
 
-        final IndexedGeometry bufferObject2 = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -315,7 +314,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -331,7 +330,7 @@ public class IndexedGeometryTest extends GlTestCase {
             assertEquals("Buffer contents invalid.", buffer.get(), normals2[i++], 0);
         }
 
-        final IndexedGeometry bufferObject2 = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -362,7 +361,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -378,7 +377,7 @@ public class IndexedGeometryTest extends GlTestCase {
             assertEquals("Buffer contents invalid.", buffer.get(), textures2[i++], 0);
         }
 
-        final IndexedGeometry bufferObject2 = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -409,7 +408,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -425,7 +424,7 @@ public class IndexedGeometryTest extends GlTestCase {
             assertEquals("Buffer contents invalid.", buffer.get(), colors2[i++], 0);
         }
 
-        final IndexedGeometry bufferObject2 = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -462,7 +461,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices2[2] = 2;
         indices2[3] = 1;
 
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -478,7 +477,7 @@ public class IndexedGeometryTest extends GlTestCase {
             assertEquals("Buffer contents invalid.", ((IntBuffer) buffer).get(), indices2[i++], 0);
         }
 
-        final IndexedGeometry bufferObject2 = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -511,7 +510,7 @@ public class IndexedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final IndexedGeometry bufferObject = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
@@ -522,7 +521,7 @@ public class IndexedGeometryTest extends GlTestCase {
 
         bufferObject.validateBuffers();
 
-        final IndexedGeometry bufferObject2 = new IndexedGeometry();
+        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override

@@ -456,7 +456,7 @@ public final class LensFlarePlugin extends Plugin {
 							GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
 
 							// Draw the elements.
-							GLES20.glDrawElements(GLES20.GL_TRIANGLES, mGeometry.getNumIndices(),
+							GLES20.glDrawElements(GLES20.GL_TRIANGLES, mGeometry.getNumberIndices(),
 												  GLES20.GL_UNSIGNED_INT, 0);
 
 							// Unbind texture.

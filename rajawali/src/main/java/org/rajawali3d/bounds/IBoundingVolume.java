@@ -12,7 +12,7 @@
  */
 package org.rajawali3d.bounds;
 
-import org.rajawali3d.geometry.IndexedGeometry;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.math.Matrix4;
@@ -21,7 +21,7 @@ public interface IBoundingVolume {
 
 	public static final int DEFAULT_COLOR = 0xFFFFFF00;
 
-	public void calculateBounds(IndexedGeometry geometry);
+	public void calculateBounds(NonInterleavedGeometry geometry);
 	public void drawBoundingVolume(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
 			final Matrix4 vMatrix, final Matrix4 mMatrix);
 	public void transform(Matrix4 matrix);

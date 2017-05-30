@@ -26,7 +26,7 @@ import java.util.concurrent.locks.Lock;
 /**
  * Abstract base for all SceneView implementations.
  *
- * TODO remove indirect dependencies here on GLES (via Camera->frustum Planes->IndexedGeometry)
+ * TODO remove indirect dependencies here on GLES (via Camera->frustum Planes->NonInterleavedGeometry)
  * TODO add factory methods (here? in RenderControl?) that instantiate the concrete type per the RenderContextType
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)

@@ -66,4 +66,11 @@ public interface Geometry {
     @RequiresReadLock
     @RenderThread
     void issueDrawCalls();
+
+    /**
+     * Gets the triangle count this {@link Geometry} contains.
+     *
+     * @return {@code int} The triangle count.
+     */
+    int getTriangleCount();
 }
