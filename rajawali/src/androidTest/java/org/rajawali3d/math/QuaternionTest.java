@@ -1096,8 +1096,24 @@ public class QuaternionTest {
 
         // p + q = q + p
         assertEquals(
-            p.clone().add(q).toString(),
-            q.clone().add(p).toString()
+            p.clone().add(q).w,
+            q.clone().add(p).w,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).x,
+            q.clone().add(p).x,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).y,
+            q.clone().add(p).y,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).z,
+            q.clone().add(p).z,
+            1e-14
         );
     }
 
@@ -1108,14 +1124,46 @@ public class QuaternionTest {
 
         // p = p + 0
         assertEquals(
-            p.toString(),
-            p.clone().add(zero).toString()
+            p.w,
+            p.clone().add(zero).w,
+            1e-14
+        );
+        assertEquals(
+            p.x,
+            p.clone().add(zero).x,
+            1e-14
+        );
+        assertEquals(
+            p.y,
+            p.clone().add(zero).y,
+            1e-14
+        );
+        assertEquals(
+            p.z,
+            p.clone().add(zero).z,
+            1e-14
         );
 
         // p = 0 + p
         assertEquals(
-            p.toString(),
-            zero.clone().add(p).toString()
+            p.w,
+            zero.clone().add(p).w,
+            1e-14
+        );
+        assertEquals(
+            p.x,
+            zero.clone().add(p).x,
+            1e-14
+        );
+        assertEquals(
+            p.y,
+            zero.clone().add(p).y,
+            1e-14
+        );
+        assertEquals(
+            p.z,
+            zero.clone().add(p).z,
+            1e-14
         );
     }
 
@@ -1127,8 +1175,24 @@ public class QuaternionTest {
 
         // (p + q) + r = p + (q + r)
         assertEquals(
-            p.clone().add(q).add(r).toString(),
-            p.clone().add(q.clone().add(r)).toString()
+            p.clone().add(q).add(r).w,
+            p.clone().add(q.clone().add(r)).w,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).add(r).x,
+            p.clone().add(q.clone().add(r)).x,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).add(r).y,
+            p.clone().add(q.clone().add(r)).y,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).add(r).z,
+            p.clone().add(q.clone().add(r)).z,
+            1e-14
         );
     }
 
@@ -1139,13 +1203,46 @@ public class QuaternionTest {
 
         // p = p * 1
         assertEquals(
-            p.toString(),
-            p.clone().multiply(one).toString()
+            p.w,
+            p.clone().multiply(one).w,
+            1e-14
         );
+        assertEquals(
+            p.x,
+            p.clone().multiply(one).x,
+            1e-14
+        );
+        assertEquals(
+            p.y,
+            p.clone().multiply(one).y,
+            1e-14
+        );
+        assertEquals(
+            p.z,
+            p.clone().multiply(one).z,
+            1e-14
+        );
+
         // p = 1 * p
         assertEquals(
-            p.toString(),
-            one.clone().multiply(p).toString()
+            p.w,
+            one.clone().multiply(p).w,
+            1e-14
+        );
+        assertEquals(
+            p.x,
+            one.clone().multiply(p).x,
+            1e-14
+        );
+        assertEquals(
+            p.y,
+            one.clone().multiply(p).y,
+            1e-14
+        );
+        assertEquals(
+            p.z,
+            one.clone().multiply(p).z,
+            1e-14
         );
     }
 
@@ -1157,8 +1254,24 @@ public class QuaternionTest {
 
         // (p * q) * r = p * (q * r)
         assertEquals(
-            p.clone().multiply(q).multiply(r).toString(),
-            p.clone().multiply(q.clone().multiply(r)).toString()
+            p.clone().multiply(q).multiply(r).w,
+            p.clone().multiply(q.clone().multiply(r)).w,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q).multiply(r).x,
+            p.clone().multiply(q.clone().multiply(r)).x,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q).multiply(r).y,
+            p.clone().multiply(q.clone().multiply(r)).y,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q).multiply(r).z,
+            p.clone().multiply(q.clone().multiply(r)).z,
+            1e-14
         );
     }
 
@@ -1170,8 +1283,24 @@ public class QuaternionTest {
 
         // p * (q + r) = p * q + p * r)
         assertEquals(
-            p.clone().multiply(q.clone().add(r)).toString(),
-            p.clone().multiply(q).add(p.clone().multiply(r)).toString()
+            p.clone().multiply(q.clone().add(r)).w,
+            p.clone().multiply(q).add(p.clone().multiply(r)).w,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q.clone().add(r)).x,
+            p.clone().multiply(q).add(p.clone().multiply(r)).x,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q.clone().add(r)).y,
+            p.clone().multiply(q).add(p.clone().multiply(r)).y,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q.clone().add(r)).z,
+            p.clone().multiply(q).add(p.clone().multiply(r)).z,
+            1e-14
         );
     }
 
