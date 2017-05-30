@@ -16,18 +16,20 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import net.jcip.annotations.NotThreadSafe;
+
+import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
+import org.rajawali3d.math.vector.Vector3;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.gl.buffers.BufferInfo;
 import c.org.rajawali3d.gl.buffers.BufferUsage;
-import net.jcip.annotations.NotThreadSafe;
-import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
-import org.rajawali3d.math.vector.Vector3;
-
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in
@@ -657,5 +659,15 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         addBufferHandles(builder);
 
         return builder.toString();
+    }
+
+    @Override
+    protected int getVertexCount() {
+        return 0;
+    }
+
+    @Override
+    protected boolean hasVertexData() {
+        return false;
     }
 }
