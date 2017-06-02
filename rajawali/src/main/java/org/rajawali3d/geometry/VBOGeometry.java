@@ -5,11 +5,6 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
-import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-import c.org.rajawali3d.gl.buffers.BufferInfo.BufferType;
-import c.org.rajawali3d.gl.buffers.BufferTarget;
-import c.org.rajawali3d.gl.buffers.BufferUsage;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -20,12 +15,20 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.gl.buffers.BufferInfo.BufferType;
+import c.org.rajawali3d.gl.buffers.BufferTarget;
+import c.org.rajawali3d.gl.buffers.BufferUsage;
+
 /**
  * {@link Geometry} implementation which stores all data in one or more Vertex Buffer Objects.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public abstract class VBOGeometry implements Geometry {
+
+    private static final String TAG = "VBOGeometry";
 
     public static final int BYTE_SIZE_BYTES   = 1;
     public static final int FLOAT_SIZE_BYTES  = 4;

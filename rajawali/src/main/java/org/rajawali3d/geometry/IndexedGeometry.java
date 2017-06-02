@@ -3,14 +3,15 @@ package org.rajawali3d.geometry;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 
 /**
  * Implementation of {@link VBOGeometry} which uses element indices to represent it's primitives. This implementation
@@ -23,6 +24,8 @@ import java.nio.ShortBuffer;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public abstract class IndexedGeometry extends VBOGeometry {
+
+    private static final String TAG = "IndexedGeometry";
 
     private static final long MAX_COUNT_UNSIGNED_BYTE  = 256;
     private static final long MAX_COUNT_UNSIGNED_SHORT = 65536;
