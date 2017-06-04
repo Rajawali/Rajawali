@@ -16,20 +16,17 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.gl.buffers.BufferUsage;
 import net.jcip.annotations.NotThreadSafe;
-
 import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-
-import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.annotations.RequiresReadLock;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-import c.org.rajawali3d.gl.buffers.BufferUsage;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in
@@ -44,10 +41,10 @@ import c.org.rajawali3d.gl.buffers.BufferUsage;
 @NotThreadSafe
 public class NonInterleavedGeometry extends IndexedGeometry {
 
-    public static final int VERTEX_BUFFER_KEY = 0;
-    public static final int NORMAL_BUFFER_KEY = 1;
-    public static final int TEXTURE_BUFFER_KEY = 2;
-    public static final int COLOR_BUFFER_KEY = 3;
+    private int vertexBufferKey  = -1;
+    private int normalBufferKey  = -1;
+    private int textureBufferKey = -1;
+    private int colorBufferKey   = -1;
 
     /**
      * The number of vertices currently stored in the vertex buffer.
@@ -160,23 +157,40 @@ public class NonInterleavedGeometry extends IndexedGeometry {
      * @see BufferInfo
      */
     public void copyFrom(@NonNull NonInterleavedGeometry geometry) {
+        // TODO: Cleanup of replaced buffers?
         numVertices = geometry.getNumVertices();
 
         BufferInfo info = geometry.getVertexBufferInfo();
         if (info != null) {
-            setBufferInfo(VERTEX_BUFFER_KEY, info);
+            if (vertexBufferKey < 0) {
+                vertexBufferKey = addBuffer(info);
+            } else {
+                setBufferInfo(vertexBufferKey, info);
+            }
         }
         info = geometry.getNormalBufferInfo();
         if (info != null) {
-            setBufferInfo(NORMAL_BUFFER_KEY, info);
+            if (normalBufferKey < 0) {
+                normalBufferKey = addBuffer(info);
+            } else {
+                setBufferInfo(normalBufferKey, info);
+            }
         }
         info = geometry.getTexCoordBufferInfo();
         if (info != null) {
-            setBufferInfo(TEXTURE_BUFFER_KEY, info);
+            if (textureBufferKey < 0) {
+                textureBufferKey = addBuffer(info);
+            } else {
+                setBufferInfo(textureBufferKey, info);
+            }
         }
         info = geometry.getColorBufferInfo();
         if (info != null) {
-            setBufferInfo(COLOR_BUFFER_KEY, info);
+            if (colorBufferKey < 0) {
+                colorBufferKey = addBuffer(info);
+            } else {
+                setBufferInfo(colorBufferKey, info);
+            }
         }
         super.copyFrom(geometry);
         sourceGeometry = geometry;
@@ -187,9 +201,8 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     /**
      * Sets the geometry data. This methods takes two {@link BufferInfo} objects which means it will use another
      * NonInterleavedGeometry instance's data (vertices and normals). The remaining parameters are arrays which will
-     * be used
-     * to create buffers that are unique to this instance.
-     * <p>
+     * be used to create buffers that are unique to this instance.
+     *
      * This is typically used with {@link VertexAnimationObject3D} instances.
      *
      * @param vertexBufferInfo {@link BufferInfo} providing the vertex data.
@@ -218,8 +231,8 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         }
         setIndices(indices);
 
-        setBufferInfo(VERTEX_BUFFER_KEY, vertexBufferInfo);
-        setBufferInfo(NORMAL_BUFFER_KEY, normalBufferInfo);
+        vertexBufferKey = addBuffer(vertexBufferInfo);
+        normalBufferKey = addBuffer(normalBufferInfo);
 
         sourceGeometry = null;
 
@@ -322,17 +335,17 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         setIndices(indices, true);
 
         // We can skip null safety check for buffers because hasBuffer enforces it
-        if (hasBuffer(VERTEX_BUFFER_KEY)) {
-            getBufferInfo(VERTEX_BUFFER_KEY).usage = verticesUsage;
+        if (hasBuffer(vertexBufferKey)) {
+            getBufferInfo(vertexBufferKey).usage = verticesUsage;
         }
-        if (hasBuffer(NORMAL_BUFFER_KEY)) {
-            getBufferInfo(NORMAL_BUFFER_KEY).usage = normalsUsage;
+        if (hasBuffer(normalBufferKey)) {
+            getBufferInfo(normalBufferKey).usage = normalsUsage;
         }
-        if (hasBuffer(TEXTURE_BUFFER_KEY)) {
-            getBufferInfo(TEXTURE_BUFFER_KEY).usage = textureCoordsUsage;
+        if (hasBuffer(textureBufferKey)) {
+            getBufferInfo(textureBufferKey).usage = textureCoordsUsage;
         }
-        if (hasBuffer(COLOR_BUFFER_KEY)) {
-            getBufferInfo(COLOR_BUFFER_KEY).usage = colorsUsage;
+        if (hasBuffer(colorBufferKey)) {
+            getBufferInfo(colorBufferKey).usage = colorsUsage;
         }
         final BufferInfo indexInfo = getIndexBufferInfo();
         if (indexInfo != null) {
@@ -352,11 +365,11 @@ public class NonInterleavedGeometry extends IndexedGeometry {
      * @see VertexAnimationObject3D
      */
     public void createVertexAndNormalBuffersOnly() throws IllegalStateException {
-        if (!hasBuffer(VERTEX_BUFFER_KEY) || !hasBuffer(NORMAL_BUFFER_KEY)) {
+        if (!hasBuffer(vertexBufferKey) || !hasBuffer(normalBufferKey)) {
             throw new IllegalStateException("Cannot create vertex and normal buffers when no data has been provided.");
         }
-        final BufferInfo vertex = getBufferInfo(VERTEX_BUFFER_KEY);
-        final BufferInfo normal = getBufferInfo(NORMAL_BUFFER_KEY);
+        final BufferInfo vertex = getBufferInfo(vertexBufferKey);
+        final BufferInfo normal = getBufferInfo(normalBufferKey);
         ((FloatBuffer) vertex.buffer).compact().position(0);
         ((FloatBuffer) normal.buffer).compact().position(0);
 
@@ -373,16 +386,20 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setVertices(@NonNull float[] vertices, boolean override) {
-        BufferInfo vertexInfo = getBufferInfo(VERTEX_BUFFER_KEY);
-        if (vertexInfo == null) {
+        BufferInfo vertexInfo;
+        if (vertexBufferKey < 0) {
             vertexInfo = new BufferInfo();
-            vertexInfo.rajawaliHandle = VERTEX_BUFFER_KEY;
+            vertexInfo.rajawaliHandle = vertexBufferKey;
             vertexInfo.bufferType = BufferInfo.FLOAT_BUFFER;
             vertexInfo.target = GLES20.GL_ARRAY_BUFFER;
-            final BufferInfo old = setBufferInfo(VERTEX_BUFFER_KEY, vertexInfo);
-            //TODO: Cleanup old buffer info
+            vertexBufferKey = addBuffer(vertexInfo);
+        } else {
+            vertexInfo = getBufferInfo(vertexBufferKey);
         }
-        if (override || vertexInfo.buffer == null) {
+        if (vertexInfo == null) {
+            throw new IllegalStateException("Expected to find vertex buffer info, but was null.");
+        }
+        if (override || (vertexBufferKey >= 0 && vertexInfo.buffer == null)) {
             if (vertexInfo.buffer != null) {
                 vertexInfo.buffer.clear();
             }
@@ -391,10 +408,12 @@ public class NonInterleavedGeometry extends IndexedGeometry {
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
 
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
-            vertexInfo.buffer.position(0);
+            vertexInfo.buffer.rewind();
             numVertices = vertices.length / 3;
         } else {
+            vertexInfo.buffer.rewind();
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
+            vertexInfo.buffer.rewind();
         }
     }
 
@@ -407,7 +426,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
 
     @Nullable
     public FloatBuffer getVertices() {
-        final BufferInfo info = getBufferInfo(VERTEX_BUFFER_KEY);
+        final BufferInfo info = getBufferInfo(vertexBufferKey);
         if (info == null) {
             return null;
         } else {
@@ -420,24 +439,28 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setNormals(@NonNull float[] normals, boolean override) {
-        BufferInfo normalInfo = getBufferInfo(NORMAL_BUFFER_KEY);
-        if (normalInfo == null) {
+        BufferInfo normalInfo;
+        if (normalBufferKey < 0) {
             normalInfo = new BufferInfo();
-            normalInfo.rajawaliHandle = NORMAL_BUFFER_KEY;
+            normalInfo.rajawaliHandle = normalBufferKey;
             normalInfo.bufferType = BufferInfo.FLOAT_BUFFER;
             normalInfo.target = GLES20.GL_ARRAY_BUFFER;
-            final BufferInfo old = setBufferInfo(NORMAL_BUFFER_KEY, normalInfo);
-            //TODO: Cleanup old buffer info
+            normalBufferKey = addBuffer(normalInfo);
+        } else {
+            normalInfo = getBufferInfo(vertexBufferKey);
+        }
+        if (normalInfo == null) {
+            throw new IllegalStateException("Expected to find normal buffer info, but was null.");
         }
         if (override || normalInfo.buffer == null) {
             normalInfo.buffer = ByteBuffer.allocateDirect(normals.length * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
             ((FloatBuffer) normalInfo.buffer).put(normals);
-            normalInfo.buffer.position(0);
+            normalInfo.buffer.rewind();
         } else {
-            normalInfo.buffer.position(0);
+            normalInfo.buffer.rewind();
             ((FloatBuffer) normalInfo.buffer).put(normals);
-            normalInfo.buffer.position(0);
+            normalInfo.buffer.rewind();
         }
 
         hasNormals = true;
@@ -453,7 +476,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
 
     @Nullable
     public FloatBuffer getNormals() {
-        final BufferInfo info = getBufferInfo(NORMAL_BUFFER_KEY);
+        final BufferInfo info = getBufferInfo(normalBufferKey);
         if (info == null) {
             return null;
         } else {
@@ -470,24 +493,31 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setTextureCoords(@NonNull float[] textureCoords, boolean override) {
-        BufferInfo textureInfo = getBufferInfo(TEXTURE_BUFFER_KEY);
-        if (textureInfo == null) {
+        BufferInfo textureInfo;
+        if (textureBufferKey < 0) {
             textureInfo = new BufferInfo();
-            textureInfo.rajawaliHandle = TEXTURE_BUFFER_KEY;
+            textureInfo.rajawaliHandle = textureBufferKey;
             textureInfo.bufferType = BufferInfo.FLOAT_BUFFER;
             textureInfo.target = GLES20.GL_ARRAY_BUFFER;
-            final BufferInfo old = setBufferInfo(TEXTURE_BUFFER_KEY, textureInfo);
-            //TODO: Cleanup old buffer info
+            textureBufferKey = addBuffer(textureInfo);
+        } else {
+            textureInfo = getBufferInfo(textureBufferKey);
+        }
+        if (textureInfo == null) {
+            throw new IllegalStateException("Expected to find texture buffer info, but was null.");
         }
         if (override || textureInfo.buffer == null) {
             textureInfo.buffer = ByteBuffer
                     .allocateDirect(textureCoords.length * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
-            textureInfo.buffer.position(0);
+            textureInfo.buffer.rewind();
         } else {
+            textureInfo.buffer.rewind();
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
+            textureInfo.buffer.rewind();
         }
+
         hasTextureCoordinates = true;
     }
 
@@ -500,7 +530,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
 
     @Nullable
     public FloatBuffer getTextureCoords() {
-        final BufferInfo info = getBufferInfo(TEXTURE_BUFFER_KEY);
+        final BufferInfo info = getBufferInfo(textureBufferKey);
         if (info == null) {
             return null;
         } else {
@@ -517,16 +547,20 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setColor(float r, float g, float b, float a, boolean override) {
-        BufferInfo colorInfo = getBufferInfo(COLOR_BUFFER_KEY);
-        if (colorInfo == null || colorInfo.buffer == null || colorInfo.buffer.limit() == 0) {
+        BufferInfo colorInfo;
+        if (colorBufferKey < 0) {
             colorInfo = new BufferInfo();
-            colorInfo.rajawaliHandle = COLOR_BUFFER_KEY;
+            colorInfo.rajawaliHandle = colorBufferKey;
             colorInfo.bufferType = BufferInfo.FLOAT_BUFFER;
             colorInfo.target = GLES20.GL_ARRAY_BUFFER;
             colorInfo.buffer = ByteBuffer.allocateDirect(numVertices * 4 * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
-            final BufferInfo old = setBufferInfo(COLOR_BUFFER_KEY, colorInfo);
-            //TODO: Cleanup old buffer info
+            colorBufferKey = addBuffer(colorInfo);
+        } else {
+            colorInfo = getBufferInfo(colorBufferKey);
+        }
+        if (colorInfo == null) {
+            throw new IllegalStateException("Expected to find color buffer info, but was null.");
         }
         if (override || colorInfo.buffer == null) {
             colorInfo.buffer = ByteBuffer
@@ -534,7 +568,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
         }
 
-        colorInfo.buffer.position(0);
+        colorInfo.buffer.rewind();
 
         while (colorInfo.buffer.remaining() > 3) {
             ((FloatBuffer) colorInfo.buffer).put(r);
@@ -542,7 +576,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) colorInfo.buffer).put(b);
             ((FloatBuffer) colorInfo.buffer).put(a);
         }
-        colorInfo.buffer.position(0);
+        colorInfo.buffer.rewind();
     }
 
     public void setColors(int color) {
@@ -554,30 +588,37 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setColors(@NonNull float[] colors, boolean override) {
-        BufferInfo colorInfo = getBufferInfo(COLOR_BUFFER_KEY);
-        if (colorInfo == null) {
+        BufferInfo colorInfo;
+        if (colorBufferKey < 0) {
             colorInfo = new BufferInfo();
-            colorInfo.rajawaliHandle = COLOR_BUFFER_KEY;
+            colorInfo.rajawaliHandle = colorBufferKey;
             colorInfo.bufferType = BufferInfo.FLOAT_BUFFER;
             colorInfo.target = GLES20.GL_ARRAY_BUFFER;
-            final BufferInfo old = setBufferInfo(COLOR_BUFFER_KEY, colorInfo);
-            //TODO: Cleanup old buffer info
+            colorInfo.buffer = ByteBuffer.allocateDirect(numVertices * 4 * FLOAT_SIZE_BYTES)
+                    .order(ByteOrder.nativeOrder()).asFloatBuffer();
+            colorBufferKey = addBuffer(colorInfo);
+        } else {
+            colorInfo = getBufferInfo(colorBufferKey);
+        }
+        if (colorInfo == null) {
+            throw new IllegalStateException("Expected to find color buffer info, but was null.");
         }
         if (override || colorInfo.buffer == null) {
             colorInfo.buffer = ByteBuffer
                     .allocateDirect(colors.length * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
             ((FloatBuffer) colorInfo.buffer).put(colors);
-            colorInfo.buffer.position(0);
+            colorInfo.buffer.rewind();
         } else {
+            colorInfo.buffer.rewind();
             ((FloatBuffer) colorInfo.buffer).put(colors);
-            colorInfo.buffer.position(0);
+            colorInfo.buffer.rewind();
         }
     }
 
     @Nullable
     public FloatBuffer getColors() {
-        final BufferInfo info = getBufferInfo(COLOR_BUFFER_KEY);
+        final BufferInfo info = getBufferInfo(colorBufferKey);
         if (info == null) {
             return null;
         } else {
@@ -600,60 +641,76 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     @Nullable
     @Override
     public BufferInfo getVertexBufferInfo() {
-        return getBufferInfo(VERTEX_BUFFER_KEY);
+        return getBufferInfo(vertexBufferKey);
     }
 
-    public void setVertexBufferInfo(BufferInfo vertexBufferInfo) {
-        final BufferInfo info = setBufferInfo(VERTEX_BUFFER_KEY, vertexBufferInfo);
-        //TODO: Cleanup old buffer info
+    public void setVertexBufferInfo(BufferInfo bufferInfo) {
+        if (vertexBufferKey < 0) {
+            vertexBufferKey = addBuffer(bufferInfo);
+        } else {
+            final BufferInfo info = setBufferInfo(vertexBufferKey, bufferInfo);
+            //TODO: Cleanup old buffer info
+        }
     }
 
     @Nullable
     public BufferInfo getNormalBufferInfo() {
-        return getBufferInfo(NORMAL_BUFFER_KEY);
+        return getBufferInfo(normalBufferKey);
     }
 
-    public void setNormalBufferInfo(BufferInfo normalBufferInfo) {
-        final BufferInfo info = setBufferInfo(NORMAL_BUFFER_KEY, normalBufferInfo);
-        //TODO: Cleanup old buffer info
-        this.hasNormals = true;
+    public void setNormalBufferInfo(BufferInfo bufferInfo) {
+        if (normalBufferKey < 0) {
+            normalBufferKey = addBuffer(bufferInfo);
+        } else {
+            final BufferInfo info = setBufferInfo(normalBufferKey, bufferInfo);
+            //TODO: Cleanup old buffer info
+        }
+        hasNormals = true;
     }
 
     @Nullable
     public BufferInfo getTexCoordBufferInfo() {
-        return getBufferInfo(TEXTURE_BUFFER_KEY);
+        return getBufferInfo(textureBufferKey);
     }
 
-    public void setTexCoordBufferInfo(BufferInfo texCoordBufferInfo) {
-        final BufferInfo info = setBufferInfo(TEXTURE_BUFFER_KEY, texCoordBufferInfo);
-        //TODO: Cleanup old buffer info
-        this.hasTextureCoordinates = true;
+    public void setTexCoordBufferInfo(BufferInfo bufferInfo) {
+        if (textureBufferKey < 0) {
+            textureBufferKey = addBuffer(bufferInfo);
+        } else {
+            final BufferInfo info = setBufferInfo(textureBufferKey, bufferInfo);
+            //TODO: Cleanup old buffer info
+            hasTextureCoordinates = true;
+        }
     }
 
     @Nullable
     public BufferInfo getColorBufferInfo() {
-        return getBufferInfo(COLOR_BUFFER_KEY);
+        return getBufferInfo(colorBufferKey);
     }
 
-    public void setColorBufferInfo(BufferInfo colorBufferInfo) {
-        final BufferInfo info = setBufferInfo(COLOR_BUFFER_KEY, colorBufferInfo);
-        //TODO: Cleanup old buffer info
+    public void setColorBufferInfo(BufferInfo bufferInfo) {
+        if (colorBufferKey < 0) {
+            colorBufferKey = addBuffer(bufferInfo);
+        } else {
+            final BufferInfo info = setBufferInfo(colorBufferKey, bufferInfo);
+            //TODO: Cleanup old buffer info
+        }
     }
 
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        if (hasBuffer(VERTEX_BUFFER_KEY) && getBufferInfo(VERTEX_BUFFER_KEY).buffer != null) {
-            builder.append(", vertices: ").append(getBufferInfo(VERTEX_BUFFER_KEY).buffer.capacity());
+        if (hasBuffer(vertexBufferKey) && getBufferInfo(vertexBufferKey).buffer != null) {
+            builder.append(", vertices: ").append(getBufferInfo(vertexBufferKey).buffer.capacity());
         }
-        if (hasBuffer(NORMAL_BUFFER_KEY) && getBufferInfo(NORMAL_BUFFER_KEY).buffer != null) {
-            builder.append(", normals: ").append(getBufferInfo(NORMAL_BUFFER_KEY).buffer.capacity());
+        if (hasBuffer(normalBufferKey) && getBufferInfo(normalBufferKey).buffer != null) {
+            builder.append(", normals: ").append(getBufferInfo(normalBufferKey).buffer.capacity());
         }
-        if (hasBuffer(TEXTURE_BUFFER_KEY) && getBufferInfo(TEXTURE_BUFFER_KEY).buffer != null) {
-            builder.append(", uvs: ").append(getBufferInfo(TEXTURE_BUFFER_KEY).buffer.capacity()).append("\n");
+        if (hasBuffer(textureBufferKey) && getBufferInfo(textureBufferKey).buffer != null) {
+            builder.append(", uvs: ").append(getBufferInfo(textureBufferKey).buffer.capacity()).append("\n");
         }
-        if (hasBuffer(COLOR_BUFFER_KEY) && getBufferInfo(COLOR_BUFFER_KEY).buffer != null) {
-            builder.append(", colors: ").append(getBufferInfo(COLOR_BUFFER_KEY).buffer.capacity()).append("\n");
+        if (hasBuffer(colorBufferKey) && getBufferInfo(colorBufferKey).buffer != null) {
+            builder.append(", colors: ").append(getBufferInfo(colorBufferKey).buffer.capacity()).append("\n");
         }
 
         addBufferHandles(builder);
