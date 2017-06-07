@@ -31,7 +31,7 @@ public class OESCompressedETC1RGB8Test extends GlTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(OESCompressedETC1RGB8Test.class.getName());
+        super.setUp(OESCompressedETC1RGB8Test.class.getSimpleName());
     }
 
     @After

@@ -31,7 +31,7 @@ public class ETC1TextureTest extends GlTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(ETC1TextureTest.class.getName());
+        super.setUp(ETC1TextureTest.class.getSimpleName());
     }
 
     @After
