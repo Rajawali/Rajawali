@@ -157,7 +157,9 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 		mBoneMatrices.position(0);
 
         mBoneMatricesBufferInfo.buffer = mBoneMatrices;
-		mGeometry.addBuffer(mBoneMatricesBufferInfo, BufferInfo.FLOAT_BUFFER, GLES20.GL_ARRAY_BUFFER);
+		mBoneMatricesBufferInfo.bufferType = BufferInfo.FLOAT_BUFFER;
+		mBoneMatricesBufferInfo.target = GLES20.GL_ARRAY_BUFFER;
+		mGeometry.addBuffer(mBoneMatricesBufferInfo);
 	}
 
 	public SkeletonJoint getJoint(int index) {

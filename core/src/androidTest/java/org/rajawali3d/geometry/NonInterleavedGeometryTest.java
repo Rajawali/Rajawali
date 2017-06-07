@@ -15,8 +15,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -140,42 +140,37 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         final FloatBuffer colorBuffer = (FloatBuffer) colorInfo.buffer;
         final FloatBuffer textureBuffer = (FloatBuffer) textureInfo.buffer;
         final Buffer indexBuffer = indexInfo.buffer;
-        assertEquals("VERTEX buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, vertexInfo.bufferType);
+        assertEquals("Vertex buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, vertexInfo.bufferType);
         assertEquals("Normal buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, normalInfo.bufferType);
         assertEquals("Texture2D buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, textureInfo.bufferType);
         assertEquals("Color buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, colorInfo.bufferType);
-        assertEquals("Index buffer info set to wrong type.", BufferInfo.INT_BUFFER, indexInfo.bufferType);
+        assertEquals("Index buffer info set to wrong type.", BufferInfo.BYTE_BUFFER, indexInfo.bufferType);
         assertEquals("VERTEX buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, vertexInfo.usage);
         assertEquals("Normal buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, normalInfo.usage);
         assertEquals("Texture2D buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, textureInfo.usage);
         assertEquals("Color buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, colorInfo.usage);
         assertEquals("Index buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, indexInfo.usage);
 
-        assertEquals("Number of vertices invalid.", 1, bufferObject.getNumVertices());
+        assertEquals("Number of vertices invalid.", 1, bufferObject.getVertexCount());
         int i = 0;
-        vertexBuffer.rewind();
         while (vertexBuffer.hasRemaining()) {
             assertEquals("VERTEX buffer contents invalid.", vertexBuffer.get(), vertices[i++], 0);
         }
         i = 0;
-        normalBuffer.rewind();
         while (normalBuffer.hasRemaining()) {
             assertEquals("Normal buffer contents invalid.", normalBuffer.get(), normals[i++], 0);
         }
         i = 0;
-        textureBuffer.rewind();
         while (textureBuffer.hasRemaining()) {
             assertEquals("Texture2D buffer contents invalid.", textureBuffer.get(), textures[i++], 0);
         }
         i = 0;
-        colorBuffer.rewind();
         while (colorBuffer.hasRemaining()) {
             assertEquals("Color buffer contents invalid.", colorBuffer.get(), colors[i++], 0);
         }
         i = 0;
-        indexBuffer.rewind();
         while (indexBuffer.hasRemaining()) {
-            assertEquals("Index buffer contents invalid.", ((IntBuffer) indexBuffer).get(), indices[i++], 0);
+            assertEquals("Index buffer contents invalid.", ((ByteBuffer) indexBuffer).get(), indices[i++], 0);
         }
     }
 
@@ -215,42 +210,37 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         final FloatBuffer colorBuffer = (FloatBuffer) colorInfo.buffer;
         final FloatBuffer textureBuffer = (FloatBuffer) textureInfo.buffer;
         final Buffer indexBuffer = indexInfo.buffer;
-        assertEquals("VERTEX buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, vertexInfo.bufferType);
+        assertEquals("Vertex buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, vertexInfo.bufferType);
         assertEquals("Normal buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, normalInfo.bufferType);
         assertEquals("Color buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, colorInfo.bufferType);
         assertEquals("Texture2D buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, textureInfo.bufferType);
-        assertEquals("Index buffer info set to wrong type.", BufferInfo.INT_BUFFER, indexInfo.bufferType);
-        assertEquals("VERTEX buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, vertexInfo.usage);
+        assertEquals("Index buffer info set to wrong type.", BufferInfo.BYTE_BUFFER, indexInfo.bufferType);
+        assertEquals("Vertex buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, vertexInfo.usage);
         assertEquals("Normal buffer info set to wrong usage.", GLES20.GL_STREAM_DRAW, normalInfo.usage);
         assertEquals("Color buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, colorInfo.usage);
         assertEquals("Texture2D buffer info set to wrong usage.", GLES20.GL_DYNAMIC_DRAW, textureInfo.usage);
         assertEquals("Index buffer info set to wrong usage.", GLES20.GL_STREAM_DRAW, indexInfo.usage);
 
-        assertEquals("Number of vertices invalid.", 1, bufferObject.getNumVertices());
+        assertEquals("Number of vertices invalid.", 1, bufferObject.getVertexCount());
         int i = 0;
-        vertexBuffer.rewind();
         while (vertexBuffer.hasRemaining()) {
             assertEquals("VERTEX buffer contents invalid.", vertexBuffer.get(), vertices[i++], 0);
         }
         i = 0;
-        normalBuffer.rewind();
         while (normalBuffer.hasRemaining()) {
             assertEquals("Normal buffer contents invalid.", normalBuffer.get(), normals[i++], 0);
         }
         i = 0;
-        colorBuffer.rewind();
         while (colorBuffer.hasRemaining()) {
             assertEquals("Color buffer contents invalid.", colorBuffer.get(), colors[i++], 0);
         }
         i = 0;
-        textureBuffer.rewind();
         while (textureBuffer.hasRemaining()) {
             assertEquals("Texture2D buffer contents invalid.", textureBuffer.get(), textures[i++], 0);
         }
         i = 0;
-        indexBuffer.rewind();
         while (indexBuffer.hasRemaining()) {
-            assertEquals("Index buffer contents invalid.",  ((IntBuffer) indexBuffer).get(), indices[i++], 0);
+            assertEquals("Index buffer contents invalid.", ((ByteBuffer) indexBuffer).get(), indices[i++], 0);
         }
     }
 
@@ -278,7 +268,6 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject.setVertices(vertices2);
         final FloatBuffer buffer = bufferObject.getVertices();
         int i = 0;
-        buffer.rewind();
         while (buffer.hasRemaining()) {
             assertEquals("Buffer contents invalid.", buffer.get(), vertices2[i++], 0);
         }
@@ -295,7 +284,6 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject2.setVertices(vertices2);
         final FloatBuffer buffer2 = bufferObject2.getVertices();
         int i2 = 0;
-        buffer2.rewind();
         while (buffer2.hasRemaining()) {
             assertEquals("Buffer contents invalid.", buffer2.get(), vertices2[i2++], 0);
         }
@@ -325,9 +313,8 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject.setNormals(normals2);
         final FloatBuffer buffer = bufferObject.getNormals();
         int i = 0;
-        buffer.rewind();
         while (buffer.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", buffer.get(), normals2[i++], 0);
+            assertEquals("Buffer contents invalid.", normals2[i++], buffer.get(), 0);
         }
 
         final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
@@ -342,9 +329,8 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject2.setNormals(normals2);
         final FloatBuffer buffer2 = bufferObject2.getNormals();
         int i2 = 0;
-        buffer2.rewind();
         while (buffer2.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", buffer2.get(), normals2[i2++], 0);
+            assertEquals("Buffer contents invalid.", normals2[i2++], buffer2.get(), 0);
         }
     }
 
@@ -372,7 +358,6 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject.setTextureCoords(textures2);
         final FloatBuffer buffer = bufferObject.getTextureCoords();
         int i = 0;
-        buffer.rewind();
         while (buffer.hasRemaining()) {
             assertEquals("Buffer contents invalid.", buffer.get(), textures2[i++], 0);
         }
@@ -389,7 +374,6 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject2.setTextureCoords(textures2);
         final FloatBuffer buffer2 = bufferObject2.getTextureCoords();
         int i2 = 0;
-        buffer2.rewind();
         while (buffer2.hasRemaining()) {
             assertEquals("Buffer contents invalid.", buffer2.get(), textures2[i2++], 0);
         }
@@ -419,7 +403,6 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject.setColors(colors2);
         final FloatBuffer buffer = bufferObject.getColors();
         int i = 0;
-        buffer.rewind();
         while (buffer.hasRemaining()) {
             assertEquals("Buffer contents invalid.", buffer.get(), colors2[i++], 0);
         }
@@ -436,7 +419,6 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject2.setColors(colors2);
         final FloatBuffer buffer2 = bufferObject2.getColors();
         int i2 = 0;
-        buffer2.rewind();
         while (buffer2.hasRemaining()) {
             assertEquals("Buffer contents invalid.", buffer2.get(), colors2[i2++], 0);
         }
@@ -472,9 +454,8 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject.setIndices(indices2);
         final Buffer buffer = bufferObject.getIndices();
         int i = 0;
-        buffer.rewind();
         while (buffer.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", ((IntBuffer) buffer).get(), indices2[i++], 0);
+            assertEquals("Buffer contents invalid.", ((ByteBuffer) buffer).get(), indices2[i++], 0);
         }
 
         final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
@@ -489,9 +470,8 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         bufferObject2.setIndices(indices2);
         final Buffer buffer2 = bufferObject.getIndices();
         i = 0;
-        buffer2.rewind();
         while (buffer2.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", ((IntBuffer) buffer2).get(), indices2[i++], 0);
+            assertEquals("Buffer contents invalid.", ((ByteBuffer) buffer2).get(), indices2[i++], 0);
         }
     }
 

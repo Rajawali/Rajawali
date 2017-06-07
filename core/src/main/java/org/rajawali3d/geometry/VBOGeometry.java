@@ -5,6 +5,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
+import android.util.Log;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.gl.buffers.BufferInfo;
 import c.org.rajawali3d.gl.buffers.BufferInfo.BufferType;
@@ -40,7 +41,7 @@ public abstract class VBOGeometry implements Geometry {
     /**
      * Mapping of {@link BufferInfo} objects.
      */
-    private final SparseArrayCompat<BufferInfo> buffers;
+    private final SparseArrayCompat<BufferInfo> buffers = new SparseArrayCompat<>(5);
 
     /**
      * Boolean to keep track of if the buffers for this geometry have been through their initial creation.
@@ -49,7 +50,6 @@ public abstract class VBOGeometry implements Geometry {
 
     public VBOGeometry() {
         haveCreatedBuffers = false;
-        buffers = new SparseArrayCompat<>(5);
     }
 
     @RenderThread
@@ -140,6 +140,7 @@ public abstract class VBOGeometry implements Geometry {
      * @param type       {@link BufferType} The data type of the buffer.
      * @param target     {@link BufferTarget} The GL target buffer.
      */
+    @RenderThread
     public void createBufferObject(@NonNull BufferInfo bufferInfo, @BufferType int type, @BufferTarget int target) {
         createBufferObject(bufferInfo, type, target, bufferInfo.usage);
     }
@@ -152,8 +153,9 @@ public abstract class VBOGeometry implements Geometry {
      * @param target     {@link BufferTarget} The GL target buffer.
      * @param usage      {@link BufferUsage} The usage hint for the buffer.
      */
-    public void createBufferObject(@NonNull BufferInfo bufferInfo, @BufferInfo.BufferType int type, @BufferTarget int target,
-                                   @BufferUsage int usage) {
+    @RenderThread
+    public void createBufferObject(@NonNull BufferInfo bufferInfo, @BufferInfo.BufferType int type,
+                                   @BufferTarget int target, @BufferUsage int usage) {
 
         // Determine the byte size per element
         int byteSize = 0;
@@ -179,7 +181,7 @@ public abstract class VBOGeometry implements Geometry {
                                                + "follow the contract.");
         }
 
-        bufferInfo.byteSize = byteSize;
+        bufferInfo.elementSize = byteSize;
 
         // Generate the buffer handle
         int buff[] = new int[1];
@@ -208,42 +210,9 @@ public abstract class VBOGeometry implements Geometry {
      *
      * @param bufferInfo {@link BufferInfo} Handle for the buffer data to create.
      */
+    @RenderThread
     public void createBufferObject(@NonNull BufferInfo bufferInfo) {
         createBufferObject(bufferInfo, bufferInfo.bufferType, bufferInfo.target, bufferInfo.usage);
-    }
-
-    /**
-     * Adds a new VBO to this geometry for tracking. This is useful when custom vertex attributes need to be supplied
-     * for things such as animation or other custom effects.
-     *
-     * @param bufferInfo {@link BufferInfo} Handle for the buffer data to add.
-     * @param type       {@link BufferType} The data type of the buffer.
-     * @param target     {@link BufferTarget} The GL target buffer.
-     * @param usage      {@link BufferUsage} The usage hint for the buffer.
-     *
-     * @return {@code int} The internal engine handle for the buffer data.
-     */
-    public int addBuffer(@NonNull BufferInfo bufferInfo, @BufferInfo.BufferType int type, @BufferTarget int target,
-                         @BufferUsage int usage) {
-        createBufferObject(bufferInfo, type, target, usage);
-        final int key = buffers.size();
-        bufferInfo.rajawaliHandle = key;
-        buffers.put(key, bufferInfo);
-        return key;
-    }
-
-    /**
-     * Adds a new VBO to this geometry for tracking. This is useful when custom vertex attributes need to be supplied
-     * for things such as animation or other custom effects.
-     *
-     * @param bufferInfo {@link BufferInfo} Handle for the buffer data to add.
-     * @param type       {@link BufferType} The data type of the buffer.
-     * @param target     {@link BufferTarget} The GL target buffer.
-     *
-     * @return {@code int} The internal engine handle for the buffer data.
-     */
-    public int addBuffer(@NonNull BufferInfo bufferInfo, @BufferInfo.BufferType int type, @BufferTarget int target) {
-        return addBuffer(bufferInfo, type, target, bufferInfo.usage);
     }
 
     /**
@@ -255,7 +224,12 @@ public abstract class VBOGeometry implements Geometry {
      * @return {@code int} The internal engine handle for the buffer data.
      */
     public int addBuffer(@NonNull BufferInfo bufferInfo) {
-        return addBuffer(bufferInfo, bufferInfo.bufferType, bufferInfo.target, bufferInfo.usage);
+        //createBufferObject(bufferInfo);
+        Log.d(TAG, "Buffers: " + buffers);
+        final int key = buffers.size();
+        bufferInfo.rajawaliHandle = key;
+        buffers.put(key, bufferInfo);
+        return key;
     }
 
     /**
@@ -378,14 +352,14 @@ public abstract class VBOGeometry implements Geometry {
             if (index == 0) {
                 // If we are starting from 0, just replace the data
                 bufferInfo.buffer = newData;
-                GLES20.glBufferData(bufferInfo.target, count * bufferInfo.byteSize, newData, bufferInfo.usage);
+                GLES20.glBufferData(bufferInfo.target, count * bufferInfo.elementSize, newData, bufferInfo.usage);
             } else {
                 // Otherwise build a resized buffer
                 bufferInfo.buffer = buildResizedBuffer(bufferInfo.buffer, newData, index, count);
             }
         } else {
             // We aren't supposed to resize, so replace the data range
-            GLES20.glBufferSubData(bufferInfo.target, index * bufferInfo.byteSize, count * bufferInfo.byteSize,
+            GLES20.glBufferSubData(bufferInfo.target, index * bufferInfo.elementSize, count * bufferInfo.elementSize,
                                    newData);
         }
         // Clear the buffer binding to avoid unexpected behaviors

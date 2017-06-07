@@ -24,15 +24,16 @@ import net.jcip.annotations.NotThreadSafe;
 import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
 import org.rajawali3d.math.vector.Vector3;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in
- * FloatBuffers, IntBuffers and ShortBuffers. The data is uploaded to the graphics card using VERTEX Buffer Objects
- * (VBOs). The data in the FloatBuffers is kept in memory in order to restore the VBOs when the OpenGL context needs
- * to be restored (typically when the application regains focus).
+ * various {@link Buffer}s. The data is uploaded to the graphics card using VERTEX Buffer Objects (VBOs). The data in
+ * the {@link Buffer}s is kept in memory in order to restore the VBOs when the OpenGL context needs to be restored
+ * (typically when the application regains focus).
  *
  * @author dennis.ippel
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -41,6 +42,11 @@ import java.nio.FloatBuffer;
 @NotThreadSafe
 public class NonInterleavedGeometry extends IndexedGeometry {
 
+    private static final String TAG = "NonInterleavedGeomtry";
+
+    /**
+     * Keys for the commonly used vertex attributes. If -1, no buffer has been stored for that key.
+     */
     private int vertexBufferKey  = -1;
     private int normalBufferKey  = -1;
     private int textureBufferKey = -1;
@@ -50,10 +56,11 @@ public class NonInterleavedGeometry extends IndexedGeometry {
      * The number of vertices currently stored in the vertex buffer.
      */
     protected int                    numVertices;
+
     /**
-     * A pointer to the original geometry. This is not null when the object has been cloned.
-     * When cloning a BaseObject3D the data isn't copied over, only the handle to the OpenGL
-     * buffers are used.
+     * A pointer to the original geometry. This is not null when the object has been cloned. When cloning a
+     * {@link NonInterleavedGeometry} the data isn't copied over, only the handle to the OpenGL buffers are used. A
+     * reference to the original is kept to ensure the data does not go out of scope prematurely.
      */
     protected NonInterleavedGeometry sourceGeometry;
 
@@ -61,13 +68,11 @@ public class NonInterleavedGeometry extends IndexedGeometry {
      * Indicates whether this geometry contains normals or not.
      */
     protected boolean hasNormals;
+
     /**
      * Indicates whether this geometry contains texture coordinates or not.
      */
     protected boolean hasTextureCoordinates;
-
-    public NonInterleavedGeometry() {
-    }
 
     @RenderThread
     @Override
@@ -158,7 +163,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
      */
     public void copyFrom(@NonNull NonInterleavedGeometry geometry) {
         // TODO: Cleanup of replaced buffers?
-        numVertices = geometry.getNumVertices();
+        numVertices = geometry.getVertexCount();
 
         BufferInfo info = geometry.getVertexBufferInfo();
         if (info != null) {
@@ -211,8 +216,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
      * @param colors           {@code float} array containing the vertex color data.
      * @param indices          {@code int} array containing the vertex index data.
      * @param createVBOs       {@code true} if the VBOs should be constructed immediately. This requires calling on
-     *                                     the GL
-     *                         thread.
+     *                         the GL thread.
      *
      * @see VertexAnimationObject3D
      */
@@ -305,7 +309,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
      * @param indices            {@code int} array containing the geometry index data.
      * @param indicesUsage       {@code int} Index buffer usage hint.
      * @param createVBOs         {@code true} if the VBOs should be constructed immediately. This requires calling on
-     *                                       the GL
+     *                           the GL
      *                           thread.
      */
     @SuppressWarnings("ConstantConditions")
@@ -358,8 +362,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     /**
-     * Creates the vertex and normal buffers only. This is typically used for a
-     * VertexAnimationObject3D's frames.
+     * Creates the vertex and normal buffers only. This is typically used for a VertexAnimationObject3D's frames.
      *
      * @throws IllegalStateException if no data has been set for the vertices or normals.
      * @see VertexAnimationObject3D
@@ -409,12 +412,12 @@ public class NonInterleavedGeometry extends IndexedGeometry {
 
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
             vertexInfo.buffer.rewind();
-            numVertices = vertices.length / 3;
         } else {
             vertexInfo.buffer.rewind();
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
             vertexInfo.buffer.rewind();
         }
+        numVertices = vertexInfo.buffer.capacity() / 3;
     }
 
     public void setVertices(@NonNull FloatBuffer vertices) {
@@ -447,7 +450,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             normalInfo.target = GLES20.GL_ARRAY_BUFFER;
             normalBufferKey = addBuffer(normalInfo);
         } else {
-            normalInfo = getBufferInfo(vertexBufferKey);
+            normalInfo = getBufferInfo(normalBufferKey);
         }
         if (normalInfo == null) {
             throw new IllegalStateException("Expected to find normal buffer info, but was null.");
@@ -458,9 +461,10 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) normalInfo.buffer).put(normals);
             normalInfo.buffer.rewind();
         } else {
-            normalInfo.buffer.rewind();
-            ((FloatBuffer) normalInfo.buffer).put(normals);
-            normalInfo.buffer.rewind();
+            final FloatBuffer buffer = ((FloatBuffer) normalInfo.buffer);
+            buffer.rewind();
+            buffer.put(normals);
+            buffer.rewind();
         }
 
         hasNormals = true;
@@ -630,14 +634,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         haveCreatedBuffers = created;
     }
 
-    public int getNumVertices() {
-        return numVertices;
-    }
-
-    public void setNumVertices(int numVertices) {
-        this.numVertices = numVertices;
-    }
-
     @Nullable
     @Override
     public BufferInfo getVertexBufferInfo() {
@@ -720,11 +716,11 @@ public class NonInterleavedGeometry extends IndexedGeometry {
 
     @Override
     protected int getVertexCount() {
-        return 0;
+        return numVertices;
     }
 
     @Override
     protected boolean hasVertexData() {
-        return false;
+        return getVertexBufferInfo() != null;
     }
 }

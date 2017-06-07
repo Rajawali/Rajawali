@@ -52,7 +52,7 @@ public class BufferInfo {
     public @BufferType   int    bufferType;
     public               Buffer buffer; //TODO: Does it make sense to let this be nullable?
     public @BufferTarget int    target;
-    public               int    byteSize;
+    public               int    elementSize;
     public @BufferUsage int usage  = GLES20.GL_STATIC_DRAW;
     public              int stride = 0;
     public              int offset = 0;
@@ -73,7 +73,7 @@ public class BufferInfo {
                 .append(" Handle: ").append(glHandle)
                 .append(" type: ").append(bufferType)
                 .append(" target: ").append(target)
-                .append(" byteSize: ").append(byteSize)
+                .append(" elementSize: ").append(elementSize)
                 .append(" usage: ").append(usage);
         return sb.toString();
     }
