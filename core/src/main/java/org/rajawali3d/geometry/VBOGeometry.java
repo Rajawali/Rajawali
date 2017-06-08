@@ -5,12 +5,6 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
-import android.util.Log;
-import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-import c.org.rajawali3d.gl.buffers.BufferInfo.BufferType;
-import c.org.rajawali3d.gl.buffers.BufferTarget;
-import c.org.rajawali3d.gl.buffers.BufferUsage;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -20,6 +14,12 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
+
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.gl.buffers.BufferInfo.BufferType;
+import c.org.rajawali3d.gl.buffers.BufferTarget;
+import c.org.rajawali3d.gl.buffers.BufferUsage;
 
 /**
  * {@link Geometry} implementation which stores all data in one or more Vertex Buffer Objects.
@@ -46,7 +46,7 @@ public abstract class VBOGeometry implements Geometry {
     /**
      * Boolean to keep track of if the buffers for this geometry have been through their initial creation.
      */
-    protected boolean haveCreatedBuffers;
+    private boolean haveCreatedBuffers;
 
     public VBOGeometry() {
         haveCreatedBuffers = false;
@@ -59,8 +59,13 @@ public abstract class VBOGeometry implements Geometry {
         for (int i = 0; i < buffers.size(); ++i) {
             final int key = buffers.keyAt(i);
             final BufferInfo info = buffers.get(key);
+
+            if (info == null || info.glHandle >= 0) {
+                continue;
+            }
+
             // Defensive check in case someone ignores the non-null requirement
-            if (info != null && info.buffer != null) {
+            if (info.buffer != null) {
                 if (info.buffer instanceof ByteBuffer) {
                     ((ByteBuffer) info.buffer).compact().position(0);
                 } else if (info.buffer instanceof FloatBuffer) {
@@ -97,7 +102,6 @@ public abstract class VBOGeometry implements Geometry {
             return;
         }
 
-        // TODO: Check for a dirty buffer
         for (int i = 0, j = buffers.size(); i < j; ++i) {
             final BufferInfo info = buffers.get(i);
             if (info != null && info.glHandle == 0) {
@@ -109,6 +113,11 @@ public abstract class VBOGeometry implements Geometry {
     @RenderThread
     @Override
     public void reload() {
+        haveCreatedBuffers = false;
+        for (int i = 0, j = buffers.size(); i < j; ++i) {
+            final BufferInfo info = buffers.get(i);
+            info.glHandle = -1;
+        }
         validateBuffers();
     }
 
@@ -124,6 +133,7 @@ public abstract class VBOGeometry implements Geometry {
             if (info != null) {
                 glHandles[index++] = info.glHandle;
                 if (info.buffer != null) {
+                    info.glHandle = -1;
                     info.buffer.clear();
                     info.buffer = null;
                 }
@@ -224,8 +234,7 @@ public abstract class VBOGeometry implements Geometry {
      * @return {@code int} The internal engine handle for the buffer data.
      */
     public int addBuffer(@NonNull BufferInfo bufferInfo) {
-        //createBufferObject(bufferInfo);
-        Log.d(TAG, "Buffers: " + buffers);
+        haveCreatedBuffers = false;
         final int key = buffers.size();
         bufferInfo.rajawaliHandle = key;
         buffers.put(key, bufferInfo);
@@ -367,6 +376,15 @@ public abstract class VBOGeometry implements Geometry {
     }
 
     /**
+     * Returns the number of VBO mappings this geometry is tracking.
+     *
+     * @return The number of VBO mappings tracked.
+     */
+    public int getBufferCount() {
+        return buffers.size();
+    }
+
+    /**
      * Fetches the {@link BufferInfo} mapped to the provided buffer key, or {@code null} if no such mapping exists.
      *
      * @param bufferKey {@code int} The buffer key to look up.
@@ -413,6 +431,16 @@ public abstract class VBOGeometry implements Geometry {
      */
     protected final boolean hasBuffer(int bufferKey) {
         return (buffers.indexOfKey(bufferKey) >= 0 && buffers.get(bufferKey) != null);
+    }
+
+    /**
+     * Check for if VBO objects have been created. If a new buffer is added after creation, this will return
+     * {@code false} to force new VBO creation.
+     *
+     * @return {@code true} If all stored buffers have been created in the GL context.
+     */
+    protected boolean haveCreatedBuffers() {
+        return haveCreatedBuffers;
     }
 
     /**

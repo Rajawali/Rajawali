@@ -69,7 +69,52 @@ public class VBOGeometryTest extends GlTestCase {
 
     @Test
     public void createBuffers() throws Exception {
+        final VBOGeometry geometry = Mockito.mock(VBOGeometry.class, Mockito.CALLS_REAL_METHODS);
+        Mockito.doNothing().when(geometry).createBufferObject(Mockito.any(BufferInfo.class));
+        // Test byte buffer
+        final BufferInfo byteBuffer = new BufferInfo(BufferInfo.BYTE_BUFFER, ByteBuffer.allocate(1));
+        geometry.addBuffer(byteBuffer);
 
+        // Test float buffer
+        final BufferInfo floatBuffer = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        geometry.addBuffer(floatBuffer);
+
+        // Test double buffer
+        final BufferInfo doubleBuffer = new BufferInfo(BufferInfo.DOUBLE_BUFFER, DoubleBuffer.allocate(1));
+        geometry.addBuffer(doubleBuffer);
+
+        // Test short buffer
+        final BufferInfo shortBuffer = new BufferInfo(BufferInfo.SHORT_BUFFER, ShortBuffer.allocate(1));
+        geometry.addBuffer(shortBuffer);
+
+        // Test int buffer
+        final BufferInfo intBuffer = new BufferInfo(BufferInfo.INT_BUFFER, IntBuffer.allocate(1));
+        geometry.addBuffer(intBuffer);
+
+        // Test long buffer
+        final BufferInfo longBuffer = new BufferInfo(BufferInfo.LONG_BUFFER, LongBuffer.allocate(1));
+        geometry.addBuffer(longBuffer);
+
+        // Test char buffer
+        final BufferInfo charBuffer = new BufferInfo(BufferInfo.CHAR_BUFFER, CharBuffer.allocate(1));
+        geometry.addBuffer(charBuffer);
+
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                geometry.createBuffers();
+            }
+        });
+
+        Mockito.verify(geometry).createBufferObject(byteBuffer);
+        Mockito.verify(geometry).createBufferObject(floatBuffer);
+        Mockito.verify(geometry).createBufferObject(doubleBuffer);
+        Mockito.verify(geometry).createBufferObject(shortBuffer);
+        Mockito.verify(geometry).createBufferObject(intBuffer);
+        Mockito.verify(geometry).createBufferObject(longBuffer);
+        Mockito.verify(geometry).createBufferObject(charBuffer);
+
+        assertTrue(geometry.haveCreatedBuffers());
     }
 
     @Test
@@ -77,25 +122,23 @@ public class VBOGeometryTest extends GlTestCase {
 
     }
 
-    @Test
-    public void reload() throws Exception {
-
-    }
-
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void destroy() throws Exception {
-
-    }
-
-    @SuppressWarnings("WrongConstant")
-    @Test
-    public void createBufferObjectWithInfoTypeTarget() throws Exception {
-        final VBOGeometry geometry = Mockito.mock(VBOGeometry.class, Mockito.CALLS_REAL_METHODS);
-        Mockito.doNothing().when(geometry).createBufferObject(Mockito.any(BufferInfo.class), Mockito.anyInt(),
-            Mockito.anyInt(), Mockito.anyInt());
+        final VBOGeometry geometry = new TestableVBOGeometry();
         final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
-        geometry.createBufferObject(info1, -10, -20);
-        Mockito.verify(geometry).createBufferObject(info1, -10, -20);
+        final int key = geometry.addBuffer(info1);
+        geometry.setBufferInfo(key + 1, null);
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                geometry.createBuffers();
+                geometry.destroy();
+            }
+        });
+        assertEquals(-1, info1.glHandle);
+        assertNull(info1.buffer);
+        assertEquals(0, geometry.getBufferCount());
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -134,25 +177,27 @@ public class VBOGeometryTest extends GlTestCase {
         // Test null buffer
         final BufferInfo nullBuffer = new BufferInfo(BufferInfo.FLOAT_BUFFER, null);
         geometry.createBufferObject(nullBuffer, nullBuffer.bufferType, nullBuffer.target, nullBuffer.usage);
-    }
 
-    @SuppressWarnings("WrongConstant")
-    @Test(expected = IllegalArgumentException.class)
-    public void createBufferObjectWithInfoTypeTargetUsageFailByteSize() throws Exception {
-        final VBOGeometry geometry = new TestableVBOGeometry();
-        final BufferInfo byteBuffer = new BufferInfo(BufferInfo.BYTE_BUFFER, FloatBuffer.allocate(1));
-        geometry.createBufferObject(byteBuffer, -1, byteBuffer.target, byteBuffer.usage);
-    }
+        assertEquals(1, byteBuffer.elementSize);
+        assertTrue(byteBuffer.glHandle >= 0);
 
-    @SuppressWarnings("WrongConstant")
-    @Test
-    public void createBufferObjectWithInfo() throws Exception {
-        final VBOGeometry geometry = Mockito.mock(VBOGeometry.class, Mockito.CALLS_REAL_METHODS);
-        Mockito.doNothing().when(geometry).createBufferObject(Mockito.any(BufferInfo.class), Mockito.anyInt(),
-            Mockito.anyInt(), Mockito.anyInt());
-        final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
-        geometry.createBufferObject(info1);
-        Mockito.verify(geometry).createBufferObject(info1);
+        assertEquals(4, floatBuffer.elementSize);
+        assertTrue(floatBuffer.glHandle >= 0);
+
+        assertEquals(8, doubleBuffer.elementSize);
+        assertTrue(doubleBuffer.glHandle >= 0);
+
+        assertEquals(2, shortBuffer.elementSize);
+        assertTrue(shortBuffer.glHandle >= 0);
+
+        assertEquals(4, intBuffer.elementSize);
+        assertTrue(intBuffer.glHandle >= 0);
+
+        assertEquals(8, longBuffer.elementSize);
+        assertTrue(longBuffer.glHandle >= 0);
+
+        assertEquals(2, charBuffer.elementSize);
+        assertTrue(charBuffer.glHandle >= 0);
     }
 
     @Test
