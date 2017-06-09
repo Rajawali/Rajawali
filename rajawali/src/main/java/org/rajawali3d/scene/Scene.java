@@ -827,23 +827,14 @@ public class Scene {
 	 * @return {@code boolean} True if the clear task was queued successfully.
 	 */
 	public boolean setSkybox(int resourceId) throws TextureException {
-	        final AFrameTask task = new AFrameTask() {
-	            @Override
-	            protected void doTask() {
-			for (int i = 0, j = mCameras.size(); i < j; ++i)
-				mCameras.get(i).setFarPlane(1000);
-	            }
-	        };
-		synchronized (mNextSkyboxLock) {
-			mNextSkybox = new Cube(700, true, false);
-			mNextSkybox.setDoubleSided(true);
-			mSkyboxTexture = new Texture("skybox", resourceId);
-			Material material = new Material();
-			material.setColorInfluence(0);
-			material.addTexture(mSkyboxTexture);
-			mNextSkybox.setMaterial(material);
-		}
-        	return internalOfferTask(task);
+		Cube skybox = new Cube(700, true, false);
+		skybox.setDoubleSided(true);
+		Texture texture = new Texture("skybox", resourceId);
+		Material material = new Material();
+		material.setColorInfluence(0);
+		material.addTexture(texture);
+		skybox.setMaterial(material);
+        	return setSkybox(skybox, texture);
 	}
 
 	/**
@@ -858,25 +849,15 @@ public class Scene {
 	 * @throws TextureException
 	 */
 	public boolean setSkybox(int posx, int negx, int posy, int negy, int posz, int negz) throws TextureException {
-	        final AFrameTask task = new AFrameTask() {
-	            @Override
-	            protected void doTask() {
-			for (int i = 0, j = mCameras.size(); i < j; ++i)
-				mCameras.get(i).setFarPlane(1000);
-			}
-		};
-		synchronized (mNextSkyboxLock) {
-			mNextSkybox = new Cube(700, true);
-			int[] resourceIds = new int[] { posx, negx, posy, negy, posz, negz };
-
-			mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
-			((CubeMapTexture)mSkyboxTexture).isSkyTexture(true);
-			Material mat = new Material();
-			mat.setColorInfluence(0);
-			mat.addTexture(mSkyboxTexture);
-			mNextSkybox.setMaterial(mat);
-		}
-        	return internalOfferTask(task);
+		Cube skybox = new Cube(700, true);
+		int[] resourceIds = new int[] { posx, negx, posy, negy, posz, negz };
+		CubeMapTexture texture = new CubeMapTexture("skybox", resourceIds);
+		texture.isSkyTexture(true);
+		Material mat = new Material();
+		mat.setColorInfluence(0);
+		mat.addTexture(texture);
+		skybox.setMaterial(mat);
+        	return setSkybox(skybox, texture);
 	}
 
     /**
@@ -884,27 +865,38 @@ public class Scene {
      *
      * @param bitmaps {@link Bitmap} array containing the cube map textures.
      */
-    public boolean setSkybox(Bitmap[] bitmaps) {
-	final AFrameTask task = new AFrameTask() {
-	            @Override
-	            protected void doTask() {
-            for (int i = 0, j = mCameras.size(); i < j; ++i)
-                mCameras.get(i).setFarPlane(1000);
-        	}
-        };
+    public boolean setSkybox(Bitmap[] bitmaps) throws TextureException {
         final Cube skybox = new Cube(700, true);
         final CubeMapTexture texture = new CubeMapTexture("bitmap_skybox", bitmaps);
         texture.isSkyTexture(true);
         final Material material = new Material();
         material.setColorInfluence(0);
-        try {
-            material.addTexture(texture);
-        } catch (TextureException e) {
-            RajLog.e(e.getMessage());
-        }
+        material.addTexture(texture);
         skybox.setMaterial(material);
-        synchronized (mNextCameraLock) {
+        return setSkybox(skybox, texture);
+    }
+
+    /**
+     * Sets the provided {@link Cube} as a skybox.
+     *
+     * @param skybox {@link Cube} object defining skybox geometry.
+     * @param texture {@link Texture} the texture added to the skybox.
+     */
+    public boolean setSkybox(final Cube skybox, final ATexture texture) {
+	final AFrameTask task = new AFrameTask() {
+	            @Override
+		protected void doTask() {
+			// ensure all cameras can see the far side of the skybox
+                	float diagonal = (float)skybox.getGeometry().getBoundingSphere().getRadius()*2;
+			for (int i = 0, j = mCameras.size(); i < j; ++i)
+				if(mCameras.get(i).getFarPlane() < diagonal) {
+					mCameras.get(i).setFarPlane(diagonal);
+				}
+			}
+	};
+	synchronized (mNextSkyboxLock) {
             mNextSkybox = skybox;
+            mSkyboxTexture = texture;
         }
         return internalOfferTask(task);
     }
