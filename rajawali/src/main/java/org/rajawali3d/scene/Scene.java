@@ -887,10 +887,12 @@ public class Scene {
 	            @Override
 		protected void doTask() {
 			// ensure all cameras can see the far side of the skybox
-                	float diagonal = (float)skybox.getGeometry().getBoundingSphere().getRadius()*2;
+                	float out_radius = (float)skybox.getGeometry().getBoundingSphere().getRadius();
+                	float in_radius = out_radius/(float)Math.sqrt(3);
+                	float median_diagonal = in_radius + out_radius;
 			for (int i = 0, j = mCameras.size(); i < j; ++i)
-				if(mCameras.get(i).getFarPlane() < diagonal) {
-					mCameras.get(i).setFarPlane(diagonal);
+				if(mCameras.get(i).getFarPlane() < median_diagonal) {
+					mCameras.get(i).setFarPlane(median_diagonal);
 				}
 			}
 	};
