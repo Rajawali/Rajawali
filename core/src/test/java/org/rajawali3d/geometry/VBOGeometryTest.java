@@ -1,30 +1,17 @@
 package org.rajawali3d.geometry;
 
 import android.support.test.filters.SmallTest;
-
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.nio.FloatBuffer;
-
-import c.org.rajawali3d.gl.buffers.BufferInfo;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @SmallTest
 public class VBOGeometryTest {
-
-    @Test
-    public void reload() throws Exception {
-        final VBOGeometry geometry = Mockito.mock(VBOGeometry.class, Mockito.CALLS_REAL_METHODS);
-        Mockito.doNothing().when(geometry).validateBuffers();
-
-        // Call method under test
-        geometry.reload();
-
-        Mockito.verify(geometry).validateBuffers();
-    }
 
     @SuppressWarnings("WrongConstant")
     @Test

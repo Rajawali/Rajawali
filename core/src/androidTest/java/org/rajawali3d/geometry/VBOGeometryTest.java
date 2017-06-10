@@ -1,10 +1,17 @@
 package org.rajawali3d.geometry;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import android.support.annotation.NonNull;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,15 +27,6 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
@@ -37,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 @RequiresDevice
 public class VBOGeometryTest extends GlTestCase {
 
-    private final class TestableVBOGeometry extends VBOGeometry {
+    public class TestableVBOGeometry extends VBOGeometry {
 
         @Override public boolean isValid() {
             return false;
@@ -69,7 +67,7 @@ public class VBOGeometryTest extends GlTestCase {
 
     @Test
     public void createBuffers() throws Exception {
-        final VBOGeometry geometry = Mockito.mock(VBOGeometry.class, Mockito.CALLS_REAL_METHODS);
+        final VBOGeometry geometry = Mockito.spy(new TestableVBOGeometry());
         Mockito.doNothing().when(geometry).createBufferObject(Mockito.any(BufferInfo.class));
         // Test byte buffer
         final BufferInfo byteBuffer = new BufferInfo(BufferInfo.BYTE_BUFFER, ByteBuffer.allocate(1));
@@ -120,6 +118,27 @@ public class VBOGeometryTest extends GlTestCase {
     @Test
     public void validateBuffers() throws Exception {
 
+    }
+
+    @Test
+    public void reload() throws Exception {
+        final VBOGeometry geometry = Mockito.spy(new TestableVBOGeometry());
+        Mockito.doNothing().when(geometry).validateBuffers();
+        final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        final int key = geometry.addBuffer(info1);
+
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                geometry.createBuffers();
+            }
+        });
+
+        // Call method under test
+        geometry.reload();
+
+        assertEquals(-1, info1.glHandle);
+        Mockito.verify(geometry).validateBuffers();
     }
 
     @SuppressWarnings("ConstantConditions")

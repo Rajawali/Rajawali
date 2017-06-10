@@ -630,10 +630,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         }
     }
 
-    public void setBuffersCreated(boolean created) {
-        haveCreatedBuffers = created;
-    }
-
     @Nullable
     @Override
     public BufferInfo getVertexBufferInfo() {

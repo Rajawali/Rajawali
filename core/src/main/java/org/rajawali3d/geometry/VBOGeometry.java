@@ -5,6 +5,11 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.gl.buffers.BufferInfo.BufferType;
+import c.org.rajawali3d.gl.buffers.BufferTarget;
+import c.org.rajawali3d.gl.buffers.BufferUsage;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -14,12 +19,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
-
-import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-import c.org.rajawali3d.gl.buffers.BufferInfo.BufferType;
-import c.org.rajawali3d.gl.buffers.BufferTarget;
-import c.org.rajawali3d.gl.buffers.BufferUsage;
 
 /**
  * {@link Geometry} implementation which stores all data in one or more Vertex Buffer Objects.
@@ -441,6 +440,16 @@ public abstract class VBOGeometry implements Geometry {
      */
     protected boolean haveCreatedBuffers() {
         return haveCreatedBuffers;
+    }
+
+    /**
+     * Sets the flag for if VBO objects have been created. If a new buffer is added after creation, this should be
+     * called with {@code false} to ensure the buffers are updated.
+     *
+     * @param created  {@code true} If all stored buffers have been created in the GL context.
+     */
+    public void setBuffersCreated(boolean created) {
+        haveCreatedBuffers = created;
     }
 
     /**
