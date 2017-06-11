@@ -154,12 +154,12 @@ public class VBOGeometryTest extends GlTestCase {
         assertTrue(geometry.haveCreatedBuffers());
 
         // Verify the GL state was left as expected
-        final int[] results = new int[2];
+        final int[] results = new int[] { -1, -1 };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                GLES20.glGetIntegerv(GLES20.GL_ELEMENT_ARRAY_BUFFER, results, 0);
-                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER, results, 1);
+                GLES20.glGetIntegerv(GLES20.GL_ELEMENT_ARRAY_BUFFER_BINDING, results, 0);
+                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER_BINDING, results, 1);
             }
         });
 
@@ -356,12 +356,12 @@ public class VBOGeometryTest extends GlTestCase {
         assertTrue(charBuffer.glHandle >= 0);
 
         // The following verifies the GL state was left as expected
-        final int[] results = new int[2];
+        final int[] results = new int[] { -1, -1 };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                GLES20.glGetIntegerv(GLES20.GL_ELEMENT_ARRAY_BUFFER, results, 0);
-                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER, results, 1);
+                GLES20.glGetIntegerv(GLES20.GL_ELEMENT_ARRAY_BUFFER_BINDING, results, 0);
+                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER_BINDING, results, 1);
             }
         });
 
@@ -436,7 +436,7 @@ public class VBOGeometryTest extends GlTestCase {
 
     @Test
     public void changeBufferDataDataIndexCountResize() throws Exception {
-        final VBOGeometry geometry = new TestableVBOGeometry();
+        final VBOGeometry geometry = Mockito.spy(new TestableVBOGeometry());
         final int[] sourceData = new int[] { 1, 2, 3, 4 };
         final IntBuffer intBuffer = IntBuffer.wrap(sourceData);
         final BufferInfo info = new BufferInfo(BufferInfo.INT_BUFFER, intBuffer);
@@ -459,11 +459,55 @@ public class VBOGeometryTest extends GlTestCase {
         });
 
         // The following verifies the GL state was left as expected
-        final int[] results = new int[1];
+        final int[] results = new int[] { -1 };
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER, results, 0);
+                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER_BINDING, results, 0);
+            }
+        });
+
+        assertEquals(0, results[0]);
+
+        // Use new data, 0-subset replace with resize (but less than capacity)
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                geometry.changeBufferData(info, newBuffer, 0, 2, true);
+            }
+        });
+
+        // The following verifies the GL state was left as expected
+        results[0] = -1;
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER_BINDING, results, 0);
+            }
+        });
+
+        assertEquals(0, results[0]);
+
+        // Use new data, non 0-subset replace with resize (but less than capacity)
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                geometry.changeBufferData(info, newBuffer, 2, 2, true);
+            }
+        });
+
+        /*final IntBuffer buffer = (IntBuffer) info.buffer;
+        buffer.rewind();
+        assertEquals(4, buffer.capacity());
+        final int[] expected = new int[] { 5, 6, 5, 6 };
+        for (int i = 0; i < 4; ++i) {
+            assertEquals(expected[i], buffer.get(i));
+        }*/
+
+        // The following verifies the GL state was left as expected
+        results[0] = -1;
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER_BINDING, results, 0);
             }
         });
 

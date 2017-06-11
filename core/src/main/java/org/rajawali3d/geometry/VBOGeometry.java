@@ -494,6 +494,38 @@ public abstract class VBOGeometry implements Geometry {
             }
             buffer.put((ByteBuffer) newBuffer);
             return buffer;
+        } else if (oldBuffer instanceof FloatBuffer) {
+            FloatBuffer old = (FloatBuffer) oldBuffer;
+            FloatBuffer buffer;
+            if (old.capacity() < index + count) {
+                buffer = FloatBuffer.allocate(index + count);
+                oldBuffer.rewind();
+                newBuffer.rewind();
+                while (old.position() < index) {
+                    buffer.put(old.get());
+                }
+            } else {
+                buffer = old;
+                buffer.position(index);
+            }
+            buffer.put((FloatBuffer) newBuffer);
+            return buffer;
+        } else if (oldBuffer instanceof DoubleBuffer) {
+            DoubleBuffer old = (DoubleBuffer) oldBuffer;
+            DoubleBuffer buffer;
+            if (old.capacity() < index + count) {
+                buffer = DoubleBuffer.allocate(index + count);
+                oldBuffer.rewind();
+                newBuffer.rewind();
+                while (old.position() < index) {
+                    buffer.put(old.get());
+                }
+            } else {
+                buffer = old;
+                buffer.position(index);
+            }
+            buffer.put((DoubleBuffer) newBuffer);
+            return buffer;
         } else if (oldBuffer instanceof ShortBuffer) {
             ShortBuffer old = (ShortBuffer) oldBuffer;
             ShortBuffer buffer;
@@ -526,11 +558,11 @@ public abstract class VBOGeometry implements Geometry {
             }
             buffer.put((IntBuffer) newBuffer);
             return buffer;
-        } else if (oldBuffer instanceof FloatBuffer) {
-            FloatBuffer old = (FloatBuffer) oldBuffer;
-            FloatBuffer buffer;
+        } else if (oldBuffer instanceof LongBuffer) {
+            LongBuffer old = (LongBuffer) oldBuffer;
+            LongBuffer buffer;
             if (old.capacity() < index + count) {
-                buffer = FloatBuffer.allocate(index + count);
+                buffer = LongBuffer.allocate(index + count);
                 oldBuffer.rewind();
                 newBuffer.rewind();
                 while (old.position() < index) {
@@ -540,13 +572,13 @@ public abstract class VBOGeometry implements Geometry {
                 buffer = old;
                 buffer.position(index);
             }
-            buffer.put((FloatBuffer) newBuffer);
+            buffer.put((LongBuffer) newBuffer);
             return buffer;
-        } else if (oldBuffer instanceof DoubleBuffer) {
-            DoubleBuffer old = (DoubleBuffer) oldBuffer;
-            DoubleBuffer buffer;
+        } else if (oldBuffer instanceof CharBuffer) {
+            CharBuffer old = (CharBuffer) oldBuffer;
+            CharBuffer buffer;
             if (old.capacity() < index + count) {
-                buffer = DoubleBuffer.allocate(index + count);
+                buffer = CharBuffer.allocate(index + count);
                 oldBuffer.rewind();
                 newBuffer.rewind();
                 while (old.position() < index) {
@@ -556,7 +588,7 @@ public abstract class VBOGeometry implements Geometry {
                 buffer = old;
                 buffer.position(index);
             }
-            buffer.put((DoubleBuffer) newBuffer);
+            buffer.put((CharBuffer) newBuffer);
             return buffer;
         } else {
             throw new IllegalArgumentException("Unsupported Buffer Type: " + oldBuffer.getClass().getName());
