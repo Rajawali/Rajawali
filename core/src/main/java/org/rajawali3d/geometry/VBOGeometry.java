@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SparseArrayCompat;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.gl.buffers.BufferInfo;
@@ -48,7 +49,7 @@ public abstract class VBOGeometry implements Geometry {
     private boolean haveCreatedBuffers;
 
     public VBOGeometry() {
-        haveCreatedBuffers = false;
+        setBuffersCreated(false);
     }
 
     @RenderThread
@@ -90,7 +91,7 @@ public abstract class VBOGeometry implements Geometry {
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-        haveCreatedBuffers = true;
+        setBuffersCreated(true);
     }
 
     @RenderThread
@@ -103,7 +104,7 @@ public abstract class VBOGeometry implements Geometry {
 
         for (int i = 0, j = buffers.size(); i < j; ++i) {
             final BufferInfo info = buffers.get(i);
-            if (info != null && info.glHandle == 0) {
+            if (info != null && info.glHandle == -1) {
                 createBufferObject(info);
             }
         }
@@ -112,7 +113,7 @@ public abstract class VBOGeometry implements Geometry {
     @RenderThread
     @Override
     public void reload() {
-        haveCreatedBuffers = false;
+        setBuffersCreated(false);
         for (int i = 0, j = buffers.size(); i < j; ++i) {
             final BufferInfo info = buffers.get(i);
             info.glHandle = -1;
@@ -190,6 +191,12 @@ public abstract class VBOGeometry implements Geometry {
                                                + "follow the contract.");
         }
 
+        //noinspection WrongConstant
+        if (target == 0) {
+            throw new IllegalArgumentException("Buffer target was not set in the BufferInfo or was set to an invalid "
+                                               + "value.");
+        }
+
         bufferInfo.elementSize = byteSize;
 
         // Generate the buffer handle
@@ -233,7 +240,7 @@ public abstract class VBOGeometry implements Geometry {
      * @return {@code int} The internal engine handle for the buffer data.
      */
     public int addBuffer(@NonNull BufferInfo bufferInfo) {
-        haveCreatedBuffers = false;
+        setBuffersCreated(false);
         final int key = buffers.size();
         bufferInfo.rajawaliHandle = key;
         buffers.put(key, bufferInfo);
@@ -467,8 +474,9 @@ public abstract class VBOGeometry implements Geometry {
      *
      * @throws IllegalArgumentException Thrown if either buffer is an unsupported type.
      */
+    @VisibleForTesting
     @NonNull
-    private static Buffer buildResizedBuffer(@NonNull Buffer oldBuffer, @NonNull Buffer newBuffer, int index,
+    static Buffer buildResizedBuffer(@NonNull Buffer oldBuffer, @NonNull Buffer newBuffer, int index,
                                              int count) throws IllegalArgumentException {
         if (oldBuffer instanceof ByteBuffer) {
             ByteBuffer old = (ByteBuffer) oldBuffer;

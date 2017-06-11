@@ -42,4 +42,9 @@ public class VBOGeometryTest {
         geometry.createBufferObject(info1);
         Mockito.verify(geometry).createBufferObject(info1, info1.bufferType, info1.target, info1.usage);
     }
+
+    @Test
+    public void buildResizedBuffer() throws Exception {
+
+    }
 }

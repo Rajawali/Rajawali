@@ -67,14 +67,15 @@ public class VBOGeometryTest extends GlTestCase {
     }
 
 
-    @SuppressWarnings({ "ConstantConditions", "WrongConstant" }) @Test
+    @SuppressWarnings({ "ConstantConditions", "WrongConstant" })
+    @Test
     public void createBuffers() throws Exception {
         final VBOGeometry geometry = Mockito.spy(new TestableVBOGeometry());
         final Buffer mockedBuffer = Mockito.mock(Buffer.class);
 
         // Setup testing for already created buffers
         final BufferInfo firstBuffer = new BufferInfo(BufferInfo.BYTE_BUFFER, ByteBuffer.allocate(1));
-        geometry.addBuffer(firstBuffer);
+        firstBuffer.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(firstBuffer);
         runOnGlThreadAndWait(new Runnable() {
             @Override public void run() {
@@ -87,42 +88,51 @@ public class VBOGeometryTest extends GlTestCase {
 
         // Test byte buffer
         final BufferInfo byteBuffer = new BufferInfo(BufferInfo.BYTE_BUFFER, ByteBuffer.allocate(1));
+        byteBuffer.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(byteBuffer);
 
         // Test float buffer
         final BufferInfo floatBuffer = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        floatBuffer.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(floatBuffer);
 
         // Test double buffer
         final BufferInfo doubleBuffer = new BufferInfo(BufferInfo.DOUBLE_BUFFER, DoubleBuffer.allocate(1));
+        doubleBuffer.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(doubleBuffer);
 
         // Test short buffer
         final BufferInfo shortBuffer = new BufferInfo(BufferInfo.SHORT_BUFFER, ShortBuffer.allocate(1));
+        shortBuffer.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(shortBuffer);
 
         // Test int buffer
         final BufferInfo intBuffer = new BufferInfo(BufferInfo.INT_BUFFER, IntBuffer.allocate(1));
+        intBuffer.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(intBuffer);
 
         // Test long buffer
         final BufferInfo longBuffer = new BufferInfo(BufferInfo.LONG_BUFFER, LongBuffer.allocate(1));
+        longBuffer.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(longBuffer);
 
         // Test char buffer
         final BufferInfo charBuffer = new BufferInfo(BufferInfo.CHAR_BUFFER, CharBuffer.allocate(1));
+        charBuffer.target = GLES20.GL_ARRAY_BUFFER;
         final int lastKey = geometry.addBuffer(charBuffer);
 
         // Test unknown class buffer
         final BufferInfo mockedBufferInfo = new BufferInfo(Integer.MAX_VALUE, mockedBuffer);
+        mockedBufferInfo.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(mockedBufferInfo);
-
-        // Test null buffer info
-        geometry.setBufferInfo(lastKey + 1, null);
 
         // Test buffer info with null buffer
         final BufferInfo nullBuffer = new BufferInfo(BufferInfo.FLOAT_BUFFER, null);
+        nullBuffer.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(nullBuffer);
+
+        // Test null buffer info
+        geometry.setBufferInfo(lastKey + 1, null);
 
         assertFalse(geometry.haveCreatedBuffers());
 
@@ -157,9 +167,60 @@ public class VBOGeometryTest extends GlTestCase {
         assertEquals(0, results[1]);
     }
 
+    @SuppressWarnings({ "ConstantConditions", "WrongConstant" })
+    @Test
+    public void createBuffersNoTarget() throws Exception {
+        final VBOGeometry geometry = new TestableVBOGeometry();
+
+        // Setup testing for already created buffers
+        final BufferInfo firstBuffer = new BufferInfo(BufferInfo.BYTE_BUFFER, ByteBuffer.allocate(1));
+        geometry.addBuffer(firstBuffer);
+        final boolean[] thrown = new boolean[] { false };
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                try {
+                    geometry.createBuffers();
+                } catch (IllegalArgumentException e) {
+                    thrown[0] = true;
+                }
+            }
+        });
+        assertTrue(thrown[0]);
+    }
+
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void validateBuffers() throws Exception {
+        final VBOGeometry geometry = Mockito.spy(new TestableVBOGeometry());
+        final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        final BufferInfo info2 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        final BufferInfo info3 = new BufferInfo(BufferInfo.FLOAT_BUFFER, null);
 
+        info1.target = GLES20.GL_ARRAY_BUFFER;
+        info2.target = GLES20.GL_ARRAY_BUFFER;
+        info3.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.addBuffer(info1);
+        geometry.addBuffer(info2);
+        geometry.addBuffer(info3);
+
+        // First call should cause createBuffers to be called
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                geometry.validateBuffers();
+            }
+        });
+        Mockito.verify(geometry).createBuffers();
+
+        // Second call should cause createBufferObject to be called on the offending buffer
+        info2.glHandle = -1;
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                geometry.validateBuffers();
+            }
+        });
+
+        Mockito.verify(geometry).createBufferObject(info1);
     }
 
     @Test
@@ -167,6 +228,7 @@ public class VBOGeometryTest extends GlTestCase {
         final VBOGeometry geometry = Mockito.spy(new TestableVBOGeometry());
         Mockito.doNothing().when(geometry).validateBuffers();
         final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        info1.target = GLES20.GL_ARRAY_BUFFER;
         geometry.addBuffer(info1);
 
         runOnGlThreadAndWait(new Runnable() {
@@ -188,7 +250,9 @@ public class VBOGeometryTest extends GlTestCase {
     public void destroy() throws Exception {
         final VBOGeometry geometry = new TestableVBOGeometry();
         final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        info1.target = GLES20.GL_ARRAY_BUFFER;
         final BufferInfo info2 = new BufferInfo(BufferInfo.FLOAT_BUFFER, null);
+        info2.target = GLES20.GL_ARRAY_BUFFER;
         final int key = geometry.addBuffer(info1);
         geometry.addBuffer(info2);
         geometry.setBufferInfo(key + 2, null);
@@ -227,35 +291,48 @@ public class VBOGeometryTest extends GlTestCase {
 
         // Test byte buffer
         final BufferInfo byteBuffer = new BufferInfo(BufferInfo.BYTE_BUFFER, ByteBuffer.allocate(1));
-        geometry.createBufferObject(byteBuffer, byteBuffer.bufferType, byteBuffer.target, byteBuffer.usage);
+        byteBuffer.target = GLES20.GL_ARRAY_BUFFER;
 
         // Test float buffer
         final BufferInfo floatBuffer = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
-        geometry.createBufferObject(floatBuffer, floatBuffer.bufferType, floatBuffer.target, floatBuffer.usage);
+        floatBuffer.target = GLES20.GL_ARRAY_BUFFER;
 
         // Test double buffer
         final BufferInfo doubleBuffer = new BufferInfo(BufferInfo.DOUBLE_BUFFER, DoubleBuffer.allocate(1));
-        geometry.createBufferObject(doubleBuffer, doubleBuffer.bufferType, doubleBuffer.target, doubleBuffer.usage);
+        doubleBuffer.target = GLES20.GL_ARRAY_BUFFER;
 
         // Test short buffer
         final BufferInfo shortBuffer = new BufferInfo(BufferInfo.SHORT_BUFFER, ShortBuffer.allocate(1));
-        geometry.createBufferObject(shortBuffer, shortBuffer.bufferType, shortBuffer.target, shortBuffer.usage);
+        shortBuffer.target = GLES20.GL_ARRAY_BUFFER;
 
         // Test int buffer
         final BufferInfo intBuffer = new BufferInfo(BufferInfo.INT_BUFFER, IntBuffer.allocate(1));
-        geometry.createBufferObject(intBuffer, intBuffer.bufferType, intBuffer.target, intBuffer.usage);
+        intBuffer.target = GLES20.GL_ARRAY_BUFFER;
 
         // Test long buffer
         final BufferInfo longBuffer = new BufferInfo(BufferInfo.LONG_BUFFER, LongBuffer.allocate(1));
-        geometry.createBufferObject(longBuffer, longBuffer.bufferType, longBuffer.target, longBuffer.usage);
+        longBuffer.target = GLES20.GL_ARRAY_BUFFER;
 
         // Test char buffer
         final BufferInfo charBuffer = new BufferInfo(BufferInfo.CHAR_BUFFER, CharBuffer.allocate(1));
-        geometry.createBufferObject(charBuffer, charBuffer.bufferType, charBuffer.target, charBuffer.usage);
+        charBuffer.target = GLES20.GL_ARRAY_BUFFER;
 
         // Test null buffer
         final BufferInfo nullBuffer = new BufferInfo(BufferInfo.FLOAT_BUFFER, null);
-        geometry.createBufferObject(nullBuffer, nullBuffer.bufferType, nullBuffer.target, nullBuffer.usage);
+        nullBuffer.target = GLES20.GL_ARRAY_BUFFER;
+
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                geometry.createBufferObject(byteBuffer, byteBuffer.bufferType, byteBuffer.target, byteBuffer.usage);
+                geometry.createBufferObject(floatBuffer, floatBuffer.bufferType, floatBuffer.target, floatBuffer.usage);
+                geometry.createBufferObject(doubleBuffer, doubleBuffer.bufferType, doubleBuffer.target, doubleBuffer.usage);
+                geometry.createBufferObject(shortBuffer, shortBuffer.bufferType, shortBuffer.target, shortBuffer.usage);
+                geometry.createBufferObject(intBuffer, intBuffer.bufferType, intBuffer.target, intBuffer.usage);
+                geometry.createBufferObject(longBuffer, longBuffer.bufferType, longBuffer.target, longBuffer.usage);
+                geometry.createBufferObject(charBuffer, charBuffer.bufferType, charBuffer.target, charBuffer.usage);
+                geometry.createBufferObject(nullBuffer, nullBuffer.bufferType, nullBuffer.target, nullBuffer.usage);
+            }
+        });
 
         assertEquals(1, byteBuffer.elementSize);
         assertTrue(byteBuffer.glHandle >= 0);
@@ -307,27 +384,90 @@ public class VBOGeometryTest extends GlTestCase {
 
     @Test
     public void changeBufferUsage() throws Exception {
+        final VBOGeometry geometry = new TestableVBOGeometry();
+        final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        info1.target = GLES20.GL_ARRAY_BUFFER;
+        geometry.addBuffer(info1);
 
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                geometry.createBuffers();
+                geometry.changeBufferUsage(info1, GLES20.GL_STREAM_DRAW);
+            }
+        });
+
+        assertTrue(info1.glHandle >= 0);
+        assertEquals(GLES20.GL_STREAM_DRAW, info1.usage);
     }
 
     @Test
-    public void changeBufferData() throws Exception {
-
+    public void changeBufferDataDataIndex() throws Exception {
+        final VBOGeometry geometry = Mockito.mock(VBOGeometry.class, Mockito.CALLS_REAL_METHODS);
+        Mockito.doNothing().when(geometry).changeBufferData(Mockito.any(BufferInfo.class), Mockito.any(Buffer.class),
+                                                            Mockito.anyInt(), Mockito.anyInt());
+        final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        final Buffer newData = FloatBuffer.allocate(1);
+        geometry.changeBufferData(info1, newData, 0);
+        Mockito.verify(geometry).changeBufferData(info1, newData, 0, newData.limit());
     }
 
     @Test
-    public void changeBufferData1() throws Exception {
-
+    public void changeBufferDataDataIndexCount() throws Exception {
+        final VBOGeometry geometry = Mockito.mock(VBOGeometry.class, Mockito.CALLS_REAL_METHODS);
+        Mockito.doNothing().when(geometry).changeBufferData(Mockito.any(BufferInfo.class), Mockito.any(Buffer.class),
+                                                            Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean());
+        final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        final Buffer newData = FloatBuffer.allocate(1);
+        geometry.changeBufferData(info1, newData, 0, 1);
+        Mockito.verify(geometry).changeBufferData(info1, newData, 0, 1, false);
     }
 
     @Test
-    public void changeBufferData2() throws Exception {
-
+    public void changeBufferDataDataIndexResize() throws Exception {
+        final VBOGeometry geometry = Mockito.mock(VBOGeometry.class, Mockito.CALLS_REAL_METHODS);
+        Mockito.doNothing().when(geometry).changeBufferData(Mockito.any(BufferInfo.class), Mockito.any(Buffer.class),
+                                                            Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean());
+        final BufferInfo info1 = new BufferInfo(BufferInfo.FLOAT_BUFFER, FloatBuffer.allocate(1));
+        final Buffer newData = FloatBuffer.allocate(1);
+        geometry.changeBufferData(info1, newData, 0, true);
+        Mockito.verify(geometry).changeBufferData(info1, newData, 0, 1, true);
     }
 
     @Test
-    public void changeBufferData3() throws Exception {
+    public void changeBufferDataDataIndexCountResize() throws Exception {
+        final VBOGeometry geometry = new TestableVBOGeometry();
+        final int[] sourceData = new int[] { 1, 2, 3, 4 };
+        final IntBuffer intBuffer = IntBuffer.wrap(sourceData);
+        final BufferInfo info = new BufferInfo(BufferInfo.INT_BUFFER, intBuffer);
+        info.target = GLES20.GL_ARRAY_BUFFER;
+        geometry.addBuffer(info);
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                geometry.createBuffers();
+            }
+        });
 
+        // Prepare new data for 0-subset replace, no resize
+        final int[] newData = new int[] { 5, 6 };
+        final IntBuffer newBuffer = IntBuffer.wrap(newData);
+
+        runOnGlThreadAndWait(new Runnable() {
+            @Override public void run() {
+                geometry.changeBufferData(info, newBuffer, 0, 2, false);
+            }
+        });
+
+        // The following verifies the GL state was left as expected
+        final int[] results = new int[1];
+        runOnGlThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                GLES20.glGetIntegerv(GLES20.GL_ARRAY_BUFFER, results, 0);
+            }
+        });
+
+        assertEquals(0, results[0]);
     }
 
     @Test

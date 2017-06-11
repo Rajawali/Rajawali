@@ -9,10 +9,12 @@ import static org.mockito.Mockito.when;
 
 import android.opengl.GLES20;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import c.org.rajawali3d.textures.annotation.Filter;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.rajawali3d.materials.Material;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@RunWith(AndroidJUnit4.class)
 @SmallTest
 public class BaseTextureTest {
 
