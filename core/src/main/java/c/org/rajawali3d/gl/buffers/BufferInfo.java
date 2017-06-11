@@ -61,7 +61,7 @@ public class BufferInfo {
     public BufferInfo() {
     }
 
-    public BufferInfo(@NonNull @BufferType int bufferType, @NonNull Buffer buffer) {
+    public BufferInfo(@BufferType int bufferType, @NonNull Buffer buffer) {
         this.bufferType = bufferType;
         this.buffer = buffer;
     }

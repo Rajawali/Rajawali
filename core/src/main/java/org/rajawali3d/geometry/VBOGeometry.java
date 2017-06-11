@@ -77,7 +77,7 @@ public abstract class VBOGeometry implements Geometry {
                     ((IntBuffer) info.buffer).compact().position(0);
                 } else if (info.buffer instanceof LongBuffer) {
                     ((LongBuffer) info.buffer).compact().position(0);
-                } else if (info.buffer instanceof CharBuffer) {
+                } else {
                     ((CharBuffer) info.buffer).compact().position(0);
                 }
             }
