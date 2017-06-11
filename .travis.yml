@@ -79,4 +79,5 @@ notifications:
   slack:
     secure: F5PgdetFfZrWrGlSg1jRQrYHH0miPpSqM969mzwh042OLybpAND4o7ouNAHYbWtVMVJ1KIK/bPKCdvW4Iy6pJpyntX+rQBYN6Tfs4bN/ivOrePBBDPLfr/uPGIY/EPAw4U7qeprRANAPT3IutCqx9FM/IAfNtzOWKcPOTRXNeoY=
 after_success:
-- bash <(curl -s https://codecov.io/bash) -f "./rajawali/build/reports/jacoco/jacocoUnifiedTestDebug.xml"
+- bash <(curl -s https://codecov.io/bash) -f "./core/build/reports/jacoco/jacocoUnifiedTestDebug.xml" -F unittests
+- bash <(curl -s https://codecov.io/bash) -f "./core/glTestCoverage.xml" -F glunittests

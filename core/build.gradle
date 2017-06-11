@@ -51,6 +51,21 @@ task uploadTestsToS3(type: AmazonS3FileUploadTask, dependsOn: zipTestsForS3) {
     enabled = new File(System.getProperty("user.home"), ".aws/credentials").exists()
 }
 
+task copyAndroidCoverage(type: Copy) {
+    afterEvaluate {
+        dependsOn createDebugAndroidTestCoverageReport
+    }
+    from 'build/reports/coverage/debug/report.xml'
+    into './'
+    rename { String fileName ->
+        fileName = "glTestCoverage.xml"
+    }
+}
+
+task prepareForCommit(dependsOn: [copyAndroidCoverage]) {
+
+}
+
 if (isReleaseBuild()) {
     status = 'release'
 } else {
