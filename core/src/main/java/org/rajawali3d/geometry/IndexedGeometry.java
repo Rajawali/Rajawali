@@ -3,15 +3,15 @@ package org.rajawali3d.geometry;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-
-import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
 
 /**
  * Implementation of {@link VBOGeometry} which uses element indices to represent it's primitives. This implementation
@@ -195,13 +195,15 @@ public abstract class IndexedGeometry extends VBOGeometry {
         if (indexBufferKey < 0) {
             indexBufferKey = addBuffer(indexBufferInfo);
         } else {
-            final BufferInfo info = setBufferInfo(indexBufferKey, indexBufferInfo);
+            final BufferInfo newInfo = indexBufferInfo.copyWithKey(indexBufferKey);
+            final BufferInfo info = setBufferInfo(indexBufferKey, newInfo);
             // TODO: Cleanup old info if necessary
         }
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    private void setByteIndices(@NonNull int[] indices, boolean replaceData) {
+    @VisibleForTesting
+    void setByteIndices(@NonNull int[] indices, boolean replaceData) {
         BufferInfo indexInfo = getBufferInfo(indexBufferKey);
         if (indexInfo == null) {
             indexInfo = new BufferInfo();
@@ -211,6 +213,7 @@ public abstract class IndexedGeometry extends VBOGeometry {
             indexBufferKey = addBuffer(indexInfo);
         }
         if (replaceData || indexInfo.buffer == null) {
+            indexInfo.bufferType = BufferInfo.BYTE_BUFFER;
             indexInfo.buffer = ByteBuffer.allocateDirect(indices.length * BYTE_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder());
             final ByteBuffer buffer = ((ByteBuffer) indexInfo.buffer);
@@ -235,7 +238,8 @@ public abstract class IndexedGeometry extends VBOGeometry {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    private void setShortIndices(@NonNull int[] indices, boolean replaceData) {
+    @VisibleForTesting
+    void setShortIndices(@NonNull int[] indices, boolean replaceData) {
         BufferInfo indexInfo = getBufferInfo(indexBufferKey);
         if (indexInfo == null) {
             indexInfo = new BufferInfo();
@@ -245,6 +249,7 @@ public abstract class IndexedGeometry extends VBOGeometry {
             indexBufferKey = addBuffer(indexInfo);
         }
         if (replaceData || indexInfo.buffer == null) {
+            indexInfo.bufferType = BufferInfo.SHORT_BUFFER;
             indexInfo.buffer = ByteBuffer.allocateDirect(indices.length * SHORT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asShortBuffer();
             final ShortBuffer buffer = ((ShortBuffer) indexInfo.buffer);
@@ -266,7 +271,8 @@ public abstract class IndexedGeometry extends VBOGeometry {
         }
     }
 
-    private void setIntIndices(@NonNull int[] indices, boolean replaceData) {
+    @VisibleForTesting
+    void setIntIndices(@NonNull int[] indices, boolean replaceData) {
         BufferInfo indexInfo = getBufferInfo(indexBufferKey);
         if (indexInfo == null) {
             indexInfo = new BufferInfo();
@@ -276,6 +282,7 @@ public abstract class IndexedGeometry extends VBOGeometry {
             indexBufferKey = addBuffer(indexInfo);
         }
         if (replaceData || indexInfo.buffer == null) {
+            indexInfo.bufferType = BufferInfo.INT_BUFFER;
             indexInfo.buffer = ByteBuffer.allocateDirect(indices.length * INT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asIntBuffer();
             ((IntBuffer) indexInfo.buffer).put(indices).rewind();

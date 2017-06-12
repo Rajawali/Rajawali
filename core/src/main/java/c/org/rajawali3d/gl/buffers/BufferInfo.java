@@ -14,6 +14,7 @@ package c.org.rajawali3d.gl.buffers;
 
 import android.opengl.GLES20;
 import android.support.annotation.IntDef;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -41,6 +42,19 @@ public class BufferInfo {
     public static final int INT_BUFFER    = 4;
     public static final int LONG_BUFFER   = 5;
     public static final int CHAR_BUFFER   = 6;
+
+    @NonNull
+    public BufferInfo copyWithKey(@IntRange(from = 0) int key) {
+        final BufferInfo clone = new BufferInfo(bufferType, buffer);
+        clone.target = target;
+        clone.glHandle = glHandle;
+        clone.rajawaliHandle = key;
+        clone.elementSize = elementSize;
+        clone.usage = usage;
+        clone.offset = offset;
+        clone.type = type;
+        return clone;
+    }
 
     @Documented
     @Retention(RetentionPolicy.SOURCE)
