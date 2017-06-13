@@ -16,6 +16,9 @@ import java.util.List;
 
 import android.graphics.Color;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.IShaderFragment;
@@ -189,28 +192,40 @@ public abstract class DiffuseMethod {
 		}
 		
 		public void setToonColors(int color0, int color1, int color2, int color3) {
-			mToonColor0[0] = Color.red(color0); 
-			mToonColor0[1] = Color.green(color0);
-			mToonColor0[2] = Color.blue(color0); 
-			mToonColor0[3] = Color.alpha(color0); 
+			mToonColor0[0] = Color.red(color0)/255f; 
+			mToonColor0[1] = Color.green(color0)/255f;
+			mToonColor0[2] = Color.blue(color0)/255f; 
+			mToonColor0[3] = Color.alpha(color0)/255f; 
 
-			mToonColor1[0] = Color.red(color1); 
-			mToonColor1[1] = Color.green(color1);
-			mToonColor1[2] = Color.blue(color1); 
-			mToonColor1[3] = Color.alpha(color1); 
+			mToonColor1[0] = Color.red(color1)/255f; 
+			mToonColor1[1] = Color.green(color1)/255f;
+			mToonColor1[2] = Color.blue(color1)/255f; 
+			mToonColor1[3] = Color.alpha(color1)/255f; 
 
-			mToonColor2[0] = Color.red(color2); 
-			mToonColor2[1] = Color.green(color2);
-			mToonColor2[2] = Color.blue(color2); 
-			mToonColor2[3] = Color.alpha(color2); 
+			mToonColor2[0] = Color.red(color2)/255f; 
+			mToonColor2[1] = Color.green(color2)/255f;
+			mToonColor2[2] = Color.blue(color2)/255f; 
+			mToonColor2[3] = Color.alpha(color2)/255f; 
 			
-			mToonColor3[0] = Color.red(color3); 
-			mToonColor3[1] = Color.green(color3);
-			mToonColor3[2] = Color.blue(color3); 
-			mToonColor3[3] = Color.alpha(color3); 
+			mToonColor3[0] = Color.red(color3)/255f; 
+			mToonColor3[1] = Color.green(color3)/255f;
+			mToonColor3[2] = Color.blue(color3)/255f; 
+			mToonColor3[3] = Color.alpha(color3)/255f; 
 			
 			if(mFragmentShader != null)
 				mFragmentShader.setToonColors(mToonColor0, mToonColor1, mToonColor2, mToonColor3);
+		}
+
+		@NonNull
+		@Override
+		public String toString() {
+		return "["
+		// @formatter:off
+			+ mToonColor0[0] + "," + mToonColor0[1] + "," + mToonColor0[2] + "," + mToonColor0[3] + "]\n["
+			+ mToonColor1[0] + "," + mToonColor1[1] + "," + mToonColor1[2] + "," + mToonColor1[3] + "]\n["
+			+ mToonColor2[0] + "," + mToonColor2[1] + "," + mToonColor2[2] + "," + mToonColor2[3] + "]\n["
+			+ mToonColor3[0] + "," + mToonColor3[1] + "," + mToonColor3[2] + "," + mToonColor3[3] + "]\n";
+		// @formatter:on
 		}
 	}
 }
