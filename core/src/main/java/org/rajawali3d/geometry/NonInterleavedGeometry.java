@@ -53,9 +53,19 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     private int colorBufferKey   = -1;
 
     /**
+     * Indicates whether this geometry contains normals or not.
+     */
+    private boolean hasNormals;
+
+    /**
+     * Indicates whether this geometry contains texture coordinates or not.
+     */
+    private boolean hasTextureCoordinates;
+
+    /**
      * The number of vertices currently stored in the vertex buffer.
      */
-    protected int                    numVertices;
+    private int numVertices;
 
     /**
      * A pointer to the original geometry. This is not null when the object has been cloned. When cloning a
@@ -63,16 +73,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
      * reference to the original is kept to ensure the data does not go out of scope prematurely.
      */
     protected NonInterleavedGeometry sourceGeometry;
-
-    /**
-     * Indicates whether this geometry contains normals or not.
-     */
-    protected boolean hasNormals;
-
-    /**
-     * Indicates whether this geometry contains texture coordinates or not.
-     */
-    protected boolean hasTextureCoordinates;
 
     @RenderThread
     @Override
