@@ -13,12 +13,13 @@
 package org.rajawali3d.materials.textures;
 
 import android.opengl.GLES20;
-import org.rajawali3d.materials.AResourceManager;
-import org.rajawali3d.renderer.Renderer;
 import c.org.rajawali3d.textures.BaseTexture;
 import c.org.rajawali3d.textures.RenderTargetTexture;
+import org.rajawali3d.materials.AResourceManager;
+import org.rajawali3d.renderer.Renderer;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -199,13 +200,12 @@ public final class TextureManager extends AResourceManager {
 	 * {@link Renderer}.
 	 */
 	public void taskReload() {
-		int len = mTextureList.size();
-		for (int i = 0; i < len; i++) {
-			BaseTexture texture = mTextureList.get(i);
+		Iterator<BaseTexture> iterator = mTextureList.iterator();
+
+		while (iterator.hasNext()) {
+			BaseTexture texture = iterator.next();
 			if (texture.willRecycle()) {
-				mTextureList.remove(i);
-				i -= 1;
-				len -= 1;
+				iterator.remove();
 			} else {
 				taskAdd(texture, true);
 			}

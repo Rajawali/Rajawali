@@ -184,10 +184,10 @@ public class ScreenQuad extends Object3D {
 				vertices[vertexCount + 2] = 0;
 
 				if (mCreateTextureCoords) {
-					float u = (float) mSegmentsW - ((float) i / (float) mSegmentsW);
-					textureCoords[texCoordCount++] = (1.0f - u) * mNumTextureTiles;
+					float u = (float) i / (float) mSegmentsW;
+					textureCoords[texCoordCount++] = u * mNumTextureTiles;
 					float v = (float) j / (float) mSegmentsH;
-					textureCoords[texCoordCount++] = v * mNumTextureTiles;
+					textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
 				}
 
 				normals[vertexCount] = 0;

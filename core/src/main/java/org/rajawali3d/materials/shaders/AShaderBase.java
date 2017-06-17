@@ -507,11 +507,28 @@ public abstract class AShaderBase {
 			super(name, dataType, value);
 		}
 		
-		public ShaderVar w()
+		public ShaderVar xyzw()
 		{
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
-			v.setName(this.mName + ".w");
+			v.setName(this.mName + ".xyzw");
+			v.mInitialized = true;
 			return v;
+		}
+		
+		public ShaderVar rgba()
+		{
+			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			v.setName(this.mName + ".rgba");
+			v.mInitialized = true;
+			return v;
+		}
+		
+		public ShaderVar w()
+		{
+                        ShaderVar v = new RFloat();
+                        v.setName(this.mName + ".w");
+                        v.mInitialized = true;
+                        return v;
 		}
 		
 		public ShaderVar a()

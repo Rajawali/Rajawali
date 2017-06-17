@@ -179,6 +179,7 @@ public abstract class AShader extends AShaderBase {
 	public AShader(ShaderType shaderType, String shaderString) {
 		mShaderType = shaderType;
 		mShaderString = shaderString;
+		mNeedsBuild = false; // do not build when a shaderstring is provided
 	}
 
 	public void initialize() {

@@ -393,6 +393,33 @@ public class Matrix4Test {
     }
 
     @Test
+    public void testInverseMultiplication() throws Exception {
+        /* given that a matrix is invertable, test that:
+           - a matrix times it's inverse equals the identity
+           - an inverse times it's matrix equals the identity */
+        final double[] seed = new double[]{
+                4, 1, 1, 1,
+                1, 4, 1, 1,
+                1, 1, 4, 1,
+                1, 1, 1, 4
+        };
+        final double[] expected = new Matrix4().identity().getDoubleValues();
+        final Matrix4 charm     = new Matrix4(seed);
+        final Matrix4 strange   = new Matrix4(seed);
+        strange.inverse();
+
+        final double[] result1  = charm.clone().multiply(strange).getDoubleValues();
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals("matrix times inverse", expected[i], result1[i], 1e-14);
+        }
+
+        final double[] result2  = strange.clone().multiply(charm).getDoubleValues();
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals("inverse times matrix", expected[i], result2[i], 1e-14);
+        }
+    }
+
+    @Test
     public void testTranspose() throws Exception {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
