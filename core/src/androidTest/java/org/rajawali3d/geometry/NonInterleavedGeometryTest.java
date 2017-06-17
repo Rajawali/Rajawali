@@ -386,32 +386,32 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
+        final NonInterleavedGeometry geometry = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                bufferObject.setData(vertices, null, null, null, indices, true);
+                geometry.setData(vertices, null, null, null, indices, true);
             }
         });
-        bufferObject.setVertices(vertices2);
-        final FloatBuffer buffer = bufferObject.getVertices();
+        geometry.setVertices(vertices2);
+        final FloatBuffer buffer = geometry.getVertices();
         int i = 0;
         while (buffer.hasRemaining()) {
             assertEquals("Buffer contents invalid.", buffer.get(), vertices2[i++], 0);
         }
 
-        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
+        final NonInterleavedGeometry geometry1 = new NonInterleavedGeometry();
 
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                bufferObject2.setData(vertices, null, null, null, indices, false);
+                geometry1.setData(vertices, null, null, null, indices, false);
             }
         });
-        bufferObject2.validateBuffers();
-        bufferObject2.setVertices(vertices2);
-        final FloatBuffer buffer2 = bufferObject2.getVertices();
+        geometry1.validateBuffers();
+        geometry1.setVertices(vertices2);
+        final FloatBuffer buffer2 = geometry1.getVertices();
         int i2 = 0;
         while (buffer2.hasRemaining()) {
             assertEquals("Buffer contents invalid.", buffer2.get(), vertices2[i2++], 0);
