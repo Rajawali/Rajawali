@@ -53,6 +53,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	protected final Matrix4 mMVPMatrix = new Matrix4();
 
 	protected final Matrix4 mMVMatrix = new Matrix4();
+	protected final Matrix4 mInverseViewMatrix = new Matrix4();
 	protected Matrix4 mPMatrix;
 	protected Matrix4 mParentMatrix;
 	protected final Matrix4 mRotationMatrix = new Matrix4();
@@ -214,6 +215,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		boolean modelMatrixWasRecalculated = onRecalculateModelMatrix(parentMatrix);
 		// -- calculate model view matrix;
 		mMVMatrix.setAll(vMatrix).multiply(mMMatrix);
+		// -- calculate inverse view matrix;
+                Matrix4 inverseView = vMatrix.clone();
+                inverseView.inverse();
+		mInverseViewMatrix.setAll(inverseView);
 		//Create MVP Matrix from View-Projection Matrix
 		mMVPMatrix.setAll(vpMatrix).multiply(mMMatrix);
 
@@ -298,6 +303,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 			material.setMVPMatrix(mMVPMatrix);
 			material.setModelMatrix(mMMatrix);
+			material.setInverseViewMatrix(mInverseViewMatrix);
 			material.setModelViewMatrix(mMVMatrix);
 
 			if(mIsVisible) {
@@ -451,6 +457,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 			// Apply this object's matrices to the pickingMaterial
 			pickingMaterial.setMVPMatrix(mMVPMatrix);
 			pickingMaterial.setModelMatrix(mMMatrix);
+			pickingMaterial.setInverseViewMatrix(mInverseViewMatrix);
 			pickingMaterial.setModelViewMatrix(mMVMatrix);
 
 			// Draw the object using its picking color
@@ -876,6 +883,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
 	public Matrix4 getModelViewProjectionMatrix() {
 		return mMVPMatrix;
+	}
+
+	public Matrix4 getInverseViewMatrix() {
+		return mInverseViewMatrix;
 	}
 
 	public Matrix4 getModelViewMatrix() {

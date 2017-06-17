@@ -155,6 +155,10 @@ public class Material {
      */
     private Matrix4 mModelMatrix;
     /**
+     * The inverse view matrix is used to transform reflections
+     */
+    private float[] mInverseViewMatrix;
+    /**
      * The model view matrix is used to transform vertices to eye coordinates
      */
     private float[] mModelViewMatrix;
@@ -469,6 +473,7 @@ public class Material {
      */
     void remove() {
         mModelMatrix = null;
+        mInverseViewMatrix = null;
         mModelViewMatrix = null;
 
         if (mLights != null)
@@ -1047,12 +1052,21 @@ public class Material {
     }
 
     /**
+     * Returns the inverse view matrix. The inverse view matrix is used to transform reflections.
+     *
+     * @return
+     */
+    public float[] getInverseViewMatrix() {
+        return mInverseViewMatrix;
+    }
+
+    /**
      * Returns the model view matrix. The model view matrix is used to transform vertices to eye coordinates.
      *
      * @return
      */
-    public Matrix4 getModelViewMatrix() {
-        return mModelMatrix;
+    public float[] getModelViewMatrix() {
+        return mModelViewMatrix;
     }
 
     /**
@@ -1093,6 +1107,16 @@ public class Material {
         mNormalFloats[8] = matrix[10];
 
         mVertexShader.setNormalMatrix(mNormalFloats);
+    }
+
+    /**
+     * Sets the inverse view matrix. The inverse view matrix is used to transform reflections
+     *
+     * @param inverseViewMatrix
+     */
+    public void setInverseViewMatrix(Matrix4 inverseViewMatrix) {
+        mInverseViewMatrix = inverseViewMatrix.getFloatValues();
+        mVertexShader.setInverseViewMatrix(mInverseViewMatrix);
     }
 
     /**
