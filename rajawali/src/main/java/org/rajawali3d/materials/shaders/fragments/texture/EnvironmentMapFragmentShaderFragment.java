@@ -62,11 +62,11 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 			}
 			else if(mTextures.get(i).getTextureType() == TextureType.CUBE_MAP)
 			{
-				RVec3 viewNormal = new RVec3();
-				viewNormal.assign("vec3(uInverseViewMatrix * vec4(vNormal, 0.0))");
+				RVec3 viewNormal = new RVec3("viewNormal");
+				viewNormal.assign(castVec3(multiply(inverseV, castVec4(normal, 0))));
 				viewNormal.assign(normalize(viewNormal));
 				reflected.assign(reflect(eyeDir.xyz(), viewNormal));
-				reflected.assign("vec3(uInverseViewMatrix * vec4(reflected, 0.0))");
+				reflected.assign(castVec3(multiply(inverseV, castVec4(reflected, 0))));
 				reflected.x().assignMultiply(-1);
 				cmColor.assign(textureCube(muCubeTextures[cubeMapCount++], reflected));
 			}
