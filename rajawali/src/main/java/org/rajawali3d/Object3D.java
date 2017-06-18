@@ -216,9 +216,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 		// -- calculate model view matrix;
 		mMVMatrix.setAll(vMatrix).multiply(mMMatrix);
 		// -- calculate inverse view matrix;
-                Matrix4 inverseView = vMatrix.clone();
-                inverseView.inverse();
-		mInverseViewMatrix.setAll(inverseView);
+		mInverseViewMatrix.setAll(vMatrix).inverse();
 		//Create MVP Matrix from View-Projection Matrix
 		mMVPMatrix.setAll(vpMatrix).multiply(mMMatrix);
 
