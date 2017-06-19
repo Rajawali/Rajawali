@@ -63,6 +63,11 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     private boolean hasTextureCoordinates;
 
     /**
+     * Indicates whether this geometry contains vertex colors or not.
+     */
+    private boolean hasVertexColors;
+
+    /**
      * The number of vertices currently stored in the vertex buffer.
      */
     private int numVertices;
@@ -338,10 +343,9 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         // Set the indices
         setIndices(indices, true);
 
-        // We can skip null safety check for buffers because hasBuffer enforces it
-        if (hasBuffer(vertexBufferKey)) {
-            getBufferInfo(vertexBufferKey).usage = verticesUsage;
-        }
+        // We can skip null safety check for buffers because hasBuffer enforces it. Vertices and indices must always
+        // be present based on the preceding code as well
+        getBufferInfo(vertexBufferKey).usage = verticesUsage;
         if (hasBuffer(normalBufferKey)) {
             getBufferInfo(normalBufferKey).usage = normalsUsage;
         }
@@ -352,9 +356,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             getBufferInfo(colorBufferKey).usage = colorsUsage;
         }
         final BufferInfo indexInfo = getIndexBufferInfo();
-        if (indexInfo != null) {
-            indexInfo.usage = indicesUsage;
-        }
+        indexInfo.usage = indicesUsage;
 
         if (createVBOs) {
             createBuffers();
@@ -402,7 +404,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         if (vertexInfo == null) {
             throw new IllegalStateException("Expected to find vertex buffer info, but was null.");
         }
-        if (override || (vertexBufferKey >= 0 && vertexInfo.buffer == null)) {
+        if (override || vertexInfo.buffer == null) {
             if (vertexInfo.buffer != null) {
                 vertexInfo.buffer.clear();
             }
@@ -413,7 +415,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
             vertexInfo.buffer.rewind();
         } else {
-            vertexInfo.buffer.rewind();
+            vertexInfo.buffer.clear();
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
             vertexInfo.buffer.rewind();
         }
@@ -462,7 +464,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             normalInfo.buffer.rewind();
         } else {
             final FloatBuffer buffer = ((FloatBuffer) normalInfo.buffer);
-            buffer.rewind();
+            buffer.clear();
             buffer.put(normals);
             buffer.rewind();
         }
@@ -517,7 +519,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
             textureInfo.buffer.rewind();
         } else {
-            textureInfo.buffer.rewind();
+            textureInfo.buffer.clear();
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
             textureInfo.buffer.rewind();
         }
@@ -525,11 +527,11 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         hasTextureCoordinates = true;
     }
 
-    public void setTextureCoords(@NonNull FloatBuffer colors) {
-        colors.position(0);
-        float[] n = new float[colors.capacity()];
-        colors.get(n);
-        setColors(n);
+    public void setTextureCoords(@NonNull FloatBuffer textureCoords) {
+        textureCoords.position(0);
+        float[] n = new float[textureCoords.capacity()];
+        textureCoords.get(n);
+        setTextureCoords(n);
     }
 
     @Nullable
@@ -572,7 +574,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
         }
 
-        colorInfo.buffer.rewind();
+        colorInfo.buffer.clear();
 
         while (colorInfo.buffer.remaining() > 3) {
             ((FloatBuffer) colorInfo.buffer).put(r);
@@ -581,6 +583,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) colorInfo.buffer).put(a);
         }
         colorInfo.buffer.rewind();
+        hasVertexColors = true;
     }
 
     public void setColors(int color) {
@@ -598,8 +601,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             colorInfo.rajawaliHandle = colorBufferKey;
             colorInfo.bufferType = BufferInfo.FLOAT_BUFFER;
             colorInfo.target = GLES20.GL_ARRAY_BUFFER;
-            colorInfo.buffer = ByteBuffer.allocateDirect(numVertices * 4 * FLOAT_SIZE_BYTES)
-                    .order(ByteOrder.nativeOrder()).asFloatBuffer();
             colorBufferKey = addBuffer(colorInfo);
         } else {
             colorInfo = getBufferInfo(colorBufferKey);
@@ -614,10 +615,18 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) colorInfo.buffer).put(colors);
             colorInfo.buffer.rewind();
         } else {
-            colorInfo.buffer.rewind();
+            colorInfo.buffer.clear();
             ((FloatBuffer) colorInfo.buffer).put(colors);
             colorInfo.buffer.rewind();
         }
+        hasVertexColors = true;
+    }
+
+    public void setColors(@NonNull FloatBuffer colors) {
+        colors.position(0);
+        float[] n = new float[colors.capacity()];
+        colors.get(n);
+        setColors(n);
     }
 
     @Nullable
@@ -628,6 +637,10 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         } else {
             return (FloatBuffer) info.buffer;
         }
+    }
+
+    public boolean hasVertexColors() {
+        return hasVertexColors;
     }
 
     @Nullable

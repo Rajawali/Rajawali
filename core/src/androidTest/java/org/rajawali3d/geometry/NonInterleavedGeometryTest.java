@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.opengl.GLES20;
+import android.support.annotation.Nullable;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
@@ -369,8 +371,20 @@ public class NonInterleavedGeometryTest extends GlTestCase {
     }
 
     @Test
-    public void testSetVertices() throws Exception {
+    public void testHasVertexData() throws Exception {
+        final NonInterleavedGeometry geometry = new NonInterleavedGeometry();
+        assertFalse(geometry.hasVertexData());
+        geometry.setVertices(new float[3]);
+        assertTrue(geometry.hasVertexData());
+    }
 
+    @Test
+    public void testSetVertices() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        Mockito.doNothing().when(geometry).setVertices(Mockito.any(float[].class), Mockito.anyBoolean());
+        final float[] array = new float[1];
+        geometry.setVertices(array);
+        Mockito.verify(geometry).setVertices(array, false);
     }
 
     @Test
@@ -386,36 +400,60 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         indices[2] = 3;
         indices[3] = 4;
 
-        final NonInterleavedGeometry geometry = new NonInterleavedGeometry();
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
 
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                geometry.setData(vertices, null, null, null, indices, true);
-            }
-        });
-        geometry.setVertices(vertices2);
-        final FloatBuffer buffer = geometry.getVertices();
+        // Test when no buffer exists, no override (valid buffer key, null buffer)
+        geometry.setVertices(vertices, false);
+        BufferInfo vertexInfo = geometry.getVertexBufferInfo();
+        assertNotNull(vertexInfo);
+        assertTrue(vertexInfo.rajawaliHandle >= 0);
+        assertEquals(BufferInfo.FLOAT_BUFFER, vertexInfo.bufferType);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, vertexInfo.target);
+        assertEquals(1, geometry.getVertexCount());
+        Mockito.verify(geometry).addBuffer(vertexInfo);
+        FloatBuffer buffer = geometry.getVertices();
+        assertNotNull(buffer);
         int i = 0;
         while (buffer.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", buffer.get(), vertices2[i++], 0);
+            assertEquals("Buffer contents invalid.", vertices[i++], buffer.get(), 0);
         }
 
-        final NonInterleavedGeometry geometry1 = new NonInterleavedGeometry();
+        // Test when buffer exists, no override (valid buffer key, non-null buffer)
+        geometry.setVertices(vertices2, false);
+        vertexInfo = geometry.getVertexBufferInfo();
+        assertNotNull(vertexInfo);
+        buffer = geometry.getVertices();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", vertices2[i++], buffer.get(), 0);
+        }
 
-        runOnGlThreadAndWait(new Runnable() {
+        // Test override, valid buffer key
+        geometry.setVertices(vertices, true);
+        vertexInfo = geometry.getVertexBufferInfo();
+        assertNotNull(vertexInfo);
+        buffer = geometry.getVertices();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", vertices[i++], buffer.get(), 0);
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSetVerticesOverrideFailNullInfo() throws Exception {
+        final NonInterleavedGeometry geometry = new NonInterleavedGeometry() {
+
+            @Nullable
             @Override
-            public void run() {
-                geometry1.setData(vertices, null, null, null, indices, false);
+            protected BufferInfo getBufferInfo(int bufferKey) {
+                return null;
             }
-        });
-        geometry1.validateBuffers();
-        geometry1.setVertices(vertices2);
-        final FloatBuffer buffer2 = geometry1.getVertices();
-        int i2 = 0;
-        while (buffer2.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", buffer2.get(), vertices2[i2++], 0);
-        }
+        };
+
+        geometry.setVertices(new float[1], true);
+        geometry.setVertices(new float[1], true);
     }
 
     @Test
@@ -464,8 +502,77 @@ public class NonInterleavedGeometryTest extends GlTestCase {
     @Test
     public void testSetNormals() throws Exception {
         // Create the dummy arrays
-        final float[] normals = createNormalArray();
-        final float[] normals2 = createVertexArray();
+        final float[] normals = createVertexArray();
+        final float[] normals2 = createNormalArray();
+        final int[] indices = new int[4];
+
+        // Fill arrays
+        indices[0] = 1;
+        indices[1] = 2;
+        indices[2] = 3;
+        indices[3] = 4;
+
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+
+        // Test when no buffer exists, no override (valid buffer key, null buffer)
+        geometry.setNormals(normals, false);
+        BufferInfo normalInfo = geometry.getNormalBufferInfo();
+        assertNotNull(normalInfo);
+        assertTrue(normalInfo.rajawaliHandle >= 0);
+        assertEquals(BufferInfo.FLOAT_BUFFER, normalInfo.bufferType);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, normalInfo.target);
+        assertTrue(geometry.hasNormals());
+        Mockito.verify(geometry).addBuffer(normalInfo);
+        FloatBuffer buffer = geometry.getNormals();
+        assertNotNull(buffer);
+        int i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", normals[i++], buffer.get(), 0);
+        }
+
+        // Test when buffer exists, no override (valid buffer key, non-null buffer)
+        geometry.setNormals(normals2, false);
+        normalInfo = geometry.getNormalBufferInfo();
+        assertNotNull(normalInfo);
+        buffer = geometry.getNormals();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", normals2[i++], buffer.get(), 0);
+        }
+
+        // Test override, valid buffer key
+        geometry.setNormals(normals, true);
+        normalInfo = geometry.getNormalBufferInfo();
+        assertNotNull(normalInfo);
+        buffer = geometry.getNormals();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", normals[i++], buffer.get(), 0);
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSetNormalsOverrideFailNullInfo() throws Exception {
+        final NonInterleavedGeometry geometry = new NonInterleavedGeometry() {
+
+            @Nullable
+            @Override
+            protected BufferInfo getBufferInfo(int bufferKey) {
+                return null;
+            }
+        };
+
+        geometry.setNormals(new float[1], true);
+        geometry.setNormals(new float[1], true);
+    }
+
+    @Test
+    public void testSetNormalsFloatBuffer() throws Exception {
+        // Create the dummy arrays
+        final float[] normals = createVertexArray();
+        final float[] normals2 = createNormalArray();
         final int[] indices = new int[4];
 
         // Fill arrays
@@ -482,35 +589,102 @@ public class NonInterleavedGeometryTest extends GlTestCase {
                 bufferObject.setData(normals, normals, null, null, indices, true);
             }
         });
-        bufferObject.setNormals(normals2);
+        bufferObject.setNormals(FloatBuffer.wrap(normals2));
         final FloatBuffer buffer = bufferObject.getNormals();
         int i = 0;
         while (buffer.hasRemaining()) {
             assertEquals("Buffer contents invalid.", normals2[i++], buffer.get(), 0);
         }
+    }
 
-        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
+    @Test
+    public void testGetNormals() throws Exception {
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
+        assertNull(bufferObject.getNormals());
 
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                bufferObject2.setData(normals, normals, null, null, indices, false);
-            }
-        });
-        bufferObject2.validateBuffers();
-        bufferObject2.setNormals(normals2);
-        final FloatBuffer buffer2 = bufferObject2.getNormals();
-        int i2 = 0;
-        while (buffer2.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", normals2[i2++], buffer2.get(), 0);
+        final float[] normals = createNormalArray();
+        bufferObject.setNormals(normals);
+        final FloatBuffer buffer = bufferObject.getNormals();
+        assertNotNull(buffer);
+        for (int i = 0; i < normals.length; ++i) {
+            assertEquals(normals[i], buffer.get(i), 1e-6);
         }
     }
 
     @Test
     public void testSetTextureCoords() throws Exception {
         // Create the dummy arrays
-        final float[] textures = createTextureArray();
-        final float[] textures2 = createVertexArray();
+        final float[] texCoords = createVertexArray();
+        final float[] texCoords2 = createNormalArray();
+        final int[] indices = new int[4];
+
+        // Fill arrays
+        indices[0] = 1;
+        indices[1] = 2;
+        indices[2] = 3;
+        indices[3] = 4;
+
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+
+        // Test when no buffer exists, no override (valid buffer key, null buffer)
+        geometry.setTextureCoords(texCoords, false);
+        BufferInfo texInfo = geometry.getTexCoordBufferInfo();
+        assertNotNull(texInfo);
+        assertTrue(texInfo.rajawaliHandle >= 0);
+        assertEquals(BufferInfo.FLOAT_BUFFER, texInfo.bufferType);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, texInfo.target);
+        assertTrue(geometry.hasTextureCoordinates());
+        Mockito.verify(geometry).addBuffer(texInfo);
+        FloatBuffer buffer = geometry.getTextureCoords();
+        assertNotNull(buffer);
+        int i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", texCoords[i++], buffer.get(), 0);
+        }
+
+        // Test when buffer exists, no override (valid buffer key, non-null buffer)
+        geometry.setTextureCoords(texCoords2, false);
+        texInfo = geometry.getTexCoordBufferInfo();
+        assertNotNull(texInfo);
+        buffer = geometry.getTextureCoords();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", texCoords2[i++], buffer.get(), 0);
+        }
+
+        // Test override, valid buffer key
+        geometry.setTextureCoords(texCoords, true);
+        texInfo = geometry.getTexCoordBufferInfo();
+        assertNotNull(texInfo);
+        buffer = geometry.getTextureCoords();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", texCoords[i++], buffer.get(), 0);
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSetTexCoordOverrideFailNullInfo() throws Exception {
+        final NonInterleavedGeometry geometry = new NonInterleavedGeometry() {
+
+            @Nullable
+            @Override
+            protected BufferInfo getBufferInfo(int bufferKey) {
+                return null;
+            }
+        };
+
+        geometry.setTextureCoords(new float[1], true);
+        geometry.setTextureCoords(new float[1], true);
+    }
+
+    @Test
+    public void testSetTexCoordsFloatBuffer() throws Exception {
+        // Create the dummy arrays
+        final float[] texCoords = createVertexArray();
+        final float[] texCoords2 = createNormalArray();
         final int[] indices = new int[4];
 
         // Fill arrays
@@ -524,38 +698,106 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         runOnGlThreadAndWait(new Runnable() {
             @Override
             public void run() {
-                bufferObject.setData(textures, null, textures, null, indices, true);
+                bufferObject.setData(texCoords, null, texCoords, null, indices, true);
             }
         });
-        bufferObject.setTextureCoords(textures2);
+        bufferObject.setTextureCoords(FloatBuffer.wrap(texCoords2));
         final FloatBuffer buffer = bufferObject.getTextureCoords();
         int i = 0;
         while (buffer.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", buffer.get(), textures2[i++], 0);
+            assertEquals("Buffer contents invalid.", texCoords2[i++], buffer.get(), 0);
         }
+    }
 
-        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
+    @Test
+    public void testGetTexCoords() throws Exception {
+        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
+        assertNull(bufferObject.getTextureCoords());
 
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                bufferObject2.setData(textures, null, textures, null, indices, false);
-            }
-        });
-        bufferObject2.validateBuffers();
-        bufferObject2.setTextureCoords(textures2);
-        final FloatBuffer buffer2 = bufferObject2.getTextureCoords();
-        int i2 = 0;
-        while (buffer2.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", buffer2.get(), textures2[i2++], 0);
+        final float[] textures = createTextureArray();
+        bufferObject.setTextureCoords(textures);
+        final FloatBuffer buffer = bufferObject.getTextureCoords();
+        assertNotNull(buffer);
+        for (int i = 0; i < textures.length; ++i) {
+            assertEquals(textures[i], buffer.get(i), 1e-6);
         }
     }
 
     @Test
     public void testSetColors() throws Exception {
         // Create the dummy arrays
-        final float[] colors = createColorArray();
-        final float[] colors2 = createVertexArray();
+        final float[] colors = createVertexArray();
+        final float[] colors2 = createNormalArray();
+        final int[] indices = new int[4];
+
+        // Fill arrays
+        indices[0] = 1;
+        indices[1] = 2;
+        indices[2] = 3;
+        indices[3] = 4;
+
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+
+        // Test when no buffer exists, no override (valid buffer key, null buffer)
+        geometry.setVertices(new float[3], true);
+        geometry.setColors(colors, false);
+        BufferInfo colorInfo = geometry.getColorBufferInfo();
+        assertNotNull(colorInfo);
+        assertTrue(colorInfo.rajawaliHandle >= 0);
+        assertEquals(BufferInfo.FLOAT_BUFFER, colorInfo.bufferType);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, colorInfo.target);
+        assertTrue(geometry.hasVertexColors());
+        Mockito.verify(geometry).addBuffer(colorInfo);
+        FloatBuffer buffer = geometry.getColors();
+        assertNotNull(buffer);
+        int i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", colors[i++], buffer.get(), 0);
+        }
+
+        // Test when buffer exists, no override (valid buffer key, non-null buffer)
+        geometry.setColors(colors2, false);
+        colorInfo = geometry.getColorBufferInfo();
+        assertNotNull(colorInfo);
+        buffer = geometry.getColors();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", colors2[i++], buffer.get(), 0);
+        }
+
+        // Test override, valid buffer key
+        geometry.setColors(colors, true);
+        colorInfo = geometry.getColorBufferInfo();
+        assertNotNull(colorInfo);
+        buffer = geometry.getColors();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", colors[i++], buffer.get(), 0);
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSetColorsOverrideFailNullInfo() throws Exception {
+        final NonInterleavedGeometry geometry = new NonInterleavedGeometry() {
+
+            @Nullable
+            @Override
+            protected BufferInfo getBufferInfo(int bufferKey) {
+                return null;
+            }
+        };
+
+        geometry.setColors(new float[1], true);
+        geometry.setColors(new float[1], true);
+    }
+
+    @Test
+    public void testSetColorsFloatBuffer() throws Exception {
+        // Create the dummy arrays
+        final float[] colors = createVertexArray();
+        final float[] colors2 = createNormalArray();
         final int[] indices = new int[4];
 
         // Fill arrays
@@ -572,80 +814,168 @@ public class NonInterleavedGeometryTest extends GlTestCase {
                 bufferObject.setData(colors, null, null, colors, indices, true);
             }
         });
-        bufferObject.setColors(colors2);
+        bufferObject.setColors(FloatBuffer.wrap(colors2));
         final FloatBuffer buffer = bufferObject.getColors();
         int i = 0;
         while (buffer.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", buffer.get(), colors2[i++], 0);
-        }
-
-        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
-
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                bufferObject2.setData(colors, null, null, colors, indices, false);
-            }
-        });
-        bufferObject2.validateBuffers();
-        bufferObject2.setColors(colors2);
-        final FloatBuffer buffer2 = bufferObject2.getColors();
-        int i2 = 0;
-        while (buffer2.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", buffer2.get(), colors2[i2++], 0);
+            assertEquals("Buffer contents invalid.", colors2[i++], buffer.get(), 0);
         }
     }
 
     @Test
-    public void testSetIndices() throws Exception {
-        // Create the dummy arrays
-        final float[] vertices = createVertexArray();
-        final int[] indices = new int[4];
-        final int[] indices2 = new int[4];
-
-        // Fill arrays
-        indices[0] = 1;
-        indices[1] = 2;
-        indices[2] = 3;
-        indices[3] = 4;
-
-        // Fill arrays
-        indices2[0] = 4;
-        indices2[1] = 3;
-        indices2[2] = 2;
-        indices2[3] = 1;
-
+    public void testGetColors() throws Exception {
         final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
+        assertNull(bufferObject.getColors());
 
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                bufferObject.setData(vertices, null, null, null, indices, true);
-            }
-        });
-        bufferObject.setIndices(indices2);
-        final Buffer buffer = bufferObject.getIndices();
-        int i = 0;
-        while (buffer.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", ((ByteBuffer) buffer).get(), indices2[i++], 0);
-        }
-
-        final NonInterleavedGeometry bufferObject2 = new NonInterleavedGeometry();
-
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                bufferObject2.setData(vertices, null, null, null, indices, false);
-            }
-        });
-        bufferObject2.validateBuffers();
-        bufferObject2.setIndices(indices2);
-        final Buffer buffer2 = bufferObject.getIndices();
-        i = 0;
-        while (buffer2.hasRemaining()) {
-            assertEquals("Buffer contents invalid.", ((ByteBuffer) buffer2).get(), indices2[i++], 0);
+        final float[] colors = createColorArray();
+        bufferObject.setColors(colors);
+        final FloatBuffer buffer = bufferObject.getColors();
+        assertNotNull(buffer);
+        for (int i = 0; i < colors.length; ++i) {
+            assertEquals(colors[i], buffer.get(i), 1e-6);
         }
     }
+
+    @Test
+    public void getVertexBufferInfo() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        final float[] indices = new float[] { 0, 1, 2 };
+        geometry.setVertices(indices);
+
+        final BufferInfo info = geometry.getVertexBufferInfo();
+        assertNotNull(info);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, info.target);
+        assertNotNull(info.buffer);
+        assertEquals(BufferInfo.FLOAT_BUFFER, info.bufferType);
+        assertTrue(info.rajawaliHandle >= 0);
+        assertEquals(3, info.buffer.capacity());
+        for (int i = 0; i < 3; ++i) {
+            assertEquals(indices[i], ((FloatBuffer) info.buffer).get(i), 1e-14);
+        }
+    }
+
+    @Test
+    public void setVertexBufferInfo() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+
+        final BufferInfo info = new BufferInfo(BufferInfo.FLOAT_BUFFER, ByteBuffer.allocate(3).asFloatBuffer());
+        info.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.setVertexBufferInfo(info);
+        Mockito.verify(geometry).addBuffer(info);
+
+        final BufferInfo infoNew = new BufferInfo(BufferInfo.FLOAT_BUFFER, ByteBuffer.allocate(3).asFloatBuffer());
+        infoNew.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.setVertexBufferInfo(infoNew);
+        Mockito.verify(geometry).setBufferInfo(Mockito.anyInt(), Mockito.any(BufferInfo.class));
+    }
+
+    @Test
+    public void getNormalBufferInfo() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        final float[] indices = new float[] { 0, 1, 2 };
+        geometry.setNormals(indices);
+
+        final BufferInfo info = geometry.getNormalBufferInfo();
+        assertNotNull(info);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, info.target);
+        assertNotNull(info.buffer);
+        assertEquals(BufferInfo.FLOAT_BUFFER, info.bufferType);
+        assertTrue(info.rajawaliHandle >= 0);
+        assertEquals(3, info.buffer.capacity());
+        for (int i = 0; i < 3; ++i) {
+            assertEquals(indices[i], ((FloatBuffer) info.buffer).get(i), 1e-14);
+        }
+    }
+
+    @Test
+    public void setNormalBufferInfo() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+
+        final BufferInfo info = new BufferInfo(BufferInfo.FLOAT_BUFFER, ByteBuffer.allocate(3).asFloatBuffer());
+        info.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.setNormalBufferInfo(info);
+        Mockito.verify(geometry).addBuffer(info);
+
+        final BufferInfo infoNew = new BufferInfo(BufferInfo.FLOAT_BUFFER, ByteBuffer.allocate(3).asFloatBuffer());
+        infoNew.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.setNormalBufferInfo(infoNew);
+        Mockito.verify(geometry).setBufferInfo(Mockito.anyInt(), Mockito.any(BufferInfo.class));
+    }
+
+    @Test
+    public void getTexCoordBufferInfo() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        final float[] indices = new float[] { 0, 1, 2 };
+        geometry.setTextureCoords(indices);
+
+        final BufferInfo info = geometry.getTexCoordBufferInfo();
+        assertNotNull(info);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, info.target);
+        assertNotNull(info.buffer);
+        assertEquals(BufferInfo.FLOAT_BUFFER, info.bufferType);
+        assertTrue(info.rajawaliHandle >= 0);
+        assertEquals(3, info.buffer.capacity());
+        for (int i = 0; i < 3; ++i) {
+            assertEquals(indices[i], ((FloatBuffer) info.buffer).get(i), 1e-14);
+        }
+    }
+
+    @Test
+    public void setTexCoordBufferInfo() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+
+        final BufferInfo info = new BufferInfo(BufferInfo.FLOAT_BUFFER, ByteBuffer.allocate(3).asFloatBuffer());
+        info.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.setTexCoordBufferInfo(info);
+        Mockito.verify(geometry).addBuffer(info);
+
+        final BufferInfo infoNew = new BufferInfo(BufferInfo.FLOAT_BUFFER, ByteBuffer.allocate(3).asFloatBuffer());
+        infoNew.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.setTexCoordBufferInfo(infoNew);
+        Mockito.verify(geometry).setBufferInfo(Mockito.anyInt(), Mockito.any(BufferInfo.class));
+    }
+
+    @Test
+    public void getColorBufferInfo() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        final float[] indices = new float[] { 0, 1, 2 };
+        geometry.setColors(indices);
+
+        final BufferInfo info = geometry.getColorBufferInfo();
+        assertNotNull(info);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, info.target);
+        assertNotNull(info.buffer);
+        assertEquals(BufferInfo.FLOAT_BUFFER, info.bufferType);
+        assertTrue(info.rajawaliHandle >= 0);
+        assertEquals(3, info.buffer.capacity());
+        for (int i = 0; i < 3; ++i) {
+            assertEquals(indices[i], ((FloatBuffer) info.buffer).get(i), 1e-14);
+        }
+    }
+
+    @Test
+    public void setColorBufferInfo() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+
+        final BufferInfo info = new BufferInfo(BufferInfo.FLOAT_BUFFER, ByteBuffer.allocate(3).asFloatBuffer());
+        info.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.setColorBufferInfo(info);
+        Mockito.verify(geometry).addBuffer(info);
+
+        final BufferInfo infoNew = new BufferInfo(BufferInfo.FLOAT_BUFFER, ByteBuffer.allocate(3).asFloatBuffer());
+        infoNew.target = GLES20.GL_ARRAY_BUFFER;
+
+        geometry.setColorBufferInfo(infoNew);
+        Mockito.verify(geometry).setBufferInfo(Mockito.anyInt(), Mockito.any(BufferInfo.class));
+    }
+
 
     @Test
     public void testToString() throws Exception {
