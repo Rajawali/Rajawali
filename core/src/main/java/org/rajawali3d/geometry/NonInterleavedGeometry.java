@@ -405,9 +405,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             throw new IllegalStateException("Expected to find vertex buffer info, but was null.");
         }
         if (override || vertexInfo.buffer == null) {
-            if (vertexInfo.buffer != null) {
-                vertexInfo.buffer.clear();
-            }
             vertexInfo.buffer = ByteBuffer
                     .allocateDirect(vertices.length * FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -415,7 +412,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
             vertexInfo.buffer.rewind();
         } else {
-            vertexInfo.buffer.clear();
+            vertexInfo.buffer.rewind();
             ((FloatBuffer) vertexInfo.buffer).put(vertices);
             vertexInfo.buffer.rewind();
         }
@@ -423,7 +420,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setVertices(@NonNull FloatBuffer vertices) {
-        vertices.position(0);
+        vertices.rewind();
         float[] v = new float[vertices.capacity()];
         vertices.get(v);
         setVertices(v);
@@ -464,7 +461,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             normalInfo.buffer.rewind();
         } else {
             final FloatBuffer buffer = ((FloatBuffer) normalInfo.buffer);
-            buffer.clear();
+            buffer.rewind();
             buffer.put(normals);
             buffer.rewind();
         }
@@ -473,7 +470,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setNormals(@NonNull FloatBuffer normals) {
-        normals.position(0);
+        normals.rewind();
         float[] n = new float[normals.capacity()];
         normals.get(n);
         setNormals(n);
@@ -519,7 +516,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
             textureInfo.buffer.rewind();
         } else {
-            textureInfo.buffer.clear();
+            textureInfo.buffer.rewind();
             ((FloatBuffer) textureInfo.buffer).put(textureCoords);
             textureInfo.buffer.rewind();
         }
@@ -528,7 +525,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setTextureCoords(@NonNull FloatBuffer textureCoords) {
-        textureCoords.position(0);
+        textureCoords.rewind();
         float[] n = new float[textureCoords.capacity()];
         textureCoords.get(n);
         setTextureCoords(n);
@@ -574,7 +571,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
         }
 
-        colorInfo.buffer.clear();
+        colorInfo.buffer.rewind();
 
         while (colorInfo.buffer.remaining() > 3) {
             ((FloatBuffer) colorInfo.buffer).put(r);
@@ -615,7 +612,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
             ((FloatBuffer) colorInfo.buffer).put(colors);
             colorInfo.buffer.rewind();
         } else {
-            colorInfo.buffer.clear();
+            colorInfo.buffer.rewind();
             ((FloatBuffer) colorInfo.buffer).put(colors);
             colorInfo.buffer.rewind();
         }
@@ -623,7 +620,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     }
 
     public void setColors(@NonNull FloatBuffer colors) {
-        colors.position(0);
+        colors.rewind();
         float[] n = new float[colors.capacity()];
         colors.get(n);
         setColors(n);

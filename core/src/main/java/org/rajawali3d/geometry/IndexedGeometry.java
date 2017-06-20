@@ -233,7 +233,7 @@ public abstract class IndexedGeometry extends VBOGeometry {
             for (int i = 0; i < indices.length; ++i) {
                 buffer.put((byte) (0xFF & indices[i]));
             }
-            buffer.position(0);
+            buffer.rewind();
         }
     }
 
@@ -267,7 +267,7 @@ public abstract class IndexedGeometry extends VBOGeometry {
             for (int i = 0; i < indices.length; ++i) {
                 buffer.put((short) (0xFFFF & indices[i]));
             }
-            buffer.position(0);
+            buffer.rewind();
         }
     }
 

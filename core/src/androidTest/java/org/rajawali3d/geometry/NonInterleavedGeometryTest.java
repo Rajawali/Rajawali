@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.Nullable;
 import android.support.test.filters.LargeTest;
@@ -18,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.rajawali3d.math.vector.Vector3;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -127,7 +129,31 @@ public class NonInterleavedGeometryTest extends GlTestCase {
 
     @Test
     public void testCalculateAABounds() throws Exception {
+        final NonInterleavedGeometry geometry = new NonInterleavedGeometry();
+        final float[] pointVertices = new float[] { 0, 0, 0 };
+        final Vector3 expectedZero = new Vector3(0);
+        geometry.setVertices(pointVertices);
+        final Vector3 min = new Vector3();
+        final Vector3 max = new Vector3();
+        geometry.calculateAABounds(min, max);
+        assertTrue(expectedZero.equals(min, 1e-14));
+        assertTrue(expectedZero.equals(max, 1e-14));
 
+        final float[] originCenteredCubeVertices = new float[] { -1, -1, -1,
+                                                                 -1, -1, 1,
+                                                                 1, -1, 1,
+                                                                 1, -1, -1,
+                                                                 -1, 1, -1,
+                                                                 -1, 1, 1,
+                                                                 1, 1, 1,
+                                                                 1, 1, -1 };
+        final Vector3 expectedMin = new Vector3(-1);
+        final Vector3 expectedMax = new Vector3(1);
+        final NonInterleavedGeometry geometry1 = new NonInterleavedGeometry();
+        geometry1.setVertices(originCenteredCubeVertices);
+        geometry1.calculateAABounds(min, max);
+        assertTrue(expectedMin.equals(min, 1e-14));
+        assertTrue(expectedMax.equals(max, 1e-14));
     }
 
     @Test
@@ -189,70 +215,16 @@ public class NonInterleavedGeometryTest extends GlTestCase {
     @SuppressWarnings("ConstantConditions")
     @Test
     public void testSetDataStaticDrawCreateBuffers() throws Exception {
-        // Create the dummy arrays
-        final float[] vertices = createVertexArray();
-        final float[] normals = createNormalArray();
-        final float[] colors = createColorArray();
-        final float[] textures = createTextureArray();
-        final int[] indices = new int[4];
-
-        // Fill arrays
-        indices[0] = 1;
-        indices[1] = 2;
-        indices[2] = 3;
-        indices[3] = 4;
-
-        final NonInterleavedGeometry bufferObject = new NonInterleavedGeometry();
-
-        runOnGlThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                bufferObject.setData(vertices, normals, textures, colors, indices, true);
-            }
-        });
-
-        final BufferInfo vertexInfo = bufferObject.getVertexBufferInfo();
-        final BufferInfo normalInfo = bufferObject.getNormalBufferInfo();
-        final BufferInfo textureInfo = bufferObject.getTexCoordBufferInfo();
-        final BufferInfo colorInfo = bufferObject.getColorBufferInfo();
-        final BufferInfo indexInfo = bufferObject.getIndexBufferInfo();
-        final FloatBuffer vertexBuffer = (FloatBuffer) vertexInfo.buffer;
-        final FloatBuffer normalBuffer = (FloatBuffer) normalInfo.buffer;
-        final FloatBuffer colorBuffer = (FloatBuffer) colorInfo.buffer;
-        final FloatBuffer textureBuffer = (FloatBuffer) textureInfo.buffer;
-        final Buffer indexBuffer = indexInfo.buffer;
-        assertEquals("Vertex buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, vertexInfo.bufferType);
-        assertEquals("Normal buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, normalInfo.bufferType);
-        assertEquals("Texture2D buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, textureInfo.bufferType);
-        assertEquals("Color buffer info set to wrong type.", BufferInfo.FLOAT_BUFFER, colorInfo.bufferType);
-        assertEquals("Index buffer info set to wrong type.", BufferInfo.BYTE_BUFFER, indexInfo.bufferType);
-        assertEquals("VERTEX buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, vertexInfo.usage);
-        assertEquals("Normal buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, normalInfo.usage);
-        assertEquals("Texture2D buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, textureInfo.usage);
-        assertEquals("Color buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, colorInfo.usage);
-        assertEquals("Index buffer info set to wrong usage.", GLES20.GL_STATIC_DRAW, indexInfo.usage);
-
-        assertEquals("Number of vertices invalid.", 1, bufferObject.getVertexCount());
-        int i = 0;
-        while (vertexBuffer.hasRemaining()) {
-            assertEquals("VERTEX buffer contents invalid.", vertexBuffer.get(), vertices[i++], 0);
-        }
-        i = 0;
-        while (normalBuffer.hasRemaining()) {
-            assertEquals("Normal buffer contents invalid.", normalBuffer.get(), normals[i++], 0);
-        }
-        i = 0;
-        while (textureBuffer.hasRemaining()) {
-            assertEquals("Texture2D buffer contents invalid.", textureBuffer.get(), textures[i++], 0);
-        }
-        i = 0;
-        while (colorBuffer.hasRemaining()) {
-            assertEquals("Color buffer contents invalid.", colorBuffer.get(), colors[i++], 0);
-        }
-        i = 0;
-        while (indexBuffer.hasRemaining()) {
-            assertEquals("Index buffer contents invalid.", ((ByteBuffer) indexBuffer).get(), indices[i++], 0);
-        }
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        final float[] array = new float[1];
+        final int[] intArray = new int[1];
+        final int usage = GLES20.GL_STATIC_DRAW;
+        final boolean create = false;
+        Mockito.doNothing().when(geometry).setData(array, usage, array, usage, array, usage, array, usage, intArray,
+                                                   usage, create);
+        geometry.setData(array, array, array, array, intArray, create);
+        Mockito.verify(geometry).setData(array, usage, array, usage, array, usage, array, usage, intArray, usage,
+                                         create);
     }
 
     @Test
@@ -721,6 +693,92 @@ public class NonInterleavedGeometryTest extends GlTestCase {
         for (int i = 0; i < textures.length; ++i) {
             assertEquals(textures[i], buffer.get(i), 1e-6);
         }
+    }
+
+    @Test
+    public void testSetColorComponentsNoOverride() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        geometry.setColor(0.1f, 0.2f, 0.3f, 0.4f);
+        Mockito.verify(geometry).setColor(0.1f, 0.2f, 0.3f, 0.4f, false);
+    }
+
+    @Test
+    public void testColorComponentsWithOverride() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        final float[] colors = new float[] { 0.1f, 0.2f, 0.3f, 0.4f };
+        final float[] colors2 = new float[] { 0.4f, 0.3f, 0.2f, 0.1f };
+
+        // Test when no buffer exists, no override (valid buffer key, null buffer)
+        geometry.setVertices(new float[3], true);
+        geometry.setColor(0.1f, 0.2f, 0.3f, 0.4f, true);
+        BufferInfo colorInfo = geometry.getColorBufferInfo();
+        assertNotNull(colorInfo);
+        assertTrue(colorInfo.rajawaliHandle >= 0);
+        assertEquals(BufferInfo.FLOAT_BUFFER, colorInfo.bufferType);
+        assertEquals(GLES20.GL_ARRAY_BUFFER, colorInfo.target);
+        assertTrue(geometry.hasVertexColors());
+        Mockito.verify(geometry).addBuffer(colorInfo);
+        FloatBuffer buffer = geometry.getColors();
+        assertNotNull(buffer);
+        int i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", colors[i++], buffer.get(), 0);
+        }
+
+        // Test when buffer exists, no override (valid buffer key, non-null buffer)
+        geometry.setColor(0.4f, 0.3f, 0.2f, 0.1f, false);
+        colorInfo = geometry.getColorBufferInfo();
+        assertNotNull(colorInfo);
+        buffer = geometry.getColors();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", colors2[i++], buffer.get(), 0);
+        }
+
+        // Test override, valid buffer key
+        geometry.setColor(0.1f, 0.2f, 0.3f, 0.4f, true);
+        colorInfo = geometry.getColorBufferInfo();
+        assertNotNull(colorInfo);
+        buffer = geometry.getColors();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", colors[i++], buffer.get(), 0);
+        }
+
+        final NonInterleavedGeometry geometry1 = new NonInterleavedGeometry();
+        geometry1.setColor(0.1f, 0.2f, 0.3f, 0.4f, true);
+        colorInfo = geometry1.getColorBufferInfo();
+        assertNotNull(colorInfo);
+        buffer = geometry1.getColors();
+        assertNotNull(buffer);
+        i = 0;
+        while (buffer.hasRemaining()) {
+            assertEquals("Buffer contents invalid.", colors[i++], buffer.get(), 0);
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSetColorComponentsOverrideFailNullInfo() throws Exception {
+        final NonInterleavedGeometry geometry = new NonInterleavedGeometry() {
+
+            @Nullable
+            @Override
+            protected BufferInfo getBufferInfo(int bufferKey) {
+                return null;
+            }
+        };
+
+        geometry.setColor(0.1f, 0.2f, 0.3f, 0.4f, true);
+        geometry.setColor(0.1f, 0.2f, 0.3f, 0.4f, true);
+    }
+
+    @Test
+    public void testSetColorsAllSame() throws Exception {
+        final NonInterleavedGeometry geometry = Mockito.spy(new NonInterleavedGeometry());
+        geometry.setColors(150);
+        Mockito.verify(geometry).setColor(Color.red(150), Color.green(150), Color.blue(150), Color.alpha(150), false);
     }
 
     @Test

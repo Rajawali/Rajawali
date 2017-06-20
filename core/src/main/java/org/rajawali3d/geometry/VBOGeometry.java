@@ -134,7 +134,6 @@ public abstract class VBOGeometry implements Geometry {
                 glHandles[index++] = info.glHandle;
                 if (info.buffer != null) {
                     info.glHandle = -1;
-                    info.buffer.clear();
                     info.buffer = null;
                 }
             }
