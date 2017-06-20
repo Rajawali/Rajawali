@@ -46,9 +46,13 @@ public class AShaderTest {
             v.assignMultiply(0);
             v.assignMultiply(v);
             v.s().assign(0);
+            v.s().assign("(0+0)");
             v.t().assign(0);
+            v.t().assign("(0+0)");
             v.x().assign(0);
+            v.x().assign("(0+0)");
             v.y().assign(0);
+            v.y().assign("(0+0)");
 	  }
         };
         s.initialize();
@@ -63,9 +67,13 @@ public class AShaderTest {
           + "v *= 0.0;\n"
           + "v *= v;\n"
           + "v.s = 0.0;\n"
+          + "v.s = (0+0);\n"
           + "v.t = 0.0;\n"
+          + "v.t = (0+0);\n"
           + "v.x = 0.0;\n"
+          + "v.x = (0+0);\n"
           + "v.y = 0.0;\n"
+          + "v.y = (0+0);\n"
           + "}\n", s.getShaderString());
     }
 
@@ -83,11 +91,17 @@ public class AShaderTest {
             v.assignMultiply(0);
             v.assignMultiply(v);
             v.r().assign(0);
+            v.r().assign("(0+0)");
             v.g().assign(0);
+            v.g().assign("(0+0)");
             v.b().assign(0);
+            v.b().assign("(0+0)");
             v.x().assign(0);
+            v.x().assign("(0+0)");
             v.y().assign(0);
+            v.y().assign("(0+0)");
             v.z().assign(0);
+            v.z().assign("(0+0)");
 	  }
         };
         s.initialize();
@@ -102,11 +116,17 @@ public class AShaderTest {
           + "v *= 0.0;\n"
           + "v *= v;\n"
           + "v.r = 0.0;\n"
+          + "v.r = (0+0);\n"
           + "v.g = 0.0;\n"
+          + "v.g = (0+0);\n"
           + "v.b = 0.0;\n"
+          + "v.b = (0+0);\n"
           + "v.x = 0.0;\n"
+          + "v.x = (0+0);\n"
           + "v.y = 0.0;\n"
+          + "v.y = (0+0);\n"
           + "v.z = 0.0;\n"
+          + "v.z = (0+0);\n"
           + "}\n", s.getShaderString());
     }
 
@@ -124,13 +144,21 @@ public class AShaderTest {
             v.assignMultiply(0);
             v.assignMultiply(v);
             v.r().assign(0);
+            v.r().assign("(0+0)");
             v.g().assign(0);
+            v.g().assign("(0+0)");
             v.b().assign(0);
+            v.b().assign("(0+0)");
             v.a().assign(0);
+            v.a().assign("(0+0)");
             v.w().assign(0);
+            v.w().assign("(0+0)");
             v.x().assign(0);
+            v.x().assign("(0+0)");
             v.y().assign(0);
+            v.y().assign("(0+0)");
             v.z().assign(0);
+            v.z().assign("(0+0)");
 	  }
         };
         s.initialize();
@@ -145,13 +173,21 @@ public class AShaderTest {
           + "v *= 0.0;\n"
           + "v *= v;\n"
           + "v.r = 0.0;\n"
+          + "v.r = (0+0);\n"
           + "v.g = 0.0;\n"
+          + "v.g = (0+0);\n"
           + "v.b = 0.0;\n"
+          + "v.b = (0+0);\n"
           + "v.a = 0.0;\n"
+          + "v.a = (0+0);\n"
           + "v.w = 0.0;\n"
+          + "v.w = (0+0);\n"
           + "v.x = 0.0;\n"
+          + "v.x = (0+0);\n"
           + "v.y = 0.0;\n"
+          + "v.y = (0+0);\n"
           + "v.z = 0.0;\n"
+          + "v.z = (0+0);\n"
           + "}\n", s.getShaderString());
     }
 }
