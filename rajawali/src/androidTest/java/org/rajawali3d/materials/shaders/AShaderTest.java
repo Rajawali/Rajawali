@@ -39,6 +39,7 @@ public class AShaderTest {
           public void main() {
             RVec2 v = new RVec2("v");
             v.assign(0);
+            v.assign(0,0);
             v.assignAdd(0);
             v.assignAdd(v);
             v.assignSubtract(0);
@@ -60,6 +61,7 @@ public class AShaderTest {
         assertEquals("\n"
           + "void main() {\n"
           + "vec2 v = vec2(0.0);\n"
+          + "v = vec2(0.0, 0.0);\n"
           + "v += 0.0;\n"
           + "v += v;\n"
           + "v -= 0.0;\n"
@@ -84,6 +86,7 @@ public class AShaderTest {
           public void main() {
             RVec3 v = new RVec3("v");
             v.assign(0);
+            v.assign(0,0,0);
             v.assignAdd(0);
             v.assignAdd(v);
             v.assignSubtract(0);
@@ -109,6 +112,7 @@ public class AShaderTest {
         assertEquals("\n"
           + "void main() {\n"
           + "vec3 v = vec3(0.0);\n"
+          + "v = vec3(0.0, 0.0, 0.0);\n"
           + "v += 0.0;\n"
           + "v += v;\n"
           + "v -= 0.0;\n"
@@ -137,6 +141,7 @@ public class AShaderTest {
           public void main() {
             RVec4 v = new RVec4("v");
             v.assign(0);
+            v.assign(0,0,0,0);
             v.assignAdd(0);
             v.assignAdd(v);
             v.assignSubtract(0);
@@ -166,6 +171,7 @@ public class AShaderTest {
         assertEquals("\n"
           + "void main() {\n"
           + "vec4 v = vec4(0.0);\n"
+          + "v = vec4(0.0, 0.0, 0.0, 0.0);\n"
           + "v += 0.0;\n"
           + "v += v;\n"
           + "v -= 0.0;\n"

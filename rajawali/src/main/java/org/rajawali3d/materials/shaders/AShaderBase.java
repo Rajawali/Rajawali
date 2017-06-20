@@ -336,6 +336,11 @@ public abstract class AShaderBase {
 		{
 			assign("vec2(" + Float.toString(value) + ")");
 		}
+
+		public void assign(float value1, float value2)
+		{
+			assign("vec2(" +Float.toString(value1)+ ", " +Float.toString(value2)+ ")");
+		}
 	}
 	
 	/**
@@ -552,6 +557,10 @@ public abstract class AShaderBase {
 			assign("vec4(" + Float.toString(value) + ")");
 		}
 
+		public void assign(float value1, float value2, float value3, float value4)
+		{
+			assign("vec4(" +Float.toString(value1)+ ", " +Float.toString(value2)+ ", " +Float.toString(value3)+ ", " +Float.toString(value4)+ ")");
+		}
 	}
 	
 	/**
