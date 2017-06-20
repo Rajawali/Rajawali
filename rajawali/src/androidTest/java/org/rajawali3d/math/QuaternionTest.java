@@ -1088,4 +1088,273 @@ public class QuaternionTest {
         assertNotNull(s);
         assertEquals("Quaternion <w, x, y, z>: <1.0, 2.0, 3.0, 4.0>", s);
     }
+
+    @Test
+    public void testCommutativity() throws Exception {
+        final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+
+        // p + q = q + p
+        assertEquals(
+            p.clone().add(q).w,
+            q.clone().add(p).w,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).x,
+            q.clone().add(p).x,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).y,
+            q.clone().add(p).y,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).z,
+            q.clone().add(p).z,
+            1e-14
+        );
+    }
+
+    @Test
+    public void testAdditiveIdentity() throws Exception {
+        final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion zero = new Quaternion(0d, 0d, 0d, 0d);
+
+        // p = p + 0
+        assertEquals(
+            p.w,
+            p.clone().add(zero).w,
+            1e-14
+        );
+        assertEquals(
+            p.x,
+            p.clone().add(zero).x,
+            1e-14
+        );
+        assertEquals(
+            p.y,
+            p.clone().add(zero).y,
+            1e-14
+        );
+        assertEquals(
+            p.z,
+            p.clone().add(zero).z,
+            1e-14
+        );
+
+        // p = 0 + p
+        assertEquals(
+            p.w,
+            zero.clone().add(p).w,
+            1e-14
+        );
+        assertEquals(
+            p.x,
+            zero.clone().add(p).x,
+            1e-14
+        );
+        assertEquals(
+            p.y,
+            zero.clone().add(p).y,
+            1e-14
+        );
+        assertEquals(
+            p.z,
+            zero.clone().add(p).z,
+            1e-14
+        );
+    }
+
+    @Test
+    public void testAdditiveAssociativity() throws Exception {
+        final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
+
+        // (p + q) + r = p + (q + r)
+        assertEquals(
+            p.clone().add(q).add(r).w,
+            p.clone().add(q.clone().add(r)).w,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).add(r).x,
+            p.clone().add(q.clone().add(r)).x,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).add(r).y,
+            p.clone().add(q.clone().add(r)).y,
+            1e-14
+        );
+        assertEquals(
+            p.clone().add(q).add(r).z,
+            p.clone().add(q.clone().add(r)).z,
+            1e-14
+        );
+    }
+
+    @Test
+    public void testMultiplicativeIdentity() throws Exception {
+        final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion one = new Quaternion().identity();
+
+        // p = p * 1
+        assertEquals(
+            p.w,
+            p.clone().multiply(one).w,
+            1e-14
+        );
+        assertEquals(
+            p.x,
+            p.clone().multiply(one).x,
+            1e-14
+        );
+        assertEquals(
+            p.y,
+            p.clone().multiply(one).y,
+            1e-14
+        );
+        assertEquals(
+            p.z,
+            p.clone().multiply(one).z,
+            1e-14
+        );
+
+        // p = 1 * p
+        assertEquals(
+            p.w,
+            one.clone().multiply(p).w,
+            1e-14
+        );
+        assertEquals(
+            p.x,
+            one.clone().multiply(p).x,
+            1e-14
+        );
+        assertEquals(
+            p.y,
+            one.clone().multiply(p).y,
+            1e-14
+        );
+        assertEquals(
+            p.z,
+            one.clone().multiply(p).z,
+            1e-14
+        );
+    }
+
+    @Test
+    public void testMultiplicativeAssociativity() throws Exception {
+        final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
+
+        // (p * q) * r = p * (q * r)
+        assertEquals(
+            p.clone().multiply(q).multiply(r).w,
+            p.clone().multiply(q.clone().multiply(r)).w,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q).multiply(r).x,
+            p.clone().multiply(q.clone().multiply(r)).x,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q).multiply(r).y,
+            p.clone().multiply(q.clone().multiply(r)).y,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q).multiply(r).z,
+            p.clone().multiply(q.clone().multiply(r)).z,
+            1e-14
+        );
+    }
+
+    @Test
+    public void testDistributivity() throws Exception {
+        final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
+
+        // p * (q + r) = p * q + p * r)
+        assertEquals(
+            p.clone().multiply(q.clone().add(r)).w,
+            p.clone().multiply(q).add(p.clone().multiply(r)).w,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q.clone().add(r)).x,
+            p.clone().multiply(q).add(p.clone().multiply(r)).x,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q.clone().add(r)).y,
+            p.clone().multiply(q).add(p.clone().multiply(r)).y,
+            1e-14
+        );
+        assertEquals(
+            p.clone().multiply(q.clone().add(r)).z,
+            p.clone().multiply(q).add(p.clone().multiply(r)).z,
+            1e-14
+        );
+    }
+
+    @Test
+    public void testInverseDivision() throws Exception {
+        final Quaternion q = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion r = new Quaternion(1d, 2d, 3d, 4d);
+        final Quaternion p = q.clone().multiply(r.clone());
+
+        // from p = q * r follows that q = p * r.inverse() and r = q.inverse() * p
+        assertEquals(q.w, p.clone().multiply(r.clone().inverse()).w, 1e-14);
+        assertEquals(q.x, p.clone().multiply(r.clone().inverse()).x, 1e-14);
+        assertEquals(q.y, p.clone().multiply(r.clone().inverse()).y, 1e-14);
+        assertEquals(q.z, p.clone().multiply(r.clone().inverse()).z, 1e-14);
+
+        assertEquals(r.w, q.clone().inverse().multiply(p).w, 1e-14);
+        assertEquals(r.x, q.clone().inverse().multiply(p).x, 1e-14);
+        assertEquals(r.y, q.clone().inverse().multiply(p).y, 1e-14);
+        assertEquals(r.z, q.clone().inverse().multiply(p).z, 1e-14);
+    }
+
+    @Test
+    public void testPowDivision() throws Exception {
+        final Quaternion q = new Quaternion(4d, 3d, 2d, 1d);
+        final Quaternion r = new Quaternion(1d, 2d, 3d, 4d);
+        q.normalize();
+        r.normalize();
+        final Quaternion p = q.clone().multiply(r.clone());
+
+        // for unit Quaternions, from p = q * r follows that q = p * r.pow(-1) and r = q.pow(-1) * p
+        assertEquals(q.w, p.clone().multiply(r.clone().pow(-1)).w, 1e-14);
+        assertEquals(q.x, p.clone().multiply(r.clone().pow(-1)).x, 1e-14);
+        assertEquals(q.y, p.clone().multiply(r.clone().pow(-1)).y, 1e-14);
+        assertEquals(q.z, p.clone().multiply(r.clone().pow(-1)).z, 1e-14);
+
+        assertEquals(r.w, q.clone().pow(-1).multiply(p).w, 1e-14);
+        assertEquals(r.x, q.clone().pow(-1).multiply(p).x, 1e-14);
+        assertEquals(r.y, q.clone().pow(-1).multiply(p).y, 1e-14);
+        assertEquals(r.z, q.clone().pow(-1).multiply(p).z, 1e-14);
+    }
+
+    @Test
+    public void testSquare() throws Exception {
+        final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
+        p.normalize();
+
+        // for unit quaternions, p * p = p.pow(2)
+        final Quaternion p2   = p.clone().multiply(p);
+        final Quaternion pow2 = p.clone().pow(2);
+
+        assertEquals(p2.w, pow2.w, 1e-14);
+        assertEquals(p2.x, pow2.x, 1e-14);
+        assertEquals(p2.y, pow2.y, 1e-14);
+        assertEquals(p2.z, pow2.z, 1e-14);
+    }
 }
+
