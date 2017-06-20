@@ -28,7 +28,7 @@ import org.rajawali3d.view.Surface;
 import java.util.Random;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class ObjectAddRemoveFragment extends AExampleFragment {
 

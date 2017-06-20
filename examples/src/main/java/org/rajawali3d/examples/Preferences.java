@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class Preferences implements OnSharedPreferenceChangeListener {
 

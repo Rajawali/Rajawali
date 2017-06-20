@@ -13,7 +13,7 @@ import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3.Axis;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @SmallTest
 public class Vector3Test {

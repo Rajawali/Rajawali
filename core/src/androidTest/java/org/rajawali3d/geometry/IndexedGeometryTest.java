@@ -28,7 +28,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @RunWith(AndroidJUnit4.class)
 @RequiresDevice

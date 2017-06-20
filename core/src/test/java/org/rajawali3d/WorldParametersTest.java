@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @SmallTest
 public class WorldParametersTest {
