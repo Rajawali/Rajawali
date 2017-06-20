@@ -35,6 +35,7 @@ public class FragmentShader extends AShader {
 	private RFloat mgSpecularValue;
 	
 	private int muColorInfluenceHandle;
+	private RMat4 mmInverseView;
 	private float mColorInfluence;
 	
 	@SuppressWarnings("unused")
@@ -69,6 +70,7 @@ public class FragmentShader extends AShader {
 		muColorInfluence = (RFloat) addUniform(DefaultShaderVar.U_COLOR_INFLUENCE);
 		if(mTimeEnabled)
 			addUniform(DefaultShaderVar.U_TIME);
+		addUniform(DefaultShaderVar.U_INVERSE_VIEW_MATRIX);
 		
 		// -- varyings
 		

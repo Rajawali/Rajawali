@@ -28,6 +28,7 @@ public class VertexShader extends AShader {
 	private RMat3 muNormalMatrix;
 	@SuppressWarnings("unused")
 	private RMat4 muModelMatrix;
+	private RMat4 muInverseViewMatrix;
 	private RMat4 muModelViewMatrix;
 	private RVec4 muColor;
 
@@ -50,6 +51,7 @@ public class VertexShader extends AShader {
 	private int muMVPMatrixHandle;
 	private int muNormalMatrixHandle;
 	private int muModelMatrixHandle;
+	private int muInverseViewMatrixHandle;
 	private int muModelViewMatrixHandle;
 	private int muColorHandle;
 	private int muTimeHandle;
@@ -97,6 +99,7 @@ public class VertexShader extends AShader {
 		muMVPMatrix = (RMat4) addUniform(DefaultShaderVar.U_MVP_MATRIX);
 		muNormalMatrix = (RMat3) addUniform(DefaultShaderVar.U_NORMAL_MATRIX);
 		muModelMatrix = (RMat4) addUniform(DefaultShaderVar.U_MODEL_MATRIX);
+		muInverseViewMatrix = (RMat4) addUniform(DefaultShaderVar.U_INVERSE_VIEW_MATRIX);
 		muModelViewMatrix = (RMat4) addUniform(DefaultShaderVar.U_MODEL_VIEW_MATRIX);
 		muColor = (RVec4) addUniform(DefaultShaderVar.U_COLOR);
 		if(mTimeEnabled)
@@ -200,6 +203,7 @@ public class VertexShader extends AShader {
 		muMVPMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_MVP_MATRIX);
 		muNormalMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_NORMAL_MATRIX);
 		muModelMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_MODEL_MATRIX);
+		muInverseViewMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_INVERSE_VIEW_MATRIX);
 		muModelViewMatrixHandle = getUniformLocation(programHandle, DefaultShaderVar.U_MODEL_VIEW_MATRIX);
 		muColorHandle = getUniformLocation(programHandle, DefaultShaderVar.U_COLOR);
 		muTimeHandle = getUniformLocation(programHandle, DefaultShaderVar.U_TIME);
@@ -260,6 +264,10 @@ public class VertexShader extends AShader {
 
 	public void setNormalMatrix(float[] normalMatrix) {
 		GLES20.glUniformMatrix3fv(muNormalMatrixHandle, 1, false, normalMatrix, 0);
+	}
+
+	public void setInverseViewMatrix(float[] inverseViewMatrix) {
+		GLES20.glUniformMatrix4fv(muInverseViewMatrixHandle, 1, false, inverseViewMatrix, 0);
 	}
 
 	public void setModelViewMatrix(float[] modelViewMatrix) {
