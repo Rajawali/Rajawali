@@ -31,15 +31,15 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	private Vector3 mCurrentTangent;
 
 	public QuadraticBezierCurve3D() {
+		mTmpPoint1 = new Vector3();
+		mTmpPoint2 = new Vector3();
+		mTmpPoint3 = new Vector3();
 		mCurrentTangent = new Vector3();
 	}
 
 	public QuadraticBezierCurve3D(Vector3 point1, Vector3 controlPoint, Vector3 point2)
 	{
 		this();
-		mTmpPoint1 = new Vector3();
-		mTmpPoint2 = new Vector3();
-		mTmpPoint3 = new Vector3();
 		addPoint(point1, controlPoint, point2);
 	}
 
