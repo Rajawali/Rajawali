@@ -23,13 +23,20 @@ public class CubicBezierCurve3D implements ICurve3D {
 	private Vector3 mControlPoint2;
 	private Vector3 mPoint2;
 	
-	private boolean mCalculateTangents;
-	private Vector3 mCurrentTangent;
-	private Vector3 mTempPointNext=new Vector3();
-	private Vector3 mTempPoint=new Vector3();
+	private Vector3 mTempPoint;
+
+	private double mCurrent;
+	private Vector3 mStartTangent;
+	private Vector3 mTransferTangent;
+	private Vector3 mEndTangent;
 	
 	public CubicBezierCurve3D() {
-		mCurrentTangent = new Vector3();
+		mCurrent = 0;
+		mTempPoint=new Vector3();
+
+		mStartTangent=new Vector3();
+		mTransferTangent=new Vector3();
+		mEndTangent=new Vector3();
 	}
 	
 	public CubicBezierCurve3D(Vector3 point1, Vector3 controlPoint1, Vector3 controlPoint2, Vector3 point2)
@@ -51,23 +58,13 @@ public class CubicBezierCurve3D implements ICurve3D {
 		mControlPoint1 = controlPoint1;
 		mControlPoint2 = controlPoint2;
 		mPoint2 = point2;
+
+		mStartTangent.setAll(mControlPoint1).subtract(point1);
+		mTransferTangent.setAll(mControlPoint2).subtract(controlPoint1);
+		mEndTangent.setAll(point2).subtract(mControlPoint2);
 	}
 
 	public void calculatePoint(Vector3 result, double t) {
-		if (mCalculateTangents) {
-			double prevt = t == 0 ? t + DELTA : t - DELTA;
-			double nextt = t == 1 ? t - DELTA : t + DELTA;
-			p(mCurrentTangent, prevt);
-			p(mTempPointNext, nextt);
-			mCurrentTangent.subtract(mTempPointNext);
-			mCurrentTangent.multiply(.5f);
-			mCurrentTangent.normalize();
-		}
-
-		p(result,t);
-	}
-
-	private void p(Vector3 result, double t) {
 		double u = 1 - t;
 		double tt = t * t;
 		double uu = u * u;
@@ -84,13 +81,20 @@ public class CubicBezierCurve3D implements ICurve3D {
 		
 		mTempPoint.scaleAndSet(mPoint2, ttt);
 		result.add(mTempPoint);
+
+		mCurrent = t;
 	}
 
 	public Vector3 getCurrentTangent() {
-		return mCurrentTangent;
+		double t = mCurrent;
+		Vector3 startPortion = new Vector3(mStartTangent).multiply(3*(1-t)*(1-t));
+		Vector3 transferPortion = new Vector3(mTransferTangent).multiply(6*(1-t)*t);
+		Vector3 endPortion = new Vector3(mEndTangent).multiply(3*t*t);
+                Vector3 result = startPortion.add(transferPortion).add(endPortion);
+		result.normalize();
+		return result;
 	}
 
 	public void setCalculateTangents(boolean calculateTangents) {
-		this.mCalculateTangents = calculateTangents;
 	}
 }
