@@ -27,14 +27,13 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	private Vector3 mTmpPoint3;
 	private Vector3 mTempPointNext=new Vector3();
 	
-	private boolean mCalculateTangents;
-	private Vector3 mCurrentTangent;
+	private double mCurrent;
 
 	public QuadraticBezierCurve3D() {
 		mTmpPoint1 = new Vector3();
 		mTmpPoint2 = new Vector3();
 		mTmpPoint3 = new Vector3();
-		mCurrentTangent = new Vector3();
+                mCurrent = 0;
 	}
 
 	public QuadraticBezierCurve3D(Vector3 point1, Vector3 controlPoint, Vector3 point2)
@@ -60,35 +59,27 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	}
 
 	public void calculatePoint(Vector3 result, double t) {
-		if (mCalculateTangents) {
-			double prevt = t == 0 ? t + DELTA : t - DELTA;
-			double nextt = t == 1 ? t - DELTA : t + DELTA;
-			p(mCurrentTangent, prevt);
-			p(mTempPointNext, nextt);
-			mCurrentTangent.subtract(mTempPointNext);
-			mCurrentTangent.multiply(.5f);
-			mCurrentTangent.normalize();
-		}
-
-		p(result, t);
-	}
-
-	private void p(Vector3 result, double t) {
+                mCurrent = t;
+                if(mCurrent <0) mCurrent=0;
+                if(mCurrent >1) mCurrent=1;
 		mTmpPoint1.setAll(mPoint1);
-		mTmpPoint1.multiply((1.0f - t) * (1.0f - t));
+		mTmpPoint1.multiply((1-mCurrent) * (1-mCurrent));
 		mTmpPoint2.setAll(mControlPoint);
-		mTmpPoint2.multiply(2 * (1.0f - t) * t);
+		mTmpPoint2.multiply(2 * (1-mCurrent) * t);
 		mTmpPoint3.setAll(mPoint2);
-		mTmpPoint3.multiply(t * t);
+		mTmpPoint3.multiply(mCurrent * mCurrent);
 		mTmpPoint2.add(mTmpPoint3);
 		result.addAndSet(mTmpPoint1, mTmpPoint2);
 	}
 
 	public Vector3 getCurrentTangent() {
-		return mCurrentTangent;
+		Vector3 start_portion = mControlPoint.clone().subtract(mPoint1).multiply(1-mCurrent);
+		Vector3 end_portion = mPoint2.clone().subtract(mControlPoint).multiply(mCurrent);
+		Vector3 result = start_portion.clone().add(end_portion);
+		result.normalize();
+		return result;
 	}
 
 	public void setCalculateTangents(boolean calculateTangents) {
-		this.mCalculateTangents = calculateTangents;
 	}
 }
