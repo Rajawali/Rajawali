@@ -81,9 +81,8 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	}
 
 	public Vector3 getCurrentTangent() {
-		double t = mCurrent;
-		Vector3 startPortion = new Vector3(mStartTangent).multiply(1-t);
-		Vector3 endPortion = new Vector3(mEndTangent).multiply(t);
+		Vector3 startPortion = new Vector3(mStartTangent).multiply(1-mCurrent);
+		Vector3 endPortion = new Vector3(mEndTangent).multiply(mCurrent);
 		Vector3 result = startPortion.add(endPortion);
 		result.normalize();
 		return result;
