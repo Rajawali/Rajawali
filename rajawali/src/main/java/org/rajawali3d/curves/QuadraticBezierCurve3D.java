@@ -28,12 +28,17 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	private Vector3 mTempPointNext=new Vector3();
 	
 	private double mCurrent;
+	private Vector3 mStartTangent;
+	private Vector3 mEndTangent;
 
 	public QuadraticBezierCurve3D() {
 		mTmpPoint1 = new Vector3();
 		mTmpPoint2 = new Vector3();
 		mTmpPoint3 = new Vector3();
+
                 mCurrent = 0;
+		mStartTangent = new Vector3();
+		mEndTangent = new Vector3();
 	}
 
 	public QuadraticBezierCurve3D(Vector3 point1, Vector3 controlPoint, Vector3 point2)
@@ -56,6 +61,9 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 		mPoint1 = point1;
 		mControlPoint = controlPoint;
 		mPoint2 = point2;
+
+		mStartTangent.setall(controlPoint).subtract(point1);
+		mEndTangent.setall(point2).subtract(controlPoint);
 	}
 
 	public void calculatePoint(Vector3 result, double t) {
@@ -73,11 +81,9 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	}
 
 	public Vector3 getCurrentTangent() {
-		Vector3 start_portion = mControlPoint.clone().subtract(mPoint1).multiply(1-mCurrent);
-		Vector3 end_portion = mPoint2.clone().subtract(mControlPoint).multiply(mCurrent);
-		Vector3 result = start_portion.clone().add(end_portion);
-		result.normalize();
-		return result;
+		Vector3 startPortion = new Vector3(mStartTangent).multiply(1-mCurrent);
+		Vector3 endPortion = new Vector3(mEndTangent).multiply(mCurrent);
+		return startPortion.add(endPortion);
 	}
 
 	public void setCalculateTangents(boolean calculateTangents) {
