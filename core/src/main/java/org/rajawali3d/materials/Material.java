@@ -495,7 +495,7 @@ public class Material {
     /**
      * {@inheritDoc}
      */
-    void remove() {
+    public void remove() {
         modelMatrix = null;
         inverseViewMatrix = null;
         modelViewMatrix = null;

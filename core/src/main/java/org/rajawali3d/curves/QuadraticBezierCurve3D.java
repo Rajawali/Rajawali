@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 	private Vector3 mTmpPoint2;
 	private Vector3 mTmpPoint3;
 	private Vector3 mTempPointNext=new Vector3();
-	
+
 	private double mCurrent;
 	private Vector3 mStartTangent;
 	private Vector3 mEndTangent;
@@ -49,7 +49,7 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 
 	/**
 	 * Add a Curve
-	 * 
+	 *
 	 * @param point1
 	 *            The first point
 	 * @param controlPoint
@@ -62,8 +62,8 @@ public class QuadraticBezierCurve3D implements ICurve3D {
 		mControlPoint = controlPoint;
 		mPoint2 = point2;
 
-		mStartTangent.setall(controlPoint).subtract(point1);
-		mEndTangent.setall(point2).subtract(controlPoint);
+		mStartTangent.setAll(controlPoint).subtract(point1);
+		mEndTangent.setAll(point2).subtract(controlPoint);
 	}
 
 	public void calculatePoint(Vector3 result, double t) {

@@ -1,20 +1,12 @@
 package org.rajawali3d.materials.shaders;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 import android.test.suitebuilder.annotation.SmallTest;
 import org.junit.Test;
-import org.rajawali3d.materials.shaders.AShader;
-
-import java.util.Arrays;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @SmallTest
 public class AShaderTest {
