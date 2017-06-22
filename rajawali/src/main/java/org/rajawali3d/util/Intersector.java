@@ -108,7 +108,7 @@ public final class Intersector {
 		rayStart = new Vector3(rayStart);
 		rayEnd = new Vector3(rayEnd);
 		Vector3 dir = Vector3.subtractAndCreate(rayEnd, rayStart);
-		dir.normalize();
+		double len = dir.normalize();
 		
 		sphereCenter = new Vector3(sphereCenter);
 		double radius2 = sphereRadius * sphereRadius;
@@ -152,10 +152,10 @@ public final class Intersector {
 		
 		// If t0 is less than zero, intersection point is at t1.
 		if (t0 < 0) {
-			hitPoint = rayStart.add(Vector3.scaleAndCreate(dir, t1));
+			hitPoint.setAll(rayStart.add(Vector3.scaleAndCreate(dir, t1*len)));
 			return true;
 		} else {
-			hitPoint = rayStart.add(Vector3.scaleAndCreate(dir, t0));
+			hitPoint.setAll(rayStart.add(Vector3.scaleAndCreate(dir, t0*len)));
 			return true;
 		}
 	}
