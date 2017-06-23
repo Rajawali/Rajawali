@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
@@ -49,6 +50,22 @@ public class VBOGeometryTest extends GlTestCase {
 
         @Override public void issueDrawCalls() {
 
+        }
+
+        @Nullable @Override public FloatBuffer getVertices() {
+            return null;
+        }
+
+        @Nullable @Override public FloatBuffer getNormals() {
+            return null;
+        }
+
+        @Nullable @Override public FloatBuffer getTextureCoords() {
+            return null;
+        }
+
+        @Nullable @Override public FloatBuffer getColors() {
+            return null;
         }
 
         @Override public int getTriangleCount() {

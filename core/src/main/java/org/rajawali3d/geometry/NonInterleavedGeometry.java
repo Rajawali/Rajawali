@@ -158,6 +158,50 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         // TODO: Issue draw calls
     }
 
+    @Override
+    @Nullable
+    public FloatBuffer getVertices() {
+        final BufferInfo info = getBufferInfo(vertexBufferKey);
+        if (info == null) {
+            return null;
+        } else {
+            return (FloatBuffer) info.buffer;
+        }
+    }
+
+    @Override
+    @Nullable
+    public FloatBuffer getNormals() {
+        final BufferInfo info = getBufferInfo(normalBufferKey);
+        if (info == null) {
+            return null;
+        } else {
+            return (FloatBuffer) info.buffer;
+        }
+    }
+
+    @Override
+    @Nullable
+    public FloatBuffer getTextureCoords() {
+        final BufferInfo info = getBufferInfo(textureBufferKey);
+        if (info == null) {
+            return null;
+        } else {
+            return (FloatBuffer) info.buffer;
+        }
+    }
+
+    @Override
+    @Nullable
+    public FloatBuffer getColors() {
+        final BufferInfo info = getBufferInfo(colorBufferKey);
+        if (info == null) {
+            return null;
+        } else {
+            return (FloatBuffer) info.buffer;
+        }
+    }
+
     /**
      * Copies another {@link NonInterleavedGeometry}'s BufferInfo objects. This means that it doesn't copy or clone the
      * actual data, but rather will just use the pointers to the other {@link NonInterleavedGeometry}'s buffers.
@@ -426,16 +470,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         setVertices(v);
     }
 
-    @Nullable
-    public FloatBuffer getVertices() {
-        final BufferInfo info = getBufferInfo(vertexBufferKey);
-        if (info == null) {
-            return null;
-        } else {
-            return (FloatBuffer) info.buffer;
-        }
-    }
-
     public void setNormals(@NonNull float[] normals) {
         setNormals(normals, false);
     }
@@ -474,17 +508,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         float[] n = new float[normals.capacity()];
         normals.get(n);
         setNormals(n);
-    }
-
-
-    @Nullable
-    public FloatBuffer getNormals() {
-        final BufferInfo info = getBufferInfo(normalBufferKey);
-        if (info == null) {
-            return null;
-        } else {
-            return (FloatBuffer) info.buffer;
-        }
     }
 
     public boolean hasNormals() {
@@ -529,16 +552,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         float[] n = new float[textureCoords.capacity()];
         textureCoords.get(n);
         setTextureCoords(n);
-    }
-
-    @Nullable
-    public FloatBuffer getTextureCoords() {
-        final BufferInfo info = getBufferInfo(textureBufferKey);
-        if (info == null) {
-            return null;
-        } else {
-            return (FloatBuffer) info.buffer;
-        }
     }
 
     public boolean hasTextureCoordinates() {
@@ -624,16 +637,6 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         float[] n = new float[colors.capacity()];
         colors.get(n);
         setColors(n);
-    }
-
-    @Nullable
-    public FloatBuffer getColors() {
-        final BufferInfo info = getBufferInfo(colorBufferKey);
-        if (info == null) {
-            return null;
-        } else {
-            return (FloatBuffer) info.buffer;
-        }
     }
 
     public boolean hasVertexColors() {

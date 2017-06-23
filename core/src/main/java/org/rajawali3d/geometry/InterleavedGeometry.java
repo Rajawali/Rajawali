@@ -122,6 +122,34 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
 
     }
 
+    @Override
+    @Nullable
+    public FloatBuffer getVertices() {
+        //TODO
+        return super.getVertices();
+    }
+
+    @Override
+    @Nullable
+    public FloatBuffer getNormals() {
+        //TODO
+        return super.getNormals();
+    }
+
+    @Override
+    @Nullable
+    public FloatBuffer getTextureCoords() {
+        //TODO
+        return super.getTextureCoords();
+    }
+
+    @Override
+    @Nullable
+    public FloatBuffer getColors() {
+        //TODO
+        return super.getColors();
+    }
+
     public void setVertices(@NonNull float[] vertices, boolean override, boolean interleaved) {
         if (interleaved) {
             vertexInterleavedIndex = floatIndex++;

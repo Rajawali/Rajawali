@@ -56,6 +56,22 @@ public class IndexedGeometryTest extends GlTestCase {
         @Override public void issueDrawCalls() {
 
         }
+
+        @Nullable @Override public FloatBuffer getVertices() {
+            return null;
+        }
+
+        @Nullable @Override public FloatBuffer getNormals() {
+            return null;
+        }
+
+        @Nullable @Override public FloatBuffer getTextureCoords() {
+            return null;
+        }
+
+        @Nullable @Override public FloatBuffer getColors() {
+            return null;
+        }
     }
 
     @Before
