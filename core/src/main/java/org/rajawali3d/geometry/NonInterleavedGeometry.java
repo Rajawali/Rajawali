@@ -16,11 +16,9 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.annotations.RequiresReadLock;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-import c.org.rajawali3d.gl.buffers.BufferUsage;
+
 import net.jcip.annotations.NotThreadSafe;
+
 import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
 import org.rajawali3d.math.vector.Vector3;
 
@@ -28,6 +26,12 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.gl.buffers.BufferUsage;
+import c.org.rajawali3d.util.FloatBufferWrapper;
 
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in
@@ -117,7 +121,7 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     @RequiresReadLock
     @Override
     public void calculateAABounds(@NonNull Vector3 min, @NonNull Vector3 max) {
-        final FloatBuffer vertices = getVertices();
+        final FloatBufferWrapper vertices = getVertices();
         vertices.rewind();
 
         min.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
@@ -160,45 +164,45 @@ public class NonInterleavedGeometry extends IndexedGeometry {
 
     @Override
     @Nullable
-    public FloatBuffer getVertices() {
+    public FloatBufferWrapper getVertices() {
         final BufferInfo info = getBufferInfo(vertexBufferKey);
         if (info == null) {
             return null;
         } else {
-            return (FloatBuffer) info.buffer;
+            return new FloatBufferWrapper(info);
         }
     }
 
     @Override
     @Nullable
-    public FloatBuffer getNormals() {
+    public FloatBufferWrapper getNormals() {
         final BufferInfo info = getBufferInfo(normalBufferKey);
         if (info == null) {
             return null;
         } else {
-            return (FloatBuffer) info.buffer;
+            return new FloatBufferWrapper(info);
         }
     }
 
     @Override
     @Nullable
-    public FloatBuffer getTextureCoords() {
+    public FloatBufferWrapper getTextureCoords() {
         final BufferInfo info = getBufferInfo(textureBufferKey);
         if (info == null) {
             return null;
         } else {
-            return (FloatBuffer) info.buffer;
+            return new FloatBufferWrapper(info);
         }
     }
 
     @Override
     @Nullable
-    public FloatBuffer getColors() {
+    public FloatBufferWrapper getColors() {
         final BufferInfo info = getBufferInfo(colorBufferKey);
         if (info == null) {
             return null;
         } else {
-            return (FloatBuffer) info.buffer;
+            return new FloatBufferWrapper(info);
         }
     }
 

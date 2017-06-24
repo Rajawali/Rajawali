@@ -5,9 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
+
 import net.jcip.annotations.NotThreadSafe;
-import org.rajawali3d.math.vector.Vector3;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -16,6 +15,9 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
+
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.util.FloatBufferWrapper;
 
 /**
  * Implementation of {@link IndexedGeometry} which interleaves some or all vertex data into a single buffer. There is
@@ -113,39 +115,34 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
     }
 
     @Override
-    public void calculateAABounds(@NonNull Vector3 min, @NonNull Vector3 max) {
-
-    }
-
-    @Override
     public void issueDrawCalls() {
 
     }
 
     @Override
     @Nullable
-    public FloatBuffer getVertices() {
+    public FloatBufferWrapper getVertices() {
         //TODO
         return super.getVertices();
     }
 
     @Override
     @Nullable
-    public FloatBuffer getNormals() {
+    public FloatBufferWrapper getNormals() {
         //TODO
         return super.getNormals();
     }
 
     @Override
     @Nullable
-    public FloatBuffer getTextureCoords() {
+    public FloatBufferWrapper getTextureCoords() {
         //TODO
         return super.getTextureCoords();
     }
 
     @Override
     @Nullable
-    public FloatBuffer getColors() {
+    public FloatBufferWrapper getColors() {
         //TODO
         return super.getColors();
     }

@@ -14,16 +14,16 @@ package org.rajawali3d.bounds;
 
 import android.opengl.GLES20;
 
-import java.nio.FloatBuffer;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.rajawali3d.geometry.NonInterleavedGeometry;
-import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
+import org.rajawali3d.cameras.Camera;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
+
+import java.nio.FloatBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BoundingBox implements IBoundingVolume {
 	protected       NonInterleavedGeometry mGeometry;
@@ -149,11 +149,11 @@ public class BoundingBox implements IBoundingVolume {
         mMin.setAll(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         mMax.setAll(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 
-        FloatBuffer vertices = geometry.getVertices();
+        /*FloatBuffer vertices = geometry.getVertices();
         if(vertices != null){
             calculateMinMaxVertices(vertices, mMin, mMax);
             calculatePoints();
-        }
+        }*/
 
     }
 

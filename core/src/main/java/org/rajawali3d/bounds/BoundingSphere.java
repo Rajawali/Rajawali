@@ -19,7 +19,7 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 
-import java.nio.FloatBuffer;
+import c.org.rajawali3d.util.FloatBufferWrapper;
 
 public class BoundingSphere implements IBoundingVolume {
 	protected       NonInterleavedGeometry mGeometry;
@@ -83,7 +83,7 @@ public class BoundingSphere implements IBoundingVolume {
 	public void calculateBounds(NonInterleavedGeometry geometry) {
 		double radius = 0, maxRadius = 0;
 		Vector3 vertex = new Vector3();
-		FloatBuffer vertices = geometry.getVertices();
+		FloatBufferWrapper vertices = geometry.getVertices();
 		vertices.rewind();
 
 		while(vertices.hasRemaining()) {

@@ -8,8 +8,9 @@ import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.vector.Vector3;
 
-import java.nio.FloatBuffer;
 import java.util.Stack;
+
+import c.org.rajawali3d.util.FloatBufferWrapper;
 
 public class DebugBoundingBox extends DebugObject3D {
     private Vector3[] mBBoxVertices;
@@ -44,7 +45,7 @@ public class DebugBoundingBox extends DebugObject3D {
     }
 
     private void updateBox(BoundingBox bb) {
-        FloatBuffer b = mGeometry.getVertices();
+        FloatBufferWrapper b = mGeometry.getVertices();
         int index = 0;
 
         bb.copyPoints(mBBoxVertices);
@@ -66,12 +67,10 @@ public class DebugBoundingBox extends DebugObject3D {
         addVertexToBuffer(b, index++, mBBoxVertices[7]);
         addVertexToBuffer(b, index++, mBBoxVertices[4]);
 
-        mGeometry.changeBufferData(
-                mGeometry.getVertexBufferInfo(),
-                mGeometry.getVertices(), 0);
+        mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), mGeometry.getVertices().getBuffer(), 0);
     }
 
-    private void addVertexToBuffer(FloatBuffer b, int index, Vector3 vertex) {
+    private void addVertexToBuffer(FloatBufferWrapper b, int index, Vector3 vertex) {
         int vertIndex = index * 3;
 
         b.put(vertIndex, (float) vertex.x);

@@ -9,8 +9,9 @@ import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Sphere;
 
-import java.nio.FloatBuffer;
 import java.util.Stack;
+
+import c.org.rajawali3d.util.FloatBufferWrapper;
 
 /**
  * @author dennis.ippel
@@ -60,7 +61,7 @@ public class DebugCamera extends DebugObject3D {
 
         mCamera.getFrustumCorners(mFrustumCornersTransformed, true, true);
 
-        FloatBuffer b = mGeometry.getVertices();
+        FloatBufferWrapper b = mGeometry.getVertices();
         int index = 0;
 
         addVertexToBuffer(b, index++, mFrustumCornersTransformed[0]);
@@ -80,12 +81,10 @@ public class DebugCamera extends DebugObject3D {
         addVertexToBuffer(b, index++, mFrustumCornersTransformed[7]);
         addVertexToBuffer(b, index++, mFrustumCornersTransformed[4]);
 
-        mGeometry.changeBufferData(
-            mGeometry.getVertexBufferInfo(),
-            mGeometry.getVertices(), 0);
+        mGeometry.changeBufferData(mGeometry.getVertexBufferInfo(), mGeometry.getVertices().getBuffer(), 0);
     }
 
-    private void addVertexToBuffer(FloatBuffer b, int index, Vector3 vertex) {
+    private void addVertexToBuffer(FloatBufferWrapper b, int index, Vector3 vertex) {
         int vertIndex = index * 3;
 
         b.put(vertIndex, (float) vertex.x);

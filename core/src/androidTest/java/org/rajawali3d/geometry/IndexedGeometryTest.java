@@ -1,19 +1,12 @@
 package org.rajawali3d.geometry;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import c.org.rajawali3d.GlTestCase;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +19,16 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+
+import c.org.rajawali3d.GlTestCase;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.util.FloatBufferWrapper;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -57,19 +60,19 @@ public class IndexedGeometryTest extends GlTestCase {
 
         }
 
-        @Nullable @Override public FloatBuffer getVertices() {
+        @Nullable @Override public FloatBufferWrapper getVertices() {
             return null;
         }
 
-        @Nullable @Override public FloatBuffer getNormals() {
+        @Nullable @Override public FloatBufferWrapper getNormals() {
             return null;
         }
 
-        @Nullable @Override public FloatBuffer getTextureCoords() {
+        @Nullable @Override public FloatBufferWrapper getTextureCoords() {
             return null;
         }
 
-        @Nullable @Override public FloatBuffer getColors() {
+        @Nullable @Override public FloatBufferWrapper getColors() {
             return null;
         }
     }

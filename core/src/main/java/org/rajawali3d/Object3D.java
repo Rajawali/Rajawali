@@ -38,6 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import c.org.rajawali3d.textures.TextureAtlas;
 import c.org.rajawali3d.textures.TexturePacker.Tile;
+import c.org.rajawali3d.util.FloatBufferWrapper;
 
 /**
  * This is the main object that all other 3D objects inherit from.
@@ -905,7 +906,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 	 */
 	public void setAtlasTile(String tileName, TextureAtlas atlas) {
 		Tile tile = atlas.getTileNamed(tileName);
-		FloatBuffer fb = this.getGeometry().getTextureCoords();
+		FloatBufferWrapper fb = this.getGeometry().getTextureCoords();
 		for(int i = 0; i < fb.capacity(); i++){
 			double uvIn = fb.get(i);
 			double uvOut;
@@ -915,7 +916,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 				uvOut = (uvIn * (tile.height/atlas.getHeight())) + tile.y/atlas.getHeight();
 			fb.put(i, (float) uvOut);
 		}
-		mGeometry.changeBufferData(mGeometry.getTexCoordBufferInfo(), fb, 0);
+		mGeometry.changeBufferData(mGeometry.getTexCoordBufferInfo(), fb.getBuffer(), 0);
 
 	}
 

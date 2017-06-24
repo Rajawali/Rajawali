@@ -2,12 +2,14 @@ package org.rajawali3d.geometry;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.annotations.RequiresReadLock;
+
 import net.jcip.annotations.NotThreadSafe;
+
 import org.rajawali3d.math.vector.Vector3;
 
-import java.nio.FloatBuffer;
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.annotations.RequiresReadLock;
+import c.org.rajawali3d.util.FloatBufferWrapper;
 
 /**
  * Interface to be implemented by geometry objects. These could be VBO only objects, Indexed VBO objects or even
@@ -71,16 +73,16 @@ public interface Geometry {
     void issueDrawCalls();
 
     @Nullable
-    FloatBuffer getVertices();
+    FloatBufferWrapper getVertices();
 
     @Nullable
-    FloatBuffer getNormals();
+    FloatBufferWrapper getNormals();
 
     @Nullable
-    FloatBuffer getTextureCoords();
+    FloatBufferWrapper getTextureCoords();
 
     @Nullable
-    FloatBuffer getColors();
+    FloatBufferWrapper getColors();
 
     /**
      * Gets the triangle count this {@link Geometry} contains.
