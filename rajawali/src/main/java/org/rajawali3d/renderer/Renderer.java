@@ -160,7 +160,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public Renderer(Context context, boolean registerForResources) {
-        RajLog.i("Rajawali | Bombshell | v1.1.777 Release ");
+        RajLog.i("Rajawali | Bombshell | v1.1.970 Release ");
         RajLog.i("This is a stable release.");
         mHaveRegisteredForResources = registerForResources;
         mContext = context;
