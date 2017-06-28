@@ -2,7 +2,7 @@ package c.org.rajawali3d.sceneview;
 
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.camera.Camera;
-import c.org.rajawali3d.core.AFrameDelegate;
+import c.org.rajawali3d.core.BaseFrameDelegate;
 import c.org.rajawali3d.core.RenderStatus;
 import c.org.rajawali3d.core.RenderContext;
 import c.org.rajawali3d.object.RenderableObject;
@@ -33,17 +33,17 @@ import java.util.concurrent.locks.Lock;
  * @author Randy Picolet
  */
 
-public abstract class ASceneView extends AFrameDelegate implements SceneView {
+public abstract class BaseSceneView extends BaseFrameDelegate implements SceneView {
 
-    private static final String TAG = "ASceneView";
+    private static final String TAG = "BaseSceneView";
 
-    // The Scene presented by this ASceneView
+    // The Scene presented by this BaseSceneView
     @NonNull protected Scene scene;
     // The Scene's graph
     @NonNull protected SceneGraph sceneGraph;
-    // The Camera for this ASceneView
+    // The Camera for this BaseSceneView
     @NonNull protected Camera camera;
-    // The viewportRect for this ASceneView
+    // The viewportRect for this BaseSceneView
     @NonNull protected Rect viewportRect;
     //
     volatile boolean viewportVisible;
@@ -68,7 +68,7 @@ public abstract class ASceneView extends AFrameDelegate implements SceneView {
 
     public static SceneView create(@NonNull AScene scene, Camera camera, Rect viewportRect) {
 
-        ASceneView sceneView = null;
+        BaseSceneView sceneView = null;
         switch(RenderContext.getType()) {
             case OPEN_GL_ES:
                 sceneView = new GLESSceneView();
@@ -83,7 +83,7 @@ public abstract class ASceneView extends AFrameDelegate implements SceneView {
         return sceneView;
     }
 
-    protected ASceneView() {
+    protected BaseSceneView() {
     }
 
     public @NonNull

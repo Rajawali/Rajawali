@@ -2,7 +2,7 @@ package c.org.rajawali3d.core;
 
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.scene.AScene;
-import c.org.rajawali3d.sceneview.ASceneView;
+import c.org.rajawali3d.sceneview.BaseSceneView;
 import org.rajawali3d.animation.Animation;
 
 import android.support.annotation.CallSuper;
@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Abstract base class for {@link AScene} and {@link ASceneView}
+ * Abstract base class for {@link AScene} and {@link BaseSceneView}
  *
  * @author Randy Picolet
  */
 
-public abstract class AFrameDelegate extends ACoreComponent implements FrameDelegate {
+public abstract class BaseFrameDelegate extends ACoreComponent implements FrameDelegate {
 
     @GuardedBy("frameStartCallbacks")
     private final List<FrameCallback> frameStartCallbacks;
@@ -37,7 +37,7 @@ public abstract class AFrameDelegate extends ACoreComponent implements FrameDele
 
     private volatile boolean isEnabled;
 
-    public AFrameDelegate() {
+    public BaseFrameDelegate() {
         super();
         frameStartCallbacks = Collections.synchronizedList(new ArrayList<FrameCallback>());
         frameEndCallbacks = Collections.synchronizedList(new ArrayList<FrameCallback>());
