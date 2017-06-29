@@ -15,7 +15,6 @@ package org.rajawali3d;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.cameras.Camera;
@@ -660,7 +659,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
     }
 
     private void ensureModelMatrix() {
-        Log.d(getName(), "Ensuring model matrix.");
         if (mParent != null) {
             mParent.ensureModelMatrix();
             mParentMatrix.setAll(mParent.mMMatrix);
