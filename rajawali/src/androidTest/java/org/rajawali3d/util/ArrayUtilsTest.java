@@ -1,11 +1,11 @@
-package org.rajawali3d.materials.shaders;
+package org.rajawali3d.utils;
 
 import static org.junit.Assert.*;
 
 import android.test.suitebuilder.annotation.SmallTest;
 import org.junit.Test;
-import org.rajawali3d.util.ArrayUtils;
 
+import org.rajawali3d.util.ArrayUtils;
 import java.util.Arrays;
 
 /**
