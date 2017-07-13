@@ -1,4 +1,4 @@
-package org.rajawali3d.materials.shaders;
+package org.rajawali3d.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
