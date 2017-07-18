@@ -783,7 +783,9 @@ public final class Quaternion implements Cloneable {
      */
     @NonNull
     public Quaternion pow(double p) {
-        return log().multiply(p).exp();
+        double l = length();
+        normalize();
+        return log().multiply(p).exp().multiply(Math.pow(l,p));
     }
 
     /**
