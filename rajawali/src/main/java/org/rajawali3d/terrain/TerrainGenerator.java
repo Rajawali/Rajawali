@@ -145,6 +145,7 @@ public class TerrainGenerator {
 				v2.y = terrain[x][z];
 
 				na = v1.subtract(v0).cross(v2.subtract(v0));
+				na.inverse();
 
 				v0.x = x * scale.x;
 				v0.z = z * scale.z;
@@ -159,6 +160,7 @@ public class TerrainGenerator {
 				v2.y = terrain[x + 1][z];
 
 				nb = v1.subtract(v0).cross(v2.subtract(v0));
+				nb.inverse();
 
 				v0.x = x * scale.x;
 				v0.z = z * scale.z;
@@ -173,6 +175,7 @@ public class TerrainGenerator {
 				v2.y = terrain[x][z + 1];
 
 				nc = v1.subtract(v0).cross(v2.subtract(v0));
+				nc.inverse();
 
 				v0.x = x * scale.x;
 				v0.z = z * scale.z;
@@ -187,6 +190,7 @@ public class TerrainGenerator {
 				v2.y = terrain[x - 1][z];
 
 				nd = v1.subtract(v0).cross(v2.subtract(v0));
+				nd.inverse();
 
 				normals[x][z].y = 0f; // pre-set to 1
 				normals[x][z].add(na);

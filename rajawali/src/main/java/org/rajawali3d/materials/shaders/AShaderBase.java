@@ -86,9 +86,9 @@ public abstract class AShaderBase {
 	 */
 	public static enum DefaultShaderVar implements IGlobalShaderVar {
 		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), 
-		U_MODEL_VIEW_MATRIX("uModelViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4), U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT),
-		U_INFLUENCE("uInfluence", DataType.FLOAT), U_REPEAT("uRepeat", DataType.VEC2), U_OFFSET("uOffset", DataType.VEC2),
-		U_TIME("uTime", DataType.FLOAT),
+		U_INVERSE_VIEW_MATRIX("uInverseViewMatrix", DataType.MAT4), U_MODEL_VIEW_MATRIX("uModelViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4), 
+		U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT), U_INFLUENCE("uInfluence", DataType.FLOAT), U_REPEAT("uRepeat", DataType.VEC2), 
+		U_OFFSET("uOffset", DataType.VEC2), U_TIME("uTime", DataType.FLOAT),
 		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3), A_VERTEX_COLOR("aVertexColor", DataType.VEC4),
 		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_CUBE_TEXTURE_COORD("vCubeTextureCoord", DataType.VEC3), V_NORMAL("vNormal", DataType.VEC3), V_COLOR("vColor", DataType.VEC4), V_EYE_DIR("vEyeDir", DataType.VEC3),
 		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4), G_TEXTURE_COORD("gTextureCoord", DataType.VEC2), G_SHADOW_VALUE("gShadowValue", DataType.FLOAT),
@@ -294,7 +294,7 @@ public abstract class AShaderBase {
 		
 		public ShaderVar x()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = new RFloat();
 			v.setName(this.mName + ".x");
 			v.mInitialized = true;
 			return v;
@@ -302,7 +302,7 @@ public abstract class AShaderBase {
 		
 		public ShaderVar y()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = new RFloat();
 			v.setName(this.mName + ".y");
 			v.mInitialized = true;
 			return v;
@@ -310,7 +310,7 @@ public abstract class AShaderBase {
 		
 		public ShaderVar s()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = new RFloat();
 			v.setName(this.mName + ".s");
 			v.mInitialized = true;
 			return v;
@@ -318,7 +318,7 @@ public abstract class AShaderBase {
 		
 		public ShaderVar t()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = new RFloat();
 			v.setName(this.mName + ".t");
 			v.mInitialized = true;
 			return v;
@@ -329,6 +329,17 @@ public abstract class AShaderBase {
 			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
 			v.setName(this.mName + "[" + index + "]");
 			return v;
+		}
+
+		@Override
+		public void assign(float value)
+		{
+			assign("vec2(" + Float.toString(value) + ")");
+		}
+
+		public void assign(float value1, float value2)
+		{
+			assign("vec2(" +Float.toString(value1)+ ", " +Float.toString(value2)+ ")");
 		}
 	}
 	
@@ -438,6 +449,7 @@ public abstract class AShaderBase {
 			return v;
 		}
 		
+		@Override
 		public void assign(float value)
 		{
 			assign("vec3(" + Float.toString(value) + ")");
@@ -539,6 +551,16 @@ public abstract class AShaderBase {
 			return v;
 		}
 
+		@Override
+		public void assign(float value)
+		{
+			assign("vec4(" + Float.toString(value) + ")");
+		}
+
+		public void assign(float value1, float value2, float value3, float value4)
+		{
+			assign("vec4(" +Float.toString(value1)+ ", " +Float.toString(value2)+ ", " +Float.toString(value3)+ ", " +Float.toString(value4)+ ")");
+		}
 	}
 	
 	/**

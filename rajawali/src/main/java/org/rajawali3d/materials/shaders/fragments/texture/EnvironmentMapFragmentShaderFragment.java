@@ -37,6 +37,7 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 	@Override
 	public void main() {
 		super.main();
+		RMat4 inverseV = (RMat4) getGlobal(DefaultShaderVar.U_INVERSE_VIEW_MATRIX);
 		RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 		RVec4 cmColor = new RVec4("cmColor");
 		RVec3 eyeDir = (RVec3) getGlobal(DefaultShaderVar.V_EYE_DIR);
@@ -44,7 +45,8 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 		
 		RVec3 reflected = new RVec3("reflected");
 		reflected.assign(reflect(eyeDir.xyz(), normal));
-		
+		reflected.assign(normalize(reflected));
+
 		int cubeMapCount = 0, sphereMapCount = 0;
 		
 		for(int i=0; i<mTextures.size(); i++)
@@ -60,6 +62,11 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 			}
 			else if(mTextures.get(i).getTextureType() == TextureType.CUBE_MAP)
 			{
+				RVec3 viewNormal = new RVec3("viewNormal");
+				viewNormal.assign(castVec3(multiply(inverseV, castVec4(normal, 0))));
+				reflected.assign(reflect(eyeDir.xyz(), viewNormal));
+				reflected.assign(castVec3(multiply(inverseV, castVec4(reflected, 0))));
+				reflected.x().assignMultiply(-1);
 				cmColor.assign(textureCube(muCubeTextures[cubeMapCount++], reflected));
 			}
 			
