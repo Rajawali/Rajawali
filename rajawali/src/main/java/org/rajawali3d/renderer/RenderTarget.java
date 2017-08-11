@@ -317,7 +317,7 @@ public class RenderTarget {
 	}
 
 	public void remove() {
-		GLES20.glDeleteFramebuffers(GLES20.GL_FRAMEBUFFER, new int[] { mFrameBufferHandle }, 0);
+		GLES20.glDeleteFramebuffers(1, new int[] { mFrameBufferHandle }, 0);
 	}
 
 	public void reload() {
