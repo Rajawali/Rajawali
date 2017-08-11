@@ -103,7 +103,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
         mColor = new float[]{ 0, 1, 0, 1.0f };
         mPickingColor = new float[4];
         setPickingColor(UNPICKABLE);
-        getBoundingBox().transform(getModelMatrix());
     }
 
     public Object3D(String name) {
@@ -667,7 +666,6 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
         } else {
             onRecalculateModelMatrix(null);
         }
-        getBoundingBox().transform(getModelMatrix());
     }
 
     public boolean removeChild(Object3D child) {
