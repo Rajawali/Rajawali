@@ -660,7 +660,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
     private void ensureModelMatrix() {
         if (mParent != null) {
-            mParent.ensureModelMatrix();
+            //mParent.ensureModelMatrix();
             mParentMatrix.setAll(mParent.mMMatrix);
             onRecalculateModelMatrix(mParent.mMMatrix);
         } else {
