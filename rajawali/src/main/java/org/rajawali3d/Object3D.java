@@ -652,7 +652,7 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
         mChildren.add(child);
         child.setParent(this);
         child.mParentMatrix = new Matrix4();
-        child.ensureModelMatrix();
+        //child.ensureModelMatrix();
         if (mRenderChildrenAsBatch) {
             child.setPartOfBatch(true);
         }
