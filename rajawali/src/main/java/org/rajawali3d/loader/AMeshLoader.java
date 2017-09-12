@@ -12,13 +12,12 @@
  */
 package org.rajawali3d.loader;
 
-import java.io.File;
-
+import android.content.res.Resources;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.textures.TextureManager;
 import org.rajawali3d.renderer.Renderer;
 
-import android.content.res.Resources;
+import java.io.File;
 
 public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 
@@ -75,5 +74,6 @@ public abstract class AMeshLoader extends ALoader implements IMeshLoader {
 		public String specularHighlightTexture;
 		public String alphaTexture;
 		public String bumpTexture;
+		public float bumpMultiplier;
 	}
 }
