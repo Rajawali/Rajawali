@@ -1320,7 +1320,7 @@ public class Scene {
 	private void updateChildMaterialWithLights(Object3D child) {
 		Material material = child.getMaterial();
 		if(material != null && material.lightingEnabled())
-			material.setLights(mLights);
+			material.setLights(new ArrayList<ALight>(mLights));
 		if(material!= null && mFogParams != null)
 			material.addPlugin(new FogMaterialPlugin(mFogParams));
 
