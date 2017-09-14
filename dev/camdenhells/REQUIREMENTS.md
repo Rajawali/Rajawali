@@ -211,7 +211,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 ### 3.3.4 Effects
 
 * Fog [?]
-* Blur [?]
+* Blur
 * Blend [?]
 * Bloom
 * FXAA
@@ -254,7 +254,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
       * Restore GPU resources across context switches due to:
         * Activity/Fragment lifecycles
         * `SurfaceView` window attachments (#1619)
-    * Per `SurfaceView` window attachment (render thread/render context/`Rnderer`) ?
+    * Per `SurfaceView` window attachment (render thread/render context/`Renderer`) ?
     * Per Scene model ?
     * Per Scene view ?
     * Per frame render and render pass
@@ -279,7 +279,7 @@ Some of these reqs could also be considered functional, but are only feasible if
 2. Enable/disable frame renders per scene view
 3. Z-order sorting - opaque, front to back, then transparent back to front ? (#789, #1236)
 4. Deferred lighting [2.1]
-5. On-the-fly ETC1 compression (#580) [2.1]
+5. ~On-the-fly ETC1 compression (#580) [2.1]~ The legitimate use case for this is somewhat sketchy. All texture compression has numerous implications on the end result, and they vary from type to type as well as based on the original content. This is very much a decision that needs to be made by the human composing the scene.
 
 ## 3.5 Interoperability Requirements
 
@@ -295,8 +295,9 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * No public API fields; provide accessors
   * Document implicit default thread assumptions 
     * E.g. render thread-only (not safe) unless otherwise specified
-  * Mark explicit thread-safety per type and/or per method (method overrides type)
+  * Mark explicit thread-safety per type and/or per method with annotation
   * App responsible for observing thread safety markers, no built-in enforcement
+   * Consider creating Android lint plugin
 
 ### 3.6.2  Simplify basic thread communication
 
@@ -328,7 +329,7 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * Isolated - from all (other) render thread/event processing
     * Frame draws, window re-sizes, queued events, other CRUD transactions, etc.
     * Implies running on the render thread as an event, queued from any thread
-    * TODO how to handle queued transactions after window detach/loss of context...
+    * Queued transactions after window detach/loss of context are dropped
   * Durable - process persistence scope
     * Combined state preserved across Activities and render contexts
     * Essentially a requirement to provide automatic restores
@@ -341,6 +342,9 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * Details ?
 2. Internal runtime logging/tracing/assertions?
   * E.g. for integration testing and for debugging support issues
+  * Judicious use of multi level logging with tags to signify source.
+  * Proguard configuration to strip each logging level as desired for release builds
+    * Removes code rather than simply using conditional checks
 3. Compile-time API-usage validation, e.g. annotations ?
   * Are these enforceable e.g. via lint?
 4. Runtime API-usage validation for the app, e.g. debug-only assertions/exceptions?
@@ -357,12 +361,14 @@ This does not preclude performance impacts; clearly there will be limits, but ha
 
   * Identify and implement separate library modules for optional/lower-frequency features
     * Core module vs add-ons:
-      * VR? AR?
-      * Modifiers, animations, rendering effects?
-      * Wear? TV?
+      * VR 
+      * AR
+      * Modifiers, animations, rendering effects
+      * Wear
+      * TV?
       * Wallpaper
-  * Still provide all-in-one module?
-  * Publish debug/development version in addition to release version of each module?
+  * Still provide all-in-one module in addition to individual modules
+  * Publish debug/development version in addition to release version of each module
     * Simplify app access to/visibility of engine-internal logging/tracing
 
 # 6. Usage Documentation Requirements
@@ -376,7 +382,8 @@ This does not preclude performance impacts; clearly there will be limits, but ha
     * Basic use case, not every variation
     * Multiple features per example OK
   * List TBD
-  * Enable automatic updates to AppStore? [2.1]
+  * Enable automatic updates to AppStore
+    * We definately need this. We used to get a lot of traffic from the AppStore
 3. Wiki Guideline .md docs
   * Major impact to content; new and refactored guides needed; priorities TBD
   * Complete migration to `docs` folder (#1633)
@@ -401,7 +408,7 @@ Define and apply engine-wide naming, packaging, and coding conventions
     * Use abstract types (base classes and interfaces)
     * Extend them as needed (directly or by inheritance)
     * Avoid modifying them; when unavoidable, use formal deprecations
-  * Liskov substitution princple
+  * Liskov substitution principle
     * Avoid changing the observable state or behavior of a type in one of its subtypes
   * Interface segregation principle
     * Use more, smaller, role-specific interfaces rather than fewer, larger, multi-role interfaces
