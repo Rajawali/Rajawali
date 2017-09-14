@@ -44,7 +44,7 @@ For reviews and updates:
     * Does not imply support for the entirety of that version's API
     * Does imply that engine features available in earlier versions are still available
   * Using an engine feature that depends on a version greater than is available on a device:
-    * Will in general throw a runtime error exception
+    * Will in general throw a checked exception, forcing the user code to deal with it. 
     * Should be avoided by the application by checking versions first, or by manifest declarations
   * Using an engine feature that depends on a version less than is available on a device:
     * May automatically use a different implementation using the newer GL ES API features
@@ -55,34 +55,37 @@ For reviews and updates:
 ## 3.1 Android and OpenGL ES integration
 
 1. Provide (major and minor) version query for the current GL ES render context
-2. Allow multiple `GlSurfaceViews` per Activity ? [2.1]
-  * Is this actually worthwhile?
-  * Only one render thread/context/Renderer can exist at once, so SurfaceViews are mutually exclusive 
-    * E.g. `ViewPager` support (per #1619)
-    * Is timing of render context switch still based on window attachment?
-3. Wallpaper surface view multisampling fix (#1559)
-4. Provide query/configuration constants (bit flags) for all nVidia GL ES extensions (#1742) [2.1]
-  * Do any other vendors or extension categories need this?
+2. Decouple Android views from the EGL context to allow offline rendering/initialization
+3. ~Allow multiple `GlSurfaceViews` per Activity ? [2.1]~
+  ~* Is this actually worthwhile?~
+  ~* Only one render thread/context/Renderer can exist at once, so SurfaceViews are mutually exclusive~
+    ~* E.g. `ViewPager` support (per #1619)~
+    ~* Is timing of render context switch still based on window attachment?~
+4. Wallpaper surface view multisampling fix (#1559)
+5. Provide query/configuration constants (bit flags) for all Vendor GL ES extensions (#1742) [2.1]
+  * CH implementation will include this for all texture extensions.
   
 ## 3.2 Scene Models and Views
 
 ### 3.2.1. Model files
  
-1. Enable "artist control" e.g. material specs, transparency/blending... ?
-2. OBJ fixes/improvements (#896 - multiple items!)
-3. Assimp support ? [2.1]
-4. Improved AWD support/bug fixes ? [2.1]  (#1185, #1465, #1468)
-5. MD5 child naming (#1454) [2.1]
+1. ~Enable "artist control" e.g. material specs, transparency/blending... ?~ Proper loader support (#2) will take care of this.
+2. Assimp support
+3. ~OBJ fixes/improvements (#896 - multiple items!)~ Assimp integration will fix most of our loading problems.
+4. ~Improved AWD support/bug fixes ? [2.1]  (#1185, #1465, #1468)~ Unfortunately, AWD and AwayBuilder are dead (they were tied to Flash). AWD is still an interesting format but content creation tools will be limited.
+5. ~MD5 child naming (#1454) [2.1]~ See item 2.
 
 ### 3.2.2. Colors and Textures
 
 Help!
 
-1. New formats, details?
+1. New formats, details
+ * CH - See section 3.1.5
 2. New functions? e.g.
  * Compression/decompression? 
  * Layouts/transforms?
-3. Font to texture support (#693)
+3. Font to texture support (#693) [2.1]
+ * Implement as additional module
 4. Fix vertex color setter (#1781)
 5. Add KTX file support (#1823)
 
@@ -105,15 +108,16 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 2. One camera, switchable, and a dynamic set of any number/mix of lights
   * No inherent geometry/vertex data
   * Embedded in the scene, transformable 
-  * World coordinates can be querie
+  * World coordinates can be queried
   * "Containers", optional visualization geometries for debugging or app functions can be added
   * Switch betwen whole light sets at once ? [2.1]
-3. Skybox texture/bitmaps and size, and/or background color; all mutable
+3. Skybox texture/bitmaps and size, and/or background color and/or materials; all mutable
 4. Target/viewport rectangle size and on-screen location (subsumes #1752)
 5. Depth mask/stencil [2.1]
 6. AR integration [2.1]
   * Camera/video stream (scene view quad)
-  * Vuforia? Is this dead? Can we do AR without it?
+  * Updated Vuforia integration
+  * ARKit integration for free AR
 7. Optional animations
   * Light positions
   * Light directions, powers, colors, spotlight parameters, etc. [2.1]
@@ -156,7 +160,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
     * Performance impacts of overwrites is application responsibility for now
     * Overall surface view background color
       * Defaults to black
-      * Can be overridded
+      * Can be overridden
       * Can be turned off if not needed
 3. Multiple frame renders per scene view
   * Example enabled use cases
@@ -173,7 +177,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Any number of frame renders to readable off-screen image buffers
 4. Multiple render targets per framebuffer (#1862)
   * E.g. for deferred lighting and ambient occlusion g-buffers
-  * All render targets are same size
+  * Different size attachments are supported per render target
 5. Multiple (sub-)passes per render pass/framebuffer
   * E.g. for post-processing effects
   * Same framebuffer for all sub-passes
@@ -188,14 +192,14 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 ### 3.3.2 Pipeline programs and fixed functions
 
 1. Hardware anti-aliasing (#1755)
-  * MXAA
-  * Coverage AA ? [2.1]
+  * MSAA
+  * Coverage AA
   * TXAA ? [2.1]
 2. Stencil test (#1863)
 3. Scissor test (#1863)
 4. Enable use of geometry shaders [2.1]
 5. Enable use of tesselation evaluation and control shaders [2.1]
-6. Enable use if compute shaders
+6. Enable use of compute shaders [2.1]
 
 ### 3.3.3 Lights and shadows [2.1]
 
@@ -209,12 +213,12 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 * Fog [?]
 * Blur [?]
 * Blend [?]
-* Bloom [?]
-* FXAA [?]
-* SSAA [2.1]
-* Sepia [?]
-* Scanline [?]
-* Vignette [?]
+* Bloom
+* FXAA
+* SSAA
+* Sepia
+* Scanline
+* Vignette
 * Lens flare [2.1]
 * Touch ripples (#1661) [2.1]
 * Bumps/Parallax from height maps (#573) [2.1]
@@ -229,7 +233,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Interleaved vertex attribute buffer data - postion, normal, color (#773)
   * Uniform buffer objects (#1861) 
   * Program pipeline objects    
-3. RenderScript (#633) [2.1]
+3. RenderScript (#633) ?
      
 ### 3.4.2 Memory Resources
   
@@ -256,7 +260,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
     * Per frame render and render pass
       * Share/re-use render target images/framebuffer attachments
       * Allow use of over-size images for smaller framebuffers 
-2. Re-add short (index ?) buffers (#1816)
+2. Re-add `short` index buffers (#1816)
 
 ### 3.4.3 Data structures and algorithms
 
