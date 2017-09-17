@@ -64,7 +64,6 @@ public class EnvironmentMapFragmentShaderFragment extends ATextureFragmentShader
 			{
 				RVec3 viewNormal = new RVec3("viewNormal");
 				viewNormal.assign(castVec3(multiply(inverseV, castVec4(normal, 0))));
-				viewNormal.assign(normalize(viewNormal));
 				reflected.assign(reflect(eyeDir.xyz(), viewNormal));
 				reflected.assign(castVec3(multiply(inverseV, castVec4(reflected, 0))));
 				reflected.x().assignMultiply(-1);

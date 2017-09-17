@@ -25,6 +25,7 @@ public abstract class FrameTask implements Runnable {
             doTask();
         } catch (Exception e) {
             RajLog.e("Execution Failed: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

@@ -667,10 +667,10 @@ public class QuaternionTest {
         final Quaternion out = q.pow(2);
         assertNotNull(out);
         assertSame(q, out);
-        assertEquals(0.550387596899225, q.w, 1e-14);
-        assertEquals(0.31007751937984496, q.x, 1e-14);
-        assertEquals(0.4651162790697673, q.y, 1e-14);
-        assertEquals(0.6201550387596899, q.z, 1e-14);
+        assertEquals(0.71, q.w, 1e-14);
+        assertEquals(0.4, q.x, 1e-14);
+        assertEquals(0.6, q.y, 1e-14);
+        assertEquals(0.8, q.z, 1e-14);
     }
 
     @Test
@@ -691,10 +691,10 @@ public class QuaternionTest {
         final Quaternion out = q.powAndCreate(2);
         assertNotNull(out);
         assertTrue(out != q);
-        assertEquals(0.550387596899225, out.w, 1e-14);
-        assertEquals(0.31007751937984496, out.x, 1e-14);
-        assertEquals(0.4651162790697673, out.y, 1e-14);
-        assertEquals(0.6201550387596899, out.z, 1e-14);
+        assertEquals(0.71, out.w, 1e-14);
+        assertEquals(0.4, out.x, 1e-14);
+        assertEquals(0.6, out.y, 1e-14);
+        assertEquals(0.8, out.z, 1e-14);
     }
 
     @Test
@@ -1358,4 +1358,3 @@ public class QuaternionTest {
         assertEquals(p2.z, pow2.z, 1e-14);
     }
 }
-

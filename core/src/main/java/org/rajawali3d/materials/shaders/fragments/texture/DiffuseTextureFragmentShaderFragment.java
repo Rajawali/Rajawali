@@ -12,20 +12,30 @@
  */
 package org.rajawali3d.materials.shaders.fragments.texture;
 
-import org.rajawali3d.materials.Material.PluginInsertLocation;
 import c.org.rajawali3d.textures.BaseTexture;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
+import org.rajawali3d.materials.Material.PluginInsertLocation;
 
+import java.util.ArrayList;
 import java.util.List;
 
-
 public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShaderFragment {
-	public final static String SHADER_ID = "DIFFUSE_TEXTURE_FRAGMENT";
+	public final static String    SHADER_ID       = "DIFFUSE_TEXTURE_FRAGMENT";
+	private             ArrayList videoTextureMap = new ArrayList();
+	private             ArrayList textureMap      = new ArrayList();
 
 	public DiffuseTextureFragmentShaderFragment(List<BaseTexture> textures)
 	{
 		super(textures);
+		for(int i=0; i<mTextures.size(); i++)
+		{
+			BaseTexture texture = mTextures.get(i);
+			if(texture.getTextureType() == Type.VIDEO_TEXTURE)
+				videoTextureMap.add(i);
+			else
+				textureMap.add(i);
+		}
 	}
 
 	public String getShaderId() {
@@ -48,9 +58,9 @@ public class DiffuseTextureFragmentShaderFragment extends ATextureFragmentShader
 				textureCoord.assignMultiply(getGlobal(DefaultShaderVar.U_REPEAT, i));
 
 			if(texture.getTextureType() == Type.VIDEO_TEXTURE)
-				texColor.assign(texture2D(muVideoTextures[i], textureCoord));
+				texColor.assign(texture2D(muVideoTextures[videoTextureMap.indexOf(i)], textureCoord));
 			else
-				texColor.assign(texture2D(muTextures[i], textureCoord));
+				texColor.assign(texture2D(muTextures[textureMap.indexOf(i)], textureCoord));
 			texColor.assignMultiply(muInfluence[i]);
 			color.assignAdd(texColor);
 		}
