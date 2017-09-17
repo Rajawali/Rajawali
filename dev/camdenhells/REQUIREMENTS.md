@@ -178,7 +178,9 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Any number of frame renders to readable off-screen image buffers
 4. Multiple render targets per framebuffer (#1862)
   * E.g. for deferred lighting and ambient occlusion g-buffers
-  * Different size attachments are supported per render target
+  * All attachments per render target are the same size (resolution).
+  * Different storage formats per attachment are supported per render target.
+    * Not all combinations are required to be supported, but at a minimum all _color format_ combinations are. If an unsupported combination is specified, `GL_FRAMEBUFFER_UNSUPPORTED` will be generated.
 5. Multiple (sub-)passes per render pass/framebuffer
   * E.g. for post-processing effects
   * Same framebuffer for all sub-passes
