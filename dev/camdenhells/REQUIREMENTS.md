@@ -56,11 +56,11 @@ For reviews and updates:
 
 1. Provide (major and minor) version query for the current GL ES render context
 2. Decouple Android views from the EGL context to allow offline rendering/initialization
-3. ~Allow multiple `GlSurfaceViews` per Activity ? [2.1]~
-  ~* Is this actually worthwhile?~
+3. Allow multiple `GlSurfaceViews` per Activity ? [2.1]
   ~* Only one render thread/context/Renderer can exist at once, so SurfaceViews are mutually exclusive~
-    ~* E.g. `ViewPager` support (per #1619)~
-    ~* Is timing of render context switch still based on window attachment?~
+  * Multiple render contexts can exist at once on some devices. Additionally, with some creative APIs, a single renderer could drive multiple SurfaceView/TextureView implementations.
+    * E.g. `ViewPager` support (per #1619)
+    * Is timing of render context switch still based on window attachment?
 4. Wallpaper surface view multisampling fix (#1559)
 5. Provide query/configuration constants (bit flags) for all Vendor GL ES extensions (#1742) [2.1]
   * CH implementation will include this for all texture extensions.
