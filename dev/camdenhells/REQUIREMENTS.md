@@ -44,7 +44,7 @@ For reviews and updates:
     * Does not imply support for the entirety of that version's API
     * Does imply that engine features available in earlier versions are still available
   * Using an engine feature that depends on a version greater than is available on a device:
-    * Will in general throw a checked exception, forcing the user code to deal with it. 
+    * Will in general throw a runtime exception. 
     * Should be avoided by the application by checking versions first, or by manifest declarations
   * Using an engine feature that depends on a version less than is available on a device:
     * May automatically use a different implementation using the newer GL ES API features
@@ -134,7 +134,8 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Looping/cycling parameters - delay, length/duration, transform window, etc.
   * Ramped loop/cycle durations on starts/stops
   * Animating (dynamic, sparse) groups of objects
-5. Advanced gesture support?
+5. Advanced gesture support
+  * Implemented as a separate module which utilizes a core interface.
   * Streamlined MotionEvent handling across threads
   * Drags, rotations, zooms, flings of any of these (with friction)
 
@@ -200,6 +201,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 4. Enable use of geometry shaders [2.1]
 5. Enable use of tesselation evaluation and control shaders [2.1]
 6. Enable use of compute shaders [2.1]
+7. Create a unified shader program interface [2.0]
 
 ### 3.3.3 Lights and shadows [2.1]
 
@@ -277,7 +279,8 @@ Some of these reqs could also be considered functional, but are only feasible if
     * "Infinite" order-of-magnitude zooming
   * Flat tree [2.0], quad tree [2.1], oct tree [2.1] 
 2. Enable/disable frame renders per scene view
-3. Z-order sorting - opaque, front to back, then transparent back to front ? (#789, #1236)
+3. Z-order sorting - opaque, front to back, ~then transparent back to front~ (#789, #1236). [2.1]
+  * Sorting of transparent objects in an automated fashion in 3D real time graphics is an open problem worthy of a PhD to any who solve it.
 4. Deferred lighting [2.1]
 5. ~On-the-fly ETC1 compression (#580) [2.1]~ The legitimate use case for this is somewhat sketchy. All texture compression has numerous implications on the end result, and they vary from type to type as well as based on the original content. This is very much a decision that needs to be made by the human composing the scene.
 
