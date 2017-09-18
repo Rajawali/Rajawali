@@ -104,7 +104,7 @@ Help!
 ### 3.2.4 Scene Views 
 
 Provide separate specification of a rendered view for a scene model. Each scene view specifies:
-1. Its scene model - immutable
+1. Its scene model - mutable
 2. One camera, switchable, and a dynamic set of any number/mix of lights
   * No inherent geometry/vertex data
   * Embedded in the scene, transformable 
@@ -179,8 +179,8 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 4. Multiple render targets per framebuffer (#1862)
   * E.g. for deferred lighting and ambient occlusion g-buffers
   * All attachments per render target are the same size (resolution).
-  * Different storage formats per attachment are supported per render target.
-    * Not all combinations are required to be supported, but at a minimum all _color format_ combinations are. If an unsupported combination is specified, `GL_FRAMEBUFFER_UNSUPPORTED` will be generated.
+  * Different storage formats per attachment are supported per framebuffer.
+  * Not all combinations are required to be supported, but at a minimum all _color format_ combinations are. If an unsupported combination is specified, `GL_FRAMEBUFFER_UNSUPPORTED` will be generated.
 5. Multiple (sub-)passes per render pass/framebuffer
   * E.g. for post-processing effects
   * Same framebuffer for all sub-passes
