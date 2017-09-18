@@ -64,6 +64,7 @@ For reviews and updates:
 4. Wallpaper surface view multisampling fix (#1559)
 5. Provide query/configuration constants (bit flags) for all Vendor GL ES extensions (#1742) [2.1]
   * CH implementation will include this for all texture extensions.
+  * Requires native code and the extension support will be provided in a module.
   
 ## 3.2 Scene Models and Views
 
@@ -71,6 +72,8 @@ For reviews and updates:
  
 1. ~Enable "artist control" e.g. material specs, transparency/blending... ?~ Proper loader support (#2) will take care of this.
 2. Assimp support
+ * Implemented as a separate module which will interface to `core` via a Java interface.
+ * ASSIMP integration module will include a JNI wrapper.
 3. ~OBJ fixes/improvements (#896 - multiple items!)~ Assimp integration will fix most of our loading problems.
 4. ~Improved AWD support/bug fixes ? [2.1]  (#1185, #1465, #1468)~ Unfortunately, AWD and AwayBuilder are dead (they were tied to Flash). AWD is still an interesting format but content creation tools will be limited.
 5. ~MD5 child naming (#1454) [2.1]~ See item 2.
@@ -88,6 +91,8 @@ Help!
  * Implement as additional module
 4. Fix vertex color setter (#1781)
 5. Add KTX file support (#1823)
+6. Dynamic/auto materials implemented as a new module
+ * Expand to support 2.0/3.0/3.1
 
 ### 3.2.3. Coordinate systems and transforms
 
