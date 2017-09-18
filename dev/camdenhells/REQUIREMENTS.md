@@ -117,6 +117,8 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * "Containers", optional visualization geometries for debugging or app functions can be added
   * Switch betwen whole light sets at once ? [2.1]
 3. Skybox texture/bitmaps and size, and/or background color and/or materials; all mutable
+  * Add an equirectangular/radial mapped skyshere geometry
+  * Add equirectangular/radial environment mapping so we can continue to share textures between both sky geometry and environment mapping.
 4. Target/viewport rectangle size and on-screen location (subsumes #1752)
 5. Depth mask/stencil [2.1]
 6. AR integration [2.1]
