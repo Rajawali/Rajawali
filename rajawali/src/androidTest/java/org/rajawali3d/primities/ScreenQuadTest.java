@@ -22,7 +22,32 @@ public class ScreenQuadTest {
     }
 
     @Test
-    public void testConstructor() throws Exception {
-        assertNotNull(screenQuad);
+    public void testVertices() throws Exception {
+	float[] expected = new float[] {
+		-0.5f, -0.5f, 0,
+		-0.5f,  0.5f, 0,
+		 0.5f, -0.5f, 0,
+		 0.5f,  0.5f, 0,
+	};
+	float[] result = new float[4*3];
+	screenQuad.getGeometry().getVertices().get(result);
+	for(int i=0; i<result.length; i++) {
+		assertEquals(expected[i], result[i], 1e-10);
+	}
+    }
+
+    @Test
+    public void testTextureCoords() throws Exception {
+	float[] expected = new float[] {
+		0, 1,
+		0, 0,
+		1, 1,
+		1, 0,
+	};
+	float[] result = new float[4*2];
+	screenQuad.getGeometry().getTextureCoords().get(result);
+	for(int i=0; i<result.length; i++) {
+		assertEquals(expected[i], result[i], 1e-10);
+	}
     }
 }
