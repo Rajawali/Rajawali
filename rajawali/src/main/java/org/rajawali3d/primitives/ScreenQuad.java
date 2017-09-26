@@ -60,15 +60,24 @@ public class ScreenQuad extends Object3D {
 	private Matrix4 mVPMatrix;
 	private EffectPass mEffectPass;
 
+	public enum UVmapping {
+		CW,
+		CCW,
+	}
+
 	public ScreenQuad() {
-		this(1, 1, true, false, 1, true);
+		this(1, 1, true, false, 1, true, UVmapping.CCW);
 	}
 
 	/**
 	 * Create a ScreenQuad. Calling this constructor will create texture coordinates but no vertex color buffer.
 	 */
+	public ScreenQuad(UVmapping mapping) {
+		this(1, 1, true, false, 1, true, mapping);
+	}
+
 	public ScreenQuad(boolean createVBOs) {
-		this(1, 1, true, false, 1, createVBOs);
+		this(1, 1, true, false, 1, createVBOs, UVmapping.CCW);
 	}
 
 	/**
@@ -81,7 +90,7 @@ public class ScreenQuad extends Object3D {
 	 */
 	public ScreenQuad(int segmentsW, int segmentsH)
 	{
-		this(segmentsW, segmentsH, true, false, 1, true);
+		this(segmentsW, segmentsH, true, false, 1, true, UVmapping.CCW);
 	}
 
 	/**
@@ -96,7 +105,7 @@ public class ScreenQuad extends Object3D {
 	 */
 	public ScreenQuad(int segmentsW, int segmentsH, int numTextureTiles, boolean createVBOs)
 	{
-		this(segmentsW, segmentsH, true, false, numTextureTiles, createVBOs);
+		this(segmentsW, segmentsH, true, false, numTextureTiles, createVBOs, UVmapping.CCW);
 	}
 
 	/**
@@ -109,7 +118,7 @@ public class ScreenQuad extends Object3D {
 	 */
 	public ScreenQuad(int segmentsW, int segmentsH, boolean createVBOs)
 	{
-		this(segmentsW, segmentsH, true, false, 1, createVBOs);
+		this(segmentsW, segmentsH, true, false, 1, createVBOs, UVmapping.CCW);
 	}
 
 	/**
@@ -126,7 +135,7 @@ public class ScreenQuad extends Object3D {
 	 */
 	public ScreenQuad(int segmentsW, int segmentsH, boolean createTextureCoordinates,
 			boolean createVertexColorBuffer, boolean createVBOs) {
-		this(segmentsW, segmentsH, createTextureCoordinates, createVertexColorBuffer, 1, createVBOs);
+		this(segmentsW, segmentsH, createTextureCoordinates, createVertexColorBuffer, 1, createVBOs, UVmapping.CCW);
 	}
 
 	/**
@@ -146,17 +155,17 @@ public class ScreenQuad extends Object3D {
      *            A boolean that indicates whether the VBOs should be created immediately.
 	 */
 	public ScreenQuad(int segmentsW, int segmentsH, boolean createTextureCoordinates,
-			boolean createVertexColorBuffer, int numTextureTiles, boolean createVBOs) {
+			boolean createVertexColorBuffer, int numTextureTiles, boolean createVBOs, UVmapping mapping) {
 		super();
 		mSegmentsW = segmentsW;
 		mSegmentsH = segmentsH;
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
 		mNumTextureTiles = numTextureTiles;
-		init(createVBOs);
+		init(createVBOs, mapping);
 	}
 
-	private void init(boolean createVBOs) {
+	private void init(boolean createVBOs, UVmapping mapping) {
 		int i, j;
 		int numVertices = (mSegmentsW + 1) * (mSegmentsH + 1);
 		float[] vertices = new float[numVertices * 3];
@@ -187,7 +196,11 @@ public class ScreenQuad extends Object3D {
 					float u = (float) i / (float) mSegmentsW;
 					textureCoords[texCoordCount++] = u * mNumTextureTiles;
 					float v = (float) j / (float) mSegmentsH;
-					textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
+					if(mapping==UVmapping.CCW) {
+						textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
+					} else {
+						textureCoords[texCoordCount++] = v * mNumTextureTiles;
+					}
 				}
 
 				normals[vertexCount] = 0;

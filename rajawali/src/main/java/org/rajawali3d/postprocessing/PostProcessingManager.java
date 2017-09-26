@@ -79,7 +79,7 @@ public class PostProcessingManager {
         mWidth = width;
         mHeight = height;
 
-        mScreenQuad = new ScreenQuad();
+        mScreenQuad = new ScreenQuad(ScreenQuad.UVmapping.CW);
         mScene = new Scene(mRenderer, GRAPH_TYPE.NONE);
 
         mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
