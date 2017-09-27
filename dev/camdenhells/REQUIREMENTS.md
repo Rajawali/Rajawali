@@ -80,13 +80,13 @@ For reviews and updates:
 
 ### 3.2.2. Colors and Textures
 
-Help!
+~Help!~
 
 1. New formats, details
  * CH - See section 3.1.5
-2. New functions? e.g.
- * Compression/decompression? 
- * Layouts/transforms?
+2. ~New functions? e.g.~
+ * ~Compression/decompression?~
+ * ~Layouts/transforms?~
 3. Font to texture support (#693) [2.1]
  * Implement as additional module
 4. Fix vertex color setter (#1781)
@@ -131,6 +131,13 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Camera position, orientation/look-at
   * Camera FOV [2.1]
   * Viewport position, size [2.1]
+8. Meta visualizations
+  * Trident, camera eyeball/frustum, lighting rays/lines, object bounds
+  * E.g. use cases:
+    * Debugging (#1436)
+    * Interactive camera/lighting selections from a global-view PIP inset 
+    * Theater/stage lighting design apps
+    * Interior design apps - door/window/furniture/light placements
 
 ### 3.2.5 Future scene/object stuff [2.1]
 
@@ -221,9 +228,9 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 
 ### 3.3.4 Effects
 
-* Fog [?]
+* Fog [2.1]
 * Blur
-* Blend [?]
+* Blend [2.1]
 * Bloom
 * FXAA
 * SSAA
@@ -244,7 +251,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Interleaved vertex attribute buffer data - postion, normal, color (#773)
   * Uniform buffer objects (#1861) 
   * Program pipeline objects    
-3. RenderScript (#633) ?
+3. RenderScript (#633) [2.1]
      
 ### 3.4.2 Memory Resources
   
@@ -260,17 +267,19 @@ Provide separate specification of a rendered view for a scene model. Each scene 
     * Render target `RenderBuffer` and `Texture2D` image buffers
   * Persistence scopes
     * Per App ? [2.1]
-      * Store/load caches across processes, e.g. program binaries
+      * Store/load caches across processes
+      * E.g. program binaries
     * Per Process
-      * Restore GPU resources across context switches due to:
+      * Restore GPU resources from client data shared across context switches due to:
         * Activity/Fragment lifecycles
         * `SurfaceView` window attachments (#1619)
-    * Per `SurfaceView` window attachment (render thread/render context/`Renderer`) ?
-    * Per Scene model ?
-    * Per Scene view ?
+      * E.g. vertex data buffers, textures, program/shader sources, uniform buffers
+    * Per `SurfaceView` window attachment (render thread/render context/`Renderer`)
+      * Render target image buffers used as framebuffer attachments
+    * Per Scene model - no memory resources
+    * Per Scene view - no memory resources
     * Per frame render and render pass
-      * Share/re-use render target images/framebuffer attachments
-      * Allow use of over-size images for smaller framebuffers 
+      * Allow use of over-size image buffers for smaller framebuffers 
 2. Re-add `short` index buffers (#1816)
 
 ### 3.4.3 Data structures and algorithms
@@ -307,9 +316,9 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * No public API fields; provide accessors
   * Document implicit default thread assumptions 
     * E.g. render thread-only (not safe) unless otherwise specified
-  * Mark explicit thread-safety per type and/or per method with annotation
-  * App responsible for observing thread safety markers, no built-in enforcement
-   * Consider creating Android lint plugin
+  * Mark explicit thread-safety per type and/or per method (overriding type), e.g. using annotations
+  * App responsible for observing thread safety markers
+    * Enforcement provided by debug-only assertions (see below)
 
 ### 3.6.2  Simplify basic thread communication
 
@@ -318,7 +327,7 @@ This does not preclude performance impacts; clearly there will be limits, but ha
     * E.g. UI input, network, sensor, IO, and app model events sourced on any thread
   * Render thread -> Main/UI thread 
     * Make it easy to post/queue messages/events to the main/UI thread
-    * E.g. from frame, animation, and transaction (see below) callbacks,
+    * Provide queueing variants of frame, animation, and transaction (see below) callbacks
   * Render thread -> Other threads
     * Is app responsibility!
 
@@ -346,40 +355,69 @@ This does not preclude performance impacts; clearly there will be limits, but ha
     * Combined state preserved across Activities and render contexts
     * Essentially a requirement to provide automatic restores
 3. Provide "successful completion" callback
-  * Provide a variant that includes queueing to main/UI thread ? 
+  * Provide a variant that includes queueing to main/UI thread (see above)
 
-# 4. Testing, Debugging, and Reliability Requirements
+# 4. Testing, Validation, and Debugging Requirements
 
-1. Automated unit/integration test harness and tests 
-  * Details ?
-2. Internal runtime logging/tracing/assertions?
-  * E.g. for integration testing and for debugging support issues
-  * Judicious use of multi level logging with tags to signify source.
-  * Proguard configuration to strip each logging level as desired for release builds
-    * Removes code rather than simply using conditional checks
-3. Compile-time API-usage validation, e.g. annotations ?
-  * Are these enforceable e.g. via lint?
-4. Runtime API-usage validation for the app, e.g. debug-only assertions/exceptions?
-  * 
-5. Debug visualizations (#1436)
-  * Trident, camera eyeball/frustum, lighting rays/lines, object bounds
-  * Are there (non-debug) app use cases for some of these as well? e.g.: 
-    * Interactive camera/lighting selections from a global-view PIP inset 
-    * Theater/stage lighting design apps
-    * Interior design apps - door/window/furniture/light placements
-  * If so perhaps just call them e.g. camera/light/bounds visualizations  
+## 4.1 Compile-time
+
+  * Consistently specify any constraints on all member and parameter values
+    * Specify all references as either nullable or non-null
+    * Specify integer and float ranges whenever less than built-in language limits
+  * ~Validate public API-usage [2.1]~
+     * ~Create an Android lint plugin to detect invocations of non API methods?~
+     * Seems like a reliable library-specific tool would be a lot of work/maintenance, and unlikely that client developers would download/install/use it anyway
+
+## 4.2 Build-time 
+
+  Help! I'm trying to define the line on what should be unit tested and what should not, and don't even understand the hardware/software environment in which unit tests run (i.e. emulators use what version of OpenGL? is there an Android process/activity context? etc)
+  
+  * Automated unit/integration test harness and tests 
+  * For all public API and internal interface methods except those:
+    * With significant historical runtime event dependencies or behavioral states, and/or
+    * Whose success cannot be (at least partially) reasonably determined as value assertions
+  * Includes e.g. contructors, simple get/set accessors, deterministic functions/transforms
+  * Excludes e.g. frame draws, client callbacks
+  
+## 4.3. Run-time
+
+For engine and app development and integration testing, and for debugging support issues
+
+1. Provide unified logging
+  * The usual levels - verbose, debug, info, warning, error, wtf
+  * All messages should identify the class and method
+  * Core engine/rendering component (scenes, scene view, render pass, etc.) messages should also identify the instance
+  * All warning and error messages should include specific causes and data values if appropriate
+  * All error messages should be accompanied by a thrown exception
+2. Provide debug-level method tracing messages 
+  * For key lifecycle event (create/init/start/run/pause/stop/destroy etc.) handlers of engine/rendering components
+    * Includes all active components: scenes, scene views, render passes, etc.
+    * Does not include passive model objects, textures, resources 
+  * Tracing dynamically enabled per instance; disabled by default  
+3. Use logging and trace messaging judiciously to avoid excessive performance impacts or major frame delays
+  * Comment out or delete developmental log messages when no longer needed
+  * Avoid frame-rate messages
+    * Accumulate/integrate/summarize per-frame data, and log e.g. once per second or so
+4. API and internal interface usage validation, e.g. debug-only assertions/exceptions
+  * Check input parameters for all public API methods and all internal interface methods 
+  * Check system and instance state for lifecycle event handlers
+  * Check thread for non-thread-safe methods
+  * Except for error-level log messages, strip all logging, tracing, and assertion code from release builds
+    * Remove code rather than simply using conditional checks
 
 # 5. Modularity Requirements
 
-  * Identify and implement separate library modules for optional/lower-frequency features
-    * Core module vs add-ons:
+  * Identify and implement separate library modules for optional/lower-frequency features [2.1]
+    * Core module vs add-ons (list TBD):
       * VR 
       * AR
       * Modifiers, animations, rendering effects
+      * Font-to-texture
+      * Gestures
       * Wear
       * TV?
       * Wallpaper
-  * Still provide all-in-one module in addition to individual modules
+  * Always provide all-in-one module in addition to core plus add-on modules
   * Publish debug/development version in addition to release version of each module
     * Simplify app access to/visibility of engine-internal logging/tracing
 
@@ -393,11 +431,32 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * Per significant feature
     * Basic use case, not every variation
     * Multiple features per example OK
-  * List TBD
+  * At a minimum;
+    * Basic hello-world
+    * GL debugging
+    * Basic materials
+    * Color picking
+    * Basic affine animations
+    * Collision detection
+    * Skybox
+    * Directional, positional, and spot lights
+    * OBJ model loader
+    * Bloom effect
+    * Shadow mapping
+    * Basic multiple scenes/sceneviews
+    * Dynamic (transactional) updates
+    * UI elements
   * Enable automatic updates to AppStore
     * We definately need this. We used to get a lot of traffic from the AppStore
 3. Wiki Guideline .md docs
-  * Major impact to content; new and refactored guides needed; priorities TBD
+  * Major impact to content; new and refactored guides needed
+  * At a minimum:
+    * Installation guide
+    * Scene, scene graph, and sceneview basics
+    * Materials & lighting basics
+    * Loader basics
+    * Skybox 
+    * Affine animatiion basics
   * Complete migration to `docs` folder (#1633)
 
 # 7. Design Goals and Constraints
