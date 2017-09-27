@@ -10,7 +10,7 @@ Two primary goals:
   * No version flag = Must-Have!
   * Many of the major new requirements were previously discussed in Git issue #1755, best to review that first...
 
-2. Enumerate as many as possible of the relevant pre-existing, broken, in-progress, and future features and requirements that should (where practical) be accomdated and/or anticipated by the new architectural design (see Design Goals below).
+2. Enumerate as many as possible of the relevant pre-existing, broken, in-progress, and future features and requirements that should (where practical) be accommodated and/or anticipated by the new architectural design (see Design Goals below).
    
 <tl;dr> 
 
@@ -78,11 +78,11 @@ For reviews and updates:
 4. ~Improved AWD support/bug fixes ? [2.1]  (#1185, #1465, #1468)~ Unfortunately, AWD and AwayBuilder are dead (they were tied to Flash). AWD is still an interesting format but content creation tools will be limited.
 5. ~MD5 child naming (#1454) [2.1]~ See item 2.
 
-### 3.2.2. Colors and Textures
+### 3.2.2. Material Specs, Colors, and Textures
 
 ~Help!~
 
-1. New formats, details
+1. New texture formats, details
  * CH - See section 3.1.5
 2. ~New functions? e.g.~
  * ~Compression/decompression?~
@@ -91,8 +91,9 @@ For reviews and updates:
  * Implement as additional module
 4. Fix vertex color setter (#1781)
 5. Add KTX file support (#1823)
-6. Dynamic/auto materials implemented as a new module
+6. Dynamic/auto material-spec-based shader generation implemented as a new module
  * Expand to support 2.0/3.0/3.1
+ * Fix compliance with GL spec (#1978)
 
 ### 3.2.3. Coordinate systems and transforms
 
@@ -115,9 +116,9 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Embedded in the scene, transformable 
   * World coordinates can be queried
   * "Containers", optional visualization geometries for debugging or app functions can be added
-  * Switch betwen whole light sets at once ? [2.1]
+  * Switch between whole light sets at once ? [2.1]
 3. Skybox texture/bitmaps and size, and/or background color and/or materials; all mutable
-  * Add an equirectangular/radial mapped skyshere geometry
+  * Add an equirectangular/radial mapped skysphere geometry
   * Add equirectangular/radial environment mapping so we can continue to share textures between both sky geometry and environment mapping.
 4. Target/viewport rectangle size and on-screen location (subsumes #1752)
 5. Depth mask/stencil [2.1]
@@ -228,9 +229,9 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 
 ### 3.3.4 Effects
 
-* Fog [2.1]
+* Fog
 * Blur
-* Blend [2.1]
+* Blend
 * Bloom
 * FXAA
 * SSAA
@@ -274,6 +275,8 @@ Provide separate specification of a rendered view for a scene model. Each scene 
         * Activity/Fragment lifecycles
         * `SurfaceView` window attachments (#1619)
       * E.g. vertex data buffers, textures, program/shader sources, uniform buffers
+      * Per resource instance, allow restoration or recycling/deletion at restore time
+        * Fix COW collection removal bug #1973
     * Per `SurfaceView` window attachment (render thread/render context/`Renderer`)
       * Render target image buffers used as framebuffer attachments
     * Per Scene model - no memory resources
@@ -359,7 +362,7 @@ This does not preclude performance impacts; clearly there will be limits, but ha
 
 # 4. Testing, Validation, and Debugging Requirements
 
-## 4.1 Compile-time
+## 4.1 Source code
 
   * Consistently specify any constraints on all member and parameter values
     * Specify all references as either nullable or non-null
@@ -368,16 +371,38 @@ This does not preclude performance impacts; clearly there will be limits, but ha
      * ~Create an Android lint plugin to detect invocations of non API methods?~
      * Seems like a reliable library-specific tool would be a lot of work/maintenance, and unlikely that client developers would download/install/use it anyway
 
-## 4.2 Build-time 
+## 4.2 Unit Tests
 
-  Help! I'm trying to define the line on what should be unit tested and what should not, and don't even understand the hardware/software environment in which unit tests run (i.e. emulators use what version of OpenGL? is there an Android process/activity context? etc)
-  
-  * Automated unit/integration test harness and tests 
-  * For all public API and internal interface methods except those:
-    * With significant historical runtime event dependencies or behavioral states, and/or
-    * Whose success cannot be (at least partially) reasonably determined as value assertions
-  * Includes e.g. contructors, simple get/set accessors, deterministic functions/transforms
-  * Excludes e.g. frame draws, client callbacks
+  * Automated build-time unit test harnesses:
+    * For off-device Java-only methods
+    * For on-device methods requiring an active GL context
+  * For all public API and internal interface methods
+    * Includes those:
+      * With simple single-instance "black-box" behaviors, and
+      * With few/no dependencies on other components, and
+      * With relatively little local history dependence (simple setup)
+      * Whose success can be determined as value assertions
+      * E.g. contructors, simple get/set accessors, deterministic functions/transforms
+    * Excluding those:
+      * With significant history/event dependencies or behavioral states, and/or
+      * Whose success cannot be (at least partially) reasonably determined as value assertions (i.e. non-visual)
+      * E.g. frame draws, client callbacks
+
+## 4.3 Integration tests
+
+  * Automated build-time integration test harness
+    * Utilize standard Android test instrumentation tooling
+  * For primarily sequential use cases/control flows:
+    * With minimal interactions with/dependencies on other components
+    * Whose success can be verified non-visually
+    * E.g. scene graph population changes and affine transformations
+  * For selected example apps [2.1]
+    * List TBD
+    * E.g. enable visual output validation by comparison with known good screen grabs per hardware configuration
+
+## 4.3 Deployment
+
+  * Enable local deployment to facilitate development testing and debugging (#1982)
   
 ## 4.3. Run-time
 
@@ -388,22 +413,30 @@ For engine and app development and integration testing, and for debugging suppor
   * All messages should identify the class and method
   * Core engine/rendering component (scenes, scene view, render pass, etc.) messages should also identify the instance
   * All warning and error messages should include specific causes and data values if appropriate
-  * All error messages should be accompanied by a thrown exception
-2. Provide debug-level method tracing messages 
+  * All error messages should be accompanied by a thrown runtime exception
+2. Provide verbose-level method tracing messages 
   * For key lifecycle event (create/init/start/run/pause/stop/destroy etc.) handlers of engine/rendering components
     * Includes all active components: scenes, scene views, render passes, etc.
     * Does not include passive model objects, textures, resources 
   * Tracing dynamically enabled per instance; disabled by default  
 3. Use logging and trace messaging judiciously to avoid excessive performance impacts or major frame delays
   * Comment out or delete developmental log messages when no longer needed
-  * Avoid frame-rate messages
-    * Accumulate/integrate/summarize per-frame data, and log e.g. once per second or so
-4. API and internal interface usage validation, e.g. debug-only assertions/exceptions
-  * Check input parameters for all public API methods and all internal interface methods 
-  * Check system and instance state for lifecycle event handlers
-  * Check thread for non-thread-safe methods
-  * Except for error-level log messages, strip all logging, tracing, and assertion code from release builds
-    * Remove code rather than simply using conditional checks
+  * Avoid frame-rate messages (except as temporary developmental aids to be deleted/commented out before checkins)
+    * E.g. accumulate/integrate/summarize any per-frame data, and log e.g. once per second or so
+4. API and internal interface usage validation
+  * Assert method contracts
+    * Log violations as warnings or errors (with thrown runtime exceptions) as noted below
+    * Debug-mode checks:
+      * Input parameters for all public API methods and all internal interface methods (error)
+      * Instance state for lifecycle event handlers, e.g. animation start, scene view render (error)
+      * Thread for non-thread-safe methods (error)
+    * Release-mode checks:
+      * Render context version and render control state (error)
+      * Render context (GL) resources, if recoverable (warning)
+        * E.g. failed shader compilation, invalid VBO handles are recoverable
+5. Except for release-mode assertions, strip all logging, tracing, and assertion code from release builds
+    * Remove code rather than simply using conditional runtime checks
+    * E.g. using Proguard or compiler optimizations
 
 # 5. Modularity Requirements
 
@@ -418,8 +451,10 @@ For engine and app development and integration testing, and for debugging suppor
       * TV?
       * Wallpaper
   * Always provide all-in-one module in addition to core plus add-on modules
-  * Publish debug/development version in addition to release version of each module
+  * Publish debug/development flavor in addition to release flavor of each module
     * Simplify app access to/visibility of engine-internal logging/tracing
+    * Snapshot builds will include debug/development modules only
+    * Tagged versions will include both release and debug modules
 
 # 6. Usage Documentation Requirements
 
@@ -443,20 +478,20 @@ For engine and app development and integration testing, and for debugging suppor
     * OBJ model loader
     * Bloom effect
     * Shadow mapping
-    * Basic multiple scenes/sceneviews
+    * Basic multiple scenes/scene views
     * Dynamic (transactional) updates
     * UI elements
   * Enable automatic updates to AppStore
-    * We definately need this. We used to get a lot of traffic from the AppStore
+    * We definitely need this. We used to get a lot of traffic from the AppStore
 3. Wiki Guideline .md docs
   * Major impact to content; new and refactored guides needed
   * At a minimum:
     * Installation guide
-    * Scene, scene graph, and sceneview basics
+    * Scene, scene graph, and scene view basics
     * Materials & lighting basics
     * Loader basics
     * Skybox 
-    * Affine animatiion basics
+    * Affine animation basics
   * Complete migration to `docs` folder (#1633)
 
 # 7. Design Goals and Constraints
