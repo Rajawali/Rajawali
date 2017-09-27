@@ -10,7 +10,7 @@ Two primary goals:
   * No version flag = Must-Have!
   * Many of the major new requirements were previously discussed in Git issue #1755, best to review that first...
 
-2. Enumerate as many as possible of the relevant pre-existing, broken, in-progress, and future features and requirements that should (where practical) be accomdated and/or anticipated by the new architectural design (see Design Goals below).
+2. Enumerate as many as possible of the relevant pre-existing, broken, in-progress, and future features and requirements that should (where practical) be accommodated and/or anticipated by the new architectural design (see Design Goals below).
    
 <tl;dr> 
 
@@ -44,7 +44,7 @@ For reviews and updates:
     * Does not imply support for the entirety of that version's API
     * Does imply that engine features available in earlier versions are still available
   * Using an engine feature that depends on a version greater than is available on a device:
-    * Will in general throw a runtime error exception
+    * Will in general throw a runtime exception. 
     * Should be avoided by the application by checking versions first, or by manifest declarations
   * Using an engine feature that depends on a version less than is available on a device:
     * May automatically use a different implementation using the newer GL ES API features
@@ -55,36 +55,45 @@ For reviews and updates:
 ## 3.1 Android and OpenGL ES integration
 
 1. Provide (major and minor) version query for the current GL ES render context
-2. Allow multiple `GlSurfaceViews` per Activity ? [2.1]
-  * Is this actually worthwhile?
-  * Only one render thread/context/Renderer can exist at once, so SurfaceViews are mutually exclusive 
+2. Decouple Android views from the EGL context to allow offline rendering/initialization
+3. Allow multiple `GlSurfaceViews` per Activity ? [2.1]
+  ~* Only one render thread/context/Renderer can exist at once, so SurfaceViews are mutually exclusive~
+  * Multiple render contexts can exist at once on some devices. Additionally, with some creative APIs, a single renderer could drive multiple SurfaceView/TextureView implementations.
     * E.g. `ViewPager` support (per #1619)
     * Is timing of render context switch still based on window attachment?
-3. Wallpaper surface view multisampling fix (#1559)
-4. Provide query/configuration constants (bit flags) for all nVidia GL ES extensions (#1742) [2.1]
-  * Do any other vendors or extension categories need this?
+4. Wallpaper surface view multisampling fix (#1559)
+5. Provide query/configuration constants (bit flags) for all Vendor GL ES extensions (#1742) [2.1]
+  * CH implementation will include this for all texture extensions.
+  * Requires native code and the extension support will be provided in a module.
   
 ## 3.2 Scene Models and Views
 
 ### 3.2.1. Model files
  
-1. Enable "artist control" e.g. material specs, transparency/blending... ?
-2. OBJ fixes/improvements (#896 - multiple items!)
-3. Assimp support ? [2.1]
-4. Improved AWD support/bug fixes ? [2.1]  (#1185, #1465, #1468)
-5. MD5 child naming (#1454) [2.1]
+1. ~Enable "artist control" e.g. material specs, transparency/blending... ?~ Proper loader support (#2) will take care of this.
+2. Assimp support
+ * Implemented as a separate module which will interface to `core` via a Java interface.
+ * ASSIMP integration module will include a JNI wrapper.
+3. ~OBJ fixes/improvements (#896 - multiple items!)~ Assimp integration will fix most of our loading problems.
+4. ~Improved AWD support/bug fixes ? [2.1]  (#1185, #1465, #1468)~ Unfortunately, AWD and AwayBuilder are dead (they were tied to Flash). AWD is still an interesting format but content creation tools will be limited.
+5. ~MD5 child naming (#1454) [2.1]~ See item 2.
 
-### 3.2.2. Colors and Textures
+### 3.2.2. Material Specs, Colors, and Textures
 
-Help!
+~Help!~
 
-1. New formats, details?
-2. New functions? e.g.
- * Compression/decompression? 
- * Layouts/transforms?
-3. Font to texture support (#693)
+1. New texture formats, details
+ * CH - See section 3.1.5
+2. ~New functions? e.g.~
+ * ~Compression/decompression?~
+ * ~Layouts/transforms?~
+3. Font to texture support (#693) [2.1]
+ * Implement as additional module
 4. Fix vertex color setter (#1781)
 5. Add KTX file support (#1823)
+6. Dynamic/auto material-spec-based shader generation implemented as a new module
+ * Expand to support 2.0/3.0/3.1
+ * Fix compliance with GL spec (#1978)
 
 ### 3.2.3. Coordinate systems and transforms
 
@@ -101,25 +110,35 @@ Help!
 ### 3.2.4 Scene Views 
 
 Provide separate specification of a rendered view for a scene model. Each scene view specifies:
-1. Its scene model - immutable
+1. Its scene model - mutable
 2. One camera, switchable, and a dynamic set of any number/mix of lights
   * No inherent geometry/vertex data
   * Embedded in the scene, transformable 
-  * World coordinates can be querie
+  * World coordinates can be queried
   * "Containers", optional visualization geometries for debugging or app functions can be added
-  * Switch betwen whole light sets at once ? [2.1]
-3. Skybox texture/bitmaps and size, and/or background color; all mutable
+  * Switch between whole light sets at once ? [2.1]
+3. Skybox texture/bitmaps and size, and/or background color and/or materials; all mutable
+  * Add an equirectangular/radial mapped skysphere geometry
+  * Add equirectangular/radial environment mapping so we can continue to share textures between both sky geometry and environment mapping.
 4. Target/viewport rectangle size and on-screen location (subsumes #1752)
 5. Depth mask/stencil [2.1]
 6. AR integration [2.1]
   * Camera/video stream (scene view quad)
-  * Vuforia? Is this dead? Can we do AR without it?
+  * Updated Vuforia integration
+  * ARKit integration for free AR
 7. Optional animations
   * Light positions
   * Light directions, powers, colors, spotlight parameters, etc. [2.1]
   * Camera position, orientation/look-at
   * Camera FOV [2.1]
   * Viewport position, size [2.1]
+8. Meta visualizations
+  * Trident, camera eyeball/frustum, lighting rays/lines, object bounds
+  * E.g. use cases:
+    * Debugging (#1436)
+    * Interactive camera/lighting selections from a global-view PIP inset 
+    * Theater/stage lighting design apps
+    * Interior design apps - door/window/furniture/light placements
 
 ### 3.2.5 Future scene/object stuff [2.1]
 
@@ -130,7 +149,8 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Looping/cycling parameters - delay, length/duration, transform window, etc.
   * Ramped loop/cycle durations on starts/stops
   * Animating (dynamic, sparse) groups of objects
-5. Advanced gesture support?
+5. Advanced gesture support
+  * Implemented as a separate module which utilizes a core interface.
   * Streamlined MotionEvent handling across threads
   * Drags, rotations, zooms, flings of any of these (with friction)
 
@@ -156,7 +176,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
     * Performance impacts of overwrites is application responsibility for now
     * Overall surface view background color
       * Defaults to black
-      * Can be overridded
+      * Can be overridden
       * Can be turned off if not needed
 3. Multiple frame renders per scene view
   * Example enabled use cases
@@ -173,7 +193,9 @@ Provide separate specification of a rendered view for a scene model. Each scene 
   * Any number of frame renders to readable off-screen image buffers
 4. Multiple render targets per framebuffer (#1862)
   * E.g. for deferred lighting and ambient occlusion g-buffers
-  * All render targets are same size
+  * All attachments per render target are the same size (resolution).
+  * Different storage formats per attachment are supported per framebuffer.
+  * Not all combinations are required to be supported, but at a minimum all _color format_ combinations are. If an unsupported combination is specified, `GL_FRAMEBUFFER_UNSUPPORTED` will be generated.
 5. Multiple (sub-)passes per render pass/framebuffer
   * E.g. for post-processing effects
   * Same framebuffer for all sub-passes
@@ -188,14 +210,15 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 ### 3.3.2 Pipeline programs and fixed functions
 
 1. Hardware anti-aliasing (#1755)
-  * MXAA
-  * Coverage AA ? [2.1]
+  * MSAA
+  * Coverage AA
   * TXAA ? [2.1]
 2. Stencil test (#1863)
 3. Scissor test (#1863)
 4. Enable use of geometry shaders [2.1]
 5. Enable use of tesselation evaluation and control shaders [2.1]
-6. Enable use if compute shaders
+6. Enable use of compute shaders [2.1]
+7. Create a unified shader program interface [2.0]
 
 ### 3.3.3 Lights and shadows [2.1]
 
@@ -206,15 +229,15 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 
 ### 3.3.4 Effects
 
-* Fog [?]
-* Blur [?]
-* Blend [?]
-* Bloom [?]
-* FXAA [?]
-* SSAA [2.1]
-* Sepia [?]
-* Scanline [?]
-* Vignette [?]
+* Fog
+* Blur
+* Blend
+* Bloom
+* FXAA
+* SSAA
+* Sepia
+* Scanline
+* Vignette
 * Lens flare [2.1]
 * Touch ripples (#1661) [2.1]
 * Bumps/Parallax from height maps (#573) [2.1]
@@ -245,18 +268,22 @@ Provide separate specification of a rendered view for a scene model. Each scene 
     * Render target `RenderBuffer` and `Texture2D` image buffers
   * Persistence scopes
     * Per App ? [2.1]
-      * Store/load caches across processes, e.g. program binaries
+      * Store/load caches across processes
+      * E.g. program binaries
     * Per Process
-      * Restore GPU resources across context switches due to:
+      * Restore GPU resources from client data shared across context switches due to:
         * Activity/Fragment lifecycles
         * `SurfaceView` window attachments (#1619)
-    * Per `SurfaceView` window attachment (render thread/render context/`Rnderer`) ?
-    * Per Scene model ?
-    * Per Scene view ?
+      * E.g. vertex data buffers, textures, program/shader sources, uniform buffers
+      * Per resource instance, allow restoration or recycling/deletion at restore time
+        * Fix COW collection removal bug #1973
+    * Per `SurfaceView` window attachment (render thread/render context/`Renderer`)
+      * Render target image buffers used as framebuffer attachments
+    * Per Scene model - no memory resources
+    * Per Scene view - no memory resources
     * Per frame render and render pass
-      * Share/re-use render target images/framebuffer attachments
-      * Allow use of over-size images for smaller framebuffers 
-2. Re-add short (index ?) buffers (#1816)
+      * Allow use of over-size image buffers for smaller framebuffers 
+2. Re-add `short` index buffers (#1816)
 
 ### 3.4.3 Data structures and algorithms
 
@@ -273,9 +300,10 @@ Some of these reqs could also be considered functional, but are only feasible if
     * "Infinite" order-of-magnitude zooming
   * Flat tree [2.0], quad tree [2.1], oct tree [2.1] 
 2. Enable/disable frame renders per scene view
-3. Z-order sorting - opaque, front to back, then transparent back to front ? (#789, #1236)
+3. Z-order sorting - opaque, front to back, ~then transparent back to front~ (#789, #1236). [2.1]
+  * Sorting of transparent objects in an automated fashion in 3D real time graphics is an open problem worthy of a PhD to any who solve it.
 4. Deferred lighting [2.1]
-5. On-the-fly ETC1 compression (#580) [2.1]
+5. ~On-the-fly ETC1 compression (#580) [2.1]~ The legitimate use case for this is somewhat sketchy. All texture compression has numerous implications on the end result, and they vary from type to type as well as based on the original content. This is very much a decision that needs to be made by the human composing the scene.
 
 ## 3.5 Interoperability Requirements
 
@@ -291,8 +319,9 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * No public API fields; provide accessors
   * Document implicit default thread assumptions 
     * E.g. render thread-only (not safe) unless otherwise specified
-  * Mark explicit thread-safety per type and/or per method (method overrides type)
-  * App responsible for observing thread safety markers, no built-in enforcement
+  * Mark explicit thread-safety per type and/or per method (overriding type), e.g. using annotations
+  * App responsible for observing thread safety markers
+    * Enforcement provided by debug-only assertions (see below)
 
 ### 3.6.2  Simplify basic thread communication
 
@@ -301,7 +330,7 @@ This does not preclude performance impacts; clearly there will be limits, but ha
     * E.g. UI input, network, sensor, IO, and app model events sourced on any thread
   * Render thread -> Main/UI thread 
     * Make it easy to post/queue messages/events to the main/UI thread
-    * E.g. from frame, animation, and transaction (see below) callbacks,
+    * Provide queueing variants of frame, animation, and transaction (see below) callbacks
   * Render thread -> Other threads
     * Is app responsibility!
 
@@ -324,42 +353,108 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * Isolated - from all (other) render thread/event processing
     * Frame draws, window re-sizes, queued events, other CRUD transactions, etc.
     * Implies running on the render thread as an event, queued from any thread
-    * TODO how to handle queued transactions after window detach/loss of context...
+    * Queued transactions after window detach/loss of context are dropped
   * Durable - process persistence scope
     * Combined state preserved across Activities and render contexts
     * Essentially a requirement to provide automatic restores
 3. Provide "successful completion" callback
-  * Provide a variant that includes queueing to main/UI thread ? 
+  * Provide a variant that includes queueing to main/UI thread (see above)
 
-# 4. Testing, Debugging, and Reliability Requirements
+# 4. Testing, Validation, and Debugging Requirements
 
-1. Automated unit/integration test harness and tests 
-  * Details ?
-2. Internal runtime logging/tracing/assertions?
-  * E.g. for integration testing and for debugging support issues
-3. Compile-time API-usage validation, e.g. annotations ?
-  * Are these enforceable e.g. via lint?
-4. Runtime API-usage validation for the app, e.g. debug-only assertions/exceptions?
-  * 
-5. Debug visualizations (#1436)
-  * Trident, camera eyeball/frustum, lighting rays/lines, object bounds
-  * Are there (non-debug) app use cases for some of these as well? e.g.: 
-    * Interactive camera/lighting selections from a global-view PIP inset 
-    * Theater/stage lighting design apps
-    * Interior design apps - door/window/furniture/light placements
-  * If so perhaps just call them e.g. camera/light/bounds visualizations  
+## 4.1 Source code
+
+  * Consistently specify any constraints on all member and parameter values
+    * Specify all references as either nullable or non-null
+    * Specify integer and float ranges whenever less than built-in language limits
+  * ~Validate public API-usage [2.1]~
+     * ~Create an Android lint plugin to detect invocations of non API methods?~
+     * Seems like a reliable library-specific tool would be a lot of work/maintenance, and unlikely that client developers would download/install/use it anyway
+
+## 4.2 Unit Tests
+
+  * Automated build-time unit test harnesses:
+    * For off-device Java-only methods
+    * For on-device methods requiring an active GL context
+  * For all public API and internal interface methods
+    * Includes those:
+      * With simple single-instance "black-box" behaviors, and
+      * With few/no dependencies on other components, and
+      * With relatively little local history dependence (simple setup)
+      * Whose success can be determined as value assertions
+      * E.g. contructors, simple get/set accessors, deterministic functions/transforms
+    * Excluding those:
+      * With significant history/event dependencies or behavioral states, and/or
+      * Whose success cannot be (at least partially) reasonably determined as value assertions (i.e. non-visual)
+      * E.g. frame draws, client callbacks
+
+## 4.3 Integration tests
+
+  * Automated build-time integration test harness
+    * Utilize standard Android test instrumentation tooling
+  * For primarily sequential use cases/control flows:
+    * With minimal interactions with/dependencies on other components
+    * Whose success can be verified non-visually
+    * E.g. scene graph population changes and affine transformations
+  * For selected example apps [2.1]
+    * List TBD
+    * E.g. enable visual output validation by comparison with known good screen grabs per hardware configuration
+
+## 4.3 Deployment
+
+  * Enable local deployment to facilitate development testing and debugging (#1982)
+  
+## 4.3. Run-time
+
+For engine and app development and integration testing, and for debugging support issues
+
+1. Provide unified logging
+  * The usual levels - verbose, debug, info, warning, error, wtf
+  * All messages should identify the class and method
+  * Core engine/rendering component (scenes, scene view, render pass, etc.) messages should also identify the instance
+  * All warning and error messages should include specific causes and data values if appropriate
+  * All error messages should be accompanied by a thrown runtime exception
+2. Provide verbose-level method tracing messages 
+  * For key lifecycle event (create/init/start/run/pause/stop/destroy etc.) handlers of engine/rendering components
+    * Includes all active components: scenes, scene views, render passes, etc.
+    * Does not include passive model objects, textures, resources 
+  * Tracing dynamically enabled per instance; disabled by default  
+3. Use logging and trace messaging judiciously to avoid excessive performance impacts or major frame delays
+  * Comment out or delete developmental log messages when no longer needed
+  * Avoid frame-rate messages (except as temporary developmental aids to be deleted/commented out before checkins)
+    * E.g. accumulate/integrate/summarize any per-frame data, and log e.g. once per second or so
+4. API and internal interface usage validation
+  * Assert method contracts
+    * Log violations as warnings or errors (with thrown runtime exceptions) as noted below
+    * Debug-mode checks:
+      * Input parameters for all public API methods and all internal interface methods (error)
+      * Instance state for lifecycle event handlers, e.g. animation start, scene view render (error)
+      * Thread for non-thread-safe methods (error)
+    * Release-mode checks:
+      * Render context version and render control state (error)
+      * Render context (GL) resources, if recoverable (warning)
+        * E.g. failed shader compilation, invalid VBO handles are recoverable
+5. Except for release-mode assertions, strip all logging, tracing, and assertion code from release builds
+    * Remove code rather than simply using conditional runtime checks
+    * E.g. using Proguard or compiler optimizations
 
 # 5. Modularity Requirements
 
-  * Identify and implement separate library modules for optional/lower-frequency features
-    * Core module vs add-ons:
-      * VR? AR?
-      * Modifiers, animations, rendering effects?
-      * Wear? TV?
+  * Identify and implement separate library modules for optional/lower-frequency features [2.1]
+    * Core module vs add-ons (list TBD):
+      * VR 
+      * AR
+      * Modifiers, animations, rendering effects
+      * Font-to-texture
+      * Gestures
+      * Wear
+      * TV?
       * Wallpaper
-  * Still provide all-in-one module?
-  * Publish debug/development version in addition to release version of each module?
+  * Always provide all-in-one module in addition to core plus add-on modules
+  * Publish debug/development flavor in addition to release flavor of each module
     * Simplify app access to/visibility of engine-internal logging/tracing
+    * Snapshot builds will include debug/development modules only
+    * Tagged versions will include both release and debug modules
 
 # 6. Usage Documentation Requirements
 
@@ -371,10 +466,32 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * Per significant feature
     * Basic use case, not every variation
     * Multiple features per example OK
-  * List TBD
-  * Enable automatic updates to AppStore? [2.1]
+  * At a minimum;
+    * Basic hello-world
+    * GL debugging
+    * Basic materials
+    * Color picking
+    * Basic affine animations
+    * Collision detection
+    * Skybox
+    * Directional, positional, and spot lights
+    * OBJ model loader
+    * Bloom effect
+    * Shadow mapping
+    * Basic multiple scenes/scene views
+    * Dynamic (transactional) updates
+    * UI elements
+  * Enable automatic updates to AppStore
+    * We definitely need this. We used to get a lot of traffic from the AppStore
 3. Wiki Guideline .md docs
-  * Major impact to content; new and refactored guides needed; priorities TBD
+  * Major impact to content; new and refactored guides needed
+  * At a minimum:
+    * Installation guide
+    * Scene, scene graph, and scene view basics
+    * Materials & lighting basics
+    * Loader basics
+    * Skybox 
+    * Affine animation basics
   * Complete migration to `docs` folder (#1633)
 
 # 7. Design Goals and Constraints
@@ -397,7 +514,7 @@ Define and apply engine-wide naming, packaging, and coding conventions
     * Use abstract types (base classes and interfaces)
     * Extend them as needed (directly or by inheritance)
     * Avoid modifying them; when unavoidable, use formal deprecations
-  * Liskov substitution princple
+  * Liskov substitution principle
     * Avoid changing the observable state or behavior of a type in one of its subtypes
   * Interface segregation principle
     * Use more, smaller, role-specific interfaces rather than fewer, larger, multi-role interfaces
