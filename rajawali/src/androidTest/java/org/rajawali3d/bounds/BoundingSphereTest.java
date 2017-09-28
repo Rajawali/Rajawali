@@ -1,13 +1,15 @@
-package org.rajawali3d;
+package org.rajawali3d.bounds;
 
-import static org.junit.Assert.*;
-import org.junit.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import org.rajawali3d.bounds.BoundingSphere;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class BoundingSphereTest {
     BoundingSphere bounds;
