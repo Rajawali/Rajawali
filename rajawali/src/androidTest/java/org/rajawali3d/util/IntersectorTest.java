@@ -1,19 +1,16 @@
-package org.rajawali3d.utils;
+package org.rajawali3d.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.test.suitebuilder.annotation.SmallTest;
+import c.org.rajawali3d.intersection.Intersector;
 import org.junit.Test;
-import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.Plane;
+import org.rajawali3d.math.vector.Vector3;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @SmallTest
 public class IntersectorTest {

@@ -1,16 +1,17 @@
 package org.rajawali3d.cameras;
 
-import static org.junit.Assert.*;
-import org.junit.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.rajawali3d.cameras.Frustum;
+import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.bounds.BoundingBox;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class FrustumTest {
     Frustum frustum;
@@ -32,7 +33,7 @@ public class FrustumTest {
     public void testSphereInFrustum() throws Exception {
 	final Vector3 center = new Vector3();
         final double radius = 0;
-	boolean result = frustum.sphereInFrustum(center, radius); 
+	boolean result = frustum.sphereInFrustum(center, radius);
         assertTrue(result);
     }
 

@@ -1,15 +1,15 @@
-package org.rajawali3d.utils;
+package org.rajawali3d.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.test.suitebuilder.annotation.SmallTest;
 import org.junit.Test;
 
-import org.rajawali3d.util.ArrayUtils;
 import java.util.Arrays;
 
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @SmallTest
 public class ArrayUtilsTest {

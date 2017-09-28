@@ -1,15 +1,10 @@
 package org.rajawali3d;
 
-import static org.junit.Assert.*;
-import org.junit.*;
-
-import org.rajawali3d.Geometry3D;
-
 /**
- * @author Jared Woolston (jwoolston@keywcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class Geometry3Dtest {
-    Geometry3D geometry;
+    /*Geometry3D geometry;
 
     @Before
     public void setup() throws Exception {
@@ -39,6 +34,6 @@ public class Geometry3Dtest {
     @Test
     public void testGetNumVertices() throws Exception {
         assertEquals(0, geometry.getNumVertices());
-    }
+    }*/
 
 }
