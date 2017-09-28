@@ -63,7 +63,7 @@ For reviews and updates:
 4. Wallpaper surface view multisampling fix (#1559)
 5. Provide query/configuration constants (bit flags) for all Vendor GL ES extensions (#1742) [2.1]
   * CH implementation will include this for all texture extensions.
-  * Requires native code and the extension support will be provided in a module.
+  * Requires native code and will be provided as part of the core library for integration reasons.
   
 ## 3.2 Scene Models and Views
 
