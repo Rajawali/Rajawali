@@ -57,8 +57,7 @@ For reviews and updates:
 1. Provide (major and minor) version query for the current GL ES render context
 2. Decouple Android views from the EGL context to allow offline rendering/initialization
 3. Allow multiple `GlSurfaceViews` per Activity ? [2.1]
-  ~* Only one render thread/context/Renderer can exist at once, so SurfaceViews are mutually exclusive~
-  * Multiple render contexts can exist at once on some devices. Additionally, with some creative APIs, a single renderer could drive multiple SurfaceView/TextureView implementations.
+    * Multiple render contexts can exist at once on some devices. Additionally, with some creative APIs, a single renderer could drive multiple SurfaceView/TextureView implementations.
     * E.g. `ViewPager` support (per #1619)
     * Is timing of render context switch still based on window attachment?
 4. Wallpaper surface view multisampling fix (#1559)
@@ -70,28 +69,19 @@ For reviews and updates:
 
 ### 3.2.1. Model files
  
-1. ~Enable "artist control" e.g. material specs, transparency/blending... ?~ Proper loader support (#2) will take care of this.
-2. Assimp support
+1. Assimp support
  * Implemented as a separate module which will interface to `core` via a Java interface.
  * ASSIMP integration module will include a JNI wrapper.
-3. ~OBJ fixes/improvements (#896 - multiple items!)~ Assimp integration will fix most of our loading problems.
-4. ~Improved AWD support/bug fixes ? [2.1]  (#1185, #1465, #1468)~ Unfortunately, AWD and AwayBuilder are dead (they were tied to Flash). AWD is still an interesting format but content creation tools will be limited.
-5. ~MD5 child naming (#1454) [2.1]~ See item 2.
 
 ### 3.2.2. Material Specs, Colors, and Textures
 
-~Help!~
-
 1. New texture formats, details
  * CH - See section 3.1.5
-2. ~New functions? e.g.~
- * ~Compression/decompression?~
- * ~Layouts/transforms?~
-3. Font to texture support (#693) [2.1]
+2. Font to texture support (#693) [2.1]
  * Implement as additional module
-4. Fix vertex color setter (#1781)
-5. Add KTX file support (#1823)
-6. Dynamic/auto material-spec-based shader generation implemented as a new module
+3. Fix vertex color setter (#1781)
+4. Add KTX file support (#1823)
+5. Dynamic/auto material-spec-based shader generation implemented as a new module
  * Expand to support 2.0/3.0/3.1
  * Fix compliance with GL spec (#1978)
 
@@ -212,7 +202,7 @@ Provide separate specification of a rendered view for a scene model. Each scene 
 1. Hardware anti-aliasing (#1755)
   * MSAA
   * Coverage AA
-  * TXAA ? [2.1]
+  * TXAA [2.1]
 2. Stencil test (#1863)
 3. Scissor test (#1863)
 4. Enable use of geometry shaders [2.1]
@@ -300,10 +290,9 @@ Some of these reqs could also be considered functional, but are only feasible if
     * "Infinite" order-of-magnitude zooming
   * Flat tree [2.0], quad tree [2.1], oct tree [2.1] 
 2. Enable/disable frame renders per scene view
-3. Z-order sorting - opaque, front to back, ~then transparent back to front~ (#789, #1236). [2.1]
+3. Z-order sorting - opaque, front to back (#789, #1236). [2.1]
   * Sorting of transparent objects in an automated fashion in 3D real time graphics is an open problem worthy of a PhD to any who solve it.
 4. Deferred lighting [2.1]
-5. ~On-the-fly ETC1 compression (#580) [2.1]~ The legitimate use case for this is somewhat sketchy. All texture compression has numerous implications on the end result, and they vary from type to type as well as based on the original content. This is very much a decision that needs to be made by the human composing the scene.
 
 ## 3.5 Interoperability Requirements
 
@@ -367,9 +356,6 @@ This does not preclude performance impacts; clearly there will be limits, but ha
   * Consistently specify any constraints on all member and parameter values
     * Specify all references as either nullable or non-null
     * Specify integer and float ranges whenever less than built-in language limits
-  * ~Validate public API-usage [2.1]~
-     * ~Create an Android lint plugin to detect invocations of non API methods?~
-     * Seems like a reliable library-specific tool would be a lot of work/maintenance, and unlikely that client developers would download/install/use it anyway
 
 ## 4.2 Unit Tests
 
