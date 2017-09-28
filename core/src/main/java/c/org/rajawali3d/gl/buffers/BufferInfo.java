@@ -52,6 +52,8 @@ public class BufferInfo {
         clone.elementSize = elementSize;
         clone.usage = usage;
         clone.offset = offset;
+        clone.stride = stride;
+        clone.count = count;
         clone.type = type;
         return clone;
     }
@@ -69,6 +71,7 @@ public class BufferInfo {
     public               int    elementSize;
     public @BufferUsage int usage  = GLES20.GL_STATIC_DRAW;
     public              int stride = 0;
+    public int count = 1;
     public              int offset = 0;
     public              int type   = GLES20.GL_FLOAT;
 

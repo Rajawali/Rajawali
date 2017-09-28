@@ -1,18 +1,17 @@
 package c.org.rajawali3d.util;
 
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 
 import java.nio.FloatBuffer;
 
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-
 /**
- * @author Jared Woolston (jwoolston@idealcorp.com)
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-
 public class FloatBufferWrapper {
 
     private final BufferInfo info;
+    private int position = 0;
 
     /**
      * offset + i * stride
@@ -55,7 +54,7 @@ public class FloatBufferWrapper {
     }
 
     public void rewind() {
-        info.buffer.rewind();
+        position = 0;
     }
 
     public boolean hasRemaining() {
@@ -65,8 +64,7 @@ public class FloatBufferWrapper {
         } else {
             final int offset = info.offset;
             final int stride = info.stride;
-            final int position = info.buffer.position();
-            final int nextPosition =
+            //final int nextPosition = ((position + 1) * stride) + offset
         }
         return info.buffer.hasRemaining();
     }
