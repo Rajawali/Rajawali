@@ -63,6 +63,7 @@ public class BufferInfo {
     @IntDef({ BYTE_BUFFER, FLOAT_BUFFER, DOUBLE_BUFFER, SHORT_BUFFER, INT_BUFFER, LONG_BUFFER, CHAR_BUFFER })
     public @interface BufferType {}
 
+
     public int rajawaliHandle = -1;
     public int glHandle       = -1;
     public @BufferType   int    bufferType;
@@ -70,9 +71,9 @@ public class BufferInfo {
     public @BufferTarget int    target;
     public               int    elementSize;
     public @BufferUsage int usage  = GLES20.GL_STATIC_DRAW;
-    public              int stride = 0;
-    public int count = 1;
-    public              int offset = 0;
+    public              int stride = 0; // How far to jump to the next vertex
+    public int count = 1; // The number of values per vertex
+    public              int offset = 0; // How far into the buffer to jump to the first vertex
     public              int type   = GLES20.GL_FLOAT;
 
     public BufferInfo() {
