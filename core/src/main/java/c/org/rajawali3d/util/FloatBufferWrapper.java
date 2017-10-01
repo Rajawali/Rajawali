@@ -2,24 +2,28 @@ package c.org.rajawali3d.util;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import c.org.rajawali3d.gl.buffers.BufferInfo;
+import org.rajawali3d.geometry.NonInterleavedGeometry;
 
-import java.nio.BufferUnderflowException;
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 
 /**
+ * Base wrapper class for accessing {@link FloatBuffer} instances in a controlled manner which differs from the
+ * default behavior of the {@link FloatBuffer} class. This implementation simply calls through to the wrapped
+ * {@link FloatBuffer}, implementing default behavior. This is useful for dealing with VBOs which contain only a
+ * single attribute of data such as would be found in {@link NonInterleavedGeometry}.
+ *
+ * Note that in there interests of minimizing the code base to test, not all methods present in {@link Buffer} and
+ * {@link FloatBuffer} have been implemented. The can however be added in the future if a need for them arises.
+ *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public class FloatBufferWrapper {
 
-    private final BufferInfo info;
-    private final int capacity;
-    private int position = 0;
-    private int bufferPosition;
+    protected final BufferInfo info;
 
-    @VisibleForTesting
-    static int bufferPosition(@NonNull BufferInfo info, @IntRange(from = 0) int position) {
+    protected static int bufferPosition(@NonNull BufferInfo info, @IntRange(from = 0) int position) {
         final int offset = info.offset;
         final int stride = info.stride;
         final int count = info.count;
@@ -39,74 +43,67 @@ public class FloatBufferWrapper {
             throw new IllegalArgumentException("Provided BufferInfo object does not reference a FloatBuffer instance.");
         }
         this.info = info;
-        bufferPosition = info.offset;
-        capacity = info.buffer.capacity() / info.stride * info.count;
-    }
-
-    public int capacity() {
-        return capacity;
-    }
-
-    public boolean hasRemaining() {
-        if (!info.buffer.hasRemaining()) {
-            return false;
-        } else {
-            return (info.buffer.capacity() >= bufferPosition(info, position + 1));
-        }
-    }
-
-    public int limit() {
-        return capacity;
-    }
-
-    public int position() {
-        return position;
-    }
-
-    public void position(int position) {
-        this.position = position;
-        bufferPosition = bufferPosition(info, position);
-    }
-
-    public int remaining() {
-        return (capacity - position);
-    }
-
-    public void rewind() {
-        position = 0;
-    }
-
-    public float get() {
-        final float retval = ((FloatBuffer) info.buffer).get(bufferPosition);
-        position(position + 1); // We use the setter to ensure that the bufferPosition field is updated properly
-        return retval;
-    }
-
-    @NonNull
-    public FloatBufferWrapper get(float[] array) {
-        return get(array, 0, array.length);
-    }
-
-    @NonNull
-    public FloatBufferWrapper get(float[] array, int offset, int length) {
-        if (length > remaining()) {
-            throw new BufferUnderflowException();
-        }
-        for (int i = offset; i < offset + length; ++i) {
-            array[i] = get();
-        }
-        return this;
-    }
-
-    public float get(int index) {
-        return ((FloatBuffer) info.buffer).get(bufferPosition(info, index));
-    }
-
-    public void put(int i, float value) {
-
     }
 
     public FloatBuffer getBuffer() {
         return (FloatBuffer) info.buffer;
+    }
+
+    /**
+     * Returns this buffer's capacity, as viewed through the parameters of the {@link BufferInfo}.
+     *
+     * @return This buffer's capacity, as viewed through the parameters of the {@link BufferInfo}.
+     */
+    public int capacity() {
+        return info.buffer.capacity();
+    }
+
+    public boolean hasRemaining() {
+        return info.buffer.hasRemaining();
+    }
+
+    public int limit() {
+        return info.buffer.limit();
+    }
+
+    public int position() {
+        return info.buffer.position();
+    }
+
+    public void position(int position) {
+        info.buffer.position(position);
+    }
+
+    public int remaining() {
+        return info.buffer.remaining();
+    }
+
+    public void rewind() {
+        info.buffer.rewind();
+    }
+
+    public float get() {
+        return ((FloatBuffer) info.buffer).get();
+    }
+
+    @NonNull
+    public FloatBufferWrapper get(float[] array) {
+        ((FloatBuffer) info.buffer).get(array);
+        return this;
+    }
+
+    @NonNull
+    public FloatBufferWrapper get(float[] array, int offset, int length) {
+        ((FloatBuffer) info.buffer).get(array, offset, length);
+        return this;
+    }
+
+    @NonNull
+    public float get(int index) {
+        return ((FloatBuffer) info.buffer).get(index);
+    }
+
+    public void put(int index, float value) {
+        ((FloatBuffer) info.buffer).put(index, value);
     }
 }
