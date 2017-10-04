@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
-
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 import net.jcip.annotations.NotThreadSafe;
 
 import java.nio.ByteBuffer;
@@ -15,8 +15,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
-
-import c.org.rajawali3d.gl.buffers.BufferInfo;
 
 /**
  * Implementation of {@link IndexedGeometry} which interleaves some or all vertex data into a single buffer. There is
@@ -135,7 +133,7 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
     }
 
     @Override
-    public void issueDrawCalls() {
+    public void issueDrawCalls(@DrawingMode int drawingMode) {
 
     }
 
