@@ -1,11 +1,13 @@
 package c.org.rajawali3d.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import c.org.rajawali3d.gl.buffers.BufferInfo;
 import org.junit.Test;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 /**
  * @author Jared Woolston (Jared.Woolston@gmail.com)
@@ -21,6 +23,31 @@ public class FloatBufferWrapperTest {
         info.stride = 3;
         info.offset = 0;
         return info;
+    }
+
+    @Test
+    public void constructorPass() throws Exception {
+        final BufferInfo info = createNewBuffer();
+        final FloatBufferWrapper wrapper = new FloatBufferWrapper(info);
+        assertNotNull(wrapper);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorFailBuffer() throws Exception {
+        final BufferInfo info = new BufferInfo(BufferInfo.FLOAT_BUFFER, IntBuffer.allocate(1));
+        final FloatBufferWrapper wrapper = new FloatBufferWrapper(info);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorFailBufferInfo() throws Exception {
+        final BufferInfo info = new BufferInfo(BufferInfo.INT_BUFFER, FloatBuffer.allocate(1));
+        final FloatBufferWrapper wrapper = new FloatBufferWrapper(info);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorFailAll() throws Exception {
+        final BufferInfo info = new BufferInfo(BufferInfo.INT_BUFFER, IntBuffer.allocate(1));
+        final FloatBufferWrapper wrapper = new FloatBufferWrapper(info);
     }
 
     @Test

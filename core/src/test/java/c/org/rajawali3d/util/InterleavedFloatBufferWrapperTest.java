@@ -151,4 +151,11 @@ public class InterleavedFloatBufferWrapperTest {
         assertEquals(Float.floatToRawIntBits(18), Float.floatToRawIntBits(wrapper.get(7)));
         assertEquals(Float.floatToRawIntBits(19), Float.floatToRawIntBits(wrapper.get(8)));
     }
+
+    @Test
+    public void putIndex() throws Exception {
+        final FloatBufferWrapper wrapper = new InterleavedFloatBufferWrapper(createNewBuffer());
+        wrapper.put(2, 42);
+        assertEquals(Float.floatToRawIntBits(42), Float.floatToRawIntBits(wrapper.get(2)));
+    }
 }

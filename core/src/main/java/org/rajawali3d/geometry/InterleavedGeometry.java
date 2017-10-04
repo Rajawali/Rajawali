@@ -5,7 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
-
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.util.FloatBufferWrapper;
 import net.jcip.annotations.NotThreadSafe;
 
 import java.nio.ByteBuffer;
@@ -16,13 +17,10 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-import c.org.rajawali3d.util.FloatBufferWrapper;
-
 /**
  * Implementation of {@link IndexedGeometry} which interleaves some or all vertex data into a single buffer. There is
  * no requirement that any or all data be interleaved, but if no interleaving is done, this class effectively
- * degenerates to {@link NonInterleavedGeometry}. Data which will not expected to change should be interleaved, and
+ * degenerates to {@link NonInterleavedGeometry}. Data which will not be expected to change should be interleaved, and
  * all other data should be stored in separate buffers. Data can be interleaved in any order (there is no requirement
  * that it be [position, normal, texture, color] for example). When adding data, you can specify the index within all
  * vertex attributes where it should appear. For example, you can specify position to be index 0, normals index 1,
@@ -79,14 +77,22 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
 
     private static class Mapping {
 
+        // Primitive array of data to be interleaved.
         final Object data;
-        final int stride;
 
+        // The number of elements per vertex
+        final int    count;
+
+        // The number of buffer elements to jump to move to the same attribute in the next vertex. Auto calculated
+        // based on order of other interleaved data when constructing the interleaved buffer.
+        int stride;
+
+        // Used for tracking the offset into the data array when building interleaved buffers
         int offset;
 
-        public Mapping(@NonNull Object data, @IntRange(from = 0) int stride) {
+        public Mapping(@NonNull Object data, @IntRange(from = 0) int count) {
             this.data = data;
-            this.stride = stride;
+            this.count = count;
             offset = 0;
         }
     }
@@ -96,9 +102,16 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
      */
     private int numVertices;
 
+    /**
+     * Adds {@code float} data to be interleaved.
+     *
+     * @param data {@code float[]} The data to be interleaved (in contiguous form).
+     * @param index {@code int} The index in the vertex attributes this data should appear at.
+     * @param count {@code int} The number of elements per vertex. Must be a value between 1 and 4 inclusive.
+     */
     public void addInterleavedData(@NonNull float[] data, @IntRange(from = 0) int index,
-                                   @IntRange(from = 0) int stride) {
-        floatData.put(index, new Mapping(data, stride));
+                                   @IntRange(from = 1, to = 4) int count) {
+        floatData.put(index, new Mapping(data, count));
     }
 
     @Override
@@ -249,6 +262,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
             // Clear any old interleaving info
             numVertices = 0;
             byteBufferInfos.clear();
+
+            // Calculate the strides for each mapping
+            int stride = 0;
+            for (int i = 0; i < byteData.size(); ++i) {
+                final Mapping mapping = byteData.get(i);
+                stride += mapping.count;
+            }
+
             // Add all the float data to the buffer
             while (buffer.hasRemaining()) {
                 ++numVertices;
@@ -262,13 +283,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
                         // Build and store a BufferInfo if needed
                         bufferInfo = new BufferInfo(BufferInfo.BYTE_BUFFER, buffer);
                         bufferInfo.offset = buffer.position();
-                        bufferInfo.stride = mapping.stride;
+                        bufferInfo.count = mapping.count;
+                        bufferInfo.stride = stride;
                         byteBufferInfos.put(i, bufferInfo);
                         onByteBufferInfoConstructed(i, bufferInfo);
                     }
                     // Add the data for this attribute to the vertex
-                    buffer.put(data, mapping.offset, mapping.stride);
-                    mapping.offset += mapping.stride;
+                    buffer.put(data, mapping.offset, mapping.count);
+                    mapping.offset += mapping.count;
                 }
             }
 
@@ -303,6 +325,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
             // Clear any old interleaving info
             numVertices = 0;
             floatBufferInfos.clear();
+
+            // Calculate the strides for each mapping
+            int stride = 0;
+            for (int i = 0; i < floatData.size(); ++i) {
+                final Mapping mapping = floatData.get(i);
+                stride += mapping.count;
+            }
+
             // Add all the float data to the buffer
             while (buffer.hasRemaining()) {
                 ++numVertices;
@@ -316,13 +346,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
                         // Build and store a BufferInfo if needed
                         bufferInfo = new BufferInfo(BufferInfo.FLOAT_BUFFER, buffer);
                         bufferInfo.offset = buffer.position();
-                        bufferInfo.stride = mapping.stride;
+                        bufferInfo.stride = stride;
+                        bufferInfo.count = mapping.count;
                         floatBufferInfos.put(i, bufferInfo);
                         floatBufferInfoConstructed(i, bufferInfo);
                     }
                     // Add the data for this attribute to the vertex
-                    buffer.put(data, mapping.offset, mapping.stride);
-                    mapping.offset += mapping.stride;
+                    buffer.put(data, mapping.offset, mapping.count);
+                    mapping.offset += mapping.count;
                 }
             }
 
@@ -372,6 +403,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
             // Clear any old interleaving info
             numVertices = 0;
             doubleBufferInfos.clear();
+
+            // Calculate the strides for each mapping
+            int stride = 0;
+            for (int i = 0; i < doubleData.size(); ++i) {
+                final Mapping mapping = doubleData.get(i);
+                stride += mapping.count;
+            }
+
             // Add all the double data to the buffer
             while (buffer.hasRemaining()) {
                 ++numVertices;
@@ -385,13 +424,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
                         // Build and store a BufferInfo if needed
                         bufferInfo = new BufferInfo(BufferInfo.DOUBLE_BUFFER, buffer);
                         bufferInfo.offset = buffer.position();
-                        bufferInfo.stride = mapping.stride;
+                        bufferInfo.count = mapping.count;
+                        bufferInfo.stride = stride;
                         doubleBufferInfos.put(i, bufferInfo);
                         onDoubleBufferInfoConstructed(i, bufferInfo);
                     }
                     // Add the data for this attribute to the vertex
-                    buffer.put(data, mapping.offset, mapping.stride);
-                    mapping.offset += mapping.stride;
+                    buffer.put(data, mapping.offset, mapping.count);
+                    mapping.offset += mapping.count;
                 }
             }
 
@@ -426,6 +466,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
             // Clear any old interleaving info
             numVertices = 0;
             shortBufferInfos.clear();
+
+            // Calculate the strides for each mapping
+            int stride = 0;
+            for (int i = 0; i < shortData.size(); ++i) {
+                final Mapping mapping = shortData.get(i);
+                stride += mapping.count;
+            }
+
             // Add all the short data to the buffer
             while (buffer.hasRemaining()) {
                 ++numVertices;
@@ -439,13 +487,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
                         // Build and store a BufferInfo if needed
                         bufferInfo = new BufferInfo(BufferInfo.SHORT_BUFFER, buffer);
                         bufferInfo.offset = buffer.position();
-                        bufferInfo.stride = mapping.stride;
+                        bufferInfo.count = mapping.count;
+                        bufferInfo.stride = stride;
                         shortBufferInfos.put(i, bufferInfo);
                         onShortBufferInfoConstructed(i, bufferInfo);
                     }
                     // Add the data for this attribute to the vertex
-                    buffer.put(data, mapping.offset, mapping.stride);
-                    mapping.offset += mapping.stride;
+                    buffer.put(data, mapping.offset, mapping.count);
+                    mapping.offset += mapping.count;
                 }
             }
 
@@ -480,6 +529,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
             // Clear any old interleaving info
             numVertices = 0;
             intBufferInfos.clear();
+
+            // Calculate the strides for each mapping
+            int stride = 0;
+            for (int i = 0; i < intData.size(); ++i) {
+                final Mapping mapping = intData.get(i);
+                stride += mapping.count;
+            }
+
             // Add all the int data to the buffer
             while (buffer.hasRemaining()) {
                 ++numVertices;
@@ -493,13 +550,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
                         // Build and store a BufferInfo if needed
                         bufferInfo = new BufferInfo(BufferInfo.INT_BUFFER, buffer);
                         bufferInfo.offset = buffer.position();
-                        bufferInfo.stride = mapping.stride;
+                        bufferInfo.count = mapping.count;
+                        bufferInfo.stride = stride;
                         intBufferInfos.put(i, bufferInfo);
                         onIntBufferInfoConstructed(i, bufferInfo);
                     }
                     // Add the data for this attribute to the vertex
-                    buffer.put(data, mapping.offset, mapping.stride);
-                    mapping.offset += mapping.stride;
+                    buffer.put(data, mapping.offset, mapping.count);
+                    mapping.offset += mapping.count;
                 }
             }
 
@@ -534,6 +592,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
             // Clear any old interleaving info
             numVertices = 0;
             longBufferInfos.clear();
+
+            // Calculate the strides for each mapping
+            int stride = 0;
+            for (int i = 0; i < longData.size(); ++i) {
+                final Mapping mapping = longData.get(i);
+                stride += mapping.count;
+            }
+
             // Add all the long data to the buffer
             while (buffer.hasRemaining()) {
                 ++numVertices;
@@ -547,13 +613,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
                         // Build and store a BufferInfo if needed
                         bufferInfo = new BufferInfo(BufferInfo.LONG_BUFFER, buffer);
                         bufferInfo.offset = buffer.position();
-                        bufferInfo.stride = mapping.stride;
+                        bufferInfo.count = mapping.count;
+                        bufferInfo.stride = stride;
                         longBufferInfos.put(i, bufferInfo);
                         onLongBufferInfoConstructed(i, bufferInfo);
                     }
                     // Add the data for this attribute to the vertex
-                    buffer.put(data, mapping.offset, mapping.stride);
-                    mapping.offset += mapping.stride;
+                    buffer.put(data, mapping.offset, mapping.count);
+                    mapping.offset += mapping.count;
                 }
             }
 
@@ -588,6 +655,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
             // Clear any old interleaving info
             numVertices = 0;
             charBufferInfos.clear();
+
+            // Calculate the strides for each mapping
+            int stride = 0;
+            for (int i = 0; i < charData.size(); ++i) {
+                final Mapping mapping = charData.get(i);
+                stride += mapping.count;
+            }
+
             // Add all the char data to the buffer
             while (buffer.hasRemaining()) {
                 ++numVertices;
@@ -601,13 +676,14 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
                         // Build and store a BufferInfo if needed
                         bufferInfo = new BufferInfo(BufferInfo.CHAR_BUFFER, buffer);
                         bufferInfo.offset = buffer.position();
-                        bufferInfo.stride = mapping.stride;
+                        bufferInfo.count = mapping.count;
+                        bufferInfo.stride = stride;
                         charBufferInfos.put(i, bufferInfo);
                         onCharBufferInfoConstructed(i, bufferInfo);
                     }
                     // Add the data for this attribute to the vertex
-                    buffer.put(data, mapping.offset, mapping.stride);
-                    mapping.offset += mapping.stride;
+                    buffer.put(data, mapping.offset, mapping.count);
+                    mapping.offset += mapping.count;
                 }
             }
 
