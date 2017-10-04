@@ -1,6 +1,7 @@
 package c.org.rajawali3d.scene;
 
-import c.org.rajawali3d.core.FrameDelegate;
+import c.org.rajawali3d.core.SceneDelegate;
+import c.org.rajawali3d.scene.graph.SceneGraph;
 import c.org.rajawali3d.sceneview.SceneView;
 
 import android.support.annotation.NonNull;
@@ -13,7 +14,7 @@ import java.util.concurrent.locks.Lock;
  * Author: Randy Picolet
  */
 
-public interface Scene extends FrameDelegate {
+public interface Scene extends SceneDelegate {
 
     /**
      * Acquires a read lock on the {@link Scene}. This is necessary when you need a self-consistent view of the
@@ -29,8 +30,8 @@ public interface Scene extends FrameDelegate {
      * @return the read {@link Lock} instance
      * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
      */
-    @NonNull
-    Lock acquireReadLock() throws InterruptedException;
+    //@NonNull
+    //Lock acquireReadLock() throws InterruptedException;
 
     /**
      * TODO should this method be exposed to the client at all?  Do we want to wrap all the write locking in higher
@@ -50,8 +51,8 @@ public interface Scene extends FrameDelegate {
      * @return the write {@link Lock} instance
      * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
      */
-    @NonNull
-    Lock acquireWriteLock() throws InterruptedException;
+    //@NonNull
+    //Lock acquireWriteLock() throws InterruptedException;
 
     /**
      * Requests modifications to this {@link Scene} via the provided {@link SceneModifier}. The
@@ -68,5 +69,7 @@ public interface Scene extends FrameDelegate {
      * @param sceneModifier {@link SceneModifier} instance which will be called when the lock has been acquired.*
      * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
      */
-    void requestModifications(@NonNull SceneModifier sceneModifier) throws InterruptedException;
+    //void requestModifications(@NonNull SceneModifier sceneModifier) throws InterruptedException;
+
+    SceneGraph getSceneGraph();
 }

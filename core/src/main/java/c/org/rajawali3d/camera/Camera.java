@@ -62,6 +62,10 @@ public class Camera extends SceneNode {
         this.parent = parent;
     }
 
+    public Vector3 getPosition() {
+        return getTransformation().getPosition();
+    }
+
     @Override
     public void modelMatrixUpdated() {
         viewMatrix.setAll(getWorldModelMatrix()).inverse();

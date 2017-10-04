@@ -2,6 +2,8 @@ package c.org.rajawali3d.core;
 
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.scene.Scene;
+import c.org.rajawali3d.sceneview.SceneView;
 import c.org.rajawali3d.surface.SurfaceSize;
 
 /**
@@ -14,7 +16,7 @@ public interface RenderControlClient {
     /**
      * Notifies the client that the {@link RenderControl} is available, which means the render thread, surface, context,
      * and interface are all ready for use. This provides an opportunity for the client to populate the initial
-     * RenderModels and RenderViews TODO how to handle lost contexts?
+     * {@link Scene}(s) and {@link SceneView}(s) TODO how to handle lost contexts?
      *
      * @param renderControl
      * @param surfaceSize the initial {@link SurfaceSize}
@@ -30,4 +32,10 @@ public interface RenderControlClient {
      */
     @RenderThread
     void onSurfaceSizeChanged(@NonNull SurfaceSize surfaceSize);
+
+    /**
+     *
+     */
+    @RenderThread
+    void onRenderControlLost();
 }

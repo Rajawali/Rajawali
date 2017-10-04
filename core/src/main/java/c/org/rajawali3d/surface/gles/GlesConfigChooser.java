@@ -1,21 +1,20 @@
 package c.org.rajawali3d.surface.gles;
 
+import static android.opengl.EGL14.EGL_OPENGL_ES2_BIT;
+import static android.opengl.EGLExt.EGL_OPENGL_ES3_BIT_KHR;
+
 import android.annotation.TargetApi;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.support.annotation.NonNull;
-
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 
-import static android.opengl.EGL14.EGL_OPENGL_ES2_BIT;
-import static android.opengl.EGLExt.EGL_OPENGL_ES3_BIT_KHR;
-
 /**
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class GLESConfigChooser implements GLSurfaceView.EGLConfigChooser {
+public class GlesConfigChooser implements GLSurfaceView.EGLConfigChooser {
 
     private static final int EGL_COVERAGE_BUFFERS_NV = 0x30E0; // For nVidia Tegra
     private static final int EGL_COVERAGE_SAMPLES_NV = 0x30E1; // For nVidia Tegra
@@ -24,9 +23,9 @@ public class GLESConfigChooser implements GLSurfaceView.EGLConfigChooser {
 
     private final int[] mConfigSpec;
 
-    private final GLESSurfaceAntiAliasing mAntiAliasing;
+    private final GlesSurfaceAntiAliasing mAntiAliasing;
 
-    public GLESConfigChooser(int glesMajorVersion, @NonNull GLESSurfaceAntiAliasing antiAliasing, int multiSampleCount,
+    public GlesConfigChooser(int glesMajorVersion, @NonNull GlesSurfaceAntiAliasing antiAliasing, int multiSampleCount,
                              int bitsRed, int bitsGreen, int bitsBlue, int bitsAlpha, int bitsDepth) {
         mAntiAliasing = antiAliasing;
 
@@ -42,7 +41,7 @@ public class GLESConfigChooser implements GLSurfaceView.EGLConfigChooser {
                         EGL10.EGL_NONE
                 };
                 break;
-            case MULTISAMPLING:;
+            case MULTI_SAMPLING:;
                 mConfigSpec = new int[]{
                         EGL10.EGL_RED_SIZE, bitsRed,
                         EGL10.EGL_GREEN_SIZE, bitsGreen,
@@ -81,7 +80,7 @@ public class GLESConfigChooser implements GLSurfaceView.EGLConfigChooser {
         mConfigSpec[RENDERABLE_TYPE_CONFIG_SLOT] = EGL_OPENGL_ES3_BIT_KHR;
     }
 
-    public GLESSurfaceAntiAliasing getAntiAliasingConfig() {
+    public GlesSurfaceAntiAliasing getAntiAliasingConfig() {
         return mAntiAliasing;
     }
 

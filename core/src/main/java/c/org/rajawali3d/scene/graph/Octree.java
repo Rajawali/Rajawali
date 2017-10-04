@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public class Octree extends ASceneGraph {
+public class Octree extends BaseSceneGraph {
 
     @NonNull
     @Override

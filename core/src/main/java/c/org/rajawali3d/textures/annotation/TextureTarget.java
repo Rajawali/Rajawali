@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.Buffer;
 
 /**
- * Allowable texture targets for both GL ES 2.x and GL ES 3.x. Corresponds to the {@code format} parameter of
+ * Allowable texture targets for both GL ES 2.x and GL ES 3.x. Corresponds to the {@code target} parameter of
  * {@link GLES30#glTexImage2D(int, int, int, int, int, int, int, int, Buffer)} and related methods.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)

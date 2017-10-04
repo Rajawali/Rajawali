@@ -1,9 +1,8 @@
 package c.org.rajawali3d.materials;
 
 import c.org.rajawali3d.core.RenderTask;
-import c.org.rajawali3d.scene.AScene;
+import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.scene.Scene;
-import c.org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.materials.Material;
 
 import android.support.annotation.NonNull;
@@ -42,7 +41,7 @@ public class MaterialManager {
         // Update the tracking structures first
         // Add the material to the collection
         materials.add(material);
-        ((AScene) scene).executeRenderTask(new RenderTask() {
+        ((BaseScene) scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 material.add();
@@ -54,13 +53,13 @@ public class MaterialManager {
      * Removes a material from this manager. This can be called from any thread. If the calling thread is the GL thread,
      * this will be executed immediately, otherwise it will be queued for execution on the GL thread.
      *
-     * @param material {@link BaseTexture} to be removed.
+     * @param material {@link Material} to be removed.
      */
     public void removeMaterial(@NonNull final Material material) {
         // Update the tracking structures first
         // Remove the material from the collection
         materials.remove(material);
-        ((AScene) scene).executeRenderTask(new RenderTask() {
+        ((BaseScene) scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 material.remove();

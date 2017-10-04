@@ -165,11 +165,13 @@ public class SceneNode implements NodeParent, NodeMember, Transformable {
     }
 
     public List<RenderableObject> getVisibleObjects() {
+        ArrayList<RenderableObject> visibleObjects = new ArrayList<RenderableObject>();
         if (isVisible()) {
             // TODO recursive accumulation for this node
-            return null;
+            for ()
+
         }
-        return null;
+        return visibleObjects;
     }
 
     @RequiresWriteLock

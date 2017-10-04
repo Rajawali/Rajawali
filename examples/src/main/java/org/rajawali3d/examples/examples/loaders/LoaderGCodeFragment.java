@@ -63,7 +63,7 @@ public class LoaderGCodeFragment extends AExampleFragment {
 				}
 			} catch (Exception e) {
 				RajLog.e(new StringBuilder()
-						.append("error init'ing gcode GL scene:\n")
+						.append("error init'ing gcode GL renderScene:\n")
 						.append(Log.getStackTraceString(e)).toString());
 			}
 		}

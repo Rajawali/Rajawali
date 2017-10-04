@@ -13,6 +13,14 @@ import android.support.annotation.NonNull;
 public interface RenderStatus extends CoreComponent {
 
     /**
+     * Gets the current RenderContext
+     *
+     * @return {@link RenderContext} - the current RenderContext enum instance
+     */
+    @NonNull
+    RenderContext getCurrentRenderContext();
+
+    /**
      * Gets the current overall render surface size in pixels.
      *
      * @return {@link SurfaceSize} instance containing current size dimensions
@@ -35,8 +43,8 @@ public interface RenderStatus extends CoreComponent {
     double getFrameRate();
 
     /**
-     * Checks whether frame processing is active (started but not yet stopped). This tracks the (paused/resumed)
-     * state of the underlying render thread.
+     * Checks whether frame processing is currently active (started but not yet stopped). This tracks the
+     * (paused/resumed) state of the underlying render thread.
      *
      * @return {@code true} if frame processing is active, {@code false} if frame processing is inactive
      */

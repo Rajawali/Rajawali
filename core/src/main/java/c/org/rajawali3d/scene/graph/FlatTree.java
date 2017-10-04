@@ -26,7 +26,7 @@ import java.util.List;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @NotThreadSafe
-public class FlatTree extends ASceneGraph {
+public class FlatTree extends BaseSceneGraph {
 
     protected final ArrayList<SceneNode> children = new ArrayList<>();
 
@@ -34,13 +34,13 @@ public class FlatTree extends ASceneGraph {
     @Override
     protected SceneGraph createChildNode() {
         // There is no such thing as a child node for a flat tree.
-        throw new UnsupportedOperationException("FlatTree scene graphs do not have child nodes.");
+        throw new UnsupportedOperationException("FlatTree renderScene graphs do not have child nodes.");
     }
 
     @RequiresWriteLock
     @Override
     public void updateGraph() {
-        // For a FlatTree, the only thing we need to worry about is updating our scene bounds and we can assume all
+        // For a FlatTree, the only thing we need to worry about is updating our renderScene bounds and we can assume all
         // nodes currently have valid bounds.
         recalculateBounds(false);
     }

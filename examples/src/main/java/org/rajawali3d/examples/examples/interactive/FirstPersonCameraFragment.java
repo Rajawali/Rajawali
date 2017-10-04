@@ -104,7 +104,7 @@ public class FirstPersonCameraFragment extends AExampleFragment {
 
                 mPerson.play();
 
-                getCurrentScene().addChild(mPerson);
+                getCurrentScene().addAndInitializeChild(mPerson);
             } catch (ParsingException e) {
                 e.printStackTrace();
             }*/

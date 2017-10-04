@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         layout="@layout/relative_layout_loader_container"/>
 
-    <c.org.rajawali3d.surface.gles.GLESTextureView
+    <c.org.rajawali3d.surface.gles.GlesSurfaceTextureView
         android:id="@+id/rajwali_surface"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>

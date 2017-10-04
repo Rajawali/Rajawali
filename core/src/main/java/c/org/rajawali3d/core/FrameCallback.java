@@ -1,8 +1,7 @@
 package c.org.rajawali3d.core;
 
-import c.org.rajawali3d.annotations.RenderThread;
-
 import android.support.annotation.FloatRange;
+import c.org.rajawali3d.annotations.RenderThread;
 
 /**
  * TODO description needs updating

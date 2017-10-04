@@ -61,7 +61,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
                 mPNGPlane = new Plane(1.5f, 1.5f, 1, 1);
                 mPNGPlane.setMaterial(material0);
                 mPNGPlane.setPosition(0, -1.75f, 0);
-                getCurrentScene().addChild(mPNGPlane);
+                getCurrentScene().addAndInitializeChild(mPNGPlane);
             } catch (TextureException e) {
                 e.printStackTrace();
             }
@@ -75,7 +75,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 				mETC1Plane = new Plane(1.5f, 1.5f, 1, 1);
 				mETC1Plane.setMaterial(material1);
 				mETC1Plane.setPosition(0, 0, 0);
-				getCurrentScene().addChild(mETC1Plane);
+				getCurrentScene().addAndInitializeChild(mETC1Plane);
 			} catch (TextureException e) {
 				e.printStackTrace();
 			}
@@ -91,7 +91,7 @@ public class ETC2TextureCompressionFragment extends AExampleFragment {
 				mETC2Plane = new Plane(1.5f, 1.5f, 1, 1);
 				mETC2Plane.setMaterial(material2);
 				mETC2Plane.setPosition(0, 1.75f, 0);
-				getCurrentScene().addChild(mETC2Plane);
+				getCurrentScene().addAndInitializeChild(mETC2Plane);
 			} catch (TextureException e) {
 				e.printStackTrace();
 			}*/

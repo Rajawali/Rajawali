@@ -171,9 +171,14 @@ class ObjectRendererImpl implements ObjectRenderer {
     }
 
     private void checkDoubleSided(@NonNull ObjectRenderer lastUsed) {
-        if (isDoubleSided && !lastUsed.isDoubleSided()) {
-            // We are double sided, the last renderer is not - disable culling
-            GLES20.glDisable(GLES20.GL_CULL_FACE);
+        if (isDoubleSided) {
+            // We are double sided
+            if (!lastUsed.isDoubleSided()) {
+                // The last renderer is not - disable culling
+                GLES20.glDisable(GLES20.GL_CULL_FACE);
+            } else {
+                // The last render also is - good to go
+            }
         } else {
             // We are not double sided
             if (lastUsed.isDoubleSided()) {
@@ -182,7 +187,7 @@ class ObjectRendererImpl implements ObjectRenderer {
                 // We dont know the backface so set it
                 applyBackFace();
             } else {
-                // The last renderer is not - check the face
+                // The last renderer also is not - check the face
                 if (isBackSided != lastUsed.isBackSided()) {
                     // The backfaces differ, set
                     applyBackFace();
@@ -192,28 +197,44 @@ class ObjectRendererImpl implements ObjectRenderer {
     }
 
     private void checkBlending(@NonNull ObjectRenderer lastUsed) {
-        if (isBlended && !lastUsed.isBlended()) {
-            // We are blended, the last renderer is not - enable
-            GLES20.glEnable(GLES20.GL_BLEND);
-            GLES20.glBlendFunc(blendSourceFactor, blendDestinationFactor);
-        } else if (lastUsed.isBlended()) {
-            // We are not blended, the last renderer is - disable
-            GLES20.glDisable(GLES20.GL_BLEND);
+        if (isBlended) {
+            // We are blended
+            if (!lastUsed.isBlended()) {
+                // The last renderer is not - enable
+                GLES20.glEnable(GLES20.GL_BLEND);
+                GLES20.glBlendFunc(blendSourceFactor, blendDestinationFactor);
+            } else {
+                // The last renderer also is - good to go
+            }
+        } else {
+            // We are not blended
+            if (lastUsed.isBlended()) {
+                // The last renderer is - disable
+                GLES20.glDisable(GLES20.GL_BLEND);
+            } else {
+                // The last renderer also is not - good to go
+            }
         }
     }
 
     private void checkDepth(@NonNull ObjectRenderer lastUsed) {
         if (!isDepthEnabled) {
+            // We are not depth tested
             if (lastUsed.isDepthEnabled()) {
-                // We are not depth tested, the last renderer is - disable
+                // The last renderer is - disable
                 GLES20.glDisable(GLES20.GL_DEPTH_TEST);
             } else {
-                // We are not depth tested, neither was last renderer
+                // The last renderer also is not - good to go
             }
-        } else if (!lastUsed.isDepthEnabled()) {
-            // We are depth tested, the last renderer is not - enable
-            GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-            GLES20.glDepthFunc(depthFunction);
+        } else {
+            // We are depth tested
+            if (!lastUsed.isDepthEnabled()) {
+                // The last renderer is not - enable
+                GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+                GLES20.glDepthFunc(depthFunction);
+            } else {
+                // The last renderer also is - good to go
+            }
         }
     }
 }

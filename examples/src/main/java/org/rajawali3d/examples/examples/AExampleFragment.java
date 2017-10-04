@@ -3,9 +3,9 @@ package org.rajawali3d.examples.examples;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.core.RenderControl;
 import c.org.rajawali3d.core.RenderControlClient;
-import c.org.rajawali3d.scene.AScene;
+import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.surface.SurfaceSize;
-import c.org.rajawali3d.surface.gles.GLESTextureView;
+import c.org.rajawali3d.surface.gles.GlesSurfaceTextureView;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.views.GitHubLogoView;
 
@@ -28,14 +28,18 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
 
     public static final String BUNDLE_EXAMPLE_URL = "BUNDLE_EXAMPLE_URL";
 
-    protected ProgressBar     mProgressBar;
-    protected GitHubLogoView  mImageViewExampleLink;
-    protected String          mExampleUrl;
-    protected FrameLayout     mLayout;
-    protected GLESTextureView mSurfaceView;
-    protected RenderControl   mRenderControl;
-    protected AScene          mScene;
-    protected SurfaceSize     mSurfaceSize;
+    protected ProgressBar mProgressBar;
+    protected GitHubLogoView mImageViewExampleLink;
+    protected String mExampleUrl;
+    protected FrameLayout mLayout;
+    protected GlesSurfaceTextureView mSurfaceView;
+    protected RenderControl mRenderControl;
+    protected BaseScene mScene;
+    protected SurfaceSize mSurfaceSize;
+
+    /*
+     * Fragment Lifecycle callbacks
+     */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,8 +63,8 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
 
         mLayout.findViewById(R.id.relative_layout_loader_container).bringToFront();
 
-        // Find the GLESSurfaceTextureView
-        mSurfaceView = (GLESTextureView) mLayout.findViewById(R.id.rajwali_surface);
+        // Find the GlesSurfaceTextureView
+        mSurfaceView = (GlesSurfaceTextureView) mLayout.findViewById(R.id.rajwali_surface);
 
         // Create the loader progress bar
         mProgressBar = (ProgressBar) mLayout.findViewById(R.id.progress_bar);
@@ -105,11 +109,15 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
 
 
     /**
-     * Override to define any GLESSurfaceTextureView-specific configuration options (such as anti-aliasing),
+     * Override to define any {@link GlesSurfaceTextureView}-specific configuration options (such as anti-aliasing),
      * or to override such options specified as styleable layout attributes
      */
     protected void setSurfaceConfigurations() {
     }
+
+    /*
+     * RenderControlClient callbacks
+     */
 
     @RenderThread
     @Override
@@ -125,6 +133,18 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
     public void onSurfaceSizeChanged(SurfaceSize surfaceSize) {
         mSurfaceSize = surfaceSize;
     }
+
+    @RenderThread
+    @Override
+    @CallSuper
+    public void onRenderControlLost() {
+        mRenderControl = null;
+        mSurfaceSize = null;
+    }
+
+    //
+    //
+    //
 
     @Override
     public void onClick(View v) {
@@ -146,6 +166,10 @@ public abstract class AExampleFragment extends Fragment implements RenderControl
                 break;
         }
     }
+
+    //
+    //
+    //
 
     @CallSuper
     protected void hideProgressBar() {

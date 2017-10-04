@@ -14,6 +14,9 @@ import c.org.rajawali3d.intersection.Intersector.Intersection;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+
+// TODO should all NodeMembers implement Transformable and encapsulate a Transformation? Notably, to avoid the need to add/correlate a dedicated SceneNode for every independently-transforming Object3D (using animations, gestures, callbacks, or otherwise)
+
 public interface NodeMember extends AABB {
 
     /**

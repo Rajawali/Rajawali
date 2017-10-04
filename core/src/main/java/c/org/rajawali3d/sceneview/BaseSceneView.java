@@ -1,95 +1,293 @@
+/**
+ * Copyright 2017 Dennis Ippel
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package c.org.rajawali3d.sceneview;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.camera.Camera;
 import c.org.rajawali3d.core.BaseFrameDelegate;
-import c.org.rajawali3d.core.RenderStatus;
 import c.org.rajawali3d.core.RenderContext;
-import c.org.rajawali3d.object.RenderableObject;
-import c.org.rajawali3d.scene.Scene;
 import c.org.rajawali3d.core.RenderTask;
+import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.scene.AScene;
-import c.org.rajawali3d.scene.graph.SceneGraph;
+import c.org.rajawali3d.scene.BaseScene;
+import c.org.rajawali3d.scene.RenderScene;
+import c.org.rajawali3d.scene.Scene;
+import c.org.rajawali3d.sceneview.render.DefaultRender;
+import c.org.rajawali3d.sceneview.render.FrameRender;
 import c.org.rajawali3d.surface.SurfaceSize;
+import c.org.rajawali3d.textures.TextureException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.util.RajLog;
 
-import android.graphics.Rect;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-
 /**
- * Abstract base for all SceneView implementations; adds the actual onRender() callback
- *
- * TODO remove indirect dependencies here on GLES (via Camera->frustum Planes->IndexedGeometry)
- * TODO add factory methods (here? in RenderControl?) that instantiate the concrete type per the RenderContextType
+ * Abstract base for all SceneView implementations; adds the actual onRenderFrame() callback
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  * @author Randy Picolet
  */
 
-public abstract class BaseSceneView extends BaseFrameDelegate implements SceneView {
+public class BaseSceneView extends BaseFrameDelegate implements RenderSceneView {
 
     private static final String TAG = "BaseSceneView";
 
-    // The Scene presented by this BaseSceneView
-    @NonNull protected Scene scene;
+    // The current RenderContext
+    @NonNull
+    protected RenderContext renderContext;
+    // The RenderScene presented by this BaseSceneView
+    @NonNull
+    protected RenderScene renderScene;
     // The Scene's graph
-    @NonNull protected SceneGraph sceneGraph;
-    // The Camera for this BaseSceneView
-    @NonNull protected Camera camera;
-    // The viewportRect for this BaseSceneView
-    @NonNull protected Rect viewportRect;
+    @NonNull
+    protected RenderSceneGraph renderSceneGraph;
+    // Background color components for this BaseSceneView
+    protected float red, blue, green, alpha;
+    // The Skybox for this BaseSceneView
+    @Nullable
+    protected Skybox skybox;
+    // The Camera for this SceneView
+    @NonNull
+    protected Camera camera;
+    // The current Viewport for this SceneView
+    @NonNull
+    protected Viewport viewport;
+
+    @NonNull
+    protected Rect viewportRect;
     //
-    volatile boolean viewportVisible;
+    volatile boolean onScreenRenderEnabled;
+
+    // The active SceneViewControl to which this SceneViewDelegate has been added
+    @Nullable
+    protected SceneViewControl sceneViewControl;
+
     //
-    @NonNull protected Matrix4 viewMatrix;
+    @Nullable
+    protected FrameRender onScreenRender;
     //
-    @NonNull protected Matrix4 projectionMatrix;
+    @NonNull
+    protected List<FrameRender> offScreenRenders = new ArrayList<>();
+
     //
-    @NonNull protected Matrix4 viewProjectionMatrix = new Matrix4();
+    @NonNull
+    protected Matrix4 viewMatrix;
+    //
+    @NonNull
+    protected Matrix4 projectionMatrix;
+    //
+    @NonNull
+    protected Matrix4 viewProjectionMatrix = new Matrix4();
+
+    //
+    @NonNull
+    protected List<RenderableObject> renderableSceneObjects;
+
+    // The last used object renderer
+    // TODO if shared across SceneViews and FrameRenders, could save a number of GL state changes per frame
+    @RenderThread
+    @Nullable
+    protected ObjectRenderer lastUsedObjectRenderer;
+
     //
     @Nullable
     Lock currentlyHeldReadLock;
 
+    /**
+     * Use the default (whole-Surface) viewport and a DefaultRender
+     * @param scene
+     * @param camera
+     * @return
+     */
     @RenderThread
-    protected @Nullable
-    ObjectRenderer lastUsedRenderer; // Reference to the last used object renderControl
-
-    public static SceneView create(@NonNull AScene scene, Camera camera) {
-        // Start with an empty viewportRect to flag whole-surface
-        return create(scene, camera, new Rect());
+    public static SceneView create(@NonNull BaseScene scene, Camera camera) {
+        return create(scene, camera, new Viewport());
     }
 
-    public static SceneView create(@NonNull AScene scene, Camera camera, Rect viewportRect) {
+    /**
+     * Use the default (whole-surface) viewport
+     *
+     * @param scene
+     * @param camera
+     * @param onScreenFrameRender
+     * @return
+     */
+    @RenderThread
+    public static SceneView create(@NonNull BaseScene scene, Camera camera, FrameRender onScreenFrameRender) {
+        return create(scene, camera, new Viewport(), onScreenFrameRender);
+    }
 
-        BaseSceneView sceneView = null;
-        switch(RenderContext.getType()) {
-            case OPEN_GL_ES:
-                sceneView = new GLESSceneView();
-                break;
-            default:
-                // TODO log, exeption, or both?
-        }
-        sceneView.scene = scene;
+    /**
+     * Use a DefaultRender
+     *
+     * @param scene
+     * @param camera
+     * @param viewport
+     * @return
+     */
+    @RenderThread
+    public static SceneView create(@NonNull BaseScene scene, Camera camera, Viewport viewport) {
+        return create(scene, camera, viewport, null);
+    }
+
+    /**
+     *
+     * @param scene
+     * @param camera
+     * @param viewport
+     * @param onScreenRender
+     * @return
+     */
+    @RenderThread
+    public static SceneView create(@NonNull BaseScene scene, @NonNull Camera camera, @NonNull Viewport viewport,
+                                   @Nullable FrameRender onScreenRender) {
+
+        BaseSceneView sceneView = new BaseSceneView();
+        sceneView.renderScene = scene;
+        sceneView.renderSceneGraph = scene.getRenderSceneGraph();
         sceneView.camera = camera;
-        sceneView.viewportRect = viewportRect;
+        sceneView.viewport = viewport;
+
+        // Set the onScreenRender
+        sceneView.setOnScreenRender(onScreenRender == null ? new DefaultRender(sceneView) : onScreenRender);
 
         return sceneView;
     }
 
-    protected BaseSceneView() {
+    // Prevent default construction
+    private BaseSceneView() {}
+
+    //
+    // SceneView interface
+    //
+
+    @Override
+    @NonNull
+    public Scene getScene() {
+        return renderScene;
     }
 
-    public @NonNull
-    Scene getScene() {
-        return scene;
+    @Override
+    public void setBackgroundColor(float red, float green, float blue, float alpha) {
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        this.alpha = alpha;
     }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        setBackgroundColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f,
+                Color.alpha(color) / 255f);
+    }
+
+    @Override
+    public int getBackgroundColor() {
+        return Color.argb((int) (alpha *255f), (int) (red *255f), (int) (green *255f), (int) (blue *255f));
+    }
+
+    @Override
+    public boolean setSkybox(int resourceId) throws TextureException {
+        /*
+        final FrameTask task = new FrameTask() {
+            @Override
+            protected void doTask() {
+                for (int i = 0, j = mCameras.size(); i < j; ++i)
+                    mCameras.get(i).setFarPlane(1000);
+            }
+        };
+        synchronized (mNextSkyboxLock) {
+            mNextSkybox = new Cube(700, true, false);
+            mNextSkybox.setDoubleSided(true);
+            mSkyboxTexture = new Texture2D("skybox", mRenderer.getContext(), resourceId);
+            Material material = new Material();
+            material.setColorInfluence(0);
+            material.addTexture(mSkyboxTexture);
+            mNextSkybox.setMaterial(material);
+        }
+        return internalOfferTask(task);
+        */
+        return false;
+    }
+
+    @Override
+    public boolean setSkybox(int posx, int negx, int posy, int negy, int posz, int negz) throws TextureException {
+        /*
+        final FrameTask task = new FrameTask() {
+            @Override
+            protected void doTask() {
+                for (int i = 0, j = mCameras.size(); i < j; ++i)
+                    mCameras.get(i).setFarPlane(1000);
+            }
+        };
+        synchronized (mNextSkyboxLock) {
+            mNextSkybox = new Cube(700, true);
+            int[] resourceIds = new int[] { posx, negx, posy, negy, posz, negz };
+
+            //mSkyboxTexture = new CubeMapTexture("skybox", resourceIds);
+            ((CubeMapTexture)mSkyboxTexture).isSkyTexture(true);
+            Material mat = new Material();
+            mat.setColorInfluence(0);
+            mat.addTexture(mSkyboxTexture);
+            mNextSkybox.setMaterial(mat);
+        }
+        return internalOfferTask(task);
+        */
+        return false;
+    }
+
+    @Override
+    public boolean setSkybox(Bitmap[] bitmaps) {
+        /*
+        final FrameTask task = new FrameTask() {
+            @Override
+            protected void doTask() {
+                for (int i = 0, j = mCameras.size(); i < j; ++i)
+                    mCameras.get(i).setFarPlane(1000);
+            }
+        };
+        final Cube skybox = new Cube(700, true);
+        final CubeMapTexture texture = new CubeMapTexture("bitmap_skybox", bitmaps);
+        texture.isSkyTexture(true);
+        final Material material = new Material();
+        material.setColorInfluence(0);
+        try {
+            material.addTexture(texture);
+        } catch (TextureException e) {
+            RajLog.e(e.getMessage());
+        }
+        skybox.setMaterial(material);
+        synchronized (mNextCameraLock) {
+            mNextSkybox = skybox;
+        }
+        return internalOfferTask(task);
+        */
+        return false;
+    }
+
+    public Skybox getSkybox() {
+        return skybox;
+    }
+
+    //
+    // Camera
+    //
 
     @Override
     public boolean setCamera(@NonNull final Camera camera) {
@@ -117,66 +315,127 @@ public abstract class BaseSceneView extends BaseFrameDelegate implements SceneVi
         return camera;
     }
 
-    @Override
-    public boolean setViewportRect(@NonNull final Rect viewport) {
-        final RenderTask task = new RenderTask() {
-            @Override
-            protected void doTask() {
-                syncViewportRect(viewport);
-            }
-        };
-        return executeRenderTask(task);
+    //
+    // Viewport
+    //
+
+    public void setViewport(Viewport viewport) {
+        this.viewport = viewport;
     }
 
-    // Intentionally package private for performance
-    @RenderThread
-    void syncViewportRect(Rect viewport) {
-        if (!viewport.equals(this.viewportRect)) {
-            this.viewportRect.set(viewport);
+    public Viewport getViewport() {
+        return viewport;
+    }
+
+    //
+    // FrameRenders
+    //
+
+    @Override
+    public void setOnScreenRender(@NonNull FrameRender frameRender) {
+        if (onScreenRender.equals(frameRender)) {
+            throw new IllegalStateException("Specified FrameRender is already the current onScreenRender!");
         }
+        if (onScreenRender != null) {
+            // Replacing onScreenRender
+            onScreenRender.setOnScreen(false);
+        }
+        if (!frameRender.renderableToScreen()) {
+            throw new IllegalStateException("Specified FrameRender is not renderable-to-screen!");
+        }
+        frameRender.initialize();
+        frameRender.setOnScreen(true);
+        this.onScreenRender = frameRender;
+    }
+
+    @NonNull
+    @Override
+    public FrameRender getOnScreenRender() {
+        return onScreenRender;
     }
 
     @Override
-    public @NonNull Rect getViewportRect() {
-        return viewportRect;
-    }
+    public boolean addOffScreenRender(@NonNull FrameRender offScreenRender) {
 
-    @Override
-    public boolean setViewportDepthOrder(@IntRange(from = 0) int depthOrder) {
-        // TODO
         return false;
     }
 
     @Override
-    public int getViewportDepthOrder() {
-        // TODO
-        return 0;
+    public boolean removeOffScreenRender(@NonNull FrameRender offScreenRender) {
+        return false;
     }
 
-    @Override
-    public void setViewportVisible(boolean viewportVisible) {
-        this.viewportVisible = viewportVisible;
-    }
+    //
+    // RenderSceneView interface
+    //
 
-    @Override
-    public boolean isViewportVisible() {
-        return viewportVisible;
+    public @NonNull
+    RenderScene getRenderScene() {
+        return renderScene;
     }
 
     @RenderThread
-    public void onRender() throws InterruptedException {
-        currentlyHeldReadLock = scene.acquireReadLock();
+    @NonNull
+    public List<RenderableObject> getRenderableSceneObjects() {
+        return renderableSceneObjects;
+    }
+
+    @Override
+    @RenderThread
+    @NonNull
+    public Matrix4 getViewMatrix() {
+        return viewMatrix;
+    }
+
+    @Override
+    @RenderThread
+    @NonNull
+    public Matrix4 getProjectionMatrix() {
+        return projectionMatrix;
+    }
+
+    @Override
+    @RenderThread
+    @NonNull
+    public Matrix4 getViewProjectionMatrix() {
+        return viewProjectionMatrix;
+    }
+
+    @NonNull
+    @Override
+    public ObjectRenderer getLastUsedObjectRenderer() {
+        return null;
+    }
+
+    //
+    //
+    //
+
+    @Override
+    @RenderThread
+    public void onRenderFrame() throws InterruptedException {
         try {
-            // Prepare the camera matrices
+            // Update the camera matrices
             viewMatrix = camera.getViewMatrix();
             projectionMatrix = camera.getProjectionMatrix();
             if (projectionMatrix == null) {
-                throw new IllegalStateException("Cannot render while current camera has a null projection matrix.");
+                throw new IllegalStateException("Cannot render while camera has a null projection matrix.");
             }
             viewProjectionMatrix.setAll(projectionMatrix).multiply(viewMatrix);
 
-            // Render the visible intersected objects
-            renderObjects(sceneGraph.visibleObjectIntersection(camera));
+            // Populate the list of the Scene's camera-visible RenderableObjects
+            renderableSceneObjects = renderSceneGraph.visibleObjectIntersection(camera);
+
+            // Run the onScreenRender
+            if (onScreenRenderEnabled) {
+                onScreenRender.render();
+            }
+
+            // Run any registered offScreenRenders
+            for (FrameRender offScreenRender : offScreenRenders) {
+                offScreenRender.render();
+            }
+
         } finally {
             if (currentlyHeldReadLock != null) {
                 currentlyHeldReadLock.unlock();
@@ -184,11 +443,12 @@ public abstract class BaseSceneView extends BaseFrameDelegate implements SceneVi
         }
     }
 
-    protected abstract void renderObjects(List<RenderableObject> renderableObjects);
-
     @Override
-    public void onAddToRenderControl(@NonNull RenderStatus renderStatus) {
-        super.onAddToRenderControl(renderStatus);
+    public void onAddToSceneViewControl(@NonNull SceneViewControl sceneViewControl) {
+        // This method does not override the parent BaseFrameDelegate method, but it still needs to be called
+        super.onAddToRenderControl(sceneViewControl);
+
+        this.sceneViewControl = sceneViewControl;
         // An empty viewportRect defaults to the whole surface
         if (viewportRect.isEmpty()) {
             SurfaceSize surfaceSize = renderStatus.getSurfaceSize();
@@ -200,5 +460,8 @@ public abstract class BaseSceneView extends BaseFrameDelegate implements SceneVi
     public void onRemoveFromRenderControl() {
         // TODO can remove if nothing else is needed
         super.onRemoveFromRenderControl();
+        sceneViewControl = null;
     }
 }
+
+

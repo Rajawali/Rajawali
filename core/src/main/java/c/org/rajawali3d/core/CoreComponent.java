@@ -5,6 +5,7 @@ package c.org.rajawali3d.core;
  *
  * @author Randy Picolet
  */
+
 public interface CoreComponent {
 
     /**

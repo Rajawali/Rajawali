@@ -1,30 +1,36 @@
 package c.org.rajawali3d.surface.gles;
 
-import android.content.Context;
-import android.opengl.GLES20;
-import c.org.rajawali3d.core.ARenderControl;
+import c.org.rajawali3d.core.CoreControl;
 import c.org.rajawali3d.core.RenderContextType;
+import c.org.rajawali3d.core.RenderControl;
 import c.org.rajawali3d.core.RenderControlClient;
 import c.org.rajawali3d.core.RenderSurfaceView;
+import c.org.rajawali3d.core.gles.GlesRenderControl;
 import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.surface.SurfaceRenderer;
+
+import android.content.Context;
+import android.opengl.GLES20;
+
 import org.rajawali3d.util.RajLog;
 
 import java.util.Locale;
 
 /**
- * Shared implementation for GL ES extensions of {@link ARenderControl}
+ * Shared implementation for GLES {@link SurfaceRenderer} extensions of {@link CoreControl}
  *
  * @author Randy Picolet
  */
-abstract class GLESRenderer extends ARenderControl {
 
-    GLESRenderer(Context context, RenderSurfaceView renderSurfaceView,
-                 RenderControlClient renderControlClient, double initialFrameRate) {
+abstract class BaseGlesSurfaceRenderer extends CoreControl implements GlesRenderControl {
+
+    BaseGlesSurfaceRenderer(Context context, RenderSurfaceView renderSurfaceView,
+                            RenderControlClient renderControlClient, double initialFrameRate) {
         super(context, renderSurfaceView, renderControlClient, initialFrameRate);
     }
 
     /**
-     * Callback to notify that the EGL context has been acquired and a valid GL thread with EGL surface now exists.
+     *
      */
     protected void onRenderContextAcquired() {
         // Initialize device Capabilities for client use
@@ -45,6 +51,8 @@ abstract class GLESRenderer extends ARenderControl {
             }
         }
         RajLog.d(String.format(Locale.US, "Derived GL ES Version: %d.%d", glesMajorVersion, glesMinorVersion));
-        super.onRenderContextAcquired(RenderContextType.OPEN_GL_ES, glesMajorVersion, glesMinorVersion);
+
+        // Specify the RenderContext
+        onRenderContextAcquired(RenderContextType.OPEN_GL_ES, glesMajorVersion, glesMinorVersion);
     }
 }
