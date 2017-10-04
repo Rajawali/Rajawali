@@ -5,8 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
-import c.org.rajawali3d.util.FloatBufferWrapper;
+
 import net.jcip.annotations.NotThreadSafe;
 
 import java.nio.ByteBuffer;
@@ -16,6 +15,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
+
+import c.org.rajawali3d.gl.buffers.BufferInfo;
 
 /**
  * Implementation of {@link IndexedGeometry} which interleaves some or all vertex data into a single buffer. There is
@@ -75,6 +76,10 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
 
     private int floatIndex = 0;
 
+    /**
+     * Internal class for keeping track of the various interleaving parameters for a particular buffer between
+     * when it was added and when the interleaved buffer is built.
+     */
     private static class Mapping {
 
         // Primitive array of data to be interleaved.
@@ -116,6 +121,7 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
 
     @Override
     public void createBuffers() {
+        // Build each interleaved buffer as necessary
         buildInterleavedByteData();
         buildInterleavedFloatData();
         buildInterleavedDoubleData();
@@ -124,6 +130,7 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
         buildInterleavedLongData();
         buildInterleavedCharData();
 
+        // Now create the buffers as usual
         super.createBuffers();
     }
 
@@ -133,31 +140,8 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
     }
 
     @Override
-    @Nullable
-    public FloatBufferWrapper getVertices() {
-        //TODO
-        return super.getVertices();
-    }
-
-    @Override
-    @Nullable
-    public FloatBufferWrapper getNormals() {
-        //TODO
-        return super.getNormals();
-    }
-
-    @Override
-    @Nullable
-    public FloatBufferWrapper getTextureCoords() {
-        //TODO
-        return super.getTextureCoords();
-    }
-
-    @Override
-    @Nullable
-    public FloatBufferWrapper getColors() {
-        //TODO
-        return super.getColors();
+    public void setVertices(@NonNull float[] vertices, boolean override) {
+        setVertices(vertices, override, true);
     }
 
     public void setVertices(@NonNull float[] vertices, boolean override, boolean interleaved) {
@@ -168,6 +152,11 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
         } else {
             super.setVertices(vertices, override);
         }
+    }
+
+    @Override
+    public void setNormals(@NonNull float[] normals, boolean override) {
+        setNormals(normals, override, true);
     }
 
     public void setNormals(@NonNull float[] normals, boolean override, boolean interleaved) {
@@ -694,9 +683,12 @@ public class InterleavedGeometry extends NonInterleavedGeometry {
         }
     }
 
+    /**
+     * Exception thrown when the data mapped for building an interleaved buffer contains a gap in its indices.
+     */
     public static class GapInInterleavedDataException extends RuntimeException {
 
-        public GapInInterleavedDataException(String message) {
+        public GapInInterleavedDataException(@NonNull String message) {
             super(message);
         }
     }

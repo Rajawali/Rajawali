@@ -33,6 +33,10 @@ import c.org.rajawali3d.gl.buffers.BufferInfo;
 import c.org.rajawali3d.gl.buffers.BufferUsage;
 import c.org.rajawali3d.util.FloatBufferWrapper;
 
+import static c.org.rajawali3d.gl.buffers.BufferInfo.BYTE_BUFFER;
+import static c.org.rajawali3d.gl.buffers.BufferInfo.INT_BUFFER;
+import static c.org.rajawali3d.gl.buffers.BufferInfo.SHORT_BUFFER;
+
 /**
  * This is where the vertex, normal, texture coordinate, color and index data is stored. The data is stored in
  * various {@link Buffer}s. The data is uploaded to the graphics card using VERTEX Buffer Objects (VBOs). The data in
@@ -158,8 +162,22 @@ public class NonInterleavedGeometry extends IndexedGeometry {
     @RequiresReadLock
     @RenderThread
     @Override
-    public void issueDrawCalls() {
-        // TODO: Issue draw calls
+    public void issueDrawCalls(@DrawingMode int drawingMode) {
+        int bufferType = getIndexBufferInfo().bufferType;
+        int bindType = GLES20.GL_UNSIGNED_BYTE;
+        switch (bufferType) {
+            case BYTE_BUFFER:
+                break;
+            case SHORT_BUFFER:
+                bindType = GLES20.GL_UNSIGNED_SHORT;
+                break;
+            case INT_BUFFER:
+                bindType = GLES20.GL_UNSIGNED_INT;
+                break;
+        }
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, getIndexBufferInfo().glHandle);
+        GLES20.glDrawElements(drawingMode, getNumberIndices(), bindType, 0);
+        // GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0); We are currently not forcefully unbinding as it is deemed unnecessary.
     }
 
     @Override
@@ -434,10 +452,12 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
     }
 
+    @Override
     public void setVertices(@NonNull float[] vertices) {
         setVertices(vertices, false);
     }
 
+    @Override
     public void setVertices(@NonNull float[] vertices, boolean override) {
         BufferInfo vertexInfo;
         if (vertexBufferKey < 0) {
@@ -474,10 +494,12 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         setVertices(v);
     }
 
+    @Override
     public void setNormals(@NonNull float[] normals) {
         setNormals(normals, false);
     }
 
+    @Override
     public void setNormals(@NonNull float[] normals, boolean override) {
         BufferInfo normalInfo;
         if (normalBufferKey < 0) {
@@ -518,10 +540,12 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         return hasNormals;
     }
 
+    @Override
     public void setTextureCoords(@NonNull float[] textureCoords) {
         setTextureCoords(textureCoords, false);
     }
 
+    @Override
     public void setTextureCoords(@NonNull float[] textureCoords, boolean override) {
         BufferInfo textureInfo;
         if (textureBufferKey < 0) {
@@ -604,10 +628,12 @@ public class NonInterleavedGeometry extends IndexedGeometry {
         setColor(Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color));
     }
 
+    @Override
     public void setColors(@NonNull float[] colors) {
         setColors(colors, false);
     }
 
+    @Override
     public void setColors(@NonNull float[] colors, boolean override) {
         BufferInfo colorInfo;
         if (colorBufferKey < 0) {
