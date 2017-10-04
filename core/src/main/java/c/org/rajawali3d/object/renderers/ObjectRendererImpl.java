@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.object.RenderableObject;
 import org.rajawali3d.geometry.Geometry;
+import org.rajawali3d.geometry.Geometry.DrawingMode;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 
@@ -22,6 +23,8 @@ class ObjectRendererImpl implements ObjectRenderer {
     private final          int      blendDestinationFactor;
     private final          int      depthFunction;
 
+    @DrawingMode private   int      drawingMode;
+
     @Nullable private RenderableObject object;
 
 
@@ -32,14 +35,15 @@ class ObjectRendererImpl implements ObjectRenderer {
      * @param builder The {@link ObjectRendererBuilder} configured for the desired render properties.
      */
     ObjectRendererImpl(@NonNull ObjectRendererBuilder builder) {
-        this.material = builder.getMaterial();
-        this.isDoubleSided = builder.isDoubleSided();
-        this.isBackSided = builder.isBackSided();
-        this.isBlended = builder.isBlended();
-        this.isDepthEnabled = builder.isDepthEnabled();
-        this.blendSourceFactor = builder.getBlendSourceFactor();
-        this.blendDestinationFactor = builder.getBlendDestinationFactor();
-        this.depthFunction = builder.getDepthFunction();
+        material = builder.getMaterial();
+        isDoubleSided = builder.isDoubleSided();
+        isBackSided = builder.isBackSided();
+        isBlended = builder.isBlended();
+        isDepthEnabled = builder.isDepthEnabled();
+        drawingMode = builder.getDrawingMode();
+        blendSourceFactor = builder.getBlendSourceFactor();
+        blendDestinationFactor = builder.getBlendDestinationFactor();
+        depthFunction = builder.getDepthFunction();
     }
 
     @Override
@@ -69,6 +73,11 @@ class ObjectRendererImpl implements ObjectRenderer {
     }
 
     @Override
+    public void setDrawingMode(@DrawingMode int mode) {
+        drawingMode = mode;
+    }
+
+    @Override
     public void prepareForObject(@NonNull RenderableObject object) {
         this.object = object;
     }
@@ -78,7 +87,7 @@ class ObjectRendererImpl implements ObjectRenderer {
         // Bind VBOS
 
         // Issue Draw Call
-        geometry.issueDrawCalls();
+        geometry.issueDrawCalls(getDrawingMode());
     }
 
     @NonNull
@@ -105,6 +114,12 @@ class ObjectRendererImpl implements ObjectRenderer {
     @Override
     public boolean isDepthEnabled() {
         return isDepthEnabled;
+    }
+
+    @DrawingMode
+    @Override
+    public int getDrawingMode() {
+        return drawingMode;
     }
 
     @Override

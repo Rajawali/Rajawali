@@ -3,7 +3,7 @@ package c.org.rajawali3d.object.renderers;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
+import org.rajawali3d.geometry.Geometry.DrawingMode;
 import org.rajawali3d.materials.Material;
 
 /**
@@ -25,6 +25,9 @@ public class ObjectRendererBuilder {
     private boolean isBlended = false;
 
     private boolean isDepthEnabled = true;
+
+    @DrawingMode
+    private int drawingMode = GLES20.GL_TRIANGLES;
 
     private int blendSourceFactor = GLES20.GL_SRC_ALPHA;
 
@@ -127,6 +130,18 @@ public class ObjectRendererBuilder {
     }
 
     /**
+     * Sets the primitive drawing mode.
+     *
+     * @param mode {@link DrawingMode} {@code int} the primitive mode to use.
+     * @return {@code this} pointer for chaining.
+     */
+    @NonNull
+    public ObjectRendererBuilder setDrawingMode(@DrawingMode int mode) {
+        drawingMode = mode;
+        return this;
+    }
+
+    /**
      * Sets the blending equation source factor.
      *
      * @param factor {@code int} One of the GL constants for blend factors.
@@ -219,11 +234,21 @@ public class ObjectRendererBuilder {
     }
 
     /**
+     * Retrieves the currently set primitive drawing mode set for this builder.
+     *
+     * @return {@link DrawingMode} {@code int} The primitive drawing mode used.
+     */
+    @DrawingMode
+    int getDrawingMode() {
+        return drawingMode;
+    }
+
+    /**
      * Retrieves the currently set blend source factor.
      *
      * @return {@code int} The blend source factor.
      */
-    public int getBlendSourceFactor() {
+    int getBlendSourceFactor() {
         return blendSourceFactor;
     }
 

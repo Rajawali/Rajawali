@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import net.jcip.annotations.NotThreadSafe;
 
 import org.rajawali3d.geometry.Geometry;
+import org.rajawali3d.geometry.Geometry.DrawingMode;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 
@@ -40,6 +41,13 @@ public interface ObjectRenderer {
     void setCameraMatrices(@NonNull Matrix4 view, @NonNull Matrix4 projection, @NonNull Matrix4 viewProjection);
 
     /**
+     * Sets the current primitive drawing mode to use.
+     *
+     * @param mode {@link DrawingMode} {@code int} The primitive drawing mode to use.
+     */
+    void setDrawingMode(@DrawingMode int mode);
+
+    /**
      * Prepares this {@link ObjectRenderer} to render the specified {@link RenderableObject}. Implementations should
      * retrieve and bind any object specific data here. This will always be called after
      * {@link #ensureState(ObjectRenderer)}.
@@ -64,6 +72,8 @@ public interface ObjectRenderer {
     boolean isBlended();
 
     boolean isDepthEnabled();
+
+    int getDrawingMode();
 
     int getBlendSourceFactor();
 

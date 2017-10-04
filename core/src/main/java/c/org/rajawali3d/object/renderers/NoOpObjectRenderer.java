@@ -1,9 +1,11 @@
 package c.org.rajawali3d.object.renderers;
 
+import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.rajawali3d.geometry.Geometry;
+import org.rajawali3d.geometry.Geometry.DrawingMode;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.util.RajLog;
@@ -43,6 +45,11 @@ public class NoOpObjectRenderer implements ObjectRenderer {
     }
 
     @Override
+    public void setDrawingMode(@DrawingMode int mode) {
+        // Do nothing
+    }
+
+    @Override
     public void prepareForObject(@NonNull RenderableObject object) {
         //TODO: Replace int value of type with string value
         RajLog.e("Using NoOp renderer for pass type: " + type + " on object: " + object);
@@ -76,6 +83,11 @@ public class NoOpObjectRenderer implements ObjectRenderer {
     @Override
     public boolean isDepthEnabled() {
         return false;
+    }
+
+    @Override
+    public int getDrawingMode() {
+        return GLES20.GL_TRIANGLES;
     }
 
     @Override
