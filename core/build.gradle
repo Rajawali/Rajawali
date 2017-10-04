@@ -1,0 +1,141 @@
+apply plugin: 'com.android.library'
+apply plugin: 'jacoco'
+apply plugin: 'signing'
+apply from: '../jacoco.gradle'
+//apply from: '../quality/quality.gradle'
+apply plugin: "jp.classmethod.aws.s3"
+
+import jp.classmethod.aws.gradle.s3.AmazonS3FileUploadTask
+
+String getVersionString() {
+    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
+    v = isTag() ? v : v + "-SNAPSHOT"
+    return v
+}
+
+group = GROUP
+version = getVersionString()
+
+aws {
+    def awsCredentials = new File(rootDir, ".aws-credentials")
+    if (awsCredentials.exists()) {
+        profileName = awsCredentials.toString()
+    }
+    region = 'us-west-2'
+    profileName = "default"
+}
+
+task fullTest() {
+    afterEvaluate {
+        dependsOn testDebugUnitTest
+        dependsOn connectedDebugAndroidTest
+        dependsOn debugCoverage
+    }
+}
+
+task zipTestsForS3(type: Zip, dependsOn: fullTest) {
+    from("${buildDir}/reports/tests") { into "tests" }
+    from("${buildDir}/reports/androidTests") { into "androidTests" }
+    include "*"
+    include "*/*"
+    archiveName "${version}.zip"
+    destinationDir new File("${buildDir}/s3/")
+}
+
+task uploadTestsToS3(type: AmazonS3FileUploadTask, dependsOn: zipTestsForS3) {
+    inputs.file("${buildDir}/s3/${version}.zip")
+
+    bucketName "rajawali-testing-data"
+    key "${version}.zip"
+    file new File("${buildDir}/s3/${version}.zip")
+    enabled = new File(System.getProperty("user.home"), ".aws/credentials").exists()
+}
+
+task copyAndroidCoverage(type: Copy) {
+    afterEvaluate {
+        dependsOn createDebugAndroidTestCoverageReport
+    }
+    from 'build/reports/coverage/debug/report.xml'
+    into './'
+    rename { String fileName ->
+        fileName = "glTestCoverage.xml"
+    }
+}
+
+task prepareForCommit(dependsOn: [copyAndroidCoverage]) {
+
+}
+
+if (isReleaseBuild()) {
+    status = 'release'
+} else {
+    status = 'integration'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+android {
+    compileSdkVersion rootProject.compileSdk
+    buildToolsVersion rootProject.buildTools
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdk
+        targetSdkVersion rootProject.targetSdk
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'CMakeLists.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v13:25.3.1'
+    compile 'net.jcip:jcip-annotations:1.0'
+    compile 'com.jakewharton.timber:timber:4.5.1'
+
+    androidTestCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12'
+
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    // Set this dependency to use JUnit 4 rules
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'org.mockito:mockito-core:1.10.19'
+    androidTestCompile 'com.crittercism.dexmaker:dexmaker:1.4'
+    androidTestCompile 'com.crittercism.dexmaker:dexmaker-dx:1.4'
+    androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
+
+    androidTestCompile 'com.ToxicBakery.android.version:versions:1.0.13@aar'
+
+    testCompile 'com.android.support.test:rules:0.5'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+}
+
+apply from: '../maven_push.gradle'

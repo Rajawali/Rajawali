@@ -1,12 +1,7 @@
 # Built application files
-examples/build/
-rajawali/build/
-vr/build/
-vuforia/build/
-wear/build/
 build/
 
-rajawali/.externalNativeBuild/
+.externalNativeBuild/
 
 vuforia/src/main/obj/
 vuforia/src/main/libs/
@@ -25,17 +20,6 @@ local.gradle
 .signing/
 
 # User-specific configurations
-.idea/libraries/
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/.name
-.idea/compiler.xml
-.idea/copyright/profiles_settings.xml
-.idea/encodings.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/scopes/scope_settings.xml
-.idea/vcs.xml
 *.iml
 
 # OS-specific files
@@ -53,4 +37,3 @@ local.properties~
 rajawali_secret.gpg
 secring.gpg
 *.alloc
-*.properties
