@@ -4,17 +4,9 @@ apply plugin: 'signing'
 apply from: '../jacoco.gradle'
 //apply from: '../quality/quality.gradle'
 apply plugin: "jp.classmethod.aws.s3"
+apply from: "$rootDir/gradle-fury/gradle/android-support.gradle"
 
 import jp.classmethod.aws.gradle.s3.AmazonS3FileUploadTask
-
-String getVersionString() {
-    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
-    v = isTag() ? v : v + "-SNAPSHOT"
-    return v
-}
-
-group = GROUP
-version = getVersionString()
 
 aws {
     def awsCredentials = new File(rootDir, ".aws-credentials")
@@ -78,14 +70,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion rootProject.compileSdk
-    buildToolsVersion rootProject.buildTools
-
     defaultConfig {
-        minSdkVersion rootProject.minSdk
-        targetSdkVersion rootProject.targetSdk
-        versionCode rootProject.versionCode
-        versionName rootProject.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -137,5 +122,3 @@ dependencies {
     testCompile 'com.android.support.test:rules:0.5'
     testCompile 'org.mockito:mockito-core:1.10.19'
 }
-
-apply from: '../maven_push.gradle'
