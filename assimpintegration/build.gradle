@@ -1,0 +1,60 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_ARM_NEON=TRUE",
+                        "-DANDROID_STL=c++_shared",
+                        "-DANDROID_PLATFORM=android-19",
+                        "-DANDROID_TOOLCHAIN=clang",
+                        "-DANDROID_ALLOW_UNDEFINED_SYMBOLS=TRUE",
+                        "-DASSIMP_BUILD_ASSIMP_TOOLS=OFF",
+                        "-DASSIMP_BUILD_TESTS=OFF",
+                        "-DASSIMP_NO_EXPORT=YES",
+                        "-DBUILD_SHARED_LIBS=YES",
+                        "-DASSIMP_COVERALLS=NO"
+                cFlags "-fexceptions", "-frtti"
+                cppFlags "-std=c++11", "-fexceptions", "-frtti"
+            }
+        }
+
+        ndk {
+            // Specifies the ABI configurations of your native
+            // libraries Gradle should build and package with your APK.
+            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a',
+                    'arm64-v8a'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path '../../assimp/CMakeLists.txt'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    testCompile 'junit:junit:4.12'
+}
