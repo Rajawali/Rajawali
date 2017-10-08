@@ -46,7 +46,6 @@ private DirectionalLight mDirectionalLight;
 
 public CustomRenderer(Context context) {
     super(context);
-    this.context = context;
     setFrameRate(60);
 }
 ```
