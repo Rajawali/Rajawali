@@ -22,7 +22,11 @@ public interface RenderSceneView extends SceneView {
     @RenderThread
     void onRenderFrame() throws InterruptedException;
 
-    // For use by RenderComponents
+    // For use by SceneView RenderComponents
+
+    @RenderThread
+    @NonNull
+    SceneViewControl getSceneViewControl();
 
     @RenderThread
     @NonNull

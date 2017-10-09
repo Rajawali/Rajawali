@@ -3,9 +3,9 @@ package c.org.rajawali3d.scene;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.core.BaseFrameDelegate;
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.SceneDelegate;
+import c.org.rajawali3d.control.BaseControlDelegate;
+import c.org.rajawali3d.control.RenderControl;
+import c.org.rajawali3d.control.SceneDelegate;
 import c.org.rajawali3d.materials.MaterialManager;
 import c.org.rajawali3d.scene.graph.BaseSceneGraph;
 import c.org.rajawali3d.scene.graph.FlatTree;
@@ -28,9 +28,7 @@ import net.jcip.annotations.ThreadSafe;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @ThreadSafe
-public abstract class BaseScene extends BaseFrameDelegate implements SceneDelegate, RenderScene {
-
-    private static final String TAG = "BaseScene";
+public abstract class BaseScene extends BaseControlDelegate implements SceneDelegate, RenderScene {
 
     /*
     @NonNull
@@ -107,37 +105,6 @@ public abstract class BaseScene extends BaseFrameDelegate implements SceneDelega
         return sceneGraph;
     }
 
-    /*
-    @Override
-    public void requestModifications(@NonNull SceneModifier modifier) throws InterruptedException {
-        currentlyHeldWriteLock = acquireWriteLock();
-        try {
-            modifier.doModifications(this);
-        } finally {
-            if (currentlyHeldWriteLock != null) {
-                currentlyHeldWriteLock.unlock();
-            }
-        }
-    }
-    */
-
-    /*
-    @Override
-    @NonNull
-    public Lock acquireReadLock() throws InterruptedException {
-        final Lock readLock = lock.readLock();
-        readLock.lockInterruptibly();
-        return readLock;
-    }
-
-    @Override
-    @NonNull
-    public Lock acquireWriteLock() throws InterruptedException {
-        final Lock writeLock = lock.writeLock();
-        writeLock.lockInterruptibly();
-        return writeLock;
-    }
-    */
 
     // RenderScene methods
 
@@ -150,40 +117,9 @@ public abstract class BaseScene extends BaseFrameDelegate implements SceneDelega
     // BaseScene method implementations
 
 
-    /**
-     * Retrieves the {@link TextureManager} associated with this {@link BaseScene}. Note that Renderers and GL
-     * contexts are tied together.
-     *
-     * TODO Which are we doing, per scene, per render context, or both (e.g. ref counting for efficient sharing)?
-     *
-     * @return The {@link TextureManager} for this {@link RenderControl}.
-     */
-    /*
-    @NonNull
-    public TextureManager getTextureManager() {
-        return textureManager;
-    }
-    */
-
-    /**
-     * Retrieves the {@link MaterialManager} associated with this {@link BaseScene}. Note that Renderers and GL
-     * contexts are tied together.
-     *
-     * TODO Which are we doing, per scene, per render context, or both (e.g. ref counting for efficient sharing)?
-     *
-     * @return The {@link MaterialManager} for this {@link RenderControl}.
-     */
-    /*
-    @NonNull
-    public MaterialManager getMaterialManager() {
-        return materialManager;
-    }
-    */
-
     @RenderThread
-    // TODO "reload" vs "restore"? If they mean the same thing, let's consistently use one or the other...
     protected void restore() {
-        textureManager.reloadTextures();
+        // textureManager.reloadTextures();
         // TODO: Restore materials
         // TODO: Restore VBOs
     }

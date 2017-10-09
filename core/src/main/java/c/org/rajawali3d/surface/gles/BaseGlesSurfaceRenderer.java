@@ -1,11 +1,10 @@
 package c.org.rajawali3d.surface.gles;
 
-import c.org.rajawali3d.core.CoreControl;
-import c.org.rajawali3d.core.RenderContextType;
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.RenderControlClient;
-import c.org.rajawali3d.core.RenderSurfaceView;
-import c.org.rajawali3d.core.gles.GlesRenderControl;
+import c.org.rajawali3d.control.CoreControl;
+import c.org.rajawali3d.control.RenderContextType;
+import c.org.rajawali3d.control.RenderControlClient;
+import c.org.rajawali3d.control.RenderSurfaceView;
+import c.org.rajawali3d.control.gles.GlesRenderControl;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.surface.SurfaceRenderer;
 

@@ -21,7 +21,7 @@ import c.org.rajawali3d.sceneview.RenderSceneView;
 public class DefaultRender extends SinglePassRender {
 
     public DefaultRender(RenderSceneView renderSceneView) {
-        super(renderSceneView);
+        super(renderSceneView, );
     }
 
 

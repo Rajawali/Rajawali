@@ -11,7 +11,7 @@ import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.interactive.planes.PlanesGalore;
 import org.rajawali3d.examples.examples.interactive.planes.PlanesGaloreMaterialPlugin;
-import org.rajawali3d.lights.DirectionalLight;
+import c.org.rajawali3d.sceneview.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import c.org.rajawali3d.textures.Texture2D;
 import c.org.rajawali3d.textures.TextureException;

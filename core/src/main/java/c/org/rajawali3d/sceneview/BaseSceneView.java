@@ -18,10 +18,10 @@ import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.camera.Camera;
-import c.org.rajawali3d.core.BaseFrameDelegate;
-import c.org.rajawali3d.core.RenderContext;
-import c.org.rajawali3d.core.RenderTask;
+import c.org.rajawali3d.sceneview.camera.Camera;
+import c.org.rajawali3d.control.BaseControlDelegate;
+import c.org.rajawali3d.control.RenderContext;
+import c.org.rajawali3d.control.RenderTask;
 import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
 import c.org.rajawali3d.scene.BaseScene;
@@ -29,6 +29,7 @@ import c.org.rajawali3d.scene.RenderScene;
 import c.org.rajawali3d.scene.Scene;
 import c.org.rajawali3d.sceneview.render.DefaultRender;
 import c.org.rajawali3d.sceneview.render.FrameRender;
+import c.org.rajawali3d.sceneview.sky.Skybox;
 import c.org.rajawali3d.surface.SurfaceSize;
 import c.org.rajawali3d.textures.TextureException;
 import java.util.ArrayList;
@@ -44,9 +45,7 @@ import org.rajawali3d.util.RajLog;
  * @author Randy Picolet
  */
 
-public class BaseSceneView extends BaseFrameDelegate implements RenderSceneView {
-
-    private static final String TAG = "BaseSceneView";
+public class BaseSceneView extends BaseControlDelegate implements RenderSceneView {
 
     // The current RenderContext
     @NonNull
@@ -148,19 +147,19 @@ public class BaseSceneView extends BaseFrameDelegate implements RenderSceneView 
 
     /**
      *
-     * @param scene
+     * @param renderScene
      * @param camera
      * @param viewport
      * @param onScreenRender
      * @return
      */
     @RenderThread
-    public static SceneView create(@NonNull BaseScene scene, @NonNull Camera camera, @NonNull Viewport viewport,
+    public static SceneView create(@NonNull RenderScene renderScene, @NonNull Camera camera, @NonNull Viewport viewport,
                                    @Nullable FrameRender onScreenRender) {
 
         BaseSceneView sceneView = new BaseSceneView();
-        sceneView.renderScene = scene;
-        sceneView.renderSceneGraph = scene.getRenderSceneGraph();
+        sceneView.renderScene = renderScene;
+        sceneView.renderSceneGraph = renderScene.getRenderSceneGraph();
         sceneView.camera = camera;
         sceneView.viewport = viewport;
 
@@ -445,7 +444,7 @@ public class BaseSceneView extends BaseFrameDelegate implements RenderSceneView 
 
     @Override
     public void onAddToSceneViewControl(@NonNull SceneViewControl sceneViewControl) {
-        // This method does not override the parent BaseFrameDelegate method, but it still needs to be called
+        // This method does not override the parent BaseControlDelegate method, but it still needs to be called
         super.onAddToRenderControl(sceneViewControl);
 
         this.sceneViewControl = sceneViewControl;

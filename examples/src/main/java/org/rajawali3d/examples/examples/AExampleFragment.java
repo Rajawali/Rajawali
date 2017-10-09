@@ -1,8 +1,8 @@
 package org.rajawali3d.examples.examples;
 
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.RenderControlClient;
+import c.org.rajawali3d.control.RenderControl;
+import c.org.rajawali3d.control.RenderControlClient;
 import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.surface.SurfaceSize;
 import c.org.rajawali3d.surface.gles.GlesSurfaceTextureView;

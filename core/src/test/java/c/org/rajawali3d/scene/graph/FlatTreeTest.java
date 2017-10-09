@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.support.annotation.NonNull;
 import android.support.test.filters.SmallTest;
-import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.sceneview.camera.Camera;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.rajawali3d.math.vector.Vector3;

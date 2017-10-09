@@ -13,14 +13,14 @@
 package c.org.rajawali3d.sceneview;
 
 import android.graphics.Bitmap;
-import c.org.rajawali3d.camera.Camera;
-import c.org.rajawali3d.core.SceneViewDelegate;
+import c.org.rajawali3d.sceneview.camera.Camera;
+import c.org.rajawali3d.control.SceneViewDelegate;
 import c.org.rajawali3d.sceneview.render.DefaultRender;
 import c.org.rajawali3d.sceneview.render.FrameRender;
 import c.org.rajawali3d.scene.Scene;
 
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.sceneview.sky.Skybox;
 import c.org.rajawali3d.textures.TextureException;
 
 /**

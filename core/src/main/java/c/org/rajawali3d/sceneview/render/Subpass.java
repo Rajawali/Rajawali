@@ -14,11 +14,13 @@ package c.org.rajawali3d.sceneview.render;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.core.RenderContext;
+import c.org.rajawali3d.control.RenderContext;
+import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.sceneview.render.gles.GlesFramebuffer;
 import c.org.rajawali3d.object.Object3D;
 import c.org.rajawali3d.sceneview.RenderSceneView;
-import c.org.rajawali3d.sceneview.render.ObjectPipelineTypes.ObjectPipelineFunction;
+import c.org.rajawali3d.sceneview.render.ObjectPipelineTypes.ObjectPipelineType;
+import java.util.List;
 
 /**
  * A Subpass is a leaf-node in a 4-level tree of {@link RenderComponent}s, and controls atomic uses of the
@@ -116,13 +118,13 @@ public abstract class Subpass extends RenderComponent {
     /**
      *
      */
-    protected final @ObjectPipelineFunction
+    protected final @ObjectPipelineType
     int pipelineType;
 
     /**
      *
      */
-    protected List<RenderObject> renderObjects;
+    protected List<RenderableObject> renderObjects;
 
     /**
      *
@@ -135,7 +137,7 @@ public abstract class Subpass extends RenderComponent {
      * @param pipelineType
      */
     protected Subpass(RenderSceneView renderSceneView, AttachmentRoles attachmentRoles,
-                      @ObjectPipelineFunction int pipelineType) {
+                      @ObjectPipelineType int pipelineType) {
         this(renderSceneView, null, RENDERABLE_TO_SCREEN, TARGET_SIZE_TRACKS_VIEWPORT, attachmentRoles, pipelineType);
     }
 
@@ -149,7 +151,7 @@ public abstract class Subpass extends RenderComponent {
      */
     protected Subpass(@NonNull RenderSceneView renderSceneView, @Nullable RenderContext minVersionRenderContext,
                       boolean renderableToScreen, boolean targetSizeTracksViewport, AttachmentRoles attachmentRoles,
-                      @ObjectPipelineFunction int pipelineType) {
+                      @ObjectPipelineType int pipelineType) {
         super(renderSceneView);
         this.minVersionRenderContext =  minVersionRenderContext == null ?
                 RenderContext.getMinimumVersion() : minVersionRenderContext;

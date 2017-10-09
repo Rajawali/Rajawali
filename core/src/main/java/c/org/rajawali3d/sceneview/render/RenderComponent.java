@@ -15,8 +15,10 @@ package c.org.rajawali3d.sceneview.render;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.core.RenderContext;
+import c.org.rajawali3d.control.RenderContext;
+import c.org.rajawali3d.logging.LoggingComponent;
 import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewControl;
 
 /**
  * A {@link RenderComponent} is the base type for composing the rendering operations used by a
@@ -39,7 +41,7 @@ import c.org.rajawali3d.sceneview.RenderSceneView;
  *
  * @author Randy Picolet
  */
-public abstract class RenderComponent {
+public abstract class RenderComponent extends LoggingComponent {
 
     /**
      *
@@ -56,6 +58,12 @@ public abstract class RenderComponent {
      */
     @NonNull
     protected final RenderSceneView renderSceneView;
+
+    /**
+     *
+     */
+    @NonNull
+    protected final SceneViewControl sceneViewControl;
 
     /**
      *
@@ -86,7 +94,9 @@ public abstract class RenderComponent {
      * @param renderSceneView
      */
     protected RenderComponent(@NonNull RenderSceneView renderSceneView) {
+        debugAssertNonNull(renderSceneView, "renderSceneView");
         this.renderSceneView = renderSceneView;
+        sceneViewControl = renderSceneView.getSceneViewControl()
     }
 
     //

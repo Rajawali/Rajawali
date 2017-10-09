@@ -4,10 +4,10 @@ package org.rajawali3d.examples.examples.camdenhells;
 import static c.org.rajawali3d.sceneview.render.ObjectPipelineTypes.OBJECT_UNLIT;
 
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.camera.Camera;
-import c.org.rajawali3d.core.RenderControl;
+import c.org.rajawali3d.sceneview.camera.Camera;
+import c.org.rajawali3d.control.RenderControl;
 import c.org.rajawali3d.object.Object3D;
-import c.org.rajawali3d.core.SingleFrameCallback;
+import c.org.rajawali3d.control.SingleFrameCallback;
 import c.org.rajawali3d.object.renderers.ObjectRendererBuilder;
 import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.scene.Scene;

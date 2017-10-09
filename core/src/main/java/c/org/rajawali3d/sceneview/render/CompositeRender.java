@@ -1,10 +1,9 @@
 package c.org.rajawali3d.sceneview.render;
 
 import android.support.annotation.CallSuper;
-import c.org.rajawali3d.core.RenderContext;
+import android.support.annotation.NonNull;
+import c.org.rajawali3d.control.RenderContext;
 import c.org.rajawali3d.sceneview.RenderSceneView;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Randy Picolet
@@ -12,11 +11,17 @@ import java.util.List;
 
 public abstract class CompositeRender<T extends RenderComponent> extends RenderComponent {
 
-    private final ArrayList<T> children;
+    //
+    private final T[] children;
 
-    private T firstChild;
+    //
+    private final int childCount;
 
-    private T lastChild;
+    //
+    private final T firstChild;
+
+    //
+    private final T lastChild;
 
     //
     // Construction
@@ -26,9 +31,14 @@ public abstract class CompositeRender<T extends RenderComponent> extends RenderC
      *
      * @param renderSceneView
      */
-    protected CompositeRender(RenderSceneView renderSceneView) {
+    protected CompositeRender(@NonNull RenderSceneView renderSceneView, @NonNull T[] children ) {
         super(renderSceneView);
-        this.children = new ArrayList<>();
+        debugAssertNonNull(children, "children");
+        childCount = children.length;
+        debugAssert(childCount > 0, "No children!");
+        this.children = children;
+        firstChild = children[0];
+        lastChild = children[childCount - 1];
     }
 
     //
@@ -39,8 +49,16 @@ public abstract class CompositeRender<T extends RenderComponent> extends RenderC
      *
      * @return
      */
-    protected List<T> getChildren() {
+    protected T[] getChildren() {
         return children;
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected int getChildCount() {
+        return childCount;
     }
 
     /**
@@ -67,40 +85,10 @@ public abstract class CompositeRender<T extends RenderComponent> extends RenderC
     @CallSuper
     public void initialize() {
         // Order matters...
-        addChildren();
-        commitChildren();
         setMinVersionRenderContext();
         setRenderableToScreen();
         setTargetSizeTracksViewport();
         initializeChildren();
-    }
-
-    /**
-     *
-     */
-    protected abstract void addChildren();
-
-    /**
-     *
-     * @param child
-     */
-    protected void addChild(T child) {
-        if (lastChild != null) {
-            throw new IllegalStateException("Children already added!");
-        }
-        children.add(child);
-    }
-
-    /**
-     *
-     */
-    @CallSuper
-    protected void commitChildren() {
-        if (children.size() == 0) {
-            throw new IllegalStateException("At least one child RenderComponent must be added!");
-        }
-        firstChild = children.get(0);
-        lastChild = children.get(children.size() - 1);
     }
 
     /**

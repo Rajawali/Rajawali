@@ -1,9 +1,9 @@
 package c.org.rajawali3d.surface;
 
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.core.CoreControl;
-import c.org.rajawali3d.core.RenderContextType;
-import c.org.rajawali3d.core.RenderSurfaceView;
+import c.org.rajawali3d.control.CoreControl;
+import c.org.rajawali3d.control.RenderContextType;
+import c.org.rajawali3d.control.RenderSurfaceView;
 
 /**
  * Interface defining the methods provided by {@link CoreControl} to enable control by a

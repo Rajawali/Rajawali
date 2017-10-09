@@ -7,7 +7,7 @@ import static org.junit.Assert.assertSame;
 import android.support.annotation.NonNull;
 import android.support.test.filters.SmallTest;
 import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.sceneview.camera.Camera;
 import c.org.rajawali3d.object.RenderableObject;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;

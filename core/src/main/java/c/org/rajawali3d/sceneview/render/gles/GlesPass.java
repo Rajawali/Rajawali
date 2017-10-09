@@ -5,11 +5,11 @@ import static c.org.rajawali3d.sceneview.render.Subpass.NO_ATTACHMENTS;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.sceneview.RenderSceneView;
-import c.org.rajawali3d.sceneview.Skybox;
+import c.org.rajawali3d.sceneview.sky.Skybox;
 import c.org.rajawali3d.sceneview.Viewport;
 import c.org.rajawali3d.sceneview.render.RenderPass;
 import c.org.rajawali3d.sceneview.render.gles.GlesPass.GlesAttachmentDescriptor;
-import c.org.rajawali3d.sceneview.render.ObjectPipelineTypes.ObjectPipelineFunction;
+import c.org.rajawali3d.sceneview.render.ObjectPipelineTypes.ObjectPipelineType;
 import c.org.rajawali3d.sceneview.render.Subpass;
 import c.org.rajawali3d.textures.annotation.TexelFormat;
 import org.rajawali3d.math.Matrix4;
@@ -27,7 +27,7 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
     /**
      *
      */
-    protected static final boolean CLEAR_BEFORE_USE = true;
+    protected static final boolean CLEAR_BEFORE_FIRST_USE = true;
 
     /**
      *
@@ -58,14 +58,14 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
         /**
          *
          */
-        protected final boolean preserveAfterLasttUse;
+        protected final boolean preserveAfterLastUse;
 
         /**
          *
          * @param internalFormat
          */
         protected GlesAttachmentDescriptor(TexelFormat internalFormat) {
-            this(internalFormat, CLEAR_BEFORE_USE);
+            this(internalFormat, CLEAR_BEFORE_FIRST_USE);
         }
 
         /**
@@ -93,14 +93,14 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
          * @param internalFormat
          * @param sampleCount
          * @param clearBeforeFirstUse
-         * @param preserveAfterLasttUse
+         * @param preserveAfterLastUse
          */
         protected GlesAttachmentDescriptor(TexelFormat internalFormat, int sampleCount,
-                                           boolean clearBeforeFirstUse, boolean preserveAfterLasttUse) {
+                                           boolean clearBeforeFirstUse, boolean preserveAfterLastUse) {
             this.internalFormat = internalFormat;
             this.sampleCount = sampleCount;
             this.clearBeforeFirstUse = clearBeforeFirstUse;
-            this.preserveAfterLasttUse = preserveAfterLasttUse;
+            this.preserveAfterLastUse = preserveAfterLastUse;
         }
 
         /**
@@ -132,7 +132,7 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
          * @return
          */
         public boolean preserveAfterLasttUse() {
-            return preserveAfterLasttUse;
+            return preserveAfterLastUse;
         }
     }
 
@@ -235,9 +235,9 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
      *
      * @param renderSceneView
      */
-    protected GlesPass(final @NonNull RenderSceneView renderSceneView,
+    protected GlesPass(final @NonNull RenderSceneView renderSceneView, @NonNull GlesSubpass[] children,
                        final @NonNull GlesAttachmentDescriptor[] attachments) {
-        super(renderSceneView,attachments);
+        super(renderSceneView, children, attachments);
     }
 
     @Override
@@ -268,46 +268,7 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
     @Override
     public void initialize() {
         super.initialize();
-        addSubpasses();
-        commitSubpasses();
-    }
 
-    /**
-     *
-     * @param depthStencilAttachment
-     * @param colorAttachments
-     */
-    protected void addSubpass(final @ObjectPipelineFunction int pipelineType, final int depthStencilAttachment,
-                              final int[] colorAttachments) {
-        this.addSubpass(pipelineType, NO_ATTACHMENTS, depthStencilAttachment, colorAttachments, NO_ATTACHMENTS);
-    }
-
-    /**
-     *
-     */
-    protected void addSubpass(final @ObjectPipelineFunction int pipelineType, final int[] inputAttachments,
-                              final int depthStencilAttachment, final int[] colorAttachments,
-                              final int[] preserveAttachments) {
-        if (lastSubpassIndex == NO_SUBPASS) {
-            subpasses.add(new GlesSubpass(pipelineType, inputAttachments, depthStencilAttachment,
-                    colorAttachments, preserveAttachments));
-        }
-    }
-
-    /**
-     *
-     */
-    protected abstract void addSubpasses();
-
-    /**
-     *
-     */
-    protected void commitSubpasses() {
-        subpassesCount = subpasses.size();
-        if (subpassesCount == 0) {
-            throw new IllegalStateException("At least one Subpass must be added!");
-        }
-        lastSubpassIndex = subpassesCount - 1;
     }
 
     /**
@@ -315,7 +276,7 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
      * @return
      */
     protected final boolean hasMultipleSubpasses() {
-        return subpassesCount > 1;
+        return getChildCount() > 1;
     }
 
     //

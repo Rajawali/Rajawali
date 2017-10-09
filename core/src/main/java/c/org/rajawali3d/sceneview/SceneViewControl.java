@@ -3,7 +3,7 @@ package c.org.rajawali3d.sceneview;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.core.RenderStatus;
+import c.org.rajawali3d.control.RenderStatus;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
 
 /**
@@ -13,6 +13,7 @@ import c.org.rajawali3d.object.renderers.ObjectRenderer;
  */
 //TODO annotation(s) for public but internal-only (vs API) types/interfaces/classes?
 public interface SceneViewControl extends RenderStatus {
+
 
     // TODO Methods for managing shared SceneView resources, e.g. Attachment buffers, shaders, & pipeines
 

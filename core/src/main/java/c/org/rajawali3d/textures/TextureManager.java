@@ -7,7 +7,7 @@ import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.scene.Scene;
 
 import net.jcip.annotations.ThreadSafe;
-import c.org.rajawali3d.core.RenderTask;
+import c.org.rajawali3d.control.RenderTask;
 
 import java.util.Collections;
 import java.util.HashSet;

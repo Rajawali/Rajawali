@@ -1,7 +1,6 @@
 package c.org.rajawali3d.scene;
 
-import c.org.rajawali3d.core.RenderStatus;
-import c.org.rajawali3d.scene.RenderScene;
+import c.org.rajawali3d.control.RenderStatus;
 
 /**
  * Specifies the internal interface between a {@link RenderScene} and the SceneControl implementation

@@ -1,7 +1,7 @@
 package c.org.rajawali3d.surface;
 
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.RenderControlClient;
+import c.org.rajawali3d.control.RenderControl;
+import c.org.rajawali3d.control.RenderControlClient;
 
 import android.support.annotation.NonNull;
 

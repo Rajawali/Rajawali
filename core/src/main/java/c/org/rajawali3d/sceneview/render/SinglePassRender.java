@@ -9,45 +9,25 @@ import c.org.rajawali3d.sceneview.RenderSceneView;
 
 public abstract class SinglePassRender extends FrameRender {
 
-    protected RenderPass renderPass;
-
-    private class SinglePassChain extends RenderPassChain {
-
-        //
-        // Construction
-        //
-
-        protected SinglePassChain(@NonNull RenderSceneView renderSceneView) {
-            super(renderSceneView);
-        }
-
-        protected void addChildren() {
-            addChild(renderPass);
-        }
-    }
-
     //
-    // Constructors
-    //
+    private static class SinglePassChain extends RenderPassChain {
 
-    protected SinglePassRender(@NonNull RenderSceneView renderSceneView) {
-        super(renderSceneView);
-        setRenderPass();
+        /**
+         *
+         * @param renderSceneView
+         * @param renderPass
+         */
+        protected SinglePassChain(@NonNull RenderSceneView renderSceneView, RenderPass renderPass) {
+            super(renderSceneView, new RenderPass[]{renderPass});
+        }
     }
 
     /**
      *
+     * @param renderSceneView
+     * @param renderPass
      */
-    @NonNull
-    protected abstract void setRenderPass();
-
-
-    //
-    // Initialization
-    //
-
-    @Override
-    protected void addChildren() {
-        addChild(new SinglePassChain(renderSceneView));
+    protected SinglePassRender(@NonNull RenderSceneView renderSceneView, RenderPass renderPass) {
+        super(renderSceneView, new RenderPassChain[]{new SinglePassChain(renderSceneView, renderPass)});
     }
 }

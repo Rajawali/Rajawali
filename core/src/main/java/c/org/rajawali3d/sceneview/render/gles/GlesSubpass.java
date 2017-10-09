@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.annotations.RequiresReadLock;
-import c.org.rajawali3d.core.RenderContext;
+import c.org.rajawali3d.control.RenderContext;
 import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
 import c.org.rajawali3d.sceneview.RenderSceneView;

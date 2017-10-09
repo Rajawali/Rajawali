@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.lights.DirectionalLight;
+import c.org.rajawali3d.sceneview.lights.DirectionalLight;
 
 public class SkeletalAnimationMD5Fragment extends AExampleFragment {
 

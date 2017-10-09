@@ -20,8 +20,8 @@ import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.RenderControlClient;
+import c.org.rajawali3d.control.RenderControl;
+import c.org.rajawali3d.control.RenderControlClient;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 
 import c.org.rajawali3d.gl.Capabilities;

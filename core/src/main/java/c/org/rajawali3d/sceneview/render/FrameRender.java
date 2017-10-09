@@ -12,7 +12,10 @@
  */
 package c.org.rajawali3d.sceneview.render;
 
-import c.org.rajawali3d.camera.Camera;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import c.org.rajawali3d.sceneview.camera.Camera;
 import c.org.rajawali3d.object.Object3D;
 import c.org.rajawali3d.scene.Scene;
 import c.org.rajawali3d.sceneview.RenderSceneView;
@@ -38,12 +41,55 @@ import c.org.rajawali3d.sceneview.SceneView;
 
 public abstract class FrameRender extends CompositeRender<RenderPassChain> {
 
+
+    public class FrameRenderAttachment {
+
+        final int chainIndex;
+
+        final int passIndex;
+
+        final int attachmentIndex;
+
+        public FrameRenderAttachment(@IntRange(from = 0) int chainIndex,
+                                     @IntRange(from = 0) int passIndex,
+                                     @IntRange(from = 0) int attachmentIndex) {
+            this.chainIndex = chainIndex;
+            this.passIndex = passIndex;
+            this.attachmentIndex = attachmentIndex;
+        }
+    }
+
+    // Attachment shared  between RenderPassChains
+
+    public class FrameRenderAttachmentLink {
+
+        final FrameRenderAttachment sourceAttachment;
+        final FrameRenderAttachment sinkAttachment;
+
+        public FrameRenderAttachmentLink(@NonNull FrameRenderAttachment sourceAttachment,
+                                         @NonNull FrameRenderAttachment sinkAttachment) {
+            this.sourceAttachment = sourceAttachment;
+            this.sinkAttachment = sinkAttachment;
+        }
+    }
+
+    @Nullable
+    private final FrameRenderAttachmentLink[] links;
+
     //
     // Construction
     //
 
-    protected FrameRender(RenderSceneView renderSceneView) {
-        super(renderSceneView);
+    protected FrameRender(@NonNull RenderSceneView renderSceneView, @NonNull RenderPassChain[] children) {
+        this(renderSceneView, children, null);
+
+    }
+
+    protected FrameRender(@NonNull RenderSceneView renderSceneView, @NonNull RenderPassChain[] children,
+                          @Nullable FrameRenderAttachmentLink[] links) {
+        super(renderSceneView, children);
+        // TODO links validation
+        this.links = links;
     }
 
     //

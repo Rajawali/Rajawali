@@ -1,8 +1,8 @@
 package c.org.rajawali3d.surface.gles;
 
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.RenderControlClient;
-import c.org.rajawali3d.core.RenderSurfaceView;
+import c.org.rajawali3d.control.RenderControl;
+import c.org.rajawali3d.control.RenderControlClient;
+import c.org.rajawali3d.control.RenderSurfaceView;
 import c.org.rajawali3d.gl.Capabilities;
 
 import org.rajawali3d.R;

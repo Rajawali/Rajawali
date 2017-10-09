@@ -1,6 +1,6 @@
 package c.org.rajawali3d.materials;
 
-import c.org.rajawali3d.core.RenderTask;
+import c.org.rajawali3d.control.RenderTask;
 import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.scene.Scene;
 import org.rajawali3d.materials.Material;

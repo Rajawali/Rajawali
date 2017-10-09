@@ -71,5 +71,5 @@ public interface ObjectPipelineTypes {
             NO_OPERATION, FIXED_OPERATION, OBJECT_UNLIT, OBJECT_LIT_FORWARD, OBJECT_G_BUFFER, QUAD_LIT_DEFERRED,
             OBJECT_MAP_SHADOWS, OBJECT_SHADOWS_FORWARD, QUAD_SHADOWS_DEFERRED, QUAD_POST_PROCESSING
     })
-    @interface ObjectPipelineFunction {}
+    @interface ObjectPipelineType {}
 }

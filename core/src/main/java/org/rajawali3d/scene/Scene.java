@@ -23,7 +23,7 @@ import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.lights.ALight;
+import c.org.rajawali3d.sceneview.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin;
 import org.rajawali3d.materials.plugins.FogMaterialPlugin.FogParams;
