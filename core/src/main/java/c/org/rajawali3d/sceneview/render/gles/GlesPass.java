@@ -1,7 +1,5 @@
 package c.org.rajawali3d.sceneview.render.gles;
 
-import static c.org.rajawali3d.sceneview.render.Subpass.NO_ATTACHMENTS;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.sceneview.RenderSceneView;
