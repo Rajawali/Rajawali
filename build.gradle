@@ -1,8 +1,5 @@
 apply from: 'versions.gradle'
 apply from: 'deps.gradle'
-if (file('local.gradle').exists()) {
-    apply from: 'local.gradle'
-}
 
 buildscript {
     repositories {
@@ -15,35 +12,33 @@ buildscript {
     }
 }
 
-allprojects {
+subprojects {
     repositories {
         mavenLocal()
         mavenCentral()
         jcenter()
     }
-}
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+    project.status = isReleaseBuild() ? 'release' : 'integration'
+    project.group = project.property('pom.groupId')
+    project.version = getVersionString()
+
+    if (project.name != "copyrightcheck") {
+        apply from: "$rootDir/gradle-fury/gradle/maven-support.gradle"
+    }
 }
 
 def isReleaseBuild() {
-    return isTag() && !isSnapshot()
+    return isTag() && !version.contains("SNAPSHOT")
 }
 
-def isSnapshot() {
-    return version.contains("SNAPSHOT")
-}
-
-boolean isTravis() {
-    return System.getenv('TRAVIS_BUILD_NUMBER') ? true : false
-}
-
-boolean isTag() {
+static boolean isTag() {
     def tag = System.getenv('TRAVIS_TAG')
     return !(tag == null || tag.isEmpty())
 }
 
-def buildNumber() {
-    return System.getenv('TRAVIS_BUILD_NUMBER') ?: "0"
+String getVersionString() {
+    String buildNumber = System.getenv('TRAVIS_BUILD_NUMBER') ?: "0"
+    String version = project.property('pom.version').replaceAll(".(0)\$", "." + buildNumber)
+    return isTag() ? version : version + "-SNAPSHOT"
 }
