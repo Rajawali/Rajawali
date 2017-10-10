@@ -15,6 +15,8 @@ package org.rajawali3d.materials.shaders.fragments.texture;
 import android.opengl.GLES20;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
+
+import c.org.rajawali3d.gl.glsl.DataType;
 import c.org.rajawali3d.textures.BaseTexture;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;

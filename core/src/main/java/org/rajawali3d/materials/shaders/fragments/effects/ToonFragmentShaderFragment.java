@@ -22,6 +22,8 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
 import android.opengl.GLES20;
 
+import c.org.rajawali3d.gl.glsl.DataType;
+
 
 public class ToonFragmentShaderFragment extends AShader implements IShaderFragment {
 	public final static String SHADER_ID = "TOON_FRAGMENT";

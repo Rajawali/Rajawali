@@ -18,6 +18,8 @@ import org.rajawali3d.lights.ALight;
 
 import java.util.List;
 
+import c.org.rajawali3d.gl.glsl.DataType;
+
 
 public class FragmentShader extends AShader {
 	private RFloat muColorInfluence;

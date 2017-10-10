@@ -17,12 +17,11 @@ import java.util.List;
 import android.graphics.Color;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.materials.shaders.AShaderBase.DataType;
+import c.org.rajawali3d.gl.glsl.DataType;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.diffuse.LambertFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.diffuse.LambertVertexShaderFragment;

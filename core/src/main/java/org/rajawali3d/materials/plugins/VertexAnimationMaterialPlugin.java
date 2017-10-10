@@ -14,7 +14,7 @@ package org.rajawali3d.materials.plugins;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.materials.shaders.AShaderBase.DataType;
+import c.org.rajawali3d.gl.glsl.DataType;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.animation.VertexAnimationVertexShaderFragment;
 

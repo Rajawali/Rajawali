@@ -25,6 +25,8 @@ import org.rajawali3d.util.ArrayUtils;
 
 import java.util.List;
 
+import c.org.rajawali3d.gl.glsl.DataType;
+
 public class LightsVertexShaderFragment extends AShader implements IShaderFragment {
 
 	public final static String SHADER_ID = "LIGHTS_VERTEX";

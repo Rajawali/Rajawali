@@ -5,6 +5,8 @@ import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 
+import c.org.rajawali3d.gl.glsl.DataType;
+
 
 public class DepthMaterialPlugin implements IMaterialPlugin {
 	private DepthFragmentShaderFragment mFragmentShader;

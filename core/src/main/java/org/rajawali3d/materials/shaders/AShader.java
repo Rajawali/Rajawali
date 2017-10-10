@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import c.org.rajawali3d.gl.glsl.DataType;
+
 
 /**
  * This class is a wrapper class for shader creation. GLSL shaders are text files that are

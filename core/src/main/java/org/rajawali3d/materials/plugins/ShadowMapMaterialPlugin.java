@@ -3,6 +3,8 @@ package org.rajawali3d.materials.plugins;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
+
+import c.org.rajawali3d.gl.glsl.DataType;
 import c.org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
@@ -115,7 +117,7 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
                     0.0f, 0.0f, 0.5f, 0.0f,
                     0.5f, 0.5f, 0.5f, 1.0f);
 			mcBiasMatrix = (RMat4) addConst(C_BIAS_MATRIX, biasMatrix);
-			muLightModelViewProjectionMatrix = (RMat4) addUniform(U_LIGHT_MVP_MATRIX,DataType.MAT4);
+			muLightModelViewProjectionMatrix = (RMat4) addUniform(U_LIGHT_MVP_MATRIX, DataType.MAT4);
 			mvShadowTexCoord = (RVec4) addVarying(V_SHADOW_TEX_COORD, DataType.VEC4);
 		}
 

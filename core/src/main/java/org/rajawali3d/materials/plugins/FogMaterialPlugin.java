@@ -6,6 +6,8 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
+import c.org.rajawali3d.gl.glsl.DataType;
+
 
 public class FogMaterialPlugin implements IMaterialPlugin {
 	public static enum FogType {

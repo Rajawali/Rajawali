@@ -6,6 +6,8 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
+import c.org.rajawali3d.gl.glsl.DataType;
+
 
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 	private SpriteSheetVertexShaderFragment mVertexShader;

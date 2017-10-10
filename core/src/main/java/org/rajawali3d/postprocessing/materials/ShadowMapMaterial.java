@@ -8,6 +8,8 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.plugins.ShadowMapMaterialPlugin;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
+
+import c.org.rajawali3d.gl.glsl.DataType;
 import c.org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;

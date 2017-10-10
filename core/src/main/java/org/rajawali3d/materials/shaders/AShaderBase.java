@@ -13,6 +13,7 @@
 package org.rajawali3d.materials.shaders;
 
 
+import c.org.rajawali3d.gl.glsl.DataType;
 
 /**
  * <p>
@@ -33,31 +34,7 @@ package org.rajawali3d.materials.shaders;
  *
  */
 public abstract class AShaderBase {
-	/**
-	 * This enum contains a mapping to GLSL data types names.
-	 * 
-	 * @author dennis.ippel
-	 *
-	 */
-	public static enum DataType {
-		FLOAT("float"), VEC2("vec2"), VEC3("vec3"), VEC4("vec4"), INT("int"), IVEC2(
-				"ivec2"), IVEC3("ivec3"), IVEC4("ivec4"), BOOL("bool"), BVEC2(
-				"bvec2"), BVEC3("bvec3"), BVEC4("bvec4"), MAT2("mat2"), MAT3(
-				"mat3"), MAT4("mat4"), VOID("void"), SAMPLER1D("sampler1D"), SAMPLER2D(
-				"sampler2D"), SAMPLER3D("sampler3D"), SAMPLERCUBE("samplerCube"), 
-				SAMPLER_EXTERNAL_EOS("samplerExternalOES"), CONSTANT("constant");
 
-		private String mTypeString;
-
-		DataType(String typeString) {
-			mTypeString = typeString;
-		}
-
-		public String getTypeString() {
-			return mTypeString;
-		}
-	}
-	
 	/**
 	 * Shader variables map to variable names that will be used in shaders. They are
 	 * defined in enums for consistency and reuse. 
@@ -85,9 +62,9 @@ public abstract class AShaderBase {
 	 *
 	 */
 	public static enum DefaultShaderVar implements IGlobalShaderVar {
-		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), 
-		U_INVERSE_VIEW_MATRIX("uInverseViewMatrix", DataType.MAT4), U_MODEL_VIEW_MATRIX("uModelViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4), 
-		U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT), U_INFLUENCE("uInfluence", DataType.FLOAT), U_REPEAT("uRepeat", DataType.VEC2), 
+		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4),
+		U_INVERSE_VIEW_MATRIX("uInverseViewMatrix", DataType.MAT4), U_MODEL_VIEW_MATRIX("uModelViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4),
+		U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT), U_INFLUENCE("uInfluence", DataType.FLOAT), U_REPEAT("uRepeat", DataType.VEC2),
 		U_OFFSET("uOffset", DataType.VEC2), U_TIME("uTime", DataType.FLOAT),
 		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3), A_VERTEX_COLOR("aVertexColor", DataType.VEC4),
 		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_CUBE_TEXTURE_COORD("vCubeTextureCoord", DataType.VEC3), V_NORMAL("vNormal", DataType.VEC3), V_COLOR("vColor", DataType.VEC4), V_EYE_DIR("vEyeDir", DataType.VEC3),
@@ -1255,7 +1232,7 @@ public abstract class AShaderBase {
 		
 		protected String generateName()
 		{
-			return "v_" + mDataType.mTypeString + "_" + mVarCount++;
+			return "v_" + mDataType.getTypeString() + "_" + mVarCount++;
 		}
 		
 		/**
@@ -1305,7 +1282,7 @@ public abstract class AShaderBase {
 		/**
 		 * Get an element from an array. Equivalent to GLSL's '[]' indexing operator.
 		 * 
-		 * @param index
+		 * @param var
 		 * @return
 		 */
 		public ShaderVar elementAt(ShaderVar var)
