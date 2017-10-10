@@ -1,0 +1,3 @@
+[submodule "gradle-fury"]
+	path = gradle-fury
+	url = ../../gradle-fury/gradle-fury.git

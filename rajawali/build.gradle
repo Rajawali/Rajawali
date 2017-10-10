@@ -1,20 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'signing'
-
-String getVersionString() {
-    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
-    v = isTag() ? v : v + "-SNAPSHOT"
-    return v
-}
-
-group = GROUP
-version = getVersionString()
-
-if (isReleaseBuild()) {
-    status = 'release'
-} else {
-    status = 'integration'
-}
+apply from: "$rootDir/gradle-fury/gradle/android-support.gradle"
 
 repositories {
     mavenCentral()
@@ -22,15 +7,9 @@ repositories {
 }
 
 android {
-    compileSdkVersion rootProject.compileSdk
-    buildToolsVersion rootProject.buildTools
     enforceUniquePackageName = false
 
     defaultConfig {
-        minSdkVersion rootProject.minSdk
-        targetSdkVersion rootProject.targetSdk
-        versionCode rootProject.versionCode
-        versionName rootProject.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -58,5 +37,3 @@ android {
 dependencies {
     compile project(':core')
 }
-
-apply from: '../maven_push.gradle'

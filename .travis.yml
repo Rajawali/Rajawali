@@ -1,83 +1,26 @@
-language: android
 sudo: required
-before_install:
-- openssl aes-256-cbc -K $encrypted_64bf13095d6f_key -iv $encrypted_64bf13095d6f_iv
-  -in rajawali_secret.gpg.enc -out rajawali_secret.gpg -d
-- chmod +x gradlew
-jdk:
-- oraclejdk8
-env:
-  global:
-  - ANDROID_API_LEVEL=26
-  - EMULATOR_API_LEVEL=21
-  - ANDROID_BUILD_TOOLS_VERSION=26.0.2
-  - ANDROID_ABI=armeabi-v7a
-  - ADB_INSTALL_TIMEOUT=20
-android:
-  components:
-  - platform-tools
-  - tools
-  - ndk
-  - build-tools-$ANDROID_BUILD_TOOLS_VERSION
-  - android-$ANDROID_API_LEVEL
-  - android-$EMULATOR_API_LEVEL
-  - extra-android-support
-  - extra-android-m2repository
-  - extra-google-m2repository
-  - sys-img-$ANDROID_ABI-android-$ANDROID_API_LEVEL
-  - sys-img-$ANDROID_ABI-android-$EMULATOR_API_LEVEL
-before_script:
-- echo no | android create avd --force -n test -t android-$EMULATOR_API_LEVEL --abi $ANDROID_ABI
-- emulator -avd test -no-skin -no-audio -no-window &
-- android-wait-for-emulator
-script:
-- echo "Travis branch is $TRAVIS_BRANCH"
-- echo "Travis branch is in pull request? $TRAVIS_PULL_REQUEST"
-- echo "Travis tag $TRAVIS_TAG"
-- echo -e "" >> "gradle.properties"
-- echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
-- echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
-- echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
-- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r13b") >> "local.properties"
-- mkdir ~/.aws
-- echo -e "" >> ~/.aws/credentials
-- echo -e "[default]" >> ~/.aws/credentials
-- echo -e "aws_access_key_id=${AWS_ACCESS_KEY}" >> ~/.aws/credentials
-- echo -e "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
-- cat local.properties
-- adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-- "./gradlew :core:uploadTestsToS3 --stacktrace --continue"
- # Will execute :core:check
-#- "./gradlew :vuforia:check --stacktrace --continue"
-#- "./gradlew :vr:check --stacktrace --continue"
-#- "./gradlew :wear:check --stacktrace --continue"
-#- "./gradlew :wear-example:check --stacktrace --continue"
-- if $TRAVIS_PULL_REQUEST; then "Skipping uploadArchives on Pull Request"; else ./gradlew
-  :core:uploadArchives :rajawali:uploadArchives --stacktrace --continue; fi
-  # The following goes before the above 'fi' when the modules are again valid
-  #./gradlew :vuforia:uploadArchives --stacktrace --continue; ./gradlew :vr:uploadArchives --stacktrace --continue;
-  #./gradlew :wear:uploadArchives --stacktrace --continue;
+language: ruby
+services:
+  - docker
+stages:
+  - compile
+  - name: publish
+    if: branch = master OR branch = development OR tag IS present
 install:
-# Install the NDK
-- wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r13b-linux-x86_64.zip
-- unzip -qo android-ndk.zip
-
-# By default, we get an older version of libstdc++6 so we need to update it
-# http://askubuntu.com/questions/575505/glibcxx-3-4-20-not-found-how-to-fix-this-error
-- sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-- sudo apt-get update --yes
-- sudo apt-get install libstdc++6 --yes
-# Install CMake
-- wget https://github.com/Commit451/android-cmake-installer/releases/download/1.1.0/install-cmake.sh
-- chmod +x install-cmake.sh
-- ./install-cmake.sh
-notifications:
+  - docker pull rajawali/alpine-glibc-android:latest
+  -  bash .travis.before_script.sh
+jobs:
+  include:
+    - stage: compile
+      script: ./.travis.compile.sh
+    - stage: publish
+      script: ./.travis.publish.sh
   email:
-  - info@rozengain.com
-  - rajawali.framework@gmail.com
-  - Jared.Woolston@gmail.com
+    - info@rozengain.com
+    - rajawali.framework@gmail.com
+    - Jared.Woolston@gmail.com
   slack:
     secure: F5PgdetFfZrWrGlSg1jRQrYHH0miPpSqM969mzwh042OLybpAND4o7ouNAHYbWtVMVJ1KIK/bPKCdvW4Iy6pJpyntX+rQBYN6Tfs4bN/ivOrePBBDPLfr/uPGIY/EPAw4U7qeprRANAPT3IutCqx9FM/IAfNtzOWKcPOTRXNeoY=
 after_success:
-- bash <(curl -s https://codecov.io/bash) -f "./core/build/reports/jacoco/jacocoUnifiedTestDebug.xml" -F unittests
-- bash <(curl -s https://codecov.io/bash) -f "./core/glTestCoverage.xml" -F glunittests
+  - bash <(curl -s https://codecov.io/bash) -f "./core/build/reports/jacoco/jacocoUnifiedTestDebug.xml" -F unittests
+  - bash <(curl -s https://codecov.io/bash) -f "./core/glTestCoverage.xml" -F glunittests
