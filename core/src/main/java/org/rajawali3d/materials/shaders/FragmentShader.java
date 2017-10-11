@@ -18,7 +18,8 @@ import org.rajawali3d.lights.ALight;
 
 import java.util.List;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
+import c.org.rajawali3d.gl.glsl.qualifiers.Precision;
 
 
 public class FragmentShader extends AShader {
@@ -65,7 +66,7 @@ public class FragmentShader extends AShader {
 	{
 		super.initialize();
 
-		addPrecisionQualifier(DataType.FLOAT, Precision.HIGHP);
+		addPrecisionQualifier(ShaderVariable.FLOAT, Precision.HIGHP);
 
 		// -- uniforms
 

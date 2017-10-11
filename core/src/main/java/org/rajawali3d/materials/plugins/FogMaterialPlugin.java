@@ -6,7 +6,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 
 
 public class FogMaterialPlugin implements IMaterialPlugin {
@@ -94,10 +94,10 @@ public class FogMaterialPlugin implements IMaterialPlugin {
 		@Override
 		public void initialize() {
 			super.initialize();
-			muFogNear = (RFloat) addUniform(U_FOG_NEAR, DataType.FLOAT);
-			muFogFar = (RFloat) addUniform(U_FOG_FAR, DataType.FLOAT);
-			muFogEnabled = (RBool) addUniform(U_FOG_ENABLED, DataType.BOOL);
-			mvFogDensity = (RFloat) addVarying(V_FOG_DENSITY, DataType.FLOAT);
+			muFogNear = (RFloat) addUniform(U_FOG_NEAR, ShaderVariable.FLOAT);
+			muFogFar = (RFloat) addUniform(U_FOG_FAR, ShaderVariable.FLOAT);
+			muFogEnabled = (RBool) addUniform(U_FOG_ENABLED, ShaderVariable.BOOL);
+			mvFogDensity = (RFloat) addVarying(V_FOG_DENSITY, ShaderVariable.FLOAT);
 		}
 		
 		@Override
@@ -177,8 +177,8 @@ public class FogMaterialPlugin implements IMaterialPlugin {
 		public void initialize() {
 			super.initialize();
 			
-			muFogColor = (RVec3) addUniform(U_FOG_COLOR, DataType.VEC3);
-			mvFogDensity = (RFloat) addVarying(V_FOG_DENSITY, DataType.FLOAT);
+			muFogColor = (RVec3) addUniform(U_FOG_COLOR, ShaderVariable.VEC3);
+			mvFogDensity = (RFloat) addVarying(V_FOG_DENSITY, ShaderVariable.FLOAT);
 		}
 		
 		@Override

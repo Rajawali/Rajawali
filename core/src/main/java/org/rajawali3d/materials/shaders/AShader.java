@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
+import c.org.rajawali3d.gl.glsl.qualifiers.Precision;
 
 
 /**
@@ -219,11 +220,11 @@ public abstract class AShader extends AShaderBase {
 	 * So float​ will affect all floating-point scalars, vectors, and matrices. The int​ type will affect
 	 * all signed and unsigned integer scalars and vectors.
 	 *
-	 * @param dataType float, int
+	 * @param shaderVariable float, int
 	 * @param precision highp, mediump, lowp
 	 */
-	protected void addPrecisionQualifier(DataType dataType, Precision precision) {
-		mPrecisionQualifier.put(dataType.getTypeString(), precision);
+	protected void addPrecisionQualifier(ShaderVariable shaderVariable, Precision precision) {
+		mPrecisionQualifier.put(shaderVariable.getTypeString(), precision);
 	}
 
 	/**
@@ -237,7 +238,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected ShaderVar addUniform(IGlobalShaderVar var)
 	{
-		return addUniform(var.getVarString(), var.getDataType());
+		return addUniform(var.getVarString(), var.getShaderVariable());
 	}
 
 	/**
@@ -252,7 +253,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected ShaderVar addUniform(IGlobalShaderVar var, int index)
 	{
-		return addUniform(var.getVarString() + Integer.toString(index), var.getDataType());
+		return addUniform(var.getVarString() + Integer.toString(index), var.getShaderVariable());
 	}
 
 	/**
@@ -267,7 +268,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected ShaderVar addUniform(IGlobalShaderVar var, String suffix)
 	{
-		return addUniform(var.getVarString() + suffix, var.getDataType());
+		return addUniform(var.getVarString() + suffix, var.getShaderVariable());
 	}
 
 	/**
@@ -277,12 +278,12 @@ public abstract class AShader extends AShaderBase {
 	 * present, or 0 if no initializer is present. Sampler types cannot have initializers.
 	 *
 	 * @param name		The uniform name
-	 * @param dataType	The uniform data type
+	 * @param shaderVariable	The uniform data type
 	 * @return
 	 */
-	protected ShaderVar addUniform(String name, DataType dataType)
+	protected ShaderVar addUniform(String name, ShaderVariable shaderVariable)
 	{
-		ShaderVar v = getInstanceForDataType(name, dataType);
+		ShaderVar v = getInstanceForDataType(name, shaderVariable);
 		v.isGlobal(true);
 		mUniforms.put(v.getName(), v);
 		return v;
@@ -345,7 +346,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected ShaderVar addAttribute(IGlobalShaderVar var)
 	{
-		return addAttribute(var.getVarString(), var.getDataType());
+		return addAttribute(var.getVarString(), var.getShaderVariable());
 	}
 
 	/**
@@ -358,11 +359,11 @@ public abstract class AShader extends AShaderBase {
 	 * cannot be declared as arrays or structures.
 	 *
 	 * @param name		The attribute name
-	 * @param dataType	The attribute data type
+	 * @param shaderVariable	The attribute data type
 	 * @return
 	 */
-	protected ShaderVar addAttribute(String name, DataType dataType) {
-		ShaderVar v = getInstanceForDataType(name, dataType);
+	protected ShaderVar addAttribute(String name, ShaderVariable shaderVariable) {
+		ShaderVar v = getInstanceForDataType(name, shaderVariable);
 		v.isGlobal(true);
 		mAttributes.put(v.getName(), v);
 		return v;
@@ -388,7 +389,7 @@ public abstract class AShader extends AShaderBase {
 	 * @return
 	 */
 	protected ShaderVar addVarying(IGlobalShaderVar var) {
-		return addVarying(var.getVarString(), var.getDataType());
+		return addVarying(var.getVarString(), var.getShaderVariable());
 	}
 
 	/**
@@ -404,7 +405,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected ShaderVar addVarying(IGlobalShaderVar var, int index)
 	{
-		return addVarying(var.getVarString() + Integer.toString(index), var.getDataType());
+		return addVarying(var.getVarString() + Integer.toString(index), var.getShaderVariable());
 	}
 
 	/**
@@ -415,11 +416,11 @@ public abstract class AShader extends AShaderBase {
 	 * vertex shader returns undefined values if it is read before being written.
 	 *
 	 * @param name		The varying name
-	 * @param dataType	The varying data type
+	 * @param shaderVariable	The varying data type
 	 * @return
 	 */
-	protected ShaderVar addVarying(String name, DataType dataType) {
-		ShaderVar v = getInstanceForDataType(name, dataType);
+	protected ShaderVar addVarying(String name, ShaderVariable shaderVariable) {
+		ShaderVar v = getInstanceForDataType(name, shaderVariable);
 		v.isGlobal(true);
 		mVaryings.put(v.getName(), v);
 		return v;
@@ -442,7 +443,7 @@ public abstract class AShader extends AShaderBase {
 	 * @return
 	 */
 	protected ShaderVar addGlobal(IGlobalShaderVar var) {
-		return addGlobal(var.getVarString(), var.getDataType());
+		return addGlobal(var.getVarString(), var.getShaderVariable());
 	}
 
 	/**
@@ -453,18 +454,18 @@ public abstract class AShader extends AShaderBase {
 	 * @return
 	 */
 	protected ShaderVar addGlobal(IGlobalShaderVar var, int index) {
-		return addGlobal(var.getVarString() + Integer.toString(index), var.getDataType());
+		return addGlobal(var.getVarString() + Integer.toString(index), var.getShaderVariable());
 	}
 
 	/**
 	 * Adds a global variable
 	 *
 	 * @param name		The global name
-	 * @param dataType	The global data type
+	 * @param shaderVariable	The global data type
 	 * @return
 	 */
-	protected ShaderVar addGlobal(String name, DataType dataType) {
-		ShaderVar v = getInstanceForDataType(name, dataType);
+	protected ShaderVar addGlobal(String name, ShaderVariable shaderVariable) {
+		ShaderVar v = getInstanceForDataType(name, shaderVariable);
 		v.isGlobal(true);
 		mGlobals.put(v.getName(), v);
 		return v;
@@ -488,7 +489,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	public ShaderVar getGlobal(IGlobalShaderVar var)
 	{
-		ShaderVar v = getInstanceForDataType(var.getVarString(), var.getDataType());
+		ShaderVar v = getInstanceForDataType(var.getVarString(), var.getShaderVariable());
 		v.mInitialized = true;
 		return v;
 	}
@@ -502,7 +503,7 @@ public abstract class AShader extends AShaderBase {
 	 */
 	public ShaderVar getGlobal(IGlobalShaderVar var, int index)
 	{
-		ShaderVar v = getInstanceForDataType(var.getVarString() + Integer.toString(index), var.getDataType());
+		ShaderVar v = getInstanceForDataType(var.getVarString() + Integer.toString(index), var.getShaderVariable());
 		v.mInitialized = true;
 		return v;
 	}
@@ -548,7 +549,7 @@ public abstract class AShader extends AShaderBase {
 	 * @return
 	 */
 	protected ShaderVar addConst(String name, ShaderVar var) {
-		ShaderVar v = getInstanceForDataType(name, var.getDataType());
+		ShaderVar v = getInstanceForDataType(name, var.getShaderVariable());
 		v.setValue(var.getValue());
 		v.isGlobal(true);
 		mConstants.put(v.getName(), v);
@@ -692,7 +693,7 @@ public abstract class AShader extends AShaderBase {
 
 			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
 
-			s.append("const ").append(var.mDataType.getTypeString())
+			s.append("const ").append(var.mShaderVariable.getTypeString())
 					.append(" ").append(var.mName).append(arrayStr)
 					.append(" = ").append(var.getValue()).append(";\n");
 		}
@@ -718,7 +719,7 @@ public abstract class AShader extends AShaderBase {
 
 			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
 
-			s.append("uniform ").append(var.mDataType.getTypeString())
+			s.append("uniform ").append(var.mShaderVariable.getTypeString())
 					.append(" ").append(var.mName).append(arrayStr).append(";\n");
 		}
 
@@ -741,7 +742,7 @@ public abstract class AShader extends AShaderBase {
 		while (iter.hasNext()) {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
-			s.append("attribute ").append(var.mDataType.getTypeString())
+			s.append("attribute ").append(var.mShaderVariable.getTypeString())
 					.append(" ").append(var.mName).append(";\n");
 		}
 
@@ -765,7 +766,7 @@ public abstract class AShader extends AShaderBase {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
 			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
-			s.append("varying ").append(var.mDataType.getTypeString())
+			s.append("varying ").append(var.mShaderVariable.getTypeString())
 					.append(" ").append(var.mName).append(arrayStr).append(";\n");
 		}
 
@@ -789,7 +790,7 @@ public abstract class AShader extends AShaderBase {
 			Entry<String, ShaderVar> e = iter.next();
 			ShaderVar var = e.getValue();
 			String arrayStr = var.isArray() ? "[" +var.getArraySize()+ "]" : "";
-			s.append(var.mDataType.getTypeString())
+			s.append(var.mShaderVariable.getTypeString())
 					.append(" ").append(var.mName).append(arrayStr).append(";\n");
 		}
 
@@ -823,7 +824,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar subtract(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		ShaderVar var = getInstanceForDataType(var1.getShaderVariable());
 		var.setName(var1.getName() + " - " + var2.getName());
 		var.mInitialized = true;
 		return var;
@@ -841,7 +842,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar divide(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		ShaderVar var = getInstanceForDataType(var1.getShaderVariable());
 		var.setName(var1.getName() + " / " + var2.getName());
 		var.mInitialized = true;
 		return var;
@@ -849,7 +850,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar multiply(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		ShaderVar var = getInstanceForDataType(var1.getShaderVariable());
 		var.setName(var1.getName() + " * " + var2.getName());
 		var.mInitialized = true;
 		return var;
@@ -857,7 +858,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar max(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		ShaderVar var = getInstanceForDataType(var1.getShaderVariable());
 		var.setName("max(" + var1.getName() + ", " + var2.getName() + ")");
 		var.mInitialized = true;
 		return var;
@@ -865,14 +866,14 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar max(ShaderVar var1, float value2)
 	{
-		ShaderVar s = new ShaderVar("max(" + var1.getName() + ", " + Float.toString(value2) + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("max(" + var1.getName() + ", " + Float.toString(value2) + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar min(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		ShaderVar var = getInstanceForDataType(var1.getShaderVariable());
 		var.setName("min(" + var1.getName() + ", " + var2.getName() + ")");
 		var.mInitialized = true;
 		return var;
@@ -880,7 +881,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar min(ShaderVar var1, float value2)
 	{
-		ShaderVar s = new ShaderVar("min(" + var1.getName() + ", " + Float.toString(value2) + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("min(" + var1.getName() + ", " + Float.toString(value2) + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
@@ -897,118 +898,118 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar sqrt(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("sqrt(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("sqrt(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar inversesqrt(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("inversesqrt(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("inversesqrt(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar texture1D(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("texture1D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		ShaderVar s = new ShaderVar("texture1D(" + var1.getName() + ", " + var2.getName() + ")", ShaderVariable.VEC4);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar texture2D(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("texture2D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		ShaderVar s = new ShaderVar("texture2D(" + var1.getName() + ", " + var2.getName() + ")", ShaderVariable.VEC4);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar texture3D(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("texture3D(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		ShaderVar s = new ShaderVar("texture3D(" + var1.getName() + ", " + var2.getName() + ")", ShaderVariable.VEC4);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar textureCube(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("textureCube(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		ShaderVar s = new ShaderVar("textureCube(" + var1.getName() + ", " + var2.getName() + ")", ShaderVariable.VEC4);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public RVec4 texture2DProj(ShaderVar var1, ShaderVar var2)
 	{
-		RVec4 s = new RVec4("texture2DProj(" + var1.getName() + ", " + var2.getName() + ")", DataType.VEC4);
+		RVec4 s = new RVec4("texture2DProj(" + var1.getName() + ", " + var2.getName() + ")", ShaderVariable.VEC4);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar distance(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("distance(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("distance(" + var1.getName() + ", " + var2.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar clamp(ShaderVar var, float value1, float value2)
 	{
-		ShaderVar s = new ShaderVar("clamp(" + var.getName() + ", " + Float.toString(value1) + ", " + Float.toString(value2) + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("clamp(" + var.getName() + ", " + Float.toString(value1) + ", " + Float.toString(value2) + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar mix(ShaderVar var1, ShaderVar var2, float value)
 	{
-		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + Float.toString(value) + ")", DataType.VEC3);
+		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + Float.toString(value) + ")", ShaderVariable.VEC3);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar mix(ShaderVar var1, ShaderVar var2, ShaderVar var3)
 	{
-		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + var3.getName() + ")", DataType.VEC3);
+		ShaderVar s = new ShaderVar("mix(" + var1.getName() + ", " + var2.getName() + ", " + var3.getName() + ")", ShaderVariable.VEC3);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar dot(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("dot(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("dot(" + var1.getName() + ", " + var2.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar cos(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("cos(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("cos(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar acos(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("acos(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("acos(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar sin(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("sin(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("sin(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar tan(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("tan(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("tan(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
     public ShaderVar atan(ShaderVar y, ShaderVar x) {
-        ShaderVar s = new ShaderVar("atan(" + y.getName() + ", " + x.getName() + ")", DataType.FLOAT);
+        ShaderVar s = new ShaderVar("atan(" + y.getName() + ", " + x.getName() + ")", ShaderVariable.FLOAT);
         s.mInitialized = true;
         return s;
     }
@@ -1016,42 +1017,42 @@ public abstract class AShader extends AShaderBase {
 
     public ShaderVar pow(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("pow(" + var1.getName() + ", " + var2.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("pow(" + var1.getName() + ", " + var2.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar mod(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar s = new ShaderVar("mod(" + var1.getName() + ", " + var2.getName() + ")", var1.getDataType());
+		ShaderVar s = new ShaderVar("mod(" + var1.getName() + ", " + var2.getName() + ")", var1.getShaderVariable());
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar length(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("length(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("length(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar floor(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("floor(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("floor(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar radians(ShaderVar var)
 	{
-		ShaderVar s = new ShaderVar("radians(" + var.getName() + ")", DataType.FLOAT);
+		ShaderVar s = new ShaderVar("radians(" + var.getName() + ")", ShaderVariable.FLOAT);
 		s.mInitialized = true;
 		return s;
 	}
 
 	public ShaderVar reflect(ShaderVar var1, ShaderVar var2)
 	{
-		ShaderVar var = getInstanceForDataType(var1.getDataType());
+		ShaderVar var = getInstanceForDataType(var1.getShaderVariable());
 		var.setName("reflect(" + var1.getName() + ", " + var2.getName() + ")");
 		var.mInitialized = true;
 		return var;
@@ -1190,7 +1191,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castInt(String value)
 	{
-		ShaderVar v = new ShaderVar("int(" + value + ")", DataType.INT);
+		ShaderVar v = new ShaderVar("int(" + value + ")", ShaderVariable.INT);
 		v.mInitialized = true;
 		return v;
 	}
@@ -1207,7 +1208,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castVec2(String x, String y)
 	{
-		ShaderVar v = new ShaderVar("vec2(" + x + ", " + y + ")", DataType.VEC2);
+		ShaderVar v = new ShaderVar("vec2(" + x + ", " + y + ")", ShaderVariable.VEC2);
 		v.mInitialized = true;
 		return v;
 	}
@@ -1219,7 +1220,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castVec2(String x)
 	{
-		ShaderVar v = new ShaderVar("vec2(" + x + ")", DataType.VEC2);
+		ShaderVar v = new ShaderVar("vec2(" + x + ")", ShaderVariable.VEC2);
 		v.mInitialized = true;
 		return v;
 	}
@@ -1236,7 +1237,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castVec3(ShaderVar x, ShaderVar y, ShaderVar z)
 	{
-		ShaderVar v = new ShaderVar(DataType.VEC3);
+		ShaderVar v = new ShaderVar(ShaderVariable.VEC3);
         v.setValue("vec3(" + x.getName() + ", " + y.getName() + ", " + z.getName() + ")");
 		v.mInitialized = true;
 		return v;
@@ -1244,7 +1245,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castVec3(String var)
 	{
-		ShaderVar v = new ShaderVar("vec3(" + var + ")", DataType.VEC3);
+		ShaderVar v = new ShaderVar("vec3(" + var + ")", ShaderVariable.VEC3);
 		v.mInitialized = true;
 		return v;
 	}
@@ -1266,7 +1267,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castVec4(String var)
 	{
-		ShaderVar v = new ShaderVar("vec4(" + var + ")", DataType.VEC4);
+		ShaderVar v = new ShaderVar("vec4(" + var + ")", ShaderVariable.VEC4);
 		v.mInitialized = true;
 		return v;
 	}
@@ -1278,7 +1279,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castVec4(String var, float value)
 	{
-		ShaderVar v = new ShaderVar("vec4(" + var + ", " + value + ")", DataType.VEC4);
+		ShaderVar v = new ShaderVar("vec4(" + var + ", " + value + ")", ShaderVariable.VEC4);
 		v.mInitialized = true;
 		return v;
 	}
@@ -1290,7 +1291,7 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castMat3(ShaderVar var)
 	{
-		ShaderVar v = new ShaderVar("mat3(" + var.getName() + ")", DataType.MAT3);
+		ShaderVar v = new ShaderVar("mat3(" + var.getName() + ")", ShaderVariable.MAT3);
 		v.mInitialized = true;
 		return v;
 	}
@@ -1302,14 +1303,14 @@ public abstract class AShader extends AShaderBase {
 
 	public ShaderVar castMat4(ShaderVar var)
 	{
-		ShaderVar v = new ShaderVar("mat4(" + var.getName() + ")", DataType.MAT3);
+		ShaderVar v = new ShaderVar("mat4(" + var.getName() + ")", ShaderVariable.MAT3);
 		v.mInitialized = true;
 		return v;
 	}
 
 	public ShaderVar enclose(ShaderVar value)
 	{
-		ShaderVar var = getReturnTypeForOperation(value.getDataType(), value.getDataType());
+		ShaderVar var = getReturnTypeForOperation(value.getShaderVariable(), value.getShaderVariable());
 		var.setValue("(" + value.getName() + ")");
 		var.setName(var.getValue());
 		return var;

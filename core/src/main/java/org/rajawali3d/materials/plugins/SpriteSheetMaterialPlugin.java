@@ -6,7 +6,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 import android.os.SystemClock;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 
 
 public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
@@ -77,8 +77,8 @@ public class SpriteSheetMaterialPlugin implements IMaterialPlugin {
 		{
 			super.initialize();
 
-			muCurrentFrame = (RFloat) addUniform(U_CURRENT_FRAME, DataType.FLOAT);
-			muNumTiles = (RVec2) addUniform(U_NUM_TILES, DataType.VEC2);
+			muCurrentFrame = (RFloat) addUniform(U_CURRENT_FRAME, ShaderVariable.FLOAT);
+			muNumTiles = (RVec2) addUniform(U_NUM_TILES, ShaderVariable.VEC2);
 		}
 		
 		@Override

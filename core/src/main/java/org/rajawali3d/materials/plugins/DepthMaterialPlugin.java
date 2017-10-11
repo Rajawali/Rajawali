@@ -5,7 +5,7 @@ import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import android.opengl.GLES20;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 
 
 public class DepthMaterialPlugin implements IMaterialPlugin {
@@ -63,7 +63,7 @@ public class DepthMaterialPlugin implements IMaterialPlugin {
 		@Override
 		public void initialize() {
 			super.initialize();
-			muFarPlane = (RFloat) addUniform(U_FAR_PLANE, DataType.FLOAT);
+			muFarPlane = (RFloat) addUniform(U_FAR_PLANE, ShaderVariable.FLOAT);
 		}
 		
 		@Override

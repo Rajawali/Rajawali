@@ -22,32 +22,32 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment.LightsShaderVar;
 import android.opengl.GLES20;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 
 
 public class ToonFragmentShaderFragment extends AShader implements IShaderFragment {
 	public final static String SHADER_ID = "TOON_FRAGMENT";
 	
 	public static enum ToonShaderVar implements IGlobalShaderVar {
-		U_TOON_COLOR0("uToonColor0", DataType.VEC4),
-		U_TOON_COLOR1("uToonColor1", DataType.VEC4),
-		U_TOON_COLOR2("uToonColor2", DataType.VEC4),
-		U_TOON_COLOR3("uToonColor3", DataType.VEC4);
+		U_TOON_COLOR0("uToonColor0", ShaderVariable.VEC4),
+		U_TOON_COLOR1("uToonColor1", ShaderVariable.VEC4),
+		U_TOON_COLOR2("uToonColor2", ShaderVariable.VEC4),
+		U_TOON_COLOR3("uToonColor3", ShaderVariable.VEC4);
 		
 		private String mVarString;
-		private DataType mDataType;
+		private ShaderVariable mShaderVariable;
 
-		ToonShaderVar(String varString, DataType dataType) {
+		ToonShaderVar(String varString, ShaderVariable shaderVariable) {
 			mVarString = varString;
-			mDataType = dataType;
+			mShaderVariable = shaderVariable;
 		}
 
 		public String getVarString() {
 			return mVarString;
 		}
 
-		public DataType getDataType() {
-			return mDataType;
+		public ShaderVariable getShaderVariable() {
+			return mShaderVariable;
 		}
 	}
 	

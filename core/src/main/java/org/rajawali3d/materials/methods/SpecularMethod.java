@@ -17,7 +17,7 @@ import java.util.List;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.specular.PhongFragmentShaderFragment;
 
@@ -50,24 +50,24 @@ public abstract class SpecularMethod {
 	 *
 	 */
 	public static enum SpecularShaderVar implements IGlobalShaderVar {
-		U_SPECULAR_COLOR("uSpecularColor", DataType.VEC3),
-		U_SPECULAR_INTENSITY("uSpecularIntensity", DataType.FLOAT),
-		U_SHININESS("uShininess", DataType.FLOAT);
+		U_SPECULAR_COLOR("uSpecularColor", ShaderVariable.VEC3),
+		U_SPECULAR_INTENSITY("uSpecularIntensity", ShaderVariable.FLOAT),
+		U_SHININESS("uShininess", ShaderVariable.FLOAT);
 
 		private String mVarString;
-		private DataType mDataType;
+		private ShaderVariable mShaderVariable;
 
-		SpecularShaderVar(String varString, DataType dataType) {
+		SpecularShaderVar(String varString, ShaderVariable shaderVariable) {
 			mVarString = varString;
-			mDataType = dataType;
+			mShaderVariable = shaderVariable;
 		}
 
 		public String getVarString() {
 			return mVarString;
 		}
 
-		public DataType getDataType() {
-			return mDataType;
+		public ShaderVariable getShaderVariable() {
+			return mShaderVariable;
 		}
 	}
 

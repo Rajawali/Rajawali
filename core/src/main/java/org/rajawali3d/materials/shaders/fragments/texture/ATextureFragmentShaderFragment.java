@@ -16,7 +16,7 @@ import android.opengl.GLES20;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 import c.org.rajawali3d.textures.BaseTexture;
 import c.org.rajawali3d.textures.annotation.Type;
 import c.org.rajawali3d.textures.annotation.Wrap;
@@ -85,11 +85,11 @@ public abstract class ATextureFragmentShaderFragment extends AShader implements 
 		{
 			BaseTexture texture = mTextures.get(i);
 			if(texture.getTextureType() == Type.CUBE_MAP)
-				muCubeTextures[textureCount++] = (RSamplerCube) addUniform(texture.getTextureName(), DataType.SAMPLERCUBE);
+				muCubeTextures[textureCount++] = (RSamplerCube) addUniform(texture.getTextureName(), ShaderVariable.SAMPLERCUBE);
 			else if(texture.getTextureType() == Type.VIDEO_TEXTURE)
-				muVideoTextures[videoTextureCount++] = (RSamplerExternalOES) addUniform(texture.getTextureName(), DataType.SAMPLER_EXTERNAL_EOS);
+				muVideoTextures[videoTextureCount++] = (RSamplerExternalOES) addUniform(texture.getTextureName(), ShaderVariable.SAMPLER_EXTERNAL_EOS);
 			else
-				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), DataType.SAMPLER2D);
+				muTextures[textureCount++] = (RSampler2D) addUniform(texture.getTextureName(), ShaderVariable.SAMPLER2D);
 
 			muInfluence[i] = (RFloat) addUniform(DefaultShaderVar.U_INFLUENCE, texture.getTextureName());
 

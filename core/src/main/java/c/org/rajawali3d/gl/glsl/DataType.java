@@ -7,67 +7,66 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Base class for all GLSL Data Types
+ * Declared final to prevent the possibility of instantiating this class.
  *
- * @author Jared.Woolston (Jared.Woolston@gmail.com)
- * @author dennis.ippel
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public class DataType {
+public final class DataType {
 
-    private static final Set<Class<? extends DataType>> GLES20_VALID
-        = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends DataType>, Boolean>());
-    private static final Set<Class<? extends DataType>> GLES30_VALID
-        = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends DataType>, Boolean>());
-    private static final Set<Class<? extends DataType>> GLES31_VALID
-        = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends DataType>, Boolean>());
-    private static final Set<Class<? extends DataType>> GLES32_VALID
-        = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends DataType>, Boolean>());
+    private static final Set<Class<? extends ShaderVariable>> GLES20_VALID
+        = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends ShaderVariable>, Boolean>());
+    private static final Set<Class<? extends ShaderVariable>> GLES30_VALID
+        = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends ShaderVariable>, Boolean>());
+    private static final Set<Class<? extends ShaderVariable>> GLES31_VALID
+        = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends ShaderVariable>, Boolean>());
+    private static final Set<Class<? extends ShaderVariable>> GLES32_VALID
+        = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends ShaderVariable>, Boolean>());
 
-    public static boolean isValidForGLES20(@NonNull DataType type) {
+    public static boolean isValidForGLES20(@NonNull ShaderVariable type) {
         return GLES20_VALID.contains(type);
     }
 
-    public static boolean isValidForGLES30(@NonNull DataType type) {
+    public static boolean isValidForGLES30(@NonNull ShaderVariable type) {
         return GLES30_VALID.contains(type);
     }
 
-    public static boolean isValidForGLES31(@NonNull DataType type) {
+    public static boolean isValidForGLES31(@NonNull ShaderVariable type) {
         return GLES31_VALID.contains(type);
     }
 
-    public static boolean isValidForGLES32(@NonNull DataType type) {
+    public static boolean isValidForGLES32(@NonNull ShaderVariable type) {
         return GLES32_VALID.contains(type);
     }
 
-    public static void addDataTypeForGLES20(@NonNull Class<? extends DataType> type) {
+    public static void addDataTypeForGLES20(@NonNull Class<? extends ShaderVariable> type) {
         GLES20_VALID.add(type);
     }
 
-    public static void addDataTypeForGLES30(@NonNull Class<? extends DataType> type) {
+    public static void addDataTypeForGLES30(@NonNull Class<? extends ShaderVariable> type) {
         GLES30_VALID.add(type);
     }
 
-    public static void addDataTypeForGLES31(@NonNull Class<? extends DataType> type) {
+    public static void addDataTypeForGLES31(@NonNull Class<? extends ShaderVariable> type) {
         GLES31_VALID.add(type);
     }
 
-    public static void addDataTypeForGLES32(@NonNull Class<? extends DataType> type) {
+    public static void addDataTypeForGLES32(@NonNull Class<? extends ShaderVariable> type) {
         GLES32_VALID.add(type);
     }
 
-    public static void removeDataTypeForGLES20(@NonNull Class<? extends DataType> type) {
+    public static void removeDataTypeForGLES20(@NonNull Class<? extends ShaderVariable> type) {
         GLES20_VALID.remove(type);
     }
 
-    public static void removeDataTypeForGLES30(@NonNull Class<? extends DataType> type) {
+    public static void removeDataTypeForGLES30(@NonNull Class<? extends ShaderVariable> type) {
         GLES30_VALID.remove(type);
     }
 
-    public static void removeDataTypeForGLES31(@NonNull Class<? extends DataType> type) {
+    public static void removeDataTypeForGLES31(@NonNull Class<? extends ShaderVariable> type) {
         GLES31_VALID.remove(type);
     }
 
-    public static void removeDataTypeForGLES32(@NonNull Class<? extends DataType> type) {
+    public static void removeDataTypeForGLES32(@NonNull Class<? extends ShaderVariable> type) {
         GLES32_VALID.remove(type);
     }
 
@@ -285,771 +284,765 @@ public class DataType {
         GLES32_VALID.add(UIMAGECUBEARRAY.class);
     }
 
-    private String typeString;
-
-    protected DataType(String typeString) {
-        this.typeString = typeString;
-    }
-
-    public String getTypeString() {
-        return typeString;
-    }
-
     /**
      * No function return value or empty parameter list
      */
-    public static final class VOID extends DataType {
+    public static final class VOID extends ShaderVariable {
 
-        public VOID() {
-            super("void");
+        public VOID(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "void");
         }
     }
 
     /**
      * Boolean
      */
-    public static final class BOOL extends DataType {
+    public static final class BOOL extends ShaderVariable {
 
-        public BOOL() {
-            super("bool");
+        public BOOL(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "bool");
         }
     }
 
     /**
      * Signed Integer
      */
-    public static final class INT extends DataType {
+    public static final class INT extends ShaderVariable {
 
-        public INT() {
-            super("int");
+        public INT(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "int");
         }
     }
 
     /**
      * Unsigned Integer
      */
-    public static final class UINT extends DataType {
+    public static final class UINT extends ShaderVariable {
 
-        public UINT() {
-            super("uint");
+        public UINT(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uint");
         }
     }
 
     /**
      * Floating point scalar
      */
-    public static final class FLOAT extends DataType {
+    public static final class FLOAT extends ShaderVariable {
 
-        public FLOAT() {
-            super("float");
+        public FLOAT(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "float");
         }
     }
 
     /**
      * 2-component floating point vector
      */
-    public static final class VEC2 extends DataType {
+    public static final class VEC2 extends ShaderVariable {
 
-        public VEC2() {
-            super("vec2");
+        public VEC2(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "vec2");
         }
     }
 
     /**
      * 3-component floating point vector
      */
-    public static final class VEC3 extends DataType {
+    public static final class VEC3 extends ShaderVariable {
 
-        public VEC3() {
-            super("vec3");
+        public VEC3(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "vec3");
         }
     }
 
     /**
      * 4-component floating point vector
      */
-    public static final class VEC4 extends DataType {
+    public static final class VEC4 extends ShaderVariable {
 
-        public VEC4() {
-            super("vec4");
+        public VEC4(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "vec4");
         }
     }
 
     /**
      * 2-component boolean vector
      */
-    public static final class BVEC2 extends DataType {
+    public static final class BVEC2 extends ShaderVariable {
 
-        public BVEC2() {
-            super("bvec2");
+        public BVEC2(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "bvec2");
         }
     }
 
     /**
      * 3-component boolean vector
      */
-    public static final class BVEC3 extends DataType {
+    public static final class BVEC3 extends ShaderVariable {
 
-        public BVEC3() {
-            super("bvec3");
+        public BVEC3(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "bvec3");
         }
     }
 
     /**
      * 4-component boolean vector
      */
-    public static final class BVEC4 extends DataType {
+    public static final class BVEC4 extends ShaderVariable {
 
-        public BVEC4() {
-            super("bvec4");
+        public BVEC4(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "bvec4");
         }
     }
 
     /**
      * 2-component signed integer vector
      */
-    public static final class IVEC2 extends DataType {
+    public static final class IVEC2 extends ShaderVariable {
 
-        public IVEC2() {
-            super("ivec2");
+        public IVEC2(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "ivec2");
         }
     }
 
     /**
      * 3-component signed integer vector
      */
-    public static final class IVEC3 extends DataType {
+    public static final class IVEC3 extends ShaderVariable {
 
-        public IVEC3() {
-            super("ivec3");
+        public IVEC3(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "ivec3");
         }
     }
 
     /**
      * 4-component signed integer vector
      */
-    public static final class IVEC4 extends DataType {
+    public static final class IVEC4 extends ShaderVariable {
 
-        public IVEC4() {
-            super("ivec4");
+        public IVEC4(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "ivec4");
         }
     }
 
     /**
      * 2-component unsigned integer vector
      */
-    public static final class UVEC2 extends DataType {
+    public static final class UVEC2 extends ShaderVariable {
 
-        public UVEC2() {
-            super("uvec2");
+        public UVEC2(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uvec2");
         }
     }
 
     /**
      * 3-component unsigned integer vector
      */
-    public static final class UVEC3 extends DataType {
+    public static final class UVEC3 extends ShaderVariable {
 
-        public UVEC3() {
-            super("uvec3");
+        public UVEC3(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uvec3");
         }
     }
 
     /**
      * 4-component unsigned integer vector
      */
-    public static final class UVEC4 extends DataType {
+    public static final class UVEC4 extends ShaderVariable {
 
-        public UVEC4() {
-            super("uvec4");
+        public UVEC4(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uvec4");
         }
     }
 
     /**
      * 2x2 floating point matrix
      */
-    public static final class MAT2 extends DataType {
+    public static final class MAT2 extends ShaderVariable {
 
-        public MAT2() {
-            super("mat2");
+        public MAT2(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat2");
         }
     }
 
     /**
      * 3x3 floating point matrix
      */
-    public static final class MAT3 extends DataType {
+    public static final class MAT3 extends ShaderVariable {
 
-        public MAT3() {
-            super("mat3");
+        public MAT3(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat3");
         }
     }
 
     /**
      * 4x4 floating point matrix
      */
-    public static final class MAT4 extends DataType {
+    public static final class MAT4 extends ShaderVariable {
 
-        public MAT4() {
-            super("mat4");
+        public MAT4(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat4");
         }
     }
 
     /**
      * 2x2 floating point matrix
      */
-    public static final class MAT2x2 extends DataType {
+    public static final class MAT2x2 extends ShaderVariable {
 
-        public MAT2x2() {
-            super("mat2x2");
+        public MAT2x2(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat2x2");
         }
     }
 
     /**
      * 2x3 floating point matrix
      */
-    public static final class MAT2x3 extends DataType {
+    public static final class MAT2x3 extends ShaderVariable {
 
-        public MAT2x3() {
-            super("mat2x3");
+        public MAT2x3(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat2x3");
         }
     }
 
     /**
      * 2x4 floating point matrix
      */
-    public static final class MAT2x4 extends DataType {
+    public static final class MAT2x4 extends ShaderVariable {
 
-        public MAT2x4() {
-            super("mat2x4");
+        public MAT2x4(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat2x4");
         }
     }
 
     /**
      * 3x2 floating point matrix
      */
-    public static final class MAT3x2 extends DataType {
+    public static final class MAT3x2 extends ShaderVariable {
 
-        public MAT3x2() {
-            super("mat3x2");
+        public MAT3x2(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat3x2");
         }
     }
 
     /**
      * 3x3 floating point matrix
      */
-    public static final class MAT3x3 extends DataType {
+    public static final class MAT3x3 extends ShaderVariable {
 
-        public MAT3x3() {
-            super("mat3x3");
+        public MAT3x3(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat3x3");
         }
     }
 
     /**
      * 3x4 floating point matrix
      */
-    public static final class MAT3x4 extends DataType {
+    public static final class MAT3x4 extends ShaderVariable {
 
-        public MAT3x4() {
-            super("mat3x4");
+        public MAT3x4(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat3x4");
         }
     }
 
     /**
      * 4x2 floating point matrix
      */
-    public static final class MAT4x2 extends DataType {
+    public static final class MAT4x2 extends ShaderVariable {
 
-        public MAT4x2() {
-            super("mat4x2");
+        public MAT4x2(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat4x2");
         }
     }
 
     /**
      * 4x3 floating point matrix
      */
-    public static final class MAT4x3 extends DataType {
+    public static final class MAT4x3 extends ShaderVariable {
 
-        public MAT4x3() {
-            super("mat4x3");
+        public MAT4x3(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat4x3");
         }
     }
 
     /**
      * 4x4 floating point matrix
      */
-    public static final class MAT4x4 extends DataType {
+    public static final class MAT4x4 extends ShaderVariable {
 
-        public MAT4x4() {
-            super("mat4x4");
+        public MAT4x4(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "mat4x4");
         }
     }
 
     /**
      * Access a 2D Texture
      */
-    public static final class SAMPLER2D extends DataType {
+    public static final class SAMPLER2D extends ShaderVariable {
 
-        public SAMPLER2D() {
-            super("sampler2D");
+        public SAMPLER2D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "sampler2D");
         }
     }
 
     /**
      * Access a 2D Image
      */
-    public static final class IMAGE2D extends DataType {
+    public static final class IMAGE2D extends ShaderVariable {
 
-        public IMAGE2D() {
-            super("image2D");
+        public IMAGE2D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "image2D");
         }
     }
 
     /**
      * Access a 3D Texture
      */
-    public static final class SAMPLER3D extends DataType {
+    public static final class SAMPLER3D extends ShaderVariable {
 
-        public SAMPLER3D() {
-            super("sampler3D");
+        public SAMPLER3D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "sampler3D");
         }
     }
 
     /**
      * Access a 3D Image
      */
-    public static final class IMAGE3D extends DataType {
+    public static final class IMAGE3D extends ShaderVariable {
 
-        public IMAGE3D() {
-            super("image3D");
+        public IMAGE3D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "image3D");
         }
     }
 
     /**
      * Access a cube mapped Texture
      */
-    public static final class SAMPLERCUBE extends DataType {
+    public static final class SAMPLERCUBE extends ShaderVariable {
 
-        public SAMPLERCUBE() {
-            super("samplerCube");
+        public SAMPLERCUBE(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "samplerCube");
         }
     }
 
     /**
      * Access a cube mapped Image
      */
-    public static final class IMAGECUBE extends DataType {
+    public static final class IMAGECUBE extends ShaderVariable {
 
-        public IMAGECUBE() {
-            super("imageCube");
+        public IMAGECUBE(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "imageCube");
         }
     }
 
     /**
      * Access cube map depth texture w/comparison
      */
-    public static final class SAMPLERCUBESHADOW extends DataType {
+    public static final class SAMPLERCUBESHADOW extends ShaderVariable {
 
-        public SAMPLERCUBESHADOW() {
-            super("samplerCubeShadow");
+        public SAMPLERCUBESHADOW(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "samplerCubeShadow");
         }
     }
 
     /**
      * Access 2D depth texture with comparison
      */
-    public static final class SAMPLER2DSHADOW extends DataType {
+    public static final class SAMPLER2DSHADOW extends ShaderVariable {
 
-        public SAMPLER2DSHADOW() {
-            super("sampler2DShadow");
+        public SAMPLER2DSHADOW(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "sampler2DShadow");
         }
     }
 
     /**
      * Access 2D array texture
      */
-    public static final class SAMPLER2DARRAY extends DataType {
+    public static final class SAMPLER2DARRAY extends ShaderVariable {
 
-        public SAMPLER2DARRAY() {
-            super("sampler2DArray");
+        public SAMPLER2DARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "sampler2DArray");
         }
     }
 
     /**
      * Access 2D array image
      */
-    public static final class IMAGE2DARRAY extends DataType {
+    public static final class IMAGE2DARRAY extends ShaderVariable {
 
-        public IMAGE2DARRAY() {
-            super("image2DArray");
+        public IMAGE2DARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "image2DArray");
         }
     }
 
     /**
      * Access 2D array depth texture with comparison
      */
-    public static final class SAMPLER2DARRAYSHADOW extends DataType {
+    public static final class SAMPLER2DARRAYSHADOW extends ShaderVariable {
 
-        public SAMPLER2DARRAYSHADOW() {
-            super("sampler2DArrayShadow");
+        public SAMPLER2DARRAYSHADOW(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "sampler2DArrayShadow");
         }
     }
 
     /**
      * Access a 2D multisample texture
      */
-    public static final class SAMPLER2DMS extends DataType {
+    public static final class SAMPLER2DMS extends ShaderVariable {
 
-        public SAMPLER2DMS() {
-            super("sampler2DMS");
+        public SAMPLER2DMS(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "sampler2DMS");
         }
     }
 
     /**
      * Access a buffer texture
      */
-    public static final class SAMPLERBUFFER extends DataType {
+    public static final class SAMPLERBUFFER extends ShaderVariable {
 
-        public SAMPLERBUFFER() {
-            super("samplerBuffer");
+        public SAMPLERBUFFER(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "samplerBuffer");
         }
     }
 
     /**
      * Access a buffer image
      */
-    public static final class IMAGEBUFFER extends DataType {
+    public static final class IMAGEBUFFER extends ShaderVariable {
 
-        public IMAGEBUFFER() {
-            super("imageBuffer");
+        public IMAGEBUFFER(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "imageBuffer");
         }
     }
 
     /**
      * Access a cube map array texture
      */
-    public static final class SAMPLERCUBEARRAY extends DataType {
+    public static final class SAMPLERCUBEARRAY extends ShaderVariable {
 
-        public SAMPLERCUBEARRAY() {
-            super("samplerCubeArray");
+        public SAMPLERCUBEARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "samplerCubeArray");
         }
     }
 
     /**
      * Access a cube map array image
      */
-    public static final class IMAGECUBEARRAY extends DataType {
+    public static final class IMAGECUBEARRAY extends ShaderVariable {
 
-        public IMAGECUBEARRAY() {
-            super("imageCubeArray");
+        public IMAGECUBEARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "imageCubeArray");
         }
     }
 
     /**
      * Access a cube map array depth texture with comparison
      */
-    public static final class SAMPLERCUBEARRAYSHADOW extends DataType {
+    public static final class SAMPLERCUBEARRAYSHADOW extends ShaderVariable {
 
-        public SAMPLERCUBEARRAYSHADOW() {
-            super("samplerCubeArrayShadow");
+        public SAMPLERCUBEARRAYSHADOW(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "samplerCubeArrayShadow");
         }
     }
 
     /**
      * Access a 2D multisample array texture
      */
-    public static final class SAMPLER2DMSARRAY extends DataType {
+    public static final class SAMPLER2DMSARRAY extends ShaderVariable {
 
-        public SAMPLER2DMSARRAY() {
-            super("sampler2DMSArray");
+        public SAMPLER2DMSARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "sampler2DMSArray");
         }
     }
 
     /**
      * Access an integer 2D texture
      */
-    public static final class ISAMPLER2D extends DataType {
+    public static final class ISAMPLER2D extends ShaderVariable {
 
-        public ISAMPLER2D() {
-            super("isampler2D");
+        public ISAMPLER2D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "isampler2D");
         }
     }
 
     /**
      * Access an integer 2D image
      */
-    public static final class IIMAGE2D extends DataType {
+    public static final class IIMAGE2D extends ShaderVariable {
 
-        public IIMAGE2D() {
-            super("iimage2D");
+        public IIMAGE2D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "iimage2D");
         }
     }
 
     /**
      * Access an integer 3D texture
      */
-    public static final class ISAMPLER3D extends DataType {
+    public static final class ISAMPLER3D extends ShaderVariable {
 
-        public ISAMPLER3D() {
-            super("isampler3D");
+        public ISAMPLER3D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "isampler3D");
         }
     }
 
     /**
      * Access an integer 3D image
      */
-    public static final class IIMAGE3D extends DataType {
+    public static final class IIMAGE3D extends ShaderVariable {
 
-        public IIMAGE3D() {
-            super("iimage3D");
+        public IIMAGE3D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "iimage3D");
         }
     }
 
     /**
      * Access integer cube mapped texture
      */
-    public static final class ISAMPLERCUBE extends DataType {
+    public static final class ISAMPLERCUBE extends ShaderVariable {
 
-        public ISAMPLERCUBE() {
-            super("isamplerCube");
+        public ISAMPLERCUBE(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "isamplerCube");
         }
     }
 
     /**
      * Access integer cube mapped image
      */
-    public static final class IIMAGECUBE extends DataType {
+    public static final class IIMAGECUBE extends ShaderVariable {
 
-        public IIMAGECUBE() {
-            super("iimageCube");
+        public IIMAGECUBE(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "iimageCube");
         }
     }
 
     /**
      * Access integer 2D array texture
      */
-    public static final class ISAMPLER2DARRAY extends DataType {
+    public static final class ISAMPLER2DARRAY extends ShaderVariable {
 
-        public ISAMPLER2DARRAY() {
-            super("isampler2DArray");
+        public ISAMPLER2DARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "isampler2DArray");
         }
     }
 
     /**
      * Access integer 2D array image
      */
-    public static final class IIMAGE2DARRAY extends DataType {
+    public static final class IIMAGE2DARRAY extends ShaderVariable {
 
-        public IIMAGE2DARRAY() {
-            super("iimage2DArray");
+        public IIMAGE2DARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "iimage2DArray");
         }
     }
 
     /**
      * Access an integer 2D multisample texture
      */
-    public static final class ISAMPLER2DMS extends DataType {
+    public static final class ISAMPLER2DMS extends ShaderVariable {
 
-        public ISAMPLER2DMS() {
-            super("isampler2DMS");
+        public ISAMPLER2DMS(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "isampler2DMS");
         }
     }
 
     /**
      * Access an integer buffer texture
      */
-    public static final class ISAMPLERBUFFER extends DataType {
+    public static final class ISAMPLERBUFFER extends ShaderVariable {
 
-        public ISAMPLERBUFFER() {
-            super("isamplerBuffer");
+        public ISAMPLERBUFFER(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "isamplerBuffer");
         }
     }
 
     /**
      * Access an integer buffer image
      */
-    public static final class IIMAGEBUFFER extends DataType {
+    public static final class IIMAGEBUFFER extends ShaderVariable {
 
-        public IIMAGEBUFFER() {
-            super("iimageBuffer");
+        public IIMAGEBUFFER(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "iimageBuffer");
         }
     }
 
     /**
      * Access an integer cube map array texture
      */
-    public static final class ISAMPLERCUBEARRAY extends DataType {
+    public static final class ISAMPLERCUBEARRAY extends ShaderVariable {
 
-        public ISAMPLERCUBEARRAY() {
-            super("isamplerCubeArray");
+        public ISAMPLERCUBEARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "isamplerCubeArray");
         }
     }
 
     // Access an integer cube map array image
-    public static final class IIMAGECUBEARRAY extends DataType {
+    public static final class IIMAGECUBEARRAY extends ShaderVariable {
 
-        public IIMAGECUBEARRAY() {
-            super("iimageCubeArray");
+        public IIMAGECUBEARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "iimageCubeArray");
         }
     }
 
     /**
      * Access an integer 2D multisample array texture
      */
-    public static final class ISAMPLER2DMSARRAY extends DataType {
+    public static final class ISAMPLER2DMSARRAY extends ShaderVariable {
 
-        public ISAMPLER2DMSARRAY() {
-            super("isampler2DMSArray");
+        public ISAMPLER2DMSARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "isampler2DMSArray");
         }
     }
 
     /**
      * Access unsigned integer 2D texture
      */
-    public static final class USAMPLER2D extends DataType {
+    public static final class USAMPLER2D extends ShaderVariable {
 
-        public USAMPLER2D() {
-            super("usampler2D");
+        public USAMPLER2D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "usampler2D");
         }
     }
 
     /**
      * Access unsigned integer 2D image
      */
-    public static final class UIMAGE2D extends DataType {
+    public static final class UIMAGE2D extends ShaderVariable {
 
-        public UIMAGE2D() {
-            super("uimage2D");
+        public UIMAGE2D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uimage2D");
         }
     }
 
     /**
      * Access unsigned integer 3D texture
      */
-    public static final class USAMPLER3D extends DataType {
+    public static final class USAMPLER3D extends ShaderVariable {
 
-        public USAMPLER3D() {
-            super("usampler3D");
+        public USAMPLER3D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "usampler3D");
         }
     }
 
     /**
      * Access unsigned integer 3D image
      */
-    public static final class UIMAGE3D extends DataType {
+    public static final class UIMAGE3D extends ShaderVariable {
 
-        public UIMAGE3D() {
-            super("uimage3D");
+        public UIMAGE3D(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uimage3D");
         }
     }
 
     /**
      * Access unsigned integer cube mapped texture
      */
-    public static final class USAMPLERCUBE extends DataType {
+    public static final class USAMPLERCUBE extends ShaderVariable {
 
-        public USAMPLERCUBE() {
-            super("usamplerCube");
+        public USAMPLERCUBE(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "usamplerCube");
         }
     }
 
     /**
      * Access unsigned integer cube mapped image
      */
-    public static final class UIMAGECUBE extends DataType {
+    public static final class UIMAGECUBE extends ShaderVariable {
 
-        public UIMAGECUBE() {
-            super("uimageCube");
+        public UIMAGECUBE(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uimageCube");
         }
     }
 
     /**
      * Access unsigned integer 2D array texture
      */
-    public static final class USAMPLER2DARRAY extends DataType {
+    public static final class USAMPLER2DARRAY extends ShaderVariable {
 
-        public USAMPLER2DARRAY() {
-            super("usampler2DArray");
+        public USAMPLER2DARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "usampler2DArray");
         }
     }
 
     /**
      * Access unsigned integer 2D array image
      */
-    public static final class UIMAGE2DARRAY extends DataType {
+    public static final class UIMAGE2DARRAY extends ShaderVariable {
 
-        public UIMAGE2DARRAY() {
-            super("uimage2DArray");
+        public UIMAGE2DARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uimage2DArray");
         }
     }
 
     /**
      * Access an unsigned atomic counter
      */
-    public static final class ATOMIC_UINT extends DataType {
+    public static final class ATOMIC_UINT extends ShaderVariable {
 
-        public ATOMIC_UINT() {
-            super("atomic_uint");
+        public ATOMIC_UINT(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "atomic_uint");
         }
     }
 
     /**
      * Access unsigned integer 2D multisample texture
      */
-    public static final class USAMPLER2DMS extends DataType {
+    public static final class USAMPLER2DMS extends ShaderVariable {
 
-        public USAMPLER2DMS() {
-            super("usampler2DMS");
+        public USAMPLER2DMS(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "usampler2DMS");
         }
     }
 
     /**
      * Access an unsigned integer buffer texture
      */
-    public static final class USAMPLERBUFFER extends DataType {
+    public static final class USAMPLERBUFFER extends ShaderVariable {
 
-        public USAMPLERBUFFER() {
-            super("usamplerBuffer");
+        public USAMPLERBUFFER(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "usamplerBuffer");
         }
     }
 
     /**
      * Access an unsigned integer buffer image
      */
-    public static final class UIMAGEBUFFER extends DataType {
+    public static final class UIMAGEBUFFER extends ShaderVariable {
 
-        public UIMAGEBUFFER() {
-            super("uimageBuffer");
+        public UIMAGEBUFFER(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uimageBuffer");
         }
     }
 
     /**
      * Access an unsigned integer cube map array texture
      */
-    public static final class USAMPLERCUBEARRAY extends DataType {
+    public static final class USAMPLERCUBEARRAY extends ShaderVariable {
 
-        public USAMPLERCUBEARRAY() {
-            super("usamplerCubeArray");
+        public USAMPLERCUBEARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "usamplerCubeArray");
         }
     }
 
     /**
      * Access an unsigned integer cube map array image
      */
-    public static final class UIMAGECUBEARRAY extends DataType {
+    public static final class UIMAGECUBEARRAY extends ShaderVariable {
 
-        public UIMAGECUBEARRAY() {
-            super("uimageCubeArray");
+        public UIMAGECUBEARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "uimageCubeArray");
         }
     }
 
     /**
      * Access an unsigned integer 2D multisample array texture
      */
-    public static final class USAMPLER2DMSARRAY extends DataType {
+    public static final class USAMPLER2DMSARRAY extends ShaderVariable {
 
-        public USAMPLER2DMSARRAY() {
-            super("usampler2DMSArray");
+        public USAMPLER2DMSARRAY(@NonNull ShaderBuilder shaderBuilder) {
+            super(shaderBuilder, "usampler2DMSArray");
         }
+    }
+
+    private DataType() {
+        // Private default constructor to prevent instantiating.
     }
 }

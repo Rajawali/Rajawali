@@ -14,31 +14,31 @@ package org.rajawali3d.materials.plugins;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.animation.VertexAnimationVertexShaderFragment;
 
 
 public class VertexAnimationMaterialPlugin implements IMaterialPlugin {
 	public static enum VertexAnimationShaderVar implements IGlobalShaderVar {
-		A_NEXT_FRAME_POSITION("aNextFramePosition", DataType.VEC4),
-		A_NEXT_FRAME_NORMAL("aNextFrameNormal", DataType.VEC3),
-		U_INTERPOLATION("uInterpolation", DataType.FLOAT);
+		A_NEXT_FRAME_POSITION("aNextFramePosition", ShaderVariable.VEC4),
+		A_NEXT_FRAME_NORMAL("aNextFrameNormal", ShaderVariable.VEC3),
+		U_INTERPOLATION("uInterpolation", ShaderVariable.FLOAT);
 		
 		private String mVarString;
-		private DataType mDataType;
+		private ShaderVariable mShaderVariable;
 
-		VertexAnimationShaderVar(String varString, DataType dataType) {
+		VertexAnimationShaderVar(String varString, ShaderVariable shaderVariable) {
 			mVarString = varString;
-			mDataType = dataType;
+			mShaderVariable = shaderVariable;
 		}
 
 		public String getVarString() {
 			return mVarString;
 		}
 
-		public DataType getDataType() {
-			return mDataType;
+		public ShaderVariable getShaderVariable() {
+			return mShaderVariable;
 		}
 	}	
 	

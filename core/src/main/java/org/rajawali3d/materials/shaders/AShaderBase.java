@@ -13,7 +13,9 @@
 package org.rajawali3d.materials.shaders;
 
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
+
+import static c.org.rajawali3d.textures.RenderTargetTexture.RenderTargetTextureType.INT;
 
 /**
  * <p>
@@ -45,7 +47,7 @@ public abstract class AShaderBase {
 	public static interface IGlobalShaderVar
 	{
 		String getVarString();
-		DataType getDataType();
+		ShaderVariable getShaderVariable();
 	}
 	
 	/**
@@ -62,79 +64,57 @@ public abstract class AShaderBase {
 	 *
 	 */
 	public static enum DefaultShaderVar implements IGlobalShaderVar {
-		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4),
-		U_INVERSE_VIEW_MATRIX("uInverseViewMatrix", DataType.MAT4), U_MODEL_VIEW_MATRIX("uModelViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4),
-		U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT), U_INFLUENCE("uInfluence", DataType.FLOAT), U_REPEAT("uRepeat", DataType.VEC2),
-		U_OFFSET("uOffset", DataType.VEC2), U_TIME("uTime", DataType.FLOAT),
-		A_POSITION("aPosition", DataType.VEC4), A_TEXTURE_COORD("aTextureCoord", DataType.VEC2), A_NORMAL("aNormal", DataType.VEC3), A_VERTEX_COLOR("aVertexColor", DataType.VEC4),
-		V_TEXTURE_COORD("vTextureCoord", DataType.VEC2), V_CUBE_TEXTURE_COORD("vCubeTextureCoord", DataType.VEC3), V_NORMAL("vNormal", DataType.VEC3), V_COLOR("vColor", DataType.VEC4), V_EYE_DIR("vEyeDir", DataType.VEC3),
-		G_POSITION("gPosition", DataType.VEC4), G_NORMAL("gNormal", DataType.VEC3), G_COLOR("gColor", DataType.VEC4), G_TEXTURE_COORD("gTextureCoord", DataType.VEC2), G_SHADOW_VALUE("gShadowValue", DataType.FLOAT),
-		G_SPECULAR_VALUE("gSpecularValue", DataType.FLOAT);
+		U_MVP_MATRIX("uMVPMatrix", ShaderVariable.MAT4), U_NORMAL_MATRIX("uNormalMatrix", ShaderVariable.MAT3), U_MODEL_MATRIX("uModelMatrix", ShaderVariable.MAT4),
+		U_INVERSE_VIEW_MATRIX("uInverseViewMatrix", ShaderVariable.MAT4), U_MODEL_VIEW_MATRIX("uModelViewMatrix", ShaderVariable.MAT4), U_COLOR("uColor", ShaderVariable.VEC4),
+		U_COLOR_INFLUENCE("uColorInfluence", ShaderVariable.FLOAT), U_INFLUENCE("uInfluence", ShaderVariable.FLOAT), U_REPEAT("uRepeat", ShaderVariable.VEC2),
+		U_OFFSET("uOffset", ShaderVariable.VEC2), U_TIME("uTime", ShaderVariable.FLOAT),
+		A_POSITION("aPosition", ShaderVariable.VEC4), A_TEXTURE_COORD("aTextureCoord", ShaderVariable.VEC2), A_NORMAL("aNormal", ShaderVariable.VEC3), A_VERTEX_COLOR("aVertexColor", ShaderVariable.VEC4),
+		V_TEXTURE_COORD("vTextureCoord", ShaderVariable.VEC2), V_CUBE_TEXTURE_COORD("vCubeTextureCoord", ShaderVariable.VEC3), V_NORMAL("vNormal", ShaderVariable.VEC3), V_COLOR("vColor", ShaderVariable.VEC4), V_EYE_DIR("vEyeDir", ShaderVariable.VEC3),
+		G_POSITION("gPosition", ShaderVariable.VEC4), G_NORMAL("gNormal", ShaderVariable.VEC3), G_COLOR("gColor", ShaderVariable.VEC4), G_TEXTURE_COORD("gTextureCoord", ShaderVariable.VEC2), G_SHADOW_VALUE("gShadowValue", ShaderVariable.FLOAT),
+		G_SPECULAR_VALUE("gSpecularValue", ShaderVariable.FLOAT);
 		
 		private String mVarString;
-		private DataType mDataType;
+		private ShaderVariable mShaderVariable;
 		
-		DefaultShaderVar(String varString, DataType dataType) {
+		DefaultShaderVar(String varString, ShaderVariable shaderVariable) {
 			mVarString = varString;
-			mDataType = dataType;
+			mShaderVariable = shaderVariable;
 		}
 		
 		public String getVarString() {
 			return mVarString;
 		}
 		
-		public DataType getDataType() {
-			return mDataType;
+		public ShaderVariable getShaderVariable() {
+			return mShaderVariable;
 		}
 	}
 
-	/**
-	 * Precision qualifier. There are three precision qualifiers: highp​, mediump​, and lowp​. 
-	 * They have no semantic meaning or functional effect. They can apply to any floating-point 
-	 * type (vector or matrix), or any integer type.
-	 * 
-	 * @author dennis.ippel
-	 *
-	 */
-	public static enum Precision {
-		LOWP("lowp"), HIGHP("highp"), MEDIUMP("mediump");
-
-		private String mPrecisionString;
-
-		Precision(String precisionString) {
-			mPrecisionString = precisionString;
-		}
-
-		public String getPrecisionString() {
-			return mPrecisionString;
-		}
-	}
-	
 	protected int mVarCount;
 	protected StringBuilder mShaderSB;
 	
 	/**
-	 * Returns an instance of a GLSL data type for the given {@link DataType}.
+	 * Returns an instance of a GLSL data type for the given {@link ShaderVariable}.
 	 * 
-	 * @param dataType
+	 * @param shaderVariable
 	 * @return
 	 */
-	protected ShaderVar getInstanceForDataType(DataType dataType)
+	protected ShaderVar getInstanceForDataType(ShaderVariable shaderVariable)
 	{
-		return getInstanceForDataType(null,  dataType);
+		return getInstanceForDataType(null, shaderVariable);
 	}
 	
 	/**
-	 * Returns an instance of a GLSL data type for the given {@link DataType}.
+	 * Returns an instance of a GLSL data type for the given {@link ShaderVariable}.
 	 * A new {@link ShaderVar} with the specified name will be created.
 	 * 
 	 * @param name
-	 * @param dataType
+	 * @param shaderVariable
 	 * @return
 	 */
-	protected ShaderVar getInstanceForDataType(String name, DataType dataType)
+	protected ShaderVar getInstanceForDataType(String name, ShaderVariable shaderVariable)
 	{
-		switch(dataType)
+		switch(shaderVariable)
 		{
 		case INT:
 			return new RInt(name);
@@ -171,34 +151,34 @@ public abstract class AShaderBase {
 	 * @param right
 	 * @return
 	 */
-	protected ShaderVar getReturnTypeForOperation(DataType left, DataType right)
+	protected ShaderVar getReturnTypeForOperation(ShaderVariable left, ShaderVariable right)
 	{
 		ShaderVar out = null;
 		
 		if(left != right)
 			out = getInstanceForDataType(left);
-		else if(left == DataType.IVEC4 || right == DataType.IVEC4)
-			out = getInstanceForDataType(DataType.IVEC4);
-		else if(left == DataType.IVEC3 || right == DataType.IVEC3)
-			out = getInstanceForDataType(DataType.IVEC3);
-		else if(left == DataType.IVEC2 || right == DataType.IVEC2)
-			out = getInstanceForDataType(DataType.IVEC2);
-		else if(left == DataType.VEC4 || right == DataType.VEC4)
-			out = getInstanceForDataType(DataType.VEC4);
-		else if(left == DataType.VEC3 || right == DataType.VEC3)
-			out = getInstanceForDataType(DataType.VEC3);
-		else if(left == DataType.VEC2 || right == DataType.VEC2)
-			out = getInstanceForDataType(DataType.VEC2);
-		else if(left == DataType.MAT4 || right == DataType.MAT4)
-			out = getInstanceForDataType(DataType.MAT4);
-		else if(left == DataType.MAT3 || right == DataType.MAT3)
-			out = getInstanceForDataType(DataType.MAT3);
-		else if(left == DataType.MAT2 || right == DataType.MAT2)
-			out = getInstanceForDataType(DataType.MAT2);
-		else if(left == DataType.FLOAT || right == DataType.FLOAT)
-			out = getInstanceForDataType(DataType.FLOAT);
+		else if(left == ShaderVariable.IVEC4 || right == ShaderVariable.IVEC4)
+			out = getInstanceForDataType(ShaderVariable.IVEC4);
+		else if(left == ShaderVariable.IVEC3 || right == ShaderVariable.IVEC3)
+			out = getInstanceForDataType(ShaderVariable.IVEC3);
+		else if(left == ShaderVariable.IVEC2 || right == ShaderVariable.IVEC2)
+			out = getInstanceForDataType(ShaderVariable.IVEC2);
+		else if(left == ShaderVariable.VEC4 || right == ShaderVariable.VEC4)
+			out = getInstanceForDataType(ShaderVariable.VEC4);
+		else if(left == ShaderVariable.VEC3 || right == ShaderVariable.VEC3)
+			out = getInstanceForDataType(ShaderVariable.VEC3);
+		else if(left == ShaderVariable.VEC2 || right == ShaderVariable.VEC2)
+			out = getInstanceForDataType(ShaderVariable.VEC2);
+		else if(left == ShaderVariable.MAT4 || right == ShaderVariable.MAT4)
+			out = getInstanceForDataType(ShaderVariable.MAT4);
+		else if(left == ShaderVariable.MAT3 || right == ShaderVariable.MAT3)
+			out = getInstanceForDataType(ShaderVariable.MAT3);
+		else if(left == ShaderVariable.MAT2 || right == ShaderVariable.MAT2)
+			out = getInstanceForDataType(ShaderVariable.MAT2);
+		else if(left == ShaderVariable.FLOAT || right == ShaderVariable.FLOAT)
+			out = getInstanceForDataType(ShaderVariable.FLOAT);
 		else
-			out = getInstanceForDataType(DataType.INT);
+			out = getInstanceForDataType(ShaderVariable.INT);
 		
 		return out;
 	}
@@ -213,12 +193,12 @@ public abstract class AShaderBase {
 	{
 		public RVec2()
 		{
-			super(DataType.VEC2);
+			super(ShaderVariable.VEC2);
 		}
 		
 		public RVec2(String name)
 		{
-			super(name, DataType.VEC2);
+			super(name, ShaderVariable.VEC2);
 		}
 		
 		public RVec2(DefaultShaderVar var)
@@ -226,19 +206,19 @@ public abstract class AShaderBase {
 			this(var, new RVec4("vec2()"));
 		}
 		
-		public RVec2(DataType dataType)
+		public RVec2(ShaderVariable shaderVariable)
 		{
-			super(dataType);
+			super(shaderVariable);
 		}
 		
-		public RVec2(String name, DataType dataType)
+		public RVec2(String name, ShaderVariable shaderVariable)
 		{
-			super(name, dataType);
+			super(name, shaderVariable);
 		}
 		
 		public RVec2(String name, ShaderVar value)
 		{
-			super(name, DataType.VEC2, value);
+			super(name, ShaderVariable.VEC2, value);
 		}
 		
 		public RVec2(DefaultShaderVar var, ShaderVar value)
@@ -246,24 +226,24 @@ public abstract class AShaderBase {
 			this(var.getVarString(), value);
 		}
 		
-		public RVec2(String name, DataType dataType, ShaderVar value)
+		public RVec2(String name, ShaderVariable shaderVariable, ShaderVar value)
 		{
-			super(name, dataType, value);
+			super(name, shaderVariable, value);
 		}
 		
 		public RVec2(ShaderVar value)
 		{
-			super(DataType.VEC2, value);
+			super(ShaderVariable.VEC2, value);
 		}
 		
-		public RVec2(DataType dataType, ShaderVar value)
+		public RVec2(ShaderVariable shaderVariable, ShaderVar value)
 		{
-			super(dataType, value);
+			super(shaderVariable, value);
 		}
 		
 		public ShaderVar xy()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, mShaderVariable);
 			v.setName(this.mName + ".xy");
 			v.mInitialized = true;
 			return v;
@@ -303,7 +283,7 @@ public abstract class AShaderBase {
 		
 		public ShaderVar index(int index)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, mShaderVariable);
 			v.setName(this.mName + "[" + index + "]");
 			return v;
 		}
@@ -330,22 +310,22 @@ public abstract class AShaderBase {
 	{
 		public RVec3()
 		{
-			super(DataType.VEC3);
+			super(ShaderVariable.VEC3);
 		}
 		
 		public RVec3(String name)
 		{
-			super(name, DataType.VEC3);
+			super(name, ShaderVariable.VEC3);
 		}
 		
-		public RVec3(DataType dataType)
+		public RVec3(ShaderVariable shaderVariable)
 		{
-			super(dataType);
+			super(shaderVariable);
 		}
 		
-		public RVec3(String name, DataType dataType)
+		public RVec3(String name, ShaderVariable shaderVariable)
 		{
-			super(name, dataType);
+			super(name, shaderVariable);
 		}
 		
 		public RVec3(DefaultShaderVar var)
@@ -355,12 +335,12 @@ public abstract class AShaderBase {
 		
 		public RVec3(ShaderVar value)
 		{
-			super(DataType.VEC3, value);
+			super(ShaderVariable.VEC3, value);
 		}
 		
-		public RVec3(DataType dataType, ShaderVar value)
+		public RVec3(ShaderVariable shaderVariable, ShaderVar value)
 		{
-			super(dataType, value);
+			super(shaderVariable, value);
 		}
 		
 		public RVec3(DefaultShaderVar var, ShaderVar value)
@@ -370,17 +350,17 @@ public abstract class AShaderBase {
 		
 		public RVec3(String name, ShaderVar value)
 		{
-			super(name, DataType.VEC3, value);
+			super(name, ShaderVariable.VEC3, value);
 		}
 		
-		public RVec3(String name, DataType dataType, ShaderVar value)
+		public RVec3(String name, ShaderVariable shaderVariable, ShaderVar value)
 		{
-			super(name, dataType, value);
+			super(name, shaderVariable, value);
 		}
 		
 		public ShaderVar xyz()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, mShaderVariable);
 			v.setName(this.mName + ".xyz");
 			v.mInitialized = true;
 			return v;
@@ -388,7 +368,7 @@ public abstract class AShaderBase {
 		
 		public ShaderVar rgb()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, mShaderVariable);
 			v.setName(this.mName + ".rgb");
 			v.mInitialized = true;
 			return v;
@@ -448,32 +428,32 @@ public abstract class AShaderBase {
 	{
 		public RVec4()
 		{
-			super(DataType.VEC4);
+			super(ShaderVariable.VEC4);
 		}
 		
 		public RVec4(String name)
 		{
-			super(name, DataType.VEC4);
+			super(name, ShaderVariable.VEC4);
 		}
 		
-		public RVec4(DataType dataType)
+		public RVec4(ShaderVariable shaderVariable)
 		{
-			super(dataType);
+			super(shaderVariable);
 		}
 		
-		public RVec4(String name, DataType dataType)
+		public RVec4(String name, ShaderVariable shaderVariable)
 		{
-			super(name, dataType);
+			super(name, shaderVariable);
 		}
 		
 		public RVec4(ShaderVar value)
 		{
-			super(DataType.VEC4, value);
+			super(ShaderVariable.VEC4, value);
 		}
 		
-		public RVec4(DataType dataType, ShaderVar value)
+		public RVec4(ShaderVariable shaderVariable, ShaderVar value)
 		{
-			super(dataType, value);
+			super(shaderVariable, value);
 		}
 		
 		public RVec4(DefaultShaderVar var)
@@ -488,17 +468,17 @@ public abstract class AShaderBase {
 		
 		public RVec4(String name, ShaderVar value)
 		{
-			super(name, DataType.VEC4, value);
+			super(name, ShaderVariable.VEC4, value);
 		}
 		
-		public RVec4(String name, DataType dataType, ShaderVar value)
+		public RVec4(String name, ShaderVariable shaderVariable, ShaderVar value)
 		{
-			super(name, dataType, value);
+			super(name, shaderVariable, value);
 		}
 		
 		public ShaderVar xyzw()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, mShaderVariable);
 			v.setName(this.mName + ".xyzw");
 			v.mInitialized = true;
 			return v;
@@ -506,7 +486,7 @@ public abstract class AShaderBase {
 		
 		public ShaderVar rgba()
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, mDataType);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, mShaderVariable);
 			v.setName(this.mName + ".rgba");
 			v.mInitialized = true;
 			return v;
@@ -551,22 +531,22 @@ public abstract class AShaderBase {
 	{
 		public RSampler2D()
 		{
-			super(DataType.SAMPLER2D);
+			super(ShaderVariable.SAMPLER2D);
 		}
 		
-		public RSampler2D(DataType dataType)
+		public RSampler2D(ShaderVariable shaderVariable)
 		{
-			super(dataType);
+			super(shaderVariable);
 		}
 		
 		public RSampler2D(String name)
 		{
-			super(name, DataType.SAMPLER2D);
+			super(name, ShaderVariable.SAMPLER2D);
 		}
 		
-		public RSampler2D(String name, DataType dataType)
+		public RSampler2D(String name, ShaderVariable shaderVariable)
 		{
-			super(name, dataType);
+			super(name, shaderVariable);
 		}
 	}
 	
@@ -581,12 +561,12 @@ public abstract class AShaderBase {
 	{
 		public RSamplerExternalOES()
 		{
-			super(DataType.SAMPLER_EXTERNAL_EOS);
+			super(ShaderVariable.SAMPLER_EXTERNAL_EOS);
 		}
 		
 		public RSamplerExternalOES(String name)
 		{
-			super(name, DataType.SAMPLER_EXTERNAL_EOS);
+			super(name, ShaderVariable.SAMPLER_EXTERNAL_EOS);
 		}
 	}
 
@@ -601,12 +581,12 @@ public abstract class AShaderBase {
 	{
 		public RSamplerCube()
 		{
-			super(DataType.SAMPLERCUBE);
+			super(ShaderVariable.SAMPLERCUBE);
 		}
 		
 		public RSamplerCube(String name)
 		{
-			super(name, DataType.SAMPLERCUBE);
+			super(name, ShaderVariable.SAMPLERCUBE);
 		}
 	}
 	
@@ -620,31 +600,31 @@ public abstract class AShaderBase {
 	{
 		public RBool()
 		{
-			super(DataType.BOOL);
+			super(ShaderVariable.BOOL);
 		}
 		
 		public RBool(String name)
 		{
-			super(name, DataType.BOOL);
+			super(name, ShaderVariable.BOOL);
 		}
 		
-		public RBool(DataType dataType)
+		public RBool(ShaderVariable shaderVariable)
 		{
-			super(dataType);
+			super(shaderVariable);
 		}
 		
-		public RBool(String name, DataType dataType)
+		public RBool(String name, ShaderVariable shaderVariable)
 		{
-			super(name, dataType);
+			super(name, shaderVariable);
 		}
 		
 		public RBool(ShaderVar value) {
-			super(DataType.BOOL, value);
+			super(ShaderVariable.BOOL, value);
 		}
 		
-		public RBool(DataType dataType, ShaderVar value)
+		public RBool(ShaderVariable shaderVariable, ShaderVar value)
 		{
-			super(dataType, value);
+			super(shaderVariable, value);
 		}
 	}
 	
@@ -658,32 +638,32 @@ public abstract class AShaderBase {
 	{
 		public RMat3()
 		{
-			super(DataType.MAT3);
+			super(ShaderVariable.MAT3);
 		}
 		
 		public RMat3(String name)
 		{
-			super(name, DataType.MAT3);
+			super(name, ShaderVariable.MAT3);
 		}
 		
-		public RMat3(DataType dataType)
+		public RMat3(ShaderVariable shaderVariable)
 		{
-			super(dataType);
+			super(shaderVariable);
 		}
 		
-		public RMat3(String name, DataType dataType)
+		public RMat3(String name, ShaderVariable shaderVariable)
 		{
-			super(name, dataType);
+			super(name, shaderVariable);
 		}
 		
 		public RMat3(ShaderVar value)
 		{
-			super(DataType.MAT3, value);
+			super(ShaderVariable.MAT3, value);
 		}
 		
-		public RMat3(DataType dataType, ShaderVar value)
+		public RMat3(ShaderVariable shaderVariable, ShaderVar value)
 		{
-			super(dataType, value);
+			super(shaderVariable, value);
 		}
 	}
 	
@@ -697,17 +677,17 @@ public abstract class AShaderBase {
 	{
 		public RMat4()
 		{
-			super(DataType.MAT4);
+			super(ShaderVariable.MAT4);
 		}
 		
 		public RMat4(String name)
 		{
-			super(name, DataType.MAT4);
+			super(name, ShaderVariable.MAT4);
 		}
 		
 		public RMat4(ShaderVar value)
 		{
-			super(DataType.MAT4, value);
+			super(ShaderVariable.MAT4, value);
 		}
 		
 		public void setValue(float m00, float m01, float m02, float m03,
@@ -812,27 +792,27 @@ public abstract class AShaderBase {
 	{
 		public RFloat()
 		{
-			super(DataType.FLOAT);
+			super(ShaderVariable.FLOAT);
 		}
 		
 		public RFloat(String name)
 		{
-			super(name, DataType.FLOAT);
+			super(name, ShaderVariable.FLOAT);
 		}
 		
 		public RFloat(String name, ShaderVar value)
 		{
-			super(name, DataType.FLOAT, value);
+			super(name, ShaderVariable.FLOAT, value);
 		}
 	
 		public RFloat(ShaderVar value)
 		{
-			super(DataType.FLOAT, value);
+			super(ShaderVariable.FLOAT, value);
 		}
 		
 		public RFloat(IGlobalShaderVar var, int index)
 		{
-			super(DataType.FLOAT, var.getVarString() + Integer.toString(index));
+			super(ShaderVariable.FLOAT, var.getVarString() + Integer.toString(index));
 		}
 		
 		public RFloat(double value)
@@ -842,7 +822,7 @@ public abstract class AShaderBase {
 		
 		public RFloat(float value)
 		{
-			super(Float.toString(value), DataType.FLOAT, Float.toString(value), false);
+			super(Float.toString(value), ShaderVariable.FLOAT, Float.toString(value), false);
 		}
 		
 		public void setValue(float value) {
@@ -860,27 +840,27 @@ public abstract class AShaderBase {
 	{
 		public RInt()
 		{
-			super(DataType.INT);
+			super(ShaderVariable.INT);
 		}
 		
 		public RInt(String name)
 		{
-			super(name, DataType.INT);
+			super(name, ShaderVariable.INT);
 		}
 		
 		public RInt(String name, ShaderVar value)
 		{
-			super(name, DataType.INT, value);
+			super(name, ShaderVariable.INT, value);
 		}
 		
 		public RInt(ShaderVar value)
 		{
-			super(DataType.INT, value);
+			super(ShaderVariable.INT, value);
 		}
 		
 		public RInt(float value)
 		{
-			super(DataType.INT, Float.toString(value));
+			super(ShaderVariable.INT, Float.toString(value));
 		}
 	}
 
@@ -895,7 +875,7 @@ public abstract class AShaderBase {
 	 */
 	protected class ShaderVar {
 		protected String mName;
-		protected DataType mDataType;
+		protected ShaderVariable mShaderVariable;
 		protected String mValue;
 		protected boolean mIsGlobal;
 		protected boolean mInitialized;
@@ -905,38 +885,38 @@ public abstract class AShaderBase {
 		public ShaderVar() {
 		}
 
-		public ShaderVar(DataType dataType)
+		public ShaderVar(ShaderVariable shaderVariable)
 		{
-			this(null, dataType);
+			this(null, shaderVariable);
 		}
 		
-		public ShaderVar(String name, DataType dataType) {
-			this(name, dataType, null, true);
+		public ShaderVar(String name, ShaderVariable shaderVariable) {
+			this(name, shaderVariable, null, true);
 		}
 		
-		public ShaderVar(DataType dataType, String value) {
-			this(null, dataType, value, true);
+		public ShaderVar(ShaderVariable shaderVariable, String value) {
+			this(null, shaderVariable, value, true);
 		}
 
-		public ShaderVar(DataType dataType, ShaderVar value) {
-			this(dataType, value.getName());
+		public ShaderVar(ShaderVariable shaderVariable, ShaderVar value) {
+			this(shaderVariable, value.getName());
 		}
 		
-		public ShaderVar(String name, DataType dataType, ShaderVar value) {
-			this(name, dataType, value.getName());
+		public ShaderVar(String name, ShaderVariable shaderVariable, ShaderVar value) {
+			this(name, shaderVariable, value.getName());
 		}
 		
-		public ShaderVar(String name, DataType dataType, String value) {
-			this(name, dataType, value, true);
+		public ShaderVar(String name, ShaderVariable shaderVariable, String value) {
+			this(name, shaderVariable, value, true);
 		}
 
-		public ShaderVar(DataType dataType, String value, boolean write) {
-			this(null, dataType, value, write);
+		public ShaderVar(ShaderVariable shaderVariable, String value, boolean write) {
+			this(null, shaderVariable, value, write);
 		}
 		
-		public ShaderVar(String name, DataType dataType, String value, boolean write) {
+		public ShaderVar(String name, ShaderVariable shaderVariable, String value, boolean write) {
 			this.mName = name;
-			this.mDataType = dataType;
+			this.mShaderVariable = shaderVariable;
 			if(name == null) this.mName = generateName();
 			this.mValue = value;
 			if(write && value != null)
@@ -951,8 +931,8 @@ public abstract class AShaderBase {
 			return this.mName;
 		}
 
-		public DataType getDataType() {
-			return this.mDataType;
+		public ShaderVariable getShaderVariable() {
+			return this.mShaderVariable;
 		}
 
 		public String getValue() {
@@ -971,14 +951,14 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar add(ShaderVar value)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, value.getShaderVariable());
 			v.setValue(this.mName + " + " + value.getName());
 			v.setName(v.getValue());
 			return v;
 		}
 
         public ShaderVar add(float value) {
-            ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
+            ShaderVar v = getReturnTypeForOperation(mShaderVariable, ShaderVariable.FLOAT);
             v.setValue(this.mName + " + " + Float.toString(value));
             v.setName(v.getValue());
             return v;
@@ -992,7 +972,7 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar subtract(ShaderVar value)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, value.getShaderVariable());
 			v.setValue(this.mName + " - " + value.getName());
 			v.setName(v.getValue());
 			return v;
@@ -1006,7 +986,7 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar subtract(float value)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, ShaderVariable.FLOAT);
 			v.setValue(this.mName + " - " + Float.toString(value));
 			v.setName(v.getValue());
 			return v;
@@ -1020,7 +1000,7 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar multiply(ShaderVar value)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, value.getShaderVariable());
 			v.setValue(this.mName + " * " + value.getName());
 			v.setName(v.getValue());
 			return v;
@@ -1034,7 +1014,7 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar multiply(float value)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, ShaderVariable.FLOAT);
 			v.setValue(this.mName + " * " + Float.toString(value));
 			v.setName(v.getValue());
 			return v;
@@ -1048,7 +1028,7 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar divide(ShaderVar value)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, value.getShaderVariable());
 			v.setValue(this.mName + " / " + value.getName());
 			v.setName(v.getValue());
 			return v;
@@ -1056,7 +1036,7 @@ public abstract class AShaderBase {
 		
 		public ShaderVar divide(float value)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, DataType.FLOAT);
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, ShaderVariable.FLOAT);
 			v.setValue(this.mName + " / " + Float.toString(value));
 			v.setName(v.getValue());
 			return v;
@@ -1071,7 +1051,7 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar modulus(ShaderVar value)
 		{
-			ShaderVar v = getReturnTypeForOperation(mDataType, value.getDataType());
+			ShaderVar v = getReturnTypeForOperation(mShaderVariable, value.getShaderVariable());
 			v.setValue(this.mName + " % " + value.getName());
 			v.setName(v.getValue());
 			return v;
@@ -1219,7 +1199,7 @@ public abstract class AShaderBase {
 		
 		protected void writeInitialize(String value)
 		{
-			mShaderSB.append(mDataType.getTypeString());
+			mShaderSB.append(mShaderVariable.getTypeString());
 			mShaderSB.append(" ");
 			mInitialized = true;
 			writeAssign(value);
@@ -1232,7 +1212,7 @@ public abstract class AShaderBase {
 		
 		protected String generateName()
 		{
-			return "v_" + mDataType.getTypeString() + "_" + mVarCount++;
+			return "v_" + mShaderVariable.getTypeString() + "_" + mVarCount++;
 		}
 		
 		/**
@@ -1298,7 +1278,7 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar elementAt(String index)
 		{
-			ShaderVar var = new ShaderVar(mDataType);
+			ShaderVar var = new ShaderVar(mShaderVariable);
 			var.setName(mName + "[" + index + "]");
 			var.mInitialized = true;
 			return var;
@@ -1311,7 +1291,7 @@ public abstract class AShaderBase {
 		 */
 		public ShaderVar negate()
 		{
-			ShaderVar var = new ShaderVar(mDataType);
+			ShaderVar var = new ShaderVar(mShaderVariable);
 			var.setName("-" + mName);
 			var.mInitialized = true;
 			return var;

@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.IShaderFragment;
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.diffuse.LambertFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.diffuse.LambertVertexShaderFragment;
@@ -53,22 +53,22 @@ public abstract class DiffuseMethod {
 		/**
 		 * The dot product between the surface normal and the light direction. 
 		 */
-		L_NDOTL("NdotL", DataType.FLOAT);
+		L_NDOTL("NdotL", ShaderVariable.FLOAT);
 		
 		private String mVarString;
-		private DataType mDataType;
+		private ShaderVariable mShaderVariable;
 
-		DiffuseShaderVar(String varString, DataType dataType) {
+		DiffuseShaderVar(String varString, ShaderVariable shaderVariable) {
 			mVarString = varString;
-			mDataType = dataType;
+			mShaderVariable = shaderVariable;
 		}
 
 		public String getVarString() {
 			return mVarString;
 		}
 
-		public DataType getDataType() {
-			return mDataType;
+		public ShaderVariable getShaderVariable() {
+			return mShaderVariable;
 		}
 	}
 	

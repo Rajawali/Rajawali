@@ -25,43 +25,43 @@ import org.rajawali3d.util.ArrayUtils;
 
 import java.util.List;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 
 public class LightsVertexShaderFragment extends AShader implements IShaderFragment {
 
 	public final static String SHADER_ID = "LIGHTS_VERTEX";
 
 	public static enum LightsShaderVar implements IGlobalShaderVar {
-		U_LIGHT_COLOR("uLightColor", DataType.VEC3),
-		U_LIGHT_POWER("uLightPower", DataType.FLOAT),
-		U_LIGHT_POSITION("uLightPosition", DataType.VEC3),
-		U_LIGHT_DIRECTION("uLightDirection", DataType.VEC3),
-		U_LIGHT_ATTENUATION("uLightAttenuation", DataType.VEC4),
-		U_SPOT_EXPONENT("uSpotExponent", DataType.FLOAT),
-		U_SPOT_CUTOFF_ANGLE("uSpotCutoffAngle", DataType.FLOAT),
-		U_SPOT_FALLOFF("uSpotFalloff", DataType.FLOAT),
-		U_AMBIENT_COLOR("uAmbientColor", DataType.VEC3),
-		U_AMBIENT_INTENSITY("uAmbientIntensity", DataType.VEC3),
-		V_LIGHT_ATTENUATION("vLightAttenuation", DataType.FLOAT),
-		V_EYE("vEye", DataType.VEC4),
-		V_AMBIENT_COLOR("vAmbientColor", DataType.VEC3),
-		G_LIGHT_DISTANCE("gLightDistance", DataType.FLOAT),
-		G_LIGHT_DIRECTION("gLightDirection", DataType.VEC3);
+		U_LIGHT_COLOR("uLightColor", ShaderVariable.VEC3),
+		U_LIGHT_POWER("uLightPower", ShaderVariable.FLOAT),
+		U_LIGHT_POSITION("uLightPosition", ShaderVariable.VEC3),
+		U_LIGHT_DIRECTION("uLightDirection", ShaderVariable.VEC3),
+		U_LIGHT_ATTENUATION("uLightAttenuation", ShaderVariable.VEC4),
+		U_SPOT_EXPONENT("uSpotExponent", ShaderVariable.FLOAT),
+		U_SPOT_CUTOFF_ANGLE("uSpotCutoffAngle", ShaderVariable.FLOAT),
+		U_SPOT_FALLOFF("uSpotFalloff", ShaderVariable.FLOAT),
+		U_AMBIENT_COLOR("uAmbientColor", ShaderVariable.VEC3),
+		U_AMBIENT_INTENSITY("uAmbientIntensity", ShaderVariable.VEC3),
+		V_LIGHT_ATTENUATION("vLightAttenuation", ShaderVariable.FLOAT),
+		V_EYE("vEye", ShaderVariable.VEC4),
+		V_AMBIENT_COLOR("vAmbientColor", ShaderVariable.VEC3),
+		G_LIGHT_DISTANCE("gLightDistance", ShaderVariable.FLOAT),
+		G_LIGHT_DIRECTION("gLightDirection", ShaderVariable.VEC3);
 
 		private String mVarString;
-		private DataType mDataType;
+		private ShaderVariable mShaderVariable;
 
-		LightsShaderVar(String varString, DataType dataType) {
+		LightsShaderVar(String varString, ShaderVariable shaderVariable) {
 			mVarString = varString;
-			mDataType = dataType;
+			mShaderVariable = shaderVariable;
 		}
 
 		public String getVarString() {
 			return mVarString;
 		}
 
-		public DataType getDataType() {
-			return mDataType;
+		public ShaderVariable getShaderVariable() {
+			return mShaderVariable;
 		}
 	}
 

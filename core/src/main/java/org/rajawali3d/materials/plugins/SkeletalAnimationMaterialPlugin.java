@@ -13,7 +13,7 @@
 package org.rajawali3d.materials.plugins;
 
 import org.rajawali3d.materials.Material.PluginInsertLocation;
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.animation.SkeletalAnimationVertexShaderFragment;
@@ -55,27 +55,27 @@ import org.rajawali3d.materials.shaders.fragments.animation.SkeletalAnimationVer
  */
 public class SkeletalAnimationMaterialPlugin implements IMaterialPlugin {
 	public static enum SkeletalAnimationShaderVar implements IGlobalShaderVar {
-		U_BONE_MATRIX("uBoneMatrix", DataType.MAT4),
-		A_BONE_INDEX1("aBoneIndex1", DataType.VEC4),
-		A_BONE_INDEX2("aBoneIndex2", DataType.VEC4),
-		A_BONE_WEIGHT1("aBoneWeight1", DataType.VEC4),
-		A_BONE_WEIGHT2("aBoneWeight2", DataType.VEC4),
-		G_BONE_TRANSF_MATRIX("gBoneTransfMatrix", DataType.MAT4);
+		U_BONE_MATRIX("uBoneMatrix", ShaderVariable.MAT4),
+		A_BONE_INDEX1("aBoneIndex1", ShaderVariable.VEC4),
+		A_BONE_INDEX2("aBoneIndex2", ShaderVariable.VEC4),
+		A_BONE_WEIGHT1("aBoneWeight1", ShaderVariable.VEC4),
+		A_BONE_WEIGHT2("aBoneWeight2", ShaderVariable.VEC4),
+		G_BONE_TRANSF_MATRIX("gBoneTransfMatrix", ShaderVariable.MAT4);
 
 		private String mVarString;
-		private DataType mDataType;
+		private ShaderVariable mShaderVariable;
 
-		SkeletalAnimationShaderVar(String varString, DataType dataType) {
+		SkeletalAnimationShaderVar(String varString, ShaderVariable shaderVariable) {
 			mVarString = varString;
-			mDataType = dataType;
+			mShaderVariable = shaderVariable;
 		}
 
 		public String getVarString() {
 			return mVarString;
 		}
 
-		public DataType getDataType() {
-			return mDataType;
+		public ShaderVariable getShaderVariable() {
+			return mShaderVariable;
 		}
 	}
 

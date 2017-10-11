@@ -9,7 +9,7 @@ import org.rajawali3d.materials.plugins.ShadowMapMaterialPlugin;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 import c.org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
@@ -109,7 +109,7 @@ public class ShadowMapMaterial extends Material {
 			super.initialize();
 
 			muModelMatrix = (RMat4) addUniform(DefaultShaderVar.U_MODEL_MATRIX);
-			muLightMatrix = (RMat4) addUniform(U_MVP_LIGHT, DataType.MAT4);
+			muLightMatrix = (RMat4) addUniform(U_MVP_LIGHT, ShaderVariable.MAT4);
 			maPosition = (RVec4) addAttribute(DefaultShaderVar.A_POSITION);
 		}
 

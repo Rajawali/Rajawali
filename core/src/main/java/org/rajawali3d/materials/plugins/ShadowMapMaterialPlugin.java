@@ -4,7 +4,7 @@ import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 
-import c.org.rajawali3d.gl.glsl.DataType;
+import c.org.rajawali3d.gl.glsl.ShaderVariable;
 import c.org.rajawali3d.textures.BaseTexture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
@@ -117,8 +117,8 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
                     0.0f, 0.0f, 0.5f, 0.0f,
                     0.5f, 0.5f, 0.5f, 1.0f);
 			mcBiasMatrix = (RMat4) addConst(C_BIAS_MATRIX, biasMatrix);
-			muLightModelViewProjectionMatrix = (RMat4) addUniform(U_LIGHT_MVP_MATRIX, DataType.MAT4);
-			mvShadowTexCoord = (RVec4) addVarying(V_SHADOW_TEX_COORD, DataType.VEC4);
+			muLightModelViewProjectionMatrix = (RMat4) addUniform(U_LIGHT_MVP_MATRIX, ShaderVariable.MAT4);
+			mvShadowTexCoord = (RVec4) addVarying(V_SHADOW_TEX_COORD, ShaderVariable.VEC4);
 		}
 
 		@Override
@@ -187,10 +187,10 @@ public class ShadowMapMaterialPlugin implements IMaterialPlugin {
 		@Override
 		public void initialize() {
 			super.initialize();
-			mvShadowTexCoord = (RVec4) addVarying(V_SHADOW_TEX_COORD, DataType.VEC4);
-			muShadowMapTexture = (RSampler2D) addUniform(U_SHADOW_MAP_TEX, DataType.SAMPLER2D);
-			muShadowInfluence = (RFloat) addUniform(U_SHADOW_INFLUENCE, DataType.FLOAT);
-			muShadowLightDir = (RVec3) addUniform(U_SHADOW_LIGHT_DIR, DataType.VEC3);
+			mvShadowTexCoord = (RVec4) addVarying(V_SHADOW_TEX_COORD, ShaderVariable.VEC4);
+			muShadowMapTexture = (RSampler2D) addUniform(U_SHADOW_MAP_TEX, ShaderVariable.SAMPLER2D);
+			muShadowInfluence = (RFloat) addUniform(U_SHADOW_INFLUENCE, ShaderVariable.FLOAT);
+			muShadowLightDir = (RVec3) addUniform(U_SHADOW_LIGHT_DIR, ShaderVariable.VEC3);
 			mcShadowBias = (RFloat) addConst(C_SHADOW_BIAS, .005f);
 		}
 
