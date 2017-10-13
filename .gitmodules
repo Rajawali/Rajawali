@@ -1,3 +1,4 @@
 [submodule "assimp"]
 	path = assimp
 	url = https://github.com/Rajawali/assimp.git
+	branch = v4.0.1
