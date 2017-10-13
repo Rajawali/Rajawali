@@ -19,6 +19,7 @@ android {
                         "-DANDROID_TOOLCHAIN=clang",
                         "-DANDROID_PIE=ON",
                         "-DANDROID_STL=c++_shared",
+                        "-DANDROID_PLATFORM=android-24",
                         "-DASSIMP_BUILD_ASSIMP_TOOLS=OFF",
                         "-DASSIMP_BUILD_TESTS=OFF",
                         "-DBUILD_SHARED_LIBS=YES",
@@ -27,6 +28,13 @@ android {
                 cppFlags "-std=c++11 -fexceptions", "-frtti", "-DASSIMP_BUILD_NO_OWN_ZLIB",
                         "-DASSIMP_BUILD_NO_C4D_IMPORTER"
             }
+        }
+
+        ndk {
+            // Specifies the ABI configurations of your native
+            // libraries Gradle should build and package with your APK.
+            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a',
+                    'arm64-v8a'
         }
     }
     buildTypes {
