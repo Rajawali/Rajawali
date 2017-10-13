@@ -2,3 +2,6 @@
 	path = assimp
 	url = https://github.com/Rajawali/assimp.git
 	branch = Tag-v4.0.1
+[submodule "gradle-fury"]
+	path = gradle-fury
+	url = ../../gradle-fury/gradle-fury.git

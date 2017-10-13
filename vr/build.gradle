@@ -1,29 +1,9 @@
 apply plugin: 'com.android.library'
-
-String getVersionString() {
-    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
-    v = isTag() ? v : v + "-SNAPSHOT"
-    return v
-}
-
-group = GROUP
-version = getVersionString()
-
-if (isReleaseBuild()) {
-    status = 'release'
-} else {
-    status = 'integration'
-}
+apply from: "$rootDir/gradle-fury/gradle/android-support.gradle"
 
 android {
-    compileSdkVersion rootProject.compileSdk
-    buildToolsVersion rootProject.buildTools
-
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion rootProject.targetSdk
-        versionCode rootProject.versionCode
-        versionName rootProject.versionName
     }
 
     compileOptions {
