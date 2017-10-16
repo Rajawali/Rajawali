@@ -25,13 +25,13 @@ import org.rajawali3d.view.Surface.ANTI_ALIASING_CONFIG;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 
 import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.surface.gles.GLESSurfaceView;
+import c.org.rajawali3d.surface.gles.GlesSurfaceView;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public abstract class Daydream extends DreamService implements Display {
 
-	protected GLESSurfaceView mGLESSurfaceView;
+	protected GlesSurfaceView mGlesSurfaceView;
 	protected FrameLayout mLayout;
 
 	private ISurfaceRenderer mRajawaliRenderer;
@@ -40,14 +40,14 @@ public abstract class Daydream extends DreamService implements Display {
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 
-		mGLESSurfaceView = new GLESSurfaceView(this);
-		mGLESSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
+		mGlesSurfaceView = new GlesSurfaceView(this);
+		mGlesSurfaceView.setEGLContextClientVersion(Capabilities.getGLESMajorVersion());
 
 		setInteractive(false);
 		setFullscreen(true);
 
 		mLayout = new FrameLayout(this);
-		mLayout.addView(mGLESSurfaceView);
+		mLayout.addView(mGlesSurfaceView);
 
 		setContentView(mLayout);
 
@@ -57,14 +57,14 @@ public abstract class Daydream extends DreamService implements Display {
 	@Override
 	public void onDreamingStarted() {
 		super.onDreamingStarted();
-		mGLESSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-		mGLESSurfaceView.onResume();
+		mGlesSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		mGlesSurfaceView.onResume();
 	}
 
 	@Override
 	public void onDreamingStopped() {
 		super.onDreamingStopped();
-		mGLESSurfaceView.onPause();
+		mGlesSurfaceView.onPause();
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public abstract class Daydream extends DreamService implements Display {
 
 	protected void setRenderer(ISurfaceRenderer renderer) {
 		mRajawaliRenderer = renderer;
-        //mGLESSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
+        //mGlesSurfaceView.setSurfaceRenderer(mRajawaliRenderer);
 	}
 
 	private void unbindDrawables(View view) {

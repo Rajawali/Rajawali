@@ -20,28 +20,28 @@ import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
+import c.org.rajawali3d.control.RenderControl;
+import c.org.rajawali3d.control.RenderControlClient;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.RenderControlClient;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.surface.SurfaceSize;
-import c.org.rajawali3d.surface.gles.GLESSurfaceView;
-import c.org.rajawali3d.surface.gles.GLESSurfaceAntiAliasing;
+import c.org.rajawali3d.surface.gles.GlesSurfaceView;
+import c.org.rajawali3d.surface.SurfaceAntiAliasing;
 
 import static android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY;
 
 public abstract class Wallpaper extends WallpaperService {
 
-    protected class WallpaperEngine extends Engine implements RenderControlClient{
+    protected class WallpaperEngine extends Engine implements RenderControlClient {
 
         protected Context mContext;
         protected ISurfaceRenderer mRenderer;
         protected WallpaperSurfaceView mSurfaceView;
-        protected GLESSurfaceAntiAliasing mAntiAliasing;
+        protected SurfaceAntiAliasing mAntiAliasing;
         protected float mDefaultPreviewOffsetX;
 
-        class WallpaperSurfaceView extends GLESSurfaceView {
+        class WallpaperSurfaceView extends GlesSurfaceView {
 
             WallpaperSurfaceView(Context context) {
                 super(context);
@@ -66,12 +66,12 @@ public abstract class Wallpaper extends WallpaperService {
         }
 
         public WallpaperEngine(Context context, ISurfaceRenderer renderer) {
-            this(context, renderer, GLESSurfaceAntiAliasing.NONE);
+            this(context, renderer, SurfaceAntiAliasing.NONE);
         }
 
         // TODO need a Scene instead of a renderer?
         public WallpaperEngine(Context context, ISurfaceRenderer renderer,
-                               GLESSurfaceAntiAliasing antiAliasing) {
+                               SurfaceAntiAliasing antiAliasing) {
             mContext = context;
             mRenderer = renderer;
             mAntiAliasing = antiAliasing;

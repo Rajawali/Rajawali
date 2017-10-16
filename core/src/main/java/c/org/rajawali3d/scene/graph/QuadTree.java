@@ -3,7 +3,7 @@ package c.org.rajawali3d.scene.graph;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
-import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.sceneview.camera.Camera;
 import c.org.rajawali3d.object.RenderableObject;
 import org.rajawali3d.math.vector.Vector3.Axis;
 
@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public class QuadTree extends ASceneGraph {
+public class QuadTree extends BaseSceneGraph {
 
     /**
      * The {@link Axis} which will be ignored during sorting.

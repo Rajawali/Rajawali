@@ -14,7 +14,7 @@ package org.rajawali3d.materials.shaders.fragments.specular;
 
 import java.util.List;
 
-import org.rajawali3d.lights.ALight;
+import c.org.rajawali3d.sceneview.lights.ALight;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.methods.DiffuseMethod.DiffuseShaderVar;
 import org.rajawali3d.materials.methods.SpecularMethod.SpecularShaderVar;

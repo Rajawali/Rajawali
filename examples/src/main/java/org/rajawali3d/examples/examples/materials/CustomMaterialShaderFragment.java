@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.materials.materials.CustomMaterialPlugin;
-import org.rajawali3d.lights.DirectionalLight;
+import c.org.rajawali3d.sceneview.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.primitives.Cube;
 

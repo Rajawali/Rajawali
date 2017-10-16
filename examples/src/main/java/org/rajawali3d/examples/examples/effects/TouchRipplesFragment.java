@@ -16,7 +16,7 @@ import android.widget.TextView;
 import org.rajawali3d.animation.Animation3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.lights.DirectionalLight;
+import c.org.rajawali3d.sceneview.lights.DirectionalLight;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -96,7 +96,7 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 					cube.addLight(light);
 					cube.setMaterial(material);
 					cube.setColor((int) (0xffffff * rnd.nextFloat()));
-					group.addChild(cube);
+					group.addAndInitializeChild(cube);
 					Vector3 axis = new Vector3(rnd.nextFloat(),
 							rnd.nextFloat(), rnd.nextFloat());
 					Animation3D anim = new RotateAnimation3D(axis, 360);
@@ -113,7 +113,7 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 			group.setY(((NUM_CUBES_V - 1) * 2) * -.5f);
 			group.setZ(-1f);
 
-			addChild(group);
+			addAndInitializeChild(group);
 
 			SimpleMaterial planeMat = new SimpleMaterial();
 			try {
@@ -125,7 +125,7 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 			plane.setRotZ(-90);
 			plane.setScale(3.7f);
 			plane.setMaterial(planeMat);
-			addChild(plane);
+			addAndInitializeChild(plane);
 
 			mFilter = new TouchRippleFilter();
 			mFilter.setRippleSize(62);*/

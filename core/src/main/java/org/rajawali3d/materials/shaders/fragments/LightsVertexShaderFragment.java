@@ -1,11 +1,11 @@
 /**
  * Copyright 2013 Dennis Ippel
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -14,10 +14,10 @@ package org.rajawali3d.materials.shaders.fragments;
 
 import android.opengl.GLES20;
 
-import org.rajawali3d.lights.ALight;
-import org.rajawali3d.lights.DirectionalLight;
-import org.rajawali3d.lights.PointLight;
-import org.rajawali3d.lights.SpotLight;
+import c.org.rajawali3d.sceneview.lights.ALight;
+import c.org.rajawali3d.sceneview.lights.DirectionalLight;
+import c.org.rajawali3d.sceneview.lights.PointLight;
+import c.org.rajawali3d.sceneview.lights.SpotLight;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.IShaderFragment;
@@ -72,7 +72,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 	private RVec4 mvEye;
 
 	private RFloat mgLightDistance;
-	
+
 	private int[] muLightColorHandles, muLightPowerHandles, muLightPositionHandles,
 			muLightDirectionHandles, muLightAttenuationHandles, muSpotExponentHandles,
 			muSpotCutoffAngleHandles, muSpotFalloffHandles;
@@ -90,7 +90,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		super(ShaderType.VERTEX_SHADER_FRAGMENT);
 		mLights = lights;
 		mAmbientColor = new float[] {.2f, .2f, .2f};
-		mAmbientIntensity = new float[] {.3f, .3f, .3f};	
+		mAmbientIntensity = new float[] {.3f, .3f, .3f};
 		initialize();
 	}
 
@@ -113,28 +113,28 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 
 		muLightColor = new RVec3[lightCount];
 		muLightColorHandles = new int[muLightColor.length];
-		
+
 		muLightPower = new RFloat[lightCount];
 		muLightPowerHandles = new int[muLightPower.length];
-		
+
 		muLightPosition = new RVec3[lightCount];
 		muLightPositionHandles = new int[muLightPosition.length];
-		
+
 		muLightDirection = new RVec3[mDirLightCount + mSpotLightCount];
 		muLightDirectionHandles = new int[muLightDirection.length];
-		
+
 		muLightAttenuation = new RVec4[mSpotLightCount + mPointLightCount];
 		muLightAttenuationHandles = new int[muLightAttenuation.length];
-		
+
 		mvAttenuation = new RFloat[lightCount];
-		
+
 		muSpotExponent = new RFloat[mSpotLightCount];
 		muSpotExponentHandles = new int[muSpotExponent.length];
 		muSpotCutoffAngle = new RFloat[mSpotLightCount];
 		muSpotCutoffAngleHandles = new int[muSpotCutoffAngle.length];
 		muSpotFalloff = new RFloat[mSpotLightCount];
 		muSpotFalloffHandles = new int[muSpotFalloff.length];
-		
+
 		mgLightDistance = (RFloat) addGlobal(LightsShaderVar.G_LIGHT_DISTANCE);
 		mvEye = (RVec4) addVarying(LightsShaderVar.V_EYE);
 
@@ -170,7 +170,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
                 //TODO: Perhaps a problem will arrise if directional and spot lights are used together due to counting each separately?
 			}
 		}
-		
+
 		muAmbientColor = (RVec3) addUniform(LightsShaderVar.U_AMBIENT_COLOR);
 		muAmbientIntensity = (RVec3) addUniform(LightsShaderVar.U_AMBIENT_INTENSITY);
 		mvAmbientColor = (RVec3) addVarying(LightsShaderVar.V_AMBIENT_COLOR);
@@ -181,7 +181,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		int lightAttCount = 0;
 		RMat4 modelMatrix = (RMat4) getGlobal(DefaultShaderVar.U_MODEL_MATRIX);
 		RVec4 position = (RVec4) getGlobal(DefaultShaderVar.G_POSITION);
-		
+
 		mvEye.assign(enclose(modelMatrix.multiply(position)));
 		mvAmbientColor.rgb().assign(muAmbientColor.rgb().multiply(muAmbientIntensity.rgb()));
 
@@ -189,7 +189,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 		{
 			ALight light = mLights.get(i);
 			int t = light.getLightType();
-			
+
 			if(t == ALight.SPOT_LIGHT || t == ALight.POINT_LIGHT)
 			{
 				//
@@ -211,7 +211,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 										.multiply(mgLightDistance)
 										)
 									));
-				
+
 				lightAttCount++;
 			} else if(t == ALight.DIRECTIONAL_LIGHT) {
 				//
@@ -231,16 +231,16 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 	public void setLocations(int programHandle) {
 		int lightDirCount = 0, lightAttCount = 0;
 		int spotCount = 0;
-		
+
 		for (int i = 0; i < mLights.size(); i++)
 		{
 			ALight light = mLights.get(i);
 			int t = light.getLightType();
-			
+
 			muLightColorHandles[i] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_COLOR, i);
 			muLightPowerHandles[i] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_POWER, i);
 			muLightPositionHandles[i] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_POSITION, i);
-			
+
 			if(t == ALight.DIRECTIONAL_LIGHT || t == ALight.SPOT_LIGHT)
 			{
 				muLightDirectionHandles[lightDirCount] = getUniformLocation(programHandle, LightsShaderVar.U_LIGHT_DIRECTION, lightDirCount);
@@ -258,7 +258,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 				muSpotFalloffHandles[spotCount] = getUniformLocation(programHandle, LightsShaderVar.U_SPOT_FALLOFF, spotCount);
 				spotCount++;
 			}
-			
+
 			muAmbientColorHandle = getUniformLocation(programHandle, LightsShaderVar.U_AMBIENT_COLOR);
 			muAmbientIntensityHandle = getUniformLocation(programHandle, LightsShaderVar.U_AMBIENT_INTENSITY);
 		}
@@ -267,19 +267,19 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 	@Override
 	public void applyParams() {
 		super.applyParams();
-		
+
 		int lightCount = mLights.size();
 		int dirCount = 0, spotCount = 0, attCount = 0;
-		
+
 		for (int i = 0; i < lightCount; i++)
 		{
 			ALight light = mLights.get(i);
 			int t = light.getLightType();
-			
+
 			GLES20.glUniform3fv(muLightColorHandles[i], 1, light.getColor(), 0);
 			GLES20.glUniform1f(muLightPowerHandles[i], light.getPower());
 			GLES20.glUniform3fv(muLightPositionHandles[i], 1, ArrayUtils.convertDoublesToFloats(light.getPositionArray(), mTemp3Floats), 0);
-			
+
 			if(t == ALight.SPOT_LIGHT)
 			{
 				SpotLight l = (SpotLight)light;
@@ -301,30 +301,30 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 				dirCount++;
 			}
 		}
-		
+
 		GLES20.glUniform3fv(muAmbientColorHandle, 1, mAmbientColor, 0);
 		GLES20.glUniform3fv(muAmbientIntensityHandle, 1, mAmbientIntensity, 0);
 	}
-	
+
 	public void setAmbientColor(float[] ambientColor)
 	{
 		mAmbientColor[0] = ambientColor[0];
 		mAmbientColor[1] = ambientColor[1];
 		mAmbientColor[2] = ambientColor[2];
 	}
-	
+
 	public void setAmbientIntensity(float[] ambientIntensity)
 	{
 		mAmbientIntensity[0] = ambientIntensity[0];
 		mAmbientIntensity[1] = ambientIntensity[1];
 		mAmbientIntensity[2] = ambientIntensity[2];
 	}
-	
+
 	@Override
 	public PluginInsertLocation getInsertLocation() {
 		return PluginInsertLocation.IGNORE;
 	}
-	
+
 	@Override
 	public void bindTextures(int nextIndex) {}
 	@Override

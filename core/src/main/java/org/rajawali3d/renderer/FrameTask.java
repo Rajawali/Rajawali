@@ -1,6 +1,5 @@
 package org.rajawali3d.renderer;
 
-import c.org.rajawali3d.scene.Scene;
 import org.rajawali3d.util.RajLog;
 
 /**

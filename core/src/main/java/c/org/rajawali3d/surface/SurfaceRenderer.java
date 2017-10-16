@@ -1,14 +1,12 @@
 package c.org.rajawali3d.surface;
 
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.core.ARenderControl;
-import c.org.rajawali3d.core.RenderContextType;
-import c.org.rajawali3d.core.RenderSurfaceView;
+import c.org.rajawali3d.control.BaseRenderControl;
+import c.org.rajawali3d.control.RenderContextType;
+import c.org.rajawali3d.control.RenderSurfaceView;
 
 /**
- * Interface defining the methods provided by {@link ARenderControl} to enable control by a
- * {@link RenderSurfaceView} implementation and/or a child of {@link ARenderControl} that implements the renderer
- * for that {@link RenderSurfaceView}.
+ * Internal interface required of {@link BaseRenderControl} by to handle system events from a {@link RenderSurfaceView}
  *
  * @author Randy Picolet
  */
@@ -42,14 +40,14 @@ public interface SurfaceRenderer {
     void onRenderFrame();
 
     /**
+     * Called when the render thread is starting/resuming
+     */
+    void onRenderThreadResume();
+
+    /**
      * Called when the render thread is pausing
      */
     void onRenderThreadPause();
-
-    /**
-     * Called when the render thread is resuming
-     */
-    void onRenderThreadResume();
 
     /**
      * Called when the render context has been lost (and the surface has been destroyed), such as when the view is

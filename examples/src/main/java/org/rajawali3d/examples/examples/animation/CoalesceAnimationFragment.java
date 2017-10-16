@@ -7,7 +7,7 @@ import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.CoalesceAnimation3D;
 import org.rajawali3d.curves.LogarithmicSpiral3D;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.lights.PointLight;
+import c.org.rajawali3d.sceneview.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.math.vector.Vector3;

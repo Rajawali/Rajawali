@@ -60,7 +60,7 @@ package org.rajawali3d.examples.examples.optimizations;
 			mAtlasPlane = new Plane(Vector3.Axis.Z);
 			mAtlasPlane.setMaterial(mAtlasMaterial);
 			mAtlasPlane.setY(1);
-			getCurrentScene().addChild(mAtlasPlane);
+			getCurrentScene().addAndInitializeChild(mAtlasPlane);
 
 			mTileSphere = new Sphere(.35f, 20, 20);
 			mTileSphere.setMaterial(mAtlasMaterial);
@@ -70,20 +70,20 @@ package org.rajawali3d.examples.examples.optimizations;
 			//
 			mTileSphere.setAtlasTile("earthtruecolor_nasa_big", mAtlas);
 			mTileSphere.setPosition(0, -.1f, 0);
-			getCurrentScene().addChild(mTileSphere);
+			getCurrentScene().addAndInitializeChild(mTileSphere);
 
 			mTileCube = new Cube(.5f);
 			mTileCube.setMaterial(mAtlasMaterial);
 			mTileCube.setAtlasTile("camden_town_alpha", mAtlas);
 			mTileCube.setPosition(-.5f, -1f, 0);
 			mTileCube.setRotX(-1);
-			getCurrentScene().addChild(mTileCube);
+			getCurrentScene().addAndInitializeChild(mTileCube);
 
 			mTilePlane = new Plane(.6f,.6f,1,1);
 			mTilePlane.setMaterial(mAtlasMaterial);
 			mTilePlane.setAtlasTile("rajawali", mAtlas);
 			mTilePlane.setPosition(.5f, -1f, 0);
-			getCurrentScene().addChild(mTilePlane);
+			getCurrentScene().addAndInitializeChild(mTilePlane);
 		}
 
         @Override

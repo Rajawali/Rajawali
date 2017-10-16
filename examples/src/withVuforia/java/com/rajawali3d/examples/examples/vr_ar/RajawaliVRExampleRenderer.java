@@ -11,7 +11,7 @@ import org.rajawali3d.animation.Animation.RepeatMode;
 import org.rajawali3d.animation.SplineTranslateAnimation3D;
 import org.rajawali3d.curves.CatmullRomCurve3D;
 import org.rajawali3d.examples.R;
-import org.rajawali3d.lights.DirectionalLight;
+import c.org.rajawali3d.sceneview.lights.DirectionalLight;
 import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;

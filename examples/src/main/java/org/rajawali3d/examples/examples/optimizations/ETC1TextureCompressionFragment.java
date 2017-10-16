@@ -34,7 +34,7 @@ public class ETC1TextureCompressionFragment extends AExampleFragment {
 				mPlane.setMaterial(material1);
 				mPlane.setPosition(0, -1.25f, 0);
 				mPlane.setDoubleSided(true);
-				getCurrentScene().addChild(mPlane);
+				getCurrentScene().addAndInitializeChild(mPlane);
 			} catch (TextureException e) {
 				e.printStackTrace();
 			}
@@ -57,7 +57,7 @@ public class ETC1TextureCompressionFragment extends AExampleFragment {
 				mMipmappedPlane.setMaterial(material2);
 				mMipmappedPlane.setPosition(0, 1.25f, 0);
 				mMipmappedPlane.setDoubleSided(true);
-				getCurrentScene().addChild(mMipmappedPlane);
+				getCurrentScene().addAndInitializeChild(mMipmappedPlane);
 			} catch (TextureException e) {
 				e.printStackTrace();
 			}*/

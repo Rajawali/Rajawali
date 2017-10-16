@@ -3,7 +3,7 @@ package c.org.rajawali3d.scene.graph;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
-import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.sceneview.camera.Camera;
 import c.org.rajawali3d.object.RenderableObject;
 
 import java.util.Collection;
@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public class Octree extends ASceneGraph {
+public class Octree extends BaseSceneGraph {
 
     @NonNull
     @Override

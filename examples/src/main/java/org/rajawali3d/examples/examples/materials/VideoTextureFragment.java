@@ -12,7 +12,7 @@ import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
 import org.rajawali3d.animation.TranslateAnimation3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.lights.PointLight;
+import c.org.rajawali3d.sceneview.lights.PointLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
@@ -54,7 +54,7 @@ public class VideoTextureFragment extends AExampleFragment {
 				material.setSpecularMethod(new SpecularMethod.Phong());
 				android.setMaterial(material);
 				android.setColor(0xff99C224);
-				//getCurrentScene().addChild(android);
+				//getCurrentScene().addAndInitializeChild(android);
 			} catch (NotFoundException e) {
 				e.printStackTrace();
 			}

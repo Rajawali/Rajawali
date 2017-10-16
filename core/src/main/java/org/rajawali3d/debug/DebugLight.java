@@ -4,7 +4,7 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.lights.ALight;
+import c.org.rajawali3d.sceneview.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;

@@ -8,7 +8,7 @@ import org.rajawali3d.animation.Animation3D;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.lights.PointLight;
+import c.org.rajawali3d.sceneview.lights.PointLight;
 import org.rajawali3d.loader.LoaderOBJ;
 import org.rajawali3d.loader.ParsingException;
 import org.rajawali3d.math.vector.Vector3;

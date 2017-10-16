@@ -1,13 +1,17 @@
 package org.rajawali3d.examples.examples.camdenhells;
 
+
+import static c.org.rajawali3d.sceneview.render.ObjectPipelineTypes.OBJECT_UNLIT;
+
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.sceneview.camera.Camera;
+import c.org.rajawali3d.control.RenderControl;
 import c.org.rajawali3d.object.Object3D;
-import c.org.rajawali3d.core.RenderControl;
-import c.org.rajawali3d.core.SingleFrameCallback;
-import c.org.rajawali3d.scene.AScene;
+import c.org.rajawali3d.control.SingleFrameCallback;
+import c.org.rajawali3d.object.renderers.ObjectRendererBuilder;
+import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.scene.Scene;
-import c.org.rajawali3d.sceneview.ASceneView;
+import c.org.rajawali3d.sceneview.BaseSceneView;
 import c.org.rajawali3d.sceneview.SceneView;
 import c.org.rajawali3d.surface.SurfaceSize;
 import c.org.rajawali3d.textures.Texture2D;
@@ -31,7 +35,7 @@ public class CamdenHellsBasic extends AExampleFragment {
 
     private static final String TAG = "CamdenHellsBasic";
 
-    private class BasicScene extends AScene {
+    private class BasicScene extends BaseScene {
 
         private Object3D sphere;
         private Texture2D texture;
@@ -50,8 +54,9 @@ public class CamdenHellsBasic extends AExampleFragment {
                 material.setColorInfluence(0);
 
                 sphere = new Sphere(1, 24, 24);
-                // TODO not sure about the new approach here...
-                //sphere.setMaterial(material);
+
+                ObjectRendererBuilder rendererBuilder = new ObjectRendererBuilder();
+                sphere.setObjectRenderer(OBJECT_UNLIT, rendererBuilder.withMaterial(material).build());
                 sphere.setParent(sceneGraph);
             } catch (TextureException | InterruptedException e) {
                 e.printStackTrace();
@@ -75,7 +80,7 @@ public class CamdenHellsBasic extends AExampleFragment {
             super.onRenderControlAvailable(renderControl, surfaceSize);
             // Create the scene
             scene = new BasicScene();
-            // Add it to the render, invoke initialize()...
+            // Add it to the render [invokes BasicScene.initialize()]...
             mRenderControl.addScene(scene);
             // Set up the camera
             camera = new Camera();
@@ -88,8 +93,8 @@ public class CamdenHellsBasic extends AExampleFragment {
                     camera.setOrientation(camera.getOrientation().inverse());
                 }
             });
-            // Create a default (whole-surface) SceneView for the scene
-            sceneView = ASceneView.create(scene, camera);
+            // Create a default (whole-surface viewport, DefaultRender) SceneView for the renderScene
+            sceneView = BaseSceneView.create(scene, camera);
             // Add it to the render
             mRenderControl.addSceneView(sceneView);
 
@@ -120,8 +125,10 @@ public class CamdenHellsBasic extends AExampleFragment {
         @Override public void onFrameEnd(double deltaTime) {
             Log.d(TAG, "First onFrameEnd()");
             super.onFrameEnd(deltaTime);
-            /*backgroundThread = new Thread(backgroundManager, "Background Manager");
-            backgroundThread.start();*/
+            /*
+            backgroundThread = new Thread(backgroundManager, "Background Manager");
+            backgroundThread.start();
+            */
             RajLog.setDebugEnabled(true);
             Material material = new Material();
             material.setColor(Color.GREEN);
@@ -133,6 +140,7 @@ public class CamdenHellsBasic extends AExampleFragment {
         }
     }
 
+    /*
     private final Runnable backgroundManager = new Runnable() {
 
         boolean add = true;
@@ -169,4 +177,5 @@ public class CamdenHellsBasic extends AExampleFragment {
             }
         }
     };
+    */
 }

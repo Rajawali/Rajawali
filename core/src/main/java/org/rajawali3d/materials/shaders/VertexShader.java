@@ -14,7 +14,7 @@ package org.rajawali3d.materials.shaders;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-import org.rajawali3d.lights.ALight;
+import c.org.rajawali3d.sceneview.lights.ALight;
 import org.rajawali3d.materials.Material.PluginInsertLocation;
 import org.rajawali3d.materials.plugins.SkeletalAnimationMaterialPlugin.SkeletalAnimationShaderVar;
 import org.rajawali3d.materials.shaders.fragments.animation.SkeletalAnimationVertexShaderFragment;

@@ -3,7 +3,7 @@ package org.rajawali3d.postprocessing.effects;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
 import org.rajawali3d.cameras.Camera;
-import org.rajawali3d.lights.DirectionalLight;
+import c.org.rajawali3d.sceneview.lights.DirectionalLight;
 import org.rajawali3d.postprocessing.APostProcessingEffect;
 import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.postprocessing.passes.ShadowPass;

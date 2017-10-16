@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.sceneview.camera.Camera;
 import c.org.rajawali3d.intersection.Intersector.Intersection;
 
 /**
@@ -14,6 +14,9 @@ import c.org.rajawali3d.intersection.Intersector.Intersection;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+
+// TODO should all NodeMembers implement Transformable and encapsulate a Transformation? Notably, to avoid the need to add/correlate a dedicated SceneNode for every independently-transforming Object3D (using animations, gestures, callbacks, or otherwise)
+
 public interface NodeMember extends AABB {
 
     /**

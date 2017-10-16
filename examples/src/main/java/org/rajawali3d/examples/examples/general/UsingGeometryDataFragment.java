@@ -7,7 +7,7 @@ import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
-import org.rajawali3d.lights.DirectionalLight;
+import c.org.rajawali3d.sceneview.lights.DirectionalLight;
 import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;

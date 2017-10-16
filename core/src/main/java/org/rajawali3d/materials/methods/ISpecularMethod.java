@@ -14,7 +14,7 @@ package org.rajawali3d.materials.methods;
 
 import java.util.List;
 
-import org.rajawali3d.lights.ALight;
+import c.org.rajawali3d.sceneview.lights.ALight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.IShaderFragment;
 import c.org.rajawali3d.textures.BaseTexture;

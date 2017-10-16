@@ -14,7 +14,7 @@ package org.rajawali3d.materials.shaders;
 
 import android.opengl.GLES20;
 
-import org.rajawali3d.lights.ALight;
+import c.org.rajawali3d.sceneview.lights.ALight;
 
 import java.util.List;
 

@@ -1,72 +1,144 @@
 package c.org.rajawali3d.scene;
 
-import c.org.rajawali3d.core.FrameDelegate;
-import c.org.rajawali3d.sceneview.SceneView;
-
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
-
-import java.util.concurrent.locks.Lock;
+import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.control.BaseRenderDelegate;
+import c.org.rajawali3d.control.RenderControlInternal;
+import c.org.rajawali3d.object.RenderableObject;
+import c.org.rajawali3d.scene.graph.BaseSceneGraph;
+import c.org.rajawali3d.scene.graph.FlatTree;
+import c.org.rajawali3d.scene.graph.SceneGraph;
+import c.org.rajawali3d.sceneview.SceneView;
+import c.org.rajawali3d.sceneview.camera.Camera;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
+import org.rajawali3d.animation.Animation;
 
 /**
- * Client interface for models that are to be presented by the RenderControl.
+ * A {@link Scene} is a self contained world-coordinate Scene that uses a {@link SceneGraph} to hold model
+ * objects and for coordinate transformations. A {@link Scene} is responsible for managing the content to be rendered
+ * in one or more {@link SceneView}s, including objects, lights, materials, and textures (and which cannot be shared across {@link Scene}s).
  *
- * Author: Randy Picolet
+ * TODO is this true? presumably large underlying elements (geometries and texture images) _can_ be shared,
+ * anything else?
+ *
+ * Unless otherwise specified, the default behavior is to use a {@link FlatTree} scene graph.
+ *
+ * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
+@ThreadSafe
+public abstract class Scene extends BaseRenderDelegate implements SceneInternal {
 
-public interface Scene extends FrameDelegate {
+    @NonNull
+    protected final BaseSceneGraph sceneGraph;
+
+    @GuardedBy("animations")
+    private final List<Animation> animations;
+
 
     /**
-     * Acquires a read lock on the {@link Scene}. This is necessary when you need a self-consistent view of the
-     * model from one thread while allowing (locked) modifications on another.
+     * Constructs a new {@link Scene} using a ({@link FlatTree}) implementation of a {@link SceneGraph}.
+     */
+    public Scene() {
+        this(new FlatTree());
+    }
+
+    /**
+     * Constructs a new {@link Scene} using the provided {@link SceneGraph} implementation.
      *
-     * Note the calling thread may be blocked if a write lock is already held on another thread.
+     * @param graph The {@link BaseSceneGraph} instance which should be used.
+     */
+    public Scene(@NonNull BaseSceneGraph graph) {
+        sceneGraph = graph;
+        // TODO Why is animations CopyOnWrite? Does syncList make this moot?
+        animations = Collections.synchronizedList(new CopyOnWriteArrayList<Animation>());
+    }
+
+    // SceneInternal interface methods
+
+    @RenderThread
+    @Override
+    @CallSuper
+    public void onRemoveFromRenderControl() {
+        super.onRemoveFromRenderControl();
+
+        // TODO lifecycle analysis on animations
+        synchronized (animations) {
+            animations.clear();
+        }
+    }
+
+
+    @RenderThread
+    @Override
+    @CallSuper
+    public void onFrameStart(double deltaTime) {
+        super.onFrameStart(deltaTime);
+        // Update any animations
+        synchronized (animations) {
+            for (int i = 0, j = animations.size(); i < j; ++i) {
+                Animation anim = animations.get(i);
+                if (anim.isPlaying())
+                    anim.update(deltaTime);
+            }
+        }
+    }
+
+    /**
      *
-     * You must call {@link Lock#unlock()} on the returned lock instance when finished, or modifications using a
-     * write lock will be blocked.
-     *
-     * TODO example code for try-finally idiom
-     *
-     * @return the read {@link Lock} instance
-     * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
+     * @return
      */
     @NonNull
-    Lock acquireReadLock() throws InterruptedException;
+    public SceneGraph getSceneGraph() {
+        return sceneGraph;
+    }
 
-    /**
-     * TODO should this method be exposed to the client at all?  Do we want to wrap all the write locking in higher
-     * order functions?
-     *
-     * Acquires a write lock on the {@link Scene}. This is necessary when you need to make a change and want to
-     * prevent corruption of any model observers the rendering of any dependent {@link SceneView}s, or worse.
-     *
-     * Note this could block or delay frame updates if there are any dependent {@link SceneView}s; likewise,
-     * the calling thread may be blocked while a dependent {@link SceneView} is being rendered or if you are holding
-     * a lock on another thread.
-     *
-     * You must call {@link Lock#unlock()} on the returned lock instance when finished, or rendering may halt.
-     *
-     * TODO example code for try-finally idiom
+    @Override
+    public void addAnimation(final Animation animation) {
+        animations.add(animation);
+    }
 
-     * @return the write {@link Lock} instance
-     * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
-     */
+    @Override
+    public void removeAnimation(final Animation animation) {
+        animations.remove(animation);
+    }
+
+    @Override
+    public void replaceAnimation(final Animation oldAnimation, final Animation newAnimation) {
+        animations.set(animations.indexOf(oldAnimation), newAnimation);
+    }
+
+    @Override
+    public void addAnimations(final Collection<Animation> animations) {
+        this.animations.addAll(animations);
+    }
+
+    @Override
+    public void clearAnimations() {
+        animations.clear();
+    }
+
+
+
+    // SceneInternal methods
+
+    @RenderThread
     @NonNull
-    Lock acquireWriteLock() throws InterruptedException;
+    public List<RenderableObject> visibleObjectIntersection(@NonNull Camera camera) {
+        return sceneGraph.visibleObjectIntersection(camera);
+    };
 
-    /**
-     * Requests modifications to this {@link Scene} via the provided {@link SceneModifier}. The
-     * modifications will all be performed under a single lock acquisition. This is useful when you need to make
-     * muiltiple changes and want to avoid acquiring the write lock for each.
-     *
-     * Note this will block rendering if any dependent {@link SceneView}s are encountered during a frame; likewise,
-     * the calling thread may be blocked while a dependent {@link SceneView} is being rendered.
-     *
-     * The lock is automatically released.
-     *
-     * TODO example code for try-finally idiom
+    // Scene method implementations
 
-     * @param sceneModifier {@link SceneModifier} instance which will be called when the lock has been acquired.*
-     * @throws InterruptedException Thrown if the calling thread is interrupted while waiting for lock acquisition.
-     */
-    void requestModifications(@NonNull SceneModifier sceneModifier) throws InterruptedException;
+    @RenderThread
+    protected void restore() {
+        // textureManager.reloadTextures();
+        // TODO: Restore materials
+        // TODO: Restore VBOs
+    }
 }

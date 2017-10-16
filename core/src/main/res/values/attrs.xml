@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="GLESSurfaceView">
+    <declare-styleable name="GlesSurfaceView">
         <attr name="frameRate" />
         <attr name="antiAliasingType"/>
         <attr name="multiSampleCount" />
@@ -12,7 +12,7 @@
         <attr name="bitsDepth" />
     </declare-styleable>
 
-    <declare-styleable name="GLESTextureView">
+    <declare-styleable name="GlesSurfaceTextureView">
         <attr name="frameRate" />
         <attr name="antiAliasingType" />
         <attr name="multiSampleCount"/>

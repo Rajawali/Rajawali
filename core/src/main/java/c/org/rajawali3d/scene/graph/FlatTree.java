@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
-import c.org.rajawali3d.camera.Camera;
+import c.org.rajawali3d.sceneview.camera.Camera;
 import c.org.rajawali3d.intersection.Intersector.Intersection;
 import c.org.rajawali3d.object.RenderableObject;
 
@@ -26,7 +26,7 @@ import java.util.List;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @NotThreadSafe
-public class FlatTree extends ASceneGraph {
+public class FlatTree extends BaseSceneGraph {
 
     protected final ArrayList<SceneNode> children = new ArrayList<>();
 
@@ -77,7 +77,6 @@ public class FlatTree extends ASceneGraph {
 
     @RequiresReadLock
     @NonNull
-    @Override
     public List<NodeMember> intersection(@NonNull Camera camera) {
         final LinkedList<NodeMember> list = new LinkedList<>();
         @Intersection int intersection;

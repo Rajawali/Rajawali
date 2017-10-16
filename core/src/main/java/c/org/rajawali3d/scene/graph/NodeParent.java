@@ -42,7 +42,8 @@ public interface NodeParent extends AABB {
      * assumed that a write lock on the scene graph is held at this point acquired via the
      * {@link #acquireWriteLock()} method. Client code should avoid using this method or risk thread safety problems.
      */
-    @RequiresWriteLock void updateGraph();
+    @RequiresWriteLock
+    void updateGraph();
 
     /**
      * Traverses the scene graph and sets the provided {@link Matrix4} to be the combination of all transformations
@@ -51,14 +52,17 @@ public interface NodeParent extends AABB {
      * @param matrix {@link Matrix4} instance which should be set to the world space transformation. Assumed to be
      *                              set to identity.
      */
-    @RequiresReadLock void setToModelMatrix(@NonNull Matrix4 matrix);
+    @RequiresReadLock
+    void setToModelMatrix(@NonNull Matrix4 matrix);
 
     /**
      * Retrieves the world space model matrix for this parent.
      *
      * @return {@link Matrix4} The world space model matrix.
      */
-    @RequiresReadLock @NonNull Matrix4 getWorldModelMatrix();
+    @RequiresReadLock
+    @NonNull
+    Matrix4 getWorldModelMatrix();
 
     /**
      * Causes a recalculation of the min/max coordinates in local coordinate space.

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * TODO affine transformations as a NodeMember or direct delegations
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 @ThreadSafe

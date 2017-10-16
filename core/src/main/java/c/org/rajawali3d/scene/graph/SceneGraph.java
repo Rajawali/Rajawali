@@ -1,14 +1,10 @@
 package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.annotations.RequiresReadLock;
-import c.org.rajawali3d.annotations.RequiresWriteLock;
+import c.org.rajawali3d.annotations.RequiresRenderTask;
 import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.camera.Camera;
-import c.org.rajawali3d.object.RenderableObject;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Interface defining methods common to all {@link SceneGraph} implementations. Implementations are expected to be
@@ -20,28 +16,33 @@ import java.util.List;
  */
 public interface SceneGraph extends NodeParent, AABB {
 
-    //TODO: Should intersection take a boolean parameter for an optional sort?
-    @RequiresReadLock @NonNull List<NodeMember> intersection(@NonNull Camera camera);
+    @RequiresRenderTask
+    boolean add(@NonNull SceneNode node);
 
-    @RequiresReadLock @NonNull List<RenderableObject> visibleObjectIntersection(@NonNull Camera camera);
+    @RequiresRenderTask
+    boolean addAll(@NonNull Collection<? extends SceneNode> collection);
 
-    @RequiresWriteLock boolean add(@NonNull SceneNode node);
+    @RequiresRenderTask
+    void clear();
 
-    @RequiresWriteLock boolean addAll(@NonNull Collection<? extends SceneNode> collection);
+    @RequiresRenderTask
+    boolean contains(@NonNull SceneNode node);
 
-    @RequiresWriteLock void clear();
+    @RequiresRenderTask
+    boolean containsAll(@NonNull Collection<? extends SceneNode> collection);
 
-    @RequiresReadLock boolean contains(@NonNull SceneNode node);
+    @RequiresRenderTask
+    boolean isEmpty();
 
-    @RequiresReadLock boolean containsAll(@NonNull Collection<? extends SceneNode> collection);
+    @RequiresRenderTask
+    boolean remove(@NonNull SceneNode node);
 
-    @RequiresReadLock boolean isEmpty();
+    @RequiresRenderTask
+    boolean removeAll(@NonNull Collection<? extends SceneNode> collection);
 
-    @RequiresWriteLock boolean remove(@NonNull SceneNode node);
+    @RequiresRenderTask
+    boolean retainAll(@NonNull Collection<? extends SceneNode> collection);
 
-    @RequiresWriteLock boolean removeAll(@NonNull Collection<? extends SceneNode> collection);
-
-    @RequiresWriteLock boolean retainAll(@NonNull Collection<? extends SceneNode> collection);
-
-    @RequiresReadLock int size();
+    @RequiresRenderTask
+    int size();
 }
