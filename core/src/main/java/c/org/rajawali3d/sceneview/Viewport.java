@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
  *
  * @author Randy Picolet
  */
-
 public class Viewport {
 
     /**
@@ -23,7 +22,7 @@ public class Viewport {
      */
     public static final float DEFAULT_FAR_DEPTH = 1.0f;
 
-    // Rectangle within the render target
+    // Rectangle within/relative to the render surface
     @NonNull
     private final Rect rect = new Rect();
 

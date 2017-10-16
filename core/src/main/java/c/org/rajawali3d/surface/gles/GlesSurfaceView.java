@@ -1,25 +1,23 @@
 package c.org.rajawali3d.surface.gles;
 
-import c.org.rajawali3d.control.RenderControl;
-import c.org.rajawali3d.control.RenderControlClient;
-import c.org.rajawali3d.control.RenderSurfaceView;
-import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.surface.SurfaceView;
-
-import org.rajawali3d.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
-
-
+import c.org.rajawali3d.control.RenderControl;
+import c.org.rajawali3d.control.RenderControlClient;
+import c.org.rajawali3d.control.RenderSurfaceView;
+import c.org.rajawali3d.control.gles.GlesRenderControl;
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.surface.SurfaceAntiAliasing;
+import c.org.rajawali3d.surface.SurfaceConfiguration;
+import c.org.rajawali3d.surface.SurfaceView;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import org.rajawali3d.R;
 
 /**
  * Rajawali version of a {@link GLSurfaceView}. If you plan on using Rajawali with a {@link GLSurfaceView},
@@ -27,20 +25,15 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class GlesSurfaceView extends GLSurfaceView implements RenderSurfaceView {
+public class GlesSurfaceView extends GLSurfaceView implements SurfaceView, RenderSurfaceView {
 
-    protected double mInitialFrameRate = RenderControl.USE_DISPLAY_REFRESH_RATE;
-    protected GlesSurfaceAntiAliasing mSurfaceAntiAliasing = GlesSurfaceAntiAliasing.NONE;
-    protected int mMultiSampleCount = 0;
-    protected boolean mIsTransparent = false;
-    protected int mBitsRed = 5;
-    protected int mBitsGreen = 6;
-    protected int mBitsBlue = 5;
-    protected int mBitsAlpha = 0;
-    protected int mBitsDepth = 16;
+
+    // The configuration for this SurfaceView
+    @NonNull
+    protected SurfaceConfiguration surfaceConfiguration = new SurfaceConfiguration();
 
     // The renderer
-    protected GlesSurfaceRenderer mGlesSurfaceRenderer;
+    protected GlesSurfaceRenderer glesSurfaceRenderer;
 
     public GlesSurfaceView(Context context) {
         super(context);
@@ -58,82 +51,47 @@ public class GlesSurfaceView extends GLSurfaceView implements RenderSurfaceView 
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
             if (attr == R.styleable.GlesSurfaceView_frameRate) {
-                mInitialFrameRate = array.getFloat(attr, (float) RenderControl.USE_DISPLAY_REFRESH_RATE);
+                surfaceConfiguration.setFrameRate(array.getFloat(attr,
+                        (float) RenderControl.USE_DISPLAY_REFRESH_RATE));
             } else if (attr == R.styleable.GlesSurfaceView_antiAliasingType) {
-                mSurfaceAntiAliasing = GlesSurfaceAntiAliasing.fromInteger(
-                        array.getInteger(attr, GlesSurfaceAntiAliasing.NONE.ordinal()));
+                surfaceConfiguration.setSurfaceAntiAliasing(SurfaceAntiAliasing.fromInteger(
+                        array.getInteger(attr, SurfaceAntiAliasing.NONE.ordinal())));
             } else if (attr == R.styleable.GlesSurfaceView_multiSampleCount) {
-                mMultiSampleCount = array.getInteger(attr, 0);
+                surfaceConfiguration.setMultiSampleCount(array.getInteger(attr, 0));
             } else if (attr == R.styleable.GlesSurfaceView_isTransparent) {
-                mIsTransparent = array.getBoolean(attr, false);
+                surfaceConfiguration.setTransparent(array.getBoolean(attr, false));
             } else if (attr == R.styleable.GlesSurfaceView_bitsRed) {
-                mBitsRed = array.getInteger(attr, 5);
+                surfaceConfiguration.setBitsRed (array.getInteger(attr, 5));
             } else if (attr == R.styleable.GlesSurfaceView_bitsGreen) {
-                mBitsGreen = array.getInteger(attr, 6);
+                surfaceConfiguration.setBitsGreen(array.getInteger(attr, 6));
             } else if (attr == R.styleable.GlesSurfaceView_bitsBlue) {
-                mBitsBlue = array.getInteger(attr, 5);
+                surfaceConfiguration.setBitsBlue(array.getInteger(attr, 5));
             } else if (attr == R.styleable.GlesSurfaceView_bitsAlpha) {
-                mBitsAlpha = array.getInteger(attr, 0);
+                surfaceConfiguration.setBitsAlpha(array.getInteger(attr, 0));
             } else if (attr == R.styleable.GlesSurfaceView_bitsDepth) {
-                mBitsDepth = array.getInteger(attr, 16);
+                surfaceConfiguration.setBitsDepth(array.getInteger(attr, 16));
             }
         }
         array.recycle();
     }
 
-    /**
-     * Sets the surface-wide anti-aliasing mode, overriding any layout attribute.
-     *
-     * Must be called before {@link #configure(RenderControlClient)}, else ignored.
-     *
-     * @param surfaceAntiAliasing {@link GlesSurfaceAntiAliasing} type to apply; default is {@link GlesSurfaceAntiAliasing#NONE}
-     * @return this {@link GlesSurfaceView} to enable chaining of set calls
-     */
-    public GlesSurfaceView setSurfaceAntiAliasing(@NonNull GlesSurfaceAntiAliasing surfaceAntiAliasing) {
-        mSurfaceAntiAliasing = surfaceAntiAliasing;
-        return this;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public GlesSurfaceAntiAliasing getSurfaceAntiAliasing() {
-        return mSurfaceAntiAliasing;
-    }
-
-
-    /**
-     * Sets the sample count when using {@link GlesSurfaceAntiAliasing#MULTI_SAMPLING}, overriding any layout attribute.
-     *
-     * Must be called before {@link #configure(RenderControlClient)}, else ignored.
-
-     * @param count
-     * @return this {@link GlesSurfaceView} to enable chaining of set calls
-     */
-    public GlesSurfaceView setMultiSampleCount(@IntRange(from = 2) int count) {
-        // TODO Just guessing on the minimum value of 2; does it also need to be a power of 2?
-        mMultiSampleCount = count;
-        return this;
-    }
-
-    /**
-     * Enables/Disables a transparent background for this {@link SurfaceView}, overriding any layout attribute.
-     *
-     * Must be called before {@link #configure(RenderControlClient)}, else ignored
-
-     * @param isTransparent {@code boolean} If true, this {@link GlesSurfaceView} will be drawn with a transparent background. Default is false.
-     * @return this {@link GlesSurfaceView} to enable chaining of set calls
-     */
-    public GlesSurfaceView setTransparent(boolean isTransparent) {
-        mIsTransparent = isTransparent;
-        return this;
-    }
+    //
+    // SurfaceView interface methods
+    //
 
     @Override
     public void configure(RenderControlClient renderControlClient) {
-        if (mGlesSurfaceRenderer != null) {
+        configure(renderControlClient, null);
+    }
+
+    @Override
+    public void configure(RenderControlClient renderControlClient, SurfaceConfiguration surfaceConfiguration) {
+        if (glesSurfaceRenderer != null) {
             throw new IllegalStateException("This SurfaceView has already been configured.");
+        }
+        // Use any supplied configuration to override the default or styled attribute values
+        if (surfaceConfiguration != null) {
+            this.surfaceConfiguration = surfaceConfiguration;
         }
         // Determine the GLES context version
         final int glesMajorVersion = Capabilities.getGLESMajorVersion();
@@ -141,44 +99,59 @@ public class GlesSurfaceView extends GLSurfaceView implements RenderSurfaceView 
         setEGLContextClientVersion(glesMajorVersion);
         //
         configureSurface(glesMajorVersion);
-        //
+        // Create the renderer/render control
         final GlesSurfaceRenderer surfaceRenderer = new GlesSurfaceRenderer(getContext(), this, renderControlClient,
-                mInitialFrameRate);
+                this.surfaceConfiguration.getFrameRate());
         // Setting the renderer starts the Render thread, and creates the context and the surface
         super.setRenderer(surfaceRenderer);
-        mGlesSurfaceRenderer = surfaceRenderer; // Don't publish a reference before its safe.
-        onPause(); // No rendering yet
+        // Don't publish a reference before its safe.
+        glesSurfaceRenderer = surfaceRenderer;
+        // No rendering yet
+        onPause();
+
     }
 
     protected void configureSurface(int glesMajorVersion) {
-        if (mIsTransparent) {
-            setEGLConfigChooser(new GlesConfigChooser(glesMajorVersion, mSurfaceAntiAliasing, mMultiSampleCount,
-                    8, 8, 8, 8, mBitsDepth));
+        if (surfaceConfiguration.isTransparent()) {
+            setEGLConfigChooser(new GlesConfigChooser(glesMajorVersion,
+                    surfaceConfiguration.getSurfaceAntiAliasing(),
+                    surfaceConfiguration.getMultiSampleCount(), 8, 8, 8, 8,
+                    surfaceConfiguration.getBitsDepth()));
 
             getHolder().setFormat(PixelFormat.TRANSLUCENT);
             setZOrderOnTop(true);
         } else {
-            setEGLConfigChooser(new GlesConfigChooser(glesMajorVersion, mSurfaceAntiAliasing, mMultiSampleCount,
-                    mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
+            setEGLConfigChooser(new GlesConfigChooser(glesMajorVersion,
+                    surfaceConfiguration.getSurfaceAntiAliasing(),
+                    surfaceConfiguration.getMultiSampleCount(),
+                    surfaceConfiguration.getBitsRed(),
+                    surfaceConfiguration.getBitsGreen(),
+                    surfaceConfiguration.getBitsBlue(),
+                    surfaceConfiguration.getBitsAlpha(),
+                    surfaceConfiguration.getBitsDepth()));
 
             getHolder().setFormat(PixelFormat.RGBA_8888);
             setZOrderOnTop(false);
         }
     }
 
+    //
+    //
+    //
+
     @Override
     public void onPause() {
         super.onPause();
-        if (mGlesSurfaceRenderer != null) {
-            mGlesSurfaceRenderer.onRenderThreadPause();
+        if (glesSurfaceRenderer != null) {
+            glesSurfaceRenderer.onRenderThreadPause();
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mGlesSurfaceRenderer != null) {
-            mGlesSurfaceRenderer.onRenderThreadResume();
+        if (glesSurfaceRenderer != null) {
+            glesSurfaceRenderer.onRenderThreadResume();
         }
     }
 
@@ -205,7 +178,7 @@ public class GlesSurfaceView extends GLSurfaceView implements RenderSurfaceView 
     @Override
     protected void onDetachedFromWindow() {
         try {
-            mGlesSurfaceRenderer.onRenderContextLost();
+            glesSurfaceRenderer.onRenderContextLost();
         } catch (NullPointerException ignored) {
             // Don't care, activity is terminating.
         }
@@ -219,6 +192,11 @@ public class GlesSurfaceView extends GLSurfaceView implements RenderSurfaceView 
     //
 
     @Override
+    public boolean isTransparent() {
+        return surfaceConfiguration.isTransparent();
+    }
+
+    @Override
     public void setRenderFramesOnRequest(boolean onRequest) {
         setRenderMode(onRequest ? RENDERMODE_WHEN_DIRTY : RENDERMODE_CONTINUOUSLY);
     }
@@ -228,12 +206,22 @@ public class GlesSurfaceView extends GLSurfaceView implements RenderSurfaceView 
         requestRender();
     }
 
+    @Override
+    public void queueToRenderThread(Runnable runnable) {
+        queueEvent(runnable);
+    }
+
+    @Override
+    public void queueToMainThread(Runnable runnable) {
+        post(runnable);
+    }
+
     /**
      * Renderer for a {@link GlesSurfaceView}
      *
      * @author Jared Woolston (jwoolston@tenkiv.com)
      */
-    private static class GlesSurfaceRenderer extends BaseGlesSurfaceRenderer implements Renderer {
+    private static class GlesSurfaceRenderer extends GlesRenderControl implements Renderer {
 
         final GlesSurfaceView glesSurfaceView;
 
@@ -245,7 +233,7 @@ public class GlesSurfaceView extends GLSurfaceView implements RenderSurfaceView 
 
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            super.onRenderContextAcquired();
+            super.specifyRenderContextAcquired();
         }
 
         @Override

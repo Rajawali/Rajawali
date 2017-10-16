@@ -3,7 +3,7 @@ package c.org.rajawali3d.sceneview.render;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 
 /**
  * @author Randy Picolet
@@ -11,12 +11,26 @@ import c.org.rajawali3d.sceneview.RenderSceneView;
 
 public abstract class RenderPassChain extends CompositeRender<RenderPass> {
 
+    /**
+     *
+     */
     public class ChainAttachment {
 
+        /**
+         *
+         */
         final int passIndex;
 
+        /**
+         *
+         */
         final int attachmentIndex;
 
+        /**
+         *
+         * @param passIndex
+         * @param attachmentIndex
+         */
         public ChainAttachment(@IntRange(from = 0) int passIndex, @IntRange(from = 0) int attachmentIndex) {
             this.passIndex = passIndex;
             this.attachmentIndex = attachmentIndex;
@@ -25,6 +39,9 @@ public abstract class RenderPassChain extends CompositeRender<RenderPass> {
 
     // Attachment shared between RenderPasses
 
+    /**
+     *
+     */
     public class ChainAttachmentLink {
 
         final ChainAttachment sourceAttachment;
@@ -41,13 +58,24 @@ public abstract class RenderPassChain extends CompositeRender<RenderPass> {
     private final ChainAttachmentLink[] links;
 
 
-    protected RenderPassChain(@NonNull RenderSceneView renderSceneView, @NonNull RenderPass[] children) {
-        this(renderSceneView, children, null);
+    /**
+     *
+     * @param sceneViewInternal
+     * @param children
+     */
+    protected RenderPassChain(@NonNull SceneViewInternal sceneViewInternal, @NonNull RenderPass[] children) {
+        this(sceneViewInternal, children, null);
     }
 
-    protected RenderPassChain(@NonNull RenderSceneView renderSceneView, @NonNull RenderPass[] children,
+    /**
+     *
+     * @param sceneViewInternal
+     * @param children
+     * @param links
+     */
+    protected RenderPassChain(@NonNull SceneViewInternal sceneViewInternal, @NonNull RenderPass[] children,
                               @Nullable ChainAttachmentLink[] links) {
-        super(renderSceneView, children);
+        super(sceneViewInternal, children);
         // TODO links validation
         this.links = links;
     }

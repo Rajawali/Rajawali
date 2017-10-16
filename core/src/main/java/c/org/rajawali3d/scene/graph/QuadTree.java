@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * {@link SceneGraph} implementation which stores children in a 2D Quad-Tree. This is useful for situations where
- * objects either have a common position in 1 dimension or the value of a single dimension is irrelevant to renderScene
+ * objects either have a common position in 1 dimension or the value of a single dimension is irrelevant to scene
  * structure.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)

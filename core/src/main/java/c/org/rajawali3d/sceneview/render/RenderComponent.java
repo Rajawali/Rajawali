@@ -17,12 +17,12 @@ import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RenderThread;
 import c.org.rajawali3d.control.RenderContext;
 import c.org.rajawali3d.logging.LoggingComponent;
-import c.org.rajawali3d.sceneview.RenderSceneView;
-import c.org.rajawali3d.sceneview.SceneViewControl;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
+import c.org.rajawali3d.control.RenderControlInternal;
 
 /**
  * A {@link RenderComponent} is the base type for composing the rendering operations used by a
- * {@link RenderSceneView} to render its per-frame outputs. Each component maps input objects and/or textures to
+ * {@link SceneViewInternal} to render its per-frame outputs. Each component maps input objects and/or textures to
  * either the SceneView's (on-screen) system framebuffer viewport or to a SceneView-specific (off-screen) framebuffer
  * object.
  * <p>
@@ -57,13 +57,13 @@ public abstract class RenderComponent extends LoggingComponent {
      *
      */
     @NonNull
-    protected final RenderSceneView renderSceneView;
+    protected final SceneViewInternal sceneViewInternal;
 
     /**
      *
      */
     @NonNull
-    protected final SceneViewControl sceneViewControl;
+    protected final RenderControlInternal renderControlInternal;
 
     /**
      *
@@ -91,12 +91,12 @@ public abstract class RenderComponent extends LoggingComponent {
 
     /**
      *
-     * @param renderSceneView
+     * @param sceneViewInternal
      */
-    protected RenderComponent(@NonNull RenderSceneView renderSceneView) {
-        debugAssertNonNull(renderSceneView, "renderSceneView");
-        this.renderSceneView = renderSceneView;
-        sceneViewControl = renderSceneView.getSceneViewControl()
+    protected RenderComponent(@NonNull SceneViewInternal sceneViewInternal) {
+        debugAssertNonNull(sceneViewInternal, "sceneViewInternal");
+        this.sceneViewInternal = sceneViewInternal;
+        renderControlInternal = sceneViewInternal.getSceneViewControl()
     }
 
     //
@@ -107,8 +107,8 @@ public abstract class RenderComponent extends LoggingComponent {
      *
      * @return
      */
-    public RenderSceneView getRenderSceneView() {
-        return renderSceneView;
+    public SceneViewInternal getSceneViewInternal() {
+        return sceneViewInternal;
     }
 
     /**

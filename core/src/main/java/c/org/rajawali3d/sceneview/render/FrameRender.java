@@ -15,11 +15,9 @@ package c.org.rajawali3d.sceneview.render;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 import c.org.rajawali3d.sceneview.camera.Camera;
 import c.org.rajawali3d.object.Object3D;
-import c.org.rajawali3d.scene.Scene;
-import c.org.rajawali3d.sceneview.RenderSceneView;
-import c.org.rajawali3d.sceneview.SceneView;
 
 /**
  * <p>
@@ -42,14 +40,26 @@ import c.org.rajawali3d.sceneview.SceneView;
 public abstract class FrameRender extends CompositeRender<RenderPassChain> {
 
 
+    /**]
+     *
+     */
     public class FrameRenderAttachment {
 
+        /**     */
         final int chainIndex;
 
+        /**     */
         final int passIndex;
 
+        /**     */
         final int attachmentIndex;
 
+        /**
+         *
+         * @param chainIndex
+         * @param passIndex
+         * @param attachmentIndex
+         */
         public FrameRenderAttachment(@IntRange(from = 0) int chainIndex,
                                      @IntRange(from = 0) int passIndex,
                                      @IntRange(from = 0) int attachmentIndex) {
@@ -61,11 +71,22 @@ public abstract class FrameRender extends CompositeRender<RenderPassChain> {
 
     // Attachment shared  between RenderPassChains
 
+    /**
+     *
+     */
     public class FrameRenderAttachmentLink {
 
+        /**     */
         final FrameRenderAttachment sourceAttachment;
+
+        /**     */
         final FrameRenderAttachment sinkAttachment;
 
+        /**
+         *
+         * @param sourceAttachment
+         * @param sinkAttachment
+         */
         public FrameRenderAttachmentLink(@NonNull FrameRenderAttachment sourceAttachment,
                                          @NonNull FrameRenderAttachment sinkAttachment) {
             this.sourceAttachment = sourceAttachment;
@@ -73,6 +94,7 @@ public abstract class FrameRender extends CompositeRender<RenderPassChain> {
         }
     }
 
+    //
     @Nullable
     private final FrameRenderAttachmentLink[] links;
 
@@ -80,14 +102,25 @@ public abstract class FrameRender extends CompositeRender<RenderPassChain> {
     // Construction
     //
 
-    protected FrameRender(@NonNull RenderSceneView renderSceneView, @NonNull RenderPassChain[] children) {
-        this(renderSceneView, children, null);
+    /**
+     *
+     * @param sceneViewInternal
+     * @param children
+     */
+    protected FrameRender(@NonNull SceneViewInternal sceneViewInternal, @NonNull RenderPassChain[] children) {
+        this(sceneViewInternal, children, null);
 
     }
 
-    protected FrameRender(@NonNull RenderSceneView renderSceneView, @NonNull RenderPassChain[] children,
+    /**
+     *
+     * @param sceneViewInternal
+     * @param children
+     * @param links
+     */
+    protected FrameRender(@NonNull SceneViewInternal sceneViewInternal, @NonNull RenderPassChain[] children,
                           @Nullable FrameRenderAttachmentLink[] links) {
-        super(renderSceneView, children);
+        super(sceneViewInternal, children);
         // TODO links validation
         this.links = links;
     }
@@ -97,7 +130,8 @@ public abstract class FrameRender extends CompositeRender<RenderPassChain> {
     //
 
     /**
-     * For use by BaseSceneView only...
+     * For use by SceneView only...
+     *
      * @param onScreen
      */
     public void setOnScreen(boolean onScreen) {

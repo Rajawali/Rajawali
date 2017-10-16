@@ -1,15 +1,19 @@
 package c.org.rajawali3d.control;
 
-import c.org.rajawali3d.surface.SurfaceView;
-
 /**
- * Internal extensions of {@link SurfaceView} required by a {@link RenderControl} implementation. The goal is to
- * define a minimal interface that can reasonably be expected to be supportable by current (GLES) and future
- * (Vulkan?) graphics systems.
+ * Internal interface to be supplied by a renderable SurfaceView and used by its associated {@link RenderControl}
+ * implementation. The goal is to define a minimal interface that can reasonably be expected to be supportable by
+ * current (GLES) and future (Vulkan?) graphics systems.
  *
  * @author Randy Picolet
  */
-public interface RenderSurfaceView extends SurfaceView {
+public interface RenderSurfaceView {
+
+    /**
+     *
+     * @return
+     */
+    boolean isTransparent();
 
     /**
      * Sets whether frames are rendered only on request (and when the surface is first created), or continuously
@@ -24,14 +28,16 @@ public interface RenderSurfaceView extends SurfaceView {
     void requestFrameRender();
 
     /**
+     * Queue a Runnable task to the render thread
      *
      * @param runnable
      */
-    void queueEvent(Runnable runnable);
+    void queueToRenderThread(Runnable runnable);
 
     /**
+     * Queue a Runnable task to the main/UI thread
      *
      * @param runnable
      */
-    void post(Runnable runnable);
+    void queueToMainThread(Runnable runnable);
 }

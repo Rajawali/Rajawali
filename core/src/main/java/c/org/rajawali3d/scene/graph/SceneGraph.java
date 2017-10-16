@@ -1,7 +1,7 @@
 package c.org.rajawali3d.scene.graph;
 
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.annotations.RenderTask;
+import c.org.rajawali3d.annotations.RequiresRenderTask;
 import c.org.rajawali3d.bounds.AABB;
 
 import java.util.Collection;
@@ -16,33 +16,33 @@ import java.util.Collection;
  */
 public interface SceneGraph extends NodeParent, AABB {
 
-    @RenderTask
+    @RequiresRenderTask
     boolean add(@NonNull SceneNode node);
 
-    @RenderTask
+    @RequiresRenderTask
     boolean addAll(@NonNull Collection<? extends SceneNode> collection);
 
-    @RenderTask
+    @RequiresRenderTask
     void clear();
 
-    @RenderTask
+    @RequiresRenderTask
     boolean contains(@NonNull SceneNode node);
 
-    @RenderTask
+    @RequiresRenderTask
     boolean containsAll(@NonNull Collection<? extends SceneNode> collection);
 
-    @RenderTask
+    @RequiresRenderTask
     boolean isEmpty();
 
-    @RenderTask
+    @RequiresRenderTask
     boolean remove(@NonNull SceneNode node);
 
-    @RenderTask
+    @RequiresRenderTask
     boolean removeAll(@NonNull Collection<? extends SceneNode> collection);
 
-    @RenderTask
+    @RequiresRenderTask
     boolean retainAll(@NonNull Collection<? extends SceneNode> collection);
 
-    @RenderTask
+    @RequiresRenderTask
     int size();
 }

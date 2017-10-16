@@ -3,7 +3,6 @@ package c.org.rajawali3d.textures;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.scene.Scene;
 
 import net.jcip.annotations.ThreadSafe;
@@ -43,7 +42,7 @@ public final class TextureManager {
         // Update the tracking structures first
         // Add the texture to the collection
         textures.add(texture);
-        ((BaseScene)scene).executeRenderTask(new RenderTask() {
+        ((Scene)scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 texture.add();
@@ -61,7 +60,7 @@ public final class TextureManager {
         // Update the tracking structures first
         // Remove the texture from the collection
         textures.remove(texture);
-        ((BaseScene)scene).executeRenderTask(new RenderTask() {
+        ((Scene)scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 texture.remove();
@@ -82,7 +81,7 @@ public final class TextureManager {
         if (!textures.contains(texture)) {
             throw new TextureException("Tried replacing texture " + texture + " but it was not previously added.");
         }
-        ((BaseScene)scene).executeRenderTask(new RenderTask() {
+        ((Scene)scene).executeRenderTask(new RenderTask() {
             @Override
             protected void doTask() throws Exception {
                 texture.replace();

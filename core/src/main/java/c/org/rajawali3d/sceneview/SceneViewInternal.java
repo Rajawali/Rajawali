@@ -2,31 +2,35 @@ package c.org.rajawali3d.sceneview;
 
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.control.RenderControlInternal;
 import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.scene.RenderScene;
+import c.org.rajawali3d.scene.SceneInternal;
 import java.util.List;
 import org.rajawali3d.math.Matrix4;
 
 /**
- * Internal-use-only rendering extensions for a SceneView
+ * Internal interface provided by a SceneView for use by other components
  *
  * @author Randy Picolet
  */
-public interface RenderSceneView extends SceneView {
+public interface SceneViewInternal {
 
-    RenderScene getRenderScene();
+    SceneInternal getSceneInternal();
 
-    // For use by SceneViewControl TODO - any lifecycle stuff?
+    // For use by RenderControlInternal TODO - any lifecycle stuff?
 
     @RenderThread
-    void onRenderFrame() throws InterruptedException;
+    boolean isEnabled();
+
+    @RenderThread
+    void onRenderFrame();
 
     // For use by SceneView RenderComponents
 
     @RenderThread
     @NonNull
-    SceneViewControl getSceneViewControl();
+    RenderControlInternal getSceneViewControl();
 
     @RenderThread
     @NonNull

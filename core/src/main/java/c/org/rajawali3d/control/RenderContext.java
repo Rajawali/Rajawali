@@ -5,6 +5,7 @@ import static c.org.rajawali3d.control.RenderContextType.OPEN_GL_ES;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.surface.SurfaceView;
 import org.rajawali3d.util.RajLog;
 
 /**
@@ -122,7 +123,7 @@ public enum RenderContext {
     }
 
     /**
-     * Set the current render context; to be called only from {@link CoreControl}
+     * Set the current render context; to be called only from {@link BaseRenderControl}
      *
      * @param type
      * @param majorVersion
@@ -181,7 +182,7 @@ public enum RenderContext {
     }
 
     /**
-     * Unset the current render context; to be called only from {@link CoreControl}
+     * Unset the current render context; to be called only from {@link BaseRenderControl}
      */
     static void unsetCurrentContext() {
         RajLog.i("Current RenderContext unset...");

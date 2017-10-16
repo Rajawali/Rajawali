@@ -1,7 +1,6 @@
 package c.org.rajawali3d.materials;
 
-import c.org.rajawali3d.control.RenderTask;
-import c.org.rajawali3d.scene.BaseScene;
+import c.org.rajawali3d.annotations.RequiresRenderTask;
 import c.org.rajawali3d.scene.Scene;
 import org.rajawali3d.materials.Material;
 
@@ -14,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * TODO Is this still valid?  pre reqs material programs/shaders can be shared across Scenes...
  * Manages materials in the context of a {@link Scene} in a thread safe manner. As a general rule, each
  * {@link Scene} should have its own instance of {@link MaterialManager}.
  *
@@ -24,11 +24,9 @@ public class MaterialManager {
 
     private final Set<Material> materials;
 
-    private final Scene scene;
-
-    public MaterialManager(@NonNull Scene scene) {
+    // TODO Singleton/process scope?
+    public MaterialManager() {
         materials = Collections.synchronizedSet(new HashSet<Material>());
-        this.scene = scene;
     }
 
     /**
@@ -37,16 +35,12 @@ public class MaterialManager {
      *
      * @param material {@link Material} to be added.
      */
+    @RequiresRenderTask
     public void addMaterial(@NonNull final Material material) {
         // Update the tracking structures first
         // Add the material to the collection
         materials.add(material);
-        ((BaseScene) scene).executeRenderTask(new RenderTask() {
-            @Override
-            protected void doTask() throws Exception {
-                material.add();
-            }
-        });
+        material.add();
     }
 
     /**
@@ -55,15 +49,11 @@ public class MaterialManager {
      *
      * @param material {@link Material} to be removed.
      */
+    @RequiresRenderTask
     public void removeMaterial(@NonNull final Material material) {
         // Update the tracking structures first
         // Remove the material from the collection
         materials.remove(material);
-        ((BaseScene) scene).executeRenderTask(new RenderTask() {
-            @Override
-            protected void doTask() throws Exception {
-                material.remove();
-            }
-        });
+        material.remove();
     }
 }

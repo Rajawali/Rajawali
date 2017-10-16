@@ -18,7 +18,7 @@ import c.org.rajawali3d.control.RenderContext;
 import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.sceneview.render.gles.GlesFramebuffer;
 import c.org.rajawali3d.object.Object3D;
-import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 import c.org.rajawali3d.sceneview.render.ObjectPipelineTypes.ObjectPipelineType;
 import java.util.List;
 
@@ -133,26 +133,26 @@ public abstract class Subpass extends RenderComponent {
 
     /**
      *
-     * @param renderSceneView
+     * @param sceneViewInternal
      * @param pipelineType
      */
-    protected Subpass(RenderSceneView renderSceneView, AttachmentRoles attachmentRoles,
+    protected Subpass(SceneViewInternal sceneViewInternal, AttachmentRoles attachmentRoles,
                       @ObjectPipelineType int pipelineType) {
-        this(renderSceneView, null, RENDERABLE_TO_SCREEN, TARGET_SIZE_TRACKS_VIEWPORT, attachmentRoles, pipelineType);
+        this(sceneViewInternal, null, RENDERABLE_TO_SCREEN, TARGET_SIZE_TRACKS_VIEWPORT, attachmentRoles, pipelineType);
     }
 
     /**
      *
-     * @param renderSceneView
+     * @param sceneViewInternal
      * @param pipelineType
      * @param minVersionRenderContext
      * @param renderableToScreen
      * @param targetSizeTracksViewport
      */
-    protected Subpass(@NonNull RenderSceneView renderSceneView, @Nullable RenderContext minVersionRenderContext,
+    protected Subpass(@NonNull SceneViewInternal sceneViewInternal, @Nullable RenderContext minVersionRenderContext,
                       boolean renderableToScreen, boolean targetSizeTracksViewport, AttachmentRoles attachmentRoles,
                       @ObjectPipelineType int pipelineType) {
-        super(renderSceneView);
+        super(sceneViewInternal);
         this.minVersionRenderContext =  minVersionRenderContext == null ?
                 RenderContext.getMinimumVersion() : minVersionRenderContext;
         this.renderableToScreen = renderableToScreen;

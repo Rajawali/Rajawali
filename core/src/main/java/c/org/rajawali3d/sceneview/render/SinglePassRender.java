@@ -1,7 +1,7 @@
 package c.org.rajawali3d.sceneview.render;
 
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 
 /**
  * @author Randy Picolet
@@ -14,20 +14,20 @@ public abstract class SinglePassRender extends FrameRender {
 
         /**
          *
-         * @param renderSceneView
+         * @param sceneViewInternal
          * @param renderPass
          */
-        protected SinglePassChain(@NonNull RenderSceneView renderSceneView, RenderPass renderPass) {
-            super(renderSceneView, new RenderPass[]{renderPass});
+        protected SinglePassChain(@NonNull SceneViewInternal sceneViewInternal, RenderPass renderPass) {
+            super(sceneViewInternal, new RenderPass[]{renderPass});
         }
     }
 
     /**
      *
-     * @param renderSceneView
+     * @param sceneViewInternal
      * @param renderPass
      */
-    protected SinglePassRender(@NonNull RenderSceneView renderSceneView, RenderPass renderPass) {
-        super(renderSceneView, new RenderPassChain[]{new SinglePassChain(renderSceneView, renderPass)});
+    protected SinglePassRender(@NonNull SceneViewInternal sceneViewInternal, RenderPass renderPass) {
+        super(sceneViewInternal, new RenderPassChain[]{new SinglePassChain(sceneViewInternal, renderPass)});
     }
 }

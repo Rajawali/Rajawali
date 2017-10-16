@@ -7,11 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Method and field annotation marking removal for ProGuard in release mode
+ * Method and field annotation marking removable source code for ProGuard in release mode
+ *
  * @author Randy Picolet
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface DebugOnly {
 }

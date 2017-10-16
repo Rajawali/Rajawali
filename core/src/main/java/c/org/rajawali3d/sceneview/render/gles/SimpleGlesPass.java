@@ -1,6 +1,6 @@
 package c.org.rajawali3d.sceneview.render.gles;
 
-import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 
 /**
  * @author Randy Picolet
@@ -8,7 +8,7 @@ import c.org.rajawali3d.sceneview.RenderSceneView;
 
 public class SimpleGlesPass extends GlesPass {
 
-    public SimpleGlesPass(RenderSceneView renderSceneView) {
-        super(renderSceneView, );
+    public SimpleGlesPass(SceneViewInternal sceneViewInternal) {
+        super(sceneViewInternal, );
     }
 }

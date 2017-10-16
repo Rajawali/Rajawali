@@ -19,7 +19,6 @@ import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.MaterialManager;
 
-import c.org.rajawali3d.sceneview.SceneView;
 import c.org.rajawali3d.sceneview.render.gles.RenderTarget;
 
 import c.org.rajawali3d.textures.annotation.Filter;

@@ -2,12 +2,11 @@ package c.org.rajawali3d.sceneview.render.gles;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 import c.org.rajawali3d.sceneview.sky.Skybox;
 import c.org.rajawali3d.sceneview.Viewport;
 import c.org.rajawali3d.sceneview.render.RenderPass;
 import c.org.rajawali3d.sceneview.render.gles.GlesPass.GlesAttachmentDescriptor;
-import c.org.rajawali3d.sceneview.render.ObjectPipelineTypes.ObjectPipelineType;
 import c.org.rajawali3d.sceneview.render.Subpass;
 import c.org.rajawali3d.textures.annotation.TexelFormat;
 import org.rajawali3d.math.Matrix4;
@@ -231,11 +230,11 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
 
     /**
      *
-     * @param renderSceneView
+     * @param sceneViewInternal
      */
-    protected GlesPass(final @NonNull RenderSceneView renderSceneView, @NonNull GlesSubpass[] children,
+    protected GlesPass(final @NonNull SceneViewInternal sceneViewInternal, @NonNull GlesSubpass[] children,
                        final @NonNull GlesAttachmentDescriptor[] attachments) {
-        super(renderSceneView, children, attachments);
+        super(sceneViewInternal, children, attachments);
     }
 
     @Override
@@ -297,17 +296,17 @@ public abstract class GlesPass extends RenderPass<GlesAttachmentDescriptor, Gles
     }
 
     protected void updateSkybox() {
-        skybox =  renderSceneView.getSkybox();
+        skybox =  sceneViewInternal.getSkybox();
     }
 
     protected void updateCameraMatrices() {
-        viewMatrix = renderSceneView.getViewMatrix();
-        projectionMatrix = renderSceneView.getProjectionMatrix();
-        viewProjectiondMatrix = renderSceneView.getViewProjectionMatrix();
+        viewMatrix = sceneViewInternal.getViewMatrix();
+        projectionMatrix = sceneViewInternal.getProjectionMatrix();
+        viewProjectiondMatrix = sceneViewInternal.getViewProjectionMatrix();
     }
 
     protected void updateViewport() {
-        viewport = renderSceneView.getViewport();
+        viewport = sceneViewInternal.getViewport();
         renderTargetWidth = viewport.getWidth();
         renderTargetHeight = viewport.getHeight();
     }

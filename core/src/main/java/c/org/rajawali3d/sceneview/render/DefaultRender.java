@@ -12,7 +12,7 @@
  */
 package c.org.rajawali3d.sceneview.render;
 
-import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 
 /**
  * @author Randy Picolet
@@ -20,8 +20,8 @@ import c.org.rajawali3d.sceneview.RenderSceneView;
 
 public class DefaultRender extends SinglePassRender {
 
-    public DefaultRender(RenderSceneView renderSceneView) {
-        super(renderSceneView, );
+    public DefaultRender(SceneViewInternal sceneViewInternal) {
+        super(sceneViewInternal, );
     }
 
 

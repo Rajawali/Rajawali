@@ -31,12 +31,12 @@ public abstract class RenderTask {
      *
      */
     @Nullable
-    protected final RenderTaskCallback callback;
+    public final RenderTaskCallback callback;
 
     /**
      *
      */
-    protected final boolean queueCallbackToMainThread;
+    public final boolean queueCallbackToMainThread;
 
     /**
      *
@@ -67,7 +67,7 @@ public abstract class RenderTask {
     public abstract void doTask() throws Exception;
 
     /**
-     * For use by {@link RenderControl} ({@link CoreControl}) only
+     * For use by {@link RenderControl} ({@link BaseRenderControl}) only
      */
     @RenderThread
     final void notifyComplete(RenderControl renderControl) {

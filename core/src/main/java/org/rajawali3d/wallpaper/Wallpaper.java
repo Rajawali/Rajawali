@@ -27,7 +27,7 @@ import org.rajawali3d.renderer.ISurfaceRenderer;
 import c.org.rajawali3d.gl.Capabilities;
 import c.org.rajawali3d.surface.SurfaceSize;
 import c.org.rajawali3d.surface.gles.GlesSurfaceView;
-import c.org.rajawali3d.surface.gles.GlesSurfaceAntiAliasing;
+import c.org.rajawali3d.surface.SurfaceAntiAliasing;
 
 import static android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY;
 
@@ -38,7 +38,7 @@ public abstract class Wallpaper extends WallpaperService {
         protected Context mContext;
         protected ISurfaceRenderer mRenderer;
         protected WallpaperSurfaceView mSurfaceView;
-        protected GlesSurfaceAntiAliasing mAntiAliasing;
+        protected SurfaceAntiAliasing mAntiAliasing;
         protected float mDefaultPreviewOffsetX;
 
         class WallpaperSurfaceView extends GlesSurfaceView {
@@ -66,12 +66,12 @@ public abstract class Wallpaper extends WallpaperService {
         }
 
         public WallpaperEngine(Context context, ISurfaceRenderer renderer) {
-            this(context, renderer, GlesSurfaceAntiAliasing.NONE);
+            this(context, renderer, SurfaceAntiAliasing.NONE);
         }
 
         // TODO need a Scene instead of a renderer?
         public WallpaperEngine(Context context, ISurfaceRenderer renderer,
-                               GlesSurfaceAntiAliasing antiAliasing) {
+                               SurfaceAntiAliasing antiAliasing) {
             mContext = context;
             mRenderer = renderer;
             mAntiAliasing = antiAliasing;

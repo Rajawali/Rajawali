@@ -7,6 +7,7 @@ import android.annotation.TargetApi;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.surface.SurfaceAntiAliasing;
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
@@ -23,9 +24,9 @@ public class GlesConfigChooser implements GLSurfaceView.EGLConfigChooser {
 
     private final int[] mConfigSpec;
 
-    private final GlesSurfaceAntiAliasing mAntiAliasing;
+    private final SurfaceAntiAliasing mAntiAliasing;
 
-    public GlesConfigChooser(int glesMajorVersion, @NonNull GlesSurfaceAntiAliasing antiAliasing, int multiSampleCount,
+    public GlesConfigChooser(int glesMajorVersion, @NonNull SurfaceAntiAliasing antiAliasing, int multiSampleCount,
                              int bitsRed, int bitsGreen, int bitsBlue, int bitsAlpha, int bitsDepth) {
         mAntiAliasing = antiAliasing;
 
@@ -80,7 +81,7 @@ public class GlesConfigChooser implements GLSurfaceView.EGLConfigChooser {
         mConfigSpec[RENDERABLE_TYPE_CONFIG_SLOT] = EGL_OPENGL_ES3_BIT_KHR;
     }
 
-    public GlesSurfaceAntiAliasing getAntiAliasingConfig() {
+    public SurfaceAntiAliasing getAntiAliasingConfig() {
         return mAntiAliasing;
     }
 

@@ -15,14 +15,14 @@ import c.org.rajawali3d.annotations.RenderThread;
 public abstract class SingleFrameCallback extends SimpleFrameCallback {
 
     @NonNull
-    private final ControlDelegate frameDelegate;
+    private final RenderDelegate frameDelegate;
 
     /**
-     * Constructs a new {@link SingleFrameCallback} for the provided {@link ControlDelegate}.
+     * Constructs a new {@link SingleFrameCallback} for the provided {@link RenderDelegate}.
      *
-     * @param frameDelegate The {@link ControlDelegate} to automatically remove from.
+     * @param frameDelegate The {@link RenderDelegate} to automatically remove from.
      */
-    public SingleFrameCallback(@NonNull ControlDelegate frameDelegate) {
+    public SingleFrameCallback(@NonNull RenderDelegate frameDelegate) {
         this.frameDelegate = frameDelegate;
     }
 

@@ -3,6 +3,10 @@ package c.org.rajawali3d.surface.gles;
 import c.org.rajawali3d.control.RenderControl;
 import c.org.rajawali3d.control.RenderControlClient;
 import c.org.rajawali3d.control.RenderSurfaceView;
+import c.org.rajawali3d.control.gles.GlesRenderControl;
+import c.org.rajawali3d.surface.SurfaceAntiAliasing;
+import c.org.rajawali3d.surface.SurfaceConfiguration;
+import c.org.rajawali3d.surface.SurfaceView;
 import c.org.rajawali3d.gl.Capabilities;
 
 import org.rajawali3d.R;
@@ -13,8 +17,6 @@ import android.content.res.TypedArray;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.TextureView;
@@ -42,7 +44,7 @@ import static android.opengl.EGLExt.EGL_OPENGL_ES3_BIT_KHR;
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-public class GlesSurfaceTextureView extends TextureView implements RenderSurfaceView {
+public class GlesSurfaceTextureView extends TextureView implements SurfaceView, RenderSurfaceView {
 
     private final static String TAG = "GlesSurfaceTextureView";
 
@@ -73,14 +75,7 @@ public class GlesSurfaceTextureView extends TextureView implements RenderSurface
 
     private final WeakReference<GlesSurfaceTextureView> mThisWeakRef = new WeakReference<>(this);
 
-    protected double mInitialFrameRate = RenderControl.USE_DISPLAY_REFRESH_RATE;
-    protected GlesSurfaceAntiAliasing mSurfaceAntiAliasing = GlesSurfaceAntiAliasing.NONE;
-    protected int mMultiSampleCount = 0;
-    protected int mBitsRed = 5;
-    protected int mBitsGreen = 6;
-    protected int mBitsBlue = 5;
-    protected int mBitsAlpha = 0;
-    protected int mBitsDepth = 16;
+    protected SurfaceConfiguration mSurfaceConfiguration = new SurfaceConfiguration();
 
     private GLThread mGLThread;
     private boolean mDetached;
@@ -120,58 +115,47 @@ public class GlesSurfaceTextureView extends TextureView implements RenderSurface
         for (int i = 0; i < count; ++i) {
             int attr = array.getIndex(i);
             if (attr == R.styleable.GlesSurfaceTextureView_frameRate) {
-                mInitialFrameRate = array.getFloat(attr, 60.0f);
+                mSurfaceConfiguration.setFrameRate(array.getFloat(attr,
+                        (float) RenderControl.USE_DISPLAY_REFRESH_RATE));
             } else if (attr == R.styleable.GlesSurfaceTextureView_antiAliasingType) {
-                mSurfaceAntiAliasing = GlesSurfaceAntiAliasing.fromInteger(
-                        array.getInteger(attr, GlesSurfaceAntiAliasing.NONE.ordinal()));
+                mSurfaceConfiguration.setSurfaceAntiAliasing(SurfaceAntiAliasing.fromInteger(
+                        array.getInteger(attr, SurfaceAntiAliasing.NONE.ordinal())));
+            } else if (attr == R.styleable.GlesSurfaceTextureView_multiSampleCount) {
+                mSurfaceConfiguration.setMultiSampleCount(array.getInteger(attr, 0));
             } else if (attr == R.styleable.GlesSurfaceTextureView_bitsRed) {
-                mBitsRed = array.getInteger(attr, 5);
+                mSurfaceConfiguration.setBitsRed(array.getInteger(attr, 5));
             } else if (attr == R.styleable.GlesSurfaceTextureView_bitsGreen) {
-                mBitsGreen = array.getInteger(attr, 6);
+                mSurfaceConfiguration.setBitsGreen(array.getInteger(attr, 6));
             } else if (attr == R.styleable.GlesSurfaceTextureView_bitsBlue) {
-                mBitsBlue = array.getInteger(attr, 5);
+                mSurfaceConfiguration.setBitsBlue(array.getInteger(attr, 5));
             } else if (attr == R.styleable.GlesSurfaceTextureView_bitsAlpha) {
-                mBitsAlpha = array.getInteger(attr, 0);
+                mSurfaceConfiguration.setBitsAlpha(array.getInteger(attr, 0));
             } else if (attr == R.styleable.GlesSurfaceTextureView_bitsDepth) {
-                mBitsDepth = array.getInteger(attr, 16);
+                mSurfaceConfiguration.setBitsDepth(array.getInteger(attr, 16));
             }
         }
         array.recycle();
     }
 
-    /**
-     * Sets the surface-wide anti-aliasing mode, overriding any layout attribute.
-     *
-     * Must be called before {@link #configure(RenderControlClient)}, else ignored.
-     *
-     * @param surfaceAntiAliasing {@link GlesSurfaceAntiAliasing} type to apply; default is {@link GlesSurfaceAntiAliasing#NONE}
-     * @return this {@link GlesSurfaceView} to enable chaining of set calls
-     */
-    public GlesSurfaceTextureView setSurfaceAntiAliasing(@NonNull GlesSurfaceAntiAliasing surfaceAntiAliasing) {
-        mSurfaceAntiAliasing = surfaceAntiAliasing;
-        return this;
-    }
+    //
+    // SurfaceView interface methods
+    //
 
-    /**
-     * Sets the sample count when using {@link GlesSurfaceAntiAliasing#MULTI_SAMPLING}, overriding any layout attribute.
-     *
-     * Must be called before {@link #configure(RenderControlClient)}, else ignored.
-
-     * @param count
-     * @return this {@link GlesSurfaceView} to enable chaining of set calls
-     */
-    public GlesSurfaceTextureView setMultiSampleCount(@IntRange(from = 2) int count) {
-        // TODO Just guessing on the minimum value of 2
-        mMultiSampleCount = count;
-        return this;
+    @Override
+    public void configure(RenderControlClient renderControlClient) {
+        configure(renderControlClient, null);
     }
 
     @Override
-    public void configure(@NonNull RenderControlClient renderControlClient) {
+    public void configure(RenderControlClient renderControlClient, SurfaceConfiguration surfaceConfiguration) {
         if (mRenderer != null) {
             throw new IllegalStateException("This SurfaceView has already been configured.");
         }
         checkRenderThreadState();
+
+        if (surfaceConfiguration != null) {
+            mSurfaceConfiguration = surfaceConfiguration;
+        }
 
         // Get/set the context version
         final int glesMajorVersion = Capabilities.getGLESMajorVersion();
@@ -188,16 +172,13 @@ public class GlesSurfaceTextureView extends TextureView implements RenderSurface
         if (mEGLWindowSurfaceFactory == null) {
             mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
         }
-        // Create our SurfaceTextureRenderer
+
+        // Create our SurfaceTextureRenderer (render control)
         final SurfaceTextureRenderer renderer = new SurfaceTextureRenderer(getContext(), this, renderControlClient,
-                mInitialFrameRate);
-        // Create the GL thread
+                mSurfaceConfiguration.getFrameRate());
+        // Create/start the GL thread
         mGLThread = new GLThread(mThisWeakRef);
         mGLThread.start();
-        // Set render mode
-        // TODO handle frame rate changes after config
-        setRenderModeInternal(mInitialFrameRate == RenderControl.USE_CONTINUOUS_RENDERING ?
-                RENDERMODE_CONTINUOUSLY : RENDERMODE_WHEN_DIRTY);
         // Register the renderer for callbacks
         mRenderer = renderer; // Done to make sure we don't publish a reference before its safe.
 
@@ -207,8 +188,14 @@ public class GlesSurfaceTextureView extends TextureView implements RenderSurface
     }
 
     protected void configureSurface(int glesMajorVersion) {
-        setEGLConfigChooser(new GlesConfigChooser(glesMajorVersion, mSurfaceAntiAliasing, mMultiSampleCount,
-                mBitsRed, mBitsGreen, mBitsBlue, mBitsAlpha, mBitsDepth));
+        setEGLConfigChooser(new GlesConfigChooser(glesMajorVersion,
+                mSurfaceConfiguration.getSurfaceAntiAliasing(),
+                mSurfaceConfiguration.getMultiSampleCount(),
+                mSurfaceConfiguration.getBitsRed(),
+                mSurfaceConfiguration.getBitsGreen(),
+                mSurfaceConfiguration.getBitsBlue(),
+                mSurfaceConfiguration.getBitsAlpha(),
+                mSurfaceConfiguration.getBitsDepth()));
     }
 
     private void checkRenderThreadState() {
@@ -304,7 +291,11 @@ public class GlesSurfaceTextureView extends TextureView implements RenderSurface
         }
     }
 
-    // TODO resolve this with renderer frame rate
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
+
     @Override
     public void setRenderFramesOnRequest(boolean onRequest) {
         setRenderModeInternal(onRequest ? RENDERMODE_WHEN_DIRTY : RENDERMODE_CONTINUOUSLY);
@@ -314,6 +305,16 @@ public class GlesSurfaceTextureView extends TextureView implements RenderSurface
     @Override
     public void requestFrameRender() {
         mGLThread.requestRender();
+    }
+
+    @Override
+    public void queueToRenderThread(Runnable runnable) {
+        queueEvent(runnable);
+    }
+
+    @Override
+    public void queueToMainThread(Runnable runnable) {
+        post(runnable);
     }
 
     /**
@@ -524,7 +525,7 @@ public class GlesSurfaceTextureView extends TextureView implements RenderSurface
     }
 
 
-    private static class SurfaceTextureRenderer extends BaseGlesSurfaceRenderer
+    private static class SurfaceTextureRenderer extends GlesRenderControl
             implements SurfaceTextureListener {
 
         final GlesSurfaceTextureView mGlesSurfaceTextureView;
@@ -1289,7 +1290,7 @@ public class GlesSurfaceTextureView extends TextureView implements RenderSurface
                         }
                         GlesSurfaceTextureView view = mViewWeakRef.get();
                         if (view != null) {
-                            view.mRenderer.onRenderContextAcquired();
+                            view.mRenderer.specifyRenderContextAcquired();
                         }
                         createEglContext = false;
                     }

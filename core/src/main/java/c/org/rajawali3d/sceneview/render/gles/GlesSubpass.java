@@ -9,7 +9,7 @@ import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.control.RenderContext;
 import c.org.rajawali3d.object.RenderableObject;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 import c.org.rajawali3d.sceneview.render.Subpass;
 
 /**
@@ -27,17 +27,17 @@ public class GlesSubpass extends Subpass {
      * @param attachmentRoles
      * @param pipelineType
      */
-    protected GlesSubpass(@NonNull RenderSceneView renderSceneView, @PipelineType int pipelineType,
+    protected GlesSubpass(@NonNull SceneViewInternal sceneViewInternal, @PipelineType int pipelineType,
                           @NonNull AttachmentRoles attachmentRoles) {
-        this(renderSceneView, null, RENDERABLE_TO_SCREEN, TARGET_SIZE_TRACKS_VIEWPORT, attachmentRoles,
+        this(sceneViewInternal, null, RENDERABLE_TO_SCREEN, TARGET_SIZE_TRACKS_VIEWPORT, attachmentRoles,
                 pipelineType);
     }
 
 
-    protected GlesSubpass(@NonNull RenderSceneView renderSceneView, @Nullable RenderContext minVersionRenderContext,
+    protected GlesSubpass(@NonNull SceneViewInternal sceneViewInternal, @Nullable RenderContext minVersionRenderContext,
                           boolean renderableToScreen, boolean targetSizeTracksViewport,
                           AttachmentRoles attachmentRoles, @PipelineType int pipelineType) {
-        super(renderSceneView, minVersionRenderContext, renderableToScreen, targetSizeTracksViewport,
+        super(sceneViewInternal, minVersionRenderContext, renderableToScreen, targetSizeTracksViewport,
                 attachmentRoles, pipelineType);
     }
 
@@ -114,8 +114,8 @@ public class GlesSubpass extends Subpass {
     }
 
     protected void applyOnScreenViewportScissor() {
-        int left = renderSceneView.getViewportLeft();
-        int top = renderSceneView.getViewportTop();
+        int left = sceneViewInternal.getViewportLeft();
+        int top = sceneViewInternal.getViewportTop();
         GLES20.glViewport(left, top, renderTargetWidth, renderTargetHeight);
         GLES20.glScissor(left, top, renderTargetWidth, renderTargetHeight);
     }
@@ -143,7 +143,7 @@ public class GlesSubpass extends Subpass {
     @RenderThread
     public void renderObjects() throws IllegalStateException {
 
-        ObjectRenderer lastUsedObjectRenderer = renderSceneView.getLastUsedObjectRenderer();
+        ObjectRenderer lastUsedObjectRenderer = sceneViewInternal.getLastUsedObjectRenderer();
 
         //
         for (RenderableObject renderableObject : renderObjects) {
@@ -160,7 +160,7 @@ public class GlesSubpass extends Subpass {
      *
      */
     protected void renderSkybox() {
-        skybox.setPosition(renderSceneView.getCamera().getPosition());
+        skybox.setPosition(sceneViewInternal.getCamera().getPosition());
         renderObject(skybox);
          /*
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);

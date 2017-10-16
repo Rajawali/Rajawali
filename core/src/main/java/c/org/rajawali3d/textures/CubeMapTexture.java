@@ -32,7 +32,7 @@ import c.org.rajawali3d.textures.annotation.Wrap;
 /**
  * A 2D cube mapped environmental texture. These textures are typically used to simulate highly reflective
  * surfaces by providing what the reflected environment would look like. For static or basic reflective appearances,
- * a single texture can be used. For more advanced reflections, the renderScene can be rendered to a FBO with cube
+ * a single texture can be used. For more advanced reflections, the scene can be rendered to a FBO with cube
  * mapping which is used as a {@link Type#CUBE_MAP} texture. They are also commonly used for sky boxes, simulating
  * the appearance of a far off sky.
  *

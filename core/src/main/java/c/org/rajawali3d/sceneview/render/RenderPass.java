@@ -15,7 +15,7 @@ package c.org.rajawali3d.sceneview.render;
 import android.support.annotation.NonNull;
 import c.org.rajawali3d.control.RenderContext;
 import c.org.rajawali3d.object.Object3D;
-import c.org.rajawali3d.sceneview.RenderSceneView;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 import c.org.rajawali3d.sceneview.render.gles.GlesFramebuffer;
 
 /**
@@ -50,10 +50,10 @@ public abstract class RenderPass<A, T extends Subpass> extends CompositeRender<S
 
     protected final int attachmentsCount;
 
-    protected RenderPass(@NonNull RenderSceneView renderSceneView,
+    protected RenderPass(@NonNull SceneViewInternal sceneViewInternal,
                          @NonNull Subpass[] children,
                          @NonNull A[] attachmentDescriptions) {
-        super(renderSceneView, children);
+        super(sceneViewInternal, children);
         debugAssertNonNull(attachmentDescriptions, "attachmentDescriptions");
         this.attachmentDescriptions = attachmentDescriptions;
         attachmentsCount = attachmentDescriptions.length;

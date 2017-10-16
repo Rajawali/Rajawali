@@ -2,11 +2,11 @@ package c.org.rajawali3d.control;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import c.org.rajawali3d.annotations.RequiresRenderTask;
 import c.org.rajawali3d.scene.Scene;
-import c.org.rajawali3d.scene.SceneControl;
 import c.org.rajawali3d.sceneview.SceneView;
 import c.org.rajawali3d.sceneview.Viewport;
-import c.org.rajawali3d.sceneview.SceneViewControl;
+import c.org.rajawali3d.surface.SurfaceSize;
 import c.org.rajawali3d.surface.SurfaceView;
 
 /**
@@ -25,9 +25,38 @@ import c.org.rajawali3d.surface.SurfaceView;
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public interface RenderControl extends RenderStatus {
+public interface RenderControl {
 
+    //
+    // Render context and surface
+    //
+
+    /**
+     * Gets the current RenderContext
+     *
+     * @return {@link RenderContext} - the current RenderContext enum instance
+     */
+    @NonNull
+    RenderContext getCurrentRenderContext();
+
+    /**
+     * Gets the current overall render surface size in pixels.
+     *
+     * @return {@link SurfaceSize} instance containing current size dimensions
+     */
+    @NonNull
+    SurfaceSize getSurfaceSize();
+
+    //
     // Concurrency and synchronization
+    //
+
+    /**
+     * Checks whether the calling thread is the render thread.
+     *
+     * @return {@code true} if the calling thread is the render thread.
+     */
+    boolean isRenderThread();
 
     /**
      *
@@ -47,26 +76,26 @@ public interface RenderControl extends RenderStatus {
      */
     void queueRenderTask(@NonNull RenderTask renderTask);
 
-    /**
-     * Checks whether the calling thread is the render thread.
-     *
-     * @return {@code true} if the calling thread is the render thread.
-     */
-    boolean isRenderThread();
-
     //
     // Frame generation
     //
 
     /**
-     *  Convenience flag for use of the display refresh rate as the render frame rate
+     *  Flag value indicating use of the display refresh rate as the render frame rate
      */
     double USE_DISPLAY_REFRESH_RATE = Double.NaN;
 
     /**
-     * Convenience flag for use of continuous rendering as fast as possible, rather than a periodic frame rate
+     * Flag value indicating use of continuous rendering as fast as possible, rather than a periodic frame rate
      */
     double USE_CONTINUOUS_RENDERING = 0d;
+
+    /**
+     * Gets the screen refresh rate for the default display in frames per second.
+     *
+     * @return {@code double} The display refresh rate.
+     */
+    double getDisplayRefreshRate();
 
     /**
      * Sets the current target frameRate.
@@ -76,45 +105,75 @@ public interface RenderControl extends RenderStatus {
      */
     void setFrameRate(double frameRate);
 
+    /**
+     * Gets the current target frame rate in frames per second. Initial default is the display refresh rate.
+     *
+     * @return {@code double} The target frame rate.
+     */
+    double getFrameRate();
+
+    /**
+     * Checks whether frame processing is currently active (started but not yet stopped). This tracks the
+     * (paused/resumed) state of the underlying render thread.
+     *
+     * @return {@code true} if frame processing is active, {@code false} if frame processing is inactive
+     */
+    boolean areFramesActive();
+
+    /**
+     * Gets the system time of the most recent start of frame processing (render thread resume);
+     * 0 if frames are stopped (render thread paused)
+     *
+     * @return {@code long} System time in nanoseconds of most recent start of frame processing
+     */
+    long getFramesStartTime();
+
+    /**
+     * Gets the time elapsed since the most recent start of frame processing (render thread resume);
+     * 0 if frame are stopped (render thread paused)
+     *
+     * @return {code long} nanoseconds elapsed since most recent start of frame processing
+     */
+    long getFramesElapsedTime();
+
     //
     // Scenes population
     //
 
     /**
-     * Adds a {@link Scene} to the list of Scene frame delegates, using a {@link RenderTask}. The {@link Scene}
-     * will be notified via {@link Scene#onAddToSceneControl(SceneControl)}, and should take any needed actions.
+     * Adds a {@link Scene} to the list of Scene frame delegates. The {@link Scene} will be notified via
+     * {@link Scene#initialize()}, and should take any needed actions.
      *
-     * @param scene A {@link Scene} to add; duplicates are quietly ignored by the task.
-     * @return {@code true} if the task was run or queued successfully.
+     * @param scene A {@link Scene} to add; duplicates are quietly ignored.
      */
-    boolean addScene(@NonNull Scene scene);
+    @RequiresRenderTask
+    void addScene(@NonNull Scene scene);
 
     /**
-     * Removes a {@link Scene} from the list of Scene frame delegates, using a {@link RenderTask}. The {@link Scene}
-     * will be notified via {@link Scene#onRemoveFromSceneControl()}, and should take any needed actions.
+     * Removes a {@link Scene} from the list of Scene frame delegates. The {@link Scene} will be notified via
+     * {@link Scene#destroy()}, and should take any needed actions.
      *
-     * @param scene The {@link Scene} to remove; if not found, it is quietly ignored by the task.
-     * @return {@code true} if the task was run or queued successfully.
+     * @param scene The {@link Scene} to remove; if not found, it is quietly ignored.
      */
-    boolean removeScene(@NonNull Scene scene);
+    @RequiresRenderTask
+    void removeScene(@NonNull Scene scene);
 
     //
     // SceneViews population/ordering
     //
 
     /**
-     * Adds a {@link SceneView} to (the end of) the list of SceneView frame delegates using a {@link RenderTask}.
-     * The {@link SceneView} will be notified via {@link SceneView#onAddToSceneViewControl(SceneViewControl)},
-     * and should take any needed actions.
+     * Adds a {@link SceneView} to (the end of) the list of SceneView frame delegates. The {@link SceneView} will be
+     * notified via {@link SceneView#onAddToSceneViewControl(RenderControlInternal)}, and should take any needed actions.
      * <p>
      * {@link SceneView}s are rendered in list order using a simple back-to-front painter's algorithm (index 0 is
      * backmost). The added {@link SceneView} will be rendered foremost.
      * </p>
      *
      * @param sceneView The {@link SceneView} to add; duplicates are quietly ignored.
-     * @return {@code true} if the task was run or queued successfully; does not indicate task success.
      */
-    boolean addSceneView(@NonNull SceneView sceneView);
+    @RequiresRenderTask
+    void addSceneView(@NonNull SceneView sceneView);
 
     /**
      * Gets the depth order of this {@link SceneView}'s on-screen viewport relative to that of other {@link SceneView}s.
@@ -124,13 +183,13 @@ public interface RenderControl extends RenderStatus {
      * @param sceneView
      * @return
      */
+    @RequiresRenderTask
     @IntRange(from = 0)
     int getSceneViewDepthOrder(@NonNull SceneView sceneView);
 
     /**
-     * Inserts a {@link SceneView} in the list of SceneView frame delegates at the specified depth order
-     * using a {@link RenderTask}.
-     * The {@link SceneView} will be notified via {@link SceneViewDelegate#onAddToSceneViewControl(SceneViewControl)},
+     * Inserts a {@link SceneView} in the list of SceneView frame delegates at the specified depth order.
+     * The {@link SceneView} will be notified via {@link SceneView#initialize()} ,
      * and should take any needed actions.
      * <p>
      * {@link SceneView}s are rendered in list order using a simple back-to-front painter's algorithm (index 0 is
@@ -138,17 +197,16 @@ public interface RenderControl extends RenderStatus {
      * </p>
      *
      * @param sceneView The {@link SceneView} to add; duplicates are quietly ignored.
-     * @return {@code true} if the task was run or queued successfully; does not indicate task success.
      */
-    boolean insertSceneView(@NonNull SceneView sceneView, int depthOrder);
+    @RequiresRenderTask
+    void insertSceneView(@NonNull SceneView sceneView, int depthOrder);
 
     /**
-     * Removes a {@link SceneView} from the list of SceneView frame delegates using a {@link RenderTask}.
-     * The {@link SceneView} will be notified via {@link SceneView#onRemoveFromSceneViewControl()}, and should take
-     * any needed actions.
+     * Removes a {@link SceneView} from the list of SceneView frame delegates. The {@link SceneView} will be notified
+     * via {@link SceneView#destroy()}, and should take any needed actions.
      *
-     * @param sceneView The {@link SceneView} to remove; if not found, it is quietly ignored by the task.
-     * @return {@code true} if the task was run or queued successfully.
+     * @param sceneView The {@link SceneView} to remove; if not found, it is quietly ignored.
      */
-    boolean removeSceneView(@NonNull SceneView sceneView);
+    @RequiresRenderTask
+    void removeSceneView(@NonNull SceneView sceneView);
 }

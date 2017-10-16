@@ -1,14 +1,12 @@
 package c.org.rajawali3d.surface;
 
 import c.org.rajawali3d.annotations.RenderThread;
-import c.org.rajawali3d.control.CoreControl;
+import c.org.rajawali3d.control.BaseRenderControl;
 import c.org.rajawali3d.control.RenderContextType;
 import c.org.rajawali3d.control.RenderSurfaceView;
 
 /**
- * Interface defining the methods provided by {@link CoreControl} to enable control by a
- * {@link RenderSurfaceView} implementation and/or a child of {@link CoreControl} that implements the renderer
- * for that {@link RenderSurfaceView}.
+ * Internal interface required of {@link BaseRenderControl} by to handle system events from a {@link RenderSurfaceView}
  *
  * @author Randy Picolet
  */

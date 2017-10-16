@@ -4,18 +4,14 @@ import android.content.Context;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.view.Choreographer;
 import android.view.WindowManager;
-import c.org.rajawali3d.annotations.RenderTask;
 import c.org.rajawali3d.annotations.RenderThread;
+import c.org.rajawali3d.logging.LoggingComponent;
 import c.org.rajawali3d.object.renderers.ObjectRenderer;
-import c.org.rajawali3d.scene.BaseScene;
 import c.org.rajawali3d.scene.Scene;
-import c.org.rajawali3d.scene.SceneControl;
-import c.org.rajawali3d.sceneview.BaseSceneView;
-import c.org.rajawali3d.sceneview.RenderSceneView;
 import c.org.rajawali3d.sceneview.SceneView;
-import c.org.rajawali3d.sceneview.SceneViewControl;
+import c.org.rajawali3d.sceneview.SceneViewInternal;
 import c.org.rajawali3d.surface.SurfaceRenderer;
 import c.org.rajawali3d.surface.SurfaceSize;
 import c.org.rajawali3d.surface.SurfaceView;
@@ -28,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import net.jcip.annotations.GuardedBy;
 import org.rajawali3d.R;
 import org.rajawali3d.util.OnFPSUpdateListener;
-import org.rajawali3d.util.RajLog;
 
 /**
  * Primary overall engine control; provides most graphics system-independent control functions, including:
@@ -43,10 +38,8 @@ import org.rajawali3d.util.RajLog;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  * @author Randy Picolet
  */
-public abstract class CoreControl extends BaseControl
-        implements RenderControl, SceneControl, SceneViewControl, SurfaceRenderer {
-
-    private static final String TAG = "CoreControl";
+public abstract class BaseRenderControl extends LoggingComponent
+        implements RenderControl, RenderControlInternal, SurfaceRenderer {
 
     // Android context
     @NonNull
@@ -72,8 +65,14 @@ public abstract class CoreControl extends BaseControl
     @Nullable
     private Thread renderThread;
 
-    //
+    // Startup state flag (one-shot)
     private boolean isInitialSurfaceSize = true;
+
+    //
+    private boolean isSurfacePrepEnabled = true;
+
+    //
+    // TODO surface color
 
     // Set of all Scenes registered with the RenderControl
     @GuardedBy("scenes")
@@ -106,8 +105,6 @@ public abstract class CoreControl extends BaseControl
 
     // Used for determining FPS
     private int frameCount;
-    // Last measured FPS value
-    private double lastMeasuredFPS;
     // Listener to notify of new FPS values.
     private OnFPSUpdateListener fpsUpdateListener;
     // Used for determining FPS
@@ -121,75 +118,22 @@ public abstract class CoreControl extends BaseControl
      * @param renderControlClient the {@link RenderControlClient}
      * @param frameRate the initial frame rate
      */
-    protected CoreControl(@NonNull Context context, @NonNull RenderSurfaceView renderSurfaceView,
-                          @NonNull RenderControlClient renderControlClient, double frameRate) {
+    protected BaseRenderControl(@NonNull Context context, @NonNull RenderSurfaceView renderSurfaceView,
+                                @NonNull RenderControlClient renderControlClient, double frameRate) {
 
-        RajLog.i(context.getString(R.string.renderer_start_header));
-        RajLog.i(context.getString(R.string.renderer_start_message));
+        logI(context.getString(R.string.renderer_start_header));
+        logI(context.getString(R.string.renderer_start_message));
 
         this.context = context;
         this.renderSurfaceView = renderSurfaceView;
         this.renderControlClient = renderControlClient;
-        this.frameRate = frameRate;
+        setFrameRate(frameRate);
 
         renderContext = RenderContext.NO_RENDER_CONTEXT;
         surfaceSize = new SurfaceSize(0, 0);
         scenes = Collections.synchronizedList(new ArrayList<Scene>());
         sceneViews = Collections.synchronizedList(new ArrayList<SceneView>());
     }
-
-    //
-    // RenderStatus methods
-    //
-
-    @Override
-    @NonNull
-    public RenderContext getCurrentRenderContext() {
-        return renderContext;
-    }
-
-    @Override
-    public @NonNull SurfaceSize getSurfaceSize() {
-        return surfaceSize;
-    }
-
-    @Override
-    public double getDisplayRefreshRate() {
-        return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRefreshRate();
-    }
-
-    @Override
-    public double getFrameRate() {
-        return frameRate;
-    }
-
-    @Override
-    public boolean areFramesEnabled() {
-        return framesStartTime != 0;
-    }
-
-    @Override
-    public long getFramesStartTime() {
-        return framesStartTime;
-    }
-
-    @Override
-    public long getFramesElapsedTime() {
-        return framesStartTime == 0 ? 0 : System.nanoTime() - framesStartTime;
-    }
-
-    //
-    // RenderControl methods
-    //
-
-    @Override
-    public final boolean isRenderThread() {
-        return Thread.currentThread() == renderThread;
-    }
-
-    // TODO add "engine-only/internal-only" annotations (type- and/or method-levels) for general use?
-    // And/or a public/client API annotation? Maybe adopt a policy of using separate/dedicated interfaces for
-    // client APIs where possible? Or some combination?
 
     //
     // Internal RenderThread methods
@@ -199,7 +143,7 @@ public abstract class CoreControl extends BaseControl
      * Sets the render thread for this component; call at the first opportunity after thread creation
      */
     @RenderThread
-    final void setRenderThread() {
+    private final void setRenderThread() {
         if (renderThread == null) {
             renderThread = Thread.currentThread();
         } else {
@@ -223,85 +167,152 @@ public abstract class CoreControl extends BaseControl
         return renderThread != null;
     }
 
+    //
+    // RenderControl interface methods
+    //
+
+    @Override
+    @NonNull
+    public RenderContext getCurrentRenderContext() {
+        return renderContext;
+    }
+
+    @Override
+    @NonNull
+    public SurfaceSize getSurfaceSize() {
+        return surfaceSize;
+    }
+
+    @Override
+    public double getDisplayRefreshRate() {
+        return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRefreshRate();
+    }
+
+    @Override
+    public double getFrameRate() {
+        return frameRate;
+    }
+
+    @Override
+    public boolean areFramesActive() {
+        return framesStartTime != 0;
+    }
+
+    @Override
+    public long getFramesStartTime() {
+        return framesStartTime;
+    }
+
+    @Override
+    public long getFramesElapsedTime() {
+        return framesStartTime == 0 ? 0 : System.nanoTime() - framesStartTime;
+    }
+
+    /**
+     * Checks whether the calling thread is the render thread.
+     *
+     * @return {@code true} if the calling thread is the render thread.
+     */
+    @Override
+    public final boolean isRenderThread() {
+        return Thread.currentThread() == renderThread;
+    }
+
     @Override
     public void queueToMainThread(Runnable runnable) {
-        renderSurfaceView.post(runnable);
+        renderSurfaceView.queueToMainThread(runnable);
 
     }
 
     @Override
     public void queueToRenderThread(Runnable runnable) {
-        renderSurfaceView.queueEvent(runnable);
+        renderSurfaceView.queueToRenderThread(runnable);
     }
 
     @Override
     public void queueRenderTask(@NonNull final RenderTask renderTask) {
+        enter("queueRenderTask", TRACE);
+        debugAssertNonNull(renderTask, "renderTask");
         queueToRenderThread(new Runnable() {
+            @RenderThread
             @Override
             public void run() {
                 try {
                     renderTask.doTask();
-                    renderTask.notifyComplete(this);
+                    notifyTaskComplete(renderTask);
                 } catch (Exception e) {
-                    RajLog.e("RenderTask failed! : " + e.getMessage());
+                    logE("RenderTask failed! : " + e.getMessage());
                 }
             }
         });
+        exit();
     }
 
-    @Override
-    public void setFrameRate(double frameRate) {
-        renderSurfaceView.setRenderFramesOnRequest(frameRate != USE_CONTINUOUS_RENDERING);
-        this.frameRate = frameRate == USE_DISPLAY_REFRESH_RATE ? getDisplayRefreshRate() : frameRate;
-        if (areFramesEnabled()) {
-            if (stopFrames()) {
-                // Restart frames using the new rate value
-                startFrames();
+    // Notify RenderTask completion if/as requested
+    private void notifyTaskComplete(final RenderTask renderTask) {
+        final RenderTask.RenderTaskCallback callback = renderTask.callback;
+        if (callback != null) {
+            if (renderTask.queueCallbackToMainThread) {
+                queueToMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onTaskComplete(renderTask);
+                    }
+                });
+            } else {
+                // Already on the RenderThread
+                callback.onTaskComplete(renderTask);
             }
         }
     }
 
     @Override
-    @c.org.rajawali3d.annotations.RenderTask
-    public boolean addScene(@NonNull final Scene scene) {
-        final RenderTask task = new RenderTask() {
-            @Override
-            protected void doTask() {
-                if (!scenes.contains(scene)) {
-                    scenes.add(scene);
-                    scene.onAddToSceneControl(CoreControl.this);
-                }
+    public void setFrameRate(double frameRate) {
+        enter("setFrameRate");
+        debugAssert(frameRate == USE_DISPLAY_REFRESH_RATE || frameRate == USE_CONTINUOUS_RENDERING || frameRate > 0.0,
+                "Illegal frame rate!");
+        this.frameRate = frameRate;
+        renderSurfaceView.setRenderFramesOnRequest(frameRate != USE_CONTINUOUS_RENDERING);
+        if (areFramesActive()) {
+            if (stopFrames()) {
+                // Restart frames using the new rate value
+                startFrames();
             }
-        };
-        return executeRenderTask(task);
+        }
+        exit();
     }
 
     @Override
-    public boolean removeScene(@NonNull final Scene scene) {
-        final RenderTask task = new RenderTask() {
-            @Override
-            protected void doTask() {
-                if (scenes.contains(scene)) {
-                    scenes.remove(scene);
-                    scene.onRemoveFromSceneControl();
-                }
-            }
-        };
-        return executeRenderTask(task);
+    public void addScene(@NonNull final Scene scene) {
+        enter("addScene", TRACE);
+        debugAssertNonNull(scene, "scene");
+        if (!scenes.contains(scene)) {
+            scenes.add(scene);
+            scene.onAddToRenderControl(this);
+        }
+        exit();
     }
 
     @Override
-    public boolean addSceneView(@NonNull final SceneView sceneView) {
-        final RenderTask task = new RenderTask() {
-            @Override
-            protected void doTask() {
-                if (!sceneViews.contains(sceneView)) {
-                    sceneViews.add(sceneView);
-                    sceneView.onAddToSceneViewControl(CoreControl.this);
-                }
-            }
-        };
-        return executeRenderTask(task);
+    public void removeScene(@NonNull final Scene scene) {
+        enter("removeScene", TRACE);
+        debugAssertNonNull(scene, "scene");
+        if (scenes.contains(scene)) {
+            scenes.remove(scene);
+            scene.onRemoveFromRenderControl();
+        }
+        exit();
+    }
+
+    @Override
+    public void addSceneView(@NonNull final SceneView sceneView) {
+        enter("addsceneView", TRACE);
+        debugAssertNonNull(sceneView, "sceneView");
+        if (!sceneViews.contains(sceneView)) {
+            sceneViews.add(sceneView);
+            sceneView.onAddToRenderControl(this);
+        }
+        exit();
     }
 
     @Override
@@ -310,52 +321,41 @@ public abstract class CoreControl extends BaseControl
     }
 
     @Override
-    public boolean insertSceneView(@NonNull final SceneView sceneView, final int depthOrder) {
-        final RenderTask task = new RenderTask() {
-            @Override
-            protected void doTask() {
-                if (!sceneViews.contains(sceneView)) {
-                    sceneViews.add(depthOrder, sceneView);
-                    sceneView.onAddToSceneViewControl(CoreControl.this);
-                }
-            }
-        };
-        return executeRenderTask(task);
+    public void insertSceneView(@NonNull final SceneView sceneView, final int depthOrder) {
+        enter("insertSceneView", TRACE);
+        if (!sceneViews.contains(sceneView)) {
+            sceneViews.add(depthOrder, sceneView);
+            sceneView.onAddToSceneViewControl(BaseRenderControl.this);
+        }
+        exit();
     }
 
     @Override
-    public boolean removeSceneView(@NonNull final SceneView sceneView) {
-        final RenderTask task = new RenderTask() {
-            @Override
-            protected void doTask() {
-                if (sceneViews.contains(sceneView)) {
-                    sceneViews.remove(sceneView);
-                    sceneView.onRemoveFromSceneViewControl();
-                }
-            }
-        };
-        return executeRenderTask(task);
+    public void removeSceneView(@NonNull final SceneView sceneView) {
+        enter("removeSceneViww", TRACE);
+        if (sceneViews.contains(sceneView)) {
+            sceneViews.remove(sceneView);
+            sceneView.onRemoveFromRenderControl();
+        }
+        exit();
     }
 
     //
-    // SceneControl methods
-    //
-
-    // None so far...
-
-    //
-    // SceneViewControl methods
+    // RenderControlInternal methods
     //
 
     @RenderThread
     @Nullable
-    public ObjectRenderer getLastUsedObjectRenderer() {;
+    public ObjectRenderer getLastUsedObjectRenderer() {
         return lastUsedObjectRenderer;
     }
 
     @RenderThread
-    public void setLastUsedObjectRenderer(@NonNull ObjectRenderer lastUsedObjectRenderer) {
-        this.lastUsedObjectRenderer = lastUsedObjectRenderer;
+    public void setLastUsedObjectRenderer(@NonNull ObjectRenderer objectRenderer) {
+        enter("setLastUsedObjectRenderer()");
+        debugAssertNonNull(objectRenderer, "objectRenderer");
+        this.lastUsedObjectRenderer = objectRenderer;
+        exit();
     }
 
     //
@@ -366,18 +366,24 @@ public abstract class CoreControl extends BaseControl
     @Override
     @CallSuper
     public void onRenderContextAcquired(RenderContextType type, int majorVersion, int minorVersion) {
+        enter("onRenderContextAcquired", TRACE);
+        debugAssertNonNull(type, "type");
+        debugAssert(majorVersion > 0 && minorVersion > 0, "Illegal version number");
         RenderContext.setCurrentContext(type, majorVersion, minorVersion);
         renderContext = RenderContext.getCurrentContext();
 
         setRenderThread();
 
         setFrameRate(frameRate);
+        exit();
     }
 
     @RenderThread
     @Override
     @CallSuper
     public void onSurfaceSizeChanged(int width, int height) {
+        enter("onSurfaceSizeChanged", TRACE);
+        releaseAssert(width > 0 && height > 0, "Invalid surface size!");
         surfaceSize = new SurfaceSize(width, height);
 
         if (isInitialSurfaceSize) {
@@ -387,13 +393,14 @@ public abstract class CoreControl extends BaseControl
         } else {
             renderControlClient.onSurfaceSizeChanged(surfaceSize);
         }
+        exit();
     }
 
     @RenderThread
     @Override
     public void onRenderFrame() {
 
-        if (!areFramesEnabled()) {
+        if (!areFramesActive()) {
             return;
         }
 
@@ -402,6 +409,7 @@ public abstract class CoreControl extends BaseControl
         onFrameStart(deltaTime);
 
         // TODO clear the surface globally at the start of each frame
+        prepareSurface();
 
         renderSceneViews();
 
@@ -419,6 +427,31 @@ public abstract class CoreControl extends BaseControl
         return deltaTime;
     }
 
+    @RenderThread
+    private void onFrameStart(double deltaTime) {
+        // Propagate to SceneDelegates...
+        for (int i = 0, j = scenes.size(); i < j; i++) {
+            ((Scene)scenes.get(i)).onFrameStart(deltaTime);
+        }
+        // Propagate to SceneViewDelegates...
+        for (int i = 0, j = sceneViews.size(); i < j; i++) {
+            SceneView sceneView = ((SceneView)sceneViews.get(i));
+            if (sceneView.isEnabled()) {
+                sceneView.onFrameStart(deltaTime);
+            }
+        }
+    }
+
+    @RenderThread
+    private void prepareSurface() {
+        // TODO
+        if (isSurfacePrepEnabled && !renderSurfaceView.isTransparent()) {
+            paintSurfaceBackground();
+        }
+    }
+
+    protected abstract void paintSurfaceBackground();
+
     //TODO Override this method in a stereo renderer to render views for each Eye
     @RenderThread
     private void renderSceneViews() {
@@ -426,9 +459,24 @@ public abstract class CoreControl extends BaseControl
 
         // Propagate to SceneViews...//
         for (int i = 0, j = sceneViews.size(); i < j; i++) {
-            RenderSceneView sceneView = ((RenderSceneView)sceneViews.get(i));
+            SceneViewInternal sceneView = ((SceneViewInternal)sceneViews.get(i));
             if (sceneView.isEnabled()) {
                 sceneView.onRenderFrame();
+            }
+        }
+    }
+
+    @RenderThread
+    private void onFrameEnd(double deltaTime) {
+        // Propagate to SceneDelegates...
+        for (int i = 0, j = scenes.size(); i < j; i++) {
+            scenes.get(i).onFrameEnd(deltaTime);
+        }
+        // Propagate to SceneViewDelegates
+        for (int i = 0, j = sceneViews.size(); i < j; i++) {
+            SceneView sceneView = sceneViews.get(i);
+            if (sceneView.isEnabled()) {
+                sceneView.onFrameEnd(deltaTime);
             }
         }
     }
@@ -441,13 +489,12 @@ public abstract class CoreControl extends BaseControl
             long now = System.nanoTime();
             double elapsedS = (now - fpsStartTime) / 1.0e9;
             double msPerFrame = (1000 * elapsedS / frameCount);
-            lastMeasuredFPS = 1000 / msPerFrame;
 
             frameCount = 0;
             fpsStartTime = now;
 
             if (fpsUpdateListener != null) {
-                fpsUpdateListener.onFPSUpdate(lastMeasuredFPS); // Update the FPS listener
+                fpsUpdateListener.onFPSUpdate(1000 / msPerFrame); // Update the FPS listener
             }
         }
     }
@@ -470,83 +517,64 @@ public abstract class CoreControl extends BaseControl
         RenderContext.unsetCurrentContext();
         unsetRenderThread();
 
-        // TODO no more
-        // clearQueuedTasks();
-
         // Notify the client
-        renderControlClient.onRenderControlLost();
-    }
-
-    //
-    // BaseControl hook method overrides
-    //
-
-    @RenderThread
-    @Override
-    public void onFrameStart(double deltaTime) {
-        // Run any queued tasks
-        super.onFrameStart(deltaTime);
-        // Propagate to SceneDelegates...
-        for (int i = 0, j = scenes.size(); i < j; i++) {
-            ((BaseScene)scenes.get(i)).onFrameStart(deltaTime);
-        }
-        // Propagate to SceneViewDelegates...
-        for (int i = 0, j = sceneViews.size(); i < j; i++) {
-            BaseSceneView sceneView = ((BaseSceneView)sceneViews.get(i));
-            if (sceneView.isEnabled()) {
-                sceneView.onFrameStart(deltaTime);
-            }
-        }
-    }
-
-    @RenderThread
-    @Override
-    public void onFrameEnd(double deltaTime) {
-        // Propagate to FrameDelegates...
-        for (int i = 0, j = scenes.size(); i < j; i++) {
-            ((SceneDelegate)scenes.get(i)).onFrameEnd(deltaTime);
-        }
-        for (int i = 0, j = sceneViews.size(); i < j; i++) {
-            SceneViewDelegate sceneView = ((BaseSceneView)sceneViews.get(i));
-            if (sceneView.isEnabled()) {
-                sceneView.onFrameEnd(deltaTime);
-            }
-        }
+        renderControlClient.onRenderControlUnavailable();
     }
 
     //
     // Render Frame generation
     //
 
-    private class RequestFrameRenderTask implements Runnable {
+    private class ChoreographerFrameCallback implements Choreographer.FrameCallback {
+        @Override
+        public void doFrame(long l) {
+            renderSurfaceView.requestFrameRender();
+        }
+    }
+    private ChoreographerFrameCallback choreographerFrameCallback = new ChoreographerFrameCallback();
+
+    private class FrameTimerCommand implements Runnable {
         public void run() {
             renderSurfaceView.requestFrameRender();
         }
     }
+    private FrameTimerCommand frameTimerCommand = new FrameTimerCommand();
 
     private boolean startFrames() {
-        RajLog.d("startFrames()");
-        if (areFramesEnabled()) {
+        logD("startFrames()");
+        if (areFramesActive()) {
             return false;
         }
         framesStartTime = System.nanoTime();
         lastFrameTime = framesStartTime;
-        if (frameRate != USE_CONTINUOUS_RENDERING) {
+        frameCount = 0;
+
+        if (frameRate == USE_DISPLAY_REFRESH_RATE) {
+            // Use the Choreographer for rendering (in sync with the hardware) at the display refresh rate
+            Choreographer.getInstance().postFrameCallback(choreographerFrameCallback);
+        } else if (frameRate != USE_CONTINUOUS_RENDERING) {
+            // Use an Executor thread for rendering at a non-continuous and non-display-refresh rate
             killTimer();
             frameTimer = Executors.newScheduledThreadPool(1);
-            frameTimer.scheduleAtFixedRate(new RequestFrameRenderTask(), 0, (long) (1000/frameRate),
-                    TimeUnit.MILLISECONDS);
+            frameTimer.scheduleAtFixedRate(frameTimerCommand, 0, (long) (1000/frameRate), TimeUnit.MILLISECONDS);
         }
         return true;
     }
 
     private boolean stopFrames() {
-        RajLog.d("stopFrames()");
-        if (!areFramesEnabled()) {
+        logD("stopFrames()");
+        if (!areFramesActive()) {
             return false;
         }
         framesStartTime = 0;
-        killTimer();
+
+        if (frameRate == USE_DISPLAY_REFRESH_RATE) {
+            // Using the Choreographer
+            Choreographer.getInstance().removeFrameCallback(choreographerFrameCallback);
+        } else if (frameRate != USE_CONTINUOUS_RENDERING) {
+            // Using an Executor thread
+            killTimer();
+        }
         return true;
     }
 

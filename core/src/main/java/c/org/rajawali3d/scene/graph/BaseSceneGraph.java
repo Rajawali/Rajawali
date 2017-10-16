@@ -4,18 +4,20 @@ import android.support.annotation.NonNull;
 import c.org.rajawali3d.annotations.RequiresReadLock;
 import c.org.rajawali3d.annotations.RequiresWriteLock;
 import c.org.rajawali3d.bounds.AABB;
-import c.org.rajawali3d.sceneview.RenderSceneGraph;
+import c.org.rajawali3d.object.RenderableObject;
+import c.org.rajawali3d.sceneview.camera.Camera;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.vector.Vector3;
 
 /**
- * Abstract implementation of {@link RenderSceneGraph} primarily responsible for thread safety management.
+ * Abstract implementation of {@link SceneGraph} primarily responsible for thread safety management.
  *
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
-public abstract class BaseSceneGraph implements RenderSceneGraph {
+public abstract class BaseSceneGraph implements SceneGraph {
 
     @NonNull
     protected final Vector3 minBound = new Vector3();
@@ -99,9 +101,7 @@ public abstract class BaseSceneGraph implements RenderSceneGraph {
     protected void checkAndAdjustMinBounds(@NonNull AABB child) {
         // Pick the lesser value of each component between our bounds and the added bounds.
         final Vector3 addMin = child.getMinBound();
-        minBound.setAll(Math.min(minBound.x, addMin.x),
-                        Math.min(minBound.y, addMin.y),
-                        Math.min(minBound.z, addMin.z));
+        minBound.setAll(Math.min(minBound.x, addMin.x), Math.min(minBound.y, addMin.y), Math.min(minBound.z, addMin.z));
     }
 
     /**
@@ -114,8 +114,10 @@ public abstract class BaseSceneGraph implements RenderSceneGraph {
     protected void checkAndAdjustMaxBounds(@NonNull AABB child) {
         // Pick the larger value of each component between our bounds and the added bounds.
         final Vector3 addMax = child.getMaxBound();
-        maxBound.setAll(Math.max(maxBound.x, addMax.x),
-                        Math.max(maxBound.y, addMax.y),
-                        Math.max(maxBound.z, addMax.z));
+        maxBound.setAll(Math.max(maxBound.x, addMax.x), Math.max(maxBound.y, addMax.y), Math.max(maxBound.z, addMax.z));
     }
+
+    @RequiresReadLock
+    @NonNull
+    public abstract List<RenderableObject> visibleObjectIntersection(@NonNull Camera camera);
 }

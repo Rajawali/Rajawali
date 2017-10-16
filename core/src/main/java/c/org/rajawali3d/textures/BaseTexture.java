@@ -83,7 +83,7 @@ public abstract class BaseTexture {
     /**
      * Indicates whether the source {@link TextureDataReference} should be recycled immediately after the OpenGL
      * texture
-     * has been created. The main reason for not recycling is renderScene caching. Scene caching stores all textures and
+     * has been created. The main reason for not recycling is scene caching. Scene caching stores all textures and
      * relevant OpenGL-specific data. This is used when the OpenGL context needs to be restored. The context typically
      * needs to be restored when the application is re-activated or when a live wallpaper is rotated.
      */
