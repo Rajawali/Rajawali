@@ -6,6 +6,7 @@ import org.junit.*;
 import java.lang.Math;
 import org.rajawali3d.ATransformable3D;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.math.Quaternion;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
@@ -63,6 +64,15 @@ public class ATransformable3DTest {
     }
 
     @Test
+    public void testGetOrientation() throws Exception {
+        Quaternion result = transformable.getOrientation();
+        assertEquals(1, result.w, 1e-10);
+        assertEquals(0, result.x, 1e-10);
+        assertEquals(0, result.y, 1e-10);
+        assertEquals(0, result.z, 1e-10);
+    }
+
+    @Test
     public void testSetScale() throws Exception {
         double expectedX = 60;
         double expectedY = 120;
@@ -105,6 +115,21 @@ public class ATransformable3DTest {
         double expected = 42;
         transformable.setRotZ(expected);
         assertEquals(Math.toRadians(expected), transformable.getRotX(), 1e-10);
+    }
+
+    @Test
+    public void testSetOrientation() throws Exception {
+        double w = 1/2d;
+        double x = Math.sqrt(3)/4d;
+        double y = 1/2d;
+        double z = Math.sqrt(5)/4d;
+        Quaternion expected = new Quaternion(w,x,y,z);
+        transformable.setOrientation(expected);
+        Quaternion result = transformable.getOrientation();
+        assertEquals(expected.w, result.w, 1e-10);
+        assertEquals(expected.x, result.x, 1e-10);
+        assertEquals(expected.y, result.y, 1e-10);
+        assertEquals(expected.z, result.z, 1e-10);
     }
 
     @Test
