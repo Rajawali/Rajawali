@@ -3,7 +3,6 @@ package org.rajawali3d;
 import static org.junit.Assert.*;
 import org.junit.*;
 
-import java.lang.Math;
 import org.rajawali3d.ATransformable3D;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.Quaternion;
@@ -100,21 +99,21 @@ public class ATransformable3DTest {
     public void testSetRotX() throws Exception {
         double expected = 42;
         transformable.setRotX(expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotZ(), 1e-10);
+        assertEquals(expected, transformable.getRotZ(), 1e-10);
     }
 
     @Test
     public void testSetRotY() throws Exception {
         double expected = 42;
         transformable.setRotY(expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotY(), 1e-10);
+        assertEquals(expected, transformable.getRotY(), 1e-10);
     }
 
     @Test
     public void testSetRotZ() throws Exception {
         double expected = 42;
         transformable.setRotZ(expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotX(), 1e-10);
+        assertEquals(expected, transformable.getRotX(), 1e-10);
     }
 
     @Test
@@ -136,41 +135,41 @@ public class ATransformable3DTest {
     public void testRotateX() throws Exception {
         double expected = 42;
         transformable.rotate(Vector3.Axis.X, expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotX(), 1e-10);
+        assertEquals(expected, transformable.getRotX(), 1e-10);
     }
 
     @Test
     public void testRotateY() throws Exception {
         double expected = 42;
         transformable.rotate(Vector3.Axis.Y, expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotY(), 1e-10);
+        assertEquals(expected, transformable.getRotY(), 1e-10);
     }
 
     @Test
     public void testRotateZ() throws Exception {
         double expected = 42;
         transformable.rotate(Vector3.Axis.Z, expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotZ(), 1e-10);
+        assertEquals(expected, transformable.getRotZ(), 1e-10);
     }
 
     @Test
     public void testRotateAroundX() throws Exception {
         double expected = 42;
         transformable.rotate(Vector3.X, expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotX(), 1e-10);
+        assertEquals(expected, transformable.getRotX(), 1e-10);
     }
 
     @Test
     public void testRotateAroundY() throws Exception {
         double expected = 42;
         transformable.rotate(Vector3.Y, expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotY(), 1e-10);
+        assertEquals(expected, transformable.getRotY(), 1e-10);
     }
 
     @Test
     public void testRotateAroundZ() throws Exception {
         double expected = 42;
         transformable.rotate(Vector3.Z, expected);
-        assertEquals(Math.toRadians(expected), transformable.getRotZ(), 1e-10);
+        assertEquals(expected, transformable.getRotZ(), 1e-10);
     }
 }
