@@ -12,9 +12,6 @@
  */
 package c.org.rajawali3d.gl;
 
-import c.org.rajawali3d.gl.extensions.GLExtension;
-import org.rajawali3d.util.RajLog;
-
 import android.annotation.TargetApi;
 import android.opengl.EGLExt;
 import android.opengl.GLES20;
@@ -23,15 +20,18 @@ import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
+import org.rajawali3d.util.RajLog;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import c.org.rajawali3d.gl.extensions.EXTDebugMarker;
+import c.org.rajawali3d.gl.extensions.GLExtension;
 import c.org.rajawali3d.gl.extensions.OESElementIndexUINT;
 import c.org.rajawali3d.gl.extensions.texture.AMDCompressedATCTexture;
 import c.org.rajawali3d.gl.extensions.texture.EXTTextureCompressionDXT1;
@@ -553,7 +553,7 @@ public class Capabilities {
         return sb.toString();
     }
 
-    public static class UnsupportedCapabilityException extends Exception {
+    public static class UnsupportedCapabilityException extends RuntimeException {
 
         /**
          * Constructs a new {@code UnsupportedCapabilityException} that includes the current stack trace.
@@ -576,7 +576,7 @@ public class Capabilities {
          * specified detail message and the specified cause.
          *
          * @param detailMessage The detail message for this exception.
-         * @param throwable     Tthe cause of this exception.
+         * @param throwable     The cause of this exception.
          */
         public UnsupportedCapabilityException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);

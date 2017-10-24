@@ -16,6 +16,11 @@ public interface GLSL {
         Version(@NonNull String versionString) {
             this.versionString = versionString;
         }
+
+        @NonNull
+        public String getVersionString() {
+            return versionString;
+        }
     }
 
 }
