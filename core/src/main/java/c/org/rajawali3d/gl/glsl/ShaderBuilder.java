@@ -3,6 +3,8 @@ package c.org.rajawali3d.gl.glsl;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.LinkedList;
+
 import c.org.rajawali3d.gl.glsl.qualifiers.Precision;
 
 import static c.org.rajawali3d.gl.glsl.GLSL.Version.GLES20;
@@ -23,8 +25,11 @@ public abstract class ShaderBuilder {
 
     private GLSL.Version version = GLES20;
 
+    private LinkedList<PreprocessorDirective> preprocessorDirectives;
+
     protected ShaderBuilder() {
         stringBuilder = new StringBuilder();
+        preprocessorDirectives = new LinkedList<>();
     }
 
     public void setVersion(@NonNull GLSL.Version version) {
@@ -43,6 +48,10 @@ public abstract class ShaderBuilder {
 
     public String getVersionString() {
         return version.getVersionString();
+    }
+
+    public void addPreprocessorDirective(@NonNull PreprocessorDirective directive) {
+        preprocessorDirectives.add(directive);
     }
 
     protected boolean isValidForVerson(@NonNull ShaderVariable variable) {

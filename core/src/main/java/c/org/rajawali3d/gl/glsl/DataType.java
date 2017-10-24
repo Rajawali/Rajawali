@@ -1,6 +1,7 @@
 package c.org.rajawali3d.gl.glsl;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.Set;
@@ -12,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Jared Woolston (Jared.Woolston@gmail.com)
  */
 public final class DataType {
+
+    // TODO: Check use of constructors for scalar types
 
     private static final Set<Class<? extends ShaderVariable>> GLES20_VALID
         = Collections.newSetFromMap(new ConcurrentHashMap<Class<? extends ShaderVariable>, Boolean>());
@@ -302,6 +305,26 @@ public final class DataType {
         public BOOL(@NonNull ShaderBuilder shaderBuilder) {
             super(shaderBuilder, "bool");
         }
+
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, @NonNull ShaderVariable value) {
+            this(shaderBuilder, null, "bool", value.getName());
+        }
+
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull ShaderVariable value) {
+            this(shaderBuilder, name, typeString, value.getName());
+        }
+
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value) {
+            this(shaderBuilder, name, typeString, value, true);
+        }
+
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, String value, boolean write) {
+            this(shaderBuilder, null, typeString, value, write);
+        }
+
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value, boolean write) {
+            super(shaderBuilder, name, typeString, value, write);
+        }
     }
 
     /**
@@ -311,6 +334,26 @@ public final class DataType {
 
         public INT(@NonNull ShaderBuilder shaderBuilder) {
             super(shaderBuilder, "int");
+        }
+
+        public INT(@NonNull ShaderBuilder shaderBuilder, @NonNull ShaderVariable value) {
+            this(shaderBuilder, null, "int", value.getName());
+        }
+
+        public INT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull ShaderVariable value) {
+            this(shaderBuilder, name, typeString, value.getName());
+        }
+
+        public INT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value) {
+            this(shaderBuilder, name, typeString, value, true);
+        }
+
+        public INT(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, String value, boolean write) {
+            this(shaderBuilder, null, typeString, value, write);
+        }
+
+        public INT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value, boolean write) {
+            super(shaderBuilder, name, typeString, value, write);
         }
     }
 
@@ -322,6 +365,26 @@ public final class DataType {
         public UINT(@NonNull ShaderBuilder shaderBuilder) {
             super(shaderBuilder, "uint");
         }
+
+        public UINT(@NonNull ShaderBuilder shaderBuilder, @NonNull ShaderVariable value) {
+            this(shaderBuilder, null, "uint", value.getName());
+        }
+
+        public UINT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull ShaderVariable value) {
+            this(shaderBuilder, name, typeString, value.getName());
+        }
+
+        public UINT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull String value) {
+            this(shaderBuilder, name, typeString, value, true);
+        }
+
+        public UINT(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, String value, boolean write) {
+            this(shaderBuilder, null, typeString, value, write);
+        }
+
+        public UINT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value, boolean write) {
+            super(shaderBuilder, name, typeString, value, write);
+        }
     }
 
     /**
@@ -332,6 +395,26 @@ public final class DataType {
         public FLOAT(@NonNull ShaderBuilder shaderBuilder) {
             super(shaderBuilder, "float");
         }
+
+        public FLOAT(@NonNull ShaderBuilder shaderBuilder, @NonNull ShaderVariable value) {
+            this(shaderBuilder, null, "float", value.getName());
+        }
+
+        public FLOAT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull ShaderVariable value) {
+            this(shaderBuilder, name, typeString, value.getName());
+        }
+
+        public FLOAT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull String value) {
+            this(shaderBuilder, name, typeString, value, true);
+        }
+
+        public FLOAT(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, String value, boolean write) {
+            this(shaderBuilder, null, typeString, value, write);
+        }
+
+        public FLOAT(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value, boolean write) {
+            super(shaderBuilder, name, typeString, value, write);
+        }
     }
 
     /**
@@ -341,6 +424,26 @@ public final class DataType {
 
         public VEC2(@NonNull ShaderBuilder shaderBuilder) {
             super(shaderBuilder, "vec2");
+        }
+
+        public VEC2(@NonNull ShaderBuilder shaderBuilder, @NonNull ShaderVariable value) {
+            this(shaderBuilder, null, "float", value.getName());
+        }
+
+        public VEC2(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull ShaderVariable value) {
+            this(shaderBuilder, name, typeString, value.getName());
+        }
+
+        public VEC2(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull String value) {
+            this(shaderBuilder, name, typeString, value, true);
+        }
+
+        public VEC2(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, String value, boolean write) {
+            this(shaderBuilder, null, typeString, value, write);
+        }
+
+        public VEC2(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value, boolean write) {
+            super(shaderBuilder, name, typeString, value, write);
         }
     }
 

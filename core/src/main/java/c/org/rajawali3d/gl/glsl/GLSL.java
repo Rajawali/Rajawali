@@ -9,7 +9,7 @@ public interface GLSL {
 
     enum Version {
 
-        GLES20("#version 100\n"), GLES30("#version 300 es\n"), GLES31("#version 310 es\n"), GLES32("#version 320 es\n");
+        GLES20("100\n"), GLES30("300 es\n"), GLES31("310 es\n"), GLES32("320 es\n");
 
         private final String versionString;
 

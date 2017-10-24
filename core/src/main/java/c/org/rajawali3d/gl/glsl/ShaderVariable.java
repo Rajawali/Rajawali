@@ -11,10 +11,11 @@ import c.org.rajawali3d.gl.glsl.qualifiers.Precision;
  * @author Jared.Woolston (Jared.Woolston@gmail.com)
  * @author dennis.ippel
  */
-public class ShaderVariable {
+public abstract class ShaderVariable {
 
     //TODO: Handling for non-null lint warnings
     //TODO: Ensure unit tests properly check that integer values promoted to floats in java do not reflect that in the string
+    //TODO: Constructors
 
     private final ShaderBuilder shaderBuilder;
     private final String typeString;
@@ -34,31 +35,34 @@ public class ShaderVariable {
         this.typeString = typeString;
     }
 
-    public ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, @NonNull ShaderVariable value) {
+    protected ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, @NonNull ShaderVariable value) {
         this(shaderBuilder, null, typeString, value.getName());
     }
 
-    public ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull ShaderVariable value) {
+    protected ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull ShaderVariable value) {
         this(shaderBuilder, name, typeString, value.getName());
     }
 
-    public ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull String value) {
+    protected ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value) {
         this(shaderBuilder, name, typeString, value, true);
     }
 
-    public ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, String value, boolean write) {
+    protected ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, String value, boolean write) {
         this(shaderBuilder, null, typeString, value, write);
     }
 
-    public ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value, boolean write) {
+    protected ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value, boolean write) {
         this(shaderBuilder, typeString);
         this.name = name;
-        if (name == null) {
-            this.name = shaderBuilder.generateVariableName(this);
-        }
         this.value = value;
-        if (write && value != null)
+        if (write && value != null) {
             shaderBuilder.writeInitialize(this);
+        }
+    }
+
+    @NonNull
+    protected ShaderBuilder getShaderBuilder() {
+        return shaderBuilder;
     }
 
     @NonNull
@@ -90,7 +94,7 @@ public class ShaderVariable {
     }
 
     /**
-     * Indicate that this is a global variable. Global variables are uniforms, attributes, varyings, etc.
+     * Indicate that this is a global variable.
      *
      * @param value
      */
@@ -99,7 +103,7 @@ public class ShaderVariable {
     }
 
     /**
-     * Indicates that this is a global variable. Global variables are uniforms, attributes, varyings, etc.
+     * Indicates that this is a global variable.
      *
      * @return
      */
