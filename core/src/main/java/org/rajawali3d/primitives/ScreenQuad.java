@@ -12,12 +12,11 @@
  */
 package org.rajawali3d.primitives;
 
+import org.rajawali3d.Object3D;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.cameras.Camera2D;
-import org.rajawali3d.Object3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.postprocessing.passes.EffectPass;
 
 /**
  * A screen quad is a plane that covers the whole screen. When used in conjunction with
@@ -58,7 +57,7 @@ public class ScreenQuad extends Object3D {
 	private boolean mCreateVertexColorBuffer;
 	private Camera2D mCamera;
 	private Matrix4 mVPMatrix;
-	private EffectPass mEffectPass;
+	//private EffectPass mEffectPass;
 
 	public ScreenQuad() {
 		this(1, 1, true, false, 1, true);
@@ -250,7 +249,7 @@ public class ScreenQuad extends Object3D {
 		super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, sceneMaterial);
 	}
 
-	@Override
+	/*@Override
 	protected void setShaderParams(Camera camera) {
 		super.setShaderParams(camera);
 		if(mEffectPass != null)
@@ -259,5 +258,5 @@ public class ScreenQuad extends Object3D {
 
 	public void setEffectPass(EffectPass effectPass) {
 		mEffectPass = effectPass;
-	}
+	}*/
 }

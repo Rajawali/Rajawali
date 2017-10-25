@@ -16,20 +16,13 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
-import c.org.rajawali3d.textures.BaseTexture;
-import c.org.rajawali3d.textures.CubeMapTexture;
-import c.org.rajawali3d.textures.Texture2D;
-import c.org.rajawali3d.textures.TextureException;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.lights.ALight;
 import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.plugins.FogMaterialPlugin;
-import org.rajawali3d.materials.plugins.FogMaterialPlugin.FogParams;
-import org.rajawali3d.materials.plugins.ShadowMapMaterialPlugin;
 import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.postprocessing.materials.ShadowMapMaterial;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.renderer.FrameTask;
 import org.rajawali3d.renderer.RenderTarget;
@@ -46,6 +39,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.CubeMapTexture;
+import c.org.rajawali3d.textures.Texture2D;
+import c.org.rajawali3d.textures.TextureException;
 
 /**
  * This is the container class for renderables in Rajawali.
@@ -72,7 +70,7 @@ public class Scene {
 
 	protected float mRed, mBlue, mGreen, mAlpha;
 	protected Cube mSkybox;
-	protected FogParams mFogParams;
+	//protected FogParams mFogParams;
 	/**
 	* Temporary camera which will be switched to by the GL thread.
 	* Guarded by {@link #mNextSkyboxLock}
@@ -90,7 +88,7 @@ public class Scene {
 	protected Surface.ANTI_ALIASING_CONFIG mAntiAliasingConfig;
 	protected boolean mEnableDepthBuffer = true;
 	protected boolean mAlwaysClearColorBuffer = true;
-	private ShadowMapMaterial mShadowMapMaterial;
+	//private ShadowMapMaterial mShadowMapMaterial;
 
 	private final List<Object3D> mChildren;
     private final List<ASceneFrameCallback> mPreCallbacks;
@@ -390,7 +388,7 @@ public class Scene {
             @Override
             protected void doTask() {
                 mChildren.add(child);
-                addShadowMapMaterialPlugin(child, mShadowMapMaterial == null ? null : mShadowMapMaterial.getMaterialPlugin());
+                //addShadowMapMaterialPlugin(child, mShadowMapMaterial == null ? null : mShadowMapMaterial.getMaterialPlugin());
             }
         };
         return internalOfferTask(task);
@@ -719,9 +717,9 @@ public class Scene {
 	 *
 	 * @param fogParams
 	 */
-	public void setFog(FogParams fogParams) {
+	/*public void setFog(FogParams fogParams) {
 		mFogParams = fogParams;
-	}
+	}*/
 
 	/**
 	 * Creates a skybox with the specified single texture.
@@ -1208,8 +1206,8 @@ public class Scene {
 		Material material = child.getMaterial();
 		if(material != null && material.lightingEnabled())
 			material.setLights(mLights);
-		if(material!= null && mFogParams != null)
-			material.addPlugin(new FogMaterialPlugin(mFogParams));
+		/*if(material!= null && mFogParams != null)
+			material.addPlugin(new FogMaterialPlugin(mFogParams));*/
 
 		int numChildren = child.getNumChildren();
 		for(int i=0; i<numChildren; i++) {
@@ -1378,7 +1376,7 @@ public class Scene {
 		mAntiAliasingConfig = config;
 	}
 
-	public void setShadowMapMaterial(ShadowMapMaterial material) {
+	/*public void setShadowMapMaterial(ShadowMapMaterial material) {
 		mShadowMapMaterial = material;
 	}
 
@@ -1395,7 +1393,7 @@ public class Scene {
 
 		for(int i=0; i<o.getNumChildren(); i++)
 			addShadowMapMaterialPlugin(o.getChildAt(i), materialPlugin);
-	}
+	}*/
 
 	/**
 	 * Set if the scene graph should be displayed. How it is

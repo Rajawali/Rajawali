@@ -19,7 +19,6 @@ import android.support.annotation.Nullable;
 
 import net.jcip.annotations.NotThreadSafe;
 
-import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
 import org.rajawali3d.math.vector.Vector3;
 
 import java.nio.Buffer;

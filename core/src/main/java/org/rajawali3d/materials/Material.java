@@ -12,42 +12,12 @@
  */
 package org.rajawali3d.materials;
 
-import static c.org.rajawali3d.textures.annotation.Type.ALPHA_MASK;
-import static c.org.rajawali3d.textures.annotation.Type.CUBE_MAP;
-import static c.org.rajawali3d.textures.annotation.Type.DIFFUSE;
-import static c.org.rajawali3d.textures.annotation.Type.NORMAL;
-import static c.org.rajawali3d.textures.annotation.Type.RENDER_TARGET;
-import static c.org.rajawali3d.textures.annotation.Type.SPECULAR;
-import static c.org.rajawali3d.textures.annotation.Type.SPHERE_MAP;
-import static c.org.rajawali3d.textures.annotation.Type.VIDEO_TEXTURE;
-
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.support.annotation.NonNull;
 
-import c.org.rajawali3d.gl.Capabilities;
-import c.org.rajawali3d.textures.BaseTexture;
-import c.org.rajawali3d.textures.CubeMapTexture;
-import c.org.rajawali3d.textures.SphereMapTexture2D;
-import c.org.rajawali3d.textures.TextureException;
 import org.rajawali3d.Object3D;
-import c.org.rajawali3d.gl.buffers.BufferInfo;
 import org.rajawali3d.lights.ALight;
-import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.methods.IDiffuseMethod;
-import org.rajawali3d.materials.methods.ISpecularMethod;
-import org.rajawali3d.materials.methods.SpecularMethod;
-import org.rajawali3d.materials.plugins.IMaterialPlugin;
-import org.rajawali3d.materials.shaders.FragmentShader;
-import org.rajawali3d.materials.shaders.IShaderFragment;
-import org.rajawali3d.materials.shaders.VertexShader;
-import org.rajawali3d.materials.shaders.fragments.LightsFragmentShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.LightsVertexShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.texture.AlphaMaskFragmentShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.texture.DiffuseTextureFragmentShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.texture.EnvironmentMapFragmentShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.texture.NormalMapFragmentShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.texture.SkyTextureFragmentShaderFragment;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
@@ -57,6 +27,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import c.org.rajawali3d.gl.Capabilities;
+import c.org.rajawali3d.gl.buffers.BufferInfo;
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.TextureException;
 
 /**
  * The Material class is where you define the visual characteristics of your 3D model. Here you can specify lighting
@@ -93,19 +68,19 @@ public class Material {
      * The generic vertex shader. This can be extended by using vertex shader fragments. A vertex shader is typically
      * used to modify vertex positions, vertex colors and normals.
      */
-    private VertexShader               vertexShader;
+    //private VertexShader               vertexShader;
 
     /**
      * The generic fragment shader. This can be extended by using fragment shader fragments. A fragment shader is
      * typically used to modify rasterized pixel colors.
      */
-    private FragmentShader             fragmentShader;
+    //private FragmentShader             fragmentShader;
 
     /**
      * The shader fragments that are plugged into both the vertex and fragment shader. This is where lighting
      * calculations are performed.
      */
-    private LightsVertexShaderFragment lightsVertexShaderFragment;
+    //private LightsVertexShaderFragment lightsVertexShaderFragment;
 
     /**
      * The diffuse method specifies the reflection of light from a surface such that an incident ray is reflected at
@@ -115,7 +90,7 @@ public class Material {
      * material.setDiffuseMethod(new DiffuseMethod.Lambert());
      * </code></pre>
      */
-    private IDiffuseMethod  diffuseMethod;
+    //private IDiffuseMethod  diffuseMethod;
 
     /**
      * The specular method specifies the mirror-like reflection of light (or of other kinds of wave) from a surface, in
@@ -125,7 +100,7 @@ public class Material {
      * material.setSpecularMethod(new SpecularMethod.Phong());
      * </code></pre>
      */
-    private ISpecularMethod specularMethod;
+    //private ISpecularMethod specularMethod;
 
     /**
      * Indicates that this material should use a color value for every vertex. These colors are contained in a separate
@@ -243,7 +218,7 @@ public class Material {
      * A list of material plugins that are used by this material. A material plugin is basically a class that contains a
      * vertex shader fragment and a fragment shader fragment. Material plugins can be used for custom shader effects.
      */
-    protected List<IMaterialPlugin> plugins;
+   // protected List<IMaterialPlugin> plugins;
 
     /**
      * This texture's unique owner identity String. This is usually the fully qualified name of the {@link Renderer}
@@ -274,8 +249,8 @@ public class Material {
      */
     protected Matrix4       normalMatrix = new Matrix4();
 
-    protected VertexShader   customVertexShader;
-    protected FragmentShader customFragmentShader;
+    ////protected VertexShader   customVertexShader;
+    //protected FragmentShader customFragmentShader;
 
     /**
      * The Material class is where you define the visual characteristics of your 3D model. Here you can specify lighting
@@ -317,7 +292,7 @@ public class Material {
         ambientIntensity = new float[]{ .3f, .3f, .3f};
     }
 
-    public Material(VertexShader customVertexShader, FragmentShader customFragmentShader) {
+    /*public Material(VertexShader customVertexShader, FragmentShader customFragmentShader) {
         this(customVertexShader, customFragmentShader, false);
     }
 
@@ -325,7 +300,7 @@ public class Material {
         this(deferCapabilitiesCheck);
         this.customVertexShader = customVertexShader;
         this.customFragmentShader = customFragmentShader;
-    }
+    }*/
 
     /**
      * Indicates that this material should use a color value for every vertex. These colors are contained in a separate
@@ -362,8 +337,8 @@ public class Material {
         this.color[1] = (float) Color.green(color) / 255.f;
         this.color[2] = (float) Color.blue(color) / 255.f;
         this.color[3] = (float) Color.alpha(color) / 255.f;
-        if (vertexShader != null)
-            vertexShader.setColor(this.color);
+        /*if (vertexShader != null)
+            vertexShader.setColor(this.color);*/
     }
 
     /**
@@ -379,8 +354,8 @@ public class Material {
         this.color[1] = color[1];
         this.color[2] = color[2];
         this.color[3] = color[3];
-        if (vertexShader != null)
-            vertexShader.setColor(this.color);
+        /*if (vertexShader != null)
+            vertexShader.setColor(this.color);*/
     }
 
     /**
@@ -427,8 +402,8 @@ public class Material {
         ambientColor[0] = (float) Color.red(color) / 255.f;
         ambientColor[1] = (float) Color.green(color) / 255.f;
         ambientColor[2] = (float) Color.blue(color) / 255.f;
-        if (lightsVertexShaderFragment != null)
-            lightsVertexShaderFragment.setAmbientColor(ambientColor);
+        /*if (lightsVertexShaderFragment != null)
+            lightsVertexShaderFragment.setAmbientColor(ambientColor);*/
     }
 
     /**
@@ -441,8 +416,8 @@ public class Material {
         ambientColor[0] = color[0];
         ambientColor[1] = color[1];
         ambientColor[2] = color[2];
-        if (lightsVertexShaderFragment != null)
-            lightsVertexShaderFragment.setAmbientColor(ambientColor);
+        /*if (lightsVertexShaderFragment != null)
+            lightsVertexShaderFragment.setAmbientColor(ambientColor);*/
     }
 
     /**
@@ -476,8 +451,8 @@ public class Material {
         ambientIntensity[0] = r;
         ambientIntensity[1] = g;
         ambientIntensity[2] = b;
-        if (lightsVertexShaderFragment != null)
-            lightsVertexShaderFragment.setAmbientIntensity(ambientIntensity);
+        /*if (lightsVertexShaderFragment != null)
+            lightsVertexShaderFragment.setAmbientIntensity(ambientIntensity);*/
     }
 
     //TODO: Remove visibility!
@@ -522,18 +497,18 @@ public class Material {
      *
      * @param vertexShader The {@link VertexShader}.
      */
-    protected void onPreVertexShaderInitialize(@NonNull VertexShader vertexShader) {
+    /*protected void onPreVertexShaderInitialize(@NonNull VertexShader vertexShader) {
 
-    }
+    }*/
 
     /**
      * Called prior to {@link FragmentShader#initialize()} being called when creating auto-generated materials.
      *
      * @param fragmentShader The {@link FragmentShader}.
      */
-    protected void onPreFragmentShaderInitialize(@NonNull FragmentShader fragmentShader) {
+    /*protected void onPreFragmentShaderInitialize(@NonNull FragmentShader fragmentShader) {
 
-    }
+    }*/
 
     /**
      * Takes all material parameters and creates the vertex shader and fragment shader and then compiles the program.
@@ -542,7 +517,7 @@ public class Material {
     protected void createShaders() {
         if (!isDirty)
             return;
-        if (customVertexShader == null && customFragmentShader == null) {
+        /*if (customVertexShader == null && customFragmentShader == null) {
             //
             // -- Check textures
             //
@@ -740,7 +715,7 @@ public class Material {
             setTextureParameters(textures.get(i));
         }
 
-        isDirty = false;
+        isDirty = false;*/
     }
 
     /**
@@ -758,13 +733,13 @@ public class Material {
      * @param location Where to insert the vertex and/or fragment shader
      */
     private void checkForPlugins(PluginInsertLocation location) {
-        if (plugins == null) return;
+        /*if (plugins == null) return;
         for (IMaterialPlugin plugin : plugins) {
             if (plugin.getInsertLocation() == location) {
                 vertexShader.addShaderFragment(plugin.getVertexShaderFragment());
                 fragmentShader.addShaderFragment(plugin.getFragmentShaderFragment());
             }
-        }
+        }*/
     }
 
     /**
@@ -844,12 +819,12 @@ public class Material {
      * Applies parameters that should be set on the shaders. These are parameters like time, color, buffer handles, etc.
      */
     public void applyParams() {
-        vertexShader.setColor(color);
+        /*vertexShader.setColor(color);
         vertexShader.setTime(time);
         vertexShader.applyParams();
 
         fragmentShader.setColorInfluence(colorInfluence);
-        fragmentShader.applyParams();
+        fragmentShader.applyParams();*/
     }
 
     /**
@@ -901,9 +876,9 @@ public class Material {
             bindTextureByName(i, textures.get(i));
         }
 
-        if (plugins != null)
+        /*if (plugins != null)
             for (IMaterialPlugin plugin : plugins)
-                plugin.bindTextures(num);
+                plugin.bindTextures(num);*/
     }
 
     public void bindTextureByName(int index, BaseTexture texture) {
@@ -930,9 +905,9 @@ public class Material {
     public void unbindTextures() {
         int num = textures.size();
 
-        if (plugins != null)
+        /*if (plugins != null)
             for (IMaterialPlugin plugin : plugins)
-                plugin.unbindTextures();
+                plugin.unbindTextures();*/
 
         for (int i = 0; i < num; i++) {
             BaseTexture texture = textures.get(i);
@@ -1001,7 +976,7 @@ public class Material {
      * @param vertexBufferHandle
      */
     public void setVertices(final int vertexBufferHandle) {
-        vertexShader.setVertices(vertexBufferHandle);
+        //vertexShader.setVertices(vertexBufferHandle);
     }
 
     /**
@@ -1010,7 +985,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setVertices(BufferInfo bufferInfo) {
-        vertexShader.setVertices(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        //vertexShader.setVertices(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1019,7 +994,7 @@ public class Material {
      * @param textureCoordBufferHandle
      */
     public void setTextureCoords(final int textureCoordBufferHandle) {
-        vertexShader.setTextureCoords(textureCoordBufferHandle);
+        //vertexShader.setTextureCoords(textureCoordBufferHandle);
     }
 
     /**
@@ -1028,7 +1003,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setTextureCoords(BufferInfo bufferInfo) {
-        vertexShader.setTextureCoords(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        //vertexShader.setTextureCoords(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1037,7 +1012,7 @@ public class Material {
      * @param normalBufferHandle
      */
     public void setNormals(final int normalBufferHandle) {
-        vertexShader.setNormals(normalBufferHandle);
+        //vertexShader.setNormals(normalBufferHandle);
     }
 
     /**
@@ -1046,7 +1021,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setNormals(BufferInfo bufferInfo) {
-        vertexShader.setNormals(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        //vertexShader.setNormals(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1055,7 +1030,7 @@ public class Material {
      * @param vertexColorBufferHandle
      */
     public void setVertexColors(final int vertexColorBufferHandle) {
-        vertexShader.setVertexColors(vertexColorBufferHandle);
+        //vertexShader.setVertexColors(vertexColorBufferHandle);
     }
 
     /**
@@ -1064,7 +1039,7 @@ public class Material {
      * @param bufferInfo
      */
     public void setVertexColors(BufferInfo bufferInfo) {
-        vertexShader.setVertexColors(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
+        //vertexShader.setVertexColors(bufferInfo.glHandle, bufferInfo.type, bufferInfo.stride, bufferInfo.offset);
     }
 
     /**
@@ -1092,7 +1067,7 @@ public class Material {
      * @param mvpMatrix
      */
     public void setMVPMatrix(Matrix4 mvpMatrix) {
-        vertexShader.setMVPMatrix(mvpMatrix.getFloatValues());
+        //vertexShader.setMVPMatrix(mvpMatrix.getFloatValues());
     }
 
     /**
@@ -1102,7 +1077,7 @@ public class Material {
      */
     public void setModelMatrix(Matrix4 modelMatrix) {
         this.modelMatrix = modelMatrix;//.getFloatValues();
-        vertexShader.setModelMatrix(this.modelMatrix);
+        //vertexShader.setModelMatrix(this.modelMatrix);
 
         normalMatrix.setAll(modelMatrix);
         try {
@@ -1122,7 +1097,7 @@ public class Material {
         normalFloats[7] = matrix[9];
         normalFloats[8] = matrix[10];
 
-        vertexShader.setNormalMatrix(normalFloats);
+        //vertexShader.setNormalMatrix(normalFloats);
     }
 
     /**
@@ -1132,7 +1107,7 @@ public class Material {
      */
     public void setInverseViewMatrix(Matrix4 inverseViewMatrix) {
         this.inverseViewMatrix = inverseViewMatrix.getFloatValues();
-        vertexShader.setInverseViewMatrix(this.inverseViewMatrix);
+        //vertexShader.setInverseViewMatrix(this.inverseViewMatrix);
     }
 
     /**
@@ -1142,7 +1117,7 @@ public class Material {
      */
     public void setModelViewMatrix(Matrix4 modelViewMatrix) {
         this.modelViewMatrix = modelViewMatrix.getFloatValues();
-        vertexShader.setModelViewMatrix(this.modelViewMatrix);
+        //vertexShader.setModelViewMatrix(this.modelViewMatrix);
     }
 
     /**
@@ -1274,11 +1249,11 @@ public class Material {
      *
      * @param diffuseMethod The diffuse method
      */
-    public void setDiffuseMethod(IDiffuseMethod diffuseMethod) {
-        if (this.diffuseMethod == diffuseMethod) return;
-        this.diffuseMethod = diffuseMethod;
+    /*public void setDiffuseMethod(IDiffuseMethod diffuseMethod) {
+        //if (this.diffuseMethod == diffuseMethod) return;
+        //this.diffuseMethod = diffuseMethod;
         isDirty = true;
-    }
+    }*/
 
     /**
      * The diffuse method specifies the reflection of light from a surface such that an incident
@@ -1290,9 +1265,9 @@ public class Material {
      *
      * @return the currently used diffuse method
      */
-    public IDiffuseMethod getDiffuseMethod() {
+    /*public IDiffuseMethod getDiffuseMethod() {
         return diffuseMethod;
-    }
+    }*/
 
     /**
      * The specular method specifies the mirror-like reflection of light (or of other kinds of wave)
@@ -1305,11 +1280,11 @@ public class Material {
      *
      * @param specularMethod The specular method to use
      */
-    public void setSpecularMethod(ISpecularMethod specularMethod) {
+    /*public void setSpecularMethod(ISpecularMethod specularMethod) {
         if (this.specularMethod == specularMethod) return;
         this.specularMethod = specularMethod;
         isDirty = true;
-    }
+    }*/
 
     /**
      * The specular method specifies the mirror-like reflection of light (or of other kinds of wave)
@@ -1322,9 +1297,9 @@ public class Material {
      *
      * @return The currently used specular method
      */
-    public ISpecularMethod getSpecularMethod() {
+    /*public ISpecularMethod getSpecularMethod() {
         return specularMethod;
-    }
+    }*/
 
     /**
      * Add a material plugin. A material plugin is basically
@@ -1333,7 +1308,7 @@ public class Material {
      *
      * @param plugin
      */
-    public void addPlugin(IMaterialPlugin plugin) {
+    /*public void addPlugin(IMaterialPlugin plugin) {
         if (plugins == null) {
             plugins = new ArrayList<IMaterialPlugin>();
         } else {
@@ -1345,7 +1320,7 @@ public class Material {
 
         plugins.add(plugin);
         isDirty = true;
-    }
+    }*/
 
     /**
      * Get a material plugin by using its class type. A material plugin is basically
@@ -1356,7 +1331,7 @@ public class Material {
      *
      * @return
      */
-    public IMaterialPlugin getPlugin(Class<?> pluginClass) {
+    /*public IMaterialPlugin getPlugin(Class<?> pluginClass) {
         if (plugins == null) return null;
 
         for (IMaterialPlugin plugin : plugins) {
@@ -1365,7 +1340,7 @@ public class Material {
         }
 
         return null;
-    }
+    }*/
 
     public void setCurrentObject(Object3D currentObject) {
     }
@@ -1380,12 +1355,12 @@ public class Material {
      *
      * @param plugin
      */
-    public void removePlugin(IMaterialPlugin plugin) {
+    /*public void removePlugin(IMaterialPlugin plugin) {
         if (plugins != null && plugins.contains(plugin)) {
             plugins.remove(plugin);
             isDirty = true;
         }
-    }
+    }*/
 
     /**
      * {@inheritDoc}

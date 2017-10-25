@@ -102,6 +102,15 @@ public abstract class ShaderBuilder {
         writeAssign(variable, variable.getValue());
     }
 
+    protected void writeConstructor(@NonNull String typeString, @NonNull ShaderVariable... arguments) {
+        getStringBuilder().append(typeString).append('(');
+        for (ShaderVariable arg : arguments) {
+            getStringBuilder().append(arg.getName() != null ? arg.getName() : arg.getValue()).append(", ");
+        }
+        getStringBuilder().setLength(getStringBuilder().length() - 2);
+        getStringBuilder().append(')');
+    }
+
     public void writeUnaryOperation(char operator, @NonNull String operand) {
         getStringBuilder().append(operator).append(operand);
     }

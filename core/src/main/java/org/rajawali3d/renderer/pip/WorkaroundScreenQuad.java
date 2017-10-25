@@ -15,7 +15,6 @@ import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.cameras.Camera2D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.math.Matrix4;
-import org.rajawali3d.postprocessing.passes.EffectPass;
 
 /**
  * <p>
@@ -27,7 +26,7 @@ import org.rajawali3d.postprocessing.passes.EffectPass;
 public class WorkaroundScreenQuad extends Object3D {
     private Camera2D mCamera;
     private Matrix4 mVPMatrix;
-    private EffectPass mEffectPass;
+    //private EffectPass mEffectPass;
 
     /**
      * Creates a new ScreenQuad.
@@ -85,7 +84,7 @@ public class WorkaroundScreenQuad extends Object3D {
         super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, sceneMaterial);
     }
 
-    @Override
+    /*@Override
     protected void setShaderParams(Camera camera) {
         super.setShaderParams(camera);
         if (mEffectPass != null) {
@@ -95,5 +94,5 @@ public class WorkaroundScreenQuad extends Object3D {
 
     public void setEffectPass(EffectPass effectPass) {
         mEffectPass = effectPass;
-    }
+    }*/
 }

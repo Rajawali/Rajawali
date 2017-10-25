@@ -17,21 +17,21 @@ import android.opengl.GLES20;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+
 import org.rajawali3d.postprocessing.IPass.PassType;
 import org.rajawali3d.postprocessing.IPostProcessingComponent.PostProcessingComponentType;
-import org.rajawali3d.postprocessing.passes.CopyPass;
-import org.rajawali3d.postprocessing.passes.EffectPass;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.renderer.RenderTarget;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.scene.Scene;
-import c.org.rajawali3d.textures.BaseTexture;
-import c.org.rajawali3d.textures.annotation.Filter;
-import c.org.rajawali3d.textures.annotation.Wrap;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import c.org.rajawali3d.textures.BaseTexture;
+import c.org.rajawali3d.textures.annotation.Filter;
+import c.org.rajawali3d.textures.annotation.Wrap;
 
 public class PostProcessingManager {
 
@@ -48,7 +48,7 @@ public class PostProcessingManager {
     protected int mWidth;
     protected int mHeight;
 
-    protected EffectPass mCopyPass;
+    //protected EffectPass mCopyPass;
 
     protected ScreenQuad mScreenQuad;
     protected Scene      mScene;
@@ -90,8 +90,8 @@ public class PostProcessingManager {
         mWriteBuffer = mRenderTarget1;
         mReadBuffer = mRenderTarget2;
 
-        mCopyPass = new EffectPass(new CopyPass());
-        mCopyPass.setSize(mWidth, mHeight);
+        //mCopyPass = new EffectPass(new CopyPass());
+        //mCopyPass.setSize(mWidth, mHeight);
         mComponents = Collections.synchronizedList(new CopyOnWriteArrayList<IPostProcessingComponent>());
         mPasses = Collections.synchronizedList(new CopyOnWriteArrayList<IPass>());
 
@@ -197,8 +197,7 @@ public class PostProcessingManager {
                 if (maskActive) {
                     GLES20.glStencilFunc(GLES20.GL_NOTEQUAL, 1, 0xffffffff);
 
-                    mCopyPass
-                            .render(mScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
+                    //mCopyPass.render(mScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
 
                     GLES20.glStencilFunc(GLES20.GL_EQUAL, 1, 0xffffffff);
                 }
