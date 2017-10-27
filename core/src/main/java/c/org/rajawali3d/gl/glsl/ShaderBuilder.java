@@ -18,8 +18,9 @@ import static c.org.rajawali3d.gl.glsl.GLSL.Version.GLES32;
 public abstract class ShaderBuilder {
 
     private static final String END_LINE = ";\n";
+    private static final char NEW_LINE = '\n';
 
-    private StringBuilder stringBuilder;
+    private ExtendedStringBuilder stringBuilder;
 
     private int variableCount = 0;
 
@@ -27,8 +28,10 @@ public abstract class ShaderBuilder {
 
     private LinkedList<PreprocessorDirective> preprocessorDirectives;
 
+    protected abstract void main();
+
     protected ShaderBuilder() {
-        stringBuilder = new StringBuilder();
+        stringBuilder = new ExtendedStringBuilder(new StringBuilder());
         preprocessorDirectives = new LinkedList<>();
     }
 
@@ -42,7 +45,7 @@ public abstract class ShaderBuilder {
     }
 
     @NonNull
-    public StringBuilder getStringBuilder() {
+    public ExtendedStringBuilder getStringBuilder() {
         return stringBuilder;
     }
 
@@ -50,8 +53,27 @@ public abstract class ShaderBuilder {
         return version.getVersionString();
     }
 
-    public void addPreprocessorDirective(@NonNull PreprocessorDirective directive) {
-        preprocessorDirectives.add(directive);
+    public String construct() {
+
+        ExtendedStringBuilder builder = getStringBuilder();
+
+        // Reset the string builder
+        builder.setLength(0);
+
+        // Add the version preprocessor directive
+        preprocessorDirectives.addFirst(new PreprocessorDirective.VERSION(version));
+
+        // Print all the pre-processor directives
+        for (PreprocessorDirective directive : preprocessorDirectives) {
+            builder.append(directive.print()).append(NEW_LINE);
+        }
+
+        builder.append("void main() ");
+        openBrace();
+        main();
+        closeBrace();
+
+        return builder.toString();
     }
 
     protected boolean isValidForVerson(@NonNull ShaderVariable variable) {
@@ -111,24 +133,79 @@ public abstract class ShaderBuilder {
         getStringBuilder().append(')');
     }
 
-    public void writeUnaryOperation(char operator, @NonNull String operand) {
+    protected void writeConstructor(@NonNull String typeString, @NonNull Object... arguments) {
+        getStringBuilder().append(typeString).append('(');
+        for (Object arg : arguments) {
+            getStringBuilder().append(arg.toString()).append(", ");
+        }
+        getStringBuilder().setLength(getStringBuilder().length() - 2);
+        getStringBuilder().append(')');
+    }
+
+    @NonNull
+    protected String constructor(@NonNull String typeString, @NonNull ShaderVariable... arguments) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(typeString).append('(');
+        for (ShaderVariable arg : arguments) {
+            stringBuilder.append(arg.getName() != null ? arg.getName() : arg.getValue()).append(", ");
+        }
+        stringBuilder.setLength(getStringBuilder().length() - 2);
+        stringBuilder.append(')');
+        return stringBuilder.toString();
+    }
+
+    @NonNull
+    protected String constructor(@NonNull String typeString, @NonNull Object... arguments) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(typeString).append('(');
+        for (Object arg : arguments) {
+            stringBuilder.append(arg.toString()).append(", ");
+        }
+        stringBuilder.setLength(stringBuilder.length() - 2);
+        stringBuilder.append(')');
+        return stringBuilder.toString();
+    }
+
+    protected void writeUnaryOperation(char operator, @NonNull String operand) {
         getStringBuilder().append(operator).append(operand);
     }
 
-    public void writeUnaryOperation(@NonNull String operator, @NonNull String operand) {
+    protected void writeUnaryOperation(@NonNull String operator, @NonNull String operand) {
         getStringBuilder().append(operator).append(operand);
     }
 
-    public void writeUnaryPostfixOperation(@NonNull String operand, @NonNull String operator) {
+    protected void writeUnaryPostfixOperation(@NonNull String operand, @NonNull String operator) {
         getStringBuilder().append(operand).append(operator);
     }
 
-    public void writeOperation(@NonNull String lhs, @NonNull String operation, @NonNull String rhs) {
+    protected void writeOperation(@NonNull String lhs, @NonNull String operation, @NonNull String rhs) {
         getStringBuilder().append(lhs).append(operation).append(rhs);
     }
 
-    public void endLine() {
+    protected void endLine() {
         getStringBuilder().append(END_LINE);
+        getStringBuilder().appendTabs();
+    }
+
+    protected void newLine() {
+        getStringBuilder().append(NEW_LINE);
+        getStringBuilder().appendTabs();
+    }
+
+    protected void openBrace() {
+        getStringBuilder().append('{');
+        getStringBuilder().increaseTabCount();
+        newLine();
+    }
+
+    protected void closeBrace() {
+        getStringBuilder().setLength(getStringBuilder().length() - 1);
+        getStringBuilder().append('}');
+        newLine();
+    }
+
+    public void addPreprocessorDirective(@NonNull PreprocessorDirective directive) {
+        preprocessorDirectives.add(directive);
     }
 
     /**

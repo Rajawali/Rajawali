@@ -302,27 +302,29 @@ public final class DataType {
      */
     public static final class BOOL extends ShaderVariable {
 
+        public static final String typeString = "bool";
+
         public BOOL(@NonNull ShaderBuilder shaderBuilder) {
-            super(shaderBuilder, "bool");
+            super(shaderBuilder, typeString);
         }
 
         public BOOL(@NonNull ShaderBuilder shaderBuilder, @NonNull ShaderVariable value) {
-            this(shaderBuilder, null, "bool", value.getName());
+            this(shaderBuilder, null, value.getName());
         }
 
-        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @NonNull ShaderVariable value) {
-            this(shaderBuilder, name, typeString, value.getName());
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull ShaderVariable value) {
+            this(shaderBuilder, name, value.getName());
         }
 
-        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value) {
-            this(shaderBuilder, name, typeString, value, true);
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @Nullable String value) {
+            this(shaderBuilder, name, value, true);
         }
 
-        public BOOL(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, String value, boolean write) {
-            this(shaderBuilder, null, typeString, value, write);
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, String value, boolean write) {
+            this(shaderBuilder, null, value, write);
         }
 
-        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @NonNull String typeString, @Nullable String value, boolean write) {
+        public BOOL(@NonNull ShaderBuilder shaderBuilder, @Nullable String name, @Nullable String value, boolean write) {
             super(shaderBuilder, name, typeString, value, write);
         }
     }

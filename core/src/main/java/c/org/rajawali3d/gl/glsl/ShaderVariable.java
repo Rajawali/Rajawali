@@ -30,10 +30,6 @@ public abstract class ShaderVariable {
     // GLES 2.0 Qualifiers
     private Precision precision;
 
-    protected static void constructor(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString, @NonNull ShaderVariable... arguments) {
-        shaderBuilder.writeConstructor(typeString, arguments);
-    }
-
     protected ShaderVariable(@NonNull ShaderBuilder shaderBuilder, @NonNull String typeString) {
         this.shaderBuilder = shaderBuilder;
         this.typeString = typeString;

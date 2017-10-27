@@ -25,7 +25,7 @@ public class PreprocessorDirective {
     }
 
     public String print() {
-        return "#" + directive + (argument != null ? argument : "");
+        return "#" + directive + (argument != null ? " " + argument : "");
     }
 
     public static class DEFINE extends PreprocessorDirective {
@@ -109,7 +109,7 @@ public class PreprocessorDirective {
         }
     }
 
-    public static class VERSION extends PreprocessorDirective {
+    static class VERSION extends PreprocessorDirective {
 
         public VERSION(@NonNull GLSL.Version version) {
             super("version", version.getVersionString());
