@@ -33,9 +33,11 @@ public class RayPicker implements IObjectPicker {
 		Vector3 pointFar = mRenderer.unProject(x, y, 1);
 
 		RayPickingVisitor visitor = new RayPickingVisitor(pointNear, pointFar);
-		//mRenderer.accept(visitor);
-
+	        ArrayList<Object3D> objects = mRenderer.getCurrentScene().getChildrenCopy(); //.accept(visitor);
 		// TODO: ray-triangle intersection test
+	        for(Object3D object : objects) {
+	            object.accept(visitor);
+	        }
 
 		mObjectPickedListener.onObjectPicked(visitor.getPickedObject());
 	}
