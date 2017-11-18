@@ -47,6 +47,10 @@ public class RayPicker implements IObjectPicker {
 	            object.accept(visitor);
 	        }
 
-		mObjectPickedListener.onObjectPicked(visitor.getPickedObject());
+		if(visitor.getPickedObject() == null) {
+                    mObjectPickedListener.onNoObjectPicked();
+                } else {
+                    mObjectPickedListener.onObjectPicked(visitor.getPickedObject());
+                }
 	}
 }
