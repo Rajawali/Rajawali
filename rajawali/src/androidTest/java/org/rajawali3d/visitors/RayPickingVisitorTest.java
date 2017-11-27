@@ -43,8 +43,8 @@ public class RayPickingVisitorTest {
 
     @Before
     public void setup() throws Exception {
-        rayStart = new Vector3(1,1,1);
-        rayEnd = new Vector3(-1,-1,-1);
+        rayStart = new Vector3(1,1,1).multiply(3);
+        rayEnd = new Vector3(-1,-1,-1).multiply(3);
         visitor = new RayPickingVisitor(rayStart, rayEnd);
     }
 
