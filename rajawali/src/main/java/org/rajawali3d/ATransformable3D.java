@@ -12,6 +12,8 @@
  */
 package org.rajawali3d;
 
+import java.lang.Math;
+
 import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.math.MathUtil;
 import org.rajawali3d.math.Matrix4;
@@ -519,28 +521,28 @@ public abstract class ATransformable3D implements IGraphNodeMember {
     /**
      * Extracts the roll Euler angle from the current orientation.
      *
-     * @return double The roll Euler angle.
+     * @return double The roll Euler angle in degrees.
      */
     public double getRotX() {
-        return mOrientation.getRotationX();
+        return Math.toDegrees(mOrientation.getRotationX());
     }
 
     /**
      * Extracts the yaw Euler angle from the current orientation.
      *
-     * @return double The yaw Euler angle.
+     * @return double The yaw Euler angle in degrees.
      */
     public double getRotY() {
-        return mOrientation.getRotationY();
+        return Math.toDegrees(mOrientation.getRotationY());
     }
 
     /**
      * Extracts the pitch Euler angle from the current orientation.
      *
-     * @return double The pitch Euler angle.
+     * @return double The pitch Euler angle in degrees.
      */
     public double getRotZ() {
-        return mOrientation.getRotationZ();
+        return Math.toDegrees(mOrientation.getRotationZ());
     }
 
     /**
