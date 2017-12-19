@@ -12,6 +12,10 @@
  */
 package org.rajawali3d.util;
 
+import android.graphics.PointF;
+import java.util.ArrayList;
+
+import org.rajawali3d.Object3D;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.Renderer;
 import org.rajawali3d.visitors.RayPickingVisitor;
@@ -28,15 +32,25 @@ public class RayPicker implements IObjectPicker {
 		mObjectPickedListener = objectPickedListener;
 	}
 
-	public void getObjectAt(float x, float y) {
-		Vector3 pointNear = mRenderer.unProject(x, y, 0);
-		Vector3 pointFar = mRenderer.unProject(x, y, 1);
+	public void getObjectAt(float screenX, float screenY) {
+		getObjectAt(mRenderer.screenToCartesian(screenX,screenY));
+	}
+
+	public void getObjectAt(PointF position) {
+		Vector3 pointNear = mRenderer.unProject(position.x, position.y, 0);
+		Vector3 pointFar = mRenderer.unProject(position.x, position.y, 1);
 
 		RayPickingVisitor visitor = new RayPickingVisitor(pointNear, pointFar);
-		//mRenderer.accept(visitor);
-
+	        ArrayList<Object3D> objects = mRenderer.getCurrentScene().getChildrenCopy();
 		// TODO: ray-triangle intersection test
+	        for(Object3D object : objects) {
+	            object.accept(visitor);
+	        }
 
-		mObjectPickedListener.onObjectPicked(visitor.getPickedObject());
+		if(visitor.getPickedObject() == null) {
+                    mObjectPickedListener.onNoObjectPicked();
+                } else {
+                    mObjectPickedListener.onObjectPicked(visitor.getPickedObject());
+                }
 	}
 }

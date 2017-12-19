@@ -15,6 +15,7 @@ package org.rajawali3d.renderer;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.PointF;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.os.Handler;
@@ -438,19 +439,41 @@ public abstract class Renderer implements ISurfaceRenderer {
         return mSceneCachingEnabled;
     }
 
-    public Vector3 unProject(double x, double y, double z) {
-        x = mDefaultViewportWidth - x;
-        y = mDefaultViewportHeight - y;
+    /**
+     * converts screen coordinates (y increases downwards) 
+     * to cartesian (y increases upwards) coordinates
+     *
+     * @param screenX {@code float} screen X position, in pixels.
+     * @param screenY {@code float} screen Y position, in pixels.
+     */
+    public PointF screenToCartesian(float screenX, float screenY) {
+        screenY = mDefaultViewportHeight - screenY;
+        return new PointF(
+            (screenX / mDefaultViewportWidth) * 2 - 1,
+            (screenY / mDefaultViewportHeight) * 2 - 1
+        );
+    }
 
+    public Vector3 unProject(PointF p, float distance) {
+        return unProject(p.x, p.y, distance);
+    }
+
+    /** Unprojects screen position into world space; 0,0,0 is center of screen
+     *
+     * @param x {@code double} x value, cartesian coordinates relative to center of sceen.
+     * @param y {@code double} y value, cartesian coordinates relative to center of sceen.
+     * @param z {@code double} z value, cartesian coordinates relative to center of sceen.
+     */
+    public Vector3 unProject(double x, double y, double z) {
         final double[] in = new double[4], out = new double[4];
 
         Matrix4 projectionMatrix = getCurrentCamera().getProjectionMatrix().clone();
         Matrix4 MVPMatrix = projectionMatrix.multiply(getCurrentCamera().getViewMatrix());
         MVPMatrix.inverse();
 
-        in[0] = (x / mDefaultViewportWidth) * 2 - 1;
-        in[1] = (y / mDefaultViewportHeight) * 2 - 1;
-        in[2] = 2 * z - 1;
+        in[0] = x;
+        in[1] = y;
+        in[2] = z;
         in[3] = 1;
 
         Matrix.multiplyMV(out, 0, MVPMatrix.getDoubleValues(), 0, in, 0);

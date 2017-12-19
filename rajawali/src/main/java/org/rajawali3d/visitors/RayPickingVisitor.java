@@ -97,9 +97,10 @@ public class RayPickingVisitor implements INodeVisitor {
 	private boolean getIntersection( double fDst1, double fDst2, Vector3 P1, Vector3 P2) {
 		if ((fDst1 * fDst2) >= 0.0f) return false;
 		if (floatEqual(fDst1, fDst2)) return false; 
-		mHitPoint.setAll(P1);
+		mHitPoint.multiply(0);
 		mHitPoint.add(Vector3.subtractAndCreate(P2, P1));
 		mHitPoint.multiply(-fDst1/(fDst2-fDst1));
+		mHitPoint.add(P1);
 		return true;
 	}
 	
@@ -108,9 +109,9 @@ public class RayPickingVisitor implements INodeVisitor {
 	}
 
 	private boolean isInBox(Vector3 boxMin, Vector3 boxMax, Axis axis) {
-		if ( axis==Axis.X && mHitPoint.z > boxMin.z && mHitPoint.z < boxMax.z && mHitPoint.y > boxMin.y && mHitPoint.y < boxMax.y) return true;
-		if ( axis==Axis.Y && mHitPoint.z > boxMin.z && mHitPoint.z < boxMax.z && mHitPoint.x > boxMin.x && mHitPoint.x < boxMax.x) return true;
-		if ( axis==Axis.Z && mHitPoint.x > boxMin.x && mHitPoint.x < boxMax.x && mHitPoint.y > boxMin.y && mHitPoint.y < boxMax.y) return true;
+		if ( axis==Axis.X && mHitPoint.z >= boxMin.z && mHitPoint.z <= boxMax.z && mHitPoint.y >= boxMin.y && mHitPoint.y <= boxMax.y) return true;
+		if ( axis==Axis.Y && mHitPoint.z >= boxMin.z && mHitPoint.z <= boxMax.z && mHitPoint.x >= boxMin.x && mHitPoint.x <= boxMax.x) return true;
+		if ( axis==Axis.Z && mHitPoint.x >= boxMin.x && mHitPoint.x <= boxMax.x && mHitPoint.y >= boxMin.y && mHitPoint.y <= boxMax.y) return true;
 		return false;
 	}
 	
