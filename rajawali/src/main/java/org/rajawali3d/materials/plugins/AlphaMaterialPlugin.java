@@ -1,6 +1,7 @@
 package org.rajawali3d.materials.plugins;
 
 import android.opengl.GLES20;
+import android.support.annotation.FloatRange;
 
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.AShader;
@@ -97,10 +98,12 @@ final class AlphaFragmentShaderFragment extends AShader implements IShaderFragme
     @Override
     public void main() {
         RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
-        color.a().assign(muAlpha);
+        color.a().assignMultiply(muAlpha);
     }
 
-    public void setAlpha(float alpha) {
+    public void setAlpha(@FloatRange(from = 0.0, to = 1.0) final float alpha) {
         mAlpha = alpha;
+        if(mAlpha>1) mAlpha=1;
+        if(mAlpha<0) mAlpha=0;
     }
 }
