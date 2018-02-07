@@ -47,11 +47,11 @@ public class SlerpAnimation3D extends Animation3D {
 	
 	public SlerpAnimation3D(Vector3 from, Vector3 to) {
 		super();
-		mFrom = quaternionFromVector(from.clone());
-		mTo = quaternionFromVector(to.clone());
 		mTmpVec = new Vector3();
 		mTmpQuatVector = new Vector3();
 		mTmpQuat = new Quaternion();
+		mFrom = quaternionFromVector(from.clone());
+		mTo = quaternionFromVector(to.clone());
 		mDistance = from.length();
 		mRotationMatrix = new double[16];
 	}
