@@ -56,10 +56,18 @@ script:
   --stacktrace --continue; ./gradlew :vr:uploadArchives --stacktrace --continue; ./gradlew
   :wear:uploadArchives --stacktrace --continue; fi
 install:
-- wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
-- chmod a+x ndk.bin
-- "./ndk.bin 1> /dev/null 2>&1"
-- chmod a+x ./android-ndk-r10d/ndk-build
+- wget --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip
+- unzip -qo android-ndk.zip
+
+# By default, we get an older version of libstdc++6 so we need to update it
+# http://askubuntu.com/questions/575505/glibcxx-3-4-20-not-found-how-to-fix-this-error
+- sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+- sudo apt-get update --yes
+- sudo apt-get install libstdc++6 unzip --yes
+# Install CMake
+- wget https://github.com/Commit451/android-cmake-installer/releases/download/1.1.0/install-cmake.sh
+- chmod +x install-cmake.sh
+- ./install-cmake.sh
 notifications:
   email:
   - info@rozengain.com
