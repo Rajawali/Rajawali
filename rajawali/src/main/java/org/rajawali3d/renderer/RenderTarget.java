@@ -228,18 +228,22 @@ public class RenderTarget {
         mTexture.setWidth(width);
     }
 
+    public void bindFramebuffer(int handle) {
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, handle);
+        int error = GLES20.glGetError();
+        if (error == GLES20.GL_INVALID_ENUM) {
+            GLNative.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, handle);
+        } else {
+            onGLError("Could not create framebuffer 1: ", error);
+        }
+    }
+
     public void create() {
         int[] bufferHandles = new int[1];
         GLES20.glGenFramebuffers(1, bufferHandles, 0);
         mFrameBufferHandle = bufferHandles[0];
 
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
-        int error = GLES20.glGetError();
-		if (error == GLES20.GL_INVALID_ENUM) {
-            GLNative.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
-        } else {
-		    onGLError("Could not create framebuffer 1: ", error);
-        }
+        bindFramebuffer(mFrameBufferHandle);
 
         // -- add the texture directly. we can afford to do this because the create()
         //    method is called in a thread safe manner.
@@ -271,17 +275,17 @@ public class RenderTarget {
 			checkGLError("Could not create stencil buffer: ");
 		}
 	*/
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        bindFramebuffer(0);
     }
 
     public void bind() {
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBufferHandle);
+        bindFramebuffer(mFrameBufferHandle);
         GLES20.glFramebufferTexture2D(
                 GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTexture.getTextureId(), 0);
 
         int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
         if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
-            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+            bindFramebuffer(0);
             String errorString = "";
             switch (status) {
                 case GLES20.GL_FRAMEBUFFER_UNSUPPORTED:
@@ -309,7 +313,7 @@ public class RenderTarget {
     }
 
     public void unbind() {
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        bindFramebuffer(0);
     }
 
     public void remove() {
