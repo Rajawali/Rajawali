@@ -52,3 +52,4 @@ rajawali_secret.gpg
 secring.gpg
 *.alloc
 *.properties
+rajawali/.externalNativeBuild/
