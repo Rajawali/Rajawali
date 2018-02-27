@@ -39,7 +39,7 @@ script:
 - echo -e "signing.keyId=${SIGNING_KEY}" >> "gradle.properties"
 - echo -e "signing.password=${SIGNING_KEY_PASSWORD}" >> "gradle.properties"
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
-- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
+- echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r16b") >> "local.properties"
 - cat local.properties
 - "./gradlew clean --stacktrace --continue"
 - "./gradlew :rajawali:jacocoTestReport :rajawali:assembleAndroidTest --stacktrace
