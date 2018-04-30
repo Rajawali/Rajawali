@@ -418,30 +418,24 @@ public class Vector3Test {
 
     @Test
     public void testRotateBy() throws Exception {
-        final Quaternion q = new Quaternion();
-        final Vector3 v = new Vector3(Vector3.X);
-        v.multiply(2.0);
-        final Vector3 out = q.multiply(v);
-        assertNotNull(out);
-        assertTrue(out != v);
-        assertEquals(Double.doubleToRawLongBits(2d), Double.doubleToRawLongBits(out.x));
-        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out.y));
-        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out.z));
-        q.fromAngleAxis(Axis.Z, 45.0);
-        final Vector3 out1 = q.multiply(v);
-        assertNotNull(out1);
-        assertTrue(out1 != v);
-        assertEquals(1.4142135623730951, out1.x, 1e-14);
-        assertEquals(1.4142135623730951, out1.y, 1e-14);
-        assertEquals(Double.doubleToRawLongBits(0d), Double.doubleToRawLongBits(out1.z));
-        q.fromAngleAxis(1d, 0d, 1d, 45d);
-        q.normalize();
-        final Vector3 out2 = q.multiply(v);
-        assertNotNull(out2);
-        assertTrue(out2 != v);
-        assertEquals(1.7071067811865477, out2.x, 1e-14);
-        assertEquals(0.9999999999999998, out2.y, 1e-14);
-        assertEquals(0.29289321881345237, out2.z, 1e-14);
+	{
+		final Quaternion q = Quaternion.getIdentity();
+		Vector3 v = new Vector3(0,0,1);
+		v.rotateBy(q);
+
+       		assertEquals("X", 0, v.x, 1e-14);
+       		assertEquals("Y", 0, v.y, 1e-14);
+       		assertEquals("Z", 1, v.z, 1e-14);
+	}
+	{
+		final Quaternion q = new Quaternion(0.5,0.5,0.5,0.5);
+		Vector3 v = new Vector3(0,0,1);
+		v.rotateBy(q);
+
+       		assertEquals("X", 1, v.x, 1e-14);
+       		assertEquals("Y", 0, v.y, 1e-14);
+       		assertEquals("Z", 0, v.z, 1e-14);
+	}
     }
 
     @Test
