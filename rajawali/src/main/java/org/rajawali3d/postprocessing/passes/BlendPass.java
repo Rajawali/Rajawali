@@ -21,7 +21,7 @@ public class BlendPass extends EffectPass {
     protected ATexture mBlendTexture;
 
     public static enum BlendMode {
-        ADD, SCREEN
+        ADD, SCREEN, SUBTRACT
     }
 
     public BlendPass(BlendMode blendMode, ATexture blendTexture) {
@@ -38,10 +38,12 @@ public class BlendPass extends EffectPass {
 
     protected int getFragmentShader(BlendMode blendMode) {
         switch (blendMode) {
-            case ADD:
-                return R.raw.blend_add_fragment_shader;
+            case SUBTRACT:
+                return R.raw.blend_subtract_fragment_shader;
             case SCREEN:
                 return R.raw.blend_screen_fragment_shader;
+            case ADD:
+                return R.raw.blend_add_fragment_shader;
             default:
                 return R.raw.blend_add_fragment_shader;
         }
