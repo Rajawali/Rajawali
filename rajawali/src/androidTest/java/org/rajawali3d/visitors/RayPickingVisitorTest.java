@@ -1,16 +1,16 @@
-package org.rajawali3d.utils;
+package org.rajawali3d.visitors;
 
-import static org.junit.Assert.*;
-import org.junit.*;
+import android.support.test.filters.SmallTest;
 
-import android.test.suitebuilder.annotation.SmallTest;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.rajawali3d.visitors.RayPickingVisitor;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.primitives.Sphere;
 
-import java.util.Arrays;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
@@ -43,8 +43,8 @@ public class RayPickingVisitorTest {
 
     @Before
     public void setup() throws Exception {
-        rayStart = new Vector3(1,1,1).multiply(3);
-        rayEnd = new Vector3(-1,-1,-1).multiply(3);
+        rayStart = new Vector3(1, 1, 1).multiply(3);
+        rayEnd = new Vector3(-1, -1, -1).multiply(3);
         visitor = new RayPickingVisitor(rayStart, rayEnd);
     }
 
@@ -68,7 +68,7 @@ public class RayPickingVisitorTest {
 
     @Test
     public void testApplySphere() throws Exception {
-        Sphere sphere = new Sphere(1,4,2,false,false,false,false);
+        Sphere sphere = new Sphere(1, 4, 2, false, false, false, false);
         sphere.getGeometry().getBoundingSphere();
         visitor.apply(sphere);
         assertNull(visitor.getPickedObject());
@@ -76,7 +76,7 @@ public class RayPickingVisitorTest {
 
     @Test
     public void testApplyInstrumentedSphere() throws Exception {
-        InstrumentedSphere sphere = new InstrumentedSphere(1,4,2,false,false,false,false);
+        InstrumentedSphere sphere = new InstrumentedSphere(1, 4, 2, false, false, false, false);
         sphere.getGeometry().getBoundingSphere();
         sphere.setFrustumTest(false);
         sphere.setInFrustum(true);
@@ -86,7 +86,7 @@ public class RayPickingVisitorTest {
 
     @Test
     public void testApplyCube() throws Exception {
-        Cube cube = new Cube(1,false,false,false,false,false);
+        Cube cube = new Cube(1, false, false, false, false, false);
         cube.getGeometry().getBoundingBox();
         visitor.apply(cube);
         assertNull(visitor.getPickedObject());
@@ -94,7 +94,7 @@ public class RayPickingVisitorTest {
 
     @Test
     public void testApplyInstrumentedCube() throws Exception {
-        InstrumentedCube cube = new InstrumentedCube(1,false,false,false,false,false);
+        InstrumentedCube cube = new InstrumentedCube(1, false, false, false, false, false);
         cube.getGeometry().getBoundingBox();
         cube.setFrustumTest(false);
         cube.setInFrustum(true);

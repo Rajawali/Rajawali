@@ -1,19 +1,18 @@
 package org.rajawali3d.math.vector;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import android.support.test.filters.SmallTest;
 
-import android.test.suitebuilder.annotation.SmallTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
-import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.math.vector.Vector3.Axis;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
@@ -79,7 +78,7 @@ public class Vector3Test {
 
     @Test
     public void testConstructorFromStringArray() throws Exception {
-        final String[] values = new String[]{ "1", "2", "3" };
+        final String[] values = new String[]{"1", "2", "3"};
         final Vector3 v = new Vector3(values);
         assertNotNull(v);
         assertEquals(1d, v.x, 0);
@@ -89,7 +88,7 @@ public class Vector3Test {
 
     @Test
     public void testConstructorFromDoubleArray() throws Exception {
-        final double[] values = new double[]{ 1d, 2d, 3d };
+        final double[] values = new double[]{1d, 2d, 3d};
         final Vector3 v = new Vector3(values);
         assertNotNull(v);
         assertEquals(1d, v.x, 0);
@@ -99,7 +98,7 @@ public class Vector3Test {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorFromShortDoubleArray() throws Exception {
-        final double[] values = new double[]{ 1d, 2d };
+        final double[] values = new double[]{1d, 2d};
         new Vector3(values);
     }
 
@@ -302,7 +301,7 @@ public class Vector3Test {
     @Test
     public void testMultiplyFomDoubleMatrix() throws Exception {
         final Vector3 v = new Vector3(1d, 2d, 3d);
-        final double[] matrix = new double[]{ 1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d, 10d, 11d, 12d, 13d, 14d, 15d, 16d };
+        final double[] matrix = new double[]{1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d, 10d, 11d, 12d, 13d, 14d, 15d, 16d};
         final Vector3 out = v.multiply(matrix);
         assertNotNull(out);
         assertTrue(out == v);
@@ -314,7 +313,7 @@ public class Vector3Test {
     @Test
     public void testMultiplyFromMatrix4() throws Exception {
         final Vector3 v = new Vector3(1d, 2d, 3d);
-        final double[] matrix = new double[]{ 1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d, 10d, 11d, 12d, 13d, 14d, 15d, 16d };
+        final double[] matrix = new double[]{1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d, 10d, 11d, 12d, 13d, 14d, 15d, 16d};
         final Matrix4 matrix4 = new Matrix4(matrix);
         final Vector3 out = v.multiply(matrix4);
         assertNotNull(out);
@@ -418,24 +417,24 @@ public class Vector3Test {
 
     @Test
     public void testRotateBy() throws Exception {
-	{
-		final Quaternion q = Quaternion.getIdentity();
-		Vector3 v = new Vector3(0,0,1);
-		v.rotateBy(q);
+        {
+            final Quaternion q = Quaternion.getIdentity();
+            Vector3 v = new Vector3(0, 0, 1);
+            v.rotateBy(q);
 
-       		assertEquals("X", 0, v.x, 1e-14);
-       		assertEquals("Y", 0, v.y, 1e-14);
-       		assertEquals("Z", 1, v.z, 1e-14);
-	}
-	{
-		final Quaternion q = new Quaternion(0.5,0.5,0.5,0.5);
-		Vector3 v = new Vector3(0,0,1);
-		v.rotateBy(q);
+            assertEquals("X", 0, v.x, 1e-14);
+            assertEquals("Y", 0, v.y, 1e-14);
+            assertEquals("Z", 1, v.z, 1e-14);
+        }
+        {
+            final Quaternion q = new Quaternion(0.5, 0.5, 0.5, 0.5);
+            Vector3 v = new Vector3(0, 0, 1);
+            v.rotateBy(q);
 
-       		assertEquals("X", 1, v.x, 1e-14);
-       		assertEquals("Y", 0, v.y, 1e-14);
-       		assertEquals("Z", 0, v.z, 1e-14);
-	}
+            assertEquals("X", 1, v.x, 1e-14);
+            assertEquals("Y", 0, v.y, 1e-14);
+            assertEquals("Z", 0, v.z, 1e-14);
+        }
     }
 
     @Test
@@ -526,7 +525,7 @@ public class Vector3Test {
         final Vector3 v3 = new Vector3(Vector3.Z);
         v2.multiply(2d);
         v3.multiply(3d);
-        Vector3.orthoNormalize(new Vector3[]{ v1, v2, v3 });
+        Vector3.orthoNormalize(new Vector3[]{v1, v2, v3});
         assertEquals(1d, v1.x, 0);
         assertEquals(0d, v1.y, 0);
         assertEquals(0d, v1.z, 0);
@@ -539,7 +538,7 @@ public class Vector3Test {
         v1.setAll(1, 1, 0);
         v2.setAll(0, 1, 1);
         v3.setAll(1, 0, 1);
-        Vector3.orthoNormalize(new Vector3[]{ v1, v2, v3 });
+        Vector3.orthoNormalize(new Vector3[]{v1, v2, v3});
         assertEquals(0.7071067811865475, v1.x, 1e-14);
         assertEquals(0.7071067811865475, v1.y, 1e-14);
         assertEquals(0d, v1.z, 1e-14);
@@ -598,7 +597,7 @@ public class Vector3Test {
     @Test
     public void testLengthFromDoublesXyz() throws Exception {
         final double l = Vector3.length(1d, 2d, 3d);
-        assertEquals(3.74165738677394, l,  1e-14);
+        assertEquals(3.74165738677394, l, 1e-14);
     }
 
     @Test
@@ -736,7 +735,7 @@ public class Vector3Test {
 
     @Test
     public void testProjectFromDoubleArrayMatrix() throws Exception {
-        final double[] m = new double[] {
+        final double[] m = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
                 0d, 0d, 1d, 1d,
@@ -753,7 +752,7 @@ public class Vector3Test {
 
     @Test
     public void testProjectFromMatrix4() throws Exception {
-        final double[] m = new double[] {
+        final double[] m = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
                 0d, 0d, 1d, 1d,
@@ -1046,7 +1045,7 @@ public class Vector3Test {
         assertEquals(Vector3.Axis.Z, Vector3.Axis.valueOf("Z"));
     }
 
-    @SuppressWarnings({ "EqualsBetweenInconvertibleTypes", "ObjectEqualsNull" })
+    @SuppressWarnings({"EqualsBetweenInconvertibleTypes", "ObjectEqualsNull"})
     @Test
     public void testEquals() throws Exception {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);

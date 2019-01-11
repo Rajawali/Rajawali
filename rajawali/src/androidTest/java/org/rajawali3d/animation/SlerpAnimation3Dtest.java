@@ -1,12 +1,15 @@
 package org.rajawali3d.animation;
 
-import android.test.suitebuilder.annotation.SmallTest;
-import static org.junit.Assert.*;
-import org.junit.*;
+import android.support.test.filters.SmallTest;
 
-import org.rajawali3d.animation.SlerpAnimation3D;
-import org.rajawali3d.math.vector.Vector3;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.rajawali3d.math.Quaternion;
+import org.rajawali3d.math.vector.Vector3;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 /**
@@ -24,12 +27,12 @@ public class SlerpAnimation3Dtest {
 
     @After
     public void teardown() throws Exception {
-       anim = null;
+        anim = null;
     }
 
     @Test
     public void testQuaternionFromVector() throws Exception {
-	Quaternion q = anim.quaternionFromVector(new Vector3());
+        Quaternion q = anim.quaternionFromVector(new Vector3());
         assertNotNull(q);
         assertEquals(1d, q.w, 1e-14);
         assertEquals(0d, q.x, 1e-14);

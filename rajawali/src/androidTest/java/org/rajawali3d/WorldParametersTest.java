@@ -1,11 +1,10 @@
 package org.rajawali3d;
 
+import org.junit.Test;
+import org.rajawali3d.math.vector.Vector3;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-import org.rajawali3d.WorldParameters;
-import org.rajawali3d.math.vector.Vector3;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)

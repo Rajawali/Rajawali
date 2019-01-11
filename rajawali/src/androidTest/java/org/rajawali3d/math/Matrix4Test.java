@@ -1,18 +1,19 @@
 package org.rajawali3d.math;
 
+import android.support.test.filters.SmallTest;
+
+import org.junit.Test;
+import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.math.vector.Vector3.Axis;
+
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-
-import android.test.suitebuilder.annotation.SmallTest;
-import org.junit.Test;
-import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.math.vector.Vector3.Axis;
-
-import java.util.Arrays;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
@@ -99,14 +100,14 @@ public class Matrix4Test {
 
     @Test
     public void testConstructorFromQuaternion() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
                 0.5027570093457944, -0.1488785046728972, 0.8515732087227414, 0d,
                 0d, 0d, 0d, 1d
         };
         final Quaternion q = new Quaternion(0.8958236433584459, -0.16744367165578425,
-                                            -0.2148860452915898, -0.3516317104771469);
+                -0.2148860452915898, -0.3516317104771469);
         final Matrix4 m = new Matrix4(q);
         assertNotNull(m);
         final double[] result = m.getDoubleValues();
@@ -194,7 +195,7 @@ public class Matrix4Test {
                 9f, 10f, 11f, 12f,
                 13f, 14f, 15f, 16f
         };
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
                 0.5027570093457944, -0.1488785046728972, 0.8515732087227414, 0d,
@@ -202,7 +203,7 @@ public class Matrix4Test {
         };
         final Matrix4 m = new Matrix4(from);
         final Quaternion q = new Quaternion(0.8958236433584459, -0.16744367165578425,
-                                            -0.2148860452915898, -0.3516317104771469);
+                -0.2148860452915898, -0.3516317104771469);
         final Matrix4 out = m.setAll(q);
         assertNotNull(out);
         assertTrue(out == m);
@@ -222,7 +223,7 @@ public class Matrix4Test {
                 9f, 10f, 11f, 12f,
                 13f, 14f, 15f, 16f
         };
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
                 0.5027570093457944, -0.1488785046728972, 0.8515732087227414, 0d,
@@ -230,7 +231,7 @@ public class Matrix4Test {
         };
         final Matrix4 m = new Matrix4(from);
         final Matrix4 out = m.setAll(0.8958236433584459, -0.16744367165578425,
-                                     -0.2148860452915898, -0.3516317104771469);
+                -0.2148860452915898, -0.3516317104771469);
         assertNotNull(out);
         assertTrue(out == m);
         final double[] result = m.getDoubleValues();
@@ -243,7 +244,7 @@ public class Matrix4Test {
 
     @Test
     public void testSetAllFromAxesAndPosition() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, -1d, 0d,
                 0d, 1d, 1d, 0d,
@@ -265,14 +266,14 @@ public class Matrix4Test {
 
     @Test
     public void testSetAllFromPositionScaleRotation() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0.6603582554517136, 1.4039252336448595, -0.26724299065420565, 0d,
                 -0.55803738317757, 1.3932710280373835, 0.4511214953271028, 0d,
                 0.5027570093457944, -0.2977570093457944, 0.8515732087227414, 0d,
                 2d, 3d, 4d, 1d
         };
         final Quaternion rotation = new Quaternion(0.8958236433584459, -0.16744367165578425,
-                                            -0.2148860452915898, -0.3516317104771469);
+                -0.2148860452915898, -0.3516317104771469);
         final Vector3 position = new Vector3(2d, 3d, 4d);
         final Vector3 scale = new Vector3(1d, 2d, 1d);
         final Matrix4 m = new Matrix4();
@@ -404,16 +405,16 @@ public class Matrix4Test {
                 1, 1, 1, 4
         };
         final double[] expected = new Matrix4().identity().getDoubleValues();
-        final Matrix4 charm     = new Matrix4(seed);
-        final Matrix4 strange   = new Matrix4(seed);
+        final Matrix4 charm = new Matrix4(seed);
+        final Matrix4 strange = new Matrix4(seed);
         strange.inverse();
 
-        final double[] result1  = charm.clone().multiply(strange).getDoubleValues();
+        final double[] result1 = charm.clone().multiply(strange).getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("matrix times inverse", expected[i], result1[i], 1e-14);
         }
 
-        final double[] result2  = strange.clone().multiply(charm).getDoubleValues();
+        final double[] result2 = strange.clone().multiply(charm).getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("inverse times matrix", expected[i], result2[i], 1e-14);
         }
@@ -731,7 +732,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("X - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
         // Test Y
         m.identity();
@@ -742,7 +743,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Y - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
         // Test Z
         m.identity();
@@ -753,7 +754,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Z - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -771,7 +772,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("X - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
         // Test Y
         m.identity();
@@ -782,7 +783,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Y - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
         // Test Z
         m.identity();
@@ -793,7 +794,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Z - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -811,7 +812,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("X - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
         // Test Y
         m.identity();
@@ -822,7 +823,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Y - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
         // Test Z
         m.identity();
@@ -833,7 +834,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Z - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -851,7 +852,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("X - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
         // Test Y
         m.identity();
@@ -862,7 +863,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Y - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
         // Test Z
         m.identity();
@@ -873,7 +874,7 @@ public class Matrix4Test {
         expected = e.getDoubleValues();
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Z - Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -893,7 +894,7 @@ public class Matrix4Test {
         assertNotNull(result);
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -969,7 +970,7 @@ public class Matrix4Test {
 
     @Test
     public void testProjectVector() throws Exception {
-        final double[] m = new double[] {
+        final double[] m = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
                 0d, 0d, 1d, 1d,
@@ -987,7 +988,7 @@ public class Matrix4Test {
 
     @Test
     public void testProjectAndCreateVector() throws Exception {
-        final double[] m = new double[] {
+        final double[] m = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
                 0d, 0d, 1d, 1d,
@@ -1005,7 +1006,7 @@ public class Matrix4Test {
 
     @Test
     public void testLerp() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0.5, 0.5, 0.5, 0.5,
                 0.5, 0.5, 0.5, 0.5,
                 0.5, 0.5, 0.5, 0.5,
@@ -1014,10 +1015,10 @@ public class Matrix4Test {
         final Matrix4 zero = new Matrix4();
         zero.zero();
         final Matrix4 one = new Matrix4();
-        one.setAll(new double[] {1d, 1d, 1d, 1d,
-                                 1d, 1d, 1d, 1d,
-                                 1d, 1d, 1d, 1d,
-                                 1d, 1d, 1d, 1d});
+        one.setAll(new double[]{1d, 1d, 1d, 1d,
+                1d, 1d, 1d, 1d,
+                1d, 1d, 1d, 1d,
+                1d, 1d, 1d, 1d});
         final Matrix4 out = zero.lerp(one, 0.5);
         final double[] result = out.getDoubleValues();
         assertNotNull(result);
@@ -1048,7 +1049,7 @@ public class Matrix4Test {
         assertNotNull(result);
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -1068,7 +1069,7 @@ public class Matrix4Test {
         assertNotNull(result);
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -1088,7 +1089,7 @@ public class Matrix4Test {
         assertNotNull(result);
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -1108,7 +1109,7 @@ public class Matrix4Test {
         assertNotNull(result);
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -1128,7 +1129,7 @@ public class Matrix4Test {
         assertNotNull(result);
         for (int i = 0; i < expected.length; ++i) {
             assertEquals("Result: " + Arrays.toString(result) + " Expected: " + Arrays.toString(expected),
-                         expected[i], result[i], 1e-14);
+                    expected[i], result[i], 1e-14);
         }
     }
 
@@ -1254,7 +1255,7 @@ public class Matrix4Test {
 
     @Test
     public void testSetToRotationVector3AxisAngle() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
                 0d, 0.7071067811865476, 0.7071067811865475, 0d,
@@ -1272,7 +1273,7 @@ public class Matrix4Test {
 
     @Test
     public void testSetToRotationAxisAngle() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
                 0d, 0.7071067811865476, 0.7071067811865475, 0d,
@@ -1290,7 +1291,7 @@ public class Matrix4Test {
 
     @Test
     public void testSetToRotationDoublesAxisAngle() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
                 0d, 0.7071067811865476, 0.7071067811865475, 0d,
@@ -1308,7 +1309,7 @@ public class Matrix4Test {
 
     @Test
     public void testSetToRotationTwoVector3() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0d, -1d, 0d, 0d,
                 1d, 0d, 0d, 0d,
                 0d, 0d, 1d, 0d,
@@ -1328,7 +1329,7 @@ public class Matrix4Test {
 
     @Test
     public void testSetToRotationTwoVectorsDoubles() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0d, -1d, 0d, 0d,
                 1d, 0d, 0d, 0d,
                 0d, 0d, 1d, 0d,
@@ -1346,7 +1347,7 @@ public class Matrix4Test {
 
     @Test
     public void testSetToRotationEulerAngles() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0.8825641192593856, -0.44096961052988237, 0.1631759111665348, 0d,
                 0.4698463103929541, 0.8137976813493737, -0.34202014332566866, 0d,
                 0.018028311236297265, 0.37852230636979245, 0.9254165783983234, 0d,
@@ -1398,7 +1399,7 @@ public class Matrix4Test {
 
     @Test
     public void testSetToWorld() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 -1d, 0d, 0d, 0d,
                 0d, 0.7071067811865476, -0.7071067811865476, 0d,
                 0d, -0.7071067811865475, -0.7071067811865475, 0d,
@@ -1467,14 +1468,14 @@ public class Matrix4Test {
 
     @Test
     public void testCreateRotationMatrixFromQuaternion() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
                 0.5027570093457944, -0.1488785046728972, 0.8515732087227414, 0d,
                 0d, 0d, 0d, 1d
         };
         final Quaternion q = new Quaternion(0.8958236433584459, -0.16744367165578425,
-                                            -0.2148860452915898, -0.3516317104771469);
+                -0.2148860452915898, -0.3516317104771469);
         final Matrix4 out = Matrix4.createRotationMatrix(q);
         assertNotNull(out);
         final double[] result = out.getDoubleValues();
@@ -1486,7 +1487,7 @@ public class Matrix4Test {
 
     @Test
     public void testCreateRotationMatrixVector3AxisAngle() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
                 0d, 0.7071067811865476, 0.7071067811865475, 0d,
@@ -1503,7 +1504,7 @@ public class Matrix4Test {
 
     @Test
     public void testCreateRotationMatrixAxisAngle() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
                 0d, 0.7071067811865476, 0.7071067811865475, 0d,
@@ -1520,7 +1521,7 @@ public class Matrix4Test {
 
     @Test
     public void testCreateRotationMatrixDoublesAxisAngle() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
                 0d, 0.7071067811865476, 0.7071067811865475, 0d,
@@ -1537,7 +1538,7 @@ public class Matrix4Test {
 
     @Test
     public void testCreateRotationMatrixEulerAngles() throws Exception {
-        final double[] expected = new double[] {
+        final double[] expected = new double[]{
                 0.8825641192593856, -0.44096961052988237, 0.1631759111665348, 0d,
                 0.4698463103929541, 0.8137976813493737, -0.34202014332566866, 0d,
                 0.018028311236297265, 0.37852230636979245, 0.9254165783983234, 0d,
