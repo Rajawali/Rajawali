@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion rootProject.compileSdk
-    buildToolsVersion rootProject.buildTools
 
     defaultConfig {
         applicationId "org.rajawali3d.examples"
@@ -24,10 +23,13 @@ android {
         }
     }
 
+    flavorDimensions "feature"
     productFlavors {
         withVuforia {
+            dimension "feature"
         }
         withoutVuforia {
+            dimension "feature"
         }
     }
 
@@ -39,19 +41,22 @@ android {
     lintOptions {
         abortOnError false;
     }
+    packagingOptions {
+        pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
+        pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
+    }
 }
 
 dependencies {
-    compile project.depAndroidSupport
-    compile project.depAppCompat
-    compile project.depRecycler
-    compile project.depGSON
-    compile project.depIon
+    implementation "com.android.support:support-v13:$supportLib"
+    implementation "com.android.support:appcompat-v7:$supportLib"
+    implementation "com.android.support:recyclerview-v7:$supportLib"
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.koushikdutta.ion:ion:2.1.7'
 
+    implementation project(':rajawali')
+    withVuforiaImplementation project(':vuforia')
+    withVuforiaImplementation project(':vr')
 
-    compile project(':rajawali')
-    withVuforiaCompile project(':vuforia')
-    withVuforiaCompile project(':vr')
-
-    wearApp project(':wear-example')
+//    wearApp project(':wear-example')
 }

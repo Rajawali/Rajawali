@@ -46,7 +46,7 @@ Now we need to add a line to **build.gradle (Module: app)**.
 ```gradle
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile "com.android.support:appcompat-v7:22.0.0'
     compile 'org.rajawali3d:rajawali:1.1.337@aar'
 }
 ```

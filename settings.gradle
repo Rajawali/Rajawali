@@ -1,1 +1,6 @@
-include ':rajawali', ':examples', ':vuforia', ':wear', ':wear-example', ':vr'
+include ':rajawali'
+include ':examples'
+include ':vuforia'
+include ':wear'
+//include ':wear-example'
+include ':vr'

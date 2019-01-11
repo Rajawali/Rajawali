@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion rootProject.compileSdk
-    buildToolsVersion rootProject.buildTools
 
     defaultConfig {
         applicationId "org.rajawali3d.examples"
@@ -36,8 +35,16 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project.depWearableSupport
-    compile project.depWearableServices
-    compile project(':wear')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.google.android.support:wearable:$wear"
+    compileOnly "com.google.android.wearable:wearable:$wear"
+
+    implementation "com.android.support:percent:28.0.0"
+    implementation "com.android.support:support-v4:28.0.0"
+    implementation("com.google.android.gms:play-services-wearable:$wearService") {
+        exclude group: "com.android.support', module: 'support-v4'
+        exclude group: "com.android.support', module: 'support-compat'
+        exclude group: "com.android.support', module: 'support-core-utils'
+    }
+    implementation project(':wear')
 }
