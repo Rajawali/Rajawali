@@ -1,21 +1,33 @@
-apply from: 'versions.gradle'
-apply from: 'deps.gradle'
 if (file('local.gradle').exists()) {
     apply from: 'local.gradle'
 }
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "jp.classmethod.aws:gradle-aws-plugin:0.31"
     }
 }
 
+ext {
+    minSdk = 15
+    targetSdk = 28
+    compileSdk = 28
+    versionCode = 1
+    versionName = '1.1'
+    wear = "2.4.0"
+    wearService = "16.0.1"
+    supportLib = "28.0.0"
+
+}
+
 allprojects {
     repositories {
+        google()
         mavenLocal()
         jcenter()
     }

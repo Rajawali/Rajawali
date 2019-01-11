@@ -19,7 +19,6 @@ if (isReleaseBuild()) {
 
 android {
     compileSdkVersion rootProject.compileSdk
-    buildToolsVersion rootProject.buildTools
 
     defaultConfig {
         minSdkVersion 15
@@ -60,12 +59,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile project.depAndroidSupport
-    compile project.depSupportAnnotations
+    implementation "com.android.support:support-v13:$supportLib"
+    implementation "com.android.support:support-annotations:$supportLib"
 
-    compile project(':rajawali')
+    implementation project(':rajawali')
 }
 
 File getNdkBuildFile() {

@@ -18,7 +18,6 @@ if (isReleaseBuild()) {
 
 android {
     compileSdkVersion rootProject.compileSdk
-    buildToolsVersion rootProject.buildTools
 
     defaultConfig {
         minSdkVersion 21
@@ -45,17 +44,17 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':rajawali')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':rajawali')
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
     // Support
-    compile project.depAndroidSupport
+    implementation "com.android.support:support-v13:$supportLib"
 
     // Wear
-    compile project.depWearableSupport
-    compile project.depWearableServices
+    implementation "com.google.android.support:wearable:$wear"
+    implementation "com.google.android.gms:play-services-wearable:$wearService"
 }
 
 apply from: '../maven_push.gradle'
