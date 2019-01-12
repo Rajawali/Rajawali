@@ -1,11 +1,12 @@
 package org.rajawali3d;
 
-import static org.junit.Assert.*;
-import org.junit.*;
-
-import org.rajawali3d.ATransformable3D;
-import org.rajawali3d.math.vector.Vector3;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.rajawali3d.math.Quaternion;
+import org.rajawali3d.math.vector.Vector3;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
@@ -118,11 +119,11 @@ public class ATransformable3DTest {
 
     @Test
     public void testSetOrientation() throws Exception {
-        double w = 1/2d;
-        double x = Math.sqrt(3)/4d;
-        double y = 1/2d;
-        double z = Math.sqrt(5)/4d;
-        Quaternion expected = new Quaternion(w,x,y,z);
+        double w = 1 / 2d;
+        double x = Math.sqrt(3) / 4d;
+        double y = 1 / 2d;
+        double z = Math.sqrt(5) / 4d;
+        Quaternion expected = new Quaternion(w, x, y, z);
         transformable.setOrientation(expected);
         Quaternion result = transformable.getOrientation();
         assertEquals(expected.w, result.w, 1e-10);

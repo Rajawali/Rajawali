@@ -1,9 +1,5 @@
 language: android
 sudo: false
-before_install:
-- openssl aes-256-cbc -K $encrypted_64bf13095d6f_key -iv $encrypted_64bf13095d6f_iv
-  -in rajawali_secret.gpg.enc -out rajawali_secret.gpg -d
-- chmod +x gradlew
 jdk:
 - oraclejdk8
 env:
@@ -41,16 +37,15 @@ script:
 - echo -e "signing.secretKeyRingFile=../rajawali_secret.gpg" >> "gradle.properties"
 - echo -e $(echo "ndk.dir=")$(pwd)$(echo "/android-ndk-r10d") >> "local.properties"
 - cat local.properties
-- "./gradlew clean --stacktrace --continue"
-- "./gradlew :rajawali:jacocoTestReport :rajawali:assembleAndroidTest --stacktrace
-  --continue"
+- ./gradlew clean --stacktrace --continue
+- ./gradlew :rajawali:jacocoTestReport :rajawali:assembleAndroidTest --stacktrace --continue
 - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-- "./gradlew :rajawali:connectedCheck --stacktrace --continue"
-- "./gradlew :vuforia:check --stacktrace --continue"
-- "./gradlew :vr:check --stacktrace --continue"
-- "./gradlew :wear:check --stacktrace --continue"
-- "./gradlew :wear-example:check --stacktrace --continue"
-- "./gradlew :examples:check --stacktrace --continue"
+- ./gradlew :rajawali:connectedCheck --stacktrace --continue
+- ./gradlew :vuforia:check --stacktrace --continue
+- ./gradlew :vr:check --stacktrace --continue
+- ./gradlew :wear:check --stacktrace --continue
+- ./gradlew :wear-example:check --stacktrace --continue
+- ./gradlew :examples:check --stacktrace --continue
 - if $TRAVIS_PULL_REQUEST; then "Skipping uploadArchives on Pull Request"; else ./gradlew
   :rajawali:uploadArchives --stacktrace --continue; ./gradlew :vuforia:uploadArchives
   --stacktrace --continue; ./gradlew :vr:uploadArchives --stacktrace --continue; ./gradlew
