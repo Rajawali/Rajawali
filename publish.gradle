@@ -1,6 +1,31 @@
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'digital.wup.android-maven-publish'
 apply plugin: 'signing'
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = '0.8.1'
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+task jacocoTestReport(type: JacocoReport) {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+    def dataSrc = fileTree(dir: "$buildDir").matching { include "**/*.ec" }
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = dataSrc
+}
 
 dokka {
     outputFormat = 'html'
@@ -20,45 +45,43 @@ task androidSourcesJar(type: Jar) {
 
 publishing {
     publications {
-        android.libraryVariants.all { variant ->
-            "maven${variant.name.capitalize()}Aar"(MavenPublication) {
-                from components.findByName("android${variant.name.capitalize()}")
-                groupId group
-                artifactId POM_ARTIFACT_ID
-                version version
+        mavenAar(MavenPublication) {
+            from components.android
+            groupId group
+            artifactId POM_ARTIFACT_ID
+            version version
 
-                artifact dokkaJar
-                artifact androidSourcesJar
+            artifact dokkaJar
+            artifact androidSourcesJar
 
-                pom.withXml {
-                    def root = asNode()
+            pom.withXml {
+                def root = asNode()
 
-                    root.children().last() + {
-                        resolveStrategy = DELEGATE_FIRST
+                root.children().last() + {
+                    resolveStrategy = DELEGATE_FIRST
 
-                        description POM_DESCRIPTION
-                        name POM_NAME
-                        url POM_URL
-                        scm {
-                            url POM_SCM_URL
-                            connection POM_SCM_CONNECTION
-                            developerConnection POM_SCM_DEV_CONNECTION
+                    description POM_DESCRIPTION
+                    name POM_NAME
+                    url POM_URL
+                    scm {
+                        url POM_SCM_URL
+                        connection POM_SCM_CONNECTION
+                        developerConnection POM_SCM_DEV_CONNECTION
+                    }
+                    licenses {
+                        license {
+                            name POM_LICENCE_NAME
+                            url POM_LICENCE_URL
+                            distribution POM_LICENCE_DIST
                         }
-                        licenses {
-                            license {
-                                name POM_LICENCE_NAME
-                                url POM_LICENCE_URL
-                                distribution POM_LICENCE_DIST
-                            }
-                        }
-                        developers {
-                            developer {
-                                id POM_DEVELOPER_ID
-                                name POM_DEVELOPER_NAME
-                                email POM_DEVELOPER_EMAIL
-                                organization POM_DEVELOPER_ORGANIZATION
-                                organizationUrl POM_DEVELOPER_ORGANIZATION_URL
-                            }
+                    }
+                    developers {
+                        developer {
+                            id POM_DEVELOPER_ID
+                            name POM_DEVELOPER_NAME
+                            email POM_DEVELOPER_EMAIL
+                            organization POM_DEVELOPER_ORGANIZATION
+                            organizationUrl POM_DEVELOPER_ORGANIZATION_URL
                         }
                     }
                 }
