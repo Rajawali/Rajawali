@@ -20,42 +20,61 @@ task androidSourcesJar(type: Jar) {
 
 publishing {
     publications {
-        defaultAar(MavenPublication) {
-            from components.android
-            artifact dokkaJar
-            artifact androidSourcesJar
+        android.libraryVariants.all { variant ->
+            "maven${variant.name.capitalize()}Aar"(MavenPublication) {
+                from components.findByName("android${variant.name.capitalize()}")
+                groupId group
+                artifactId POM_ARTIFACT_ID
+                version version
 
-            pom.withXml {
-                def root = asNode()
+                artifact dokkaJar
+                artifact androidSourcesJar
 
-                root.children().last() + {
-                    resolveStrategy = DELEGATE_FIRST
+                pom.withXml {
+                    def root = asNode()
 
-                    description POM_DESCRIPTION
-                    name POM_NAME
-                    url POM_URL
-                    scm {
-                        url POM_SCM_URL
-                        connection POM_SCM_CONNECTION
-                        developerConnection POM_SCM_DEV_CONNECTION
-                    }
-                    licenses {
-                        license {
-                            name POM_LICENCE_NAME
-                            url POM_LICENCE_URL
-                            distribution POM_LICENCE_DIST
+                    root.children().last() + {
+                        resolveStrategy = DELEGATE_FIRST
+
+                        description POM_DESCRIPTION
+                        name POM_NAME
+                        url POM_URL
+                        scm {
+                            url POM_SCM_URL
+                            connection POM_SCM_CONNECTION
+                            developerConnection POM_SCM_DEV_CONNECTION
                         }
-                    }
-                    developers {
-                        developer {
-                            id POM_DEVELOPER_ID
-                            name POM_DEVELOPER_NAME
-                            email POM_DEVELOPER_EMAIL
-                            organization POM_DEVELOPER_ORGANIZATION
-                            organizationUrl POM_DEVELOPER_ORGANIZATION_URL
+                        licenses {
+                            license {
+                                name POM_LICENCE_NAME
+                                url POM_LICENCE_URL
+                                distribution POM_LICENCE_DIST
+                            }
+                        }
+                        developers {
+                            developer {
+                                id POM_DEVELOPER_ID
+                                name POM_DEVELOPER_NAME
+                                email POM_DEVELOPER_EMAIL
+                                organization POM_DEVELOPER_ORGANIZATION
+                                organizationUrl POM_DEVELOPER_ORGANIZATION_URL
+                            }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    repositories {
+        def releaseUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        def snapshotUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+
+        maven {
+            url !version.contains("SNAPSHOT") ? releaseUrl : snapshotUrl
+            credentials {
+                username System.getenv('SONATYPE_USERNAME') ?: ""
+                password System.getenv('SONATYPE_PASSWORD') ?: ""
             }
         }
     }
