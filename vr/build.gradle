@@ -1,18 +1,5 @@
-apply plugin: 'com.android.library'
-
-String getVersionString() {
-    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
-    v = isTag() ? v : v + "-SNAPSHOT"
-    return v
-}
-
-group = GROUP
-version = getVersionString()
-
-if (isReleaseBuild()) {
-    status = 'release'
-} else {
-    status = 'integration'
+plugins {
+    id 'com.android.library'
 }
 
 android {
@@ -40,10 +27,16 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    dexOptions {
+        // Skip pre-dexing when running on CI
+        preDexLibraries = !isCi
+        javaMaxHeapSize maxDexHeap
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "com.android.support:support-v13:$supportLib"
     implementation "com.android.support:support-annotations:$supportLib"
@@ -51,4 +44,4 @@ dependencies {
     implementation project(':rajawali')
 }
 
-apply from: '../maven_push.gradle'
+apply from: '../publish.gradle'

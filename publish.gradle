@@ -1,0 +1,67 @@
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'digital.wup.android-maven-publish'
+apply plugin: 'signing'
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+    sourceDirs = files('src/main/java')
+}
+
+task dokkaJar(type: Jar, dependsOn: dokka) {
+    classifier = 'javadoc'
+    from "$buildDir/javadoc"
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+publishing {
+    publications {
+        defaultAar(MavenPublication) {
+            from components.android
+            artifact dokkaJar
+            artifact androidSourcesJar
+
+            pom.withXml {
+                def root = asNode()
+
+                root.children().last() + {
+                    resolveStrategy = DELEGATE_FIRST
+
+                    description POM_DESCRIPTION
+                    name POM_NAME
+                    url POM_URL
+                    scm {
+                        url POM_SCM_URL
+                        connection POM_SCM_CONNECTION
+                        developerConnection POM_SCM_DEV_CONNECTION
+                    }
+                    licenses {
+                        license {
+                            name POM_LICENCE_NAME
+                            url POM_LICENCE_URL
+                            distribution POM_LICENCE_DIST
+                        }
+                    }
+                    developers {
+                        developer {
+                            id POM_DEVELOPER_ID
+                            name POM_DEVELOPER_NAME
+                            email POM_DEVELOPER_EMAIL
+                            organization POM_DEVELOPER_ORGANIZATION
+                            organizationUrl POM_DEVELOPER_ORGANIZATION_URL
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    required false
+    sign publishing.publications
+}

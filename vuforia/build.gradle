@@ -1,20 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-apply plugin: 'com.android.library'
-
-String getVersionString() {
-    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
-    v = isTag() ? v : v + "-SNAPSHOT"
-    return v
-}
-
-group = GROUP
-version = getVersionString()
-
-if (isReleaseBuild()) {
-    status = 'release'
-} else {
-    status = 'integration'
+plugins {
+    id 'com.android.library'
 }
 
 android {
@@ -56,6 +43,12 @@ android {
     tasks.withType(JavaCompile) {
         compileTask -> compileTask.dependsOn ndkBuild
     }
+
+    dexOptions {
+        // Skip pre-dexing when running on CI
+        preDexLibraries = !isCi
+        javaMaxHeapSize maxDexHeap
+    }
 }
 
 dependencies {
@@ -76,4 +69,4 @@ File getNdkBuildFile() {
     return new File(ndkDir, name)
 }
 
-apply from: '../maven_push.gradle'
+apply from: '../publish.gradle'

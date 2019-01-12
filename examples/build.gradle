@@ -26,6 +26,7 @@ android {
     flavorDimensions "feature"
     productFlavors {
         withVuforia {
+            minSdkVersion 19
             dimension "feature"
         }
         withoutVuforia {
@@ -33,17 +34,18 @@ android {
         }
     }
 
-    dexOptions {
-        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
-        preDexLibraries = !isTravis()
-    }
-
     lintOptions {
-        abortOnError false;
+        abortOnError false
     }
     packagingOptions {
         pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
         pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
+    }
+
+    dexOptions {
+        // Skip pre-dexing when running on CI
+        preDexLibraries = !isCi
+        javaMaxHeapSize maxDexHeap
     }
 }
 

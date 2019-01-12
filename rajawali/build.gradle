@@ -1,41 +1,5 @@
-apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
-apply plugin: 'signing'
-
-String getVersionString() {
-    String v = VERSION_NAME.replaceAll(".(0)\$", "." + buildNumber())
-    v = isTag() ? v : v + "-SNAPSHOT"
-    return v
-}
-
-group = GROUP
-version = getVersionString()
-
-
-if (isReleaseBuild()) {
-    status = 'release'
-} else {
-    status = 'integration'
-}
-
-task jacocoTestReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-
-    //jacocoClasspath = configurations['androidJacocoAnt']
-
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java"
-
-    sourceDirectories = files([mainSrc])
-    classDirectories = files([debugTree])
-    executionData = files(["${buildDir}/jacoco/testDebugUnitTest.exec",
-                           "${buildDir}/outputs/code-coverage/connected/coverage.ec"
-            ])
+plugins {
+    id 'com.android.library'
 }
 
 android {
@@ -72,6 +36,12 @@ android {
     testOptions { 
         unitTests.returnDefaultValues = true
     }
+
+    dexOptions {
+        // Skip pre-dexing when running on CI
+        preDexLibraries = !isCi
+        javaMaxHeapSize maxDexHeap
+    }
 }
 
 dependencies {
@@ -82,4 +52,15 @@ dependencies {
     androidTestImplementation "com.android.support.test:rules:1.0.2"
 }
 
-apply from: '../maven_push.gradle'
+apply from: '../publish.gradle'
+
+task dokkaGhPages(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/gh-pages"
+    sourceDirs = files(
+            'src/main/java',
+            '../vr/src/main/java',
+            '../vuforia/src/main/java',
+            '../wear/src/main/java',
+    )
+}
