@@ -16,11 +16,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
-
-    dexOptions {
-        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
-        preDexLibraries = !isTravis()
-    }
     
     buildTypes {
         release {
@@ -31,6 +26,12 @@ android {
 
     lintOptions {
         abortOnError false
+    }
+
+    dexOptions {
+        // Skip pre-dexing when running on CI
+        preDexLibraries = !isCi
+        javaMaxHeapSize maxDexHeap
     }
 }
 
