@@ -58,5 +58,5 @@ dependencies {
     withVuforiaImplementation project(':vuforia')
     withVuforiaImplementation project(':vr')
 
-//    wearApp project(':wear-example')
+    wearApp project(':wear-example')
 }

@@ -48,7 +48,7 @@ public class MainActivity extends WearActivity {
 
     private static final class SpotLightRenderer extends Renderer {
 
-        public SpotLightRenderer(Context context) {
+        SpotLightRenderer(Context context) {
             super(context);
             setFrameRate(60);
         }
