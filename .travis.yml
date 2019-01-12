@@ -26,15 +26,17 @@ android:
     - doc-27
 
 install:
-  - echo $ANDROID_HOME # We assume this is correctly set when setting path
+  - export ANDROID_NDK_HOME=$HOME/android/sdk/ndk
+  - echo $ANDROID_NDK_HOME
+  - echo $ANDROID_HOME
   - sdkmanager --list || true # Look at the packages
   - echo yes | sdkmanager "tools" # Ensure tools is updated
   - echo yes | sdkmanager "emulator" # Ensure emulator is present
 
-  - wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
-  - chmod a+x ndk.bin
-  - "./ndk.bin 1> /dev/null 2>&1"
-  - chmod a+x ./android-ndk-r10d/ndk-build
+#  - wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin
+#  - chmod a+x ndk.bin
+#  - "./ndk.bin 1> /dev/null 2>&1"
+#  - chmod a+x ./android-ndk-r10d/ndk-build
 
   # Install emulator
   - export EMULATOR="system-images;android-$EMULATOR_API;$EMULATOR_TAG;$EMULATOR_ABI"
@@ -48,6 +50,10 @@ install:
   - emulator -avd test -no-window -camera-back emulated -camera-front emulated -memory 2048 -writable-system & # Launch
   - adb wait-for-device # Wait for adb process
   - adb remount # Mount as writable
+
+before_install:
+  - git clone https://github.com/urho3d/android-ndk.git $HOME/android-ndk-root
+  - export ANDROID_NDK_HOME=$HOME/android-ndk-root
 
 before_script:
   - android-wait-for-emulator # Wait for emulator ready to interact
@@ -73,10 +79,14 @@ script:
   - ./gradlew :wear:check --stacktrace --continue
   #- ./gradlew :wear-example:check --stacktrace --continue
   #- ./gradlew :examples:check --stacktrace --continue
-  - if $TRAVIS_PULL_REQUEST; then "Skipping uploadArchives on Pull Request"; else ./gradlew
-    :rajawali:uploadArchives --stacktrace --continue; ./gradlew :vuforia:uploadArchives
-    --stacktrace --continue; ./gradlew :vr:uploadArchives --stacktrace --continue; ./gradlew
-    :wear:uploadArchives --stacktrace --continue; fi
+  - if $TRAVIS_PULL_REQUEST; then
+      "Skipping uploadArchives on Pull Request";
+    else
+      ./gradlew :rajawali:uploadArchives --stacktrace --continue;
+      ./gradlew :vuforia:uploadArchives --stacktrace --continue;
+      ./gradlew :vr:uploadArchives --stacktrace --continue;
+      ./gradlew :wear:uploadArchives --stacktrace --continue;
+    fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
