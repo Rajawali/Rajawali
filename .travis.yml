@@ -79,14 +79,19 @@ script:
   - ./gradlew :wear:check --stacktrace --continue
   #- ./gradlew :wear-example:check --stacktrace --continue
   #- ./gradlew :examples:check --stacktrace --continue
-  - if $TRAVIS_PULL_REQUEST; then
-      "Skipping uploadArchives on Pull Request";
-    else
-      ./gradlew :rajawali:uploadArchives --stacktrace --continue;
-      ./gradlew :vuforia:uploadArchives --stacktrace --continue;
-      ./gradlew :vr:uploadArchives --stacktrace --continue;
-      ./gradlew :wear:uploadArchives --stacktrace --continue;
-    fi
+
+
+#  reason for comment:
+#  Cannot perform signing task ':wear:signArchives' because it has no configured signatory
+#
+#  - if $TRAVIS_PULL_REQUEST; then
+#      "Skipping uploadArchives on Pull Request";
+#    else
+#      ./gradlew :rajawali:uploadArchives --stacktrace --continue;
+#      ./gradlew :vuforia:uploadArchives --stacktrace --continue;
+#      ./gradlew :vr:uploadArchives --stacktrace --continue;
+#      ./gradlew :wear:uploadArchives --stacktrace --continue;
+#    fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
