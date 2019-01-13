@@ -26,7 +26,7 @@ import android.opengl.GLES20;
 public class ToonFragmentShaderFragment extends AShader implements IShaderFragment {
 	public final static String SHADER_ID = "TOON_FRAGMENT";
 	
-	public static enum ToonShaderVar implements IGlobalShaderVar {
+	public enum ToonShaderVar implements IGlobalShaderVar {
 		U_TOON_COLOR0("uToonColor0", DataType.VEC4),
 		U_TOON_COLOR1("uToonColor1", DataType.VEC4),
 		U_TOON_COLOR2("uToonColor2", DataType.VEC4),

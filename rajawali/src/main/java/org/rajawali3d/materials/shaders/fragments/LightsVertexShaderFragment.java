@@ -29,7 +29,7 @@ public class LightsVertexShaderFragment extends AShader implements IShaderFragme
 
 	public final static String SHADER_ID = "LIGHTS_VERTEX";
 
-	public static enum LightsShaderVar implements IGlobalShaderVar {
+	public enum LightsShaderVar implements IGlobalShaderVar {
 		U_LIGHT_COLOR("uLightColor", DataType.VEC3),
 		U_LIGHT_POWER("uLightPower", DataType.FLOAT),
 		U_LIGHT_POSITION("uLightPosition", DataType.VEC3),

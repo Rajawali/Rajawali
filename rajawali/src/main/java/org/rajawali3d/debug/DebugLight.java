@@ -78,7 +78,7 @@ public class DebugLight extends DebugObject3D {
 
         points = new Stack<>();
 
-        if(mLight.getLightType() == mLight.DIRECTIONAL_LIGHT || mLight.getLightType() == mLight.SPOT_LIGHT)
+        if(mLight.getLightType() == ALight.DIRECTIONAL_LIGHT || mLight.getLightType() == ALight.SPOT_LIGHT)
         {
             for(int i=0; i<20; i+=2) {
                 Vector3 p1 = new Vector3();

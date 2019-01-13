@@ -48,7 +48,7 @@ public abstract class SpecularMethod {
 	 * @author dennis.ippel
 	 *
 	 */
-	public static enum SpecularShaderVar implements IGlobalShaderVar {
+	public enum SpecularShaderVar implements IGlobalShaderVar {
 		U_SPECULAR_COLOR("uSpecularColor", DataType.VEC3),
 		U_SPECULAR_INTENSITY("uSpecularIntensity", DataType.FLOAT),
 		U_SHININESS("uShininess", DataType.FLOAT);

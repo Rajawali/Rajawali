@@ -31,17 +31,17 @@ public class GLDebugger {
         mWriter = new Writer() {
 
             @Override
-            public void close() throws IOException {
+            public void close() {
                 flushBuilder();
             }
 
             @Override
-            public void flush() throws IOException {
+            public void flush() {
                 flushBuilder();
             }
 
             @Override
-            public void write(char[] buf, int offset, int count) throws IOException {
+            public void write(char[] buf, int offset, int count) {
                 for (int i = 0; i < count; i++) {
                     char c = buf[offset + i];
                     if (c == '\n') {

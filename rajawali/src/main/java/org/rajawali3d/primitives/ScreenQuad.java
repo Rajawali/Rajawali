@@ -221,13 +221,13 @@ public class ScreenQuad extends Object3D {
 				int ur = (col + 1) * colspan + row;
 				int lr = ur + 1;
 
-				indices[indexCount++] = (int) ur;
-				indices[indexCount++] = (int) lr;
-				indices[indexCount++] = (int) ul;
+				indices[indexCount++] = ur;
+				indices[indexCount++] = lr;
+				indices[indexCount++] = ul;
 
-				indices[indexCount++] = (int) lr;
-				indices[indexCount++] = (int) ll;
-				indices[indexCount++] = (int) ul;
+				indices[indexCount++] = lr;
+				indices[indexCount++] = ll;
+				indices[indexCount++] = ul;
 			}
 		}
 

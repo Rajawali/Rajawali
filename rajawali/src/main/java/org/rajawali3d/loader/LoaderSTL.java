@@ -316,12 +316,10 @@ public class LoaderSTL extends AMeshLoader {
 		final String readAheadString = new String(readAhead);
 
 		// If the following text is present, then this is likely an ascii file
-		if (readAheadString.contains("facet normal") && readAheadString.contains("outer loop"))
-			return true;
+        return readAheadString.contains("facet normal") && readAheadString.contains("outer loop");
 
 		// Likely a binary file
-		return false;
-	}
+    }
 
 	public static final class StlParseException extends ParsingException {
 

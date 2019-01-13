@@ -18,12 +18,12 @@ public interface IAsyncLoaderCallback {
      *
      * @param loader
      */
-    public void onModelLoadComplete(ALoader loader);
+    void onModelLoadComplete(ALoader loader);
 
     /**
      * Callback listener indicating the returned loader failed to parse the model resource.
      *
      * @param loader
      */
-    public void onModelLoadFailed(ALoader loader);
+    void onModelLoadFailed(ALoader loader);
 }

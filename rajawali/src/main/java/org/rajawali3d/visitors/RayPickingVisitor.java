@@ -79,16 +79,14 @@ public class RayPickingVisitor implements INodeVisitor {
 		    raySta.z > boxMin.z && raySta.z < boxMax.z) 
 		    {mHitPoint.setAll(raySta); 
 		    return true;}
-		if ( (getIntersection(raySta.x-boxMin.x, rayEnd.x-boxMin.x, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.X))
-		  || (getIntersection(raySta.y-boxMin.y, rayEnd.y-boxMin.y, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Y)) 
-		  || (getIntersection(raySta.z-boxMin.z, rayEnd.z-boxMin.z, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Z)) 
-		  || (getIntersection(raySta.x-boxMax.x, rayEnd.x-boxMax.x, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.X)) 
-		  || (getIntersection(raySta.y-boxMax.y, rayEnd.y-boxMax.y, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Y)) 
-		  || (getIntersection(raySta.z-boxMax.z, rayEnd.z-boxMax.z, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Z)))
-			return true;
+        return (getIntersection(raySta.x - boxMin.x, rayEnd.x - boxMin.x, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.X))
+                || (getIntersection(raySta.y - boxMin.y, rayEnd.y - boxMin.y, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Y))
+                || (getIntersection(raySta.z - boxMin.z, rayEnd.z - boxMin.z, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Z))
+                || (getIntersection(raySta.x - boxMax.x, rayEnd.x - boxMax.x, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.X))
+                || (getIntersection(raySta.y - boxMax.y, rayEnd.y - boxMax.y, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Y))
+                || (getIntersection(raySta.z - boxMax.z, rayEnd.z - boxMax.z, raySta, rayEnd) && isInBox(boxMin, boxMax, Axis.Z));
 
-		return false;
-	}
+    }
 	
 	private boolean intersectsWith(BoundingSphere bsphere) {
 		return Intersector.intersectRaySphere(mRayStart, mRayEnd, bsphere.getPosition(), bsphere.getRadius(), mHitPoint);
@@ -111,9 +109,8 @@ public class RayPickingVisitor implements INodeVisitor {
 	private boolean isInBox(Vector3 boxMin, Vector3 boxMax, Axis axis) {
 		if ( axis==Axis.X && mHitPoint.z >= boxMin.z && mHitPoint.z <= boxMax.z && mHitPoint.y >= boxMin.y && mHitPoint.y <= boxMax.y) return true;
 		if ( axis==Axis.Y && mHitPoint.z >= boxMin.z && mHitPoint.z <= boxMax.z && mHitPoint.x >= boxMin.x && mHitPoint.x <= boxMax.x) return true;
-		if ( axis==Axis.Z && mHitPoint.x >= boxMin.x && mHitPoint.x <= boxMax.x && mHitPoint.y >= boxMin.y && mHitPoint.y <= boxMax.y) return true;
-		return false;
-	}
+        return axis == Axis.Z && mHitPoint.x >= boxMin.x && mHitPoint.x <= boxMax.x && mHitPoint.y >= boxMin.y && mHitPoint.y <= boxMax.y;
+    }
 	
 	public Object3D getPickedObject() {
 		return mPickedObject;

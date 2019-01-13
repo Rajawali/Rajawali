@@ -19,14 +19,14 @@ package org.rajawali3d.renderer.plugins;
  * @author Andrew Jo
  */
 public interface IRendererPlugin {
-	public void destroy();
+	void destroy();
 
-	public void reload();
+	void reload();
 
 	/**
 	 * Called by the Renderer. You are responsible for settings up all
 	 * the necessary GL calls here to achieve your custom effect. You should always call
      * through to the super method to ensure any geometry is handled properly.
 	 */
-	public void render();
+    void render();
 }

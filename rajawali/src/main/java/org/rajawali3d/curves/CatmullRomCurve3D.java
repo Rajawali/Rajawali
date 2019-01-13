@@ -228,7 +228,7 @@ public class CatmullRomCurve3D implements ICurve3D {
 			if (currentLength >= segmentDistance)
 			{
 				point = new Vector3();
-				calculatePoint(point, (double) i / (double) (numSegments - 1));
+				calculatePoint(point, (double) i / (numSegments - 1));
 				newPoints.add(point);
 				currentLength = 0;
 			}

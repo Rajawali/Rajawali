@@ -19,17 +19,17 @@ public class ATransformable3DTest {
     }
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         transformable = new transformable3D();
     }
 
     @After
-    public void teardown() throws Exception {
+    public void teardown() {
         transformable = null;
     }
 
     @Test
-    public void testGetScale() throws Exception {
+    public void testGetScale() {
         double expected = 1;
         Vector3 scale = transformable.getScale();
         assertEquals(expected, scale.x, 1e-10);
@@ -38,7 +38,7 @@ public class ATransformable3DTest {
     }
 
     @Test
-    public void testGetLookAt() throws Exception {
+    public void testGetLookAt() {
         double expected = 0;
         Vector3 rotation = transformable.getLookAt();
         assertEquals(expected, rotation.x, 1e-10);
@@ -47,25 +47,25 @@ public class ATransformable3DTest {
     }
 
     @Test
-    public void testGetRotX() throws Exception {
+    public void testGetRotX() {
         double expected = 0;
         assertEquals(expected, transformable.getRotX(), 1e-10);
     }
 
     @Test
-    public void testGetRotY() throws Exception {
+    public void testGetRotY() {
         double expected = 0;
         assertEquals(expected, transformable.getRotY(), 1e-10);
     }
 
     @Test
-    public void testGetRotZ() throws Exception {
+    public void testGetRotZ() {
         double expected = 0;
         assertEquals(expected, transformable.getRotZ(), 1e-10);
     }
 
     @Test
-    public void testGetOrientation() throws Exception {
+    public void testGetOrientation() {
         Quaternion result = transformable.getOrientation();
         assertEquals(1, result.w, 1e-10);
         assertEquals(0, result.x, 1e-10);
@@ -74,7 +74,7 @@ public class ATransformable3DTest {
     }
 
     @Test
-    public void testSetScale() throws Exception {
+    public void testSetScale() {
         double expectedX = 60;
         double expectedY = 120;
         double expectedZ = 180;
@@ -86,7 +86,7 @@ public class ATransformable3DTest {
     }
 
     @Test
-    public void testSetLookAt() throws Exception {
+    public void testSetLookAt() {
         double expectedX = 60;
         double expectedY = 120;
         double expectedZ = 180;
@@ -98,28 +98,28 @@ public class ATransformable3DTest {
     }
 
     @Test
-    public void testSetRotX() throws Exception {
+    public void testSetRotX() {
         double expected = 42;
         transformable.setRotX(expected);
         assertEquals(expected, transformable.getRotZ(), 1e-10);
     }
 
     @Test
-    public void testSetRotY() throws Exception {
+    public void testSetRotY() {
         double expected = 42;
         transformable.setRotY(expected);
         assertEquals(expected, transformable.getRotY(), 1e-10);
     }
 
     @Test
-    public void testSetRotZ() throws Exception {
+    public void testSetRotZ() {
         double expected = 42;
         transformable.setRotZ(expected);
         assertEquals(expected, transformable.getRotX(), 1e-10);
     }
 
     @Test
-    public void testSetOrientation() throws Exception {
+    public void testSetOrientation() {
         double w = 1 / 2d;
         double x = Math.sqrt(3) / 4d;
         double y = 1 / 2d;
@@ -134,42 +134,42 @@ public class ATransformable3DTest {
     }
 
     @Test
-    public void testRotateX() throws Exception {
+    public void testRotateX() {
         double expected = 42;
         transformable.rotate(Vector3.Axis.X, expected);
         assertEquals(expected, transformable.getRotX(), 1e-10);
     }
 
     @Test
-    public void testRotateY() throws Exception {
+    public void testRotateY() {
         double expected = 42;
         transformable.rotate(Vector3.Axis.Y, expected);
         assertEquals(expected, transformable.getRotY(), 1e-10);
     }
 
     @Test
-    public void testRotateZ() throws Exception {
+    public void testRotateZ() {
         double expected = 42;
         transformable.rotate(Vector3.Axis.Z, expected);
         assertEquals(expected, transformable.getRotZ(), 1e-10);
     }
 
     @Test
-    public void testRotateAroundX() throws Exception {
+    public void testRotateAroundX() {
         double expected = 42;
         transformable.rotate(Vector3.X, expected);
         assertEquals(expected, transformable.getRotX(), 1e-10);
     }
 
     @Test
-    public void testRotateAroundY() throws Exception {
+    public void testRotateAroundY() {
         double expected = 42;
         transformable.rotate(Vector3.Y, expected);
         assertEquals(expected, transformable.getRotY(), 1e-10);
     }
 
     @Test
-    public void testRotateAroundZ() throws Exception {
+    public void testRotateAroundZ() {
         double expected = 42;
         transformable.rotate(Vector3.Z, expected);
         assertEquals(expected, transformable.getRotZ(), 1e-10);

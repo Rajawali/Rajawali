@@ -168,13 +168,13 @@ public class Loader3DSMax extends AMeshLoader {
         }
     }
 
-    public void build() {
-        int num = mVertices.size();
-        for (int j = 0; j < num; ++j) {
-            ArrayList<Integer> indices = mIndices.get(j);
-            ArrayList<Vector3> vertices = mVertices.get(j);
-            ArrayList<Vector3> texCoords = null;
-            ArrayList<Vector3> vertNormals = mVertNormals.get(j);
+	public void build() {
+		int num = mVertices.size();
+		for (int j = 0; j < num; ++j) {
+			ArrayList<Integer> indices = mIndices.get(j);
+			ArrayList<Vector3> vertices = mVertices.get(j);
+			ArrayList<Vector3> texCoords = null;
+			ArrayList<Vector3> vertNormals = mVertNormals.get(j);
 
             if (mTexCoords.size() > 0)
                 texCoords = mTexCoords.get(j);

@@ -13,6 +13,6 @@
 package org.rajawali3d.util;
 
 public interface IObjectPicker {
-	public void setOnObjectPickedListener(OnObjectPickedListener objectPickedListener);
-	public void getObjectAt(float x, float y);
+	void setOnObjectPickedListener(OnObjectPickedListener objectPickedListener);
+	void getObjectAt(float x, float y);
 }

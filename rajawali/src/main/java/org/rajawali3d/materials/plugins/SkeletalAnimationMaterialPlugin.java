@@ -54,7 +54,7 @@ import org.rajawali3d.materials.shaders.fragments.animation.SkeletalAnimationVer
  *
  */
 public class SkeletalAnimationMaterialPlugin implements IMaterialPlugin {
-	public static enum SkeletalAnimationShaderVar implements IGlobalShaderVar {
+	public enum SkeletalAnimationShaderVar implements IGlobalShaderVar {
 		U_BONE_MATRIX("uBoneMatrix", DataType.MAT4),
 		A_BONE_INDEX1("aBoneIndex1", DataType.VEC4),
 		A_BONE_INDEX2("aBoneIndex2", DataType.VEC4),

@@ -20,7 +20,7 @@ import org.rajawali3d.materials.textures.ATexture;
 public class BlendPass extends EffectPass {
     protected ATexture mBlendTexture;
 
-    public static enum BlendMode {
+    public enum BlendMode {
         ADD, SCREEN, SUBTRACT
     }
 

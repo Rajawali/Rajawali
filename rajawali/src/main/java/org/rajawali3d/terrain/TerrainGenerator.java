@@ -221,7 +221,7 @@ public class TerrainGenerator {
 		float r, g, b, a;
 		a = 1f;
 
-		float a_basecolor = (float) ((float) Color.alpha(prs.basecolor) * oneover255);
+		float a_basecolor = (float) Color.alpha(prs.basecolor) * oneover255;
 		float a_middlecolor = (float) Color.alpha(prs.middlecolor) * oneover255;
 		float a_upcolor = (float) Color.alpha(prs.upcolor) * oneover255;
 

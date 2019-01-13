@@ -42,14 +42,14 @@ public class RayPickingVisitorTest {
     }
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         rayStart = new Vector3(1, 1, 1).multiply(3);
         rayEnd = new Vector3(-1, -1, -1).multiply(3);
         visitor = new RayPickingVisitor(rayStart, rayEnd);
     }
 
     @After
-    public void teardown() throws Exception {
+    public void teardown() {
         Vector3 rayStart = null;
         Vector3 rayEnd = null;
         visitor = null;
@@ -57,17 +57,17 @@ public class RayPickingVisitorTest {
 
 
     @Test
-    public void testGetPickedObjectNull() throws Exception {
+    public void testGetPickedObjectNull() {
         assertNull(visitor.getPickedObject());
     }
 
     @Test
-    public void testApplyNull() throws Exception {
+    public void testApplyNull() {
         visitor.apply(null);
     }
 
     @Test
-    public void testApplySphere() throws Exception {
+    public void testApplySphere() {
         Sphere sphere = new Sphere(1, 4, 2, false, false, false, false);
         sphere.getGeometry().getBoundingSphere();
         visitor.apply(sphere);
@@ -75,7 +75,7 @@ public class RayPickingVisitorTest {
     }
 
     @Test
-    public void testApplyInstrumentedSphere() throws Exception {
+    public void testApplyInstrumentedSphere() {
         InstrumentedSphere sphere = new InstrumentedSphere(1, 4, 2, false, false, false, false);
         sphere.getGeometry().getBoundingSphere();
         sphere.setFrustumTest(false);
@@ -85,7 +85,7 @@ public class RayPickingVisitorTest {
     }
 
     @Test
-    public void testApplyCube() throws Exception {
+    public void testApplyCube() {
         Cube cube = new Cube(1, false, false, false, false, false);
         cube.getGeometry().getBoundingBox();
         visitor.apply(cube);
@@ -93,7 +93,7 @@ public class RayPickingVisitorTest {
     }
 
     @Test
-    public void testApplyInstrumentedCube() throws Exception {
+    public void testApplyInstrumentedCube() {
         InstrumentedCube cube = new InstrumentedCube(1, false, false, false, false, false);
         cube.getGeometry().getBoundingBox();
         cube.setFrustumTest(false);

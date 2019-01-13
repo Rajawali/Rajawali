@@ -39,7 +39,7 @@ public abstract class AShaderBase {
 	 * @author dennis.ippel
 	 *
 	 */
-	public static enum DataType {
+	public enum DataType {
 		FLOAT("float"), VEC2("vec2"), VEC3("vec3"), VEC4("vec4"), INT("int"), IVEC2(
 				"ivec2"), IVEC3("ivec3"), IVEC4("ivec4"), BOOL("bool"), BVEC2(
 				"bvec2"), BVEC3("bvec3"), BVEC4("bvec4"), MAT2("mat2"), MAT3(
@@ -65,7 +65,7 @@ public abstract class AShaderBase {
 	 * @author dennis.ippel
 	 *
 	 */
-	public static interface IGlobalShaderVar
+	public interface IGlobalShaderVar
 	{
 		String getVarString();
 		DataType getDataType();
@@ -84,7 +84,7 @@ public abstract class AShaderBase {
 	 * @author dennis.ippel
 	 *
 	 */
-	public static enum DefaultShaderVar implements IGlobalShaderVar {
+	public enum DefaultShaderVar implements IGlobalShaderVar {
 		U_MVP_MATRIX("uMVPMatrix", DataType.MAT4), U_NORMAL_MATRIX("uNormalMatrix", DataType.MAT3), U_MODEL_MATRIX("uModelMatrix", DataType.MAT4), 
 		U_INVERSE_VIEW_MATRIX("uInverseViewMatrix", DataType.MAT4), U_MODEL_VIEW_MATRIX("uModelViewMatrix", DataType.MAT4), U_COLOR("uColor", DataType.VEC4), 
 		U_COLOR_INFLUENCE("uColorInfluence", DataType.FLOAT), U_INFLUENCE("uInfluence", DataType.FLOAT), U_REPEAT("uRepeat", DataType.VEC2), 
@@ -119,7 +119,7 @@ public abstract class AShaderBase {
 	 * @author dennis.ippel
 	 *
 	 */
-	public static enum Precision {
+	public enum Precision {
 		LOWP("lowp"), HIGHP("highp"), MEDIUMP("mediump");
 
 		private String mPrecisionString;

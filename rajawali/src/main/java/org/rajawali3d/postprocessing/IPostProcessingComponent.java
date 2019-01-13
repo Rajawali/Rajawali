@@ -14,10 +14,10 @@ package org.rajawali3d.postprocessing;
 
 
 public interface IPostProcessingComponent {
-	public static enum PostProcessingComponentType {
+	enum PostProcessingComponentType {
 		PASS, EFFECT, MULTIPASS
-	};
-	
-	boolean isEnabled();
+	}
+
+    boolean isEnabled();
 	PostProcessingComponentType getType();
 }

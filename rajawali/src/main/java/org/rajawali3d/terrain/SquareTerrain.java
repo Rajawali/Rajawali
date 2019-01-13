@@ -372,9 +372,7 @@ public class SquareTerrain extends Terrain {
 		double zz = ((z - mPosition.z) * mOneOverZScale + mDivisions * 0.5);
 
 		if (xx >= 0 && zz >= 0) {
-			if (xx < mDivisions && zz < mDivisions) {
-				return true;
-			}
+            return xx < mDivisions && zz < mDivisions;
 		}
 		return false;
 	}
@@ -588,11 +586,8 @@ public class SquareTerrain extends Terrain {
 		if ((c.x - a.x) * as_y - (c.z - a.z) * as_x > 0 == s_ab)
 			return false;
 
-		if ((c.x - b.x) * (s.z - b.z) - (c.z - b.z) * (s.x - b.x) > 0 != s_ab)
-			return false;
-
-		return true;
-	}
+        return (c.x - b.x) * (s.z - b.z) - (c.z - b.z) * (s.x - b.x) > 0 == s_ab;
+    }
 
 	/**
 	 * the Normal at position

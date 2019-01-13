@@ -15,32 +15,32 @@ public class Geometry3Dtest {
     private Geometry3D geometry;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         geometry = new Geometry3D();
     }
 
     @After
-    public void teardown() throws Exception {
+    public void teardown() {
         geometry = null;
     }
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() {
         assertNotNull(geometry);
     }
 
     @Test
-    public void testGetNumIndices() throws Exception {
+    public void testGetNumIndices() {
         assertEquals(0, geometry.getNumIndices());
     }
 
     @Test
-    public void testGetNumTriangles() throws Exception {
+    public void testGetNumTriangles() {
         assertEquals(0, geometry.getNumTriangles());
     }
 
     @Test
-    public void testGetNumVertices() throws Exception {
+    public void testGetNumVertices() {
         assertEquals(0, geometry.getNumVertices());
     }
 

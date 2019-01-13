@@ -12,13 +12,13 @@ import static org.junit.Assert.assertNotNull;
 public class WorldParametersTest {
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() {
         assertNotNull(new WorldParameters());
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
     @Test
-    public void testSetWorldAxes() throws Exception {
+    public void testSetWorldAxes() {
         WorldParameters.setWorldAxes(Vector3.Y, Vector3.Z, Vector3.X);
         assertEquals(WorldParameters.FORWARD_AXIS, Vector3.X);
         assertEquals(WorldParameters.NEG_FORWARD_AXIS, Vector3.NEG_X);
@@ -30,7 +30,7 @@ public class WorldParametersTest {
 
     @SuppressWarnings("SuspiciousNameCombination")
     @Test(expected = IllegalArgumentException.class)
-    public void testSetWorldAxesNotOrthogonal() throws Exception {
+    public void testSetWorldAxesNotOrthogonal() {
         WorldParameters.setWorldAxes(Vector3.Y, Vector3.Y, Vector3.X);
     }
 }

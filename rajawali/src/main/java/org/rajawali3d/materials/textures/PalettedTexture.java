@@ -44,9 +44,9 @@ public class PalettedTexture extends ACompressedTexture {
 		PALETTE8_R5_G6_B5,
 		PALETTE8_RGBA4,
 		PALETTE8_RGB5_A1
-	};
+	}
 
-	/**
+    /**
 	 * Texture palette format. See {@link PaletteFormat}.
 	 */
 	private PaletteFormat mPaletteFormat;

@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 public class IntersectorTest {
 
     @Test
-    public void testIntersectRayPlane() throws Exception {
+    public void testIntersectRayPlane() {
         Vector3 rayStart = new Vector3(0, 0, 0);
         Vector3 rayEnd = new Vector3(1, 1, 1);
         Plane plane = new Plane();
@@ -30,7 +30,7 @@ public class IntersectorTest {
     }
 
     @Test
-    public void testIntersectRayTriangle() throws Exception {
+    public void testIntersectRayTriangle() {
         Vector3 rayStart = new Vector3(0, 0, 0);
         Vector3 rayEnd = new Vector3(1, 1, 1);
         Vector3 t1 = new Vector3(1, 0, 0);
@@ -47,7 +47,7 @@ public class IntersectorTest {
     }
 
     @Test
-    public void testIntersectRaySphere() throws Exception {
+    public void testIntersectRaySphere() {
         Vector3 rayStart = new Vector3(0, 0, 0);
         Vector3 rayEnd = new Vector3(1, 1, 1);
         Vector3 sphereCentre = new Vector3(1, 1, 1);

@@ -15,7 +15,7 @@ package org.rajawali3d.math;
 import org.rajawali3d.math.vector.Vector3;
 
 public class Plane {
-	public static enum PlaneSide {
+	public enum PlaneSide {
 		BACK, ONPLANE, FRONT
 	}
 	/**

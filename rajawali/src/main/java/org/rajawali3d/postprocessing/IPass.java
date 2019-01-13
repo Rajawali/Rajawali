@@ -20,20 +20,20 @@ import org.rajawali3d.scene.Scene;
 
 
 public interface IPass extends IPostProcessingComponent {
-	public static enum PassType {
+	enum PassType {
 		RENDER, DEPTH, EFFECT, MASK, CLEAR, MULTIPASS
-	};
+	}
 
-	boolean isClear();
+    boolean isClear();
 	boolean needsSwap();
 	void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime);
 	PassType getPassType();
 	void setMaterial(Material material);
 	void setRenderToScreen(boolean renderToScreen);
 	boolean getRenderToScreen();
-	public void setWidth(int width);
-	public int getWidth();
-	public void setHeight(int height);
-	public int getHeight();
-	public void setSize(int width, int height);
+	void setWidth(int width);
+	int getWidth();
+	void setHeight(int height);
+	int getHeight();
+	void setSize(int width, int height);
 }

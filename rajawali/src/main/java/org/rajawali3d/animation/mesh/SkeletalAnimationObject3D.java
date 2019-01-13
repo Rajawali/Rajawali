@@ -333,8 +333,8 @@ public class SkeletalAnimationObject3D extends AAnimationObject3D {
 
 		long currentTime = SystemClock.uptimeMillis();
 
-		SkeletalAnimationFrame currentFrame = (SkeletalAnimationFrame) mSequence.getFrame(mCurrentFrameIndex);
-		SkeletalAnimationFrame nextFrame = (SkeletalAnimationFrame) mSequence.getFrame((mCurrentFrameIndex + 1) % mSequence.getNumFrames());
+		SkeletalAnimationFrame currentFrame = mSequence.getFrame(mCurrentFrameIndex);
+		SkeletalAnimationFrame nextFrame = mSequence.getFrame((mCurrentFrameIndex + 1) % mSequence.getNumFrames());
 
 		mInterpolation += mFps * (currentTime - mStartTime) / 1000.0;
 

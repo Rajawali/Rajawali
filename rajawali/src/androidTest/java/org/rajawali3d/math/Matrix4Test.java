@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 public class Matrix4Test {
 
     @Test
-    public void testConstructorNoArgs() throws Exception {
+    public void testConstructorNoArgs() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -40,7 +40,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testConstructorFromMatrix4() throws Exception {
+    public void testConstructorFromMatrix4() {
         final double[] expected = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -61,7 +61,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testConstructorFromDoubleArray() throws Exception {
+    public void testConstructorFromDoubleArray() {
         final double[] expected = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -80,7 +80,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testConstructorFromFloatArray() throws Exception {
+    public void testConstructorFromFloatArray() {
         final float[] expected = new float[]{
                 1f, 2f, 3f, 4f,
                 5f, 6f, 7f, 8f,
@@ -99,7 +99,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testConstructorFromQuaternion() throws Exception {
+    public void testConstructorFromQuaternion() {
         final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
@@ -118,7 +118,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetAllFromMatrix4() throws Exception {
+    public void testSetAllFromMatrix4() {
         final double[] expected = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -140,7 +140,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetAllFromDoubleArray() throws Exception {
+    public void testSetAllFromDoubleArray() {
         final double[] expected = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -161,7 +161,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetAllFromFloatArray() throws Exception {
+    public void testSetAllFromFloatArray() {
         final float[] from = new float[]{
                 1f, 2f, 3f, 4f,
                 5f, 6f, 7f, 8f,
@@ -188,7 +188,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetAllFromQuaternion() throws Exception {
+    public void testSetAllFromQuaternion() {
         final float[] from = new float[]{
                 1f, 2f, 3f, 4f,
                 5f, 6f, 7f, 8f,
@@ -216,7 +216,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetAllFromQuaternionComponents() throws Exception {
+    public void testSetAllFromQuaternionComponents() {
         final float[] from = new float[]{
                 1f, 2f, 3f, 4f,
                 5f, 6f, 7f, 8f,
@@ -243,7 +243,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetAllFromAxesAndPosition() throws Exception {
+    public void testSetAllFromAxesAndPosition() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, -1d, 0d,
@@ -265,7 +265,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetAllFromPositionScaleRotation() throws Exception {
+    public void testSetAllFromPositionScaleRotation() {
         final double[] expected = new double[]{
                 0.6603582554517136, 1.4039252336448595, -0.26724299065420565, 0d,
                 -0.55803738317757, 1.3932710280373835, 0.4511214953271028, 0d,
@@ -288,7 +288,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testIdentity() throws Exception {
+    public void testIdentity() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -314,7 +314,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testZero() throws Exception {
+    public void testZero() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -340,7 +340,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testDeterminant() throws Exception {
+    public void testDeterminant() {
         final double[] from = new double[]{
                 16d, 2d, 3d, 13d,
                 5d, 11d, 10d, 8d,
@@ -354,7 +354,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testInverse() throws Exception {
+    public void testInverse() {
         final double[] from = new double[]{
                 16d, 5d, 9d, 4d,
                 2d, 11d, 7d, 8d,
@@ -394,7 +394,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testInverseMultiplication() throws Exception {
+    public void testInverseMultiplication() {
         /* given that a matrix is invertable, test that:
            - a matrix times it's inverse equals the identity
            - an inverse times it's matrix equals the identity */
@@ -421,7 +421,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testTranspose() throws Exception {
+    public void testTranspose() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -445,7 +445,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testAdd() throws Exception {
+    public void testAdd() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -477,7 +477,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSubtract() throws Exception {
+    public void testSubtract() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -509,7 +509,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testMultiply() throws Exception {
+    public void testMultiply() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -541,7 +541,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testLeftMultiply() throws Exception {
+    public void testLeftMultiply() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -573,7 +573,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testMultiplyDouble() throws Exception {
+    public void testMultiplyDouble() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -599,7 +599,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testTranslateWithVector3() throws Exception {
+    public void testTranslateWithVector3() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 1d, 0d, 0d, // Col 1
@@ -619,7 +619,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testTranslateFromDoubles() throws Exception {
+    public void testTranslateFromDoubles() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 1d, 0d, 0d, // Col 1
@@ -639,7 +639,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testNegTranslate() throws Exception {
+    public void testNegTranslate() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 1d, 0d, 0d, // Col 1
@@ -659,7 +659,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testScaleFromVector3() throws Exception {
+    public void testScaleFromVector3() {
         final double[] expected = new double[]{
                 2d, 0d, 0d, 0d,
                 0d, 3d, 0d, 0d,
@@ -679,7 +679,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testScaleFromDoubles() throws Exception {
+    public void testScaleFromDoubles() {
         final double[] expected = new double[]{
                 2d, 0d, 0d, 0d,
                 0d, 3d, 0d, 0d,
@@ -699,7 +699,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testScaleFromDouble() throws Exception {
+    public void testScaleFromDouble() {
         final double[] expected = new double[]{
                 2d, 0d, 0d, 0d,
                 0d, 2d, 0d, 0d,
@@ -719,7 +719,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testRotateWithQuaternion() throws Exception {
+    public void testRotateWithQuaternion() {
         final Matrix4 e = new Matrix4();
         double[] expected;
         final Matrix4 m = new Matrix4();
@@ -759,7 +759,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testRotateWithVector3AxisAngle() throws Exception {
+    public void testRotateWithVector3AxisAngle() {
         final Matrix4 e = new Matrix4();
         double[] expected;
         final Matrix4 m = new Matrix4();
@@ -799,7 +799,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testRotateWithAxisAngle() throws Exception {
+    public void testRotateWithAxisAngle() {
         final Matrix4 e = new Matrix4();
         double[] expected;
         final Matrix4 m = new Matrix4();
@@ -839,7 +839,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testRotateDoubleAxisAngle() throws Exception {
+    public void testRotateDoubleAxisAngle() {
         final Matrix4 e = new Matrix4();
         double[] expected;
         final Matrix4 m = new Matrix4();
@@ -879,7 +879,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testRotateBetweenTwoVectors() throws Exception {
+    public void testRotateBetweenTwoVectors() {
         final double[] expected = new double[]{
                 0d, -1d, 0d, 0d,
                 1d, 0d, 0d, 0d,
@@ -899,7 +899,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetTranslationFromVector3() throws Exception {
+    public void testSetTranslationFromVector3() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 1d, 0d, 0d, // Col 1
@@ -919,7 +919,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetTranslationFromDoubles() throws Exception {
+    public void testSetTranslationFromDoubles() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 1d, 0d, 0d, // Col 1
@@ -939,7 +939,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetCoordinateZoom() throws Exception {
+    public void testSetCoordinateZoom() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -959,7 +959,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testRotateVector() throws Exception {
+    public void testRotateVector() {
         final Matrix4 m = new Matrix4(new Quaternion(Vector3.X, 45d));
         final Vector3 v = new Vector3(0d, 1d, 0d);
         m.rotateVector(v);
@@ -969,7 +969,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testProjectVector() throws Exception {
+    public void testProjectVector() {
         final double[] m = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -987,7 +987,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testProjectAndCreateVector() throws Exception {
+    public void testProjectAndCreateVector() {
         final double[] m = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -1005,7 +1005,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testLerp() throws Exception {
+    public void testLerp() {
         final double[] expected = new double[]{
                 0.5, 0.5, 0.5, 0.5,
                 0.5, 0.5, 0.5, 0.5,
@@ -1028,7 +1028,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToNormalMatrix() throws Exception {
+    public void testSetToNormalMatrix() {
         final double[] from = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
@@ -1054,7 +1054,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToPerspective() throws Exception {
+    public void testSetToPerspective() {
         final double[] expected = new double[]{
                 1.3323467750529825, 0.0, 0.0, 0.0,
                 0.0, 1.7320508075688774, 0.0, 0.0,
@@ -1074,7 +1074,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToOrthographic2D() throws Exception {
+    public void testSetToOrthographic2D() {
         final double[] expected = new double[]{
                 0.001953125, 0d, 0d, 0d,
                 0d, 0.00390625, 0d, 0d,
@@ -1094,7 +1094,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToOrthographic2D1() throws Exception {
+    public void testSetToOrthographic2D1() {
         final double[] expected = new double[]{
                 0.001953125, 0d, 0d, 0d,
                 0d, 0.00390625, 0d, 0d,
@@ -1114,7 +1114,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToOrthographic() throws Exception {
+    public void testSetToOrthographic() {
         final double[] expected = new double[]{
                 2d, 0d, 0d, 0d,
                 0d, 1.25, 0d, 0d,
@@ -1134,7 +1134,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToTranslationFromVector3() throws Exception {
+    public void testSetToTranslationFromVector3() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -1154,7 +1154,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToTranslationFromDoubles() throws Exception {
+    public void testSetToTranslationFromDoubles() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 1d, 0d, 0d, // Col 1
@@ -1174,7 +1174,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToScaleFromVector3() throws Exception {
+    public void testSetToScaleFromVector3() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 2d, 0d, 0d,
@@ -1194,7 +1194,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToScaleFromDoubles() throws Exception {
+    public void testSetToScaleFromDoubles() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 2d, 0d, 0d,
@@ -1214,7 +1214,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToTranslationAndScalingFromVector3s() throws Exception {
+    public void testSetToTranslationAndScalingFromVector3s() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 2d, 0d, 0d, // Col 1
@@ -1234,7 +1234,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToTranslationAndScalingFromDoubles() throws Exception {
+    public void testSetToTranslationAndScalingFromDoubles() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 2d, 0d, 0d, // Col 1
@@ -1254,7 +1254,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToRotationVector3AxisAngle() throws Exception {
+    public void testSetToRotationVector3AxisAngle() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
@@ -1272,7 +1272,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToRotationAxisAngle() throws Exception {
+    public void testSetToRotationAxisAngle() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
@@ -1290,7 +1290,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToRotationDoublesAxisAngle() throws Exception {
+    public void testSetToRotationDoublesAxisAngle() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
@@ -1308,7 +1308,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToRotationTwoVector3() throws Exception {
+    public void testSetToRotationTwoVector3() {
         final double[] expected = new double[]{
                 0d, -1d, 0d, 0d,
                 1d, 0d, 0d, 0d,
@@ -1328,7 +1328,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToRotationTwoVectorsDoubles() throws Exception {
+    public void testSetToRotationTwoVectorsDoubles() {
         final double[] expected = new double[]{
                 0d, -1d, 0d, 0d,
                 1d, 0d, 0d, 0d,
@@ -1346,7 +1346,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToRotationEulerAngles() throws Exception {
+    public void testSetToRotationEulerAngles() {
         final double[] expected = new double[]{
                 0.8825641192593856, -0.44096961052988237, 0.1631759111665348, 0d,
                 0.4698463103929541, 0.8137976813493737, -0.34202014332566866, 0d,
@@ -1364,7 +1364,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToLookAtDirectionUp() throws Exception {
+    public void testSetToLookAtDirectionUp() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Vector3 lookAt = Vector3.subtractAndCreate(new Vector3(0, 10d, 10d), Vector3.ZERO);
         q.lookAt(lookAt, Vector3.Y);
@@ -1381,7 +1381,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToLookAtPositionTargetUp() throws Exception {
+    public void testSetToLookAtPositionTargetUp() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Vector3 lookAt = Vector3.subtractAndCreate(new Vector3(0, 10d, 10d), Vector3.ZERO);
         q.lookAt(lookAt, Vector3.Y);
@@ -1398,7 +1398,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testSetToWorld() throws Exception {
+    public void testSetToWorld() {
         final double[] expected = new double[]{
                 -1d, 0d, 0d, 0d,
                 0d, 0.7071067811865476, -0.7071067811865476, 0d,
@@ -1420,7 +1420,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testGetTranslation() throws Exception {
+    public void testGetTranslation() {
         final double[] from = new double[]{
                 1d, 0d, 0d, 0d, // Col 0
                 0d, 2d, 0d, 0d, // Col 1
@@ -1435,7 +1435,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testGetScalingNoArgs() throws Exception {
+    public void testGetScalingNoArgs() {
         final double[] from = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 2d, 0d, 0d,
@@ -1450,7 +1450,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testGetScalingInVector3() throws Exception {
+    public void testGetScalingInVector3() {
         final double[] from = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 2d, 0d, 0d,
@@ -1467,7 +1467,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateRotationMatrixFromQuaternion() throws Exception {
+    public void testCreateRotationMatrixFromQuaternion() {
         final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
@@ -1486,7 +1486,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateRotationMatrixVector3AxisAngle() throws Exception {
+    public void testCreateRotationMatrixVector3AxisAngle() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
@@ -1503,7 +1503,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateRotationMatrixAxisAngle() throws Exception {
+    public void testCreateRotationMatrixAxisAngle() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
@@ -1520,7 +1520,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateRotationMatrixDoublesAxisAngle() throws Exception {
+    public void testCreateRotationMatrixDoublesAxisAngle() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 0.7071067811865475, -0.7071067811865476, 0d,
@@ -1537,7 +1537,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateRotationMatrixEulerAngles() throws Exception {
+    public void testCreateRotationMatrixEulerAngles() {
         final double[] expected = new double[]{
                 0.8825641192593856, -0.44096961052988237, 0.1631759111665348, 0d,
                 0.4698463103929541, 0.8137976813493737, -0.34202014332566866, 0d,
@@ -1554,7 +1554,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateTranslationMatrixVector3() throws Exception {
+    public void testCreateTranslationMatrixVector3() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -1571,7 +1571,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateTranslationMatrixDoubles() throws Exception {
+    public void testCreateTranslationMatrixDoubles() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -1588,7 +1588,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateScaleMatrixVector3() throws Exception {
+    public void testCreateScaleMatrixVector3() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 2d, 0d, 0d,
@@ -1605,7 +1605,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testCreateScaleMatrixDoubles() throws Exception {
+    public void testCreateScaleMatrixDoubles() {
         final double[] expected = new double[]{
                 2d, 0d, 0d, 0d,
                 0d, 3d, 0d, 0d,
@@ -1622,7 +1622,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testGetFloatValues() throws Exception {
+    public void testGetFloatValues() {
         final double[] expected = new double[]{
                 1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
@@ -1639,7 +1639,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testGetDoubleValues() throws Exception {
+    public void testGetDoubleValues() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -1656,7 +1656,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testClone() throws Exception {
+    public void testClone() {
         final double[] expected = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -1676,7 +1676,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testToArray() throws Exception {
+    public void testToArray() {
         final double[] expected = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -1694,7 +1694,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testToFloatArray() throws Exception {
+    public void testToFloatArray() {
         final double[] expected = new double[]{
                 1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
@@ -1712,7 +1712,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         final double[] from = new double[]{
                 1d, 2d, 3d, 4d,
                 5d, 6d, 7d, 8d,
@@ -1730,7 +1730,7 @@ public class Matrix4Test {
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         final Matrix4 m = new Matrix4();
         assertNotNull(m.toString());
     }
