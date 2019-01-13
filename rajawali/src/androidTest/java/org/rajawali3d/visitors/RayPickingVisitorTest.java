@@ -1,7 +1,5 @@
 package org.rajawali3d.visitors;
 
-import android.support.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +13,6 @@ import static org.junit.Assert.assertNull;
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
-@SmallTest
 public class RayPickingVisitorTest {
     RayPickingVisitor visitor;
     Vector3 rayStart;

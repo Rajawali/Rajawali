@@ -1,7 +1,5 @@
 package org.rajawali3d.util;
 
-import android.support.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
@@ -12,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
-@SmallTest
 public class IntersectorTest {
 
     @Test
