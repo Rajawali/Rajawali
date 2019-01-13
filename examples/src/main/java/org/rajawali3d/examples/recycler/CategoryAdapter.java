@@ -32,6 +32,7 @@ public final class CategoryAdapter extends ReferencedAdapter<INamed, NamedRefere
         holder.onBind(namedIndexReference);
     }
 
+    @NonNull
     @Override
     public NamedReferenceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -105,8 +106,7 @@ public final class CategoryAdapter extends ReferencedAdapter<INamed, NamedRefere
                 Example[] examples = category.getExamples();
 
                 // If the category matches the query, add all examples then move to the next item
-                String categoryName = context.getString(category.getName())
-                        .toLowerCase(Locale.ENGLISH);
+                String categoryName = context.getString(category.getName()).toLowerCase(Locale.ENGLISH);
 
                 if (categoryName.contains(queryLC)) {
                     categories.add(category);
@@ -115,8 +115,7 @@ public final class CategoryAdapter extends ReferencedAdapter<INamed, NamedRefere
 
                 // Iterate the examples adding matches to the filtered list
                 for (Example example : examples) {
-                    String exampleName = context.getString(example.getName())
-                            .toLowerCase(Locale.ENGLISH);
+                    String exampleName = context.getString(example.getName()).toLowerCase(Locale.ENGLISH);
 
                     if (exampleName.contains(queryLC)) {
                         filtered.add(example);
@@ -156,8 +155,7 @@ public final class CategoryAdapter extends ReferencedAdapter<INamed, NamedRefere
         setReferences(indexReferences);
     }
 
-    void onExampleSelected(@NonNull Context context,
-                           @NonNull Example example) {
+    void onExampleSelected(@NonNull Context context, @NonNull Example example) {
 
         Class aClass = example.getType();
         if (Activity.class.isAssignableFrom(aClass)) {

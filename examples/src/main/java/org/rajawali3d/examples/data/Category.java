@@ -9,8 +9,7 @@ public class Category implements INamed {
     private final int name;
     private final Example[] examples;
 
-    public Category(@StringRes int name,
-             @NonNull Example[] examples) {
+    public Category(@StringRes int name, @NonNull Example[] examples) {
         this.name = name;
         this.examples = examples;
     }

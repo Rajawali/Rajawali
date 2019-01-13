@@ -30,7 +30,7 @@ public class AnimationFragment extends AExampleFragment {
 
     public class AnimationRenderer extends AExampleRenderer {
 
-        public AnimationRenderer(Context context, @Nullable AExampleFragment fragment) {
+        AnimationRenderer(Context context, @Nullable AExampleFragment fragment) {
             super(context, fragment);
         }
 

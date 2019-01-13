@@ -31,7 +31,7 @@ public class ColoredLinesFragment extends AExampleFragment {
 			getCurrentCamera().setPosition(0, 0, 10);
 			getCurrentCamera().setLookAt(0, 0, 0);
 
-			Stack<Vector3> points = new Stack<Vector3>();
+			Stack<Vector3> points = new Stack<>();
 			int[] colors = new int[2000];
 			int colorCount = 0;
 			for (int i = -1000; i < 1000; i++) {

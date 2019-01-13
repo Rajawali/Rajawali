@@ -26,7 +26,7 @@ public class GreyScaleFilterFragment extends AExampleFragment {
 	private final class GreyScaleFilterRenderer extends AExampleRenderer {
 		private PostProcessingManager mEffects;
 
-		public GreyScaleFilterRenderer(Context context, @Nullable AExampleFragment fragment) {
+		GreyScaleFilterRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

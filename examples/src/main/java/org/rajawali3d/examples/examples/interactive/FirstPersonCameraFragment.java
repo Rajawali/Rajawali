@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.interactive;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationSequence;
@@ -31,13 +33,12 @@ import org.rajawali3d.renderer.ISurfaceRenderer;
  */
 public class FirstPersonCameraFragment extends AExampleFragment {
 
-    Button mMoveForward;
-    Button mMoveRight;
-    Button mMoveUp;
+    private Button mMoveForward;
+    private Button mMoveRight;
+    private Button mMoveUp;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         LinearLayout ll = new LinearLayout(getActivity());
@@ -116,7 +117,7 @@ public class FirstPersonCameraFragment extends AExampleFragment {
             try {
                 Material material = new Material();
                 material.addTexture(new Texture("earthColors",
-                    R.drawable.earthtruecolor_nasa_big));
+                        R.drawable.earthtruecolor_nasa_big));
                 material.setColorInfluence(0);
                 mSphere = new Sphere(1, 24, 24);
                 mSphere.setPosition(0, 0, -5.0);

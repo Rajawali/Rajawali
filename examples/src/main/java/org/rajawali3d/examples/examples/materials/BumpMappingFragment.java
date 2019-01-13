@@ -34,7 +34,7 @@ public class BumpMappingFragment extends AExampleFragment {
 		private Object3D mEarth;
 		private Animation3D mLightAnim;
 
-		public BumpMappingRenderer(Context context, @Nullable AExampleFragment fragment) {
+		BumpMappingRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

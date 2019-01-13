@@ -22,7 +22,7 @@ public class CoalesceAnimationFragment extends AExampleFragment {
 
 	public class CoalesceAnimationRenderer extends AExampleRenderer {
 
-		public CoalesceAnimationRenderer(Context context, @Nullable AExampleFragment fragment) {
+		CoalesceAnimationRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

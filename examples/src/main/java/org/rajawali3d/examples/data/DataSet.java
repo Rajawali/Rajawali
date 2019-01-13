@@ -86,7 +86,7 @@ public final class DataSet {
 
     private final List<Category> categories;
 
-    DataSet() {
+    private DataSet() {
         categories = createCategories();
         categories.addAll(DataSetImpl.getInstance().getCategories());
     }
@@ -104,7 +104,7 @@ public final class DataSet {
     }
 
     @NonNull
-    static List<Category> createCategories() {
+    private static List<Category> createCategories() {
         List<Category> categories = new LinkedList<>();
         categories.add(new Category(R.string.category_general, new Example[]{
                 new Example(R.string.example_general_getting_started, BasicFragment.class),

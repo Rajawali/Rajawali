@@ -20,8 +20,6 @@ import org.rajawali3d.view.TextureView;
  */
 public class AnimatedTextureViewFragment extends AExampleFragment {
 
-    private TextureView mRajawaliTextureView;
-
 	@Override
     public AExampleRenderer createRenderer() {
 		return new BasicRenderer(getActivity(), this);
@@ -37,7 +35,7 @@ public class AnimatedTextureViewFragment extends AExampleFragment {
 
 		private Object3D mSphere;
 
-		public BasicRenderer(Context context, @Nullable AExampleFragment fragment) {
+		BasicRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

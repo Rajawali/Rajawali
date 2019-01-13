@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -33,7 +34,7 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
 
     protected ProgressBar mProgressBarLoader;
     protected GitHubLogoView mImageViewExampleLink;
-    protected String mExampleUrl;
+    private String mExampleUrl;
     protected FrameLayout mLayout;
     protected ISurface mRenderSurface;
     protected ISurfaceRenderer mRenderer;
@@ -52,7 +53,7 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         // Inflate the view
@@ -61,14 +62,14 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
         mLayout.findViewById(R.id.relative_layout_loader_container).bringToFront();
 
         // Find the TextureView
-        mRenderSurface = (ISurface) mLayout.findViewById(R.id.rajwali_surface);
+        mRenderSurface = mLayout.findViewById(R.id.rajwali_surface);
 
         // Create the loader
-        mProgressBarLoader = (ProgressBar) mLayout.findViewById(R.id.progress_bar_loader);
+        mProgressBarLoader = mLayout.findViewById(R.id.progress_bar_loader);
         mProgressBarLoader.setVisibility(View.GONE);
 
         // Set the example link
-        mImageViewExampleLink = (GitHubLogoView) mLayout.findViewById(R.id.image_view_example_link);
+        mImageViewExampleLink = mLayout.findViewById(R.id.image_view_example_link);
         mImageViewExampleLink.setOnClickListener(this);
 
         // Create the renderer

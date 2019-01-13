@@ -12,7 +12,8 @@ import static org.junit.Assert.assertEquals;
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
 public class ATransformable3DTest {
-    transformable3D transformable;
+
+    private transformable3D transformable;
 
     class transformable3D extends ATransformable3D {
     }
