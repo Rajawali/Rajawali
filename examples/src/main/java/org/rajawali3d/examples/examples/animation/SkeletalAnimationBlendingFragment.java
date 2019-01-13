@@ -2,12 +2,14 @@ package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationSequence;
 import org.rajawali3d.examples.R;
@@ -20,21 +22,20 @@ import org.rajawali3d.loader.md5.LoaderMD5Mesh;
 public class SkeletalAnimationBlendingFragment extends AExampleFragment implements OnClickListener {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         inflater.inflate(R.layout.skeletal_blending_button_bar, mLayout, true);
 
-        Button button1 = (Button) mLayout.findViewById(R.id.button1);
+        Button button1 = mLayout.findViewById(R.id.button1);
         button1.setOnClickListener(this);
 
-        Button button2 = (Button) mLayout.findViewById(R.id.button2);
+        Button button2 = mLayout.findViewById(R.id.button2);
         button2.setOnClickListener(this);
 
-        Button button3 = (Button) mLayout.findViewById(R.id.button3);
+        Button button3 = mLayout.findViewById(R.id.button3);
         button3.setOnClickListener(this);
 
-        Button button4 = (Button) mLayout.findViewById(R.id.button4);
+        Button button4 = mLayout.findViewById(R.id.button4);
         button4.setOnClickListener(this);
 
         inflater.inflate(R.layout.skeletal_blending_creator_bar, mLayout, true);
@@ -67,14 +68,14 @@ public class SkeletalAnimationBlendingFragment extends AExampleFragment implemen
     }
 
     private final class SkeletalAnimationBlendingRenderer extends AExampleRenderer {
-        private DirectionalLight          mLight;
+        private DirectionalLight mLight;
         private SkeletalAnimationObject3D mObject;
         private SkeletalAnimationSequence mSequenceWalk;
         private SkeletalAnimationSequence mSequenceIdle;
         private SkeletalAnimationSequence mSequenceArmStretch;
         private SkeletalAnimationSequence mSequenceBend;
 
-        public SkeletalAnimationBlendingRenderer(Context context, @Nullable AExampleFragment fragment) {
+        SkeletalAnimationBlendingRenderer(Context context, @Nullable AExampleFragment fragment) {
             super(context, fragment);
         }
 
@@ -89,11 +90,11 @@ public class SkeletalAnimationBlendingFragment extends AExampleFragment implemen
 
             try {
                 LoaderMD5Mesh meshParser = new LoaderMD5Mesh(this,
-                                                             R.raw.ingrid_mesh);
+                        R.raw.ingrid_mesh);
                 meshParser.parse();
 
                 LoaderMD5Anim animParser = new LoaderMD5Anim("idle", this,
-                                                             R.raw.ingrid_idle);
+                        R.raw.ingrid_idle);
                 animParser.parse();
 
                 mSequenceIdle = (SkeletalAnimationSequence) animParser
@@ -106,7 +107,7 @@ public class SkeletalAnimationBlendingFragment extends AExampleFragment implemen
                         .getParsedAnimationSequence();
 
                 animParser = new LoaderMD5Anim("armstretch", this,
-                                               R.raw.ingrid_arm_stretch);
+                        R.raw.ingrid_arm_stretch);
                 animParser.parse();
 
                 mSequenceArmStretch = (SkeletalAnimationSequence) animParser

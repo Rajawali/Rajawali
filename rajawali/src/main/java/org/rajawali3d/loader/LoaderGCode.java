@@ -165,8 +165,8 @@ public class LoaderGCode extends AMeshLoader {
 	 */
 	public static class GCodeLine {
 
-		public static final float DEFAULT_THICKNESS = 1.0f;
-		public static final int DEFAULT_COLOR = 0x9c9c9c;
+		static final float DEFAULT_THICKNESS = 1.0f;
+		static final int DEFAULT_COLOR = 0x9c9c9c;
 
 		private boolean invalidateLine;
 		private float thickness;

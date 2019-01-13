@@ -21,7 +21,7 @@ public class CustomMaterialShaderFragment extends AExampleFragment {
 		private float mTime;
 		private Material mMaterial;
 
-		public CustomShaderRenderer(Context context, @Nullable AExampleFragment fragment) {
+		CustomShaderRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

@@ -1,9 +1,8 @@
-package org.rajawali3d.utils;
+package org.rajawali3d.util;
 
 import android.support.test.filters.SmallTest;
 
 import org.junit.Test;
-import org.rajawali3d.util.ArrayUtils;
 
 import java.util.Arrays;
 

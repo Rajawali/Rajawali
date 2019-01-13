@@ -11,7 +11,8 @@ import static org.junit.Assert.assertNotNull;
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
 public class Geometry3Dtest {
-    Geometry3D geometry;
+
+    private Geometry3D geometry;
 
     @Before
     public void setup() throws Exception {

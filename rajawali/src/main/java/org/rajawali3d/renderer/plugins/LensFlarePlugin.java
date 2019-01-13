@@ -216,12 +216,12 @@ public final class LensFlarePlugin extends Plugin {
 
 	@Override
 	protected void init(boolean createVBOs) {
-		mLensFlares = new Stack<LensFlare>();
+		mLensFlares = new Stack<>();
 		int[] maxVertexTextureImageUnits = new int[1];
 		GLES20.glGetIntegerv(GLES20.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, maxVertexTextureImageUnits, 0);
 		mVertexTextureSupported = maxVertexTextureImageUnits[0] != 0;
 
-		int i = 0, j = 0;
+		int i = 0, j;
         int numVertices = 8;
         float[] vertices = new float[numVertices];
         float[] textureCoords = new float[numVertices];

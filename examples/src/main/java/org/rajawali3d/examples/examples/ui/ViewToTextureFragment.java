@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -31,7 +32,7 @@ public class ViewToTextureFragment extends AExampleFragment {
     Handler mHandler;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         mHandler = new Handler(Looper.getMainLooper());
 
@@ -68,7 +69,7 @@ public class ViewToTextureFragment extends AExampleFragment {
 
         private Object3D mObject3D;
 
-        public ViewTextureRenderer(Context context, @Nullable AExampleFragment fragment) {
+        ViewTextureRenderer(Context context, @Nullable AExampleFragment fragment) {
             super(context, fragment);
         }
 
@@ -142,7 +143,7 @@ public class ViewToTextureFragment extends AExampleFragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             final View view = inflater.inflate(R.layout.view_to_texture, container, false);
-            mWebView = (WebView) view.findViewById(R.id.webview);
+            mWebView = view.findViewById(R.id.webview);
             mWebView.setWebViewClient(new WebViewClient());
             // Load the Rajawali Repo commit activity graph
             //webView.loadUrl("https://github.com/Rajawali/Rajawali/graphs/commit-activity");

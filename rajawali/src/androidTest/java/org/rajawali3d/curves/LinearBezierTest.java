@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 public class LinearBezierTest {
 
     @Test
-    public void testCalculatePoint() throws Exception {
+    public void testCalculatePoint() {
         Vector3 result = new Vector3();
         Vector3 p0 = new Vector3(0, 0, 0);
         Vector3 p1 = new Vector3(1, 1, 1);

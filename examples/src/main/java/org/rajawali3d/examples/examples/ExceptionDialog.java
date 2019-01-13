@@ -10,8 +10,8 @@ import org.rajawali3d.examples.R;
 
 public class ExceptionDialog extends DialogFragment {
 
-    public static final String BUNDLE_KEY_TITLE = "ExceptionDialog.BUNDLE_KEY_TITLE";
-    public static final String BUNDLE_KEY_MESSAGE = "ExceptionDialog.BUNDLE_KEY_MESSAGE";
+    private static final String BUNDLE_KEY_TITLE = "ExceptionDialog.BUNDLE_KEY_TITLE";
+    private static final String BUNDLE_KEY_MESSAGE = "ExceptionDialog.BUNDLE_KEY_MESSAGE";
     public static final String TAG = "ExceptionDialog.TAG";
 
     public static ExceptionDialog newInstance(@NonNull String title, @NonNull String message) {

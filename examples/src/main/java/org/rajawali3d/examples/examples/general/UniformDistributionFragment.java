@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.general;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,8 +31,7 @@ import java.util.Stack;
 public class UniformDistributionFragment extends AExampleFragment {
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 
 		LinearLayout ll = new LinearLayout(getActivity());
@@ -62,7 +62,7 @@ public class UniformDistributionFragment extends AExampleFragment {
 		private final int CURVE1_COLOR = 0xffffee;
 		private final int CURVE2_COLOR = 0xff0000;
 
-		public UniformDistributionRenderer(Context context, @Nullable AExampleFragment fragment) {
+		UniformDistributionRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 
@@ -146,7 +146,7 @@ public class UniformDistributionFragment extends AExampleFragment {
 		private void drawCurve(ICurve3D curve, int color, Vector3 position) {
 			Material lineMaterial = new Material();
 
-			Stack<Vector3> points = new Stack<Vector3>();
+			Stack<Vector3> points = new Stack<>();
 			for (int i = 0; i <= NUM_POINTS; i++) {
 				Vector3 pos = new Vector3();
 				curve.calculatePoint(pos, (float) i / (float) NUM_POINTS);

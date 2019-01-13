@@ -144,7 +144,8 @@ public class Vector3 implements Cloneable {
      * @throws IllegalArgumentException if there are fewer than 3 values in the array.
      */
     public Vector3(@NonNull @Size(min = 3) double[] values) throws IllegalArgumentException {
-        if (values.length < 3) throw new IllegalArgumentException("Vector3 must be initialized with an array length of at least 3.");
+        if (values.length < 3)
+            throw new IllegalArgumentException("Vector3 must be initialized with an array length of at least 3.");
         x = values[0];
         y = values[1];
         z = values[2];
@@ -1231,8 +1232,8 @@ public class Vector3 implements Cloneable {
         }
         Vector3 vector3 = (Vector3) o;
         return vector3.x == x
-               && vector3.y == y
-               && vector3.z == z;
+                && vector3.y == y
+                && vector3.z == z;
     }
 
     /**
@@ -1260,14 +1261,13 @@ public class Vector3 implements Cloneable {
     @NonNull
     @Size(min = 3)
     public double[] toArray(@Size(min = 3) double[] array) {
-    	if(array != null && array.length >= 3)
-    	{
-    		array[0] = x;
-    		array[1] = y;
-    		array[2] = z;
-    	}
+        if (array != null && array.length >= 3) {
+            array[0] = x;
+            array[1] = y;
+            array[2] = z;
+        }
 
-    	return array;
+        return array;
     }
 
     /**
@@ -1278,7 +1278,7 @@ public class Vector3 implements Cloneable {
     @NonNull
     @Size(3)
     public double[] toArray() {
-    	return toArray(new double[3]);
+        return toArray(new double[3]);
     }
 
     @NonNull
@@ -1286,12 +1286,12 @@ public class Vector3 implements Cloneable {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Vector3 <x, y, z>: <")
-            .append(x)
-            .append(", ")
-            .append(y)
-            .append(", ")
-            .append(z)
-            .append(">");
+                .append(x)
+                .append(", ")
+                .append(y)
+                .append(", ")
+                .append(z)
+                .append(">");
         return sb.toString();
     }
 }

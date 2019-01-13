@@ -2,6 +2,7 @@ package org.rajawali3d.examples.examples.general;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.cameras.ChaseCamera;
 import org.rajawali3d.examples.R;
@@ -27,7 +29,7 @@ import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.view.ISurface;
 
 public class ChaseCameraFragment extends AExampleFragment implements
-    OnSeekBarChangeListener {
+        OnSeekBarChangeListener {
 
     private SeekBar mSeekBarX, mSeekBarY, mSeekBarZ;
     private Vector3 mCameraOffset;
@@ -39,8 +41,7 @@ public class ChaseCameraFragment extends AExampleFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         LinearLayout ll = new LinearLayout(getActivity());
@@ -82,10 +83,9 @@ public class ChaseCameraFragment extends AExampleFragment implements
         return new ChaseCameraRenderer(getActivity(), this);
     }
 
-    public void onProgressChanged(SeekBar seekBar, int progress,
-                                  boolean fromUser) {
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         mCameraOffset.setAll((mSeekBarX.getProgress() * 0.2f) - 10,
-            (mSeekBarY.getProgress() * 0.2f) - 10, (mSeekBarZ.getProgress() * 0.2f));
+                (mSeekBarY.getProgress() * 0.2f) - 10, (mSeekBarZ.getProgress() * 0.2f));
         ((ChaseCameraRenderer) mRenderer).setCameraOffset(mCameraOffset);
     }
 
@@ -103,7 +103,7 @@ public class ChaseCameraFragment extends AExampleFragment implements
         private double mTime;
         private PointLight mPointLight;
 
-        public ChaseCameraRenderer(Context context, @Nullable AExampleFragment fragment) {
+        ChaseCameraRenderer(Context context, @Nullable AExampleFragment fragment) {
             super(context, fragment);
         }
 
@@ -182,7 +182,7 @@ public class ChaseCameraFragment extends AExampleFragment implements
             getCurrentScene().replaceAndSwitchCamera(chaseCamera, 0);
         }
 
-        public void setCameraOffset(Vector3 offset) {
+        void setCameraOffset(Vector3 offset) {
             // -- change the camera offset
             ((ChaseCamera) getCurrentCamera()).setCameraOffset(offset);
         }

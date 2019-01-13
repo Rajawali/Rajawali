@@ -5,7 +5,6 @@ import android.support.test.filters.SmallTest;
 import org.junit.Test;
 import org.rajawali3d.math.Plane;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.util.Intersector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

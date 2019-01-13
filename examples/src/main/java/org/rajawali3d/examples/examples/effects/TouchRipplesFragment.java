@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.effects;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Display;
 import android.view.Gravity;
@@ -13,6 +14,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import org.rajawali3d.animation.Animation3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -22,66 +24,65 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class TouchRipplesFragment extends AExampleFragment implements OnTouchListener {
-	private Point mScreenSize;
+    private Point mScreenSize;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		super.onCreateView(inflater, container, savedInstanceState);
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
         ((View) mRenderSurface).setOnTouchListener(this);
 
-		Display display = getActivity().getWindowManager().getDefaultDisplay();
-		mScreenSize = new Point();
-		display.getSize(mScreenSize);
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        mScreenSize = new Point();
+        display.getSize(mScreenSize);
 
-		LinearLayout ll = new LinearLayout(getActivity());
-		ll.setOrientation(LinearLayout.VERTICAL);
-		ll.setGravity(Gravity.BOTTOM);
+        LinearLayout ll = new LinearLayout(getActivity());
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.setGravity(Gravity.BOTTOM);
 
-		TextView tv = new TextView(getActivity());
-		tv.setText(R.string.touch_ripples_fragment_button_touch_me);
-		tv.setTextColor(0xffffffff);
-		ll.addView(tv);
+        TextView tv = new TextView(getActivity());
+        tv.setText(R.string.touch_ripples_fragment_button_touch_me);
+        tv.setTextColor(0xffffffff);
+        ll.addView(tv);
 
-		return mLayout;
-	}
+        return mLayout;
+    }
 
-	@Override
+    @Override
     public AExampleRenderer createRenderer() {
-		return new TouchRipplesRenderer(getActivity(), this);
-	}
+        return new TouchRipplesRenderer(getActivity(), this);
+    }
 
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			((TouchRipplesRenderer) mRenderer).setTouch(event.getX()
-					/ mScreenSize.x, 1.0f - (event.getY() / mScreenSize.y));
-		}
-		return ((View) mRenderSurface).onTouchEvent(event);
-	}
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            ((TouchRipplesRenderer) mRenderer).setTouch(event.getX()
+                    / mScreenSize.x, 1.0f - (event.getY() / mScreenSize.y));
+        }
+        return ((View) mRenderSurface).onTouchEvent(event);
+    }
 
-	private final class TouchRipplesRenderer extends AExampleRenderer {
-		private final int NUM_CUBES_H = 2;
-		private final int NUM_CUBES_V = 2;
-		private final int NUM_CUBES = NUM_CUBES_H * NUM_CUBES_V;
-		private Animation3D[] mAnims;
-		//private TouchRippleFilter mFilter;
-		private long frameCount;
+    private final class TouchRipplesRenderer extends AExampleRenderer {
+        private final int NUM_CUBES_H = 2;
+        private final int NUM_CUBES_V = 2;
+        private final int NUM_CUBES = NUM_CUBES_H * NUM_CUBES_V;
+        private Animation3D[] mAnims;
+        //private TouchRippleFilter mFilter;
+        private long frameCount;
 
-		public TouchRipplesRenderer(Context context, @Nullable AExampleFragment fragment) {
-			super(context, fragment);
-		}
+        public TouchRipplesRenderer(Context context, @Nullable AExampleFragment fragment) {
+            super(context, fragment);
+        }
 
-		protected void initScene() {
-			mAnims = new Animation3D[NUM_CUBES];
+        protected void initScene() {
+            mAnims = new Animation3D[NUM_CUBES];
 
-			getCurrentCamera().setPosition(0, 0, 10);
+            getCurrentCamera().setPosition(0, 0, 10);
 
-			DirectionalLight light = new DirectionalLight(0, 0, 1);
-			light.setPower(1f);
+            DirectionalLight light = new DirectionalLight(0, 0, 1);
+            light.setPower(1f);
 
-			// TODO add post processing effects
+            // TODO add post processing effects
 			/*
 			Object3D group = new Object3D();
 			DiffuseMaterial material = new DiffuseMaterial();
@@ -129,19 +130,19 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 
 			mFilter = new TouchRippleFilter();
 			mFilter.setRippleSize(62);*/
-		}
+        }
 
         @Override
         protected void onRender(long ellapsedRealtime, double deltaTime) {
             super.onRender(ellapsedRealtime, deltaTime);
-			//mFilter.setTime((float) frameCount++ * .05f);
-		}
+            //mFilter.setTime((float) frameCount++ * .05f);
+        }
 
-		@Override
-		public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
-			super.onRenderSurfaceSizeChanged(gl, width, height);
-			//mFilter.setScreenSize(width, height);
-		}
+        @Override
+        public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
+            super.onRenderSurfaceSizeChanged(gl, width, height);
+            //mFilter.setScreenSize(width, height);
+        }
 
         @Override
         public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
@@ -152,12 +153,12 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
 				mAnims[i].play();
 			}
 			mFilter.setScreenSize(mViewportWidth, mViewportHeight);*/
-		}
+        }
 
-		public void setTouch(float x, float y) {
-			//mFilter.addTouch(x, y, frameCount * .05f);
-		}
+        void setTouch(float x, float y) {
+            //mFilter.addTouch(x, y, frameCount * .05f);
+        }
 
-	}
+    }
 
 }

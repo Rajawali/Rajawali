@@ -23,7 +23,7 @@ import org.rajawali3d.util.RajLog;
 public class ObjectPickingFragment extends AExampleFragment implements OnTouchListener {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         inflater.inflate(R.layout.object_picking_overlay, mLayout, true);
         ((View) mRenderSurface).setOnTouchListener(this);

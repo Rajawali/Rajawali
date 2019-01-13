@@ -3,6 +3,7 @@ package org.rajawali3d.examples.examples.general;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.EllipticalOrbitAnimation3D;
@@ -23,14 +24,16 @@ import org.rajawali3d.primitives.Sphere;
 public class DebugVisualizerFragment extends AExampleFragment {
 
     @Override
-    public AExampleRenderer createRenderer() { return new DebugVisualizerRenderer(getActivity(), this); }
+    public AExampleRenderer createRenderer() {
+        return new DebugVisualizerRenderer(getActivity(), this);
+    }
 
     public class DebugVisualizerRenderer extends AExampleRenderer {
         private DirectionalLight mDirectionalLight;
         private Camera mOtherCamera;
         private Object3D mSphere;
 
-        public DebugVisualizerRenderer(Context context, @Nullable AExampleFragment fragment) {
+        DebugVisualizerRenderer(Context context, @Nullable AExampleFragment fragment) {
             super(context, fragment);
         }
 

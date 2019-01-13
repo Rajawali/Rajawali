@@ -40,7 +40,8 @@ public class ArcballCamera extends Camera {
     private Matrix4 mScratchMatrix;
     private Vector3 mScratchVector;
     private double mStartFOV;
-    @FloatRange(from = -1, to = 1) private float mScreenMapping = 1;
+    @FloatRange(from = -1, to = 1)
+    private float mScreenMapping = 1;
 
     public ArcballCamera(Context context, View view) {
         this(context, view, null);
@@ -77,38 +78,32 @@ public class ArcballCamera extends Camera {
     }
 
     public void setScreenMappingRatio(@FloatRange(from = -1, to = 1) float ratio) {
-        if(ratio > 1) ratio = 1;
-        if(ratio < -1) ratio = -1;
+        if (ratio > 1) ratio = 1;
+        if (ratio < -1) ratio = -1;
         mScreenMapping = ratio;
     }
 
-    @FloatRange(from=-1,to=1)
+    @FloatRange(from = -1, to = 1)
     public float getScreenMappingRatio() {
-	return mScreenMapping;
+        return mScreenMapping;
     }
 
-    private void mapToSphere(final float x, final float y, Vector3 out)
-    {
+    private void mapToSphere(final float x, final float y, Vector3 out) {
         float lengthSquared = x * x + y * y;
-        if (lengthSquared > 1)
-        {
+        if (lengthSquared > 1) {
             out.setAll(x, y, 0);
             out.normalize();
-        }
-        else
-        {
+        } else {
             out.setAll(x, y, Math.sqrt(1 - lengthSquared));
         }
     }
 
-    private void mapToScreen(final float x, final float y, Vector2 out)
-    {
+    private void mapToScreen(final float x, final float y, Vector2 out) {
         out.setX(mScreenMapping * (2 * x - mLastWidth) / mLastWidth);
-        out.setY(-mScreenMapping  * (2 * y - mLastHeight) / mLastHeight);
+        out.setY(-mScreenMapping * (2 * y - mLastHeight) / mLastHeight);
     }
 
-    private void startRotation(final float x, final float y)
-    {
+    private void startRotation(final float x, final float y) {
         mapToScreen(x, y, mPrevScreenCoord);
 
         mCurrScreenCoord.setAll(mPrevScreenCoord.getX(), mPrevScreenCoord.getY());
@@ -116,22 +111,18 @@ public class ArcballCamera extends Camera {
         mIsRotating = true;
     }
 
-    private void updateRotation(final float x, final float y)
-    {
+    private void updateRotation(final float x, final float y) {
         mapToScreen(x, y, mCurrScreenCoord);
 
         applyRotation();
     }
 
-    private void endRotation()
-    {
+    private void endRotation() {
         mStartOrientation.multiply(mCurrentOrientation);
     }
 
-    private void applyRotation()
-    {
-        if (mIsRotating)
-        {
+    private void applyRotation() {
+        if (mIsRotating) {
             mapToSphere((float) mPrevScreenCoord.getX(), (float) mPrevScreenCoord.getY(), mPrevSphereCoord);
             mapToSphere((float) mCurrScreenCoord.getX(), (float) mCurrScreenCoord.getY(), mCurrSphereCoord);
 
@@ -154,7 +145,7 @@ public class ArcballCamera extends Camera {
     public Matrix4 getViewMatrix() {
         Matrix4 m = super.getViewMatrix();
 
-        if(mTarget != null) {
+        if (mTarget != null) {
             mScratchMatrix.identity();
             mScratchMatrix.translate(mTarget.getPosition());
             m.multiply(mScratchMatrix);
@@ -164,7 +155,7 @@ public class ArcballCamera extends Camera {
         mScratchMatrix.rotate(mEmpty.getOrientation());
         m.multiply(mScratchMatrix);
 
-        if(mTarget != null) {
+        if (mTarget != null) {
             mScratchVector.setAll(mTarget.getPosition());
             mScratchVector.inverse();
 
@@ -225,7 +216,7 @@ public class ArcballCamera extends Camera {
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onScroll(MotionEvent event1, MotionEvent event2, float distanceX, float distanceY) {
-            if(!mIsRotating) {
+            if (!mIsRotating) {
                 startRotation(event2.getX(), event2.getY());
                 return false;
             }
@@ -245,14 +236,14 @@ public class ArcballCamera extends Camera {
         }
 
         @Override
-        public boolean onScaleBegin (ScaleGestureDetector detector) {
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
             mIsScaling = true;
             mIsRotating = false;
             return super.onScaleBegin(detector);
         }
 
         @Override
-        public void onScaleEnd (ScaleGestureDetector detector) {
+        public void onScaleEnd(ScaleGestureDetector detector) {
             mIsRotating = false;
             mIsScaling = false;
         }

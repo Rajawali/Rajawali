@@ -322,9 +322,6 @@ public class LoaderAWD extends AMeshLoader {
      * Get the parsed object or objects. This is returns each model independent of a scene
      * regardless of if a scene exists or not.
      *
-     * @param alwaysUseContainer When false, a single model will be returned as a BaseObject3D. When
-     *                           true, or when more than one model exists, the models will be
-     *                           returned as children of a container.
      * @return
      */
     @Override
@@ -562,7 +559,7 @@ public class LoaderAWD extends AMeshLoader {
         public void readMatrix3D(Matrix4 matrix, boolean usePrecision, boolean convert) throws ParsingException, IOException {
             final double[] m = matrix.getDoubleValues();
 
-            if (m == null || m.length != 16)
+            if (m.length != 16)
                 throw new ParsingException("Matrix array must be of size 16");
 
             if (convert) {
@@ -624,7 +621,6 @@ public class LoaderAWD extends AMeshLoader {
         /**
          * Skip reading of block properties. Same as calling skip(properties.length).
          *
-         * @param dis
          * @throws IOException
          */
         public void readProperties() throws IOException {

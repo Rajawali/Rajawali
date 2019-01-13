@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.AExampleFragment;
@@ -17,13 +18,11 @@ import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.textures.CubeMapTexture;
 import org.rajawali3d.math.vector.Vector3;
 
-public class AccelerometerFragment extends AExampleFragment implements
-    SensorEventListener {
+public class AccelerometerFragment extends AExampleFragment implements SensorEventListener {
 
-    private final float ALPHA = 0.8f;
-    private final int SENSITIVITY = 5;
+    private final static float ALPHA = 0.8f;
+    private final static int SENSITIVITY = 5;
 
-    private SensorManager mSensorManager;
     private float mGravity[];
 
     @Override
@@ -31,11 +30,9 @@ public class AccelerometerFragment extends AExampleFragment implements
         super.onCreate(savedInstanceState);
 
         mGravity = new float[3];
-        mSensorManager = (SensorManager) getActivity().getSystemService(
-            Context.SENSOR_SERVICE);
+        SensorManager mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(this,
-            mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-            SensorManager.SENSOR_DELAY_FASTEST);
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
@@ -55,8 +52,8 @@ public class AccelerometerFragment extends AExampleFragment implements
             mGravity[2] = ALPHA * mGravity[2] + (1 - ALPHA) * event.values[2];
 
             ((AccelerometerRenderer) mRenderer).setAccelerometerValues(
-                event.values[1] - mGravity[1] * SENSITIVITY,
-                event.values[0] - mGravity[0] * SENSITIVITY, 0);
+                    event.values[1] - mGravity[1] * SENSITIVITY,
+                    event.values[0] - mGravity[0] * SENSITIVITY, 0);
         }
     }
 
@@ -88,15 +85,14 @@ public class AccelerometerFragment extends AExampleFragment implements
                 getCurrentCamera().setZ(7);
 
                 int[] resourceIds = new int[]{R.drawable.posx, R.drawable.negx,
-                    R.drawable.posy, R.drawable.negy, R.drawable.posz,
-                    R.drawable.negz};
+                        R.drawable.posy, R.drawable.negy, R.drawable.posz,
+                        R.drawable.negz};
 
                 Material material = new Material();
                 material.enableLighting(true);
                 material.setDiffuseMethod(new DiffuseMethod.Lambert());
 
-                CubeMapTexture envMap = new CubeMapTexture("environmentMap",
-                    resourceIds);
+                CubeMapTexture envMap = new CubeMapTexture("environmentMap", resourceIds);
                 envMap.isEnvironmentTexture(true);
                 material.addTexture(envMap);
                 material.setColorInfluence(0);
@@ -112,7 +108,7 @@ public class AccelerometerFragment extends AExampleFragment implements
             mMonkey.setRotation(mAccValues.x, mAccValues.y, mAccValues.z);
         }
 
-        public void setAccelerometerValues(float x, float y, float z) {
+        void setAccelerometerValues(float x, float y, float z) {
             mAccValues.setAll(-x, -y, -z);
         }
 

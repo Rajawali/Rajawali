@@ -1,6 +1,8 @@
 package org.rajawali3d.postprocessing.passes;
 
 import android.opengl.GLES20;
+import android.support.annotation.NonNull;
+
 import org.rajawali3d.R;
 import org.rajawali3d.materials.shaders.FragmentShader;
 import org.rajawali3d.materials.shaders.VertexShader;
@@ -34,16 +36,14 @@ import org.rajawali3d.scene.Scene;
  */
 public class FXAAPass extends EffectPass {
 
-    private static final String TAG = "FXAAPass";
-
     public FXAAPass() {
         super();
         createMaterial(new FXAAVertexShader(), new FXAAFragmentShader());
     }
 
     @Override
-    public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget,
-                                 RenderTarget readTarget, long ellapsedTime, double deltaTime) {
+    public void render(@NonNull Scene scene, @NonNull Renderer renderer, @NonNull ScreenQuad screenQuad, @NonNull RenderTarget writeTarget,
+                       @NonNull RenderTarget readTarget, long ellapsedTime, double deltaTime) {
         //Log.d(TAG, "Rendering FXAA Pass at time: " + ellapsedTime);
         super.render(scene, renderer, screenQuad, writeTarget, readTarget, ellapsedTime, deltaTime);
     }
@@ -53,7 +53,7 @@ public class FXAAPass extends EffectPass {
         private int rtWHandle;
         private int rtHHandle;
 
-        public FXAAVertexShader() {
+        FXAAVertexShader() {
             super(R.raw.fxaa_vertex_shader);
         }
 
@@ -77,7 +77,7 @@ public class FXAAPass extends EffectPass {
         private int rtWHandle;
         private int rtHHandle;
 
-        public FXAAFragmentShader() {
+        FXAAFragmentShader() {
             super(R.raw.fxaa_fragment_shader);
         }
 

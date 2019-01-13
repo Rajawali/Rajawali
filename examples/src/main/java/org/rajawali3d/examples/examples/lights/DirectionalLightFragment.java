@@ -23,7 +23,7 @@ public class DirectionalLightFragment extends AExampleFragment {
 
 	private final class DirectionalLightRenderer extends AExampleRenderer {
 
-		public DirectionalLightRenderer(Context context, @Nullable AExampleFragment fragment) {
+		DirectionalLightRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

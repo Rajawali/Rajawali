@@ -26,7 +26,7 @@ public class BezierFragment extends AExampleFragment {
 	private final class BezierRenderer extends AExampleRenderer {
 		private DirectionalLight mLight;
 
-		public BezierRenderer(Context context, @Nullable AExampleFragment fragment) {
+		BezierRenderer(Context context, @Nullable AExampleFragment fragment) {
 			super(context, fragment);
 		}
 

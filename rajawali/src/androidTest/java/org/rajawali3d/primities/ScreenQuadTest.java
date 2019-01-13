@@ -11,7 +11,8 @@ import static org.junit.Assert.assertEquals;
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
 public class ScreenQuadTest {
-    ScreenQuad screenQuad;
+
+    private ScreenQuad screenQuad;
 
     @Before
     public void setup() throws Exception {
