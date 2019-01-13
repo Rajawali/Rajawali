@@ -29,8 +29,7 @@ jobs:
               ./gradlew build dokkaGhPages publish
             else
               # Regular Build
-              #./gradlew build --no-daemon
-              echo "skip"
+              ./gradlew build --no-daemon
             fi
 
             # Firebase Test Lab for non forked work
