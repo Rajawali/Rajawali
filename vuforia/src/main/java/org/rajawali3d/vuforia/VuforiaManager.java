@@ -181,8 +181,6 @@ public class VuforiaManager {
         }
     }
 
-    ;
-
     public void onConfigurationChanged(Configuration config) {
         storeScreenDimensions();
 

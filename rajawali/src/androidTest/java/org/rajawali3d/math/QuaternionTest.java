@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 public class QuaternionTest {
 
     @Test
-    public void testConstructorNoArgs() throws Exception {
+    public void testConstructorNoArgs() {
         final Quaternion q = new Quaternion();
         assertNotNull(q);
         assertEquals(Double.doubleToRawLongBits(1d), Double.doubleToRawLongBits(q.w));
@@ -30,7 +30,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testConstructorDoubles() throws Exception {
+    public void testConstructorDoubles() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         assertNotNull(q);
         assertEquals(Double.doubleToRawLongBits(1d), Double.doubleToRawLongBits(q.w));
@@ -40,7 +40,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testConstructorQuat() throws Exception {
+    public void testConstructorQuat() {
         final Quaternion from = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion q = new Quaternion(from);
         assertNotNull(q);
@@ -52,7 +52,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testConstructorVector3AxisAngle() throws Exception {
+    public void testConstructorVector3AxisAngle() {
         final Quaternion q = new Quaternion(new Vector3(1d, 2d, 3d), 60);
         assertNotNull(q);
         assertEquals(0.86602540378443864676372317075294, q.w, 1e-14);
@@ -62,7 +62,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testSetAllFromDoubles() throws Exception {
+    public void testSetAllFromDoubles() {
         final Quaternion q = new Quaternion();
         final Quaternion out = q.setAll(0d, 1d, 2d, 3d);
         assertNotNull(out);
@@ -74,7 +74,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testSetAllFromQuaternion() throws Exception {
+    public void testSetAllFromQuaternion() {
         final Quaternion from = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion q = new Quaternion();
         final Quaternion out = q.setAll(from);
@@ -87,7 +87,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromAngleAxisAxisAngle() throws Exception {
+    public void testFromAngleAxisAxisAngle() {
         final Quaternion q = new Quaternion();
         // Test X
         Quaternion out = q.fromAngleAxis(Axis.X, 60);
@@ -118,7 +118,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromAngleAxisVector3Angle() throws Exception {
+    public void testFromAngleAxisVector3Angle() {
         final Quaternion q = new Quaternion();
         // Test X
         Quaternion out = q.fromAngleAxis(new Vector3(1, 0, 0), 60);
@@ -158,7 +158,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromAngleAxisDoubles() throws Exception {
+    public void testFromAngleAxisDoubles() {
         final Quaternion q = new Quaternion();
         // Test X
         Quaternion out = q.fromAngleAxis(1, 0, 0, 60);
@@ -189,7 +189,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromAxesVector3() throws Exception {
+    public void testFromAxesVector3() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         // Try normal axes
         final Quaternion out = q.fromAxes(Vector3.X, Vector3.Y, Vector3.Z);
@@ -210,7 +210,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromAxesDoubles() throws Exception {
+    public void testFromAxesDoubles() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         // Try normal axes
         final Quaternion out = q.fromAxes(1d, 0d, 0d, 0d, 1d, 0d, 0d, 0d, 1d);
@@ -231,7 +231,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromMatrix() throws Exception {
+    public void testFromMatrix() {
         final double[] doubles = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
@@ -250,7 +250,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromMatrixDoubles() throws Exception {
+    public void testFromMatrixDoubles() {
         final double[] doubles = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
@@ -268,7 +268,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromEuler() throws Exception {
+    public void testFromEuler() {
         final Quaternion q = new Quaternion();
         final Quaternion out = q.fromEuler(30d, 10d, 40d);
         assertNotNull(out);
@@ -280,7 +280,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromRotationBetweenVector3() throws Exception {
+    public void testFromRotationBetweenVector3() {
         final Quaternion q = new Quaternion();
         final Quaternion out = q.fromRotationBetween(Vector3.X, Vector3.Y);
         assertNotNull(out);
@@ -320,7 +320,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testFromRotationBetweenDoubles() throws Exception {
+    public void testFromRotationBetweenDoubles() {
         final Quaternion q = new Quaternion();
         final Quaternion out = q.fromRotationBetween(1, 0, 0, 0, 1, 0);
         assertNotNull(out);
@@ -332,7 +332,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testCreateFromRotationBetween() throws Exception {
+    public void testCreateFromRotationBetween() {
         final Quaternion q = Quaternion.createFromRotationBetween(Vector3.X, Vector3.Y);
         assertNotNull(q);
         assertEquals(0.7071067811865475, q.w, 1e-14);
@@ -342,7 +342,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testAdd() throws Exception {
+    public void testAdd() {
         final Quaternion a = new Quaternion();
         final Quaternion b = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = a.add(b);
@@ -355,7 +355,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testSubtract() throws Exception {
+    public void testSubtract() {
         final Quaternion a = new Quaternion();
         final Quaternion b = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = a.subtract(b);
@@ -368,7 +368,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testMultiplyScalar() throws Exception {
+    public void testMultiplyScalar() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = q.multiply(2.0);
         assertNotNull(out);
@@ -380,7 +380,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testMultiplyQuat() throws Exception {
+    public void testMultiplyQuat() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion m = new Quaternion(5d, 6d, 7d, 8d);
         final Quaternion out = q.multiply(m);
@@ -393,7 +393,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testMultiplyVector3() throws Exception {
+    public void testMultiplyVector3() {
         final Quaternion q = new Quaternion();
         final Vector3 v = new Vector3(Vector3.X);
         v.multiply(2.0);
@@ -421,7 +421,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testMultiplyLeft() throws Exception {
+    public void testMultiplyLeft() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion q1 = new Quaternion(q);
         final Quaternion m = new Quaternion(5d, 6d, 7d, 8d);
@@ -437,7 +437,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final double norm = q.normalize();
         assertEquals(Double.doubleToRawLongBits(30d), Double.doubleToRawLongBits(norm));
@@ -448,7 +448,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testConjugate() throws Exception {
+    public void testConjugate() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = q.conjugate();
         assertNotNull(out);
@@ -460,7 +460,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testInverse() throws Exception {
+    public void testInverse() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = q.inverse();
         assertNotNull(out);
@@ -472,7 +472,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testInvertAndCreate() throws Exception {
+    public void testInvertAndCreate() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = q.invertAndCreate();
         assertNotNull(out);
@@ -484,7 +484,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testComputeW() throws Exception {
+    public void testComputeW() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.computeW();
         assertNotNull(out);
@@ -496,7 +496,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testGetXAxis() throws Exception {
+    public void testGetXAxis() {
         final Quaternion q = new Quaternion();
         q.fromAngleAxis(Axis.X, 10);
         q.multiply((new Quaternion()).fromAngleAxis(Axis.Y, 30));
@@ -509,7 +509,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testGetYAxis() throws Exception {
+    public void testGetYAxis() {
         final Quaternion q = new Quaternion();
         q.fromAngleAxis(Axis.X, 10);
         q.multiply((new Quaternion()).fromAngleAxis(Axis.Y, 30));
@@ -522,7 +522,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testGetZAxis() throws Exception {
+    public void testGetZAxis() {
         final Quaternion q = new Quaternion();
         q.fromAngleAxis(Axis.X, 10);
         q.multiply((new Quaternion()).fromAngleAxis(Axis.Y, 30));
@@ -535,7 +535,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testGetAxis() throws Exception {
+    public void testGetAxis() {
         final Quaternion q = new Quaternion();
         q.fromAngleAxis(Axis.X, 10);
         q.multiply((new Quaternion()).fromAngleAxis(Axis.Y, 30));
@@ -558,26 +558,26 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testLength() throws Exception {
+    public void testLength() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         assertEquals(Math.sqrt(30d), q.length(), 1e-14);
     }
 
     @Test
-    public void testLength2() throws Exception {
+    public void testLength2() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         assertEquals(30d, q.length2(), 1e-14);
     }
 
     @Test
-    public void testDot() throws Exception {
+    public void testDot() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion b = new Quaternion(5d, 6d, 7d, 8d);
         assertEquals(Double.doubleToRawLongBits(70d), Double.doubleToRawLongBits(q.dot(b)));
     }
 
     @Test
-    public void testIdentity() throws Exception {
+    public void testIdentity() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = q.identity();
         assertNotNull(out);
@@ -589,7 +589,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testGetIdentity() throws Exception {
+    public void testGetIdentity() {
         final Quaternion q = Quaternion.getIdentity();
         assertNotNull(q);
         assertEquals(Double.doubleToRawLongBits(1d), Double.doubleToRawLongBits(q.w));
@@ -599,7 +599,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testExp() throws Exception {
+    public void testExp() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.exp();
         assertNotNull(out);
@@ -611,7 +611,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testExpAndCreate() throws Exception {
+    public void testExpAndCreate() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.expAndCreate();
         assertNotNull(out);
@@ -623,7 +623,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testLog() throws Exception {
+    public void testLog() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.log();
         assertNotNull(out);
@@ -643,7 +643,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testLogAndCreate() throws Exception {
+    public void testLogAndCreate() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.logAndCreate();
         assertNotNull(out);
@@ -663,7 +663,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testPowDouble() throws Exception {
+    public void testPowDouble() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.pow(2);
         assertNotNull(out);
@@ -675,7 +675,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testPowQuaternion() throws Exception {
+    public void testPowQuaternion() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.pow(new Quaternion(1d, 2d, 3d, 4d));
         assertNotNull(out);
@@ -687,7 +687,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testPowAndCreateDouble() throws Exception {
+    public void testPowAndCreateDouble() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.powAndCreate(2);
         assertNotNull(out);
@@ -699,7 +699,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testPowAndCreateQuaternion() throws Exception {
+    public void testPowAndCreateQuaternion() {
         final Quaternion q = new Quaternion(1d, 0.2, 0.3, 0.4);
         final Quaternion out = q.powAndCreate(new Quaternion(1d, 2d, 3d, 4d));
         assertNotNull(out);
@@ -711,7 +711,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testSlerpQuaternion() throws Exception {
+    public void testSlerpQuaternion() {
         final Quaternion start = new Quaternion(Vector3.X, 0d);
         final Quaternion end = new Quaternion(Vector3.X, 90d);
         final Quaternion middle = new Quaternion(0.9238795325112868, 0.3826834323650898, 0.0, 0.0);
@@ -740,7 +740,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testSlerpTwoQuaternions() throws Exception {
+    public void testSlerpTwoQuaternions() {
         final Quaternion q = new Quaternion();
         final Quaternion start = new Quaternion(Vector3.X, 0d);
         final Quaternion end = new Quaternion(Vector3.X, 90d);
@@ -776,7 +776,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testSlerpTwoQuaternionsShortestPath() throws Exception {
+    public void testSlerpTwoQuaternionsShortestPath() {
         final Quaternion q = new Quaternion();
         final Quaternion start = new Quaternion(Vector3.X, 0d);
         final Quaternion end = new Quaternion(Vector3.X, 90d);
@@ -812,7 +812,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testLerp() throws Exception {
+    public void testLerp() {
         final Quaternion start = new Quaternion(Vector3.X, 0d);
         final Quaternion end = new Quaternion(Vector3.X, 90d);
         final Quaternion middle = new Quaternion(0.8535533905932737, 0.35355339059327373, 0.0, 0.0);
@@ -842,7 +842,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testNlerp() throws Exception {
+    public void testNlerp() {
         final Quaternion start = new Quaternion(Vector3.X, 0d);
         start.multiply(2.0);
         final Quaternion nStart = start.clone();
@@ -881,7 +881,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testGetGimbalPole() throws Exception {
+    public void testGetGimbalPole() {
         final Quaternion q = new Quaternion();
         q.fromAngleAxis(Axis.X, 90);
         assertEquals(q.getGimbalPole(), 0);
@@ -892,28 +892,28 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testGetRotationX() throws Exception {
+    public void testGetRotationX() {
         final Quaternion q = new Quaternion();
         q.fromAngleAxis(Axis.X, 45);
         assertEquals(MathUtil.degreesToRadians(45d), q.getRotationX(), 1e-14);
     }
 
     @Test
-    public void testGetRotationY() throws Exception {
+    public void testGetRotationY() {
         final Quaternion q = new Quaternion();
         q.fromAngleAxis(Axis.Y, 45);
         assertEquals(MathUtil.degreesToRadians(45d), q.getRotationY(), 1e-14);
     }
 
     @Test
-    public void testGetRotationZ() throws Exception {
+    public void testGetRotationZ() {
         final Quaternion q = new Quaternion();
         q.fromAngleAxis(Axis.Z, 45d);
         assertEquals(MathUtil.degreesToRadians(45d), q.getRotationZ(), 1e-14);
     }
 
     @Test
-    public void testToRotationMatrix() throws Exception {
+    public void testToRotationMatrix() {
         final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
@@ -932,7 +932,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testToRotationMatrixMatrix4() throws Exception {
+    public void testToRotationMatrixMatrix4() {
         final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
@@ -953,7 +953,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testToRotationMatrixDoubles() throws Exception {
+    public void testToRotationMatrixDoubles() {
         final double[] expected = new double[]{
                 0.6603582554517136, 0.7019626168224298, -0.26724299065420565, 0d,
                 -0.55803738317757, 0.6966355140186917, 0.4511214953271028, 0d,
@@ -970,7 +970,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testLookAt() throws Exception {
+    public void testLookAt() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Vector3 lookAt = Vector3.subtractAndCreate(new Vector3(0, 10d, 10d), Vector3.ZERO);
         final Vector3 up = Vector3.Y;
@@ -1011,7 +1011,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testLookAtAndCreate() throws Exception {
+    public void testLookAtAndCreate() {
         final Vector3 lookAt = Vector3.subtractAndCreate(new Vector3(0, 10d, 10d), Vector3.ZERO);
         final Vector3 up = Vector3.Y;
         Quaternion out = Quaternion.lookAtAndCreate(lookAt, up);
@@ -1047,7 +1047,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testAngleBetween() throws Exception {
+    public void testAngleBetween() {
         final Quaternion q1 = new Quaternion(Vector3.X, 0);
         final Quaternion q2 = new Quaternion(Vector3.X, 45);
         final double angle = q1.angleBetween(q2);
@@ -1055,7 +1055,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testClone() throws Exception {
+    public void testClone() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion out = q.clone();
         assertNotNull(out);
@@ -1067,14 +1067,14 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion other = new Quaternion(q);
         assertEquals(q, other);
     }
 
     @Test
-    public void testEqualsWithTolerance() throws Exception {
+    public void testEqualsWithTolerance() {
         final Quaternion q = new Quaternion(1.0000001d, 2d, 3d, 4d);
         final Quaternion other = new Quaternion(1d, 2d, 3d, 4d);
         q.normalize();
@@ -1083,7 +1083,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final String s = q.toString();
         assertNotNull(s);
@@ -1091,7 +1091,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testCommutativity() throws Exception {
+    public void testCommutativity() {
         final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
 
@@ -1119,7 +1119,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testAdditiveIdentity() throws Exception {
+    public void testAdditiveIdentity() {
         final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion zero = new Quaternion(0d, 0d, 0d, 0d);
 
@@ -1169,7 +1169,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testAdditiveAssociativity() throws Exception {
+    public void testAdditiveAssociativity() {
         final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
@@ -1198,7 +1198,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testMultiplicativeIdentity() throws Exception {
+    public void testMultiplicativeIdentity() {
         final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion one = new Quaternion().identity();
 
@@ -1248,7 +1248,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testMultiplicativeAssociativity() throws Exception {
+    public void testMultiplicativeAssociativity() {
         final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
@@ -1277,7 +1277,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testDistributivity() throws Exception {
+    public void testDistributivity() {
         final Quaternion p = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion q = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion r = new Quaternion(3d, 4d, 1d, 2d);
@@ -1306,7 +1306,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testInverseDivision() throws Exception {
+    public void testInverseDivision() {
         final Quaternion q = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion r = new Quaternion(1d, 2d, 3d, 4d);
         final Quaternion p = q.clone().multiply(r.clone());
@@ -1324,7 +1324,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testPowDivision() throws Exception {
+    public void testPowDivision() {
         final Quaternion q = new Quaternion(4d, 3d, 2d, 1d);
         final Quaternion r = new Quaternion(1d, 2d, 3d, 4d);
         q.normalize();
@@ -1344,7 +1344,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testSquare() throws Exception {
+    public void testSquare() {
         final Quaternion p = new Quaternion(1d, 2d, 3d, 4d);
         p.normalize();
 

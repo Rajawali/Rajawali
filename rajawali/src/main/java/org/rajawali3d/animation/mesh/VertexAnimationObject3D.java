@@ -51,7 +51,7 @@ public class VertexAnimationObject3D extends AAnimationObject3D {
 		}
 
 		// Update geometry (if current frame is different from before)
-		Geometry3D currentGeometry = ((VertexAnimationFrame) mFrames.get(mCurrentFrameIndex)).getGeometry();
+		Geometry3D currentGeometry = mFrames.get(mCurrentFrameIndex).getGeometry();
 		if (mGeometry.getVertexBufferInfo() != currentGeometry.getVertexBufferInfo()) {
 			mGeometry.setVertexBufferInfo(currentGeometry.getVertexBufferInfo());
 			mGeometry.setNormalBufferInfo(currentGeometry.getNormalBufferInfo());

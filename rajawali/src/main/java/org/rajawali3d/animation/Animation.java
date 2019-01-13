@@ -14,8 +14,8 @@ public abstract class Animation extends Playable {
 		, INFINITE
 		, RESTART
 		, REVERSE
-		, REVERSE_INFINITE;
-		// @formatter:on
+		, REVERSE_INFINITE
+        // @formatter:on
 	}
 
 	protected final List<IAnimationListener> mAnimationListeners;

@@ -13,7 +13,7 @@ public class ShadowPass extends RenderPass {
 	private RenderTarget mShadowRenderTarget;
 	private int mShadowMapSize;
 
-	public static enum ShadowPassType {
+	public enum ShadowPassType {
 		CREATE_SHADOW_MAP, APPLY_SHADOW_MAP
 	}
 

@@ -504,7 +504,7 @@ public abstract class A_nAABBTree extends BoundingBox implements IGraphNode {
 		calculateChildSideLengths();
 		if (mSplit) {
 			for (int i = 0; i < CHILD_COUNT; ++i) {
-				((Octree) mChildren[i]).setChildRegion(i, mChildLengths);
+				mChildren[i].setChildRegion(i, mChildLengths);
 			}
 		}
 		for (int i = 0; i < members_count; ++i) {

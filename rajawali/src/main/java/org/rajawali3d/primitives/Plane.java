@@ -256,21 +256,21 @@ public class Plane extends Object3D {
 				int lr = ur + 1;
 
                 if (mUpAxis == Axis.X || mUpAxis == Axis.Z) {
-                    indices[indexCount++] = (int) ur;
-                    indices[indexCount++] = (int) lr;
-                    indices[indexCount++] = (int) ul;
+                    indices[indexCount++] = ur;
+                    indices[indexCount++] = lr;
+                    indices[indexCount++] = ul;
 
-                    indices[indexCount++] = (int) lr;
-                    indices[indexCount++] = (int) ll;
-                    indices[indexCount++] = (int) ul;
+                    indices[indexCount++] = lr;
+                    indices[indexCount++] = ll;
+                    indices[indexCount++] = ul;
                 } else {
-                    indices[indexCount++] = (int) ur;
-                    indices[indexCount++] = (int) ul;
-                    indices[indexCount++] = (int) lr;
+                    indices[indexCount++] = ur;
+                    indices[indexCount++] = ul;
+                    indices[indexCount++] = lr;
 
-                    indices[indexCount++] = (int) lr;
-                    indices[indexCount++] = (int) ul;
-                    indices[indexCount++] = (int) ll;
+                    indices[indexCount++] = lr;
+                    indices[indexCount++] = ul;
+                    indices[indexCount++] = ll;
                 }
 			}
 		}

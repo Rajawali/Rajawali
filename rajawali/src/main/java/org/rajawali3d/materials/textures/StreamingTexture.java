@@ -25,7 +25,7 @@ public class StreamingTexture extends ATexture {
 
     public interface ISurfaceListener {
 
-        public void setSurface(Surface surface);
+        void setSurface(Surface surface);
     }
 
     private final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
@@ -93,16 +93,16 @@ public class StreamingTexture extends ATexture {
         }
     }
 
-    void remove() throws TextureException {
+    void remove() {
         GLES20.glDeleteTextures(1, new int[]{mTextureId}, 0);
         mSurfaceTexture.release();
     }
 
-    void replace() throws TextureException {
+    void replace() {
         return;
     }
 
-    void reset() throws TextureException {
+    void reset() {
         mSurfaceTexture.release();
     }
 

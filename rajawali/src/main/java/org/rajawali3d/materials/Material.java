@@ -75,9 +75,9 @@ public class Material {
      * This tells the Material class where to insert a shader fragment into either
      * the vertex of fragment shader.
      */
-    public static enum PluginInsertLocation {
+    public enum PluginInsertLocation {
         PRE_LIGHTING, PRE_DIFFUSE, PRE_SPECULAR, PRE_ALPHA, PRE_TRANSFORM, POST_TRANSFORM, IGNORE
-    };
+    }
 
     private final boolean mCapabilitiesCheckDeferred;
 

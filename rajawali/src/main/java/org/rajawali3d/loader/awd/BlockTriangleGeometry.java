@@ -128,7 +128,7 @@ public class BlockTriangleGeometry extends ABaseObjectBlockParser {
                     RajLog.d("   Mesh Data: t:" + type + " tf:" + typeF + " l:" + subLength + " ls:" + dis.getPosition() + " le:" + subEnd);
 
 				// Process the mesh data by type
-				switch ((int) type) {
+				switch (type) {
 				case 1: // Vertex positions
 					vertices = new float[(int) (subLength / geoPrecisionSize)];
 					while (idx < vertices.length) {

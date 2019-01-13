@@ -20,7 +20,7 @@ import org.rajawali3d.materials.shaders.fragments.animation.VertexAnimationVerte
 
 
 public class VertexAnimationMaterialPlugin implements IMaterialPlugin {
-	public static enum VertexAnimationShaderVar implements IGlobalShaderVar {
+	public enum VertexAnimationShaderVar implements IGlobalShaderVar {
 		A_NEXT_FRAME_POSITION("aNextFramePosition", DataType.VEC4),
 		A_NEXT_FRAME_NORMAL("aNextFrameNormal", DataType.VEC3),
 		U_INTERPOLATION("uInterpolation", DataType.FLOAT);

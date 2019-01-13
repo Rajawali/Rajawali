@@ -14,7 +14,7 @@ public interface ISurface {
     /**
      * Enum of available anti-aliasing configurations.
      */
-    public static enum ANTI_ALIASING_CONFIG {
+    enum ANTI_ALIASING_CONFIG {
         NONE, MULTISAMPLING, COVERAGE;
 
         public static ANTI_ALIASING_CONFIG fromInteger(int i) {
@@ -38,7 +38,7 @@ public interface ISurface {
      * @see #setRenderMode(int)
      * @see #requestRenderUpdate()
      */
-    public final static int RENDERMODE_WHEN_DIRTY = 0;
+    int RENDERMODE_WHEN_DIRTY = 0;
     /**
      * The renderer is called
      * continuously to re-render the scene.
@@ -46,28 +46,28 @@ public interface ISurface {
      * @see #getRenderMode()
      * @see #setRenderMode(int)
      */
-    public final static int RENDERMODE_CONTINUOUSLY = 1;
+    int RENDERMODE_CONTINUOUSLY = 1;
 
     /**
      * Sets the target frame rate in frames per second.
      *
      * @param rate {@code double} The target rate.
      */
-    public void setFrameRate(double rate);
+    void setFrameRate(double rate);
 
     /**
      * Gets the current rendering mode.
      *
      * @return {@code int} The current rendering mode.
      */
-    public int getRenderMode();
+    int getRenderMode();
 
     /**
      * Sets the desired rendering mode
      *
      * @param mode {@code int} The desired rendering mode.
      */
-    public void setRenderMode(int mode);
+    void setRenderMode(int mode);
 
     /**
      * Called to enable/disable multisampling on this surface.
@@ -75,14 +75,14 @@ public interface ISurface {
      *
      * @param config {@link ANTI_ALIASING_CONFIG} The desired anti aliasing configuration.
      */
-    public void setAntiAliasingMode(ANTI_ALIASING_CONFIG config);
+    void setAntiAliasingMode(ANTI_ALIASING_CONFIG config);
 
     /**
      * Sets the sample count to use. Only applies if multisample antialiasing is active.
      *
      * @param count {@code int} The sample count.
      */
-    public void setSampleCount(int count);
+    void setSampleCount(int count);
 
     /**
      * Called to set the {@link ISurfaceRenderer} which will render on this surface.
@@ -90,10 +90,10 @@ public interface ISurface {
      * @param renderer {@link ISurfaceRenderer} instance.
      * @throws IllegalStateException Thrown if a renderer has already been set.
      */
-    public void setSurfaceRenderer(ISurfaceRenderer renderer) throws IllegalStateException ;
+    void setSurfaceRenderer(ISurfaceRenderer renderer) throws IllegalStateException ;
 
     /**
      * Called when a render request should be made.
      */
-    public void requestRenderUpdate();
+    void requestRenderUpdate();
 }

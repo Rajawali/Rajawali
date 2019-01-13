@@ -8,36 +8,36 @@ public interface IPlayable {
 	 * 
 	 * @return {@link Boolean}
 	 */
-	public boolean isEnded();
+    boolean isEnded();
 
 	/**
 	 * Determine if an IPlayable is currently paused.
 	 * 
 	 * @return {@link Boolean}
 	 */
-	public boolean isPaused();
+    boolean isPaused();
 
 	/**
 	 * Determine if an IPlayable is currently playing.
 	 * 
 	 * @return {@link Boolean}
 	 */
-	public boolean isPlaying();
+    boolean isPlaying();
 
 	/**
 	 * Pause an IPlayable. Use {{@link #play()} to continue.
 	 */
-	public void pause();
+    void pause();
 
 	/**
 	 * Start an IPlayable for the first time or continue from a paused state. Use {{@link #pause()} to halt an
 	 * animation.
 	 */
-	public void play();
+    void play();
 
 	/**
 	 * Stop the IPlayable and set the elapsed time to zero.
 	 */
-	public void reset();
+    void reset();
 
 }

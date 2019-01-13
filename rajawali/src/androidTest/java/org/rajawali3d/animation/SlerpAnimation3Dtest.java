@@ -20,18 +20,18 @@ public class SlerpAnimation3Dtest {
     SlerpAnimation3D anim;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         anim = new SlerpAnimation3D(new Vector3(), new Vector3());
         assertNotNull(anim);
     }
 
     @After
-    public void teardown() throws Exception {
+    public void teardown() {
         anim = null;
     }
 
     @Test
-    public void testQuaternionFromVector() throws Exception {
+    public void testQuaternionFromVector() {
         Quaternion q = anim.quaternionFromVector(new Vector3());
         assertNotNull(q);
         assertEquals(1d, q.w, 1e-14);

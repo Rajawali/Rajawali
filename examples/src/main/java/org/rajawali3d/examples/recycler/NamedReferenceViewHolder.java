@@ -21,7 +21,7 @@ final class NamedReferenceViewHolder<K extends INamed,
 
     public NamedReferenceViewHolder(View itemView) {
         super(itemView);
-        textViewName = (TextView) itemView.findViewById(android.R.id.text1);
+        textViewName = itemView.findViewById(android.R.id.text1);
         textViewName.setOnClickListener(this);
     }
 

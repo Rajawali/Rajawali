@@ -21,12 +21,12 @@ import static org.junit.Assert.assertTrue;
 public class Vector3Test {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
 
     }
 
@@ -49,7 +49,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testConstructorNoArgs() throws Exception {
+    public void testConstructorNoArgs() {
         final Vector3 v = new Vector3();
         assertNotNull(v);
         assertEquals(0, v.x, 0);
@@ -58,7 +58,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testConstructorFromDouble() throws Exception {
+    public void testConstructorFromDouble() {
         final Vector3 v = new Vector3(1d);
         assertNotNull(v);
         assertEquals(1d, v.x, 0);
@@ -67,7 +67,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testConstructorFromVector3() throws Exception {
+    public void testConstructorFromVector3() {
         final Vector3 v1 = new Vector3(2d);
         final Vector3 v = new Vector3(v1);
         assertNotNull(v);
@@ -77,7 +77,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testConstructorFromStringArray() throws Exception {
+    public void testConstructorFromStringArray() {
         final String[] values = new String[]{"1", "2", "3"};
         final Vector3 v = new Vector3(values);
         assertNotNull(v);
@@ -87,7 +87,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testConstructorFromDoubleArray() throws Exception {
+    public void testConstructorFromDoubleArray() {
         final double[] values = new double[]{1d, 2d, 3d};
         final Vector3 v = new Vector3(values);
         assertNotNull(v);
@@ -97,13 +97,13 @@ public class Vector3Test {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConstructorFromShortDoubleArray() throws Exception {
+    public void testConstructorFromShortDoubleArray() {
         final double[] values = new double[]{1d, 2d};
         new Vector3(values);
     }
 
     @Test
-    public void testConstructorDoublesXyz() throws Exception {
+    public void testConstructorDoublesXyz() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         assertNotNull(v);
         assertEquals(1d, v.x, 0);
@@ -112,7 +112,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testSetAllFromDoublesXyz() throws Exception {
+    public void testSetAllFromDoublesXyz() {
         final Vector3 v = new Vector3();
         assertNotNull(v);
         final Vector3 out = v.setAll(1d, 2d, 3d);
@@ -124,7 +124,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testSetAllFromVector3() throws Exception {
+    public void testSetAllFromVector3() {
         final Vector3 v = new Vector3();
         assertNotNull(v);
         final Vector3 out = v.setAll(new Vector3(1d, 2d, 3d));
@@ -136,7 +136,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testSetAllFromAxis() throws Exception {
+    public void testSetAllFromAxis() {
         final Vector3 v = new Vector3();
         assertNotNull(v);
         final Vector3 outX = v.setAll(Vector3.Axis.X);
@@ -160,7 +160,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testAddVector3() throws Exception {
+    public void testAddVector3() {
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 v = new Vector3(0.1d, 0.2d, 0.3d);
         final Vector3 out = u.add(v);
@@ -172,7 +172,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testAddDoublesXyz() throws Exception {
+    public void testAddDoublesXyz() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final Vector3 out = v.add(0.1d, 0.2d, 0.3d);
         assertNotNull(out);
@@ -183,7 +183,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testAddDouble() throws Exception {
+    public void testAddDouble() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final Vector3 out = v.add(0.1d);
         assertNotNull(out);
@@ -194,7 +194,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testAddAndSet() throws Exception {
+    public void testAddAndSet() {
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 v = new Vector3(0.1d, 0.2d, 0.3d);
         final Vector3 t = new Vector3();
@@ -207,7 +207,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testAddAndCreate() throws Exception {
+    public void testAddAndCreate() {
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 v = new Vector3(0.1d, 0.2d, 0.3d);
         final Vector3 t = Vector3.addAndCreate(u, v);
@@ -218,7 +218,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testSubtractVector3() throws Exception {
+    public void testSubtractVector3() {
         final Vector3 u = new Vector3(1.1d, 2.2d, 3.3d);
         final Vector3 v = new Vector3(0.1d, 0.2d, 0.3d);
         final Vector3 out = u.subtract(v);
@@ -230,7 +230,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testSubtractDoublesXyz() throws Exception {
+    public void testSubtractDoublesXyz() {
         final Vector3 v = new Vector3(1.1d, 2.2d, 3.3d);
         final Vector3 out = v.subtract(0.1d, 0.2d, 0.3d);
         assertNotNull(out);
@@ -241,7 +241,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testSubtractDouble() throws Exception {
+    public void testSubtractDouble() {
         final Vector3 v = new Vector3(1.1d, 2.1d, 3.1d);
         final Vector3 out = v.subtract(0.1d);
         assertNotNull(out);
@@ -252,7 +252,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testSubtractAndSet() throws Exception {
+    public void testSubtractAndSet() {
         final Vector3 u = new Vector3(1.1d, 2.2d, 3.3d);
         final Vector3 v = new Vector3(0.1d, 0.2d, 0.3d);
         final Vector3 t = new Vector3();
@@ -265,7 +265,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testSubtractAndCreate() throws Exception {
+    public void testSubtractAndCreate() {
         final Vector3 u = new Vector3(1.1d, 2.2d, 3.3d);
         final Vector3 v = new Vector3(0.1d, 0.2d, 0.3d);
         final Vector3 t = Vector3.subtractAndCreate(u, v);
@@ -276,7 +276,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testMultiplyFromDouble() throws Exception {
+    public void testMultiplyFromDouble() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final Vector3 out = v.multiply(2d);
         assertNotNull(out);
@@ -287,7 +287,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testMultiplyFromVector3() throws Exception {
+    public void testMultiplyFromVector3() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final Vector3 v1 = new Vector3(2d, 3d, 4d);
         final Vector3 out = v.multiply(v1);
@@ -299,7 +299,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testMultiplyFomDoubleMatrix() throws Exception {
+    public void testMultiplyFomDoubleMatrix() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final double[] matrix = new double[]{1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d, 10d, 11d, 12d, 13d, 14d, 15d, 16d};
         final Vector3 out = v.multiply(matrix);
@@ -311,7 +311,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testMultiplyFromMatrix4() throws Exception {
+    public void testMultiplyFromMatrix4() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final double[] matrix = new double[]{1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d, 10d, 11d, 12d, 13d, 14d, 15d, 16d};
         final Matrix4 matrix4 = new Matrix4(matrix);
@@ -324,7 +324,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testMultiplyAndSet() throws Exception {
+    public void testMultiplyAndSet() {
         final Vector3 v = new Vector3();
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v2 = new Vector3(2d, 3d, 4d);
@@ -337,7 +337,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testMultiplyAndCreateFromTwoVector3() throws Exception {
+    public void testMultiplyAndCreateFromTwoVector3() {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v2 = new Vector3(2d, 3d, 4d);
         final Vector3 v = Vector3.multiplyAndCreate(v1, v2);
@@ -348,7 +348,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testMultiplyAndCreateFromVector3Double() throws Exception {
+    public void testMultiplyAndCreateFromVector3Double() {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v = Vector3.multiplyAndCreate(v1, 2d);
         assertNotNull(v);
@@ -358,7 +358,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDivideFromDouble() throws Exception {
+    public void testDivideFromDouble() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final Vector3 out = v.divide(2d);
         assertNotNull(out);
@@ -369,7 +369,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDivideFromVector3() throws Exception {
+    public void testDivideFromVector3() {
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 v = new Vector3(0.5d, 0.25d, 4d);
         final Vector3 out = u.divide(v);
@@ -381,7 +381,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDivideAndSet() throws Exception {
+    public void testDivideAndSet() {
         final Vector3 t = new Vector3();
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 v = new Vector3(0.5d, 0.25d, 4d);
@@ -394,7 +394,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testScaleAndSet() throws Exception {
+    public void testScaleAndSet() {
         final Vector3 t = new Vector3();
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final Vector3 out = t.scaleAndSet(v, 0.5d);
@@ -406,7 +406,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testScaleAndCreate() throws Exception {
+    public void testScaleAndCreate() {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v = Vector3.scaleAndCreate(v1, 0.5d);
         assertNotNull(v);
@@ -416,7 +416,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testRotateBy() throws Exception {
+    public void testRotateBy() {
         {
             final Quaternion q = Quaternion.getIdentity();
             Vector3 v = new Vector3(0, 0, 1);
@@ -438,7 +438,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testRotateX() throws Exception {
+    public void testRotateX() {
         final Vector3 v1 = new Vector3(Vector3.X);
         final Vector3 v2 = new Vector3(Vector3.Y);
         final Vector3 v3 = new Vector3(Vector3.Z);
@@ -457,7 +457,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testRotateY() throws Exception {
+    public void testRotateY() {
         final Vector3 v1 = new Vector3(Vector3.X);
         final Vector3 v2 = new Vector3(Vector3.Y);
         final Vector3 v3 = new Vector3(Vector3.Z);
@@ -476,7 +476,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testRotateZ() throws Exception {
+    public void testRotateZ() {
         final Vector3 v1 = new Vector3(Vector3.X);
         final Vector3 v2 = new Vector3(Vector3.Y);
         final Vector3 v3 = new Vector3(Vector3.Z);
@@ -495,7 +495,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final double mod = v.normalize();
         assertEquals(3.7416573867739413, mod, 1e-14);
@@ -519,7 +519,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testOrthoNormalizeFromVector3Array() throws Exception {
+    public void testOrthoNormalizeFromVector3Array() {
         final Vector3 v1 = new Vector3(Vector3.X);
         final Vector3 v2 = new Vector3(Vector3.Y);
         final Vector3 v3 = new Vector3(Vector3.Z);
@@ -551,7 +551,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testOrthoNormalizeFromTwoVector3() throws Exception {
+    public void testOrthoNormalizeFromTwoVector3() {
         final Vector3 v1 = new Vector3(Vector3.X);
         final Vector3 v2 = new Vector3(Vector3.Y);
         v2.multiply(2d);
@@ -574,7 +574,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testInverse() throws Exception {
+    public void testInverse() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final Vector3 out = v.inverse();
         assertNotNull(out);
@@ -585,7 +585,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testInvertAndCreate() throws Exception {
+    public void testInvertAndCreate() {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v = v1.invertAndCreate();
         assertNotNull(v);
@@ -595,47 +595,47 @@ public class Vector3Test {
     }
 
     @Test
-    public void testLengthFromDoublesXyz() throws Exception {
+    public void testLengthFromDoublesXyz() {
         final double l = Vector3.length(1d, 2d, 3d);
         assertEquals(3.74165738677394, l, 1e-14);
     }
 
     @Test
-    public void testLengthFromVector3() throws Exception {
+    public void testLengthFromVector3() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final double l = Vector3.length(v);
         assertEquals(3.74165738677394, l, 1e-14);
     }
 
     @Test
-    public void testLength2FromVector3() throws Exception {
+    public void testLength2FromVector3() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final double l2 = Vector3.length2(v);
         assertEquals(14d, l2, 1e-14);
     }
 
     @Test
-    public void testLength2DoublesXyz() throws Exception {
+    public void testLength2DoublesXyz() {
         final double l2 = Vector3.length2(1d, 2d, 3d);
         assertEquals(14d, l2, 1e-14);
     }
 
     @Test
-    public void testLengthFromSelf() throws Exception {
+    public void testLengthFromSelf() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final double l = v.length();
         assertEquals(3.74165738677394, l, 1e-14);
     }
 
     @Test
-    public void testLength2FromSelf() throws Exception {
+    public void testLength2FromSelf() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final double l2 = v.length2();
         assertEquals(14d, l2, 1e-14);
     }
 
     @Test
-    public void testDistanceToFromVector3() throws Exception {
+    public void testDistanceToFromVector3() {
         final Vector3 v1 = new Vector3(0d, 1d, 2d);
         final Vector3 v2 = new Vector3(3d, 5d, 7d);
         final double distance1 = v1.distanceTo(v2);
@@ -645,7 +645,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDistanceToFromDoublesXyz() throws Exception {
+    public void testDistanceToFromDoublesXyz() {
         final Vector3 v1 = new Vector3(0d, 1d, 2d);
         final Vector3 v2 = new Vector3(3d, 5d, 7d);
         final double distance1 = v1.distanceTo(3d, 5d, 7d);
@@ -655,7 +655,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDistanceToFromTwoVector3() throws Exception {
+    public void testDistanceToFromTwoVector3() {
         final Vector3 v1 = new Vector3(0d, 1d, 2d);
         final Vector3 v2 = new Vector3(3d, 5d, 7d);
         final double distance1 = Vector3.distanceTo(v1, v2);
@@ -665,7 +665,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDistanceToFromTwoPointsDoublesXyz() throws Exception {
+    public void testDistanceToFromTwoPointsDoublesXyz() {
         final double distance1 = Vector3.distanceTo(0d, 1d, 2d, 3d, 5d, 7d);
         final double distance2 = Vector3.distanceTo(3d, 5d, 7d, 0d, 1d, 2d);
         assertEquals(7.07106781186548, distance1, 1e-14);
@@ -673,7 +673,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDistanceTo2FromVector3() throws Exception {
+    public void testDistanceTo2FromVector3() {
         final Vector3 v1 = new Vector3(0d, 1d, 2d);
         final Vector3 v2 = new Vector3(3d, 5d, 7d);
         final double distance1 = v1.distanceTo2(v2);
@@ -683,7 +683,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDistanceTo2FromDoublesXyz() throws Exception {
+    public void testDistanceTo2FromDoublesXyz() {
         final Vector3 v1 = new Vector3(0d, 1d, 2d);
         final Vector3 v2 = new Vector3(3d, 5d, 7d);
         final double distance1 = v1.distanceTo2(3d, 5d, 7d);
@@ -693,7 +693,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDistanceTo2FromTwoVector3() throws Exception {
+    public void testDistanceTo2FromTwoVector3() {
         final Vector3 v1 = new Vector3(0d, 1d, 2d);
         final Vector3 v2 = new Vector3(3d, 5d, 7d);
         final double distance1 = Vector3.distanceTo2(v1, v2);
@@ -703,7 +703,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDistanceTo2FromTwoPointsDoublesXyz() throws Exception {
+    public void testDistanceTo2FromTwoPointsDoublesXyz() {
         final double distance1 = Vector3.distanceTo2(0d, 1d, 2d, 3d, 5d, 7d);
         final double distance2 = Vector3.distanceTo2(3d, 5d, 7d, 0d, 1d, 2d);
         assertEquals(50d, distance1, 0);
@@ -711,7 +711,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testAbsoluteValue() throws Exception {
+    public void testAbsoluteValue() {
         final Vector3 v = new Vector3(-0d, -1d, -2d);
         final Vector3 out = v.absoluteValue();
         assertNotNull(out);
@@ -722,7 +722,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testProjectFromVector3() throws Exception {
+    public void testProjectFromVector3() {
         final Vector3 a = new Vector3(1d, 1d, 0d);
         final Vector3 b = new Vector3(2d, 0d, 0d);
         final Vector3 v = b.project(a);
@@ -734,7 +734,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testProjectFromDoubleArrayMatrix() throws Exception {
+    public void testProjectFromDoubleArrayMatrix() {
         final double[] m = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -751,7 +751,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testProjectFromMatrix4() throws Exception {
+    public void testProjectFromMatrix4() {
         final double[] m = new double[]{
                 1d, 0d, 0d, 0d,
                 0d, 1d, 0d, 0d,
@@ -768,7 +768,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testProjectAndCreate() throws Exception {
+    public void testProjectAndCreate() {
         final Vector3 a = new Vector3(1d, 1d, 0d);
         final Vector3 b = new Vector3(2d, 0d, 0d);
         final Vector3 v = Vector3.projectAndCreate(a, b);
@@ -781,7 +781,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testAngle() throws Exception {
+    public void testAngle() {
         final Vector3 v1 = new Vector3(Vector3.X);
         final Vector3 v2 = new Vector3(Vector3.Y);
         final Vector3 v = new Vector3(1d, 1d, 1d);
@@ -795,7 +795,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDotFromTwoVector3() throws Exception {
+    public void testDotFromTwoVector3() {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v2 = new Vector3(4d, 5d, 6d);
         final double dot = Vector3.dot(v1, v2);
@@ -803,7 +803,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDotFromVector3() throws Exception {
+    public void testDotFromVector3() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final Vector3 v1 = new Vector3(4d, 5d, 6d);
         final double dot = v.dot(v1);
@@ -811,20 +811,20 @@ public class Vector3Test {
     }
 
     @Test
-    public void testDotFromDoublesXyz() throws Exception {
+    public void testDotFromDoublesXyz() {
         final Vector3 v = new Vector3(1d, 2d, 3d);
         final double dot = v.dot(4d, 5d, 6d);
         assertEquals(32d, dot, 0);
     }
 
     @Test
-    public void testDotFromTwoDoublesXyz() throws Exception {
+    public void testDotFromTwoDoublesXyz() {
         final double dot = Vector3.dot(1d, 2d, 3d, 4d, 5d, 6d);
         assertEquals(32d, dot, 0);
     }
 
     @Test
-    public void testCrossFromVector3() throws Exception {
+    public void testCrossFromVector3() {
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 v = new Vector3(4d, 5d, 6d);
         final Vector3 out = u.cross(v);
@@ -836,7 +836,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testCrossFromDoublesXyz() throws Exception {
+    public void testCrossFromDoublesXyz() {
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 out = u.cross(4d, 5d, 6d);
         assertNotNull(out);
@@ -847,7 +847,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testCrossAndSet() throws Exception {
+    public void testCrossAndSet() {
         final Vector3 t = new Vector3();
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 v = new Vector3(4d, 5d, 6d);
@@ -860,7 +860,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testCrossAndCreate() throws Exception {
+    public void testCrossAndCreate() {
         final Vector3 u = new Vector3(1d, 2d, 3d);
         final Vector3 v = new Vector3(4d, 5d, 6d);
         final Vector3 t = Vector3.crossAndCreate(u, v);
@@ -871,7 +871,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testGetRotationTo() throws Exception {
+    public void testGetRotationTo() {
         final Quaternion out = Vector3.X.getRotationTo(Vector3.Y);
         assertNotNull(out);
         assertEquals(0.7071067811865475, out.w, 1e-14);
@@ -905,7 +905,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testLerp() throws Exception {
+    public void testLerp() {
         final Vector3 v = new Vector3(1d, 0d, 0d);
         final Vector3 vp = new Vector3(0d, 1d, 0d);
         final Vector3 v1 = v.lerp(vp, 0);
@@ -931,7 +931,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testLerpAndSet() throws Exception {
+    public void testLerpAndSet() {
         final Vector3 v = new Vector3(1d, 0d, 0d);
         final Vector3 vp = new Vector3(0d, 1d, 0d);
         final Vector3 out = new Vector3();
@@ -956,7 +956,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testLerpAndCreate() throws Exception {
+    public void testLerpAndCreate() {
         final Vector3 v = new Vector3(1d, 0d, 0d);
         final Vector3 vp = new Vector3(0d, 1d, 0d);
         final Vector3 v1 = Vector3.lerpAndCreate(v, vp, 0d);
@@ -977,7 +977,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testClone() throws Exception {
+    public void testClone() {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v = v1.clone();
         assertNotNull(v);
@@ -988,7 +988,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testIsUnit() throws Exception {
+    public void testIsUnit() {
         assertTrue(Vector3.X.isUnit());
         assertTrue(Vector3.Y.isUnit());
         assertTrue(Vector3.Z.isUnit());
@@ -997,7 +997,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testIsUnitWithMargin() throws Exception {
+    public void testIsUnitWithMargin() {
         assertTrue(Vector3.X.isUnit(0.1));
         assertTrue(Vector3.Y.isUnit(0.1));
         assertTrue(Vector3.Z.isUnit(0.1));
@@ -1008,7 +1008,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testIsZero() throws Exception {
+    public void testIsZero() {
         assertFalse(Vector3.X.isZero());
         assertFalse(Vector3.Y.isZero());
         assertFalse(Vector3.Z.isZero());
@@ -1017,7 +1017,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testIsZeroWithMargin() throws Exception {
+    public void testIsZeroWithMargin() {
         assertFalse(Vector3.X.isZero(0.1));
         assertFalse(Vector3.Y.isZero(0.1));
         assertFalse(Vector3.Z.isZero(0.1));
@@ -1027,19 +1027,19 @@ public class Vector3Test {
     }
 
     @Test
-    public void testGetAxisVector() throws Exception {
+    public void testGetAxisVector() {
         assertEquals(Vector3.X, Vector3.getAxisVector(Vector3.Axis.X));
         assertEquals(Vector3.Y, Vector3.getAxisVector(Vector3.Axis.Y));
         assertEquals(Vector3.Z, Vector3.getAxisVector(Vector3.Axis.Z));
     }
 
     @Test(expected = NullPointerException.class)
-    public void testGetAxisVectorWithNull() throws Exception {
+    public void testGetAxisVectorWithNull() {
         Vector3.getAxisVector(null);
     }
 
     @Test
-    public void testAxisValueOf() throws Exception {
+    public void testAxisValueOf() {
         assertEquals(Vector3.Axis.X, Vector3.Axis.valueOf("X"));
         assertEquals(Vector3.Axis.Y, Vector3.Axis.valueOf("Y"));
         assertEquals(Vector3.Axis.Z, Vector3.Axis.valueOf("Z"));
@@ -1047,7 +1047,7 @@ public class Vector3Test {
 
     @SuppressWarnings({"EqualsBetweenInconvertibleTypes", "ObjectEqualsNull"})
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v2 = new Vector3(1d, 2d, 3d);
         final Vector3 v3 = new Vector3(4d, 5d, 6d);
@@ -1062,7 +1062,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testEqualsWithError() throws Exception {
+    public void testEqualsWithError() {
         final Vector3 v1 = new Vector3(1d, 2d, 3d);
         final Vector3 v2 = new Vector3(1d, 2d, 3d);
         final Vector3 v3 = new Vector3(4d, 5d, 6d);
@@ -1081,7 +1081,7 @@ public class Vector3Test {
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         final Vector3 v = new Vector3();
         assertNotNull(v.toString());
     }

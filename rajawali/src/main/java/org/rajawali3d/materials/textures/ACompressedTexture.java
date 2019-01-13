@@ -35,9 +35,9 @@ public abstract class ACompressedTexture extends ATexture {
 		ATC,
 		DXT1,
 		PVRTC
-	};
+	}
 
-	/**
+    /**
 	 * Texture compression type
 	 */
 	protected CompressionType mCompressionType;
@@ -183,8 +183,7 @@ public abstract class ACompressedTexture extends ATexture {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
-	void remove() throws TextureException
-	{
+	void remove() {
 		GLES20.glDeleteTextures(1, new int[] { mTextureId }, 0);
 	}
 

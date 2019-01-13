@@ -13,5 +13,5 @@
 package org.rajawali3d.visitors;
 
 public interface INode {
-	public void accept(INodeVisitor visitor);
+	void accept(INodeVisitor visitor);
 }

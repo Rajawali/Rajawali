@@ -55,7 +55,7 @@ public class LoaderGCode extends AMeshLoader {
 
 		private int val;
 
-		private GCodeFlavor(int val) {
+		GCodeFlavor(int val) {
 			this.val = val;
 		}
 
@@ -97,7 +97,7 @@ public class LoaderGCode extends AMeshLoader {
 
 		private int val;
 
-		private SupportedCommands(int val) {
+		SupportedCommands(int val) {
 			this.val = val;
 		}
 
@@ -607,9 +607,8 @@ public class LoaderGCode extends AMeshLoader {
 	/**
 	 * @param buffer
 	 * @return
-	 * @throws IOException
-	 */
-	protected HashMap<String, String> readSkeinforgeComments(BufferedInputStream buffer) throws IOException {
+     */
+	protected HashMap<String, String> readSkeinforgeComments(BufferedInputStream buffer) {
 		// FIXME no-op
 		return new HashMap<String, String>();
 	}

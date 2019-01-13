@@ -15,17 +15,17 @@ public class ScreenQuadTest {
     private ScreenQuad screenQuad;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         screenQuad = new ScreenQuad(false);
     }
 
     @After
-    public void teardown() throws Exception {
+    public void teardown() {
         screenQuad = null;
     }
 
     @Test
-    public void testVertices() throws Exception {
+    public void testVertices() {
         float[] expected = new float[]{
                 -0.5f, -0.5f, 0,
                 -0.5f, 0.5f, 0,
@@ -40,7 +40,7 @@ public class ScreenQuadTest {
     }
 
     @Test
-    public void testTextureCoords() throws Exception {
+    public void testTextureCoords() {
         float[] expected = new float[]{
                 0, 1,
                 0, 0,

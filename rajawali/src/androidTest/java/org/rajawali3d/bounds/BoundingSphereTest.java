@@ -15,22 +15,22 @@ public class BoundingSphereTest {
     BoundingSphere bounds;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         bounds = new BoundingSphere();
     }
 
     @After
-    public void teardown() throws Exception {
+    public void teardown() {
         bounds = null;
     }
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() {
         assertNotNull(bounds);
     }
 
     @Test
-    public void testGetPosition() throws Exception {
+    public void testGetPosition() {
         Vector3 position = bounds.getPosition();
         assertEquals(0, position.x, 1e-14);
         assertEquals(0, position.y, 1e-14);
@@ -38,19 +38,19 @@ public class BoundingSphereTest {
     }
 
     @Test
-    public void testGetRadius() throws Exception {
+    public void testGetRadius() {
         double radius = bounds.getRadius();
         assertEquals(0, radius, 1e-14);
     }
 
     @Test
-    public void testGetScale() throws Exception {
+    public void testGetScale() {
         double scale = bounds.getScale();
         assertEquals(0, scale, 1e-14);
     }
 
     @Test
-    public void testGetScaledRadius() throws Exception {
+    public void testGetScaledRadius() {
         double scaledRadius = bounds.getScaledRadius();
         assertEquals(0, scaledRadius, 1e-14);
     }

@@ -35,7 +35,7 @@ public interface IGraphNode {
 	 * This enum defines the different scene graphs which {@link Scene}
 	 * can use. If a new type is created it should be added to this list.
 	 */
-	public enum GRAPH_TYPE {
+    enum GRAPH_TYPE {
 		NONE, OCTREE
 	}
 
@@ -46,7 +46,7 @@ public interface IGraphNode {
 	 *
 	 * @param object BaseObject3D to be added to the graph.
 	 */
-	public void addObject(IGraphNodeMember object);
+    void addObject(IGraphNodeMember object);
 
 	/**
 	 * Adds a collection of objects to the scene graph. Implementations
@@ -55,7 +55,7 @@ public interface IGraphNode {
 	 *
 	 * @param objects Collection of {@link IGraphNodeMember} objects to add.
 	 */
-	public void addObjects(Collection<IGraphNodeMember> objects);
+    void addObjects(Collection<IGraphNodeMember> objects);
 
 	/**
 	 * Removes an object from the scene graph. Implementations do not
@@ -64,7 +64,7 @@ public interface IGraphNode {
 	 *
 	 * @param object BaseObject3D to be removed from the graph.
 	 */
-	public void removeObject(IGraphNodeMember object);
+    void removeObject(IGraphNodeMember object);
 
 	/**
 	 * Removes a collection of objects from the scene graph. Implementations do not
@@ -73,7 +73,7 @@ public interface IGraphNode {
 	 *
 	 * @param objects Collection of {@link IGraphNodeMember} objects to remove.
 	 */
-	public void removeObjects(Collection<IGraphNodeMember> objects);
+    void removeObjects(Collection<IGraphNodeMember> objects);
 
 	/**
 	 * This should be called whenever an object has moved in the scene.
@@ -81,7 +81,7 @@ public interface IGraphNode {
 	 *
 	 * @param object BaseObject3D to re-examine.
 	 */
-	public void updateObject(IGraphNodeMember object);
+    void updateObject(IGraphNodeMember object);
 
 	/**
 	 * Set the child addition behavior. Implementations are expected
@@ -89,7 +89,7 @@ public interface IGraphNode {
 	 *
 	 * @param recursive boolean Should the children be added recursively.
 	 */
-	public void addChildrenRecursively(boolean recursive);
+    void addChildrenRecursively(boolean recursive);
 
 	/**
 	 * Set the child removal behavior. Implementations are expected to
@@ -97,19 +97,19 @@ public interface IGraphNode {
 	 *
 	 * @param recursive boolean Should the children be removed recursively.
 	 */
-	public void removeChildrenRecursively(boolean recursive);
+    void removeChildrenRecursively(boolean recursive);
 
 	/**
 	 * Can be called to force a reconstruction of the scene graph
 	 * with all added children. This is useful if the scene graph
 	 * does not support online modification.
 	 */
-	public void rebuild();
+    void rebuild();
 
 	/**
 	 * Can be called to remove all objects from the scene graph.
 	 */
-	public void clear();
+    void clear();
 
 	/**
 	 * Called to cause the scene graph to determine which objects are
@@ -118,7 +118,7 @@ public interface IGraphNode {
 	 *
 	 * @param volume IBoundingVolume to test visibility against.
 	 */
-	public void cullFromBoundingVolume(IBoundingVolume volume);
+    void cullFromBoundingVolume(IBoundingVolume volume);
 
 	/**
 	 * Call this in the renderer to cause the scene graph to be
@@ -128,21 +128,21 @@ public interface IGraphNode {
 	 *
 	 * @param display boolean indicating if the graph is to be displayed.
 	 */
-	public void displayGraph(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix);
+    void displayGraph(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix);
 
 	/**
 	 * Retrieve the minimum bounds of this scene.
 	 *
 	 * @return {@link Vector3} The components represent the minimum value in each axis.
 	 */
-	public Vector3 getSceneMinBound();
+    Vector3 getSceneMinBound();
 
 	/**
 	 * Retrieve the maximum bounds of this scene.
 	 *
 	 * @return {@link Vector3} The components represent the maximum value in each axis.
 	 */
-	public Vector3 getSceneMaxBound();
+    Vector3 getSceneMaxBound();
 
 	/**
 	 * Retrieve the number of objects this node is aware of. This count should
@@ -151,7 +151,7 @@ public interface IGraphNode {
 	 *
 	 * @return int containing the object count.
 	 */
-	public int getObjectCount();
+    int getObjectCount();
 
 	/**
 	 * Does this volume fully contain the input volume.
@@ -159,7 +159,7 @@ public interface IGraphNode {
 	 * @param boundingVolume Volume to check containment of.
 	 * @return boolean result of containment test.
 	 */
-	public boolean contains(IBoundingVolume boundingVolume);
+    boolean contains(IBoundingVolume boundingVolume);
 
 	/**
 	 * Is this volume fully contained by the input volume.
@@ -167,5 +167,5 @@ public interface IGraphNode {
 	 * @param boundingVolume Volume to check containment by.
 	 * @return boolean result of containment test.
 	 */
-	public boolean isContainedBy(IBoundingVolume boundingVolume);
+    boolean isContainedBy(IBoundingVolume boundingVolume);
 }

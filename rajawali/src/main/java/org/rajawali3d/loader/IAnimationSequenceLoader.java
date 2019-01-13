@@ -15,5 +15,5 @@ package org.rajawali3d.loader;
 import org.rajawali3d.animation.mesh.IAnimationSequence;
 
 public interface IAnimationSequenceLoader extends ILoader {
-	public IAnimationSequence getParsedAnimationSequence();
+	IAnimationSequence getParsedAnimationSequence();
 }

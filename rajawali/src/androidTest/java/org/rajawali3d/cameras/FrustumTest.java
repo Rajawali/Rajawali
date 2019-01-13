@@ -17,7 +17,7 @@ public class FrustumTest {
     Frustum frustum;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         frustum = new Frustum();
         assertNotNull(new Frustum());
         final Matrix4 inverseProjectionView = new Matrix4();
@@ -25,12 +25,12 @@ public class FrustumTest {
     }
 
     @After
-    public void teardown() throws Exception {
+    public void teardown() {
         frustum = null;
     }
 
     @Test
-    public void testSphereInFrustum() throws Exception {
+    public void testSphereInFrustum() {
         final Vector3 center = new Vector3();
         final double radius = 0;
         boolean result = frustum.sphereInFrustum(center, radius);
@@ -38,14 +38,14 @@ public class FrustumTest {
     }
 
     @Test
-    public void testBoundsInFrustum() throws Exception {
+    public void testBoundsInFrustum() {
         final BoundingBox bounds = new BoundingBox();
         boolean result = frustum.boundsInFrustum(bounds);
         assertTrue(result);
     }
 
     @Test
-    public void testPointInFrustum() throws Exception {
+    public void testPointInFrustum() {
         final Vector3 point = new Vector3();
         boolean result = frustum.pointInFrustum(point);
         assertTrue(result);
