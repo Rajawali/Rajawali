@@ -1,7 +1,5 @@
 package org.rajawali3d.math;
 
-import android.support.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.math.vector.Vector3.Axis;
@@ -18,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
-@SmallTest
 public class Matrix4Test {
 
     @Test

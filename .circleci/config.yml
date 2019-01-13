@@ -41,8 +41,7 @@ jobs:
               gcloud auth activate-service-account $GCLOUD_SERVICE_ACCOUNT --key-file ${HOME}/client-secret.json
               gcloud firebase test android run --type instrumentation --device version=28,model=Pixel2 --no-record-video --app testing/dummy.apk --test rajawali/build/outputs/apk/androidTest/debug/rajawali-debug-androidTest.apk --timeout 1m --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" --directories-to-pull /sdcard --results-dir rajawali-${CIRCLE_SHA1}
               coverageFile=`gsutil ls gs://test-lab-b7bitcqyxt144-h7dwq818889qk/rajawali-${CIRCLE_SHA1}/**/*.ec | tail -1`
-              gsutil cp $coverageFile rajawali/build/outputs | true
-              mv rajawali/build/outputs/coverage.ec rajawali/build/outputs/rajawali-coverage.ec
+              gsutil cp $coverageFile $PWD/rajawali/build/jacoco | true
               ./gradlew :rajawali:jacocoTestReport
             fi
 

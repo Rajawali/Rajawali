@@ -1,7 +1,5 @@
 package org.rajawali3d.math.vector;
 
-import android.support.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
-@SmallTest
 public class Vector3Test {
 
     @Before

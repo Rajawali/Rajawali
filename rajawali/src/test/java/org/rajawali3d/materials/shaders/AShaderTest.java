@@ -1,7 +1,5 @@
 package org.rajawali3d.materials.shaders;
 
-import android.support.test.filters.SmallTest;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -9,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
-@SmallTest
 public class AShaderTest {
 
     @Test
