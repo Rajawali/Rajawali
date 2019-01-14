@@ -15,6 +15,7 @@ import org.rajawali3d.R
 import org.rajawali3d.renderer.ISurfaceRenderer
 import org.rajawali3d.util.Capabilities
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser
+import org.rajawali3d.util.egl.ResultConfigChooser
 import java.lang.ref.WeakReference
 import java.util.*
 import javax.microedition.khronos.egl.*
@@ -51,7 +52,7 @@ open class TextureView @JvmOverloads constructor(
 
     private var glThread: GLThread? = null
     private var detached: Boolean = false
-    private var eglConfigChooser: GLSurfaceView.EGLConfigChooser? = null
+    private var eglConfigChooser: IRajawaliEglConfigChooser? = null
     private var eglContextFactory: GLSurfaceView.EGLContextFactory? = null
     private var eglWindowSurfaceFactory: GLSurfaceView.EGLWindowSurfaceFactory? = null
     private var eglContextClientVersion: Int = 0
@@ -319,7 +320,7 @@ open class TextureView @JvmOverloads constructor(
      *
      * @param configChooser [GLSurfaceView.EGLConfigChooser] The EGL Configuration chooser.
      */
-    open fun setEGLConfigChooser(configChooser: GLSurfaceView.EGLConfigChooser) {
+    open fun setEGLConfigChooser(configChooser: IRajawaliEglConfigChooser) {
         checkRenderThreadState()
         eglConfigChooser = configChooser
     }
@@ -525,7 +526,7 @@ open class TextureView @JvmOverloads constructor(
     abstract class BaseConfigChooser(
             protected val textureView: TextureView,
             requestedConfigSpec: IntArray
-    ) : GLSurfaceView.EGLConfigChooser {
+    ) : IRajawaliEglConfigChooser {
 
         private var configSpec: IntArray = filterConfigSpec(requestedConfigSpec)
 
@@ -595,6 +596,9 @@ open class TextureView @JvmOverloads constructor(
                     EGL10.EGL_NONE
             )
     ) {
+        override fun chooseConfigWithReason(egl: EGL10, display: EGLDisplay): ResultConfigChooser {
+            return ResultConfigChooser(chooseConfig(egl, display), null)
+        }
 
         private val valueArray = IntArray(1)
 
@@ -654,7 +658,8 @@ open class TextureView @JvmOverloads constructor(
             eglDisplay = egl?.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY)
 
             if (eglDisplay === EGL10.EGL_NO_DISPLAY) {
-                throw RuntimeException("eglGetDisplay failed")
+                throwEglException("eglGetDisplay failed " + EGL10.EGL_NO_DISPLAY)
+                return
             }
 
             /*
@@ -662,23 +667,30 @@ open class TextureView @JvmOverloads constructor(
              */
             val version = IntArray(2)
             if (!egl!!.eglInitialize(eglDisplay, version)) {
-                throw RuntimeException("eglInitialize failed")
+                throwEglException("eglInitialize failed")
+                return
             }
             rajawaliTextureViewWeakRef.get()?.let {
-                mEglConfig = it.eglConfigChooser?.chooseConfig(egl, eglDisplay)
 
-                /*
-                * Create an EGL context. We want to do this as rarely as we can, because an
-                * EGL context is a somewhat heavy object.
-                */
-                eglContext = it.eglContextFactory?.createContext(egl, eglDisplay, mEglConfig)
+                val result = it.eglConfigChooser?.chooseConfigWithReason(egl!!, eglDisplay!!)
+                result?.configGL?.let { config ->
+                    mEglConfig = config
+
+                    /*
+                    * Create an EGL context. We want to do this as rarely as we can, because an
+                    * EGL context is a somewhat heavy object.
+                    */
+                    eglContext = it.eglContextFactory?.createContext(egl, eglDisplay, mEglConfig)
+                } ?: run {
+                    result?.error?.let { error -> throwEglException(error) }
+                }
             } ?: run {
                 mEglConfig = null
                 eglContext = null
             }
-            if (eglContext == null || eglContext === EGL10.EGL_NO_CONTEXT) {
+            if (eglContext === EGL10.EGL_NO_CONTEXT) {
                 eglContext = null
-                throwEglException("createContext")
+                throwEglException("createContext " + EGL10.EGL_NO_CONTEXT)
             }
             if (LOG_EGL) {
                 Log.w("EglHelper", "createContext " + eglContext + " tid=" + Thread.currentThread().id)
@@ -707,7 +719,7 @@ open class TextureView @JvmOverloads constructor(
                 throw RuntimeException("eglDisplay not initialized")
             }
             if (mEglConfig == null) {
-                throw RuntimeException("mEglConfig not initialized")
+                return false
             }
 
             /*
@@ -1536,5 +1548,7 @@ open class TextureView @JvmOverloads constructor(
         private const val LOG_EGL = false
 
         private val glThreadManager = GLThreadManager()
+
     }
+
 }
