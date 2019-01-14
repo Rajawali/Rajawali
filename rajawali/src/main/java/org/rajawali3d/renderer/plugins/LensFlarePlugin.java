@@ -270,8 +270,8 @@ public final class LensFlarePlugin extends Plugin {
         // Set up lookup textures.
         mMapTexture = new TextureConfig(TextureType.LOOKUP);
         mMapTexture.setBuffers(new ByteBuffer[0]);
-        mMapTexture = mRenderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.RGB_565, false, false, WrapType.CLAMP, FilterType.NEAREST);
-        mOcclusionMapTexture = mRenderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.ARGB_8888, false, false, WrapType.CLAMP, FilterType.NEAREST);
+        mMapTexture = renderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.RGB_565, false, false, WrapType.CLAMP, FilterType.NEAREST);
+        mOcclusionMapTexture = renderer.getTextureManager().addTexture(new ByteBuffer[0], null, 16, 16, TextureType.LOOKUP, Config.ARGB_8888, false, false, WrapType.CLAMP, FilterType.NEAREST);
         */
         // Set up shader program.
         // Currently vertex texture shader causes problems on Adreno 320 GPUs.
