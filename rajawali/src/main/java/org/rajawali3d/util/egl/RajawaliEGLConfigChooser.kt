@@ -13,8 +13,16 @@ import javax.microedition.khronos.egl.EGLDisplay
 /**
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-class RajawaliEGLConfigChooser(glMajorVersion: Int, val antiAliasingConfig: ISurface.ANTI_ALIASING_CONFIG,
-                               sampleCount: Int, bitsRed: Int, bitsGreen: Int, bitsBlue: Int, bitsAlpha: Int, bitsDepth: Int) : GLSurfaceView.EGLConfigChooser {
+class RajawaliEGLConfigChooser(
+        glMajorVersion: Int,
+        val antiAliasingConfig: ISurface.ANTI_ALIASING_CONFIG,
+        sampleCount: Int,
+        bitsRed: Int,
+        bitsGreen: Int,
+        bitsBlue: Int,
+        bitsAlpha: Int,
+        bitsDepth: Int
+) : GLSurfaceView.EGLConfigChooser {
 
     private val configSpec: IntArray
 
@@ -40,7 +48,7 @@ class RajawaliEGLConfigChooser(glMajorVersion: Int, val antiAliasingConfig: ISur
         configSpec[11] = EGLExt.EGL_OPENGL_ES3_BIT_KHR
     }
 
-    override fun chooseConfig(egl: EGL10, display: EGLDisplay): EGLConfig {
+    override fun chooseConfig(egl: EGL10, display: EGLDisplay): EGLConfig? {
         val result = IntArray(1)
         if (!egl.eglChooseConfig(display, configSpec, null, 0, result)) {
             throw IllegalStateException("This device does not support the requested EGL Configuration!")
@@ -61,8 +69,7 @@ class RajawaliEGLConfigChooser(glMajorVersion: Int, val antiAliasingConfig: ISur
             }
         }
 
-        return (if (configs.isNotEmpty()) configs[index] else null)
-                ?: throw RuntimeException("No EGL configuration chosen")
+        return if (configs.isNotEmpty()) configs[index] else throw RuntimeException("No EGL configuration chosen")
     }
 
     companion object {

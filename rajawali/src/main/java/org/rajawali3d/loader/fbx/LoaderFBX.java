@@ -167,12 +167,12 @@ public class LoaderFBX extends AMeshLoader {
 		//TODO: add fog support
 		/*if(mFbx.version5.fogOptions.fogEnable != null && mFbx.version5.fogOptions.fogEnable == 1) {
 			FogOptions fogOptions = mFbx.version5.fogOptions;
-			mRenderer.setFogEnabled(true);
-			Camera cam = mRenderer.getCamera();
+			renderer.setFogEnabled(true);
+			Camera cam = renderer.getCamera();
 			cam.setFogEnabled(true);
 			cam.setFogNear(fogOptions.fogStart);
 			cam.setFogColor(fogOptions.fogColor.color);
-			mRenderer.setBackgroundColor(fogOptions.fogColor.color);
+			renderer.setBackgroundColor(fogOptions.fogColor.color);
 		}*/
 
 		// -- get meshes

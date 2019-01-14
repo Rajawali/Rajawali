@@ -1,10 +1,8 @@
 package org.rajawali3d.view
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -24,7 +22,13 @@ import javax.microedition.khronos.opengles.GL10
  *
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-class TextureView : android.view.TextureView, ISurface {
+class TextureView @JvmOverloads constructor(
+        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : android.view.TextureView(context, attrs, defStyleAttr), ISurface {
+
+    init {
+        applyAttributes(context, attrs)
+    }
 
     private val thisWeakRef = WeakReference(this)
 
@@ -103,21 +107,6 @@ class TextureView : android.view.TextureView, ISurface {
         set(renderMode) {
             glThread!!.renderMode = renderMode
         }
-
-    constructor(context: Context) : super(context) {}
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        applyAttributes(context, attrs)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        applyAttributes(context, attrs)
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
-        applyAttributes(context, attrs)
-    }
 
     private fun applyAttributes(context: Context, attrs: AttributeSet?) {
         if (attrs == null) return
@@ -223,7 +212,7 @@ class TextureView : android.view.TextureView, ISurface {
         if (LOG_ATTACH_DETACH) {
             Log.v(TAG, "onDetachedFromWindow")
         }
-        rendererDelegate!!.mRenderer.onRenderSurfaceDestroyed(null)
+        rendererDelegate?.renderer?.onRenderSurfaceDestroyed(null)
         if (glThread != null) {
             glThread!!.requestExitAndWait()
         }
@@ -243,7 +232,7 @@ class TextureView : android.view.TextureView, ISurface {
     override fun setFrameRate(rate: Double) {
         frameRateTexture = rate
         if (rendererDelegate != null) {
-            rendererDelegate!!.mRenderer.frameRate = rate
+            rendererDelegate?.renderer?.frameRate = rate
         }
     }
 
@@ -369,10 +358,14 @@ class TextureView : android.view.TextureView, ISurface {
      * view will choose an RGB_888 surface with a depth buffer depth of
      * at least 16 bits.
      */
-    fun setEGLConfigChooser(redSize: Int, greenSize: Int, blueSize: Int,
-                            alphaSize: Int, depthSize: Int, stencilSize: Int) {
-        setEGLConfigChooser(ComponentSizeChooser(redSize, greenSize,
-                blueSize, alphaSize, depthSize, stencilSize))
+    fun setEGLConfigChooser(
+            redSize: Int,
+            greenSize: Int,
+            blueSize: Int,
+            alphaSize: Int,
+            depthSize: Int,
+            stencilSize: Int) {
+        setEGLConfigChooser(ComponentSizeChooser(redSize, greenSize, blueSize, alphaSize, depthSize, stencilSize))
     }
 
     /**
@@ -419,7 +412,7 @@ class TextureView : android.view.TextureView, ISurface {
      */
     fun onPause() {
         if (rendererDelegate != null) {
-            rendererDelegate!!.mRenderer.onPause()
+            rendererDelegate?.renderer?.onPause()
         }
         if (glThread != null) {
             glThread!!.onPause()
@@ -435,7 +428,7 @@ class TextureView : android.view.TextureView, ISurface {
      */
     fun onResume() {
         if (rendererDelegate != null) {
-            rendererDelegate!!.mRenderer.onResume()
+            rendererDelegate?.renderer?.onResume()
         }
         glThread!!.onResume()
     }
@@ -445,21 +438,21 @@ class TextureView : android.view.TextureView, ISurface {
      * to communicate with the Renderer on the rendering thread.
      * Must not be called before a renderer has been set.
      *
-     * @param r the runnable to be run on the GL rendering thread.
+     * @param runnable the runnable to be run on the GL rendering thread.
      */
-    fun queueEvent(r: Runnable) {
-        glThread!!.queueEvent(r)
+    fun queueEvent(runnable: Runnable) {
+        glThread!!.queueEvent(runnable)
     }
 
-    protected class RendererDelegate(internal val mRenderer: ISurfaceRenderer, internal val mRajawaliTextureView: TextureView) : SurfaceTextureListener {
+    protected class RendererDelegate(internal val renderer: ISurfaceRenderer, internal val mRajawaliTextureView: TextureView) : SurfaceTextureListener {
 
         init {
-            mRenderer.frameRate = if (mRajawaliTextureView.mRenderMode == ISurface.RENDERMODE_WHEN_DIRTY)
+            renderer.frameRate = if (mRajawaliTextureView.mRenderMode == ISurface.RENDERMODE_WHEN_DIRTY)
                 mRajawaliTextureView.frameRateTexture
             else
                 0.0
-            mRenderer.setAntiAliasingMode(mRajawaliTextureView.antiAliasingConfig)
-            mRenderer.setRenderSurface(mRajawaliTextureView)
+            renderer.setAntiAliasingMode(mRajawaliTextureView.antiAliasingConfig)
+            renderer.setRenderSurface(mRajawaliTextureView)
             mRajawaliTextureView.setSurfaceTextureListener(this)
         }
 
@@ -505,8 +498,12 @@ class TextureView : android.view.TextureView, ISurface {
 
     private class DefaultWindowSurfaceFactory : GLSurfaceView.EGLWindowSurfaceFactory {
 
-        override fun createWindowSurface(egl: EGL10, display: EGLDisplay,
-                                         config: EGLConfig, nativeWindow: Any): EGLSurface? {
+        override fun createWindowSurface(
+                egl: EGL10,
+                display: EGLDisplay,
+                config: EGLConfig,
+                nativeWindow: Any
+        ): EGLSurface? {
             var result: EGLSurface? = null
             try {
                 result = egl.eglCreateWindowSurface(display, config, nativeWindow, null)
@@ -529,17 +526,15 @@ class TextureView : android.view.TextureView, ISurface {
         }
     }
 
-    abstract inner class BaseConfigChooser(configSpec: IntArray) : GLSurfaceView.EGLConfigChooser {
-
-        protected var mConfigSpec: IntArray
+    abstract inner class BaseConfigChooser(var configSpec: IntArray) : GLSurfaceView.EGLConfigChooser {
 
         init {
-            mConfigSpec = filterConfigSpec(configSpec)
+            configSpec = filterConfigSpec(configSpec)
         }
 
         override fun chooseConfig(egl: EGL10, display: EGLDisplay): EGLConfig {
             val num_config = IntArray(1)
-            if (!egl.eglChooseConfig(display, mConfigSpec, null, 0, num_config)) {
+            if (!egl.eglChooseConfig(display, configSpec, null, 0, num_config)) {
                 throw IllegalArgumentException("eglChooseConfig failed")
             }
 
@@ -550,7 +545,7 @@ class TextureView : android.view.TextureView, ISurface {
             }
 
             val configs = arrayOfNulls<EGLConfig>(numConfigs)
-            if (!egl.eglChooseConfig(display, mConfigSpec, configs, numConfigs, num_config)) {
+            if (!egl.eglChooseConfig(display, configSpec, configs, numConfigs, num_config)) {
                 throw IllegalArgumentException("eglChooseConfig#2 failed")
             }
             return chooseConfig(egl, display, configs.requireNoNulls())
@@ -585,25 +580,24 @@ class TextureView : android.view.TextureView, ISurface {
      * and at least the specified depth and stencil sizes.
      */
     inner class ComponentSizeChooser(// Subclasses can adjust these values:
-            protected var mRedSize: Int, protected var mGreenSize: Int, protected var mBlueSize: Int,
-            protected var mAlphaSize: Int, protected var mDepthSize: Int, protected var mStencilSize: Int) : BaseConfigChooser(intArrayOf(EGL10.EGL_RED_SIZE, mRedSize, EGL10.EGL_GREEN_SIZE, mGreenSize, EGL10.EGL_BLUE_SIZE, mBlueSize, EGL10.EGL_ALPHA_SIZE, mAlphaSize, EGL10.EGL_DEPTH_SIZE, mDepthSize, EGL10.EGL_STENCIL_SIZE, mStencilSize, EGL10.EGL_NONE)) {
+            protected var redSize: Int, protected var greenSize: Int, protected var blueSize: Int,
+            protected var alphaSize: Int, protected var depthSize: Int, protected var stencilSize: Int) :
+            BaseConfigChooser(
+                    intArrayOf(EGL10.EGL_RED_SIZE, redSize, EGL10.EGL_GREEN_SIZE, greenSize, EGL10.EGL_BLUE_SIZE, blueSize, EGL10.EGL_ALPHA_SIZE, alphaSize, EGL10.EGL_DEPTH_SIZE, depthSize, EGL10.EGL_STENCIL_SIZE, stencilSize, EGL10.EGL_NONE)
+            ) {
 
-        private val mValue: IntArray
-
-        init {
-            mValue = IntArray(1)
-        }
+        private val valueArray = IntArray(1)
 
         public override fun chooseConfig(egl: EGL10, display: EGLDisplay, configs: Array<EGLConfig>): EGLConfig? {
             for (config in configs) {
                 val d = findConfigAttrib(egl, display, config, EGL10.EGL_DEPTH_SIZE, 0)
                 val s = findConfigAttrib(egl, display, config, EGL10.EGL_STENCIL_SIZE, 0)
-                if (d >= mDepthSize && s >= mStencilSize) {
+                if (d >= depthSize && s >= stencilSize) {
                     val r = findConfigAttrib(egl, display, config, EGL10.EGL_RED_SIZE, 0)
                     val g = findConfigAttrib(egl, display, config, EGL10.EGL_GREEN_SIZE, 0)
                     val b = findConfigAttrib(egl, display, config, EGL10.EGL_BLUE_SIZE, 0)
                     val a = findConfigAttrib(egl, display, config, EGL10.EGL_ALPHA_SIZE, 0)
-                    if (r == mRedSize && g == mGreenSize && b == mBlueSize && a == mAlphaSize) {
+                    if (r == redSize && g == greenSize && b == blueSize && a == alphaSize) {
                         return config
                     }
                 }
@@ -612,21 +606,22 @@ class TextureView : android.view.TextureView, ISurface {
         }
 
         private fun findConfigAttrib(egl: EGL10, display: EGLDisplay, config: EGLConfig, attribute: Int, defaultValue: Int): Int {
-            return if (egl.eglGetConfigAttrib(display, config, attribute, mValue)) {
-                mValue[0]
-            } else defaultValue
+            return if (egl.eglGetConfigAttrib(display, config, attribute, valueArray)) {
+                valueArray[0]
+            } else
+                defaultValue
         }
     }
 
     /**
      * An EGL helper class.
      */
-    private class EglHelper(private val mRajawaliTextureViewWeakRef: WeakReference<TextureView>) {
-        internal var mEgl: EGL10? = null
-        internal var mEglDisplay: EGLDisplay? = null
-        internal var mEglSurface: EGLSurface? = null
+    private class EglHelper(private val rajawaliTextureViewWeakRef: WeakReference<TextureView>) {
+        internal var egl: EGL10? = null
+        internal var eglDisplay: EGLDisplay? = null
+        internal var eglSurface: EGLSurface? = null
         internal var mEglConfig: EGLConfig? = null
-        internal var mEglContext: EGLContext? = null
+        internal var eglContext: EGLContext? = null
 
         /**
          * Initialize EGL for a given configuration spec.
@@ -638,14 +633,14 @@ class TextureView : android.view.TextureView, ISurface {
             /*
              * Get an EGL instance
              */
-            mEgl = EGLContext.getEGL() as EGL10
+            egl = EGLContext.getEGL() as EGL10
 
             /*
              * Get to the default display.
              */
-            mEglDisplay = mEgl!!.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY)
+            eglDisplay = egl!!.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY)
 
-            if (mEglDisplay === EGL10.EGL_NO_DISPLAY) {
+            if (eglDisplay === EGL10.EGL_NO_DISPLAY) {
                 throw RuntimeException("eglGetDisplay failed")
             }
 
@@ -653,31 +648,31 @@ class TextureView : android.view.TextureView, ISurface {
              * We can now initialize EGL for that display
              */
             val version = IntArray(2)
-            if (!mEgl!!.eglInitialize(mEglDisplay, version)) {
+            if (!egl!!.eglInitialize(eglDisplay, version)) {
                 throw RuntimeException("eglInitialize failed")
             }
-            val view = mRajawaliTextureViewWeakRef.get()
+            val view = rajawaliTextureViewWeakRef.get()
             if (view == null) {
                 mEglConfig = null
-                mEglContext = null
+                eglContext = null
             } else {
-                mEglConfig = view.eglConfigChooser!!.chooseConfig(mEgl, mEglDisplay)
+                mEglConfig = view.eglConfigChooser!!.chooseConfig(egl, eglDisplay)
 
                 /*
                 * Create an EGL context. We want to do this as rarely as we can, because an
                 * EGL context is a somewhat heavy object.
                 */
-                mEglContext = view.eglContextFactory!!.createContext(mEgl, mEglDisplay, mEglConfig)
+                eglContext = view.eglContextFactory!!.createContext(egl, eglDisplay, mEglConfig)
             }
-            if (mEglContext == null || mEglContext === EGL10.EGL_NO_CONTEXT) {
-                mEglContext = null
+            if (eglContext == null || eglContext === EGL10.EGL_NO_CONTEXT) {
+                eglContext = null
                 throwEglException("createContext")
             }
             if (LOG_EGL) {
-                Log.w("EglHelper", "createContext " + mEglContext + " tid=" + Thread.currentThread().id)
+                Log.w("EglHelper", "createContext " + eglContext + " tid=" + Thread.currentThread().id)
             }
 
-            mEglSurface = null
+            eglSurface = null
         }
 
         /**
@@ -693,10 +688,10 @@ class TextureView : android.view.TextureView, ISurface {
             /*
              * Check preconditions.
              */
-            if (mEgl == null) {
+            if (egl == null) {
                 throw RuntimeException("egl not initialized")
             }
-            if (mEglDisplay == null) {
+            if (eglDisplay == null) {
                 throw RuntimeException("eglDisplay not initialized")
             }
             if (mEglConfig == null) {
@@ -712,16 +707,16 @@ class TextureView : android.view.TextureView, ISurface {
             /*
              * Create an EGL surface we can render into.
              */
-            val view = mRajawaliTextureViewWeakRef.get()
+            val view = rajawaliTextureViewWeakRef.get()
             if (view != null) {
-                mEglSurface = view.eglWindowSurfaceFactory!!.createWindowSurface(mEgl,
-                        mEglDisplay, mEglConfig, view.surfaceTexture)
+                eglSurface = view.eglWindowSurfaceFactory!!.createWindowSurface(egl,
+                        eglDisplay, mEglConfig, view.surfaceTexture)
             } else {
-                mEglSurface = null
+                eglSurface = null
             }
 
-            if (mEglSurface == null || mEglSurface === EGL10.EGL_NO_SURFACE) {
-                val error = mEgl!!.eglGetError()
+            if (eglSurface == null || eglSurface === EGL10.EGL_NO_SURFACE) {
+                val error = egl!!.eglGetError()
                 if (error == EGL10.EGL_BAD_NATIVE_WINDOW) {
                     Log.e("EglHelper", "createWindowSurface returned EGL_BAD_NATIVE_WINDOW.")
                 }
@@ -732,12 +727,12 @@ class TextureView : android.view.TextureView, ISurface {
              * Before we can issue GL commands, we need to make sure
              * the context is current and bound to a surface.
              */
-            if (!mEgl!!.eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext)) {
+            if (!egl!!.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
                 /*
                  * Could not make the context current, probably because the underlying
                  * SurfaceView surface has been destroyed.
                  */
-                logEglErrorAsWarning("EGLHelper", "eglMakeCurrent", mEgl!!.eglGetError())
+                logEglErrorAsWarning("EGLHelper", "eglMakeCurrent", egl!!.eglGetError())
                 return false
             }
 
@@ -750,7 +745,7 @@ class TextureView : android.view.TextureView, ISurface {
          * @return [GL] The GL interface for the current context.
          */
         internal fun createGL(): GL {
-            return mEglContext!!.gl
+            return eglContext!!.gl
         }
 
         /**
@@ -759,8 +754,8 @@ class TextureView : android.view.TextureView, ISurface {
          * @return the EGL error code from eglSwapBuffers.
          */
         fun swap(): Int {
-            return if (!mEgl!!.eglSwapBuffers(mEglDisplay, mEglSurface)) {
-                mEgl!!.eglGetError()
+            return if (!egl!!.eglSwapBuffers(eglDisplay, eglSurface)) {
+                egl!!.eglGetError()
             } else EGL10.EGL_SUCCESS
         }
 
@@ -772,15 +767,15 @@ class TextureView : android.view.TextureView, ISurface {
         }
 
         private fun destroySurfaceImp() {
-            if (mEglSurface != null && mEglSurface !== EGL10.EGL_NO_SURFACE) {
-                mEgl!!.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
+            if (eglSurface != null && eglSurface !== EGL10.EGL_NO_SURFACE) {
+                egl!!.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE,
                         EGL10.EGL_NO_SURFACE,
                         EGL10.EGL_NO_CONTEXT)
-                val view = mRajawaliTextureViewWeakRef.get()
+                val view = rajawaliTextureViewWeakRef.get()
                 if (view != null) {
-                    view.eglWindowSurfaceFactory!!.destroySurface(mEgl, mEglDisplay, mEglSurface)
+                    view.eglWindowSurfaceFactory!!.destroySurface(egl, eglDisplay, eglSurface)
                 }
-                mEglSurface = null
+                eglSurface = null
             }
         }
 
@@ -788,21 +783,21 @@ class TextureView : android.view.TextureView, ISurface {
             if (LOG_EGL) {
                 Log.w("EglHelper", "finish() tid=" + Thread.currentThread().id)
             }
-            if (mEglContext != null) {
-                val view = mRajawaliTextureViewWeakRef.get()
+            if (eglContext != null) {
+                val view = rajawaliTextureViewWeakRef.get()
                 if (view != null) {
-                    view.eglContextFactory!!.destroyContext(mEgl, mEglDisplay, mEglContext)
+                    view.eglContextFactory!!.destroyContext(egl, eglDisplay, eglContext)
                 }
-                mEglContext = null
+                eglContext = null
             }
-            if (mEglDisplay != null) {
-                mEgl!!.eglTerminate(mEglDisplay)
-                mEglDisplay = null
+            if (eglDisplay != null) {
+                egl!!.eglTerminate(eglDisplay)
+                eglDisplay = null
             }
         }
 
         private fun throwEglException(function: String) {
-            throwEglException(function, mEgl!!.eglGetError())
+            throwEglException(function, egl!!.eglGetError())
         }
 
         companion object {
@@ -853,7 +848,7 @@ class TextureView : android.view.TextureView, ISurface {
      *
      *
      * All potentially blocking synchronization is done through the
-     * sGLThreadManager object. This avoids multiple-lock ordering issues.
+     * glThreadManager object. This avoids multiple-lock ordering issues.
      */
     internal class GLThread(
             /**
@@ -861,52 +856,52 @@ class TextureView : android.view.TextureView, ISurface {
              * called. This weak reference allows the TextureView to be garbage collected while
              * the RajawaliGLThread is still alive.
              */
-            private val mRajawaliTextureViewWeakRef: WeakReference<TextureView>) : Thread() {
+            private val rajawaliTextureViewWeakRef: WeakReference<TextureView>) : Thread() {
 
         // Once the thread is started, all accesses to the following member
-        // variables are protected by the sGLThreadManager monitor
-        private var mShouldExit: Boolean = false
-        var mExited: Boolean = false
-        private var mRequestPaused: Boolean = false
-        private var mPaused: Boolean = false
-        private var mHasSurface: Boolean = false
-        private var mSurfaceIsBad: Boolean = false
-        private var mWaitingForSurface: Boolean = false
+        // variables are protected by the glThreadManager monitor
+        private var shouldExit: Boolean = false
+        var exited: Boolean = false
+        private var requestPaused: Boolean = false
+        private var paused: Boolean = false
+        private var hasSurface: Boolean = false
+        private var surfaceIsBad: Boolean = false
+        private var waitingForSurface: Boolean = false
         private var haveEglContext: Boolean = false
         private var haveEglSurface: Boolean = false
-        private var mFinishedCreatingEglSurface: Boolean = false
-        private var mShouldReleaseEglContext: Boolean = false
-        private var mWidth: Int = 0
-        private var mHeight: Int = 0
-        private var mRenderMode: Int = 0
-        private var mRequestRender: Boolean = false
-        private var mRenderComplete: Boolean = false
-        private val mEventQueue = ArrayList<Runnable>()
-        private var mSizeChanged = true
+        private var finishedCreatingEglSurface: Boolean = false
+        private var shouldReleaseEglContext: Boolean = false
+        private var width: Int = 0
+        private var height: Int = 0
+        private var renderMode1: Int = 0
+        private var requestRender: Boolean = false
+        private var renderComplete: Boolean = false
+        private val eventQueue = ArrayList<Runnable>()
+        private var sizeChanged = true
 
-        // End of member variables protected by the sGLThreadManager monitor.
+        // End of member variables protected by the glThreadManager monitor.
 
         private var eglHelper: EglHelper? = null
 
         var renderMode: Int
-            get() = synchronized(sGLThreadManager) {
-                return mRenderMode
+            get() = synchronized(glThreadManager) {
+                return renderMode1
             }
             set(renderMode) {
                 if (!(ISurface.RENDERMODE_WHEN_DIRTY <= renderMode && renderMode <= ISurface.RENDERMODE_CONTINUOUSLY)) {
                     throw IllegalArgumentException("renderMode")
                 }
-                synchronized(sGLThreadManager) {
-                    mRenderMode = renderMode
-                    sGLThreadManager.notifyAll()
+                synchronized(glThreadManager) {
+                    renderMode1 = renderMode
+                    glThreadManager.notifyAll()
                 }
             }
 
         init {
-            mWidth = 0
-            mHeight = 0
-            mRequestRender = true
-            mRenderMode = ISurface.RENDERMODE_CONTINUOUSLY
+            width = 0
+            height = 0
+            requestRender = true
+            renderMode1 = ISurface.RENDERMODE_CONTINUOUSLY
         }
 
         override fun run() {
@@ -920,13 +915,13 @@ class TextureView : android.view.TextureView, ISurface {
             } catch (e: InterruptedException) {
                 // fall thru and exit normally
             } finally {
-                sGLThreadManager.threadExiting(this)
+                glThreadManager.threadExiting(this)
             }
         }
 
         /*
          * This private method should only be called inside a
-         * synchronized(sGLThreadManager) block.
+         * synchronized(glThreadManager) block.
          */
         private fun stopEglSurfaceLocked() {
             if (haveEglSurface) {
@@ -937,19 +932,19 @@ class TextureView : android.view.TextureView, ISurface {
 
         /*
          * This private method should only be called inside a
-         * synchronized(sGLThreadManager) block.
+         * synchronized(glThreadManager) block.
          */
         private fun stopEglContextLocked() {
             if (haveEglContext) {
                 eglHelper!!.finish()
                 haveEglContext = false
-                sGLThreadManager.releaseEglContextLocked(this)
+                glThreadManager.releaseEglContextLocked(this)
             }
         }
 
         @Throws(InterruptedException::class)
         private fun guardedRun() {
-            eglHelper = EglHelper(mRajawaliTextureViewWeakRef)
+            eglHelper = EglHelper(rajawaliTextureViewWeakRef)
             haveEglContext = false
             haveEglSurface = false
             try {
@@ -958,7 +953,7 @@ class TextureView : android.view.TextureView, ISurface {
                 var createEglSurface = false
                 var createGlInterface = false
                 var lostEglContext = false
-                var sizeChanged = false
+                var sizeChangedLocal = false
                 var wantRenderNotification = false
                 var doRenderNotification = false
                 var askedToReleaseEglContext = false
@@ -967,36 +962,36 @@ class TextureView : android.view.TextureView, ISurface {
                 var event: Runnable? = null
 
                 while (true) {
-                    synchronized(sGLThreadManager) {
+                    synchronized(glThreadManager) {
                         while (true) {
-                            if (mShouldExit) {
+                            if (shouldExit) {
                                 return
                             }
 
-                            if (!mEventQueue.isEmpty()) {
-                                event = mEventQueue.removeAt(0)
+                            if (!eventQueue.isEmpty()) {
+                                event = eventQueue.removeAt(0)
                                 break
                             }
 
                             // Update the pause state.
                             var pausing = false
-                            if (mPaused != mRequestPaused) {
-                                pausing = mRequestPaused
-                                mPaused = mRequestPaused
-                                sGLThreadManager.notifyAll()
+                            if (paused != requestPaused) {
+                                pausing = requestPaused
+                                paused = requestPaused
+                                glThreadManager.notifyAll()
                                 if (LOG_PAUSE_RESUME) {
-                                    Log.i("RajawaliGLThread", "mPaused is now $mPaused tid=$id")
+                                    Log.i("RajawaliGLThread", "paused is now $paused tid=$id")
                                 }
                             }
 
                             // Do we need to give up the EGL context?
-                            if (mShouldReleaseEglContext) {
+                            if (shouldReleaseEglContext) {
                                 if (LOG_SURFACE) {
                                     Log.i("RajawaliGLThread", "releasing EGL context because asked to tid=$id")
                                 }
                                 stopEglSurfaceLocked()
                                 stopEglContextLocked()
-                                mShouldReleaseEglContext = false
+                                shouldReleaseEglContext = false
                                 askedToReleaseEglContext = true
                             }
 
@@ -1017,9 +1012,9 @@ class TextureView : android.view.TextureView, ISurface {
 
                             // When pausing, optionally release the EGL Context:
                             if (pausing && haveEglContext) {
-                                val view = mRajawaliTextureViewWeakRef.get()
+                                val view = rajawaliTextureViewWeakRef.get()
                                 val preserveEglContextOnPause = view != null && view.preserveEGLContextOnPause
-                                if (!preserveEglContextOnPause || sGLThreadManager.shouldReleaseEGLContextWhenPausing()) {
+                                if (!preserveEglContextOnPause || glThreadManager.shouldReleaseEGLContextWhenPausing()) {
                                     stopEglContextLocked()
                                     if (LOG_SURFACE) {
                                         Log.i("RajawaliGLThread", "releasing EGL context because paused tid=$id")
@@ -1029,7 +1024,7 @@ class TextureView : android.view.TextureView, ISurface {
 
                             // When pausing, optionally terminate EGL:
                             if (pausing) {
-                                if (sGLThreadManager.shouldTerminateEGLWhenPausing()) {
+                                if (glThreadManager.shouldTerminateEGLWhenPausing()) {
                                     eglHelper!!.finish()
                                     if (LOG_SURFACE) {
                                         Log.i("RajawaliGLThread", "terminating EGL because paused tid=$id")
@@ -1038,25 +1033,25 @@ class TextureView : android.view.TextureView, ISurface {
                             }
 
                             // Have we lost the SurfaceView surface?
-                            if (!mHasSurface && !mWaitingForSurface) {
+                            if (!hasSurface && !waitingForSurface) {
                                 if (LOG_SURFACE) {
                                     Log.i("RajawaliGLThread", "noticed surfaceView surface lost tid=$id")
                                 }
                                 if (haveEglSurface) {
                                     stopEglSurfaceLocked()
                                 }
-                                mWaitingForSurface = true
-                                mSurfaceIsBad = false
-                                sGLThreadManager.notifyAll()
+                                waitingForSurface = true
+                                surfaceIsBad = false
+                                glThreadManager.notifyAll()
                             }
 
                             // Have we acquired the surface view surface?
-                            if (mHasSurface && mWaitingForSurface) {
+                            if (hasSurface && waitingForSurface) {
                                 if (LOG_SURFACE) {
                                     Log.i("RajawaliGLThread", "noticed surfaceView surface acquired tid=$id")
                                 }
-                                mWaitingForSurface = false
-                                sGLThreadManager.notifyAll()
+                                waitingForSurface = false
+                                glThreadManager.notifyAll()
                             }
 
                             if (doRenderNotification) {
@@ -1065,8 +1060,8 @@ class TextureView : android.view.TextureView, ISurface {
                                 }
                                 wantRenderNotification = false
                                 doRenderNotification = false
-                                mRenderComplete = true
-                                sGLThreadManager.notifyAll()
+                                renderComplete = true
+                                glThreadManager.notifyAll()
                             }
 
                             // Ready to draw?
@@ -1075,18 +1070,18 @@ class TextureView : android.view.TextureView, ISurface {
                                 if (!haveEglContext) {
                                     if (askedToReleaseEglContext) {
                                         askedToReleaseEglContext = false
-                                    } else if (sGLThreadManager.tryAcquireEglContextLocked(this)) {
+                                    } else if (glThreadManager.tryAcquireEglContextLocked(this)) {
                                         try {
                                             eglHelper!!.start()
                                         } catch (t: RuntimeException) {
-                                            sGLThreadManager.releaseEglContextLocked(this)
+                                            glThreadManager.releaseEglContextLocked(this)
                                             throw t
                                         }
 
                                         haveEglContext = true
                                         createEglContext = true
 
-                                        sGLThreadManager.notifyAll()
+                                        glThreadManager.notifyAll()
                                     }
                                 }
 
@@ -1094,14 +1089,14 @@ class TextureView : android.view.TextureView, ISurface {
                                     haveEglSurface = true
                                     createEglSurface = true
                                     createGlInterface = true
-                                    sizeChanged = true
+                                    sizeChangedLocal = true
                                 }
 
                                 if (haveEglSurface) {
-                                    if (mSizeChanged) {
-                                        sizeChanged = true
-                                        w = mWidth
-                                        h = mHeight
+                                    if (sizeChanged) {
+                                        sizeChangedLocal = true
+                                        w = width
+                                        h = height
                                         wantRenderNotification = true
                                         if (LOG_SURFACE) {
                                             Log.i("RajawaliGLThread", "noticing that we want render notification tid=$id")
@@ -1110,10 +1105,10 @@ class TextureView : android.view.TextureView, ISurface {
                                         // Destroy and recreate the EGL surface.
                                         createEglSurface = true
 
-                                        mSizeChanged = false
+                                        sizeChanged = false
                                     }
-                                    mRequestRender = false
-                                    sGLThreadManager.notifyAll()
+                                    requestRender = false
+                                    glThreadManager.notifyAll()
                                     break
                                 }
                             }
@@ -1123,19 +1118,19 @@ class TextureView : android.view.TextureView, ISurface {
                                 Log.i("RajawaliGLThread", "waiting tid=" + id
                                         + " haveEglContext: " + haveEglContext
                                         + " haveEglSurface: " + haveEglSurface
-                                        + " mFinishedCreatingEglSurface: " + mFinishedCreatingEglSurface
-                                        + " mPaused: " + mPaused
-                                        + " mHasSurface: " + mHasSurface
-                                        + " mSurfaceIsBad: " + mSurfaceIsBad
-                                        + " mWaitingForSurface: " + mWaitingForSurface
-                                        + " mWidth: " + mWidth
-                                        + " mHeight: " + mHeight
-                                        + " mRequestRender: " + mRequestRender
-                                        + " mRenderMode: " + mRenderMode)
+                                        + " finishedCreatingEglSurface: " + finishedCreatingEglSurface
+                                        + " paused: " + paused
+                                        + " hasSurface: " + hasSurface
+                                        + " surfaceIsBad: " + surfaceIsBad
+                                        + " waitingForSurface: " + waitingForSurface
+                                        + " width: " + width
+                                        + " height: " + height
+                                        + " requestRender: " + requestRender
+                                        + " renderMode1: " + renderMode1)
                             }
-                            sGLThreadManager.wait()
+                            glThreadManager.wait()
                         }
-                    } // end of synchronized(sGLThreadManager)
+                    } // end of synchronized(glThreadManager)
 
                     if (event != null) {
                         event!!.run()
@@ -1148,15 +1143,15 @@ class TextureView : android.view.TextureView, ISurface {
                             Log.w("RajawaliGLThread", "egl createSurface")
                         }
                         if (eglHelper!!.createSurface()) {
-                            synchronized(sGLThreadManager) {
-                                mFinishedCreatingEglSurface = true
-                                sGLThreadManager.notifyAll()
+                            synchronized(glThreadManager) {
+                                finishedCreatingEglSurface = true
+                                glThreadManager.notifyAll()
                             }
                         } else {
-                            synchronized(sGLThreadManager) {
-                                mFinishedCreatingEglSurface = true
-                                mSurfaceIsBad = true
-                                sGLThreadManager.notifyAll()
+                            synchronized(glThreadManager) {
+                                finishedCreatingEglSurface = true
+                                surfaceIsBad = true
+                                glThreadManager.notifyAll()
                             }
                             continue
                         }
@@ -1166,7 +1161,7 @@ class TextureView : android.view.TextureView, ISurface {
                     if (createGlInterface) {
                         gl = eglHelper!!.createGL() as GL10
 
-                        sGLThreadManager.checkGLDriver(gl)
+                        glThreadManager.checkGLDriver(gl)
                         createGlInterface = false
                     }
 
@@ -1174,37 +1169,36 @@ class TextureView : android.view.TextureView, ISurface {
                         if (LOG_RENDERER) {
                             Log.w("RajawaliGLThread", "onSurfaceCreated")
                         }
-                        val view = mRajawaliTextureViewWeakRef.get()
+                        val view = rajawaliTextureViewWeakRef.get()
                         if (view != null) {
-                            view.rendererDelegate!!.mRenderer.onRenderSurfaceCreated(eglHelper!!.mEglConfig, gl, -1, -1)
+                            view.rendererDelegate?.renderer?.onRenderSurfaceCreated(eglHelper!!.mEglConfig, gl, -1, -1)
                         }
                         createEglContext = false
                     }
 
-                    if (sizeChanged) {
+                    if (sizeChangedLocal) {
                         if (LOG_RENDERER) {
                             Log.w("RajawaliGLThread", "onSurfaceChanged($w, $h)")
                         }
-                        val view = mRajawaliTextureViewWeakRef.get()
+                        val view = rajawaliTextureViewWeakRef.get()
                         if (view != null) {
-                            view.rendererDelegate!!.mRenderer.onRenderSurfaceSizeChanged(gl, w, h)
+                            view.rendererDelegate?.renderer?.onRenderSurfaceSizeChanged(gl, w, h)
                         }
-                        sizeChanged = false
+                        sizeChangedLocal = false
                     }
 
                     if (LOG_RENDERER_DRAW_FRAME) {
                         Log.w("RajawaliGLThread", "onDrawFrame tid=$id")
                     }
                     run {
-                        val view = mRajawaliTextureViewWeakRef.get()
+                        val view = rajawaliTextureViewWeakRef.get()
                         if (view != null) {
-                            view.rendererDelegate!!.mRenderer.onRenderFrame(gl)
+                            view.rendererDelegate?.renderer?.onRenderFrame(gl)
                         }
                     }
                     val swapError = eglHelper!!.swap()
                     when (swapError) {
-                        EGL10.EGL_SUCCESS -> {
-                        }
+                        EGL10.EGL_SUCCESS -> Unit
                         EGL11.EGL_CONTEXT_LOST -> {
                             if (LOG_SURFACE) {
                                 Log.i("RajawaliGLThread", "egl context lost tid=$id")
@@ -1218,9 +1212,9 @@ class TextureView : android.view.TextureView, ISurface {
                             // Log the error to help developers understand why rendering stopped.
                             EglHelper.logEglErrorAsWarning("RajawaliGLThread", "eglSwapBuffers", swapError)
 
-                            synchronized(sGLThreadManager) {
-                                mSurfaceIsBad = true
-                                sGLThreadManager.notifyAll()
+                            synchronized(glThreadManager) {
+                                surfaceIsBad = true
+                                glThreadManager.notifyAll()
                             }
                         }
                     }
@@ -1234,45 +1228,41 @@ class TextureView : android.view.TextureView, ISurface {
                 /*
                  * clean-up everything...
                  */
-                synchronized(sGLThreadManager) {
+                synchronized(glThreadManager) {
                     stopEglSurfaceLocked()
                     stopEglContextLocked()
                 }
             }
         }
 
-        fun ableToDraw(): Boolean {
-            return haveEglContext && haveEglSurface && readyToDraw()
-        }
+        private fun ableToDraw() = haveEglContext && haveEglSurface && readyToDraw()
 
-        private fun readyToDraw(): Boolean {
-            return (!mPaused && mHasSurface && !mSurfaceIsBad
-                    && mWidth > 0 && mHeight > 0
-                    && (mRequestRender || mRenderMode == ISurface.RENDERMODE_CONTINUOUSLY))
-        }
+        private fun readyToDraw() = !paused && hasSurface && !surfaceIsBad
+                && width > 0 && height > 0
+                && (requestRender || renderMode1 == ISurface.RENDERMODE_CONTINUOUSLY)
 
         fun requestRender() {
-            synchronized(sGLThreadManager) {
-                mRequestRender = true
-                sGLThreadManager.notifyAll()
+            synchronized(glThreadManager) {
+                requestRender = true
+                glThreadManager.notifyAll()
             }
         }
 
         fun surfaceCreated(w: Int, h: Int) {
-            synchronized(sGLThreadManager) {
+            synchronized(glThreadManager) {
                 if (LOG_THREADS) {
                     Log.i("RajawaliGLThread", "surfaceCreated tid=$id")
                 }
-                mHasSurface = true
-                mWidth = w
-                mHeight = h
-                mFinishedCreatingEglSurface = false
-                sGLThreadManager.notifyAll()
-                while (mWaitingForSurface
-                        && !mFinishedCreatingEglSurface
-                        && !mExited) {
+                hasSurface = true
+                width = w
+                height = h
+                finishedCreatingEglSurface = false
+                glThreadManager.notifyAll()
+                while (waitingForSurface
+                        && !finishedCreatingEglSurface
+                        && !exited) {
                     try {
-                        sGLThreadManager.wait()
+                        glThreadManager.wait()
                     } catch (e: InterruptedException) {
                         Thread.currentThread().interrupt()
                     }
@@ -1282,15 +1272,15 @@ class TextureView : android.view.TextureView, ISurface {
         }
 
         fun surfaceDestroyed() {
-            synchronized(sGLThreadManager) {
+            synchronized(glThreadManager) {
                 if (LOG_THREADS) {
                     Log.i("RajawaliGLThread", "surfaceDestroyed tid=$id")
                 }
-                mHasSurface = false
-                sGLThreadManager.notifyAll()
-                while (!mWaitingForSurface && !mExited) {
+                hasSurface = false
+                glThreadManager.notifyAll()
+                while (!waitingForSurface && !exited) {
                     try {
-                        sGLThreadManager.wait()
+                        glThreadManager.wait()
                     } catch (e: InterruptedException) {
                         Thread.currentThread().interrupt()
                     }
@@ -1300,18 +1290,18 @@ class TextureView : android.view.TextureView, ISurface {
         }
 
         fun onPause() {
-            synchronized(sGLThreadManager) {
+            synchronized(glThreadManager) {
                 if (LOG_PAUSE_RESUME) {
                     Log.i("RajawaliGLThread", "onPause tid=$id")
                 }
-                mRequestPaused = true
-                sGLThreadManager.notifyAll()
-                while (!mExited && !mPaused) {
+                requestPaused = true
+                glThreadManager.notifyAll()
+                while (!exited && !paused) {
                     if (LOG_PAUSE_RESUME) {
-                        Log.i("Main thread", "onPause waiting for mPaused.")
+                        Log.i("Main thread", "onPause waiting for paused.")
                     }
                     try {
-                        sGLThreadManager.wait()
+                        glThreadManager.wait()
                     } catch (ex: InterruptedException) {
                         Thread.currentThread().interrupt()
                     }
@@ -1321,20 +1311,20 @@ class TextureView : android.view.TextureView, ISurface {
         }
 
         fun onResume() {
-            synchronized(sGLThreadManager) {
+            synchronized(glThreadManager) {
                 if (LOG_PAUSE_RESUME) {
                     Log.i("RajawaliGLThread", "onResume tid=$id")
                 }
-                mRequestPaused = false
-                mRequestRender = true
-                mRenderComplete = false
-                sGLThreadManager.notifyAll()
-                while (!mExited && mPaused && !mRenderComplete) {
+                requestPaused = false
+                requestRender = true
+                renderComplete = false
+                glThreadManager.notifyAll()
+                while (!exited && paused && !renderComplete) {
                     if (LOG_PAUSE_RESUME) {
-                        Log.i("Main thread", "onResume waiting for !mPaused.")
+                        Log.i("Main thread", "onResume waiting for !paused.")
                     }
                     try {
-                        sGLThreadManager.wait()
+                        glThreadManager.wait()
                     } catch (ex: InterruptedException) {
                         Thread.currentThread().interrupt()
                     }
@@ -1344,22 +1334,22 @@ class TextureView : android.view.TextureView, ISurface {
         }
 
         fun onWindowResize(w: Int, h: Int) {
-            synchronized(sGLThreadManager) {
-                mWidth = w
-                mHeight = h
-                mSizeChanged = true
-                mRequestRender = true
-                mRenderComplete = false
-                sGLThreadManager.notifyAll()
+            synchronized(glThreadManager) {
+                width = w
+                height = h
+                sizeChanged = true
+                requestRender = true
+                renderComplete = false
+                glThreadManager.notifyAll()
 
                 // Wait for thread to react to resize and render a frame
-                while (!mExited && !mPaused && !mRenderComplete
+                while (!exited && !paused && !renderComplete
                         && ableToDraw()) {
                     if (LOG_SURFACE) {
                         Log.i("Main thread", "onWindowResize waiting for render complete from tid=$id")
                     }
                     try {
-                        sGLThreadManager.wait()
+                        glThreadManager.wait()
                     } catch (ex: InterruptedException) {
                         Thread.currentThread().interrupt()
                     }
@@ -1371,12 +1361,12 @@ class TextureView : android.view.TextureView, ISurface {
         fun requestExitAndWait() {
             // don't call this from RajawaliGLThread thread or it is a guaranteed
             // deadlock!
-            synchronized(sGLThreadManager) {
-                mShouldExit = true
-                sGLThreadManager.notifyAll()
-                while (!mExited) {
+            synchronized(glThreadManager) {
+                shouldExit = true
+                glThreadManager.notifyAll()
+                while (!exited) {
                     try {
-                        sGLThreadManager.wait()
+                        glThreadManager.wait()
                     } catch (ex: InterruptedException) {
                         Thread.currentThread().interrupt()
                     }
@@ -1386,22 +1376,22 @@ class TextureView : android.view.TextureView, ISurface {
         }
 
         fun requestReleaseEglContextLocked() {
-            mShouldReleaseEglContext = true
-            sGLThreadManager.notifyAll()
+            shouldReleaseEglContext = true
+            glThreadManager.notifyAll()
         }
 
         /**
          * Queue an "event" to be run on the GL rendering thread.
          *
-         * @param r the runnable to be run on the GL rendering thread.
+         * @param runnable the runnable to be run on the GL rendering thread.
          */
-        fun queueEvent(r: Runnable?) {
-            if (r == null) {
-                throw IllegalArgumentException("r must not be null")
+        fun queueEvent(runnable: Runnable?) {
+            if (runnable == null) {
+                throw IllegalArgumentException("runnable must not be null")
             }
-            synchronized(sGLThreadManager) {
-                mEventQueue.add(r)
-                sGLThreadManager.notifyAll()
+            synchronized(glThreadManager) {
+                eventQueue.add(runnable)
+                glThreadManager.notifyAll()
             }
         }
     }
@@ -1411,21 +1401,21 @@ class TextureView : android.view.TextureView, ISurface {
     // It's hacky to extend from Object and concurrency mechanisms can done in a better way, eg Coroutines
     private class GLThreadManager : Object() {
 
-        private var mGLESVersionCheckComplete: Boolean = false
-        private var mGLESVersion: Int = 0
-        private var mGLESDriverCheckComplete: Boolean = false
-        private var mMultipleGLESContextsAllowed: Boolean = false
-        private var mLimitedGLESContexts: Boolean = false
-        private var mEglOwner: GLThread? = null
+        private var glesVersionCheckComplete: Boolean = false
+        private var glesVersion: Int = 0
+        private var glesDriverCheckComplete: Boolean = false
+        private var multipleGLESContextsAllowed: Boolean = false
+        private var limitedGLESContexts: Boolean = false
+        private var eglOwner: GLThread? = null
 
         @Synchronized
         fun threadExiting(thread: GLThread) {
             if (LOG_THREADS) {
                 Log.i("RajawaliGLThread", "exiting tid=" + thread.id)
             }
-            thread.mExited = true
-            if (mEglOwner === thread) {
-                mEglOwner = null
+            thread.exited = true
+            if (eglOwner === thread) {
+                eglOwner = null
             }
             notifyAll()
         }
@@ -1433,37 +1423,37 @@ class TextureView : android.view.TextureView, ISurface {
         /*
          * Tries once to acquire the right to use an EGL
          * context. Does not block. Requires that we are already
-         * in the sGLThreadManager monitor when this is called.
+         * in the glThreadManager monitor when this is called.
          *
          * @return true if the right to use an EGL context was acquired.
          */
         fun tryAcquireEglContextLocked(thread: GLThread): Boolean {
-            if (mEglOwner === thread || mEglOwner == null) {
-                mEglOwner = thread
+            if (eglOwner === thread || eglOwner == null) {
+                eglOwner = thread
                 notifyAll()
                 return true
             }
             checkGLESVersion()
-            if (mMultipleGLESContextsAllowed) {
+            if (multipleGLESContextsAllowed) {
                 return true
             }
             // Notify the owning thread that it should release the context.
             // TODO: implement a fairness policy. Currently
             // if the owning thread is drawing continuously it will just
             // reacquire the EGL context.
-            if (mEglOwner != null) {
-                mEglOwner!!.requestReleaseEglContextLocked()
+            if (eglOwner != null) {
+                eglOwner!!.requestReleaseEglContextLocked()
             }
             return false
         }
 
         /*
          * Releases the EGL context. Requires that we are already in the
-         * sGLThreadManager monitor when this is called.
+         * glThreadManager monitor when this is called.
          */
         fun releaseEglContextLocked(thread: GLThread) {
-            if (mEglOwner === thread) {
-                mEglOwner = null
+            if (eglOwner === thread) {
+                eglOwner = null
             }
             notifyAll()
         }
@@ -1473,45 +1463,45 @@ class TextureView : android.view.TextureView, ISurface {
             // Release the EGL context when pausing even if
             // the hardware supports multiple EGL contexts.
             // Otherwise the device could run out of EGL contexts.
-            return mLimitedGLESContexts
+            return limitedGLESContexts
         }
 
         @Synchronized
         fun shouldTerminateEGLWhenPausing(): Boolean {
             checkGLESVersion()
-            return !mMultipleGLESContextsAllowed
+            return !multipleGLESContextsAllowed
         }
 
         private fun checkGLESVersion() {
-            if (!mGLESVersionCheckComplete) {
-                mGLESVersion = Capabilities.getGLESMajorVersion()
-                if (mGLESVersion >= kGLES_20) {
-                    mMultipleGLESContextsAllowed = true
+            if (!glesVersionCheckComplete) {
+                glesVersion = Capabilities.getGLESMajorVersion()
+                if (glesVersion >= kGLES_20) {
+                    multipleGLESContextsAllowed = true
                 }
                 if (LOG_SURFACE) {
-                    Log.w(TAG, "checkGLESVersion mGLESVersion =" +
-                            " " + mGLESVersion + " mMultipleGLESContextsAllowed = " + mMultipleGLESContextsAllowed)
+                    Log.w(TAG, "checkGLESVersion glesVersion =" +
+                            " " + glesVersion + " multipleGLESContextsAllowed = " + multipleGLESContextsAllowed)
                 }
-                mGLESVersionCheckComplete = true
+                glesVersionCheckComplete = true
             }
         }
 
         @Synchronized
         fun checkGLDriver(gl: GL10?) {
-            if (!mGLESDriverCheckComplete) {
+            if (!glesDriverCheckComplete) {
                 checkGLESVersion()
                 val renderer = gl!!.glGetString(GL10.GL_RENDERER)
-                if (mGLESVersion < kGLES_20) {
-                    mMultipleGLESContextsAllowed = !renderer.startsWith(kMSM7K_RENDERER_PREFIX)
+                if (glesVersion < kGLES_20) {
+                    multipleGLESContextsAllowed = !renderer.startsWith(kMSM7K_RENDERER_PREFIX)
                     notifyAll()
                 }
-                mLimitedGLESContexts = !mMultipleGLESContextsAllowed
+                limitedGLESContexts = !multipleGLESContextsAllowed
                 if (LOG_SURFACE) {
                     Log.w(TAG, "checkGLDriver renderer = \"" + renderer + "\" multipleContextsAllowed = "
-                            + mMultipleGLESContextsAllowed
-                            + " mLimitedGLESContexts = " + mLimitedGLESContexts)
+                            + multipleGLESContextsAllowed
+                            + " limitedGLESContexts = " + limitedGLESContexts)
                 }
-                mGLESDriverCheckComplete = true
+                glesDriverCheckComplete = true
             }
         }
 
@@ -1532,6 +1522,6 @@ class TextureView : android.view.TextureView, ISurface {
         private const val LOG_RENDERER_DRAW_FRAME = false
         private const val LOG_EGL = false
 
-        private val sGLThreadManager = GLThreadManager()
+        private val glThreadManager = GLThreadManager()
     }
 }
