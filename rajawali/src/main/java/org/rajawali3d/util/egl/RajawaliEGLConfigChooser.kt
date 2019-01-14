@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.opengl.EGLExt
 import android.opengl.GLSurfaceView
 import android.os.Build
+import org.rajawali3d.view.IRajawaliEglConfigChooser
 import org.rajawali3d.view.ISurface
 
 import javax.microedition.khronos.egl.EGL10
@@ -23,7 +24,7 @@ open class RajawaliEGLConfigChooser(
         bitsBlue: Int,
         bitsAlpha: Int,
         bitsDepth: Int
-) : GLSurfaceView.EGLConfigChooser {
+) : IRajawaliEglConfigChooser {
 
     private val configSupportsMultiSampling: Boolean
         get() = antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING
@@ -98,16 +99,22 @@ open class RajawaliEGLConfigChooser(
         configSpec[11] = EGLExt.EGL_OPENGL_ES3_BIT_KHR
     }
 
+    override fun chooseConfigWithReason(egl: EGL10, display: EGLDisplay): ResultConfigChooser {
+        val returnVal = chooseConfig(egl, display)
+        return ResultConfigChooser(returnVal, errorText)
+    }
+
+    private var errorText: String = ""
+
     override fun chooseConfig(egl: EGL10, display: EGLDisplay): EGLConfig? {
         val result = IntArray(1)
         if (!egl.eglChooseConfig(display, configSpec, null, 0, result)) {
-            throw IllegalStateException(
-                    "This device does not support the requested EGL Configuration! " + antiAliasingConfig.name)
+            errorText = "This device does not support the requested EGL Configuration!" + antiAliasingConfig.name
         }
 
         val configs = arrayOfNulls<EGLConfig>(result[0])
         if (!egl.eglChooseConfig(display, configSpec, configs, result[0], result)) {
-            throw RuntimeException("Couldn't create EGL configuration.")
+            errorText = "Couldn't create EGL configuration."
         }
 
         val value = IntArray(1)
@@ -118,7 +125,7 @@ open class RajawaliEGLConfigChooser(
             }
         }
 
-        throw RuntimeException("No EGL configuration chosen")
+        return null
     }
 
     companion object {
@@ -128,3 +135,5 @@ open class RajawaliEGLConfigChooser(
         const val EGL_OPENGL_ES3_BIT_KHR = 0x0040
     }
 }
+
+data class ResultConfigChooser(val configGL: EGLConfig?, val error: String? = null)
