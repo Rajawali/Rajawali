@@ -28,14 +28,30 @@ class RajawaliEGLConfigChooser(
 
     init {
 
-        if (this.antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) {
-            configSpec = intArrayOf(EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE, bitsBlue, EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth, EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL10.EGL_SAMPLE_BUFFERS, if (antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) 1 else 0, /* Do we use sample buffers */
-                    EGL10.EGL_SAMPLES, if (antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) sampleCount else 0, /* Sample count */
-                    EGL10.EGL_NONE)
-        } else if (this.antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.COVERAGE) {
-            configSpec = intArrayOf(EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE, bitsBlue, EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth, EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_COVERAGE_BUFFERS_NV, 1, EGL_COVERAGE_SAMPLES_NV, 2, EGL10.EGL_NONE)
-        } else {
-            configSpec = intArrayOf(EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE, bitsBlue, EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth, EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL10.EGL_NONE)
+        when {
+            antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING -> configSpec =
+                    intArrayOf(
+                            EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE, bitsBlue,
+                            EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth, EGL10.EGL_RENDERABLE_TYPE,
+                            EGL_OPENGL_ES2_BIT, EGL10.EGL_SAMPLE_BUFFERS,
+                            if (antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) 1 else 0, /* Do we use sample buffers */
+                            EGL10.EGL_SAMPLES,
+                            if (antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) sampleCount else 0, /* Sample count */
+                            EGL10.EGL_NONE
+                    )
+            antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.COVERAGE -> configSpec =
+                    intArrayOf(
+                            EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE,
+                            bitsBlue, EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth,
+                            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_COVERAGE_BUFFERS_NV,
+                            1, EGL_COVERAGE_SAMPLES_NV, 2, EGL10.EGL_NONE
+                    )
+            else -> configSpec =
+                    intArrayOf(
+                            EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE,
+                            bitsBlue, EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth,
+                            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL10.EGL_NONE
+                    )
         }
 
         if (glMajorVersion > 2) {
