@@ -167,6 +167,13 @@ public class ArcballCamera extends Camera {
         return m;
     }
 
+    @Override
+    public void resetCameraOrientation() {
+        super.resetCameraOrientation();
+        mEmpty.setOrientation(Quaternion.getIdentity());
+        getViewMatrix();
+    }
+
     public void setFieldOfView(double fieldOfView) {
         synchronized (mFrustumLock) {
             mStartFOV = fieldOfView;
