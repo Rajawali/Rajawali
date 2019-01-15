@@ -225,6 +225,7 @@ public abstract class Animation extends Playable {
 
 		// Update the elapsed time
 		mElapsedTime += deltaTime;
+                if(mElapsedTime > mDuration) mElapsedTime = mDuration;
 
 		// Calculate the interpolated time
 		final double interpolatedTime = mInterpolator
