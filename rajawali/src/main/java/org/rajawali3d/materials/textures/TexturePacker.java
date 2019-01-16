@@ -212,6 +212,7 @@ public class TexturePacker{
 			if(node != null) {
 				BFO.inSampleSize = tile.getSampling();
 				try {
+					tile.stream.reset();
 					tileImage = BitmapFactory.decodeStream(tile.stream, null, BFO);
 				} catch (Exception e) {
 					RajLog.e("Unable to read "+tile.name+" from stream.");
