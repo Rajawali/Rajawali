@@ -13,8 +13,9 @@ import javax.microedition.khronos.egl.EGLDisplay
 /**
  * @author Jared Woolston (jwoolston@tenkiv.com)
  */
-class RajawaliEGLConfigChooser(
+open class RajawaliEGLConfigChooser(
         glMajorVersion: Int,
+        @Suppress("MemberVisibilityCanBePrivate")
         val antiAliasingConfig: ISurface.ANTI_ALIASING_CONFIG,
         sampleCount: Int,
         bitsRed: Int,
@@ -24,36 +25,69 @@ class RajawaliEGLConfigChooser(
         bitsDepth: Int
 ) : GLSurfaceView.EGLConfigChooser {
 
-    private val configSpec: IntArray
+    private val configSupportsMultiSampling: Boolean
+        get() = antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING
 
-    init {
-
-        when {
-            antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING -> configSpec =
-                    intArrayOf(
-                            EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE, bitsBlue,
-                            EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth, EGL10.EGL_RENDERABLE_TYPE,
-                            EGL_OPENGL_ES2_BIT, EGL10.EGL_SAMPLE_BUFFERS,
-                            if (antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) 1 else 0, /* Do we use sample buffers */
-                            EGL10.EGL_SAMPLES,
-                            if (antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING) sampleCount else 0, /* Sample count */
-                            EGL10.EGL_NONE
-                    )
-            antiAliasingConfig == ISurface.ANTI_ALIASING_CONFIG.COVERAGE -> configSpec =
-                    intArrayOf(
-                            EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE,
-                            bitsBlue, EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth,
-                            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_COVERAGE_BUFFERS_NV,
-                            1, EGL_COVERAGE_SAMPLES_NV, 2, EGL10.EGL_NONE
-                    )
-            else -> configSpec =
-                    intArrayOf(
-                            EGL10.EGL_RED_SIZE, bitsRed, EGL10.EGL_GREEN_SIZE, bitsGreen, EGL10.EGL_BLUE_SIZE,
-                            bitsBlue, EGL10.EGL_ALPHA_SIZE, bitsAlpha, EGL10.EGL_DEPTH_SIZE, bitsDepth,
-                            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL10.EGL_NONE
-                    )
+    private val configSpec: IntArray =
+            when (antiAliasingConfig) {
+                ISurface.ANTI_ALIASING_CONFIG.MULTISAMPLING -> intArrayOf(
+                        EGL10.EGL_RED_SIZE,
+                        bitsRed,
+                        EGL10.EGL_GREEN_SIZE,
+                        bitsGreen,
+                        EGL10.EGL_BLUE_SIZE,
+                        bitsBlue,
+                        EGL10.EGL_ALPHA_SIZE,
+                        bitsAlpha,
+                        EGL10.EGL_DEPTH_SIZE,
+                        bitsDepth,
+                        EGL10.EGL_RENDERABLE_TYPE,
+                        EGL_OPENGL_ES2_BIT,
+                        EGL10.EGL_SAMPLE_BUFFERS,
+                        /* Do we use sample buffers */
+                        if (configSupportsMultiSampling) 1 else 0,
+                        EGL10.EGL_SAMPLES,
+                        /* Sample count */
+                        if (configSupportsMultiSampling) sampleCount else 0,
+                        EGL10.EGL_NONE
+                )
+                ISurface.ANTI_ALIASING_CONFIG.COVERAGE -> intArrayOf(
+                        EGL10.EGL_RED_SIZE,
+                        bitsRed,
+                        EGL10.EGL_GREEN_SIZE,
+                        bitsGreen,
+                        EGL10.EGL_BLUE_SIZE,
+                        bitsBlue,
+                        EGL10.EGL_ALPHA_SIZE,
+                        bitsAlpha,
+                        EGL10.EGL_DEPTH_SIZE,
+                        bitsDepth,
+                        EGL10.EGL_RENDERABLE_TYPE,
+                        EGL_OPENGL_ES2_BIT,
+                        EGL_COVERAGE_BUFFERS_NV,
+                        1,
+                        EGL_COVERAGE_SAMPLES_NV,
+                        2,
+                        EGL10.EGL_NONE
+                )
+                else -> intArrayOf(
+                        EGL10.EGL_RED_SIZE,
+                        bitsRed,
+                        EGL10.EGL_GREEN_SIZE,
+                        bitsGreen,
+                        EGL10.EGL_BLUE_SIZE,
+                        bitsBlue,
+                        EGL10.EGL_ALPHA_SIZE,
+                        bitsAlpha,
+                        EGL10.EGL_DEPTH_SIZE,
+                        bitsDepth,
+                        EGL10.EGL_RENDERABLE_TYPE,
+                        EGL_OPENGL_ES2_BIT,
+                        EGL10.EGL_NONE
+                )
         }
 
+    init {
         if (glMajorVersion > 2) {
             makeConfigSpecES3()
         }
@@ -75,21 +109,18 @@ class RajawaliEGLConfigChooser(
             throw RuntimeException("Couldn't create EGL configuration.")
         }
 
-        var index = -1
         val value = IntArray(1)
-        for (i in configs.indices) {
-            egl.eglGetConfigAttrib(display, configs[i], EGL10.EGL_RED_SIZE, value)
+        for (config in configs) {
+            egl.eglGetConfigAttrib(display, config, EGL10.EGL_RED_SIZE, value)
             if (value[0] == configSpec[1]) {
-                index = i
-                break
+                return config
             }
         }
 
-        return if (configs.isNotEmpty()) configs[index] else throw RuntimeException("No EGL configuration chosen")
+        throw RuntimeException("No EGL configuration chosen")
     }
 
     companion object {
-
         private const val EGL_COVERAGE_BUFFERS_NV = 0x30E0 // For nVidia Tegra
         private const val EGL_COVERAGE_SAMPLES_NV = 0x30E1 // For nVidia Tegra
         const val EGL_OPENGL_ES2_BIT = 0x0004
