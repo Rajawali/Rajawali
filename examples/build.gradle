@@ -1,8 +1,11 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
 
 android {
-    compileSdkVersion rootProject.compileSdk
-
+    compileSdkVersion 28
     defaultConfig {
         applicationId "org.rajawali3d.examples"
         minSdkVersion 16
@@ -10,19 +13,16 @@ android {
         versionCode rootProject.versionCode
         versionName rootProject.versionName
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-
     flavorDimensions "feature"
     productFlavors {
         withVuforia {
@@ -33,20 +33,19 @@ android {
             dimension "feature"
         }
     }
-
     lintOptions {
         abortOnError false
     }
-    packagingOptions {
-        pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
-        pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
-    }
-
     dexOptions {
         // Skip pre-dexing when running on CI
         preDexLibraries = !isCi
         javaMaxHeapSize maxDexHeap
     }
+    packagingOptions {
+        pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
+        pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
+    }
+    buildToolsVersion '28.0.3'
 }
 
 dependencies {
@@ -55,10 +54,9 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$supportLib"
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.koushikdutta.ion:ion:2.1.7'
-
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation project(':rajawali')
     withVuforiaImplementation project(':vuforia')
     withVuforiaImplementation project(':vr')
-
     wearApp project(':wear-example')
 }

@@ -2,7 +2,9 @@ package org.rajawali3d.vuforia;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import com.qualcomm.QCAR.QCAR;
+import android.content.res.Configuration;
+import android.support.annotation.NonNull;
+import com.vuforia.*;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture.TextureException;
 import org.rajawali3d.math.Quaternion;
@@ -15,128 +17,153 @@ import org.rajawali3d.util.RajLog;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-/**
- *
- */
+import static android.opengl.GLES20.*;
+
 public abstract class VuforiaRenderer extends Renderer {
-	private   Vector3      mPosition;
-	private   Quaternion   mOrientation;
-	protected ScreenQuad   mBackgroundQuad;
-	protected RenderTarget mBackgroundRenderTarget;
-	private   double[]     mModelViewMatrix;
-	private int mI = 0;
-	private VuforiaManager mVuforiaManager;
 
-	public native void initRendering();
-	public native void updateRendering(int width, int height);
-	public native void renderFrame(int frameBufferId, int frameBufferTextureId);
-	public native void drawVideoBackground();
-	public native float getFOV();
-	public native int getVideoWidth();
-	public native int getVideoHeight();
+    private final Vector3 position;
+    private final Quaternion orientation;
+    private final double[] modelViewMatrix;
+    private final int videoMode;
 
-	public VuforiaRenderer(Context context, VuforiaManager manager) {
-		super(context);
-		mVuforiaManager = manager;
-		mPosition = new Vector3();
-		mOrientation = new Quaternion();
-		getCurrentCamera().setNearPlane(10);
-		getCurrentCamera().setFarPlane(2500);
-		mModelViewMatrix = new double[16];
-	}
+    @SuppressWarnings("WeakerAccess")
+    protected ScreenQuad backgroundQuad;
+    @SuppressWarnings("WeakerAccess")
+    protected RenderTarget backgroundRenderTarget;
 
-	@Override
-	public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
-        RajLog.i("onRenderSurfaceCreated");
-		super.onRenderSurfaceCreated(config, gl, width, height);
-		initRendering();
-		QCAR.onSurfaceCreated();
-	}
+    protected VuforiaManager vuforiaManager;
 
-	@Override
-	public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
-        RajLog.i("onRenderSurfaceSizeChanged " + width + ", " + height);
-		super.onRenderSurfaceSizeChanged(gl, width, height);
-		updateRendering(width, height);
-		QCAR.onSurfaceChanged(width, height);
-		getCurrentCamera().setProjectionMatrix(getFOV(), getVideoWidth(),
-				getVideoHeight());
-		if(mBackgroundRenderTarget == null) {
-			mBackgroundRenderTarget = new RenderTarget("rajVuforia", width, height);
+    public VuforiaRenderer(
+            @NonNull Context context,
+            @NonNull VuforiaManager vuforiaManager,
+            int videoMode
+    ) {
+        super(context);
+        position = new Vector3();
+        orientation = new Quaternion();
+        getCurrentCamera().setNearPlane(10);
+        getCurrentCamera().setFarPlane(2500);
+        modelViewMatrix = new double[16];
+        this.vuforiaManager = vuforiaManager;
+        this.videoMode = videoMode;
+    }
 
-			addRenderTarget(mBackgroundRenderTarget);
-			Material material = new Material();
-			material.setColorInfluence(0);
-			try {
-				material.addTexture(mBackgroundRenderTarget.getTexture());
-			} catch (TextureException e) {
-				e.printStackTrace();
-			}
+    private static void copyMatrixArray(float[] src, double[] dst) {
+        for (int i = 0; i < 16; i++) {
+            dst[i] = src[i];
+        }
+    }
 
-			mBackgroundQuad = new ScreenQuad();
-			if(mVuforiaManager.getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-				mBackgroundQuad.setScaleY((float)height / (float)getVideoHeight());
-			else
-				mBackgroundQuad.setScaleX((float)width / (float)getVideoWidth());
-			mBackgroundQuad.setMaterial(material);
-			getCurrentScene().addChildAt(mBackgroundQuad, 0);
-		}
-	}
+    @Override
+    public void onRenderSurfaceCreated(EGLConfig config, GL10 gl, int width, int height) {
+        super.onRenderSurfaceCreated(config, gl, width, height);
+        vuforiaManager.onSurfaceCreated();
+    }
 
-	public void foundFrameMarker(int markerId, float[] modelViewMatrix) {
-		synchronized (this) {
-			transformPositionAndOrientation(modelViewMatrix);
+    @Override
+    public void onRenderSurfaceSizeChanged(GL10 gl, final int width, final int height) {
+        RajLog.i("Vuforia onRenderSurfaceSizeChanged(" + width + ", " + height + ")");
+        super.onRenderSurfaceSizeChanged(gl, width, height);
 
-			foundFrameMarker(markerId, mPosition, mOrientation);
-		}
-	}
+        vuforiaManager.onSurfaceChanged(width, height);
 
-	private void transformPositionAndOrientation(float[] modelViewMatrix) {
-		mPosition.setAll(modelViewMatrix[12], -modelViewMatrix[13],
-				-modelViewMatrix[14]);
-		copyFloatToDoubleMatrix(modelViewMatrix, mModelViewMatrix);
-		mOrientation.fromMatrix(mModelViewMatrix);
+        CameraDevice cameraDevice = CameraDevice.getInstance();
+        VideoMode vm = cameraDevice.getVideoMode(videoMode);
+        CameraCalibration cameraCalibration = cameraDevice.getCameraCalibration();
 
-		if(mVuforiaManager.getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-		{
-			mPosition.setAll(modelViewMatrix[12], -modelViewMatrix[13],
-					-modelViewMatrix[14]);
-			mOrientation.y = -mOrientation.y;
-			mOrientation.z = -mOrientation.z;
-		}
-		else
-		{
-			mPosition.setAll(-modelViewMatrix[13], -modelViewMatrix[12],
-					-modelViewMatrix[14]);
-			double orX = mOrientation.x;
-			mOrientation.x = -mOrientation.y;
-			mOrientation.y = -orX;
-			mOrientation.z = -mOrientation.z;
-		}
-	}
+        VideoBackgroundConfig config = new VideoBackgroundConfig();
+        config.setPosition(new Vec2I(0, 0));
 
-	public void foundImageMarker(String trackableName, float[] modelViewMatrix) {
-		synchronized (this) {
-			transformPositionAndOrientation(modelViewMatrix);
-			foundImageMarker(trackableName, mPosition, mOrientation);
-		}
-	}
+        int xSize, ySize;
+        if (getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT) {
+            xSize = (int) (vm.getHeight() * (height / (float) vm.getWidth()));
+            ySize = height;
+            if (xSize < width) {
+                xSize = width;
+                ySize = (int) (width * (vm.getWidth() / (float) vm.getHeight()));
+            }
+        } else {
+            xSize = width;
+            ySize = (int) (vm.getHeight() * (width / (float) vm.getWidth()));
+            if (ySize < height) {
+                xSize = (int) (height * (vm.getWidth() / (float) vm.getHeight()));
+                ySize = height;
+            }
+        }
+        config.setSize(new Vec2I(xSize, ySize));
 
-	abstract protected void foundFrameMarker(int markerId, Vector3 position, Quaternion orientation);
-	abstract protected void foundImageMarker(String trackableName, Vector3 position, Quaternion orientation);
-	abstract public void noFrameMarkersFound();
+        Vec2F size = cameraCalibration.getSize();
+        Vec2F focalLength = cameraCalibration.getFocalLength();
+        double fovRadians = 2 * Math.atan(0.5f * size.getData()[1] / focalLength.getData()[1]);
+        double fovDegrees = fovRadians * 180.0 / Math.PI;
+        getCurrentCamera().setProjectionMatrix(fovDegrees, vm.getWidth(), vm.getHeight());
 
-	@Override
-	protected void onRender(final long elapsedRealtime, final double deltaTime) {
-		renderFrame(mBackgroundRenderTarget.getFrameBufferHandle(), mBackgroundRenderTarget.getTexture().getTextureId());
-		super.onRender(elapsedRealtime, deltaTime);
-	}
+        if (backgroundRenderTarget == null) {
+            backgroundRenderTarget = new RenderTarget("rajVuforia", width, height);
 
-	private void copyFloatToDoubleMatrix(float[] src, double[] dst)
-	{
-		for(mI = 0; mI < 16; mI++)
-		{
-			dst[mI] = src[mI];
-		}
-	}
+            addRenderTarget(backgroundRenderTarget);
+            Material material = new Material();
+            material.setColorInfluence(0);
+            try {
+                material.addTexture(backgroundRenderTarget.getTexture());
+            } catch (TextureException e) {
+                e.printStackTrace();
+            }
+
+            backgroundQuad = new ScreenQuad();
+            if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+                backgroundQuad.setScaleY((float) height / (float) vm.getHeight());
+            else
+                backgroundQuad.setScaleX((float) width / (float) vm.getWidth());
+            backgroundQuad.setMaterial(material);
+            getCurrentScene().addChildAt(backgroundQuad, 0);
+        }
+
+        com.vuforia.Renderer.getInstance().setVideoBackgroundConfig(config);
+    }
+
+    private void transformPositionAndOrientation(float[] modelViewMatrix) {
+        position.setAll(modelViewMatrix[12], -modelViewMatrix[13], -modelViewMatrix[14]);
+        copyMatrixArray(modelViewMatrix, this.modelViewMatrix);
+        orientation.fromMatrix(this.modelViewMatrix);
+
+        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            position.setAll(modelViewMatrix[12], -modelViewMatrix[13],
+                    -modelViewMatrix[14]);
+            orientation.y = -orientation.y;
+            orientation.z = -orientation.z;
+        } else {
+            position.setAll(-modelViewMatrix[13], -modelViewMatrix[12],
+                    -modelViewMatrix[14]);
+            double orX = orientation.x;
+            orientation.x = -orientation.y;
+            orientation.y = -orX;
+            orientation.z = -orientation.z;
+        }
+    }
+
+    @Override
+    public void onRenderFrame(GL10 gl) {
+        super.onRenderFrame(gl);
+        com.vuforia.Renderer vuforiaRenderer = com.vuforia.Renderer.getInstance();
+        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        vuforiaRenderer.begin(new State());
+        int frameBufferHandle = backgroundRenderTarget.getFrameBufferHandle();
+        int textureId = backgroundRenderTarget.getTexture().getTextureId();
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBufferHandle);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+        vuforiaRenderer.updateVideoBackgroundTexture();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        vuforiaRenderer.end();
+    }
+
+    /**
+     * Get the current screen orientation.
+     *
+     * @return Android screen orientation
+     */
+    private int getScreenOrientation() {
+        return getContext().getResources().getConfiguration().orientation;
+    }
+
 }

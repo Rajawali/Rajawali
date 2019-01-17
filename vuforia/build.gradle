@@ -2,20 +2,25 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
 }
 
 android {
     compileSdkVersion rootProject.compileSdk
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion rootProject.targetSdk
         versionCode rootProject.versionCode
         versionName rootProject.versionName
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86'
+        }
     }
 
     sourceSets.main {
-        jniLibs.srcDir 'src/main/libs'
+        //jniLibs.srcDir 'src/main/libs'
         jni.srcDirs = [] //disable automatic ndk-build call
     }
 
@@ -35,15 +40,6 @@ android {
         abortOnError false
     }
 
-    // call regular ndk-build(.cmd) script from app directory
-    task ndkBuild(type: Exec) {
-        commandLine getNdkBuildFile().absolutePath, '-C', file('src/main').absolutePath
-    }
-
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn ndkBuild
-    }
-
     dexOptions {
         // Skip pre-dexing when running on CI
         preDexLibraries = !isCi
@@ -52,21 +48,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "com.android.support:support-v13:$supportLib"
     implementation "com.android.support:support-annotations:$supportLib"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation project(':rajawali')
-}
-
-File getNdkBuildFile() {
-    String name = Os.isFamily(Os.FAMILY_WINDOWS) ? 'ndk-build.cmd' : 'ndk-build'
-    File ndkDir = android.getNdkDirectory()
-    if(ndkDir == null) throw new GradleException('NDK location not found. '
-                          + 'Define location with ndk.dir in the local.properties file '
-                          + 'or with an ANDROID_NDK_HOME environment variable.')
-    return new File(ndkDir, name)
 }
 
 apply from: '../publish.gradle'

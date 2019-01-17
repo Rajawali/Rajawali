@@ -30,7 +30,7 @@ ext {
     isTag = tagName != null && !tagName.isEmpty()
     buildNumber = System.getenv('CIRCLE_BUILD_NUM') ?: "0"
     isCi = buildNumber != "0"
-    maxDexHeap = "2g"
+    maxDexHeap = "3g"
 }
 
 subprojects {
@@ -41,6 +41,11 @@ subprojects {
         google()
         mavenCentral()
         jcenter()
+    }
+
+    tasks.withType(Test) {
+        // Use all but one core or one core if only a single core is available
+        maxParallelForks = Runtime.runtime.availableProcessors() - 1 ?: 1
     }
 }
 

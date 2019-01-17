@@ -1,21 +1,20 @@
 package com.rajawali3d.examples.examples.vr_ar;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ToggleButton;
+import com.vuforia.CameraDevice;
+import com.vuforia.Device;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationSequence;
@@ -29,42 +28,40 @@ import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.methods.SpecularMethod;
 import org.rajawali3d.materials.textures.Texture;
-import org.rajawali3d.math.Quaternion;
-import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.RajLog;
-import org.rajawali3d.view.ISurface;
 import org.rajawali3d.vuforia.VuforiaManager;
-import org.rajawali3d.vuforia.VuforiaManager.VuforiaConsumer;
 import org.rajawali3d.vuforia.VuforiaRenderer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import java.util.Objects;
+
+import static org.rajawali3d.vuforia.VuforiaManager.Action;
+import static org.rajawali3d.vuforia.VuforiaManager.GLVersion;
 
 /**
  * @author Jared Woolston (jwoolston@keywcorp.com)
  */
-public class VuforiaExampleFragment extends AExampleFragment implements VuforiaConsumer {
+public class VuforiaExampleFragment extends AExampleFragment {
 
-    private VuforiaManager mVuforiaManager;
-    private Button         mStartScanButton;
-
-    public VuforiaExampleFragment() {
-        mVuforiaManager = new VuforiaManager(this);
-    }
+    private VuforiaManager vuforiaManager;
+    private Button mStartScanButton;
+    private int videoMode = CameraDevice.MODE.MODE_DEFAULT;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mVuforiaManager.setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        mVuforiaManager.useCloudRecognition(true);
-        mVuforiaManager.setCloudRecoDatabase("a75960aa97c3b72a76eb997f9e40d210d5e40bf2",
-                                             "aac883379f691a2550e80767ccd445ffbaa520ca");
+        vuforiaManager = new VuforiaManager(
+                Objects.requireNonNull(getActivity()),
+                GLVersion.GL_20,
+                "AR+hDUT/////AAABmdJV8j4z5k2Hg8TUewiO3T1K1bjSTJfG4WEwlQVOT/MAgZz0GFiAejB8bObUsYaH2YA/aa0ZjzBA4JYJoV6JwNzXbrmd39utOLyMGLQW/6d+WkNLuM13eeg71I3C9CvQneN8RTEmCCqHwgW9R9gaRMvj8Dxd84dJj+nhBavkrlErtuQxHuQRnfeyIcuFQ9aJ8nMWO5I5/l+zr0jKREuoThLWxGpYHWmaREIykJglEtWb6G+1Jw+KFdztAExX9g306gYMCOJVGS7A2qYaWmWq6vQM8pi4uQlECV7x5h4gslGN/S1M50HcMoql5vqsjv0qN9LzibXYut7IRUOJY+aKHdqRTn/31uEuP6HdbZ7LuZ8h");
 
-        mVuforiaManager.startVuforia();
+        vuforiaManager.request(Action.Prepare.INSTANCE);
     }
 
-    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final ViewGroup view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
         assert view != null;
         LinearLayout ll = new LinearLayout(getContext());
@@ -82,46 +79,82 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mVuforiaManager.onConfigurationChanged(newConfig);
+        vuforiaManager.onConfigurationChanged();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mVuforiaManager.onResume();
+        vuforiaManager.request(
+                Action.Resume.INSTANCE,
+                new Function0<Unit>() {
+                    @Override
+                    public Unit invoke() {
+                        prepareDevice();
+                        return Unit.INSTANCE;
+                    }
+                });
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mVuforiaManager.onPause();
+        vuforiaManager.request(
+                Action.Pause.INSTANCE,
+                new Function0<Unit>() {
+                    @Override
+                    public Unit invoke() {
+                        CameraDevice cameraDevice = CameraDevice.getInstance();
+                        cameraDevice.stop();
+                        cameraDevice.deinit();
+                        return Unit.INSTANCE;
+                    }
+                });
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mVuforiaManager.onDestroy();
+        vuforiaManager.request(Action.Destroy.INSTANCE);
     }
 
     @Override
     public ISurfaceRenderer createRenderer() {
-        return new VuforiaExampleRenderer(getContext(), mVuforiaManager);
+        return new VuforiaExampleRenderer(getContext(), vuforiaManager, videoMode);
     }
 
-    @NonNull
+    private void prepareDevice() {
+        new Handler(getContext().getMainLooper()).postAtFrontOfQueue(new Runnable() {
+            @Override
+            public void run() {
+                CameraDevice cameraDevice = CameraDevice.getInstance();
+                if (!cameraDevice.init(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_DEFAULT))
+                    throw new RuntimeException("Failed to init camera");
+                if (!cameraDevice.selectVideoMode(videoMode)) throw new RuntimeException("Failed to set video mode");
+                if (!cameraDevice.start()) throw new RuntimeException("Failed to start camera");
+
+                RajLog.i("Vuforia configuring device for AR");
+                Device device = Device.getInstance();
+                device.setViewerActive(false);
+                device.setMode(Device.MODE.MODE_AR);
+            }
+        });
+    }
+
+/*    @NonNull
     @Override
     public ISurface getRenderSurface() {
         return mRenderSurface;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void initialize() {
         // Add button for Cloud Reco:
         mStartScanButton = new Button(getContext());
         mStartScanButton.setText("Start Scanning CloudReco");
         mStartScanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mVuforiaManager.enterScanningModeNative();
+                vuforiaManager.enterScanningModeNative();
                 mStartScanButton.setVisibility(View.GONE);
             }
         });
@@ -133,11 +166,11 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
         extendedTrackingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (((ToggleButton) v).isChecked()) {
-                    if (!mVuforiaManager.startExtendedTracking()) {
+                    if (!vuforiaManager.startExtendedTracking()) {
                         RajLog.e("Could not start extended tracking");
                     }
                 } else {
-                    if (!mVuforiaManager.stopExtendedTracking()) {
+                    if (!vuforiaManager.stopExtendedTracking()) {
                         RajLog.e("Could not stop extended tracking");
                     }
                 }
@@ -149,37 +182,32 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
         ll.addView(extendedTrackingButton);
         ((ViewGroup) getView()).addView(ll, new LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-    }
-
-    @Override
-    public void onPostCloudRecoInit(boolean success, @Nullable String message) {
-
-    }
-
-    @Override
-    public void onPostQcarInit(boolean success, @Nullable String message) {
-
-    }
+    }*/
 
     public void showStartScanButton() {
-        getActivity().runOnUiThread(new Runnable() {
+        new Handler().post(new Runnable() {
+            @Override
             public void run() {
-                if (mStartScanButton != null) {
-                    mStartScanButton.setVisibility(View.VISIBLE);
-                }
+                if (mStartScanButton != null) mStartScanButton.setVisibility(View.VISIBLE);
             }
         });
     }
 
     private final class VuforiaExampleRenderer extends VuforiaRenderer {
 
-        private DirectionalLight          mLight;
+        private DirectionalLight mLight;
         private SkeletalAnimationObject3D mBob;
-        private Object3D                  mF22;
-        private Object3D                  mAndroid;
+        private Object3D mF22;
+        private Object3D mAndroid;
+        private Resources resources;
 
-        public VuforiaExampleRenderer(Context context, VuforiaManager manager) {
-            super(context, manager);
+        VuforiaExampleRenderer(
+                Context context,
+                VuforiaManager vuforiaManager,
+                int videoMode
+        ) {
+            super(context, vuforiaManager, videoMode);
+            this.resources = context.getResources();
         }
 
         @Override
@@ -196,18 +224,14 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
                 // http://www.katsbits.com/download/models/)
                 //
 
-                LoaderMD5Mesh meshParser = new LoaderMD5Mesh(this,
-                                                             R.raw.boblampclean_mesh);
+                LoaderMD5Mesh meshParser = new LoaderMD5Mesh(this, R.raw.boblampclean_mesh);
                 meshParser.parse();
-                mBob = (SkeletalAnimationObject3D) meshParser
-                        .getParsedAnimationObject();
+                mBob = (SkeletalAnimationObject3D) meshParser.getParsedAnimationObject();
                 mBob.setScale(2);
 
-                LoaderMD5Anim animParser = new LoaderMD5Anim("dance", this,
-                                                             R.raw.boblampclean_anim);
+                LoaderMD5Anim animParser = new LoaderMD5Anim("dance", this, R.raw.boblampclean_anim);
                 animParser.parse();
-                mBob.setAnimationSequence((SkeletalAnimationSequence) animParser
-                        .getParsedAnimationSequence());
+                mBob.setAnimationSequence((SkeletalAnimationSequence) animParser.getParsedAnimationSequence());
 
                 getCurrentScene().addChild(mBob);
 
@@ -219,7 +243,7 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
                 // http://www.blendswap.com/blends/view/67634)
                 //
 
-                final LoaderAWD parserF22 = new LoaderAWD(mContext.getResources(), mTextureManager, R.raw.awd_suzanne);
+                final LoaderAWD parserF22 = new LoaderAWD(resources, mTextureManager, R.raw.awd_suzanne);
                 parserF22.parse();
 
                 mF22 = parserF22.getParsedObject();
@@ -238,8 +262,7 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
                 // -- Load Android
                 //
 
-                final LoaderAWD parserAndroid = new LoaderAWD(mContext.getResources(), mTextureManager,
-                                                              R.raw.awd_suzanne);
+                final LoaderAWD parserAndroid = new LoaderAWD(resources, mTextureManager, R.raw.awd_suzanne);
                 parserAndroid.parse();
 
                 mAndroid = parserAndroid.getParsedObject();
@@ -276,7 +299,7 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
 
         }
 
-        @Override
+        /*@Override
         protected void foundFrameMarker(int markerId, Vector3 position, Quaternion orientation) {
             if (markerId == 0) {
                 mBob.setVisible(true);
@@ -295,7 +318,7 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
                 mBob.setVisible(true);
                 mBob.setPosition(position);
                 mBob.setOrientation(orientation);
-                RajLog.d(mVuforiaManager.getMetadataNative());
+                //RajLog.d(vuforiaManager.getMetadataNative());
             }
             if (trackableName.equals("stones")) {
                 mF22.setVisible(true);
@@ -309,7 +332,7 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
         @Override
         public void noFrameMarkersFound() {
 
-        }
+        }*/
 
         @Override
         public void onRenderFrame(GL10 gl) {
@@ -319,9 +342,9 @@ public class VuforiaExampleFragment extends AExampleFragment implements VuforiaC
 
             super.onRenderFrame(gl);
 
-            if (!mVuforiaManager.getScanningModeNative()) {
+            /*if (!vuforiaManager.getScanningModeNative()) {
                 showStartScanButton();
-            }
+            }*/
         }
     }
 }
