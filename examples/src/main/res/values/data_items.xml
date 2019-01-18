@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="category_general">General</string>
     <string name="category_lights">Lights</string>
     <string name="category_interactive">Interactive</string>
@@ -35,7 +35,7 @@
     <string name="example_lights_spot_light">Spot Light</string>
     <string name="example_lights_multiple_light">Multiple Lights</string>
 
-    <string name="example_interactive_using_accelerometer">Using The Accelerometer</string>
+    <string name="example_interactive_using_accelerometer" tools:ignore="ExtraTranslation">Using The Accelerometer</string>
     <string name="example_interactive_object_picking">Object Picking</string>
     <string name="example_interactive_touch_drag">Touch &amp; Drag</string>
     <string name="example_interactive_first_person_camera">First Person Camera</string>
