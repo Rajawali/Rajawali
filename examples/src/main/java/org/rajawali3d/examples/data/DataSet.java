@@ -31,6 +31,7 @@ import org.rajawali3d.examples.examples.general.TerrainFragment;
 import org.rajawali3d.examples.examples.general.ThreeSixtyImagesFragment;
 import org.rajawali3d.examples.examples.general.UniformDistributionFragment;
 import org.rajawali3d.examples.examples.general.UsingGeometryDataFragment;
+import org.rajawali3d.examples.examples.interactive.AccelerometerFragment;
 import org.rajawali3d.examples.examples.interactive.FirstPersonCameraFragment;
 import org.rajawali3d.examples.examples.interactive.ObjectPickingFragment;
 import org.rajawali3d.examples.examples.interactive.TouchAndDragFragment;
@@ -132,7 +133,8 @@ public final class DataSet {
                 new Example(R.string.example_lights_multiple_light, MultipleLightsFragment.class),
         }));
         categories.add(new Category(R.string.category_interactive, new Example[]{
-                new Example(R.string.example_interactive_using_accelerometer, UsingGeometryDataFragment.class),
+                new Example(R.string.example_interactive_using_accelerometer, AccelerometerFragment.class),
+                new Example(R.string.example_general_using_geometry_data, UsingGeometryDataFragment.class),
                 new Example(R.string.example_interactive_object_picking, ObjectPickingFragment.class),
                 new Example(R.string.example_interactive_touch_drag, TouchAndDragFragment.class),
                 new Example(R.string.example_interactive_first_person_camera, FirstPersonCameraFragment.class),
