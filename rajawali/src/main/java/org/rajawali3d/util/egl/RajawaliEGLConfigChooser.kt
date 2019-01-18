@@ -85,7 +85,7 @@ open class RajawaliEGLConfigChooser(
                         EGL_OPENGL_ES2_BIT,
                         EGL10.EGL_NONE
                 )
-        }
+            }
 
     init {
         if (glMajorVersion > 2) {
@@ -101,7 +101,8 @@ open class RajawaliEGLConfigChooser(
     override fun chooseConfig(egl: EGL10, display: EGLDisplay): EGLConfig? {
         val result = IntArray(1)
         if (!egl.eglChooseConfig(display, configSpec, null, 0, result)) {
-            throw IllegalStateException("This device does not support the requested EGL Configuration!")
+            throw IllegalStateException(
+                    "This device does not support the requested EGL Configuration! " + antiAliasingConfig.name)
         }
 
         val configs = arrayOfNulls<EGLConfig>(result[0])
