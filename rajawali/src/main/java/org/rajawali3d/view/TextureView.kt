@@ -5,9 +5,12 @@ package org.rajawali3d.view
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import org.rajawali3d.R
 import org.rajawali3d.renderer.ISurfaceRenderer
 import org.rajawali3d.util.Capabilities
@@ -181,7 +184,7 @@ open class TextureView @JvmOverloads constructor(
         }
         if (detached && rendererDelegate != null) {
             val renderMode = glThread?.renderMode!!
-            glThread = GLThread(thisWeakRef)
+            glThread = GLThread(thisWeakRef, context)
             if (renderMode != ISurface.RENDERMODE_CONTINUOUSLY) {
                 glThread?.renderMode = renderMode
             }
@@ -252,7 +255,7 @@ open class TextureView @JvmOverloads constructor(
         // Create our delegate
         val delegate = TextureView.RendererDelegate(renderer, this)
         // Create the GL thread
-        glThread = GLThread(thisWeakRef)
+        glThread = GLThread(thisWeakRef, context)
                 .apply { start() }
         // Render mode cant be set until the GL thread exists
         renderModeInternal = mRenderMode
@@ -862,7 +865,7 @@ open class TextureView @JvmOverloads constructor(
              * called. This weak reference allows the TextureView to be garbage collected while
              * the RajawaliGLThread is still alive.
              */
-            private val rajawaliTextureViewWeakRef: WeakReference<TextureView>) : Thread() {
+            private val rajawaliTextureViewWeakRef: WeakReference<TextureView>, val context: Context) : Thread() {
 
         // Once the thread is started, all accesses to the following member
         // variables are protected by the glThreadManager monitor
@@ -920,8 +923,21 @@ open class TextureView @JvmOverloads constructor(
                 guardedRun()
             } catch (e: InterruptedException) {
                 // fall thru and exit normally
+            } catch (e: IllegalStateException) {
+                Log.e("RajawaliGLThread", e.message)
+                showToast(e.message)
+            } catch (e: Exception) {
+                Log.e("RajawaliGLThread", e.message)
             } finally {
                 glThreadManager.threadExiting(this)
+            }
+        }
+
+        fun showToast(text: String?) {
+            if (Looper.myLooper() == Looper.getMainLooper())
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+            else Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show()
             }
         }
 
