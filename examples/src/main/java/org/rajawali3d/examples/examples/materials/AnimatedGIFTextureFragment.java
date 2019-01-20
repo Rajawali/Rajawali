@@ -55,8 +55,8 @@ public class AnimatedGIFTextureFragment extends AExampleFragment {
 		}
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
-            super.onRender(ellapsedRealtime, deltaTime);
+        protected void onRender(long elapsedRealtime, double deltaTime) {
+            super.onRender(elapsedRealtime, deltaTime);
 			if (mGifTexture != null) {
 				try {
 					mGifTexture.update();

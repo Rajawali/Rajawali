@@ -43,9 +43,9 @@ public class FXAAPass extends EffectPass {
 
     @Override
     public void render(@NonNull Scene scene, @NonNull Renderer renderer, @NonNull ScreenQuad screenQuad, @NonNull RenderTarget writeTarget,
-                       @NonNull RenderTarget readTarget, long ellapsedTime, double deltaTime) {
-        //Log.d(TAG, "Rendering FXAA Pass at time: " + ellapsedTime);
-        super.render(scene, renderer, screenQuad, writeTarget, readTarget, ellapsedTime, deltaTime);
+                       @NonNull RenderTarget readTarget, long elapsedTime, double deltaTime) {
+        //Log.d(TAG, "Rendering FXAA Pass at time: " + elapsedTime);
+        super.render(scene, renderer, screenQuad, writeTarget, readTarget, elapsedTime, deltaTime);
     }
 
     protected class FXAAVertexShader extends VertexShader {

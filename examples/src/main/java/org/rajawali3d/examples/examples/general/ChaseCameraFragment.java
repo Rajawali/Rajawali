@@ -188,7 +188,7 @@ public class ChaseCameraFragment extends AExampleFragment implements
         }
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
+        protected void onRender(long elapsedRealtime, double deltaTime) {
             // -- no proper physics here, just a bad approximation to keep
             // this example as short as possible ;-)
             mRaptor.setZ(mRaptor.getZ() + 2.0);
@@ -208,7 +208,7 @@ public class ChaseCameraFragment extends AExampleFragment implements
 
             mPointLight.setPosition(getCurrentCamera().getPosition());
             mPointLight.setLookAt(mRaptor.getWorldPosition());
-            super.onRender(ellapsedRealtime, deltaTime);
+            super.onRender(elapsedRealtime, deltaTime);
         }
 
     }

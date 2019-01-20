@@ -124,11 +124,11 @@ public class RenderToTextureFragment extends AExampleFragment {
 		}
 
         @Override
-        public void onRender(final long ellapsedTime, final double deltaTime) {
+        public void onRender(final long elapsedTime, final double deltaTime) {
 			//
 			// -- Off screen rendering first. Render to texture.
 			//
-			mEffects.render(ellapsedTime, deltaTime);
+			mEffects.render(elapsedTime, deltaTime);
 			try {
 				if (mCurrentTexture != null)
 					mSphere.getMaterial().removeTexture(mCurrentTexture);
@@ -143,7 +143,7 @@ public class RenderToTextureFragment extends AExampleFragment {
 			} catch (ATexture.TextureException e) {
 				e.printStackTrace();
 			}
-			super.onRender(ellapsedTime, deltaTime);
+			super.onRender(elapsedTime, deltaTime);
 		}
 	}
 }

@@ -51,7 +51,7 @@ public class RenderPass extends APass {
 		mNeedsSwap = true;
 	}
 
-	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long elapsedTime, double deltaTime) {
 		// Set the background color with that of current render pass.
 		if (mClearColor != 0x00000000) {
 			mOldClearColor = renderer.getCurrentScene().getBackgroundColor();
@@ -61,7 +61,7 @@ public class RenderPass extends APass {
 		// Render the current scene.
 		mOldCamera = mScene.getCamera();
 		mScene.switchCamera(mCamera);
-		mScene.render(ellapsedTime, deltaTime, mRenderToScreen ? null : writeBuffer, mMaterial);
+		mScene.render(elapsedTime, deltaTime, mRenderToScreen ? null : writeBuffer, mMaterial);
 		mScene.switchCamera(mOldCamera);
 
 		// Restore the old background color.

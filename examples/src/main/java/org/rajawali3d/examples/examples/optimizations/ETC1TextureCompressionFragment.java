@@ -70,8 +70,8 @@ public class ETC1TextureCompressionFragment extends AExampleFragment {
         }
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
-            super.onRender(ellapsedRealtime, deltaTime);
+        protected void onRender(long elapsedRealtime, double deltaTime) {
+            super.onRender(elapsedRealtime, deltaTime);
             // Rotate the plane to showcase difference between a mipmapped
             // texture and non-mipmapped texture.
             if (mMipmappedPlane != null) {

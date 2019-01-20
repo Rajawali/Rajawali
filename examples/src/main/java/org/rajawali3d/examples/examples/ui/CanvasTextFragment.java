@@ -124,7 +124,7 @@ public class CanvasTextFragment extends AExampleFragment {
 		}
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
+        protected void onRender(long elapsedRealtime, double deltaTime) {
 			//
             // -- not a really accurate way of doing things but you get the point :)
             //
@@ -140,7 +140,7 @@ public class CanvasTextFragment extends AExampleFragment {
                 mTextureManager.replaceTexture(mTimeTexture);
                 mShouldUpdateTexture = false;
             }
-            super.onRender(ellapsedRealtime, deltaTime);
+            super.onRender(elapsedRealtime, deltaTime);
 		}
 
 	}

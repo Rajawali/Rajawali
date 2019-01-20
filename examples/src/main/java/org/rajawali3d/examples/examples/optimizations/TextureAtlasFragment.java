@@ -100,8 +100,8 @@ public class TextureAtlasFragment extends AExampleFragment {
 		}
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
-            super.onRender(ellapsedRealtime, deltaTime);
+        protected void onRender(long elapsedRealtime, double deltaTime) {
+            super.onRender(elapsedRealtime, deltaTime);
 			mTileCube.setRotY(mTileCube.getRotY()+1);
 			mTileSphere.setRotY(mTileSphere.getRotY()+1);
 		}

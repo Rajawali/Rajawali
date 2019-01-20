@@ -1006,11 +1006,11 @@ public class Scene {
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 	}
 
-	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget) {
-		render(ellapsedTime, deltaTime, renderTarget, null);
+	public void render(long elapsedTime, double deltaTime, RenderTarget renderTarget) {
+		render(elapsedTime, deltaTime, renderTarget, null);
 	}
 
-	public void render(long ellapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
+	public void render(long elapsedTime, double deltaTime, RenderTarget renderTarget, Material sceneMaterial) {
 		// Scene color-picking requests are relative to the prior frame's render
 		// state, so handle any pending request before applying this frame's updates...
 		if (mPickerInfo != null) {
@@ -1073,7 +1073,7 @@ public class Scene {
         if (preCount > 0) {
             synchronized (mPreCallbacks) {
                 for (int i = 0; i < preCount; ++i) {
-                    mPreCallbacks.get(i).onPreFrame(ellapsedTime, deltaTime);
+                    mPreCallbacks.get(i).onPreFrame(elapsedTime, deltaTime);
                 }
             }
         }
@@ -1112,7 +1112,7 @@ public class Scene {
         if (preDrawCount > 0) {
             synchronized (mPreDrawCallbacks) {
                 for (int i = 0; i < preDrawCount; ++i) {
-                    mPreDrawCallbacks.get(i).onPreDraw(ellapsedTime, deltaTime);
+                    mPreDrawCallbacks.get(i).onPreDraw(elapsedTime, deltaTime);
                 }
             }
         }
@@ -1167,7 +1167,7 @@ public class Scene {
         if (postCount > 0) {
             synchronized (mPostCallbacks) {
                 for (int i = 0; i < postCount; ++i) {
-                    mPostCallbacks.get(i).onPostFrame(ellapsedTime, deltaTime);
+                    mPostCallbacks.get(i).onPostFrame(elapsedTime, deltaTime);
                 }
             }
         }

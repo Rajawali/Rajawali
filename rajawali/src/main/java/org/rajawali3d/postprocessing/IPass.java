@@ -26,7 +26,7 @@ public interface IPass extends IPostProcessingComponent {
 
     boolean isClear();
 	boolean needsSwap();
-	void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long ellapsedTime, double deltaTime);
+	void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget, RenderTarget readTarget, long elapsedTime, double deltaTime);
 	PassType getPassType();
 	void setMaterial(Material material);
 	void setRenderToScreen(boolean renderToScreen);

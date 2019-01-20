@@ -410,21 +410,21 @@ public abstract class Renderer implements ISurfaceRenderer {
      * Called by {@link #onRenderFrame(GL10)} to render the next frame. This is
      * called prior to the current scene's {@link Scene#render(long, double, RenderTarget)} method.
      *
-     * @param ellapsedRealtime {@code long} The total ellapsed rendering time in milliseconds.
+     * @param elapsedRealtime {@code long} The total elapsed rendering time in milliseconds.
      * @param deltaTime        {@code double} The time passes since the last frame, in seconds.
      */
-    protected void onRender(final long ellapsedRealtime, final double deltaTime) {
-        render(ellapsedRealtime, deltaTime);
+    protected void onRender(final long elapsedRealtime, final double deltaTime) {
+        render(elapsedRealtime, deltaTime);
     }
 
     /**
      * Called by {@link #onRender(long, double)} to render the next frame.
      *
-     * @param ellapsedRealtime {@code long} Render ellapsed time in milliseconds.
+     * @param elapsedRealtime {@code long} Render elapsed time in milliseconds.
      * @param deltaTime        {@code double} Time passed since last frame, in seconds.
      */
-    protected void render(final long ellapsedRealtime, final double deltaTime) {
-        mCurrentScene.render(ellapsedRealtime, deltaTime, mCurrentRenderTarget);
+    protected void render(final long elapsedRealtime, final double deltaTime) {
+        mCurrentScene.render(elapsedRealtime, deltaTime, mCurrentRenderTarget);
     }
 
     public boolean getSceneInitialized() {

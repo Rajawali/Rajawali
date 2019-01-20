@@ -96,8 +96,8 @@ public class BloomEffectFragment extends AExampleFragment {
 		}
 
 		@Override
-		public void onRender(final long ellapsedTime, final double deltaTime) {
-			mEffects.render(ellapsedTime, deltaTime);
+		public void onRender(final long elapsedTime, final double deltaTime) {
+			mEffects.render(elapsedTime, deltaTime);
 		}
 	}
 }
