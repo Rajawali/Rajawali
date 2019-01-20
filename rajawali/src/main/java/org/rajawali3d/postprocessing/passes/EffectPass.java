@@ -71,16 +71,16 @@ public class EffectPass extends APass {
 
     public void render(@NonNull Scene scene, @NonNull Renderer renderer, @NonNull ScreenQuad screenQuad,
                        @NonNull RenderTarget writeTarget, @NonNull RenderTarget readTarget,
-                       @IntRange(from = 0) long ellapsedTime, @FloatRange(from = 0d) double deltaTime) {
+                       @IntRange(from = 0) long elapsedTime, @FloatRange(from = 0d) double deltaTime) {
         mReadTarget = readTarget;
         mWriteTarget = writeTarget;
         screenQuad.setMaterial(mMaterial);
         screenQuad.setEffectPass(this);
 
         if (mRenderToScreen) {
-            scene.render(ellapsedTime, deltaTime, null);
+            scene.render(elapsedTime, deltaTime, null);
         } else {
-            scene.render(ellapsedTime, deltaTime, writeTarget);
+            scene.render(elapsedTime, deltaTime, writeTarget);
         }
     }
 

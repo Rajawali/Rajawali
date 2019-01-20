@@ -35,12 +35,12 @@ public class DepthPass extends APass {
 
 	@Override
 	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeTarget,
-					   RenderTarget readTarget, long ellapsedTime, double deltaTime) {
+					   RenderTarget readTarget, long elapsedTime, double deltaTime) {
 		GLES20.glClearColor(0, 0, 0, 1);
 		mDepthPlugin.setFarPlane((float)mCamera.getFarPlane());
 		mOldCamera = mScene.getCamera();
 		mScene.switchCamera(mCamera);
-		mScene.render(ellapsedTime, deltaTime, writeTarget, mMaterial);
+		mScene.render(elapsedTime, deltaTime, writeTarget, mMaterial);
 		mScene.switchCamera(mOldCamera);
 	}
 }

@@ -107,8 +107,8 @@ public class MaterialsFragment extends AExampleFragment {
 		}
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
-            super.onRender(ellapsedRealtime, deltaTime);
+        protected void onRender(long elapsedRealtime, double deltaTime) {
+            super.onRender(elapsedRealtime, deltaTime);
 			mMonkey1.setRotY(mMonkey1.getRotY() - 1f);
 			mMonkey2.setRotY(mMonkey2.getRotY() + 1f);
 			mMonkey3.setRotY(mMonkey3.getRotY() - 1f);

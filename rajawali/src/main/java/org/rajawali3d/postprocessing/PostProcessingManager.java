@@ -165,7 +165,7 @@ public class PostProcessingManager {
         // This method is currently intentionally empty.
     }
 
-    public void render(@IntRange(from = 0) long ellapsedTime, @FloatRange(from = 0d) double deltaTime) {
+    public void render(@IntRange(from = 0) long elapsedTime, @FloatRange(from = 0d) double deltaTime) {
         if (mComponentsDirty) {
             updatePassesList();
             mComponentsDirty = false;
@@ -193,14 +193,14 @@ public class PostProcessingManager {
             }
             final boolean depthOrRenderPass = type == PassType.RENDER || type == PassType.DEPTH;
             final Scene renderScene = depthOrRenderPass ? mRenderer.getCurrentScene() : mScene;
-            pass.render(renderScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
+            pass.render(renderScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, elapsedTime, deltaTime);
 
             if (pass.needsSwap() && i < mNumPasses - 1) {
                 if (maskActive) {
                     GLES20.glStencilFunc(GLES20.GL_NOTEQUAL, 1, 0xffffffff);
 
                     mCopyPass
-                            .render(mScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, ellapsedTime, deltaTime);
+                            .render(mScene, mRenderer, mScreenQuad, mWriteBuffer, mReadBuffer, elapsedTime, deltaTime);
 
                     GLES20.glStencilFunc(GLES20.GL_EQUAL, 1, 0xffffffff);
                 }

@@ -57,7 +57,7 @@ public class MaskPass extends APass {
 	}
 
 	@Override
-	public void render(Scene scene, Renderer render, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer render, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long elapsedTime, double deltaTime) {
 		// Do not update color or depth.
 		GLES20.glColorMask(false, false, false, false);
 		GLES20.glDepthMask(false);
@@ -79,8 +79,8 @@ public class MaskPass extends APass {
 		GLES20.glClearStencil(clearValue);
 
 		// Draw into the stencil buffer.
-		mScene.render(ellapsedTime, deltaTime, readBuffer);
-		mScene.render(ellapsedTime, deltaTime, writeBuffer);
+		mScene.render(elapsedTime, deltaTime, readBuffer);
+		mScene.render(elapsedTime, deltaTime, writeBuffer);
 
 		// Re-enable color and depth.
 		GLES20.glColorMask(true, true, true, true);

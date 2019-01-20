@@ -225,7 +225,7 @@ public abstract class SideBySideRenderer extends Renderer {
 	}
 
 	@Override
-	protected void onRender(final long ellapsedTime, final double deltaTime) {
+	protected void onRender(final long elapsedTime, final double deltaTime) {
 		mUserScene = getCurrentScene();
 
 		setRenderTarget(mLeftRenderTarget);
@@ -234,7 +234,7 @@ public abstract class SideBySideRenderer extends Renderer {
 		mCameraLeft.setProjectionMatrix(mViewportWidthHalf, mDefaultViewportHeight);
 		mCameraLeft.setOrientation(mCameraOrientation);
 
-		render(ellapsedTime, deltaTime);
+		render(elapsedTime, deltaTime);
 
 		setRenderTarget(mRightRenderTarget);
 
@@ -242,14 +242,14 @@ public abstract class SideBySideRenderer extends Renderer {
 		mCameraRight.setProjectionMatrix(mViewportWidthHalf, mDefaultViewportHeight);
 		mCameraRight.setOrientation(mCameraOrientation);
 
-		render(ellapsedTime, deltaTime);
+		render(elapsedTime, deltaTime);
 
 		switchSceneDirect(mSideBySideScene);
 		GLES20.glViewport(0, 0, mDefaultViewportWidth, mDefaultViewportHeight);
 
 		setRenderTarget(null);
 
-		render(ellapsedTime, deltaTime);
+		render(elapsedTime, deltaTime);
 
 		switchSceneDirect(mUserScene);
 	}

@@ -109,12 +109,12 @@ public class GaussianBlurFilterFragment extends AExampleFragment {
         }
 
         @Override
-        public void onRender(final long ellapsedTime, final double deltaTime) {
+        public void onRender(final long elapsedTime, final double deltaTime) {
             //
             // -- Important. Call render() on the post processing manager.
             //
 
-            mEffects.render(ellapsedTime, deltaTime);
+            mEffects.render(elapsedTime, deltaTime);
         }
     }
 }

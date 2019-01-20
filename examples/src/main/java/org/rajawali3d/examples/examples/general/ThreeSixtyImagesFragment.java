@@ -76,8 +76,8 @@ public class ThreeSixtyImagesFragment extends AExampleFragment {
 		}
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
-            super.onRender(ellapsedRealtime, deltaTime);
+        protected void onRender(long elapsedRealtime, double deltaTime) {
+            super.onRender(elapsedRealtime, deltaTime);
 			// -- get the texture info list and remove the previous TextureInfo object
 			mMaterial.getTextureList().remove(
 					mTextures[mFrameCount++ % NUM_TEXTURES]);

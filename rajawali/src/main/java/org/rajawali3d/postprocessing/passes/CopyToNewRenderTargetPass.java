@@ -43,8 +43,8 @@ public class CopyToNewRenderTargetPass extends EffectPass {
         return mRenderTarget;
     }
 
-    public void render(@NonNull Scene scene, @NonNull Renderer renderer, @NonNull ScreenQuad screenQuad, @NonNull RenderTarget writeTarget, @NonNull RenderTarget readTarget, long ellapsedTime, double deltaTime) {
-        super.render(scene, renderer, screenQuad, mRenderTarget, readTarget, ellapsedTime, deltaTime);
+    public void render(@NonNull Scene scene, @NonNull Renderer renderer, @NonNull ScreenQuad screenQuad, @NonNull RenderTarget writeTarget, @NonNull RenderTarget readTarget, long elapsedTime, double deltaTime) {
+        super.render(scene, renderer, screenQuad, mRenderTarget, readTarget, elapsedTime, deltaTime);
     }
 
     @Override

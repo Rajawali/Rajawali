@@ -90,8 +90,8 @@ public class Optimized2000PlanesFragment extends AExampleFragment {
 		}
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
-            super.onRender(ellapsedRealtime, deltaTime);
+        protected void onRender(long elapsedRealtime, double deltaTime) {
+            super.onRender(elapsedRealtime, deltaTime);
 			mMaterial.setTime((System.currentTimeMillis() - mStartTime) / 1000f);
 			mMaterialPlugin.setCameraPosition(getCurrentCamera().getPosition());
 		}

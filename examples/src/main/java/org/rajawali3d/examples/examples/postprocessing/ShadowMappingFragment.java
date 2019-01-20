@@ -83,8 +83,8 @@ public class ShadowMappingFragment extends AExampleFragment {
 		}
 
         @Override
-        public void onRender(final long ellapsedTime, final double deltaTime) {
-			mPostProcessingManager.render(ellapsedTime, deltaTime);
+        public void onRender(final long elapsedTime, final double deltaTime) {
+			mPostProcessingManager.render(elapsedTime, deltaTime);
 		}
 	}
 }

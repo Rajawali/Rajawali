@@ -133,8 +133,8 @@ public class TouchRipplesFragment extends AExampleFragment implements OnTouchLis
         }
 
         @Override
-        protected void onRender(long ellapsedRealtime, double deltaTime) {
-            super.onRender(ellapsedRealtime, deltaTime);
+        protected void onRender(long elapsedRealtime, double deltaTime) {
+            super.onRender(elapsedRealtime, deltaTime);
             //mFilter.setTime((float) frameCount++ * .05f);
         }
 

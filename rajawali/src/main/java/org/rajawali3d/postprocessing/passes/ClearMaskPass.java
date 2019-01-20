@@ -31,7 +31,7 @@ public class ClearMaskPass extends APass {
 	}
 
 	@Override
-	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long ellapsedTime, double deltaTime) {
+	public void render(Scene scene, Renderer renderer, ScreenQuad screenQuad, RenderTarget writeBuffer, RenderTarget readBuffer, long elapsedTime, double deltaTime) {
 		// Disable stencil test so next rendering pass won't be masked.
 		GLES20.glDisable(GLES20.GL_STENCIL_TEST);
 	}

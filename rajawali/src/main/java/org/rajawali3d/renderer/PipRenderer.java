@@ -128,24 +128,24 @@ public class PipRenderer extends Renderer {
     }
 
     @Override
-    protected void onRender(final long ellapsedTime, final double deltaTime) {
+    protected void onRender(final long elapsedTime, final double deltaTime) {
         try {
             // Render mini scene into mini quad
             switchSceneDirect(mMiniRenderer.getCurrentScene());
             mMiniRenderer.doRender();
             setRenderTarget(mMiniRenderTarget);
-            render(ellapsedTime, deltaTime);
+            render(elapsedTime, deltaTime);
 
             // Render main scene into main quad
             switchSceneDirect(mMainRenderer.getCurrentScene());
             mMainRenderer.doRender();
             setRenderTarget(mMainRenderTarget);
-            render(ellapsedTime, deltaTime);
+            render(elapsedTime, deltaTime);
 
             // Render everything into the surface
             switchSceneDirect(mCompositeScene);
             setRenderTarget(null);
-            render(ellapsedTime, deltaTime);
+            render(elapsedTime, deltaTime);
         } catch (Throwable t) {
             Log.e(TAG, "Exception in render loop.", t);
         }
