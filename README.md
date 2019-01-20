@@ -40,13 +40,13 @@ Numerous apps and live wallpapers have been made with Rajawali. [Check them out!
 
 Using Rajawali is as simple as adding a single line to your gradle dependencies:
 
-`compile 'org.rajawali3d:rajawali:x.x.x@aar` where x.x.x is the version number (and the last number is the build number). If you wish to use the `master` branch snapshot, append `-SNAPSHOT`. For example, to use release `1.0.325`, you would use:
+`implementation 'org.rajawali3d:rajawali:x.x.x@aar` where x.x.x is the version number (and the last number is the build number). If you wish to use the `master` branch snapshot, append `-SNAPSHOT`. For example, to use release `1.0.325`, you would use:
 
-`compile 'org.rajawali3d:rajawali:1.0.325@aar`
+`implementation 'org.rajawali3d:rajawali:1.0.325@aar`
 
 To use the `master` branch build 48 snapshot `1.0.48-SNAPSHOT`, you would use:
 
-`compile 'org.rajawali3d:rajawali:1.0.48-SNAPSHOT@aar`
+`implementation 'org.rajawali3d:rajawali:1.0.48-SNAPSHOT@aar`
 
 All commits to `master` and `development` branch are deployed as snapshots. All tags will be deployed as releases. To see the latest build number, see the [build history](https://travis-ci.org/Rajawali/Rajawali/builds) and be sure you choose a `master` branch build.
 
@@ -54,7 +54,7 @@ For the above to work you will need to make sure your repository list includes:
 
 `mavenCentral()` for releases, and `maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }` for snapshots.
 
-Alternatively, if you checkout Rajawali via GIT, you can run `gradle assembleRelease uploadArchives` (or simply add a Gralde launch config to Android Studio for the `assembleRelease` and `uploadArchives` tasks). This will deploy to your local maven ropository. Consuming apps should have `mavenLocal()` in their repository list and add `compile 'org.rajawali3d:rajawali:1.0.0-SNAPSHOT@aar` to their dependencies.
+Alternatively, if you checkout Rajawali via GIT, you can run `gradle assembleRelease uploadArchives` (or simply add a Gralde launch config to Android Studio for the `assembleRelease` and `uploadArchives` tasks). This will deploy to your local maven ropository. Consuming apps should have `mavenLocal()` in their repository list and add `implementation 'org.rajawali3d:rajawali:1.0.0-SNAPSHOT@aar` to their dependencies.
 
 ## Rajawali Examples On The Market
 
