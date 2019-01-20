@@ -934,11 +934,7 @@ open class TextureView @JvmOverloads constructor(
         }
 
         fun showToast(text: String?) {
-            if (Looper.myLooper() == Looper.getMainLooper())
-                Toast.makeText(context, text, Toast.LENGTH_LONG).show()
-            else Handler(Looper.getMainLooper()).post {
-                Toast.makeText(context, text, Toast.LENGTH_LONG).show()
-            }
+            Handler(Looper.getMainLooper()).post { Toast.makeText(context, text, Toast.LENGTH_LONG).show() }
         }
 
         /*
