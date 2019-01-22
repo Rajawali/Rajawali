@@ -605,6 +605,7 @@ public abstract class AShader extends AShaderBase {
 	public void addShaderFragment(IShaderFragment fragment)
 	{
 		if(fragment == null) return;
+		if(mShaderFragments == null) return;
 		mShaderFragments.add(fragment);
 	}
 
