@@ -48,6 +48,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
 
     implementation project(':rajawali')
+    implementation 'com.google.vr:sdk-base:1.190.0'
 }
 
 apply from: '../publish.gradle'

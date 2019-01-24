@@ -19,7 +19,8 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.View;
-import com.google.vrtoolkit.cardboard.CardboardView;
+
+import com.google.vr.sdk.base.GvrView;
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.util.Capabilities;
 import org.rajawali3d.util.egl.RajawaliEGLConfigChooser;
@@ -31,7 +32,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  *
  */
-public class VRSurfaceView extends CardboardView implements ISurface {
+public class VRSurfaceView extends GvrView implements   ISurface {
 
     protected RendererDelegate mRendererDelegate;
 

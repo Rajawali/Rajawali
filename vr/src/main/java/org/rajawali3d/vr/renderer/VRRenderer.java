@@ -1,11 +1,11 @@
 /**
  * Copyright 2015 Dennis Ippel
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -14,10 +14,12 @@
 package org.rajawali3d.vr.renderer;
 
 import android.content.Context;
-import com.google.vrtoolkit.cardboard.CardboardView;
-import com.google.vrtoolkit.cardboard.Eye;
-import com.google.vrtoolkit.cardboard.HeadTransform;
-import com.google.vrtoolkit.cardboard.Viewport;
+
+import com.google.vr.sdk.base.Eye;
+import com.google.vr.sdk.base.GvrView;
+import com.google.vr.sdk.base.HeadTransform;
+import com.google.vr.sdk.base.Viewport;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
@@ -29,7 +31,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 /**
  * @author dennis.ippel
  */
-public abstract class VRRenderer extends Renderer implements CardboardView.StereoRenderer {
+public abstract class VRRenderer extends Renderer implements GvrView.StereoRenderer {
     private static final float MAX_LOOKAT_ANGLE = 10;
 
     protected Matrix4 mCurrentEyeMatrix;
@@ -44,8 +46,8 @@ public abstract class VRRenderer extends Renderer implements CardboardView.Stere
     private Matrix4 mLookingAtMatrix;
     private float[] mHeadView;
 
-	public VRRenderer(Context context) {
-		super(context);
+    public VRRenderer(Context context) {
+        super(context);
         mCurrentEyeMatrix = new Matrix4();
         mHeadViewMatrix = new Matrix4();
         mLookingAtMatrix = new Matrix4();
@@ -55,7 +57,7 @@ public abstract class VRRenderer extends Renderer implements CardboardView.Stere
         mCameraPosition = new Vector3();
         mForwardVec = new Vector3();
         mHeadTranslation = new Vector3();
-	}
+    }
 
     @Override
     public void onNewFrame(HeadTransform headTransform) {
