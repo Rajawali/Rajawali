@@ -106,7 +106,7 @@ public class RenderTargetTexture extends ATexture {
         super.setFrom(other);
     }
 
-    @Override void add() throws TextureException {
+    @Override protected void add() throws TextureException {
         if (mWidth == 0 || mHeight == 0) {
             throw new TextureException(
                     "FrameBufferTexture could not be added because the width and/or height weren't specified.");
@@ -161,11 +161,11 @@ public class RenderTargetTexture extends ATexture {
         }
     }
 
-    @Override void remove() {
+    @Override protected void remove() {
         GLES20.glDeleteTextures(1, new int[]{ mTextureId }, 0);
     }
 
-    @Override void replace() {
+    @Override protected void replace() {
         return;
     }
 
@@ -180,7 +180,7 @@ public class RenderTargetTexture extends ATexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
-    void reset() {
+    protected void reset() {
         return;
     }
 }

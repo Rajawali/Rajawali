@@ -91,7 +91,7 @@ public class Etc2Texture extends ACompressedTexture {
     }
 
     @Override
-    void add() throws TextureException {
+    protected void add() throws TextureException {
         super.add();
         if (mShouldRecycle) {
             if (mBitmap != null) {
@@ -102,7 +102,7 @@ public class Etc2Texture extends ACompressedTexture {
     }
 
     @Override
-    void reset() throws TextureException {
+    protected void reset() throws TextureException {
         super.reset();
         if (mBitmap != null) {
             mBitmap.recycle();

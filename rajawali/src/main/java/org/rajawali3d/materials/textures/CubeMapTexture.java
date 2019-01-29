@@ -152,7 +152,7 @@ public class CubeMapTexture extends AMultiTexture {
     }
 
     @Override
-    void add() throws TextureException {
+    protected void add() throws TextureException {
         if(mHasCompressedTextures) {
             for(int i=0; i<mCompressedTextures.length; i++) {
                 mCompressedTextures[i].add();
@@ -173,7 +173,7 @@ public class CubeMapTexture extends AMultiTexture {
     }
 
     @Override
-    void remove() throws TextureException {
+    protected void remove() throws TextureException {
         if(mHasCompressedTextures) {
             for(int i=0; i<mCompressedTextures.length; i++) {
                 mCompressedTextures[i].remove();
@@ -183,7 +183,7 @@ public class CubeMapTexture extends AMultiTexture {
     }
 
     @Override
-    void replace() throws TextureException {
+    protected void replace() throws TextureException {
         checkBitmapConfiguration();
 
         if (mTextureId > 0) {

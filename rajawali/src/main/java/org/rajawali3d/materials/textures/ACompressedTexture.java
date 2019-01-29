@@ -132,7 +132,7 @@ public abstract class ACompressedTexture extends ATexture {
         return mByteBuffers;
     }
 
-    void add() throws TextureException
+    protected void add() throws TextureException
 	{
 		int[] textures = new int[1];
 		GLES20.glGenTextures(1, textures, 0);
@@ -183,11 +183,11 @@ public abstract class ACompressedTexture extends ATexture {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
-	void remove() {
+	protected void remove() {
 		GLES20.glDeleteTextures(1, new int[] { mTextureId }, 0);
 	}
 
-	void replace() throws TextureException
+	protected void replace() throws TextureException
 	{
 		if (mByteBuffers == null || mByteBuffers.length == 0)
 			throw new TextureException("Texture could not be replaced because there is no ByteBuffer set.");
@@ -207,7 +207,7 @@ public abstract class ACompressedTexture extends ATexture {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
-	void reset() throws TextureException
+	protected void reset() throws TextureException
 	{
 		if (mByteBuffers != null)
 		{
