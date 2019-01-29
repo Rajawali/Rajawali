@@ -117,7 +117,7 @@ public abstract class ASingleTexture extends ATexture
 		return mByteBuffer;
 	}
 
-	void add() throws TextureException
+	protected void add() throws TextureException
 	{
 		if(mCompressedTexture != null)
 		{
@@ -208,7 +208,7 @@ public abstract class ASingleTexture extends ATexture
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
-	void remove() throws TextureException
+	protected void remove() throws TextureException
 	{
 		if(mCompressedTexture != null)
 			mCompressedTexture.remove();
@@ -216,7 +216,7 @@ public abstract class ASingleTexture extends ATexture
 			GLES20.glDeleteTextures(1, new int[] { mTextureId }, 0);
 	}
 
-	void replace() throws TextureException
+	protected void replace() throws TextureException
 	{
 		if(mCompressedTexture != null)
 		{
@@ -254,7 +254,7 @@ public abstract class ASingleTexture extends ATexture
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
-	void reset() throws TextureException
+	protected void reset() throws TextureException
 	{
 		if(mCompressedTexture != null)
 		{

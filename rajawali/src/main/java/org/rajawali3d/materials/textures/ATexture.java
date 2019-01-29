@@ -466,13 +466,13 @@ public abstract class ATexture {
         return mCompressedTexture;
     }
 
-    abstract void add() throws TextureException;
+    abstract protected void add() throws TextureException;
 
-    abstract void remove() throws TextureException;
+    abstract protected void remove() throws TextureException;
 
-    abstract void replace() throws TextureException;
+    abstract protected void replace() throws TextureException;
 
-    abstract void reset() throws TextureException;
+    abstract protected void reset() throws TextureException;
 
     public static class TextureException extends Exception {
         private static final long serialVersionUID = -4218033240897223177L;

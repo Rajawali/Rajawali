@@ -123,7 +123,7 @@ public abstract class AMultiTexture extends ATexture {
         mCompressedTextures = compressedTextures;
     }
 	
-	void reset() throws TextureException
+	protected void reset() throws TextureException
 	{
 		if(mBitmaps != null)
 		{

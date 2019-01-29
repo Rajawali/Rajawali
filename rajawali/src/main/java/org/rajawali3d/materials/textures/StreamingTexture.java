@@ -63,7 +63,7 @@ public class StreamingTexture extends ATexture {
         return new StreamingTexture(this);
     }
 
-    void add() throws TextureException {
+    protected void add() throws TextureException {
         int[] textures = new int[1];
         GLES20.glGenTextures(1, textures, 0);
         int textureId = textures[0];
@@ -93,16 +93,16 @@ public class StreamingTexture extends ATexture {
         }
     }
 
-    void remove() {
+    protected void remove() {
         GLES20.glDeleteTextures(1, new int[]{mTextureId}, 0);
         mSurfaceTexture.release();
     }
 
-    void replace() {
+    protected void replace() {
         return;
     }
 
-    void reset() {
+    protected void reset() {
         mSurfaceTexture.release();
     }
 

@@ -79,7 +79,7 @@ public class Etc1Texture extends ACompressedTexture {
     }
 
     @Override
-    void add() throws TextureException {
+    protected void add() throws TextureException {
         if(mResourceId != -1) {
             Resources resources = TextureManager.getInstance().getContext().getResources();
             try {
@@ -133,7 +133,7 @@ public class Etc1Texture extends ACompressedTexture {
     }
 
     @Override
-    void reset() throws TextureException {
+    protected void reset() throws TextureException {
         super.reset();
         if (mBitmap != null) {
             mBitmap.recycle();
