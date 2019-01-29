@@ -99,7 +99,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		mStartTime = SystemClock.uptimeMillis();
 	}
 	
-	void replace() throws TextureException
+	protected void replace() throws TextureException
 	{
 		if(mLoadNewGIF)
 		{
@@ -129,7 +129,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		mLoadNewGIF = true;
 	}
 	
-	public void reset() throws TextureException
+	protected void reset() throws TextureException
 	{
 		super.reset();
 		
@@ -143,7 +143,7 @@ public class AnimatedGIFTexture extends ASingleTexture {
 		mMovie = null;
 	}
 	
-	void remove() throws TextureException
+	protected void remove() throws TextureException
 	{
 		if(mGIFBitmap != null)
 		{
