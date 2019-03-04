@@ -54,7 +54,7 @@ For the above to work you will need to make sure your repository list includes:
 
 `mavenCentral()` for releases, and `maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }` for snapshots.
 
-Alternatively, if you checkout Rajawali via GIT, you can run `gradle assembleRelease uploadArchives` (or simply add a Gralde launch config to Android Studio for the `assembleRelease` and `uploadArchives` tasks). This will deploy to your local maven ropository. Consuming apps should have `mavenLocal()` in their repository list and add `implementation 'org.rajawali3d:rajawali:1.0.0-SNAPSHOT@aar` to their dependencies.
+Alternatively, if you checkout Rajawali via GIT, you can run `gradle assembleRelease uploadArchives` (or simply add a Gralde launch config to Android Studio for the `assembleRelease` and `uploadArchives` tasks). This will deploy to your local maven repository. Consuming apps should have `mavenLocal()` in their repository list and add `implementation 'org.rajawali3d:rajawali:1.0.0-SNAPSHOT@aar` to their dependencies.
 
 ## Rajawali Examples On The Market
 
