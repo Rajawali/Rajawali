@@ -50,11 +50,11 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:support-v13:$supportLib"
-    implementation "com.android.support:appcompat-v7:$supportLib"
-    implementation "com.android.support:recyclerview-v7:$supportLib"
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.koushikdutta.ion:ion:2.1.7'
+    implementation 'com.koushikdutta.ion:ion:2.2.1'
 
     implementation project(':rajawali')
     withVuforiaImplementation project(':vuforia')

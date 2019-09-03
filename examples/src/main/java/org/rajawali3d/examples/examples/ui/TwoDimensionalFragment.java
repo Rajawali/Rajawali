@@ -1,7 +1,7 @@
 package org.rajawali3d.examples.examples.ui;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.materials.materials.CustomMaterialPlugin;
 import org.rajawali3d.materials.Material;

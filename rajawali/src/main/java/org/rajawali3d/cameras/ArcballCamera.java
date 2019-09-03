@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
-import android.support.annotation.FloatRange;
+import androidx.annotation.FloatRange;
 
 import org.rajawali3d.Object3D;
 import org.rajawali3d.math.MathUtil;

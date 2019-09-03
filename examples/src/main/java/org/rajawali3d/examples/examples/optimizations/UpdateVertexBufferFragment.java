@@ -3,7 +3,7 @@ package org.rajawali3d.examples.examples.optimizations;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import org.rajawali3d.BufferInfo;
 import org.rajawali3d.Geometry3D;
 import org.rajawali3d.Object3D;

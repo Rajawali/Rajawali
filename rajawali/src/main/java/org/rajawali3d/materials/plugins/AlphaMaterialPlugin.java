@@ -1,7 +1,7 @@
 package org.rajawali3d.materials.plugins;
 
 import android.opengl.GLES20;
-import android.support.annotation.FloatRange;
+import androidx.annotation.FloatRange;
 
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.AShader;

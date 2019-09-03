@@ -1,7 +1,7 @@
 package org.rajawali3d.examples.examples.effects;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import org.rajawali3d.examples.examples.AExampleFragment;
 import org.rajawali3d.examples.examples.effects.particles.ExampleParticleSystem;
 

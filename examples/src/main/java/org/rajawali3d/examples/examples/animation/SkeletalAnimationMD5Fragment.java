@@ -1,7 +1,7 @@
 package org.rajawali3d.examples.examples.animation;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import org.rajawali3d.animation.mesh.SkeletalAnimationObject3D;
 import org.rajawali3d.animation.mesh.SkeletalAnimationSequence;
 import org.rajawali3d.examples.R;

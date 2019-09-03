@@ -2,7 +2,7 @@ package org.rajawali3d.examples.examples.materials;
 
 import android.content.Context;
 import android.opengl.GLES20;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import org.rajawali3d.Object3D;

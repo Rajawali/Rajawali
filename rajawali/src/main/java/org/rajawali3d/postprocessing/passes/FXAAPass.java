@@ -1,7 +1,7 @@
 package org.rajawali3d.postprocessing.passes;
 
 import android.opengl.GLES20;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.rajawali3d.R;
 import org.rajawali3d.materials.shaders.FragmentShader;

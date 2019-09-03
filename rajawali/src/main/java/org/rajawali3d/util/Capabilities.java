@@ -17,7 +17,7 @@ import android.opengl.EGLExt;
 import android.opengl.GLES20;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;

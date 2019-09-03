@@ -1,7 +1,7 @@
 package org.rajawali3d.examples.examples.ui;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import org.rajawali3d.Object3D;
