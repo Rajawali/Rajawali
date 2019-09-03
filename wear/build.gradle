@@ -42,7 +42,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     // Support
-    implementation "com.android.support:support-v13:$supportLib"
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 
     // Wear
     implementation "com.google.android.support:wearable:$wear"

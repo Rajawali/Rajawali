@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_search"
         android:title="@string/menu_action_search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always"/>
 
 </menu>

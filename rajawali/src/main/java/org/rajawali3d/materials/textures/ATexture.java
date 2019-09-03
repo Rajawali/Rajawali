@@ -14,7 +14,7 @@ package org.rajawali3d.materials.textures;
 
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.renderer.Renderer;

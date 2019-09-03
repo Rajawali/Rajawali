@@ -1,7 +1,7 @@
 package org.rajawali3d.examples.data;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 public class Category implements INamed {
 

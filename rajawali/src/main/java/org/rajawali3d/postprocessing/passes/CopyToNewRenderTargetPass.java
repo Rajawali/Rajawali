@@ -14,7 +14,7 @@ package org.rajawali3d.postprocessing.passes;
 
 import android.graphics.Bitmap.Config;
 import android.opengl.GLES20;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.rajawali3d.R;
 import org.rajawali3d.materials.textures.ATexture.FilterType;

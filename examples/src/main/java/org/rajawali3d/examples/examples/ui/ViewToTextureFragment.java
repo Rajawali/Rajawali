@@ -5,9 +5,10 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
@@ -36,7 +37,7 @@ public class ViewToTextureFragment extends AExampleFragment {
         super.onCreateView(inflater, container, savedInstanceState);
         mHandler = new Handler(Looper.getMainLooper());
 
-        final FrameLayout fragmentFrame = new FrameLayout(getActivity());
+        final FrameLayout fragmentFrame = new FrameLayout(requireActivity());
         final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(1024, 1024);
         fragmentFrame.setLayoutParams(params);
         fragmentFrame.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_bright));
@@ -45,7 +46,7 @@ public class ViewToTextureFragment extends AExampleFragment {
         mLayout.addView(fragmentFrame);
 
         mFragmentToDraw = new FragmentToDraw();
-        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.view_to_texture_frame, mFragmentToDraw, "custom").commit();
+        requireActivity().getSupportFragmentManager().beginTransaction().add(R.id.view_to_texture_frame, mFragmentToDraw, "custom").commit();
         return mLayout;
     }
 

@@ -5,11 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -89,22 +90,15 @@ public abstract class AExampleFragment extends Fragment implements IDisplay, OnC
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.image_view_example_link:
-                if (mImageViewExampleLink == null)
-                    throw new IllegalStateException("Example link is null!");
+        if (v.getId() == R.id.image_view_example_link) {
+            if (mImageViewExampleLink == null)
+                throw new IllegalStateException("Example link is null!");
 
-                try {
-                    final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mExampleUrl));
-                    startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    ExceptionDialog dialog = ExceptionDialog.newInstance(
-                            getString(R.string.exception_dialog_title),
-                            getString(R.string.exception_dialog_message_no_browser));
-
-                    dialog.show(getFragmentManager(), ExceptionDialog.TAG);
-                }
-                break;
+            try {
+                final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mExampleUrl));
+                startActivity(intent);
+            } catch (ActivityNotFoundException ignored) {
+            }
         }
     }
 

@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  */
 package org.rajawali3d.util;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.rajawali3d.Object3D;
 
 public interface OnObjectPickedListener {
