@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: rajawali/rajawali:release-1.1
+    - image: rajawali/rajawali:1.1
   environment:
     TERM: dumb
 
