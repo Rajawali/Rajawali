@@ -176,12 +176,22 @@ public class LoaderFBX extends AMeshLoader {
 		}*/
 
 		// -- get meshes
-
 		Stack<Model> models = mFbx.objects.getModelsByType(FBXValues.MODELTYPE_MESH);
 
 		try {
 			for(int i=0; i<models.size(); ++i) {
 				buildMesh(models.get(i), sceneLights);
+			}
+		} catch(TextureException tme) {
+			throw new ParsingException(tme);
+		}
+
+		// -- get nulls
+		Stack<Model> nulls = mFbx.objects.getModelsByType(FBXValues.MODELTYPE_NULL);
+
+		try {
+			for(int i=0; i<nulls.size(); ++i) {
+				buildNull(nulls.get(i));
 			}
 		} catch(TextureException tme) {
 			throw new ParsingException(tme);
@@ -203,11 +213,11 @@ public class LoaderFBX extends AMeshLoader {
 		if(camera != null) { //TODO: FIX
 			Camera cam = mRenderer.getCurrentCamera();
 			cam.setPosition(camera.position);
-			cam.setX(mRenderer.getCurrentCamera().getX() * -1);
-			cam.setRotation(camera.properties.lclRotation);
-			Vector3 lookAt = camera.lookAt;
-//			lookAt.x = -lookAt.x;
-			cam.setLookAt(lookAt);
+			cam.setRotation(
+					-(camera.properties.lclRotation.z + 90),//done
+					camera.properties.lclRotation.x + 90,
+					90 - camera.properties.lclRotation.y//done
+			);
 			cam.setNearPlane(camera.properties.nearPlane);
 			cam.setFarPlane(camera.properties.farPlane);
 			cam.setFieldOfView(camera.properties.fieldOfView);
@@ -403,11 +413,21 @@ public class LoaderFBX extends AMeshLoader {
 		setMeshTextures(o, model.name);
 
 		o.setPosition(model.properties.lclTranslation);
-		o.setX(o.getX() * -1);
 		o.setScale(model.properties.lclScaling);
 		o.setRotation(model.properties.lclRotation);
-		o.setRotZ(-o.getRotZ());
+//		o.rotate(Vector3.Axis.X, 90);
+//		o.rotate(Vector3.Axis.Y, 90);
 
+		mRootObject.addChild(o);
+	}
+
+	private void buildNull(Model model) throws TextureException, ParsingException {
+		Object3D o = new Object3D(model.name);
+		o.setPosition(model.properties.lclTranslation);
+		o.setScale(model.properties.lclScaling);
+		o.setRotation(model.properties.lclRotation);
+//		o.rotate(Vector3.Axis.X, 90);
+//		o.rotate(Vector3.Axis.Y, 90);
 		mRootObject.addChild(o);
 	}
 

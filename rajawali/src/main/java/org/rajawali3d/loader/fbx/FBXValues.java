@@ -23,7 +23,8 @@ public class FBXValues {
 	public static final String MODELTYPE_CAMERA = "Camera";
 	public static final String MODELTYPE_LIGHT = "Light";
 	public static final String MODELTYPE_MESH = "Mesh";
-	
+	public static final String MODELTYPE_NULL = "Null";
+
 	public FBXHeaderExtension fbxHeaderExtension = new FBXHeaderExtension();
 	public String creationTime;
 	public String creator;
