@@ -547,7 +547,7 @@ public class LoaderOBJ extends AMeshLoader {
 					} else if(type.equals(AMBIENT_TEXTURE)) {
 						matDef.ambientTexture = parts.nextToken();
 					} else if(type.equals(DIFFUSE_TEXTURE)) {
-						matDef.diffuseTexture = parts.nextToken();
+							matDef.diffuseTexture = parts.nextToken();
 					} else if(type.equals(SPECULAR_COLOR_TEXTURE)) {
 						matDef.specularColorTexture = parts.nextToken();
 					} else if(type.equals(SPECULAR_HIGHLIGHT_TEXTURE)) {

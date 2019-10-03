@@ -15,6 +15,7 @@ package org.rajawali3d.loader.fbx;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.opengl.GLES20;
 
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.Object3D;
@@ -181,6 +182,7 @@ public class LoaderFBX extends AMeshLoader {
 		try {
 			for(int i=0; i<models.size(); ++i) {
 				buildMesh(models.get(i), sceneLights);
+				buildMeshDEBUG(models.get(i), sceneLights);
 			}
 		} catch(TextureException tme) {
 			throw new ParsingException(tme);
@@ -303,8 +305,162 @@ public class LoaderFBX extends AMeshLoader {
 			if(vidx[i] < 0) {
 				if(count==3) {
 					int index1 = vidx[i-2],
-						index2 = vidx[i-1],
-						index3 = (vidx[i] * -1) - 1;
+							index2 = vidx[i-1],
+							index3 = (vidx[i] * -1) - 1;
+
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+
+					triIds[0] = index1 * 3;
+					triIds[1] = index2 * 3;
+					triIds[2] = index3 * 3;
+
+					for(j=0; j<3; ++j)
+					{
+						int cid = triIds[j];
+						vertices.add(modelVerts[cid+0]);
+						vertices.add(modelVerts[cid+1]);
+						vertices.add(modelVerts[cid+2]);
+						normals.add(modelNorm[cid+0]);
+						normals.add(modelNorm[cid+1]);
+						normals.add(modelNorm[cid+2]);
+					}
+
+					if(hasUVs) {
+						int uvIndex3 = uvidx[i] * 2;
+						int uvIndex2 = uvidx[i-1] * 2;
+						int uvIndex1 = uvidx[i-2] * 2;
+
+						uvs.add(modelUv[uvIndex1+0]);
+						uvs.add(1f-modelUv[uvIndex1+1]);
+
+						uvs.add(modelUv[uvIndex2+0]);
+						uvs.add(1f-modelUv[uvIndex2+1]);
+
+						uvs.add(modelUv[uvIndex3+0]);
+						uvs.add(1f-modelUv[uvIndex3+1]);
+					}
+				} else {
+					int index1 = vidx[i-3];
+					int index2 = vidx[i-2];
+					int index3 = vidx[i-1];
+					int index4 = (vidx[i] * -1)-1;
+
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+					indices.add(indexCount++);
+
+					quadIds[0] = index1 * 3;
+					quadIds[1] = index2 * 3;
+					quadIds[2] = index3 * 3;
+					quadIds[3] = index4 * 3;
+					quadIds[4] = index1 * 3;
+					quadIds[5] = index3 * 3;
+
+					for(j=0; j<6; ++j)
+					{
+						int cid = quadIds[j];
+						vertices.add(modelVerts[cid+0]);
+						vertices.add(modelVerts[cid+1]);
+						vertices.add(modelVerts[cid+2]);
+						normals.add(modelNorm[cid+0]);
+						normals.add(modelNorm[cid+1]);
+						normals.add(modelNorm[cid+2]);
+					}
+
+					if(hasUVs) {
+						int uvIndex1 = uvidx[i-3] * 2;
+						int uvIndex2 = uvidx[i-2] * 2;
+						int uvIndex3 = uvidx[i-1] * 2;
+						int uvIndex4 = uvidx[i] * 2;
+
+						quadIds[0] = uvIndex1;
+						quadIds[1] = uvIndex2;
+						quadIds[2] = uvIndex3;
+						quadIds[3] = uvIndex4;
+						quadIds[4] = uvIndex1;
+						quadIds[5] = uvIndex3;
+
+						for(j=0; j<6; ++j) {
+							int cid = quadIds[j];
+							for(k=0; k<2; ++k) {
+								if(k==0)
+									uvs.add(modelUv[cid + k]);
+								else
+									uvs.add(1f-modelUv[cid + k]);
+							}
+						}
+
+					}
+				}
+				count = 0;
+			}
+		}
+
+		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null,
+				convertIntegers(indices), false);
+
+		vertices.clear();
+		vertices = null;
+		normals.clear();
+		normals = null;
+		if(hasUVs) {
+			uvs.clear();
+			uvs = null;
+		}
+		indices.clear();
+		indices = null;
+		o.setMaterial(getMaterialForMesh(o, model.name));
+		setMeshTextures(o, model.name);
+
+		o.setPosition(model.properties.lclTranslation);
+		o.setScale(model.properties.lclScaling);
+		o.setRotation(model.properties.lclRotation);
+//		o.rotate(Vector3.Axis.X, 90);
+//		o.rotate(Vector3.Axis.Y, 90);
+
+		mRootObject.addChild(o);
+	}
+	private void buildMeshDEBUG(Model model, Stack<ALight> lights) throws TextureException, ParsingException {
+		Object3D o = new Object3D(model.name);
+		boolean hasUVs = model.layerElementUV.uVIndex != null;
+
+		int[] vidx 					= model.polygonVertexIndex.data;
+		int[] uvidx 				= null;
+		float[] modelVerts 			= model.vertices.data;
+		float[] modelNorm			= model.layerElementNormal.normals.data;
+		float[] modelUv		 		= null;
+
+		ArrayList<Integer> indices 	= new ArrayList<Integer>();
+		ArrayList<Float> vertices 	= new ArrayList<Float>();
+		ArrayList<Float> normals	= new ArrayList<Float>();
+		ArrayList<Float> uvs 		= null;
+
+		if(hasUVs) {
+			uvs = new ArrayList<Float>();
+			uvidx = model.layerElementUV.uVIndex.data;
+			modelUv = model.layerElementUV.uV.data;
+		}
+
+		int count = 0;
+		int indexCount = 0;
+		int[] triIds = new int[3];
+		int[] quadIds = new int[6];
+		int i = 0, j = 0, k = 0;
+		int vidxLen = vidx.length;
+
+		for(i=0; i<vidxLen; ++i) {
+			count++;
+
+			if(vidx[i] < 0) {
+				if(count==3) {
+					int index1 = vidx[i-2],
+							index2 = vidx[i-1],
+							index3 = (vidx[i] * -1) - 1;
 
 					indices.add(indexCount++);
 					indices.add(indexCount++);
@@ -361,10 +517,12 @@ public class LoaderFBX extends AMeshLoader {
 					for(j=0; j<6; ++j)
 					{
 						int cid = quadIds[j];
-						for(k=0; k<3; ++k) {
-							vertices.add(modelVerts[cid+k]);
-							normals.add(modelNorm[cid+k]);
-						}
+						vertices.add(modelVerts[cid+0]);
+						vertices.add(modelVerts[cid+1]);
+						vertices.add(modelVerts[cid+2]);
+						normals.add(modelNorm[cid+0]);
+						normals.add(modelNorm[cid+1]);
+						normals.add(modelNorm[cid+2]);
 					}
 
 					if(hasUVs) {
@@ -396,8 +554,14 @@ public class LoaderFBX extends AMeshLoader {
 			}
 		}
 
-		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null,
-            convertIntegers(indices), false);
+		List<Integer> indie = new ArrayList<>();
+		float[] v = uniteVN(vertices, normals, indie);
+		o.setData(v, null, null, null,
+				convertIntegers(indie), false);
+
+
+//		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null,
+//				convertIntegers(indices), false);
 
 		vertices.clear();
 		vertices = null;
@@ -409,12 +573,20 @@ public class LoaderFBX extends AMeshLoader {
 		}
 		indices.clear();
 		indices = null;
-		o.setMaterial(getMaterialForMesh(o, model.name));
-		setMeshTextures(o, model.name);
+
+		Material mat = new Material();
+//		mat.enableLighting(true);
+		mat.setDiffuseMethod(new DiffuseMethod.Lambert());
+		mat.setColor((int)(Math.random() * 0xffffff));
+		o.setMaterial(mat);
+
+//		o.setMaterial(getMaterialForMesh(o, model.name));
+//		setMeshTextures(o, model.name);
 
 		o.setPosition(model.properties.lclTranslation);
 		o.setScale(model.properties.lclScaling);
 		o.setRotation(model.properties.lclRotation);
+		o.setDrawingMode(GLES20.GL_LINES);
 //		o.rotate(Vector3.Axis.X, 90);
 //		o.rotate(Vector3.Axis.Y, 90);
 
@@ -451,6 +623,24 @@ public class LoaderFBX extends AMeshLoader {
 	        ret[i] = floats.get(i).floatValue();
 	    }
 	    return ret;
+	}
+
+	public static float[] uniteVN(List<Float> vertices,List<Float> normals, List<Integer> outputIndicies)
+	{
+		outputIndicies.clear();
+		float[] ret = new float[vertices.size()+normals.size()];
+		int len = vertices.size();
+		for (int i=0; i < len/3; ++i){
+			outputIndicies.add(2*i);
+			ret[6*i+0] = vertices.get(3*i+0);
+			ret[6*i+1] = vertices.get(3*i+1);
+			ret[6*i+2] = vertices.get(3*i+2);
+			outputIndicies.add(2*i+1);
+			ret[6*i+3] = vertices.get(3*i+0)+normals.get(i+0)*0.2f;
+			ret[6*i+4] = vertices.get(3*i+1)+normals.get(i+1)*0.2f;
+			ret[6*i+5] = vertices.get(3*i+2)+normals.get(i+2)*0.2f;
+		}
+		return ret;
 	}
 
 	private void setMeshTextures(Object3D o, String name) throws TextureException, ParsingException {
