@@ -146,7 +146,7 @@ public class Loader3DSMax extends AMeshLoader {
                 // else
                 // texture.append(textureName);
                 //
-                // textureAtlas.addBitmapAsset(new BitmapAsset(mCurrentMaterialKey, texture.toString()));
+//                 textureAtlas.addBitmapAsset(new BitmapAsset(mCurrentMaterialKey, texture.toString()));
                 skipRead(stream);
                 break;
             case TRI_MATERIAL:
