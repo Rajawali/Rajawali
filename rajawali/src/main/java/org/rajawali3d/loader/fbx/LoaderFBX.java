@@ -344,35 +344,30 @@ public class LoaderFBX extends AMeshLoader {
 					normals[3*iNext+0] = modelNorm[3*nidx_old+0];//nx
 					normals[3*iNext+1] = modelNorm[3*nidx_old+1];//ny
 					normals[3*iNext+2] = modelNorm[3*nidx_old+2];//nz
-//					if(hasUVs) {
-//						uvs[2*iNext] = modelUv[2*tidx_old];
-//						uvs[2*iNext+1] = 1f - modelUv[2*tidx_old+1];
-//					}
+					if(hasUVs) {
+						int uvidx_old = modelUVIdx[i+v];//index of current normal in FBX order
+						uvs[2*iNext] = modelUv[2*uvidx_old];
+						uvs[2*iNext+1] = 1f - modelUv[2*uvidx_old+1];
+					}
 					++iNext;
 				}
 			}
 			i = i2 + 1;
 		}
 
+		//TODO: find how to use VBOs when |modelVerts|<|normals|
+		o.setData(vertexes, normals, uvs, null, indices, false);
 
-		o.setData(vertexes, normals, null, null, indices, false);
-
-		Material mat = new Material();
-		mat.setDiffuseMethod(new DiffuseMethod.Lambert());
-		mat.setColor((int)(Math.random() * 0xffffff));
-		o.setMaterial(mat);
-//		o.setMaterial(getMaterialForMesh(o, model.name));
-//		setMeshTextures(o, model.name);
+		o.setMaterial(getMaterialForMesh(o, model.name));
+		setMeshTextures(o, model.name);
 
 		o.setPosition(model.properties.lclTranslation);
 		o.setScale(model.properties.lclScaling);
 		o.setRotation(model.properties.lclRotation);
-//		o.rotate(Vector3.Axis.X, 90);
-//		o.rotate(Vector3.Axis.Y, 90);
 		o.setDrawingMode(GLES20.GL_TRIANGLES);
 
-		Object3D n = new NormalsObject3D(o, 4,1f);
-		o.addChild(n);
+//		Object3D n = new NormalsObject3D(o, 4,1f);
+//		o.addChild(n);
 		mRootObject.addChild(o);
 	}
 
