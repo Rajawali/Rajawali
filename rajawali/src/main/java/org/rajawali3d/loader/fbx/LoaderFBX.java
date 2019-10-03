@@ -271,158 +271,105 @@ public class LoaderFBX extends AMeshLoader {
 
 	}
 
+	final int [][] trigTriangulation = {
+			{0, 1, 2}
+	};
+	final int [][] quadTriangulation = {
+			{0, 1, 2},
+			{3, 0, 2}
+	};
+
+	//https://banexdevblog.wordpress.com/2014/06/23/a-quick-tutorial-about-the-fbx-ascii-format/
 	private void buildMesh(Model model, Stack<ALight> lights) throws TextureException, ParsingException {
 		Object3D o = new Object3D(model.name);
 		boolean hasUVs = model.layerElementUV.uVIndex != null;
 
-		int[] vidx 					= model.polygonVertexIndex.data;
-		int[] uvidx 				= null;
-		float[] modelVerts 			= model.vertices.data;
-		float[] modelNorm			= model.layerElementNormal.normals.data;
-		float[] modelUv		 		= null;
-
-		ArrayList<Integer> indices 	= new ArrayList<Integer>();
-		ArrayList<Float> vertices 	= new ArrayList<Float>();
-		ArrayList<Float> normals	= new ArrayList<Float>();
-		ArrayList<Float> uvs 		= null;
-
-		if(hasUVs) {
-			uvs = new ArrayList<Float>();
-			uvidx = model.layerElementUV.uVIndex.data;
-			modelUv = model.layerElementUV.uV.data;
+		int[]   modelUVIdx = null;
+		float[] modelUv = null;
+		int[]   modelIdx 	= model.polygonVertexIndex.data;
+		float[] modelVerts 	= model.vertices.data;
+		float[] modelNorm	= model.layerElementNormal.normals.data;
+		if(hasUVs){
+				modelUVIdx 	= model.layerElementUV.uVIndex.data;
+				modelUv 	= model.layerElementUV.uV.data;
 		}
 
-		int count = 0;
-		int indexCount = 0;
-		int[] triIds = new int[3];
-		int[] quadIds = new int[6];
-		int i = 0, j = 0, k = 0;
-		int vidxLen = vidx.length;
-
-		for(i=0; i<vidxLen; ++i) {
-			count++;
-
-			if(vidx[i] < 0) {
-				if(count==3) {
-					int index1 = vidx[i-2],
-							index2 = vidx[i-1],
-							index3 = (vidx[i] * -1) - 1;
-
-					indices.add(indexCount++);
-					indices.add(indexCount++);
-					indices.add(indexCount++);
-
-					triIds[0] = index1 * 3;
-					triIds[1] = index2 * 3;
-					triIds[2] = index3 * 3;
-
-					for(j=0; j<3; ++j)
-					{
-						int cid = triIds[j];
-						vertices.add(modelVerts[cid+0]);
-						vertices.add(modelVerts[cid+1]);
-						vertices.add(modelVerts[cid+2]);
-						normals.add(modelNorm[cid+0]);
-						normals.add(modelNorm[cid+1]);
-						normals.add(modelNorm[cid+2]);
-					}
-
-					if(hasUVs) {
-						int uvIndex3 = uvidx[i] * 2;
-						int uvIndex2 = uvidx[i-1] * 2;
-						int uvIndex1 = uvidx[i-2] * 2;
-
-						uvs.add(modelUv[uvIndex1+0]);
-						uvs.add(1f-modelUv[uvIndex1+1]);
-
-						uvs.add(modelUv[uvIndex2+0]);
-						uvs.add(1f-modelUv[uvIndex2+1]);
-
-						uvs.add(modelUv[uvIndex3+0]);
-						uvs.add(1f-modelUv[uvIndex3+1]);
-					}
-				} else {
-					int index1 = vidx[i-3];
-					int index2 = vidx[i-2];
-					int index3 = vidx[i-1];
-					int index4 = (vidx[i] * -1)-1;
-
-					indices.add(indexCount++);
-					indices.add(indexCount++);
-					indices.add(indexCount++);
-					indices.add(indexCount++);
-					indices.add(indexCount++);
-					indices.add(indexCount++);
-
-					quadIds[0] = index1 * 3;
-					quadIds[1] = index2 * 3;
-					quadIds[2] = index3 * 3;
-					quadIds[3] = index4 * 3;
-					quadIds[4] = index1 * 3;
-					quadIds[5] = index3 * 3;
-
-					for(j=0; j<6; ++j)
-					{
-						int cid = quadIds[j];
-						vertices.add(modelVerts[cid+0]);
-						vertices.add(modelVerts[cid+1]);
-						vertices.add(modelVerts[cid+2]);
-						normals.add(-modelNorm[cid+0]);
-						normals.add(modelNorm[cid+1]);
-						normals.add(modelNorm[cid+2]);
-					}
-
-					if(hasUVs) {
-						int uvIndex1 = uvidx[i-3] * 2;
-						int uvIndex2 = uvidx[i-2] * 2;
-						int uvIndex3 = uvidx[i-1] * 2;
-						int uvIndex4 = uvidx[i] * 2;
-
-						quadIds[0] = uvIndex1;
-						quadIds[1] = uvIndex2;
-						quadIds[2] = uvIndex3;
-						quadIds[3] = uvIndex4;
-						quadIds[4] = uvIndex1;
-						quadIds[5] = uvIndex3;
-
-						for(j=0; j<6; ++j) {
-							int cid = quadIds[j];
-							for(k=0; k<2; ++k) {
-								if(k==0)
-									uvs.add(modelUv[cid + k]);
-								else
-									uvs.add(1f-modelUv[cid + k]);
-							}
-						}
-
-					}
+		int newTrigsCount = 0;
+		{//count trigs as 1, quads as 2:
+			int tmpc = 0;
+			for (int idx: modelIdx) {
+				++tmpc;
+				if(idx<0 || tmpc>4){
+					if(tmpc == 3) newTrigsCount += 1;//trig
+					else if(tmpc == 4) newTrigsCount += 2;//quad
+					else throw new ParsingException("There is a polygon which is not a quad nor a trig in the mesh");
+					tmpc = 0;
 				}
-				count = 0;
 			}
 		}
 
-		o.setData(convertFloats(vertices), convertFloats(normals), hasUVs ? convertFloats(uvs) : null, null,
-				convertIntegers(indices), false);
+		float[] uvs = null;
+		if(hasUVs) uvs  = new float[newTrigsCount*3*2];
+		float[] normals = new float[newTrigsCount*3*3];
+		float[] vertexes = new float[newTrigsCount*3*3];
+		int[] indices = new int[newTrigsCount*3];
 
-		vertices.clear();
-		vertices = null;
-		normals.clear();
-		normals = null;
-		if(hasUVs) {
-			uvs.clear();
-			uvs = null;
+		int iNext = 0;//index of next vertex in a triangulated order and a pointer to next element in indicies
+		int i = 0;//index in modelIdx
+		while(i<modelIdx.length && i<newTrigsCount*3) {
+			//get next polygon
+			int i2 = i;
+			while (modelIdx[i2]>=0){
+				++i2;
+			}
+			modelIdx[i2] = ~modelIdx[i2];
+
+			//triangulate
+			int[][] triangulation = null;
+			if(i2 == i+2) {//its a trig!
+				triangulation = trigTriangulation;
+			} else if(i2 == i+3) {//its a quad!
+				triangulation = quadTriangulation;
+			}
+
+			//for each trig in triangulation
+			for (int[] trig: triangulation) {
+				for (int v: trig){
+					int tidx_old = modelIdx[i+v];//index of current vertex in FBX order
+					int nidx_old = i+v;//index of current normal in FBX order
+					indices[iNext] = iNext;//the correct modelIdx for this vertex
+					vertexes[3*iNext+0] = modelVerts[3*tidx_old+0];//x
+					vertexes[3*iNext+1] = modelVerts[3*tidx_old+1];//y
+					vertexes[3*iNext+2] = modelVerts[3*tidx_old+2];//z
+					normals[3*iNext+0] = modelNorm[3*nidx_old+0];//nx
+					normals[3*iNext+1] = modelNorm[3*nidx_old+1];//ny
+					normals[3*iNext+2] = modelNorm[3*nidx_old+2];//nz
+//					if(hasUVs) {
+//						uvs[2*iNext] = modelUv[2*tidx_old];
+//						uvs[2*iNext+1] = 1f - modelUv[2*tidx_old+1];
+//					}
+					++iNext;
+				}
+			}
+			i = i2 + 1;
 		}
-		indices.clear();
-		indices = null;
-		o.setMaterial(getMaterialForMesh(o, model.name));
-		setMeshTextures(o, model.name);
+
+
+		o.setData(vertexes, normals, null, null, indices, false);
+
+		Material mat = new Material();
+		mat.setDiffuseMethod(new DiffuseMethod.Lambert());
+		mat.setColor((int)(Math.random() * 0xffffff));
+		o.setMaterial(mat);
+//		o.setMaterial(getMaterialForMesh(o, model.name));
+//		setMeshTextures(o, model.name);
 
 		o.setPosition(model.properties.lclTranslation);
 		o.setScale(model.properties.lclScaling);
 		o.setRotation(model.properties.lclRotation);
 //		o.rotate(Vector3.Axis.X, 90);
 //		o.rotate(Vector3.Axis.Y, 90);
-//		o.setDrawingMode(GLES20.GL_LINE_STRIP);
+		o.setDrawingMode(GLES20.GL_TRIANGLES);
 
 		Object3D n = new NormalsObject3D(o, 4,1f);
 		o.addChild(n);
