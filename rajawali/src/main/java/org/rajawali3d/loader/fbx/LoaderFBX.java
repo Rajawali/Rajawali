@@ -302,7 +302,7 @@ public class LoaderFBX extends AMeshLoader {
 				if(idx<0 || tmpc>4){
 					if(tmpc == 3) newTrigsCount += 1;//trig
 					else if(tmpc == 4) newTrigsCount += 2;//quad
-					else throw new ParsingException("There is a polygon which is not a quad nor a trig in the mesh");
+					else throw new ParsingException("There is a polygon which is not a quad nor a trig in the mesh of " + model.name);
 					tmpc = 0;
 				}
 			}
