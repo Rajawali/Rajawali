@@ -733,8 +733,10 @@ public class Object3D extends ATransformable3D implements Comparable<Object3D>, 
 
     public Object3D getChildByName(String name) {
         for (int i = 0, j = mChildren.size(); i < j; i++) {
-            if (mChildren.get(i).getName().equals(name)) {
-                return mChildren.get(i);
+            Object3D child = mChildren.get(i);
+            if (child.getName() == null) continue;
+            if (child.getName().equals(name)) {
+                return child;
             }
         }
 
