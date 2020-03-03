@@ -50,10 +50,16 @@ android {
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
 
-    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core"
     androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation "androidx.test:runner:$runnerVersion"
+    androidTestImplementation "androidx.test:core:$coreVersion"
+
+    androidTestImplementation "androidx.test.ext:junit:$extJUnitVersion"
+    androidTestImplementation "androidx.test.ext:truth:$extJUnitVersion"
+    androidTestImplementation "com.google.truth:truth:1.0.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
