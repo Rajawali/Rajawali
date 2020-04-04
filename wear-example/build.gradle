@@ -36,7 +36,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "com.google.android.support:wearable:$wear"
     compileOnly "com.google.android.wearable:wearable:$wear"
 
