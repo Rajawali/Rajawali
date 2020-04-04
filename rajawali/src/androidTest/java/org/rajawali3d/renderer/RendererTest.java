@@ -14,7 +14,7 @@ public class RendererTest {
 
     @Test
     public void testInstantiation() {
-        new Renderer(InstrumentationRegistry.getTargetContext()) {
+        new Renderer(InstrumentationRegistry.getInstrumentation().getTargetContext()) {
 
             @Override
             public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {

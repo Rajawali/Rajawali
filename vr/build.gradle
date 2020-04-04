@@ -17,6 +17,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    // https://stackoverflow.com/a/56453718/1079990
+    packagingOptions {
+        pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
+        pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
+    }
+
     buildTypes {
         release {
             minifyEnabled false
