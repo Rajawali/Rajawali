@@ -120,6 +120,12 @@ public class VerticalGradientMaterialPlugin implements IMaterialPlugin {
 
         }
 
+        // overlay color is transparent at the bottom and screened over background at the top.
+        //
+        // essentially (1-(1-a*(1-v))*(1-b*v)),
+        //
+        // where a is the existing material, b is the overlay, 
+        // and v is the v axis value premultiplied by b opacity.
         @Override
         public void main() {
             RVec4 color = (RVec4) getGlobal(AShaderBase.DefaultShaderVar.G_COLOR);
