@@ -804,6 +804,16 @@ public abstract class AShader extends AShaderBase {
 		s = null;
 	}
 
+	public String abs(String value)
+	{
+		return "abs(" + value + ")";
+	}
+
+	public String abs(ShaderVar value)
+	{
+		return abs(value.getName());
+	}
+
 	/**
 	 * applyParams() should be called on every frame. The shader parameters
 	 * are set here.
