@@ -14,6 +14,8 @@ package org.rajawali3d.materials.plugins;
 
 import android.graphics.Color;
 
+import android.opengl.GLES20;
+
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.AShaderBase;
