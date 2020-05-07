@@ -37,6 +37,7 @@ public interface IShaderFragment {
 	Hashtable<String, ShaderVar> getVaryings();
 	Hashtable<String, ShaderVar> getGlobals();
 	Hashtable<String, ShaderVar> getConsts();
+	Hashtable<String, String> getFunctions();
 	void setStringBuilder(StringBuilder stringBuilder);
 	void main();
 	void applyParams();
