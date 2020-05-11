@@ -33,27 +33,12 @@ public class PointSpriteSuperNova extends Object3D {
         super.preRender();
     }
 
-    Bitmap createSprite(float diameter) {
-        Bitmap bitmap = Bitmap.createBitmap(5,5, Bitmap.Config.ARGB_8888);
-        for(int y=0; y<Math.ceil(diameter); y++) {
-            for(int x=0; x<Math.ceil(diameter); x++) {
-                float dx = x/diameter-0.5f;
-                float dy = y/diameter-0.5f;
-                int p = 255-Math.round(255f*(float)Math.sqrt(dx*dx+dy*dy));
-                bitmap.setPixel(x,y,Color.argb(p,p,p,p));
-            }
-        }
-        return bitmap;
-    }
-
     public void init(int numSprites, float spriteDiameter) {
         try {
             setTransparent(true);
             setBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE);
             setDrawingMode(GLES20.GL_POINTS);
-            Texture mSpritesTex = new Texture("sprite", createSprite(spriteDiameter));
             Material mSpritesMat = new Material();
-            mSpritesMat.addTexture(mSpritesTex);
             mSpritesMat.enableTime(true);
 
             mMaterialPlugin = new PointSpriteSuperNovaMaterialPlugin(spriteDiameter);
@@ -149,25 +134,13 @@ public class PointSpriteSuperNova extends Object3D {
             }
 
             @Override
-            public void initialize()
-            {
-                super.initialize();
-            }
-
-            @Override
             public void main() {
-                mShaderSB.append("\n" +
-                        "mat4 m = mat4(0.);\n" +
-                        "m[0][0] = uTime;\n" +
-                        "m[1][1] = uTime;\n" +
-                        "m[2][2] = uTime;\n" +
-                        "m[3][3] = 1.;\n" +
-                        "\n" +
-                        "gl_PointSize = " +  mDiameter + ";\n" +
-                        "\n");
+                RFloat u_time = (RFloat) getGlobal(DefaultShaderVar.U_TIME);
+                RVec4 a_position = (RVec4) getGlobal(DefaultShaderVar.A_POSITION);
                 RVec4 g_position = (RVec4) getGlobal(DefaultShaderVar.G_POSITION);
-                g_position.assign("aPosition * m");
 
+                g_position.assign(a_position.multiply(castVec4(castVec3(u_time), 1)));
+                GL_POINT_SIZE.assign(mDiameter);
             }
 
             @Override
@@ -213,15 +186,15 @@ public class PointSpriteSuperNova extends Object3D {
             }
 
             @Override
-            public void initialize()
-            {
-                super.initialize();
-            }
-
-            @Override
             public void main() {
+                RVec4 v_color = (RVec4) getGlobal(AShaderBase.DefaultShaderVar.V_COLOR);
                 RVec4 g_color = (RVec4) getGlobal(AShaderBase.DefaultShaderVar.G_COLOR);
-                g_color.assign("vColor * texture2D(sprite, gl_PointCoord)");
+
+                RFloat d = new RFloat("d");
+                d.assign(clamp(length(castVec2("gl_PointCoord*2.-1.")), 0,1));
+                RVec3 color = new RVec3("color");
+                color.assign(castVec3("1.-d"));
+                g_color.assign(v_color.multiply(castVec4(color, 1)));
             }
 
             @Override
@@ -237,3 +210,4 @@ public class PointSpriteSuperNova extends Object3D {
         }
     }
 }
+
