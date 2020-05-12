@@ -20,14 +20,16 @@ public class PointShell extends Object3D {
         super.preRender();
     }
 
-    public void init(int numStars, float radius) {
+    public void init(int numPoints, float radius) {
 
-        float[] vertices = new float[numStars * 3];
-        float[] normals = new float[numStars * 3];
-        int[] indices = new int[numStars * 3];
-        float[] colors = new float[numStars * 4];
+        float[] vertices = new float[numPoints * 3];
+        float[] normals = new float[numPoints * 3];
+        int[] indices = new int[numPoints * 3];
+        float[] colors = new float[numPoints * 4];
+        float[] textureCoords = new float[numPoints * 2];
+        int texel = (int)Math.ceil(Math.sqrt(numPoints));
 
-        for (int i = 0; i < numStars; ++i) {
+        for (int i = 0; i < numPoints; ++i) {
             Vector3 n = new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1);
             n.normalize();
 
@@ -52,6 +54,9 @@ public class PointShell extends Object3D {
             colors[i * 4 + 1] = randColor * randColor;
             colors[i * 4 + 2] = randColor * randColor;
             colors[i * 4 + 3] = 1.0f;
+
+            textureCoords[i * 2 + 0] = i%texel;
+            textureCoords[i * 2 + 1] = i/texel;
         }
 
         setData(vertices, normals, null, colors, indices, true);
