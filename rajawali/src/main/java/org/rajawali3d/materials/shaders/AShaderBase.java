@@ -776,6 +776,32 @@ public abstract class AShaderBase {
 			mInitialized = true;
 		}
 	}
+	 
+	/**
+	 * Defines the two-dimensional coordinates indicating where within a point primitive 
+         * the current fragment is located. This corresponds to the gl_PointCoord GLSL variable.
+	 */
+	protected final class GLPointCoord extends RVec2
+	{
+		public GLPointCoord()
+		{
+			super("gl_PointCoord");
+			mInitialized = true;
+		}
+	}
+	 
+	/**
+	 * Defines an output that receives the intended size of the point to be rasterized,
+         * in pixels. This corresponds to the gl_PointSize GLSL variable.
+	 */
+	protected final class GLPointSize extends RFloat
+	{
+		public GLPointSize()
+		{
+			super("gl_PointSize");
+			mInitialized = true;
+		}
+	}
 	
 	/**
 	 * Contains the window-relative coordinates of the current fragment

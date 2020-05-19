@@ -136,6 +136,16 @@ public abstract class AShader extends AShaderBase {
 	 */
 	protected final GLPosition GL_POSITION = new GLPosition();
 	/**
+         * Defines an output that receives the intended size of the point to be rasterized,
+         * in pixels. This corresponds to the gl_PointSize GLSL variable.
+	 */
+	protected final GLPointCoord GL_POINT_COORD = new GLPointCoord();
+	/**
+         * Defines an output that receives the intended size of the point to be rasterized,
+         * in pixels. This corresponds to the gl_PointSize GLSL variable.
+	 */
+	protected final GLPointSize GL_POINT_SIZE = new GLPointSize();
+	/**
 	 * Defines the color of the current fragment. This is used in the fragment shader to
 	 * write the final fragment color to. This corresponds to the gl_FragColor GLSL variable.
 	 */
