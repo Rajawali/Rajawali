@@ -936,10 +936,10 @@ open class TextureView @JvmOverloads constructor(
             } catch (e: InterruptedException) {
                 // fall thru and exit normally
             } catch (e: IllegalStateException) {
-                Log.e("RajawaliGLThread", e.message)
+                Log.e("RajawaliGLThread", "" + e.message)
                 showToast(e.message)
             } catch (e: Exception) {
-                Log.e("RajawaliGLThread", e.message)
+                Log.e("RajawaliGLThread", "" + e.message)
             } finally {
                 glThreadManager.threadExiting(this)
             }
