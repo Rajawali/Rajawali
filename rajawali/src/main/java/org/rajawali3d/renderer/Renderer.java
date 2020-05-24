@@ -696,6 +696,16 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     /**
+     * Retrieve the number of {@link Scene} associated with the Renderer.
+     *
+     * @return int the number of Scenes.
+     * @see {@link Renderer#mScenes}
+     */
+    public int getNumScenes() {
+        return mScenes.size();
+    }
+
+    /**
      * Fetches the specified scene.
      *
      * @param scene Index of the {@link Scene} to fetch.
