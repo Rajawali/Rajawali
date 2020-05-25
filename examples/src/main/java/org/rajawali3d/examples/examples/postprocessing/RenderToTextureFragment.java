@@ -1,7 +1,9 @@
 package org.rajawali3d.examples.examples.postprocessing;
 
 import android.content.Context;
+
 import androidx.annotation.Nullable;
+
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.RotateOnAxisAnimation;
@@ -96,6 +98,7 @@ public class RenderToTextureFragment extends AExampleFragment {
 			mSphere = new Cube(1);
 			mSphere.setMaterial(cubeMaterial);
 			mOtherScene.addChild(mSphere);
+			addScene(mOtherScene);
 
 			Vector3 axis = new Vector3(1, 1, 0);
 			axis.normalize();
@@ -120,6 +123,16 @@ public class RenderToTextureFragment extends AExampleFragment {
 			// -- Other effect passes could be added here
 			//
 
+			//
+			// -- Get the post-processed/offscreen texture and add it to the cube
+			//
+			try {
+				mCurrentTexture = mEffects.getTexture();
+				mSphere.getMaterial().addTexture(mCurrentTexture);
+			} catch (ATexture.TextureException e) {
+				e.printStackTrace();
+			}
+
 			switchScene(mOtherScene);
 		}
 
@@ -129,20 +142,7 @@ public class RenderToTextureFragment extends AExampleFragment {
 			// -- Off screen rendering first. Render to texture.
 			//
 			mEffects.render(elapsedTime, deltaTime);
-			try {
-				if (mCurrentTexture != null)
-					mSphere.getMaterial().removeTexture(mCurrentTexture);
 
-				//
-				// -- Get the latest updated texture from the post
-				//    processing manager
-				//
-
-				mCurrentTexture = mEffects.getTexture();
-				mSphere.getMaterial().addTexture(mCurrentTexture);
-			} catch (ATexture.TextureException e) {
-				e.printStackTrace();
-			}
 			super.onRender(elapsedTime, deltaTime);
 		}
 	}
