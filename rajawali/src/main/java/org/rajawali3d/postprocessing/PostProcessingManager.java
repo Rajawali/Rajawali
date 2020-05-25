@@ -69,9 +69,11 @@ public class PostProcessingManager {
     public PostProcessingManager(@NonNull Renderer renderer,
                                  @IntRange(from = -1) int width,
                                  @IntRange(from = -1) int height) {
+        boolean fullscreen = false;
         mRenderer = renderer;
 
         if (width == -1 && height == -1) {
+            fullscreen = true;
             width = mRenderer.getViewportWidth();
             height = mRenderer.getViewportHeight();
         }
@@ -85,9 +87,11 @@ public class PostProcessingManager {
         mRenderTarget1 = new RenderTarget("rt1" + hashCode(), width, height, 0, 0,
                                           false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
                                           FilterType.LINEAR, WrapType.CLAMP);
+        mRenderTarget1.setFullscreen(fullscreen);
         mRenderTarget2 = new RenderTarget("rt2" + hashCode(), width, height, 0, 0,
                                           false, false, GLES20.GL_TEXTURE_2D, Config.ARGB_8888,
                                           FilterType.LINEAR, WrapType.CLAMP);
+        mRenderTarget2.setFullscreen(fullscreen);
 
         mWriteBuffer = mRenderTarget1;
         mReadBuffer = mRenderTarget2;
