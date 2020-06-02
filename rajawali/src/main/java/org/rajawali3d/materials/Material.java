@@ -583,6 +583,9 @@ public class Material {
                         if (envMapTextures == null)
                             envMapTextures = new ArrayList<>();
                         envMapTextures.add(texture);
+                    } else if(hasCubeMaps) {
+                        if (diffuseTextures == null) diffuseTextures = new ArrayList<>();
+                        diffuseTextures.add(texture);
                     }
                     break;
                 case SPECULAR:
