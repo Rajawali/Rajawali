@@ -1095,6 +1095,13 @@ public abstract class AShader extends AShaderBase {
 		return s;
 	}
 
+	public ShaderVar mod(ShaderVar var1, String var2)
+	{
+		ShaderVar s = new ShaderVar("mod(" + var1.getName() + ", " + var2 + ")", var1.getDataType());
+		s.mInitialized = true;
+		return s;
+	}
+
 	public ShaderVar length(ShaderVar var)
 	{
 		ShaderVar s = new ShaderVar("length(" + var.getName() + ")", DataType.FLOAT);
