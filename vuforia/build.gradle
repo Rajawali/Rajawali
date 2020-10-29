@@ -35,15 +35,6 @@ android {
         abortOnError false
     }
 
-    // call regular ndk-build(.cmd) script from app directory
-    task ndkBuild(type: Exec) {
-        commandLine getNdkBuildFile().absolutePath, '-C', file('src/main').absolutePath
-    }
-
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn ndkBuild
-    }
-
     dexOptions {
         // Skip pre-dexing when running on CI
         preDexLibraries = !isCi
@@ -58,15 +49,6 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.0.0'
 
     implementation project(':rajawali')
-}
-
-File getNdkBuildFile() {
-    String name = Os.isFamily(Os.FAMILY_WINDOWS) ? 'ndk-build.cmd' : 'ndk-build'
-    File ndkDir = android.getNdkDirectory()
-    if(ndkDir == null) throw new GradleException('NDK location not found. '
-                          + 'Define location with ndk.dir in the local.properties file '
-                          + 'or with an ANDROID_NDK_HOME environment variable.')
-    return new File(ndkDir, name)
 }
 
 apply from: '../publish.gradle'
