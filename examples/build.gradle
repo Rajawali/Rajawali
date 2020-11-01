@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.compileSdk
@@ -9,6 +10,8 @@ android {
         targetSdkVersion rootProject.targetSdk
         versionCode getGitCommitCount()
         versionName getTag()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -17,6 +20,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            defaultConfig.minSdkVersion 21
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
@@ -26,7 +32,7 @@ android {
     flavorDimensions "feature"
     productFlavors {
         withVuforia {
-            minSdkVersion 19
+            minSdkVersion 21 // 19 would be ok as well, but Espresso needs a 21. btw, this sample code is very old
             dimension "feature"
         }
         withoutVuforia {
@@ -47,18 +53,78 @@ android {
         preDexLibraries = !isCi
         javaMaxHeapSize maxDexHeap
     }
+
+    configurations.all {
+        resolutionStrategy {
+            // Please removed it, as soon as the project compiles without it
+            force 'org.jetbrains:annotations:13.0'
+        }
+    }
 }
 
 dependencies {
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.koushikdutta.ion:ion:3.0.8'
+    implementation "androidx.core:core-ktx:1.3.2"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation project(':rajawali')
     withVuforiaImplementation project(':vuforia')
     withVuforiaImplementation project(':vr')
 
     wearApp project(':wear-example')
+
+    androidTestImplementation 'com.github.AppDevNext:Moka:0.4'
+    androidTestImplementation "androidx.test:runner:$runnerVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso_core"
+
+    androidTestImplementation "androidx.test.ext:junit:1.1.2"
+    androidTestImplementation "androidx.test.ext:truth:1.3.0"
+    androidTestImplementation "com.google.truth:truth:1.0.1"
+}
+
+def adbDirectory = '/storage/emulated/0/Download' // api 28
+//def adbDirectory = '/storage/self/primary/Download' // api 21
+def reportsDirectory = "$projectDir/../screenshots/adb"
+
+def clearScreenshotsTask = task('clearScreenshots', type: Exec) {
+    println "clearScreenshotsTask 'adb shell rm -r $adbDirectory'"
+    executable "${android.getAdbExe().toString()}"
+    args 'shell', 'rm', '-r', adbDirectory
+}
+
+def createScreenshotDirectoryTask = task('createScreenshotDirectory', type: Exec, group: 'reporting') {
+    println "createScreenshotDirectoryTask"
+    executable "${android.getAdbExe().toString()}"
+    args 'shell', 'mkdir', '-p', adbDirectory
+}
+
+def fetchScreenshotsTask = task('fetchScreenshots', type: Exec, group: 'reporting') {
+    println "fetchScreenshotsTask"
+    executable "${android.getAdbExe().toString()}"
+    args 'pull', adbDirectory + '/.', reportsDirectory
+
+    dependsOn {
+        createScreenshotDirectoryTask
+    }
+
+    doFirst {
+        new File(reportsDirectory).mkdirs()
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('connected') && task.name.endsWith('DebugAndroidTest')) {
+        task.mustRunAfter {
+            clearScreenshotsTask
+            createScreenshotDirectoryTask
+        }
+        task.finalizedBy {
+            fetchScreenshotsTask
+        }
+    }
 }

@@ -5,6 +5,7 @@ vr/build/
 vuforia/build/
 wear/build/
 build/
+screenshots
 
 vuforia/src/main/obj/
 vuforia/src/main/libs/

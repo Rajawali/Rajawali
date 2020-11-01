@@ -20,7 +20,7 @@ public class LauncherActivity extends AppCompatActivity {
     private static final String TAG = "LauncherActivity";
 
     private static final int REQUEST_PERMISSIONS = 1;
-    private static String[] PERMISSIONS = {
+    public static String[] PERMISSIONS = {
             permission.CAMERA,
             permission.INTERNET,
             permission.ACCESS_NETWORK_STATE,
