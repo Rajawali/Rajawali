@@ -22,7 +22,6 @@ public class LauncherActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS = 1;
     private static String[] PERMISSIONS = {
             permission.CAMERA,
-            permission.READ_PHONE_STATE,
             permission.INTERNET,
             permission.ACCESS_NETWORK_STATE,
             permission.ACCESS_WIFI_STATE,
