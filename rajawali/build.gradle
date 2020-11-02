@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion rootProject.targetSdk
-        versionCode rootProject.versionCode
-        versionName rootProject.versionName
+        versionCode getGitCommitCount()
+        versionName getTag()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
