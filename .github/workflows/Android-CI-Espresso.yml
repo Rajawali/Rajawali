@@ -1,4 +1,4 @@
-name: CI
+name: Github CI
 
 on:
   push:
@@ -10,52 +10,46 @@ on:
 
 jobs:
   build:
-    name: JDK ${{ matrix.java_version }}
+    name: Build
     runs-on: macOS-latest
     strategy:
       matrix:
         java_version: [1.8]
     steps:
-      # In order to have sha256sum on macOS, we need to install coreutils first
-      # Use this until coreutils or sha256sum are natively included in macOS on actions https://github.com/actions/virtual-environments/issues/90
-      - name: Install coreutils for macOS
-        run: brew install coreutils
       - name: Checkout
-        uses: actions/checkout@v1
-      - name: Check Gradle checksum
-        run: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ZacSweers/check-gradle-checksums/master/check-gradle-checksums.sh)"
-      - name: Install JDK ${{ matrix.java_version }}
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.java_version }}
+        uses: actions/checkout@v2
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.0.5
-      - name: Configure Gradle
-        # Initial gradle configuration, install dependencies, etc
-        run: ./gradlew help
+        uses: malinskiy/action-android/install-sdk@release/0.0.7
       - name: Build project
-        run: ./gradlew assemble --stacktrace
-      # TODO split test and instrumentation into parallel builds
+        run: ./gradlew assemble
       - name: Run tests
-        run: ./gradlew test --stacktrace
+        run: ./gradlew test
       - name: Run instrumentation tests
-        uses: malinskiy/action-android/emulator-run-cmd@release/0.0.5
+        uses: malinskiy/action-android/emulator-run-cmd@release/0.0.7
         with:
-          cmd: ./gradlew cAT --stacktrace
-          api: 18
+          cmd: ./gradlew cAT
+          api: 28
           tag: default
           abi: x86
       - name: Archive Espresso results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2.1.4
+        if: ${{ always() }}
         with:
-          name: Espresso-report
+          name: Rajawali-Espresso
           path: rajawali/build/reports/androidTests/connected
-      - name: Reclaim memory
-        run: ./gradlew --stop && jps|grep -E 'KotlinCompileDaemon|GradleDaemon'| awk '{print $1}'| xargs kill -9
-      - name: Final checks
-        run: ./gradlew check --stacktrace
+  check:
+    name: Check
+    runs-on: macOS-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Android SDK
+        uses: malinskiy/action-android/install-sdk@release/0.0.7
+      - name: Gradle checks
+        run: ./gradlew check
       - name: Archive Lint report
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2.1.4
+        if: ${{ always() }}
         with:
-          name: Lint-report
-          path: rajawali/build/reports/lint-results.html
+          name: Rajawali-Lint
+          path: ./**/build/reports/lint-results.html
