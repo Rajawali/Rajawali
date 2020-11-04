@@ -2,6 +2,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0%20License-blue.svg)](https://github.com/Rajawali/Rajawali/blob/master/LICENSE.txt)
 [![Maven Central](https://img.shields.io/maven-metadata/v/https/oss.sonatype.org/content/repositories/releases/org/rajawali3d/rajawali/maven-metadata.xml.svg)](https://oss.sonatype.org/content/repositories/releases/org/rajawali3d)
 [![Maven Central](https://img.shields.io/maven-metadata/v/https/oss.sonatype.org/content/repositories/snapshots/org/rajawali3d/rajawali/maven-metadata.xml.svg)](https://oss.sonatype.org/content/repositories/snapshots/org/rajawali3d)
+[![](https://jitpack.io/v/rajawali/rajawali.svg)](https://jitpack.io/#rajawali/rajawali)
 
 ### Build Status
 **Master Branch Status**  
@@ -36,7 +37,7 @@ The [RajawaliExamples](https://github.com/MasDennis/RajawaliExamples) project is
 
 Numerous apps and live wallpapers have been made with Rajawali. [Check them out!](https://plus.google.com/u/0/communities/116529974266844528013/stream/526227da-cf2d-46f9-8ad6-beaca7b8ddd5)
 
-## Using Rajawali
+## Using Rajawali with mavenCentral()
 
 Using Rajawali is as simple as adding a single line to your gradle dependencies:
 
@@ -55,6 +56,27 @@ For the above to work you will need to make sure your repository list includes:
 `mavenCentral()` for releases, and `maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }` for snapshots.
 
 Alternatively, if you checkout Rajawali via GIT, you can run `gradle assembleRelease uploadArchives` (or simply add a Gralde launch config to Android Studio for the `assembleRelease` and `uploadArchives` tasks). This will deploy to your local maven repository. Consuming apps should have `mavenLocal()` in their repository list and add `implementation 'org.rajawali3d:rajawali:1.0.0-SNAPSHOT@aar` to their dependencies.
+
+## Using Rajawali with Jitpack
+
+Just add the following lines to your `build.gradle` Here you see more details https://jitpack.io/#rajawali/rajawali
+
+```groovy
+dependencies {
+    implementation "com.github.rajawali:rajawali:$latest_version"
+}
+```
+
+To tell Gradle where to find the library, make sure `build.gradle` also contains this:
+
+```groovy
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
 
 ## Rajawali Examples On The Market
 
