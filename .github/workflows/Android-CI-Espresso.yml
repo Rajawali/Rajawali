@@ -19,24 +19,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.0.7
+        uses: hannesa2/action-android/install-sdk@0.0.7.5
       - name: Build project
-        run: ./gradlew assemble
+        run: ./gradlew assembleDebug
       - name: Run tests
         run: ./gradlew test
       - name: Run instrumentation tests
-        uses: malinskiy/action-android/emulator-run-cmd@release/0.0.7
+        uses: hannesa2/action-android/emulator-run-cmd@0.0.7.5
         with:
-          cmd: ./gradlew cAT
+          cmd: ./gradlew connectedWithoutVuforiaDebugAndroidTest
           api: 28
           tag: default
           abi: x86
-      - name: Archive Espresso results
-        uses: actions/upload-artifact@v2.1.4
+      - name: Save Espresso output
+        uses: actions/upload-artifact@master
         if: ${{ always() }}
         with:
           name: Rajawali-Espresso
-          path: rajawali/build/reports/androidTests/connected
+          path: |
+            artifacts/logcat.log
+            screenshots/adb/
+            ./**/build/reports/**/connected
+          if-no-files-found: error
   check:
     name: Check
     runs-on: macOS-latest
@@ -44,7 +48,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.0.7
+        uses: hannesa2/action-android/install-sdk@0.0.7.5
       - name: Gradle checks
         run: ./gradlew check
       - name: Archive Lint report
