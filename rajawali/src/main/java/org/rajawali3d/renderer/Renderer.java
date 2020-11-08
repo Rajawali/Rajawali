@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import android.util.SparseArray;
 import android.view.WindowManager;
 
+import org.rajawali3d.BuildConfig;
 import org.rajawali3d.cameras.Camera;
 import org.rajawali3d.loader.ALoader;
 import org.rajawali3d.loader.async.IAsyncLoaderCallback;
@@ -161,8 +162,7 @@ public abstract class Renderer implements ISurfaceRenderer {
     }
 
     public Renderer(Context context, boolean registerForResources) {
-        RajLog.i("Rajawali | Bombshell | v1.1.970 Release ");
-        RajLog.i("This is a stable release.");
+        RajLog.i("Rajawali " + BuildConfig.BUILD_TYPE + " " + BuildConfig.VERSION_NAME);
         mHaveRegisteredForResources = registerForResources;
         mContext = context;
         RawShaderLoader.mContext = new WeakReference<>(context);
