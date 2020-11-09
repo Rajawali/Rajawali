@@ -13,14 +13,11 @@ import static org.junit.Assert.assertEquals;
  */
 public class ATransformable3DTest {
 
-    private transformable3D transformable;
-
-    class transformable3D extends ATransformable3D {
-    }
+    private Transformable3D transformable;
 
     @Before
     public void setup() {
-        transformable = new transformable3D();
+        transformable = new Transformable3D();
     }
 
     @After
