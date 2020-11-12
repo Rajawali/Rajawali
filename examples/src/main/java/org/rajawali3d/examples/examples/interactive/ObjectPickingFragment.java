@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +17,7 @@ import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.loader.LoaderAWD;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.util.ObjectColorPicker;
 import org.rajawali3d.util.OnObjectPickedListener;
 import org.rajawali3d.util.RajLog;
@@ -47,10 +49,10 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
     private final class ObjectPickingRenderer extends AExampleRenderer implements OnObjectPickedListener {
 
         private DirectionalLight  mLight;
-        private Object3D          mMonkey1;
-        private Object3D          mMonkey2;
-        private Object3D          mMonkey3;
-        private Object3D          mMonkey4;
+        private Object3D mMonkeyBlue;
+        private Object3D mMonkeyGreen;
+        private Object3D mMonkeyTwoAxis;
+        private Object3D mMonkeyBrown;
         private ObjectColorPicker mPicker;
 
         public ObjectPickingRenderer(Context context, @Nullable AExampleFragment fragment) {
@@ -85,41 +87,41 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
                 container1.setPosition(-1, 1, 0);
                 container.addChild(container1);
 
-                mMonkey1 = parser.getParsedObject();
+                mMonkeyBlue = parser.getParsedObject();
 
-                mMonkey1.setRotY(0);
-                mMonkey1.setMaterial(material);
-                mMonkey1.setColor(0x0000ff);
-                container1.addChild(mMonkey1);
+                mMonkeyBlue.setRotY(0);
+                mMonkeyBlue.setMaterial(material);
+                mMonkeyBlue.setColor(0x0000ff);
+                container1.addChild(mMonkeyBlue);
 
-                mMonkey2 = mMonkey1.clone();
-                mMonkey2.setScale(.7f);
-                mMonkey2.setPosition(1, 1, 0);
-                mMonkey2.setRotY(45);
-                mMonkey2.setMaterial(material);
-                mMonkey2.setColor(0x00ff00);
-                container.addChild(mMonkey2);
+                mMonkeyGreen = mMonkeyBlue.clone();
+                mMonkeyGreen.setScale(.7f);
+                mMonkeyGreen.setPosition(1, 1, 0);
+                mMonkeyGreen.setRotY(45);
+                mMonkeyGreen.setMaterial(material);
+                mMonkeyGreen.setColor(0x00ff00);
+                container.addChild(mMonkeyGreen);
 
-                mMonkey3 = mMonkey1.clone();
-                mMonkey3.setScale(.7f);
-                mMonkey3.setPosition(-1, -1, 0);
-                mMonkey3.setRotY(90);
-                mMonkey3.setMaterial(material);
-                mMonkey3.setColor(0xcc1100);
-                getCurrentScene().addChild(mMonkey3);
+                mMonkeyTwoAxis = mMonkeyBlue.clone();
+                mMonkeyTwoAxis.setScale(.7f);
+                mMonkeyTwoAxis.setPosition(-1, -1, 0);
+                mMonkeyTwoAxis.setRotY(90);
+                mMonkeyTwoAxis.setMaterial(material);
+                mMonkeyTwoAxis.setColor(0xcc1100);
+                getCurrentScene().addChild(mMonkeyTwoAxis);
 
-                mMonkey4 = mMonkey1.clone();
-                mMonkey4.setScale(.7f);
-                mMonkey4.setPosition(1, -1, 0);
-                mMonkey4.setRotY(135);
-                mMonkey4.setMaterial(material);
-                mMonkey4.setColor(0xff9955);
-                getCurrentScene().addChild(mMonkey4);
+                mMonkeyBrown = mMonkeyBlue.clone();
+                mMonkeyBrown.setScale(.7f);
+                mMonkeyBrown.setPosition(1, -1, 0);
+//                mMonkeyZ.setRotY(135);
+                mMonkeyBrown.setMaterial(material);
+                mMonkeyBrown.setColor(0xff9955);
+                getCurrentScene().addChild(mMonkeyBrown);
 
-                mPicker.registerObject(mMonkey1);
-                mPicker.registerObject(mMonkey2);
-                mPicker.registerObject(mMonkey3);
-                mPicker.registerObject(mMonkey4);
+                mPicker.registerObject(mMonkeyBlue);
+                mPicker.registerObject(mMonkeyGreen);
+                mPicker.registerObject(mMonkeyTwoAxis);
+                mPicker.registerObject(mMonkeyBrown);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -128,10 +130,11 @@ public class ObjectPickingFragment extends AExampleFragment implements OnTouchLi
         @Override
         protected void onRender(long elapsedRealtime, double deltaTime) {
             super.onRender(elapsedRealtime, deltaTime);
-            mMonkey1.setRotY(mMonkey1.getRotY() - 1f);
-            mMonkey2.setRotY(mMonkey2.getRotY() + 1f);
-            mMonkey3.setRotY(mMonkey3.getRotY() - 1f);
-            mMonkey4.setRotY(mMonkey4.getRotY() + 1f);
+            mMonkeyBlue.rotate(Vector3.Axis.X, 1);
+            mMonkeyGreen.rotate(Vector3.Axis.Y, 1);
+            mMonkeyTwoAxis.rotate(Vector3.Axis.Z, -1);
+            mMonkeyTwoAxis.rotate(Vector3.Axis.X, 1);
+            mMonkeyBrown.rotate(Vector3.Axis.Z, 1);
         }
 
         public void getObjectAt(float x, float y) {
