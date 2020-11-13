@@ -34,6 +34,7 @@ import org.rajawali3d.examples.examples.general.UsingGeometryDataFragment;
 import org.rajawali3d.examples.examples.interactive.AccelerometerFragment;
 import org.rajawali3d.examples.examples.interactive.FirstPersonCameraFragment;
 import org.rajawali3d.examples.examples.interactive.ObjectPickingFragment;
+import org.rajawali3d.examples.examples.interactive.ObjectRotateFragment;
 import org.rajawali3d.examples.examples.interactive.TouchAndDragFragment;
 import org.rajawali3d.examples.examples.lights.DirectionalLightFragment;
 import org.rajawali3d.examples.examples.lights.MultipleLightsFragment;
@@ -136,6 +137,7 @@ public final class DataSet {
                 new Example(R.string.example_interactive_using_accelerometer, AccelerometerFragment.class),
                 new Example(R.string.example_general_using_geometry_data, UsingGeometryDataFragment.class),
                 new Example(R.string.example_interactive_object_picking, ObjectPickingFragment.class),
+                new Example(R.string.example_interactive_object_rotate, ObjectRotateFragment.class),
                 new Example(R.string.example_interactive_touch_drag, TouchAndDragFragment.class),
                 new Example(R.string.example_interactive_first_person_camera, FirstPersonCameraFragment.class),
         }));

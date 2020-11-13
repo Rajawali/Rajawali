@@ -37,6 +37,7 @@
 
     <string name="example_interactive_using_accelerometer" tools:ignore="ExtraTranslation">Using The Accelerometer</string>
     <string name="example_interactive_object_picking">Object Picking</string>
+    <string name="example_interactive_object_rotate">Object Rotate</string>
     <string name="example_interactive_touch_drag">Touch &amp; Drag</string>
     <string name="example_interactive_first_person_camera">First Person Camera</string>
 
