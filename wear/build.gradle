@@ -36,16 +36,15 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':rajawali')
 
     testImplementation 'junit:junit:4.13.1'
 
-    // Support
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 
     // Wear
     implementation "com.google.android.support:wearable:$wear"
+    compileOnly "com.google.android.wearable:wearable:$wear"
     implementation "com.google.android.gms:play-services-wearable:$wearService"
 }
 
