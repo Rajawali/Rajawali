@@ -58,7 +58,7 @@ android {
     configurations.all {
         resolutionStrategy {
             // Please removed it, as soon as the project compiles without it
-            force 'org.jetbrains:annotations:13.0'
+            force 'org.jetbrains:annotations:20.1.0'
         }
     }
 }
