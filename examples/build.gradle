@@ -32,13 +32,6 @@ android {
         pickFirst 'lib/armeabi-v7a/libvraudio_engine.so'
         pickFirst 'lib/armeabi-v7a/libvrtoolkit.so'
     }
-
-    configurations.all {
-        resolutionStrategy {
-            // Please removed it, as soon as the project compiles without it
-            force 'org.jetbrains:annotations:20.1.0'
-        }
-    }
 }
 
 dependencies {
