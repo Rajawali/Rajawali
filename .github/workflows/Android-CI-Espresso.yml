@@ -19,13 +19,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install Android SDK
-        uses: hannesa2/action-android/install-sdk@0.0.7.5
+        uses: hannesa2/action-android/install-sdk@0.0.7.7
       - name: Build project
         run: ./gradlew assembleDebug
       - name: Run tests
         run: ./gradlew test
       - name: Run instrumentation tests
-        uses: hannesa2/action-android/emulator-run-cmd@0.0.7.5
+        uses: hannesa2/action-android/emulator-run-cmd@0.0.7.7
         with:
           cmd: ./gradlew connectedWithoutVuforiaDebugAndroidTest
           api: 28
@@ -48,7 +48,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install Android SDK
-        uses: hannesa2/action-android/install-sdk@0.0.7.5
+        uses: hannesa2/action-android/install-sdk@0.0.7.7
       - name: Gradle checks
         run: ./gradlew check
       - name: Archive Lint report
