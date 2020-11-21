@@ -1,20 +1,11 @@
 name: Github CI
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+on: [pull_request]
 
 jobs:
   build:
     name: Build
     runs-on: macOS-latest
-    strategy:
-      matrix:
-        java_version: [1.8]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
