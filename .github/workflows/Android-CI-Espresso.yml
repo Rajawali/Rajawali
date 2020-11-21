@@ -1,31 +1,22 @@
 name: Github CI
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+on: [pull_request]
 
 jobs:
   build:
     name: Build
     runs-on: macOS-latest
-    strategy:
-      matrix:
-        java_version: [1.8]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install Android SDK
-        uses: hannesa2/action-android/install-sdk@0.0.7.7
+        uses: malinskiy/action-android/install-sdk@release/0.1.0
       - name: Build project
         run: ./gradlew assembleDebug
       - name: Run tests
         run: ./gradlew test
       - name: Run instrumentation tests
-        uses: hannesa2/action-android/emulator-run-cmd@0.0.7.7
+        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.0
         with:
           cmd: ./gradlew connectedWithoutVuforiaDebugAndroidTest
           api: 28
@@ -48,7 +39,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install Android SDK
-        uses: hannesa2/action-android/install-sdk@0.0.7.7
+        uses: malinskiy/action-android/install-sdk@release/0.1.0
       - name: Gradle checks
         run: ./gradlew check
       - name: Archive Lint report
