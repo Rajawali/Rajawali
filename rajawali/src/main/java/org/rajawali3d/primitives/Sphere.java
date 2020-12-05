@@ -117,12 +117,17 @@ public class Sphere extends Object3D {
 		mCreateTextureCoords = createTextureCoordinates;
 		mCreateVertexColorBuffer = createVertexColorBuffer;
         mMirrorTextureCoords = mirrorTextureCoords;
+		if(mSegmentsW<0) return;
+		if(mSegmentsH<0) return;
 		init(createVBOs);
 	}
 
 	protected void init(boolean createVBOs) {
 		int numVertices = (mSegmentsW + 1) * (mSegmentsH + 1);
 		int numIndices = 2 * mSegmentsW * (mSegmentsH - 1) * 3;
+
+		if(numVertices < 0) return;
+		if(numIndices < 0) return;
 
 		float[] vertices = new float[numVertices * 3];
 		float[] normals = new float[numVertices * 3];
@@ -148,6 +153,8 @@ public class Sphere extends Object3D {
 				vertices[vertIndex++] = z;
 				normals[vertIndex] = y * normLen;
 				vertices[vertIndex++] = y;
+
+				if(indices.length==0) continue;
 
 				if (i > 0 && j > 0) {
 					int a = (mSegmentsW + 1) * j + i;
