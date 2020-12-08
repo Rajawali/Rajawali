@@ -117,33 +117,33 @@ public class NPrism extends Object3D {
         mColorIndex = 12*triangle;
     }
 
-	protected void init(boolean createVBOs) {
-		int vertex_count = 6*mSideCount + 6*mSideCount; // Six vertices per side plus 3 per side per top/bottom
-		int tri_count = 2*mSideCount + 2*mSideCount; //2 per side plus 1 per side per top/bottom
+    protected void init(boolean createVBOs) {
+        int vertex_count = 6*mSideCount + 6*mSideCount; // Six vertices per side plus 3 per side per top/bottom
+        int tri_count = 2*mSideCount + 2*mSideCount; //2 per side plus 1 per side per top/bottom
 
-		int triangle = 0;
-		float[] vertices = new float[3*vertex_count];
-		float[] normals = new float[3*vertex_count];
-		float[] texture = new float[2*vertex_count];
-		float[] colors = new float[4*vertex_count];
-		int[] indices = new int[3*tri_count];
-		
-		double angle_delta = 2*Math.PI/mSideCount;
+        int triangle = 0;
+        float[] vertices = new float[3*vertex_count];
+        float[] normals = new float[3*vertex_count];
+        float[] texture = new float[2*vertex_count];
+        float[] colors = new float[4*vertex_count];
+        int[] indices = new int[3*tri_count];
 
-		// Populate the vertices
+        double angle_delta = 2*Math.PI/mSideCount;
+
+        // Populate the vertices
         int indexIndex = 0; // Increments by 3
 
         // If the side count is even, we want to start at half the angle or we will appear rotated.
-		final double angle0 = (mSideCount % 2 == 0) ? angle_delta/2.0 : 0;
-		
+        final double angle0 = (mSideCount % 2 == 0) ? angle_delta/2.0 : 0;
+
         final Vector3 vertex0 = new Vector3();
         final Vector3 vertex1 = new Vector3();
         final Vector3 vertex2 = new Vector3();
         final Vector3 scratch0 = new Vector3();
         final Vector3 scratch1 = new Vector3();
         final Vector3 temp_normal = new Vector3();
-		for (int side = 0; side < mSideCount; ++side) {
-			// Handle the side
+        for (int side = 0; side < mSideCount; ++side) {
+            // Handle the side
             // Even Triangle
             setIndices(triangle);
             vertex0.x = mRadiusTop * Math.cos(angle0 + side * angle_delta);
@@ -159,6 +159,7 @@ public class NPrism extends Object3D {
             scratch0.subtractAndSet(vertex0, vertex1);
             scratch1.subtractAndSet(vertex0, vertex2);
             temp_normal.crossAndSet(scratch1, scratch0);
+            temp_normal.inverse();
             temp_normal.normalize();
             // Vertex 0
             vertices[mVertexIndex] = (float) vertex0.x;
@@ -205,6 +206,7 @@ public class NPrism extends Object3D {
             scratch0.subtractAndSet(vertex2, vertex0);
             scratch1.subtractAndSet(vertex2, vertex1);
             temp_normal.crossAndSet(scratch1, scratch0);
+            temp_normal.inverse();
             temp_normal.normalize();
             // Vertex 0
             vertices[mVertexIndex] = (float) vertex0.x;
@@ -241,15 +243,15 @@ public class NPrism extends Object3D {
 
             // Handle the top
             setIndices(triangle);
-            vertex0.x = mRadiusTop * Math.cos(angle0 + side * angle_delta);
+            vertex0.x = 0;
             vertex0.y = mHeight / 2.0;
-            vertex0.z = mMinorTop * Math.sin(angle0 + side * angle_delta);
-            vertex1.x = 0;
-            vertex1.y = vertex0.y;
-            vertex1.z = 0;
-            vertex2.x = mRadiusTop * Math.cos(angle0 + (side + 1) * angle_delta);
-            vertex2.y = vertex0.y;
-            vertex2.z = mMinorTop * Math.sin(angle0 + (side + 1) * angle_delta);
+            vertex0.z = 0;
+            vertex1.x = mRadiusTop * Math.cos(angle0 + (side + 1) * angle_delta);
+            vertex1.y = mHeight / 2.0;
+            vertex1.z = mMinorTop * Math.sin(angle0 + (side + 1) * angle_delta);
+            vertex2.x = mRadiusTop * Math.cos(angle0 + side * angle_delta);
+            vertex2.y = mHeight / 2.0;
+            vertex2.z = mMinorTop * Math.sin(angle0 + side * angle_delta);
             temp_normal.x = 0;
             temp_normal.y = 1.0;
             temp_normal.z = 0;
@@ -260,8 +262,8 @@ public class NPrism extends Object3D {
             normals[mNormalIndex] = (float) temp_normal.x;
             normals[mNormalIndex + 1] = (float) temp_normal.y;
             normals[mNormalIndex + 2] = (float) temp_normal.z;
-            texture[mTextureIndex] = (float) Math.cos(angle0 + side * angle_delta);
-            texture[mTextureIndex + 1] = 1.0f;
+            texture[mTextureIndex] = 1/2f;
+            texture[mTextureIndex + 1] = 1/2f;
             // Vertex 1
             vertices[mVertexIndex + 3] = (float) vertex1.x;
             vertices[mVertexIndex + 4] = (float) vertex1.y;
@@ -269,8 +271,8 @@ public class NPrism extends Object3D {
             normals[mNormalIndex + 3] = (float) temp_normal.x;
             normals[mNormalIndex + 4] = (float) temp_normal.y;
             normals[mNormalIndex + 5] = (float) temp_normal.z;
-            texture[mTextureIndex + 2] = (float) Math.cos(angle0 + (side + 1) * angle_delta);
-            texture[mTextureIndex + 3] = 1.0f;
+            texture[mTextureIndex + 2] = (1 + (float)Math.sin(angle0 + side * angle_delta))/2f;
+            texture[mTextureIndex + 3] = (1 + (float)Math.cos(angle0 + side * angle_delta))/2f;
             // Vertex 2
             vertices[mVertexIndex + 6] = (float) vertex2.x;
             vertices[mVertexIndex + 7] = (float) vertex2.y;
@@ -278,8 +280,8 @@ public class NPrism extends Object3D {
             normals[mNormalIndex + 6] = (float) temp_normal.x;
             normals[mNormalIndex + 7] = (float) temp_normal.y;
             normals[mNormalIndex + 8] = (float) temp_normal.z;
-            texture[mTextureIndex + 4] = (float) Math.cos(angle0 + side * angle_delta);
-            texture[mTextureIndex + 5] = 1.0f;
+            texture[mTextureIndex + 4] = (1 + (float)Math.sin(angle0 + (side + 1) * angle_delta))/2f;
+            texture[mTextureIndex + 5] = (1 + (float)Math.cos(angle0 + (side + 1) * angle_delta))/2f;
             indices[indexIndex] = indexIndex;
             indices[indexIndex + 1] = indexIndex + 1;
             indices[indexIndex + 2] = indexIndex + 2;
@@ -288,14 +290,14 @@ public class NPrism extends Object3D {
 
             // Handle the bottom
             setIndices(triangle);
-            vertex0.x = mRadiusBase * Math.cos(angle0 + side * angle_delta);
+            vertex0.x = 0;
             vertex0.y = -mHeight / 2.0;
-            vertex0.z = mMinorBase * Math.sin(angle0 + side * angle_delta);
-            vertex1.x = 0;
-            vertex1.y = vertex0.y;
-            vertex1.z = 0;
+            vertex0.z = 0;
+            vertex1.x = mRadiusBase * Math.cos(angle0 + side * angle_delta);
+            vertex1.y = -mHeight / 2.0;
+            vertex1.z = mMinorBase * Math.sin(angle0 + side * angle_delta);
             vertex2.x = mRadiusBase * Math.cos(angle0 + (side + 1) * angle_delta);
-            vertex2.y = vertex0.y;
+            vertex2.y = -mHeight / 2.0;
             vertex2.z = mMinorBase * Math.sin(angle0 + (side + 1) * angle_delta);
             temp_normal.x = 0;
             temp_normal.y = -1.0;
@@ -307,8 +309,8 @@ public class NPrism extends Object3D {
             normals[mNormalIndex] = (float) temp_normal.x;
             normals[mNormalIndex + 1] = (float) temp_normal.y;
             normals[mNormalIndex + 2] = (float) temp_normal.z;
-            texture[mTextureIndex] = (float) Math.cos(angle0 + side * angle_delta);
-            texture[mTextureIndex + 1] = 1.0f;
+            texture[mTextureIndex] = 1/2f;
+            texture[mTextureIndex + 1] = 1/2f;
             // Vertex 1
             vertices[mVertexIndex + 3] = (float) vertex1.x;
             vertices[mVertexIndex + 4] = (float) vertex1.y;
@@ -316,8 +318,8 @@ public class NPrism extends Object3D {
             normals[mNormalIndex + 3] = (float) temp_normal.x;
             normals[mNormalIndex + 4] = (float) temp_normal.y;
             normals[mNormalIndex + 5] = (float) temp_normal.z;
-            texture[mTextureIndex + 2] = (float) Math.cos(angle0 + (side + 1) * angle_delta);
-            texture[mTextureIndex + 3] = 1.0f;
+            texture[mTextureIndex + 2] = (1 + (float)Math.cos(angle0 + side * angle_delta))/2f;
+            texture[mTextureIndex + 3] = (1 + (float)Math.sin(angle0 + side * angle_delta))/2f;
             // Vertex 2
             vertices[mVertexIndex + 6] = (float) vertex2.x;
             vertices[mVertexIndex + 7] = (float) vertex2.y;
@@ -325,20 +327,20 @@ public class NPrism extends Object3D {
             normals[mNormalIndex + 6] = (float) temp_normal.x;
             normals[mNormalIndex + 7] = (float) temp_normal.y;
             normals[mNormalIndex + 8] = (float) temp_normal.z;
-            texture[mTextureIndex + 4] = (float) Math.cos(angle0 + side * angle_delta);
-            texture[mTextureIndex + 5] = 0.0f;
-            indices[indexIndex] = indexIndex;
+            texture[mTextureIndex + 4] = (1 + (float)Math.cos(angle0 + (side + 1) * angle_delta))/2f;
+            texture[mTextureIndex + 5] = (1 + (float)Math.sin(angle0 + (side + 1) * angle_delta))/2f;
+            indices[indexIndex] = indexIndex + 0;
             indices[indexIndex + 1] = indexIndex + 1;
             indices[indexIndex + 2] = indexIndex + 2;
             indexIndex += 3;
             ++triangle;
-		}
+        }
 
-		//Populate the colors
-		for (int i = 0, j = 4*vertex_count; i < j; ++i) {
-			colors[i] = 1.0f;
-		}
+        //Populate the colors
+        for (int i = 0, j = 4*vertex_count; i < j; ++i) {
+            colors[i] = 1.0f;
+        }
 
-		setData(vertices, normals, texture, colors, indices, createVBOs);
-	}
+        setData(vertices, normals, texture, colors, indices, createVBOs);
+    }
 }
