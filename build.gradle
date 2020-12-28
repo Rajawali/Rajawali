@@ -1,7 +1,7 @@
 buildscript {
     ext.dokka_version = '0.9.18'
-    ext.kotlin_version = '1.4.10'
-    ext.jacoco_version = '0.8.4'
+    ext.kotlin_version = '1.4.21'
+    ext.jacoco_version = '0.8.6'
     repositories {
         google()
         jcenter()
@@ -18,7 +18,7 @@ buildscript {
 
 plugins {
     // ./gradlew dependencyUpdates
-    id 'com.github.ben-manes.versions' version '0.28.0'
+    id 'com.github.ben-manes.versions' version '0.36.0'
 }
 
 ext {
