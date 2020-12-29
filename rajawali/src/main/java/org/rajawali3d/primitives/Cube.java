@@ -97,24 +97,23 @@ public class Cube extends Object3D {
 	{
 		float halfSize = mSize * .5f;
 		float[] vertices = {
-				// -- back
 				halfSize, halfSize, halfSize, 			-halfSize, halfSize, halfSize,
-				-halfSize, -halfSize, halfSize,			halfSize, -halfSize, halfSize, // 0-1-halfSize-3 front
-				
-				halfSize, halfSize, halfSize, 			halfSize, -halfSize, halfSize,
-				halfSize, -halfSize, -halfSize, 		halfSize, halfSize, -halfSize,// 0-3-4-5 right
-				// -- front
-				halfSize, -halfSize, -halfSize, 		-halfSize, -halfSize, -halfSize,
-				-halfSize, halfSize, -halfSize,			halfSize, halfSize, -halfSize,// 4-7-6-5 back
+				-halfSize, -halfSize, halfSize,			halfSize, -halfSize, halfSize, // 0-1-2-3 front
+
+				halfSize, halfSize, -halfSize,			 halfSize, halfSize, halfSize,
+	 			halfSize, -halfSize, halfSize,			 halfSize, -halfSize, -halfSize, // 5-0-3-4 right
+
+				-halfSize, halfSize, -halfSize,			halfSize, halfSize, -halfSize,
+				halfSize, -halfSize, -halfSize, 		-halfSize, -halfSize, -halfSize, // 6-5-4-7 back
 				
 				-halfSize, halfSize, halfSize, 			-halfSize, halfSize, -halfSize,
-				-halfSize, -halfSize, -halfSize,		-halfSize,	-halfSize, halfSize,// 1-6-7-halfSize left
-				
-				halfSize, halfSize, halfSize, 			halfSize, halfSize, -halfSize,
-				-halfSize, halfSize, -halfSize, 		-halfSize, halfSize, halfSize, // top
-				
+				-halfSize, -halfSize, -halfSize,		-halfSize,-halfSize, halfSize, // 1-6-7-2 left
+
+		 		-halfSize, halfSize, halfSize,			 halfSize, halfSize, halfSize,
+				 halfSize, halfSize, -halfSize,			-halfSize, halfSize, -halfSize,  // 5-6-1-0 top
+
 				halfSize, -halfSize, halfSize, 			-halfSize, -halfSize, halfSize,
-				-halfSize, -halfSize, -halfSize,		halfSize, -halfSize, -halfSize,// bottom
+				-halfSize, -halfSize, -halfSize,		halfSize, -halfSize, -halfSize, // 3-2-7-4 bottom
 		};
 
 
@@ -126,22 +125,22 @@ public class Cube extends Object3D {
 			textureCoords = new float[]
 			{
 					0, 1, 1, 1, 1, 0, 0, 0, // front
-					0, 1, 1, 1, 1, 0, 0, 0, // up
+					0, 0, 0, 1, 1, 1, 1, 0, // right
 					0, 1, 1, 1, 1, 0, 0, 0, // back
-					0, 1, 1, 1, 1, 0, 0, 0, // down
-					0, 1, 1, 1, 1, 0, 0, 0, // right
-					0, 1, 1, 1, 1, 0, 0, 0, // left
+					0, 0, 0, 1, 1, 1, 1, 0, // left
+					0, 0, 0, 1, 1, 1, 1, 0, // top
+					0, 0, 0, 1, 1, 1, 1, 0, // bottom
 			};
 		}
 		else if (mIsSkybox && !mHasCubemapTexture)
 		{
 			skyboxTextureCoords = new float[] {
-					.25f, .3333f, .5f, .3333f, .5f, .6666f, .25f, .6666f, // back
-					.25f, .3333f, .25f, .6666f, 0, .6666f, 0, .3333f, // left
-					1, .6666f, .75f, .6666f, .75f, .3333f, 1, .3333f, // front
-					.5f, .3333f, .75f, .3333f, .75f, .6666f, .5f, .6666f, // right
-					.25f, .3333f, .25f, 0, .5f, 0, .5f, .3333f, // up
-					.25f, .6666f, .5f, .6666f, .5f, 1, .25f, 1 // down
+					1/4f, 1/3f, 1/2f, 1/3f, 1/2f, 2/3f, 1/4f, 2/3f, // north
+					   0, 1/3f, 1/4f, 1/3f, 1/4f, 2/3f,    0, 2/3f, // west
+					3/4f, 1/3f,    1, 1/3f,    1, 2/3f, 3/4f, 2/3f, // south
+					1/2f, 1/3f, 3/4f, 1/3f, 3/4f, 2/3f, 1/2f, 2/3f, // east
+					1/2f, 1/3f, 1/4f, 1/3f, 1/4f,    0, 1/2f,    0, // up
+					1/4f, 2/3f, 1/2f, 2/3f, 1/2f,    1, 1/4f,    1, // down
 			};
 		}
 

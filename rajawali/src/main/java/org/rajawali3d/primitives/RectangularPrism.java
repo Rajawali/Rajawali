@@ -118,24 +118,23 @@ public class RectangularPrism extends Object3D {
 		float halfHeight = mHeight * .5f;
 		float halfDepth = mDepth * .5f;
 		float[] vertices = {
-				// -- back
-				 halfWidth,  halfHeight,  halfDepth,		-halfWidth,  halfHeight,  halfDepth,
-				-halfWidth, -halfHeight,  halfDepth,		 halfWidth, -halfHeight,  halfDepth, // 0-1-halfSize-3 front
+			 halfWidth, halfHeight, halfDepth, 		-halfWidth, halfHeight, halfDepth,
+			-halfWidth, -halfHeight, halfDepth,		 halfWidth, -halfHeight, halfDepth, // 0-1-2-3 front
 
-				 halfWidth,  halfHeight,  halfDepth, 		 halfWidth, -halfHeight,  halfDepth,
-				 halfWidth, -halfHeight, -halfDepth, 		 halfWidth,  halfHeight, -halfDepth,// 0-3-4-5 right
-				// -- front
-				 halfWidth, -halfHeight, -halfDepth, 		-halfWidth, -halfHeight, -halfDepth,
-				-halfWidth,  halfHeight, -halfDepth,		 halfWidth,  halfHeight, -halfDepth,// 4-7-6-5 back
+			 halfWidth, halfHeight, -halfDepth,		 halfWidth, halfHeight, halfDepth,
+	 		 halfWidth, -halfHeight, halfDepth,		 halfWidth, -halfHeight, -halfDepth, // 5-0-3-4 right
+
+			-halfWidth, halfHeight, -halfDepth,		 halfWidth, halfHeight, -halfDepth,
+			 halfWidth, -halfHeight, -halfDepth, 		-halfWidth, -halfHeight, -halfDepth, // 6-5-4-7 back
 				
-				-halfWidth,  halfHeight,  halfDepth, 		-halfWidth,  halfHeight, -halfDepth,
-				-halfWidth, -halfHeight, -halfDepth,		-halfWidth,	-halfHeight,  halfDepth,// 1-6-7-halfSize left
+			-halfWidth, halfHeight, halfDepth, 		-halfWidth, halfHeight, -halfDepth,
+			-halfWidth, -halfHeight, -halfDepth,		-halfWidth,-halfHeight, halfDepth, // 1-6-7-2 left
 
-				 halfWidth,  halfHeight,  halfDepth, 		 halfWidth,  halfHeight, -halfDepth,
-				-halfWidth,  halfHeight, -halfDepth, 		-halfWidth,  halfHeight,  halfDepth, // top
+	 		-halfWidth, halfHeight, halfDepth,		 halfWidth, halfHeight, halfDepth,
+			 halfWidth, halfHeight, -halfDepth,		-halfWidth, halfHeight, -halfDepth,  // 5-6-1-0 top
 
-				 halfWidth, -halfHeight,  halfDepth, 		-halfWidth, -halfHeight,  halfDepth,
-				-halfWidth, -halfHeight, -halfDepth,		 halfWidth, -halfHeight, -halfDepth,// bottom
+			 halfWidth, -halfHeight, halfDepth, 		-halfWidth, -halfHeight, halfDepth,
+			-halfWidth, -halfHeight, -halfDepth,		 halfWidth, -halfDepth, -halfHeight, // 3-2-7-4 bottom
 		};
 
 		float[] textureCoords = null;
@@ -146,11 +145,11 @@ public class RectangularPrism extends Object3D {
 			textureCoords = new float[]
 			{
 					0, 1, 1, 1, 1, 0, 0, 0, // front
-					0, 1, 1, 1, 1, 0, 0, 0, // up
+					0, 0, 0, 1, 1, 1, 1, 0, // right
 					0, 1, 1, 1, 1, 0, 0, 0, // back
-					0, 1, 1, 1, 1, 0, 0, 0, // down
-					0, 1, 1, 1, 1, 0, 0, 0, // right
-					0, 1, 1, 1, 1, 0, 0, 0, // left
+					0, 0, 0, 1, 1, 1, 1, 0, // left
+					0, 0, 0, 1, 1, 1, 1, 0, // top
+					0, 0, 0, 1, 1, 1, 1, 0, // bottom
 			};
 		}
 
