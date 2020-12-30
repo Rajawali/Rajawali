@@ -83,37 +83,23 @@ public class TextureScalingMaterialPlugin  extends AShader implements IMaterialP
             RVec3 y_axis = new RVec3("y_axis"); y_axis.assign(0,1,0);
             RVec3 z_axis = new RVec3("z_axis"); z_axis.assign(0,0,1);
 
-            startif(new Condition(dot(a_normal,x_axis), Operator.EQUALS, 1f));
-            {
-                g_texture_coord.s().assign(a_texture_coord.s().multiply(scaleY));
-                g_texture_coord.t().assign(a_texture_coord.t().multiply(scaleZ));
-            }
-            ifelseif(new Condition(dot(a_normal,y_axis), Operator.EQUALS, 1f));
-            {
-                g_texture_coord.s().assign(a_texture_coord.s().multiply(scaleZ));
-                g_texture_coord.t().assign(a_texture_coord.t().multiply(scaleX));
-            }
-            ifelseif(new Condition(dot(a_normal,z_axis), Operator.EQUALS, 1f));
-            {
-                g_texture_coord.s().assign(a_texture_coord.s().multiply(scaleX));
-                g_texture_coord.t().assign(a_texture_coord.t().multiply(scaleY));
-            }
-            ifelseif(new Condition(dot(a_normal,x_axis), Operator.EQUALS, -1f));
-            {
-                g_texture_coord.s().assign(a_texture_coord.s().multiply(scaleY));
-                g_texture_coord.t().assign(a_texture_coord.t().multiply(scaleZ));
-            }
-            ifelseif(new Condition(dot(a_normal,y_axis), Operator.EQUALS, -1f));
-            {
-                g_texture_coord.s().assign(a_texture_coord.s().multiply(scaleZ));
-                g_texture_coord.t().assign(a_texture_coord.t().multiply(scaleX));
-            }
-            ifelseif(new Condition(dot(a_normal,z_axis), Operator.EQUALS, -1f));
-            {
-                g_texture_coord.s().assign(a_texture_coord.s().multiply(scaleX));
-                g_texture_coord.t().assign(a_texture_coord.t().multiply(scaleY));
-            }
-            endif();
+            RFloat dotX = new RFloat("dotX");
+            dotX.assign(abs(dot(a_normal,x_axis)));
+            RFloat dotY = new RFloat("dotY");
+            dotY.assign(abs(dot(a_normal,y_axis)));
+            RFloat dotZ = new RFloat("dotZ");
+            dotZ.assign(abs(dot(a_normal,z_axis)));
+
+            g_texture_coord.assign(0,0);
+
+            g_texture_coord.s().assignAdd(a_texture_coord.s().multiply(scaleY).multiply(dotX));
+            g_texture_coord.t().assignAdd(a_texture_coord.t().multiply(scaleZ).multiply(dotX));
+
+            g_texture_coord.s().assignAdd(a_texture_coord.s().multiply(scaleZ).multiply(dotY));
+            g_texture_coord.t().assignAdd(a_texture_coord.t().multiply(scaleX).multiply(dotY));
+
+            g_texture_coord.s().assignAdd(a_texture_coord.s().multiply(scaleX).multiply(dotZ));
+            g_texture_coord.t().assignAdd(a_texture_coord.t().multiply(scaleY).multiply(dotZ));
         }
     }
 }
