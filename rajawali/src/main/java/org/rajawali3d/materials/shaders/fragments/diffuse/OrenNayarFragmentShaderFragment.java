@@ -63,7 +63,7 @@ public class OrenNayarFragmentShaderFragment extends AShader implements IShaderF
 		RVec3 normal = (RVec3) getGlobal(DefaultShaderVar.G_NORMAL);
 
 		RVec3 viewDir = new RVec3("viewDir");
-		viewDir.assign(eyeDir.multiply(-1));
+		viewDir.assign(normalize(eyeDir.multiply(-1)));
     		RFloat NdotV = new RFloat("NdotV");
 		NdotV.assign(clamp(dot(normal, viewDir),0,1));
 		RFloat sinNV = new RFloat("sinNV");
