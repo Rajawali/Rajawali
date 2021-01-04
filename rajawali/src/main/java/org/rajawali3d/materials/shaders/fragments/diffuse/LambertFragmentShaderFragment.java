@@ -67,10 +67,10 @@ public class LambertFragmentShaderFragment extends AShader implements IShaderFra
 			
 			RVec3 lightDir = new RVec3("lightDir" + i);
 			//
-			// -- NdotL = max(dot(vNormal, lightDir), 0.1);
+			// -- NdotL = clamp(dot(vNormal, lightDir), 0, 1);
 			//
 			RFloat nDotL = mgNdotL[i];
-			nDotL.assign(max(dot(normal, lightDir), 0.1f));
+			nDotL.assign(clamp(dot(normal, lightDir), 0, 1));
 			//
 			// -- power = uLightPower * NdotL * vAttenuation;
 			//

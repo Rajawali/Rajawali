@@ -25,7 +25,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.AShaderBase.DataType;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.diffuse.LambertFragmentShaderFragment;
-import org.rajawali3d.materials.shaders.fragments.diffuse.LambertVertexShaderFragment;
+import org.rajawali3d.materials.shaders.fragments.diffuse.OrenNayarFragmentShaderFragment;
 import org.rajawali3d.materials.shaders.fragments.effects.ToonFragmentShaderFragment;
 
 
@@ -93,23 +93,10 @@ public abstract class DiffuseMethod {
         private List<ALight> mLights;
 
         public Lambert() {
-            this(0.8f);
-        }
-
-        public Lambert(float intensity) {
-            mIntensity = intensity;
-        }
-
-        public float getIntensity() {
-            return mIntensity;
-        }
-
-        public void setIntensity(float intensity) {
-            mIntensity = intensity;
         }
 
         public IShaderFragment getVertexShaderFragment() {
-            return new LambertVertexShaderFragment();
+            return null;
         }
 
         public IShaderFragment getFragmentShaderFragment() {
@@ -208,6 +195,39 @@ public abstract class DiffuseMethod {
                     + mToonColor2[0] + "," + mToonColor2[1] + "," + mToonColor2[2] + "," + mToonColor2[3] + "]\n["
                     + mToonColor3[0] + "," + mToonColor3[1] + "," + mToonColor3[2] + "," + mToonColor3[3] + "]\n";
             // @formatter:on
+        }
+    }
+
+    public static final class OrenNayar implements IDiffuseMethod {
+        private float mRoughness;
+        private List<ALight> mLights;
+
+        public OrenNayar() {
+            this(1/3f);
+        }
+
+        public OrenNayar(float roughness) {
+            mRoughness = roughness;
+        }
+
+        public float getRoughness() {
+            return mRoughness;
+        }
+
+        public void setRoughness(float intensity) {
+            mRoughness = intensity;
+        }
+
+        public IShaderFragment getVertexShaderFragment() {
+            return null;
+        }
+
+        public IShaderFragment getFragmentShaderFragment() {
+            return new OrenNayarFragmentShaderFragment(mLights, mRoughness);
+        }
+
+        public void setLights(List<ALight> lights) {
+            mLights = lights;
         }
     }
 }
