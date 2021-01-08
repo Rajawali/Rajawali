@@ -20,6 +20,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.AShaderBase.DataType;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.specular.PhongFragmentShaderFragment;
+import org.rajawali3d.materials.shaders.fragments.specular.CookTorranceFragmentShaderFragment;
 import org.rajawali3d.materials.textures.ATexture;
 import android.graphics.Color;
 
@@ -124,6 +125,103 @@ public abstract class SpecularMethod {
 		{
 			if(mFragmentShader == null)
 				mFragmentShader = new PhongFragmentShaderFragment(mLights, mSpecularColor, mShininess, mIntensity, mTextures);
+			return mFragmentShader;
+		}
+		
+		public void setLights(List<ALight> lights)
+		{
+			mLights = lights;
+		}
+		
+		public void setSpecularColor(int specularColor)
+		{
+			mSpecularColor = specularColor;
+			if(mFragmentShader != null)
+				mFragmentShader.setSpecularColor(specularColor);
+		}
+		
+		public int getSpecularColor()
+		{
+			return mSpecularColor;
+		}
+		
+		/**
+		 * A high value (200) for shininess gives a more polished shine and lower (10) gives a more diffuse reflection. 
+		 * 
+		 * @param shininess
+		 */
+		public void setShininess(float shininess)
+		{
+			mShininess = shininess;
+			if(mFragmentShader != null)
+				mFragmentShader.setShininess(shininess);
+		}
+		
+		public float getShininess()
+		{
+			return mShininess;
+		}
+		
+		/**
+		 * Sets the specular intensity. Use 1 for full intensity and 0 for no intensity.
+		 * 
+		 * @param intensity
+		 */
+		public void setIntensity(float intensity)
+		{
+			mIntensity = intensity;
+		}
+		
+		public float getIntensity()
+		{
+			return mIntensity;
+		}
+
+		public void setTextures(List<ATexture> textures) {
+			mTextures = textures;
+		}
+	}
+
+	public static final class CookTorrance implements ISpecularMethod
+	{
+		private int mSpecularColor;
+		private float mShininess;
+		private float mIntensity = 1;
+		private List<ALight> mLights;
+		private List<ATexture> mTextures;
+		private CookTorranceFragmentShaderFragment mFragmentShader;
+		
+		public CookTorrance()
+		{
+			this(Color.WHITE, 96);
+		}
+		
+		public CookTorrance(int specularColor)
+		{
+			this(specularColor, 96);
+		}
+		
+		public CookTorrance(int specularColor, float shininess)
+		{
+			this(specularColor, shininess, 1);
+		}
+		
+		public CookTorrance(int specularColor, float shininess, float intensity)
+		{
+			mSpecularColor = specularColor;
+			mShininess = shininess;
+			mIntensity = intensity;
+		}
+		
+		public IShaderFragment getVertexShaderFragment()
+		{
+			return null;
+		}
+		
+		public IShaderFragment getFragmentShaderFragment()
+		{
+			if(mFragmentShader == null)
+				mFragmentShader = new CookTorranceFragmentShaderFragment(mLights, mSpecularColor, mShininess, mIntensity, mTextures);
 			return mFragmentShader;
 		}
 		
