@@ -67,15 +67,19 @@ public class PhongFragmentShaderFragment extends ATextureFragmentShaderFragment 
 	@Override
 	public void main() {
 		RFloat specular = new RFloat("specular");
+		RVec3 gNormal = (RVec3) getGlobal(DefaultShaderVar.G_NORMAL);
 		RFloat gSpecularValue = (RFloat) getGlobal(DefaultShaderVar.G_SPECULAR_VALUE);
 		specular.assign(0);
 		
 		for(int i=0; i<mLights.size(); ++i) {
 			RFloat attenuation = (RFloat)getGlobal(LightsShaderVar.V_LIGHT_ATTENUATION, i);
 			RFloat lightPower = (RFloat)getGlobal(LightsShaderVar.U_LIGHT_POWER, i);
-			RFloat nDotL = (RFloat)getGlobal(DiffuseShaderVar.L_NDOTL, i);
+			RVec3 H = new RVec3("H" + i);
+			H.assign("normalize(lightDir" + i + " - normalize(vEyeDir))");
+			RFloat nDotH = new RFloat("nDotH" + i);
+			nDotH.assign(max(new RFloat("0."), dot(gNormal, H)));
 			RFloat spec = new RFloat("spec" + i);
-			spec.assign(pow(nDotL, muShininess));
+			spec.assign(pow(nDotH, muShininess));
 			spec.assign(spec.multiply(attenuation).multiply(lightPower));
 			specular.assignAdd(spec);
 		}
