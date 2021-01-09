@@ -52,7 +52,9 @@ public abstract class SpecularMethod {
 	public enum SpecularShaderVar implements IGlobalShaderVar {
 		U_SPECULAR_COLOR("uSpecularColor", DataType.VEC3),
 		U_SPECULAR_INTENSITY("uSpecularIntensity", DataType.FLOAT),
-		U_SHININESS("uShininess", DataType.FLOAT);
+		U_SHININESS("uShininess", DataType.FLOAT),
+		U_ROUGHNESS("uRoughness", DataType.FLOAT),
+		U_EXTINCTION_COEFFICIENT("uK", DataType.FLOAT);
 		
 		private String mVarString;
 		private DataType mDataType;
@@ -185,8 +187,8 @@ public abstract class SpecularMethod {
 	public static final class CookTorrance implements ISpecularMethod
 	{
 		private int mSpecularColor;
-		private float mShininess;
-		private float mIntensity = 1;
+		private float mRoughness = 1/8f;
+		private float mExtinction = 1/8f;
 		private List<ALight> mLights;
 		private List<ATexture> mTextures;
 		private CookTorranceFragmentShaderFragment mFragmentShader;
@@ -198,19 +200,19 @@ public abstract class SpecularMethod {
 		
 		public CookTorrance(int specularColor)
 		{
-			this(specularColor, 96);
+			this(specularColor, 1/8f);
 		}
 		
-		public CookTorrance(int specularColor, float shininess)
+		public CookTorrance(int specularColor, float roughness)
 		{
-			this(specularColor, shininess, 1);
+			this(specularColor, roughness, 1/8f);
 		}
 		
-		public CookTorrance(int specularColor, float shininess, float intensity)
+		public CookTorrance(int specularColor, float roughness, float extinction)
 		{
 			mSpecularColor = specularColor;
-			mShininess = shininess;
-			mIntensity = intensity;
+			mRoughness = roughness;
+			mExtinction = extinction;
 		}
 		
 		public IShaderFragment getVertexShaderFragment()
@@ -221,7 +223,7 @@ public abstract class SpecularMethod {
 		public IShaderFragment getFragmentShaderFragment()
 		{
 			if(mFragmentShader == null)
-				mFragmentShader = new CookTorranceFragmentShaderFragment(mLights, mSpecularColor, mShininess, mIntensity, mTextures);
+				mFragmentShader = new CookTorranceFragmentShaderFragment(mLights, mSpecularColor, mRoughness, mExtinction, mTextures);
 			return mFragmentShader;
 		}
 		
@@ -243,35 +245,28 @@ public abstract class SpecularMethod {
 		}
 		
 		/**
-		 * A high value (200) for shininess gives a more polished shine and lower (10) gives a more diffuse reflection. 
-		 * 
-		 * @param shininess
+		 * @param roughness
 		 */
-		public void setShininess(float shininess)
+		public void setRoughness(float roughness)
 		{
-			mShininess = shininess;
+			mRoughness = roughness;
 			if(mFragmentShader != null)
-				mFragmentShader.setShininess(shininess);
+				mFragmentShader.setRoughness(roughness);
 		}
 		
-		public float getShininess()
+		public float getRoughness()
 		{
-			return mShininess;
+			return mRoughness;
 		}
 		
-		/**
-		 * Sets the specular intensity. Use 1 for full intensity and 0 for no intensity.
-		 * 
-		 * @param intensity
-		 */
-		public void setIntensity(float intensity)
+		public void setExtinction(float extinction)
 		{
-			mIntensity = intensity;
+			mExtinction = extinction;
 		}
 		
-		public float getIntensity()
+		public float getExtinction()
 		{
-			return mIntensity;
+			return mExtinction;
 		}
 
 		public void setTextures(List<ATexture> textures) {

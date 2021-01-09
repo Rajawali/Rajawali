@@ -29,31 +29,31 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 	public final static String SHADER_ID = "COOK_TORRANCE_FRAGMENT";
 	
 	private RVec3 muSpecularColor;
-	private RFloat muShininess;
-	private RFloat muSpecularIntensity;
+	private RFloat muRoughness;
+	private RFloat muExtinctionCoefficient;
 	
 	private float[] mSpecularColor;
-	private float mShininess;
-	private float mSpecularIntensity;
+	private float mRoughness;
+	private float mExtinctionCoefficient;
 	
 	private int muSpecularColorHandle;
-	private int muShininessHandle;
-	private int muSpecularIntensityHandle;
+	private int muRoughnessHandle;
+	private int muExtinctionCoefficientHandle;
 	
 	private List<ALight> mLights;
 	
-	public CookTorranceFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess) {
-		this(lights, specularColor, shininess, 1, null);
+	public CookTorranceFragmentShaderFragment(List<ALight> lights, int specularColor, float roughness) {
+		this(lights, specularColor, roughness, 1/8f, null);
 	}
 	
-	public CookTorranceFragmentShaderFragment(List<ALight> lights, int specularColor, float shininess, float specularIntensity, List<ATexture> textures) {
+	public CookTorranceFragmentShaderFragment(List<ALight> lights, int specularColor, float roughness, float extinctionCoefficient, List<ATexture> textures) {
 		super(textures);
 		mSpecularColor = new float[] { 1, 1, 1 };
 		mSpecularColor[0] = (float)Color.red(specularColor) / 255.f;
 		mSpecularColor[1] = (float)Color.green(specularColor) / 255.f;
 		mSpecularColor[2] = (float)Color.blue(specularColor) / 255.f;
-		mShininess = shininess;
-		mSpecularIntensity = specularIntensity;
+		mRoughness = roughness;
+		mExtinctionCoefficient = extinctionCoefficient;
 		mLights = lights;
 		mTextures = textures;
 		initialize();
@@ -65,37 +65,39 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 
 	@Override
 	public void main() {
-	float roughness = 1/8f;
-	float k = 1/8f;
 
 	RVec4 color = (RVec4) getGlobal(DefaultShaderVar.G_COLOR);
 	RVec3 eyeDir = (RVec3) getGlobal(DefaultShaderVar.V_EYE_DIR);
 	RVec3 normal = (RVec3) getGlobal(DefaultShaderVar.G_NORMAL);
 
-	int i = 0;
-	RVec3 lightDir = new RVec3("lightDir" + i);
-
-	RVec3 viewDir = new RVec3("veiwDir");
-	viewDir.assign(normalize(eyeDir.multiply(-1)));
+	RFloat k = (RFloat) getGlobal(SpecularShaderVar.U_EXTINCTION_COEFFICIENT);
 	RFloat F0 = new RFloat("F0");
 	F0.assign("0.8");
-	RFloat NdotL = (RFloat)getGlobal(DiffuseShaderVar.L_NDOTL, i);
+	RFloat nDotV = new RFloat("nDotV");
+	nDotV.assign("max(0., dot(gNormal, normalize(-vEyeDir)))");
+
 	RFloat Rs = new RFloat("Rs");
-	Rs.assign("0.0");
+	RVec3 specular = new RVec3("specular");
 
-        RFloat attenuation = (RFloat)getGlobal(LightsShaderVar.V_LIGHT_ATTENUATION, i);
-        RFloat lightPower = (RFloat)getGlobal(LightsShaderVar.U_LIGHT_POWER, i);
-        RVec3 lightColor = (RVec3)getGlobal(LightsShaderVar.U_LIGHT_COLOR, i);
+	for(int i=0; i<mLights.size(); ++i) {
+		Rs.assign("0.0");
+		specular.assign("vec3(0.,0.,0.)");
 
-	startif(new Condition(NdotL, Operator.GREATER_THAN, "0.0")); {
-		RVec3 H = new RVec3("H");
-		H.assign("normalize(lightDir" + i + " + veiwDir)");
+		RFloat attenuation = (RFloat)getGlobal(LightsShaderVar.V_LIGHT_ATTENUATION, i);
+		RFloat lightPower = (RFloat)getGlobal(LightsShaderVar.U_LIGHT_POWER, i);
+		RVec3 lightColor = (RVec3)getGlobal(LightsShaderVar.U_LIGHT_COLOR, i);
+		RVec3 lightDir = new RVec3("lightDir" + i);
+
+		RFloat NdotL = (RFloat)getGlobal(DiffuseShaderVar.L_NDOTL, i);
+
+		startif(new Condition(NdotL, Operator.GREATER_THAN, "0.0")); {
+
+		RVec3 H = new RVec3("H" + i);
+		H.assign("normalize(lightDir" + i + " + normalize(-vEyeDir))");
 		RFloat NdotH = new RFloat("NdotH");
-		NdotH.assign("max(0., dot(gNormal, H))");
-		RFloat NdotV = new RFloat("NdotV");
-		NdotV.assign("max(0., dot(gNormal, veiwDir))");
+		NdotH.assign("max(0., dot(gNormal, H" + i + "))");
 		RFloat VdotH = new RFloat("VdotH");
-		VdotH.assign("max(0., dot(veiwDir, H))");
+		VdotH.assign("max(0., dot(normalize(-vEyeDir), H" + i + "))");
 
 		// Fresnel reflectance
 		RFloat F = new RFloat("F");
@@ -105,7 +107,7 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 
 		// Microfacet distribution by Beckmann
 		RFloat m_squared = new RFloat("m_squared");
-		m_squared.assign(roughness * roughness);
+		m_squared.assign(muRoughness.multiply(muRoughness));
 		RFloat r1 = new RFloat("r1");
 		r1.assign("1.0 / (4.0 * m_squared * pow(NdotH, 4.0))");
 		RFloat r2 = new RFloat("r2");
@@ -117,19 +119,23 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 		RFloat two_NdotH = new RFloat("two_NdotH");
 		two_NdotH.assign("2.0 * NdotH");
 		RFloat g1 = new RFloat("g1");
-		g1.assign("(two_NdotH * NdotV) / VdotH");
+		g1.assign("(two_NdotH * nDotV) / VdotH");
 		RFloat g2 = new RFloat("g2");
 		g2.assign("(two_NdotH * NdotL" + i + ") / VdotH");
 		RFloat G = new RFloat("G");
 		G.assign("min(1.0, min(g1, g2))");
 
-		Rs.assign("(F * D * G) / (" + Math.PI + " * NdotL" + i + " * NdotV)");
-	} endif();
+		Rs.assign("(F * D * G) / (" + Math.PI + " * NdotL" + i + " * nDotV)");
 
-	RVec3 specular = new RVec3("specular");
-	specular.assign("uSpecularColor * NdotL" + i + " * (" + k + " + Rs * (1.0 - " + k + "))");
-	specular.assignMultiply(lightColor.multiply(lightPower).multiply(attenuation));
-	color.rgb().assignAdd(specular);
+		specular.assign("uSpecularColor * NdotL" + i);
+		specular.assignMultiply("(uK + Rs * (1. - uK))");
+		specular.assignMultiply(lightColor.multiply(lightPower).multiply(attenuation));
+
+		} endif();
+
+		color.rgb().assignAdd(specular);
+	}
+
 	}
 	
 	@Override
@@ -138,24 +144,24 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 		super.initialize();
 		
 		muSpecularColor = (RVec3) addUniform(SpecularShaderVar.U_SPECULAR_COLOR);
-		muShininess = (RFloat) addUniform(SpecularShaderVar.U_SHININESS);
-		muSpecularIntensity = (RFloat) addUniform(SpecularShaderVar.U_SPECULAR_INTENSITY);
+		muRoughness = (RFloat) addUniform(SpecularShaderVar.U_ROUGHNESS);
+		muExtinctionCoefficient = (RFloat) addUniform(SpecularShaderVar.U_EXTINCTION_COEFFICIENT);
 	}
 	
 	@Override
 	public void setLocations(int programHandle) {
 		super.setLocations(programHandle);
 		muSpecularColorHandle = getUniformLocation(programHandle, SpecularShaderVar.U_SPECULAR_COLOR);
-		muShininessHandle = getUniformLocation(programHandle, SpecularShaderVar.U_SHININESS);
-		muSpecularIntensityHandle = getUniformLocation(programHandle, SpecularShaderVar.U_SPECULAR_INTENSITY);
+		muRoughnessHandle = getUniformLocation(programHandle, SpecularShaderVar.U_ROUGHNESS);
+		muExtinctionCoefficientHandle = getUniformLocation(programHandle, SpecularShaderVar.U_EXTINCTION_COEFFICIENT);
 	}
 	
 	@Override
 	public void applyParams() {
 		super.applyParams();
 		GLES20.glUniform3fv(muSpecularColorHandle, 1, mSpecularColor, 0);
-		GLES20.glUniform1f(muShininessHandle, mShininess);
-		GLES20.glUniform1f(muSpecularIntensityHandle, mSpecularIntensity);
+		GLES20.glUniform1f(muRoughnessHandle, mRoughness);
+		GLES20.glUniform1f(muExtinctionCoefficientHandle, mExtinctionCoefficient);
 	}
 	
 	public void setSpecularColor(int color)
@@ -165,14 +171,14 @@ public class CookTorranceFragmentShaderFragment extends ATextureFragmentShaderFr
 		mSpecularColor[2] = (float)Color.blue(color) / 255.f;
 	}
 	
-	public void setSpecularIntensity(float specularIntensity)
+	public void setExtinctionCoefficient(float extinctionCoefficient)
 	{
-		mSpecularIntensity = specularIntensity;
+		mExtinctionCoefficient = extinctionCoefficient;
 	}
 	
-	public void setShininess(float shininess)
+	public void setRoughness(float roughness)
 	{
-		mShininess = shininess;
+		mRoughness = roughness;
 	}
 	
 	@Override
