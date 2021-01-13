@@ -20,6 +20,7 @@ import org.rajawali3d.materials.shaders.IShaderFragment;
 import org.rajawali3d.materials.shaders.AShaderBase.DataType;
 import org.rajawali3d.materials.shaders.AShaderBase.IGlobalShaderVar;
 import org.rajawali3d.materials.shaders.fragments.specular.PhongFragmentShaderFragment;
+import org.rajawali3d.materials.shaders.fragments.specular.CookTorranceFragmentShaderFragment;
 import org.rajawali3d.materials.textures.ATexture;
 import android.graphics.Color;
 
@@ -51,7 +52,9 @@ public abstract class SpecularMethod {
 	public enum SpecularShaderVar implements IGlobalShaderVar {
 		U_SPECULAR_COLOR("uSpecularColor", DataType.VEC3),
 		U_SPECULAR_INTENSITY("uSpecularIntensity", DataType.FLOAT),
-		U_SHININESS("uShininess", DataType.FLOAT);
+		U_SHININESS("uShininess", DataType.FLOAT),
+		U_ROUGHNESS("uRoughness", DataType.FLOAT),
+		U_EXTINCTION_COEFFICIENT("uK", DataType.FLOAT);
 		
 		private String mVarString;
 		private DataType mDataType;
@@ -174,6 +177,96 @@ public abstract class SpecularMethod {
 		public float getIntensity()
 		{
 			return mIntensity;
+		}
+
+		public void setTextures(List<ATexture> textures) {
+			mTextures = textures;
+		}
+	}
+
+	public static final class CookTorrance implements ISpecularMethod
+	{
+		private int mSpecularColor;
+		private float mRoughness = 1/8f;
+		private float mExtinction = 1/8f;
+		private List<ALight> mLights;
+		private List<ATexture> mTextures;
+		private CookTorranceFragmentShaderFragment mFragmentShader;
+		
+		public CookTorrance()
+		{
+			this(Color.WHITE, 96);
+		}
+		
+		public CookTorrance(int specularColor)
+		{
+			this(specularColor, 1/8f);
+		}
+		
+		public CookTorrance(int specularColor, float roughness)
+		{
+			this(specularColor, roughness, 1/8f);
+		}
+		
+		public CookTorrance(int specularColor, float roughness, float extinction)
+		{
+			mSpecularColor = specularColor;
+			mRoughness = roughness;
+			mExtinction = extinction;
+		}
+		
+		public IShaderFragment getVertexShaderFragment()
+		{
+			return null;
+		}
+		
+		public IShaderFragment getFragmentShaderFragment()
+		{
+			if(mFragmentShader == null)
+				mFragmentShader = new CookTorranceFragmentShaderFragment(mLights, mSpecularColor, mRoughness, mExtinction, mTextures);
+			return mFragmentShader;
+		}
+		
+		public void setLights(List<ALight> lights)
+		{
+			mLights = lights;
+		}
+		
+		public void setSpecularColor(int specularColor)
+		{
+			mSpecularColor = specularColor;
+			if(mFragmentShader != null)
+				mFragmentShader.setSpecularColor(specularColor);
+		}
+		
+		public int getSpecularColor()
+		{
+			return mSpecularColor;
+		}
+		
+		/**
+		 * @param roughness
+		 */
+		public void setRoughness(float roughness)
+		{
+			mRoughness = roughness;
+			if(mFragmentShader != null)
+				mFragmentShader.setRoughness(roughness);
+		}
+		
+		public float getRoughness()
+		{
+			return mRoughness;
+		}
+		
+		public void setExtinction(float extinction)
+		{
+			mExtinction = extinction;
+		}
+		
+		public float getExtinction()
+		{
+			return mExtinction;
 		}
 
 		public void setTextures(List<ATexture> textures) {
