@@ -116,6 +116,10 @@ public class LoaderOBJ extends AMeshLoader {
 
 	@Override
 	public LoaderOBJ parse() throws ParsingException {
+		return parse(false);
+	}
+
+	public LoaderOBJ parse(boolean offsetCentroids) throws ParsingException {
 		super.parse();
 		BufferedReader buffer = null;
 		if(mFile == null) {
@@ -312,13 +316,15 @@ public class LoaderOBJ extends AMeshLoader {
 			float[] aColors		= new float[oid.colorIndices.size() * 4];
 			int[] aIndices 		= new int[oid.vertexIndices.size()];
 
+			float[] centroid = offsetCentroids ? getCentroid(oid.vertexIndices, vertices) : new float[] { 0, 0, 0 };
+			oid.targetObj.setPosition(centroid[0], centroid[1], centroid[2]);
 			for(i=0; i<oid.vertexIndices.size(); ++i) {
 				int faceIndex = oid.vertexIndices.get(i) * 3;
 				int vertexIndex = i * 3;
 				try {
-					aVertices[vertexIndex] = vertices.get(faceIndex);
-					aVertices[vertexIndex+1] = vertices.get(faceIndex + 1);
-					aVertices[vertexIndex+2] = vertices.get(faceIndex + 2);
+					aVertices[vertexIndex] = vertices.get(faceIndex) - centroid[0];
+					aVertices[vertexIndex+1] = vertices.get(faceIndex + 1) - centroid[1];
+					aVertices[vertexIndex+2] = vertices.get(faceIndex + 2) - centroid[2];
 					aIndices[i] = i;
 				} catch(ArrayIndexOutOfBoundsException e) {
 					RajLog.d("Obj array index out of bounds: " + vertexIndex + ", " + faceIndex);
@@ -375,6 +381,20 @@ public class LoaderOBJ extends AMeshLoader {
 		return this;
 	}
 
+	float[] getCentroid(ArrayList<Integer> vertexIndices, ArrayList<Float> vertices) {
+		float[] centroid = new float[] { 0,0,0 };
+		for(int i=0; i<vertexIndices.size(); ++i) {
+			int faceIndex = vertexIndices.get(i) * 3;
+			int vertexIndex = i * 3;
+			centroid[0] += vertices.get(faceIndex+0);
+			centroid[1] += vertices.get(faceIndex+1);
+			centroid[2] += vertices.get(faceIndex+2);
+		}
+		centroid[0] /= (vertexIndices.size());
+		centroid[1] /= (vertexIndices.size());
+		centroid[2] /= (vertexIndices.size());
+		return centroid;
+	}
 
 	/**
 	 * Collapse single-object groups. (Some obj exporters use g token for objects)
