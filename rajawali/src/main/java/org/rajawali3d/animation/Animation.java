@@ -355,4 +355,26 @@ public abstract class Animation extends Playable {
     public double getInterpolatedTime() {
         return mInterpolatedTime;
     }
+
+    public void toggleDirection() {
+        mIsReversing = !mIsReversing;
+        mElapsedTime = (mDuration - mElapsedTime);
+    }
+
+    public void play(Direction direction) {
+        switch(direction) {
+        case reverse:
+            mIsReversing = true;
+            break;
+        default:
+            mIsReversing = false;
+            break;
+        }
+        play();
+    }
+
+    public enum Direction {
+        forwards,
+        reverse
+    }
 }
