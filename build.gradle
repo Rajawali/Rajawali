@@ -69,7 +69,7 @@ static def getVersion() {
         if (isCI && isMaster) {
             def commitCount = getGitCommitCount()
             return "1.2.$commitCount"
-        if (!isCI || isPR || hasLocalChanges) {
+        } else if (!isCI || isPR || hasLocalChanges) {
             modifier = "-DIRTY"
         } else if(!isMaster) {
             modifier = "-SNAPSHOT"
