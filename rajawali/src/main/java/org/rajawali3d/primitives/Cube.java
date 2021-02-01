@@ -110,7 +110,7 @@ public class Cube extends Object3D {
 				-halfSize, -halfSize, -halfSize,		-halfSize,-halfSize, halfSize, // 1-6-7-2 left
 
 		 		-halfSize, halfSize, halfSize,			 halfSize, halfSize, halfSize,
-				 halfSize, halfSize, -halfSize,			-halfSize, halfSize, -halfSize,  // 5-6-1-0 top
+				 halfSize, halfSize, -halfSize,			-halfSize, halfSize, -halfSize,  // 1-0-5-6 top
 
 				halfSize, -halfSize, halfSize, 			-halfSize, -halfSize, halfSize,
 				-halfSize, -halfSize, -halfSize,		halfSize, -halfSize, -halfSize, // 3-2-7-4 bottom
