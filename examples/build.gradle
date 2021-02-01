@@ -30,17 +30,6 @@ android {
         }
     }
 
-    flavorDimensions "feature"
-    productFlavors {
-        withVuforia {
-            minSdkVersion 21 // 19 would be ok as well, but Espresso needs a 21. btw, this sample code is very old
-            dimension "feature"
-        }
-        withoutVuforia {
-            dimension "feature"
-        }
-    }
-
     lintOptions {
         abortOnError false
     }
@@ -73,8 +62,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     implementation project(':rajawali')
-    withVuforiaImplementation project(':vuforia')
-    withVuforiaImplementation project(':vr')
 
     wearApp project(':wear-example')
 
