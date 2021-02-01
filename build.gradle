@@ -66,6 +66,9 @@ static def getVersion() {
 
         // Dirty if local, a PR, or has local changes
         // Snapshot if not dirty but not master
+        if (isCI && isMaster) {
+            def commitCount = getGitCommitCount()
+            return "1.2.$commitCount"
         if (!isCI || isPR || hasLocalChanges) {
             modifier = "-DIRTY"
         } else if(!isMaster) {
