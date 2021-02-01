@@ -14,7 +14,6 @@ package org.rajawali3d;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-import org.rajawali3d.animation.mesh.VertexAnimationObject3D;
 import org.rajawali3d.bounds.BoundingBox;
 import org.rajawali3d.bounds.BoundingSphere;
 import org.rajawali3d.math.vector.Vector3;
