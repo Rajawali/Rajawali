@@ -34,9 +34,12 @@ ext {
     maxDexHeap = "2g"
 }
 
+def bundleVersion = getVersion()
+println("Building project $bundleVersion")
+
 subprojects {
     group 'org.rajawali3d'
-    version = getTag()
+    version = bundleVersion
 
     repositories {
         google()
@@ -50,18 +53,27 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-
-static def getTag() {
+static def getVersion() {
     def tagVersion = "$System.env.VERSION"
+    def isCI = !"$System.env.CI".isEmpty()
+    def isPR = !"$System.env.CIRCLE_PR_REPONAME".isEmpty()
+    def isMaster = "$System.env.CIRCLE_BRANCH" == "master"
     if (tagVersion == "null") {
         // with local un-commited changes a -DIRTY is added
         def processChanges = "git diff-index --name-only HEAD --".execute()
-        def dirty = ""
-        if (!processChanges.text.toString().trim().isEmpty())
-            dirty = "-DIRTY"
+        def hasLocalChanges = !processChanges.text.toString().trim().isEmpty()
+        def modifier = ""
+
+        // Dirty if local, a PR, or has local changes
+        // Snapshot if not dirty but not master
+        if (!isCI || isPR || hasLocalChanges) {
+            modifier = "-DIRTY"
+        } else if(!isMaster) {
+            modifier = "-SNAPSHOT"
+        }
 
         def process = "git describe --tags".execute()
-        tagVersion = process.text.toString().trim() + dirty
+        tagVersion = process.text.toString().trim() + modifier
     } else {
         def tagVersionToken = tagVersion.split("/")
         if (tagVersionToken.size() > 2)

@@ -9,7 +9,7 @@ android {
         minSdkVersion 21
         targetSdkVersion rootProject.targetSdk
         versionCode getGitCommitCount()
-        versionName getTag()
+        versionName version
     }
 
     compileOptions {

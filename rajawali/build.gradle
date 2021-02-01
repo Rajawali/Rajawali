@@ -9,7 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion rootProject.targetSdk
         versionCode getGitCommitCount()
-        versionName getTag()
+        versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // VERSION_NAME no longer available as of 4.1
