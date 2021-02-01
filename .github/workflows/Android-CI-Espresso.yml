@@ -18,7 +18,7 @@ jobs:
       - name: Run instrumentation tests
         uses: malinskiy/action-android/emulator-run-cmd@release/0.1.0
         with:
-          cmd: ./gradlew connectedWithoutVuforiaDebugAndroidTest
+          cmd: ./gradlew connectedDebugAndroidTest
           api: 28
           tag: default
           abi: x86

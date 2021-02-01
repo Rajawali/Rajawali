@@ -2,8 +2,6 @@ package org.rajawali3d.examples.data;
 
 import androidx.annotation.NonNull;
 
-import com.rajawali3d.examples.data.DataSetImpl;
-
 import org.rajawali3d.examples.R;
 import org.rajawali3d.examples.examples.animation.AnimationFragment;
 import org.rajawali3d.examples.examples.animation.BezierFragment;
@@ -90,7 +88,6 @@ public final class DataSet {
 
     private DataSet() {
         categories = createCategories();
-        categories.addAll(DataSetImpl.getInstance().getCategories());
     }
 
     public static synchronized DataSet getInstance() {

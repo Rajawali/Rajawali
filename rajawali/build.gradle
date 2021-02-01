@@ -11,6 +11,10 @@ android {
         versionCode getGitCommitCount()
         versionName getTag()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // VERSION_NAME no longer available as of 4.1
+        // https://issuetracker.google.com/issues/158695880
+        buildConfigField 'String', 'VERSION_NAME', "\"$version\""
     }
 
     compileOptions {
@@ -50,7 +54,7 @@ android {
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.12'
 
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core"
     androidTestImplementation 'androidx.test:rules:1.3.0'
