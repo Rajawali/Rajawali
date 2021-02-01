@@ -10,6 +10,9 @@
 
 ### News
 
+**06/23/2017**
+`Bombshell 1.1.970` has been released. It fixes behavior of Objects of zero size, TextureView, TextureManager, Toon Shader color setters, custom shaders and more... It also adds preprocessor directive support for shader plugins, configurable skybox geometry, and extends our Unit Text Framework.
+
 **11/16/2016**
 `Bombshell 1.1.777` has been released. It fixes a small number of bugs and adds a Scan Line post processing effect (thanks @contriteobserver). 
 
