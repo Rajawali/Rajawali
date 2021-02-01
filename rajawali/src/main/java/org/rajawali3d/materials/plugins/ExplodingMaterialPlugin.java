@@ -36,7 +36,7 @@ public class ExplodingMaterialPlugin implements IMaterialPlugin {
     }
 
     public void setFactor(double factor) {
-        mVertexShader.setFactor((float)factor);
+        mVertexShader.setFactor((float)(factor*factor));
     }
 
     @Override
