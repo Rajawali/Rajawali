@@ -1,6 +1,7 @@
 package org.rajawali3d.materials.plugins;
 
 import android.opengl.GLES20;
+import androidx.annotation.FloatRange;
 
 import org.rajawali3d.Geometry3D;
 import org.rajawali3d.materials.Material;
@@ -8,6 +9,8 @@ import org.rajawali3d.materials.plugins.IMaterialPlugin;
 import org.rajawali3d.materials.shaders.AShader;
 import org.rajawali3d.materials.shaders.AShaderBase;
 import org.rajawali3d.materials.shaders.IShaderFragment;
+
+import static org.rajawali3d.math.MathUtil.clamp;
 
 import java.nio.FloatBuffer;
 
@@ -40,8 +43,8 @@ public class PosableMaterialPlugin implements IMaterialPlugin {
         mVertexShader = new PosingVertexShaderFragment(geometry);
     }
 
-    public void setInterpolation(double interpolation) {
-        mVertexShader.setInterpolation((float)interpolation);
+    public void setInterpolation(@FloatRange(from = 0.0d, to = 1.0d) double interpolation) {
+        mVertexShader.setInterpolation((float)clamp(interpolation, 0, 1));
     }
     @Override
     public Material.PluginInsertLocation getInsertLocation() {
