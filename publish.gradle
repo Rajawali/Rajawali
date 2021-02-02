@@ -99,11 +99,13 @@ publishing {
         def releaseUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
         def snapshotUrl = "https://oss.sonatype.org/content/repositories/snapshots"
 
-        maven {
-            url !version.contains("SNAPSHOT") ? releaseUrl : snapshotUrl
-            credentials {
-                username System.getenv('SONATYPE_USERNAME') ?: ""
-                password System.getenv('SONATYPE_PASSWORD') ?: ""
+        if (!version.contains("DIRTY")) {
+            maven {
+                url !version.contains("SNAPSHOT") ? releaseUrl : snapshotUrl
+                credentials {
+                    username System.getenv('SONATYPE_USERNAME') ?: ""
+                    password System.getenv('SONATYPE_PASSWORD') ?: ""
+                }
             }
         }
     }
